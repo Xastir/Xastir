@@ -3529,7 +3529,7 @@ static void* net_connect_thread(void *arg) {
             //if (debug_level & 2)
             //    fprintf(stderr,"net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
 
-            usleep(300);
+            usleep(100000); // 100ms
             //pthread_testcancel();   // Check for thread termination request
             //stat = close(port_data[port].channel);
             //pthread_testcancel();   // Check for thread termination request
@@ -3557,7 +3557,7 @@ static void* net_connect_thread(void *arg) {
         //if (debug_level & 2)
         //    fprintf(stderr,"net_connect_thread():Net Shutdown 2 Returned %d, port %d\n",stat,port);
 
-        usleep(300);
+        usleep(100000); // 100ms
         //pthread_testcancel();   // Check for thread termination request
         //stat = close(port_data[port].channel);
         //pthread_testcancel();   // Check for thread termination request
@@ -3838,7 +3838,7 @@ int net_detach(int port) {
             quiti[1] = (char)0;
             if (port_data[port].status == DEVICE_UP) {
                 port_write_string(port,quiti);
-                usleep(300);
+                usleep(100000); // 100ms
             }
             /* wait to write */
             while (port_data[port].status == DEVICE_UP && port_data[port].write_in_pos != port_data[port].write_out_pos && max < 25) {
@@ -5419,7 +5419,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 
                     (void)command_file_to_tnc_port(port,
                         get_data_base_dir(temp));
-                    usleep(3000000);
+                    usleep(3000000);    // 3secs
                     break;
 
                 default:
@@ -5889,7 +5889,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             /* if all is ok check and start read write threads */
             (void)start_port_threads(port_avail);
-            usleep(500);
+            usleep(100000); // 100ms
 
             switch (dev_type) {
 
