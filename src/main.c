@@ -23,12 +23,6 @@
  */
 
 
-// Uncomment this line if we wish to have a listening socket at port
-// 2023 for multiple client connects.  "telnet localhost 2023" works
-// great for testing.
-//#define ENABLE_LOCAL_SERVER_PORT
-
-
 #include "config.h"
 #include "snprintf.h"
 
@@ -47,6 +41,7 @@
 #include <pthread.h>
 #include <locale.h>
 #include <strings.h>
+#include <wait.h>
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -223,12 +218,6 @@
 uid_t euid;
 gid_t egid;
 
-
-#ifdef ENABLE_LOCAL_SERVER_PORT
-int enable_local_server_port = 1;
-#else   // ENABLE_LOCAL_SERVER_PORT
-int enable_local_server_port = 0;
-#endif  // ENABLE_LOCAL_SERVER_PORT
 
 
 // Used in segfault handler
@@ -558,10 +547,13 @@ static void Display_last_heard_toggle(Widget w, XtPointer clientData, XtPointer 
 static void  Transmit_disable_toggle( Widget widget, XtPointer clientData, XtPointer callData);
 static void  Posit_tx_disable_toggle( Widget widget, XtPointer clientData, XtPointer callData);
 static void  Object_tx_disable_toggle( Widget widget, XtPointer clientData, XtPointer callData);
+static void  Server_port_toggle( Widget widget, XtPointer clientData, XtPointer callData);
 int transmit_disable;
 int posit_tx_disable;
 int object_tx_disable;
+int enable_server_port = 0;
 Widget iface_transmit_now, posit_tx_disable_toggle, object_tx_disable_toggle;
+Widget server_port_toggle;
 
 #ifdef HAVE_GPSMAN
 Widget Fetch_gps_track, Fetch_gps_route, Fetch_gps_waypoints;
@@ -6767,6 +6759,19 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(object_tx_disable_toggle,FALSE);
 
 
+    server_port_toggle = XtVaCreateManagedWidget(langcode("PULDNTNT11"),
+            xmToggleButtonGadgetClass,
+            ifacepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(server_port_toggle,XmNvalueChangedCallback,Server_port_toggle,"1");
+    if (enable_server_port)
+        XmToggleButtonSetState(server_port_toggle,TRUE,FALSE);
+
+
     (void)XtVaCreateManagedWidget("create_appshell sep5b",
             xmSeparatorGadgetClass,
             ifacepane,
@@ -10564,7 +10569,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 
 // Check the x_spider server for incoming data
-                if (enable_local_server_port) {
+                if (enable_server_port) {
                     // Check whether the x_spider server pipe has any data
                     // for us.  Process it if found.
                     n = readline(pipe_server_to_xastir, line, MAX_LINE_SIZE);
@@ -10605,7 +10610,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                     //fprintf(stderr,"device_type: %d\n",port_data[data_port].device_type);
 
 
-                    if (enable_local_server_port) {
+                    if (enable_server_port) {
 // Send data to the x_spider server
                         if (writen(pipe_xastir_to_server, incoming_data, incoming_data_length) != incoming_data_length) {
                             fprintf(stderr,
@@ -10795,19 +10800,21 @@ void shut_down_server(void) {
     // Shut down the server if it was enabled
     if (server_pid) {
 
-        // Send to the main server process
-//        kill(server_pid, 1);
+        // Send a kill to the main server process
+        kill(server_pid, 1);
+
+        wait(0);    // Reap the status of the process
 
         // Send to all processes in our process group.  This will
-        // cause the server and all of its children to die.
-        kill(0, 1);
+        // cause the server and all of its children to die.  Also
+        // causes Xastir to die!  Don't do it!
+        //kill(0, 1);
 
         sleep(1);
 
         // Send a more forceful kill signal in case the "nice" kill
         // signal didn't work.
-//        kill(server_pid, 9);
-        kill(0, 9);
+        kill(server_pid, 9);
     }
 }
 
@@ -14595,6 +14602,33 @@ void  Object_tx_disable_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         object_tx_disable = atoi(which);
     else
         object_tx_disable = 0;
+}
+
+
+
+
+
+void  Server_port_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set) {
+        // Start the listening socket.  If we fork it early we end
+        // up with much smaller process memory allocated for it and
+        // all its children.  The server will authenticate each
+        // client that connects.  We'll share all of our data with
+        // the server, which will send it to all
+        // connected/authenticated clients.  Anything transmitted by
+        // the clients will come back to us and standard igating
+        // rules should apply from there.
+        //
+        enable_server_port = atoi(which);
+        server_pid = Fork_server();
+    }
+    else {
+        enable_server_port = 0;
+        shut_down_server();
+    }
 }
 
 
@@ -27779,17 +27813,6 @@ int main(int argc, char *argv[]) {
     }
 
 
-    // Start the listening socket.  If we fork it early we end up
-    // with much smaller process memory allocated for it and all its
-    // children.  The server will authenticate each client that
-    // connects.  We'll share all of our data with the server, which
-    // will send it to all connected/authenticated clients.
-    // Anything transmitted by the clients will come back to us and
-    // standard igating rules should apply from there.
-    if (enable_local_server_port) {
-        server_pid = Fork_server();
-    }
-
     // initialize interfaces
     init_critical_section(&port_data_lock);   // Protects the port_data[] array of structs
     init_critical_section(&output_data_lock); // Protects interface.c:channel_data() function only
@@ -27831,6 +27854,18 @@ int main(int argc, char *argv[]) {
         (void) signal(SIGSEGV,segfault);                // set segfault signal to check
 
     load_data_or_default(); // load program parameters or set to default values
+
+
+    // Start the listening socket.  If we fork it early we end up
+    // with much smaller process memory allocated for it and all its
+    // children.  The server will authenticate each client that
+    // connects.  We'll share all of our data with the server, which
+    // will send it to all connected/authenticated clients.
+    // Anything transmitted by the clients will come back to us and
+    // standard igating rules should apply from there.
+    if (enable_server_port) {
+        server_pid = Fork_server();
+    }
 
 
     if (deselect_maps_on_startup) {

@@ -224,6 +224,7 @@ PULDNTNT02|Properties|P|
 PULDNTNT03|Disable Transmit: ALL||
 PULDNTNT05|Disable Transmit: My Position||
 PULDNTNT06|Disable Transmit: Objects/Items||
+PULDNTNT11|Enable Server Port|P|
 PULDNTNT01|Transmit Now!|T|
 PULDNTNT07|Fetch GPS Track|F|
 PULDNTNT08|Fetch GPS Routes|R|

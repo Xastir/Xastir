@@ -7377,7 +7377,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
     }
 
 
-    if (enable_local_server_port) {
+    if (enable_server_port) {
 // Send data to the x_spider server
 
         xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
@@ -7789,7 +7789,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     }
 
 
-    if (enable_local_server_port) {
+    if (enable_server_port) {
 // Send data to the x_spider server
 
         xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,

@@ -49,7 +49,7 @@
 //#define TRANSMIT_RAW_WX
 
 
-extern int enable_local_server_port;
+extern int enable_server_port;
 
 
 extern char altnet_call[];

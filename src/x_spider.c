@@ -848,11 +848,11 @@ int Fork_server(void) {
         // listening process whenever it dies.
         //
 //        while (1) {
-            fprintf(stderr,"Starting Server...\n");
+//            fprintf(stderr,"Starting Server...\n");
 
             Server();
  
-            fprintf(stderr,"Server process died.\n");
+//            fprintf(stderr,"Server process died.\n");
 //        }
     }
     //
