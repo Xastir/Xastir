@@ -2088,10 +2088,10 @@ clear_dangerous();
                     "Geographic coordinate system, %s, adding to index\n",
                     geogcs);
 
-                if (   file_MinY >=  -90.0 && file_MinY <  90.0
-                    && file_MaxY >=  -90.0 && file_MaxY <  90.0
-                    && file_MinX >= -180.0 && file_MinX < 180.0
-                    && file_MaxX >= -180.0 && file_MaxX < 180.0) {
+                if (   file_MinY >=  -90.0 && file_MinY <=  90.0
+                    && file_MaxY >=  -90.0 && file_MaxY <=  90.0
+                    && file_MinX >= -180.0 && file_MinX <= 180.0
+                    && file_MaxX >= -180.0 && file_MaxX <= 180.0) {
 
 // Debug:  Don't add them to the index so that we can experiment
 // with datum translation and such.
