@@ -25,7 +25,7 @@ PULDNFI001|Configurar|C|
 PULDNFI002|Abrir o log|B|
 PULDNFI003|Testar|P|
 PULDNFI004|Sair|S|
-PULDNFI005|Yes I'm Sure!||
+PULDNFI005|Sim, vou sair!|S|
 PULDNFI007|Muda nivel de Debug|D|
 PULDNFI010|Abre o log do TNC|T|
 PULDNFI011|Abre o log da Internet|I|
@@ -51,7 +51,7 @@ PULDNVI014|Programar aviso|r|
 # Menú de configuração
 PULDNCF004|Estação|E|
 PULDNCF001|Pré-definidos|P|
-PULDNCF002|Coordinate System||
+PULDNCF002|Sistema de coordenadas|S|
 PULDNCF006|Audio dos alarmes|A|
 PULDNCF007|Sintetizador de voz|S|
 PULDNCF008|Guardar configuração!|G|
@@ -94,7 +94,7 @@ PULDNMBC08|Dourado amarelado||
 PULDNMBC09|Castanho rosado||
 PULDNMBC10|Vermelho escuro||
 PULDNMBC11|Branco||
-PULDNMBC12|Negro||
+PULDNMBC12|Preto||
 #
 # Mapas de estações e estilos das etiquetas
 PULDNMSL01|Fundo negro||
@@ -266,9 +266,9 @@ WPUPCFD024|Info de posição comprimido quando transmita?||
 WPUPCFD025|Activar rede alternativa?|A|
 WPUPCFD026|Enviar reportes de posição em que intervalos?||
 #
-# PopUp "Configure Coordinate System"
-WPUPCFC001|Configure Coordinate System||
-WPUPCFC002|Select Coordinate System||
+# PopUp "Sistema de configuração de coordenadas"
+WPUPCFC001|Sistema de configuração de coordenadas||
+WPUPCFC002|Sistema de seleção de coordenadas||
 WPUPCFC003|dd.ddddd|d|
 WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
@@ -770,7 +770,7 @@ SPCHDIRE00|este of||
 SPCHDIRW00|oeste of||
 SPCHDIRNE0|nordeste of||
 SPCHDIRNW0|nordoeste of||
-SPCHDIRSE0|sudest of||
+SPCHDIRSE0|sudeste of||
 SPCHDIRSW0|sudoeste of||
 #
 # Diálogo da seleção do simbolo
@@ -804,8 +804,10 @@ FEATURE004|Mapa quad:||
 FEATURE005|Tipo:||
 FEATURE006|GNIS arquivo:||
 #
-# Coordinate Calculator Dialog
-COORD001|Coordinate Calc||
-COORD002|Calc||
-COORD003|Calculate||
-COORD004|Clear||
+# Diálogo do cálculo de coordenadas
+COORD001|Cálcular coordenadas||
+COORD002|Cálc||
+COORD003|Cálcular||
+COORD004|Limpar||
+#
+#
