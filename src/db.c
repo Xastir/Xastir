@@ -188,14 +188,6 @@ int is_my_call(char *call, int exact) {
     // for a terminators in the first position.  If a terminator in
     // the second position, we'll fail the match properly in the
     // string compares.
-    // We need this next bit of code so that we don't run off the
-    // end of the string when we compare the 2nd char position.
-    //
-    if (!call[0])   // Empty string
-        return(0);
-
-    if (!my_callsign[0])    // Empty string
-        return(0);
 
 
     // Check first letter.  If a match, go on to strcmp() functions,
@@ -205,6 +197,16 @@ int is_my_call(char *call, int exact) {
     if (call[0] != my_callsign[0]) {
         return(0);
     }
+
+
+    // We need this next bit of code so that we don't run off the
+    // end of the string when we compare the 2nd char position.
+    //
+    if (!call[0])   // Empty string
+        return(0);
+
+    if (!my_callsign[0])    // Empty string
+        return(0);
 
 
     // Same for second letter.  This is much faster than the string
