@@ -7420,6 +7420,7 @@ void init_station(DataRow *p_station) {
     p_station->object_retransmit  = -1;           // transmit forever
     p_station->last_transmit_time = sec_now();    // Used for object/item decaying algorithm
     p_station->transmit_time_increment = 0;       // Used in data_add()
+    p_station->last_modified_time = 0;            // Used for object/item dead-reckoning
     p_station->record_type        = '\0';
     p_station->data_via           = '\0';         // L local, T TNC, I internet, F file
     p_station->heard_via_tnc_port = 0;
