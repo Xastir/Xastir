@@ -4114,6 +4114,11 @@ int serial_init (int port) {
 #endif // HAVE_GETPGRP
 
             }
+            else {
+                // fscanf parsed the wrong number of items.
+                // Lockfile is different, perhaps created by some
+                // other program.
+            }
 
             (void)fclose(lock);
 
@@ -4579,7 +4584,9 @@ int net_init(int port) {
         if (strcmp(ip_addrs,"NOHOST") != 0) {
             if (strcmp(ip_addrs,"TIMEOUT") != 0) {    // We found an IP address
                 /* get the first ip */
-                (void)sscanf(ip_addrs,"%39s",ip_addr);
+                if (1 != sscanf(ip_addrs,"%39s",ip_addr)) {
+                    fprintf(stderr,"net_init: sscanf parsing error\n");
+                }
                 if (debug_level & 2)
                     fprintf(stderr,"IP Address: %s\n",ip_addr);
                 /* set address for connection */

@@ -1060,7 +1060,9 @@ void load_NWS_stations(char *file) {
                         // add data
                         // Note:  Size of string variable is 12
                         // bytes, defined in igate.h
-                        (void)sscanf(line,"%11s",NWS_station_data[NWS_stations-1].call);
+                        if (1 != sscanf(line,"%11s",NWS_station_data[NWS_stations-1].call)) {
+                            fprintf(stderr,"load_NWS_stations: sscanf parsing error\n");
+                        }
                         if (debug_level & 1024)
                             fprintf(stderr,"LINE:%s\n",line);
                     }

@@ -455,13 +455,19 @@ Cell Name
 
                     // Now must convert from DD MM SS format to DD MM.MM format so that we
                     // can run it through our conversion routine to Xastir coordinates.
-                    (void)sscanf(lat_ss, "%d", &temp1);
+                    if (1 != sscanf(lat_ss, "%d", &temp1)) {
+                        fprintf(stderr,"draw_gnis_map:sscanf parsing error\n");
+                    }
+
                     temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
                     xastir_snprintf(lat_str, sizeof(lat_str), "%s%s.%02d%s", lat_dd,
                             lat_mm, temp1, lat_dir);
                     coord_lat = convert_lat_s2l(lat_str);
 
-                    (void)sscanf(long_ss, "%d", &temp1);
+                    if (1 != sscanf(long_ss, "%d", &temp1)) {
+                        fprintf(stderr,"draw_gnis_map:sscanf parsing error\n");
+                    }
+
                     temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
                     xastir_snprintf(long_str, sizeof(long_str), "%s%s.%02d%s", long_dd,
                             long_mm, temp1, long_dir);
@@ -1242,13 +1248,19 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                         // Now must convert from DD MM SS format to DD MM.MM format so that we
                         // can run it through our conversion routine to Xastir coordinates.
-                        (void)sscanf(lat_ss, "%d", &temp1);
+                        if (1 != sscanf(lat_ss, "%d", &temp1)) {
+                            fprintf(stderr,"locate_place:sscanf parsing error\n");
+                        }
+
                         temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
                         xastir_snprintf(lat_str, sizeof(lat_str), "%s%s.%02d%s", lat_dd,
                                 lat_mm, temp1, lat_dir);
                         coord_lat = convert_lat_s2l(lat_str);
 
-                        (void)sscanf(long_ss, "%d", &temp1);
+                        if (1 != sscanf(long_ss, "%d", &temp1)) {
+                            fprintf(stderr,"locate_place:sscanf parsing error\n");
+                        }
+
                         temp1 = (int)((temp1 / 60.0) * 100 + 0.5);  // Poor man's rounding
                         xastir_snprintf(long_str, sizeof(long_str), "%s%s.%02d%s", long_dd,
                                 long_mm, temp1, long_dir);

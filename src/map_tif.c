@@ -236,7 +236,9 @@ int read_fgd_file ( char* tif_filename,
                 if ( ( (ptr = strstr(line, "WEST BOUNDING COORDINATE:") ) != NULL)
                         || ( (ptr = strstr(line, "West_Bounding_Coordinate:") ) != NULL) )
                 {
-                    sscanf (ptr + 25, " %f", f_west_bounding);
+                    if (1 != sscanf (ptr + 25, " %f", f_west_bounding)) {
+                        fprintf(stderr,"read_fgd_file:sscanf parsing error\n");
+                    }
                     if (debug_level & 512)
                         fprintf(stderr,"West Bounding:  %f\n",*f_west_bounding);
                     num_coordinates++;
@@ -248,7 +250,9 @@ int read_fgd_file ( char* tif_filename,
                 if ( ( (ptr = strstr(line, "EAST BOUNDING COORDINATE:") ) != NULL)
                         || ( (ptr = strstr(line, "East_Bounding_Coordinate:") ) != NULL) )
                 {
-                    sscanf (ptr + 25, " %f", f_east_bounding);
+                    if (1 != sscanf (ptr + 25, " %f", f_east_bounding)) {
+                        fprintf(stderr,"read_fgd_file:sscanf parsing error\n");
+                    }
                     if (debug_level & 512)
                         fprintf(stderr,"East Bounding:  %f\n",*f_east_bounding);
                     num_coordinates++;
@@ -260,7 +264,9 @@ int read_fgd_file ( char* tif_filename,
                 if ( ( (ptr = strstr(line, "NORTH BOUNDING COORDINATE:") ) != NULL)
                         || ( (ptr = strstr(line, "North_Bounding_Coordinate:") ) != NULL) )
                 {
-                    sscanf (ptr + 26, " %f", f_north_bounding);
+                    if (1 != sscanf (ptr + 26, " %f", f_north_bounding)) {
+                        fprintf(stderr,"read_fgd_file:sscanf parsing error\n");
+                    }
                     if (debug_level & 512)
                         fprintf(stderr,"North Bounding: %f\n",*f_north_bounding);
                     num_coordinates++;
@@ -272,7 +278,9 @@ int read_fgd_file ( char* tif_filename,
                 if ( ( (ptr = strstr(line, "SOUTH BOUNDING COORDINATE:") ) != NULL)
                         || ( (ptr = strstr(line, "South_Bounding_Coordinate:") ) != NULL) )
                 {
-                    sscanf (ptr + 26, " %f", f_south_bounding);
+                    if (1 != sscanf (ptr + 26, " %f", f_south_bounding)) {
+                        fprintf(stderr,"read_fgd_file:sscanf parsing error\n");
+                    }
                     if (debug_level & 512)
                         fprintf(stderr,"South Bounding: %f\n",*f_south_bounding);
                     num_coordinates++;

@@ -134,7 +134,9 @@ void location_view(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                             "%s",
                             temp_ptr);
                         if (strcmp(location,name)==0) {
-                            (void)sscanf(pos,"%19s %19s %9s", s_lat, s_long, s_sz);
+                            if (3 != sscanf(pos,"%19s %19s %9s", s_lat, s_long, s_sz)) {
+                                fprintf(stderr,"location_view:sscanf parsing error\n");
+                            }
                             map_pos(convert_lat_s2l(s_lat),convert_lon_s2l(s_long),atol(s_sz));
                             done=1;
                         }

@@ -5541,6 +5541,7 @@ void index_restore_from_file(void) {
 // Remember to free the XmString pointer if necessary.
 
                     free(temp_record);
+//                    fprintf(stderr,"index_restore_from_file:sscanf parsing error\n");
                 }
             }
         }

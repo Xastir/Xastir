@@ -6893,7 +6893,9 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
             /* if selection was made */
             if (found) {
                 /* look at list data (Must be "Device" port#) */
-                (void)sscanf(temp,"%49s %d",temp2,&port);
+                if (2 != sscanf(temp,"%49s %d",temp2,&port)) {
+                    fprintf(stderr,"interface_option:sscanf parsing error\n");
+                }
                 if(do_w==1) {
                     /* delete interface */
                     /*fprintf(stderr,"delete interface port %d\n",port);*/
@@ -7136,7 +7138,9 @@ void start_stop_interface( /*@unused@*/ Widget widget, XtPointer clientData,  /*
 //end_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
 
         /* look at list data (Must be "Device" port#) */
-        (void)sscanf(temp,"%49s %d",temp2,&port);
+        if (2 != sscanf(temp,"%49s %d",temp2,&port)) {
+            fprintf(stderr,"start_stop_interface:sscanf parsing error\n");
+        }
         /*fprintf(stderr,"Port to change %d\n",port);*/
         do_w = atoi(which);
         if (do_w) {

@@ -1245,7 +1245,7 @@ time_t time_from_aprsstring(char *aprs_time) {
 
         case 2:
             minute = 0;
-
+ 
         default:
             break;
     }
@@ -1427,9 +1427,6 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
 //    last_speed,
 //    phg);
 
-    // sscanf() doesn't work on latest Cygwin!
-    //(void)sscanf(input_lat, "%2d%lf%c", &deg, &minutes, &ext);
-
     // Fetch degrees (first two chars)
     temp_str[0] = input_lat[0];
     temp_str[1] = input_lat[1];
@@ -1464,9 +1461,6 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     lat[4] = '\0';
 
 //fprintf(stderr,"%s\n",lat);
-
-    // This doesn't work on latest Cygwin!
-    //(void)sscanf(input_lon, "%3d%lf%c", &deg, &minutes, &ext);
 
     // Fetch degrees (first three chars)
     temp_str[0] = input_lon[0];

@@ -1090,20 +1090,22 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 sizeof(weather->wx_station),
                 "OWW");
 
-            sscanf((const char *)data,
-                "%f %f %f %f %f %f %d %d %f %f %f %f",
-                &tmp1,
-                &tmp2,
-                &tmp3,
-                &tmp4,
-                &tmp5,
-                &tmp6,
-                &tmp7,
-                &tmp8,
-                &tmp9,
-                &tmp10,
-                &tmp11,
-                &tmp12);
+            if (12 != sscanf((const char *)data,
+                    "%f %f %f %f %f %f %d %d %f %f %f %f",
+                    &tmp1,
+                    &tmp2,
+                    &tmp3,
+                    &tmp4,
+                    &tmp5,
+                    &tmp6,
+                    &tmp7,
+                    &tmp8,
+                    &tmp9,
+                    &tmp10,
+                    &tmp11,
+                    &tmp12)) {
+                fprintf(stderr,"wx_fill_data:sscanf parsing error\n");
+            }
 
 
             // The format of the data originates here:
@@ -2110,7 +2112,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // Can this sscanf overflow the "temp" buffer?  I
             // changed the length of temp to MAX_DEVICE_BUFFER to
             // avoid this problem.
-            (void)sscanf((char *)data,"%19s %d %19s %d %19s %d",temp,&temp1,temp,&temp2,temp,&temp3);
+            if (6 != sscanf((char *)data,"%19s %d %19s %d %19s %d",temp,&temp1,temp,&temp2,temp,&temp3)) {
+                fprintf(stderr,"wx_fill_data:sscanf parsing error\n");
+            }
 
             /* outdoor temp */
             xastir_snprintf(weather->wx_temp,
@@ -2747,7 +2751,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                 // sscanf looking for the correct number and types of fields for the
                 // OWW server in ARNE mode.  6 %f's, 2 %d's, 4 %f's.
                 else if (sscanf((const char *)wx_line,"%f %f %f %f %f %f %d %d %f %f %f %f",
-                        &t1,&t2,&t3,&t4,&t5,&t6,&t7,&t8,&t9,&t10,&t11,&t12)) {
+                        &t1,&t2,&t3,&t4,&t5,&t6,&t7,&t8,&t9,&t10,&t11,&t12) == 12) {
 
                     // Found Dallas One-Wire Weather Station
                     if (debug_level & 1)

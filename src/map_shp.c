@@ -355,7 +355,9 @@ void create_map_from_trail(char *call_sign) {
             // Convert to string
             convert_lon_l2s(ptr->trail_long_pos, temp, sizeof(temp), CONVERT_DEC_DEG);
             // Convert to double and stuff into array of doubles
-            (void)sscanf(temp, "%lf", &x[ii]);
+            if (1 != sscanf(temp, "%lf", &x[ii])) {
+                fprintf(stderr,"create_map_from_trail:sscanf parsing error\n");
+            }
             // If longitude string contains "W", make the final
             // result negative.
             if (index(temp, 'W'))
@@ -364,7 +366,9 @@ void create_map_from_trail(char *call_sign) {
             // Convert to string 
             convert_lat_l2s(ptr->trail_lat_pos, temp, sizeof(temp), CONVERT_DEC_DEG);
             // Convert to double and stuff into array of doubles
-            (void)sscanf(temp, "%lf", &y[ii]);
+            if (1 != sscanf(temp, "%lf", &y[ii])) {
+                fprintf(stderr,"create_map_from_trail:sscanf parsing error\n");
+            }
             // If latitude string contains "S", make the final
             // result negative.
             if (index(temp, 'S'))
@@ -3779,9 +3783,13 @@ if (on_screen) {
 
                             if (fieldcount >= 4) {
                                 dbf_temp = DBFReadStringAttribute( hDBF, structure, 2 );
-                                sscanf(dbf_temp, "%f", &lat_f);
+                                if (1 != sscanf(dbf_temp, "%f", &lat_f)) {
+                                    fprintf(stderr,"draw_shapefile_map:sscanf parsing error\n");
+                                }
                                 dbf_temp = DBFReadStringAttribute( hDBF, structure, 3 );
-                                sscanf(dbf_temp, "%f", &lon_f);
+                                if (1 != sscanf(dbf_temp, "%f", &lon_f)) {
+                                    fprintf(stderr,"draw_shapefile_map:sscanf parsing error\n");
+                                }
                                 lon_f = lon_f - 0.125;
                             }
                             else {

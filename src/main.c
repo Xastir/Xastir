@@ -8703,61 +8703,83 @@ void Restore_CAD_Objects_from_file(void) {
         }
         else if (strncasecmp(line,"creation_time:",14) == 0) {
             //fprintf(stderr,"Found creation_time:\n");
-            sscanf(line+15, "%lu",
-                (unsigned long *)&CAD_list_head->creation_time);
+            if (1 != sscanf(line+15, "%lu",
+                    (unsigned long *)&CAD_list_head->creation_time)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"line_color:",11) == 0) {
             //fprintf(stderr,"Found line_color:\n");
-            sscanf(line+12,"%d",
-                &CAD_list_head->line_color);
+            if (1 != sscanf(line+12,"%d",
+                    &CAD_list_head->line_color)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"line_type:",10) == 0) {
             //fprintf(stderr,"Found line_type:\n");
-            sscanf(line+11,"%d",
-                &CAD_list_head->line_type);
+            if (1 != sscanf(line+11,"%d",
+                    &CAD_list_head->line_type)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"line_width:",11) == 0) {
             //fprintf(stderr,"Found line_width:\n");
-            sscanf(line+12,"%d",
-                &CAD_list_head->line_width);
+            if (1 != sscanf(line+12,"%d",
+                    &CAD_list_head->line_width)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"computed_area:",14) == 0) {
             //fprintf(stderr,"Found computed_area:\n");
-            sscanf(line+15,"%f",
-                &CAD_list_head->computed_area);
+            if (1 != sscanf(line+15,"%f",
+                    &CAD_list_head->computed_area)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"raw_probability:",16) == 0) {
             //fprintf(stderr,"Found raw_probability:\n");
-            sscanf(line+17,"%f",
-                &CAD_list_head->raw_probability);
+            if (1 != sscanf(line+17,"%f",
+                    &CAD_list_head->raw_probability)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"label_latitude:",15) == 0) {
             //fprintf(stderr,"Found label_latitude:\n");
-            sscanf(line+16,"%lu",
-                (unsigned long *)&CAD_list_head->label_latitude);
+            if (1 != sscanf(line+16,"%lu",
+                    (unsigned long *)&CAD_list_head->label_latitude)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"label_longitude:",16) == 0) {
             //fprintf(stderr,"Found label_longitude:\n");
-            sscanf(line+17,"%lu",
-                (unsigned long *)&CAD_list_head->label_longitude);
+            if (1 != sscanf(line+17,"%lu",
+                    (unsigned long *)&CAD_list_head->label_longitude)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"label:",6) == 0) {
             //fprintf(stderr,"Found label:\n");
-            sscanf(line+7,"%s",
-                CAD_list_head->label);
+            if (1 != sscanf(line+7,"%s",
+                    CAD_list_head->label)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"comment:",8) == 0) {
             //fprintf(stderr,"Found comment:\n");
-            sscanf(line+9,"%s",
-                CAD_list_head->comment);
+            if (1 != sscanf(line+9,"%s",
+                    CAD_list_head->comment)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
         }
         else if (strncasecmp(line,"Vertice:",8) == 0) {
             long latitude, longitude;
 
             //fprintf(stderr,"Found Vertice:\n");
-            sscanf(line+9,"%lu %lu",
-                (unsigned long *)&latitude,
-                (unsigned long *)&longitude);
+            if (2 != sscanf(line+9,"%lu %lu",
+                    (unsigned long *)&latitude,
+                    (unsigned long *)&longitude)) {
+                fprintf(stderr,"Restore_CAD_Objects_from_file:sscanf parsing error\n");
+            }
             CAD_vertice_allocate(latitude,longitude);
         }
         else {

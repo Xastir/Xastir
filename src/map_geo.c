@@ -675,7 +675,9 @@ void draw_geo_image_map (Widget w,
         while (!feof (f)) {
             (void)get_line (f, line, MAX_FILENAME);
             if (strncasecmp (line, "FILENAME", 8) == 0) {
-                (void)sscanf (line + 9, "%s", fileimg);
+                if (1 != sscanf (line + 9, "%s", fileimg)) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
                 if (fileimg[0] != '/' ) { // not absolute path
                     // make it relative to the .geo file
                     char temp[MAX_FILENAME];
@@ -692,11 +694,19 @@ void draw_geo_image_map (Widget w,
                 }
             }
             if (strncasecmp (line, "URL", 3) == 0)
-                (void)sscanf (line + 4, "%s", fileimg);
+                if (1 != sscanf (line + 4, "%s", fileimg)) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
 
             if (n_tp < 2) {     // Only take the first two tiepoints
                 if (strncasecmp (line, "TIEPOINT", 8) == 0) {
-                    (void)sscanf (line + 9, "%d %d %f %f",&tp[n_tp].img_x,&tp[n_tp].img_y,&temp_long,&temp_lat);
+                    if (4 != sscanf (line + 9, "%d %d %f %f",
+                            &tp[n_tp].img_x,
+                            &tp[n_tp].img_y,
+                            &temp_long,
+                            &temp_lat)) {
+                        fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                    }
                     // Convert tiepoints from lat/lon to Xastir coordinates
                     tp[n_tp].x_long = 64800000l + (360000.0 * temp_long);
                     tp[n_tp].y_lat  = 32400000l + (360000.0 * (-temp_lat));
@@ -705,13 +715,20 @@ void draw_geo_image_map (Widget w,
             }
 
             if (strncasecmp (line, "IMAGESIZE", 9) == 0)
-                (void)sscanf (line + 10, "%d %d",&geo_image_width,&geo_image_height);
+                if (2 != sscanf (line + 10, "%d %d",&geo_image_width,&geo_image_height)) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
 
             if (strncasecmp (line, "DATUM", 5) == 0)
-                (void)sscanf (line + 6, "%8s",geo_datum);
+                if (1 != sscanf (line + 6, "%8s",geo_datum)) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
 
             if (strncasecmp (line, "PROJECTION", 10) == 0)
-                (void)sscanf (line + 11, "%256s",geo_projection); // ignores leading and trailing space (nice!)
+                // Ignores leading and trailing space (nice!)
+                if (1 != sscanf (line + 11, "%256s",geo_projection)) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
 
             if (strncasecmp (line, "TERRASERVER", 11) == 0)
                 terraserver_flag = 1;
@@ -745,7 +762,9 @@ void draw_geo_image_map (Widget w,
                     && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
 
                 if (strncasecmp (line, "REFRESH", 7) == 0) {
-                    (void)sscanf (line + 8, "%d", &map_refresh_interval_temp);
+                    if (1 != sscanf (line + 8, "%d", &map_refresh_interval_temp)) {
+                        fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                    }
                     if ( map_refresh_interval_temp > 0 && 
                          ( map_refresh_interval == 0 || 
                            map_refresh_interval_temp < map_refresh_interval) ) {
@@ -760,7 +779,9 @@ void draw_geo_image_map (Widget w,
                 // need to make this read a list of colors to zap
                 // out.  Use 32-bit unsigned values, so we can
                 // handle 32-bit color displays.
-                (void)sscanf (line + 12, "%lx", &trans_color);
+                if (1 != sscanf (line + 12, "%lx", &trans_color)) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
 
                 // Mask it with the color depth so that we don't
                 // check too many bits when looking for the
@@ -781,8 +802,13 @@ void draw_geo_image_map (Widget w,
 //fprintf(stderr,"New Transparent: %lx\n",trans_color);
             }
             if (strncasecmp(line, "CROP", 4) == 0) { 
-                (void)sscanf (line + 5, "%d %d %d %d", 
-                              &crop_x1,&crop_y1,&crop_x2,&crop_y2 ); 
+                if (4 != sscanf (line + 5, "%d %d %d %d", 
+                        &crop_x1,
+                        &crop_y1,
+                        &crop_x2,
+                        &crop_y2 )) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
                 if (crop_x1 < 0 ) crop_x1 = 0;
                 if (crop_y1 < 0 ) crop_y1 = 0;
                 if (crop_x2 < 0 ) crop_x2 = 0;
@@ -799,10 +825,16 @@ void draw_geo_image_map (Widget w,
                                                         &imagemagick_options.r_gamma,
                                                         &imagemagick_options.g_gamma,
                                                         &imagemagick_options.b_gamma);
-            if (strncasecmp(line, "CONTRAST", 8) == 0)
-                (void)sscanf(line + 9, "%d", &imagemagick_options.contrast);
-            if (strncasecmp(line, "NEGATE", 6) == 0)
-                (void)sscanf(line + 7, "%d", &imagemagick_options.negate);
+            if (strncasecmp(line, "CONTRAST", 8) == 0) {
+                if (1 != sscanf(line + 9, "%d", &imagemagick_options.contrast)) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
+            }
+            if (strncasecmp(line, "NEGATE", 6) == 0) {
+                if (1 != sscanf(line + 7, "%d", &imagemagick_options.negate)) {
+                    fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+                }
+            }
             if (strncasecmp(line, "EQUALIZE", 8) == 0)
                 imagemagick_options.equalize = 1;
             if (strncasecmp(line, "NORMALIZE", 9) == 0)
@@ -930,7 +962,9 @@ void draw_geo_image_map (Widget w,
         top  = -((y_lat_offset - 32400000l) / 360000.0);
         left =  (x_long_offset - 64800000l) / 360000.0;
         ll_to_utm_ups(gDatum[D_NAD_83_CONUS].ellipsoid, top, left, &top_n, &left_e, zstr, sizeof(zstr) );
-        sscanf(zstr, "%d", &z);
+        if (1 != sscanf(zstr, "%d", &z)) {
+            fprintf(stderr,"draw_geo_image_map:sscanf parsing error\n");
+        }
 
         bottom = -(((y_lat_offset + (screen_height * scale_y)) - 32400000l) / 360000.0);
         right  =   ((x_long_offset + (screen_width * scale_x)) - 64800000l) / 360000.0;
