@@ -253,8 +253,8 @@ command:
   cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
   cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
-If you keep seeing "EOF" at the end of an error message, it means
-that the anonymous CVS server at SourceForge is overloaded (too many
+If you keep seeing "EOF" or "connection reset by peer" it means that
+the anonymous CVS server at SourceForge is overloaded (too many
 users).  Keep trying that the failed commands until they succeed!
 Notice that up-arrow (on the keyboard) and then <ENTER> will repeat
 the last command, saving you some typing.
