@@ -8088,10 +8088,12 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
  
     // Walk the linked list again, computing the area of the
     // polygon.  Greene's Theorem is how we can compute the area of
-    // a polygon using the vertices.
-    //
-    // Here we're walking around the vertices backwards due to the
-    // ordering of the list.  This changes some of the signs below.
+    // a polygon using the vertices.  We could also compute whether
+    // we're going clockwise or counter-clockwise around the polygon
+    // using Greene's Theorem.  In fact I think we do that for
+    // Shapefile hole polygons.  Remember that here we're walking
+    // around the vertices backwards due to the ordering of the
+    // list.  Shouldn't matter for our purposes though.
     //
     area = 0.0;
     tmp = CAD_list_head->start;
@@ -8151,8 +8153,15 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 temp_course,
                 sizeof(temp_course));
 
-        if (tmp->next->latitude < CAD_list_head->start->latitude)
+        // Add the minus signs back in, if any
+        if (tmp->longitude < CAD_list_head->start->longitude)
             dx0 = -dx0;
+        if (tmp->latitude < CAD_list_head->start->latitude)
+            dy0 = -dy0;
+        if (tmp->next->longitude < CAD_list_head->start->longitude)
+            dx1 = -dx1;
+        if (tmp->next->latitude < CAD_list_head->start->latitude)
+            dy1 = -dy1;
 
         // Greene's Theorem:  Summation of the following, then
         // divide by two:
@@ -8170,7 +8179,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     if (area < 0.0)
         area = -area;
 
-fprintf(stderr,"Area: %f\n\n", area);
+fprintf(stderr,"Area: %f\n", area);
 
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
