@@ -47,10 +47,19 @@ pid_t play_sound(char *sound_cmd, char *soundfile) {
             sound_pid = fork(); // Create a new process to run in
             if (sound_pid!=-1) {
                 if(sound_pid==0) {
-                    strcpy(file,SOUND_DIR);
-                    strcat(file,"/");
-                    strcat(file,soundfile);
-                    xastir_snprintf(command, sizeof(command), "%s %s", sound_cmd, file);
+
+                    xastir_snprintf(file,
+                        sizeof(file),
+                        "%s/%s",
+                        SOUND_DIR,
+                        soundfile);
+
+                    xastir_snprintf(command,
+                        sizeof(command),
+                        "%s %s",
+                        sound_cmd,
+                        file);
+
                     /*fprintf(stderr,"PS%d:%s\n",sound_pid,file);*/
                     (void)system(command);  // Note we're not caring about whether it succeeded or not
                     exit(0);    // Exits only this process, not Xastir itself
