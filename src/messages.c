@@ -364,6 +364,14 @@ void clear_outgoing_messages_to(char *callsign) {
         // If it matches the callsign we're talking to
         if (strcasecmp(message_pool[ii].to_call_sign,callsign) == 0) {
 
+            // Record a fake ack and add "TIMEOUT:" to the message.
+            // This will be displayed in the Send Message dialog.
+            msg_record_ack(message_pool[ii].to_call_sign,
+                message_pool[ii].from_call_sign,
+                message_pool[ii].seq,
+                0,  // Not a timeout
+                1); // Record a cancel
+ 
             // Clear it out.
             message_pool[ii].active=MESSAGE_CLEAR;
             message_pool[ii].to_call_sign[0] = '\0';
@@ -743,7 +751,8 @@ void check_and_transmit_messages(time_t time) {
                         msg_record_ack(temp_to,
                             message_pool[i].from_call_sign,
                             message_pool[i].seq,
-                            1); // "1" specifies a timeout
+                            1,  // "1" specifies a timeout
+                            0); // Not a cancel
 
                         clear_acked_message(temp_to,
                             message_pool[i].from_call_sign,

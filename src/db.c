@@ -753,10 +753,16 @@ void msg_update_ack_stamp(long record_num) {
 // Message which gets rid of the highlighting in the Send Message
 // dialog for that line.  This lets us know which messages have
 // been acked and which have not.  If timeout is non-zero, then
-// set acked to 2.  We use this in the update_messages() to flag
-// that "TIMEOUT:" should prefix the string.
+// set acked to 2:  We use this in update_messages() to flag that
+// "*TIMEOUT*" should prefix the string.  If cancelled is non-zero,
+// set acked to 3:  We use this in update_messages() to flag that
+// "*CANCELLED*" should prefix the string.
 //
-void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
+void msg_record_ack(char *to_call_sign,
+                    char *my_call,
+                    char *seq,
+                    int timeout,
+                    int cancel) {
     Message m_fill;
     long record;
     int do_update = 0;
@@ -808,7 +814,9 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
         else {  // This message has already been acked.
         }
 
-        if (timeout)
+        if (cancel)
+            msg_data[msg_index[record]].acked = (char)3;
+        else if (timeout)
             msg_data[msg_index[record]].acked = (char)2;
         else
             msg_data[msg_index[record]].acked = (char)1;
@@ -1248,6 +1256,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                             p_next = p_prev->next;
                             while (!done && (p_prev != NULL)) {  // Loop until end of list
                                 int j = p_prev->index;  // Snag the index out of the record
+                                char prefix[50];
 
                                 //fprintf(stderr,"\nLooping through, reading messages\n");
  
@@ -1273,6 +1282,20 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
                                 // Label the message line with who sent it.
                                 // If acked = 2 a timeout has occurred
+                                // If acked = 3 a cancel has occurred
+                                if (msg_data[msg_index[j]].acked == 2) {
+                                    xastir_snprintf(prefix,
+                                        sizeof(prefix),
+                                        "*TIMEOUT* ");
+                                }
+                                else if (msg_data[msg_index[j]].acked == 3) {
+                                    xastir_snprintf(prefix,
+                                        sizeof(prefix),
+                                        "*CANCELLED* ");
+                                }
+                                else prefix[0] = '\0';
+
+
                                 xastir_snprintf(temp2, sizeof(temp2),
                                     "%s  %-9s>%s%s\n",
                                     // Debug code.  Trying to find sorting error
@@ -1280,7 +1303,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     //msg_data[msg_index[j]].sec_heard,
                                     stemp,
                                     msg_data[msg_index[j]].from_call_sign,
-                                    (msg_data[msg_index[j]].acked == 2) ? "*TIMEOUT* " : "",
+                                    prefix,
                                     msg_data[msg_index[j]].message_line);
 
 //fprintf(stderr,"update_message: %s|%s", temp1, temp2);
@@ -12749,7 +12772,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // fprintf(stderr,"ACK: %s: |%s| |%s|\n",call,addr,msg_id);
         if (is_my_call(addr,1)) {
             clear_acked_message(call,addr,msg_id);  // got an ACK for me
-            msg_record_ack(call,addr,msg_id,0);     // Record the ack for this message
+            msg_record_ack(call,addr,msg_id,0,0);   // Record the ack for this message
         }
         else {  // ACK is for another station
             /* Now if I have Igate on and I allow to retransmit station data           */
@@ -12813,7 +12836,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // Check for Reply/Ack
         if (strlen(ack_string) != 0) {  // Have a free-ride ack to deal with
             clear_acked_message(call,addr,ack_string);  // got an ACK for me
-            msg_record_ack(call,addr,ack_string,0);   // Record the ack for this message
+            msg_record_ack(call,addr,ack_string,0,0);   // Record the ack for this message
         }
 
         // Save the ack 'cuz we might need it while talking to this
@@ -13034,7 +13057,7 @@ else {
             // for auto-reply, with an embedded free-ride Ack.
             if (strlen(ack_string) != 0) {  // Have an extra ack to deal with
                 clear_acked_message(call,addr,ack_string);  // got an ACK for me
-                msg_record_ack(call,addr,ack_string,0);   // Record the ack for this message
+                msg_record_ack(call,addr,ack_string,0,0);   // Record the ack for this message
             }
         }
  
@@ -13139,8 +13162,8 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
     if (!done && len == 2 && msg_id[0] == '\0') {                // ACK
         substr(msg_id,message,5);
         if (is_my_call(addr,1)) {
-            clear_acked_message(call,addr,msg_id);      // got an ACK for me
-            msg_record_ack(call,addr,msg_id,0);      // Record the ack for this message
+            clear_acked_message(call,addr,msg_id); // got an ACK for me
+            msg_record_ack(call,addr,msg_id,0,0);  // Record the ack for this message
         }
 //        else {                                          // ACK for other station
             /* Now if I have Igate on and I allow to retransmit station data           */
