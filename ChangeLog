@@ -1,3 +1,8 @@
+2003-02-24 kd6zwr
+
+	* db.c: made my_station_gps_change update sec_heard
+		to fix DR of my station
+
 2003-02-24 11:25  jtwilley
 
 	* interface.c: changed timeouts to 100ms from 100us

@@ -9534,6 +9534,9 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     my_last_speed=(int)(atof(speed));
     strcpy(p_station->sats_visible,sats);
 
+    // Update "heard" time for our new position
+    p_station->sec_heard = sec_now();
+
     //if (   p_station->coord_lon != last_lon
     //    || p_station->coord_lat != last_lat ) {
     // we don't store redundant points (may change this later ?)
