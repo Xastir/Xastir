@@ -922,11 +922,11 @@ time_t WX_ALERTS_REFRESH_TIME;  /* Minimum WX alert map refresh time in seconds 
 /* button zoom */
 int menu_x;
 int menu_y;
-int menu_prev_x;
-int menu_prev_y;
 int mouse_zoom = 0;
-int polygon_start_x;            // Draw CAD objects functions
-int polygon_start_y;            // Draw CAD objects functions
+int polygon_start_x = -1;       // Draw CAD Objects functions
+int polygon_start_y = -1;       // Draw CAD Objects functions
+int polygon_last_x = -1;        // Draw CAD Objects functions
+int polygon_last_y = -1;        // Draw CAD Objects functions
 
 // log file replay
 int read_file;
@@ -7530,10 +7530,10 @@ void Draw_CAD_Objects( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer calldata) {
 
-    fprintf(stderr,"Draw_CAD_Objects function enabled\n");
+//    fprintf(stderr,"Draw_CAD_Objects function enabled\n");
     draw_CAD_objects_flag = 1;
-    menu_x = -1;    // Invalid position
-    menu_y = -1;    // Invalid position
+    polygon_last_x = -1;    // Invalid position
+    polygon_last_y = -1;    // Invalid position
 }
 
 
@@ -7544,7 +7544,7 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
 
-    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
+//    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
     draw_CAD_objects_flag = 0;
 }
 
@@ -7558,7 +7558,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 
     // Draw a line from the last position recorded to the first
     // position recorded.
-    if (menu_prev_x != -1 && menu_prev_y != -1) {
+    if (polygon_last_x != -1 && polygon_last_y != -1) {
  
         (void)XSetLineAttributes (XtDisplay (da),
             gc_tint,
@@ -7578,8 +7578,8 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         (void)XDrawLine(XtDisplay(da),
             pixmap_final,
             gc_tint,
-            menu_prev_x,
-            menu_prev_y,
+            polygon_last_x,
+            polygon_last_y,
             polygon_start_x,
             polygon_start_y);
 
@@ -7604,8 +7604,8 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
-    menu_x = -1;    // Invalid position
-    menu_y = -1;    // Invalid position
+    polygon_last_x = -1;    // Invalid position
+    polygon_last_y = -1;    // Invalid position
 }
 
 
@@ -7793,8 +7793,18 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     input_y = event->xbutton.y;
 
 
-// Check whether we're in CAD object draw mode first
-    if (draw_CAD_objects_flag && event->xbutton.button == Button2) {
+// Check whether we're in CAD Object draw mode first
+    if (draw_CAD_objects_flag
+            && event->xbutton.button == Button2) {
+
+        if (event->type == ButtonRelease) {
+            // We don't want to do anything for ButtonRelease.  Most
+            // of all, we don't want another point drawn for both
+            // press and release, and we don't want other GUI
+            // actions performed on release when in CAD Draw mode.
+            done++;
+        }
+        else {  // ButtonPress for Button2
 
 // We need to check to see whether we're dragging the pointer, and
 // then need to save the points away (in Xastir lat/long format),
@@ -7806,69 +7816,66 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 // We'll use that mouse pointer the next time a mouse button gets
 // pressed in order to draw a line.
 
-        // We're going to use gc_tint with an XOR bitblit here to
-        // make sure that any lines we draw will be easily seen, no
-        // matter what colors we're drawing on top of.
-        //
+            // We're going to use gc_tint with an XOR bitblit here
+            // to make sure that any lines we draw will be easily
+            // seen, no matter what colors we're drawing on top of.
+            //
 
-        // If we have a valid saved position already from our first
-        // click, then we must be on the 2nd or later click.  Draw a
-        // line.
-        if (menu_x != -1 && menu_y != -1) {
+            // If we have a valid saved position already from our
+            // first click, then we must be on the 2nd or later
+            // click.  Draw a line.
+            if (polygon_last_x != -1 && polygon_last_y != -1) {
  
-            (void)XSetLineAttributes (XtDisplay (w),
-                gc_tint,
-                4,
-                LineOnOffDash,
-                CapButt,
-                JoinMiter);
+                (void)XSetLineAttributes (XtDisplay (w),
+                    gc_tint,
+                    4,
+                    LineOnOffDash,
+                    CapButt,
+                    JoinMiter);
 
-            (void)XSetForeground (XtDisplay (w),
-                gc_tint,
-                colors[0x27]);
+                (void)XSetForeground (XtDisplay (w),
+                    gc_tint,
+                    colors[0x27]);
 
-            (void)XSetFunction (XtDisplay (da),
-                gc_tint,
-                GXxor);
+                (void)XSetFunction (XtDisplay (da),
+                    gc_tint,
+                    GXxor);
 
-            (void)XDrawLine(XtDisplay(w),
-                pixmap_final,
-                gc_tint,
-                menu_x,
-                menu_y,
-                input_x,
-                input_y);
+                (void)XDrawLine(XtDisplay(w),
+                    pixmap_final,
+                    gc_tint,
+                    polygon_last_x,
+                    polygon_last_y,
+                    input_x,
+                    input_y);
 
 // Copy the new drawing to the screen.  This is of course a
 // temporary thing to test out the concepts.  Later we'll implement
 // storage for the points and an automatic refresh:  Every time we
 // refresh symbols we'll refresh the overlays.
 //
-            (void)XCopyArea(XtDisplay(w),
-                pixmap_final,
-                XtWindow(w),
-                gc,
-                0,
-                0,
-                screen_width,
-                screen_height,
-                0,
-                0);
+                (void)XCopyArea(XtDisplay(w),
+                    pixmap_final,
+                    XtWindow(w),
+                    gc,
+                    0,
+                    0,
+                    screen_width,
+                    screen_height,
+                    0,
+                    0);
+            }
+            else {  // First point of a polygon.  Save it.
+                polygon_start_x = input_x;
+                polygon_start_y = input_y;
+            }
+
+            // Save current point away for the next draw.
+            polygon_last_x = input_x;
+            polygon_last_y = input_y;
+
+            done++;
         }
-        else {  // First point of a polygon.  Save it.
-            polygon_start_x = input_x;
-            polygon_start_y = input_y;
-        }
-
-        // Save last point away for close polygon code
-        menu_prev_x = menu_x;
-        menu_prev_y = menu_y;
-
-        // Save current point away for the next draw.
-        menu_x = input_x;
-        menu_y = input_y;
-
-        done++;
     }
 
 
