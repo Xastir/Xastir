@@ -704,7 +704,7 @@ void Coordinate_calc_output(char *full_zone, long northing,
     int lon_deg_int,lon_min_int,lon_sec_int;
 
     // Round the values first so we don't get strange rounding errors
-    // later.
+    // later.  This was mainly a problem with the dd mm.mmm format.
     xastir_snprintf(temp_string,sizeof(temp_string),"%8.5f",latitude);
     my_lat = atof(temp_string);
     xastir_snprintf(temp_string,sizeof(temp_string),"%9.5f",longitude);
@@ -804,7 +804,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
 
     // dd.ddddN     ddd.ddddW
     // dd.dddd N    ddd.dddd W
-    // -dd.dddd     -ddd.ddddW
+    // -dd.dddd     -ddd.dddd
 
     // dd mmN       ddd mmW
     // dd mm N      ddd mm W
@@ -875,6 +875,7 @@ printf("Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
     }
     else {
 printf("Bad zone, not a UTM coordinate\n");
+        // Skip zone widget for lat/lon, it's not used.
         have_lat_lon = 1;
     }
     // We're done with that variable.  Free the space.
@@ -911,8 +912,12 @@ printf("Bad Easting value: 7 chars but first one not 0\n");
 printf("Easting: %lu\n",easting);
         }
         else {
+            have_utm = 0;
 printf("Bad Easting value\n");
         }
+    }
+    else if (have_lat_lon) {
+// Process the string to see if it's a latitude value
     }
     // We're done with that variable.  Free the space.
     XtFree(str_ptr); 
@@ -943,8 +948,12 @@ printf("Bad Northing value: Not 7 chars\n");
 printf("Northing: %lu\n",northing);
         }
         else {
+            have_utm = 0;
 printf("Bad Northing value\n");
         }
+    }
+    else if (have_lat_lon) {
+// Process the string to see if it's a longitude value
     }
     // We're done with that variable.  Free the space.
     XtFree(str_ptr);
@@ -965,6 +974,9 @@ printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
             easting,
             latitude,
             longitude);
+    }
+    else if (have_lat_lon) {
+// Process lat/lon values
     }
 }
 
