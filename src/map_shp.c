@@ -3096,6 +3096,14 @@ if (on_screen) {
 #ifdef WITH_DBFAWK
                             else if (1) {
                                 /* color is already set by dbfawk! */
+                                /* And so are lanes and pattern.  Let's
+                                   use what was specified. */
+                                (void)XSetLineAttributes(XtDisplay(w),
+                                    gc,
+                                    (lanes)?lanes:1,
+                                    (pattern)?LineSolid:LineOnOffDash,
+                                    CapButt,
+                                    JoinMiter);
 #else /* !WITH_DBFAWK */
                             else if (glacier_flag||lake_flag||river_flag) {
                                 int color = (glacier_flag)?0x0f:
