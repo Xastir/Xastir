@@ -35,6 +35,8 @@ The Questions
     3.2 I'm using gcc and I get some compilation errors, what is wrong?
     3.3 The linking stage is failing because it isn't linking in the
         freetype library.  What to do?
+    3.4 During the linking stage, it's giving me "undefined reference to
+        `CompressImageColormap'".  What to do?
 
 4.  Running Xastir
 
@@ -255,6 +257,14 @@ The Answers
     libraries that ImageMagick needs, but evidently they forgot one.
     To get around this problem, you can add "-lfreetype" to the link
     line to get the compile to complete.
+
+    3.4 During the linking stage, it's giving me "undefined reference to
+        `CompressImageColormap'".  What to do?
+
+    This is, yet again, an ImageMagick problem.  ImageMagic decided to change
+    their API on us again.  Newer releases of Xastir work around this problem
+    by checking the version of ImageMagick you have and changing the function
+    call to match.
 
 
 4. Running Xastir
