@@ -939,7 +939,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         //printf("Position known: %s\n",from_call);
     }
     else {
-//printf("Position not known: %s\n",from_call);
+        //printf("Position not known: %s\n",from_call);
     }
 
     substr(m_fill.call_sign,call_sign,MAX_CALLSIGN);

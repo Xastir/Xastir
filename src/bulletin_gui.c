@@ -136,8 +136,9 @@ void  bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char 
             packet_message);
 
 // Operands of <= have incompatible types (double, int):
-    if ( ( ((int)distance <= bulletin_range) && ((int)distance > 0.0) )
-            || (view_zero_distance_bulletins && (int)distance == 0) ) {
+    if ( ( ((int)distance <= bulletin_range) && (distance > 0.0) )
+            || (view_zero_distance_bulletins && distance == 0.0)
+            || ( (bulletin_range == 0) && (distance > 0.0) ) ) {
 
 begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
 
@@ -226,8 +227,9 @@ void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag,
             packet_message);
 
 // Operands of <= have incompatible types (double, int):
-    if ( ( ((int)distance <= bulletin_range) && ((int)distance > 0.0) )
-            || (view_zero_distance_bulletins && (int)distance == 0) ) {
+    if ( ( ((int)distance <= bulletin_range) && (distance > 0.0) )
+            || (view_zero_distance_bulletins && distance == 0.0)
+            || ( (bulletin_range == 0) && (distance > 0.0) ) ) {
 
         // Is it newer than our first new_bulletin timestamp?
         if (sec_heard >= first_new_bulletin_time) {
@@ -251,6 +253,78 @@ static void count_bulletin_line(Message *fill) {
 static void count_new_bulletins(void) {
     mscan_file(MESSAGE_BULLETIN, count_bulletin_line);
 }
+
+
+
+
+
+//WE7U
+// Function called by mscan_file for each bulletin with zero for the
+// position_known flag.  See next function find_zero_position_bulletins()
+//
+static void zero_bulletin_processing(Message *fill) {
+    DataRow *p_station; // Pointer to station data
+
+
+    if (!fill->position_known) {
+
+        //printf("Position unknown: %s:%s\n",
+        //    fill->from_call_sign,
+        //    fill->message_line);
+
+        // Check to see if we _now_ have a position for this non-new
+        // bulletin.  If so, change the position_known flag on that
+        // record to a one, update the record, set the proper timers
+        // and then schedule a popup if it fits within our current
+        // parameters.
+
+        if ( search_station_name(&p_station,fill->from_call_sign,1) ) {
+            // Found a bulletin for which we get to fill in a new
+            // position!
+
+            if ( (p_station->coord_lon == 0l)
+                    && (p_station->coord_lat == 0l) ) {
+                //printf("Found it but still no valid position!\n");
+            }
+            else { // Found valid position for this bulletin
+
+                //printf("Found it now! %s:%s\n",
+                //    fill->from_call_sign,
+                //    fill->message_line);
+
+                // Mark it as found
+                fill->position_known = 1;
+
+                // Fake the timestamp so that we check messages back
+                // to at least this one we just found.  Allow for the
+                // fact that we might find several older messages, so
+                // we only want to keep taking the timestamp backwards
+                // in time here.
+                if (first_new_bulletin_time > (fill->sec_heard - 1) )
+                    first_new_bulletin_time = fill->sec_heard - 1;
+ 
+                // Set the flag that gets the whole ball rolling
+                new_bulletin_flag = 1;
+            }
+        }
+        else {
+            // No position known for the bulletin.  Skip it for now.
+            //printf("Still not found\n");
+        }
+    }
+}
+
+
+
+
+
+// Find all bulletins that have a zero for the position_known flag.
+// Calls the function above for each bulletin.
+//
+static void find_zero_position_bulletins(void) {
+    mscan_file(MESSAGE_BULLETIN, zero_bulletin_processing);
+}
+
 
 
 
@@ -292,13 +366,19 @@ void prep_for_popup_bulletins() {
 time_t last_bulletin_check = 0;
 void check_for_new_bulletins() {
 
-    // Any new bulletins?  If not, return
-    if (!new_bulletin_flag) {
-        return;
-    }
 
     // Check every two seconds max
     if ( (last_bulletin_check + 2) > sec_now() ) {
+        return;
+    }
+
+    // Look first to see if we might be able to fill in positions on
+    // any older bulletins, then cause a popup for those that fit
+    // our parameters.
+    find_zero_position_bulletins();
+
+    // Any new bulletins?  If not, return
+    if (!new_bulletin_flag) {
         return;
     }
 
