@@ -78,7 +78,7 @@ Dropping setuid root privs
 Tracked proximity alarms
 Tracking self
 Different Coordinate systems
-Different rain guage sizes
+Different rain guage sizes +weather station fixes
 Shapefile weather alerts/pixmaps
 WXserver info via finger
 Major shapefile improvements, point-type shapefiles
@@ -102,6 +102,11 @@ serial KISS TNC interface
 Grid square in station info/coordinate calc
 Emergency beacons->locate station
 29 sec Anti-dupe queues
+Object persistance
+timestamps 
+quad label shapefiles
+Track me
+Map extent/index caching
 
 
 HELP-INDEX>What's new in Xastir 1.1
@@ -446,8 +451,8 @@ At the bottom of the window various status messages are available:
 In the first box on the left general status messages are displayed for a
 short time.
 
-The second box displays the current lat/long position of the mouse over the
-map. 
+The second box displays the current lat/long and Meidenhead grid square
+position of the mouse over the map. 
 
 A third box is used to display how many stations are in the database.
 
@@ -554,8 +559,10 @@ For the other two, signpost and DF objects, see below.
 Objects are retransmitted at the rate of station position reports, configured
 in File|Configure|Defaults, and will cease retransmitting after double the
 station display time, also configured there. "killed" objects are also
-retransmitted in this manner, until they expire from the queue.
-
+retransmitted in this manner, until they expire from the queue. Objects are
+persistant across Xastir sessions, and are stored in 
+~/.xastir/config/object.log. This file may be cleared by selecting "Clear
+Object/Item history" from the Stations menu.
 
 The Object/Item creation option in the right click menu will bring up a dialog
 with the position of your object filled in based on where you clicked the
@@ -704,7 +711,8 @@ Own Objects & Items
 This option displays only objects and items that you control (i.e.: Have sent
 the most recent update for). It includes the number of packets heard, the time
 the objects/item was last heard, the path that the most recent packet took, the
-PHG, and the comment of the object/item.
+PHG, and the comment of the object/item. A ghosted icon indicates that the
+object has been deleted.
 
 WX stations
 This option displays a table of all the APRS(tm) weather stations and their
@@ -1114,6 +1122,12 @@ This will wipe all the line tracking data from the station database and
 refreshes the screen.  This option is useful if you're low on memory
 or just want an uncluttered screen.  You may also clear individual
 station's trails from the Station Info dialog.
+
+Clear Object/Item History
+This will clear the ~/.xastir/config/objects.log file used for Object and Item
+persistance. It is recommended that you delete all Objects and Items that you
+own before doing this, otherwise they may remain on the screens of other APRS
+users.
 
 HELP-INDEX>Messages and the Messages menu
 
