@@ -2904,7 +2904,7 @@ void init_device_names(void) {
 
 
 //***********************************************************
-// Delete Device
+// Delete Device.  Shuts down active port/ports.
 //***********************************************************
 int del_device(int port) {
     int ok;
@@ -3107,6 +3107,16 @@ end_critical_section(&devices_lock, "interface.c:del_device");
             fprintf(stderr,"Port %d could not be closed\n",port);
     }
     usleep(10);
+
+    // Cover the case where someone plays with a GPS interface or
+    // three and then turns it/them off again: They won't send a
+    // posit again until the next restart or whenever they enable a
+    // GPS interface again that has good data, unless we set this
+    // variable again for them.
+    if (!using_gps_position) {
+        my_position_valid = 1;
+    }
+
     return(ok);
 }
 
@@ -3115,7 +3125,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 
 
 //***********************************************************
-// Add Device
+// Add Device.  Starts up ports (makes them active).
 // dev_type is the device type to add
 // dev_num is the device name
 // dev_hst is the host name to connect to (network only)
