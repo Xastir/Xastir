@@ -166,7 +166,72 @@ int is_my_call(char *call, int exact) {
     }
     return(ok);
 }
+
+
         
+
+
+/*
+ *  Change map position if neccessary while tracking a station
+ *      we call it with defined station call and position
+ */
+int is_tracked_station(char *call_sign) {
+    int found;
+    char call_find[MAX_CALLSIGN+1];
+    int ii;
+    int call_len;
+
+    if (!track_station_on)
+        return(0);
+
+    call_len = 0;
+    found = 0;
+
+    if (!track_case) {
+        for ( ii = 0; ii < (int)strlen(tracking_station_call); ii++ ) {
+            if (isalpha((int)tracking_station_call[ii]))
+                call_find[ii] = toupper((int)tracking_station_call[ii]);
+            else
+                call_find[ii] = tracking_station_call[ii];
+        }
+        call_find[ii] = '\0';
+    } else {
+        strcpy(call_find,tracking_station_call);
+    }
+
+    if (debug_level & 256) {
+        printf("is_tracked_station(): CALL %s %s %s\n",
+            tracking_station_call,
+            call_find, call_sign);
+    }
+
+    if (track_match) {
+        if (strcmp(call_find,call_sign) == 0) { // we want an exact match
+            found = 1;
+        }
+    }
+    else {
+        found = 0;
+        call_len = (int)(strlen(call_sign) - strlen(call_find));
+        if (strlen(call_find) <= strlen(call_sign)) {
+            found = 1;
+            for ( ii = 0; ii <= call_len; ii++ ) {
+                if (!track_case) {
+                    if (!strncasecmp(call_find,call_sign+ii,strlen(call_find)) == 0) {
+                        found = 0;  // Found a mis-match
+                    }
+                }
+                else {
+                    if (!strncmp(call_find,call_sign+ii,strlen(call_find)) == 0) {
+                        found = 0;
+                    }
+                }
+            }
+        }
+    }
+    return(found);
+}
+
 
 
 
@@ -2055,6 +2120,15 @@ void display_station(Widget w, DataRow *p_station, int single) {
             orient,
             p_station->aprs_symbol.area_object.type);
 
+        // Draw additional stuff if this is the tracked station
+        if (is_tracked_station(p_station->call_sign)) {
+//WE7U
+            draw_pod_circle(p_station->coord_lon,
+                p_station->coord_lat,
+                0.0035 * scale_y,
+                pixmap_final);
+        }
+
         temp_sec_heard = p_station->sec_heard;    // DK7IN: ???
     }   // End of "if (single)" portion
 
@@ -2127,6 +2201,15 @@ void display_station(Widget w, DataRow *p_station, int single) {
         pixmap_final,
         orient,
         p_station->aprs_symbol.area_object.type);
+
+    // Draw additional stuff if this is the tracked station
+    if (is_tracked_station(p_station->call_sign)) {
+//WE7U
+        draw_pod_circle(p_station->coord_lon,
+            p_station->coord_lat,
+            0.0035 * scale_y,
+            pixmap_final);
+    }
 
     if (show_phg && strlen(p_station->power_gain) == 7) {   // There's a PHG defined
         /*printf("PHG:%s\n",p_station->power_gain);*/
@@ -10298,51 +10381,10 @@ void search_tracked_station(DataRow **p_tracked) {
  *      we call it with defined station call and position
  */
 void track_station(Widget w, char *call_tracked, DataRow *p_station) {
-    int found;
-    char *call;
-    char call_find[MAX_CALLSIGN+1];
-    int ii;
-    int call_len;
     long x_ofs, y_ofs;
     long new_lat, new_lon;
 
-    call_len = 0;
-    found = 0;
-    call = p_station->call_sign;
-    if (!track_case) {
-        for (ii=0; ii<(int)strlen(call_tracked); ii++) {
-            if (isalpha((int)call_tracked[ii]))
-                call_find[ii] = toupper((int)call_tracked[ii]);
-            else
-                call_find[ii] = call_tracked[ii];
-        }
-        call_find[ii] = '\0';
-    } else
-        strcpy(call_find,call_tracked);
-
-    if (debug_level & 256)
-        printf("track_station(): CALL %s %s %s\n",call_tracked, call_find, call);
-
-    if (track_match) {
-        if (strcmp(call_find,call) == 0)                // we want an exact match
-            found=1;
-    } else {
-        found=0;
-        call_len=(int)(strlen(call)-strlen(call_find));
-        if (strlen(call_find)<=strlen(call)) {
-            for (ii=0; ii<=call_len; ii++) {
-                if (!track_case) {
-                    if (strncasecmp(call_find,call+ii,strlen(call_find)) == 0)
-                        found=1;
-                } else {
-                    if (strncmp(call_find,call+ii,strlen(call_find)) == 0)
-                        found=1;
-                }
-            }
-        }
-    }
-
-    if(found) {                                         // we want to track this station
+    if ( is_tracked_station(p_station->call_sign) ) {   // We want to track this station
         new_lat = p_station->coord_lat;                 // center map to station position as default
         new_lon = p_station->coord_lon;
         x_ofs = new_lon - mid_x_long_offset;            // current offset from screen center
