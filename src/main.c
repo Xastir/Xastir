@@ -699,61 +699,52 @@ void Coordinate_calc_output(char *full_zone, long northing,
     char temp_string[1024];
     int south = 0;
     int west = 0;
-    double my_lat,my_lon,lat_abs,lon_abs,lat_min,lon_min,lat_sec,lon_sec;
-    int lat_deg_int,lat_min_int,lat_sec_int;
-    int lon_deg_int,lon_min_int,lon_sec_int;
+    double lat_min,lon_min,lat_sec,lon_sec;
+    int lat_deg_int,lat_min_int;
+    int lon_deg_int,lon_min_int;
+    long temp;
 
-    // Round the values first so we don't get strange rounding errors
-    // later.  This was mainly a problem with the dd mm.mmm format.
-    xastir_snprintf(temp_string,sizeof(temp_string),"%8.5f",latitude);
-    my_lat = atof(temp_string);
-    xastir_snprintf(temp_string,sizeof(temp_string),"%9.5f",longitude);
-    my_lon = atof(temp_string);
-       
-    lat_abs = fabs(my_lat);
-    lon_abs = fabs(my_lon); 
 
-    lat_deg_int = (int)lat_abs;
-    lon_deg_int = (int)lon_abs;
-
-    lat_min = (lat_abs - lat_deg_int) * 60;
-    lon_min = (lon_abs - lon_deg_int) * 60;
-
-    lat_min_int = (int)lat_min;
-    lon_min_int = (int)lon_min;
-
-    lat_sec = (lat_min - lat_min_int) * 60;
-    lon_sec = (lon_min - lon_min_int) * 60;
-
-    lat_sec_int = (int)lat_sec;
-    lon_sec_int = (int)lon_sec;
-
-    if (my_lat < 0)
+    // Latitude:  Switch to integer arithmetic to avoid
+    // floating-point rounding errors.
+    temp = (long)(latitude * 100000);
+    if (temp < 0) {
         south++;
-    if (my_lon < 0)
-        west++;
+        temp = labs(temp);
+    }
+    lat_deg_int = (int)temp / 100000;
+    lat_min = (temp % 100000) * 60.0 / 100000.0;
 
-    
-/*
-    xastir_snprintf(temp_string,
-        sizeof(temp_string),
-        "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
-        "*** Simulated output ***",
-        "",
-        "              Decimal Degrees:  48.00000N     122.00000W",
-        "      Degrees/Decimal Minutes:  48 00.000N    122 00.000W",
-        "      Degrees/Minutes/Seconds:  48 00 00.0N   122 00 00.0W",
-        "Universal Transverse Mercator:  10T  0574599  5316888",
-        "",
-        "*** Simulated output ***");
-*/
+    // Again switch to integer arithmetic to avoid floating-point
+    // rounding errors.
+    temp = (long)(lat_min * 1000);
+    lat_min_int = (int)(temp / 1000);
+    lat_sec = (temp % 1000) * 60.0 / 1000.0;
+
+
+    // Longitude:  Switch to integer arithmetic to avoid
+    // floating-point rounding errors.
+    temp = (long)(longitude * 100000);
+    if (temp < 0) {
+        west++;
+        temp = labs(temp);
+    }
+    lon_deg_int = (int)temp / 100000;
+    lon_min = (temp % 100000) * 60.0 / 100000.0;
+
+    // Again switch to integer arithmetic to avoid floating-point
+    // rounding errors.
+    temp = (long)(lon_min * 1000);
+    lon_min_int = (int)(temp / 1000);
+    lon_sec = (temp % 1000) * 60.0 / 1000.0;
+
 
     xastir_snprintf(temp_string,
         sizeof(temp_string),
         "%s%8.5f%c   %9.5f%c\n%s%02d %06.3f%c  %03d %06.3f%c\n%s%02d %02d %04.1f%c %03d %02d %04.1f%c\n%s%3s  %07lu  %07lu",
         "               Decimal Degrees:  ",
-        lat_abs, (south) ? 'S':'N',
-        lon_abs, (west) ?  'W':'E',
+        lat_deg_int+lat_min/60.0, (south) ? 'S':'N',
+        lon_deg_int+lon_min/60.0, (west) ?  'W':'E',
         "       Degrees/Decimal Minutes:  ",
         lat_deg_int, lat_min, (south) ? 'S':'N',
         lon_deg_int, lon_min, (west) ?  'W':'E',
@@ -992,8 +983,8 @@ printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
             "%s\n%s\n%s\n%s",
             " **       Sorry, your input was not recognized!        **",
             " **   Please use one of the following input formats:   **",
-            " ** 48.00000N  122.00000W,   48 00.000N   122 00.000W  **",
-            " ** 10T  0574599  5316888,   48 00 00.0N  122 00 00.0W **");
+            " ** 47.99999N  121.99999W,   47 59.999N   121 59.999W  **",
+            " ** 10T  0574599  5316887,   47 59 59.9N  121 59 59.9W **");
         XmTextSetString(coordinate_calc_result_text, temp_string);
     }
 }
