@@ -63,6 +63,18 @@ int dbfawk_sig(DBFHandle dbf, char *sig, int size)
   return nf;
 }
 
+/* Free a field list */
+void dbfawk_free_info ( dbfawk_field_info *list)
+{
+    dbfawk_field_info *x, *p;
+    for ( p = list; p != NULL; )
+    {
+        x = p;
+        p = p->next;
+        free(x);
+    }
+}
+
 /*
  * dbfawk_field_list: Generate a list of info about fields to read for
  *  a given a DBFHandle and colon-separated list of fieldnames.
@@ -217,7 +229,10 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
             return NULL;
         }
         info->prog = awk_load_program_file(perfile);
-        /* N.B. info->sig is left uninitialized since it won't be searched */
+        /* N.B. info->sig is left NULL since it won't be searched, and 
+           to flag that it's safe to free this memory when we're done with
+           it */
+        info->sig = NULL;
         free(perfile);
         if (info->prog)
             return info;

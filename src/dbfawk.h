@@ -57,6 +57,7 @@ extern dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
                                         const char *file);
 extern void dbfawk_free_sig(dbfawk_sig_info *sig);
 extern void dbfawk_free_sigs(dbfawk_sig_info *list);
+extern void dbfawk_free_info(dbfawk_field_info *list);
 extern void dbfawk_parse_record(awk_program *rs,
                                 DBFHandle dbf,
                                 dbfawk_field_info *fi,

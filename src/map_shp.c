@@ -3545,6 +3545,16 @@ if (on_screen) {
         ptr2 = label_ptr;
     }
 
+#ifdef WITH_DBFAWK
+    dbfawk_free_info(fld_info);
+    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
+    {
+        if (sig_info->prog != NULL)
+            awk_free_program(sig_info->prog);
+        free(sig_info);
+    }
+#endif
+
 
     DBFClose( hDBF );
     SHPClose( hSHP );
