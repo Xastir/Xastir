@@ -1725,6 +1725,39 @@ int net_detach(int port) {
 //***************************** STOP NETWORK FUNCTIONS **********************************
 
 
+
+//
+void send_ax25_frame(int port, char *data) {
+
+// Not implemented yet.  Lot's of bit-twiddling to do.
+printf("KISS String:%s\n",data);
+
+
+// WE7U
+// Need code here to create the AX.25 frame and send it to the KISS
+// TNC.  These will all be UI frames.  Use my own callsign and the
+// path that was computed in output_my_aprs_data() and
+// output_my_data() functions.
+
+// Examples:
+//
+// KISS String:WE7U-15>APX112,RELAY,WIDE:=4756.10N/12216.20WxRNG0001Xastir
+// KISS String::N7TAP    :test2{3G}
+//
+// Obviously we need to work on output_my_data() a bit more so that
+// it sends proper strings to us for KISS TNC's.
+
+    // Convert each callsign/SSID to proper format, including six
+    // chars for the callsign portion, left shift each char, set the
+    // higher/lower bits properly, format the SSID byte properly.
+    // Add the control and PID bytes.  Remove the ':' byte.  Call
+    // port_write_string() with the result.
+}
+
+
+
+
+
 //***********************************************************
 // port_write_string()
 //
@@ -1752,19 +1785,8 @@ void port_write_string(int port, char *data) {
 
     write_in_pos_hold = port_data[port].write_in_pos;
 
-    // Serial KISS TNC?
-    if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
-
-// WE7U
-// Need code here to create the AX.25 frame and send it to the KISS
-// TNC.  These will all be UI frames.  Use my own callsign and the
-// path that was computed in output_my_aprs_data() and
-// output_my_data() functions.
-
-    }
-
     // Normal Serial/Net output?
-    else if (port_data[port].device_type != DEVICE_AX25_TNC) {
+    if (port_data[port].device_type != DEVICE_AX25_TNC) {
         for (i = 0; i < (int)strlen(data) && !erd; i++) {
             port_data[port].device_write_buffer[port_data[port].write_in_pos++] = data[i];
             if (port_data[port].write_in_pos >= MAX_DEVICE_BUFFER)
@@ -1795,7 +1817,6 @@ void port_write_string(int port, char *data) {
         printf("write_lock, Port = %d\n", port);
 }
  
-
 
 
 
@@ -3199,6 +3220,7 @@ void output_my_aprs_data(void) {
     char header_txt_save[MAX_LINE_SIZE+5];
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
+    char kiss_tnc_txt[MAX_LINE_SIZE*2];
     char data_txt2[5];
     struct tm *day_time;
     time_t sec;
@@ -3251,21 +3273,14 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 xastir_snprintf(output_net, sizeof(output_net), "%s>%s,TCPIP*:", my_callsign, VERSIONFRM);
                 break;
 
-            case DEVICE_SERIAL_KISS_TNC:
-
-// WE7U:  Need code here for KISS TNC.  It'd be better to merge this
-// section in with the next section having to do with TNC's, but we
-// need to set the callsign and path in a different manner than
-// sending a string to the interface.
-
-                break;
-
             case DEVICE_SERIAL_TNC_HSP_GPS:
 
                 /* make dtr normal */
                 port_dtr(port,0);
 
             case DEVICE_SERIAL_TNC_AUX_GPS:
+
+            case DEVICE_SERIAL_KISS_TNC:
 
             case DEVICE_SERIAL_TNC:
 
@@ -3278,12 +3293,19 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s\r", '\3', "MYCALL", my_callsign);
 
                 // Send the callsign out to the TNC only if the interface is up and tx is enabled???
-                if ( (port_data[port].status == DEVICE_UP)
+                // We don't set it this way for KISS TNC interfaces.
+                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                        && (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
                         && !posit_tx_disable) {
                     port_write_string(port,header_txt);
                 }
+
+// WE7U:  Should we check here to make sure that there are printable
+// characters in the path?  Also:  Output_aprs_data() has nearly
+// identical path selection code.  Fix it in one place, fix it in
+// the other.
 
                 // Set unproto path:
                 // We look for a non-null path entry starting at the current
@@ -3339,9 +3361,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 devices[port].unprotonum = (devices[port].unprotonum + 1 + bump_up) % 3;
 
 
-                // Actually send the header data to the TNC.  This sets the unproto
-                // path that'll be used by the next packet.
-                if ( (port_data[port].status == DEVICE_UP)
+                // Send the header data to the TNC.  This sets the
+                // unproto path that'll be used by the next packet.
+                // We don't set it this way for KISS TNC interfaces.
+                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                        && (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
                         && !posit_tx_disable) {
@@ -3349,9 +3373,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 }
 
 
-                // Set converse mode
+                // Set converse mode.  We don't need to do this for
+                // KISS TNC interfaces.
                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "CONV");
-                if ( (port_data[port].status == DEVICE_UP)
+                if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                        && (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
                         && !posit_tx_disable) {
@@ -3537,7 +3563,24 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     && (devices[port].transmit_data == 1)
                     && !transmit_disable
                     && !posit_tx_disable) {
-                port_write_string(port, data_txt);          // Transmit the posit
+
+// WE7U:  Change so that path is passed as well for KISS TNC
+// interfaces:  header_txt_save would probably be the one to pass,
+// or create a new string just for KISS TNC's.
+
+                if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+
+// Note:  This one has callsign & destination in the string
+
+                    xastir_snprintf(kiss_tnc_txt, sizeof(kiss_tnc_txt),
+                        "%s%s",
+                        header_txt_save,
+                        data_txt);
+                    send_ax25_frame(port, kiss_tnc_txt);  // Transmit the posit
+                }
+                else {  // Not a Serial KISS TNC interface
+                    port_write_string(port, data_txt);  // Transmit the posit
+                }
 
                 if (debug_level & 2)
                     printf("TX:%d<%s>\n",port,data_txt);
@@ -3605,6 +3648,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 void output_my_data(char *message, int port, int type, int loopback_only, int use_igate_path, char *path) {
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
+    char kiss_tnc_txt[MAX_LINE_SIZE*2];
     char output_net[100];
     int ok, start, finish, i;
     /*char temp[150]; for port message -FG */
@@ -3649,19 +3693,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         VERSIONFRM);
                     break;
 
-                case DEVICE_SERIAL_KISS_TNC:
-
-// WE7U:  Need code here for KISS TNC.  It'd be better to merge this
-// section in with the next section having to do with TNC's, but we
-// need to set the callsign and path in a different manner than
-// sending a string to the interface.
-
-                    break;
-
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                     port_dtr(port,0);           // make DTR normal
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
+
+                case DEVICE_SERIAL_KISS_TNC:
 
                 case DEVICE_SERIAL_TNC:
 
@@ -3678,7 +3715,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         "MYCALL",
                         my_callsign);
 
-                    if ( (port_data[i].status == DEVICE_UP)
+                    if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
+                            &&  (port_data[i].status == DEVICE_UP)
                             && (devices[i].transmit_data == 1)
                             && !transmit_disable
                             && !loopback_only) {
@@ -3694,8 +3732,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     // to use the igate path.  If so and the path
                     // isn't empty, skip the rest of the path selection:
                     if ( (use_igate_path)
-                            && (devices[i].unproto_igate != NULL)
                             && (strlen(devices[i].unproto_igate) > 0) ) {
+
+// WE7U:  Should we check here and in the following path
+// selection code to make sure that there are printable characters
+// in the path?  Also:  Output_my_aprs_data() has nearly identical
+// path selection code.  Fix it in one place, fix it in the other.
 
                         xastir_snprintf(data_txt,
                             sizeof(data_txt),
@@ -3832,7 +3874,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     // This will round-robin the paths so that all entered paths get used.
                     devices[i].unprotonum = (devices[i].unprotonum + 1 + bump_up) % 3;
 
-                    if ( (port_data[i].status == DEVICE_UP)
+                    if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
+                            && (port_data[i].status == DEVICE_UP)
                             && (devices[i].transmit_data == 1)
                             && !transmit_disable
                             && !loopback_only) {
@@ -3843,7 +3886,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     // Set converse mode
                     xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
 
-                    if ( (port_data[i].status == DEVICE_UP)
+                    if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
+                            && (port_data[i].status == DEVICE_UP)
                             && (devices[i].transmit_data == 1)
                             && !transmit_disable
                             && !loopback_only) {
@@ -3871,7 +3915,22 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     && (devices[i].transmit_data == 1)
                     && !transmit_disable
                     && !loopback_only) {
-                port_write_string(i,data_txt);
+
+// WE7U:  Change so that path is passed as well for KISS TNC
+// interfaces:  data_txt_save would probably be the one to pass,
+// or create a new string just for KISS TNC's.
+
+                if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+                    xastir_snprintf(kiss_tnc_txt, sizeof(kiss_tnc_txt),
+                        "%s%s",
+                        data_txt_save,
+                        data_txt);
+                    send_ax25_frame(i, kiss_tnc_txt);  // Transmit
+                }
+                else {  // Not a Serial KISS TNC interface
+                    port_write_string(i, data_txt);  // Transmit
+                }
+
                 if (debug_level & 1)
                     printf("Sending to interface:%d, %s\n",i,data_txt);
             }
