@@ -4115,8 +4115,25 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     }
 
     // Current Power Gain ...
-    if (strlen(p_station->power_gain) == 7)
+    if (strlen(p_station->power_gain) == 7) {
         phg_decode(langcode("WPUPSTI014"), p_station->power_gain, temp, sizeof(temp) );
+
+        // Check for Map View symbol:  Eyeball symbol with // RNG
+        // extension.
+        if ( strncmp(p_station->power_gain,"RNG",3) == 0
+                && p_station->aprs_symbol.aprs_type == '/'
+                && p_station->aprs_symbol.aprs_symbol == 'E' ) {
+
+//fprintf(stderr,"Found a Map View 'eyeball' symbol!\n");
+
+            // Center_Zoom() normally fills in the values with the
+            // current zoom/center for the map window.  We want to
+            // be able to override these with our own values in this
+            // case, derived from the object info.
+            center_zoom_override++;
+            Center_Zoom(w,NULL,(XtPointer)p_station);
+        }
+    }
     else if (p_station->flag & (ST_OBJECT|ST_ITEM))
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI014"), "none");
     else if (units_english_metric)
@@ -5004,14 +5021,12 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
         si_text = NULL;
         si_text = XmCreateScrolledText(form,"Station_data",args,n);
 
-
 end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
-        // Fill in the si_text widget with real data
-        station_data_fill_in( w, (XtPointer)db_station_info_callsign, NULL);
+    // Fill in the si_text widget with real data
+    station_data_fill_in( w, (XtPointer)db_station_info_callsign, NULL);
  
 begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
-
 
         if (restore_position) {
             XtVaSetValues(db_station_info,XmNx,x - decoration_offset_x,XmNy,y - decoration_offset_y,NULL);
@@ -8643,39 +8658,67 @@ int extract_altitude(char *info, char *altitude) {
 
 
 
-
+ 
 /*
  *  Extract powergain from APRS info field          "PHG1234/" "PHG1234"  from APRS data extension
  */
 int extract_powergain(char *info, char *phgd) {
     int i,found,len;
+    char *info2;
+
+
+//fprintf(stderr,"Info:%s\n",info);
+
+    // Check whether two strings of interest are present and snag a
+    // pointer to them.
+    info2 = strstr(info,"RNG");
+    if (!info2)
+        info2 = strstr(info,"PNG");
+    if (!info2) {
+        phgd[0] = '\0';
+        return(0);
+    }
 
     found=0;
-    len = (int)strlen(info);
-    if (len >= 9 && strncmp(info,"PHG",3)==0 && info[7]=='/' && info[8]!='A'  // trailing '/' not defined in Reference...
-                 && isdigit((int)info[3]) && isdigit((int)info[5]) && isdigit((int)info[6])) {
-        substr(phgd,info,7);
+    len = (int)strlen(info2);
+
+    if (len >= 9 && strncmp(info2,"PHG",3)==0
+            && info2[7]=='/'
+            && info2[8]!='A'  // trailing '/' not defined in Reference...
+            && isdigit((int)info2[3])
+            && isdigit((int)info2[4])
+            && isdigit((int)info2[5])
+            && isdigit((int)info2[6])) {
+        substr(phgd,info2,7);
+        found = 1;
         for (i=0;i<=len-8;i++)        // delete powergain from data extension field
-            info[i] = info[i+8];
-        return(1);
-    } else {
-        if (len >= 7 && strncmp(info,"PHG",3)==0
-                 && isdigit((int)info[3]) && isdigit((int)info[5]) && isdigit((int)info[6])) {
-            substr(phgd,info,7);
+            info2[i] = info2[i+8];
+    }
+    else {
+        if (len >= 7 && strncmp(info2,"PHG",3)==0
+                && isdigit((int)info2[3])
+                && isdigit((int)info2[4])
+                && isdigit((int)info2[5])
+                && isdigit((int)info2[6])) {
+            substr(phgd,info2,7);
+            found = 1;
             for (i=0;i<=len-7;i++)        // delete powergain from data extension field
-                info[i] = info[i+7];
-            return(1);
-        } else if (len >= 7 && strncmp(info,"RNG",3)==0
-                 && isdigit((int)info[3]) && isdigit((int)info[5]) && isdigit((int)info[6])) {
-            substr(phgd,info,7);
+                info2[i] = info2[i+7];
+        }
+        else if (len >= 7 && strncmp(info2,"RNG",3)==0
+                && isdigit((int)info2[3])
+                && isdigit((int)info2[4])
+                && isdigit((int)info2[5])
+                && isdigit((int)info2[6])) {
+            substr(phgd,info2,7);
+            found = 1;
             for (i=0;i<=len-7;i++)        // delete powergain from data extension field
-                info[i] = info[i+7];
-            return(1);
+                info2[i] = info2[i+7];
         } else {
             phgd[0] = '\0';
-            return(0);
         }
     }
+    return(found);
 }
 
 
@@ -9136,8 +9179,12 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                     nrq);
                 p_station->signal_gain[0] = '\0';   // And blank out the shgd values
                 }
-            } else {
+            }
+            else {
                 if (extract_powergain(data,temp1)) {
+
+//fprintf(stderr,"Found power_gain: %s\n", temp1);
+
                     xastir_snprintf(p_station->power_gain,
                         sizeof(p_station->power_gain),
                         "%s",

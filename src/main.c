@@ -798,7 +798,8 @@ static void Pan_left(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_left_less(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_right(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_right_less(Widget w, XtPointer clientData, XtPointer calldata);
-static void Center_Zoom(Widget w, XtPointer clientData, XtPointer calldata);
+void Center_Zoom(Widget w, XtPointer clientData, XtPointer calldata);
+int center_zoom_override = 0;
 Widget center_zoom_dialog = (Widget)NULL;
 
 static void Menu_Quit(Widget w, XtPointer clientData, XtPointer calldata);
@@ -11961,25 +11962,153 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         XmAddWMProtocolCallback(center_zoom_dialog, delw, Center_Zoom_destroy_shell, (XtPointer)center_zoom_dialog);
 
 
-        // Snag the current lat/long/center values, convert them to
-        // displayable values, and fill in the fields.
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "%f",
-            f_center_latitude);
-        XmTextFieldSetString(center_zoom_latitude, temp); 
+        if (center_zoom_override) { // We've found a Map View
+                                    // "eyeball" object and are
+                                    // doing a center/zoom based on
+                                    // that object's info.  Grab the
+                                    // pointer to the object which
+                                    // is in calldata.
+            DataRow *p_station = (DataRow *)calldata;
+            float f_latitude, f_longitude;
+            int range;
+            Dimension width, height;
+            long x, x0, y, y0;
+            double x_miles, y_miles, distance;
+            char temp_course[10];
+            double scale_factor;
+            long my_scale_y;
 
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "%f",
-            f_center_longitude);
-        XmTextFieldSetString(center_zoom_longitude, temp); 
 
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "%ld",
-            scale_y);
-        XmTextFieldSetString(center_zoom_zoom_level, temp); 
+//fprintf(stderr,"Map View Object: %s\n",p_station->call_sign);
+
+            center_zoom_override = 0;
+
+
+            // Snag the objects values, convert them to displayable
+            // values, and fill in the fields.
+            convert_from_xastir_coordinates(&f_longitude,
+                &f_latitude,
+                p_station->coord_lon,
+                p_station->coord_lat);
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%f",
+                f_latitude);
+            XmTextFieldSetString(center_zoom_latitude, temp); 
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%f",
+                f_longitude);
+            XmTextFieldSetString(center_zoom_longitude, temp); 
+
+            // Compute the approximate zoom level we need from the
+            // range value in the object.  Range is in miles.
+            range = atoi(&p_station->power_gain[3]);
+
+            // We should be able to compute the distance across the
+            // screen that we currently have, then compute an
+            // accurate zoom level that will give us the range we
+            // want.
+
+            // Find out the screen values
+            XtVaGetValues(da,XmNwidth, &width, XmNheight, &height, 0);
+
+            // Convert points to Xastir coordinate system
+
+            // X
+            x = mid_x_long_offset  - ((width *scale_x)/2);
+            x0 = mid_x_long_offset; // Center of screen
+
+            // Y
+            y = mid_y_lat_offset   - ((height*scale_y)/2);
+            y0 = mid_y_lat_offset;  // Center of screen
+
+            // Compute distance from center to each edge
+
+            // X distance.  Keep Y constant.
+            x_miles = cvt_kn2len
+                * calc_distance_course(y0,
+                    x0,
+                    y0,
+                    x,
+                    temp_course,
+                    sizeof(temp_course));
+
+            // Y distance.  Keep X constant.
+            y_miles = cvt_kn2len
+                * calc_distance_course(y0,
+                    x0,
+                    y,
+                    x0,
+                    temp_course,
+                    sizeof(temp_course));
+
+            // Choose the smaller distance
+            if (x_miles < y_miles) {
+                distance = x_miles;
+            }
+            else {
+                distance = y_miles;
+            }
+//fprintf(stderr,"Current screen range: %f\n", distance);
+//fprintf(stderr,"Desired screen range: %d\n", range);
+
+// Note that these numbers will be off if we're zoomed out way too
+// far (edges of the earth are inside the screen view).
+
+            // Now we know the range of the current screen
+            // (distance) in miles.  Compute what we need from
+            // "distance" (screen) and "range" (object) in order to
+            // get a scale factor we can apply to our zoom numbers.
+            if (distance < range) {
+//fprintf(stderr,"Zooming out\n");
+                scale_factor = (range * 1.0)/distance;
+                fprintf(stderr,"Scale Factor: %f\n", scale_factor);
+                my_scale_y = (long)(scale_y * scale_factor);
+            }
+            else {  // distance > range
+//fprintf(stderr,"Zooming in\n");
+                scale_factor = distance/(range * 1.0);
+//fprintf(stderr,"Scale Factor: %f\n", scale_factor);
+                my_scale_y = (long)(scale_y / scale_factor);
+            }
+
+            if (my_scale_y < 1)
+                my_scale_y = 1;
+
+//fprintf(stderr,"my_scale_y: %ld\n", my_scale_y);
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%ld",
+                my_scale_y);
+            XmTextFieldSetString(center_zoom_zoom_level, temp); 
+        }
+        else {
+            // Normal user-initiated center/zoom function
+
+            // Snag the current lat/long/center values, convert them to
+            // displayable values, and fill in the fields.
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%f",
+                f_center_latitude);
+            XmTextFieldSetString(center_zoom_latitude, temp); 
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%f",
+                f_center_longitude);
+            XmTextFieldSetString(center_zoom_longitude, temp); 
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%ld",
+                scale_y);
+            XmTextFieldSetString(center_zoom_zoom_level, temp); 
+        }
 
 
         XtManageChild(form);
