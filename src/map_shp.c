@@ -426,7 +426,9 @@ int shape_ring_direction ( SHPObject *psObject, int Ring ) {
 
 //WE7U: Temporary.  For OGR debugging.
 //
+#ifdef HAVE_LIBGDAL
 extern void draw_ogr_map(Widget w, char *dir, char *filenm, alert_entry *alert, u_char alert_color, int destination_pixmap, int draw_filled);
+#endif  // HAVE_LIBGDAL
 
 
 
