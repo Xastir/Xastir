@@ -5,6 +5,7 @@ EXTRA_DIST = \
     help-French.dat \
     help-German.dat \
     help-Italian.dat \
+    help-Portuguese.dat \
     help-Spanish.dat
 
 help_DATA = \
@@ -13,4 +14,5 @@ help_DATA = \
     help-French.dat \
     help-German.dat \
     help-Italian.dat \
+    help-Portuguese.dat \
     help-Spanish.dat
