@@ -866,8 +866,8 @@ void load_data_or_default(void) {
         Select_.via_digi = 1;
     if (!get_int ("DISPLAY_NET_STATIONS", &Select_.net, 0, 1, 1))
         Select_.net = 1;
-    if (!get_int ("DISPLAY_OLD_STATION_DATA", &Select_.old_data, 0, 1, 1))
-        Select_.old_data = 1;
+    if (!get_int ("DISPLAY_OLD_STATION_DATA", &Select_.old_data, 0, 1, 0))
+        Select_.old_data = 0;
     if (!get_int ("DISPLAY_STATIONS", &Select_.stations, 0, 1, 1))
         Select_.stations = 1;
     if (!get_int ("DISPLAY_FIXED_STATIONS", &Select_.fixed_stations, 0, 1, 1))
