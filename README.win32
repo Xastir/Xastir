@@ -646,7 +646,13 @@ something like this:
     export MAGICK_HOME=/usr
     xastir &
 
-Perhaps name it "aprs".  Start it by typing "./aprs".
+Perhaps name it "aprs".  Issue this command to turn it into an
+executable file:
+
+    chmod 755 aprs
+
+
+Start it by typing "./aprs".
 
 --------------------------------------------------------------------
 Note from Kirk Mefford, KC2ELO:
