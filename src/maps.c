@@ -248,18 +248,24 @@ void draw_grid(Widget w) {
     int grid_place;
     long xx, yy, xx1, yy1;
 
+    if (!long_lat_grid)
+        return;
+
     /* Set the line width in the GC */
     (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
     (void)XSetForeground (XtDisplay (w), gc, colors[0x08]);
 
-    //printf("scale_x: %lu\n", scale_x);
+    if (0 /*coordinate_system == USE_UTM*/) {
+        // Not yet, just teasing... ;-)
+    }
+    else { // Not UTM coordinate system, draw some lat/long lines
+        //printf("scale_x: %lu\n", scale_x);
 
-    if (scale_x < GRID_MORE)
-        grid_place = 1;
-    else
-        grid_place = 10;
+        if (scale_x < GRID_MORE)
+            grid_place = 1;
+        else
+            grid_place = 10;
 
-    if (long_lat_grid) {
         for (place = 180; place >= 0; place -= grid_place) {
             xastir_snprintf(place_str, sizeof(place_str), "%03d00.00W", place);
             /*printf("Place %s\n",place_str); */
@@ -296,7 +302,6 @@ void draw_grid(Widget w) {
             xastir_snprintf(place_str, sizeof(place_str), "%02d00.00N", place);
             /*printf("Place %s\n",place_str); */
             yy1 = yy = ((convert_lat_s2l (place_str) - y_lat_offset) / scale_y);
-
             if (yy > 0 && yy < screen_height) {
                 xx  = (convert_lon_s2l ("18000.00W") - x_long_offset) / scale_x;
                 xx1 = (convert_lon_s2l ("18000.00E") - x_long_offset) / scale_x;
@@ -313,7 +318,6 @@ void draw_grid(Widget w) {
             xastir_snprintf(place_str, sizeof(place_str), "%02d00.00S", place);
             /*printf("Place %s\n",place_str); */
             yy1 = yy = ((convert_lat_s2l (place_str) - y_lat_offset) / scale_y);
-
             if (yy > 0 && yy < screen_height) {
                 xx  = (convert_lon_s2l ("18000.00W") - x_long_offset) / scale_x;
                 xx1 = (convert_lon_s2l ("18000.00E") - x_long_offset) / scale_x;
@@ -326,6 +330,37 @@ void draw_grid(Widget w) {
                 (void)XDrawLine (XtDisplay (w), pixmap_final, gc, xx, yy, xx1, yy1);
             }
         }
+    }
+
+    // Draw equator and central meridian with solid black lines
+    (void)XSetLineAttributes(XtDisplay(w), gc, 1, LineSolid, CapButt,JoinMiter);
+    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]);
+
+    xastir_snprintf(place_str, sizeof(place_str), "%03d00.00W", 0);
+    xx1 = xx = ((convert_lon_s2l(place_str) - x_long_offset) / scale_x);
+    if (xx > 0 && xx < screen_width) {
+        yy  = (convert_lat_s2l("9000.00N") - y_lat_offset) / scale_y;
+        yy1 = (convert_lat_s2l("9000.00S") - y_lat_offset) / scale_y;
+        if (yy < 0)
+            yy = 0;
+
+        if (yy1 > screen_height)
+            yy1 = screen_height;
+
+        (void)XDrawLine(XtDisplay(w), pixmap_final, gc, xx, yy, xx1, yy1);
+    }
+    xastir_snprintf(place_str, sizeof(place_str), "%02d00.00N", 0);
+    yy1 = yy = ((convert_lat_s2l(place_str) - y_lat_offset) / scale_y);
+    if (yy > 0 && yy < screen_height) {
+        xx  = (convert_lon_s2l("18000.00W") - x_long_offset) / scale_x;
+        xx1 = (convert_lon_s2l("18000.00E") - x_long_offset) / scale_x;
+        if (xx < 0)
+            xx = 0;
+
+        if (xx1 > screen_width)
+            xx1 = screen_width;
+
+        (void)XDrawLine(XtDisplay(w), pixmap_final, gc, xx, yy, xx1, yy1);
     }
 }
 
