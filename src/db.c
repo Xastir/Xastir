@@ -2373,6 +2373,7 @@ _do_the_drawing:
                 || (weather->wx_trop_storm_radius[0] != '\0')
                 || (weather->wx_whole_gale_radius[0] != '\0') ) ) {
         char temp[4];
+        int ghost = (int)(((sec_old + weather->wx_sec_time)) < sec_now());
 
 
         //fprintf(stderr,"Plotting a storm symbol:%s:%s:%s:\n",
@@ -2384,8 +2385,9 @@ _do_the_drawing:
 // different ranges.  Might be nice to tint it as well.
 
         strcpy(temp,weather->wx_hurricane_radius);
-        if ( (temp[0] != '\0')
-             && (strncmp(temp,"000",3) != 0) ) {
+        if ( !ghost && (temp[0] != '\0')
+                && (strncmp(temp,"000",3) != 0) ) {
+
             draw_pod_circle(p_station->coord_lon,
                             p_station->coord_lat,
                             atof(temp) * 1.15078, // nautical miles to miles
@@ -2394,7 +2396,7 @@ _do_the_drawing:
         }
 
         strcpy(temp,weather->wx_trop_storm_radius);
-        if ( (temp[0] != '\0')
+        if ( !ghost && (temp[0] != '\0')
              && (strncmp(temp,"000",3) != 0) ) {
             draw_pod_circle(p_station->coord_lon,
                             p_station->coord_lat,
@@ -2404,7 +2406,7 @@ _do_the_drawing:
         }
 
         strcpy(temp,weather->wx_whole_gale_radius);
-        if ( (temp[0] != '\0')
+        if ( !ghost && (temp[0] != '\0')
              && (strncmp(temp,"000",3) != 0) ) {
             draw_pod_circle(p_station->coord_lon,
                             p_station->coord_lat,
