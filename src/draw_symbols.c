@@ -2029,7 +2029,14 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
     // if there are points to draw, and the object has not been cleared (or 
     // we're supposed to show old data).
 
-    ghost = (int)(((sec_old+sec_heard)) < sec_now());
+
+    // Per Dale Huguley in e-mail 07/10/2003, a good interval for
+    // the severe weather polygons to disappear is 10 minutes.  We
+    // hard-code it here so the user can't mess it up too badly with
+    // the ghosting interval.
+//    ghost = (int)(((sec_old+sec_heard)) < sec_now());
+    ghost = (int)( ( sec_heard + (10 * 60) ) < sec_now() );
+
 
     // We don't want to draw them if the ghost interval is up, not
     // matter whether Include Expired Data is checked.
