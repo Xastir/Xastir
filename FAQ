@@ -298,7 +298,15 @@ The Answers
     An easy way to determine if your hardware works correctly is to try it on
     conventional packet.
 
-    4.5 Who is this APX112 guy who all my stuff is getting sent to? Who are
+    4.5 I run Xastir, and get on the air, but none of the other stations
+        appear on my screen?
+
+    Did you set up your TNC startup files correctly to remove any extra data
+    from the packet headers? See README.1ST.
+
+    Second, check that ALTNET support in File|Configure|Defaults isn't enabled.
+
+    4.6 Who is this APX112 guy who all my stuff is getting sent to? Who are
         these RELAY, WIDE and TRACE people digipeating packets, and why are
         they putting different callsigns in the fields where their names used
         to be? Why doesn't anyone answer me when I connect to them? HELP!!!
@@ -331,22 +339,15 @@ The Answers
     countries!) There are also experimental systems for sending messages via
     amateur radio satellites, but that is beyond the scope of this FAQ.
 
-    4.5 I run Xastir, and get on the air, but none of the other stations
-        appear on my screen?
 
-    Did you set up your TNC startup files correctly to remove any extra data
-    from the packet headers? See README.1ST.
-
-    Second, check that ALTNET support in File|Configure|Defaults isn't enabled.
-
-    4.6 When weather alerts come in, the counties on my map don't highlight.
+    4.7 When weather alerts come in, the counties on my map don't highlight.
 
     First of all, did you download and install the new shaepfile weather maps
     as described in the README.1ST? Did you compile with shapefile support?
 
     Second, check that Map|Map WX Alert Counties is turned on.
 
-    4.7 I have geoTIFF support compiled and working, but when I select a map,
+    4.8 I have geoTIFF support compiled and working, but when I select a map,
         it gives me a -38 error converting the datum, and it doesn't display in
         the right place.
 
@@ -357,7 +358,7 @@ The Answers
     sure it is one of the ones supported by Xastir. The listgeo program
     included with libgeotiff can tell you the datum of a map.
 
-    4.8 Xastir runs slowly/loads maps slowly.
+    4.9 Xastir runs slowly/loads maps slowly.
 
     There are many things that can effect the speed of your Xastir software,
     including the speed of the computer, the amount of memory available, the
@@ -375,7 +376,7 @@ The Answers
     compiled Xastir or libax25/libtiff/libgeotiff/etc with debugging (-g),
     recompile these software without debugging and with optimization ON (-O2).
 
-    4.9 I installed a new version of lesstif, but the help menu shows the old
+    4.10 I installed a new version of lesstif, but the help menu shows the old
          version.
 
     The help menu shows the version of lesstif that Xastir was compiled with,
