@@ -466,16 +466,18 @@ void draw_ogr_map(Widget w,
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-
+/////////////////////////////////////////////////////////////////////
         // We're indexing only.  Save the extents in the index.
         char status_text[MAX_FILENAME];
-        double file_MinX = 1000.0;  // Invalid
-        double file_MaxX = 1000.0;  // Invalid
-        double file_MinY = 1000.0;  // Invalid
-        double file_MaxY = 1000.0;  // Invalid
+        double file_MinX = 0;
+        double file_MaxX = 0;
+        double file_MinY = 0;
+        double file_MaxY = 0;
+        int first_extents = 1;
         int geographic = 0;
         int projected = 0;
         int local = 0;
+        const char *geogcs = NULL;
 
 
         xastir_snprintf(status_text,
@@ -539,8 +541,8 @@ void draw_ogr_map(Widget w,
                     temp = OSRGetAttrValue(spatial, "PROJCS", 0);
                     temp = OSRGetAttrValue(spatial, "PROJECTION", 0);
                 }
-                temp = OSRGetAttrValue(spatial, "GEOGCS", 0);
                 temp = OSRGetAttrValue(spatial, "SPHEROID", 0);
+                geogcs = OSRGetAttrValue(spatial, "GEOGCS", 0);
             }
             else {
             }
@@ -548,6 +550,10 @@ void draw_ogr_map(Widget w,
             // Get the extents for this layer.  OGRERR_FAILURE means
             // that the layer has no spatial info or that it would be
             // an expensive operation to establish the extent.
+            // Here we set the force option to TRUE in order to read
+            // all of the extents even for files where that would be
+            // an expensive operation.  We're trying to index the
+            // file after all!
             if (OGR_L_GetExtent(layer, &psExtent, TRUE) != OGRERR_FAILURE) {
 /*
                 fprintf(stderr,
@@ -558,16 +564,15 @@ void draw_ogr_map(Widget w,
                     psExtent.MaxY);
 */
 
-                    // If first value, store it.
-                    if (file_MinX == 1000.0)
-                        file_MinX = psExtent.MinX;
-                    if (file_MaxX == 1000.0)
-                        file_MaxX = psExtent.MaxX;
-                    if (file_MinY == 1000.0)
-                        file_MinY = psExtent.MinY;
-                    if (file_MaxY == 1000.0)
-                        file_MaxY = psExtent.MaxY;
-
+                // If first value, store it.
+                if (first_extents) {
+                    file_MinX = psExtent.MinX;
+                    file_MaxX = psExtent.MaxX;
+                    file_MinY = psExtent.MinY;
+                    file_MaxY = psExtent.MaxY;
+                    first_extents = 0;
+                }
+                else {
                     // Store the min/max values
                     if (psExtent.MinX < file_MinX)
                         file_MinX = psExtent.MinX;
@@ -577,24 +582,51 @@ void draw_ogr_map(Widget w,
                         file_MinY = psExtent.MinY;
                     if (psExtent.MaxY > file_MaxY)
                         file_MaxY = psExtent.MaxY;
+                }
             }
             // No need to free layer handle, it belongs to the
             // datasource.
         }
 
-        if (geographic
-                && file_MinY != 1000.0
-                && file_MaxY != 1000.0
-                && file_MinX != 1000.0
-                && file_MaxX != 1000.0) {
+        if (geographic && !first_extents) {
+            // Need to also check datum!  Must be NAD83 or WGS84 for
+            // our purposes.
+            if (       strcasecmp(geogcs,"WGS84") == 0
+                    || strcasecmp(geogcs,"NAD83") == 0) {
 
-// Need to also check datum.
+fprintf(stderr, "Geographic coordinate system, %s, adding to index\n", geogcs);
 
-            index_update_ll(filenm,    // Filename only
-                file_MinY,  // Bottom
-                file_MaxY,  // Top
-                file_MinX,  // Left
-                file_MaxX); // Right
+                index_update_ll(filenm,    // Filename only
+                    file_MinY,  // Bottom
+                    file_MaxY,  // Top
+                    file_MinX,  // Left
+                    file_MaxX); // Right
+            }
+            else {
+                // Have geographic coordinates, but in the wrong
+                // datum.  Convert to WGS84.
+
+fprintf(stderr, "Geographic coordinate system, but wrong datum: %s\n", geogcs);
+
+            }
+        }
+        else if (projected && !first_extents) {
+            // Convert to geographic/WGS84
+
+fprintf(stderr, "Projected coordinate system.  Skipping indexing\n");
+
+        }
+        else if (local && !first_extents) {
+            // Convert to geographic/WGS84
+
+fprintf(stderr, "Local coordinate system.  Skipping indexing\n");
+
+        }
+        else {
+            // Abandon all hope, ye who enter here!  Either we don't
+            // have any extents, or we don't have a geographic,
+            // projected, or local coordinate system.  We don't have
+            // a clue how to index this dataset...
         }
 
 /*
@@ -611,6 +643,7 @@ void draw_ogr_map(Widget w,
         OGR_DS_Destroy( datasource );
 
         return; // Done indexing the file
+/////////////////////////////////////////////////////////////////////
     }
 
  
