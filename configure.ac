@@ -418,7 +418,7 @@ changequote([,])
 #
 # Change the compiler optimization if using Windows/Cygwin in order
 # to reduce memory usage and speed up the compile.  Here we change
-# "-O2" to "-O1" in CFLAGS/CPPFLAGS to reduce the level of
+# "-O2" to "-O1" or " " in CFLAGS/CPPFLAGS to reduce the level of
 # optimization.
 #
 case "$host_os" in
