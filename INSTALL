@@ -275,9 +275,7 @@ First Time Install:
         cd ..
         ./configure
         make
-        su (root)
-        make install (as root)
-        exit (from root)
+        su -c 'make install'
         libproj should now be installed in:
 
             /usr/local/include/
@@ -460,9 +458,7 @@ First Time Install:
         cd im*
         ./configure
         make
-        su (become root user)
-        make install
-        exit (from su)
+        su -c 'make install'
 
      These instructions are courtesy of Wes Johnston.
      -------------------------------------------------------------------------
@@ -504,9 +500,7 @@ First Time Install:
      tar xzvf gpsmanshp_1.0.2.tgz
      cd gpsmanshp
      make
-     su (root)
-     make install
-     exit (from root)
+     su -c 'make install'
 
      Install GPSMan:
 
@@ -524,7 +518,7 @@ First Time Install:
      chmod -R 755 /usr/lib/gpsman
      chmod 644 /usr/lib/gpsman/gmicons
      chmod 777 /usr/local/share/xastir/maps/GPS   (IMPORTANT!)
-     exit (from root
+     exit (from root)
 
      Verify that GPSMan will start up and will download information from a
      Garmin GPS in Garmin-Garmin mode.  This also creates the configuration
