@@ -11386,30 +11386,63 @@ void new_image(Widget da) {
 void check_range(void) {
     Dimension width, height;
 
-    XtVaGetValues(da, XmNwidth, &width, XmNheight, &height, NULL);
+    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
 
-    if ((height*new_scale_y) > 64800000l)
-        new_mid_y  =  64800000l/2;                               // center between 90°N and 90°S
-    else
-        if ((new_mid_y - (height*new_scale_y)/2) < 0)
+
+    // Check the window itself to see if our new y-scale fits it
+    //
+    if ((height*new_scale_y) > 64800000l) {
+
+        // Center between 90°N and 90°S
+        new_mid_y  =  64800000l/2;
+
+        // Adjust y-scaling so that we fit perfectly in the window
+        new_scale_y = 64800000l / height;
+    }
+
+
+
+
+
+// Find the four corners of the map in the new scale system.  Make
+// sure they are on the display, but not all inside the display.
+
+
+
+
+
+    if ((new_mid_y < (height*new_scale_y)/2))
             new_mid_y  = (height*new_scale_y)/2;                 // upper border max 90°N
-        else
+
+
             if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
                 new_mid_y = 64800000l-((height*new_scale_y)/2);  // lower border max 90°S
+
 
     // Adjust scaling based on latitude of new center
     new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
     //fprintf(stderr,"x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
 
+
     // scale_x will always be bigger than scale_y, so no problem here...
-    if ((width*new_scale_x) > 129600000l)
-        new_mid_x = 129600000l/2;                                // center between 180°W and 180°E
-    else
-        if ((new_mid_x - (width*new_scale_x)/2) < 0)
+    if ((width*new_scale_x) > 129600000l) {
+        // Center between 180°W and 180°E
+        new_mid_x = 129600000l/2;
+    }
+
+
+    if ((new_mid_x < (width*new_scale_x)/2))
             new_mid_x = (width*new_scale_x)/2;                   // left border max 180°W
-        else
+
+
             if ((new_mid_x + (width*new_scale_x)/2) > 129600000l)
                 new_mid_x = 129600000l-((width*new_scale_x)/2);  // right border max 180°E
+
+
+    // Check for all earth borders inside window border.  If so,
+    // rescale/recenter so that it does a best fit inside the
+    // window.
+
 }
 
 
