@@ -5554,7 +5554,9 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     }
     if (ok) {
         overlay_symbol(my_data[9], my_data[0], p_station);      // Symbol / Table
-        if (!is_my_call(p_station->call_sign,1)) {      // don't change my position, I know it better...
+        if ( (!is_my_call(p_station->call_sign,1))      // don't change my position, I know it better...
+                && ( (p_station->flag && ST_OBJECT) == 0)       // Not an object
+                && ( (p_station->flag && ST_ITEM  ) == 0) ) {   // Not an item
             p_station->coord_lat = (long)((lat));               // in 1/100 sec
             p_station->coord_lon = (long)((lon));               // in 1/100 sec
         }
@@ -9724,25 +9726,52 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
     else {  // Else it's a normal object/item
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
-                p_station->call_sign,
-                time,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                speed_course,
-                altitude);
+            if (transmit_compressed_posit) {
+                xastir_snprintf(line, line_length, ";%-9s*%s%s",
+                    p_station->call_sign,
+                    time,
+                    compress_posit(lat_str,
+                        object_group,
+                        lon_str,
+                        object_symbol,
+                        0,  // Course
+                        0,  // Speed
+                        ""));   // PHG, must be blank
+            }
+            else {
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
+                    p_station->call_sign,
+                    time,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    speed_course,
+                    altitude);
+            }
         }
         else {  // It's an item
-            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
-                p_station->call_sign,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                speed_course,
-                altitude);
+            if (transmit_compressed_posit) {
+                xastir_snprintf(line, line_length, ")%s!%s",
+                    p_station->call_sign,
+                    compress_posit(lat_str,
+                        object_group,
+                        lon_str,
+                        object_symbol,
+                        0,  // Course
+                        0,  // Speed
+                        ""));   // PHG, must be blank
+            }
+            else {
+                xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
+                    p_station->call_sign,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    speed_course,
+                    altitude);
+            }
         }
     }
 
