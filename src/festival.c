@@ -89,6 +89,7 @@
 #include "festival.h"
 #include <errno.h>
 #include "xastir.h"
+#include "snprintf.h"
 
 FT_Info *info;      
 
@@ -272,10 +273,29 @@ int festivalClose()
 
 
 
+static char last_speech_text[8000];
+static time_t last_speech_time;
+
 int SayText(char *text)
 {
     if (debug_level & 2)
         printf("SayText: %s\n",text);
+
+    // Check whether the last text was the same and it hasn't been
+    // enough time between them (30 seconds).
+    if ( (strcmp(last_speech_text,text) == 0) // Strings match
+            && (last_speech_time + 30 > sec_now()) ) {
+//printf("Same text, skipping speech: %s\n",text);
+        return 1;
+    }
+
+//printf("Speaking: %s\n",text);
+
+    xastir_snprintf(last_speech_text,
+        sizeof(last_speech_text),
+        "%s",
+        text);
+    last_speech_time = sec_now();
 
     festivalStringToSpeech(text);
     return 0;
@@ -285,8 +305,11 @@ int SayText(char *text)
 
 int SayTextInit()
 {
-       festival_default_info();
-       festivalOpen();
-        return 0;
+    festival_default_info();
+    festivalOpen();
+    last_speech_text[0] = '\0';
+    last_speech_time = (time_t)0;
+    return 0;
 }
+
 
