@@ -491,7 +491,7 @@ First Time Install:
      cp -R gmicons /usr/lib/gpsman
      chmod -R 755 /usr/lib/gpsman
      chmod 644 /usr/lib/gpsman/gmicons
-     chmod 777 /usr/local/xastir/maps/GPS
+     chmod 777 /usr/local/xastir/maps/GPS   (IMPORTANT!)
      exit (from root
 
      Verify that GPSMan will start up and will download information from a
