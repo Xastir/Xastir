@@ -205,6 +205,9 @@ static void Map_disable_toggle( Widget w, XtPointer clientData, XtPointer callda
 
 static void Map_auto_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int map_auto_maps;              /* toggle use of auto_maps */
+static void Map_auto_skip_raster_toggle( Widget w, XtPointer clientData, XtPointer calldata);
+int auto_maps_skip_raster;
+Widget map_auto_skip_raster_button;
 
 Widget map_levels_on, map_levels_off;
 static void Map_levels_toggle( Widget w, XtPointer clientData, XtPointer calldata);
@@ -3969,6 +3972,21 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(map_auto_button,TRUE,FALSE);
 
 
+    map_auto_skip_raster_button = XtVaCreateManagedWidget(langcode("PULDNMP021"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(map_auto_skip_raster_button,XmNvalueChangedCallback,Map_auto_skip_raster_toggle,"1");
+    if (auto_maps_skip_raster)
+        XmToggleButtonSetState(map_auto_skip_raster_button,TRUE,FALSE);
+    if (!map_auto_maps)
+        XtSetSensitive(map_auto_skip_raster_button,FALSE);
+
+
     map_grid_button = XtVaCreateManagedWidget(langcode("PULDNMP003"),
             xmToggleButtonGadgetClass,
             mappane,
@@ -7346,10 +7364,14 @@ void  Map_auto_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    if(state->set)
+    if(state->set) {
         map_auto_maps = atoi(which);
-    else
+        XtSetSensitive(map_auto_skip_raster_button,TRUE);
+    }
+    else {
         map_auto_maps = 0;
+        XtSetSensitive(map_auto_skip_raster_button,FALSE);
+    }
 
     create_image(da);
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
@@ -7357,6 +7379,23 @@ void  Map_auto_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
         statusline(langcode("BBARSTA007"),1);   // The use of Auto Maps is now on
     else
         statusline(langcode("BBARSTA008"),2);   // The use of Auto Maps is now off
+}
+
+
+
+
+
+void  Map_auto_skip_raster_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        auto_maps_skip_raster = atoi(which);
+    else
+        auto_maps_skip_raster = 0;
+
+    create_image(da);
+    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 

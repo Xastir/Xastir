@@ -109,6 +109,7 @@ extern int long_lat_grid;
 extern int map_color_levels;
 extern int map_labels;
 extern int map_auto_maps;
+extern int auto_maps_skip_raster;
 extern time_t sec_remove;
 extern Widget da;
 extern Widget text;

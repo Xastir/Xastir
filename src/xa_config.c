@@ -365,6 +365,8 @@ void save_data(void)  {
         store_int (fout, "MAPS_LEVELS", map_color_levels);
         store_int (fout, "MAPS_LABELS", map_labels);
         store_int (fout, "MAPS_AUTO_MAPS", map_auto_maps);
+        store_int (fout, "MAPS_AUTO_MAPS_SKIP_RASTER", auto_maps_skip_raster);
+
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
         store_int (fout, "USE_TIGERMAPS", tiger_flag);
@@ -790,6 +792,10 @@ void load_data_or_default(void) {
 
     if (!get_int ("MAPS_AUTO_MAPS", &map_auto_maps, 0, 1, 0))
         map_auto_maps = 0;
+
+    if (!get_int ("MAPS_AUTO_MAPS_SKIP_RASTER", &auto_maps_skip_raster, 0, 1, 0))
+        auto_maps_skip_raster = 0;
+
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
     if (!get_int ("USE_TIGERMAPS", &tiger_flag, 0, 1, 0))

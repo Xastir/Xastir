@@ -75,6 +75,7 @@ PULDNMP006|Etichette Stazione|S|
 PULDNMP011|Menù sul puntatore del mouse|M|
 PULDNMP008|Intensità Mappa|I|
 PULDNMP020|Enable/Configure Tigermap||
+PULDNMP021|Auto Map - Disable Raster Maps||
 #
 #
 # PopUp "Configure Tigermap"
@@ -251,6 +252,7 @@ BBARSTA035|Sto attendendo dati del GPS via AUX..||
 BBARSTA036|Libero AUX, ricezione dati da TNC..||
 BBARSTA037|Dati GPS rilevati||
 BBARSTA038|Posizionare il cambiamento sulla mia stazione||
+BBARSTA039|Indexing %s||
 #
 #Visualizzazione dati packet
 WPUPDPD001|Visualizzazione dati packet||

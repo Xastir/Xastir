@@ -1668,6 +1668,7 @@ void draw_shapefile_map (Widget w,
     // Get the extents of the map file
     SHPGetInfo( hSHP, &nEntities, &nShapeType, adfBndsMin, adfBndsMax );
 
+
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
@@ -1761,8 +1762,15 @@ void draw_shapefile_map (Widget w,
 
 
     // Update the statusline for this map name
-    xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
-    statusline(status_text,0);       // Loading ...
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+    }
+    else {
+        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+    }
+    statusline(status_text,0);       // Loading/Indexing ...
 
 
     // Set a default line width for all maps.  This will most likely
@@ -3976,9 +3984,17 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
     // The map extents in the map index are checked in draw_map to
     // see whether we should draw the map at all.
 
+
     // Update the statusline for this map name
-    xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
-    statusline(status_text,0);       // Loading ...
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+    }
+    else {
+        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+    }
+    statusline(status_text,0);       // Loading/Indexing ...
 
 
     // Attempt to open the file
@@ -4494,6 +4510,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
             }
         }   // End of while
         (void)fclose (f);
+
 
         // Check whether we're indexing the map
         if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -5324,8 +5341,17 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
     }
 
-    xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
-    statusline(map_it,0);       // Loading ...
+
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+    }
+    else {
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
+    }
+    statusline(map_it,0);       // Loading/Indexing ...
+
 
     atb.valuemask = 0;
 
@@ -5930,8 +5956,10 @@ void draw_tiger_map (Widget w) {
     int geo_image_width;        // Image width  from GEO file
     int geo_image_height;       // Image height from GEO file
 
+
     xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), "tigermap");
     statusline(map_it,0);       // Loading ...
+
 
     // Get user info
     user_id=getuid();
@@ -7469,8 +7497,15 @@ Samples Per Pixel: 1
 
 
     /* Put "Loading..." message on status line */
-    xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
-    statusline(map_it,0);       // Loading ...
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+    }
+    else {
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
+    }
+    statusline(map_it,0);       // Loading/Indexing ...
 
 
     /*
@@ -8828,8 +8863,15 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
 
             // Update the statusline for this map name
-            xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
-            statusline(status_text,0);       // Loading ...
+            // Check whether we're indexing or drawing the map
+            if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                    || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+                xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+            }
+            else {
+                xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+            }
+            statusline(status_text,0);       // Loading/Indexing ...
 
 
             max_x = (long)(screen_width + MAX_OUTBOUND);
@@ -9408,8 +9450,19 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             if (in_window) {
                 unsigned char last_behavior, special_fill = (unsigned char)FALSE;
                 object_behavior = '\0';
-                xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
-                statusline(map_it,0);       // Loading ...
+
+
+                // Check whether we're indexing or drawing the map
+                if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                        || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+                    xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+                }
+                else {
+                    xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
+                }
+                statusline(map_it,0);       // Loading/Indexing ...
+
+
                 if (debug_level & 1)
                     printf ("in Boundary %s\n", map_it);
 
@@ -10940,6 +10993,7 @@ void load_auto_maps (Widget w, char *dir) {
 
     //map_search (w, dir, NULL, NULL, (int)TRUE, DRAW_TO_PIXMAP);
 
+    // Run through the entire map_index linked list
     while (current != NULL) {
 
         // Snag the complete path/filename
@@ -10965,12 +11019,23 @@ void load_auto_maps (Widget w, char *dir) {
 
             //printf("%s\t%s\n",directory,filename);
 
-            draw_map (w,
-                directory,
-                filename,
-                NULL,
-                '\0',
-                DRAW_TO_PIXMAP);
+            if (auto_maps_skip_raster
+                && (   strstr(filename,"geo")
+                    || strstr(filename,"GEO")
+                    || strstr(filename,"tif")
+                    || strstr(filename,"TIF")
+                    || strstr(filename,"gnis")
+                    || strstr(filename,"GNIS") ) ) {
+                // Skip this map
+            }
+            else {  // Draw this map
+                draw_map (w,
+                    directory,
+                    filename,
+                    NULL,
+                    '\0',
+                    DRAW_TO_PIXMAP);
+            }
         }
         current = current->next;
     }

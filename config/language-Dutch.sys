@@ -80,6 +80,7 @@ PULDNMP006|Station Tekst Stijl|S|
 PULDNMP011|Muis Menu|M|
 PULDNMP008|Kaart Intensiteit|I|
 PULDNMP020|Aanzetten/Configureren Tigermap||
+PULDNMP021|Auto Map - Disable Raster Maps||
 #
 #
 # PopUp "Configureren Tigermap"
@@ -255,6 +256,7 @@ BBARSTA035|Wachten op GPS gegevens via AUX..||
 BBARSTA036|HSP vrijmaken, TNC data ophalen..||
 BBARSTA037|GPS tekst gedecodeerd||
 BBARSTA038|Positie verandering bij mijn station||
+BBARSTA039|Indexing %s||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Ontvangen Packets Bekijken||

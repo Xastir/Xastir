@@ -75,6 +75,7 @@ PULDNMP006|Etiquetas de estns|E|
 PULDNMP011|Menú Indicador del Ratón|R|
 PULDNMP008|Intensidad del Mapa|I|                                              
 PULDNMP020|Enable/Configure Tigermap||
+PULDNMP021|Auto Map - Disable Raster Maps||
 #
 #
 # PopUp "Configure Tigermap"
@@ -251,6 +252,7 @@ BBARSTA035|Esperando por datos del GPS via AUX..||
 BBARSTA036|Limpiando el AUX datos obtenido del TNC..||
 BBARSTA037|Datos de GPS Decondificado||
 BBARSTA038|Coloque el cambio en mi estación||
+BBARSTA039|Indexing %s||
 #
 # Despliegue Paquete de Datos
 WPUPDPD001|Despligue de Datos||

@@ -74,6 +74,7 @@ PULDNMP006|Style du texte de station|S|
 PULDNMP011|Menu souris|e|
 PULDNMP008|Intensité des cartes|I|                                             
 PULDNMP020|Enable/Configure Tigermap||
+PULDNMP021|Auto Map - Disable Raster Maps||
 #
 #
 # PopUp "Configure Tigermap"
@@ -250,6 +251,7 @@ BBARSTA035|Attente de donées du GPS par AUX||
 BBARSTA036|Fermeture port GPS réception donnée TNC..||
 BBARSTA037|GPS météo décodées||
 BBARSTA038|Placez le changement sur ma station||
+BBARSTA039|Indexing %s||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Affichage de données paquet||
