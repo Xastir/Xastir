@@ -67,6 +67,11 @@ while (1) {
         $easting =~ s/^\d\d[a-zA-Z]\s+(\w+)\s+\w+\s*$/$1/;
         $northing =~ s/^\d\d[a-zA-Z]\s+\w+\s+(\w+)\s*$/$1/;
 
+        if ($easting > 999999) {
+            printf("Easting value is too high!\n");
+            next;
+        }
+
         $position->zone($zone);
         $position->easting($easting);
         $position->northing($northing);
