@@ -95,6 +95,7 @@ int index_retrieve(char *filename, unsigned long *bottom,
 void index_restore_from_file(void);
 void index_save_to_file(void);
 void map_indexer(void);
+void index_sort(void);
 
 extern int print_rotated;
 extern int print_auto_rotation;

@@ -12837,6 +12837,62 @@ void index_insert_sorted(map_index_record *new_record) {
 
 
 
+// sort map index
+// simple bubble sort, since we should be sorted already
+//
+void index_sort(void) {
+    map_index_record *current, *previous, *next;
+    int changed = 1;
+    int loops = 0; // for debug stats
+
+    previous = map_index_head;
+    //  fprintf(stderr, "index_sort: start.\n");
+    // check if we have any records at all, and at least two
+    if ( (previous != NULL) && (previous->next != NULL) ) {
+        current = previous->next;
+        while ( changed == 1) {
+            changed = 0;
+            if (current->next != NULL) {next = current->next;}
+            if ( strcmp( previous->filename, current->filename) >= 0 ) {
+                // out of order - swap them
+                current->next = previous;
+                previous->next = next;
+                map_index_head = current;
+                current = previous;
+                previous = map_index_head;
+                changed = 1;
+            }
+            
+            while ( next != NULL ) {
+                if ( strcmp( current->filename, next->filename) >= 0 ) {
+                    // out of order - swap them
+                    current->next = next->next;
+                    previous->next = next;
+                    next->next = current;
+                    // get ready for the next iteration
+                    previous = next;  // current already moved ahead from the swap
+                    next = current->next;
+                    changed = 1;
+                } else {
+                    previous = current;
+                    current = next;
+                    next = current->next;
+                }
+            }
+            previous = map_index_head;
+            current = previous->next;
+            next = current->next;
+            loops++;
+        }
+    }
+    // debug stats
+    // fprintf(stderr, "index_sort: ran %d loops.\n", loops);
+}
+
+
+
+
+
 //WE7U2
 // Snags the file and creates the linked list pointed to by the
 // map_index_head pointer.  The memory linked list keeps the same
@@ -12845,6 +12901,7 @@ void index_insert_sorted(map_index_record *new_record) {
 void index_restore_from_file(void) {
     FILE *f;
     map_index_record *temp_record;
+    map_index_record *last_record;
     char in_string[MAX_FILENAME*2];
 
 //fprintf(stderr,"\nRestoring map index from file\n");
@@ -13006,7 +13063,18 @@ void index_restore_from_file(void) {
  
                     // Insert the new record into the in-memory map
                     // list in sorted order.
-                    index_insert_sorted(temp_record);
+                    // --slow for large lists
+                    // index_insert_sorted(temp_record);
+                    // -- so we just add it to the end of the list
+                    // and sort it at the end tp make sure nobody 
+                    // messed us up by editting the file by hand
+                    if ( last_record == NULL ) { // first record
+                        map_index_head = temp_record;
+                    } else {
+                        last_record->next = temp_record;
+                    }
+                    last_record = temp_record;
+
 
                     // Remember that we may just have attached the
                     // record to our in-memory map list, or we may
@@ -13023,6 +13091,8 @@ void index_restore_from_file(void) {
         }
     }
     (void)fclose(f);
+    // now that we have read the whole file, make sure it is sorted
+    index_sort();  // probably should check for dup records
 }
 
 
