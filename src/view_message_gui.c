@@ -347,7 +347,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 XmNrightAttachment,XmATTACH_NONE,
                 NULL);
 
-        dist_units = XtVaCreateManagedWidget((units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005")),
+        dist_units = XtVaCreateManagedWidget((english_units?langcode("UNIOP00004"):langcode("UNIOP00005")),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_FORM,

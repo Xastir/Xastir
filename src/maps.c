@@ -22,7 +22,7 @@
  * Look at the README for more information on the program.
  */
 
-//#define GDAL_SHAPEFILES
+#define GDAL_SHAPEFILES
 //#define MAP_SCALE_CHECK
 
 

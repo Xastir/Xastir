@@ -655,7 +655,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
 
                         XtManageChild(SL_course[type][row]);
                         if (strlen(p_station->speed)>0) {
-                            if (!units_english_metric)
+                            if (!english_units)
                                 xastir_snprintf(stemp, sizeof(stemp), "%.1f",
                                         atof(p_station->speed)*1.852);
                             else
@@ -669,7 +669,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_speed[type][row]);
 
                         if (strlen(p_station->altitude)>0) {
-                            if (!units_english_metric)
+                            if (!english_units)
                                 xastir_snprintf(stemp, sizeof(stemp), "%s", p_station->altitude);
                             else
                                 xastir_snprintf(stemp, sizeof(stemp), "%.1f", atof(p_station->altitude)*3.28084);
@@ -738,7 +738,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         value = (float)calc_distance_course(l_lat,l_lon,
                             p_station->coord_lat,p_station->coord_lon,stemp,sizeof(stemp));
 
-                        if (units_english_metric)
+                        if (english_units)
                             xastir_snprintf(stemp1, sizeof(stemp1), "%0.1f", (value * 1.15078));
                         else
                             xastir_snprintf(stemp1, sizeof(stemp1), "%0.1f", (value * 1.852));
@@ -765,7 +765,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_wx_wind_course[type][row]);
 
                         if (strlen(weather->wx_speed) > 0) {
-                            if (units_english_metric)
+                            if (english_units)
                                 xastir_snprintf(stemp, sizeof(stemp), "%d", (int)atoi(weather->wx_speed));
                             else
                                 xastir_snprintf(stemp, sizeof(stemp), "%d", (int)(atof(weather->wx_speed)*1.6094));
@@ -777,7 +777,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_wx_wind_speed[type][row]);
 
                         if (strlen(weather->wx_gust) > 0) {
-                            if (units_english_metric)
+                            if (english_units)
                                 xastir_snprintf(stemp, sizeof(stemp), "%d", atoi(weather->wx_gust));
                             else
                                 xastir_snprintf(stemp, sizeof(stemp), "%d", (int)(atof(weather->wx_gust)*1.6094));
@@ -789,7 +789,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_wx_wind_gust[type][row]);
 
                         if (strlen(weather->wx_temp) > 0) {
-                            if (units_english_metric)
+                            if (english_units)
                                 xastir_snprintf(stemp, sizeof(stemp), "%d", atoi(weather->wx_temp));
                             else
                                 xastir_snprintf(stemp, sizeof(stemp), "%d", (int)(((atof(weather->wx_temp)-32)*5.0)/9.0));
@@ -810,7 +810,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
 //WE7U
 // Change this to inches mercury when English Units is selected
                         if (strlen(weather->wx_baro) > 0) {
-                            if (!units_english_metric) {    // hPa
+                            if (!english_units) {    // hPa
                                 XmTextFieldSetString(SL_wx_baro[type][row],
                                     weather->wx_baro);
                             }
@@ -834,7 +834,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_wx_baro[type][row]);
 
                         if (strlen(weather->wx_rain) > 0) {
-                            if (units_english_metric)
+                            if (english_units)
                                 xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_rain)/100.0);
                             else
                                 xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_rain)*.254);
@@ -846,7 +846,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_wx_rain_h[type][row]);
 
                         if (strlen(weather->wx_prec_00) > 0) {
-                            if (units_english_metric)
+                            if (english_units)
                                 xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_prec_00)/100.0);
                             else
                                 xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_prec_00)*.254);
@@ -858,7 +858,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_wx_rain_00[type][row]);
 
                         if (strlen(weather->wx_prec_24) > 0) {
-                            if (units_english_metric)
+                            if (english_units)
                                 xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_prec_24)/100.0);
                             else
                                 xastir_snprintf(stemp, sizeof(stemp), "%0.2f", atof(weather->wx_prec_24)*.254);
@@ -981,7 +981,7 @@ void update_station_scroll_list(void) {         // called from UpdateTime() [mai
             XtVaGetValues(SL_scroll[i], XmNmaximum,&last,XmNvalue, &pos, NULL);
             if ((redo_list && (sec_now() - last_list_upd > LIST_UPDATE_CYCLE))
                   || (last_h!=list_size_h[i]) || (last_w!=list_size_w[i])
-                  || units_last!=units_english_metric) {
+                  || units_last!=english_units) {
                 Station_List_fill(i,pos);     // update list contents
                 ok = 1;
             }
@@ -991,7 +991,7 @@ void update_station_scroll_list(void) {         // called from UpdateTime() [mai
         last_list_upd = sec_now();
         redo_list = FALSE;
     }
-    units_last = units_english_metric;
+    units_last = english_units;
 }
 
 

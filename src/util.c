@@ -520,7 +520,7 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
             directivity[0] = '\0';  break;
     }
 
-    if (units_english_metric)
+    if (english_units)
         xastir_snprintf(temp,
             sizeof(temp),
             "%.0fW @ %.0fft HAAT, %ddB%s, range %.1fmi",
@@ -721,7 +721,7 @@ void shg_decode(const char *langstr, const char *shg, char *shg_decoded, int shg
             directivity[0] = '\0';  break;
     }
 
-    if (units_english_metric)
+    if (english_units)
         xastir_snprintf(temp,
             sizeof(temp),
             "%.0fft HAAT, %ddB%s, DF Range: %.1fmi, %s",
@@ -829,7 +829,7 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 
         //fprintf(stderr,"Width = %d\n",width);
 
-        if (units_english_metric) {
+        if (english_units) {
             xastir_snprintf(temp,
                 sizeof(temp),
                 "%i°, DF Beamwidth: %i°, DF Length: %i mi",
@@ -2137,7 +2137,7 @@ double distance_from_my_station(char *call_sign, char *course_deg) {
                 course_deg,
                 sizeof(course_deg));
 
-            if (units_english_metric)
+            if (english_units)
                 distance = value * 1.15078;         // nautical miles to miles
             else
                 distance = value * 1.852;           // nautical miles to km

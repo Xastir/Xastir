@@ -663,7 +663,6 @@ void Draw_OGR_Labels( Widget w,
     int ii;
     const char *pii = NULL;
     char label[200] = "";
-    char extra[100] = "";
     float angle = 0.0;  // Angle for the beginning of this polyline
     int my_color = color;
     int scale_factor = 10;
@@ -695,16 +694,25 @@ void Draw_OGR_Labels( Widget w,
         // Compute the label rotation angle
         float diff_X = (int)xpoints[1].x - xpoints[0].x;
         float diff_Y = (int)xpoints[1].y - xpoints[0].y;
+
         if (diff_X == 0.0) {  // Avoid divide by zero errors
             diff_X = 0.0000001;
         }
+        if (diff_Y == 0.0) {  // Avoid divide by zero errors
+            diff_Y = 0.0000001;
+        }
+ 
         angle = atan( diff_X / diff_Y ); // Compute in radians
+
         // Convert to degrees
         angle = angle / (2.0 * M_PI );
         angle = angle * 360.0;
 
         // Change to fit our rotate label function's idea of angle
         angle = 360.0 - angle;
+
+        if (angle >= 360.0 || angle <= 0.0)
+            angle = 0.0;
     }
 
 
@@ -731,42 +739,74 @@ void Draw_OGR_Labels( Widget w,
     if (ii == -1) {
 
         ii = OGR_F_GetFieldIndex(featureH, "ELEVATION");
-//        my_color = 0x0e;  // yellow
 
+        if (ii != -1) {  // Found an elevation field
 
-// We should switch our display between meters and ft here based on
-// the setting of the "Enable English Units" toggle.  Here we're
-// just figuring out what our base numbers mean that we're getting
-// out of the file.  We still should convert based on our
-// togglebutton.
-//
-    if (sdts_elevation_in_meters)
-        xastir_snprintf(extra,sizeof(extra), "m");
-    else
-        xastir_snprintf(extra,sizeof(extra), "ft");
+            // Convert to the user's desired units based on the
+            // setting of the "english_units" global variable, which
+            // is set by the Enable English Units toggle.
+            //
+            if (english_units) {    // We desire English Units (feet)
+                if (sdts_elevation_in_meters) {
+                    // Map file is in meters, convert to feet for
+                    // display
+                    xastir_snprintf(label,
+                        sizeof(label),
+                        "%ift",
+                        (int)((OGR_F_GetFieldAsInteger(featureH, ii) * 3.28084) + 0.5));
+                }
+                else {
+                    // Map file is already in feet
+                    xastir_snprintf(label,
+                        sizeof(label),
+                        "%sft",
+                        OGR_F_GetFieldAsString(featureH, ii));
+                }
+            }
+            else {  // We desire metric Units (meters)
+                if (!sdts_elevation_in_meters) {
+                    // Map file is in feet, convert to meters for
+                    // display
+                    xastir_snprintf(label,
+                        sizeof(label),
+                        "%im",
+                        (int)((OGR_F_GetFieldAsInteger(featureH, ii) * 0.3048) + 0.5));
+                }
+                else {
+                    // Map file is already in meters
+                    xastir_snprintf(label,
+                        sizeof(label),
+                        "%sm",
+                        OGR_F_GetFieldAsString(featureH, ii));
+                }
+            }
 
+            // Test for empty value
+            if (label[0] == 'f' || label[0] == 'm')
+                return;
 
-// We should switch between meters and ft here based on the setting
-// of the "Enable English Units" toggle.
-
+//fprintf(stderr,"Elevation label: %s, angle: %2.1f\n", label, angle);
+        }
     }
+
+
     if (ii == -1) {
         ii = OGR_F_GetFieldIndex(featureH, "LANDNAME");
         my_color = 0x1a;  // Steel Blue
-        extra[0] = '\0';
     }
 
-    if (ii != -1) {  // Found one of the fields
+
+    // Check whether we found a field and if we haven't already
+    // created a label.  If so, snag the field.
+    if (ii != -1 && label[0] == '\0') {
         pii = OGR_F_GetFieldAsString(featureH, ii);
-    }
 
-
-    if (pii && pii[0] != '\0') {
-        xastir_snprintf(label,
-            sizeof(label),
-            "%s%s",
-            pii,
-            extra);
+        if (pii && pii[0] != '\0') {
+            xastir_snprintf(label,
+                sizeof(label),
+                "%s",
+                pii);
+        }
     }
 
 
@@ -778,28 +818,38 @@ void Draw_OGR_Labels( Widget w,
     //
     if (label && map_labels /* && !skip_label */ ) {
 
-        if (angle == 0) {   // Non-rotated label
+        // Check that we're not trying to draw the label out of
+        // bounds for the X11 calls.
+        //
+        if (       xpoints[0].x+10 <  15000
+                && xpoints[0].x+10 > -15000
+                && xpoints[0].y+5  <  15000
+                && xpoints[0].y+5  > -15000) {
 
-            draw_rotated_label_text (w,
-                -90.0,
-                xpoints[0].x+10,
-                xpoints[0].y+5,
-                strlen(label),
-                colors[my_color],
-                label,
-                FONT_DEFAULT);
-        }
+/*
+            if (angle == 0.0) {   // Non-rotated label
 
-        else {  // Rotated label
+                draw_rotated_label_text (w,
+                    -90.0,
+                    xpoints[0].x+10,
+                    xpoints[0].y+5,
+                    strlen(label),
+                    colors[my_color],
+                    label,
+                    FONT_DEFAULT);
+            }
 
-            draw_rotated_label_text (w,
-                angle,
-                xpoints[0].x+10,
-                xpoints[0].y+5,
-                strlen(label),
-                colors[my_color],
-                label,
-                FONT_DEFAULT);
+            else {  // Rotated label
+*/
+                draw_rotated_label_text (w,
+                    angle,
+                    xpoints[0].x+10,
+                    xpoints[0].y+5,
+                    strlen(label),
+                    colors[my_color],
+                    label,
+                    FONT_DEFAULT);
+//            }
         }
     }
 
@@ -3332,13 +3382,13 @@ int features_processed = 0;
  
             numFields = OGR_FD_GetFieldCount( layerDefn );
 
-            fprintf(stderr,"  Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
+            fprintf(stderr,"  Layer %d: '%s'\n", i, OGR_FD_GetName(layerDefn));
 
             for ( jj=0; jj<numFields; jj++ ) {
                 OGRFieldDefnH fieldDefn;
 
                 fieldDefn = OGR_FD_GetFieldDefn( layerDefn, jj );
-                fprintf(stderr,"  Field %d: %s (%s)\n", 
+                fprintf(stderr,"    Field %d: %s (%s)\n", 
                        jj, OGR_Fld_GetNameRef(fieldDefn), 
                        OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
             }

@@ -2333,7 +2333,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
             if (Display_.temperature_only)
                 tmp[0] = '\0';
 
-            if (units_english_metric)
+            if (english_units)
                 xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°F ",
                                 tmp, atof(weather->wx_temp));
             else
@@ -2731,7 +2731,7 @@ void draw_range_scale(Widget w) {
 
     // Convert it to nearest power of two that fits inside
 
-    if (units_english_metric) { // English units
+    if (english_units) { // English units
         if (distance >= 1.0) {
             // Shift it right until it is less than 2.
             temp = (long)distance;
@@ -2803,7 +2803,7 @@ void draw_range_scale(Widget w) {
     //fprintf(stderr,"Distance: %f\t", distance);
     //fprintf(stderr,"Range: %ld\n", range);
 
-    if (units_english_metric) { // English units
+    if (english_units) { // English units
         if (small_flag) {
             xastir_snprintf(text,sizeof(text),"RANGE SCALE 1/%ld mi", range);
         }
@@ -2846,7 +2846,7 @@ void draw_ruler(Widget w) {
     ruler_pix = (int)(screen_width / 9);        // ruler size (in pixels)
     ruler_siz = ruler_pix * scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset); // size in meter
 
-    if(units_english_metric) {
+    if(english_units) {
         if (ruler_siz > 1609.3/2) {
             xastir_snprintf(unit,
                 sizeof(unit),
@@ -3742,7 +3742,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         xastir_snprintf(temp, sizeof(temp), "\n");
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
-        if (units_english_metric)
+        if (english_units)
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI026"),weather->wx_course,weather->wx_speed);
         else
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI025"),weather->wx_course,(int)(atof(weather->wx_speed)*1.6094));
@@ -3751,7 +3751,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         pos += strlen(temp);
 
         if (strlen(weather->wx_gust) > 0) {
-            if (units_english_metric)
+            if (english_units)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI028"),weather->wx_gust);
             else
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI027"),(int)(atof(weather->wx_gust)*1.6094));
@@ -3766,7 +3766,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         pos += strlen(temp);
 
         if (strlen(weather->wx_temp) > 0) {
-            if (units_english_metric)
+            if (english_units)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI030"),weather->wx_temp);
             else {
                 temp_out_C =(((atof(weather->wx_temp)-32)*5.0)/9.0);
@@ -3785,10 +3785,10 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 // NOTE:  The below (Humidex) is not coded for english units, only for metric.
 // What is Humidex anyway?  Heat Index?  Wind Chill? --we7u
 
-        // DK7IN: ??? units_english ???
+        // DK7IN: ??? english_units ???
         if (strlen(weather->wx_hum) > 0
                 && strlen(weather->wx_temp) > 0
-                && (!units_english_metric) &&
+                && (!english_units) &&
                 (atof(weather->wx_hum) > 0.0) ) {
 
             e = (float)(6.112 * pow(10,(7.5 * temp_out_C)/(237.7 + temp_out_C)) * atof(weather->wx_hum) / 100.0);
@@ -3800,7 +3800,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }
 
         if (strlen(weather->wx_baro) > 0) {
-            if (!units_english_metric) {  // hPa
+            if (!english_units) {  // hPa
                 xastir_snprintf(temp, sizeof(temp),
                     langcode("WPUPSTI033"),
                     weather->wx_baro);
@@ -3824,7 +3824,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }
 
         if (strlen(weather->wx_snow) > 0) {
-            if(units_english_metric)
+            if(english_units)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI035"),atof(weather->wx_snow));
             else
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI034"),atof(weather->wx_snow)*2.54);
@@ -3843,7 +3843,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }
 
         if (strlen(weather->wx_rain) > 0) {
-            if (units_english_metric)
+            if (english_units)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI038"),atof(weather->wx_rain)/100.0);
             else
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI037"),atof(weather->wx_rain)*.254);
@@ -3853,7 +3853,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }
 
         if (strlen(weather->wx_prec_24) > 0) {
-            if(units_english_metric)
+            if(english_units)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI040"),atof(weather->wx_prec_24)/100.0);
             else
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI039"),atof(weather->wx_prec_24)*.254);
@@ -3863,7 +3863,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }
 
         if (strlen(weather->wx_prec_00) > 0) {
-            if (units_english_metric)
+            if (english_units)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI042"),atof(weather->wx_prec_00)/100.0);
             else
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI041"),atof(weather->wx_prec_00)*.254);
@@ -3876,7 +3876,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             xastir_snprintf(temp, sizeof(temp), "\n%s",langcode("WPUPSTI046"));
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
-            if (units_english_metric)
+            if (english_units)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI048"),atof(weather->wx_rain_total)/100.0);
             else
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI047"),atof(weather->wx_rain_total)*.254);
@@ -3887,7 +3887,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
         // Fuel temp/moisture for RAWS weather stations
         if (strlen(weather->wx_fuel_temp) > 0) {
-            if (units_english_metric)
+            if (english_units)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI061"),weather->wx_fuel_temp);
             else {
                 temp_out_C =(((atof(weather->wx_fuel_temp)-32)*5.0)/9.0);
@@ -4182,7 +4182,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     }
     else if (p_station->flag & (ST_OBJECT|ST_ITEM))
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI014"), "none");
-    else if (units_english_metric)
+    else if (english_units)
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI014"), "default (9W @ 20ft HAAT, 3dB omni, range 6.2mi)");
     else
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI014"), "default (9W @ 6.1m HAAT, 3dB omni, range 10.0km)");
@@ -4224,7 +4224,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     // Altitude ...
     last_pos=pos;
     if (strlen(p_station->altitude) > 0) {
-        if (units_english_metric)
+        if (english_units)
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI016"),atof(p_station->altitude)*3.28084,"ft");
         else
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI016"),atof(p_station->altitude),"m");
@@ -4242,7 +4242,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
     // Speed ...
     if (strlen(p_station->speed) > 0) {
-        if (units_english_metric)
+        if (english_units)
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI019"),atof(p_station->speed)*1.1508);
 
         else
@@ -4271,7 +4271,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
         // n7tap: This is a quick hack to get some more useful values for
         //        distance to near ojects.
-        if (units_english_metric) {
+        if (english_units) {
             if (value*1.15078 < 0.99) {
                 xastir_snprintf(temp_my_distance,
                     sizeof(temp_my_distance),
@@ -11145,7 +11145,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             /* check ranges */
             if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && sound_play_prox_message) {
                 xastir_snprintf(station_id, sizeof(station_id), "%s < %.3f %s",p_station->call_sign, distance,
-                        units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"));
+                        english_units?langcode("UNIOP00004"):langcode("UNIOP00005"));
                 statusline(station_id,0);
                 play_sound(sound_command,sound_prox_message);
                 /*fprintf(stderr,"%s> PROX distance %f\n",p_station->call_sign, distance);*/
@@ -11164,7 +11164,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     p_station->call_sign);
                 spell_it_out(speech_callsign, 50);
 
-                if (units_english_metric) {
+                if (english_units) {
                     if (distance < 1.0)
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), speech_callsign,
                             (int)(distance * 1760), langcode("SPCHSTR004")); // say it in yards
@@ -11192,7 +11192,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             if ((distance > atof(bando_min)) && (distance < atof(bando_max)) &&
                     sound_play_band_open_message && from == DATA_VIA_TNC) {
                 xastir_snprintf(station_id, sizeof(station_id), "%s %s %.1f %s",p_station->call_sign, langcode("UMBNDO0001"),
-                        distance, units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"));
+                        distance, english_units?langcode("UNIOP00004"):langcode("UNIOP00005"));
                 statusline(station_id,0);
                 play_sound(sound_command,sound_band_open_message);
                 /*fprintf(stderr,"%s> BO distance %f\n",p_station->call_sign, distance);*/
@@ -11213,7 +11213,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     langcode("SPCHSTR011"),
                     speech_callsign,
                     distance,
-                    units_english_metric?langcode("SPCHSTR003"):langcode("SPCHSTR001"));
+                    english_units?langcode("SPCHSTR003"):langcode("SPCHSTR001"));
                 SayText(station_id);
             }
 #endif  // HAVE_FESTIVAL
@@ -14553,14 +14553,14 @@ void search_tracked_station(DataRow **p_tracked) {
 
                 if (sound_play_prox_message) {
                         sprintf(station_id,"%s < %.3f %s from %s",t->call_sign, distance,
-                                units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+                                english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
                                 curr->call_sign);
                         statusline(station_id,0);
                         play_sound(sound_command,sound_prox_message);
                 }
 #ifdef HAVE_FESTIVAL
                 if (festival_speak_tracked_proximity_alert) {
-                        if (units_english_metric) {
+                        if (english_units) {
                             if (distance < 1.0)
                                 sprintf(station_id, langcode("SPCHSTR007"), t->call_sign,
                                         (int)(distance * 1760), langcode("SPCHSTR004"),

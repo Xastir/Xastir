@@ -1502,7 +1502,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                 if (weather != 0) {  // we have weather data
                     if (strlen(weather->wx_temp) > 0) {
-                       if (!units_english_metric) {
+                       if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1522,7 +1522,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_wind_cse_data);
 
                     if (strlen(weather->wx_speed) > 0) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1537,7 +1537,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_wind_spd_data);
 
                     if (strlen(weather->wx_gust) > 0) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1552,7 +1552,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_wind_gst_data);
 
                     if (strlen(weather->wx_rain_total) > 0) {
-                        if (!units_english_metric)
+                        if (!english_units)
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%0.2f",
@@ -1570,7 +1570,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_rain_data);
 
                     if (strlen(weather->wx_rain) > 0) {
-                        if (!units_english_metric)
+                        if (!english_units)
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%0.2f",
@@ -1588,7 +1588,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_rain_h_data);
 
                     if (strlen(weather->wx_prec_24) > 0) {
-                        if (!units_english_metric)
+                        if (!english_units)
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%0.2f",
@@ -1606,7 +1606,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_rain_24_data);
 
                     if (strlen(weather->wx_prec_00) > 0) {
-                        if (!units_english_metric)
+                        if (!english_units)
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%0.2f",
@@ -1631,7 +1631,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_humidity_data);
 
                     if (strlen(wx_dew_point) > 0) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1645,7 +1645,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_dew_point_data);
 
                     if (strlen(wx_high_wind) > 0) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1659,7 +1659,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_high_wind_data);
 
                     if (strlen(wx_wind_chill) > 0) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1673,7 +1673,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_wind_chill_data);
 
                     if (strlen(weather->wx_baro) > 0) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             //xastir_snprintf(temp, sizeof(temp), "%0.0f",
                             //        atof(wx_baro_inHg)*25.4); // inch Hg -> mm Hg
                             //XmTextFieldSetString(WX_baro_data,temp);
@@ -1692,7 +1692,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_baro_data);
 
                     if (wx_three_hour_baro_on) {
-                        if (!units_english_metric) {  // hPa
+                        if (!english_units) {  // hPa
                             //xastir_snprintf(temp, sizeof(temp), "%0.0f",
                             //        atof(wx_three_hour_baro)*25.4); // inch Hg -> mm Hg
                             XmTextFieldSetString(WX_three_hour_baro_data,wx_three_hour_baro);
@@ -1709,7 +1709,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_three_hour_baro_data);
 
                     if (wx_hi_temp_on) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1723,7 +1723,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_hi_temp_data);
 
                     if (wx_low_temp_on) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1737,7 +1737,7 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
                     XtManageChild(WX_low_temp_data);
 
                     if (wx_heat_index_on) {
-                        if (!units_english_metric) {
+                        if (!english_units) {
                             xastir_snprintf(temp,
                                 sizeof(temp),
                                 "%03d",
@@ -1754,105 +1754,105 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
         }
 
         /* labels */
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_speed_label,langcode("UNIOP00012"));
         else
             XmTextFieldSetString(WX_speed_label,langcode("UNIOP00013"));
 
         XtManageChild(WX_speed_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_gust_label,langcode("UNIOP00012"));
         else
             XmTextFieldSetString(WX_gust_label,langcode("UNIOP00013"));
 
         XtManageChild(WX_gust_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_temp_label,langcode("UNIOP00014"));
         else
             XmTextFieldSetString(WX_temp_label,langcode("UNIOP00015"));
 
         XtManageChild(WX_temp_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_rain_label,langcode("UNIOP00016"));
         else
             XmTextFieldSetString(WX_rain_label,langcode("UNIOP00017"));
 
         XtManageChild(WX_rain_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_to_rain_label,langcode("UNIOP00022"));
         else
             XmTextFieldSetString(WX_to_rain_label,langcode("UNIOP00023"));
 
         XtManageChild(WX_to_rain_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_rain_h_label,langcode("UNIOP00020"));
         else
             XmTextFieldSetString(WX_rain_h_label,langcode("UNIOP00021"));
 
         XtManageChild(WX_rain_h_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_rain_24_label,langcode("UNIOP00018"));
         else
             XmTextFieldSetString(WX_rain_24_label,langcode("UNIOP00019"));
 
         XtManageChild(WX_rain_24_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_dew_point_label,langcode("UNIOP00014"));
         else
             XmTextFieldSetString(WX_dew_point_label,langcode("UNIOP00015"));
 
         XtManageChild(WX_dew_point_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_wind_chill_label,langcode("UNIOP00014"));
         else
             XmTextFieldSetString(WX_wind_chill_label,langcode("UNIOP00015"));
 
         XtManageChild(WX_wind_chill_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_heat_index_label,langcode("UNIOP00014"));
         else
             XmTextFieldSetString(WX_heat_index_label,langcode("UNIOP00015"));
 
         XtManageChild(WX_heat_index_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_hi_temp_label,langcode("UNIOP00014"));
         else
             XmTextFieldSetString(WX_hi_temp_label,langcode("UNIOP00015"));
 
         XtManageChild(WX_hi_temp_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_low_temp_label,langcode("UNIOP00014"));
         else
             XmTextFieldSetString(WX_low_temp_label,langcode("UNIOP00015"));
 
         XtManageChild(WX_low_temp_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_high_wind_label,langcode("UNIOP00012"));
         else
             XmTextFieldSetString(WX_high_wind_label,langcode("UNIOP00013"));
 
         XtManageChild(WX_high_wind_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_baro_label,langcode("UNIOP00025"));
         else
             XmTextFieldSetString(WX_baro_label,langcode("UNIOP00027"));
 
         XtManageChild(WX_baro_label);
 
-        if (!units_english_metric)
+        if (!english_units)
             XmTextFieldSetString(WX_three_hour_baro_label,langcode("UNIOP00025"));
         else
             XmTextFieldSetString(WX_three_hour_baro_label,langcode("UNIOP00027"));

@@ -590,15 +590,17 @@ Widget GPS_operations_dialog = (Widget)NULL;
 // ------------------------ unit conversion --------------------------
 static void Units_choice_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
-int units_english_metric;       // 0: metric, 1: english, (2: nautical)
-char un_alt[2+1];               // m / ft
-char un_dst[2+1];               // mi / km      (..nm)
-char un_spd[4+1];               // mph / km/h   (..kn)
-double cvt_m2len;               // from meter
-double cvt_kn2len;              // from knots
-double cvt_mi2len;              // from miles
-double cvt_dm2len;              // from decimeter
-double cvt_hm2len;              // from hectometer
+// 0: metric, 1: english, (2: nautical, not fully implemented)
+int english_units;
+
+char un_alt[2+1];   // m / ft
+char un_dst[2+1];   // mi / km      (..nm)
+char un_spd[4+1];   // mph / km/h   (..kn)
+double cvt_m2len;   // from meter
+double cvt_kn2len;  // from knots
+double cvt_mi2len;  // from miles
+double cvt_dm2len;  // from decimeter
+double cvt_hm2len;  // from hectometer
 
 void update_units(void);
 
@@ -1165,7 +1167,7 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
         str_ptr1 = XmTextGetString(sb_hi_mph_data);
         i = atoi(str_ptr1);
-        switch (units_english_metric) {
+        switch (english_units) {
             case 0: // Metric:  Convert from KPH to MPH for storage
                 i = (int)((i * 0.62137) + 0.5);
                 break;
@@ -1190,7 +1192,7 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
         str_ptr1 = XmTextGetString(sb_lo_mph_data);
         i = atoi(str_ptr1);
-        switch (units_english_metric) {
+        switch (english_units) {
             case 0: // Metric:  Convert from KPH to MPH for storage
                 i = (int)((i * 0.62137) + 0.5);
                 break;
@@ -1328,7 +1330,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 
-        switch (units_english_metric) {
+        switch (english_units) {
             case 0: // Metric
                 xastir_snprintf(temp_label_string,
                     sizeof(temp_label_string),
@@ -1418,7 +1420,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 
-        switch (units_english_metric) {
+        switch (english_units) {
             case 0: // Metric
                 xastir_snprintf(temp_label_string,
                     sizeof(temp_label_string),
@@ -1650,7 +1652,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
         xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_posit_fast);
         XmTextSetString(sb_hi_rate_data, temp_string);
 
-        switch (units_english_metric) {
+        switch (english_units) {
             case 0: // Metric:  Convert from MPH to KPH for display
                 xastir_snprintf(temp_string,
                     sizeof(temp_string),
@@ -1671,7 +1673,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
         xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_posit_slow);
         XmTextSetString(sb_lo_rate_data, temp_string);
 
-        switch (units_english_metric) {
+        switch (english_units) {
             case 0: // Metric:  Convert from MPH to KPH for display
                 xastir_snprintf(temp_string,
                     sizeof(temp_string),
@@ -3456,7 +3458,7 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         // n7tap: This is a quick hack to get some more useful values for
         //        distance to near ojects.
         // (copied from db.c:station_data_fill_in)
-        if (units_english_metric) {
+        if (english_units) {
             if (value*1.15078 < 0.99) {
                 xastir_snprintf(temp_my_distance,
                     sizeof(temp_my_distance),
@@ -5259,7 +5261,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(units_choice_button,XmNvalueChangedCallback,Units_choice_toggle,"1");
-    if (units_english_metric)
+    if (english_units)
         XmToggleButtonSetState(units_choice_button,TRUE,FALSE);
 
 
@@ -8952,7 +8954,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 
         // Small area.  Convert to square feet or square meters
 
-        if (units_english_metric) { // Square feet
+        if (english_units) { // Square feet
             area = area * 5280 * 5280;
             xastir_snprintf(temp,
                 sizeof(temp),
@@ -9442,7 +9444,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     full_distance = cvt_kn2len * calc_distance_course(a_y,a_x,b_y,b_x,temp_course,sizeof(temp_course));
 
                     if (full_distance < 1.0) {
-                        switch (units_english_metric) {
+                        switch (english_units) {
                             case 1:     // English
                                 full_distance   = full_distance   * 5280;   // convert from miles to feet
                                 x_distance_real = x_distance_real * 5280;   // convert from miles to feet
@@ -14999,9 +15001,9 @@ void  Units_choice_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if(state->set)
-        units_english_metric = atoi(which);
+        english_units = atoi(which);
     else
-        units_english_metric = 0;
+        english_units = 0;
 
     redraw_on_new_data=2;
     update_units();                     // setup conversion
@@ -15038,14 +15040,14 @@ void  Dbstatus_choice_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
  *  Update global variables for unit conversion
  *
  * Be careful using these, as they change based on the value of
- * units_english_metric!  These variable should only be used when
+ * english_units!  These variable should only be used when
  * DISPLAYING data, not when converting numbers for use in internal
  * storage or equations.
  *
  */
 void update_units(void) {
 
-    switch (units_english_metric) {
+    switch (english_units) {
         case 1:     // English
             xastir_snprintf(un_alt,sizeof(un_alt),"ft");
             xastir_snprintf(un_dst,sizeof(un_dst),"mi");
@@ -20590,7 +20592,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 2,
                 NULL);
 
-        min2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+        min2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -20641,7 +20643,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 2,
                 NULL);
 
-        max2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+        max2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -20728,7 +20730,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 2,
                 NULL);
 
-        minb2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+        minb2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -20779,7 +20781,7 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
                 XmNrightPosition, 2,
                 NULL);
 
-        maxb2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+        maxb2 = XtVaCreateManagedWidget(english_units?langcode("UNIOP00004"):langcode("UNIOP00005"),
                 xmLabelWidgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -28172,7 +28174,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 NULL);
         XtAddCallback(posamb0,XmNvalueChangedCallback,Configure_station_toggle,"0");
 
-        posamb1 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS020"):langcode("WPUPCFS024"),
+        posamb1 = XtVaCreateManagedWidget(english_units?langcode("WPUPCFS020"):langcode("WPUPCFS024"),
                 xmToggleButtonGadgetClass,
                 option_box,
                 MY_FOREGROUND_COLOR,
@@ -28181,7 +28183,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XtAddCallback(posamb1,XmNvalueChangedCallback,Configure_station_toggle,"1");
 
 
-        posamb2 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS021"):langcode("WPUPCFS025"),
+        posamb2 = XtVaCreateManagedWidget(english_units?langcode("WPUPCFS021"):langcode("WPUPCFS025"),
                 xmToggleButtonGadgetClass,
                 option_box,
                 MY_FOREGROUND_COLOR,
@@ -28189,7 +28191,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 NULL);
         XtAddCallback(posamb2,XmNvalueChangedCallback,Configure_station_toggle,"2");
 
-        posamb3 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS022"):langcode("WPUPCFS026"),
+        posamb3 = XtVaCreateManagedWidget(english_units?langcode("WPUPCFS022"):langcode("WPUPCFS026"),
                 xmToggleButtonGadgetClass,
                 option_box,
                 MY_FOREGROUND_COLOR,
@@ -28197,7 +28199,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 NULL);
         XtAddCallback(posamb3,XmNvalueChangedCallback,Configure_station_toggle,"3");
 
-        posamb4 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS023"):langcode("WPUPCFS027"),
+        posamb4 = XtVaCreateManagedWidget(english_units?langcode("WPUPCFS023"):langcode("WPUPCFS027"),
                 xmToggleButtonGadgetClass,
                 option_box,
                 MY_FOREGROUND_COLOR,

@@ -144,7 +144,7 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
     distance = distance_from_my_station(call_sign,temp_my_course);
     xastir_snprintf(temp, sizeof(temp), "%-9s:%-4s (%s %6.1f %s) %s\n",
             call_sign, &tag[3], time_str, distance,
-            units_english_metric ? langcode("UNIOP00004"): langcode("UNIOP00005"),
+            english_units ? langcode("UNIOP00004"): langcode("UNIOP00005"),
             packet_message);
 
 // Operands of <= have incompatible types (double, int):
@@ -628,7 +628,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 
-        dist_units = XtVaCreateManagedWidget((units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005")),
+        dist_units = XtVaCreateManagedWidget((english_units?langcode("UNIOP00004"):langcode("UNIOP00005")),
                 xmLabelWidgetClass, 
                 form,
                 XmNtopAttachment, XmATTACH_FORM,

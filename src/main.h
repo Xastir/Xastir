@@ -228,7 +228,7 @@ extern int colors[256];
 extern int max_trail_colors;
 extern int trail_colors[32];
 extern int current_trail_color;
-extern int units_english_metric;
+extern int english_units;
 extern int do_dbstatus;
 extern int redraw_on_new_data;
 extern int redo_list;
