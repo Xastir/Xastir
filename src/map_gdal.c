@@ -613,8 +613,6 @@ void draw_ogr_map(Widget w,
         return; // Done indexing the file
     }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
  
     // Find out what type of file we're dealing with:
     // This reports "TIGER" for the tiger driver, "ESRI Shapefile"
@@ -777,19 +775,19 @@ void draw_ogr_map(Widget w,
         if (OGR_L_GetExtent(layer, &psExtent, FALSE) != OGRERR_FAILURE) {
             // We have extents.  Check whether any part of the layer
             // is within our viewport.
-            fprintf(stderr, "Extents obtained.\n");
+            fprintf(stderr, "Extents obtained.");
             extents_found++;
         }
-        else {
-//            fprintf(stderr, "    Extents unavailable for layer %d without a FORCE.\n", i);
-            if (OGR_L_GetExtent(layer, &psExtent, TRUE) != OGRERR_FAILURE) {
-                fprintf(stderr, "Extents obtained via FORCE.\n");
-                extents_found++;
-            }
-            else {
-                fprintf(stderr, "Extents are not available even with FORCE.\n");
-            }
-        }
+//        else {
+//            if (OGR_L_GetExtent(layer, &psExtent, TRUE) != OGRERR_FAILURE) {
+//                fprintf(stderr, "Extents obtained via FORCE.");
+//                extents_found++;
+//            }
+//            else {
+//                fprintf(stderr, "Extents are not available even with FORCE.");
+//            }
+//        }
+        fprintf(stderr, "\n");
         if (extents_found) {
             fprintf(stderr,
                 "  MinX: %f, MaxX: %f, MinY: %f, MaxY: %f\n",
