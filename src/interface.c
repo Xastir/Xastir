@@ -1087,6 +1087,1340 @@ static void data_out_ax25(int port, unsigned char *string) {
 
 
 
+// fetch16bits
+//
+// Modifies: Nothing.
+//
+int fetch16bits(unsigned char *str) {
+    int i;
+
+    
+    i = *str++;
+    i = i << 8;
+    i = i | *str++;
+    return(i);
+}
+
+
+
+
+
+// fetch32bits
+//
+// Modifies: Nothing.
+//
+int fetch32bits(unsigned char *str) {
+    int i;
+
+ 
+    i = *str++;
+    i = i << 8;
+    i = i | *str++;
+    i = i << 8;
+    i = i | *str++;
+    i = i << 8;
+    i = i | *str;
+    return(i);
+}
+
+
+
+
+
+// 0x00 Sequence number - 16 bit integer
+//
+// Modifies: sequence
+//
+int OpenTrac_decode_sequence(unsigned char *element,
+                             int           element_len,
+                             unsigned int  *sequence) {
+
+    if (element_len != 2)
+        return -1;
+
+    *sequence = fetch16bits(element);
+
+    fprintf(stderr,"Sequence: %d\n",*sequence);
+
+    return 0;
+}
+
+
+
+
+
+// 0x01 Originating Station - Callsign, SSID, Sequence, and Network
+//
+// Modifies: sequence
+//           callsign
+//           ssid
+//           network
+//
+int OpenTrac_decode_origination(unsigned char *element,
+                                int           element_len,
+                                unsigned int  *sequence,
+                                char          *callsign,
+                                unsigned char *ssid,
+                                unsigned char *network) {
+    unsigned char c;
+
+
+    if (element_len < 8)
+        return -1;
+
+    if (element_len > 9)
+        return -1;
+
+    strncpy(callsign, element, 6);
+    callsign[6]=0;
+    for (c=*ssid=0;c<6;c++) {
+        *ssid |= (callsign[c] & 0x80) >> (c+2);
+        callsign[c] &= 0x7f;
+    }
+
+    *sequence = fetch16bits(element+6);
+    if (element_len == 9) {
+        *network = *(element+9);
+
+        fprintf(stderr, "Origin: %s-%d seq %d net %d\n",
+            callsign,
+            *ssid,
+            *sequence,
+            *network);
+    }
+    else {
+        fprintf(stderr, "Origin: %s-%d seq %d direct\n",
+            callsign,
+            *ssid,
+            *sequence);
+    }
+
+    return 0;
+}
+
+
+
+
+
+// Strip the SSID from the callsign and return it
+// 
+// Modifies: call (Strips top bit from each char)
+//
+int OpenTrac_extract_ssid(unsigned char *call) {
+    int c, ssid;
+
+
+    for (c=ssid=0;c<6;c++) {
+        ssid |= (call[c] & 0x80) >> (c+2);
+        call[c] &= 0x7f;
+    }
+
+    return ssid;
+}
+
+
+
+
+
+// 0x02 Entity ID
+//
+// Modifies: entity_call
+//           entity_ssid
+//           entity_serial
+//           entity_sequence
+//
+int OpenTrac_decode_entityid(unsigned char *element,
+                             int           element_len,
+                             unsigned char *origin_call,
+                             unsigned char origin_ssid,
+                             unsigned char *entity_call,
+                             unsigned char *entity_ssid,
+                             unsigned int  *entity_serial,
+                             unsigned int  *entity_sequence) {
+
+    if (element_len > 10) {
+        return -1;
+    }
+    else if (element_len > 5) {
+        memcpy(entity_call, element, 6);
+        entity_call[6]=0;
+        *entity_ssid = OpenTrac_extract_ssid(entity_call);
+    }
+    else {  // Not enough, so use origin_call instead
+        strcpy(entity_call, origin_call);
+        *entity_ssid = origin_ssid;
+    }
+
+    switch (element_len) {
+        case 0:
+            *entity_serial = *entity_serial + 1;
+            *entity_sequence = 0;
+            break;
+        case 2:
+            *entity_serial = fetch16bits(element);
+            *entity_sequence = 0;
+            break;
+        case 4:
+            *entity_serial = fetch16bits(element);
+            *entity_sequence = fetch16bits(element+2);
+            break;
+        case 6:
+            *entity_serial = 0;
+            break;
+        case 8:
+            *entity_serial = fetch16bits(element+6);
+            *entity_sequence = 0;
+            break;
+        case 10:
+            *entity_serial = fetch16bits(element+6);
+            *entity_sequence = fetch16bits(element+8);
+            break;
+        default:
+            *entity_sequence = 0;
+            *entity_serial = *entity_serial + 1;
+            break;
+    }
+
+    fprintf(stderr, "Entity %s-%d:%04x #%d\n",
+        entity_call,
+        *entity_ssid,
+        *entity_serial,
+        *entity_sequence);
+
+    return 0;
+}
+
+
+
+
+
+// 0x10 Position Report - Lat/Lon/<Alt>
+// Lat/Lon is WGS84, 180/2^31 degrees,  Alt is 1/100 meter
+//
+// Modifies: lat
+//           lon
+//           alt
+//
+int OpenTrac_decode_position(unsigned char *element,
+                             int           element_len,
+                             double        *lat,
+                             double        *lon,
+                             float         *alt) {
+
+    const double semicircles = 11930464.71111111111;
+
+
+    if (element_len < 8)
+        return -1; // Too short!
+
+    if (element_len > 11)
+        return -1; // Too long!
+
+    *lat = fetch32bits(element) / semicircles;
+    *lon = fetch32bits(element+4) / semicircles;
+
+    if (element_len == 11) {
+        *alt = ((((*(element+8))<<16)+fetch16bits(element+9))/100)-10000;
+    }
+
+    fprintf(stderr, "Position: Lat %f Lon %f Alt %f\n",*lat,*lon,*alt);
+
+    return 0;
+}
+
+
+
+
+
+// 0x11 Timestamp - Unix format time (unsigned)
+//
+// Modifies: rawtime
+// 
+int OpenTrac_decode_timestamp(unsigned char *element,
+                              int           element_len,
+                              long          *rawtime) {
+
+    *rawtime = 0;
+
+    if (element_len != 4)
+        return -1;
+
+    *rawtime = fetch32bits(element);
+
+    fprintf(stderr, "Time: %s", ctime(rawtime));
+
+    return 0;
+}
+
+
+
+
+
+// 0x12 Freeform Comment - ASCII text
+//
+// Modifies: comment
+// 
+int OpenTrac_decode_comment(unsigned char *element,
+                            int           element_len,
+                            char          *comment) {
+
+    if (element_len > 126)
+        return -1;  // shouldn't be possible
+
+    strcat(comment," ");
+    strncat(comment, element, element_len);
+    comment[element_len + 1] = 0;   // Account for the space char
+
+    fprintf(stderr, "Text: %s\n", comment);
+
+    return 0;
+}
+
+
+
+
+
+// 0x13 Course and Speed - Course in degrees, speed in 1/50 m/s
+//
+// Modifies: course  (degrees true)
+//           speed   (kph)
+//
+int OpenTrac_decode_courseandspeed(unsigned char *element,
+                                   int           element_len,
+                                   int           *course,
+                                   float         *speed) {
+    int rawspeed;
+
+
+    if (element_len != 3)
+        return -1;
+
+    *course = (*element<<1) + ((*(element+1)&0x8000) >> 15);
+    rawspeed = (fetch16bits(element+1) & 0x7ffff);
+    *speed = (float)rawspeed*0.072; // kph
+
+    fprintf(stderr, "Course: %d Speed: %f kph\n", *course, *speed);
+
+    return 0;
+}
+
+
+
+
+
+// 0x14 Positional Ambiguity - 16 bits, in meters
+//
+// Modifies: ambiguity
+// 
+int OpenTrac_decode_ambiguity(unsigned char *element,
+                              int           element_len,
+                              int           *ambiguity) {
+
+    if (element_len != 2)
+        return -1;
+
+    *ambiguity = fetch16bits(element);
+
+    fprintf(stderr, "Position +/- %d meters\n", *ambiguity);
+
+    return 0;
+}
+
+
+
+
+
+// 0x15 Country Code - ISO 3166-1 and optionally -2
+//
+// Modifies: country
+//           subdivision
+// 
+int OpenTrac_decode_country(unsigned char *element,
+                            int           element_len,
+                            char          *country,
+                            char          *subdivision) {
+
+    if (element_len < 2)
+        return -1;
+
+    if (element_len > 5)
+        return -1;
+
+    strncpy(country, element, 2);
+    country[2] = 0;
+    if (element_len > 2) {
+        strncpy(subdivision, element+2, element_len-2);
+        subdivision[element_len-2] = 0;
+        fprintf(stderr, "Country Code %s-%s\n", country, subdivision);
+    }
+    else {
+        fprintf(stderr, "Country Code %s\n", country);
+    }
+    return 0;
+}
+
+
+
+
+
+// 0x16 - Display Name (UTF-8 text)
+//
+// Modifies: displayname
+// 
+int OpenTrac_decode_displayname(unsigned char *element,
+                                int           element_len,
+                                char          *displayname) {
+
+    if (element_len > 30 || !element_len)
+        return -1;
+
+    strncpy(displayname, element, element_len);
+    displayname[element_len] = 0;
+
+    fprintf(stderr, "Display Name: %s\n", displayname);
+    return 0;
+}
+
+
+
+
+
+// 0x17 - Waypoint Name (up to 6 chars, uppercase)
+//
+// Modifies: waypoint
+// 
+int OpenTrac_decode_waypoint(unsigned char *element,
+                             int           element_len,
+                             char          *waypoint) {
+
+    if (element_len > 6 || !element_len)
+        return -1;
+
+    strncpy(waypoint, element, element_len);
+    waypoint[element_len] = 0;
+
+    fprintf(stderr, "Waypoint Name: %s\n", waypoint);
+
+    return 0;
+}
+
+
+
+
+
+// 0x18 Map Symbol - Packed 4-bit integers
+//
+// Modifies: symbol (leaves it in 4-bit packed format)
+// 
+int OpenTrac_decode_symbol(unsigned char *element,
+                           int           element_len,
+                           char          *symbol,
+                           char          *aprs_symbol_table,
+                           char          *aprs_symbol_char) {
+    int c, ii;
+    unsigned char split[6];
+
+
+    ii = 0;
+    symbol[0] = '\0';
+
+    if (!element_len)
+        return -1;
+
+    if (element_len > 4)
+        return -1;
+
+    fprintf(stderr, "Symbol: ");
+
+    for (c = 0; c < element_len; c++) {
+
+        symbol[c] = element[c];
+
+        // Split nibbles into two bytes
+        split[ii++] = element[c] >> 4;
+        split[ii++] = element[c] & 0x0f;
+
+        if (c > 0) {
+            fprintf(stderr, ".");
+        }
+        fprintf(stderr, "%d", element[c] >> 4);
+
+        if (element[c] & 0x0f) {
+            fprintf(stderr, ".%d", element[c] & 0x0f);
+        }
+    }
+
+    symbol[element_len] = '\0'; // Terminate string
+    split[ii] = '\0';   // Terminate split integers
+
+    switch (split[0]) {
+        case 1:
+            fprintf(stderr, " (Space Symbol)");
+            *aprs_symbol_table = '/';
+            *aprs_symbol_char = 'S';    // Space Shuttle
+            break;
+        case 2:
+            fprintf(stderr, " (Air Symbol)");
+            *aprs_symbol_table = '/';
+            *aprs_symbol_char = 'X';    // Helicopter
+            break;
+        case 3:
+            fprintf(stderr, " (Ground Symbol)");
+            *aprs_symbol_table = '/';
+            *aprs_symbol_char = '-';    // House
+            break;
+        case 4:
+            fprintf(stderr, " (Sea Symbol)");
+            *aprs_symbol_table = '/';
+            *aprs_symbol_char = 'Y';    // Sailboat
+            break;
+        case 5:
+            fprintf(stderr, " (Subsurface Symbol)");
+            *aprs_symbol_table = '\\';
+            *aprs_symbol_char = '<';    // Red flag (dive site?)
+            break;
+        case 6:
+            fprintf(stderr, " (Activities Symbol)");
+            *aprs_symbol_table = '/';
+            *aprs_symbol_char = 'E';    // Eyeball
+            break;
+        case 7:
+            fprintf(stderr, " (Weather Symbol)");
+            *aprs_symbol_table = '/';
+            *aprs_symbol_char = '_';    // WX Symbol
+            break;
+        default:
+            fprintf(stderr, " (Unknown Symbol)");
+            break;
+    }
+    fprintf(stderr, "\n");
+
+    return 0;
+}
+
+
+
+
+
+// 0x20 Path Trace - Call/SSID, Network
+//
+// Modifies:
+// 
+int OpenTrac_decode_pathtrace(unsigned char *element,
+                              int           element_len) {
+
+//WE7U:  Need to pass back and use callsign/ssid/network.
+
+    char callsign[7];
+    int ssid, c, network;
+
+
+    if (element_len % 7)
+        return -1; // Must be multiple of 7 octets
+
+    if (!element_len) {
+        fprintf(stderr, "Empty Path\n");
+        return 0;
+    }
+
+    fprintf(stderr, "Path: ");
+    for (c=0; c<element_len; c+=7) {
+        memcpy(callsign, element+c, 6);
+        ssid = OpenTrac_extract_ssid(callsign);
+        network = (int)*(element+c+6);
+        fprintf(stderr, " %s-%d (%d)", callsign, ssid, network);
+    }
+    fprintf(stderr, "\n");
+
+    return 0;
+}
+
+
+
+
+
+// 0x21 Heard-By List
+//
+// Modifies:
+// 
+int OpenTrac_decode_heardby(unsigned char *element,
+                            int           element_len) {
+
+//WE7U:  Need to pass back "Heard By" string.
+
+    int c;
+
+
+    if (!element_len)
+        return -1;
+ 
+    fprintf(stderr, "Heard By:");
+    for (c=0; c<element_len; c++) {
+        fprintf(stderr, " %d", (int)*(element+c));
+    }
+    fprintf(stderr, "\n");
+
+    return 0;
+}
+
+
+
+
+
+// 0x22 Available Networks
+//
+// Modifies:
+// 
+int OpenTrac_decode_availablenets(unsigned char *element,
+                                  int           element_len) {
+
+//WE7U:  Need to pass back "Available Networks" string.
+
+    int c;
+
+
+    if (!element_len)
+        return -1;
+
+    fprintf(stderr, "Available Networks:");
+    for (c=0; c<element_len; c++) {
+        fprintf(stderr, " %d", (int)*(element+c));
+    }
+    fprintf(stderr, "\n");
+
+    return 0;
+}
+
+
+
+
+
+// 0x32 - Maidenhead Locator (4 or 6 chars)
+//
+// Modifies: maidenhead
+// 
+int OpenTrac_decode_maidenhead(unsigned char *element,
+                               int           element_len,
+                               char          *maidenhead) {
+
+    if (element_len > 6)
+        return -1;
+
+    if (element_len < 4)
+        return -1;
+
+    strncpy(maidenhead, element, element_len);
+    maidenhead[element_len] = 0;
+
+    fprintf(stderr, "Grid ID: %s\n", maidenhead);
+    return 0;
+}
+
+
+
+
+
+// 0x34 GPS Data Quality - Fix, Validity, Sats, PDOP, HDOP, VDOP
+//
+// Modifies:
+// 
+int OpenTrac_decode_gpsquality(unsigned char *element,
+                               int           element_len) {
+
+//WE7U:  Need to pass back gps quality parameters/strings.
+
+    int fixtype, validity, sats;
+    const char *fixstr[] = {"Unknown Fix", "No Fix", "2D Fix", "3D Fix"};
+    const char *validstr[] = {"Invalid", "Valid SPS", "Valid DGPS", "Valid PPS"};
+
+
+    if (element_len > 4 || !element_len)
+        return -1;
+
+    fixtype = (element[0] & 0xc0) >> 6;
+    validity = (element[0] & 0x30) >> 4;
+    sats = (element[0] & 0x0f);
+    fprintf(stderr, "GPS: %s %s, %d sats", fixstr[fixtype],
+        validstr[validity], sats);
+    if (element_len > 1)
+        fprintf(stderr, " PDOP=%.1f", (float)element[1]/10);
+    if (element_len > 2)
+        fprintf(stderr, " HDOP=%.1f", (float)element[2]/10);
+    if (element_len > 3)
+        fprintf(stderr, " VDOP=%.1f", (float)element[3]/10);
+    fprintf(stderr, "\n");
+
+    return 0;
+}
+
+
+
+
+
+// 0x35 Aircraft Registration - ASCII text
+//
+// Modifies: aircraft_id
+// 
+int OpenTrac_decode_acreg(unsigned char *element,
+                          int           element_len,
+                          char          *aircraft_id) {
+
+    if (element_len > 8)
+        return -1;
+
+    strncpy(aircraft_id, element, element_len);
+    aircraft_id[element_len]=0;
+
+    fprintf(stderr, "Aircraft ID: %s\n", aircraft_id);
+
+    return 0;
+}
+
+
+
+
+
+// 0x42 River Flow Gauge - 1/64 m^3/sec, centimeters
+//
+// Modifies: Nothing.
+// 
+int OpenTrac_decode_rivergauge(unsigned char *element,
+                               int           element_len) {
+
+//WE7U:  Need to pass back gauge indications.
+
+    unsigned int flow;
+    unsigned int height;
+    float flowm;
+    float heightm;
+
+
+    if (element_len != 4)
+        return -1;
+
+    flow = fetch16bits(element);
+    height = fetch16bits(element+2);
+    flowm = (float)flow / 64;
+    heightm = (float)height / 100;
+    fprintf(stderr, "River flow rate: %f Cu M/Sec  Height: %f M\n",
+        flowm, heightm);
+
+    return 0;
+}
+
+
+
+
+
+// 0x0100 - Emergency / Distress Call
+//
+// Modifies: nothing
+//
+int OpenTrac_flag_emergency(void) {
+
+    fprintf(stderr, "* * * EMERGENCY * * *\n");
+
+    return 0;
+}
+
+
+
+
+
+// 0x0101 - Attention / Ident
+//
+// Modifies: nothing
+//
+int OpenTrac_flag_attention(void) {
+
+    fprintf(stderr, " - ATTENTION - \n");
+
+    return 0;
+}
+
+
+
+
+
+// 0x0300 - HAZMAT (UN ID in lower 14 bits)
+//
+// Modifies: hazmat_id
+// 
+int OpenTrac_decode_hazmat(unsigned char *element,
+                           int           element_len,
+                           int           *hazmat_id,
+                           char          *comment) {
+
+    if (element_len < 2) {
+        fprintf(stderr, "HAZMAT: Unknown Material\n");
+        strcat(comment," HAZMAT: Unknown Material");
+    }
+    else if (element_len > 2) {
+        fprintf(stderr, "HAZMAT: Unknown Material: ID too Long\n");
+        strcat(comment," HAZMAT: Unknown Material: ID too Long");
+    }
+    else {
+        char temp[200];
+
+        *hazmat_id = fetch16bits(element) & 0x3fff;
+        fprintf(stderr, "HAZMAT: UN%04d\n", *hazmat_id);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            " HAZMAT: UN%04d",
+            *hazmat_id);
+        strcat(comment,temp);
+    }
+    return 0;
+}
+
+
+
+
+
+// 0x0500 to 0x05ff Generic Measurement Elements
+// Values may be 8-bit int, 16-bit int, single float, or double
+// float
+//
+// Modifies: Nothing.
+// 
+int OpenTrac_decode_units(int           unitnum,
+                          unsigned char *element,
+                          int           element_len,
+                          char          *comment) {
+
+//WE7U:  Need to pass back and use units.
+
+    const char *units[]={"Volts","Amperes","Watts","Kelvins",
+        "Meters","Seconds","Meters/Second","Liters","Kilograms",
+        "Bits/Second","Bytes","Radians","Radians/Second",
+        "Square Meters","Joules","Newtons","Pascals","Hertz",
+        "Meters/Sec^2","Grays","Lumens","Cubic Meters/Second",
+        "Pascal Seconds","Kilograms/Meter^3","Radians/Second^2",
+        "Coulombs","Farads","Siemens"};
+
+    union measurement {
+        char c;
+        float f;
+        double d;
+    } *mval;
+
+    int ival; // too much variation in byte order and size for union
+    char temp[200];
+
+
+    mval = (void *)element;
+    switch (element_len) {
+        case 1:
+            xastir_snprintf(temp,
+                sizeof(temp),
+                " %d %s",
+                mval->c,
+                units[unitnum]);
+            strcat(comment,temp);
+            fprintf(stderr, "%s\n",temp);
+            break;
+        case 2:
+            ival = fetch16bits(element);
+            xastir_snprintf(temp,
+                sizeof(temp),
+                " %d %s",
+                ival,
+                units[unitnum]);
+            strcat(comment,temp);
+            fprintf(stderr, "%s\n", temp);
+            break;
+        case 4:
+            xastir_snprintf(temp,
+                sizeof(temp),
+                " %f %s",
+                mval->f,
+                units[unitnum]);
+            strcat(comment,temp);
+            fprintf(stderr, "%s\n", temp);
+            break;
+        case 8:
+            xastir_snprintf(temp,
+                sizeof(temp),
+                " %f %s",
+                mval->d,
+                units[unitnum]);
+            strcat(comment,temp);
+            fprintf(stderr, "%s\n", temp);
+            break;
+        default:
+            return -1;
+    }
+
+    return 0;
+}
+
+
+
+
+
+//WE7U: Protect "buffer" from getting overrun!!!
+//
+//***********************************************************
+// process_OpenTrac_packet()
+//
+// data     raw packet data: Points to first char of info field
+// len      length of info field of AX.25 packet
+// buffer   buffer to write readable packet data to
+// source   source callsign
+// ssid     ssid of source callsign
+// dest     destination callsign
+// digis    number of digi's that we're being passed
+// digi[][] digi list (up to 10 digis, 10 chars each)
+// digi_h   high bit of the digis (up to 10 chars)
+//
+// Function used to process an OpenTrac packet that is not in a
+// KISS frame.  In other words the underlying transport protocol
+// portions have been stripped off by this point, or perhaps the
+// packet was received from an OpenTrac internet feed that didn't
+// have anything to strip off.
+//
+// This is where the majority of the OpenTrac-specific decoding gets
+// done.  Much of the code for this routine and the routines above
+// that deal with OpenTrac packets was generously donated by Scott
+// Miller, N1VG.  He's allowing us to put it under the GPL license.
+//
+//***********************************************************
+
+char *process_OpenTrac_packet( unsigned char *data,
+                               unsigned int  len,
+                               char          *buffer,
+                               unsigned char *source_call,
+                               unsigned int  source_ssid,
+                               unsigned char *dest,
+                               unsigned int  digis,
+                               unsigned char digi[10][10],
+                               unsigned char *digi_h) {
+    int           i;
+    int           elen;
+    int           etype;
+    int           decoded         = 0;
+    unsigned char origin_call[7];       // Where the packet originated
+    unsigned char origin_ssid     = 0;
+    unsigned char entity_call[7];       // What the packet is talking about
+    unsigned char entity_ssid     = 0x00;
+    unsigned int  entity_serial   = 0;
+    unsigned int  entity_sequence = 0;
+    unsigned char network         = 0;
+    long          rawtime         = 0;
+    int           have_position   = 0;
+    double        latitude        = 0.0;
+    double        longitude       = 0.0;
+    float         altitude        = 0;
+    int           course          = 0;
+    float         speed           = 0;
+    int           ambiguity       = 0;
+    char          country[3];
+    char          subdivision[4];
+    char          aircraft_id[9];
+    int           hazmat_id       = 0;
+    char          displayname[31];
+    char          maidenhead[7];
+    char          waypoint[7];
+    char          symbol[5];
+    char          aprs_symbol_table = '/';
+    char          aprs_symbol_char = '/';   // A "dot"
+    char          comment[127];
+ 
+
+    fprintf(stderr, "process_OpenTrac_packet()\n");
+
+    // Initialize strings
+    entity_call[0] = '\0';
+    country[0]     = '\0';
+    subdivision[0] = '\0';
+    aircraft_id[0] = '\0';
+    displayname[0] = '\0';
+    maidenhead[0]  = '\0';
+    waypoint[0]    = '\0';
+    symbol[0]      = '\0';
+    comment[0]     = '\0';
+
+    // Fill origin with source-call/SSID initially.
+    xastir_snprintf(origin_call,
+        sizeof(origin_call),
+        "%s",
+        source_call);
+    origin_ssid = source_ssid;
+
+
+    // OpenTrac-specific decoding code.  For the moment we'll
+    // construct an APRS-format packet from it and send it through
+    // our regular decoding routines.  Later we'll dissect the
+    // OpenTrac packets and store them into their own data
+    // structures, but then we'll also need code in place for
+    // _displaying_ that data.
+
+
+    fprintf(stderr, "OpenTRAC: %d bytes\n", len);
+
+
+    // Main loop.  Keep decoding elements until we run out of things
+    // to process.
+    //
+    while (decoded < len) {
+        elen = (int)*data;
+        decoded += (elen & 0x7f)+1;
+        if (elen & 0x80) { // See if it's got a 16-bit ID
+            elen = (elen & 0x7f) - 2; // Strip the extid flag
+            etype = fetch16bits(++data);
+        }
+        else {
+            elen--; // Don't count the type byte
+            etype = (int)*(data+1);
+        }
+        data+=2; // Skip to the body
+        fprintf(stderr, "EID 0x%x len %d: ", etype, elen);
+        switch (etype) {
+            case (0x00): // Sequence
+                OpenTrac_decode_sequence(
+                    data,
+                    elen,
+                    &entity_sequence);
+
+// Problem here:  What to do for multi-sequence OpenTrac packets?
+// Generate a new APRS packet for each so that we get an entire
+// history?
+
+                break;
+            case (0x01): // Originating Station
+                OpenTrac_decode_origination(
+                    data,
+                    elen,
+                    &entity_sequence,   // Origin sequence?
+                    origin_call,
+                    &origin_ssid,
+                    &network);
+
+                // Originating station different from transmitting
+                // station.
+
+                break;
+            case (0x02): // Entity ID
+                OpenTrac_decode_entityid(
+                    data,
+                    elen,
+                    origin_call,
+                    origin_ssid,
+                    entity_call,
+                    &entity_ssid,
+                    &entity_serial,
+                    &entity_sequence);
+
+// We're dealing with a different entity than the transmitting or
+// originating station.  Need to do something different here,
+// perhaps creating an object or an item from it?
+
+                break;
+            case (0x10): // Position report
+                OpenTrac_decode_position(
+                    data,
+                    elen,
+                    &latitude,
+                    &longitude,
+                    &altitude);
+                have_position++;
+//fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
+                break;
+            case (0x11): // Timestamp
+                OpenTrac_decode_timestamp(
+                    data,
+                    elen,
+                    &rawtime);
+                break;
+            case (0x12): // Comment
+                OpenTrac_decode_comment(
+                    data,
+                    elen,
+                    comment);
+                break;
+            case (0x13): // Course and Speed
+                OpenTrac_decode_courseandspeed(
+                    data,
+                    elen,
+                    &course,    // degrees true
+                    &speed);    // kph
+                break;
+            case (0x14): // Positional Ambiguity
+                OpenTrac_decode_ambiguity(
+                    data,
+                    elen,
+                    &ambiguity);
+                break;
+            case (0x15): // Country Code
+                OpenTrac_decode_country(
+                    data,
+                    elen,
+                    country,
+                    subdivision);
+                break;
+            case (0x16): // Display Name
+                OpenTrac_decode_displayname(
+                    data,
+                    elen,
+                    displayname);
+                break;
+            case (0x17): // Waypoint Name
+                OpenTrac_decode_waypoint(
+                    data,
+                    elen,
+                    waypoint);
+                break;
+            case (0x18): // Map Symbol
+                OpenTrac_decode_symbol(
+                    data,
+                    elen,
+                    symbol,
+                    &aprs_symbol_table,
+                    &aprs_symbol_char);
+                break;
+             case (0x20): // Path Trace
+                OpenTrac_decode_pathtrace(
+                    data,
+                    elen);
+                break;
+            case (0x21): // Heard-By List
+                OpenTrac_decode_heardby(
+                    data,
+                    elen);
+                break;
+            case (0x22): // Available Networks
+                OpenTrac_decode_availablenets(
+                    data,
+                    elen);
+                break;
+            case (0x32): // Maidenhead Locator
+                OpenTrac_decode_maidenhead(
+                    data,
+                    elen,
+                    maidenhead);
+                break;
+            case (0x34): // GPS Data Quality
+                OpenTrac_decode_gpsquality(
+                    data,
+                    elen);
+                break;
+            case (0x35): // Aircraft Registration
+                OpenTrac_decode_acreg(
+                    data,
+                    elen,
+                    aircraft_id);
+                break;
+            case (0x42): // River Flow Gauge
+                OpenTrac_decode_rivergauge(
+                    data,
+                    elen);
+                break;
+            case (0x100): // Emergency/distress flag
+                OpenTrac_flag_emergency();
+                break;
+            case (0x101): // Attention/ident flag
+                OpenTrac_flag_attention();
+                break;
+            case (0x300): // Hazmat
+                OpenTrac_decode_hazmat(
+                    data,
+                    elen,
+                    &hazmat_id,
+                    comment);
+                break;
+            default: // Everything else
+                if ((etype & 0xff00) == 0x500) {
+                    OpenTrac_decode_units(
+                        etype & 0x00ff,
+                        data,
+                        elen,
+                        comment);
+                }
+                else {
+                    fprintf(stderr, "Unknown Element Type\n");
+                }
+                break;
+        }
+        data+=elen;
+    }
+
+
+    // Construct a standard APRS-format packet out of the header
+    // information.  We may need to construct several APRS packets
+    // out of the OpenTrac packet, as there may be several entity
+    // ID's or other types of info that can't fit into one APRS
+    // packet.
+    //
+    // Note that if we got an Origination Station element, the path
+    // here is not representative of the entire path the packet
+    // took, and in fact we don't know who the transmitting station
+    // was for this packet anymore, just the originating station for
+    // the packet.
+    //
+    strcat(buffer,(char *)origin_call);
+    if (origin_ssid != 0x00) {
+        char temp[10];
+
+        strcat(buffer,"-");
+        xastir_snprintf(temp,sizeof(temp),"%d",origin_ssid);
+        strcat(buffer,temp);
+    }
+    strcat(buffer,">");
+    strcat(buffer,(char *)dest);
+
+    for(i = 0; i < (int)digis; i++) {
+        strcat(buffer,",");
+        strcat(buffer,(char *)digi[i]);
+        /* at the last digi always put a '*' when h_bit is set */
+        if (i == (int)(digis - 1)) {
+            if (digi_h[i] == (unsigned char)0x80) {
+                /* this digi must have transmitted the packet */
+                strcat(buffer,"*");
+            }
+        } else {
+            if (digi_h[i] == (unsigned char)0x80) {
+                /* only put a '*' when the next digi has no h_bit */
+                if (digi_h[i + 1] != (unsigned char)0x80) {
+                    /* this digi must have transmitted the packet */
+                    strcat(buffer,"*");
+                }
+            }
+        }
+    }
+    strcat(buffer,":");
+
+
+    // If we parsed a position, finish creating an APRS packet.
+    if (have_position) {
+        // We have latitude/longitude/altitude
+        int ok;
+        unsigned long temp_lat, temp_lon;
+        char lat_str[20];
+        char lon_str[20];
+        char alt_str[20];
+
+
+        // Format it in DDMM.MMN/DDDMM.MMW format
+        // lat/lon are doubles, alt is a float
+        //
+
+//fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
+ 
+        // Convert lat/long to Xastir coordinate system first
+        ok = convert_to_xastir_coordinates (
+            &temp_lon,
+            &temp_lat,
+            (float)longitude,
+            (float)latitude);
+
+        if (ok) {
+            // Convert to the proper format for an APRS position
+            // packet:  "4903.50N/07201.75W/"
+            char temp[20];
+
+
+            convert_lat_l2s( temp_lat, lat_str, 20, CONVERT_LP_NOSP);
+            convert_lon_l2s( temp_lon, lon_str, 20, CONVERT_LP_NOSP);
+           
+            if (entity_serial) {
+                // We have an entity that is non-zero.  Create an
+                // APRS "Item" from the data.  NOTE:  Items have to
+                // have at minimum 3, maximum 9 characters for the
+                // name.
+                char entity_name[10];
+
+                if (strlen(displayname)) {
+                    xastir_snprintf(entity_name,
+                        sizeof(entity_name),
+                        "%s",
+                        displayname);
+                }
+                else {
+                    xastir_snprintf(entity_name,
+                        sizeof(entity_name),
+                        "Ent. %04x",    // Short for "Entity"
+                        entity_serial);
+                }
+
+                strcat(buffer,")"); // APRS Item packet
+                strcat(buffer,entity_name);   // Entity name
+                strcat(buffer,"!");
+                strcat(buffer,lat_str);
+                temp[0] = aprs_symbol_table;
+                temp[1] = '\0';
+                strcat(buffer,temp);
+                strcat(buffer,lon_str);
+                temp[0] = aprs_symbol_char;
+                strcat(buffer,temp);
+
+                // Course/Speed
+                if ((int)speed != 0 || course != 0) {
+                    xastir_snprintf(temp,
+                        sizeof(temp),
+                        "%03d/%03d",
+                        course % 360,
+                        (int)(speed / 1.852));  // Convert from kph to knots
+                    strcat(buffer,temp);
+                }
+            }
+            else {
+                // Entity is zero.  Create an APRS position packet.
+                strcat(buffer,"!"); // APRS non-messaging position packet
+                strcat(buffer,lat_str);
+                temp[0] = aprs_symbol_table;
+                temp[1] = '\0';
+                strcat(buffer,temp);
+                strcat(buffer,lon_str);
+                temp[0] = aprs_symbol_char;
+                strcat(buffer,temp);
+
+                // Course/Speed
+                if ((int)speed != 0 || course != 0) {
+                    xastir_snprintf(temp,
+                        sizeof(temp),
+                        "%03d/%03d",
+                        course % 360,
+                        (int)(speed / 1.852));  // Convert from kph to knots
+                    strcat(buffer,temp);
+                }
+                if (strlen(displayname)) {
+                    // Add displayname to the comment field
+                    strcat(comment," ");
+                    strcat(comment,displayname);
+                }
+            }
+
+            // Altitude should be in feet "/A=001234", and placed in
+            // the comment field
+            xastir_snprintf(alt_str,
+                sizeof(alt_str),
+                " /A=%06d",
+                (int)(altitude * 3.28084)); // meters to feet
+            strcat(comment,alt_str);
+
+            // Append the comment to the end.
+
+// We really should check length here.  APRS packets can't handle
+// much.  Item and position packets probably have different
+// restriction on length of comment field as well.
+
+            strcat(buffer,comment);
+        }
+    }
+
+
+    // Null-terminate the buffer string to make sure.
+    buffer[MAX_DEVICE_BUFFER - 1] = '\0';
+
+    fprintf(stderr, "%s\n", buffer);
+
+    return( buffer );
+}
+ 
+
+
+
+
 //***********************************************************
 // process_ax25_packet()
 //
@@ -1097,7 +2431,8 @@ static void data_out_ax25(int port, unsigned char *string) {
 // Note that db.c:decode_ax25_header does much the same thing for
 // Serial KISS interface packets.  Consider combining the two
 // functions.  process_ax25_packet() would be the earlier and more
-// thought-out function.
+// thought-out function.  This function now has some OpenTrac code
+// as well.
 //***********************************************************
 
 char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
@@ -1120,12 +2455,17 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
     if (*bp != (unsigned char)0)
         return(NULL); /* not a DATA packet */
 
+    // We have a KISS packet here, so we know that the first
+    // character is a flag character.  Skip over it.
     bp++;
     len--;
 
+    // Check the length to make sure that we don't have an empty
+    // packet.
     if (!bp || !len)
         return(NULL);
 
+    // Check for minimum KISS frame bytes.
     if (len < 15)
         return(NULL);
 
@@ -1214,8 +2554,42 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
     if (!len)
         return(NULL);
 
-    if(*bp != (unsigned char)0xF0)
-        return(NULL); /* check the PID */
+    // Check whether we're dealing with an OpenTrac KISS packet.  If
+    // so, go process it and then pass through the return code that
+    // the OpenTrac functions provide.
+    if (*bp == 0x77) {
+        char* ret;
+
+        bp++;
+        len--;
+        // We have an OpenTrac packet.
+        ret = process_OpenTrac_packet(
+                    bp,
+                    len,
+                    buffer,
+                    source,
+                    ssid,
+                    dest,
+                    digis,
+                    digi,
+                    digi_h);
+
+        // If we wish to process some APRS-converted OpenTrac
+        // packet: 
+        return(ret);
+
+        // If we processed it in another manner and just wish to
+        // quit:
+        //return(NULL);
+
+    }
+    else if(*bp != (unsigned char)0xF0) {   // APRS PID
+        // We _don't_ have an APRS packet
+        return(NULL);
+    }
+
+    // We have what looks like a valid KISS-frame containing APRS
+    // protocol data.
 
     bp++;
     len--;
