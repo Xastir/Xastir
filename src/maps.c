@@ -35,9 +35,8 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#ifdef __solaris__
+// Needed for Solaris
 #include <strings.h>
-#endif
 
 #ifdef HAVE_IMAGEMAGICK
 #include <time.h>
@@ -49,7 +48,7 @@
 #include <netinet/in.h>
 #include <Xm/XmAll.h>
 
-#ifdef __solaris__
+#ifdef HAVE_XPMI
   #ifndef NO_XPM
     #include <Xm/XpmI.h>
   #endif

@@ -201,7 +201,7 @@ void set_port_speed(int port) {
             break;
 
         case(10):
-#ifdef __CYGWIN__
+#ifndef B230400
             devices[port].sp=B115200;
 #else
             devices[port].sp=B230400;
@@ -1313,7 +1313,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                     device_speed=9;
                     break;
 
-#ifndef __CYGWIN__
+#ifdef B230400
                 case(B230400):
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;
@@ -1838,7 +1838,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS" );
                     device_speed=9;
                     break;
 
-#ifndef __CYGWIN__
+#ifdef B230400
                 case(B230400):
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;
@@ -2381,7 +2381,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
                     device_speed=9;
                     break;
 
-#ifndef __CYGWIN__
+#ifdef B230400
                 case(B230400):
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;

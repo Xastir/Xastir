@@ -28,7 +28,7 @@
 #include <stdio.h>
 #include "config.h"
 
-#ifdef __solaris__
+#ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif
 

@@ -956,7 +956,7 @@ int command_file_to_tnc_port(int port, char *filename) {
 //***********************************************************
 void port_dtr(int port, int dtr) {
 
-// It looks like we have two methods of getting this to work on
+// It looks like we have two methods of getting this to compile on
 // CYGWIN, getting rid of the entire procedure contents, and getting
 // rid of the TIO* code.  One method or the other should work to get
 // it compiled.  We shouldn't need both.
@@ -1126,19 +1126,17 @@ int serial_init (int port) {
             if (fscanf(lock,"%d %s %s",&myintpid,temp,temp1) == 3) {
                 //fprintf(stderr,"Current lock %d %s %s\n",mypid,temp,temp1);
                 mypid = (pid_t)myintpid;
+
 #ifdef HAVE_GETPGRP
+  #ifdef GETPGRP_VOID
                 status = getpgrp();
-#else
-  #ifdef __solaris__
-                status = getpgid(mypid);
   #else
-    #ifdef GETPGRP_VOID
-                status = getpgrp();
-    #else
                 status = getpgrp(mypid);
-    #endif
-  #endif
-#endif
+  #endif // GETPGRP_VOID
+#else
+                status = getpgid(mypid);
+#endif // HAVE_GETPGRP
+
             }
 
             (void)fclose(lock);
@@ -2217,11 +2215,11 @@ void port_read(int port) {
 #ifdef __solaris__
     unsigned int    from_len;
 #else
-#ifndef socklen_t
+  #ifndef socklen_t
     int             from_len;
-#else
+  #else
     socklen_t       from_len;
-#endif
+  #endif
 #endif
 
 #ifdef HAVE_AX25
@@ -2264,11 +2262,11 @@ void port_read(int port) {
 #ifdef __solaris__
                     from_len = (unsigned int)sizeof(from);
 #else
-#ifndef socklen_t
+  #ifndef socklen_t
                     from_len = (int)sizeof(from);
-#else
+  #else
                     from_len = (socklen_t)sizeof(from);
-#endif
+  #endif
 #endif
 
                     pthread_testcancel();   // Check for thread termination request
