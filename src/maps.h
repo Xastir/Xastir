@@ -92,6 +92,18 @@ typedef struct {
     unsigned long y_lat;
 } tiepoint;
 
+void draw_point(Widget w,
+                 unsigned long x1,
+                 unsigned long y1,
+                 GC gc,
+                 Pixmap which_pixmap);
+
+void draw_point_ll(Widget w,
+                 float y1,
+                 float x1,
+                 GC gc,
+                 Pixmap which_pixmap);
+
 void draw_vector(Widget w,
                  unsigned long x1,
                  unsigned long y1,

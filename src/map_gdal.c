@@ -521,7 +521,7 @@ fprintf(stderr,"Indexing %s\n", filenm);
         // through the layers.
         //
         numLayers = OGR_DS_GetLayerCount(datasource);
-        for(i=0; i<numLayers; i++) {
+        for ( i=0; i<numLayers; i++ ) {
             OGRLayerH layer;
             OGREnvelope psExtent;  
 
@@ -822,16 +822,17 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
 // Optimization:  Get the envelope for each layer if it's not an
 // expensive operation.  Skip the layer if it's completely outside
 // our viewport.
+
  
     // Loop through all layers in the data source.
     //
     numLayers = OGR_DS_GetLayerCount(datasource);
-    for(i=0; i<numLayers; i++) {
+    for ( i=0; i<numLayers; i++ ) {
         OGRLayerH layer;
-//        int j;
-//        int numFields;
+        int jj;
+        int numFields;
         OGRFeatureH feature;
-//        OGRFeatureDefnH layerDefn;
+        OGRFeatureDefnH layerDefn;
         OGREnvelope psExtent;  
         OGRSpatialReferenceH spatial;
         int extents_found = 0;
@@ -942,6 +943,10 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
         }
         else {
             fprintf(stderr,"No Spatial Info, ");
+
+// Assume geographic/WGS84 unless the coordinates go outside the
+// range of lat/long, in which case, exit.
+
         }
 
         // Get the extents for this layer.  OGRERR_FAILURE means
@@ -975,23 +980,24 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
 
 
         // Dump info about this layer
-//        layerDefn = OGR_L_GetLayerDefn( layer );
-//        if (layerDefn != NULL) {
-//            numFields = OGR_FD_GetFieldCount( layerDefn );
+        layerDefn = OGR_L_GetLayerDefn( layer );
+        if (layerDefn != NULL) {
+            numFields = OGR_FD_GetFieldCount( layerDefn );
 
-//            fprintf(stderr,"\n===================\n");
-//            fprintf(stderr,"Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
+            fprintf(stderr,"\n===================\n");
+            fprintf(stderr,"Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
 
-//            for(j=0; j<numFields; j++) {
-//                OGRFieldDefnH fieldDefn;
+            for ( jj=0; jj<numFields; jj++ ) {
+                OGRFieldDefnH fieldDefn;
 
-//                fieldDefn = OGR_FD_GetFieldDefn( layerDefn, j );
+                fieldDefn = OGR_FD_GetFieldDefn( layerDefn, jj );
 //                fprintf(stderr," Field %d: %s (%s)\n", 
-//                       j, OGR_Fld_GetNameRef(fieldDefn), 
+//                       jj, OGR_Fld_GetNameRef(fieldDefn), 
 //                       OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
-//            }
+            }
 //            fprintf(stderr,"\n");
-//        }
+        }
+
 
 // Here we need to convert to WGS84 and lat/long if necessary (using
 // OGRCoordinateTransformation class and PROJ.4), then start
@@ -1029,11 +1035,14 @@ fprintf(stderr,"4\n");
 
         // Loop through all of the features in the layer.
         //
+
+//        if ( (feature = OGR_L_GetNextFeature( layer ) ) != NULL ) {
         while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
             OGRGeometryH shape;
-            int num, ii;
+            int num = 0;
+            int ii;
             double X1, Y1, Z1, X2, Y2, Z2;
-            int polygon = 0;
+            int geometry_type = 0;
 //            OGRSpatialReferenceH spatial;
  
 
@@ -1049,7 +1058,8 @@ fprintf(stderr,"4\n");
                 continue;
             }
 
-            //OGR_F_DumpReadable( feature, stderr );
+//OGR_F_DumpReadable( feature, stderr );
+
             // Get a handle to the shape itself
             shape = OGR_F_GetGeometryRef(feature);
             if (shape == NULL) {
@@ -1057,7 +1067,66 @@ fprintf(stderr,"4\n");
                 continue;
             }
 
-            //OGR_G_DumpReadable(shape, stderr, "Shape: ");
+
+// ::getGeometryName()
+// "POINT"              (ogrpoint.cpp)
+// "LINESTRING"         (ogrlinestring.cpp)
+// "POLYGON"            (ogrpolygon.cpp)
+// "GEOMETRYCOLLECTION" (ogrgeometrycollection.cpp)
+// "MULTIPOLYGON"       (ogrmultipolygon.cpp)
+// "MULTIPOINT"         (ogrmultipoint.cpp)
+// "MULTILINESTRING"    (ogrmultilinestring.cpp)
+// "LINEARRING"         (ogrlinearring.cpp)
+
+//fprintf(stderr,"Name: %s\n", OGR_G_GetGeometryName(shape));
+
+// ogrgeometry.cpp:OGRGeometryTypeToName()
+// "3D Geometry Collection"
+// "3D Line String"
+// "3D Multi Line String"
+// "3D Multi Point"
+// "3D Multi Polygon"
+// "3D Point"
+// "3D Polygon"
+// "Geometry Collection"
+// "Line String"
+// "Multi Line String"
+// "Multi Point"
+// "Multi Polygon"
+// "None"
+// "Point"
+// "Polygon"
+// "Unknown (any)"
+
+
+
+            // This function returns 0 for points, 1 for lines, 2
+            // for surfaces.  Use it to decide how to get/draw the
+            // data.
+            geometry_type = OGR_G_GetDimension(shape);
+//            fprintf(stderr, "Dimension: %d, ", geometry_type);
+            switch (geometry_type) {
+                case 0:     // Point
+//                    fprintf(stderr,"Point\n");
+                    // Get number of elements (points)
+                    num = OGR_G_GetPointCount(shape);
+                    break;
+                case 1:     // Polyline
+//                    fprintf(stderr,"Polyline\n");
+                    // Get number of elements (lines)
+                    num = OGR_G_GetPointCount(shape);
+                    break;
+                case 2:     // Polygon
+//                    fprintf(stderr,"Polygon\n");
+                    // Get number of elements (polygons)
+                    num = OGR_G_GetGeometryCount(shape);
+                    break;
+                default:    // Unknown
+                    fprintf(stderr,"Unknown\n");
+                    break;
+            }
+
+//OGR_G_DumpReadable(shape, stderr, "Shape: ");
 
 // We could either call OGR_G_GetEnvelope() here and calculate for
 // ourselves it if is in our viewport, or we could set a filter and
@@ -1066,37 +1135,53 @@ fprintf(stderr,"4\n");
 // Causes segfaults on some tiger files
 //            spatial = OGR_G_GetSpatialReference(shape);
 
-            // This works for a point or a linestring only.
-// Causes segfaults on some tiger files
-            num = OGR_G_GetPointCount(shape);
+//            fprintf(stderr,"Number of elements: %d\n",num);
 
-            if (num == 0) {
-                // Get number of elements (polygons)
-                num = OGR_G_GetGeometryCount(shape);
-//                fprintf(stderr,"Polygon: Number of elements: %d\n",num);
-                if (num) {
-                    polygon++;
-                }
-            }
-            else {
-//                fprintf(stderr,"Point/Line: Number of points: %d\n",num);
-            }
 
 /*
-            // Print out the points
-            for (ii=0; ii < num; ii++) {
-                OGR_G_GetPoint(shape,
-                    ii,
-                    &X1,
-                    &Y1,
-                    &Z1);
-                fprintf(stderr,"%f\t%f\t%f\n",pdfX,pdfY,pdfZ);
+            switch (geometry_type) {
+
+                case 0:     // Point
+
+                    // Print out the points
+                    for ( ii=0; ii < num; ii++ ) {
+                        X1 = OGR_G_GetX(shape, ii);
+                        Y1 = OGR_G_GetY(shape, ii);
+                        Z1 = OGR_G_GetZ(shape, ii);
+//                        fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
+                    }
+                    break;
+
+                case 1:     // Polyline
+
+                    // Print out the points
+                    for ( ii=0; ii < num; ii++ ) {
+                        OGR_G_GetPoint(shape,
+                            ii,
+                            &X1,
+                            &Y1,
+                            &Z1);
+//                        fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
+                    }
+                    break;
+
+                case 2:     // Polygon
+
+                    // Print out the points
+//                    for ( ii=0; ii < num; ii++ ) {
+                        // fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
+//                    }
+                    break;
+                default:    // Unknown
+                    break;
             }
 */
 
-            // If point or line feature, draw in normal manner.
-            // If polygon feature, do we do the "rotation one way =
-            // fill, rotation the other way = hole" thing?
+
+// If point or line feature, draw in normal manner.  If polygon
+// feature, do we do the "rotation one way = fill, rotation the
+// other way = hole" thing?
+
 
 // At this point it'd be nice to either have all of the coordinates
 // in WGS84 lat/long, or WGS84 Xastir coordinate system.  It'd be
@@ -1104,39 +1189,113 @@ fprintf(stderr,"4\n");
 // latter one for us.  We'd then just draw the darn things.
 
             if (num > 0) {
-                if (!polygon) { // Draw lines/points
+                switch (geometry_type) {
 
-                    // Get the first point
-                    OGR_G_GetPoint(shape,
-                        0,
-                        &X2,
-                        &Y2,
-                        &Z2);
+                    case 0:     // Points
+                        for ( ii = 0;  ii < num; ii++ ) {
+                            OGR_G_GetPoint(shape,
+                                ii,
+                                &X1,
+                                &Y1,
+                                &Z1);
+//fprintf(stderr,"Draw Point here\n");
+                            draw_point_ll(da,
+                                (float)Y1,
+                                (float)X1,
+                                gc,
+                                pixmap);
+                        }
+                        break;
 
-                    for (ii = 1; ii < num; ii++) {
-
-                        X1 = X2;
-                        Y1 = Y2;
-                        Z1 = Z2;
-
-                        // Get the next point
+                    case 1:     // Polylines
+                        // Get the first point
                         OGR_G_GetPoint(shape,
-                            ii,
+                            0,
                             &X2,
                             &Y2,
                             &Z2);
 
-                        draw_vector_ll(da,
-                            (float)Y1,
-                            (float)X1,
-                            (float)Y2,
-                            (float)X2,
-                            gc,
-                            pixmap);
-                    }
-                }
-                else {  // Draw polygons
-                }
+                        for ( ii = 1; ii < num; ii++ ) {
+
+                            X1 = X2;
+                            Y1 = Y2;
+                            Z1 = Z2;
+
+                            // Get the next point
+                            OGR_G_GetPoint(shape,
+                                ii,
+                                &X2,
+                                &Y2,
+                                &Z2);
+
+// Optimization:
+// It should be faster here to draw the entire Polyline with one X11
+// call, instead of drawing each line segment in turn.  Change to
+// that method at some point.
+
+                            draw_vector_ll(da,
+                                (float)Y1,
+                                (float)X1,
+                                (float)Y2,
+                                (float)X2,
+                                gc,
+                                pixmap);
+                        }
+                        break;
+
+                    case 2:     // Polygons
+//                        fprintf(stderr,"Draw %d Polygons here\n", num);
+
+                        {   // Block so that we can do local defines
+//                            int geometry_count = 0;
+//                            int kk;
+
+
+                            // First get the count of geometry's in
+                            // this layer.
+//                            geometry_count = OGR_G_GetGeometryCount(shape);
+
+
+
+                            // Get outer ring (there will only be
+                            // one)
+//                            outer_ring = getExteriorRing();
+
+                            // Snag qty of inner rings
+//                            ring_qty = getNumInteriorRings();
+                            // And snag each inner ring in turn
+//                            for ( kk = 0; kk < interior_ring_qty) {
+//                                inner_ring = getInteriorRing(kk);
+//                            }
+                        
+
+
+                        // This can get complicated:  Polygons are
+                        // composed of rings.  If a ring goes in one
+                        // direction, it's a fill, if the other
+                        // direction, it's a hole in the polygon.
+
+// From ogr_geometry.h
+// -------------------
+// class OGRLinearRing
+// int isClockwise();a
+
+// int nRingCount;
+// OGRLinearRing **papoRings;
+// OGRPolygon();
+// OGRErr transform(OGRCoordinateTransformation *poCT);
+// OGRLinearRing *getExteriorRing();
+// int getNumInteriorRings();
+// OGRLinearRing *getInteriorRing(int);
+
+
+                        }
+                        break;
+
+                    default:    // Unknown type
+                        break;
+    
+                }   // End of switch
             }
             OGR_F_Destroy( feature );
         }
