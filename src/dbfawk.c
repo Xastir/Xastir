@@ -77,7 +77,7 @@ void dbfawk_free_info ( dbfawk_field_info *list)
 
 /*
  * dbfawk_field_list: Generate a list of info about fields to read for
- *  a given a DBFHandle and colon-separated list of fieldnames.
+ *  a given DBFHandle and colon-separated list of fieldnames.
  */
 dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
 {
@@ -90,8 +90,9 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
     char *d,*p = sp;
     char junk[XBASE_FLDHDR_SZ];
     int w,prec;
-    
+
     fi = calloc(1,sizeof(dbfawk_field_info));
+ 
     if (!fi)
         return NULL;
     if (prev) {
@@ -144,7 +145,7 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
     while ((e = readdir(d)) != NULL) {
         int len = strlen(e->d_name);
         char *path = calloc(1,len+strlen(dir)+2);
-
+ 
         if (!path) {
             fprintf(stderr,"failed to malloc in dbfawk.c!\n");
             return NULL;
@@ -182,8 +183,9 @@ void dbfawk_free_sig(dbfawk_sig_info *sig)
     if (sig) {
         if (sig->prog)
             awk_free_program(sig->prog);
-        if (sig)
+        if (sig) {
             free(sig);
+        }
     }
 }
 
@@ -224,6 +226,7 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
             *dot = '\0';
         strcat(perfile,".dbfawk");
         info = calloc(1,sizeof(*info));
+ 
         if (!info) {
             fprintf(stderr,"failed to malloc in dbfawk_find_sig!\n");
             return NULL;
@@ -234,10 +237,12 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
            it */
         info->sig = NULL;
         free(perfile);
-        if (info->prog)
+        if (info->prog) {
             return info;
-        else
+        }
+        else {
             free(info);
+        }
         /* fall through and do normal signature search */
     }
     for (result = info; result; result = result->next) {

@@ -811,6 +811,7 @@ void draw_shapefile_map (Widget w,
             awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
             /* find out which dbf fields we care to read */
             fld_info = dbfawk_field_list(hDBF, dbffields);
+
         } else {                /* should never be reached anymore! */
             fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
             exit(1);
@@ -1252,6 +1253,10 @@ void draw_shapefile_map (Widget w,
         fprintf(stderr,"draw_shapefile_map: SHPOpen(%s,\"rb\") failed.\n", file );
         DBFClose( hDBF );   // Clean up open file descriptors
 
+#ifdef WITH_DBFAWK
+        dbfawk_free_info(fld_info);
+#endif
+
         return;
     }
 
@@ -1275,6 +1280,10 @@ void draw_shapefile_map (Widget w,
 
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );
+
+#ifdef WITH_DBFAWK
+        dbfawk_free_info(fld_info);
+#endif
 
         return; // Done indexing this file
     }
@@ -1303,12 +1312,20 @@ void draw_shapefile_map (Widget w,
             DBFClose( hDBF );   // Clean up open file descriptors
             SHPClose( hSHP );
 
+#ifdef WITH_DBFAWK
+        dbfawk_free_info(fld_info);
+#endif
+
             return; // Multipoint type.  Not implemented yet.
             break;
 
         default:
             DBFClose( hDBF );   // Clean up open file descriptors
             SHPClose( hSHP );
+
+#ifdef WITH_DBFAWK
+        dbfawk_free_info(fld_info);
+#endif
 
             return; // Unknown type.  Don't know how to process it.
             break;
@@ -1337,6 +1354,10 @@ void draw_shapefile_map (Widget w,
 
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );
+
+#ifdef WITH_DBFAWK
+        dbfawk_free_info(fld_info);
+#endif
 
         return;     // The file contains no shapes in our viewport
     }
@@ -1464,6 +1485,11 @@ void draw_shapefile_map (Widget w,
         SHPClose( hSHP );
         // Update to screen
         (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+#ifdef WITH_DBFAWK
+        dbfawk_free_info(fld_info);
+#endif
+
         return;
     }
 
@@ -3343,7 +3369,6 @@ if (on_screen) {
                     // Free the storage that we allocated to hold
                     // the "hole" flags for the shape.
                     free(polygon_hole_storage);
-
                     if (polygon_hole_flag) {
                         //Free the temporary GC that we may have used to
                         //draw polygons using the clip-mask:
