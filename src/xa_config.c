@@ -920,7 +920,7 @@ void load_data_or_default(void) {
 
     /* defaults */
     if (!get_long ("DEFAULT_STATION_OLD", (long *)&sec_old))
-        sec_old = (time_t)7200l;
+        sec_old = (time_t)4800l;
 
     if (!get_long ("DEFAULT_STATION_CLEAR", (long *)&sec_clear))
         sec_clear = (time_t)43200l;
