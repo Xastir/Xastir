@@ -151,6 +151,8 @@ float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma corre
 const time_t *map_index_timestamp;
 extern int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right);
 static int map_onscreen_index(char *filename);
+extern void index_update_directory(char *directory);
+
 
 
 int grid_size = 0;
@@ -10443,13 +10445,42 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
             int count = 0;
             while ((dl = readdir (dm))) {
                 xastir_snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, dl->d_name);
-                /*printf("FULL PATH %s\n",fullpath); */
+                //printf("FULL PATH %s\n",fullpath);
                 if (stat (fullpath, &nfile) == 0) {
                     ftime = (time_t *)&nfile.st_ctime;
                     switch (nfile.st_mode & S_IFMT) {
                         case (S_IFDIR):     // It's a directory, recurse
                             //printf("file %c letter %c\n",dl->d_name[0],letter);
                             if ((strcmp (dl->d_name, ".") != 0) && (strcmp (dl->d_name, "..") != 0)) {
+
+                                //printf("FULL PATH %s\n",fullpath);
+
+//WE7U
+                                // If we're indexing, throw the
+                                // directory into the map index as
+                                // well.
+                                if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                                        || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+                                    char temp_dir[8000];
+
+                                    // Zero it first, just in case
+                                    // we mess up and don't have a
+                                    // terminator.
+                                    memset(temp_dir,0x00,8000);
+
+                                    // Figure out the current
+                                    // complete path.  Drop off the
+                                    // base part of the path for the
+                                    // indexing.
+                                    strcpy(temp_dir,&fullpath[map_dir_length+1]);
+
+                                    // Put a '/' on the end so that
+                                    // we can identify it as a
+                                    // directory.
+                                    strcat(temp_dir,"/");
+                                    index_update_directory(temp_dir);
+                                }
+
                                 strcpy (this_time, ctime (ftime));
                                 map_search(w, fullpath, alert, alert_count, warn, destination_pixmap);
                             }
@@ -10520,8 +10551,10 @@ map_index_record *map_index_head = NULL;
 //
 // Function used to add map directories to the in-memory map index.
 // Causes an update of the index list in memory.  Input Records are
-// inserted in alphanumerical order.
-void index_update_directory(char *filename) {
+// inserted in alphanumerical order.  We mark directories in the
+// index with a '/' on the end of the name, and zero entries for
+// top/bottom/left/right.
+void index_update_directory(char *directory) {
 
     map_index_record *current = map_index_head;
     map_index_record *previous = map_index_head;
@@ -10529,7 +10562,7 @@ void index_update_directory(char *filename) {
     int done = 0;
 
 
-printf( "index_update_directory: %s\n", filename );
+    //printf( "index_update_directory: %s\n", directory );
 
     //if (map_index_head == NULL)
     //    printf("Empty list\n");
@@ -10538,12 +10571,13 @@ printf( "index_update_directory: %s\n", filename );
     while ((current != NULL) && !done) {
         int test;
 
-        //printf("Comparing %s to\n          %s\n",current->filename,filename);
+        //printf("Comparing %s to\n          %s\n",
+        //    current->filename, directory);
 
-        test = strcmp(current->filename,filename);
+        test = strcmp(current->filename, directory);
         if (test == 0) {
             // Found a match!
-            //printf("Found: Updating entry for %s\n",filename);
+            //printf("Found: Updating entry for %s\n",directory);
             temp_record = current;
             done++; // Exit the while loop
         }
@@ -10551,9 +10585,9 @@ printf( "index_update_directory: %s\n", filename );
                                 // alphabet.  Insert ahead of this
                                 // last record.
 
-            //printf("\n%s\n%s\n",current->filename,filename);
+            //printf("\n%s\n%s\n",current->filename,directory);
 
-            //printf("Not Found: Inserting an index record for %s\n",filename);
+            //printf("Not Found: Inserting an index record for %s\n",directory);
             temp_record = (map_index_record *)malloc(sizeof(map_index_record));
 
             if (previous == current) {  // Start of list!
@@ -10568,7 +10602,7 @@ printf( "index_update_directory: %s\n", filename );
                 temp_record->next = current;
                 //printf("Inserting before current\n");
             }
-            //printf("Adding:%d:%s\n",strlen(filename),filename);
+            //printf("Adding:%d:%s\n",strlen(directory),directory);
         
             //current = current->next;
             done++;
@@ -10581,7 +10615,7 @@ printf( "index_update_directory: %s\n", filename );
 
     if (!done) {  // Matching record not found, add a
         // record to the end of the list
-        //printf("Not Found: Adding an index record for %s\n",filename);
+        //printf("Not Found: Adding an index record for %s\n",directory);
         temp_record = (map_index_record *)malloc(sizeof(map_index_record));
         temp_record->next = NULL;
 
@@ -10591,19 +10625,19 @@ printf( "index_update_directory: %s\n", filename );
         }
         else {  // Else at end of list
             previous->next = temp_record;
-            //printf("Adding to end of list: %s\n",filename);
+            //printf("Adding to end of list: %s\n",directory);
         }
 
-        //printf("Adding:%d:%s\n",strlen(filename),filename);
+        //printf("Adding:%d:%s\n",strlen(directory),directory);
     }
 
     // Update the values.  By this point we have a struct to fill
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
-    xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",filename);
-    //strncpy(temp_record->filename,filename,MAX_FILENAME-1);
+    xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",directory);
+    //strncpy(temp_record->filename,directory,MAX_FILENAME-1);
     //temp_record->filename[MAX_FILENAME-1] = '\0';
-//    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
+//    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",directory);
 
     temp_record->bottom = 0;
     temp_record->top = 0;
