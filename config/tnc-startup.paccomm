@@ -28,6 +28,7 @@ MFILT $00
 MRPt on
 MSTamp off
 NEWmode off
+PASSALL off
 SCR 0
 MON 1
 #

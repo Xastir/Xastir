@@ -57,6 +57,7 @@ NOMODE on
 # Only used in KISS mode?
 PERSIST 128
 #
+PASSALL off
 #PIDCHECK off
 PMS off
 SCREENLN 0

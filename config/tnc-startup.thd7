@@ -12,6 +12,7 @@ MCOM off
 MON ON
 MRPt on
 PACLen 128
+PASSALL off
 HBAUD 1200
 # Delete following lines if without GPS
 GBAUD 4800
