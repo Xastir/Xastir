@@ -3889,6 +3889,9 @@ void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /
 }
 
 
+
+
+
 void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
     char xfontsel_font[sizeof(rotated_label_fontname)];
     FILE *f;
@@ -3904,7 +3907,24 @@ void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) 
     } else {
         perror("xfontsel");
     }
+
+// One current problem:  Xastir stops until you press "Quit" on
+// xfontsel.  We could fix this by putting it in another thread, but
+// then would probably have to have Xastir check periodically to see
+// if the temp file was updated, filling in the dialog when it
+// figured it out.  Could put the Xastir dialog in a separate
+// thread, and set "request_new_image" when the "OK" button was
+// pressed.  This causes UpdateTime() to update the map screen.
+
+// Check out "gps_operation_pending" and the GPS thread to see how
+// it was done before.  Probably could use the same techniques to
+// make the xfontsel stuff work properly in another thread without
+// stopping the main Xastir thread.
+
 }
+
+
+
 
 
 void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
