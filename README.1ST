@@ -992,7 +992,7 @@ Getting Data Files for Xastir:
       shapefile you wish to reproject, or have the .prj file that some
       shapefiles come with.
 
-      Fortunately, the shapelib-1.2.9 distribution (which you probably
+      Fortunately, the shapelib-1.2.10 distribution (which you probably
       compiled and installed to enable shapefile maps in Xastir) includes a
       tool for performing this reprojection. 
 
