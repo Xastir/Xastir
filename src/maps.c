@@ -2814,10 +2814,10 @@ static void free_map_index(map_index_record *index_list_head) {
 
     while (current != NULL) {
         temp = current;
-        current = current->next;
         if (current->XmStringPtr != NULL) {
             XmStringFree(current->XmStringPtr);
         }
+        current = current->next;
         free(temp);
     }
 
