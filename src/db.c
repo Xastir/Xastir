@@ -14116,7 +14116,6 @@ void  read_file_line(FILE *f) {
     char line[MAX_LINE_SIZE+1];
     char cin;
     int pos;
-    char *ptr;
 
     pos = 0;
     line[0] = '\0';
@@ -14128,6 +14127,8 @@ void  read_file_line(FILE *f) {
                  }
             } else {                                    // CR or LF
                 if (cin == (char)10) {                  // Found LF as EOL char
+                    char *ptr;
+
                     line[pos] = '\0';                   // Always add a terminating zero after last char
                     pos = 0;                            // start next line
 
