@@ -724,7 +724,7 @@ void channel_data(int port, unsigned char *string, int length) {
 
 
         // If it's any of three types of GPS ports and is a GPRMC or
-        // GPGGA string, just stick it in a one of two global
+        // GPGGA string, just stick it in one of two global
         // variables for holding such strings.  UpdateTime() can
         // come along and process/clear-out those strings at the
         // gps_time interval.
