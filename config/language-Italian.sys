@@ -431,6 +431,7 @@ WPUPCFSP05|Nuovo corpo del messaggio||
 WPUPCFSP06|Allarme di vicinanza||
 WPUPCFSP07|Apertura di banda||
 WPUPCFSP08|Allarme Meteo||
+WPUPCFSP09|Tracked Station Proximity Alert||
 #
 # Track Stazione
 WPUPTSP001|Segui Stazione||
@@ -726,12 +727,23 @@ AMTMW00001|Traffico di tutti i messaggi||
 AMTMW00002|Raggio (0, senza limite)||
 #
 # Speech Strings
-SPCHKMS000|kilometers||
-SPCHMETERS|meters||
-SPCHMILES0|miles||
-SPCHYARDS0|yards||
-SPCHDIST0D|%s, distance is %d %s.||
-SPCHDIST0F|%s, distance is %.1f %s.||
+SPCHSTR001|kilometers||
+SPCHSTR002|meters||
+SPCHSTR003|miles||
+SPCHSTR004|yards||
+SPCHSTR005|%s, distance is %d %s.||
+SPCHSTR006|%s, distance is %.1f %s.||
+SPCHSTR007|%s, distance is %d %s %s %s.||
+SPCHSTR008|%s, distance is %.1f %s %s %s.||
+#
+SPCHDIRN00|north of||
+SPCHDIRS00|south of||
+SPCHDIRE00|east of||
+SPCHDIRW00|west of||
+SPCHDIRNE0|northeast of||
+SPCHDIRNW0|northwest of||
+SPCHDIRSE0|southeast of||
+SPCHDIRSW0|southwest of||
 #
 # Symbol Selection Dialog
 SYMSEL0001|Selezione simbolo||

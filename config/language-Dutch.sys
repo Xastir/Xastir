@@ -435,6 +435,7 @@ WPUPCFSP05|Nieuwe Bericht Inhoud||
 WPUPCFSP06|Naderings Waarschuwing||
 WPUPCFSP07|Band Opening||
 WPUPCFSP08|Nieuwe Weer Waarschuwing||
+WPUPCFSP09|Tracked Station Proximity Alert||
 #
 # PopUp "Track Station"
 WPUPTSP001|Volg Station||
@@ -738,6 +739,17 @@ SPCHSTR003|mijl||
 SPCHSTR004|yards||
 SPCHSTR005|%s, afstand is %d %s.||
 SPCHSTR006|%s, afstand is %.1f %s.||
+SPCHSTR007|%s, distance is %d %s %s %s.||
+SPCHSTR008|%s, distance is %.1f %s %s %s.||
+#
+SPCHDIRN00|north of||
+SPCHDIRS00|south of||
+SPCHDIRE00|east of||
+SPCHDIRW00|west of||
+SPCHDIRNE0|northeast of||
+SPCHDIRNW0|northwest of||
+SPCHDIRSE0|southeast of||
+SPCHDIRSW0|southwest of||
 #
 # Symbol Selection Dialog
 SYMSEL0001|Selecteer Symbool||

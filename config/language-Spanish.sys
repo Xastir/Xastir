@@ -431,6 +431,7 @@ WPUPCFSP05|<- Anuncia Cuerpo de Nuevo Mensaje||
 WPUPCFSP06|<- Anuncia la Proximidad de estaciones||
 WPUPCFSP07|<- Anuncia DX condición de Banda Abierta||
 WPUPCFSP08|<- Anuncia Alerta sobre condiciones del Tiempo||
+WPUPCFSP09|Tracked Station Proximity Alert||
 #
 # Rastreo de Estación
 WPUPTSP001|Rastreo estación|| 
@@ -734,6 +735,17 @@ SPCHSTR003|millas||
 SPCHSTR004|yardas||
 SPCHSTR005|%s, distancia es %d %s.||
 SPCHSTR006|%s, distancia es %.1f %s.||
+SPCHSTR007|%s, distance is %d %s %s %s.||
+SPCHSTR008|%s, distance is %.1f %s %s %s.||
+#
+SPCHDIRN00|north of||
+SPCHDIRS00|south of||
+SPCHDIRE00|east of||
+SPCHDIRW00|west of||
+SPCHDIRNE0|northeast of||
+SPCHDIRNW0|northwest of||
+SPCHDIRSE0|southeast of||
+SPCHDIRSW0|southwest of||
 #
 # Diálogo de seleción de Símbolo
 SYMSEL0001|Seleccione Símbolo||
