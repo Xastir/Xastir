@@ -2359,8 +2359,13 @@ int valid_inet_name(char *name, char *info, char *origin) {
                 ok = 0;
         ok = ok && (info != NULL);      // check if we can test info
         if (ok) {
-            ptr = strstr(info,":NWS-"); // NWS data in info field
+            ptr = strstr(info,":NWS-"); // "NWS-" in info field (non-compressed alert)
             ok = (ptr != NULL);
+
+            if (!ok) {
+                ptr = strstr(info,":NWS_"); // "NWS_" in info field (compressed alert)
+                ok = (ptr != NULL);
+            }
         }
         if (ok) {
             strcpy(origin, "INET-NWS");
