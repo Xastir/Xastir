@@ -110,9 +110,15 @@ Getting Maps and other Data Files for Xastir:
 
      GeoTIFF Map files:
 
-      If you compiled in geoTIFF support, you can find DRG topo maps at
-      GIS Data Depot (http://www.gisdatadepot.com) for the U.S. You can also
-      find links to maps at http://mcmcweb.er.usgs.gov/drg/free_drg.html
+      If you compiled in geoTIFF support, you can find DRG topo maps at GIS
+      Data Depot (http://www.gisdatadepot.com) for the U.S. You used to be able
+      to find links to maps at http://mcmcweb.er.usgs.gov/drg/free_drg.html,
+      but that page doesn't appear to exist anymore.  Try this one instead:
+
+        http://www.bianifc.org/gis_gps/gps/drgfree.html
+
+      or try a google search with "free drg maps" as the search query.
+
       The 7.5' topo maps work the best so far.  Be sure to install the .tif AND
       the .fgd files side-by-side into the map directories. Without the .fgd
       file Xastir won't be able to crop the white border from the map.  Xastir
