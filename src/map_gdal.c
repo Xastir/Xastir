@@ -1841,6 +1841,21 @@ void clear_dangerous(void) {
 
 
 
+// Need this declaration for weather alerts currently
+#ifdef HAVE_LIBSHP
+extern void draw_shapefile_map (Widget w,
+                                char *dir,
+                                char *filenm,
+                                alert_entry *alert,
+                                u_char alert_color,
+                                int destination_pixmap,
+                                int draw_filled);
+#endif /* HAVE_LIBSHP */
+
+
+
+
+
 // The GDAL docs say to use these flags to compile:
 // `gdal-config --libs` `gdal-config * --cflags`
 // but so far they return: "-L/usr/local/lib -lgdal" and
@@ -1945,13 +1960,36 @@ void draw_ogr_map( Widget w,
     if (debug_level & 16)
         fprintf(stderr,"Entered draw_ogr_map function\n");
 
+
+/******************************************************************/
+// We don't want to process weather alerts right now in this code.
+// We're not set up for it yet.  Call the original shapefile map
+// function instead.  We added an extern declaration above in order
+// that this function knows about the draw_shapefile_map() function
+// parameters.  Remove that declaration once we support weather
+// alerts in this code natively.
+//
+if (alert) {
+    // We have a weather alert, call the original function instead.
+    draw_shapefile_map(w,
+        dir,
+        filenm,
+        alert,
+        alert_color,
+        destination_pixmap,
+        draw_filled);
+    return;
+}
+/******************************************************************/
+
+
     xastir_snprintf(full_filename,
         sizeof(full_filename),
         "%s/%s",
         dir,
         filenm);
 
-    if (debug_level & 16)
+//    if (debug_level & 16)
         fprintf(stderr,"Opening datasource %s\n", full_filename);
 
     //
@@ -1981,12 +2019,16 @@ clear_dangerous();
         fprintf(stderr,"Opened datasource\n");
 
     driver_type = OGR_Dr_GetName(driver);
-//    fprintf(stderr,"%s: ", driver_type);
+
+    if (debug_level & 16)
+        fprintf(stderr,"%s: ", driver_type);
 
     // Get name/path.  Less than useful since we should already know
     // this.
     ptr = OGR_DS_GetName(datasourceH);
-//    fprintf(stderr,"%s\n", ptr);
+
+    if (debug_level & 16)
+        fprintf(stderr,"%s\n", ptr);
 
     // Set up coordinate translation:  We need it for indexing and
     // drawing so we do it first and keep a pointer to our
@@ -2047,7 +2089,8 @@ clear_dangerous();
         }
         else {
 
-            fprintf(stderr,"  Couldn't get spatial reference\n");
+            if (debug_level & 16)
+                fprintf(stderr,"  Couldn't get spatial reference\n");
 
             // For this case, assume that it is WGS84/geographic,
             // and attempt to index as-is.  If the numbers don't
@@ -2073,30 +2116,39 @@ clear_dangerous();
 // "???".
 
             transformH = NULL;  // No transform needed
-//            fprintf(stderr,
-//                "  Geographic coordinate system, NO CONVERSION NEEDED!, %s\n",
-//                geogcs);
+
+            if (debug_level & 16) {
+                fprintf(stderr,
+                    "  Geographic coordinate system, NO CONVERSION NEEDED!, %s\n",
+                    geogcs);
+            }
         }
         else {  // We have coordinates but they're in the wrong
                 // datum or in a projected/local coordinate system.
                 // Set up a transform to WGS84.
 
             if (geographic) {
-//                fprintf(stderr,
-//                    "  Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
-//                    geogcs);
-fprintf(stderr, "  DATUM: %s\n", datum);
+                if (debug_level & 16) {
+                    fprintf(stderr,
+                        "  Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
+                        geogcs);
+                    fprintf(stderr, "  DATUM: %s\n", datum);
+                }
             }
             else if (projected) {
-//                fprintf(stderr,
-//                    "  Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
-//                    geogcs);
+                if (debug_level & 16) {
+                    fprintf(stderr,
+                        "  Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
+                        geogcs);
+                }
             }
             else if (local) {
                 // Convert to geographic/WGS84?  How?
 
-                fprintf(stderr,
-                    "  Found local coordinate system.  Returning\n");
+                if (debug_level & 16) {
+                    fprintf(stderr,
+                        "  Found local coordinate system.  Returning\n");
+                }
 
                 // Close data source
                 if (datasourceH != NULL) {
@@ -2121,8 +2173,10 @@ fprintf(stderr, "  DATUM: %s\n", datum);
             wgs84_spatialH = OSRNewSpatialReference(NULL);
 
             if (wgs84_spatialH == NULL) {
-                fprintf(stderr,
-                    "Couldn't create empty wgs84_spatialH object\n");
+                if (debug_level & 16) {
+                    fprintf(stderr,
+                        "Couldn't create empty wgs84_spatialH object\n");
+                }
 
                 // Close data source
                 if (datasourceH != NULL) {
@@ -2135,8 +2189,10 @@ fprintf(stderr, "  DATUM: %s\n", datum);
             if (OSRSetWellKnownGeogCS(wgs84_spatialH,"WGS84") == OGRERR_FAILURE) {
  
                 // Couldn't fill in WGS84 parameters.
-                fprintf(stderr,
-                    "Couldn't fill in wgs84 spatial reference parameters\n");
+                if (debug_level & 16) {
+                    fprintf(stderr,
+                        "Couldn't fill in wgs84 spatial reference parameters\n");
+                }
 
                 // NOTE: DO NOT destroy map_spatialH!  It is part of
                 // the datasource.  You'll get a segfault if you
@@ -2156,8 +2212,10 @@ fprintf(stderr, "  DATUM: %s\n", datum);
             }
 
             if (map_spatialH == NULL || wgs84_spatialH == NULL) {
-                fprintf(stderr,
-                    "Couldn't transform because map_spatialH or wgs84_spatialH are NULL\n");
+                if (debug_level & 16) {
+                    fprintf(stderr,
+                        "Couldn't transform because map_spatialH or wgs84_spatialH are NULL\n");
+                }
 
                 if (wgs84_spatialH != NULL) {
                     OSRDestroySpatialReference(wgs84_spatialH);
@@ -2178,8 +2236,10 @@ fprintf(stderr, "  DATUM: %s\n", datum);
 
                 if (transformH == NULL) {
                     // Couldn't create transformation object
-                    fprintf(stderr,
-                        "Couldn't create transformation object\n");
+                    if (debug_level & 16) {
+                        fprintf(stderr,
+                            "Couldn't create transformation object\n");
+                    }
 
                     if (wgs84_spatialH != NULL) {
                         OSRDestroySpatialReference(wgs84_spatialH);
@@ -2248,10 +2308,12 @@ clear_dangerous();
 
             layer = OGR_DS_GetLayer( datasourceH, i );
             if (layer == NULL) {
-                fprintf(stderr,
-                    "Unable to open layer %d of %s\n",
-                    i,
-                    full_filename);
+                if (debug_level & 16) {
+                    fprintf(stderr,
+                        "Unable to open layer %d of %s\n",
+                        i,
+                        full_filename);
+                }
 
                 if (wgs84_spatialH != NULL) {
                     OSRDestroySpatialReference(wgs84_spatialH);
@@ -2337,13 +2399,15 @@ clear_dangerous();
                             && file_MaxY == 0.0
                             && file_MinX == 0.0
                             && file_MaxX == 0.0 ) {
-                        fprintf(stderr,
-                            "Geographic coordinates are all zero, skipping indexing\n");
-                        fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
-                            file_MinX,
-                            file_MinY,
-                            file_MaxX,
-                            file_MaxY);
+                        if (debug_level & 16) {
+                            fprintf(stderr,
+                                "Geographic coordinates are all zero, skipping indexing\n");
+                            fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
+                                file_MinX,
+                                file_MinY,
+                                file_MaxX,
+                                file_MaxY);
+                        }
                     }
                     else {
  
@@ -2360,13 +2424,15 @@ clear_dangerous();
                     }
                 }
                 else {
-                    fprintf(stderr,
-                        "Geographic coordinates out of bounds, skipping indexing\n");
-                    fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
-                        file_MinX,
-                        file_MinY,
-                        file_MaxX,
-                        file_MaxY);
+                    if (debug_level & 16) {
+                        fprintf(stderr,
+                            "Geographic coordinates out of bounds, skipping indexing\n");
+                        fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
+                            file_MinX,
+                            file_MinY,
+                            file_MaxX,
+                            file_MaxY);
+                    }
                 }
             }
             else {  // We have coordinates but they're in the wrong
@@ -2391,7 +2457,8 @@ clear_dangerous();
                 // have a valid transform.  If not, just assume
                 // we're ok and index it as-is.
                 if (transformH == NULL) {
-                    fprintf(stderr, "No transform available!\n");
+                    if (debug_level & 16)
+                        fprintf(stderr, "No transform available!\n");
                 }
                 else {
 
@@ -2418,13 +2485,15 @@ clear_dangerous();
                             && file_MaxY == 0.0
                             && file_MinX == 0.0
                             && file_MaxX == 0.0 ) {
-                        fprintf(stderr,
-                            "Coordinates are all zero, skipping indexing\n");
-                        fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
-                            file_MinX,
-                            file_MinY,
-                            file_MaxX,
-                            file_MaxY);
+                        if (debug_level & 16) {
+                            fprintf(stderr,
+                                "Coordinates are all zero, skipping indexing\n");
+                            fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
+                                file_MinX,
+                                file_MinY,
+                                file_MaxX,
+                                file_MaxY);
+                        }
                     }
                     else {
  
@@ -2440,13 +2509,15 @@ clear_dangerous();
                     }
                 }
                 else {
-                    fprintf(stderr,
-                        "Coordinates out of bounds, skipping indexing\n");
-                    fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
-                        file_MinX,
-                        file_MinY,
-                        file_MaxX,
-                        file_MaxY);
+                    if (debug_level & 16) {
+                        fprintf(stderr,
+                            "Coordinates out of bounds, skipping indexing\n");
+                        fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
+                            file_MinX,
+                            file_MinY,
+                            file_MaxX,
+                            file_MaxY);
+                    }
                 }
             }
         }
@@ -2557,10 +2628,12 @@ clear_dangerous();
 
         layer = OGR_DS_GetLayer( datasourceH, i );
         if (layer == NULL) {
-            fprintf(stderr,
-                "Unable to open layer %d of %s\n",
-                i,
-                full_filename);
+            if (debug_level & 16) {
+                fprintf(stderr,
+                    "Unable to open layer %d of %s\n",
+                    i,
+                   full_filename);
+            }
 
             if (wgs84_spatialH != NULL) {
                 OSRDestroySpatialReference(wgs84_spatialH);
@@ -2602,21 +2675,26 @@ clear_dangerous();
         //   NOTE: Shapefile reports this as TRUE.
         //
         if (i == 0) {   // First layer
-//            fprintf(stderr, "  ");
+            if (debug_level & 16)
+                fprintf(stderr, "  ");
             if (OGR_L_TestCapability(layer, OLCRandomRead)) {
-//                fprintf(stderr, "Random Read, ");
+                if (debug_level & 16)
+                    fprintf(stderr, "Random Read, ");
             }
             if (OGR_L_TestCapability(layer, OLCFastSpatialFilter)) {
-//                fprintf(stderr,
-//                    "Fast Spatial Filter, ");
+                if (debug_level & 16)
+                    fprintf(stderr,
+                        "Fast Spatial Filter, ");
             }
             if (OGR_L_TestCapability(layer, OLCFastFeatureCount)) {
-//                fprintf(stderr,
-//                    "Fast Feature Count, ");
+                if (debug_level & 16)
+                    fprintf(stderr,
+                        "Fast Feature Count, ");
             }
             if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
-//                fprintf(stderr,
-//                    "Fast Get Extent, ");
+                if (debug_level & 16)
+                    fprintf(stderr,
+                        "Fast Get Extent, ");
                 // Save this away and decide whether to
                 // request/compute extents based on this.
                 fast_extents = 1;
@@ -2632,19 +2710,22 @@ clear_dangerous();
 
             if (OSRIsGeographic(map_spatialH)) {
                 if (i == 0) {
-//                    fprintf(stderr,"  Geographic Coord, ");
+                    if (debug_level & 16)
+                        fprintf(stderr,"  Geographic Coord, ");
                 }
                 geographic++;
             }
             else if (OSRIsProjected(map_spatialH)) {
                 if (i == 0) {
-//                    fprintf(stderr,"  Projected Coord, ");
+                    if (debug_level & 16)
+                        fprintf(stderr,"  Projected Coord, ");
                 }
                 projected++;
             }
             else {
                 if (i == 0) {
-//                    fprintf(stderr,"  Local Coord, ");
+                    if (debug_level & 16)
+                        fprintf(stderr,"  Local Coord, ");
                 }
             }
 
@@ -2652,34 +2733,40 @@ clear_dangerous();
             //
             temp = OSRGetAttrValue(map_spatialH, "DATUM", 0);
             if (i == 0) {
-//                    fprintf(stderr,"DATUM: %s, ", temp);
+                if (debug_level & 16)
+                    fprintf(stderr,"DATUM: %s, ", temp);
             }
 
             if (projected) {
                 temp = OSRGetAttrValue(map_spatialH, "PROJCS", 0);
                 if (i == 0) {
-//                    fprintf(stderr,"PROJCS: %s, ", temp);
+                    if (debug_level & 16)
+                        fprintf(stderr,"PROJCS: %s, ", temp);
                 }
  
                 temp = OSRGetAttrValue(map_spatialH, "PROJECTION", 0);
                 if (i == 0) {
-//                    fprintf(stderr,"PROJECTION: %s, ", temp);
+                    if (debug_level & 16)
+                        fprintf(stderr,"PROJECTION: %s, ", temp);
                 }
             }
 
             temp = OSRGetAttrValue(map_spatialH, "GEOGCS", 0);
             if (i == 0) {
-//                    fprintf(stderr,"GEOGCS: %s, ", temp);
+                if (debug_level & 16)
+                    fprintf(stderr,"GEOGCS: %s, ", temp);
             }
 
             temp = OSRGetAttrValue(map_spatialH, "SPHEROID", 0);
             if (i == 0) {
-//                    fprintf(stderr,"SPHEROID: %s, ", temp);
+                if (debug_level & 16)
+                    fprintf(stderr,"SPHEROID: %s, ", temp);
             }
 
         }
         else {
             if (i == 0) {
+                if (debug_level & 16)
                     fprintf(stderr,"  No Spatial Info, ");
                 // Assume geographic/WGS84 unless the coordinates go
                 // outside the range of lat/long, in which case,
@@ -2696,12 +2783,14 @@ clear_dangerous();
             // We have extents.  Check whether any part of the layer
             // is within our viewport.
             if (i == 0) {
-//                fprintf(stderr, "Extents obtained.");
+                if (debug_level & 16)
+                    fprintf(stderr, "Extents obtained.");
             }
             extents_found++;
         }
         if (i == 0) {
-//            fprintf(stderr, "\n");
+            if (debug_level & 16)
+                fprintf(stderr, "\n");
         }
 
 /*
@@ -2786,6 +2875,7 @@ clear_dangerous();
             if (geometryH == NULL) {
                 OGR_F_Destroy( featureH );
 //                if (strlen(geometry_type_name) == 0) {
+                if (debug_level & 16)
                     fprintf(stderr,"  Layer %02d:   - No geometry info -\n", i);
 //                    geometry_type_name[0] = ' ';
 //                    geometry_type_name[1] = '\0';
@@ -2931,7 +3021,8 @@ clear_dangerous();
                 default:            // Unknown/Unimplemented
 
                     num = 0;
-                    fprintf(stderr,"  Unknown or unimplemented geometry\n");
+                    if (debug_level & 16)
+                        fprintf(stderr,"  Unknown or unimplemented geometry\n");
                     break;
             }
             if (featureH)
