@@ -20,6 +20,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  * Look at the README for more information on the program.
+ *
+ *
+ * Please see separate copyright notice attached to the
+ * SHPRingDir_2d() function in this file.
+ *
  */
 
 
@@ -1341,6 +1346,121 @@ void create_map_from_trail(char *call_sign) {
         free(z);
     }
     else {  // Couldn't find the station of interest
+    }
+}
+
+
+
+
+
+// SHPRingDir_2d Function snagged from Shapelib/contrib/shpgeo.c.
+// The below copyright notice applies to this one function only.
+/********************************************************************
+ * Copyright (c) 1999, Carl Anderson
+ *
+ * This code is based in part on the earlier work of Frank Warmerdam
+ * 
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ ********************************************************************/
+
+// SHPRingDir_2d
+//
+// Test Polygon for CW / CCW  ( R+ / R- )
+//
+// return 1  for R+
+// return -1 for R-
+// return 0  for error
+// **************************************************************************
+int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
+    int     i, ti, last_vtx;
+    double  tX;
+    double  *a, *b;
+    double  dx0, dx1, dy0, dy1, v1, v2 ,v3;
+   
+    tX = 0.0;
+    a = psCShape->padfX;
+    b = psCShape->padfY;
+   
+    if ( Ring >= psCShape->nParts )
+        return(0);
+   
+    if ( Ring >= psCShape->nParts -1 ) {
+        last_vtx = psCShape->nVertices;
+    }
+    else {
+        last_vtx = psCShape->panPartStart[Ring + 1];
+    }
+      
+    // All vertices at the corners of the extrema (rightmost lowest,
+    // leftmost lowest, topmost rightest, ...) must be less than pi
+    // wide.  If they werent they couldnt be extrema.  Of course the
+    // following will fail if the Extents are even a little wrong.
+   
+    for ( i = psCShape->panPartStart[Ring]; i < last_vtx; i++ ) {
+        if ( b[i] == psCShape->dfYMax && a[i] > tX ) {
+            ti = i;
+        }
+    }
+
+    if (debug_level & 1) {
+        printf ("(shpgeo:SHPRingDir) highest Rightmost Pt is vtx %d (%f, %f)\n",
+            ti,
+            a[ti],
+            b[ti]);
+    }
+   
+    // Cross product:
+    // The sign of the cross product of two vectors indicates the
+    // right or left half-plane which we can use to indicate Ring
+    // Dir
+    if ( ti > psCShape->panPartStart[Ring] & ti < last_vtx ) {
+        dx0 = a[ti-1] - a[ti];
+        dx1 = a[ti+1] - a[ti];
+        dy0 = b[ti-1] - b[ti];
+        dy1 = b[ti+1] - b[ti];
+    }
+    else {
+        // if the tested vertex is at the origin then continue from 0
+        dx1 = a[1] - a[0];
+        dx0 = a[last_vtx] - a[0];
+        dy1 = b[1] - b[0];
+        dy0 = b[last_vtx] - b[0];
+    }
+  
+    // These next two are alwyas zero so why do the math? 
+    //v1 = ( (dy0 * 0) - (0 * dy1) );
+    //v2 = ( (0 * dx1) - (dx0 * 0) );
+
+    v3 = ( (dx0 * dy1) - (dx1 * dy0) );
+
+    if (debug_level & 1) {
+        printf ("(shpgeo:SHPRingDir)  cross product for vtx %d was %f n",
+            ti, v3); 
+    }
+
+    if ( v3 > 0 ) {
+        return (1);
+    }
+    else {
+        return (-1);
     }
 }
 
@@ -3399,6 +3519,37 @@ void draw_shapefile_map (Widget w,
                         int glacier_flag = 0;
                         const char *temp;
 
+
+
+
+
+//WE7U
+// Testing for fill or hole ring.  This will determine how we
+// ultimately draw the entire shape.
+//
+// Tests Polygon for CW / CCW  ( R+ / R- )
+//
+// return 1  for R+ (CW or a fill)
+// return -1 for R- (CCW or a hole in the polygon)
+// return 0  for error
+//
+switch ( SHPRingDir_2d( object, ring) ) {
+    case  0:    // Error in trying to compute whether fill or hole
+    case  1:    // It's a fill ring
+        // Do nothing for these two cases
+        break;
+    case -1:    // It's a hole ring
+//        fprintf(stderr, "Ring %d/%d is a polygon hole\n",
+//            ring,
+//            object->nParts);
+        break;
+}
+//WE7U
+
+
+
+
+
                         if (lake_flag || river_flag) {
                             if ( mapshots_labels_flag && (fieldcount >= 3) ) {
                                 temp = DBFReadStringAttribute( hDBF, structure, 2 );    // CFCC Field
@@ -3457,7 +3608,8 @@ void draw_shapefile_map (Widget w,
 // right/left counters?
 //
 // Use the routine in the contrib directory of Shapelib which can
-// determine whether it's a fill or a hole shape.
+// determine whether it's a fill or a hole shape:
+// contrib/shpgeo.c:SHPRingDir_2d()
 //WE7U
 
 
