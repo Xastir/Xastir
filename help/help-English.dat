@@ -149,6 +149,7 @@ Other language options are:
     xastir -lFrench
     xastir -lGerman
     xastir -lItalian
+    xastir -lPortuguese
     xastir -lSpanish
 
 The chosen language will be stored in your config file, so it is
@@ -408,10 +409,9 @@ large areas. The lower number the level, the more local the area.
 
 A quicker zoom in function is to push and hold the left mouse button, drag it
 across the area of interest and let go.  The map will zoom to approximately
-the size of the square you just described with the mouse drag operation.
-The program uses the vertical component to decide on the zoom level, and the
-vertical and horizontal components to compute the new map center.  The "move"
-and "measure" toolbar checkboxes must be disabled for this feature to work.
+the size of the square you just described with the mouse drag operation. The
+"move" and "measure" toolbar checkboxes must be disabled for this feature to
+work.
 
 The map can also be zoomed with the keyboard PageUp/PageDown keys.  The
 zooming in this case keeps the same map center. 
@@ -1310,7 +1310,7 @@ HELP-INDEX>Configure Serial TNC w/GPS on HSP cable or AUX port
 
 These hybrid interface types implement the options of both serial TNCs and
 GPSs. Please consult the configuration help for both serial TNCs and serial
-GPSs for further information on the configuration of this device.
+GPSs for further information on the configuration of these devices.
 
 HELP-INDEX>Configure AX.25 TNC Devices
 
