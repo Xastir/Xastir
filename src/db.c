@@ -13548,7 +13548,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         if (strncasecmp(line,"user",4) == 0
                 || strncasecmp(line,"pass",4 == 0)
                 || strncasecmp(line,"filter",6 == 0)) {
-            fprintf(stderr,"Logged on via x_spider: %s\n", line);
+            fprintf(stderr,"\tLogged on: %s\n", line);
 
 // If the line has a "filter" parameter in it, we need to remove it,
 // else a client may change our filtering parameters.  Perhaps we

@@ -173,6 +173,7 @@ extern short checkHash(char *theCall, short theHash);
 typedef struct _pipe_object {
     int to_child[2];
     int to_parent[2];
+    char callsign[20];
     int authenticated;
     struct _pipe_object *next;
 } pipe_object;
@@ -457,8 +458,17 @@ int pipe_check(void) {
         n = readline(p->to_parent[0], line, MAXLINE);
         if (n == 0) {
             pipe_object *q = pipe_head;
- 
-//            fprintf(stderr,"Client connection terminated.\n");
+
+            if (p->authenticated) { 
+                fprintf(stderr,
+                    "X_spider session terminated, callsign: %s\n",
+                    p->callsign);
+            }
+            else {
+                fprintf(stderr,
+                    "X_spider session terminated, unauthenticated user\n");
+            }
+
             // Close the pipe
             close(p->to_child[1]);
             close(p->to_parent[0]);
@@ -555,10 +565,12 @@ int pipe_check(void) {
                     //    "x_spider: Authenticated user %s\n",
                     //    callsign);
                     p->authenticated = 1;
+                    strncpy(p->callsign,callsign,20);
+                    p->callsign[19] = '\0';
                 }
                 else {
                     fprintf(stderr,
-                        "x_spider: Bad authentication, user %s, pass %d\n",
+                        "X_spider: Bad authentication, user %s, pass %d\n",
                         callsign,
                         passcode);
                 }
@@ -789,6 +801,9 @@ void Server(void) {
 
         // We haven't authenticated this user client yet.
         p->authenticated = 0;
+        p->callsign[0] = '\0';
+
+        fprintf(stderr,"X_spider client connected!\n");
 
         // Link it into the head of the chain.
         //
@@ -904,6 +919,7 @@ int Fork_server(void) {
     }
  
     xastir_pipe->authenticated = 1;
+    xastir_pipe->callsign[0] = '\0';
  
     if ( (childpid = fork()) < 0) {
         fprintf(stderr,"Fork_server: Fork error\n");
