@@ -73,8 +73,8 @@ The latest Xastir release adds numerous new capabilities, keeping Xastir a
 benchmark for APRS programs on any operating system.
 
 Xastir's hardware support has been enhanced, with
-* Support for Serial KISS TNC's
-* Support for Serial TNC's with GPS on the AUX port
+* Support for Serial KISS TNCs
+* Support for Serial TNCs with GPS on the AUX port
 * Support for using AGWPE as a TNC
 * Support for Dallas One-Wire weather station
   (see http://melhuish.info/simon/projects/oww/)
@@ -1659,7 +1659,7 @@ HELP-INDEX>Configure Serial TNC Devices
 
                           Configure Serial TNC Devices 
 
-This section covers adding or modifying Serial TNC's or Serial TNC's with a
+This section covers adding or modifying Serial TNCs or Serial TNCs with a
 GPS on a HSP cable.
 
 If you have a HSP cable, which allows you to share the TNC port with a GPS
@@ -1713,18 +1713,18 @@ HELP-INDEX>Configure Serial TNC w/GPS on HSP cable or AUX port
 
                 Configure Serial TNC w/GPS on HSP cable or AUX port
 
-These hybrid interface types implement the options of both serial TNC's and
-GPS's. Please consult the configuration help for both serial TNC's and serial
-GPS's for further information on the configuration of these devices.
+These hybrid interface types implement the options of both serial TNCs and
+GPSs. Please consult the configuration help for both serial TNCs and serial
+GPSs for further information on the configuration of these devices.
 
 HELP-INDEX>Configure Serial KISS TNC
 
                      Configure Serial KISS TNC
 
-This section covers adding or modifying Serial KISS TNC's. KISS mode can be done
-by most standard TNC's too, and it eliminates the necessity to set the options
+This section covers adding or modifying Serial KISS TNCs. KISS mode can be done
+by most standard TNCs too, and it eliminates the necessity to set the options
 specially in the startup files, at the expense of slightly higher processor
-usage. And of course this enables the use of purely KISS TNC's, such as the one
+usage. And of course this enables the use of purely KISS TNCs, such as the one
 described in the November 2000 issue of QST, without a separate program or
 kernel module.
 
