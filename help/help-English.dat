@@ -65,6 +65,13 @@ on APRS(tm) can be found in the APRSdos documentation written by
 Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
+HELP-INDEX>What's new in Xastir BETA
+Comment fields for interfaces
+split_gnis and ozi2geo scripts, need to add to section on scripts
+serial mkiss interface
+move objects without confirm
+new timing params wrt trails, need to add to config|timing part
+
 HELP-INDEX>What's new in Xastir 1.3
 
                     What's new in Xastir 1.3
@@ -1745,7 +1752,9 @@ Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
 
 The TNC Port is the Unix device that the TNC (or TNC and GPS) is hooked to.
-Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc..
+Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc.
+
+Comment will allow you to set a friendly name or comment for the port.
 
 Now set the bps rate under port settings, and the parameters under port
 style. Port Style setting 8N1 is used for 8 data bits, No parity and 1 stop
@@ -1810,7 +1819,9 @@ base stations in regions where there are few other RELAY stations in the
 area. Consult with a local group about the best setting for your region. 
 
 The TNC Port is the Unix serial device that the TNC is hooked to.
-Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc..
+Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc.
+
+Comment will allow you to set a friendly name or comment for the port.
 
 Now set the bps rate under port settings.
 
@@ -1866,11 +1877,13 @@ area.  Consult with a local group about the best setting for your region.
 This is only needed if you are not using any other software that performs
 this function, such as aprsdigi or DIGI_NED.
 
+Enter the AX.25 Device name you specified in the axports file for this device.
+
+Comment will allow you to set a friendly name or comment for the port.
+
 Choose the correct IGate operation for this device. You may have several TNC
 devices and this option can be different for each device. If you are not
 running an IGate leave it at the default option of "Disable".
-
-Enter the AX.25 Device name you specified in the axports file for this device.
 
 Enter in up to three UNPROTO paths. Xastir will assume the XX VIA part of the
 UNPROTO path. There are three paths allowed so that your signal will be heard
@@ -1901,6 +1914,8 @@ HELP-INDEX>Configure Serial GPS Devices
 Set the serial port device for your GPS unit. Common values of /dev/ttyS0
 (COM1) or /dev/ttyS1 (COM2) can be used.
 
+Comment will allow you to set a friendly name or comment for the port.
+
 Selecting "Activate on start up" will tell Xastir to look for this device and
 set up communications with it when the program first starts.
 
@@ -1924,6 +1939,8 @@ connections to share your GPS data.
 
 Set the host name (or IP address) and the port number for the gpsd host on
 your network.
+
+Comment will allow you to set a friendly name or comment for the port.
 
 Selecting "Activate on start up" will tell Xastir to look for this device and
 set up communications with it when the program first starts.
@@ -1960,6 +1977,8 @@ Enter any filter parameters. This causes a special message to be sent to the
 server requesting that the data be filtered in a certain way. The exact format
 of this field is fully specified, please consult APRSSIG for more information.
 
+Comment will allow you to set a friendly name or comment for the port.
+
 Selecting "Reconnect on failure" will tell Xastir to try to reconnect when the
 data stream has failed.
 
@@ -1969,6 +1988,8 @@ HELP-INDEX>Configure a Serial WX Station
 
 Set the serial port device for your WX unit. Common values of /dev/ttyS0
 (COM1) or /dev/ttyS1 (COM2) can be used.
+
+Comment will allow you to set a friendly name or comment for the port.
 
 Selecting "Activate on start up" will tell Xastir to look for this device and
 set up communications with it when the program first starts.
@@ -1997,6 +2018,8 @@ computers.
 
 Enter the host name (or IP address) and the port number of the WX data server
 you want to contact.
+
+Comment will allow you to set a friendly name or comment for the port.
 
 Selecting "Activate on start up" will tell Xastir to look for this device and
 set up communications with it when the program first starts.
