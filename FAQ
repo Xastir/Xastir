@@ -65,6 +65,8 @@ The Questions
          version.
     4.11 Why does Xastir segfault sometimes when indexing or loading
          geoTIFF images?
+    4.12 Why doesn't Xastir run on RedHat 9.0 properly?
+    4.13 Why do I see "Character '\55' not supported in font"?
 
 5.  Features
 
@@ -461,6 +463,52 @@ The Answers
     the TIFF code, or that the private TIFF API will become public.  Either
     of these changes should fix this problem for good.
 
+    4.12 Why doesn't Xastir run on RedHat 9.0 properly?
+
+    The RH kernels have implemented the new(er) New Posix Threading Library
+    (NPTL) as well as backported many of the new bells and whistles set to
+    appear in the 2.6.x kernels.  You might experience a great improvement
+    for apps that are heavily threaded.  NPTL is supposed to be backward
+    compatible but we have seen apps that have had problems.  You can revert
+    back to the older LinuxThreads implementation by setting the environment
+    variable: 
+
+    LD_ASSUME_KERNEL=<kernel-version>
+
+    in a shell before starting the app The following versions are available:
+
+       - 2.4.1 - Linuxthreads with floating stacks
+
+       - 2.2.5 - Linuxthreads without floating stacks
+
+    or, you can disable NPTL altogether for dynamically linked
+    applications by using 'nosysinfo' as a boot time option.
+
+    4.13 Why do I see "Character '\55' not supported in font"?
+
+    This message and similar have to do with localization and OpenMotif/
+    Lesstif.  For most of us this is a benign message and can be ignored.
+    If you simply can't stand it any more set LANG = C or en_US.  In RH 9
+    the default LANG is set to en_US.UTF-8 and this is where the "warning"
+    are coming from.
+
+    A quick way to address this on RedHat 8 and 9 is to edit your
+    /etc/sysconfig/i18n config file.  I believe the original file looks
+    like:
+
+    LANG="en_US.UTF-8"
+    SUPPORTED="en_US.UTF-8:en_US:en"
+    SYSFONT="latarcyrheb-sun16"
+
+    Change the "LANG=" line to:
+
+    LANG="en_US"
+
+    and reboot.
+
+    With the original setting you get some weird character mappings.  For
+    example, running "man ls", all of the dashes (-) disappeared from my
+    screen until I changed the LANG setting.
 
 5.  Features
 
