@@ -1533,7 +1533,7 @@ void load_data_or_default(void) {
     if (!get_int ("TRACK_ME", &track_me,0,1,0))
         track_me = 0;    // No tracking
 
-    if (!get_int ("MAP_CHOOSER_EXPAND_DIRS", &map_chooser_expand_dirs,0,1,0))
+    if (!get_int ("MAP_CHOOSER_EXPAND_DIRS", &map_chooser_expand_dirs,0,1,1))
         map_chooser_expand_dirs = 1;
 
     if (!get_int ("ST_DIRECT_TIMEOUT", &st_direct_timeout,1,60*60*24*30,60*60))
