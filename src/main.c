@@ -3897,14 +3897,17 @@ void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
     menu_y=input_y;
     if (right_menu_popup != NULL) { // If popup menu defined
 
-        // Bring up the popup menu
-        XmMenuPosition(right_menu_popup,(XButtonPressedEvent *)event);
-        XtManageChild(right_menu_popup);
+        if (!measuring_distance && !moving_object) {
 
-        // Check whether any modifiers are pressed.
-        // If so, pop up a warning message.
-        if ( (event->state != 0) && warn_about_mouse_modifiers) {
-            popup_message(langcode("POPUPMA023"),langcode("POPUPMA024"));
+            // Bring up the popup menu
+            XmMenuPosition(right_menu_popup,(XButtonPressedEvent *)event);
+            XtManageChild(right_menu_popup);
+
+            // Check whether any modifiers are pressed.
+            // If so, pop up a warning message.
+            if ( (event->state != 0) && warn_about_mouse_modifiers) {
+                popup_message(langcode("POPUPMA023"),langcode("POPUPMA024"));
+            }
         }
     }
 }
