@@ -1,6 +1,22 @@
 # $Id$
 # This is the TNC Startup file for Kantronics TNC.
 # lines that begin with a pound sign are comments.
+#
+# This configuration sets up Control-E mode for a KPC-3+ (GPS
+# connected to the 2nd serial port).  When Xastir is actively
+# getting GPS fixes, the TNC beacons only what Xastir sends to it.
+# When Xastir stops getting GPS data from the TNC, the TNC will
+# revert to dumb-tracker mode and start sending NMEA strings out all
+# by itself at a 20-minute rate.  If the GPS get disconnected or
+# turned off, the dumb-tracker mode will cease to send out beacons.
+# This last function is done by the "CLEAR" parameter for the BLT
+# commands.
+#
+# Some people prefer to turn off the GPS but still have the TNC
+# beacon their last good GPS position when in dumb-tracker mode.
+# To do this, remove the "CLEAR" parameters from the BLT command
+# lines.
+#
 
 int terminal
 
@@ -10,7 +26,7 @@ LT 2
 LT 3
 LT 4
 # Clear out the buffer regularly to prevent stale data:
-BLT 1 00:01:30 CLEAR
+BLT 1 00:20:00 CLEAR
 BLT 2 00:20:00 CLEAR
 BLT 3 00:00:00
 BLT 4 00:00:00
