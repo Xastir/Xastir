@@ -975,6 +975,10 @@ time_t WX_ALERTS_REFRESH_TIME;  /* Minimum WX alert map refresh time in seconds 
 int menu_x;
 int menu_y;
 int possible_zoom_function = 0;
+int zoom_box_x1 = -1;           // Stores one corner of zoom box
+int zoom_box_y1 = -1;
+int zoom_box_x2 = -1;           // Stores one corner of zoom box
+int zoom_box_y2 = -1;
 int mouse_zoom = 0;
 int polygon_last_x = -1;        // Draw CAD Objects functions
 int polygon_last_y = -1;        // Draw CAD Objects functions
@@ -8866,8 +8870,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     display_zoom_image(1);          // check range and do display, recenter
                 }
             */
-                // Reset the zoom-box variable
+                // Reset the zoom-box variables
                 possible_zoom_function = 0;
+                zoom_box_x1 = -1;
             }
             // It's not the center function because the mouse moved more than 15 pixels.
             // It must be either the "Compute new zoom/center" -OR- the "Measure distance"
@@ -8879,8 +8884,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 // and input_x/input_y where the button release occurred.
 
                 if (measuring_distance) {   // Measure distance function
-                    // Reset the zoom-box variable
+
+                    // Reset the zoom-box variables
                     possible_zoom_function = 0;
+                    zoom_box_x1 = -1;
+
                     x_distance = abs(menu_x - input_x);
                     y_distance = abs(menu_y - input_y);
 
@@ -8959,8 +8967,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     //      Put the new value of lat/lon into the object data.
                     //      Cause symbols to get redrawn.
 
-                    // Reset the zoom-box variable
+                    // Reset the zoom-box variables
                     possible_zoom_function = 0;
+                    zoom_box_x1 = -1;
 
                     x = (mid_x_long_offset - ((screen_width  * scale_x)/2) + (event->xmotion.x * scale_x));
                     y = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
@@ -9057,8 +9066,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     menu_y = input_y;
                     //fprintf(stderr,"Drag/zoom/center happened\n");
 
-                    // Reset the zoom-box variable
+                    // Reset the zoom-box variables
                     possible_zoom_function = 0;
+                    zoom_box_x1 = -1;
                 }
             }
             mouse_zoom = 0;
@@ -9284,9 +9294,6 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
 
 
-static time_t last_pointer_check = (time_t)0;
-
-
 // This function snags the current pointer information and tries to
 // determine whether we're doing some sort of draw or zoom function.
 // If so, draws the appropriate temporary squares or lines that the
@@ -9305,12 +9312,6 @@ void check_pointer_position(void) {
     unsigned int border_width_return;
     unsigned int depth_return;
 
-
-    // Check once per second only.
-    if ( last_pointer_check >= sec_now() ) {
-        return;
-    }
-    last_pointer_check = sec_now();
 
     // If this variable has not been set, we should not display the
     // box.
@@ -9405,11 +9406,11 @@ void check_pointer_position(void) {
                     // line from polygon_last_x and polygon_last_y
                     // to the current pointer position.
 /*
-                    (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x0e]); // yellow
+                    (void)XSetLineAttributes(XtDisplay(da), gc_tint, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(da), gc_tint, colors[(int)0x0e]); // yellow
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
-                        gc,
+                        gc_tint,
                         polygon_last_x,
                         polygon_last_y,
                         win_x_return,
@@ -9426,39 +9427,83 @@ void check_pointer_position(void) {
                         return;
                     }
 
-                    (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x0e]); // yellow
+                    (void)XSetLineAttributes(XtDisplay(da), gc_tint, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(da), gc_tint, colors[(int)0x0e]); // yellow
+                    (void)XSetFunction(XtDisplay(da), gc_tint, GXxor);
  
-                    // Remove the last box drawn (if any).  Draw a
-                    // box around the current zoom area.
+                    // Check whether we already have a box on screen
+                    // that we need to erase.
+                    if (zoom_box_x1 != -1) {
+//fprintf(stderr,"erasing\n");
+                        // Remove the last box drawn via the XOR
+                        // function.
+                        XDrawLine(XtDisplay(da),
+                            XtWindow(da),
+                            gc_tint,
+                            zoom_box_x1,    // Keep x constant
+                            zoom_box_y1,
+                            zoom_box_x1,
+                            zoom_box_y2);
+                        XDrawLine(XtDisplay(da),
+                            XtWindow(da),
+                            gc_tint,
+                            zoom_box_x1,
+                            zoom_box_y1,    // Keep y constant
+                            zoom_box_x2,
+                            zoom_box_y1);
+                        XDrawLine(XtDisplay(da),
+                            XtWindow(da),
+                            gc_tint,
+                            zoom_box_x2,    // Keep x constant
+                            zoom_box_y1,
+                            zoom_box_x2,
+                            zoom_box_y2);
+                        XDrawLine(XtDisplay(da),
+                            XtWindow(da),
+                            gc_tint,
+                            zoom_box_x1,
+                            zoom_box_y2,    // Keep y constant
+                            zoom_box_x2,
+                            zoom_box_y2);
+                    }
+
+                    // Draw a box around the current zoom area.
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
-                        gc,
+                        gc_tint,
                         menu_x,         // Keep x constant
                         menu_y,
                         menu_x,
                         win_y_return);
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
-                        gc,
+                        gc_tint,
                         menu_x,
                         menu_y,         // Keep y constant
                         win_x_return,
                         menu_y);
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
-                        gc,
+                        gc_tint,
                         win_x_return,   // Keep x constant
                         menu_y,
                         win_x_return,
                         win_y_return);
                     XDrawLine(XtDisplay(da),
                         XtWindow(da),
-                        gc,
+                        gc_tint,
                         menu_x,
                         win_y_return,   // Keep y constant
                         win_x_return,
                         win_y_return);
+
+                    // Save the values away so that we can erase the
+                    // box later.
+                    zoom_box_x1 = menu_x;
+                    zoom_box_y1 = menu_y;
+                    zoom_box_x2 = win_x_return;
+                    zoom_box_y2 = win_y_return;
+
                     return;
                 }
 
