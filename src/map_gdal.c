@@ -449,6 +449,11 @@ void draw_ogr_map(Widget w,
         return;
     }
 
+
+// Optimization:  Get the envelope for each layer, skip the layer if
+// it's completely outside our viewport.
+
+
     /* Loop through layers and dump their contents */
 
     numLayers = OGR_DS_GetLayerCount(datasource);
@@ -513,6 +518,10 @@ fprintf(stderr,"4\n");
     }
 */
 
+
+
+// Optimization:  Get the envelope for each feature, skip the
+// feature if it's completely outside our viewport.
 
 
         // Dump each feature individually
