@@ -50,7 +50,7 @@
 // Check entire station list at this rate for objects/items that
 // might need to be transmitted via the decaying algorithm.  This is
 // the start rate, which gets doubled on each transmit.
-#define OBJECT_CHECK_RATE 15
+#define OBJECT_CHECK_RATE 20
 
 // We should probably be using APRS_DF in extract_bearing_NRQ()
 // and extract_omnidf() functions.  We aren't currently.
