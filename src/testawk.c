@@ -14,6 +14,8 @@
 #endif // HAVE_LIBSHP_SHAPEFIL_H
 #endif // HAVE_SHAPEFIL_H
 
+#include <ctype.h>
+#include <sys/types.h>
 #include "awk.h"
 #include "dbfawk.h"
 

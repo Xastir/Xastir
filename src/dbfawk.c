@@ -271,4 +271,52 @@ void dbfawk_parse_record(awk_program *rs,
     awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 }
 
+#ifndef HAVE_DBFGETFIELDINDEX
+#include <ctype.h>
+/************************************************************************/
+/*                            str_to_upper()                            */
+/************************************************************************/
+
+static void str_to_upper (char *string)
+{
+  int len;
+  short i = -1;
+
+  len = strlen (string);
+
+  while (++i < len)
+    if (isalpha(string[i]) && islower(string[i]))
+      string[i] = toupper ((int)string[i]);
+}
+
+/************************************************************************/
+/*                          DBFGetFieldIndex()                          */
+/*                                                                      */
+/*      Get the index number for a field in a .dbf file.                */
+/*                                                                      */
+/*      Contributed by Jim Matthews.                                    */
+/************************************************************************/
+
+int 
+DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName)
+
+{
+  char          name[12], name1[12], name2[12];
+  int           i;
+
+  strncpy(name1, pszFieldName,11);
+  str_to_upper(name1);
+
+  for( i = 0; i < DBFGetFieldCount(psDBF); i++ )
+    {
+      DBFGetFieldInfo( psDBF, i, name, NULL, NULL );
+      strncpy(name2,name,11);
+      str_to_upper(name2);
+
+      if(!strncmp(name1,name2,10))
+	return(i);
+    }
+  return(-1);
+}
+#endif
 #endif /* HAVE_LIBSHP && HAVE_LIBPCRE */

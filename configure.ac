@@ -168,6 +168,8 @@ AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}")
 use_shapelib=no
 AC_CHECK_HEADERS(shapefil.h libshp/shapefil.h, [AC_CHECK_LIB(shp, DBFOpen, use_shapelib=yes
 LIBS="$LIBS -lshp"
+AC_CHECK_LIB(shp,DBFGetFieldIndex,
+  AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
 AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
 break)])
  
