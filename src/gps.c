@@ -48,8 +48,6 @@
 char gps_gprmc[MAX_GPS_STRING];
 char gps_gpgga[MAX_GPS_STRING];
 
-int got_gps_gprmc;
-int got_gps_gpgga;
 int gps_stop_now;
 
 
@@ -85,7 +83,7 @@ int decode_gps_rmc( char *data,
     struct tm stm;
     int ok;
 
-// We should check for a miniumum line length before parsing,
+// We should check for a minimum line length before parsing,
 // and check for end of input while tokenizing.
 
     ok=0;
@@ -201,7 +199,7 @@ int decode_gps_gga( char *data,
     char alt_unit;
     int ok;
 
-// We should check for a miniumum line length before parsing,
+// We should check for a minimum line length before parsing,
 // and check for end of input while tokenizing.
 
     ok=0;
@@ -286,6 +284,7 @@ void gps_data_find(char *gps_line_data, int port) {
     struct timeval tv;
     struct timezone tz;
     char temp_str[MAX_GPS_STRING];
+    int have_valid_string = 0;
 
 
     if (strncmp(gps_line_data,"$GPRMC,",7)==0 && !gps_stop_now) {
@@ -298,7 +297,7 @@ void gps_data_find(char *gps_line_data, int port) {
         statusline(langcode("BBARSTA015"),0);
         strcpy(gps_gprmc,gps_line_data);
         strcpy(temp_str,gps_line_data);
-        got_gps_gprmc=1;
+        // decode_gps_rmc is destructive to its first parameter
         if (decode_gps_rmc( temp_str,
                             long_pos,
                             sizeof(long_pos),
@@ -310,12 +309,36 @@ void gps_data_find(char *gps_line_data, int port) {
                             cse,
                             &t ) == 1) {    /* mod station data */
             /* got GPS data */
+            have_valid_string++;
+            if (debug_level & 128)
+                printf("RMC <%s> <%s><%s> %c <%s>\n",
+                    long_pos,lat_pos,spd,sunit[0],cse);
+
             alt[0] = '\0';
             sats[0] = '\0';
             my_station_gps_change(long_pos,lat_pos,cse,spd,
                 sunit[0],alt,sats);
+
+            if (debug_level & 128) {
+                printf("Checking for Time Set on %d (%d)\n",
+                    port, devices[port].set_time);
+            }
+
+            if (devices[port].set_time) {
+                tv.tv_sec=t;
+                tv.tv_usec=0;
+                tz.tz_minuteswest=0;
+                tz.tz_dsttime=0;
+
+                if (debug_level & 128) {
+                    printf("Setting Time %ld EUID: %d, RUID: %d\n",
+                        (long)t, (int)getuid(), (int)getuid());
+                }
+#ifdef __linux__
+                settimeofday(&tv, &tz);
+#endif
+            }
         }
- 
     }
 
     if(strncmp(gps_line_data,"$GPGGA,",7)==0 && !gps_stop_now) {
@@ -328,7 +351,7 @@ void gps_data_find(char *gps_line_data, int port) {
         statusline(langcode("BBARSTA016"),0);
         strcpy(gps_gpgga,gps_line_data);
         strcpy(temp_str,gps_line_data);
-        got_gps_gpgga=1;
+        // decode_gps_gga is destructive to its first parameter
         if ( decode_gps_gga( temp_str,
                              long_pos,
                              sizeof(long_pos),
@@ -338,6 +361,11 @@ void gps_data_find(char *gps_line_data, int port) {
                              alt,
                              aunit) == 1) { /* mod station data */
             /* got GPS data */
+            have_valid_string++;
+            if (debug_level & 128)
+                printf("GGA <%s> <%s> <%s> <%s> %c\n",
+                    long_pos,lat_pos,sats,alt,aunit[0]);
+
             cse[0] = '\0';
             spd[0] = '\0';
             sunit[0] = '\0';
@@ -346,78 +374,18 @@ void gps_data_find(char *gps_line_data, int port) {
         }
     }
 
-    if (debug_level & 128)
-        printf("Is GPS data complete?...");
-
-    if (got_gps_gpgga==1 && got_gps_gprmc==1) { /* decode data and shutdown gps port for timed interval */
+    if (have_valid_string) {
         if (debug_level & 128)
-            printf("Yes.\n");
             statusline(langcode("BBARSTA037"),0);
-        if (!gps_stop_now) {
+
+        if (!gps_stop_now)
             gps_stop_now=1;
-            if (decode_gps_rmc(gps_gprmc,
-                                long_pos,
-                                sizeof(long_pos),
-                                lat_pos,
-                                sizeof(lat_pos),
-                                spd,
-                                sunit,
-                                sizeof(sunit),
-                                cse,
-                                &t)==1) { /* mod station data */
 
-                if (debug_level & 128) {
-                    printf("Checking for Time Set on %d (%d)\n",
-                        port, devices[port].set_time);
-                }
-
-                if (devices[port].set_time) {
-                    tv.tv_sec=t;
-                    tv.tv_usec=0;
-                    tz.tz_minuteswest=0;
-                    tz.tz_dsttime=0;
-
-                    if (debug_level & 128) {
-                        printf("Setting Time %ld EUID: %d, RUID: %d\n",
-                            (long)t, (int)getuid(), (int)getuid());
-                    }
-#ifdef __linux__
-                    settimeofday(&tv, &tz);
-#endif
-                }
-
-                if (debug_level & 128)
-                    printf("RMC <%s> <%s><%s> %c <%s>\n",
-                        long_pos,lat_pos,spd,sunit[0],cse);
-
-                if (decode_gps_gga( gps_gpgga,
-                                    long_pos,
-                                    sizeof(long_pos),
-                                    lat_pos,
-                                    sizeof(lat_pos),
-                                    sats,
-                                    alt,
-                                    aunit)==1) {     /* mod station data */
-                    got_gps_gpgga=0;
-                    if (debug_level & 128)
-                        printf("GGA <%s> <%s> <%s> <%s> %c\n",
-                            long_pos,lat_pos,sats,alt,aunit[0]);
-                    got_gps_gprmc=0;
-
-                    /* got GPS data */
-                    my_station_gps_change(long_pos,lat_pos,cse,spd,
-                        sunit[0],alt,sats);
-                    if (port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
-                        /* return dtr to normal */
-                        port_dtr(port,0);
-                    }
-                }
-            }
+        /* If HSP port, shutdown gps for timed interval */
+        if (port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
+            /* return dtr to normal */
+            port_dtr(port,0);
         }
-    }
-    else {
-        if (debug_level & 128)
-            printf("No.\n");
     }
 }
 
