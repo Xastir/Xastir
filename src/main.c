@@ -9770,6 +9770,144 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
 
 
 
+
+// Change the "auto_maps" field in the in-memory map_index to a one.
+void map_index_update_auto_maps_yes(char *filename) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->auto_maps = 1;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+
+
+
+
+// Change the "auto_maps" field in the in-memory map_index to a
+// zero.
+void map_index_update_auto_maps_no(char *filename) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->auto_maps = 0;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+
+
+
+
+//WE7U
+void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x;
+    XmString *list;
+    char *temp;
+
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the auto_maps field
+    // on every one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+                temp2 = temp + 27;
+
+//printf("New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting the "auto_maps" field to 1.
+                map_index_update_auto_maps_yes(temp2);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
+}
+
+
+
+
+
+//WE7U
+void map_properties_auto_maps_no(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x;
+    XmString *list;
+    char *temp;
+
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the auto_maps field
+    // on every one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+                temp2 = temp + 27;
+
+//printf("New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting the "auto_maps" field to 0.
+                map_index_update_auto_maps_no(temp2);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
+}
+
+
+
+
+
 // Update the "map_layer" field in the in-memory map_index based on
 // the "map_layer" input parameter.
 void map_index_update_layer(char *filename, int map_layer) {
@@ -9875,8 +10013,9 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 //    char *temp;
 //    XmString *list;
     static Widget pane, my_form, button_clear, button_close, rowcol,
-           label1, label2, label3, button_filled_yes,
-           button_filled_no, button_layer_change;
+           label1, label2, label3, label4, button_filled_yes,
+           button_filled_no, button_layer_change,
+           button_auto_maps_yes, button_auto_maps_no;
     Atom delw;
     Arg al[10];                     // Arg List
     register unsigned int ac = 0;   // Arg Count
@@ -10047,7 +10186,37 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-// "None"
+//WE7U
+//        label4  = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        label4  = XtVaCreateManagedWidget("Automaps->",
+                xmLabelWidgetClass,
+                rowcol,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// "Automaps-Yes"
+//        button_filled_yes = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        button_auto_maps_yes = XtVaCreateManagedWidget("Yes",
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+//WE7U
+// "Automaps-No"
+//        button_filled_no = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        button_auto_maps_no = XtVaCreateManagedWidget("No",
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// "Clear"
         button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
                 xmPushButtonGadgetClass, 
                 rowcol,
@@ -10070,7 +10239,10 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         XtAddCallback(button_filled_yes, XmNactivateCallback, map_properties_filled_yes, map_properties_dialog);
         XtAddCallback(button_filled_no, XmNactivateCallback, map_properties_filled_no, map_properties_dialog);
         XtAddCallback(button_layer_change, XmNactivateCallback, map_properties_layer_change, map_properties_dialog);
-
+        XtAddCallback(button_auto_maps_yes, XmNactivateCallback,
+map_properties_auto_maps_yes, map_properties_dialog);
+        XtAddCallback(button_auto_maps_no, XmNactivateCallback,
+map_properties_auto_maps_no, map_properties_dialog);
 
         pos_dialog(map_properties_dialog);
 
