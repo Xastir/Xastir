@@ -128,6 +128,9 @@ Create a shortcut to C:\cygwin\usr\X11r6\bin\startxwin.bat from your
 desktop.  This shortcut is the method you'll use to start up
 Xwindows.
 
+Change the properties on the shortcut so that it runs it from your
+home directory on Cygwin, something like "c:\cygwin\home\<user>\"
+
 
 Step 3)  Test Cygwin and create startup shortcuts:
 
