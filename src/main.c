@@ -11188,8 +11188,15 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 void Stations_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
 
     delete_all_stations();
+
     my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
+
     current_trail_color = 0x00;  // restart
+
+    // Reload saved objects and items from previous runs.
+    // This implements persistent objects.
+    reload_object_item();
+
     redraw_on_new_data=2;
 }
 
