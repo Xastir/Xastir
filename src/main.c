@@ -3889,69 +3889,22 @@ void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /
 }
 
 
-
-
-
 void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
-    char temp_cmd[80];
-    char temp_file[80];
-    char line[129];
-    FILE *f_temp;
-
-
-    xastir_snprintf(temp_file,
-        sizeof(temp_file),
-        "%s/%s",
-        get_user_base_dir("tmp"),
-        "xfontsel.txt");
-
-    // Set up the command for xfontsel.  Save the output results in
-    // the "~/.xastir/tmp/xfontsel.txt" file.
-    xastir_snprintf(temp_cmd,
-        sizeof(temp_cmd),
-        "/usr/X11R6/bin/xfontsel -print > %s",
-        temp_file);
-
-    // Run "xfontsel"
-    if ( system(temp_cmd) ) {
-        fprintf(stderr,"Couldn't execute %s\n",temp_cmd);
-        return;
+    char xfontsel_font[sizeof(rotated_label_fontname)];
+    FILE *f;
+    /* invoke xfontsel -print and stick into map_font_text */
+    if ((f = popen("xfontsel -print","r"))) {
+        if (fgets(xfontsel_font,sizeof(xfontsel_font),f)) {
+            int l = strlen(xfontsel_font);
+            if (xfontsel_font[l-1] == '\n')
+                xfontsel_font[l-1] = '\0';
+            XmTextSetString(map_font_text, xfontsel_font);
+        }
+        pclose(f);
+    } else {
+        perror("xfontsel");
     }
-
-    // Successful run.  We should have a file in tmp now.  Note that
-    // xfontsel doesn't write out a <LF>.  Open the file, snag the
-    // first line, copy it into the dialog's textfield.
-
-    // Open the new file for reading
-    f_temp = fopen(temp_file,"r");
-    if (f_temp == NULL) {
-        fprintf(stderr,"Couldn't open %s\n",temp_file);
-        return;
-    }
-
-    // Get the first line, write it to the dialog
-    if (fgets(line, 128, f_temp) != NULL) {
-        XmTextSetString(map_font_text, line);
-    }
-
-    fclose(f_temp);
-
-// Should we remove the temp file now?
-
-// One current problem:  Xastir stops until you press "Quit" on
-// xfontsel.  We could fix this by putting it in another thread, but
-// then would probably have to have Xastir check periodically to see
-// if the temp file was updated, filling in the dialog when it
-// figured it out.
-
-// Check out "gps_operation_pending" and the GPS thread to see how
-// it was done before.  Probably could use the same techniques to
-// make the xfontsel stuff work properly in another thread without
-// stopping the main Xastir thread.
 }
-
-
-
 
 
 void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
