@@ -1,0 +1,33 @@
+$Revision$
+
+News - Updated 29 April 2001
+  ------------------------------------------------------------------------
+
+Whats new, first read the following documents:
+
+     INSTALL
+     README
+     ChangeLog
+
+All of these documents combined will fill you in on the latest changes to
+xastir in version 0.4.x.
+
+A lot of things have changed in this version so at a minimum read the
+ChangeLog text file. ChangeLog shows whats been added and fixed along the
+way.
+
+This version includes a "first try" at using the GNU Autotools for
+configuration.  These scripts have not been throughly tested on all
+platforms.  Any feedback is actively solicited.
+
+This version also includes several additional directories added in
+preparation for the implementation of GNU internationalization
+routines.
+
+
+CAUTION:
+
+     1. Before you start xastir for the first time BACKUP your
+     data files if this is an upgrade from a previous version.
+
+     2. DON'T USE YOUR OLD CONFIG FILE.. MAKE A NEW ONE.........

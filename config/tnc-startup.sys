@@ -1,0 +1,30 @@
+# $Id$
+# This is the TNC Startup file for Kantronics TNC.
+# lines that begin with a pound sign are comments.
+
+int terminal
+
+MYAlias RELAY
+B E 0
+DIGI on
+EXP on
+FLow off
+FUll off
+HEA off
+LFadd off
+LFSup ON
+AUTOLF off
+MCOM off
+MON ON
+MResp OFF
+MRPt on
+MSTamp off
+MXMit off
+NEWmode off
+#PACLen 128
+#PID off
+SCR 0
+# B E 0 must be set to 0 or both APRS and your TNC will send BCNS
+# Which will alternate in everyones L and A lists and fill up
+# their logs.  Do NOT set B E to anything other than 0 while APRS
+# is running.

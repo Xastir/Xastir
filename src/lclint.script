@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+
+#
+# This is for use with lclint 2.5 or later.
+#
+# http://lclint.cs.virginia.edu/
+#
+# $Id$
+#
+
+
+#$options = "+forcehints +gnuextensions -warnposix -I/usr/X11/LessTif/Motif2.0/include +trytorecover";
+#$options = "-warnposix -I/usr/X11/LessTif/Motif2.0/include +trytorecover -boolops -predboolint";
+$options = "-unqualifiedtrans -branchstate -mayaliasunique -exportlocal -linelength 1000 -predboolothers -nullassign -warnposix -I/usr/X11/LessTif/Motif1.2/include +trytorecover -boolops -predboolint";
+
+
+$grep = " \\
+| grep -v \"Only storage\" \\
+| grep -v \"New fresh\" \\
+| grep -v \"Immediate address\" \\
+| grep -v \"Fresh storage\" \\
+| grep -v \"exported but not used\" \\
+| grep -v Boolean \\
+| grep -v \"in function\" \\
+| grep -v \"used before definition\" \\
+| grep -v \"comment inside comment\" \\
+| grep -v \"declared unique\" \\
+| grep -v \"used after being released\" \\
+| grep -v \"referencing released storage\" \\
+| grep -v \"Dereference\" \\
+| grep -v \"Passed storage\" \\
+| grep -v \"ossibly null\" \\
+| grep -v \"Clauses\" \\
+| grep -v \"may become null\" \\
+| grep -v \"reachable from\" \\
+| grep -v \"null storage derivable\" \\
+| grep -v \"Implicitly\" \\
+| grep -v \"Unqualified\" \\
+| grep -v \"kept in true\" \\
+| grep -v \"released in true branch\" ";
+
+
+$grep = "";
+
+
+`(nice lclint $options callpass/callpass.c  2>&1) $grep >callpass.lint`;
+
+
+`(nice lclint $options alert.c bulletin_gui.c color.c datum.c db.c draw_symbols.c fcc_data.c festival.c gps.c hostname.c igate.c interface.c interface_gui.c lang.c list_gui.c locate_gui.c location.c location_gui.c main.c maps.c messages.c messages_gui.c popup_gui.c rac_data.c rotated.c snprintf.c sound.c track_gui.c util.c view_message_gui.c wx.c wx_gui.c xa_config.c 2>&1) $grep > xastir.lint`;
+

@@ -1,0 +1,682 @@
+HELP-INDEX>READ ME FIRST - License
+
+                            READ ME FIRST for XASTIR
+
+!!! NOTE: These Docs are out of Date!!
+
+For the most current information please read the README.1ST file in the Xastir 
+directory.
+
+Remember this program is intended to be used by the HAM community, in the USA
+the  FCC restricts you from transmitting over RF if you are not a licensed HAM.
+Users in countries outside the USA should seek their local government 
+restrictions. 
+
+LICENSE:
+
+XASTIR, Amateur Station Tracking and Information Reporting
+Copyright (C) 1999  Frank Giannandrea
+Copyright (c) 2000,2001,2002 The Xastir Group
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+More information on the program can be found at:
+Web,
+ http://www.xastir.org
+
+For more information on the GNU License look at:
+http://www.gnu.org
+
+
+HELP-INDEX>Welcome! and Notes from the Author
+
+                               Welcome to XASTIR!
+
+XASTIR, Stands for, X-windows Amateur Station Tracking and Information Reporting.
+
+It is an APRS(tm) like program that is Open Source and free to use and pass out
+to others. Currently this program is in development and should not be seen as 
+a finished product! Your help will be needed to make this a better program.  If 
+you have programming skills and/or can write documentation, your help may be 
+needed! I have a lot of ideas but very little time. So if you think you can add
+something to the effort let us know!
+
+
+APRS[tm] is a Trademark of Bob Bruninga, 
+his home page is at "http://web.usna.navy.mil/~bruninga/aprs.html"
+HELP-INDEX>Getting Started
+
+                               Getting Started
+
+Now that you have XASTIR running you must configure it!
+
+Xastir will by default not transmit any data. By default most options are
+turned off It will not even open the port to your TNC or GPS until you tell
+it. So go through the configuration Help section to configure XASTIR for 
+your station.
+
+NOTE: On menus, items that are grayed out are selected, as in the on/off 
+options, if the on is selected it will be grayed out.
+
+HELP-INDEX>Configuring the Defaults
+
+                             Configuring the Defaults
+
+Click on Configure then on Defaults.
+
+Select the time that must pass, from the last time a station is heard, for
+that station to be considered old. Default is 2 hours. This means if you
+hear from a station at say 2 PM and that station is not heard from after 2
+hours, the stations icon on the screen will look ghosted or transparent.
+
+Clicking OK will save your changes, Clicking on Cancel will keep the current
+settings.
+
+HELP-INDEX>Configuring the GPS/Port
+
+                               Configuring the GPS/Port
+
+Click on Configure then GPS/Port.
+
+To use a stand alone GPS on the serial port, click on Stand alone GPS.
+This port can be specified in the "Stand Alone GPS port" field. You may use
+a serial device like /dev/ttyS1.
+
+If you have a HSP cable, which allows you to share the tnc port with a GPS
+unit you may select TNC Connect GPS (HSP Cable). This is a special cable and
+my not work on all computers/GPS/TNC combinations.
+
+Now you may select a GPS sample and TNC transmit rate, Remember use caution
+here be friendly to your near by stations.
+
+To activate the use of the GPS data select the "Use GPS Position?" option.
+With this selection made the GPS unit will update your position. If this is 
+not selected the current location will come from the location in Station 
+information configuration. When active the GPS data will also update the 
+location in Station information configuration.
+
+When using the GPS your packets change, you will become a mobile station with
+course and speed even if your not moving (I may change this to an option later).
+The GPS time will allow you to select sample rates for the GPS and will override
+the standard packet time for transmitting your station. If you are stationary
+then use 10 minutes. If your doing something special/tracking etc.. use the
+selection that will best fit the data you need. Please don't over transmit,
+if you don't need to. 
+
+
+Clicking OK will save your changes, Clicking on Cancel will keep the current
+settings.
+
+HELP-INDEX>Configuring the TNC/Port
+
+                               Configuring the TNC/Port
+
+
+Click on the Configure then TNC/Port
+
+If you have a TNC and plan to use it with XASTIR select "Use TNC?". The 
+default is, not selected.
+
+Now enter the port the TNC is on i.e. /dev/ttyS0 for com1
+
+Select the port settings that match your TNCs Baud Rate.
+
+Enter in up to three UNPROTO paths.
+
+Xastir will assume the XX VIA part of the UNPROTO path. There are three Paths 
+allowed so that your signal will be heard if conditions are bad. If any of 
+these are filled in XASTIR will cycle through one of them at each transmission
+time. If you are local, just a WIDE may be a good choice. If you are using low
+power and/or are distant from a digi then RELAY, WIDE may work better. Or if 
+you know the call of your closest digi you may use XXXCALL, WIDE. Most of you 
+will only need one path. If you are in a remote area and your signal is 
+difficult to get out you may need more. Check with a local group and ask what
+path may be best for your area.
+
+Clicking OK will save your changes, Clicking on Cancel will keep the current
+settings.
+
+HELP-INDEX>Configuring the Station information
+
+                            Configuring the Station information
+
+
+Enter your Call sign/SSID.
+
+Default is N0CALL, if you don't know what this is perhaps you shouldn't be 
+using this program. 
+
+Next enter the Latitude in degrees, minutes.100ths of minutes and N for North
+or S for South (Hemisphere).
+
+Now enter the longitude also in degrees, minutes.100ths of minutes and E for
+East and W for West. 
+
+By default you are at 00 00.00N Lat, 000 00.00W long, or somewhere off the 
+African cost.
+
+Now enter the Group/overlay and the symbol of your station. Check the chart 
+listing for what symbol to use. By default the symbol is x or for 
+xwindows/unix and the group is "/". if you want to overlay a number/letter
+on top of a symbol, enter the letter or digit in the group/overlay box and
+pick a symbol form the "\" group. 
+
+Next enter the data for the power/height/gain of your station. This is good
+information to add but it is not required. These fields are broken in to
+a granular representation of your station. For power choose the digit closest
+to your power level form this chart.
+
+Digit to use      0  1  2  3   4   5   6   7   8   9 
+Power in (watts)  0  1  4  9  16  25  36  49  64  81
+i.e if your running 36 watts use a "6".
+
+The same for height, but this is not the height above the ground but rather
+above the average terrain.
+
+Digit to use   0   1   2   3    4    5    6     7     8     9 
+Height        10  20  40  80  160  320  640  1280  2560  5120
+i.e if your height is 1280 watts use a "7".
+
+For Gain use the digit that is the gain of your antenna, in dB.
+
+Direction needs another chart, the direction is degrees from North.
+
+Digit to use    0   1   2    3    4    5    6    7    8     9 
+Direction (deg) 0  45  90  135  180  225  270  315  360  None
+i.e if your antenna is not directional use 0".
+
+Enter a comment, not required but it will add insight on your station.
+
+Position ambiguity will allow you control how accurate you  transmit your 
+position. A setting of none will allow your station to transmit the exact 
+position you have entered or received from a GPS. The other choices will
+place you somewhere in the range of the choice you selected. 
+
+Clicking OK will save your changes, Clicking on Cancel will keep the current
+settings.
+
+HELP-INDEX>Configuring the Internet connection
+
+                            Configuring the Internet connection
+
+
+To configure the Internet you will need to know of a host and a port number.
+The default host is first.aprs.net and the post is 23. You can choose
+others but this should work. A valid pass code will allow your station to
+transmit thru the Internet. It will allow your station to come out of an 
+I-gate and get retransmitted via RF. To get a pass code you will need to 
+contact Steve Dimse, K4HG at www.aprs.net, Send him your name, call sign, etc.
+Once he verifies your status as a HAM he can send you your code. You may still
+receive and transmit data via the Internet even though you don't have a pass
+code. But with out the pass code your data will not be retransmitted via RF.
+Any one directly connected to the Internet will still get your message.
+
+Host1 and Host2 are optional hosts that will be contacted if the primary host
+is down. Each host will be tried twice, moving on to the next if the 
+connection fails.
+
+If you want XASTIR to reconnect after a net connection was dropped then
+select "Reconnect on NET failure?" option which is on by default.
+
+The last options are for setting up your station to be an Igate. This allows 
+your station with your pass code to act just like a gate, but instead of 
+another band your data will pass through the Internet. This option must not 
+be taken lightly. First you must coordinate with others in your area so that 
+you may truly add information that may be missing. You should also contact 
+Steve about this. This version can send information received from your TNC to
+the Internet and will broadcast any Internet message data through your station
+via RF. It will only send data via RF if you have the Broadcast messages option
+selected. Only stations that you have heard (via RF) in the last hour will
+have messages sent to them in this way. Note also you are responsible for the
+data transmitted by your station so be careful with this option (others may send
+messages you do not want to transmit).
+
+If you want to see what your I-Gate is doing turn on the Log I-gate 
+transactions option. this will build a igate.log file in your "logs" directory
+it will show all the data passed from local RF to the net with line that have
+"IGATE-RF->NET:" and contain the full data. It will also show all the traffic
+coming from the net with "NET->RF-IGATE:". Note here you will not see the full
+outgoing packet, as your station and path are assumed. It will just show the
+data as a 3rd party message.
+
+
+Clicking OK will save your changes, Clicking on Cancel will keep the current
+settings.
+ 
+
+APRS[tm] is a Trademark of Bob Bruninga, 
+his home page is at "http://web.usna.navy.mil/~bruninga/aprs.html"
+
+
+HELP-INDEX>Configuring Audio Alarms
+
+                         Configuring Audio Alarms
+
+To use this option you must have a sound card and a program that will play
+wav files. The Audio Play Command should contain the program you want to
+execute to play the audio file (and any command line options).
+
+The fields will contain the name of the file to play, fields under the 
+option will set parameters for the option.
+  
+The Current choices are:
+
+  Play message on finding a new station. 
+
+  Play message on receiving an new message.
+
+  Play message on receiving data from a station within the min/max distance
+    of your proximity settings.
+
+  Play message on receiving data from a station (via TNC) with in the min/max
+    distance of your band opening settings.
+
+HELP-INDEX>Configuring Units
+
+                         Configuring default Units
+
+
+Units (English/Metric)
+ This selects what units the data will displayed in. Metric is the default,
+however English units are also available for those in the US that still use 
+it. 
+
+HELP-INDEX>Bottom Status Bar Information
+                        Bottom Status Bar Information
+
+At the bottom of the window various status messages are available:
+
+ In the first box general status messages are displayed.
+
+ The second box displays the current lat/long position of the mouse over the
+ map.
+
+ A third box is used to display how many stations are in the database.
+
+ The fourth box will display the current zoom level and will display "Tr"
+ if the station tracking is on.
+
+ The last two boxes will display the tnc and the network status. A ">" will
+ display if data is sending out, and a "<" if data is coming in from the 
+ interface.
+
+
+HELP-INDEX>Moving the Map (panning and zooming) and the Options Menu
+
+                    Moving the Map and the Options Menu
+
+Map movement is very simple, ease and quickness of movement is dependent on
+your processor speed and the amount of detail you load.
+
+All Movement and Zooming can be done by left clicking on the map (and holding
+the button down) This will bring up an options menu. This operation is 
+different than previous versions.
+
+All zooming functions will zoom in or out at the point on the map where you
+clicked the left mouse button. Zoom levels has a cascade menu. Levels 1-3 
+are for very local areas and Levels 4-6 are for large area. The lower number
+the level the more local the area.
+
+Panning is also accomplished by the options menu. The maps' position will
+change from the center of the window.
+
+The "Station Info" selection on the option menu will look for the closest 
+station when you left clicked the mouse. If more than one station is close
+to that position a "Station chooser" list will appear, then you can choose
+what stations' data you want to look at. If only one station is close then
+the stations' data will display.
+
+HELP-INDEX>Map Options and Map Chooser
+
+                       Map Options and Map Chooser
+
+Map Options:
+
+Auto maps (on/off)
+ When on, any map found in the map directory (or any directory under it) will
+be displayed, if it falls within the current display region. You can add any
+number of directory levels under the main map directory for your maps. Auto 
+maps will go through them all and find what map (or part) should be displayed. 
+All Maps will be merged in to the viewing area. If you have a large quantity of
+maps, very detailed maps or a slower computer this can be quite slow. When
+this option is off, maps selected with the Map Chooser will be displayed.
+
+Map Grid (on/off)
+ When on, this option will display a grid line every 10 degrees.
+
+Map levels (on/off)
+ When on, this option will try to filter out data when the zoom level show
+large areas. This does not work will all maps but will work with the maps 
+generated from Tiger Line maps at the aprs.rutgers.edu site.
+
+
+Map Chooser
+ This will present you with a list of all files in your map directory. Any map
+you would like to include in the displayed data, just click on the name. This 
+will highlight the map name, You can select any number of maps. Clicking the 
+OK button will display the selected maps. Cancel will abandon any changes.
+
+HELP-INDEX>Display Options
+
+                                Display Options
+
+These options will allow you to display data about the station around the 
+stations icon on the map.
+
+Altitude (on/off)
+ When on, a blue line of data will appear above the call sign. This will
+display the last know altitude of the station.
+
+Course (on/off)
+ When on, a green line of data will appear below the call sign. This will 
+display the last know course (in degrees) the station is traveling.
+
+Speed (on/off)
+ When on, a red line will appear below the call sign (or course). This
+will display the last know speed the station is traveling.
+
+Dist/course (on/off)
+ When on, two lines of information will be displayed on the left side of the
+stations' icon. The top line will contain the distance from your station to
+this station. The bottom line will contain the course from your station to
+this station. 
+
+Station trails (on/off)
+ When on, any moving station will trail a colored line with the last 100+ 
+ locations. When the station becomes old and icon is ghosted the track line
+ will become a dashed rather than solid line.
+ 
+
+Station Power/Gain (on/off)
+ When on, Power/Gain Circles will be displayed.
+
+Track Station
+ Will bring up a pop-up box similar to the locate station option. You can enter
+ all or part of the call sign. When selecting "Track Now!" The display will
+ jump to the location of the station (if one is found). When new data for that 
+ station is found the display will track along with that station.
+ 
+ The "Clear Tracking" button will clear all tracking.
+
+ The "Cancel" button will exit with no changes made.
+
+Weather Info (on/off)
+ When on, the latest weather data (temp,wind speed/course/gust,Humidity) 
+ is displayed.
+
+
+HELP-INDEX>Messages
+
+                                  Messages
+
+Send message to and Open Group messages
+ These are very similar. The "Send message to" will send your messages to one 
+station and will only receive data form that station. Group messages are more
+general you can receive any message for the group and you will send out your 
+messages to that group name. Group messages may not work the best right now
+there are various problems that need to be worked out. However, back to the
+use of these screens. 
+ Each of these screens contain a message box, a call line, a message line, 
+and various buttons. You must first enter the call of the group or station 
+you want to contact. Once that is done any new message that has come in from 
+that station to you will be displayed. If the station is sending you 
+information and no message window is up it will automatically pop up a new 
+window (up to 10) with that stations call sign filled in for you. You can now
+enter a message on the message line. The message can be longer that the 
+message line, and will max out about 250+ characters. Once your message is
+entered, clicking on the "Send Now!" button will send your message out. The
+"Send Now!" button will gray out until your message is completely Acked.
+Any message you receive will be sorted by the line # and be placed in the 
+message window. If you are in a group mode each line will display the call 
+sign from where the message was sent followed by the message itself. Currently
+group messages are sorted by call and then line #. When you are done sending
+messages clicking on the exit button will close the window. Two other buttons
+are also available. The "New Call" button will allow you to look at old data
+a station has sent. Type in the call and click on this button, any old
+information will be displayed. You can also use this button to change the call
+of the station your talking with. Enter the new call and click the button. The
+Clear Messages button will clear any message displayed in the message window.
+
+
+Clear all outgoing messages
+ This will clear all un-acked out message you have sent.
+
+Auto Reply Msg
+ This will turn on an automatic reply when a incoming message is received.
+
+Set Auto reply message
+ This will set the message that is sent.
+
+HELP-INDEX>TNC Options
+
+                             TNC Options
+
+Station Transmit (on/off)
+ This controls transmitting of data through the TNC. You may want to
+Just listen on RF or if your not a HAM and should not transmit. With
+This option (which is default to off) you can control transmitting any 
+data via RF. 
+
+Data Logging (on/off)
+ If this is on, a log file will be created in the log directory. The file
+will be called tnc.log and it will be appended with all the information
+heard via RF.
+ 
+Transmit Now!
+ This will transmit your stations position/info when you click on this
+selection. It will not transmit if the "Use TNC?" option is not selected
+(in the Configure - TNC/Port section) or if the above station transmit
+option is set to off.
+
+HELP-INDEX>NET Options
+
+                             NET Options
+
+Station Transmit (on/off)
+ This controls transmitting of data through the Internet. Default is off.
+With this in the off setting no data is sent out to the Internet.
+
+Data Logging (on/off)
+ If this is on, a log file will be created in the log directory. The file
+will be called net.log and it will be appended with all the information
+heard via the Internet.
+ 
+Transmit Now!
+ This will transmit your stations position/info when you click on this
+selection. It will not transmit if the above station transmit option is 
+set to off.
+
+HELP-INDEX>Station info box - FCC and RAC lookup
+
+                   Station info box - FCC and RAC lookup
+
+Station Info will display any data decoded by Xastir.
+
+Currently two three buttons appear here besides the close button.
+
+The Clear Track buttons will clear any line tracking for this station
+that is currently stored or on the map display.
+
+Send message will open up the message window and allow you to send a message
+to this station. It will fill in the callsign for you.
+
+If the FCC database is installed, a Search FCC Database button will appear
+in this box. If the RAC (Radio Amateurs of Canada) database is installed, 
+a Search RAC Database button will appear for callsigns beginning with a "V".
+
+You may use this button to add the Stations name and address to the
+Station Info box.
+
+To use the FCC lookup download:
+ ftp://ftp.fcc.gov/pub/XFS_AlphaTest/amateur/appl.zip
+ or the New database at
+ ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
+  (The only file needed form this 40Meg zip is the EN.dat file)
+
+To use the RAC lookup download:
+ ftp://ftp.rac.ca/pub/cdncaldb.zip
+
+Xastir will create index files for each database file upon startup.
+If a callsign file is dropped in while Xastir is running, it will create
+or rebuild the index on the next lookup.
+
+Special prefixes are NOT handled.
+
+HELP-INDEX>Clearing the screen of stations
+
+                     Clearing the screen of stations
+
+Click on file and then "Clear All Stations". This will wipe the all the
+data from the station database except yours.
+
+HELP-INDEX>Clearing the screen of line tracks
+
+                    Clearing the screen of line tracks
+
+Click on file and then "Clear All Tracks". This will wipe the all the
+line tracking data from the station database and refresh the screen.
+
+HELP-INDEX>Replaying a log
+
+                             Replaying a log
+
+Click on "Open Log File" a file selector window will display. You can
+use it to browse your hard drive and select any file containing raw TNC
+data like those created by the TNC and Net options.
+ Your station will still function the same way, receiving and transmitting.
+And there should be a word of warning here, if your data contains a message
+session and you have your station set to transmit, It will respond to the 
+file as if the data was received over the TNC or Internet. 
+
+
+HELP-INDEX>Locating a Station
+
+                            Locating a Station
+
+Click on "View" then, "Locate a Station" a window will pop up. You can
+now enter a call or part of a call. By default it will search for an 
+exact match (full call, not partial) and is not case sensitive. If you
+are looking for a partial match, "Match Exact" should not be selected.
+Actually you can use this to locate a station or an object. Which is
+where we come to the "Match Case" option. I have noticed that some 
+objects are in mixed case or lower case. With "Match Case" selected, 
+the locator will look for upper and lower case as you entered it. If
+"Match Case" is not selected, the locator will assume any case you type
+in is uppercase and will search on that. Clicking on the "Locate Now!"
+button will center the first station found in the center of your screen
+at the current zoom level. Clicking on "Cancel" will close the window.
+
+
+HELP-INDEX>Symbol Table
+
+                            Symbol Table
+
+
+
+Symbol     Group /                       Group \
+ 
+!          Triangle w/!                   Triangle w/!
+"          Rain Cloud                    Rain Cloud
+#          Digi                          DIGI         
+$          Phone Symbol                  $ Symbol
+%          DX                            DX 
+&          GATE-HF                       GATE
+'          Small Aircraft                Aircraft Crash
+(          Cloud                         Cloud
+)          TBD                           
+*          SNOW Flake                    SNOW Flake  
++          Red Cross                     
+,          Reverse L                     
+-          House w/omni                  
+.          Small x                       
+/          Red Dot                       
+0          0 in a box                    Circle
+1          1 in a box
+2          2 in a box
+3          3 in a box
+4          4 in a box
+5          5 in a box
+6          6 in a box
+7          7 in a box
+8          8 in a box
+9          9 in a box                    GAS
+:          Fire                          ?
+;          Tent                          Tent
+<          Motorcycle                    Pennant
+=          Train Engine                  
+>          Car                           Car 
+?          POS Antenna                   ? in a box
+@          HURRICANE/STORM               HURRICANE/STORM 
+A          First Aid                     Box
+B          BBS                           Blowing Snow
+C          Canoe                         
+D          D in a circle                 
+E          E in a circle                 Smoke Stack
+F          F in a circle                 
+G          Grid Square Antenna           ?
+H          Hotel/Bed                     
+I          TCP/IP                        ?
+J          J in a circle                 Lightening
+K          School House                  
+L          Light House                   Light House
+M          Mac                           
+N          NTS                           ?
+O          Balloon                       
+P          Police car                    Rx
+Q          Circle with in Circles        Circle with in Circles
+R          RV                            Restaurant
+S          Shuttle                       Satellite
+T          Thunderstorm (cloud/bolt)     Thunderstorm (cloud/bolt)
+U          School Bus                    Sun
+V          VOR TAC                       VOR TAC Symbol
+W          National Weather Service      NWS-Digi
+X          Helicopter                    
+Y          Sail Boat                     
+Z          Windows
+[          Runner                        WC
+\          DF Triangle                   
+]          Packet Mail Box
+^          Large Aircraft                Large Aircraft
+_          Weather Station               WS-Digi
+`          Satellite Dish              
+a          Ambulance
+b          Bike                          blowing cloud
+c          DX antenna                     
+d          Fire dept.                    DX Antenna
+e          Horse                         Sleet cloud 
+f          Fire Truck                    FC Cloud 
+g          glider                        Pennant (2)
+h          Hospital                      HAM
+i          Island                        Island
+j          Jeep                          Jeep
+k          Truck                         Truck 
+l          Small dot                     Small Dot
+m          MIC                           Mile Post
+n          N                             Small Triangle
+o          EOC                           Dot with in Circles 
+p          Puppy                         Dot with in Circles 
+q          GS Antenna                    GS Antenna
+r          Antenna Tower                 Antenna Tower
+s          Boat                          Boat
+t          TS                            ?
+u          18 Wheel Truck                
+v          Van                           Dot with in Circles 
+w          H20                           Flood
+x          X Windows                     Red Dot
+y          House w/Yagi                  House w/yagi 
+z                                        X Windows
+{          FOG                           FOG
+|          Black Line                    Black Line
+}          TCP                           TCP
+~          Sail Boat                     Sail Boat

@@ -1,0 +1,1645 @@
+HELP-INDEX>LÉAME PRIMERO - Licencia
+
+           LÉAME PRIMERO - Licencia
+
+!!! NOTA: ¡Este Documento se actualizó en Fecha 11/24/01 !!
+
+Para la información más actualizada por favor
+lea el archivo README.1ST en el directorio de Xastir.
+
+Recuerde que este programa es usado por la comunidad HAM, en los EE.UU
+la FCC le restringe de transmitir sobre RF si usted no es un HAM con licencia.
+Usuarios autorizados en otros países fuera de los EE.UU.
+Deben buscar sus restricciones gubernamentales locales. 
+
+LICENCIA:
+
+XASTIR, Estación de Aficionado de Rastreo y Reportes de Información.
+Derechos de propiedad literaria (C) 1999,2000 Frank Giannandrea
+Derechos de propiedad literaria (c) 2000,2002 El Xastir Grupo
+
+Este programa es software libre; usted puedes redistribuirlo y/o
+modificarlo bajo los términos del GNU Licencia Pública General
+como publicado por la Fundación del Software Libre; cualquier versión 2
+de la Licencia, o (a su opción) cualquier versión más atrazada.
+
+pero SIN NINGUNA GARANTIA; aún sin la garantía implícita de
+COMERCIABILIDAD o APTITUD PARA UN PROPOSITO PARTICULAR.
+Vea el (GNU) Licencia Pública General para más detalles.
+
+Usted debes de haber recibido una copia del GNU Licencia Pública General
+junto con este programa; si no, escriba al Software Libre
+Fundación, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, EE.UU..
+
+Más información sobre el programa puede encontrarse en:
+
+http://www.xastir.org/
+
+Hay algunos Forum de discusiones disponibles que son específicamente sobre Xastir.
+Usted puedes subscribirse en uno o en ambos de ellos para recibir las últimas
+informaciones y novedades sobre el desarrollo de Xastir.
+Visite esta dirección para subscribirse en http://www.xastir.org/.
+
+Para más información sobre la Licencia GNU busque en:
+
+http://www.gnu.org/
+
+
+HELP-INDEX>Bienvenido! y Notas de los Autores
+
+                      ¡Bienvenido! y Notas de los Autores
+
+XASTIR, Significa, X-ventanas Estación de Aficionado de Rastreo y Reportes de Información.
+
+               El significado en inglés es como sigue:
+XASTIR, or (X)windows (A)mateur (S)tation (T)racking and (I)nformation (R)eporting.
+
+Es un APRS(tm) como programa que es Fuente Abierta y libre para usarlo y pasarlo a otros. 
+Actualmente este programa está en desarrollo y no debe verse 
+como un producto finalizado! Su ayuda será necesaria para hacer de este 
+un mejor programa.  
+
+Si usted tienes habilidades programando y/o puede escribir documentación, 
+su ayuda puede ser necesaria! Yo tengo muchas ideas pero el tiempo muy corto. 
+Así que si usted piensas que usted puedes anexar algo al esfuerzo déjemelo saber!
+
+73,
+Frank Giannandrea
+fgiannan@eazy.net
+
+
+APRS[tm] es una Marca de fábrica de Bob Bruninga, 
+su página está en "http://web.usna.navy.mil/~bruninga/aprs.html" 
+Por favor note que mucha de la información sobre APRS(tm) puede encontrarse  
+en la documentación de APRSdos escrita por Bob Bruninga.  Una adicional  
+fuente de información es el APRS(tm) especificación, disponible en  
+http://www.tapr.org
+
+HELP-INDEX>Que hay de nuevo en Xastir 1.1
+
+	    Que hay de nuevo en Xastir 1.1
+
+Esta nueva versión, Xastir 1.1, agrega nuevos rasgos significantes y perfeccionamientos  
+a la interface del usuario. Al contrario de 1.0, 
+los cambios de la interface tomarán algunos uso conseguido, 
+pero la flexibilidad y versatilidad de la interface reforzada será  
+mayor, trantando de sacar fuera los problemas.  
+Entre las mejoras a la interfáz de usuario:  
+* Los atajos del teclado para los menús y diálogos, reorganización del menú, y ratón  
+  cambios de conducta.  
+* La habilidad de mover objetos o medida distancia con el ratón, usando el  
+  apropiado marcado de caja en la barra de herramienta.  
+* Una balanza se ha agregado para permitir a uno a juzgar distancia sobre un mapa.  
+* Las etiquetas del APRS(tm) mapas para el estilo de ventanas son rotado para machar los rasgos  de mapas marcado.  
+* La interfáz del usuario por tratar con objetos que han sido rediseñado completamente.  
+* Pueden ponerse cajas de info de estación para fijar automáticamente actualización.  
+* Rasgar-fuera los menús. Permitiendole a usted mantener un menú en la pantalla y jugar con  
+  opciones diferentes. Rasgar fuera un menú por pulsar el botón del ratón en la porción del golpear-línea.  
+  
+El soporte del mapa se ha reforzado grandemente, con PocketAPRS, ESRI Shapefiles, GNIS,  
+etiquetas y muchos gráficos estructuran con ImageMagick. Adicionalmente, soporte para  
+bajar graficalmente mapas desde varios webservers han sido agregado, permitiendo a Xastir a  
+use radar en línea, Tigre (Tiger), y mapas de Terraserver.   
+  
+Xastir ahora soporta mucho más del APRS(tm) protocolo que su precursor:  
+* Puede agregar, modificar y ver áreas de objetos, el poste indicador de objeto, y artículos. Éstos  
+  rasgos son inestimables para la coordinación de evento y búsqueda y uso en rescate.  
+  Los objetos y artículos también son periódicamente retransmitido.  
+* El soporte para desplegar ambigüedad de posición cuadra, rangos de radio precalculado,  
+  Cuadra de rejilla, y objetos de tiempo. Estos rasgos no son  
+  sumamente común, pero surge de vez en cuando.  
+* El soporte para el APRS(tm) rasgos de radio-dirección-encontrada (RDF). Estos rasgos  
+  son útilidad para algo, desde rastrear localizar excursionistas perdidos. Xastir  
+  soportas ambas Omni y direccional.  
+    
+Otras mejoras notables:  
+* Xastir puede ahora buscar una localización especificada o punto en tierra usando el GNIS data.  
+* Pueden exportarse ahora las bitácoras (logs) hacia un archivo.  
+* Pueden imprimirse mapas si ciertas herramientas y bibliotecas están presentes.  
+* Soporte para recuperar datos de rastreo históricos desde findu.com.  
+* Se han corregido varios bichos (bugs) mayores encontrados en 1.0, incluso los problemas  
+  cargando mapas de DOS y los problemas con el informe del tiempo. Otro menores   
+  bichos y goteras de memoria han sido reparada. Y algunos más errores han sido  
+  corregido en las rutinas de parsing, así que Xastir debe permanecer estable no importa  
+  ¡lo que se tire en él!   
+  
+Y muchas mejoras menores han sido hecha en el código fuente
+para asegurar que compile correctamente en varios sistemas.
+  
+Esperamos que usted disfrute el nuevo Xastir!  
+  
+
+HELP-INDEX>Iniciando a Xastir por primera vez
+
+               Iniciando a Xastir por primera vez
+
+Cuando Xastir se inicie por primera vez, usted debes ejecutarlo en una ventana 
+terminal asi que cualquier mensaje de advertencia o error puedan verse.
+
+En la mayoría de los sistemas una ruta es configurada para correr el programa 
+en /usr/local/bin y todo lo que usted necesitas hacer es tipear "xastir" 
+en la línea de comando.
+
+En sistemas que no tienen este tipo de ruta instalado "/usr/local/bin/xastir" 
+para empezar el programa.
+
+Usted también puedes poner la opción del Idioma en este momento. 
+Para poner el idioma o cambiar el idioma actual, use ésta línea:
+
+xastir -l  
+
+
+Los Idomas Actuales son:
+
+Alemán  (German)
+Español  (Spanish)
+Francés  (French)
+Holandés  (Dutch)
+Inglés  (English)
+Italiano  (Italian)
+
+Si Usted quieres correr el Xastir en español use ésta línea:
+
+Ej: xastir -lSpanish o xastir -l Spanish
+
+Esta opción será guardada en el archivo de  configuración de usuario 
+para que la próxima vez que Xastir se ejecute corra con el idioma Español. 
+
+En nueva instalación xastir tendrá como valor predefinido el idioma inglés 
+a menos que usted uses ésta opción de línea de comando.
+
+NOTA: En menús, se seleccionan artículos que son encanecido,
+como en las opciones del ON/OFF, si 'ON' es seleccionado
+se opacará o se pondrá transparente (encanecido).
+
+HELP-INDEX>Configurando la información de la Estación
+
+           Configure la Información de la Estación   
+
+Pulse el botón del ratón en Archivo luego Configurar después en Estación  
+llene la casilla con su Indicativo de Radioaficionado.
+
+llene su posición de la estación si usted no estás usando Xastir con una unidad de GPS. 
+Si usted no la conoce, usted puedes localizar su posición general en el mapa 
+con Xastir y puedes usar la posición dada por colocar el puntero del ratón sobre el mapa.
+
+Esta posición será visible en la barra del fondo de Xastir cuadro 2
+de la izquierda. Si usted tienes un GPS usted puedes saltar esta opción.
+
+Los símbol/grupo de la estación pueden configurarse aquí. Pulse seleccionar gráficamente y  
+escoja un símbolo, o manualmente rellene los campos. Una descripción de texto de cada uno  
+de los símbolos pueden encontrarse en la "Tabla de símbolo" tema de ayuda. Las cubiertas son cumplidas seleccionando un símbolo de la tabla alternada, y poniendo el campo de la tabla a  
+el carácter que usted desea recubrir encima del símbolo. Letras mayúsculas y  
+los números pueden ser recubierto. El APRS(tm) especificación sólo permite cubiertas sobre  
+símbolos específicos; Xastir no forza esto, pero algunos otros programas pueden.  
+Note que no todos los símbolos se han llevado a cabo en el selector gráfico  
+todavía, y algunos de ellos no están por el APRS(tm) especificación todavía.  
+
+Luego, entre en los datos para la potencia/altura/ganancia de su estación. Esta es  
+una información útil pero no se requiere; absolutamente seleccione "Desactive PHG"  
+desactivarlo. Estas opciones presentan una representación granular de su estación.  
+Seleccione la combinación de valores cerca a la descripción de su estación.  
+
+Otra opción sería especificar el RNG en el campo de comentario en millas  
+en lugar de usar PHG. Vea el APRS(tm) especificación para detalles.  
+  
+Por favor use altura sobre el promedio del  terreno para el valor de altura.  No  
+use el promedio de altura sobre el nivel del mar o altura sobre tierra.  
+  
+Para el uso de Ganancia la ganancia de su antena en dBi.   
+¿(CORRIGEME:  dBd? la especificación no es clara, 
+yo pienso que está implicando dBi porque dice "en ausencia de cualquier datos,
+las estaciones son asumida a estar corriendo 10w a un 3dB omni en  20pies.
+Una antena omni típica es sólo 3dBi.....)   
+Para Altura, use el HAAT (altura sobre el promedio del terreno) de su estación,  
+NO la altura sobre el nivel del mar o altura sobre geo-id.  
+
+Nota: La ganancia puesta es realmente pensada para las antenas verticales; la ganancia  
+puesta para una antena direcional debería ser por debajo de la ganancia hacia delante de una antena direcional.  
+Esto es porque con la direccionabilidad puesta, el círculo de PHG es compensado sólo a través de 1/3rd  
+de su tamaño hacia la dirección especificada. Poniendo la Ganancia más alta agrandará  
+el círculo entero no-realisticamente, en lugar del aumentado direccionalmente.  
+Había charla hace varios años sobre el enmendando las especificaciones para mejorar  
+trato con antenas direccional, pero nada fue cambiado.  
+  
+Entrar un comentario, no requerido pero agregará visión en su estación.  
+Una cosa común para entrar aquí es su dirección de e-mail preferida.  Que  
+será transmitido a lo largo con su postula.  
+  
+La ambigüedad de la posición permitirá usted controlar que tan exacto usted transmite su  
+posición. Si usted no pone nada, xastir permitirá a su estación transmitir la exacta  
+posición que usted ha entrado o ha recibido de un GPS. Las otras opciones lo pondrán  
+en alguna parte en el rango de la opción que usted seleccionó.  Note que  
+esto puede tirar estaciones dóciles a alguna no-especificación para un bucle.  Findu.com  
+no entiende la ambigüedad de posición.  
+  
+Pulsando el botón "Aceptar" guardarás sus cambios.
+Pulsando el botón en "Cancelar" conservarás las actuales configuraciones.
+
+HELP-INDEX>Configurar Operación Predefinida
+
+              Configurar Operación Predefinida  
+  
+Pulse el botón en Archivo después en Configurar luego en Predefinidos
+  
+Esta página prepara algunos valores por defecto normales para el funcionamiento 
+del programa. Viejas estaciones se desplegarán con un icono fantasma, 
+y el sendero correspondiente se fragmentará.  
+
+El primer juego de botones de barra especifica el intervalo de desdoblamiento.  El segundo  
+juego de botones que especifica cuando una estación será removida de la pantalla.  
+Las estaciones también son removida del banco de datos interno en el doble este tiempo,  
+así si usted lo pusiera durante 6 horas, se anularán estaciones del banco de datos  
+a las 12 horas.  
+  
+El tercer juego de botones especifica qué a menudo la identificación de su estación será  
+transmitido.  Para las estaciones fijas una recomendación buena es cada 30 minutos,  
+y definitivamente ninguno menos de 10 minutos.  
+Las estaciones móviles pueden desear una más rápida proporción.
+
+Este intervalo también se usa para mandar objetos y artículos.  Pruebe  
+mantener este intervalo algo razonable, como transmitir hacia un largo camino,  
+cada 30 segundo realmente subirá mucho el tiempo aéreo.
+
+GPS Tiempo pondrá el intervalo de tiempo mirar el GPS por nuevos datos.  
+Esto es disponible para estaciones que usan un cable compartido HSP con su TNC.  
+  
+La Opción Trasmite Estación fija el tipo de paquete que su estación transmitirá sus datos como.
+Transmite datos Raw WX  si seleccionado también enviará un paquete que contiene Datos raw
+de una Estación Meteorológica. Esto es útil en los tipos de ASCII de estaciones WX, como la Peet Bros.
+
+Estación WX. Las Opciones de IGate prepararán su estación como un portal de Internet-RF.
+Esta opción podría ser usada con cuatela, Como un HAM usted es responsable
+por el data que viene vía el Internet y es transmitido hacia el Puerto de RF. 
+
+Usted también necesitará   
+escoger una opción del igate en cada interface para que el igate funcione.  
+Si usted quiere tener su igate envíe NWS alarmas WX  hacia el RF, usted debe  
+crear un archivo ~/.xastir/data/nws-stations.txt listando cada llamada o estación de NWS  
+(como "PHISVR") que le gustaría transmitir vía RF.
+    
+"Transmitir datos de WX RAW", si seleccionado, también enviará un paquete que contiene crudo (raw)  
+Datos de estación meteorológica. Esto es útil en los tipos de ASCII de estaciones WX,   
+como la Peet Bros. estación meteorológica.
+
+"Los datos de posición comprimida pueden ser transmitida"?, si es seleccionado, transmitirá en  
+el más nuevo formato comprimido. Este formato reducirá la cantidad de datos en  
+el aire, por eso aumentando la capacidad de la red APRS(tm). La máxima  
+precisión de la posición transmitida también es más alta. Algunos programas más viejos,  
+incluyendo las recientes versiones de WinAPRS, no decodificará este formato todavía.  
+Findu.com también podrían tener problema con el.
+
+Activar Red Alternada ?
+esta opción se usa para desplegar grupos de estaciones que muestran
+en el unproto en el campo '>To' la versión del software como el Xastir
+que muestra la versión en el unproto como esto: HI8GN>APX090.
+
+Usted también puede seleccionar Altnet y puede escoger una llamada del altnet de este diálogo.
+Altnet le permite tener un privado APRS(tm) red entre las estaciones que también  
+tenga altnet configurado, y tiene la misma llamada del altnet entrada.
+
+Si cambiamos el valor por defecto que es XASTIR por ejemplo por APX110
+desplegará toda las estaciones que tengan versiones de APX11x
+donde valor de 'x' puede ser desde 0-9.
+
+HELP-INDEX>Configurando las Alarmas de Audio
+
+                         Configurando las alarmas de Audio
+
+Para usar esta opción usted debes tener una tarjeta de sonido y un programa que 
+reproduzcan los archivos wav. El programa reproductor de Audio debe tener 
+comando el cual usted quieres ejecutar para tocar el audio archivo (y cualquier 
+opción en la línea de comando).
+
+Los campos tendrán el nombre del archivo a reproducir, campos bajo la opción 
+pondrá parámetros para la opción.
+
+Las opciones Actuales son:
+
+  Reproducir mensaje al encontrar una nueva estación. 
+
+  Reproducir mensaje al recibir un nuevo mensaje.
+
+  Reproducir mensaje de datos recibidos de una estación dentro de la distancia  
+ min/max de su proximidad.
+
+  Reproducir mensaje de datos recibidos de una estación (vía TNC) con la 
+distancia de min/max de su banda abrierta.
+
+HELP-INDEX>Configurar el Sintetizador de Voz
+
+                         Configurar el Sintetizador de Voz
+
+Para usar esta opción del sintetizador de voz usted debes tener una tarjeta de sonido
+configurada para poder reproducir sonido.
+
+También usted necesita tener instalado y corriendo al Servidor Festival más
+el Speech_tools con su biblioteca de soporte para el Sistema Festival de Voz Síntetizada
+
+y asi poder escuchar el sintetizador de voz anunciar
+nuevas estaciones y aperturas de banda proximidad de una estacián. 
+
+El sistema de alarmas de sonidos ha sido también retenido.
+
+Con el Sintetizador de Voz adaptado por Curt Mills (we7u) 
+
+ajuste las casillas en las cuales usted quieres ejecutar el sintetizador para las alarmas
+
+(y cualquier opción en la línea de comando).
+
+Los campos tendrán el nombre del archivo a reproducir, campos bajo la opción 
+pondrá parámetros para la opción.
+
+Las opciones Actuales son:
+
+  Anunciar un mensaje al encontrar una nueva estación. 
+  Anunciar un mensaje al recibir un nuevo mensaje.
+  Anunciar un mensaje al recibir el cuerpo un nuevo mensaje.
+  Anunciar un mensaje de datos recibidos de una estación dentro de la distancia  
+  min/max de su proximidad.
+
+  Anunciar un mensaje de datos recibidos de una estación (vía TNC o INET)
+  con la distancia de min/max de su banda abierta.
+
+  Anunciar un mensaje al recibir una nueva alerta sobre el tiempo climatológico.
+
+Info sobre Festival puede ser obtenida desde: http://www.speech.cs.cmu.edu/festival/
+
+HELP-INDEX>Configurando las Unidades de Medida
+
+                    Configure Unidades de Medida  
+  
+La selección predefinida es para el Sistema Métrico, mm, cm, KPH, etc. 
+Seleccionar Inglés, pulgadas, pies, MPH, etc. Pulse el botón de Configurar, 
+luego en Unidades, después la unidad de medida que usted quieres usar.
+Recuerde encanecida opciones son selecciona actualmente. 
+
+HELP-INDEX>Salvar Configuración Ahora!
+
+                      Salvar Configuración Ahora!
+
+Este botón salvará todas la configuración actual al archivo de configuración.  
+Note que cuando Xastir está cerrado, también salva configuración al archivo
+de configuración.
+
+HELP-INDEX>Barra de Estado de fondo
+
+                         Barra de Estado de fondo  
+  
+En el fondo de la ventana varios mensajes de estado están disponibles:  
+  
+En la primera parte en la barra de estados general los mensajes son desplegados.
+
+La segunda parte se muestra la posición lat/long
+actual moviendo el ratón sobre el mapa.
+
+En la tercera parte es usada para mostrar
+cuántas estaciones están en el banco de datos.
+
+La cuarta parte de la barra desplegará el nivel de enfoque actual y desplegará
+"Tr" si el rastreo de estación está encendida (on).   
+  
+El última área desplegará el estado de dispositivo para cada interfáz. Cada una  
+desplegará en orden primero hasta el último o de 0 a 9. El estado de la interface está separado  
+en tres áreas, tipo de dispositivo cima, datos de centro fluyendo, y interface de fondo  
+estado operacional. El tipo de dispositivo mostrará qué interfaces se configuraron.  
+El color mostrará qué tipo de dispositivo de la interface se configuró. Azul  
+es para los varios dispositivos TNC; Verde mostrará los dispositivos de GPS; Amarillo para los   
+Servidores de Internet; Naranja para las interfaces de WX. El centro mostrará que los datos fluyen en rx (flecha que apunta a la izquierda) o los datos fluyen fuera tx (flecha que apunta a la derecha) para eso interface. Una caja verde al fondo mostrará si esa interface es activa.  
+Una caja roja mostrará si la interface es activa pero en una condición de error.  
+Por otra parte nada mostrará si la interface no está activa.  
+
+Las últimas dos partes mostrarán el estado del tnc y de la red. Una "=>" 
+indicará si el dato está siendo enviado, y una "<=" si el dato está entrando 
+desde la interfaz.
+
+  
+HELP-INDEX>Moviendo el Mapa y el Menú de Opciones
+
+                    Moviendo el Mapa y el Menú de Opciones  
+  
+Movimiento en el mapa es muy simple, la facilidad y rapidez de movimiento son dependientes de  
+la velocidad de su procesador y la cantidad de detalle que usted carga.  
+  
+Subiendo verticalmente:  
+Subiendo verticalmente puede ser logrado por pulsar el botón derecho de ratón sobre el mapa (y sosteniendo el botón abajo). Esto planteará un menú de opciones, con opciones para hacer subir verticalmente o fuera a un solo nivel, o para cambiar a uno de los niveles del enfoque prefijado.  
+  
+Todas las funciones de enfoque desde el menú de opciones harán acercarse o alejarse al punto  
+en el mapa donde usted pulsó el botón del ratón correcto. El  nivel de enfoque tiene una menú en  cascada. Niveles 1-64 son para las áreas muy locales y niveles 256 y superior es para  
+áreas grandes. El número más bajo del nivel, la área más local.  
+  
+Una función de enfoque más rápida es empujar y sostener el botón del ratón izquierdo, arrástrelo  
+por el área de interés y permitida vaya.  El mapa hará subir verticalmente aproximadamente a  
+el tamaño del cuadrado usted apenas descrito con el ratón la función de arrastre.  
+El programa usa el componente vertical para decidir en el nivel de enfoque, y el  
+componentes verticales y horizontales para computar el nuevo centro del mapa.  El "movimiento"  
+y "medida" que deben desactivarse checkboxes de la bara de herramienta de este rasgo para trabajar.  
+  
+El mapa también puede acercarse con el teclado las llaves de PageUp/PageDown.  El  
+acercar en este caso guarda el mismo centro del mapa.   
+  
+Paneando/Centrando:  
+El mapa puede centrarse a una situación específica por pulsar el botón izquierdo del ratón.  
+Pulsando el botón los enfoques del botón medio aleja con un factor de 2, centrando donde usted  
+pulsó el botón.  
+  
+Paneando también es cumplido usando el menú de opciones, o usando la flecha  
+botones en la tope de la pantalla. La posición del mapa cambiará una porción de  
+pantalla. Bastantes datos de pantalla anterior deben estar disponibles reorientarlo  
+.  
+  
+El mapa también puede ser paneado con las llaves de flecha del teclado.  
+  
+Más Sobre el Menú de Opciones:  
+La selección de "Estación Info" en el menú de opciones buscará la estación  
+cerca a donde usted pulsó el botón derecho del ratón. Si más de una estación está  
+cerca de esa posición un "escogedor de Estación" de lista aparecerá, entonces usted puede  
+escoger los datos de qué estación que usted quiere ver. Si sólo una estación es vista entonces el indicador del ratón es cerrado y los datos de esa estación se desplegarán inmediatamente. Note  
+que expiradas estaciones todavía tienen sus datos guardados en el banco de datos de Xastir, y  
+si uno sabe la situación anterior de una estación, uno todavía puede ver su info de esta  
+manera. También es posible desplegar estaciones viejas encendiendo el "el Despliegue  
+de Datos Expirados" opción en el menú de las estaciones. CORRIGEME: Si no es completamente verdad.  Esto sólo despliega algunos de los datos que desaparecen como estaciones fantasma,   
+Velocidad/altitud, etc.,  
+  
+Para información de Objeto y Artículo, por favor vea el tema de ayuda "Objetos y Artículos"  
+
+HELP-INDEX>Objetos y Artículos
+
+				Objetos y Artículos
+
+La opción de crear Objeto/Artículo en el botón derecho pulsado el menú traeará un diálogo  
+con la posición de basado objeto en donde usted pulsó el botón del ratón.  
+Usted puede rellenar los detalles, y agregar un objeto/artículo desde este menú.  
+  
+La opción de modificar Objeto/Artículo le traerá un diálogo de modificación de objeto.  
+Es similar al diálogo de creación de objeto, excepto por la actual información de objeto que  
+ya están publicada, y el nombre del objeto y unas de las pocas otras opciones que no pueden ser cambiada.  
+  
+Los objetos son retransmitido dentro de la proporción de posición de la estación reportada, configurada en Archivo|Configurar|Predefinidos, y cesará la retransmisión después doblar el  
+tiempo de despliegue de la estación, también configurada allí. "muerta" los objetos también son  
+retransmitido de esta manera, hasta que ellos expiren desde la cola.  
+  
+Generalmente se usan los objetos para movimiento o cosas inconstantes como tormentas,  
+mientras que los artículos generalmente son usando para las cosas más inanimadas, como agua,  
+estaciones. Cualquiera puede moverse con el ratón si el "Movimiento" el checkbox en la  
+barra de botones se habilita.  Note que los artículos no pueden ser descifrados por uno cuantos  programas APRS(tm) .  
+  
+Las área de objetos son útiles para una variedad de funcionamientos en lo que usted quiere dibujar  
+o resaltar una área de interés en el mapa. Ellos también pueden ser personalizados para dibujar  
+rastros/caminos/fronteras, sitios de vijilancia para mal el tiempo, las pistas de aterrizaje, perímetros, de una área de búsqueda o de un evento de servicio público, áreas de daño, áreas para quedarse fuera de, edificios que no están en el mapa, la tabla checker/chess para juego por dinero en APRS(tm).: -) Note que las área de objetos no son llevada a cabo en todas las versiones de programas APRS(tm), y algunos de los detalles de cómo ellos se despliegan también pueden  
+ser diferente en otros programas.  
+  
+Nombre  
+Éste es el nombre del objeto o artículo. Puede depender de hasta 9 carácteres. Cuando  
+modifica un objeto, este no puede ser cambiado. Para renombrar un objeto usted debe  
+anular el original y entonces crear un nuevo objeto. Note que si usted selecciona  
+Signpost/Area Object/DF Objeto que este campo y quizás otros serán aclarado.  
+Entre en el nombre DESPUÉS que usted ha seleccionado el tipo de objeto que volverá.  
+  
+Poste indicador  
+Este hace al objeto un poste indicador de objeto. Estas señales pueden ser 3 carácteres,  
+visible en un poste indicador a la locación cuando el enfoque es acercado. (CORRIGEME: Nosotros no hacemos el despliegue de los postes indicadores todavía de esta manera).  
+  
+Objeto del área  
+Esto hace un objeto del área al objeto, y habilita los mandos de objeto de área  
+descrito debajo.  
+  
+Objeto DF  
+Éste es un informe de contrada-dirección. Habilitándolo le permite escoger reporte Omni o  
+direccional, y le permite poner en el especifico para cada uno.  Vea:  
+    http://web.usna.navy.mil/~bruninga/dfing.html  
+y la documentación de APRSdos para los detalles en estas técnicas útiles.  
+(CORRIGEME: la sección Separada en las técnicas de DFing?)  
+  
+Símbolo Estación  
+Usted puede seleccionar un símbolo para el objeto. Pulse seleccionar para escoger gráficamente,  
+o ver la sección tabla de ayuda de símbolo para las descripciones de cada símbolo. Note  
+que no todos los símbolos se han llevado a cabo todavía en el escogedor de gráficos,  
+y algunos no están por el APRS(tm) especificación. También note esa área de objeto, poste indicador de objetos, y los objetos de DF tienen símbolos fijos especiales y por consiguiente no pueden ser seleccionado aquí.  
+  
+Localización  
+La localización del objeto se especifica aquí. Si usted seleccionara "Crear   
+Objeto/Artículo" pulsando el botón derecho del menú, la locación que usted pulsado se llenará  
+. Si usted moviera un objeto con el ratón, la nueva posición estará en esos campos.  Usted también puede teclear en una posición, por ejemplo usted puede estar poniendo un  
+objeto de un informe de voz sobre el aire.  
+  
+Opciones genéricas  
+Usted puede especificar la velocidad, dirección, y altitud de objetos aquí. Algunos tipos de objetos  
+no pueden tener una velocidad o dirección en tales casos los campos son desgrisado  
+.  
+  
+Objeto del poste indicador  
+Si el objeto es un objeto de poste indicador, usted puede especificar de 1 a 3 carácter  
+de mensaje que aparece en la señal aquí.  Note que Xastir no despliega los objetos  
+de poste indicador a propiamente todavía.  
+  
+Objeto área  
+Se usan Objetos de área para resaltar partes específicas del mapas, o para dibujar excepcionalmente detalle dentro de los mapas.  
+  Color luminoso.  
+    Use la versión más luminosa de los colores permitidos.  
+  Colorido  
+    El área debe llenarse, no sólo perfilado. Esto puede ser útil para  
+    excluir una área de una búsqueda u otro evento.  
+  Tipo de objeto  
+    Escoge desde las formas geométricas permitidas.  
+  Color del objeto  
+    Escoge el color en el que el objeto se desplegará. Esto también es afectado  
+    por el "Color Luminoso" la opción anteriormente.  
+  El objeto Compensado  
+    En centésima de un grado latitud.  Un detalle infortunado de la especificación,  
+    y duro de calcular fácilmente.  Basta decir que usted puede cambiar  
+    el tamaño del objeto una vez usted lo ponga.  
+  El Desplazamiento izquierdo del objeto excepto /  
+    En centésima de un grado latitud.  Vea anteriormente.  
+  Objeto corredor  
+    Éste es el ancho de una línea de área de objeto. Util para las pistas de aterrizaje, tiempo  
+    watchboxes, describiendo una área de interés o una área de exclusión, etc.,  
+(CORRIGEME: Escriba esta parte! (el área objeto) La especificación es incierta a mí, el código,  
+es incierto a mí, pero en el futuro yo lo deduciré todos!)  
+  
+¡Siempre anule sus objetos y artículos cuando usted halla terminado con ellos!  
+No les permita simplemente expirar desde su escondite, como ellos pueden colgarse  
+alrededor de las pantallas de otras personas por un periodo extendido.  
+    
+
+HELP-INDEX>Menú Visualizador
+
+                     Opciones del Menú de Visualizar  
+  
+El menú de Visualizar presenta varias maneras de ver datos en Xastir.  
+  
+Boletines  
+Éste es el APRS(tm) tabla de anuncios, donde importantes anuncios son puesto.  
+Si usted se conecta con la interfáz del internet, es una buena idea para poner el  
+rango del campo a unas cientas millas, para ignorar postes de otras porciones del  
+mundo. "0" es el rango del campo, significa el mundo entero. Pulse el botón "Cambio de rango"  
+pulse para hacer cambios a este campo eficaz. Xastir actualmente no soporta el envío de boletines.  
+  
+Datos de paquete entrantes  
+Esto despliega los datos entrantes en su TNC o interfáz del internet. Los botones radio  
+debajo selecciona si usted quiere ver sólo datos de TNC, sólo datos del internet, o  
+ambos.  
+  
+Estaciones móviles  
+Ésta es una lista de estaciones que se están moviendo. Las estaciones califican para esta lista si  
+ellas se han movido (más de una posición recibida para ellas), el símbolo de  
+la estación no es considerada. Información mostrada incluyendo curso, velocidad, altitud,  
+posición, número de paquetes recibido, número de satélites de GPS visibles, curso,  
+de su estación, y distancia de su estación.   
+  
+Todas las Estaciones  
+Esta opción despliega una tabla de todas las estaciones ordenada alfabéticamente. Incluyendo  
+el número de paquetes oído, el tiempo que la estación fue oída última vez, el camino   
+más reciente paquete tomado, el PHG, y el comentario de la estación.  
+  
+Estaciones locales  
+Esta opción despliega sólo estaciones que se oyen vía su TNC. Incluye  
+el número de paquetes oído, el tiempo que la estación fue oída última vez, el camino  
+más reciente paquete tomado, el PHG, y el comentario de la estación.  
+  
+Ultimas Estaciones  
+Esta opción despliega una tabla de todas las estaciones ordenada recientemente oída  
+a menor recientemente escuchada. Incluye el número de paquetes oído, el tiempo,  
+la estación fue oída última vez, el camino que el más reciente paquete tomó, el PHG,  
+y el comentario de la estación.  
+  
+Estación WX  
+Esta opción despliega una tabla de todo el APRS(tm) estaciones del tiempo y sus datos.  
+El datos incluyen curso del viento, velocidad del viento, velocidad de ráfaga dle viento, temperatura, humedad, presión barométrica, lluvia en la última hora, lluvia medianoche subsecuentemente, y lluvia en las últimas 24 horas.  
+  
+Estación Meteorológica Propia  
+Despliega sus datos del tiempo si usted tiene una estación del tiempo y la ha configurado  
+Xastir para accederla.  
+  
+Alerta del Tiempo  
+Los despliegues alarmas recibidas, incluso las banderas de alertas, la alerta fuente/tipo,  
+destino alerta, expiración, mensaje, y efectuada situación. Esto datos  
+se usa por el resalto de condado, y no es particularmente humanamente-leíble.  
+Usted generalmente puede deducir el estado y condado para la mayoría de las alarmas.  
+  
+Tráfico de mensaje  
+Muestras todo el tráfico de mensaje mientras la ventana está abierta. Incluye la fuente,  
+destino, interfáz, y mensaje. La opción de rango puede limitar este despliegue  
+a las estaciones cercanas, mucho como el mando del rango en boletines. Un rango de 0  
+causas todos los mensajes a ser desplegados.  
+  
+SobreHora  
+Muestras la cantidad de tiempo pasado subsecuentemente que Xastir fue iniciado.  
+  
+HELP-INDEX>Mapas Opciones y Seleccionar Mapas
+
+              Mapas Opciones y Seleccionar Mapas
+
+Mapas Opciones:
+
+Auto mapas (on/off)
+ Cuando cualquier mapa es encontrado, en el directorio de mapas
+(o cualquier directorio bajo él) será desplegado,
+si el cae dentro de la región de despliegue actual.
+
+Usted puedes agregar cualquier número de niveles de directorios bajo
+el directorio del mapa principal para sus mapas.
+El Auto mapa pasará por todos ellos y hallará que mapa (o parte) debe desplegarse.
+
+Todos los Mapas se unirán en el área de visión.
+Si usted tienes una cantidad grandes de mapas, mapas muy detallados
+o una computadora muy lenta, esto puede ser mostrado bastante lento.
+
+Cuando esta opción está apagada, se desplegarán mapas seleccionados
+con el selector de Mapas.
+
+Rejillas sobre Mapa (on/off)
+ Cuando esté en 'ON', esta opción desplegará una línea de reja cada 10 grados.
+
+ Niveles de mapas (on/off)
+ Cuando esté en 'ON', esta opción intentará filtrar fuera los datos cuando el 
+nivel de enfoque muesta grandes áreas. Esto no trabajará con todos los mapas 
+pero trabajará con los mapas generados de 'Tiger line maps'  en el sitio de 
+aprs.rutgers.edu.
+
+Areas rellena en colores (on/off)
+Esta opcion controla el relleno del vector del mapa. En ciertos casos, usted
+podria querer enliminar el relleno para ver el mapa bajo el tope de mapas.
+Los mapas son cargados en orden alfabertico por tipo, asi que renombrando
+mapas es un segundo pero la via es menos elegante archivar la vista deseada.
+
+Seleccionar Mapas
+Esta se presentará con una lista de todos los archivos en su directorio de 
+mapas. Cualquier mapa que usted desearías incluirlo en los datos desplegados, 
+simplemente tiene que pulsar el botón del ratón sobre el nombre.
+Esto resaltará el nombre del mapa, Usted puedes seleccionar cualquier número de mapas.
+Pulsando en el botón "Aceptar"  se desplegarán los mapas seleccionados.
+Oprimiendo el Botón de "Cancelar" abandonaría cualquier cambio.
+
+Tambien hay botones de atajo para seleccionar todos de un cierto tipo de mapa,
+o de-seleccionar todos los mapas de una vez.
+
+Una nota sobre mapas: Muchos de los actuales mapas de vectores disponibles para
+los EE.UU. fueron creado en NAD 1927 datum, mientras Xastir y otros programas de APRS
+usan el WGS 1984 datum. 
+Si es enfocado hacia una área pequeña en el mapa la variacián del datum
+puede ser muy notable. Los mapas topo USGS tienen sus datum corregido por Xastir
+como ellos son desplegados,
+asi que la posiciones generalmente serán más exacta con los mapas topo.
+
+HELP-INDEX>Archivos Mapas, Dos, Windows, Pixmaps, geoTIFF y Condados WX  
+
+             Archivos mapas, Dos, Windows, Pixmaps, geoTIFF y Condados WX  
+
+Tipos de mapas  
+Xastir trabajará con varios tipos archivos de mapas.
+Todo el Dos, Windows/MacAPRS[TM] son archivos de  Mapas que son soportados.
+
+Un nuevo formato de Pixmap se ha agregado en versión 0.3.2.
+Xastir también soportará mapas para las Alertas de condados WX.  
+El último formato de mapa soportado es geoTIFF, tales mapas como son
+USGS DRG topo mapas.
+
+Locaciones de Mapas 
+Cualquier Dos, Windows/Mac o archivo Pixmap y geoTIFF, deben guardarse en el  
+Directorio de /usr/local/xastir/maps en su computadora.
+Usted puedes crear cualquier números de directorios bajo este directorio
+para ayudar a separar sus datos.
+Por ejemplo usted puedes querer crear un directorio de USA.
+y después uno por cada estado bajo el Directorio de USA.
+O tiene un directorio separado para DOS o Pixmaps y geoTIFF.
+
+
+                          /usr/local/xastir/maps/
+                                                /usa/
+                                                /usa/CO/
+                                                /usa/NJ/
+                                                /dos/CO/
+                                                /dos/NJ/
+                                                /pixmaps/CO/
+                                                /pixmaps/NJ/
+
+
+Pixmaps realmente son una combinación de dos archivos, un archivo de dato con un,  
+pixmap (.xpm), gráfico y un archivo de locación (.geo).
+El archivo .xpm es una estructura de gráfico normal,
+con una imagen de cualquier tipo.
+
+Usted puedes usar XView para convertir gif, jpg, y tif imágenes en este formato.
+El archivo geo es un archivo de dato que atará la imagen a una locación en el mundo.
+Aquí está un ejemplo de mi archivo world1.geo
+
+
+ARCHIVO   world1.xpm
+#          x          y        lon         lat
+TIEPOINT   0          0        -180        90
+TIEPOINT   640        320      180         -90
+
+Este es un archivo simple, con 4 componentes básicos.
+La primera línea especifica este archivo data .geo es usado,
+este archivo debe estar en el mismo directorio como el archivo de .geo.  
+
+La segunda línea muestra un comentario;
+cualquier línea con el carácter como un "#" será ignorado.  
+  
+Las últimas dos líneas son para conectar un pixel en la posición x,y  
+en la imagen a una posición lat y long en la mundo. Dos puntos unidos  
+son necesitado y debe estar cerca de la esquina izquierda superior 
+y la esquina derecha más abajo de la imagen.  
+  
+Usar archivo pixmap con xastir, use el selector de mapa y seleccione el archivo .geo
+para incluir la imagen en la vista del mapa actual.  
+
+Por razones de velocidad, otras líneas de opciones pueden ser anexada
+en el archivo .geo.
+Aquí algunos ejemplos del formato modificado:
+
+ARCHIVO         Agnes_Mountain.xpm.gz
+#
+#               X       Y       Lon             Lat
+#               ----    ----    -------------   -----------
+TIEPOINT        0       0       -121.00120491   48.37481943
+TIEPOINT        1337    1999    -120.87619806   48.24982052
+#
+#EDGES  BOTTOM          TOP             LEFT            RIGHT
+EDGES  48.24982052  48.37481943  -121.00120491  -120.87619806
+
+La línea EDGES especifica el min/max bordes del mapa. El mencionado
+mapa arriba es inclinado ligeramente, el cual es el porqué los números
+no corresponden a la esquina 'tiepoints' exactamente. Xastir usará esa
+información saltar el mapa si no encaja en la vista actual.
+
+Mapas geoTIFF son una combinación de dos archivos también:
+un archivo .tif y un .fgd. El archivo .tif es el actual data mapa.
+El archivo .fgd necesita solamente tener cuatro líneas como estas:
+
+1.5.1.1   WEST BOUNDING COORDINATE:  -122.000000
+1.5.1.2   EAST BOUNDING COORDINATE:  -120.000000
+1.5.1.3   NORTH BOUNDING COORDINATE:  48.000000
+1.5.1.4   SOUTH BOUNDING COORDINATE:  47.000000
+
+Xastir usa esas cuatro líneas en su calculaciones para determinar los puntos
+de la esquina del mapa, y si o no el mapa vuelve al actual punto de vista
+(asi que el puede decidir si saltarlo). Si su data mapa es un mapa topo USGS,
+el archivo .fgd podría ser leídamente disponible a usted.
+Una forma anexada en Xastir es la abilidad hacer traslaciones datum desde
+NAD 1927 a WGS 84 datum, el cual hace el mapa topo USGS mucho más posicionalmente
+exacto sobre la pantalla en Xastir.
+
+Mapas Condado WX  
+Todos los mapas Condado WX deben guardarse en el directorio de /usr/local/xastir/Counties.  
+Hay formatos diferentes para los mapas, pero de cualquier modo este  
+directorio tendrá directorios (usted podrías necesitar crearlos) bajo este  
+para cada estado (2 abreviaciones de letras).  
+
+               /usr/local/xastir/Counties
+                                         /CO/
+                                         /CO/COPARK.map
+                                         /CO/CODOUGLA.map
+                                         /CO/COJEFFER.map
+                                         /CO/COZ001.map
+                                         /CO/COZ002.map
+                                         /CO/COZ003.map
+                                         /NJ/
+                                         /NJ/NJOCEAN.map
+                                         /NJ/NJBERGEN.map
+                                         /NJ/NJMONMOU.map
+                                         /NJ/NJZ001.map
+                                         /NJ/NJZ002.map
+                                         /NJ/NJZ003.map
+
+
+Aqui estan dos lugares en el Internet donde usted puedes obtener esos mapas:
+
+ftp://aprs.rutgers.edu/pub/hamradio/APRS/NWSCounties/
+http://home.att.net/~kg5qd1/Maps.html
+
+Como los mensajes NWS son recibidos, diferentes areas obtendrán un tintado
+hacia las áreas designadas.
+Ellas son coloreadas para especificar diferentes tipos de alertas. 
+
+Los colores originales fueron:
+
+Cian para el asesor, amarillo para alerta del tiempo,
+rojo para advertencia, naranja para alerta cancelada, azul real para pruebas,
+y verde para niveles de indeterminadas alarmas.
+
+Con la última versión de Xastir los colores pueden ser diferentes
+debido a un cambio mayor: 
+Las áreas que ahora son tintadas en lugar de relleno de color,
+y la dependencia en el tintado debajo los colores.
+
+Este cambio fue hecho asi que los mapas estando debajo de esto pueden
+mantenerse visible debajo en las áreas de alertas del tiempo. 
+Las alertas del tiempo podrían ser fijada en on/off vía el menú del mapa también.
+
+
+HELP-INDEX>Configurar Interfaces
+
+                           Configurar Interfaces  
+  
+Pulse el botón en Configurar luego en Interfaces  
+  
+Un diálogo de "Interfaces Instalados" debe aparecer. 
+Este diálogo le permitirás a usted Agregar, Anular, y modificar las Propiedades 
+en varios dispositivos que usted puedes querer usar con Xastir.  
+  
+Las opciones actuales son:  
+TNC vía el Puerto Serial
+TNC vía un Puerto Serial con (GPS más cable HSP)
+GPS vía un Puerto Serial
+Estación Meteorológica vía Puerto Serial
+Conexión a un Servidor en Internet
+TNC vía la Uilidades del AX.25
+GPS Enlazado vía el Servidor gpsd
+Estación Meteorológica Enlazada a una RED
+  
+Para agregar un dispositivo, pulse el botón de agregar. 
+Un diálogo "Elegir Tipo de Interfaz" aparecerá. 
+Pulse el botón en el tipo de dispositivo que le gustaría agregar. 
+Luego pulse el botón de Agregar en el diálogo "Elegir Tipo de Interfaz". 
+Las propiedades para ese dispositivo aparecerá. 
+
+Rellene la información pedida y pulse el botón en Aceptar, anular el dispositivo, 
+pulse el botón en el dispositivo usted deseas anular y entonces pulse el botón Anular.
+Para modificar las propiedades de un dispositivo, 
+pulse el botón en el dispositivo usted deseas modificar, 
+luego pulse sobre el botón de propiedades. 
+
+Las propiedades para ese dispositivo aparecerá.
+Cambie la información que usted quieres y pulsar el botón en Aceptar.
+
+HELP-INDEX>Configurando el Serial sobre un TNC
+
+                 Configurando el Serial sobre un TNC
+
+SERIAL TNC CONFIGURACION
+
+Pulse el botón "Configurar" luego en "Interfaces" después en "Agregar"
+después en "Serial TNC" luego "Agregar" y por último en "Puerto TNC"
+
+Si usted tienes un TNC y planea usarlo con XASTIR seleccione "Puerto TNC".
+El valor por defecto no, es seleccionado.
+
+Ahora entre en el puerto que el TNC está, es decir /dev/ttyS0 para com1
+
+Seleccione los valores del puerto que se acoplan a su TNCs velocidad del puerto.
+
+Entre en tres rutas de UNPROTO.
+
+Xastir asumirá los XX VIA la parte de la ruta de UNPROTO. Hay tres Rutas 
+permitidas para que su señal sea escuchada si las condiciones son mala.
+Si cualquiera de éstos es llenado en XASTIR ciclará a través de uno de ellos
+a cada intervalo de transmision.
+
+Si usted estás local, sólo un WIDE puede ser una buena opción.
+Si usted estás usando baja potencia y/o estás distante de un digi entonces
+RELAY, WIDE puede trabajar mejor.
+
+O si usted conoces el indicativo de su digi más cercano que usted
+puedes usar XXXCALL, WIDE.
+La mayoría de ustedes necesitarán sólo una ruta.
+
+Si usted estás en una área remota y su señal es difícil de conseguirla
+usted puedes necesitar más.
+
+Verifique con un grupo local y pregúntele que ruta 
+puede ser mejor para su área. Algunas areas
+usan el flujo de protocolos más eficientes, en tales caso usted podría usar
+WIDE3-3 o RELAY,WIDE3-3.
+
+Los archivos de Inicio y Salida del TNC. Estos campos especifican a nombre
+de archivo qie es localizado en el directorio /usr/local/xastir/config.
+Cada archivo es un archivo de texto estandar conteniendo algunos comandos que
+usted le gustaria enviarle a su TNC a la vez que el dispositivo es activado
+(Archivo de Inicio - Startup file) o de deshabilitar (shut down).
+
+Pulsando el botón "Aceptar" guardarás sus cambios.
+Pulsando el botón en "Cancelar" guardará la configuracion actual.
+
+HELP-INDEX>Opciones del TNC
+
+                   Opciones del TNC
+
+Permitir Transmisión (on/off)
+ Esto controla la transmisión de datos a través del TNC. Usted puedes querer
+Simplemente escuchar en RF o si usted no es un HAM y no debes transmitir. Con
+Esta opción (el cual está apagado por defecto) usted puedes controlar 
+transmisión de cualquier datos vía RF. 
+
+Bitácora (log) del TNC (on/off)
+ Si está en 'ON', un archivo de log (Bitácora) se creará en el directorio logs. 
+El archivo se llamará tnc.log y se añadirá con toda la información oída vía RF.
+
+Transmitir Ahora!
+ Este transmitirá su position/info de su estacion cuando usted pulses el botón 
+en esta selección. No transmitirá si la opción "Serial TNC" no está seleccionada
+(en la sección Configurar/Interfaces/Agregar/Serial TNC/Adregar/Puerto TNC)
+o si la opción arriba mencionada permitir transmisión está fijada en off.
+
+HELP-INDEX>Configurando el AX.25 TNC
+
+                 Configurando el AX.25 TNC
+
+AX.25 TNC CONFIGURACION    
+    
+Esta sección cubre agregando o modificando AX.25 TNC dispositivos.
+AX.25 dispositivos pueden sea cualquier dispositivo que use controladores AX.25
+en Linux.
+
+Éste es un controlador de nivel del núcleo (kernel),
+y el dispositivo como un Baycom o una tarjeta de sonido como módem 
+puede usarse como un TNC.
+Estos dispositivos deben ser configurado y correrlo
+ antes de que Xastir pueda usarlos.    
+    
+Seleccionando Activar en Inicio, le dirá a Xastir que busque este dispositivo
+y fije las comunicaciones con él cuando el programa de su primer inicio.
+    
+Seleccionando Permite Transmitir, le dirá a Xastir que cualquier
+salida de datos de RF puede ser enviado a este dispositivo para la transmisión.
+    
+Escoja la operación correcta de IGate para este dispositivo.
+Usted puedes tener varios dispositivos TNC, y esta opción puede ser diferente 
+por cada dispositivo. Si usted no estás ejecutando un IGate 
+usted puedes dejar ésta opción predefinida de "Desactivar todo el tráfico".    
+    
+Entre el nombre del Dispositivo AX.25 
+que usted especificó en el archivo del axports para este dispositivo.
+    
+Entre en tres rutas de UNPROTO. Xastir asumirá el XX VIA parte de la ruta
+del UNPROTO. Hay tres rutas permitidas para que su señal sea escuchada
+si las condiciones son mala.
+
+Si cualquiera de ésas son llenada en XASTIR ciclará a través de uno de ellos 
+en cada momento de la transmisión. Si usted es local, sólo un WIDE puede ser una buena opción.
+
+Si usted estás usando baja potencia y/o estás distante de un digi entonces RELAY, WIDE pueden trabajar mejor.
+O si usted sabes el indicativo de su digi más cercano
+a usted puedes usar XXXCALL, WIDE. La mayoría de ustedes necesitarán sólo una ruta.
+
+Si usted estás en una área remota y su señal es difícil de conseguir usted puedes 
+necesitar más. Verifique con un grupo local y pregúntele qué 
+ruta puede ser mejor para su área. Algunas areas
+usan el flujo de protocolos más eficientes, en tales caso usted podría usar
+WIDE3-3 o RELAY,WIDE3-3.
+
+    
+NOTA: Para usar dispositivos AX.25 con Xastir usted necesitarás ejecutar el programa como "raíz" ("root").
+
+Si usted quieres ejecutar Xastir como otro usuario usted necesitarás
+fijar el suid en ON  en el archivo de programa de xastir.
+El orden siguiente como raíz debe fijar esto para usted. chmod a+s /usr/local/bin/xastir.
+
+como con cualquier programa que este corriendo de esta forma, por favor note que
+esto puede ser considerado como una seguridad de riesgo, como el programa no ha sido
+probado para explotar. Uselo en este modo en un multi-usuarios en su propio riesgo!
+
+HELP-INDEX>Cómo uso yo mi GPS con Xastir?  
+  
+                             Usando UN GPS con Xastir  
+  
+Para usar una unidad de GPS con Xastir usted tienes tres opciones,
+un GPS Conectado a una red o a un serial GPS,
+o a un serial GPS con un TNC y cable HSP.
+
+			    GPS conectado a una red:   
+  
+La ventaja de usar un GPS conectado a una red
+es que usted puedes compartir el GPS con otros programas.   
+Xastir usa un programa llamado gpsd para hacer una connexión a una red.   
+  
+Este programa entrega datos de GPS normales en un sócalo de conexión de redes.
+Algunas versiones también permiten corrección de GPS vía un servidor de Internet.   
+  
+Una vez que usted tengas bajado e Instalado el gpsd en su máquina
+(u otra máquina), usted puedes fijar el Xastir
+para conectar a él creando una interfaz.   
+  
+Pulse el botón en "Configurar" y después en "Interfaces".
+Cuando el diálogo de Interfaces aparezca Pulse el botón de "Agregar".   
+Un nuevo diálogo aparecerá con los tipos de Interfaces,
+Elegir en "Enlazado GPS (via el gpsd)", y luego pulse el botón en Agregar.
+
+Hay 4 opciones a elegir.
+Primero entre el nombre del servidor del programa gpsd que está ejecutando.   
+Si está en el mismo computador que Xastir entonces  entre localhost.   
+  
+Luego entre en el puerto que usted puso el programa gpsd para escuchar.
+Si usted seleccionas "Activar en Inicio", Xastir tratará de conectar
+al programa gpsd tan pronto se inicia y tan pronto usted hagas click
+en el botón "Aceptar". La última opción, si seleccionado,
+intentará hacer la reconexión al gpsd si un fallo fué encontrado.  
+  
+Serial GPS: Un serial GPS es cualquier unidad de GPS normal 
+que conecte al puerto serial y transmita datos en el NMEA normal. 
+Permitir a Xastir a usar este tipo de GPS pulse el botón
+de "Configurar" luego en "Interfaces". Cuando el diálogo
+de Interfaces aparezca pulse el botón de "Agregar".
+
+Un diálogo con los tipos de Interfaces aparecerá,
+Pulse sobre el "Serial GPS" y después en el botón Agregar.   
+  
+               Unas pocas opciones para fijar.
+	       
+Primero entre el puerto serial en donde el dispositivo
+está conectado (como "/dev/ttyS1 (COM2)"). 
+Próximo si usted seleccionas "Activar en Inicio",
+Xastir intentará inicializar el "serial GPS" cuando él se
+inicie y cuando usted pulses el botón "Aceptar".
+Las próximas opciones pondrán la velocidad del puerto serial y modo.   
+  
+Para la mayoría de las unidades de GPS los valores predefinidos están bien.
+Pero Chequee usted el manual del GPS sólo en caso de dudas.
+
+HSP TNC/GPS: 
+Mire en "Cómo uso yo mi TNC con Xastir?"  
+
+
+HELP-INDEX>Configurando el Puerto/GPS
+
+              Configurando el Puerto/GPS
+
+Pulse el botón en "Configurar" luego en "Interfaces" luego en "Agregar" 
+elija "Serial GPS" luego "Agregar" después ajuste los parámetros del Puerto/GPS.
+
+Para usar una posición "Serial GPS" en el puerto serial,
+pulse el botón en Posición Serial GPS.
+Este puerto puede especificarse en la Posición "Sólo el puerto de GPS".
+Usted puedes usar un dispositivo serial como /dev/ttyS1 (COM2).
+
+Si usted tienes un cable de HSP que le permitas compartir el Serial TNC con una 
+unidad GPS usted puedes seleccionar "Serial TNC c/GPS más (Cable HSP).
+Éste es un cable especial y el mío no trabaja en todas las combinaciones
+de computadores/GPS/TNC.
+
+Ahora usted puedes escoger un GPS muestreo y TNC relación, Recuerde usarlo con 
+precaución aqui, que sean amigables por sus estaciones cercanas.
+
+¿Activar el uso de los datos de GPS seleccione el "Uso Posición GPS?" opción.
+Con esta selección hecha la unidad de GPS pondrá al día su posición.
+Si esto no se selecciona la posición actual vendrá desde la locación 
+en configuración información de la Estación.
+
+Cuando active los datos de GPS también pondrás al día 
+la posición en configuración de información de la Estación.
+
+Cuando use el GPS sus paquetes cambian, usted obtendrás una estación móvil con 
+curso y velocidad aún cuando la suya no esté moviendose (yo puedo cambiar esto 
+después a una opción).
+
+El tiempo del GPS le permitirá seleccionar proporciones de la relación
+de muestra  para el GPS y sobre pasar el tiempo del paquete normal 
+por transmitir su estación.
+
+Si usted estás estacionado entonces use 10 minutos.
+Si usted estás haciendo algún especial/rastreo etc..
+use la selección que encajarán mejor los datos que usted necesitas.
+Por favor no haga sobre transmisión, si usted no lo necesitas hacer. 
+
+
+Pulsando el botón "Aceptar" guardarás sus cambios.
+Pulsando el botón en "Cancelar" guardarás las configuraciones actuales.
+
+HELP-INDEX>Cómo uso yo mi TNC con Xastir?  
+  
+                Usando UN TNC con Xastir  
+  
+Para usar un TNC con Xastir usted tienes tres opciones,
+un "serial TNC" o un "Serial TNC c/GPS más (cable HSP)"
+o un TNC Conectado a una red "AX.25 TNC".
+
+AX.25 o un TNC en una red:
+Este tipo de tnc le permitirá compartir el TNC con otros programas.
+Al usarlo usted debes tener la librería AX.25 , y el
+HamRadio soporte instalado en el núcleo (kernel) de su Linux OS.
+
+Ellos son un poco más difíciles de configurar para usarlo 
+pero hay muy buenas opciones y ventajas en su uso. 
+
+Usando el soporte del "AX.25 TNC", usted tienes varios
+dispositivos que usted puedes usar con Xastir.
+Algunos de ellos son serial TNC que usan AX.25,
+tarjetas de sonidos como TNC's, Baycom, etc.  
+  
+SERIAL TNC: SERIAL TNC con (GPS más cable HSP):
+
+HELP-INDEX>Configurando la conexión de Internet
+
+             Configurando la conexión de Internet
+
+La conexion a los Servicios de Internet le permite a usted enviar
+y recibir datos desde y hacia todo el mundo.
+
+Para configurar el Internet usted necesitarás conocer un host y un número de 
+puerto. El host predefinido es www.aprs.net y el puerto es 10151. Usted puedes 
+escoger otros pero este debe trabajar. Una Palabra de paso válida le permitirá
+a su estación transmitir por el Internet.
+
+Permitirá a su estación salir de una I-Gate y conseguir retransmitir vía RF.
+Para conseguir un código de paso usted necesitarás contactar con Frank, 
+email fgiannan@earthlink.net, Enviarle su nombre, Indicativo, etc.
+
+Una vez él verifique su estado como un HAM él puede enviarle su código. 
+Usted puedes mantenerse recibiendo y transmitiendo datos vía el 
+Internet aunque usted no tengas un passcode. Pero sin el código de paso sus 
+datos no serán directamente retransmitido vía RF.
+Cualquiera que esté conectado al Internet directamente conseguirá su mensaje.
+
+Host1 y Host2 son servidores opcionales que serán contactado si el servidor 
+primario está fuera. Cada servidor será intentado dos veces, siguiendo al 
+próximo si la conexión fracasa.
+
+Si usted quieres que XASTIR reconecte después de una conexión perdida
+en el net entonces seleccione la opción "Reconecte en fracaso de la RED?"
+en la que por defecto está en ON.
+
+Las últimas opciones son para preparar su estación para ser un IGate. Esto 
+permite a su estación con su código de paso simplemente actuar como una puerta 
+(gateway), pero en lugar de otra banda sus datos atravesarán el Internet.
+Esta opción no debe ser tomada ligeramente.
+
+Primero usted debes coordinar con otros 
+en su área para que usted puedas agregar verdadera información que puede estar 
+perdiendo. Usted también debes avisar a Steve sobre esto. Esta versión puede 
+enviar información recibida desde su TNC hacia el Internet y transmitirá 
+cualquier mensaje procedente de Internet a través de su estación via RF.
+
+Enviará sólo datos vía RF si usted tienes el opción seleccionada de transmisión 
+de mensajes. Sólo estaciones que usted has oído (vía RF) en las últimas horas 
+tendrán mensajes enviados a ellos en ésta vía.
+
+Note también usted es responsable por los datos transmitidos
+por su estación asi que tenga cuidado con esta 
+opción (otros pueden enviarle mensajes que usted no quieres transmitir).
+
+Si usted quieres ver que su I-Gate esta haciendo encienda la opción Log I-Gate 
+de transacciones. esto construirá un archivo de igate.log en su "logs" los 
+directorios  mostrarán todos los datos pasados de RF local hacia la red con 
+línea que tiene "IGATE-RF->NET": y conteniendo todo los datos.
+
+También mostrará todo el tráfico entrante desde la red con "NET->RF-IGATE:".
+Note aquí usted no verás la completa salida de paquetes, como su estación y ruta son 
+asumida. Solamente mostrará el data como un mensaje de tercera persona.
+
+
+Pulsando el botón "Aceptar" guardarás sus cambios.
+Pulsando el botón en "Cancelar" guardarás los cambios actuales.
+
+
+APRS[tm] es una Marca de fábrica de Bob Bruninga, 
+su página está en "http://web.usna.navy.mil/~bruninga/aprs.html"
+
+
+HELP-INDEX>Opciones de RED
+
+                   Opciones de RED
+
+Permitir Transmisión (on/off)
+Esto controla la transmisión de datos a través del Internet.
+El valor por defecto es apagado.
+Con esto en (off) apagado ningún dato será enviado al Internet.
+
+Bitácora de Internet (on/off)
+ Si esto está en 'ON', un archivo log se creará en el directorio logs. El archivo
+se llamará net.log y se añadirá con toda la información oída vía el Internet.
+
+Transmitir Ahora!
+ Esto transmitirá su position/info de la estación cuando usted pulses el 
+botón en esta selección. No transmitirá si la opción está apagada en Permitir 
+transmisión.
+
+HELP-INDEX>Configurando una Estación Meteorológica sobre un Puerto Serial.
+
+Configurando una Estación Meteorológica sobre un Puerto Serial.
+
+Configurar el puerto serial para su estación Meteorológica. A los valores 
+comunes de /dev/ttyS0 (COM1) o /dev/ttyS1 (COM2) pueden ser usado.
+
+Seleccionado "Activar en Inicio" le dirás a Xastir buscar este dispositivo y
+fijar comunicanciones con el cuando el programa se inicie primero.
+
+Ahora fije el bps bajo el puerto de configuración, y los parámetros bajo el
+puerto estilo. El seteo del puerto estilo 8N1, es usado para 8 bitios de datos,
+No paridad y 1 bitio de parada (stop bit). 7E1 es usado para 7 bitios de datos,
+even paridad y 1 bitio de parada. 7O1 es usado para 7 bitios de datos, odd paridad
+y 1 bitio de parada. Esos parámetros deben de machar con su estación Meteorológica.
+El tipo de opción de data le perimitirá sobrepasar que tipo de serial data el progrma
+verá. La forma de auto-detección primero buscará datos del tiempo en un modo binario
+como lo usa el Radio Shack WX-200. Si no dato binario es encontrado,
+Xastir buscará un tipo ASCII de estación Meteorológica (como la Peet Bros.)
+
+HELP-INDEX>Configurando una Estación Meteorlógica en la RED
+
+Configurando una Estación Meteorlógica en la RED
+
+Xastir puede usar servicios de dato de una estación Meteorológica
+tales como la wx200d. La wx200d le permitirás varias conexiones de redes,
+asi compartiendo el informe del tiempo con varios programas o computadores.
+
+Entre el nombre del host (o la dirección numérica IP) y el número del puerto
+de la estación Meteorológica servidora que usted quieres contactar.
+
+Seleccionado "Activar en Inicio" le dirás a Xastir buscar este dispositivo y
+fijar comunicanciones con el cuando el programa se inicie primero.
+
+Seleccionado "Reconectar en fallo de la RED" le dirá a Xastir tratar de reconectar cuando
+el data conexión haya fracasado.
+Como antes el tipo de data sobrepasará el auto-detección.
+
+HELP-INDEX>Diálogo info estación - búsqueda FCC y RAC  
+  
+                  Diálogo info estación - búsqueda FCC y RAC  
+  
+Info estación desplegará cualquier dato descifrado por Xastir.
+Actualmente dos o tres botones aparecen aquí además del botón Cerrar.
+
+Los botones de Anular Rastro anularán cualquier línea de rastro para esa estación 
+que es actualmente guardada o en el despliegue de mapa.
+
+Envíe mensaje abrirá la ventana de mensaje y le permitirá enviar a mensje a esta estación.
+El llenará en el indicativo por usted. 
+
+Si el banco de datos de FCC se instala,
+un botón de Búsqueda en el Banco de datos FCC aparecerá en este Diálogo.
+Si el RAC (RadioAficionados de Canadá) banco de datos se instala, 
+un botón de búsqueda RAC Banco de datos aparecerá para indicativo 
+que empiezan con una "V".  
+
+El archivo FCC y  RAC deben colocarse en el directorio /usr/local/xastir/fcc,
+y el caso es importante!  
+  
+Usted puedes usar este botón para agregar los nombres de estaciones
+y diríjase al Diálogo de Estación Info. 
+
+Para usar la búsqueda de FCC bajelo de aqui:
+ftp://ftp.fcc.gov/pub/XFS_AlphaTest/amateur/appl.zip
+
+ o el Nuevo banco de datos en:
+ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip  
+  
+(El único archivo necesitado forma este 40Meg zip es el archivo EN.dat)  
+  
+* * * * NOTA para usar el NUEVO archivo base de datos debe ordenarse primero!!! * * * *
+
+¡Asegúrese que usted tienes espacio en el disco suficiente 
+para esto como el archivo es GRANDE!  
+
+Para ordenar el archivo: sort +4 -t \ | EN.dat >EN.dat.ordenado  
+rm EN.dat  
+mv EN.dat.ordenado EN.dat  
+  
+Para usar la búsqueda de RAC bájelo de: ftp://ftp.rac.ca/pub/cdncaldb.zip  
+Xastir creará archivos índice por cada archivo del banco de datos en el inicio.  
+  
+Si un archivo de indicativo es eliminado mientras Xastir está corriendo,
+creará o reconstruirá el índice en la próxima búsqueda. No se manejan prefijos especiales.
+
+HELP-INDEX>Opciones de Despliegue
+
+                        Opciones de Despliegue
+
+Estas opciones le permitirán desplegar datos sobre la estación alrededor del 
+ícono de las estaciones en el mapa.
+
+Indicativo (on/off)
+ Cuando esté en 'ON', todo los indicativos de las estaciones se desplegarán.  
+Si este esta en 'OFF' los indicativos no se desplegarán sobre el mapa.
+
+Para viejas estaciones el símbolo es dibujado
+como fantasma y en su orientación estandar.
+
+Corespondiendo al arrastre que son subrayado más que sólido y todo el data
+excepto el indicativo desaparece de la pantalla.
+
+Callsign (on/off)
+Determines if the callsign is displayed on the right side of the symbol.
+
+Altura (on/off)
+ Cuando esté en 'ON', una línea azul de datos aparecerá  sobre el indicativo.  
+Este desplegará la última altitud conocida de la estación.
+
+Curso (on/off)
+ Cuando esté en 'ON', una línea verde de dato aparecerá debajo del indicativo. 
+Esto desplegará el último curso conocido (en grados) de la estación que está en 
+movimiento.
+
+Velocidad (on/off)
+ Cuando esté en 'ON', una línea roja aparecerá debajo del indicativo (o curso). 
+Esto despliegará la última velocidad conocida de la estación que está en 
+movimiento.
+
+Dist/curso (on/off)
+ Cuando esté en 'ON', se desplegarán dos líneas de información en el lado 
+izquierdo del ícono de la estación. La línea de arriba tendrá la distancia 
+de su estación hacia esta estación. La línea de abajo tendrá el curso desde su 
+estación hacia esta estación. 
+
+Rastros de estaciones (on/off)
+ Cuando esté en 'ON', cualquier estación en movimiento arrastrará una línea 
+coloreada con las últimas 100+ localizaciones. Cuando la estación se pone vieja 
+el ícono es opaco la línea de rastro se volverá intermitente en lugar de la 
+línea contínua.
+
+
+Estación Potencia/Ganancia (on/off)
+ Cuando esté en 'ON', se desplegarán Círculos de Poder/Ganancia.
+ Sobrepasando los círculos indicado que las estaciones están teóricamente
+ con simple rango uno del otro.
+ Esto es aproximandaemnte exacto, especialmente in áreas de terreno variable.
+ 
+Rastreo Estación
+ Traerá una caja abierta similar a la opción localizar estación. Usted puedes 
+entrar  todos o parte del indicativo. Al seleccionar "Rastrear Ahora!" El 
+despliegue saltará a la posición de la estación (si es encuentrada). Cuando 
+nuevos datos para esa estación son encuentrados el despliegará el rastro a lo largo 
+de esa estación.
+
+ El botón "Borrar Rastro" limpiará todo el rastro.
+
+ El botón de "Cancelar" terminará sin cambios realizados.
+
+Informe del Tiempo (on/off)
+Cuando esté en 'ON', los últimos datos del tiempo 
+(velocidad/curso/ráfaga,Humedad,temperatura,viento) 
+ son desplegados.
+
+Símbolos (on/off)
+Determina si los símbolos podrían ser dibujado en el mapa.
+
+Rotar Símbolos (on/off)
+Si 'ON', algunos símbolos deberían cambiar su orientación y mostrar la
+dirección en la cual una estación móvil se está moviendo.
+
+HELP-INDEX>Mensajes
+
+                        Mensajes
+
+Enviar mensaje a y Mensajes De grupo abierto
+Éstos son muy similares. El "Enviar mensaje a" enviará sus mensajes a una 
+estación y recibirá sólo forma de datos de la estación. Los mensajes de grupo 
+son más en general usted puedes recibir cualquier mensaje para el grupo y usted 
+enviarás sus mensajes a ese nombre de grupo. Los mensajes de grupo no pueden 
+trabajar mejor por el momento hay varios problemas que necesitan ser 
+solucionado. Sin embargo, volviendo atrás al
+uso de estas pantallas. 
+
+Cada una de estas pantallas contienen una caja de mensaje, una línea de 
+llamada, una línea de mensaje, y varios botones. Usted debes primero entrar  la 
+llamada del grupo o estación que usted quieres avisar. Una vez que eso se hace 
+cualquier nuevo mensaje que ha entrado de esa estación hacia usted serás 
+desplegado. Si la estación está enviándole información y ninguna ventana de 
+mensaje está abierta él abrirá automáticamente a una nueva ventana (hasta 10) 
+con esos indicativos de estaciones para usted. Usted puedes ahora entrar un 
+mensaje en la línea de mensaje. El mensaje puede ser más largo que la línea de 
+mensaje, y la máxima salida es aproximadamente 250+ carácteres. Una vez su 
+mensaje es entrado, pulsando el botón "Enviar Ahora!" mandará su mensaje.
+
+El botón "Enviar Ahora!" se pondrá opaco hasta que su mensaje sea completamente Reconocido.
+Cualquier mensaje que usted recibas será ordenado por la línea # y será puesto 
+en la ventana de mensaje. Si usted estás en un modo de grupo cada línea 
+desplegará el indicativo de donde el mensaje se envió seguido por el propio 
+mensaje. Los mensajes de grupos actuales son ordenados por llamada y después   
+la línea #. Cuando usted hayas enviado el mensaje pulsando el botón de "Cerrar" 
+cerrará la ventana.
+
+Dos otros botones son también disponible. El botón "Nuevo Indicativo" 
+le permitirá mirar datos viejos que una estación ha enviado.
+Teclee el indicativo y pulse en este botón, cualquier 
+información vieja será desplegada.
+Usted también puedes usar este botón para cambiar el indicativo de la estación
+con la que usted estás hablando.
+Entre el nuevo indicativo y pulse el botón. El botón de "Borrar Mensajes"
+limpiará cualquier mensaje desplegado en la ventana de mensajes.
+
+
+Borrar todos los mensajes salientes
+ Esto limpiará todo los mensajes no-conocidos que usted has enviado.
+
+Auto Contestación de Msj
+Esto encenderá una contestación automática
+cuando un mensaje entrante se recibe.
+
+Fijar Mensaje en  contestación Automática
+ Esto fijará un mensaje que se enviará en ausencia automáticamente.
+
+HELP-INDEX>Limpiando el despliegue de línea de rastros
+
+            Limpiando el despliegue de línea de rastros
+
+Pulse el botón en "Archivo" y después "Borrar Todo rastro". Esto limpiará 
+todo el dato de la línea de rastreo del banco de datos de la estación y 
+actualiza la pantalla.
+
+HELP-INDEX>Limpiando el despliegue de estaciones
+
+             Limpiando el despliegue de estaciones
+
+Pulse el botón en "Archivo" y luego el botón "Borrar Toda las Estaciones". Esto 
+limpiará todo los datos del banco de datos de las estaciones excepto la suya.
+
+HELP-INDEX>Reenviando un log (Bitácora) 
+
+                     Reenviando una Bitácora
+
+Pulse el botón en "Archivo" y después en "Abrir Bitácora"
+una ventana de selección de archivo se desplegará.
+
+Usted puedes usarlo hojear su unidad de disco duro y seleccionar cualquier archivo
+que contenga un TNC datos raw  como aquéllos creados por el TNC y opciones de red.
+
+Su estación todavía funcionará de la misma manera, recibiendo y transmitiendo.
+Y debe haber una palabra de advertencia aquí, si su dato contiene una sessión 
+de mensaje y usted tienes su estación lista para transmitir, responderá al 
+archivo como si el dato fué recibido sobre el TNC o Internet. 
+
+HELP-INDEX>Localizando una Estación
+
+                  Localizando una Estación
+
+Pulse el botón sobre "Visualizador" luego en, "Localizar Estación"
+o sobre el botón de "Desplegar" luego en "Estación Rastreo" una ventana se abrirá.
+Usted puedes ahora entrar una estación o parte de una estación. Por 
+defecto buscará un macheo exacto (llamada completa, no parcial) y no es caso 
+sensible. Si usted estás buscando un macheo parcial, "Macheo Exacto" podría no 
+ser seleccionado.
+
+Realmente usted puedes usar esto para localizar una estación o un objeto. Qué es
+donde nosotros venimos a la opción "Macheo Sensible". Yo he notado que algunos 
+objetos están en caso mixto o minúscula. Con "Macheo Sensible" seleccionado, 
+el localizador buscará mayúscula y minúscula cuando usted la entró. Si
+"Macheo Sensible" no se selecciona, el localizador asumirá cualquier caso que usted 
+teclees es mayúscula y investigará en eso. Pulsando el botón "Localizar Ahora!"
+centrará la primera estación encontrada en el centro de su pantalla
+al nivel del enfoque actual. Pulsando el botón "Cancelar" cerrará la ventana.
+
+HELP-INDEX>Creando y usando Salto a Localizaciones  
+  
+                     Creando y usando Salto a Localizaciones  
+  
+Pulse el botón "Visualizador", luego en "Saltar a la posición" una ventana aparecerá.
+Si ésta es la primera vez usted has usado este diálogo no tendrás ninguna entrada en él.
+Agregar una posición en la lista de posición vaya al área del mapa principal 
+y enfoque el nivel que usted quieres usar.
+
+Entre un único nombre en el área "Nombre de Nueva localización",
+luego pulse el botón agregar.
+Su entrada se agregará a la lista (en orden alfabético).
+Usted puedes agregar tantas locación de mapas que usted quieras de esta manera.
+
+Para usar uno de la posición pulsar el botón en el nombre de la posición 
+y pulsar el botón  "IR!", el mapa principal entonces mostrará esa posición. 
+
+Usted puedes anular una posición similarmente pulsando el botón 
+sobre el nombre de la posición y luego el botón "Anular".
+
+HELP-INDEX>Rastreando una Estación  
+  
+Rastreando una Estación  
+  
+Pulse sobre el botón de "Desplegar" luego en "Rastreo Estación".
+Entre en el indicativo para rastrear (todos o parte) luego pulse el botón "Rastrear Ahora!".
+Como la estación lo mueve será centrado en la ventana del mapa principal.
+Dejar de rastrear esta estación pulsar el botón  "Anular Rastro".
+
+HELP-INDEX>Tráfico de mensajes
+  
+    Tráfico de todos los mensajes
+    
+Pulse sobre la opción de "Tráfico de Mensajes"
+luego un diálogo se abrirá e iniciará el Monitoreo
+de todas las estaciones alrededor del mundo, en chat o enviando
+mensaje de prueba etc.
+  
+HELP-INDEX>Imprimiendo
+  
+              Imprimiendo la Pantalla del Mapa  
+  
+Xastir puede imprimir el área de dibujo en cualquier blanco y negro o color.  Hace  
+esto primero descargando la imagen a un archivo XPixmap en disco, entonces usando una  
+herramienta externa para convertirlo al posdata, balancearlo, rotarlo, prevista, entonces la impresión  
+.  Usted debe tener su sistema que configure la impresión para manejar posdata (normalmente  
+esto requiere Ghostscript y un filtro de impresión instalados, así como lp o lpr  
+imprime spoolers). Usted también debe tener las herramientas siguientes instaladas para esta  
+capacidad:  Herramientas de ImageMagick (específicamente "convertido"), "Ghostscript",  
+Conjuntos de caracteres de Ghostscript, y "gv". Una vez todos esos paquetes son instalando y  
+funcional, usted debe una "gv" ventana sobre salte brevemente después que usted le diga a  
+Xastir crear un archivo de impresión.  De allí usted puede ver la imagen impresa, y  
+si aceptable, diga a "gv" imprimirlo.  Note que algunas veces cambiando a un blanco  
+el fondo predefinido para los mapas se recomienda, dependiendo de qué mapas usted tienen  
+visualizable.  Esto puede ahorrar le grandemente la tinta.  
+  
+HELP-INDEX>Creando Captura Instantánea Automáticamente
+
+             Creando Captura Instantánea Automáticamente
+  
+Xastir tiene la capacidad para crear captura instantánea automáticamente en pantalla del mapa  
+recurriendo al algo básico.  Este periodo de tiempo es actualmente fijado por cinco  
+minutos.  Asumiendo que usted tiene "convertir" de la herramienta de ImageMagick  
+instalado, Xastir creará un archivo de formato XPM en /var/tmp, entonces lo converte,  
+al archivo de PNG /var/tmp/xastir_snap.png. Este archivo es útil para ponerlo  
+en páginas web para mostrar una imagen viva de lo que está en su pantalla de Xastir.  Habilite  
+este rasgo vía el "Archivo->Activar PNG Instantánea".  
+  
+
+HELP-INDEX>Tabla de Símbolo
+
+Eso son los símbolos que usted puedes selecionar para su estación bajo la
+"Información de la Estación" menú de configuración.
+
+La lista actual puede ser encontrada en el APRS Referencia en el cual usted
+puedes obtenerlo desde http://www.tapr.org/
+
+                   Tabla de símbolo
+
+Símbolo	Grupo/				Grupo/
+
+!	Triángulo w/!			Triángulo w/!
+"	Lluvia Nube			Lluvia Nube
+#	Digi				DIGI         
+$	Símbolo	 telefónico		$ Símbolo
+%	DX				DX 
+&	GATE-HF 			GATE
+'	Avión pequeño			Avión Caído
+(	Nube 				nube
+)	TBD                           
+*	NIEVE Hojuela	 		NIEVE Hojuela  
++	Cruz roja                     
+,	Inverso  L
+-	w/omni casa                  
+.	X pequeña
+/	Punto rojo                       
+0	0 en una caja			 Círculo
+1	1 en una caja
+2	2 en una caja
+3	3 en una caja
+4	4 en una caja
+5	5 en una caja
+6	6 en una caja
+7	7 en una caja
+8	8 en una caja
+9	9 en un GAS de la caja
+:	Bombero				?
+;	Tienda 				tienda
+<	motocicleta			Banderín
+=	Máquina de tren                  
+>	Automóvil 			automóvil 
+?	Antena POS			? en una caja
+@	HURRICAN/TORMENTA		HURRICAN/TORMENTA 
+A	Primero auxilio			Caja
+B	BBS 				Blowing Nieve 
+C	Canoa                         
+D	D en un círculo                 
+E	E en un circulo			Pila de Humo
+F	F en un círculo                 
+G	Reja Antena Cuadrada		?
+H	Hotel/Cama                     
+I	TCP/IP				?
+J	J en un círculo			descarga
+K	Escuela                  
+L	Casa Iluminada			Casa Iluminada
+M	Mac                           
+N	NTS				?
+O	Globo                       
+P	Carro  de  Patrulla   		Rx
+Q	Circle con Círculos 		Círculo con Círculos
+R	RV				Restaurante
+S	Transbordador			Satélite
+T	Tormenta (cloud/bolt)		Tormenta (cloud/bolt)
+U	Autobús escolar			Sol
+V	VOR TAC 			VOR TAC Símbolo
+W	Servicio  del Tiempo Nacional	NWS-Digi
+X	Helicóptero
+Y	Velero                     
+Z	Windows
+[	corredor   	 	 	WC
+\	DF Triángulo
+]	Packet Mail Box
+^	Avión grande			Avión Grande
+_	Estación Meteorológica		WS-Digi
+`	Plato de satélite              
+a	Ambulancia
+b	Bicicleta   	  	  	vuela nube
+c	antena de DX                     
+d	depto de bombero.  	  	Antena de DX
+e	Caballo				Aguanieve nube 
+f	Camión de bombero		FC Nube
+g	planeador			Banderín (2)
+h	Hospital   	   		HAM
+i	Isla				Isla
+j	Jeep				Jeep
+k	Camión				Camión 
+l	Punto pequeño			Punto pequeño
+m	MIC				Milla Poste
+n	N				Triángulo Pequeño
+o	EOC				Punto en Círculos 
+p	Cachorro   	   		Punto en Círculos 
+q	GS Antena			Antena de GS
+r	Antena Torre			Antena Torre
+s	Bote				Barco
+t	TS				?
+u	18 Rueda de Camión
+v	Carro de mudanzas   	   	Punto en Círculos 
+w	H20				Diluvio
+x	X Windows			Punto Rojo
+y	Casa w/Yagi	 		Casa w/yagi 
+z					X Windows
+{	NIEBLA				NIEBLA
+|	Línea Negra			Línea negra
+}	TCP				TCP
+~	Velero				Velero

@@ -1,0 +1,85 @@
+000 000 000 black
+069 069 069 gray27
+047 079 079 DarkSlateGray
+089 089 089 gray35
+135 135 135 gray53
+169 169 169 darkgray
+186 186 186 gray73
+204 204 204 gray80
+211 211 211 lightgray
+219 219 219 gray86
+255 255 255 white
+
+000 000 255 blue
+000 000 238 blue2
+000 000 205 blue3
+000 000 139 blue4
+173 216 230 lightblue
+030 144 255 DodgerBlue
+065 105 225 RoyalBlue
+070 130 180 SteelBlue
+000 191 255 DeepSkyBlue
+000 000 205 MediumBlue
+000 000 128 NavyBlue
+
+000 255 000 green
+000 238 000 green2
+000 205 000 green3
+000 139 000 green4
+152 251 152 PaleGreen
+050 205 050 LimeGreen
+060 179 113 MediumSeaGreen
+034 139 034 ForestGreen
+000 100 000 DarkGreen
+
+000 255 255 cyan
+000 238 238 cyan2
+000 205 205 cyan3
+000 139 139 cyan4
+224 255 255 LightCyan
+
+255 000 000 red
+238 000 000 red2
+205 000 000 red3
+139 000 000 red4
+
+255 000 255 magenta
+238 000 238 magenta2
+205 000 205 magenta3
+139 000 139 magenta4
+
+255 255 000 yellow
+238 238 000 yellow2
+205 205 000 yellow3
+139 139 000 yellow4
+250 250 210 LightGoldenrodYellow
+238 232 170 PaleGoldenrod
+255 248 220 cornsilk
+
+255 165 000 orange
+238 154 000 orange2
+205 133 000 orange3
+205 102 000 DarkOrange3
+255 069 000 OrangeRed
+
+178 034 034 firebrick
+188 143 143 RosyBrown
+
+165 042 042 brown
+255 064 064 brown1
+205 051 051 brown3
+255 130 071 sienna1
+
+064 224 208 turquoise
+186 085 211 mediumorchid
+153 050 204 DarkOrchid
+160 032 240 purple
+127 255 000 chartreuse
+230 230 250 lavender
+221 160 221 plum
+238 174 238 plum2
+250 128 114 salmon
+255 192 203 pink
+255 228 225 MistyRose
+255 174 185 LightPink1
+255 105 180 HotPink

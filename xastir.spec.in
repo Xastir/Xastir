@@ -1,0 +1,26 @@
+Summary         : Amateur Station Tracking and Reporting sytem for amateur radio
+Name            : @PACKAGE@
+Version         : @VERSION@
+Release         : 1
+Group           : Applications/Networking
+Copyright       : GPL
+Packager        : cbyam@virginia.edu
+# Icon            : src/@PACKAGE@.xpm
+BuildRoot       : /var/tmp/%{name}-buildroot
+Source          : ftp://argon.hscs.virginia.edu/pub/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
+
+%description
+Xastir is a graphical application that interfaces HAM radio
+and internet access to realtime mapping software.
+
+Install XASTIR if you are interested in APRS and HAM radio
+software.
+
+%requires lesstif
+
+%prep
+%setup
+
+%build
+./configure
+make install

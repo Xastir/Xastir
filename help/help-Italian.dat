@@ -1,0 +1,1042 @@
+HELP-INDEX>Leggimi - Licenza
+
+                          Leggimi - Licenza
+
+Per informazioni sulla versione corrente del programma leggere README.1ST nella 
+cartella di Xastir.
+
+Questo programma è sviluppato per essere usato all'interno della comunità 
+radioamatoriale, negli Stati Uniti la FCC non autorizza a trasmettere per radio 
+se non sei radioamatore.
+Gli utenti di altri paesi devono attenersi alle leggi locali in merito.
+
+
+LICENZA:
+
+XASTIR, Amateur Station Tracking and Information Reporting
+Copyright (C) 1999,2000  Frank Giannandrea
+Copyright (c) 2000,2001,2002  The Xastir Group
+
+Questo programma è un software libero; può' essere ridistribuito e modificato
+secondo i termini della Licenza GNU GPL, pubblicata dalla Free Software
+Foundation;
+anche la versione 2 della licenza è valida, come anche le versioni seguenti.
+
+ma SENZA ALCUNA GARANZIA; senza la garanzia di COMMERCIABILITA' o ADATTAMENTO
+PER UN PARTICOLARE USO.  Vedere la Licenza GNU GPL per maggiori dettagli.
+
+Dovrebbe essere pervenuta a voi la licenza GNU assieme al programma; se così
+non fosse segnalate l'evento alla  Free Software Foundation, Inc., 59 Temple
+Place - Suite 330, Boston, MA  02111-1307, USA.
+
+Ulteriori informazioni sul software possono essere ottenute via:
+Web,
+ http://www.xastir.org
+
+
+Per maggiori informazioni riguardo la licenza pubblica GNU GPL:
+ http://www.gnu.org
+
+
+HELP-INDEX>Benvenuti! e note dell'Autore
+
+                      Benvenuti! - note dell'autore
+
+XASTIR, o X-windows Amateur Station Tracking and Information Reporting.
+
+è un programma APRS(tm) sviluppato liberamente e di libero uso, può  essere 
+liberamente distribuito. Attualmente il programma è in fase di sviluppo e non 
+deve essere visto come un prodotto finito! Il tuo aiuto servirà a renderlo 
+migliore.
+Se sai programmare o vuoi scrivere documentazione, il tuo aiuto mi risulterà  
+molto gradito! Ho molte idee ma così poco tempo! Quindi se pensi che manchi 
+qualcosa, fammelo sapere.
+
+73,
+Frank Giannandrea
+
+Traduzione della guida a cura di Alessandro Frigeri, IK0YUP.
+
+APRS[tm] è un marchio registrato di Bob Bruninga, 
+la sua pagina è "http://web.usna.navy.mil/~bruninga/aprs.html"
+
+HELP-INDEX>Novità in Xastir 1.0
+
+			Novità in Xastir 1.0
+
+Over the past year, Xastir has been under active development, and this new
+release is the culmination of those efforts. Development has been run by
+Chuck Byam, who agreed to take over for Frank Giannandrea. Many other
+individuals have contributed to this project, and are listed in the AUTHORS
+file.
+
+Nell'ultimo anno, Xastir è passato per una fase di notevole sviluppo, e questa 
+nuova versione è il culmine dell'impegno di questo periodo.  Lo sviluppo è 
+stato coordinato da Chuck Byam, a cui Frank Giannandrea ha passato il 
+testimone.
+Altre persone hanno contribuito allo sviluppo di questo progetto, e sono 
+elencati nel file AUTHORS. 
+
+Il programma Xastir ora utilizza GNU autoconf per la costruzione dei Makefile 
+e la selezione delle caratteristiche in base alle librerie e del software 
+installato nel sistema.  Non sono quindi necessarie modifiche ai Makefile come 
+nelle versioni precedenti.
+
+Avviando Xastir 1.0 probabilmente non si noteranno grandi differenze.  
+L'interfaccia utente già buona è stata mantenuta pressochè inalterata. La 
+maggior parte dei cambiamenti è avvenuta in un miglioramento delle prestazioni 
+complessive:
+* Sono stati migliorati i tempi di avvio del programma.
+* E' stato migliorato l'utilizzo della memoria, con l'allocazione dinamica 
+  dei dati di stazione, tracciati, meteo.  Non verrà utilizzata inutilmente 
+  memoria per dati non aggiornati.  Con questa modifica, Xastir potrà essere 
+  collegato ad un server internet anche in un computer con 16Mb di RAM.
+* E' stata migliorata la modalità di caricamento delle mappe.  Infatti una
+  mappa non verrà più ricaricata per un semplice cambiamento di dat ida una 
+  stazione.  Allarmi meteo e tracciati di stazioni in movimento saranno 
+  disegnati a parte.  
+* Miglioramenti sono stati apportati nella frequenza d visualizzazione di 
+  alcune  finestre di dialogo che nella versione precedente apparivano con 
+  una alta frequenza.  
+
+Grazie a questi cambiamenti Xastir è perfettamente funzionante anche su 
+computer lenti. 
+
+Il supporto per le mappe GeoTIFF ora è incluso nel codice e verrà attivato se 
+nel sistema sono presenti le librerie GeoTIFF.  Questi file contengono mappe 
+di alta qualità, utili specialmente in operazioni di soccorso.  Questo 
+formato di mappe è disponibile presso l'USGS (United States Geological Survey) 
+oppure commercialmente su CDROM.  Xastir convertirà automaticamente le mappe
+trasferendo il datum NAD-27 al WGS-84.  Sono state abilitate delle 
+scorciatoie tramite tastiera che permettono di caricare tutte le mappe
+disponibili per una particolare area.
+
+E' disponibile il supporto per Festival Speech Synthesis System per l'annuncio 
+vocale  di nuovi dati in arrivo.  Il precedente sistema di avvisi sonori è 
+ancora disponibile.
+
+Xatir ora supporta la possibilità di aggiungere oggetti alle mappe. Questa 
+possibilità fornisce all'utente molte possibilità di utilizzo in coordinazione 
+di eventi e operazioni di soccorso.
+  
+Le mappe di allarme meteo (ndt: solo USA, per ora) sono visualizzate con una 
+trasparenza, permettendo di vedere le mappe geografiche sottostanti.
+
+Una nuova ed utile funzione è il cambiamento della orientazione di un simbolo 
+in base alla direzione del suo movimento.  Anche senza un percorso, è possibile 
+sapere la direzione di una stazione modile..  Ci sono diverse nuove funzioni 
+nel menù di visualizzazione, che permettono all'utente di visualizzare solo le 
+informazioni interressanti al momento. 
+
+Il controllo di visualizzazione delle mappe è stato migliorato:  sono presenti
+dei bottoni a freccia nella parte alta dello schermo.  Le mappe possono essere 
+così spostate con i suddetti bottoni, con i tasti freccia della tastiera e 
+lo zoom può essere regolato con i tasti Pag-SU e Pag-Giù della tastiera.  
+Nel menù che appare cliccando sulla mappa è disponibile la nuova funzione che 
+permette di centrare la mappa in un dato punto.  Le funzioni di spostamento
+della mappa sono state rimosse in quanto presenti i bottoni in alto nello 
+schermo.  
+
+E' stato aggiunto il supporto altnet per permettere di avere reti APRS(tm)
+locali per eventi speciali, operazioni di soccorso, allarmi meteo o qualsiasi 
+situazione in cui non è necessario analizzare dati da altre stazioni.
+
+Ci sono numerosi cambiamenti minori, visibili ed invisibili all'utente.  
+Il controllo di interfaccia ha ora il bottone "Avvia tutte" e "Arresta tutte" 
+per permettere all'utente di avviare tutte le interfacce in una sola
+operazione. La finestra di dialogo della configurazione della stazione ora 
+mostra l'icona scelta, così non è più necessario controllare sulla mappa quale 
+icona è stata scelta.  Sono stati corretti errori nel codice che davano errori 
+di overflow di memoria.  Altre correzioni sono state fatte per rendere il 
+codice compilabile senza problemi su diverse piattaforme con fiversi sistemi.
+
+E ora: Buon divertimento con il nuovo Xastir!   
+
+ 
+  
+HELP-INDEX>Avviare Xastir
+
+                    Avviare Xastir per la prima volta
+
+La prima volta che si lancia Xastir, dovrebbe essere fatto da un terminale in 
+maniera tale che qualsiasi messaggio di errore salti alla vista.  Nella maggior 
+parte dei sistemi il percorso di ricerca dei file eseguibili comprende la 
+cartella  /usr/local/bin e tutto quello che serve per avviare il programma è 
+dare il comando xastir al prompt.  Nei sistemi dove il percorso 
+"/usr/local/bin" non è impostato bisognerà digitare "/usr/local/bin/xastir" per 
+avviare il programma.
+
+Si può anche impostare un linguaggio diverso dall'originale.  Per impostare o 
+cambiare il linguaggio usato da xastir bisogna utilizzare la seguente sintassi: 
+
+xastir -l
+
+Attualmente le scelte sono: English Dutch French German Spanish Italian
+
+Questa opzione viene memorizzata nel file di configurazione dell'utente e resa 
+disponibile per i seguenti usi del programma.  Per le nuove installazioni 
+Xastir userà l'inglese a meno che non venga specificato un linguaggio 
+differente con l'opzione -l.
+
+NOTA: Nei menu, le opzioni in grigio sono quelle selezionate, come anche nelle 
+opzioni di on/off, la scelta attivata sarà evidenziata dalla colorazione grigia.
+
+HELP-INDEX>Informazioni sulla configurazione della stazione
+
+                         Informazioni sulla configurazione della stazione
+
+Seleziona Configura la Stazione
+
+Imposta il tuo nominativo nella apposita casella.
+
+Compila le caselle relative alla posizione (Lat,Long) se non si intende usare 
+Xastir con un GPS. Se la posizione non è disponibile è possibile individuare la 
+posizione sulla mappa e copiare i dati. Latitudine e longitudine potranno 
+essere rilevati nella seconda casella partendo da destra, nella parte bassa 
+della finestra principale.
+Se si intende utilizzare un GPS si può saltare questa sezione e configurare il 
+GPS in un secondo momento.
+
+Il simbolo o il gruppo della stazione possono essere cambiati in qualsiasi 
+momento, per fare questo si faccia riferimento alla guida ai simboli.
+
+Indicare ora i dati tecnici della stazione: questi dati sono interessanti ma 
+non necessari al corretto funzionamento del programma.
+Utilizzare il seguente codice per indicare la potenza che più si avvicina a 
+quella della vostra stazione:
+
+Codice           0  1  2  3   4   5   6   7   8   9
+Potenza (watts)  0  1  4  9  16  25  36  49  64  81
+
+Esempio: Se si sta trasmettendo con 36 watt, indicare "6".
+
+
+Lo stesso discorso vale per l'altezza, ma bisogna indicare l'altitudine e non 
+l'altezza dell'antenna sul terreno.
+
+Codice             0   1   2   3    4    5    6     7     8     9
+Altitudine (piedi)10  20  40  80  160  320  640  1280  2560  5120
+
+Esempio: se l'altitudine della stazione è 1280 piedi, il codice da usare
+         sarà  "7".
+
+
+Per impostare il guadagno scrivere semplicemente il valore dello stesso 
+espresso in dB, nella apposita casella.
+
+La direzione ha bisogno di un codice che esprime la direzione dell'antenna 
+espressa in gradi dal Nord.
+
+Codice           0   1   2    3    4    5    6    7    8        9
+Direzione(gradi) *  45  90  135  180  225  270  315  360  Nessuna
+
+Esempio: Se la vostra antenna è omnidirezionale, impostare "0". Se la 
+         direzionalità è verso nord, impostare "8".
+
+Inserire un commento, non necessario al programma, ma utile agli altri 
+operatori.
+
+L'ambiguità della posizione permette di trasmettere quanto è precisa la 
+posizione fornita dalla nostra stazione. Una impostazione con ambiguità nulla 
+permetterà di comunicare alle altre stazioni esattamente la posizione che 
+abbiamo impostato o che arriva dal GPS.  Le altre scelte posizioneranno la 
+stazione nel raggio indicato dal codice impostato.
+
+Selezionando OK, verranno applicati tutti i cambiamenti effettuati, mentre il 
+tasto Annulla manterrà le opzioni correnti. 
+
+HELP-INDEX>Configurazione delle Unità di Misura
+
+                        Configurazione delle Unità di Misura
+
+L'impostazione originale del programma è per il sistema metrico, mm, cm, Km/ora 
+ecc.
+Per selezionare il sistema di misura anglosassone (pollici,piedi,miglia/ora) 
+selezionare Configura, Unità, quindi il sistema che si vuole usare.  L'opzione 
+attiva è quella marcata dal grigio.
+
+
+HELP-INDEX>Configurazione delle Operazioni Base
+
+                        Configurazione delle Operazioni Base
+
+Selezionare Configura e quindi Predefinito
+
+Questa scheda imposta una configurazione standard. Le vecchie stazioni saranno 
+visualizzate con un'icona fantasma.  Il "tempo lettura GPS" imposterà 
+l'intervallo di tempo per  acquisire nuovi dati dal GPS.  Questa opzione è 
+disponibile per le stazioni dotate di HSP o di un cavo condiviso con il proprio 
+TNC.
+
+L'opzione "Trasmissioni Stazione" imposta con quali packet la stazione 
+trasmetterà i propri dati.    
+
+L'opzione "Trasmetti codici WX", se selezionato, manderà anche un pacchetto di 
+dati provenienti dalla stazione meteo.Questa opzione è utile per i tipi di 
+stazioni meteo che trasmettono i dati già in formato ASCII come le Peet Bros. 
+
+Le opzioni Gateway permetteranno di impostare la stazione come un gateway tra 
+internet e la rete radio.  Questa opzione va usata con cautela, come 
+radioamatore ognuno di noi è responsabile per i dati che trasmette, e quindi 
+anche per quelli che provengono da internet e vengono trasmessi per radio in 
+una simile configurazione.
+
+HELP-INDEX>Configurazione Interfacce
+
+                           Configurazione Interfacce
+
+Selezionare Configura e quindi Interfacce.
+
+Dovrebbe apparire una scheda che indica le "Interfacce installate".  Questa 
+scheda vi permetterà di aggiungere, cancellare, e modificare le proprietà 
+delle varie periferiche che possono essere utilizzate con Xastir.
+
+Le opzioni sono:
+TNC Seriale
+TNC Seriale con GPS tramite un cavo HSP
+GPS Seriale
+WX Seriale
+Server Internet
+TNC AX25
+GPS in rete (via gpsd)
+WX in rete
+
+Per aggiungere una periferica, selezionare aggiungi.  Apparirà la scheda
+ "Scegli il tipo di interfaccia".  Seleziona il tipo di interfaccia che vuoi 
+aggiungere.
+Appariranno i parametri di quella periferica.  Fornire le impostazioni 
+richieste e selezionare "ok"
+
+Per eliminare una periferica, selezionarla e in seguito cliccare sul bottone 
+Elimina.
+
+Per modificare le proprietà di una periferica, seleziona la periferica e quindi 
+il bottone "Proprietà".  La scheda con i parametri della periferica appariranno 
+e potranno essere modificati a piacere. Per rendere effettive le impostazioni 
+schiacciare il bottone OK dopo aver fatto le modifiche.
+ 
+HELP-INDEX>Configurazione di TNC Seriali
+
+
+                          Configurazione di TNC Seriali
+
+CONFIGURAZIONE DI UN TNC SERIALE
+
+Questa sezione tratta l'impostazione di un TNC Seriale o di un TNC seriale con 
+un  cavo HSP per il collegamento del GPS.
+
+Se si ha il cavo HSP, che permette di condividere la porta del TNC con quella 
+del GPS, la configurazione da selezionare sarà "TNC con GPS".  Il cavo HSP è un 
+cavo speciale che può non essere compatibile con tutte le combinazioni 
+computer/TNC/GPS possibili.  Se si usa questa configurazione, il TNC e il GPS
+devono avere una impostazione dei parametri di comunicazione che in genere 
+prevede: 4800 bps, 8 bit di dati, nessuna parità, 1 bit di stop.
+
+Opzioni della Porta TNC:
+Selezionando "Attivare all'avvio" si indica a Xastir di caricare questa 
+periferica automaticamente all'avvio del programma.
+
+Selezionando "Permetti la Trasmissione", ordina a Xastir che ogni dato inviato 
+all'interfaccia può essere trasmesso.
+
+La porta del TNC è la porta Unix alla quale è collegato il TNC.  In genere sono 
+chiamate /dev/ttyS0 (Dos com1), /dev/ttyS1 (Dos com2)
+
+Ora impostare la velocità e il tipo di comunicazione in "Impostazioni porta", e 
+i parametri in "Stile porta".  Uno stile di porta 8N1 indica 8 bit di dati, 
+Nessuna parità e 1 bit di stop. 7E1 indica 7 bit di dati, parità e 1 bit di 
+stop.  7O1 indica 7 bit di dati, parità dispari, e 1 bit di stop.  Questi 
+parametri DEVONO essere 
+comuni sia al TNC che al GPS. 
+
+Scegliere ora la corretta impostazione per il Gateway di questa interfaccia. 
+Potresti avere diversi TNC e questa opzione può essere diversa per ogni TNC.
+Se non intendi attivare le funzionalità di gateway lascia l'opzione 
+"Disabilitato".
+
+Inserisci ora fino a tre percorsi UNPROTO. Xastir assume la parte XX VIA del 
+percorso UNPROTO. è possibile impostare tre percorsi differenti in modo da 
+ avere alternative nel caso le condizioni non siano buone.  Se uno dei percorsi 
+è occupato allora Xastir passerà al successivo ad ogni trasmissione e così via.
+
+Se sei in una condizione di stazioni locali, semplicemente un WIDE può essere 
+una buona scelta.  Se stai usando poca potenza e/o sei distante dal digipeater 
+allora RELAY, WIDE potrebbe essere la scelta giusta.  Se conosci il nominativo 
+del tuo più vicino digipeater allora si potrà usare NOMINATIVO_DIGI, WIDE.  La 
+maggior parte di voi avrà bisogno di un solo percorso.  Se ci si trova in un 
+area remota e il segnale è difficilmente ascoltabile dalle altre stazioni allora 
+potrebbe essere necessario aggiungere dei percorsi.  Una buona norma è quella
+di chiedere al gruppo di radioamatori locali quale è il miglio percorso per i 
+pacchetti in quella data area. 
+
+File di inizializzazione e di spegnimento del TNC. Questi campi specificano i 
+nomi di file presenti nelle cartella /usr/local/xastir/config. Ognuno di questi 
+file di test contiene i comandi che si vogliono mandare al TNC all'avvio del 
+programma e al termine dello stesso.
+
+CONFIGURAZIONE DEL TNC AX.25
+
+Questa sezione descrive l'aggiunta e la modifica di interfacce TNC AX.25.
+Per interfacce AX.25 si intendono tutte quelle periferiche che usano i driver 
+AX.25 di Linux.  Questo driver è a livello di kernel e periferiche come i 
+Baycom o soundmodem possono essere usati come TNC.  Queste periferiche devono 
+essere rese disponibili (funzionanti) al programma prima del suo avvio.
+
+Selezionando "Attiva all'avvio" si ordinerà a Xastir di caricare questa 
+interfaccia all'avvio.
+
+Selezionando "Permetti la Trasmissione", si permetterà che i dati vengano 
+trasmessi per radio.
+
+Scegliere ora la corretta impostazione per il Gateway di questa interfaccia. 
+Potresti avere diversi TNC AX.25 o TNC Seriali  e questa opzione può essere 
+diversa per ogni TNC.
+Se non si intende attivare le funzionalità di gateway lascia l'opzione 
+"Disabilitato".
+
+Impostare il nome della periferica AX.25 come specificato dal file axports.
+
+Inserisci ora fino a tre percorsi UNPROTO. Xastir assume la parte XX VIA del 
+percorso UNPROTO. è possibile impostare tre percorsi differenti in modo da 
+avere alternative nel caso le condizioni non siano buone.  Se uno dei percorsi è
+occupato allora Xastir passerà al successivo ad ogni trasmissione e così via.
+
+Se sei in una condizione di stazioni locali, semplicemente un WIDE può essere 
+una buona scelta.  Se stai usando poca potenza e/o sei distante dal digipeater
+allora RELAY, WIDE potrebbe essere la scelta giusta.  Se conosci il nominativo 
+del tuo più vicino digipeater allora si potrà usare NOMINATIVO_DIGI, WIDE.  La 
+maggior parte di voi avrà bisogno di un solo percorso.  Se ci si trova in 
+un'area remota e il segnale è difficilmente ascoltabile dalle altre stazioni allora 
+potrebbe essere necessario aggiungere dei percorsi.  Una buona norma è quella 
+di chiedere al gruppo di radioamatori locali quale è il miglio percorso per i 
+pacchetti in quella data area. 
+
+NOTA: Per usare le periferiche AX.25 con Xastir bisogna avere i privilegi di 
+root.
+Se si vuole far eseguire Xastir da un utente qualsiasi, bisognerà cambiare il 
+suid del programma Xastir.  Il comando seguente  eseguito da root potrà servire 
+allo scopo:
+
+chmod a+s /usr/local/bin/xastir
+
+
+Come qualsiasi programma che venga eseguito in questa modalità, questo è da 
+considerarsi un rischio di sicurezza, visto che il programma ancora non è stato 
+sperimentato per reagire a tentativi di intrusione.
+
+Configurazione del GPS
+
+
+				Configurazione GPS Seriali
+
+Imposta la porta seriale che usata dal vostro GPS.  Valori comuni sono 
+/dev/ttyS0 (dos com1) e /dev/ttyS1 (dos com2).
+
+Selezionando "Attiva all'avvio" si ordinerà a Xastir di caricare questa 
+interfaccia all'avvio.
+
+Ora seleziona la velocità di trasmissione espressa in bps e i parametri della 
+porta sotto il menu "stile".  Uno stile di porta 8N1 significa 8 but di dati, 
+nessuna parità e 1 bit di stop. 7E1 indica 7 bits di dati, parità pari e 1 stop 
+bit. 701 indica 7 bit di dati, parità dispari e 1 stop bit.  Questi parametri 
+devono essere gli stessi che usa il GPS.  La maggior parte dei GPS usa 4800 bps
+8N1.
+
+HELP-INDEX>Configurare un GPS in rete
+
+                    Configurazione di un GPS in rete.
+
+Questa opzione permette di condividere i dati provenienti dal GPS con più 
+programmi, e con più computer in rete.  Xastir può ottenere i dati dal GPS 
+attraverso il demone gpsd che permette, attraverso diverse connessioni, di 
+condividere i dati del 
+GPS  con altrettante applicazioni. 
+
+Impostare il nome dell'host (o l'indirizzo IP) e il numero della porta che gpsd 
+utilizza per le connessioni (di solito la 5678).
+
+Selezionando "Attiva all'avvio" si ordinerà a Xastir di caricare questa 
+interfaccia  all'avvio.
+
+Selezionando "Riconnetti su Errore", indicherà ad Xastir di riconnettersi una 
+volta che il flusso di dati si è per qualche motivo interrotto.
+
+HELP-INDEX>Configurare il Server Internet
+
+                         Configurazione del Server Internet
+
+I server internet permettono di ricevere ed inviare dati a tutto il mondo 
+attraverso internet.
+
+Selezionando "Attiva all'avvio" si ordinerà a Xastir di caricare questa 
+interfaccia  all'avvio.
+
+Selezionando "Permetti la Trasmissione", indicherà che Xastir potrà trasmettere 
+via radio tutti i dati.
+
+Inserisci il nome dell'host (o l'indirizzo IP) e il numero della porta del 
+server internet che vuoi connettere.
+
+Inserisci un codice di accesso valido per attivare la connessione, che 
+permetterà ai tuoi dati di essere trasmessi attraverso Internet.  Se non hai 
+un codice di accesso puoi spedire un mail a fgiannan@earthlink.net con tutti i 
+tuoi dati e informazioni radio, per ricevere il codice.
+
+Selezionare Riconnetti in caso di errore, che indica a Xastir di riconnettersi 
+nel caso la comunicazione sia interrotta.
+
+HELP-INDEX>Configurare una Stazione Meteo
+
+                           Configurare una stazione meteo
+
+Configurare una stazione meteo Seriale.
+
+Impostare la porta seriale alla quale è connessa l'unità Meteo.  
+Valori comuni sono /dev/ttyS0 (COM1) o /dev/ttyS1 (COM2).
+
+Selezionando "Attiva all'avvio" si ordinerà a Xastir di caricare questa 
+interfaccia  all'avvio.
+
+Ora bisogna selezionare la velocità della porta in bps sotto Configurazione 
+della Porta, e i parametri sotto 'Stile di Porta'.  Lo 'Stile della Porta' 8N1 
+indica 8 bit di dati, nessuna parità e 1 bit di stop.  7E1 indica 7 bit di 
+dati, parità e 1 bit di stop. 
+7O1 è usato per 7 bit di dati, parità, un bit di stop.  Questi parametri devono 
+essere gli stessi della porta dell'apparecchio meteo.
+L'opzione 'Tipi di dati permette di aggiornare per quale tipo di comunicazione 
+seriale il programma dovrà cercare.  La funzione di autoriconoscimento 
+(auto-detect) cercherà per primi dei dati in formato binario come quelli della 
+stazione meteo Radio Shack WX-200.
+Nel caso non vengano rilevati dati binari allora Xastir cercherà per dati ASCII 
+(utilizzati dalla stazione Peer Bros.).
+
+
+Configurare una stazione Meteo in Rete
+
+Xastir può usare dati meteo reperendoli da server come il wx200d.
+wx200d permette più connessioni, permettendo di condividere i dati meteo con 
+più programmi o computer.
+
+Inserisci il nome dell'host (o l'indirizzo IP) e il numero della porta del 
+server Meteo che si vuole connettere .
+
+Selezionando "Attiva all'avvio" si ordinerà a Xastir di caricare questa 
+interfaccia  all'avvio.
+
+Selezionando "Riconnetti se sconnesso", indicherà a Xastir di riconnettersi in 
+caso di errore.
+
+Come prima, selezionando il "Tipo di dati" si escluderà l'auto-riconoscimento.
+
+
+
+HELP-INDEX>Configurzione allarmi Audio
+
+                           Configurazione Suoni
+
+Selezionare Configurazione, e quindi Suoni.
+
+Per usare questa opzione bisogna avere una scheda sonora e un programma che 
+esegua i file con estensione .wav.  Il "Comando per eseguire i suoni" è il 
+programma (e relative opzioni) che si vuole usare per ascoltare i suoni che 
+vengono da Xastir.
+
+I campi conterranno il nome del file da eseguire, i campi sotto le opzioni 
+imposteranno i parametri per le opzioni.
+
+Le possibili scelte sono:
+-Esegui un suono quando viene rilevata una nuova stazione.
+-Esegui un suono quando viene ricevuto un nuovo messaggio.
+-Esegui un suono quando arrivano dati da una stazione ad una distanza 
+ Min/Max come segnalato dall'utente.
+-Esegui un suono quando viene rilevata una stazione (via TNC) con una distanza 
+min/max impostata nei limiti di apertura di banda..
+
+HELP-INDEX>Configurazione delle unità di misura (Inglese/Metrico)
+
+              Configurazione delle unità di misura (Inglese/Metrico)
+
+Questo seleziona che in che unità le grandezze verranno visualizzate dal 
+programma.
+Il programma si configura automaticamente sul sistema metrico ma è possibile 
+cambiare questa possibilità.
+
+HELP-INDEX>Barra di stato inferiore
+
+                         Barra di stato inferiore
+
+Nella parte inferiore della finestra principale sono disponibili diversi 
+messaggi di controllo.
+
+I messaggi di controllo generale sono visualizzati nella paste sinistra.
+
+Nella seconda casella da sinistra è visualizzata la posizione sulla mappa del 
+mouse in lat/lon.
+La terza casella visualizza il numero di stazioni ricevute e presenti nel 
+database.
+La quarta casella visualizza il livello di zoom e visualizzerà Tr se
+sulla stazione selezionata è attivata la funzione di inseguimento.
+L'ultima casella visualizza lo stato di funzionamento delle periferiche, che
+sono visualizzate nell'ordine di inserimento da 0 a 9.
+Il controllo di stato delle interfacce è diviso in tre aree, la parte alta 
+indica il tipo di periferica, in mezzo è indicato lo stato di flusso di dati e 
+nella parte bassa è indicato lo stato operazionale della periferica, blu per i 
+vari TNC, verde per i GPS, giallo per per i servizi Internet, arancio per le 
+periferiche Meteo. 
+Nella parte centrale il flusso di dati entrante è indicato con una freccia a 
+sinistra per dati uscenti e a destra per dati entranti. Nella parte inferiore 
+il verde indica che l'interfaccia è collegata e funziona correttamente, il 
+rosso che l'interfaccia è collegata ma in uno stato di errore, l'assenza di 
+colore indica che l'interfaccia non è collegata.
+
+
+HELP-INDEX>Spostare la mappa e opzioni.
+
+                    Spostare la mappa e Opzioni
+
+Il movimento della mappa è molto semplice e la velocità di visualizzazione 
+della stessa è dipendente dal tipo di sistema in uso e dalla quantità di 
+dettagli visualizzata.
+
+Tutti i movimenti e ingrandimenti sono possibili cliccando il tasto sinistro 
+del mouse (tenendolo premuto) sulla mappa.  Questa azione visualizzerà un menu 
+di Opzioni.
+
+Tutte le funzioni di Zoom sono riferite al punto della mappa dove è stato 
+cliccato il bottone sinistro del mouse.  Il menu degli zoom mostrerà ulteriori 
+opzioni: livelli di zoom da 1 a 3 sono per aree locali mentre livelli da 4 a 6 
+sono per aree 
+maggiori, quindi più il numero è piccolo e più l'area visualizzata è stretta.
+
+Dal menu delle opzioni si può anche spostare la vista della mappa con la 
+funzione Pan, che provocherà uno spostamento del centro della mappa.
+
+Le "informazioni della stazione" cerca per la stazione più vicina al punto 
+selezionato dal click del mouse.  Se più stazioni sono presenti apparirà una 
+finestra di 
+selezione che permetterà di indicare di quale stazione veramente si ha bisogno 
+di 
+informazioni.
+
+HELP-INDEX>Map Options and Map Chooser Opzioni della Mappa e Scelta della Mappa
+
+                       Opzioni della Mappa e Scelta della mappa
+
+Opzioni della Mappa:
+
+Mappe Automatiche (Attiva/Disattiva)
+Quando attivato, qualsiasi mappa trovata nella directory delle mappe verrà 
+visualizzata se nella sua area ricade la visualizzazione corrente.  Questa 
+funzione cercherà in tutte le sottocartelle della directory delle mappe.  Se 
+più mappe sono disponibili allora verranno sovrapposte, in questo caso un
+ computer poco veloce può produrre una visualizzazione lenta.
+Tuttavia è possibile disattivare questa funzione e selezionare manualmente la 
+mappa da visualizzare.
+
+Griglia (Attiva/Disattiva)
+Quando è attiva, questa funzione visualizza una griglia ogni 10 gradi. Se si 
+effettua uno zoom in avanti la risoluzione della griglia passerà ad 1 grado.
+
+Livelli della Mappa (Attiva/Disattiva)
+Quando attivata, questa funzione permette di filtrare i dati di mappe su 
+grandi aree.
+Questa opzione funziona solo con le mappe Tiger Line maps reperibili presso 
+http://aprs.rutgers.edu.  Ciò non velocizzerà il caricamento delle mappe ma 
+produrrà una visualizzazione di dettagli appropriata alla scala di 
+visualizzazione.
+
+Colore in Aree Chiuse (Attiva/Disattiva)
+Questa opzione controlla il colore di riempimento delle mappe vettoriali. 
+In alcuni casi può essere necessario eliminare il riempimento di un'area 
+per permettere la visualizzazione dei livelli sottostanti.  Le mappe sono 
+caricate in ordine alfabetico e quindi i livelli rispetteranno tale ordine. 
+
+Scelta della mappa.
+Questa funzione visualizza tutte le mappe disponibili.  Si potrà selezionare 
+più di una mappa e poi premere OK per confermare la selezione.  Il bottone 
+Cancella chiude la finestra di dialogo della scelta delle mappe.
+
+Nota: Xastir utilizza il Datum WGS 1984 per le mappe.
+
+HELP-INDEX>File di mappe, Dos, Windows, Pixmaps e WX Counties
+
+             File di mappe, Dos, Windows, Pixmaps e WX Counties
+
+Tipi di Mappa
+Xastir funziona con vari tipi di mappa.  Tutte le mappe per il programma 
+APRS[TM] Dos,Windows,Mac sono supportate.  Dalla versione 0.3.2 è possibile 
+caricare anche mappe in formato Pixmap.  è possibile anche caricare le mappe di 
+supporto per gli Allarmi Meteo Statunitensi.
+
+Dove posizionare le mappe
+Qualsiasi mappa Dos, Windows/Mac o Pixmap deve essere messa nella directory 
+/usr/local/xastir/maps.  Si possono creare sottocartelle per oridare il 
+contenuto. Per esempio si può creare una cartella ITALIA per mettere tutte le 
+mappe che comprendono il territorio italiano, oppure si possono dividere le 
+mappe per tipo: Pixmap e Dos.
+
+Esempio
+
+                          /usr/local/xastir/maps/
+                                                /italia/nord
+                                                /italia/centro
+                                                /italia/sud
+                                                /dos/italia/
+                                                /dos/germania/
+                                                /pixmaps/italia/
+                                                /pixmaps/germania/
+
+
+
+Le mappe Pixmap sono una combinazione di due file, un file binario grafico 
+pixmap (.xpm) e un file di dati di locazione (.geo).  Il file .xpm grafico è in 
+formato .xpm 
+standard modificabile con qualsiasi programma di grafica che supporti questo 
+formato.  Il 
+file di dati .geo permette di posizionare la mappa nel mondo.
+Ecco un esempio di file .geo: world1.geo
+
+FILENAME   world1.xpm
+#          x          y        lon         lat
+TIEPOINT   0          0        -180        90
+TIEPOINT   640        320      180         -90
+
+
+Questo semplice file  ha 4 componenti. La prima riga indica il file grafico a 
+cui sono riferiti i dati che deve essere nella stessa directory del file di 
+dati.
+La seconda linea imposta un commento alla mappa.  Ogni linea che inizia con un
+ # (cancelletto) indica un commento che non verrà letto dal programma.
+Le ultime due linee connettono un pixel di coordinate x,y ad un punto della 
+terra con coordinate lat/long.  Due punti sono necessari e dovrebbero essere 
+presi in alto a 
+sinistra e in basso a destra dell'immagine.
+Per usare la mappa Pixmap, selezionare la scelta di mappa e in seguito il file 
+.geo
+
+Mappe di Allerta Meteo USA
+Tutte le mappe di Allerta meteo USA dovrebbero essere posizionate in 
+/usr/local/xastir/Counties.
+Dovranno poi essere create delle sottocartelle per lo stato USA a cui 
+appartiene la mappa chiamate con l'abbreviazione di due lettere dello stato.
+
+
+               /usr/local/xastir/Counties
+                                         /CO/
+                                         /CO/COPARK.map
+                                         /CO/CODOUGLA.map
+                                         /CO/COJEFFER.map
+                                         /CO/COZ001.map
+                                         /CO/COZ002.map
+                                         /CO/COZ003.map
+                                         /NJ/
+                                         /NJ/NJOCEAN.map
+                                         /NJ/NJBERGEN.map
+                                         /NJ/NJMONMOU.map
+                                         /NJ/NJZ001.map
+                                         /NJ/NJZ002.map
+                                         /NJ/NJZ003.map
+
+
+
+Ecco due siti dove è possibile avere questo tipo di mappe:
+ftp://aprs.rutgers.edu/pub/hamradio/APRS/NWSCounties/
+http://home.att.net/~kg5qd1/Maps.html
+
+HELP-INDEX>Informazioni stazione - Ricerca nel database FCC e RAC
+
+                       Informazioni stazione - Ricerca nel database FCC e RAC
+
+Informazioni Stazione mostrerà tutti i dati acquisiti da Xastir per quel 
+determinato nominativo.
+
+Il bottone Annulla Inseguimento toglierà tutti i percorsi che sono stati 
+memorizzati nello schermo.
+
+Il bottone Spedisci Messaggio aprirà una finestra per spedire un messaggio.
+
+Se si è installato il database FCC o RAC si può fare una ricerca dei dati della 
+stazione.
+I file di databse RAC e FCC devono essere posizionati in /usr/local/xastir/fcc.
+
+Questa funzione aggiungerà l'indirizzo della stazione alle informazioni 
+ricevute via radio.
+
+Per usare il database FCC bisogna scaricarlo (40Mb) da:
+ftp://ftp.fcc.gov/pub/XFS_AlphaTest/amateur/appl.zip
+
+o la nuova versione da:
+ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
+(The only file needed form this 40Meg zip is the EN.dat file)
+
+**** NOTA: per usare la  nuova versione, il database deve essere prima 
+ordinato!!! ****
+Assicurarsi di avere spazio disco libero (100Mb)
+Per ordinare il file eseguire i seguenti comandi:
+sort +4 -t \| EN.dat >EN.dat.sorted
+rm EN.dat
+mv EN.dat.sorted EN.dat
+
+Il database RAC si può scaricare da:
+ftp://ftp.rac.ca/pub/cdncaldb.zip
+
+Xastir creerà degli indici per ogni database, se un nuovo callsign è immesso 
+nel database allora Xastir creerà dei nuovi indici e renderà subito disponibile 
+il nuovo 
+callsign.
+
+I prefissi speciali NON sono inclusi nei database.
+
+HELP-INDEX>Opzioni di Visualizzazione
+
+                             Opzioni di visualizzazione
+
+Queste opzioni permettono di visualizzare i dati delle stazioni attorno 
+all'icona che indica la posizione della stazione sulla mappa.
+
+Altitudine (on/off)
+Quando attivo, una linea blu di dati appare sopra al nominativo, ad indicare 
+l'altitudine della stazione nell'ultima posizione ricevuta.
+
+Direzione (on/off)
+Quando attivo, una linea verde di dati apparirà sotto al nominativo. Questa 
+indica la direzione in gradi del movimento della stazione l'ultima volta che è 
+stata ascoltata.
+
+
+Velocità Speed (on/off)
+Quando attiva, una linea di dati rossi indica la velocità della stazione 
+l'ultima volta che è stata ricevuta.
+
+Distanza/direzione (on/off)
+Quando attivata, due linee di dati verranno visualizzate alla sinistra
+dell'icona della stazione.
+La linea superiore indica la distanza dalla propria stazione, mentre la linea 
+inferiore la direzione dalla propria stazione.
+
+Tracce della Stazione (on/off)
+Quando attiva, qualsiasi stazione in movimento lascerà una traccia della 
+posizione precedente fino ad un numero di 100 posizioni.  Quando i dati della 
+stazione diventano vecchi e l'icona della stazione diventa trasparente, la 
+traccia è indicata con un tratteggio.
+
+Potenza/Guadagno (on/off)
+Quando attiva, visualizza i cerchi di potenza e guadagno.
+
+Insegui stazione
+Questa funzione visualizza una finestra di dialogo simile a quella di 
+localizzazione.
+Si può inserire un nominativo o parte di esso e quindi selezionare "Insegui 
+ora!" per centrare lo schermo su quella stazione e mantenerlo centrato per ogni 
+successivo spostamento.
+
+Selezionando "Elimina Inseguimento" si eliminerà la funzione.
+
+Il bottone "Annulla" nasconderà la finestra senza apportare cambiamenti.
+
+Informazioni Meteo (on/off)
+Quando selezionato, verranno visualizzate le ultime informazioni meteo
+(temperature,velocità del vento/direzione/gust,umidità).
+
+
+HELP-INDEX>Messaggi
+
+                                Messaggi
+
+Spedire Messaggi e Apri Gruppo
+
+Queste funzioni sono molto simili. "Spedisci messaggio a" spedirà un messaggio 
+solo ad una stazione.  I messaggi di gruppo sono più generali.
+(ndt: la funzione messaggi di gruppo al momento non è completamente funzionante)
+
+Ognuna di queste finestre visualizza una scheda di messaggio, una linea per il 
+nominativo/nome gruppo e vari bottoni.
+
+Una volta inserito il nominativo della stazione, tutti i messaggi ricevuti da
+essa verranno visualizzati.  Se non ci sono messaggi allora una nuova finestra
+permetterà di inserire un nuovo messaggi da spedire.  La lunghezza massima del
+ messaggio è di 250 caratteri. "Spedisci ora!" invierà il messaggio al 
+destinatario.
+Il bottone "Spedisci ora!" rimarrà grigio fino a quando il messaggio non sarà
+correttamente inviato.
+
+Qualsiasi messaggio ricevuto sarà ordinato secondo la linea # e messo nella
+ finestra dei messaggi.  Se si è nella funzione Gruppo, la lista dei messaggi
+ visualizzerà anche il nominativo del mittente.
+
+"Nuovo nominativo" visualizzerà i vecchi messaggi della stazione oppure
+permetterà la comunicazione con un'altra stazione.  Il bottone "Cancella
+ Messaggi" eliminerà tutti i messaggi.
+
+Elimina i messaggi in uscita.
+
+Questo eliminerà tutti i messaggi che sono stati spediti.
+
+Risposta automatica
+
+Questa funzione attiva la risposta automatica ai messaggi in entrata.
+
+Imposta risposta automatica
+
+Renderà possibile impostare il messaggio  di risposta automatico.
+
+HELP-INDEX>Eliminare i percorsi dallo schermo
+
+                   Eliminare i percorsi dallo schermo
+
+Selezionare File e quindi "Elimina Percorsi" per eliminare tutti i percorsi 
+delle dallo schermo e dal database interno.
+
+HELP-INDEX>Ripulire lo schermo dai simboli di stazioni
+
+                   Ripulire lo schermo dai simboli di stazioni
+
+Selezionare File e quindi "Elimina tutte le Stazioni". Questo eliminerà tutti 
+dati delle stazioni ricevute fino a quel momento eccetto la vostra.
+
+HELP-INDEX>Rispondere ad un log
+
+                              Rispondere ad un log
+
+Selezionare "Apri file log" e selezionare un file di log creato dal TNC o dalla 
+rete con la funzione sotto le opzioni di rete. La stazione userà il file di log 
+come se 
+fosse direttamente connessa al TNC.
+
+HELP-INDEX>Localizzare una Stazione
+
+                            Localizzare una Stazione
+
+Selezionare Vista e quindi "Localizza Stazione" per fare apparire una finestra 
+di dialogo che permette di inserire un nominativo (completo, non case 
+sensitive). Se si vuole cercare un nominativo parziale allora bisogna 
+deselezionare "Nome esatto".  Selezionando "Maius/Minus Esatti" verranno
+ osservati anche i criteri di Maiuscole/minuscole.
+Selezionando "Localizza Ora!" il Display verrà centrato sulla stazione cercata 
+al livello di zoom corrente.  "Annulla" chiuderà la finestra di dialogo.
+
+
+HELP-INDEX>Creare ed usare i Salti alla Stazione
+
+                     Creare ed usare i Salti alla Stazione
+
+Selezionare Visualizza e quindi  "Vai alla Stazione" per visualizzare una
+finestra di dialogo.
+La prima volta che si usa questa funzione la finestra di dialogo sarà vuota.  
+Si può creare una nuova vista selezionando "Nuova posizione", inserire il nome  
+e quindi Aggiungi.
+Per usare le posizioni registrate basterà selezionare la posizione e quindi il 
+tasto "Vai!" per centrare la posizione registrata.  E' possibile eliminare una 
+posizione selezionandola e selezionando "Elimina".
+
+HELP-INDEX>Inseguimento di una stazione
+
+Inseguimento di una stazione
+
+Selezionare Visualizza e quindi Insegui stazione.  Inserire il nominativo da 
+inseguire (tutto o parte di esso) e quindi selezionare "Insegui Ora!".  Appena 
+la stazione si muove, essa viene centrata nello schermo.  Per disattivare 
+questa funzione bisogna selezionare "Annulla Inseguimento".
+
+HELP-INDEX>Tabella dei simboli
+
+                        Tabella dei Simboli
+
+Simbolo    Gruppo /                     Gruppo \
+
+!          Triangolo w/!                Triangolo w/!
+"          Nuvola Nera                  Nuvola da Pioggia
+#          Digi                         DIGI
+$          Telefono                     Simbolo $
+%          DX                           DX
+&          GATEWAY-HF                   GATE
+'          Piccolo Aereo                Incidente Aereo
+(          Nuvola                       Nuvola
+)          TBD
+*          Fiocco di neve               Fiocco di neve
++          Croce rossa
+,          L inversa
+-          Casa con antenna Omnidirezionale
+.          Piccola x
+/          Punto rosso
+0          0 in un quadrato     	    Cerchio
+1          1 in un quadrato
+2          2 in un quadrato     
+3          3 in un quadrato
+4          4 in un quadrato     
+5          5 in un quadrato
+6          6 in un quadrato     
+7          7 in un quadrato
+8          8 in un quadrato     
+9          9 in un quadrato     	     GAS
+:          Fuoco                         ?
+;          Tenda                         Tenda
+<          Motocicletta                  Banderuola
+=          Locomotiva
+>          Auto                          Auto
+?          POS Antenna                   ? in un quadrato     
+@          URAGANO/TEMPESTA              URAGANO/TEMPESTA
+A          Pronto Soccorso		 		 Quadrato
+B          BBS                           Neve a vento
+C          Canoa
+D          D in un cerchio
+E          E in un cerchio               Fumogeno
+F          F in un cerchio
+G          Antenna Grid Square           ?
+H          Hotel/Letto
+I          TCP/IP                        ?
+J          J in un cerchio               Fulmine
+K          Scuola Casa
+L          Faro				 Faro
+M          Mac
+N          NTS                           ?
+O          Pallone Aerostatico
+P          Auto Polizia                  Rx
+Q          Cerchio con Cerchietti        Cerchio con Cerchietti
+R          RV                            Ristorante
+S          Shuttle                       Satellite
+T          Temporale (cloud/bolt)        Temporale (cloud/bolt)
+U          Scuolabus		         	 Sole
+V          VOR TAC                       VOR TAC Symbol
+W          National Weather Service      NWS-Digi
+X          Elicottero
+Y          Barca a vela
+Z          Windows
+[          Corridore                     Bagno
+\          Triangolo DF
+]          Packet Mail Box
+^          Grande Aereo                  Grande Aereo
+_          Stazione meteo                WS-Digi
+`          Antenna parabolica
+a          Ambulanza
+b          Bicicletta                    Nuvola a vento
+c          antenna DX
+d          Caserma Pompieri              Antenna DX
+e          Cavallo                       Nuvola a Cirro
+f          Mezzo Pompieri                FC Cloud
+g          aliante                       Banderuola (2)
+h          Ospedale                      HAM
+i          Isola                         Isola
+j          Jeep                          Jeep
+k          Camion                        Camion
+l          Puntino                       Puntino
+m          MIC                           Pietra Miliare
+n          N                             Small Triangle
+o          EOC                           Punto con cerchietti
+p          Cagnolino                     Punto con cerchietti
+q          GS Antenna                    GS Antenna
+r          Traliccio Antenna             Traliccio
+s          Nave                          Nave
+t          TS                            ?
+u          18 Wheel Truck
+v          Van                           Punto con cerchietti
+w          H20                           Inondazione
+x          X Windows                     Punto Rosso
+y          House w/Yagi                  Casa con Yagi
+z                                        X Windows
+{          NEBBIA                        NEBBIA
+|          Linea Nera                    Linea Nera
+}          TCP                           TCP
+~          Barca a vela                  Barca a vela
+
+

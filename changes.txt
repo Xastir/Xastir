@@ -1,0 +1,534 @@
+$Revision$
+
+Changes.txt
+
+04.01.2001
+    See ChangeLog for software changes...
+
+11/13/2000
+    codebase verion changed to 0.4.0, starting next development release
+
+11/08/2000 0.3.6-2 -- cb
+ modified color.c to behave with gcc 2.96
+ added callpass
+ delete object patch for db.c - J.Stueve KE4NFJ
+
+09/24/2000 Alpha 0.3.6b
+ added time/date to buletins list.
+ modified PHG routines.
+ added the beginings to view all message traffic.
+
+09/19/2000 Alpha 0.3.6a
+ fixed/added sorting for bulletins. *
+
+*fixes by KE4NFJ
+
+09/16/2000 Alpha 0.3.6
+ add the usage of comments in the nws-stations.txt file, "#" as first char on a line.
+ add bulletins within a radius view screen.
+ added speedups for pixmaps. *
+ added Italian language #
+
+*modifications by VE6LFM
+#additions by IK0YUP
+
+
+08/27/2000 Alpha 0.3.5a
+ bug fix for the PHG not displaying.
+
+08/26/2000 Alpha 0.3.5
+ changed WX alert minimum refresh from a int to a long.
+ Updated the French language file.
+ fixed a network socket closing problem.
+ changing all posits (in and out) to High precision, Compressed format will output high precision.
+ added igating (net to RF) of NWS weather messages.
+  (to use this build a text file in the xastir users directory as .xastir/data/nws-stations.txt
+   list each call or NWS station like "SECIND" that you would like to transmit via RF)
+
+
+
+07/14/2000 Alpha 0.3.4a 
+ fixed a minor problem for some solaris systems.*
+* fixes/additions by KE4NFJ
+
+07/10/2000 Alpha 0.3.4 (no changes from the pre-release)
+ fixed symbol decoding for stations with an overlay character.
+ added AEA to TAPR2 path decoding to fix MIC-E decoding with AEA type TNCs.
+ modified station trails.+
+ speed ups for Pixmaps images.@
+ fixed output logic on mobile data. 
+ removed unused data from makefile.
+ modified altitude decoding for "/A=XXXXXX".
+ added "/A=XXXXXX" altitude encoding on output of station positions (with GPS input and not WX data output).
+ added NETWORK_WAITTIME to config file, this sets the network time out value
+       when doing host lookups and socket connections, default is 10 (no GUI Interface for this yet). 
+ added WX_ALERTS_REFRESH_TIME to config file, this sets the minimum seconds allowed
+       between a WX Alert starting a redraw of maps on the screen, default is 30 (no GUI Interface yet). 
+ updated help file.
+
++ modifications by WE7U
+@ fixes by PE1DNN
+
+
+06/12/2000 Alpha 0.3.3
+ fixed data position information output logic.
+ fixed missing E/W logic in compressed posit formats.*
+
+
+* fixes/additions by KE4NFJ
+
+05/31/2000 Alpha 0.3.2
+
+ fixes for Solaris.*
+ fixed a bug in sending data via TNC, the first few chars were dropped on MFJ's with Paccom software installed.
+ added support for image maps (.xpm format only) with .geo files for location.
+ fixed small problem with weather alerts expiring incorrectly for Daylight Savings Time.*
+ fixed some conditions for alert matching on weather alerts.*
+ fixed path length.@
+ fixed Dos map problem dropping data, as in Ilchicgo.map.*
+ fixes for WX-Alerts.*
+ changed line tracking to not display line when the object is faster then 900 MPH, however
+     I may make this an option, or a soft limit.
+ fixes for 0.91 of lesstif, some scrolled text was not positioned correctly.
+ added wx gust reset.
+ removed some filtering on AX.25 ports.@
+ fixed data command/transmission problem for some TNCs.
+ changed the default code compiling to not include debugging information,
+     this reduces the executable code size by a huge amount. However I also
+     added an option in the Makefile to compile with this information.
+ changed Segmentation faults operation, if the program Segfaults, it will
+     terminate, but now it should happen cleaner.
+ changed the way broken pipes are handled, hopefully you won't see those again.
+ added white as a background color.
+ modified MIC-E decode logic for more support of the protocol.+
+ added transmission of compressed position data.* 
+ cleaned up decoding of compressed data.*
+ added jump to last map position.
+ fixed map sorting for case insensitive.
+
+* fixes/additions by KE4NFJ
+@ fixes by PE1DNN
++ modifications by WE7U and me (KC2GJS).
+
+Also I changed my CALL from KC0DGE to KC2GJS.
+
+03/30/2000 Alpha 0.3.1
+ changed Baro reading on WX-200 to Sea Level vs. Local Level.
+ added more space for and digits for some WX station display fields.
+ added changes.. so Xastir will run on FreeBSD.+
+ fixed object decoding.
+ fixed compressed format symbol decoding
+ added compressed object decoding.
+ added course and speed to compressed decoding.
+ added logic to AX.25 interface so a "*" would be added to the 
+       digipeater call that's transmitting the packet.@ 
+ fixed bug in AX.25 interface, seems as if all AX.25 packet data is transmitted through
+       the interface. Even if it is from a device not used by Xastir. Added code to 
+       "filter out" incoming packets that are from another device. @
+ fixed tab groups for keyboard movement on message boxes, tracking, locate station, and misc dialogs.
+ removed transmitter off message popups, some found this annoying.
+ changed to case insensitive sort on stations.*
+ fixed bug in WX data output, rain in past 24hr was switched with rain since midnight
+       on output of data.
+ fixed a possible crash on shutdown of the network connections. 
+ added/fixed max station now only has a memory limit. The station buffer now allocates memory
+       as needed and the max station's error popup will only show when no more memory can be
+       allocated for stations.*
+ changed message time intervals.
+
++ Additions by N3NYN
+@ fixes by PE1DNN, modified by KC0DGE
+* fixes by KE4NFJ
+
+03/23/2000 Alpha 0.3.0
+
+ changed the station Info box size.
+ changed net connect and host lookup return a good connect faster.
+ modified net connect procedure.. used terminate thread instead of sigalarm.
+ modified the size of the raw WX buffer.
+ Added Net WX interface.
+ modified symbol routines.*
+ Added new symbols.*
+ misc include file fixes.*
+ modified Makefile so that compiling on RH5.2 and using the old AX.25 utils works.+
+ fixed the AX.25 port lockup on start up problem.
+ Added Radio Shack WX200/Oregon Scientific WM-918 support.
+ misc WX station fixes and changes.
+ fixed dialogs to work on older system/KDE combo.
+ Added WX data decode for APRS POS/WX format.
+ Added popup message when MAX_STATIONS is exceeded.
+
+* additions by KE4NFJ
++ fix by HI8GN
+
+03/14/2000 Alpha 0.2.9
+
+ changed it so any data from a good call sign goes into data base.
+ changed serial port start up, if serial lock file errors on opening, still try to open port.
+ fixed Query response for ?IGATE? to number of "local" stations and added message counter.
+ added a few General Queries to the menu.
+ added Query response for ?APRSP.
+ changed Widget shells (Major code change) to support main window over child windows.
+ fixed/changed some misc gui stuff.
+ fixed New fcc data lookup (too slow!).. However it requires the following:
+    **** NOTE to use the NEW data base file it must be sorted first!!! ****
+    Make sure you have plenty of disk space for this as the file is BIG!
+      To sort the file:
+      sort +4 -t \| EN.dat >EN.dat.sorted
+      rm EN.dat
+      mv EN.dat.sorted EN.dat     
+
+ removed previously added reject logic for bad rain data, caused a segfult.  
+ fixed interface gui causing segfault if windows closed out of order.
+ moved fcc/rac test to after window's opens.
+ Added status for fcc/rac rebuilding index files.
+ removed usleep out of threaded routines read_port() & write_port() as usleep is not
+    thread safe on solaris, replaced usleep with select.
+ fixed baud rate selection, 38400 and 57600 were reversed.
+ fixed a problem in the Makefile where it couldn't find Lesstif Libs on some systems.
+ fixed some memory leaks. * 
+ fixed data entry screens to remove added spaces in data input.
+ Added Peet Bros Complete data mode for WX Station. &
+ modified WX Station screen for more info if in Complete data mode.
+ fixed bug in heard_via_tnc_in_past_hour.
+ added second chance transmit of message if heard via tnc but not in past hour then
+    try the last net connection the station was heard.
+ fixed German ',' vs '.', stupidity on my part.
+ added busy cursor (to map etc..) when working with interfaces.
+ fixed bug in adding a WX port at 2400 bps.. on startup would go to 4800.
+ fixed bug in starting interface (manually) when it is already up.
+ fixed bug in connection to the net where the host is found but the connection is not made.
+ cleared out some possible "broken-pipe" errors on closing a errored interface.
+ cleaned up a possible segfault on messages with out acks.
+ added some more WX rain checks.. Please Check me..
+ added Spanish Language support. +
+
+* fix by KE4NFJ
+& additions by KD6VPE
++ additions by HI8GN
+
+03/08/2000 Alpha 0.2.8
+
+ added/changed color lookups, now has it's own file and colors should be consistent across
+        various X managers.
+ added local stations list.
+ added some Query buttons to station info window.
+ cleaned up buttons on dialogs.
+ added Query responses for ?APRST ?PING? ?APRSM ?APRSD ?IGATE.
+ moved more gui stuff to separate files.
+ Added popup message windows for errors, status, query responses, etc.
+ fixed/added updates to local station for last path heard and position/packet time.
+ fixed a bug when transmitting messages via RF to a local station. ### NOTE THIS IS A BIG ONE!!!!
+ added more reject logic for bad rain data, for the WX Station.
+
+03/03/2000 Alpha 0.2.7
+ changed formula used on Qualimetrics Q-Net WX station decoding (another minor difference).
+ fixed WX wind gust.
+ found a WX rain bug.
+ changed some more background colors.
+ fixed a broken pipe bug on write.
+ changed wx alert display routines.*
+ added sound for wx alerts.*
+ fixed Motif popup menu on map problem (FINALLY!!!!!).
+ fixed bug in station lists.
+ added save of station list size.
+ fixed clipboard copy for call sign on station list (as long as the call does not move in the list).
+ changed gethostbyname2 to gethostbyname for older systems.
+
+* additions by KE4NFJ
+
+02/27/2000 Alpha 0.2.6
+ changed zoom status window size
+ fixed a bug in auto map directory.
+ fixed a bug in config not saving if no backup file exists.
+ changed formula used on Qualimetrics Q-Net WX station decoding (minor difference). 
+ changed some background colors. 
+ added some extra debugging on the serial ports.
+ fixed Q-Net transmit wx data (original routine needed Course and Speed so it can TX WX data).
+
+
+02/26/2000 Alpha 0.2.5
+ More Motif stuff.*
+ More Makefile Mods. * (and me)
+ fixed port shutdown but data to be written bug. 
+ fixed a bug when sending raw WX data.
+ hopefully fixed mouse button popup menu (zooming/panning) for Motif. 
+ added Qualimetrics Q-Net WX station decoding. 
+ fixed? Peet bros packet mode for WX station reading (wind/rain problem).
+ fixed? alignment problem for headers on station/wx/mobile lists.
+
+* additions by KE4NFJ
+
+02/25/2000 Alpha 0.2.4
+ fixed a bug in AX.25 status (input bytes).
+ fixed the map redraw bug? 
+ Modified the Makefile.
+ added time stamp in message box.
+
+02/24/2000 Alpha 0.2.3
+ Added code to remove stale serial lock files.
+ Added option for WX Alert Counties maps to appear above or below other loaded maps.
+ Added Station List, Mobile Station List, and WX Station List.
+ Modified WX station decoding.
+ Added Transmitting of Raw WX data - Peet Bros. UII, U2k (data logging), U2k (Packet). 
+ Added WX station logging.
+ Added option to compile with out AX.25 (look at Makefile, Let me know how it works for you!).*
+ Added Host name on top bar.*
+ Modified WX Alerts.*
+ Added some Motif Conditions (start of better Motif vs LessTif support).*
+
+* additions by KE4NFJ
+
+02/19/2000 Alpha 0.2.2
+
+ Added more WX station stuff and WX transmit !! PLEASE CHECK THIS
+ fixed a bug in AX.25 Gui restart.
+ Modified Makefile to be a little more generic.
+ Changed operation of WX Alerts so screen updates don't hold the system up.  
+
+02/18/2000 Alpha 0.2.1
+
+ Ok first round is through some had problems, some had none. 
+
+ Deleted a include file giving some of you problem.
+ Modified some of the interface code for displaying status.
+ Fixed some bugs in the interface status display code.
+
+ 
+
+02/17/2000 Alpha 0.2.0
+
+ 0.1.4 is dead. I've decided not to continue with this version number because 
+ A good part of Xastir has been rewritten for the threaded I/O. I have also 
+ brought the functionality up to warrant a much higher version number.
+
+ This version allows multiple TNC's and Internet connections.
+
+ Complete rewrite of I/O (Too many changes to list).
+ Added AX.25 support built in. @
+ Changed RAC look up for "VE" and "VA" only, rather than just "V".
+ Changed I/O menus.
+ Changed default menus.
+ Fixed some IGate problems.
+ Changed HOST lookup 
+ Added $ULTW WX data support.
+ Added support for WX stations (beginning support so far).
+ Modified WX support.
+ Added WX Alert List (with WX Alert county maps. *
+
+
+
+* additions by KE4NFJ
+@ AX.25 Parts adopted from: aprs_tty.c by Henk de Groot, modified by KC0DGE
+
+12/30/1999 Alpha 0.1.4
+ changed Mapping for higher precision display (Still testing)
+    (Example 28.255 min instead of 28.25 min)
+    NOTE: Your zoom and position in your xastir.cnf file will be
+          based on the previous data and when you upgrade you may find
+          your position and zoom in the wrong place when you first
+          start it.
+
+ added TNC format (8N1, 7E1, 7O1) to the TNC. 
+ cleaned up a possible TNC over-run error.
+ changed some tracking constants for new map precision.
+ added WX port code and dialogs.
+ cleaned up some display code.
+ cleaned up TNC code.
+ changed automap detection, it should work better on odd sized maps.
+ added more map support and better decoding. * 
+ fixed a map pan up bug.
+ fixed WX gust missing bug in station info box.
+ added support for dos maps. *
+ added the start of station queries.
+ added gpsd support (networked GPS). @
+ added support for filled map types * (and me)
+ added support for background map colors, Selection in Maps menu. 
+ added two methods for displaying station labels.
+ fixed a bug in weather from a Peet Bros U2K with negative temp.
+ disabled problem in alerts routine
+ deleted old debug command line, now is -v <debug_level>.
+ added new command line language options.
+ changed Makefile to work with the new command line language options.
+ deleted use of HELP_DATA key in xastir.cnf file
+ changed start up to check and make missing directories for user data.
+ 
+* additions by KE4NFJ
+@ additions by WE7U
+
+11/14/1999 Alpha 0.1.3
+
+ fixed rain to show in mm instead of cm (in metric mode).
+ fixed update to display for new data, not just position.
+ added support for compressed map format. *
+ fixed time values to the correct time_t rather than unsigned long.
+ added Canadian Callsign Lookup. + 
+ added fast search and indexing of US and Canadian Callsign Lookup. +
+ added check for new file to rebuild the search index for above.
+ added support for new FCC file format.
+ fixed an error in the make install for new a install.
+ added support for other languages (with the language.sys file) (more to do).
+ added support for multi color tracking lines. @
+ fixed additional tracking line bugs.
+ added support for station position ambiguity.
+ added support for NET to RF IGATE for messages.
+ fixed message data to fit in with the spec.
+ added Proximity and band opening alarms. #
+ fixed Red Hat core dump when no files in map directory and using the map chooser.
+ added I-Gate logging.
+ added some Reject I-Gate logic.
+ added I-Gate on ack's (oops forgot this!)
+ fixed I-Gate to net logic (or at least made it more sane).
+ moved Proximity and band opening alarms to work on any incoming packet not just new ones.
+ added Language install
+ added GNU LICENSE
+
+* additions by KE4NFJ
++ additions by VE3UNW 
+@ additions by WE7U
+# additions by KD5AMB 
+
+10/22/1999 Alpha 0.1.2
+
+ fixed net connect core dump if the server was not available.
+ removed source directory copy to /usr/local/src/xastir on install. (no really needed just
+         messed up the developers.
+ changed the zoom level to match with the actual level.
+ added GPS GLL string decoding. *
+ cleaned up station data base code.*
+ changed some makefile options (runs smoother).
+ started work on Igate to RF.
+ fixed mistake in map loading stuff. +
+
+* additions by KE4NFJ (A big THANKS!!)
++ fixes by Chris Bell (THANKS!!)
+
+
+10/01/1999 Alpha 0.1.1
+
+ !!!! Added/changed file structure to fit in the more standard FHS format. !!!
+ added GPS support via HSP cable.
+ added GPS time value.
+ added APRS(tm) output in mobile format when GPS is active. 
+ added/fixed net/tnc clean up.
+ fixed net data decode for servers that put out Carriage returns not Line feeds. (*)
+ added more aprs decode support (for decoding CsT characters on RMC and GGA strings). (*)
+ added environment values XASTIR_USER_BASE and XASTIR_DATA_BASE to set alternative directory
+       locations for user data and common data. (-)
+ added more aprs decode support (for handling some compressed mode lat/lon). (+)
+ added course and speed decode for aprs mobile stations.
+ added decoding of altitude in some formats other than GGA strings.
+ fixed Track line bug.
+ added more track lines.
+ fixed decoding of some missed status data.
+ added changes as per WE7U for grid lines every degree, However this is an auto selection
+       on zoom level.
+ added changes for Humidex (chill factor) only displays in metric. @
+ fixed grid lines so they don't erase map lines.
+ added zoom info.
+ fixed GPS drop off of last digit on some GPS (I hope).  
+ added install feature in makefile (fits in with above).
+ added support for other users than root (!!! you need to have access to the
+       devices you want to use still !!!).
+ fixed some window close problems. 
+ Tested with version 0.89 of Lesstif (seems ok, no problems yet!!).
+ added sorting of map files in map chooser.
+ fixed station info box/send message core dump when message box open and info box closed.
+ added Display for incoming packet data (with selection of data type).
+ added Station Tracking.
+
+* additions by KE4NFJ (A big THANKS!!)
++ additions by WE7U (Again A big THANKS!!)
+- additions by KE4NFJ and modified by me.
+@ additions by VE3UNW (Again A big THANKS!!)
+
+08/17/1999 Alpha 0.1.0
+
+ Do not use Lesstif version 0.88.9! It makes the use of radio buttons
+ crash the program. Not sure why.. perhaps a bug in this version of
+ Lesstif?!  
+
+ Ok first official canning of Alpha characters in the version numbers,
+ This would have been 0.0.Kt4, but it gets too confusing. From now on,
+ test versions, for that matter any version will be numeric digits only
+ and no special tX on the end for test versions. Trying to keep it simple.
+
+ fixed a "major stupid" bug, put any object to the East off its real location.
+ added decoding for Peet Bros UM2.
+ fixed some bugs in displaying temp on the station info screen.
+ added sound alerts for messages.
+ added Send message button for Station Info.
+ added Multi-hosts for Internet connections.
+ added GPS Support.
+ fixed some core dump problems on incoming data. 
+
+07/22/1999 Alpha 0.0.Kt3 (test version for K)
+
+ !!!!! This is a test version !!!!!!
+
+ added wx display on maps.
+ added timeout indicator when loading maps.
+ added Net/Tnc status indicators.
+ added auto message responder.
+ added Power-gain circles.
+ fixed Metric values. Meters should have been kilometers.
+ fixed some misspellings.
+ fix/add wx data now changes MPH to KPH and temp goes for F to C,
+         inches go to cm.
+ added PHG to station info.
+ fixed hear via TNC statement in station info..
+ added decoding for Peet Bros. data logging mode record format for over air data. 
+ Hopefully fixed: Red Hat tnc & net down/up core dump problem.
+ 
+
+06/26/1999 Alpha 0.0.Kt2 (test version for K)
+
+ !!!!! This is a test version !!!!!!
+
+ Fixed some minor bugs.
+ Changed some window layout code, Hopefully it will be more consistent across
+ window managers.
+ More Speed ups, Some major speed up to display writing.
+ More Message fixes.
+ Changed the way you zoom and scroll the display.
+ Added preset zoom levels.
+ Added Station info display.
+ Added Station tracking, with a trailing tracking line.
+ Beginning work on weather data, station info will report data if available.  
+ Fixed net connection drop bug (hopefully).
+ Fixed Red Hat map chooser bug.
+
+ New, if the connection is dropped there is a new option under configure,
+ Internet, That will allow you to reconnect to the net if this option is 
+ checked.
+
+ Changed, The messaging system is going through an overhaul, hopefully not
+ so much of a kludge.
+
+06/02/1999 Alpha 0.0.J
+
+ Major bug fixes for Red Hat users.. I hope I got them all..
+
+
+06/01/1999 Alpha 0.0.I
+
+ First release of Xastir!
+
+Lots of things are not working.. No station information windows. It doesn't
+decode all of the APRS(tm) packets. Messaging works, however it is not 
+finished. Currently there is no support for GPS data for setting your position.
+
+Xastir will read window/mac APRS(tm) map format and automatically select the
+correct map for your area win auto maps on. Currently this is slow and will
+be corrected in future versions. Most of the APRS(tm) are in place and will
+position on the map. Net interface is live, but also needs more work.
+Configuration screens are very basic.. In other words it is the first release
+of FREE Alpha version software!
+
+
+
+
+
+
+APRS[tm] is a Trademark of Bob Bruninga, 
+his home page is at "http://web.usna.navy.mil/~bruninga/aprs.html"

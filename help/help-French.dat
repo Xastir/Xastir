@@ -1,0 +1,591 @@
+HELP-INDEX>ME LIRE EN PREMIER - License
+
+			ME LIRE EN PREMIER pour XASTIR
+
+Traduction Francaise par F1SJE F1SJE@F1SJE.FRPA.FRA.EU
+Correction et derniers peaufinages F1IOL@F6KBF.FRPA.FRA.EU
+			
+!!! NOTE: Ces documentations ne sont peut-être pas à jour ou incomplètes
+
+Les plus récentes informations sont dans le README.1ST dans le répertoire
+Xastir.
+
+Ce programme est destiné a être utilisé par des radio-amateurs DANS LE
+CADRE DE LEUR REGLEMENTATION NATIONALE.
+
+LICENSE :
+
+XASTIR, Amateur Station Tracking and Information Reporting
+Copyright (C) 1999  Frank Giannandrea
+Copyright (c) 2000,2001,2002 The Xastir Group
+
+Ce programme est libre; vous pouvez le redistribuer et le modifier
+dans les conditions définies dans la "GNU General Public License"
+(version 2 ou supérieure) définie par la "Free Software Fondation".
+
+mais SANS AUCUNE GARANTIE. Voir la "GNU General Public License" pour
+plus de détails.
+
+Vous devriez avoir recu une copie de la "GNU General Public License"
+avec ce programme sinon écrivez à  : the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+Plus d'informations sur ce programme peuvent être trouvée sur sa page Web :
+
+http://www.xastir.org
+
+Pour plus d'informations sur la License GNU regardez sur :
+http://www.gnu.org
+
+
+HELP-INDEX>Bienvenue! Et notes de l'auteur.
+
+			Bienvenue dans Xastir
+			
+XASTIR, ou X-windows Amateur Station Tracking and Information Reporting.
+
+C'est un programme APRS(tm) dont les sources sont ouvertes et libres 
+d'utilisation et de diffusion. Ce programme est en cours de développement
+et ne devrait pas être vu comme un produit fini. J'aurai besoin de votre 
+aide pour le rendre plus fonctionnel. J'ai beaucoup d'idées mais peu de 
+temps alors si vous pensez pouvoir m'aider n'hésitez pas et faite moi le 
+savoir!
+
+73s
+Frank Giannandrea
+
+APRS[tm] est une marque déposée de Bob Bruninga, 
+Sa page d'accueil est  "http://web.usna.navy.mil/~bruninga/aprs.html"
+
+HELP-INDEX>Débuter
+                               Débuter
+                               
+Maintenant que Xastir fonctionne il faut le configurer !
+Le menu Configurer va vous permettre de paramètrer votre station.
+La plupart de options par défaut vous permettent déjà de travailler.
+
+Le sous menu défaut vous permet de sélectionner les valeurs des 
+différents intervals de temps, les options de transmission et les
+fonctions du gateway internet.
+
+Le sous menu interfaces vous permet de paramètrer vos périphériques
+série, AX25, GPS, Stations météo, Connexions internet etc...
+Vous pouvez également modifier les paramètres de ces interfaces avec
+ce menu.
+
+Pour commencer le plus important est de configurer la station; 
+indicatif, Latitude/Longitude (Si vous n'avez pas de GPS), incertitude 
+quant à la position et autres informations.
+
+Alarmes sonores va configurer les sons en fonction des évènements.
+
+Mesure vous permettra de choisr entre système métrique ou mesures 
+anglaises.
+
+NOTE : Dans les menus les options grises sont actives, quand vous 
+sélectionnez vous faites passer l'option en gris.
+
+HELP-INDEX>Configuration de la station
+
+				Configuration de la station
+  
+Entrez votre indicatif/SSID.
+
+Le défaut est NOCALL, si vous ne savez pas ce que ca veut dire peut-etre
+ne devriez vous pas utiliser ce programme.
+
+Ensuite entrez latitude et longitude en degrés, minutes, centièmes
+
+N pour Nord, S pour Sud, E pour Est et attention W pour Ouest (Ndt : allez
+on ne va pas modifier les sources pour ca hi ! ) 
+
+Maintenant entrez votre Groupe/Overlay et le symbole de votre station.
+Regardez le listing des tables pour choisir votre symbole.
+Par défaut le symbole est x pour xwindows/Unix et le groupe est "/".
+Si vous voulez autre chose entrez la lettre ou le chiffre dans la
+fenêtre Groupe/Overlay et prenez un symbole dans le groupe "\".
+
+Ce n'est pas obligatoire mais si vous voulez entrez ensuite la puissance,
+la hauteur et le gain de votre antenne en vous aidant des tableaux ci-dessous :
+
+
+Chiffre a utiliser       0  1  2  3   4   5   6   7   8   9 
+Puissance    (en watts)  0  1  4  9  16  25  36  49  64  81
+
+Exemple : Entrez 6 pour 36 Watts
+
+Idem pour la hauteur, ce n'est pas la hauteur au dessus du sol
+mais la hauteur au dessus du niveau de la mer.
+
+Chiffre a utiliser    0   1   2   3    4    5    6     7     8     9 
+Hauteur		     10  20  40  80  160  320  640  1280  2560  5120
+
+Exemple : Entrez 7 pour 1280m
+
+Pour le gain mettez simplement le gain de votre antenne en dB.
+
+Ci dessous en degrés par rapport au nord 
+
+Chiffre a utiliser   0   1   2    3    4    5    6    7    8     9 
+Direction (deg)      0  45  90  135  180  225  270  315  360  None
+
+Utilisez 0 pour une antenne omnidirectionnelle (Verticale)
+
+Entrez un commentaire, ce n'est pas exigé mais personnalisera votre station.
+
+L'incertitude quant à votre position vous permet de gérer la précision 
+avec laquelle vous allez transmettre votre position.
+Avec aucune votre station transmettra la position exacte que vous avez
+entrée ou recue par GPS sinon votre station sera vue quelque part dans 
+les limites choisies. 
+
+
+cliquez sur OK pour sauvegarder vos changements, cliquez sur annuler pour conserver
+les paramètres courants.
+
+HELP-INDEX>Comment utiliser mon GPS avec Xastir
+
+			Comment utiliser mon GPS avec Xastir
+			
+Vous avez 3 solutions, un GPS en réseau , un GPS sur port série ou un GPS
+sur port série avec TNC et câble HSP.
+L'intérêt d'un GPS en réseau est que vous pouvez le partager avec d'autres 
+programmes. Xastir peut se connecter en réseau sur un démon nommé GPSD.
+Ce programme envoie des données GPS standards sur le réseau.
+Certaines versions autorisent une connexion GPS sur internet.
+Une fois installé sur votre machine (ou une autre en réseau) vous pouvez 
+y connnecter Xastir en créant une interface.
+Cliquez sur Configurer/Interfaces
+Ajouter
+Réseau GPS (avec gpsd)
+Entrez le nom de la machine ou vous avez installé GPSD et le nom du port.
+Validez les 2 autres options selon ce que vous voulez.
+
+GPS série :
+C'est un GPS série standard connecté sur port série qui doit transmettre
+ses données au format NEMA. Procédez comme pour gpsd pour l'ajouter,
+mettez le port série utilisé, en principe les paramètres par défaut pour
+le port série doivent fonctionner sinon ajustez les à l'aide de la doc de
+votre appareil.
+
+HSP TNC/GPS: 
+ Regardez à "Comment utiliser mon TNC avec Xastir?"
+
+
+HELP-INDEX>Comment utiliser mon TNC avec Xastir?
+
+                             Comment utiliser mon TNC avec Xastir?
+                             
+La encore vous avez trois solutions : Un TNC en réseau (AX25), un TNC sur
+port série  et un TNC avec câble HSP et GPS.
+
+AX25 :
+
+C'est simplement un des ports du kernel AX25 de Linux, vous devez avoir
+les librairies AX25 d'installées et le support AX25 dans le Kernel.
+
+TNC Série :
+
+TNC Série avec HSP et GPS :
+
+
+HELP-INDEX>Configurer les Defauts
+
+				Configurer les Defauts
+
+cliquez sur Configurer/Defaut.
+
+Sélectionnez l'intervalle de temps au delà duquel votre station sera
+considérée comme vieille, 2 heures par default. Au bout de cet intervalle
+de temps l'icone de la station deviendra ombrée ou transparente.
+
+
+Cliquez sur OK pour sauvegarder vos changements, Cliquez sur annuler pour conserver
+les paramètres courants.
+
+HELP-INDEX>Configurer le port GPS
+
+				Configurer le port GPS
+cliquez sur Configurer/Interfaces
+Ajouter
+Série GPS pour un GPS seul, vous utiliserez un port série style ttyS1.
+
+Si vous avez un câble HSP qui vous permet de partager le port TNC avec 
+un GPS vous devez sélectionner Série TNC/GPS sur câble HSP.
+C'est un câble spécial qui ne fonctionne pas sur toutes combinaisons
+de machines/GPS/TNC.
+Attention aux paramètres de transmission, soyez sympas avec les autres
+utilisateurs de la fréquence.
+Pour activer l'utilisation du GPS sélectionner l'option autorisation de 
+transmettre sinon vous transmettrez les données que vous avez configurées
+dans le sous menu station. Ces données seront mises a jours automatiquement
+si vous utilisez un GPS.
+Quand vous utilisez GPS vous denenez une station mobile avec vitesse et 
+direction même si vous ne bougez pas, les données transmises changent. (Je 
+changerai cela avec une option plus tard)  
+Vous devrez sélectionnez les intervalles de transmission directement
+avec le GPS, les options par defaut de votre station ne seront plus prises
+en compte. Si vous etes en fixe mettez 10 minutes, sinon choissisez les 
+options selon vos besoins.
+
+Cliquez sur OK pour sauvegarder vos changements, Cliquez sur annuler pour conserver
+les paramètres courants.
+
+HELP-INDEX>Configurer le port TNC
+
+				Configurer le port TNC
+				
+cliquez sur Configurer/Interface
+Ajouter
+Choisir votre TNC 
+Sélectionnez activer au démarrage et autorisation de transmettre
+selon vos besoins.
+Entrez le port et paramètrez le.
+
+Entrez le chemin des UNPROTOS.
+Xastir par défaut a déjà le chemin VIA XX.
+Vous pouvez en ajouter 3 autres de manière a être bien entendu
+même dans de mauvaises conditions.
+En fonction des champs remplis Xastir commencera un cycle d'envoi vers
+ces destinations, l'une après l'autre a chaque fois qu'il sera l'heure
+de transmettre.
+Si vous êtes en local sans digi mettez WIDE, si vous etes QRP ou loin 
+d'un digi RELAY, WIDE fonctionnera mieux.
+Si vous êtes près d'un digi vous pouvez mettre INDICATIF, WIDE.
+La plupart d'entre vous n'avez besoin que d'un chemin mais si vous n'etes
+pas bien dégagé mettez en plusieurs, demandez aux stations qui vous 
+entourent.
+
+Cliquez sur OK pour sauvegarder vos changements, Cliquez sur annuler pour conserver
+les paramètres courants.
+
+HELP-INDEX>Configurer la connexion à Internet
+
+			Configurer la connexion à Internet
+
+Vous devez connaître un serveur et un n° de port, par defaut 
+www.aprs.net port 10151. Un mot de passe valide autorisera votre
+station à transmettre par internet et à être retransmise sur l'air.
+Pour obtenir un mot de passe contacter Steve Dimse, K4HG à www.aprs.net
+en lui précisant vos nom, indicatif etc etc... Après vérification il vous
+donnera votre code. Sans code par d'accès sur l'air mais vous êtes quand 
+même forwardé sur Internet.
+Validez reconnexion sur erreur réseau pour une reconnexion automatique en
+cas de coupure.
+Dans Configurer/options vous avez la possiblité de devenir un Gateway vous
+aussi. FAITES TRES ATTENTION à cette option, contactez Steve Dimse et veillez
+à rester en conformité avec la règlementation en vigueur.
+Dans interface/fichier journal vous avez une option pour enregistrer 
+tous les évènements du Gateway.
+
+Cliquez sur OK pour sauvegarder vos changements, Cliquez sur annuler pour conserver
+les paramètres courants.
+
+APRS[tm] est une marque déposée de Bob Bruninga, 
+Sa page d'accueil est  "http://web.usna.navy.mil/~bruninga/aprs.html"
+
+HELP-INDEX>Configurer alertes sonores
+
+				Configurer alertes sonores
+				
+Bien évidement vous devez avoir une carte son ! il vous faudra aussi un
+programme qui joue les .wav, mettez le chemin complet dans la fenêtre 
+commande audio.
+
+Choix disponibles :
+
+Nouvelle station
+
+Nouveau message
+
+Proximité
+
+Ouverture de bande
+
+Distance Minimum
+
+Distance Maximum
+
+Alerte Météo
+
+HELP-INDEX>Configuration des  Unités
+
+                         Configuration des  Unités
+                         
+Ceci selectionne le système d'unités, par defaut métrique. Sinon
+les mesures anglaises sont disponibles.
+
+HELP-INDEX>Ligne de status inférieure
+
+				Ligne de status inférieure
+
+En bas de la fenêtre vous pouvez voir différents messages :
+
+1ère fenetre : messages généraux.
+2ème fenêtre : Latitude/Longitude du pointeur sur la carte.
+3ème fenêtre : Nombre de stations dans la base de donnée.
+4ème fenêtre : Niveau de Zoom et Tr si le suivi de station est actif.
+
+Les 2 dernières fenêtres montrent le status du TNC et du réseau.
+Un ">" pour des données sortantes et un "<" pour des données entrantes.
+
+
+HELP-INDEX>Mouvements de la carte (Zoom et N.S.E.W) et menu options
+
+	Mouvements de la carte (Zoom et N.S.E.W) et menu options
+		
+Les mouvements de la carte sont très simple, la facilité et la rapidité
+des mouvements dépend de la vitesse du processeur et du niveau de détail
+des cartes chargées.
+Il suffit de cliquer sur un point de carte pour voir s'ouvrir un menu 
+qui permet de Zoomer sur ce point, voir + au nord, sud est ou ouest par
+rapport au centre de la carte; plus le zoom est petit plus le grossissement
+est grand.
+Le sous menu information sur la station vous donne les éléments de la station
+la plus proche du point ou vous avez cliqué. S'il y a plusieurs stations non 
+loin un choix vous sera proposé.
+
+HELP-INDEX>Menu Cartes et choix de cartes
+
+			Menu Cartes et choix de cartes
+			
+Carte automatique Actif/Inactif
+Si actif toutes les cartes du sous répertoire "map" et toutes celle des
+répertoires dessous seront affichées si elles correspondent à la région
+sur laquelle vous travaillez. Ceci peut ralentir considérablement le système
+si vous avez beaucoup de cartes et un ordinateur très lent.
+Si inactif seules les cartes choisies dans cartes/choisir une carte seront
+affichées.
+
+Quadrillage Actif/Inactif
+Active un quadrillage tous les 10°.
+
+Niveau Actif/Inactif
+Active le filtrage des petits détails quand le niveau de zoom montre une
+large surface, fonctionne seulement avec le cartes générées avec "Tiger
+Line maps" (Site aprs.rutgers.edu).
+
+Choisir une carte
+Cliquez simplement sur les cartes que vous voulez afficher. Vous pouvez
+en prendre autant que vous voulez.
+cliquez sur OK pour afficher vos cartes, cliquez sur annuler pour conserver
+les paramètres courants.
+
+HELP-INDEX>Options Visualisation
+
+				Options Visualisation
+				
+Ces options vous permettent d'afficher des données autour des stations
+se trouvant sur la carte.
+
+Altitude Actif/Inactif
+Si actif une ligne bleue de données aparait au dessus de l'indicatif,
+indiquant la dernière altitude connue de la station.
+  
+Route Actif/Inactif
+Si actif une ligne verte de données aparait au dessous de l'indicatif,
+indiquant le dernier azimut connu de la station.
+
+Vitesse Actif/Inactif
+Si actif une ligne rouge de données aparait au dessous de l'indicatif 
+ou de la trajectoire indiquant la dernière vitesse connue de la station.
+
+Distance/Orientation Actif/Inactif
+Si actif deux lignes de données aparaissent à gauche de l'indicatif, la
+ligne du dessus indique la distance par rapport à votre station, celle
+du dessous l'azimut.
+
+Trajectoire des stations Actif/Inactif
+Si actif toutes les stations en mouvement traceront une ligne de couleur
+affichant les 100 dernières positions. Quand la station devient vieille
+et que sont icones est transparente la trajectoire n'est plus en ligne
+continue.
+
+PHG  Actif/Inactif
+Si actif on verra des cercles Puissance/Gain autour de la station.
+
+Suivre une station
+Ouvrira une fenêtre ou vous pourrez entrer un indicatif. cliquez sur
+suivre maintenant et l'affichage ira sur cette station et continuera 
+de la suivre quand elle enverra d'autres données.
+cliquez sur fin de suivi pour arrêter.
+Cliquez sur Annuler pour quitter sans changement.
+
+Information Météo
+Si actif Les dernières données météo seront affichées (T°, Vitesse et
+direction du vent, rafales, humidité)
+
+HELP-INDEX>Messages
+
+				Messages
+				
+Composer un message et message de groupe
+C'est a peu prêt la même chose. Composer un message enverra votre
+message à une unique station, inversement vous ne recevrez des 
+messages que de cette station. Message de groupe enverra un message
+a un groupe de personnes et inversement vous recevrez tous les messages
+postés dans ce groupe. Actuellement les messages de groupe ne 
+fonctionnent pas tout à fait bien.
+Dans chacun de ces écrans il y a une fenêtre Message, une ligne Message,
+une fenêtre ident. de la station et quelques boutons.
+Entrez en premier l'indicatif de la station ou le groupe. Ceci fait vous
+recevrez déjà tous les messages de la station ou du groupe; une fenêtre
+s'ouvrira s'il n'y en a pas d'ouverte. Vous pouvez maintenant entrer
+un message de 250 caractères maxi sur la ligne message, cliquez sur 
+transmettre maintenant pour l'envoyer. Le bouton restera gris j'usqu'a
+reception d'un accusé de réception. Les messages recus seront triés et 
+s'afficheront dans la fenêtre message. En mode groupe vous verrez 
+l'indicatif de l'expéditeur suivi du message; les messages seront triés
+par indicatif. Quand vous avez terminé cliquez sur fermer.
+Le bouton nouvelle identité vous permet de voir les anciens messages
+qu'une station a envoyés; tapez son indicatif pour les afficher.
+Bien entendu ce bouton peut servir à changer la station avec qui vous
+parlez. Le bouton effacer tous les messages effacera tous les messages
+de la fenêtre en cours.
+
+Effacer tous les messages sortants
+Efface tous les messages non acquittés.
+
+Réponse automatique
+Active ou désactive la réponse automatique.
+
+Message de réponse automatique
+Configure un message de réponse automatique.
+
+
+HELP-INDEX>Effacer toutes les stations
+
+				Effacer toutes les stations
+				
+cliquez sur fichier/Effacer toutes les stations enlevera toutes
+les station de votre écran et de la base de données station.
+
+
+HELP-INDEX>Relire un fichier journal
+
+				Relire un fichier journal
+				
+cliquez sur Fichier/ouvrir un fichier journal. Choisissez un
+fichier journal, votre station va se comporter comme si elle
+recevait en émmettait de nouveau, simulant les évènements du 
+fichier journal. Ca peut bien sur créer quelques messages d'alerte
+si par exemple vous avez eu une session message, votre station va 
+renvoyer les messages à un fichier journal !
+
+HELP-INDEX>Localiser une Station
+
+				Localiser une Station
+				
+Cliquer sur examiner/localiser une station, une fenêtre s'ouvre,
+entrez un indicatif ou une partie. Par défaut Xastir cherchera
+la correspondance exacte (D'une station ou d'un objet). Case exact
+vous permettra de chercher sans prendre en compte la différence 
+majuscule/minuscule. Cliquez sur trouver maintenant centrera 
+l'écran sur la première correspondance trouvée.
+Cliquer sur annuler fermera la fenêtre.
+
+HELP-INDEX>Table des symboles
+
+				Table des symboles
+				
+
+
+
+Symbole     Groupe /                      Groupe \
+
+
+!          Triangle w/!                   Triangle w/!
+"          Rain Cloud                    Rain Cloud
+#          Digi                          DIGI         
+$          Phone Symbol                  $ Symbol
+%          DX                            DX 
+&          GATE-HF                       GATE
+'          Small Aircraft                Aircraft Crash
+(          Cloud                         Cloud
+)          TBD                           
+*          SNOW Flake                    SNOW Flake  
++          Red Cross                     
+,          Reverse L                     
+-          House w/omni                  
+.          Small x                       
+/          Red Dot                       
+0          0 in a box                    Circle
+1          1 in a box
+2          2 in a box
+3          3 in a box
+4          4 in a box
+5          5 in a box
+6          6 in a box
+7          7 in a box
+8          8 in a box
+9          9 in a box                    GAS
+:          Fire                          ?
+;          Tent                          Tent
+<          Motorcycle                    Pennant
+=          Train Engine                  
+>          Car                           Car 
+?          POS Antenna                   ? in a box
+@          HURRICANE/STORM               HURRICANE/STORM 
+A          First Aid                     Box
+B          BBS                           Blowing Snow 
+C          Canoe                         
+D          D in a circle                 
+E          E in a circle                 Smoke Stack
+F          F in a circle                 
+G          Grid Square Antenna           ?
+H          Hotel/Bed                     
+I          TCP/IP                        ?
+J          J in a circle                 Lightening
+K          School House                  
+L          Light House                   Light House
+M          Mac                           
+N          NTS                           ?
+O          Balloon                       
+P          Police car                    Rx
+Q          Circle with in Circles        Circle with in Circles
+R          RV                            Restaurant
+S          Shuttle                       Satellite
+T          Thunderstorm (cloud/bolt)     Thunderstorm (cloud/bolt)
+U          School Bus                    Sun
+V          VOR TAC                       VOR TAC Symbol
+W          National Weather Service      NWS-Digi
+X          Helicopter                    
+Y          Sail Boat                     
+Z          Windows
+[          Runner                        WC
+\          DF Triangle                   
+]          Packet Mail Box
+^          Large Aircraft                Large Aircraft
+_          Weather Station               WS-Digi
+`          Satellite Dish              
+a          Ambulance
+b          Bike                          blowing cloud
+c          DX antenna                     
+d          Fire dept.                    DX Antenna
+e          Horse                         Sleet cloud 
+f          Fire Truck                    FC Cloud 
+g          glider                        Pennant (2)
+h          Hospital                      HAM
+i          Island                        Island
+j          Jeep                          Jeep
+k          Truck                         Truck 
+l          Small dot                     Small Dot
+m          MIC                           Mile Post
+n          N                             Small Triangle
+o          EOC                           Dot with in Circles 
+p          Puppy                         Dot with in Circles 
+q          GS Antenna                    GS Antenna
+r          Antenna Tower                 Antenna Tower
+s          Boat                          Boat
+t          TS                            ?
+u          18 Wheel Truck                
+v          Van                           Dot with in Circles 
+w          H20                           Flood
+x          X Windows                     Red Dot
+y          House w/Yagi                  House w/yagi 
+z                                        X Windows
+{          FOG                           FOG
+|          Black Line                    Black Line
+}          TCP                           TCP
+~          Sail Boat                     Sail Boat
+

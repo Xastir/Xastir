@@ -1,0 +1,160 @@
+$Revision$
+
+README
+  ------------------------------------------------------------------------
+
+     Please at least SKIM this document before asking questions. In fact,
+     READ IT if you've never successfully set up xastir before. PLEASE!
+     READ IT! If you haven't read this file, and ask for help
+     expect to be told to READ the README file first! or rtfm :)
+
+     Contents
+
+     0    Important notice
+     1    What is Xastir?
+     2    How do I get Xastir
+          2a    CVS usage
+     3    Quick startup
+     4    Upgrading
+     5    Boring legal stuff
+     6    Mailing list
+     7    Documentation
+     8    Obtaining help
+
+  ------------------------------------------------------------------------
+
+     (0) NOTICE
+
+          Please read this file carefully before trying to set up Xastir.
+          This software was developed to be used by licensced amature radio
+          operators.  You are responsible for any information transmitted
+          or propogated on any network.
+
+     (1) WHAT IS XASTIR?
+
+
+     (2) HOW TO GET XASTIR
+
+          Currently, the 1.0.x tree of xastir is developed at xastir.org.
+          You can get the latest version of xastir from
+          ftp://argon.hscs.virginia.edu/pub/xastir
+
+          You might try www.xastir.org for help and information.
+
+
+     (2a) CVS USAGE
+
+          You might obtain the *very latest* version of xastir that
+          is still under development by using CVS. CVS means
+          'Concurrent Versions System' and is a tool for developers to
+          always keep source code up to date. Try 'man cvs' on your
+          shell for more information about CVS ;-)
+
+          This intended only for users that know a fair bit about
+          xastir. Be aware that the versions of xastir that you get
+          by CVS are still being developed, and may be buggy. The
+          Xastir devteam will in *NO WAY* take any responsibility for
+          whatever might happen to you or your computer if you use a
+          CVS version of xastir.
+
+          To obtain xastir over CVS, do as follows:
+
+               (1) log into your shell
+               (2) type 'export
+               CVSROOT=:pserver:anonymous@argon.hscs.virginia.edu:/usr/local/cvs'
+
+               (3) type 'cvs login'
+               (4) type 'xastir' when it asks for a password.
+               (5) in your home dir, type 'cvs checkout xastir'
+               (6) in ~/xastir, you should have a copy of the
+               latest CVS version of xastir.
+
+          Notes:
+
+               (1) you can 'cvs logout', but you don't need to.
+               (2) you don't need to go through this whole
+               process every time; if you want to get a CVS
+               version of xastir at a later time, you can just
+               'cd ~/xastir' and type 'cvs update -A'.
+               (3) if you experience errors when using 'export',
+               you might be using tclsh as a shell. If so, try
+               using the command 'setenv' instead of 'export':
+               'setenv CVSROOT
+               :pserver:anonymous@argon.hscs.virginia.edu:/usr/local/cvs'
+
+     (3) QUICK STARTUP
+
+         #### NOW INCLUDED IN 'INSTALL' - READ IT *AFTER* FINISHING THIS ####
+
+     (4) UPGRADING
+
+
+     (5) BORING LEGAL STUFF
+
+          Xastir is Copyright © by Frank Giannandrea. Xastir is
+          distributed according to the GNU General Public
+          License. There should be a copy of this license in the
+          file COPYING. If not, write to the Free Software
+          Foundation, Inc., 675 Mass Ave, Cambridge, MA
+          02139, USA.
+
+          As of xastir 0.4.0 all changes made by the Xastir
+          development team to the xastir source code and any related
+          files are Copyright © 2001,2002 by The Xastir Group. The source
+          code will still be distributed according to the GNU General
+          Public License as Frank Giannandrea did in the past.
+
+          There is no warranty, implied or whatever. You use this
+          software at your own risk, no matter what purpose you put
+          it to.
+
+          You didn't pay for it, so don't expect magic.
+
+     (6) MAILING LIST
+
+          There are currently a couple of mailing lists about xastir.
+          xastir@xastir.org is the one relevant for posts about
+          xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
+
+          To subscribe to the xastir mailing list, send email to:
+          xastir-request@xastir.org In the body of the message,
+          put "subscribe xastir"; or go to
+          http://www.xastir.org/mailman/listinfo/xastir
+
+               ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
+
+          Frank is no longer developing the xastir code (although
+          he does put a word in every now and then) so don't bother
+          emailing him. If you have a serious problem, email the
+          xastir mailing list and it will get to the coders.
+
+          Please, before posting to this list, see what things are
+          like, and when you do post, read over your post for
+          readability, spelling, and grammar mistakes. Obviously,
+          we're all human (or are we?) and we all make mistakes (heck,
+          look at this document! ;).
+
+          Open discussion and debate is integral to change and
+          progress. Don't flame others over mere form (grammar and
+          spelling), or even substantive issues either for that
+          matter. Please read and follow the mailing list rules.
+
+          The xastir@xastir.org maillist is dedicated to Bug
+          reports, technical questions, your thoughts or
+          suggestions on new features being added to Xastir, things
+          that should be removed or fixed, amazing problems that even
+          stump the guru's, etc... are what we want to see here.
+
+     (7) DOCUMENTATION
+
+          We're trying to keep the documentation up to date. If you
+          feel that anything is missing here, or that anything should
+          be added etc, please email xastir@xastir.org about it,
+          thank you.
+
+     (10) OBTAINING HELP
+
+
+  ------------------------------------------------------------------------
+(c) 1999 Frank Giannandrea
+(c) 2000,2001,2002 The Xastir Group

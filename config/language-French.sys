@@ -1,0 +1,767 @@
+# $Id$
+# This is the French Language file used for all the prompts in xastir
+#
+# Creator        : Richard VE2DJE ve2dje@amsat.org
+# Maintained by  : The Xastir Group <xastir@xastir.org>
+#
+# comment lines with pound signs in front are ignored
+# File format as follows:
+# Id (10 chars alpha numeric)|(String associated with id)|QuickKeys|#comment
+#
+# WARNING:
+# Some strings contain formatting commands like %s and %d, you should not
+# change these. Wrong format strings could produce a segfault!
+#
+# Main Menu
+MENUTB0001|Fichier|F|
+MENUTB0002|Examiner|E|
+MENUTB0004|Cartes|a|
+MENUTB0005|Stations|S|
+MENUTB0006|Messages|M|
+MENUTB0010|Interfaces|I|
+MENUTB0009|Aide|A|
+#
+# Menu "File"
+PULDNFI001|Configurer|C|
+PULDNFI002|Ouvrir le fichier de journal|O|
+PULDNFI010|Activer archivage TNC|T|
+PULDNFI011|Activer archivage réseau|r|
+PULDNFI012|Activer archivage IGate|I|
+PULDNFI013|Activer archivage météo|m|
+PULDNFI014|Activer instantanés PNG||
+PULDNFI015|Imprimer carte|p|
+PULDNFI003|Test|e|
+PULDNFI007|Changer niveau de débogage|d|
+PULDNFI004|Quitter|Q|
+#
+# Menu "View"
+PULDNVI001|Bulletins|B|
+PULDNVI002|Données entrantes|D|
+PULDNVI003|Stations mobiles|m|
+PULDNVI004|Toutes stations|T|
+PULDNVI009|Stations locales|l|
+PULDNVI012|Stations récentes|r|
+PULDNVI005|Stations météo|m|
+PULDNVI008|Mes données météo|o|
+PULDNVI007|Alertes météo|A|
+PULDNVI011|Trafic des messages|i|
+PULDNVI013|Durée de fonctionnement|f|
+PULDNVI014|Durée de fonctionnement du logiciel||
+#
+# Menu "Configure"
+PULDNCF004|Station|S|
+PULDNCF001|Défauts|D|
+PULDNCF006|Alertes sonores|A|
+PULDNCF007|Parole|P|
+PULDNCF008|Sauver configuration maintenant!|a|
+# (Units see PULDNDP006)
+#
+# Menu "Maps"
+PULDNMP001|Choisir carte(s)|C|
+PULDNMP012|Aller à|l|
+PULDNMP014|Localiser élément cartographique|F|
+PULDNMP013|Désactiver cartes|D|
+PULDNMP002|Activer cartographie automatique|A|
+PULDNMP003|Activer quadrillage|q|
+PULDNMP004|Activer niveaus de cartes|n|
+PULDNMP010|Activer annotation des cartes|n|
+PULDNMP009|Activer remplissage de zones|r|
+PULDNMP007|Activer alertes météo|M|
+PULDNMP005|Couleur de fond|f|
+PULDNMP006|Style du texte de station|S|
+PULDNMP011|Menu souris|e|
+PULDNMP008|Intensité des cartes|I|                                             
+#
+# PopUp "Map Chooser"
+WPUPMCP001|Choix de cartes||
+WPUPMCP002|Sélection de cartes||
+PULDNMMC01|Aucune|A|
+PULDNMMC02|Cartes vectorielles|V|
+PULDNMMC03|Topogr. 250k|2|
+PULDNMMC04|Topogr. 100k|1|
+PULDNMMC05|Topogr. 24k|4|
+#
+# PullDown "Map Background Color"
+PULDNMBC01|Gris||
+PULDNMBC02|Rose||
+PULDNMBC03|Bleu marine||
+PULDNMBC04|Bleu acier ||
+PULDNMBC05|Vert moyen||
+PULDNMBC06|Vert pâle||
+PULDNMBC07|Jaune pâle||
+PULDNMBC08|Blanc crème||
+PULDNMBC09|Brun rosé||
+PULDNMBC10|Rouge brique||
+PULDNMBC11|Blanc||
+#
+# PullDown "Station text Style"
+PULDNMSL01|Bordure noire|n|
+PULDNMSL02|Ombré avec toile de fond|O|
+PULDNMSL03|Blanc sur noir|B|
+#
+# Switches
+PULDNOT001|Ouvrir||
+PULDNOT002|Fermer||
+PULDNOT003|Court||
+#
+# Menu "Stations"
+PULDNDP014|Localiser une station|L|
+PULDNDP001|Suivre une station|S|
+PULDNDP022|Télécharger piste Findu||
+PULDNDP012|Activer symboles|c|
+PULDNDP011|Pivoter symboles|o|
+PULDNDP010|Activer indicatif|n|
+PULDNDP004|Activer vitesse|v|
+PULDNDP017|Afficher vitesse abrégée||
+PULDNDP002|Activer altitude|A|
+PULDNDP003|Activer cap|r|
+PULDNDP005|Activer distance/relèvement|d|
+PULDNDP009|Activer info météo|I|
+PULDNDP018|Afficher seulement température||
+PULDNDP008|Activer puissance/gain|g|
+PULDNDP021|Activer puissance/gain défaut||
+PULDNDP020|Activer puissance/gain mobile||
+PULDNDP013|Activer ambiguïté de position|b|
+PULDNDP019|Afficher données périmées||
+PULDNDP023|Afficher cercles DF||
+PULDNDP007|Activer pistes de station|p|
+PULDNDP015|Effacer toutes stations!!!|E|
+PULDNDP016|Effacer toutes pistes!!!|f|
+#
+# Units
+PULDNUT001|Activer mesures anglaises||
+PULDNUT002|Mètres||
+#
+# Menu "Messages"
+PULDNMG001|Composer un message|C|
+PULDNMG002|Messages de groupe|g|
+PULDNMG003|Effacer tout message à expédier|E|
+PULDQUS001|Info toutes stations|I|
+PULDQUS002|Info stations IGate|n|
+PULDQUS003|Info stations météo|m|
+PULDNMG004|Configurer réponse automatique|o|
+PULDNMG005|Activer réponse automatique|R|
+#
+# Menu "Interfaces"
+PULDNTNT04|Départ/arrêt|C|
+PULDNTNT02|Propriétés|P|
+PULDNTNT03|Désactiver transmission: Tout||
+PULDNTNT05|Désactiver transmission: Ma position||
+PULDNTNT06|Désactiver transmission: Objets/Articles||
+PULDNTNC01|Transmettre maintenant!|T|
+#
+# Menu "Help"
+PULDNHEL01|Information|I|
+PULDNHEL02|Index de l'Aide|A|#'
+#
+# Mouse Menu Popup
+POPUPMA001|Options|O|
+POPUPMA00c|Centrer|C|
+POPUPMA015|Information sur la station||
+POPUPMA002|Niveau zoom supérieur|s|
+POPUPMA003|Niveau zoom inférieur|i|
+POPUPMA004|Niveau de zoom|N|
+POPUPMA005|Niveau 1|1|
+POPUPMA006|Niveau 16|6|
+POPUPMA007|Niveau 64|4|
+POPUPMA008|Niveau 256|2|
+POPUPMA009|Niveau 1024|0|
+POPUPMA010|Niveau 8192|8|
+POPUPMA017|Monde entier|M|
+POPUPMA016|Pos/zoom précédent||
+POPUPMA018|Objet/Article->Créer||
+POPUPMA019|Objet/Article->Modifier||
+POPUPMA011|Nord||
+POPUPMA012|Sud||
+POPUPMA013|Ouest||
+POPUPMA014|Est||
+POPUPMA020|Mesurer||
+POPUPMA021|Déplacer||
+#
+# Status line labels
+BBARZM0001|Zoom %s||
+BBARZM0002|Zoom %s Sv||
+BBARSTH001|%d stations||
+BBARSTA000|%-9s Nouvel objet!||
+BBARSTA001|%-9s Nouvelle station!||
+BBARSTA002|%-9s||
+BBARSTA003|Chargement de cartes...||
+BBARSTA004|Cartes chargées||
+BBARSTA005|Quadrillage de carte Lat/Long activé||
+BBARSTA006|Quadrillage de carte Lat/Long désactivé||
+BBARSTA007|Carte automatique activée||
+BBARSTA008|Carte automatique désactivée||
+BBARSTA009|Niveau de cartes activé||
+BBARSTA010|Niveau de cartes désactivé||
+BBARSTA011|Réponse automatique désactivée||
+BBARSTA012|Filière terminée...||
+BBARSTA013|Ouverture du port GPS||
+BBARSTA014|Fermeture du port GPS||
+BBARSTA015|Réception de message GPS RMC||
+BBARSTA016|Réception de message GPS GGA||
+BBARSTA017|Connexion terminée||
+BBARSTA018|Connexion réseau dépassement de temps!||
+BBARSTA019|Recherche de l'hôte %s||
+BBARSTA020|Connecté à %s||
+BBARSTA021|Connexion echouée!||
+BBARSTA022|Incapable de relier le socket!||
+BBARSTA023|Hôte inconnu!||
+BBARSTA024|Serveur n'est pas spécifié||
+BBARSTA025|Hôte trouvé, connexion en cours %d||
+BBARSTA026|Attente de données du GPS par HSP||
+BBARSTA027|Fermeture port HSP réception donnée TNC..||
+BBARSTA028|Chargement de %s||
+BBARSTA029|Ouverture port météo||
+BBARSTA030|Fermeture port météo||
+BBARSTA031|Recherche d'hôte %d||
+BBARSTA032|Données météo décodées||
+BBARSTA033|Echo de digipeater||
+BBARSTA034|Chargement de cartes alertes météo||
+#
+# PopUp "View - Incoming Packet Data"
+WPUPDPD001|Affichage de données paquet||
+WPUPDPD002|Données du TNC seulement||
+WPUPDPD003|Données du réseau seulement||
+WPUPDPD004|Données du TNC et réseau||
+WPUPDPD005|TNC||
+WPUPDPD006|Réseau||
+#
+# PopUp "View - Find Station"
+WPUPLSP001|Localiser une station||
+WPUPLSP002|Localiser l'indicatif||
+WPUPLSP003|Casse exacte|C|
+WPUPLSP004|Correspondance exacte|E|
+WPUPLSP005|Localiser maintenant!|L|
+#
+# PopUp "Configure - Defaults"
+WPUPCFD001|Configurer défauts||
+WPUPCFD002|Après combien de temps une station sera-t-elle considérée âgée?||
+WPUPCFD003|15 min|1|
+WPUPCFD004|30 min|3|
+WPUPCFD005|45 min|4|
+WPUPCFD006|1 heure|h|
+WPUPCFD007|90 min|9|
+WPUPCFD008|2 heures|2|
+WPUPCFD009|Après combien de temps une station ne sera-t-elle plus affichée?||
+WPUPCFD010|6 heures|6|
+WPUPCFD011|12 heures|e|
+WPUPCFD012|1 jour|j|
+WPUPCFD013|2 jours|o|
+WPUPCFD014|1 semaine|s|
+WPUPCFD015|Option de transmission||
+WPUPCFD016|Station fixe||
+WPUPCFD017|Station mobile + heure locale||
+WPUPCFD018|Station mobile + date/heure Zulu||
+WPUPCFD019|Station mobile + heure/secondes Zulu||
+WPUPCFD021|Position de station + météo||
+WPUPCFD022|Position de station + date/heure Zulu + météo||
+WPUPCFD023|Données météo non traités?||
+WPUPCFD024|Compresser la position à la transmission?||
+WPUPCFD025|Activer réseau alterne?|A|
+WPUPCFD026|Transmettre position à quel intervalle?||
+#
+# PopUp "Configure GPS"
+WPUPCFG001|Configurer GPS||
+WPUPCFG003|Port GPS seulement||
+WPUPCFG002|Utiliser la position GPS?||
+WPUPCFG004|Options du GPS||
+WPUPCFG005|GPS seul||
+WPUPCFG006|TNC branché au GPS (Cable HSP)||
+WPUPCFG007|TNC branché au GPS avec CTL-E||
+WPUPCFG008|Intervalle de temps GPS||
+WPUPCFG009|10 sec||
+WPUPCFG010|20 sec||
+WPUPCFG011|30 sec||
+WPUPCFG012|1 min||
+WPUPCFG013|2 min||
+WPUPCFG014|5 min||
+WPUPCFG015|10 min||
+WPUPCFG016|GPS branché réseau||
+WPUPCFG017|Hôte GPSD||
+WPUPCFG018|Port GPSD||
+WPUPCFG019|GPS réseau via GPSD||
+WPUPCFG020|Reconnexion sur échec?||
+WPUPCFG021|Connexion météo réseau||
+WPUPCFG022|Hôte météo||
+WPUPCFG023|Port météo||
+#
+# Configure TNC (baud/style are also for WX)
+WPUPCFT001|Configurer le TNC||
+WPUPCFT002|Utiliser le TNC?||
+WPUPCFT003|Port TNC||
+WPUPCFT004|Configuration du port||
+WPUPCFT005|300 bps||
+WPUPCFT006|1200 bps||
+WPUPCFT007|2400 bps||
+WPUPCFT008|4800 bps||
+WPUPCFT009|9600 bps||
+WPUPCFT010|19200 bps||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
+WPUPCFT015|Type de port||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT011|Voies UnProto||
+WPUPCFT012|Voie 1: %s via ||
+WPUPCFT013|Voie 2: %s via ||
+WPUPCFT014|Voie 3: %s via ||
+WPUPCFT023|Configurer TNC +HSP GPS||
+#
+# PopUp "Configure WX Port"
+WPUPCFWX01|Configurer port météo||
+WPUPCFWX02|Port météo||
+WPUPCFT024|Type de données||
+WPUPCFT025|Auto detection||
+WPUPCFT026|Type binaire||
+WPUPCFT027|Type ASCII||
+#
+# PopUp "Configure - Station"
+WPUPCFS001|Configurer la station||
+WPUPCFS002|Indicatif||
+WPUPCFS003|LAT||
+WPUPCFS004|deg||
+WPUPCFS005|min||
+WPUPCFS006|(N/S)||
+WPUPCFS007|LONG||
+WPUPCFS008|(E/O)||
+WPUPCFS009|Symbole de station||
+WPUPCFS010|Groupe/superposition||
+WPUPCFS011|Symbole||
+WPUPCFS028|Choisir||
+WPUPCFS012|Puissance - Hauteur (HAAT) - Gain - Directivité||
+WPUPCFS013|Désactiver PHG||
+WPUPCFS014|Hauteur de l'antenne||
+WPUPCFS015|Gain de l'antenne||
+WPUPCFS016|Omni||
+WPUPCFS017|Commentaire:||
+WPUPCFS018|Ambiguité de position||
+WPUPCFS019|Rien||
+WPUPCFS020|.11 milles||
+WPUPCFS021|1.15 milles||
+WPUPCFS022|11.51 milles||
+WPUPCFS023|69.09 milles||
+WPUPCFS024|.18 kilomètres||
+WPUPCFS025|1.85 kilomètres||
+WPUPCFS026|18.53 kilomètres||
+WPUPCFS027|111.19 kilomètres||
+#
+# PopUp "Object/Item"
+POPUPOB001|Objet/Article||
+POPUPOB002|Nom||
+POPUPOB003|Créer nouvel objet||
+POPUPOB004|Supprimer objet||
+POPUPOB005|Modifier objet||
+POPUPOB006|Créer nouvel article||
+POPUPOB007|Objet polygonal||
+POPUPOB008|Objet polygonal||
+POPUPOB009|Couleur vive||
+POPUPOB010|Remplis de couleur||
+POPUPOB011|Cercle||
+POPUPOB012|Ligne-droite '/'||
+POPUPOB013|Ligne-gauche '\'||
+POPUPOB014|Triangle||
+POPUPOB015|Rectangle||
+POPUPOB016|Noir||
+POPUPOB017|Bleu||
+POPUPOB018|Vert||
+POPUPOB019|Cyan||
+POPUPOB020|Rouge||
+POPUPOB021|Violet||
+POPUPOB022|Jaune||
+POPUPOB023|Gris||
+POPUPOB024|Décalage haut:||
+POPUPOB025|Décalage gauche (sauf '/'):||
+POPUPOB026|Couloir:||
+POPUPOB027|Options génériques||
+POPUPOB028|Placement||
+POPUPOB029|Activer enseigne||
+POPUPOB030|Texte de l'enseigne||#'
+POPUPOB031|Enseigne||
+POPUPOB032|Activer compression||
+POPUPOB033|Supprimer article||
+POPUPOB034|Modifier article||
+POPUPOB035|Altitude (pieds):||
+POPUPOB036|Vitesse (noeuds):||
+POPUPOB037|Cap:||
+POPUPOB038|Objet DF||
+POPUPOB039|Signal - Hauteur (HAAT) - Gain - Directivité||
+POPUPOB040|Largeur de faisceau - Relèvement||
+POPUPOB041|Antenne omni||
+POPUPOB042|Antenne dirigée||
+#
+# PopUp "Configure Internet"
+WPUPCFI001|Configurer Internet||
+WPUPCFI002|Hôte ||
+WPUPCFI003|Port ||
+WPUPCFI004|(Hôte secondaire)||
+WPUPCFI005|Hôte1||
+WPUPCFI006|Port1||
+WPUPCFI007|Hôte2||
+WPUPCFI008|Port2||
+WPUPCFI009|Code d'accès||
+WPUPCFI010|(Laisser vide si nul)||
+WPUPCFI011|Reconnexion sur erreur réseau?||
+WPUPCFI012|Fonction IGate?||
+WPUPCFI013|Diffusion de messages par le TNC lorsqu'en IGate?||
+WPUPCFI014|Archivage des transactions IGate?||
+#
+# PopUp "Configure Audio Alarms"
+WPUPCFA001|Configurer alarmes sonores||
+WPUPCFA002|Commande audio à utiliser||
+WPUPCFA003|Alarme pour:||
+WPUPCFA004|Fichier sonore||
+WPUPCFA005|Nouvelle station||
+WPUPCFA006|Nouveau message||
+WPUPCFA007|Proximité||
+WPUPCFA008|Ouverture de bande||
+WPUPCFA009|Distance minimum||
+WPUPCFA010|Distance maximum||
+WPUPCFA011|Alerte météo||
+#
+# PopUp "Configure Speech"
+WPUPCFSP01|Configurer parole||
+WPUPCFSP02|Parole pour:||
+WPUPCFSP03|Nouvelle station||
+WPUPCFSP04|Alerte nouveau message||
+WPUPCFSP05|Texte nouveau message||
+WPUPCFSP06|Proximité||
+WPUPCFSP07|Ouverture de bande||
+WPUPCFSP08|Alerte météo||
+#
+# PopUp "Track Station"
+WPUPTSP001|Suivre station||
+WPUPTSP002|Suivre l'indicatif||
+WPUPTSP003|Casse exacte||
+WPUPTSP004|Correspondance exacte||
+WPUPTSP005|Suivre maintenant!||
+WPUPTSP006|Anuler suivi||
+WPUPTSP007|Télécharger piste||
+WPUPTSP008|Indicatif||
+#
+# PopUp "Messages..."
+WPUPMSB001|Boite d'envoi %d||
+WPUPMSB002|Boite d'envoi au groupe %d||
+WPUPMSB003|Indicatif de station:||
+WPUPMSB004|Ident. du groupe:||
+WPUPMSB005|Nouvel indicatif||
+WPUPMSB006|Nouveau groupe||
+WPUPMSB007|Effacer tous les messages||
+WPUPMSB008|Message:||
+WPUPMSB009|Transmettre maintenant!||
+#
+# PopUp "Auto Reply"
+WPUPARM001|Modifier réponse automatique||
+WPUPARM002|Réponse:||
+#
+# PopUp "Help Index"
+WPUPHPI001|Index d'Aide||
+WPUPHPI002|Lire||
+#
+# PopUp "Station Info"
+WPUPSTI000|Objet de: %s||
+WPUPSTI001|Information de station||
+WPUPSTI002|Composer un message||
+WPUPSTI003|Chercher dans la base FCC||
+WPUPSTI004|Chercher dans la base RAC||
+WPUPSTI005|Paquets recu: %d     Dernière transmission: ||
+WPUPSTI006|Entendu sur le TNC %d, ||
+WPUPSTI007|Entendu ||
+WPUPSTI008|dernièrement sur port local||
+WPUPSTI009|dernièrement sur TNC %d||
+WPUPSTI010|dernièrement sur Internet %d||
+WPUPSTI011|dernièrement dans fichier||
+WPUPSTI012|dernièrement sur inconnu||
+WPUPSTI013|, et a bougé||
+WPUPSTI014|Puissance/gain/etc.: %s||
+WPUPSTI016|Altitude: %.0f%s ||
+WPUPSTI017|Cap: %s° ||
+WPUPSTI018|Vitesse: %.1f km/h||
+WPUPSTI019|Vitesse: %.1f milles/h||
+WPUPSTI020|%0.1f milles||
+WPUPSTI021|%0.1f km||
+WPUPSTI022|Distance de ma station: %s  Relèvement de ma station: %s||
+WPUPSTI023|Dernière position : ||
+WPUPSTI024|Donnés météo %c:%s||
+WPUPSTI025|Cap des vents: %s° Vitesse: %03d km/h||
+WPUPSTI026|Cap des vents: %s° Vitesse: %s milles/h||
+WPUPSTI027|   Rafales: %03d km/h||
+WPUPSTI028|   Rafales: %s milles/h||
+WPUPSTI029|Température: %02.1f°C  ||
+WPUPSTI030|Température: %s°F   ||
+WPUPSTI031|Humidité: %s%%   ||
+WPUPSTI032| Humidex: %02.1f°C  ||
+WPUPSTI033|Baro: %s hPa||
+WPUPSTI034|Neige: %0.2f (cm/h||
+WPUPSTI035|Neige: %0.2f (pouces/h)||
+WPUPSTI036|Pluie: ||
+WPUPSTI037|%0.2f (mm/h)   ||
+WPUPSTI038|%0.2f (pouces/h)   ||
+WPUPSTI039|%0.2f (mm/jour)  ||
+WPUPSTI040|%0.2f (pouces/jour)  ||
+WPUPSTI041|%0.2f (mm/depuis minuit)||
+WPUPSTI042|%0.2f (pouces/depuis minuit)||
+WPUPSTI043|Route des donnés: %s||
+WPUPSTI044|Commentaire: %s||
+WPUPSTI045|Effacer la piste||
+WPUPSTI046|Pluie Totale: ||
+WPUPSTI047|%0.2f (mm)||
+WPUPSTI048|%0.2f (pouces)||
+WPUPSTI049|Informations suivi||
+WPUPSTI050|Messages non confirmés||
+WPUPSTI051|Info station en direct||
+WPUPSTI052|Info station version||
+WPUPSTI053|Modifier objet/article||
+WPUPSTI054|Sauver piste||
+WPUPSTI055|Echo de:||
+WPUPSTI056|Activer actualisation automatique||
+WPUPSTI057|Omni-DF: %s||
+WPUPSTI058|Relèvement DF:||
+#
+# FCC-RAC Call Look up
+STIFCC0001|Chercher le fichier FCC||
+STIFCC0002|Chercher le fichier RAC||
+STIFCC0003|Nom:|| 
+STIFCC0004|Adresse:|| 
+STIFCC0005|Ville:|| 
+STIFCC0006|Etat:||
+STIFCC0007|Code postal:|| 
+STIFCC0008|License de base ||
+STIFCC0009|License avancée ||
+STIFCC0010|5 mot/min ||
+STIFCC0011|12 mot/min ||
+#
+# Band open message 
+UMBNDO0001|à une distance de||
+#
+# Universal Options
+UNIOP00001|OK||
+UNIOP00002|Annuler||
+UNIOP00003|Fermer||
+UNIOP00004|milles||
+UNIOP00005|km||
+UNIOP00006|Périphérique||
+UNIOP00007|Ajouter||
+UNIOP00008|Supprimer||
+UNIOP00009|Propriétés||
+UNIOP00010|Permettre transmission ?||
+UNIOP00011|Activer au démarrage?||
+UNIOP00012|km/h||
+UNIOP00013|milles/h||
+UNIOP00014|°C||
+UNIOP00015|°F||
+UNIOP00016|mm||
+UNIOP00017|pouces||
+UNIOP00018|mm/jour||
+UNIOP00019|pouces/jour||
+UNIOP00020|mm/h||
+UNIOP00021|pouces/h||
+UNIOP00022|mm/minuit||
+UNIOP00023|pouces/minuit||
+UNIOP00024|deg||
+UNIOP00025|hPa||
+UNIOP00026|%||
+UNIOP00027|pouces Hg||
+UNIOP00028|mm Hg||
+#
+# PopUp "Station Chooser"
+STCHO00001|Choix de station||
+#
+# DISPLAY WX ALERT 
+WPUPWXA001|Alerte météo||
+WPUPWXA002|Liste d'alertes météo||
+#
+# PopUp "Configure - Interfaces"
+WPUPCIF001|Interfaces installées||
+WPUPCIF002|Choix du type d'interface||
+#
+# PopUp "Configure AX.25 TNC"
+WPUPCAX001|Configurer TNC AX.25||
+WPUPCAX002|Nom de l'interface AX.25||
+#
+# Interface device names 
+IFDNL00000|Aucune||
+IFDNL00001|TNC port série||
+IFDNL00002|TNC série + GPS sur câble HSP||
+IFDNL00003|GPS port série||
+IFDNL00004|Météo port série||
+IFDNL00005|Serveur Internet||
+IFDNL00006|TNC AX25||
+IFDNL00007|GPS réseau (par gpsd)||
+IFDNL00008|Météo par réseau||
+#
+# Interface device info 
+IFDIN00000|%s %d %s sur port série %s||
+IFDIN00001|%s %d %s connecté à %s:%d||
+IFDIN00002|%s %d %s avec interface nommée %s||
+IFDIN00003|%s %d %s sur port série %s est %s||
+IFDIN00004|%s %d %s connecté à %s:%d est %s||
+IFDIN00005|%s %d %s utilisant interface AX25 %s est %s||
+IFDIN00006|INACTIF||
+IFDIN00007|ACTIF||
+IFDIN00008|en ERREUR||
+IFDIN00009|en état INCONNU||
+#
+# PopUp "Interface control"
+IFPUPCT000|Contrôle d'interface||
+IFPUPCT001|Démarrer||
+IFPUPCT002|Arrêter||
+IFPUPCT003|Démarrer toutes||
+IFPUPCT004|Arrêter toutes||
+#
+# IGate control
+IGPUPCF000|Options IGate||
+IGPUPCF001|Arrêter traffic Internet||
+IGPUPCF002|Autoriser RF vers Internet seulement||
+IGPUPCF003|Autoriser RF->Inet et Inet->RF||
+#
+# WX Station
+WXPUPSI000|Station météo||
+WXPUPSI001|Type de station météo||
+WXPUPSI002|Données courantes||
+WXPUPSI003|Cap des vents||
+WXPUPSI004|Vitesse des vents||
+WXPUPSI005|Rafales||
+WXPUPSI006|Température||
+WXPUPSI007|Précipitation totale||
+WXPUPSI008|Précipitation totale journalière||
+WXPUPSI009|Baromètre||
+WXPUPSI010|Humidité||
+WXPUPSI011|Peet Bros ULTIMETER 2000 (mode acquisition de données)||
+WXPUPSI012|Peet Bros ULTIMETER II||
+WXPUPSI013|Peet Bros ULTIMETER 2000 (mode paquet)||
+WXPUPSI014|Précipitation horaire totale||
+WXPUPSI015|Total précipitation 24 hrs||
+WXPUPSI016|Qualimetrics Q-Net||
+WXPUPSI017|Peet Bros ULTIMETER 2000 (mode complet)||
+WXPUPSI018|Point de rosée||
+WXPUPSI019|Vents max.||
+WXPUPSI020|Facteur éolien||
+WXPUPSI021|Facteur humidex||
+WXPUPSI022|Baro 3 heures||
+WXPUPSI023|Température max.||
+WXPUPSI024|Température min.||
+WXPUPSI025|Radio Shack WX-200/Oregon Scientific WM-918||
+#
+# Station Lists
+LHPUPNI000|Toutes stations||
+LHPUPNI001|Stations mobiles||
+LHPUPNI002|Stations météo||
+LHPUPNI003|Stations locales (par TNC)||
+LHPUPNI004|Dernières stations||
+LHPUPNI010|No.||
+LHPUPNI011|Indicatif||
+LHPUPNI012|#Paq||
+LHPUPNI013|Heure dernière pos.||
+LHPUPNI014|Relèvement||
+LHPUPNI015|PHG||
+LHPUPNI016|Commentaires||
+LHPUPNI100|Cap||
+LHPUPNI101|Vit.||
+LHPUPNI102|Alt.||
+LHPUPNI103|Lat||
+LHPUPNI104|Long||
+LHPUPNI105|#Paq||
+LHPUPNI106|LSV||
+LHPUPNI107|CFMS||
+LHPUPNI108|DFMS||
+LHPUPNI200|Cap||
+LHPUPNI201|Vit||
+LHPUPNI202|GST||
+LHPUPNI203|Temp||
+LHPUPNI204|Hum||
+LHPUPNI205|Baro||
+LHPUPNI206|RN-H||
+LHPUPNI207|RNSM||
+LHPUPNI208|RN24||
+#
+# Maps WX Alert styles
+PULDNMAT01|Voir cartes alertes sur autres cartes||
+PULDNMAT02|Voir cartes alertes sous autres cartes||
+#
+# Error/popup messages 
+POPEM00001|Erreur localisation!||
+POPEM00002|Station %s non trouvée!||
+POPEM00003|Erreur de suivi!||
+POPEM00004|Erreur d'interface!||
+POPEM00005|Nom de port AX.25 invalide %s||
+POPEM00006|Nom de port AX.25 invalide %s||
+POPEM00007|Indicatif invalide %s||
+POPEM00008|Destination AX25 invalide||
+POPEM00009|Erreur ouverture socket AX.25, %s||
+POPEM00010|Erreur liaison socket AX.25, %s||
+POPEM00011|Pas de connection à l'indicatif AX.25 %s||
+POPEM00012|Erreur AX.25 sur sortie UI||
+POPEM00013|Problème avec fichier axports||
+POPEM00014|Nom de port AX.25 invalide %s||
+POPEM00015|Erreur ouverture d'interface %d Erreur majeure||
+POPEM00016|Erreur ouverture d'interface %d Dépassement de temps||
+POPEM00017|Plus d'interfaces disponible!||
+POPEM00018|Demande de donnée - Message à une ligne||
+POPEM00019|Transmission hors service port %d||
+POPEM00020|Erreur base de données!||
+POPEM00021|Support AX.25 n'est pas compilé dans Xastir!||
+POPEM00022|Erreur d'entrée!||
+POPEM00023|Aucun nom de lieu spécifié!||
+POPEM00024|Le nom de lieu spécifié est en cour d'utilisation!||
+POPEM00025|Pas trouvé!||
+POPEM00026|Suivi commencera quand elle apparaîtra||
+POPEM00027|Mauvaise info.  Certains champs vides?||
+POPEM00028|Ne peut ouvrier fichier||
+POPEM00029|Trouvé!||
+#
+# Jump Location 
+JMLPO00001|Lieu de la carte||
+JMLPO00002|Aller!||
+JMLPO00003|Nouveau nom de lieu:||
+#
+# Bulletins
+BULMW00001|Bulletins||
+BULMW00002|Limiter la portée à (0, aucune limite)||
+BULMW00003|Changer portée||
+#
+# All Message Traffic
+AMTMW00001|Tout trafic des messages||
+AMTMW00002|Limiter la portée à (0, aucune limite)||
+#
+# Speech Strings
+SPCHSTR001|kilomètres||
+SPCHSTR002|mètres||
+SPCHSTR003|milles||
+SPCHSTR004|yards||
+SPCHSTR005|%s, distance est %d %s.||
+SPCHSTR006|%s, distance est %.1f %s.||
+#
+# Symbol Selection Dialog
+SYMSEL0001|Choisir symbole||
+SYMSEL0002|Table de symboles primaire||
+SYMSEL0003|Table de symboles secondaire||
+#
+# Print Properties Dialog
+PRINT0001|Propriétés d'impression||
+PRINT0002|Taille du papier||
+PRINT0003|Rotation automatique d'image||
+PRINT0004|Tourner image 90° à gauche||
+PRINT0005|Proportion automatique d'image||
+PRINT0006|Echelle:||
+PRINT0007|Forcer le fond a être blanc||
+PRINT0008|Imprimer en noir et blanc||
+PRINT0016|Inverser couleurs||
+PRINT0009|Résolution Postscript:||
+PRINT0010|Prévisualiser||
+PRINT0011|Imprimer dans in fichier||
+PRINT0012|En train de sauver image dans un fichier...||
+PRINT0013|Conversion Postscript...||
+PRINT0014|Création du fichier d'impression finie||
+PRINT0015|Etat d'impression||
+#
+# Locate Feature Dialog
+FEATURE001|Nom:||
+FEATURE002|Etat/Province:||
+FEATURE003|Comté:||
+FEATURE004|Quadrant de carte:||
+FEATURE005|Type:||
+FEATURE006|Fichier GNIS:||
+#

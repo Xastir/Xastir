@@ -1,0 +1,413 @@
+                  XASTIR Frequently Asked Questions
+
+$Revision$
+
+The latest version of this FAQ is always available from the Xastir web site, at
+<http://www.xastir.org/docs/FAQ.html>.
+
+The Questions
+-------------
+
+1.  Background
+
+    1.1 What is XASTIR?
+    1.2 How and why was XASTIR created?
+    1.3 Why the name "XASTIR"?
+    1.4 OK, so how does Xastir compare to other APRS clients?
+    1.5 How thoroughly tested is Xastir?
+    1.6 What are the future plans for Xastir?
+    1.7 Whom do I contact for support?
+    1.8 Is there any more information on Xastir?
+    1.9 Where can I get Xastir?
+
+2.  General Technical Questions
+
+    2.1 "Why can't I...? Why won't...work?" What to do in case of problems
+    2.2 How do I submit a patch to the Xastir Development Group?
+    3.3 What's the best hardware/operating system/...
+    4.4 Why isn't there a binary for my platform?
+
+3.  Building XASTIR
+
+    3.1 Why won't Xastir compile with my system's cc?
+    3.2 I'm using gcc and I get some compilation errors, what is wrong?
+
+4.  Running XASTIR
+
+    4.1 I got a segfault using a non-English language file.
+    4.2 Why do I get wrong texts in menus or other places when using a
+        non-English language file?
+    4.3 I run Xastir under Linux, and I get an error about loading a shared
+        library.
+    4.4 I run Xastir under Linux, and try to set up an ax25 device, but get a
+        "Hard Fail" error on the interface. There is a "permission denied" error
+        in the terminal from which I started Xastir.
+    4.5 I run Xastir, and get on the air, but nobody else sees me on their screens.
+    4.6 Who is this APX110 guy who all my stuff is getting sent to? Who are these
+        RELAY, WIDE and TRACE people digipeating packets, and why are they putting
+        different callsigns in the fields where their names used to be? Why
+        doesn't anyone answer me when I connect to them? HELP!!!
+    4.7 When weather alerts come in, the counties on my map don't highlight.
+    4.8 I have geoTIFF support compiled and working, but when I select a map, it
+        gives me a -38 error converting the datum, and it doesn't display in the
+        right place.
+    4.9 Xastir runs slowly/loads maps slowly.
+    4.10 I installed a new version of lesstif, but the help menu shows the old
+         version.
+
+5.  Features
+
+    5.1  Why doesn't Xastir include <insert your feature here>?
+
+
+The Answers
+-----------
+
+1. Background
+
+    1.1 What is XASTIR?
+
+
+    XASTIR is an APRS client program that uses amateur radio and internet
+    services to convey GPS mapping, weather, and positional data in a graphical
+    application.  It has been developed by and for amateur radio enthusiast to
+    provide real-time data in an easy to use package.
+
+    1.2 How and why was XASTIR created?
+
+    There were already several APRS client programs available to the
+    Mac/DOS world when Frank Giannandrea, KC2GJS decided to develop
+    a Unix client using X Window's and the Motif/LessTiff widget set.
+    From its meager beginings, XASTIR is now a very robust client that
+    meets the needs of the Ham community.
+
+    1.3  Why the name XASTIR?
+
+    XASTIR is an acronym for X Amateur Station Tracking and Information
+    Reporting.  Besides it sounds much cooler that those other names ;)
+
+    1.4 Ok, so how does XASTIR compare to other APRS clients?
+
+    Being actively developed by and for Hams, XASTIR is constantly being
+    improved upon to reflect the changing state of APRS.  XASTIR has all
+    the functionality you would find in any other APRS client, from any
+    OS, and quite possibly some unique features.
+
+    1.5 How thoroughly tested is XASTIR?
+
+    XASTIR is currently in use by hundreds of Hams from around the world.
+    The XASTIR Group maintains rigours standards before releasing new
+    versions of our client.  When bugs do show up, we release patches and
+    new versions as soon as they are available.
+
+    1.6 Whom do I contact for support?
+
+    This FAQ may answer many of users frequent questions.  However, there
+    are two active mailing lists that users could use to help answer any
+    other questions.  Both mailing list are by subscription only and can
+    be accessed through the XASTIR website http://www.xastir.org
+
+    1.7 Is there any more information on XASTIR?
+
+    See the main XASTIR website for more information http://www.xastir.org
+
+    1.8 Where can I get XASTIR?
+
+    Source code and binaries for several popular Linux distributions is
+    available through the XASTIR website or via anonymous FTP at
+    argon.hscs.virginia.edu
+
+
+2. General Technical Questions
+
+    2.1 "Why can't I...? Why won't... work?" What to do in case of
+        problems.
+
+    If are having trouble running the XASTIR software:
+
+        1.  Check the FAQ!
+
+            The latest version of the XASTIR FAQ can be found on the
+            XASTIR website http://www.xastir.org
+
+        2.  Ask in the xastir@krypton.hscs.virginia.edu mailing list.
+
+            Many XASTIR users and developers can be found roaming its
+            virtual halls, so it is suggested that you seek wisdom there.
+            The chances are good that you'll get your question answered
+            there.
+
+    2.2 How do I submit a patch to the XASTIR Development Group?
+
+    The XASTIR Development Group encourages patches from outside developers.
+    There are two main "types" of patches: small bug fixes and general
+    improvements.  Improvements, modifications, and additions should
+    follow the instructions below:
+
+    In general, the first course of action is to be a member of the
+    xastir-dev@krypton.hscs.virginia.edu mailing list. This indicates to the
+    Group that you are closely following the latest developments. Your patch
+    file should be generated using either 'diff -c' or 'diff -u' against the
+    latest CVS tree. To submit your patch, send email to
+    xastir-dev@krypton.hscs.virginia.edu with a Subject: line that starts with
+    [PATCH] and includes a general description of the patch. In the body of
+    the message, the patch should be clearly described and then included at
+    the end of the message. If the patch-file is long, you can note a URL to
+    file itself. Use of MIME enclosures/attachments should be avoided.
+
+    Be prepared to respond to any questions about your patches and possibly
+    defend your code. If your patch results in a lot of discussion, you
+    may be asked to submit an updated patch that incorporates all changes and
+    suggestions.
+
+    2.3 What's the best hardware/operating system?
+
+    Anything that works for "you".
+
+    2.4 Why isn't there a binary for my platform?
+
+    The developers make sure that the software builds and works correctly on
+    the platforms available to them; this does not necessarily mean that
+    your platform is one of them. In addition, the XASTIR Project is primarily
+    source oriented, meaning that the distributing valid and buildable source
+    code is the purpose of a release, not making sure that there is a binary
+    package for all of the supported platforms.
+
+3. Building XASTIR
+
+    3.1. Why won't XASTIR compile with my system's cc?
+
+    If XASTIR won't compile on your system, it is probably due to
+    one of the following causes:
+
+    - The configure script doesn't recognize your system environment.
+
+      This might be either because it's completely unknown or because
+      the specific environment (include files, OS version, etc) isn't
+      explicitly handled. If this happens, you may need to port the
+      software to your OS yourself.
+
+    - Your systems C compiler is garbage.
+
+      Some operating systems include a default C compiler that is either
+      not ANSI C-compliant or suffers from other deficiencies. The
+      usual recommendation in cases like this is to acquire, install,
+      and use gcc.
+
+    - Your include files may be confused.
+
+      In some cases, we have found that a compiler installation or system
+      upgrade has left the C header files in an inconsistent state. Make
+      sure that your include directory tree is in sync with the compiler
+      and operating system.
+
+    - You haven't installed all the necessary libraries and include files.
+
+      Xastir depends on at least the X, and Motif/LessTif include files.
+      Be sure these are installed before trying to compile the application.
+      NOTE: If you installed ImageMagick from a binary distribution, it will be
+      dependent on the shared libraries for the various graphics formats
+      installed on system on which it was compiled. Be sure you have these same
+      libraries installed, or you'll get a link error.
+
+    - Your operating system or compiler may be out of version.
+
+      Software vendors issue new releases for a reason; sometimes to add
+      functionality, but more often to fix bugs that have been
+      discovered. Try upgrading your compiler and/or your operating
+      system.
+
+    3.2 I'm using gcc and I get some compilation errors, what is wrong?
+
+    GCC parses your system header files and produces a modified subset which
+    it uses for compiling. This behavior ties GCC tightly to the version of
+    your operating system. So, for example, if you were running IRIX 5.3 when
+    you built GCC and then upgrade to IRIX 6.2 later, you will have to
+    rebuild GCC. Similarly for Solaris 2.4, 2.5, or 2.5.1 when you upgrade
+    to 2.6. Sometimes you can type "gcc -v" and it will tell you the version
+    of the operating system it was built against.
+
+    If you fail to do this, then it is very likely that XASTIR will fail to
+    build. One of the most common errors is with readv, writev, or uio.h.
+    This is not a bug with XASTIR. You will need to re-install GCC.
+
+
+4. Running XASTIR
+
+    4.1 I got a segfault using a non-English language file.
+
+    Run XASTIR with the English language file, if the problem is gone,
+    the language file you are using needs an update. The reason may
+    be missing or wrong format strings.
+
+    4.2 Why do I get wrong texts in menus or other places when using a
+        non-English language file?
+
+    The development is done mainly with the English language file, so
+    other languages may not be up to date.
+
+    Those texts like IC>PULDNMBC02 are placeholders for missing entries
+    in the language file. You can add the local meaning of that string
+    in the English language file to your language file. And send it to
+    the XASTIR development team...
+
+    4.3 I run Xastir under Linux, and I get an error about loading a shared
+        library.
+
+    Xastir uses many shared libraries, including lesstif, and perhaps libax25,
+    libproj, libtiff, libgeotiff, libz, libjpeg, etc. These errors indicate
+    ld.so, the Linux dynamic linker, can't find the shared libraries.
+    * First, check that all the libraries are installed. Check the README.1ST
+    file for the locations to get these libraries if you've accidently removed
+    one of them.
+    * Check that the locations of the libraries are in /etc/ld.so.conf. This
+    should probably be set up by your Linux distribution, but if you've
+    added new library directories after install, you'll need to add them here.
+    This is most applicable to lesstif which installs its libraries in
+    non-standard locations. Read the lesstif installation instructions for
+    more information on this. (Very recent versions create symlinks in
+    /usr/local/lib, so you probably won't need to do anything aside from
+    running ldconfig.)
+    * If you had a libc5 system and hand upgraded it to libc6, and are
+    attempting to link against both libc5 and libc6 built libraries at once,
+    stop now and recompile all your libraries against libc6. The dynamic
+    linkers are different for libc5 and libc6 programs, and linking against
+    libraries built with both versions is bound to cause trouble. This setup
+    has caused many people lots of headaches. Just upgrade your distribution.
+
+    4.4  I run Xastir under Linux, and try to set up an ax25 device, but get a
+         "Hard Fail" error on the interface. There is a "permission denied"
+         error in the terminal from which I started Xastir.
+
+    As mentioned in the README.1ST and helpfile, Xastir must be setuid root
+    to use Linux ax25. This is required because Xastir needs the ability to
+    edit its source callsign, and use other advanced options that the Linux
+    ax25 stack restricts to root.
+
+    4.5 I run Xastir, and get on the air, but nobody else sees me on their
+        screens.
+
+    From a software standpoint, check that you have transmitting enabled
+    on your interface. Check that your digipeater path is set reasonably; other
+    hams in your area could probably help with this, as the exact settings
+    depend on your setup and on your area's network. The other possibilities
+    are hardware problems: Is the output level on your TNC or soundcard
+    correct? Is PTT on your radio getting triggered? Is your TXdelay set
+    reasonably? All of these possibilities are beyond the scope of this FAQ.
+    An easy way to determine if your hardware works correctly is to try it on
+    conventional packet.
+
+    4.6 Who is this APX110 guy who all my stuff is getting sent to? Who are
+        these RELAY, WIDE and TRACE people digipeating packets, and why are
+        they putting different callsigns in the fields where their names used
+        to be? Why doesn't anyone answer me when I connect to them? HELP!!!
+
+    You must be used to conventional packet. APRS(tm) is inherently different
+    from conventional packet. There are many online resources that explain the
+    basics of APRS(tm), but I'll try to summarize here. APRS(tm) is an
+    unconnected protocol, where you broadcast UI (unnumbered information)
+    packets to the world. Since these packets aren't directed toward a
+    specific user, the TO address of the packet is simply a summary of the
+    software you're running. AP=APRS, X=X Windowing System, 110=Version 1.10.
+    RELAY, WIDE, and TRACE are aliases for generic digipeaters. Most base
+    stations have (or should have!) their TNCs configured to digipeat with the
+    call of RELAY. Very large stations should be set up as WIDEs. Newer
+    digipeater software substitutes their own call for the "RELAY" and "WIDE",
+    to enable people to see who digipeated them. TRACE was originally for this
+    purpose, but is now quite often used to avoid "WIDE, WIDE, WIDE" paths,
+    which would cause loops with older digipeaters. Some areas use special
+    flooding protocols to aid packets to get farther, but reduce congestion
+    on the network. Packets of that type will have digipeater paths of WIDEn-N.
+    To talk to people, you send them messages from within Xastir, you don't
+    "call" them like on typical packet. Most TNCs are set up to ignore classic
+    packet "calls" so you won't get any response. When sending messages to
+    people in your area, do check in their comments that they are people and
+    not stand-alone digipeaters or similar. ;) Thanks to the worldwide APRSserv
+    internet system, you can send messages to any APRS(tm) user anywhere in the
+    world, provided they're within range of an Igate. Most users are; if your
+    area isn't and you have a 24/7 internet connection, Xastir can be your
+    area's Igate! (Please check your local laws, as Igating is illegal in some
+    countries!) There are also experimental systems for sending messages via
+    amateur radio satellites, but that is beyond the scope of this FAQ.
+
+    4.7 When weather alerts come in, the counties on my map don't highlight.
+
+    First of all, did you download and install the county maps as described in
+    the README.1ST?
+
+    Check View|Weather alerts: Are the alerts listed? Are they in COZ## (zone)
+    format, or are they in the older name format? Do you have the maps of
+    that format installed? It is recommended to install both formats, as
+    sometimes there are alerts in an area with the opposite format of the
+    usual.
+
+    Second, check that Map|Map WX Alert Counties is turned on.
+
+    4.8 I have geoTIFF support compiled and working, but when I select a map,
+        it gives me a -38 error converting the datum, and it doesn't display in
+        the right place.
+
+    Did you install libgeotiff before libproj? This error you'll see if you
+    ignored the note in the README.1ST about this. Recompile libgeotiff and
+    the problem should vanish.
+    If this is not the case, check the datum of the geoTIFF file, and make
+    sure it is one of the ones supported by Xastir. The listgeo program
+    included with libgeotiff can tell you the datum of a map.
+
+    4.9 Xastir runs slowly/loads maps slowly.
+
+    There are many things that can effect the speed of your Xastir software,
+    including the speed of the computer, the amount of memory available, the
+    number of active interfaces, the complexity/type/number of maps you use,
+    and the options you used to compile Xastir and helper libraries. The
+    developers aren't aware of any specific cases in which there would be
+    performance problems; generally these are limitations of your computer.
+    Xastir, when using only basic maps, runs reasonably on a Pentium 60. If
+    you use higher detail maps, such as the tiger line maps suggested in
+    README.1ST, you'll need a faster computer to be able to load the maps
+    quickly. Also be sure you have a few Megabytes of memory available for
+    Xastir, because paging to disk decreases speed rapidly. If you have the
+    Internet interface, as well as TNCs and weather stations all active
+    at the same time, you'll see a slowdown on a slower computer. Also, if you
+    compiled Xastir or libax25/libtiff/libgeotiff/etc with debugging (-g),
+    recompile these software without debugging and with optimization ON (-O2).
+
+    4.10 I installed a new version of lesstif, but the help menu shows the old
+         version.
+
+    The help menu shows the version of lesstif that Xastir was compiled with,
+    not necessarily the version you're running now. Assuming you compiled it
+    with the new version, check that the new version is the only copy
+    installed. If you install in /usr/local/LessTif/, the default location,
+    be sure you remove any older version from /usr/LessTif/ or
+    /usr/X11R6/LessTif/, as some distributions use those locations.
+
+5.  Features
+
+    5.1  Why doesn't Xastir include <insert your feature here>?
+
+    Probably because someone hasn't taken the time to write the feature or
+    enough people have complained loud enough that it wasn't there.  The
+    feature set of XASTIR is user/developer driven. So get busy!
+
+    5.2  Why doesn't Xastir digipeat packets sent to the RELAY alias?
+
+    If you're running serial-port connected TNC's, the "tnc-startup.*"
+    files that get installed in /usr/local/xastir/config should set up
+    your TNC to respond to these packets.  Select Interfaces->Properties,
+    then select the interface, click Properties, then select the Setup
+    and Shutdown files at the bottom of that dialog.  When an interface
+    is brought up the Setup file will be downloaded to the TNC.
+    "myalias RELAY" is the command most TNC's accept for defining a
+    RELAY alias.  That command or similar should be in the Setup file
+    that you use.
+
+    If you're running kernel AX.25 interfaces, then you'll need to run
+    another package to handle digipeating on these interfaces, perhaps
+    digi_ned.
+
+----------------------------------------------------------------
+
+If you find other problems, or would like to point out other caveats to add to
+this FAQ, please point them out to the developers on the Xastir-dev mailing
+list, linked to on http://www.xastir.org

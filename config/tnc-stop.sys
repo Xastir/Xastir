@@ -1,0 +1,6 @@
+# $Id$
+#TNC STOP FILE
+# Undo any settings make in tnc-startup.sys
+# Edit this file for your tnc!
+UNPROTO CQ
+AUTOLF ON

@@ -1,0 +1,768 @@
+# $Id$
+# This is the English Language file used for all the prompts in xastir
+# 
+# Creator        : Frank Giannandrea <fgiannan@eazy.net >
+# Maintained by  : The Xastir Group <xastir@xastir.org>
+#
+# comment lines with pound signs in front are ignored
+# File format as follows:
+# ID (10 chars alpha+numeric)|(String associated with id)|QuickKeys|#comment
+# The ID is a unique uppercase char string for each block followed by a nummer
+#
+# WARNING:
+# Some strings contain formatting commands like %s and %d, you should not
+# change these. Wrong format strings could produce a segfault!
+#
+# Main Menu
+MENUTB0001|File|F|
+MENUTB0002|View|V|
+MENUTB0004|Maps|M|
+MENUTB0005|Stations|S|
+MENUTB0006|Messages|e|
+MENUTB0010|Interfaces|I|
+MENUTB0009|Help|H|
+#
+# Menu "File"
+PULDNFI001|Configure|C|
+PULDNFI002|Open Log File|O|
+PULDNFI010|Enable TNC Logging||
+PULDNFI011|Enable Net Logging||
+PULDNFI012|Enable IGate Logging||
+PULDNFI013|Enable WX Logging||
+PULDNFI014|Enable PNG Snapshots||
+PULDNFI015|Print Map|P|
+PULDNFI003|Test|T|
+PULDNFI007|Change Debug Level|D|
+PULDNFI004|Exit|x|
+#
+# Menu "View"
+PULDNVI001|Bulletins|B|
+PULDNVI002|Incoming Packet Data|I|
+PULDNVI003|Mobile Stations|M|
+PULDNVI004|All Stations|A|
+PULDNVI009|Local Stations|S|
+PULDNVI012|Last Stations|L|
+PULDNVI005|Weather Stations|W|
+PULDNVI008|Own Weather Data|D|
+PULDNVI007|Weather Alerts|e|
+PULDNVI011|Message Traffic|T|
+PULDNVI013|Uptime|U|
+PULDNVI014|Program Uptime||
+#
+# Menu "Configure"
+PULDNCF004|Station|S|
+PULDNCF001|Defaults|D|
+PULDNCF006|Audio Alarms|A|
+PULDNCF007|Speech|p|
+PULDNCF008|Save Config Now!|C|
+# (Units see PULDNDP006)
+#
+# Menu "Maps"
+PULDNMP001|Map Chooser|M|
+PULDNMP012|Map Display Bookmarks|B|
+PULDNMP014|Locate Map Feature|F|
+PULDNMP013|Disable All Maps||
+PULDNMP002|Enable Auto Maps||
+PULDNMP003|Enable Map Grid||
+PULDNMP004|Enable Map Levels||
+PULDNMP010|Enable Map Labels||
+PULDNMP009|Enable Area Color Fills||
+PULDNMP007|Enable Weather Alert Counties||
+PULDNMP005|Background Color|C|
+PULDNMP006|Station Text Style|T|
+PULDNMP011|Mouse Pointer Menu|P|
+PULDNMP008|Map Intensity|I|                                                    
+#
+# PopUp "Map Chooser"
+WPUPMCP001|Map Chooser||
+WPUPMCP002|Select Maps||
+PULDNMMC01|None|N|
+PULDNMMC02|Vector Maps|V|
+PULDNMMC03|250k Topos|2|
+PULDNMMC04|100k Topos|1|
+PULDNMMC05|24k Topos|4|
+#
+# PullDown "Map Background Color"
+PULDNMBC01|Gray||
+PULDNMBC02|Misty Rose||
+PULDNMBC03|Navy Blue||
+PULDNMBC04|Steel Blue||
+PULDNMBC05|Med. Sea Green||
+PULDNMBC06|Pale Green||
+PULDNMBC07|Pale Goldenrod||
+PULDNMBC08|Goldenrod Yellow||
+PULDNMBC09|Rosy Brown||
+PULDNMBC10|Fire brick Red||
+PULDNMBC11|White||
+#
+# PullDown "Station text Style"
+PULDNMSL01|Black Border|B|
+PULDNMSL02|Black Shadow|S|
+PULDNMSL03|Text on Black|T|
+#
+# Switches
+PULDNOT001|On||
+PULDNOT002|Off||
+PULDNOT003|Short||
+#
+# Menu "Stations"
+PULDNDP014|Find Station|F|
+PULDNDP001|Track Station|T|
+PULDNDP022|Fetch Findu Trail|u|
+PULDNDP012|Display Symbols||
+PULDNDP011|Rotate Symbols||
+PULDNDP010|Display Callsign||
+PULDNDP004|Display Speed|S|
+PULDNDP017|Display Short Speed||
+PULDNDP002|Display Altitude||
+PULDNDP003|Display Course||
+PULDNDP005|Display Dist/Bearing||
+PULDNDP009|Display Weather Info||
+PULDNDP018|Display Temperature Only||
+PULDNDP008|Display Power/Gain||
+PULDNDP021|Use Default Power/Gain||
+PULDNDP020|Display Mobile Power/Gain||
+PULDNDP013|Display Position Ambiguity||
+PULDNDP019|Display Expired Data||
+PULDNDP023|Display DF Circles||
+PULDNDP007|Display Station Trails||
+PULDNDP015|Clear All Stations!!!|A|
+PULDNDP016|Clear All Trails!!!|C|
+#
+# Units
+PULDNUT001|Enable English Units|E|
+PULDNUT002|Metric|M|
+#
+# Menu "Messages"
+PULDNMG001|Send Message To|S|
+PULDNMG002|Open Group Messages|O|
+PULDNMG003|Clear All Outgoing Messages|C|
+PULDQUS001|General Stations Query|G|
+PULDQUS002|IGate Stations Query|I|
+PULDQUS003|WX Stations Query|W|
+PULDNMG004|Modify Auto Reply Message|A|
+PULDNMG005|Enable Auto Reply Message||
+#
+# Menu "Interfaces"
+PULDNTNT04|Start/Stop|S|
+PULDNTNT02|Properties|P|
+PULDNTNT03|Disable Transmit: ALL||
+PULDNTNT05|Disable Transmit: My Position||
+PULDNTNT06|Disable Transmit: Objects/Items||
+PULDNTNC01|Transmit Now!|T|
+#
+# Menu "Help"
+PULDNHEL01|About|A|
+PULDNHEL02|Help Index|I|
+#
+# Mouse Menu Popup
+POPUPMA001|Options||
+POPUPMA00c|Center|C|
+POPUPMA015|Station Info|S|
+POPUPMA002|Zoom In|I|
+POPUPMA003|Zoom Out|O|
+POPUPMA004|Zoom Level|L|
+POPUPMA005|Level 1|1|
+POPUPMA006|Level 16|6|
+POPUPMA007|Level 64|4|
+POPUPMA008|Level 256|2|
+POPUPMA009|Level 1024|0|
+POPUPMA010|Level 8192|8|
+POPUPMA017|Entire World|E|
+POPUPMA016|Last Map Pos/Zoom|P|
+POPUPMA018|Object/Item->Create|b|
+POPUPMA019|Object/Item->Modify|M|
+POPUPMA011|Pan up|u|
+POPUPMA012|Pan down|d|
+POPUPMA013|Pan left|l|
+POPUPMA014|Pan right|r|
+POPUPMA020|Measure||
+POPUPMA021|Move||
+#
+# Status line labels
+BBARZM0001|Zoom %s||
+BBARZM0002|Zoom %s Tr||
+BBARSTH001|%d Stations||
+BBARSTA000|%-9s New object!||
+BBARSTA001|%-9s New station!||
+BBARSTA002|%-9s||# new data (only display the call)
+BBARSTA003|Loading Maps...||
+BBARSTA004|Maps Loaded||
+BBARSTA005|Map Lat/Long Grid On|O|
+BBARSTA006|Map Lat/Long Grid Off|f|
+BBARSTA007|The use of Auto Maps, is now ON||
+BBARSTA008|The use of Auto Maps, is now OFF||
+BBARSTA009|The use of Map Levels is now ON||
+BBARSTA010|The use of Map Levels is now OFF||
+BBARSTA011|Auto Reply Message OFF!||
+BBARSTA012|File done..||
+BBARSTA013|Opening GPS Port||
+BBARSTA014|Closing GPS Port||
+BBARSTA015|Got GPS RMC String||
+BBARSTA016|Got GPS GGA String||
+BBARSTA017|Net disconnected from host||
+BBARSTA018|Net connection timed out!||
+BBARSTA019|Looking up host %s||
+BBARSTA020|Connected to %s||
+BBARSTA021|Net Connection Failed!||
+BBARSTA022|Could not bind socket!||
+BBARSTA023|No IP for Host!||
+BBARSTA024|No Host Specified||
+BBARSTA025|Host found, Connecting %d||
+BBARSTA026|Waiting for GPS data via HSP..||
+BBARSTA027|Clearing HSP getting TNC data..||
+BBARSTA028|Loading %s||
+BBARSTA029|Opening WX Port||
+BBARSTA030|Closing WX Port||
+BBARSTA031|Looking up hostname %d||
+BBARSTA032|Decoded WX Data||
+BBARSTA033|Echo from digipeater||
+BBARSTA034|Loading Weather Alert Maps||
+#
+# PopUp "View - Incoming Packet Data"
+WPUPDPD001|Display Packet Data||
+WPUPDPD002|TNC Data only|T|
+WPUPDPD003|Net Data only|N|
+WPUPDPD004|TNC and Net Data|a|
+WPUPDPD005|TNC||
+WPUPDPD006|NET||
+#
+# PopUp "View - Find Station"
+WPUPLSP001|Locate Station||
+WPUPLSP002|Locate Callsign||
+WPUPLSP003|Match Case|C|
+WPUPLSP004|Match Exact|E|
+WPUPLSP005|Locate Now!|N|
+#
+# PopUp "Configure - Defaults"
+WPUPCFD001|Configure Defaults||
+WPUPCFD002|After what interval of time will a station be considered old?||
+WPUPCFD003|15 min|1|
+WPUPCFD004|30 min|3|
+WPUPCFD005|45 min|4|
+WPUPCFD006|1 hr|H|
+WPUPCFD007|90 min|9|
+WPUPCFD008|2 hrs|2|
+WPUPCFD009|After what interval of time will a station not be displayed?||
+WPUPCFD010|6 hrs|6|
+WPUPCFD011|12 hrs|o|
+WPUPCFD012|1 Day|D|
+WPUPCFD013|2 Days|y|
+WPUPCFD014|1 Week|W|
+WPUPCFD015|Transmit Station Option||
+WPUPCFD016|Fixed Station|F|
+WPUPCFD017|Mobile Station w/local time|l|
+WPUPCFD018|Mobile Station w/Zulu date-time|Z|
+WPUPCFD019|Mobile Station w/Zulu time-seconds|u|
+WPUPCFD021|Station Position w/weather|S|
+WPUPCFD022|Station Position, Zulu date-time, and weather|t|
+WPUPCFD023|Transmit Raw WX data?|R|
+WPUPCFD024|Compress position data when transmitting?|C|
+WPUPCFD025|Activate Alternate net?|A|
+WPUPCFD026|Send position reports at what intervals?||
+#
+# PopUp "Configure GPS"
+WPUPCFG001|Configure GPS||
+WPUPCFG003|Stand alone GPS port||
+WPUPCFG002|Use GPS Position?||
+WPUPCFG004|GPS Options||
+WPUPCFG005|Stand-alone GPS||
+WPUPCFG006|TNC Connected GPS (HSP Cable)||
+WPUPCFG007|TNC Connected GPS using CTL-E||
+WPUPCFG008|GPS Time (Sample every)||
+WPUPCFG009|10 sec||
+WPUPCFG010|20 sec||
+WPUPCFG011|30 sec||
+WPUPCFG012|1 min||
+WPUPCFG013|2 min||
+WPUPCFG014|5 min||
+WPUPCFG015|10 min||
+WPUPCFG016|Network Connected GPS||
+WPUPCFG017|GPSD Host||
+WPUPCFG018|GPSD Port||
+WPUPCFG019|Network GPS via GPSD||
+WPUPCFG020|Reconnect on failure?||
+WPUPCFG021|Network Connected WX||
+WPUPCFG022|WX Host||
+WPUPCFG023|WX Port||
+#
+# Configure TNC (baud/style are also for WX)
+WPUPCFT001|Configure TNC||
+WPUPCFT002|Use TNC?||
+WPUPCFT003|TNC port||
+WPUPCFT004|Port Settings||
+WPUPCFT005|300 bps||
+WPUPCFT006|1200 bps||
+WPUPCFT007|2400 bps||
+WPUPCFT008|4800 bps||
+WPUPCFT009|9600 bps||
+WPUPCFT010|19200 bps||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
+WPUPCFT015|Port Style||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT011|UnProto Paths||
+WPUPCFT012|Path 1: %s via ||
+WPUPCFT013|Path 2: %s via ||
+WPUPCFT014|Path 3: %s via ||
+WPUPCFT023|Configure TNC w/HSP GPS||
+#
+# PopUp "Configure WX Port"
+WPUPCFWX01|Configure WX Port||
+WPUPCFWX02|Weather Station device||
+WPUPCFT024|Data Type||
+WPUPCFT025|Auto detect||
+WPUPCFT026|Binary Type||
+WPUPCFT027|ASCII Type||
+#
+# PopUp "Configure - Station"
+WPUPCFS001|Configure Station||
+WPUPCFS002|Callsign||
+WPUPCFS003|LAT||
+WPUPCFS004|deg||
+WPUPCFS005|min||
+WPUPCFS006|(N/S)||
+WPUPCFS007|LONG||
+WPUPCFS008|(E/W)||
+WPUPCFS009|Station Symbol||
+WPUPCFS010|Group/overlay||
+WPUPCFS011|Symbol||
+WPUPCFS028|Select||
+WPUPCFS012|Power - Height (HAAT) - Gain - Directivity||
+WPUPCFS013|Disable PHG||
+WPUPCFS014|Antenna Height||
+WPUPCFS015|Antenna Gain||
+WPUPCFS016|Omni||
+WPUPCFS017|Comment:||
+WPUPCFS018|Position Ambiguity||
+WPUPCFS019|None||
+WPUPCFS020|.11 miles||
+WPUPCFS021|1.15 miles||
+WPUPCFS022|11.51 miles||
+WPUPCFS023|69.09 miles||
+WPUPCFS024|.18 kilometres||
+WPUPCFS025|1.85 kilometres||
+WPUPCFS026|18.53 kilometres||
+WPUPCFS027|111.19 kilometres||
+#
+# PopUp "Object/Item"
+POPUPOB001|Object/Item||
+POPUPOB002|Name:||
+POPUPOB003|Create New Object||
+POPUPOB004|Delete Object||
+POPUPOB005|Modify Object||
+POPUPOB006|Create New Item||
+POPUPOB007|Area Object||
+POPUPOB008|Area Object||
+POPUPOB009|Bright Color||
+POPUPOB010|Color-Fill||
+POPUPOB011|Circle||
+POPUPOB012|Line-Right '/'||
+POPUPOB013|Line-Left '\'||
+POPUPOB014|Triangle||
+POPUPOB015|Rectangle||
+POPUPOB016|Black||
+POPUPOB017|Blue||
+POPUPOB018|Green||
+POPUPOB019|Cyan||
+POPUPOB020|Red||
+POPUPOB021|Violet||
+POPUPOB022|Yellow||
+POPUPOB023|Grey||
+POPUPOB024|Offset Up:||
+POPUPOB025|Offset Left (Except '/'):||
+POPUPOB026|Corridor:||
+POPUPOB027|Generic Options||
+POPUPOB028|Location||
+POPUPOB029|Signpost||
+POPUPOB030|Signpost Text||
+POPUPOB031|Signpost Object||
+POPUPOB032|Enable Compression||
+POPUPOB033|Delete Item||
+POPUPOB034|Modify Item||
+POPUPOB035|Altitude (ft):||
+POPUPOB036|Speed (knots):||
+POPUPOB037|Course:||
+POPUPOB038|DF Object||
+POPUPOB039|Signal - Height(HAAT) - Gain - Directivity||
+POPUPOB040|Beam Width - Bearing||
+POPUPOB041|Omni Antenna||
+POPUPOB042|Beam Antenna||
+#
+# PopUp "Configure Internet"
+WPUPCFI001|Configure Internet||
+WPUPCFI002|Host ||
+WPUPCFI003|Port ||
+WPUPCFI004|(Secondary hosts)||
+WPUPCFI005|Host1||
+WPUPCFI006|Port1||
+WPUPCFI007|Host2||
+WPUPCFI008|Port2||
+WPUPCFI009|Pass-code||
+WPUPCFI010|(Leave Blank if None)||
+WPUPCFI011|Reconnect on NET failure?||
+WPUPCFI012|Run as an I-Gate?||
+WPUPCFI013|Broadcast messages via TNC when an I-Gate?||
+WPUPCFI014|Log I-Gate Transactions?||
+#
+# PopUp "Configure Audio Alarms"
+WPUPCFA001|Configure Audio Alarms||
+WPUPCFA002|Audio Play Command||
+WPUPCFA003|Alarm on||
+WPUPCFA004|Audio file to Play||
+WPUPCFA005|New Station||
+WPUPCFA006|New Message||
+WPUPCFA007|Proximity||
+WPUPCFA008|Band Opening||
+WPUPCFA009|Minimum Distance||
+WPUPCFA010|Maximum Distance||
+WPUPCFA011|Weather Alert||
+#
+# PopUp "Configure Speech"
+WPUPCFSP01|Configure Speech||
+WPUPCFSP02|Speech Output on:||
+WPUPCFSP03|New Station||
+WPUPCFSP04|New Message Alert||
+WPUPCFSP05|New Message Body||
+WPUPCFSP06|Proximity Alert||
+WPUPCFSP07|Band Opening||
+WPUPCFSP08|New Weather Alert||
+#
+# PopUp "Track Station"
+WPUPTSP001|Track Station|| 
+WPUPTSP002|Track Callsign|| 
+WPUPTSP003|Match Case|| 
+WPUPTSP004|Match Exact|| 
+WPUPTSP005|Track Now!|| 
+WPUPTSP006|Clear Tracking|| 
+WPUPTSP007|Download Trail||
+WPUPTSP008|Callsign||
+#
+# PopUp "Messages..."
+WPUPMSB001|Send Message Box %d||
+WPUPMSB002|Send Group Message Box %d||
+WPUPMSB003|Stations Call:||
+WPUPMSB004|Group's Call:||
+WPUPMSB005|New Call||
+WPUPMSB006|New Group||
+WPUPMSB007|Clear Messages||
+WPUPMSB008|Message:||
+WPUPMSB009|Send Now!||
+#
+# PopUp "Auto Reply"
+WPUPARM001|Change Auto Reply||
+WPUPARM002|Reply:||
+#
+# PopUp "Help Index"
+WPUPHPI001|Help Index||
+WPUPHPI002|View||
+#
+# PopUp "Station Info"
+WPUPSTI000|Object from: %s||
+WPUPSTI001|Station Info||
+WPUPSTI002|Send Message||
+WPUPSTI003|Search FCC Database||
+WPUPSTI004|Search RAC Database||
+WPUPSTI005|Packets received: %d     Last Heard: ||
+WPUPSTI006|Heard via the TNC on device %d, ||
+WPUPSTI007|Heard ||
+WPUPSTI008|last via Local||
+WPUPSTI009|last via TNC on device %d||
+WPUPSTI010|last via Internet on device %d||
+WPUPSTI011|last via File||
+WPUPSTI012|last via Unknown||
+WPUPSTI013|, and has moved||
+WPUPSTI014|Current Power Gain: %s||
+WPUPSTI016|Altitude: %.0f%s ||
+WPUPSTI017|Course: %s° ||
+WPUPSTI018|Speed: %.1f km/h||
+WPUPSTI019|Speed: %.1f mph||
+WPUPSTI020|%0.1f miles||
+WPUPSTI021|%0.1f km||
+WPUPSTI022|Distance from my station: %s  Bearing from my station: %s||
+WPUPSTI023|Last Position: ||
+WPUPSTI024|Weather Data %c:%s||
+WPUPSTI025|Wind Course: %s°    Speed: %03d km/h||
+WPUPSTI026|Wind Course: %s°    Speed: %s mph||
+WPUPSTI027|   Gust: %03d km/h||
+WPUPSTI028|   Gust: %s mph||
+WPUPSTI029|Temperature: %02.1f°C  ||
+WPUPSTI030|Temperature: %s°F   ||
+WPUPSTI031|Humidity: %s%%   ||
+WPUPSTI032| Humidex: %02.1f°C  ||
+WPUPSTI033|Baro: %s hPa||
+WPUPSTI034|Snow: %0.2f (cm/h)||
+WPUPSTI035|Snow: %0.2f (inch/h)||
+WPUPSTI036|Rain: ||
+WPUPSTI037|%0.2f (mm/h)    ||
+WPUPSTI038|%0.2f (inch/h)  ||
+WPUPSTI039|%0.2f (mm/day)     ||
+WPUPSTI040|%0.2f (inch/day)  ||
+WPUPSTI041|%0.2f (mm/since midnight)||
+WPUPSTI042|%0.2f (inch/since midnight)||
+WPUPSTI043|Data path: %s||
+WPUPSTI044|Comments: %s||
+WPUPSTI045|Clear Track||
+WPUPSTI046|Total Rain: ||
+WPUPSTI047|%0.2f (mm)||
+WPUPSTI048|%0.2f (inch)||
+WPUPSTI049|Trace Query||
+WPUPSTI050|Un-Acked Messages Query||
+WPUPSTI051|Direct Stations Query||
+WPUPSTI052|Station Version Query||
+WPUPSTI053|Modify Object/Item||
+WPUPSTI054|Store Track||
+WPUPSTI055|Echoed from:||
+WPUPSTI056|Enable Automatic Updates||
+WPUPSTI057|Omni-DF: %s||
+WPUPSTI058|DF Bearing:||
+#
+# FCC-RAC Call Look up
+STIFCC0001|FCC Database Lookup||
+STIFCC0002|RAC Database Lookup||
+STIFCC0003|Name:||
+STIFCC0004|Street:||
+STIFCC0005|City:||
+STIFCC0006|State:||
+STIFCC0007|Zip:||
+STIFCC0008|Basic ||
+STIFCC0009|Advanced ||
+STIFCC0010|5 wpm ||
+STIFCC0011|12 wpm ||
+#
+# Band open message 
+UMBNDO0001|at distance of||
+#
+# Universal Options
+UNIOP00001|OK||
+UNIOP00002|Cancel||
+UNIOP00003|Close||
+UNIOP00004|miles||
+UNIOP00005|km||
+UNIOP00006|Device||
+UNIOP00007|Add||
+UNIOP00008|Delete||
+UNIOP00009|Properties||
+UNIOP00010|Allow Transmitting?||
+UNIOP00011|Activate on Startup?||
+UNIOP00012|km/h||
+UNIOP00013|mph||
+UNIOP00014|°C||
+UNIOP00015|°F||
+UNIOP00016|mm||
+UNIOP00017|inch||
+UNIOP00018|mm/day||
+UNIOP00019|inch/day||
+UNIOP00020|mm/hr||
+UNIOP00021|inch/hr||
+UNIOP00022|mm/mid||
+UNIOP00023|inch/mid||
+UNIOP00024|deg||
+UNIOP00025|hPa||
+UNIOP00026|%||
+UNIOP00027|inHg||
+UNIOP00028|mm Hg||
+#
+# PopUp "Station Chooser"
+STCHO00001|Station Chooser||
+#
+# DISPLAY WX ALERT 
+WPUPWXA001|Wx Alerts||
+WPUPWXA002|Wx Alert List||
+#
+# PopUp "Configure - Interfaces"
+WPUPCIF001|Installed Interfaces||
+WPUPCIF002|Choose Interface Type||
+#
+# PopUp "Configure AX.25 TNC"
+WPUPCAX001|Configure AX.25 TNC||
+WPUPCAX002|AX.25 Device name||
+#
+# Interface device names 
+IFDNL00000|None||
+IFDNL00001|Serial TNC||
+IFDNL00002|Serial TNC w/GPS on a HSP cable||
+IFDNL00003|Serial GPS||
+IFDNL00004|Serial WX||
+IFDNL00005|Internet Server||
+IFDNL00006|AX25 TNC||
+IFDNL00007|Networked GPS (via gpsd)||
+IFDNL00008|Networked WX||
+#
+# Interface device info 
+IFDIN00000|%s %d %s on serial %s||
+IFDIN00001|%s %d %s connecting to %s:%d||
+IFDIN00002|%s %d %s using device named %s||
+IFDIN00003|%s %d %s on serial %s and is %s||
+IFDIN00004|%s %d %s connecting to %s:%d and is %s||
+IFDIN00005|%s %d %s using AX25 device %s and is %s||
+IFDIN00006|DOWN||
+IFDIN00007|UP||
+IFDIN00008|in an ERROR state||
+IFDIN00009|in an UNKNOWN state||
+#
+# PopUp "Interface control"
+IFPUPCT000|Interface Control||
+IFPUPCT001|Start||
+IFPUPCT002|Stop||
+IFPUPCT003|Start All||
+IFPUPCT004|Stop All||
+#
+# IGate control
+IGPUPCF000|IGate Options||
+IGPUPCF001|Disable all IGate traffic||
+IGPUPCF002|Allow RF to Inet traffic ONLY||
+IGPUPCF003|Allow RF->Inet and Inet->RF traffic||
+#
+# WX Station
+WXPUPSI000|WX Station||
+WXPUPSI001|WX Station Type||
+WXPUPSI002|Current Data||
+WXPUPSI003|Wind Course||
+WXPUPSI004|Wind Speed||
+WXPUPSI005|Wind Gust||
+WXPUPSI006|Temp||
+WXPUPSI007|Total Rain||
+WXPUPSI008|Today's Rain Total||
+WXPUPSI009|Baro||
+WXPUPSI010|Humidity||
+WXPUPSI011|Peet Bros ULTIMETER 2000 Type (Data Logging Mode)||
+WXPUPSI012|Peet Bros ULTIMETER II Type||
+WXPUPSI013|Peet Bros ULTIMETER 2000 Type (Packet Mode)||
+WXPUPSI014|Current HR Rain Tot.||
+WXPUPSI015|Last 24 Rain Total||
+WXPUPSI016|Qualimetrics Q-Net||
+WXPUPSI017|Peet Bros ULTIMETER 2000 Type (Complete Mode)||
+WXPUPSI018|Dew Point||
+WXPUPSI019|High Wind||
+WXPUPSI020|Wind Chill||
+WXPUPSI021|Heat Index||
+WXPUPSI022|3-Hr Baro||
+WXPUPSI023|High Temp.||
+WXPUPSI024|Low Temp.||
+WXPUPSI025|Radio Shack WX-200/Oregon Scientific WM-918||
+#
+# Station Lists
+LHPUPNI000|All Stations||
+LHPUPNI001|Mobile Stations||
+LHPUPNI002|Weather Stations||
+LHPUPNI003|Local Stations (via TNC)||
+LHPUPNI004|Last Stations||
+LHPUPNI010|#||
+LHPUPNI011|Call Sign||
+LHPUPNI012|#Pack||
+LHPUPNI013|Pos Time||
+LHPUPNI014|Path||
+LHPUPNI015|PHG||
+LHPUPNI016|Comments||
+LHPUPNI100|CSE||
+LHPUPNI101|SPD||
+LHPUPNI102|ALT.||
+LHPUPNI103|Lat||
+LHPUPNI104|Long||
+LHPUPNI105|#Pack||
+LHPUPNI106|LSV||
+LHPUPNI107|CFMS||
+LHPUPNI108|DFMS||
+LHPUPNI200|CSE||
+LHPUPNI201|SPD||
+LHPUPNI202|GST||
+LHPUPNI203|Temp||
+LHPUPNI204|Hum||
+LHPUPNI205|Baro||
+LHPUPNI206|RN-H||
+LHPUPNI207|RNSM||
+LHPUPNI208|RN24||
+#
+# Maps WX Alert styles
+PULDNMAT01|Show Alert maps above other maps||
+PULDNMAT02|Show Alert maps under other maps||
+#
+# Error/popup messages 
+POPEM00001|Locate Error!||
+POPEM00002|Station %s was not found!||
+POPEM00003|Tracking Error!||
+POPEM00004|Interface Error!||
+POPEM00005|Invalid AX.25 port name %s||
+POPEM00006|Invalid AX.25 port name %s||
+POPEM00007|Invalid callsign %s||
+POPEM00008|Invalid AX.25 destination callsign or digipeater||
+POPEM00009|Cannot open AX.25 socket, %s||
+POPEM00010|Cannot bind AX.25 socket, %s||
+POPEM00011|Cannot connect to AX.25 callsign, %s||
+POPEM00012|AX.25 error on output of UI||
+POPEM00013|AX.25 problem with axports file||
+POPEM00014|AX.25 invalid port name %s||
+POPEM00015|Error opening interface %d Hard Fail||
+POPEM00016|Error opening interface %d Time Out||
+POPEM00017|No more interfaces Available!||
+POPEM00018|Data Query - Single Message Line||
+POPEM00019|Port transmitting is off for port %d||
+POPEM00020|Database Error!||
+POPEM00021|AX.25 support not compiled into Xastir!||
+POPEM00022|Input Error!||
+POPEM00023|No location name specified!||
+POPEM00024|Location name specified is in use!||
+POPEM00025|Not Found!||
+POPEM00026|Tracking will commence when it appears||
+POPEM00027|Improper info.  Some fields empty?||
+POPEM00028|Can't open file||
+POPEM00029|Found It!||
+#
+# Jump Location 
+JMLPO00001|Map Display Bookmarks||
+JMLPO00002|Activate!||
+JMLPO00003|New Name:||
+#
+# Bulletins
+BULMW00001|Bulletins||
+BULMW00002|Limit Range to (0, is no limit)||
+BULMW00003|Change Range||
+#
+# All Message Traffic
+AMTMW00001|All Message Traffic||
+AMTMW00002|Limit Range to (0, is no limit)||
+#
+# Speech Strings
+SPCHSTR001|kilometers||
+SPCHSTR002|meters||
+SPCHSTR003|miles||
+SPCHSTR004|yards||
+SPCHSTR005|%s, distance is %d %s.||
+SPCHSTR006|%s, distance is %.1f %s.||
+#
+# Symbol Selection Dialog
+SYMSEL0001|Select Symbol||
+SYMSEL0002|Primary Symbol Table||
+SYMSEL0003|Secondary Symbol Table||
+#
+# Print Properties Dialog
+PRINT0001|Print Properties||
+PRINT0002|Paper Size||
+PRINT0003|Auto-Rotate Image||
+PRINT0004|Rotate Image 90° CCW||
+PRINT0005|Auto-Scale Image||
+PRINT0006|Scale:||
+PRINT0007|Force default background color to white||
+PRINT0008|Print in Black and White||
+PRINT0016|Reverse Colors||
+PRINT0009|Postscript Resolution:||
+PRINT0010|Preview||
+PRINT0011|Print to File||
+PRINT0012|Dumping image to file...||
+PRINT0013|Converting to Postscript...||
+PRINT0014|Finished creating print file||
+PRINT0015|Print Status||
+#
+# Locate Feature Dialog
+FEATURE001|Name:||
+FEATURE002|State/Province:||
+FEATURE003|County:||
+FEATURE004|Map Quad:||
+FEATURE005|Type:||
+FEATURE006|GNIS File:||
+#

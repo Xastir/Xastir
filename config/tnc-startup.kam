@@ -1,0 +1,28 @@
+# $Id$
+# This is the TNC Startup file for a Kantronics KAM TNC. 
+# lines that begin with a pound sign are comments.
+# Edit this file for your tnc!
+myalias RELAY
+INTF TERM
+txu on
+xflow off
+MONITOR ON
+MSTAMP OFF
+HEADERLN OFF
+SCREENLN 0
+AUTOLF OFF
+LFADD OFF
+CD SOFT
+MCOM OFF/OFF
+MCON OFF
+AUTOCR 0
+BEACON EVERY 0
+BT %
+BUDL OFF/OFF
+CMS DISC
+CONL OFF
+CT APRS Network no connected messages supported!
+ECHO OFF
+FLOW OFF
+HID OFF/OFF
+MSTAMP OFF
