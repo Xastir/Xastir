@@ -2542,7 +2542,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
         // Bessel (no)
         // Sinc (not too bad)
 
-        xastir_snprintf(command, sizeof(command), "/usr/bin/convert -filter Point %s%s%s%s%s %s %s",
+        xastir_snprintf(command, sizeof(command), "convert -filter Point %s%s%s%s%s %s %s",
                 mono, invert, rotate, scale, density, xpm_filename, ps_filename );
         if ( debug_level & 512 )
             printf( "%s\n", command );
@@ -3179,11 +3179,11 @@ void Snapshot(void) {
 
         // Convert it to a png file.  This depends on having the
         // ImageMagick command "convert" installed.
-        xastir_snprintf(command, sizeof(command), "/usr/bin/convert -quality 100 %s %s",
+        xastir_snprintf(command, sizeof(command), "convert -quality 100 %s %s",
                 xpm_filename, png_filename );
 
         if ( system( command ) != 0 ) {
-            printf("/usr/bin/convert failed to convert snapshot from xpm to png\n");
+            printf("convert failed to convert snapshot from xpm to png\n");
         }
         else {
             chmod( png_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
