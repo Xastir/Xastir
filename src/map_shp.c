@@ -1163,10 +1163,17 @@ void draw_shapefile_map (Widget w,
                             i,key);
                 }
                 if (strncmp(alert->title,key,keylen) == 0) {
-                    found_shape = i;
-                    done++;
-                    if (debug_level & 16) {
-                        fprintf(stderr,"dbfawk alert found it: %d \n",i);
+                    // keylen could be zero, so check again
+                    int titlelen;
+
+                    titlelen = strlen(alert->title);
+                    if (strncmp(alert->title,key,titlelen) == 0) {
+                        found_shape = i;
+                        done++;
+                        if (debug_level & 16) {
+                            fprintf(stderr,"dbfawk alert found it: %d \n",i);
+                            fprintf(stderr,"Title %s, key %s\n",alert->title,key);
+                        }
                     }
                 }
             }
