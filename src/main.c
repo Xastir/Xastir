@@ -1313,7 +1313,10 @@ void Coordinate_calc_output(char *full_zone, long northing,
     double lat_min,lon_min,lat_sec,lon_sec;
     int lat_deg_int,lat_min_int;
     int lon_deg_int,lon_min_int;
+    char maidenhead_grid[50];
     long temp;
+    long xastir_lat;
+    long xastir_lon;
 
 
     // Latitude:  Switch to integer arithmetic to avoid
@@ -1355,11 +1358,23 @@ void Coordinate_calc_output(char *full_zone, long northing,
     lon_min_int = (int)(temp / 1000);
     lon_sec = (temp % 1000) * 60.0 / 1000.0;
 
+    // Compute Maidenhead Grid Locator.  Note that the sec_to_loc()
+    // function expects lat/lon in Xastir coordinate system.
+    convert_UTM_to_xastir(easting,
+        northing,
+        full_zone,
+        &xastir_lon,
+        &xastir_lat);
+    xastir_snprintf(maidenhead_grid,
+        sizeof(maidenhead_grid),
+        "%s",
+        sec_to_loc( xastir_lon, xastir_lat ) );
+
     // Put the four different representations of the coordinate into
     // the "result" textField.
     xastir_snprintf(temp_string,
         sizeof(temp_string),
-        "%s%8.5f%c   %9.5f%c\n%s%02d %06.3f%c  %03d %06.3f%c\n%s%02d %02d %04.1f%c %03d %02d %04.1f%c\n%s%3s  %07lu  %07lu",
+        "%s%8.5f%c   %9.5f%c\n%s%02d %06.3f%c  %03d %06.3f%c\n%s%02d %02d %04.1f%c %03d %02d %04.1f%c\n%s%3s  %07lu  %07lu\n%s%s",
         "               Decimal Degrees:  ",
         lat_deg_int+lat_min/60.0, (south) ? 'S':'N',
         lon_deg_int+lon_min/60.0, (west) ?  'W':'E',
@@ -1370,7 +1385,9 @@ void Coordinate_calc_output(char *full_zone, long northing,
         lat_deg_int, lat_min_int, lat_sec, (south) ? 'S':'N',
         lon_deg_int, lon_min_int, lon_sec, (west) ?  'W':'E',
         " Universal Transverse Mercator:  ",
-        full_zone, easting, northing);
+        full_zone, easting, northing,
+        "       Maidenhead Grid Locator:  ",
+        maidenhead_grid);
     XmTextSetString(coordinate_calc_result_text, temp_string);
 
     // Fill in the global dd mm.mmm values in case we wish to write
@@ -2077,7 +2094,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
 
         coordinate_calc_result_text = NULL;
         coordinate_calc_result_text = XtVaCreateManagedWidget("Coordinate_calc results",xmTextWidgetClass,form,
-                            XmNrows, 4,
+                            XmNrows, 5,
                             XmNcolumns, 58,
                             XmNeditable, FALSE,
                             XmNtraversalOn, FALSE,

@@ -3074,6 +3074,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     pos += strlen(temp);
 
     // dl9sau
+    // Maidenhead Grid Locator
     xastir_snprintf(temp, sizeof(temp), "  %s", sec_to_loc(p_station->coord_lon, p_station->coord_lat) );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
