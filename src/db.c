@@ -13906,6 +13906,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
     char line[MAX_TNC_LINE_SIZE+1];
     char my_data[MAX_TNC_LINE_SIZE+1];
     int  ok_igate_net;
+    int  ok_igate_rf;
     int  done, ignore;
     char data_id;
 
@@ -13915,10 +13916,11 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
     if (debug_level & 1)
         fprintf(stderr,"decode_info_field: Past check\n");
 
-    done         = 0;                                   // if 1, packet was decoded
-    ignore       = 0;                                   // if 1, don't treat undecoded packets as status text
-    ok_igate_net = 0;                                   // if 1, send packet to internet
-    my_data[0]   = '\0';                                // not really needed...
+    done         = 0;       // if 1, packet was decoded
+    ignore       = 0;       // if 1, don't treat undecoded packets as status text
+    ok_igate_net = 0;       // if 1, send packet to internet
+    ok_igate_rf  = 0;       // if 1, igate packet to RF if "from" is in nws-stations.txt
+    my_data[0]   = '\0';    // not really needed...
 
     if ( (message != NULL) && (strlen(message) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.
         if (debug_level & 1)
@@ -13963,6 +13965,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 ok_igate_net = 1;                       // report it to internet
             }
         done = 1;
+        ok_igate_rf = done;
     }
 
     if (!done) {
@@ -13980,6 +13983,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: = (position w/o timestamp)\n");
                 done = data_add(APRS_MSGCAP,call,path,message,from,port,origin,third_party);
+                ok_igate_rf = done;
                 break;
 
             case '!':   // Position without timestamp (no APRS messaging) or Ultimeter 2000 WX
@@ -13989,12 +13993,14 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                     done = data_add(APRS_WX3,call,path,message+1,from,port,origin,third_party);
                 else
                     done = data_add(APRS_FIXED,call,path,message,from,port,origin,third_party);
+                ok_igate_rf = done;
                 break;
 
             case '/':   // Position with timestamp (no APRS messaging)
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: / (position w/timestamp)\n");
                 done = data_add(APRS_DOWN,call,path,message,from,port,origin,third_party);
+                ok_igate_rf = done;
                 break;
 
             case '@':   // Position with timestamp (with APRS messaging)
@@ -14021,10 +14027,12 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                     } else
                         done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
                 }
+                ok_igate_rf = done;
                 break;
 
             case '[':   // Maidenhead grid locator beacon (obsolete- but used for meteor scatter)
-              done = data_add(APRS_GRID,call,path,message,from,port,origin,third_party);
+                done = data_add(APRS_GRID,call,path,message,from,port,origin,third_party);
+                ok_igate_rf = done;
                 break;
             case 0x27:  // Mic-E  Old GPS data (or current GPS data in Kenwood TM-D700)
             case 0x60:  // Mic-E  Current GPS data (but not used in Kennwood TM-D700)
@@ -14033,12 +14041,14 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: 0x27 or 0x60 (Mic-E)\n");
                 done = decode_Mic_E(call,path,message,from,port,third_party);
+                ok_igate_rf = done;
                 break;
 
             case '_':   // Positionless weather data                [APRS Reference, chapter 12]
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: _ (positionless wx data)\n");
                 done = data_add(APRS_WX2,call,path,message,from,port,origin,third_party);
+                ok_igate_rf = done;
                 break;
 
             case '#':   // Peet Bros U-II Weather Station (mph)     [APRS Reference, chapter 12]
@@ -14046,6 +14056,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                     fprintf(stderr,"decode_info_field: # (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
                     done = data_add(APRS_WX4,call,path,message,from,port,origin,third_party);
+                ok_igate_rf = done;
                 break;
 
             case '*':   // Peet Bros U-II Weather Station (km/h)
@@ -14053,6 +14064,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                     fprintf(stderr,"decode_info_field: * (peet bros u-II wx station)\n");
                 if (is_xnum_or_dash(message,13))
                     done = data_add(APRS_WX6,call,path,message,from,port,origin,third_party);
+                ok_igate_rf = done;
                 break;
 
             case '$':   // Raw GPS data or Ultimeter 2000
@@ -14069,6 +14081,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 else {
                         // handle VTG and WPT too  (APRS Ref p.25)
                 }
+                ok_igate_rf = done;
                 break;
 
             case ':':   // Message
@@ -14082,6 +14095,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: > (status)\n");
                 done = data_add(APRS_STATUS,call,path,message,from,port,origin,third_party);
+                ok_igate_rf = done;
                 break;
 
             case '?':   // Query
@@ -14163,6 +14177,43 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             output_igate_net(line, port, third_party);
         }
     }
+
+    // Attempt to gate to RF only if the following conditions are
+    // met:
+    //
+    //   *) ok_igate_rf flag is set.
+    //   *) Not my exact callsign.
+    //   *) The "from" call matches a line in data/nws-stations.txt,
+    //      verified by igate.c:check_NWS_stations().
+    //
+    // The output_igate_rf() function will also do some checks on
+    // the packet before allowing it to be igated, including a
+    // dupe-check.
+    //
+    if (ok_igate_rf && !is_my_call(call,1)) {
+        char ipacket_message[300];
+        char short_path[100];
+
+        shorten_path(path,short_path,sizeof(short_path));
+
+        xastir_snprintf(ipacket_message,
+            sizeof(ipacket_message),
+            "}%s>%s,TCPIP,%s*:%s",
+            call,
+            short_path,
+            my_callsign,
+            message);
+
+        output_igate_rf(call,
+            call,
+            path,
+            ipacket_message,
+            port,
+            third_party);
+
+//fprintf(stderr,"decode_info_field: IGATE>RF %s\n",line);
+    }
+
     if (debug_level & 1)
         fprintf(stderr,"decode_info_field: done\n");
 }

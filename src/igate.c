@@ -52,6 +52,9 @@ int max_NWS_stations = 0;
 NWS_Data *NWS_station_data;
 
 
+int check_NWS_stations(char *call);
+
+
 
 // Struct for holding packet data.  We use dynamically-allocated
 // singly-linked lists.  The last record should have its "next"
@@ -755,8 +758,8 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
 /****************************************************************/
 /* output data to tnc interfaces                                */
-/* from: type of port heard from                                */
-/* call: call sign heard from                                   */
+/* from: type of port heard from (No! It's the source call!)    */
+/* call: call sign heard from (No! It's the destination call!)  */
 /* line: data to gate to rf                                     */
 /* port: port data came from                                    */
 /****************************************************************/
@@ -851,8 +854,9 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
  
     // Check whether the source and destination calls have been
     // heard on local RF.
-    if (!heard_via_tnc_in_past_hour(call)==1        // Haven't heard destination call in previous hour
-            || heard_via_tnc_in_past_hour(from)) {  // Have heard source call in previous hour
+    if (!check_NWS_stations(from)   // Source call is not listed in nws-stations.txt
+        && (!heard_via_tnc_in_past_hour(call)==1        // Haven't heard destination call in previous hour
+            || heard_via_tnc_in_past_hour(from))) {  // Have heard source call in previous hour
 
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
@@ -952,6 +956,8 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                         // format, last digit: use
                         // unproto_igate path
                         output_my_data(line,x,0,0,1,NULL);
+
+fprintf(stderr, "Igating->RF: %s\n", line);
 
 begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
 
