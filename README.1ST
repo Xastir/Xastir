@@ -380,6 +380,10 @@ First Time Install:
        make lib
        make lib_install
 
+     You may also need to tweak "/etc/ld.so.conf" to contain the proper path
+     to the libraries and then run ldconfig to update "/etc/ld.so.cache".
+     Once this is done the loader should be able to find the Shapelib library.
+
 
    5. OPTIONAL:  Install ImageMagick graphics support.  Allows using more than
      68 different graphics format files as maps, by creating an associated .geo
