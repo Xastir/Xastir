@@ -241,7 +241,7 @@ AC_SUBST(LIBS)
 #AC_CHECK_HEADERS([Xm/Xm.h],,AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install them first. ***))
 AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes",)
 if test "$MOTIF_INC" != "yes"; then
-  # Check special Mac OSX paths
+  # Check special MacOSX paths
   AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes") 
   AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes")
   if test "$MOTIF_INC" != "yes"; then
@@ -418,7 +418,7 @@ then
   fi 
 else 
   #
-  # More checks for Mac OSX/Fink, which installs things into
+  # More checks for MacOSX/Fink, which installs things into
   # "/sw/lib", "/sw/include", "/sw/bin"
   #
   AC_CHECK_FILE(/sw/include/libshp/shapefil.h, XASTIR_SHAPELIB_INC="yes")
