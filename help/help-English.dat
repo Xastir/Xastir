@@ -78,7 +78,7 @@ Dropping setuid root privs
 Tracked proximity alarms
 Tracking self
 Different Coordinate systems
-Different rain guage sizes +weather station fixes
+Different rain gauge sizes +weather station fixes
 Shapefile weather alerts/pixmaps
 WXserver info via finger
 Major shapefile improvements, point-type shapefiles
@@ -451,7 +451,7 @@ At the bottom of the window various status messages are available:
 In the first box on the left general status messages are displayed for a
 short time.
 
-The second box displays the current lat/long and Meidenhead grid square
+The second box displays the current lat/long and Maidenhead grid square
 position of the mouse over the map. 
 
 A third box is used to display how many stations are in the database.
@@ -1241,7 +1241,7 @@ For moving stations a tracklog follows with the most recent entries on top.
 A '+' in front indicates that a new track starts at that point (if there was
 a large gap in time or position). A star at the end of a line indicates that
 this station could be heard direct (without a digi) at that specific position.
-Positions are followed by the 6 digit Meidenhead grid square the station was
+Positions are followed by the 6 digit Maidenhead grid square the station was
 located in at that point.
 
 For your own station, there is an "Echoed from" field, listing the
