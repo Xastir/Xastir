@@ -657,7 +657,8 @@ void draw_shapefile_map (Widget w,
 
     // Check for ~/.xastir/tracklogs directory.  We set up the
     // labels and colors differently for these types of files.
-    if (strstr(filenm,".xastir/tracklogs")) { // We're in the ~/.xastir/tracklogs directory
+//    if (strstr(filenm,".xastir/tracklogs")) { // We're in the ~/.xastir/tracklogs directory
+    if (strstr(filenm,"GPS")) { // We're in the maps/GPS directory
         gps_flag++;
     }
 
