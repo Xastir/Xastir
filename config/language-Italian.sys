@@ -1007,7 +1007,11 @@ GAMMA002|Correzione Gamma||
 # Map labels font Dialog
 MAPFONT001|Change Map Labels Font||
 MAPFONT002|Map Labels Font||
-MAPFONT003|Font name:||
+MAPFONT003|Tiny||
+MAPFONT004|Small||
+MAPFONT005|Medium||
+MAPFONT006|Large||
+MAPFONT007|Huge||
 #
 # Distance/Bearing on status line
 PULDNDB001|Stato Distanza/Puntamento||

@@ -31,7 +31,7 @@ dbffields="ID:NAME"}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
-BEGIN_RECORD {key=""; lanes=2; fill_color=11; color=8; name=""; filled=1; pattern=0; display_level=8192; label_level=512; label_color=20; symbol=""}
+BEGIN_RECORD {key=""; lanes=2; fill_color=11; color=8; name=""; filled=1; pattern=0; display_level=8192; label_level=512; label_color=20; font_size=2; symbol=""}
 
 /^ID=(.*)$/ {key="$1"; next}
 /^NAME=(.*)$/ {name="$1"; next}

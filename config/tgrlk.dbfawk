@@ -29,7 +29,7 @@ dbffields="TLID:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC"}
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
 # use color 11 to highlight stuff that isn't properly mapped.
-BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=8; symbol=""}
+BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; pattern=0; display_level=8192; label_level=32; label_color=8; font_size=0; symbol=""}
 
 # per-field rules are applied to the dbffields that are read from each record.
 # key: set the search key to be the Tiger/Line ID.  Not currently used.
@@ -90,14 +90,14 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # A72 - stairway
 # A73 - alley
 # A74 - driveway
-/^CFCC=A1/ {lanes=4; color=4; label_level=512; next}
-/^CFCC=A2/ {lanes=3; color=8; label_level=256; next}
-/^CFCC=A3/ {lanes=2; color=8; label_level=128; next}
+/^CFCC=A1/ {lanes=4; color=4; label_level=512; font_size=3; next}
+/^CFCC=A2/ {lanes=3; color=8; label_level=256; font_size=2; next}
+/^CFCC=A3/ {lanes=2; color=8; label_level=128; font_size=1; next}
 /^CFCC=A3[1-6]/ {display_level=256; next}
 /^CFCC=A3[7-8]/ {display_level=128; next}
 /^CFCC=A4/ {display_level=96; label_level=16; color=40; lanes=1; next}
-/^CFCC=A5/ {lanes=2; color=40; display_level=64; next}
-/^CFCC=A65/ {lanes=2; color=8; pattern=2; next}
+/^CFCC=A5/ {lanes=2; color=40; display_level=64; font_size=1; next}
+/^CFCC=A65/ {lanes=2; color=8; pattern=2; font_size=1; next}
 /^CFCC=A6[^5]/ {color=40; display_level=64; next}
 /^CFCC=A7[12]/ {lanes=1; color=12; pattern=2; display_level=64; next}
 /^CFCC=A7[03-9]/ {lanes=1; color=40; pattern=2; display_level=64; next}
