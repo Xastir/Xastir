@@ -896,6 +896,13 @@ void draw_grid(Widget w) {
 // last point from the previous grid over to the first point of a
 // new grid.  That can cause us to be off by one.
 //
+// It also appears that the vertical lines that are missing in some
+// cases are on the right of the zone boundary.  This is probably
+// because the top of that line doesn't go to the top of the view.
+// On views where it does, the line is drawn.  I assume this is
+// because we're drawing from NW corner to the right, and then down,
+// which would cause that line to be skipped if it's not present on
+// the first line.
 
 
         e[1] = e[0];
