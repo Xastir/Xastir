@@ -113,6 +113,8 @@ storm wind radius decoding
 stations menu cleanup
 grid density adjustment +=-
 wind barbs
+dead-reckoning
+voice IDs/Screen IDs-config file only
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -656,8 +658,6 @@ detail onto maps. This will be done with the following entries:
   = Object corridor =
     This is the width of a line area object. Useful for runways, weather
     watchboxes, describing an area of interest or an area of exclusion, etc.
-(FIXME: Write this part! (area objects) The spec is unclear to me, the code
-is unclear to me, but eventually I'll figure it all out!)
 
 Always delete your objects and items when you are done with them!
 Don't just allow them to expire from your cache, as they may hang
@@ -805,9 +805,9 @@ with the "+" and "-" keys.
 Enable Map Levels
 When enabled, this option will try to filter out data when the zoom level shows
 large areas. This does not work will all maps but will work with the maps
-generated from Tiger Line maps at the aprs.rutgers.edu site. This does not
-decrease the loading times of the maps, rather it simply reduces screen
-clutter.
+generated from Tiger Line maps at the aprs.rutgers.edu site, and with
+shapefile maps. This does not decrease the loading times of the maps, rather
+it simply reduces screen clutter.
 
 Enable Map Labels
 This option toggles the display of map labels embedded in dosAPRS, winAPRS,
@@ -1021,17 +1021,14 @@ the README.1ST section on obtaining maps.
 
 As NWS messages are received, different areas will get tinted to designate
 areas of concern.  They are color-coded to specify different types of
-alerts. The basic colors are: Cyan for advisory, yellow for watch, red
-for warning, orange for cancelled alert, royal blue for tests, and green
-for undetermined alert levels. With recent versions of Xastir the colors may
-be different because the areas are tinted instead of color-filled, and the
-tinting depends on the colors underneath. The tinting is done with a pixmap
-stipple that displays the type of alert, if it is able to be determined.
-These change was made so that the underlying maps may still be seen
-underneath the weather alert areas, and so the alert type may be more easily
-determined, as sometimes matching the alerts on screen and in the weather
-alerts dialog is difficult. The display of weather alerts may be turned on/off
-via the Map menu.
+alerts. The colors are: Cyan for advisory, yellow for watch, red for warning,
+orange for cancelled alert, royal blue for tests, and green for undetermined
+alert levels. The coloring is done with a pixmap stipple that displays the
+type of alert, if it is able to be determined. These changes were made so that
+the underlying maps may still be seen underneath the weather alert areas, and
+so the alert type may be more easily determined, as sometimes matching the
+alerts on screen and in the weather alerts dialog is difficult. The display
+of weather alerts may be turned on/off via the Map menu.
 
 HELP-INDEX>Stations Menu
 
@@ -1147,6 +1144,24 @@ This sub-menu allows filtering of the displayed data:
 
   Display DF Circles
   When enabled, any DF circles will be displayed on the screen.
+
+  Enable Dead-Reckoning
+  When enabled, the positions of stations are estimated based on past course
+  and speed. The recalculation rate should be reasonable, but can be adjusted
+  in the configuration file.
+
+  Enable Dead-Reckoning Arcs
+  Displays an expanding arc of expected maximum travel distance, location and
+  course given the past course and speed. The arc slowly becomes a circle as
+  the position report gets older.
+
+  Enable Dead-Reckoning Course
+  Displays an expected course and distance traveled by the station, assuming
+  the course hasn't changed.
+ 
+  Enable Dead-Reckoning Symbols
+  Displays a ghosted version of the stations symbol at the expected position,
+  assuming the station has continued at its current course and speed.
 
   Display Station trails
   When enabled, any moving station will trail a colored line with the last 100+
