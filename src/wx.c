@@ -1178,18 +1178,24 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_hum[0]=0;
             }
 
-// Isn't this replaced by the above switch-case?
-//            /* todays rain total */
-//            if (data[42]!='-') {
-//                if (from) { // From remote station
-//                    substr(temp_data1,(char *)(data+42),4);
-//                    xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
-//                        "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
-//                }
-//            } else {
-//                if (!from)  // From local station
-//                    weather->wx_prec_00[0]=0;
-//            }
+            // Isn't this replaced by the above switch-case?
+            // No, I don't think so.  We can get these packets over
+            // RF as well.
+            /* todays rain total */
+            if (strlen(data) > 45) {
+                if (data[42]!='-') {
+                    if (from) { // From remote station
+                        substr(temp_data1,(char *)(data+42),4);
+                        xastir_snprintf(weather->wx_prec_00,
+                            sizeof(weather->wx_prec_00),
+                            "%0.2f",
+                            (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                    }
+                } else {
+                    if (!from)  // From local station
+                        weather->wx_prec_00[0]=0;
+                }
+            }
             break;
 
 
