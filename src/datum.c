@@ -497,9 +497,11 @@ char utm_letter_designator(double lat)
     //This routine determines the correct UTM letter designator for the given latitude
     //returns 'Z' if latitude is outside the UTM limits of 84N to 80S
     //Written by Chuck Gantz- chuck.gantz@globalstar.com
+    //Modified to return 'A' if below 80S, 'Z' if above 84N. --we7u
     char LetterDesignator;
 
-    if      ((84 >= lat) && (lat >=  72)) LetterDesignator = 'X';
+    if      ((90 >= lat) && (lat >=  84)) LetterDesignator = 'Z'; // Could be Y or Z, UPS coordinates
+    else if ((84 >= lat) && (lat >=  72)) LetterDesignator = 'X';
     else if ((72  > lat) && (lat >=  64)) LetterDesignator = 'W';
     else if ((64  > lat) && (lat >=  56)) LetterDesignator = 'V';
     else if ((56  > lat) && (lat >=  48)) LetterDesignator = 'U';
@@ -519,7 +521,7 @@ char utm_letter_designator(double lat)
     else if ((-56 > lat) && (lat >= -64)) LetterDesignator = 'E';
     else if ((-64 > lat) && (lat >= -72)) LetterDesignator = 'D';
     else if ((-72 > lat) && (lat >= -80)) LetterDesignator = 'C';
-    else LetterDesignator = 'Z'; //This is here as an error flag to show that the Latitude is outside the UTM limits
+    else LetterDesignator = 'A'; // Could be A or B, UPS coordinates
 
     return LetterDesignator;
 }
