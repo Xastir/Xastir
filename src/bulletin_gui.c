@@ -421,27 +421,27 @@ static void find_zero_position_bulletins(void) {
 // posit for it might come in as well).  If so, checks for bulletins
 // that are newer than first_new_bulletin_time and fit within our
 // range.  If any found, it updates the Bulletins dialog.
-time_t last_bulletin_check = 0;
+time_t last_bulletin_check = (time_t)0l;
 void check_for_new_bulletins() {
 
 
-    // Check every fifteen seconds max
+    // Check every 15 seconds max
     if ( (last_bulletin_check + 15) > sec_now() ) {
         return;
     }
+    last_bulletin_check = sec_now();
 
     // Look first to see if we might be able to fill in positions on
     // any older bulletins, then cause a popup for those that fit
     // our parameters.  The below function sets new_bulletin_flag if
     // it is able to fill in a distance for an older bulletin.
+// Note:  This is time-consuming!
     find_zero_position_bulletins();
 
     // Any new bulletins to check?  If not, return
     if (!new_bulletin_flag) {
         return;
     }
-
-    last_bulletin_check = sec_now();
 
     // Enough time passed since most recent bulletin?  Need to have
     // enough time to perhaps fill in a distance for each bulletin.
