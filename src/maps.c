@@ -1219,6 +1219,7 @@ void draw_shapefile_map (Widget w,
     int             ok, index;
     int             gps_flag = 0;
     char            gps_label[100];
+    int             gps_color = 0x0c;
     int             road_flag = 0;
     int             lake_flag = 0;
     int             river_flag = 0;
@@ -2474,23 +2475,27 @@ void draw_shapefile_map (Widget w,
                         // Check for a color in the filename: i.e.
                         // "Team2TrackRed.shp"
                         if (strstr(filenm,"Red.shp")) {
-                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // Red
+                            gps_color = 0x0c; // Red
                         }
                         else if (strstr(filenm,"Orange.shp")) {
-                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x41]); // DarkOrange3
+                            gps_color = 0x41; // DarkOrange3
                         }
                         else if (strstr(filenm,"White.shp")) {
-                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]); // white
+                            gps_color = 0x0f; // white
                         }
                         else if (strstr(filenm,"Green.shp")) {
-                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0xfd]); // PaleGreen
+                            gps_color = 0xfd; // PaleGreen
                         }
 //                        else if (strstr(filenm,".shp")) {
-//                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x41]); //
+//                            gps_color = 0x41;   // DarkOrange3
 //                        }
                         else {  // Default color
-                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
+                            gps_color = 0x08; // black
                         }
+
+                        // Set the color for the arc's
+                        (void)XSetForeground(XtDisplay(w), gc, colors[gps_color]);
+ 
                         // Make the track nice and wide: Easy to
                         // see.
                         (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineSolid, CapButt,JoinMiter);
@@ -2789,7 +2794,24 @@ void draw_shapefile_map (Widget w,
                                 //fprintf(stderr,"%f\t%s\n",angle,temp);
 
 //                              (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
-                                (void)draw_rotated_label_text (w, (int)angle, x, y, strlen(temp), colors[0x08], (char *)temp);
+                                if (gps_flag) {
+                                    (void)draw_rotated_label_text (w,
+                                        (int)angle,
+                                        x,
+                                        y,
+                                        strlen(temp),
+                                        colors[gps_color],
+                                        (char *)temp);
+                                }
+                                else {
+                                    (void)draw_rotated_label_text(w,
+                                        (int)angle,
+                                        x,
+                                        y,
+                                        strlen(temp),
+                                        colors[0x08],
+                                        (char *)temp);
+                                }
                             }
                             if (new_label) {
 
