@@ -422,7 +422,7 @@ draw_dos_map(Widget w,
       total_vector_points = 200000;
       total_labels = 2000;
 
-      for (j = 0; j < DOS_HDR_LINES; j++) {
+      for (j = 0; j < DOS_HDR_LINES; strlen(Buffer) ? 1 : j++) {
         
 	  (void)fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f);
 
