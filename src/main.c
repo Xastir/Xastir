@@ -25198,7 +25198,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 //int main(int argc, char *argv[], char *envp[]) {
 
 int main(int argc, char *argv[]) {
-    int ag, ag_error, trap_segfault;
+    int ag, ag_error, trap_segfault, deselect_maps_on_startup;
     uid_t user_id;
     struct passwd *user_info;
     static char lang_to_use_or[30];
@@ -25435,6 +25435,7 @@ int main(int argc, char *argv[]) {
     last_popup_x = 0;
     last_popup_y = 0;
     trap_segfault = 0;
+    deselect_maps_on_startup = 0;
     debug_level = 0;
     install_colormap = 0;
     last_sound_pid = 0;
@@ -25461,13 +25462,17 @@ int main(int argc, char *argv[]) {
 
     strcpy(lang_to_use_or,"");
     ag_error=0;
-    while ((ag = getopt(argc, argv, "v:l:012346789ti")) != EOF) {
+
+    while ((ag = getopt(argc, argv, "v:l:012346789tim")) != EOF) {
+
         switch (ag) {
-        case 't':
-            fprintf(stderr,"Trap segfault\n");
-        trap_segfault = (int)TRUE;
-        break;
-        case 'v':
+
+            case 't':
+                fprintf(stderr,"Trap segfault\n");
+                trap_segfault = (int)TRUE;
+                break;
+
+            case 'v':
                 fprintf(stderr,"debug");
                 if (optarg) {
                     debug_level = atoi(optarg);
@@ -25500,15 +25505,19 @@ int main(int argc, char *argv[]) {
                     }
                     if (!ag_error)
                         fprintf(stderr," %s", lang_to_use_or);
+                    }
+                    fprintf(stderr,"\n");
+                    break;
 
-                }
-                fprintf(stderr,"\n");
+            case 'i':
+                fprintf(stderr,"Install Colormap\n");
+                install_colormap = (int)TRUE;
                 break;
 
-        case 'i':
-            fprintf(stderr,"Install Colormap\n");
-            install_colormap = (int)TRUE;
-            break;
+            case 'm':
+                fprintf(stderr,"De-select Maps\n");
+                deselect_maps_on_startup = (int)TRUE;
+                break;
 
             default:
                 ag_error++;
@@ -25518,7 +25527,7 @@ int main(int argc, char *argv[]) {
 
     if (ag_error){
         fprintf(stderr,"\nXastir Command line Options\n\n");
-        fprintf(stderr,"-v level      Set the debug level\n\n");
+        fprintf(stderr,"-i            Install private Colormap\n");
         fprintf(stderr,"-lDutch       Set the language to Dutch\n");
         fprintf(stderr,"-lEnglish     Set the language to English\n");
         fprintf(stderr,"-lFrench      Set the language to French\n");
@@ -25526,7 +25535,8 @@ int main(int argc, char *argv[]) {
         fprintf(stderr,"-lItalian     Set the language to Italian\n");
         fprintf(stderr,"-lPortuguese  Set the language to Portuguese\n");
         fprintf(stderr,"-lSpanish     Set the language to Spanish\n");
-        fprintf(stderr,"-i            Install private Colormap\n");
+        fprintf(stderr,"-m            Deselect Maps\n");
+        fprintf(stderr,"-v level      Set the debug level\n\n");
         fprintf(stderr,"\n");
         exit(0);
     }
@@ -25568,6 +25578,11 @@ int main(int argc, char *argv[]) {
         (void) signal(SIGSEGV,segfault);                // set segfault signal to check
 
     load_data_or_default(); // load program parameters or set to default values
+
+
+    if (deselect_maps_on_startup) {
+        unlink(SELECTED_MAP_DATA);  // Remove the selected_maps.sys file
+    }
 
     update_units(); // set up conversion factors and strings
 
