@@ -52,6 +52,7 @@ int max_NWS_stations = 0;
 NWS_Data *NWS_station_data;
 
 
+void load_NWS_stations(char *file);
 int check_NWS_stations(char *call);
 
 
@@ -853,7 +854,16 @@ void output_igate_rf(char *from, char *call, char *path, char *line,
         }
         return;
     }
- 
+
+
+     // check to see if the nws-stations file is newer than last read
+    if (last_nws_stations_file_time < file_time(get_user_base_dir("data/nws-stations.txt"))) {
+        last_nws_stations_file_time = file_time(get_user_base_dir("data/nws-stations.txt"));
+        load_NWS_stations(get_user_base_dir("data/nws-stations.txt"));
+        //fprintf(stderr,"NWS Station file time is old\n");
+    }
+
+
     // Check whether the source and destination calls have been
     // heard on local RF.
     if (  (   (!object_name && !check_NWS_stations(from)) // Source call not in nws-stations.txt
@@ -1030,6 +1040,14 @@ void load_NWS_stations(char *file) {
     if (file[0] == '\0')
         return;
 
+    if (NWS_station_data) {
+        free(NWS_station_data);
+        NWS_station_data = NULL;
+    }
+
+    NWS_stations = 0;
+    max_NWS_stations = 0;
+
     f = fopen(file,"r");
     if (f!=NULL) {
         while (!feof(f)) {
@@ -1080,6 +1098,9 @@ int check_NWS_stations(char *call) {
         return(0);
 
     if (call[0] == '\0')
+        return(0);
+
+    if (NWS_station_data == NULL)
         return(0);
 
     if (debug_level & 1024)
