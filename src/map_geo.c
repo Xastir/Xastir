@@ -1219,8 +1219,14 @@ fprintf(stderr,"2 ");
         return;
     }
 
+    if (debug_level & 16)
+        fprintf(stderr,"Colors = %ld\n", image->colors);
+
+    // Set up our own version of the color map.
     if (image->storage_class == PseudoClass && image->colors <= 256) {
         for (l = 0; l < (int)image->colors; l++) {
+            int leave_unchanged = 0;
+
             // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
             // of image files
             temp_pack = image->colormap[l];
@@ -1233,20 +1239,52 @@ fprintf(stderr,"2 ");
             // unsigned char, depending on what "configure" decided when ImageMagick was installed.
             // We can determine which by looking at MaxRGB or QuantumDepth.
             //
-            if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
+
+            if (QuantumDepth == 16) {   // Defined in /usr/include/magick/magick_config.h
                 if (debug_level & 16)
                     fprintf(stderr,"Color quantum is [0..65535]\n");
-                my_colors[l].red   = temp_pack.red * raster_map_intensity;
-                my_colors[l].green = temp_pack.green * raster_map_intensity;
-                my_colors[l].blue  = temp_pack.blue * raster_map_intensity;
+
+                my_colors[l].red   = temp_pack.red;
+                my_colors[l].green = temp_pack.green;
+                my_colors[l].blue  = temp_pack.blue;
             }
             else {  // QuantumDepth = 8
                 if (debug_level & 16)
                     fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
-                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
-                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
+
+                my_colors[l].red   = temp_pack.red << 8;
+                my_colors[l].green = temp_pack.green << 8;
+                my_colors[l].blue  = temp_pack.blue << 8;
             }
+
+            // Take care not to screw up the transparency value by
+            // the raster_map_intensity multiplication factor.
+            if ( do_check_trans ) {
+//fprintf(stderr,"Checking for transparency\n");
+
+                // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
+                if (visual_type == NOT_TRUE_NOR_DIRECT)
+                    XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+                else
+                    pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
+                                    &my_colors[l].pixel);
+
+                if ( check_trans(my_colors[l],trans_color) ) {
+                    // Found a transparent color.  Leave it alone.
+                    leave_unchanged++;
+//fprintf(stderr,"Found transparency\n");
+// We never get here!
+                }
+            }
+
+            // Use the map_intensity value if it's not a transparent
+            // color we're dealing with.
+            if (!leave_unchanged) {
+                my_colors[l].red   = my_colors[l].red   * raster_map_intensity;
+                my_colors[l].green = my_colors[l].green * raster_map_intensity;
+                my_colors[l].blue  = my_colors[l].blue  * raster_map_intensity;
+            }
+ 
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
             if (visual_type == NOT_TRUE_NOR_DIRECT)
