@@ -3226,7 +3226,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
     // list rest of trail data
     if (p_station->newest_trackpoint != NULL) {
-        TrackRow2 *ptr;
+        TrackRow *ptr;
 
         ptr = p_station->newest_trackpoint;
 
@@ -4740,7 +4740,7 @@ int new_trail_color(char *call) {
 //
 int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *alt, char *speed, char *course, short stn_flag) {
     char flag;
-    TrackRow2 *ptr;
+    TrackRow *ptr;
 
     //printf("store_trail_point: %s\n",p_station->call_sign);
 
@@ -4749,7 +4749,7 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
     }
 
     // Allocate storage for the new track point
-    ptr = malloc(sizeof(TrackRow2));
+    ptr = malloc(sizeof(TrackRow));
     if (ptr == NULL) {
         if (debug_level & 256) {
             printf("store_trail_point: MALLOC failed for trail.\n");
@@ -4843,7 +4843,7 @@ int is_trailpoint_echo(DataRow *p_station) {
     int packets = 1;
     time_t checktime;
     char temp[50];
-    TrackRow2 *ptr;
+    TrackRow *ptr;
 
 
     // Start at newest end of linked list and compare.  Return if we're
@@ -4903,7 +4903,7 @@ int is_trailpoint_echo(DataRow *p_station) {
 void expire_trail_points(DataRow *p_station, time_t sec) {
     int i = 0;
     int done = 0;
-    TrackRow2 *ptr;
+    TrackRow *ptr;
 
     //printf("expire_trail_points: %s\n",p_station->call_sign);
 
@@ -5022,10 +5022,10 @@ int delete_comments_and_status(DataRow *fill) {
 int delete_trail(DataRow *fill) {
 
     if (fill->newest_trackpoint != NULL) {
-        TrackRow2 *current;
-        TrackRow2 *next;
+        TrackRow *current;
+        TrackRow *next;
 
-        // Free the TrackRow2 records
+        // Free the TrackRow records
         current = fill->oldest_trackpoint;
         while (current != NULL) {
             next = current->next;
@@ -5055,7 +5055,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 /*    Colormap cmap;  KD6ZWR - Now set in main() */
     long brightness;
     char flag1;
-    TrackRow2 *ptr;
+    TrackRow *ptr;
 
     // Expire old trackpoints first.  We use the
     // remove-station-from-display time as the expire time for
@@ -5253,7 +5253,7 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
     long speed;         // 0.1km/h
     int  course;        // degrees
     long alt;           // 0.1m
-    TrackRow2 *current;
+    TrackRow *current;
 
     if (p_station->origin == NULL || p_station->origin[0] == '\0')
         fprintf(f,"\n#C %s\n",p_station->call_sign);

@@ -245,7 +245,7 @@ typedef struct {                //                      strlen
 // "prev" pointer set to NULL and the last record should have its "next"
 // pointer set to NULL.  If no track storage exists then the pointers to
 // these structs in the DataRow struct should be NULL.
-typedef struct _TrackRow2{
+typedef struct _TrackRow{
     long    trail_long_pos;     // coordinate of trail point
     long    trail_lat_pos;      // coordinate of trail point
     time_t  sec;                // date/time of position
@@ -253,9 +253,9 @@ typedef struct _TrackRow2{
     int     course;             // in degrees    undefined: -1
     long    altitude;           // in 0.1 m      undefined: -99999
     char    flag;               // several flags, see below
-    struct  _TrackRow2 *prev;   // pointer to previous record in list
-    struct  _TrackRow2 *next;   // pointer to next record in list
-} TrackRow2;
+    struct  _TrackRow *prev;    // pointer to previous record in list
+    struct  _TrackRow *next;    // pointer to next record in list
+} TrackRow;
 
 
 // trail flag definitions
@@ -274,7 +274,7 @@ typedef struct _CommentRow{
 
 // Break DataRow into several structures.  DataRow will contain the parameters
 // that are common across all types of stations.  DataRow will contain a pointer
-// to TrackRow2 if it is a moving station, and contain a pointer to WeatherRow
+// to TrackRow if it is a moving station, and contain a pointer to WeatherRow
 // if it is a weather station.  If no weather or track data existed, the
 // pointers will be NULL.  This new way of storing station data will save a LOT
 // of memory.  If a station suddenly starts moving or spitting out weather data
@@ -301,8 +301,8 @@ typedef struct _DataRow {
     long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
     long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
 
-    TrackRow2 *oldest_trackpoint;       // Pointer to oldest track point in doubly-linked list
-    TrackRow2 *newest_trackpoint;       // Pointer to newest track point in doubly-linked list
+    TrackRow *oldest_trackpoint;        // Pointer to oldest track point in doubly-linked list
+    TrackRow *newest_trackpoint;        // Pointer to newest track point in doubly-linked list
     int trail_color;                    // trail color (when assigned)
  
     WeatherRow *weather_data;           // Pointer to weather data or NULL if no weather data
