@@ -588,8 +588,8 @@ void guess_vector_attributes( Widget w,
 // DEBUG:
 // Determine whether it is a hypsography layer we're dealing with.
                 // Set to yellow for SDTS hypsography layer (contours)
-                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
-                label_color_guess = 0x08;   // black
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]);  // brown
+                label_color_guess = 0x04;   // brown
             }
             else if (strstr(full_filename,"lkH")) {
                 (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
@@ -612,8 +612,8 @@ void guess_vector_attributes( Widget w,
 // DEBUG:
 // Determine whether it is a hypsography layer we're dealing with.
                 // Set to yellow for SDTS hypsography layer (contours)
-                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
-                label_color_guess = 0x08;   // black
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]);  // brown
+                label_color_guess = 0x04;   // brown
             }
             else {
 // DEBUG:
