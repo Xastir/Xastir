@@ -12450,12 +12450,13 @@ int process_directed_query(char *call,char *path,char *message,char from) {
     DataRow *p_station;
     char from_call[MAX_CALLSIGN+1];
     char temp[100];
-    int ok;
+    int ok = 0;
+
 
     if (debug_level & 1)
         fprintf(stderr,"process_directed_query: %s\n",message);
 
-    ok = 0;
+    // Check for proper usage of the APRSD query
     if (!ok && strncmp(message,"APRSD",5) == 0 && from != 'F') {  // stations heard direct
         pad_callsign(from_call,call);
         xastir_snprintf(temp, sizeof(temp), ":%s:Directs=",from_call);
@@ -12492,22 +12493,104 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         transmit_message_data(call,temp,NULL);
         ok = 1;
     }
+    // Check for illegal case for the APRSD query
+    if (!ok && strncasecmp(message,"APRSD",5) == 0 && from != 'F') {  // stations heard direct
+        fprintf(stderr,
+            "%s just queried us with an illegal query: %s\n",
+            call,
+            message),
+        fprintf(stderr,
+            "Consider sending a message, asking them to follow the spec\n");
+        ok = 1;
+    }
+
+
+// NOT IMPLEMENTED YET
+    // Check for proper usage of the APRSH query
     if (!ok && strncmp(message,"APRSH",5)==0) {
         ok = 1;
     }
+    // Check for illegal case for the APRSH query
+    if (!ok && strncasecmp(message,"APRSH",5)==0) {
+//        fprintf(stderr,
+//            "%s just queried us with an illegal query: %s\n",
+//            call,
+//            message),
+//        fprintf(stderr,
+//            "Consider sending a message, asking them to follow the spec\n");
+        ok = 1;
+    }
+
+
+// NOT IMPLEMENTED YET
+    // Check for proper usage of the APRSM query
     if (!ok && strncmp(message,"APRSM",5)==0) {
         ok = 1;
     }
+    // Check for illegal case for the APRSM query
+    if (!ok && strncasecmp(message,"APRSM",5)==0) {
+//        fprintf(stderr,
+//            "%s just queried us with an illegal query: %s\n",
+//            call,
+//            message),
+//        fprintf(stderr,
+//            "Consider sending a message, asking them to follow the spec\n");
+        ok = 1;
+    }
+
+
+// NOT IMPLEMENTED YET
+    // Check for proper usage of the APRSO query
     if (!ok && strncmp(message,"APRSO",5)==0) {
         ok = 1;
     }
+    // Check for illegal case for the APRSO query
+    if (!ok && strncasecmp(message,"APRSO",5)==0) {
+//        fprintf(stderr,
+//            "%s just queried us with an illegal query: %s\n",
+//            call,
+//            message),
+//        fprintf(stderr,
+//            "Consider sending a message, asking them to follow the spec\n");
+        ok = 1;
+    }
+
+
+    // Check for proper usage of the APRSP query
     if (!ok && strncmp(message,"APRSP",5) == 0 && from != 'F') {
         transmit_now = 1;       //send position
         ok = 1;
     }
+    // Check for illegal case for the APRSP query
+    if (!ok && strncasecmp(message,"APRSP",5) == 0 && from != 'F') {
+        fprintf(stderr,
+            "%s just queried us with an illegal query: %s\n",
+            call,
+            message),
+        fprintf(stderr,
+            "Consider sending a message, asking them to follow the spec\n");
+        ok = 1;
+    }
+
+
+// NOT IMPLEMENTED YET
+    // Check for proper usage of the APRSS query
     if (!ok && strncmp(message,"APRSS",5)==0) {
         ok = 1;
     }
+    // Check for illegal case for the APRSS query
+    if (!ok && strncasecmp(message,"APRSS",5)==0) {
+//        fprintf(stderr,
+//            "%s just queried us with an illegal query: %s\n",
+//            call,
+//            message),
+//        fprintf(stderr,
+//            "Consider sending a message, asking them to follow the spec\n");
+        ok = 1;
+    }
+
+
+    // Check for proper usage of the APRST/PING? queries
     if (!ok && (strncmp(message,"APRST",5)==0
             ||  strncmp(message,"PING?",5)==0) && from != 'F') {
         pad_callsign(from_call,call);
@@ -12517,6 +12600,20 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         transmit_message_data(call,temp,NULL);
         ok = 1;
     }
+    // Check for illegal case for the APRST/PING? queries
+    if (!ok && (strncasecmp(message,"APRST",5)==0
+            ||  strncasecmp(message,"PING?",5)==0) && from != 'F') {
+        fprintf(stderr,
+            "%s just queried us with an illegal query: %s\n",
+            call,
+            message),
+        fprintf(stderr,
+            "Consider sending a message, asking them to follow the spec\n");
+        ok = 1;
+    }
+
+
+    // Check for proper usage of the VER query (either case?)
     if (!ok && strncasecmp("VER",message,3) == 0 && from != 'F') { // not in Reference !???
         pad_callsign(from_call,call);
         xastir_snprintf(temp, sizeof(temp), ":%s:%s",from_call,VERSIONLABEL);
@@ -12526,6 +12623,7 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         if (debug_level & 1)
             fprintf(stderr,"Sent to %s:%s\n",call,temp);
     }
+
     return(ok);
 }
 
@@ -12538,12 +12636,27 @@ int process_directed_query(char *call,char *path,char *message,char from) {
  */
 int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *message,char from,int port, /*@unused@*/ int third_party) {
     char temp[100];
-    int ok;
+    int ok = 0;
 
-    ok = 0;
+
+// NOT IMPLEMENTED YET
+    // Check for proper usage of the APRS? query
     if (!ok && strncmp(message,"APRS?",5)==0) {
         ok = 1;
     }
+    // Check for illegal case for the APRS? query
+    if (!ok && strncasecmp(message,"APRS?",5)==0) {
+        ok = 1;
+//        fprintf(stderr,
+//            "%s just queried us with an illegal query: %s\n",
+//            call_sign,
+//            message),
+//        fprintf(stderr,
+//            "Consider sending a message, asking them to follow the spec\n");
+    }
+
+
+    // Check for proper usage of the IGATE? query
     if (!ok
             && strncmp(message,"IGATE?",6)==0
             && port != -1) {    // Not from a log file
@@ -12553,9 +12666,38 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *m
         }
         ok = 1;
     }
+    // Check for illegal case for the IGATE? query
+    if (!ok
+            && strncasecmp(message,"IGATE?",6)==0
+            && port != -1) {    // Not from a log file
+        if (operate_as_an_igate && from != 'F') {
+            fprintf(stderr,
+                "%s just queried us with an illegal query: %s\n",
+                call_sign,
+                message),
+            fprintf(stderr,
+                "Consider sending a message, asking them to follow the spec\n");
+        }
+        ok = 1;
+    }
+
+
+// NOT IMPLEMENTED YET
+    // Check for proper usage of the WX? query
     if (!ok && strncmp(message,"WX?",3)==0) {
         ok = 1;
     }
+    // Check for illegal case for the WX? query
+    if (!ok && strncasecmp(message,"WX?",3)==0) {
+        ok = 1;
+//        fprintf(stderr,
+//            "%s just queried us with an illegal query: %s\n",
+//            call_sign,
+//            message),
+//        fprintf(stderr,
+//            "Consider sending a message, asking them to follow the spec\n");
+    }
+
     return(ok);
 }
 
