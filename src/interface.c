@@ -1508,9 +1508,8 @@ int OpenTrac_decode_waypoint(unsigned char *element,
 
 
 
-/*
 // Mapping between OpenTrac symbols and APRS symbols
-char symbol_translate[14,100] = {
+char symbol_translate[100][14] = {
     "3 11100000 /S",  // space shuttle
     "3 12100000 \\S", // satellite
     "1 10000000 \\S", // *** other space
@@ -1569,7 +1568,7 @@ char symbol_translate[14,100] = {
     "4 41620000 \\C", // coastguard
     "3 43100000 \\N", // nav buoy
     "1 40000000 \\s", // *** other sea
-    "1 50000000 //",  // *** A dot
+    "1 50000000 /.",  // ***
     "4 62110000 /[",  // jogger
     "3 64200000 /:",  // fire
     "3 65500000 \\'", // crash site
@@ -1599,16 +1598,15 @@ char symbol_translate[14,100] = {
     "4 71960000 \\H", // haze
     "4 71970000 \\b", // blowing dust/sand
     "1 70000000 \\o", // *** other weather
-    "1 80000000 //",  // *** A dot
-    "1 90000000 //",  // *** A dot
-    "1 A0000000 //",  // *** A dot
-    "1 B0000000 //",  // *** A dot
-    "1 C0000000 //",  // *** A dot
-    "1 D0000000 //",  // *** A dot
-    "1 E0000000 //",  // *** A dot
-    "1 F0000000 //",  // *** A dot
-    ""};
-*/
+    "1 80000000 /.",  // ***
+    "1 90000000 /.",  // ***
+    "1 A0000000 /.",  // ***
+    "1 B0000000 /.",  // ***
+    "1 C0000000 /.",  // ***
+    "1 D0000000 /.",  // ***
+    "1 E0000000 /.",  // ***
+    "1 F0000000 /.",  // ***
+    "0"};
 
 
 
@@ -1661,6 +1659,18 @@ int OpenTrac_decode_symbol(unsigned char *element,
     symbol[element_len] = '\0'; // Terminate string
     split[ii] = '\0';   // Terminate split integers
 
+    // Convert split string chars into hex chars
+    for (c = 0; c < element_len * 2; c++) {
+        if (split[c] < 10) {
+            split[c] += 0x30;
+        }
+        else {
+            split[c] += 0x37;
+        }
+    }
+
+//fprintf(stderr,"\n%s\n",split);
+
     // Find the symbol from the table above that matches.  Use the
     // split[] string.
 
@@ -1668,36 +1678,34 @@ int OpenTrac_decode_symbol(unsigned char *element,
     *aprs_symbol_table = '/';
     *aprs_symbol_char  = '/';   // A dot
 
-/*
     ii = 0;
     done = 0;
-//    while (!done && symbol_translate[0,ii] != '\0') {
-    while (!done) {
+
+    while (!done && symbol_translate[ii][0] != '0') {
         int len;
 
         // Find out how many chars to compare
-        len = symbol_translate[0,ii];
+        len = symbol_translate[ii][0] - 0x30;
 
-        // Do a strncasecmp() for "len" chars in the hex string.
-        // Once we find a match, the last two chars in the string
-        // are our symbol table and symbol.  If we don't find a
-        // match, we use the default "//" symbol (a dot) instead.
-        if ( strncasecmp(&symbol_translate[2,ii],split,len) == 0 ) {
+//fprintf(stderr,"%d:%s\n",len,&symbol_translate[ii][2]);
+
+        // Do a strncasecmp() for "len" chars in the hex part of the
+        // string.  Once we find a match, the last two chars in the
+        // string are our symbol table and symbol.  If we don't find
+        // a match, we use the default "//" symbol (a dot) instead.
+        if ( strncasecmp(&symbol_translate[ii][2],split,len) == 0 ) {
             // Found a match
-
-fprintf(stderr,"Found a match: %s in %s",
-    split,
-    &symbol_translate[0,ii]);
-
+//fprintf(stderr,"Found a match: %s in %d", split, ii);
+            len = strlen(&symbol_translate[ii][0]);
+            *aprs_symbol_table = symbol_translate[ii][len-2];
+            *aprs_symbol_char  = symbol_translate[ii][len-1];
             done++;
         }
         else {
-fprintf(stderr,"A");
             // No match
             ii++;
         }
     }
-*/
 
     switch (split[0]) {
         case 1:
