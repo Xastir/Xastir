@@ -328,6 +328,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
                 case DEVICE_SERIAL_TNC:
                 case DEVICE_AX25_TNC:
                 case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_NET_AGWPE:
                     fprintf(stderr,"        Found RF dupe: %s\n",match_line);
                     break;
 
@@ -411,7 +412,8 @@ void insert_into_heard_queue(int port, char *line) {
         case DEVICE_SERIAL_TNC:
         case DEVICE_AX25_TNC:
         case DEVICE_SERIAL_KISS_TNC:
-
+        case DEVICE_NET_AGWPE:
+ 
             // We're not using the dupe check function, but merely the
             // expiration and insert functions of not_a_dupe()
 
@@ -766,16 +768,12 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
             //fprintf(stderr,"output_igate_rf: Not a dupe port %d, transmitting\n",x);
 
             switch (port_data[x].device_type) {
+
                 case DEVICE_SERIAL_TNC_AUX_GPS:
-
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-
                 case DEVICE_SERIAL_TNC:
-
                 case DEVICE_AX25_TNC:
-
                 case DEVICE_SERIAL_KISS_TNC:
-
                 case DEVICE_NET_AGWPE:
 
 begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
@@ -1085,16 +1083,12 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 && not_a_dupe( SENT, x, line, NO_FORCED_INSERT) ) {
 
             switch (port_data[x].device_type) {
+
                 case DEVICE_SERIAL_TNC_AUX_GPS:
-
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-
                 case DEVICE_SERIAL_TNC:
-
                 case DEVICE_AX25_TNC:
-
                 case DEVICE_SERIAL_KISS_TNC:
-
                 case DEVICE_NET_AGWPE:
 
 begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
