@@ -850,6 +850,21 @@ void draw_shapefile_map (Widget w,
 // don't get freed!  dbfawk_field_list allocates new memory.
             fld_info = dbfawk_field_list(hDBF, dbffields);
 
+            //  Check for NULL here
+            if (!fld_info) {
+                fprintf(stderr,"draw_shapefile_map: fld_info is NULL\n");
+//WE7U
+// Frees memory
+                if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+                    if (sig_info->prog != NULL)
+//WE7U
+// Frees memory
+                        awk_free_program(sig_info->prog);
+                    free(sig_info);
+                }
+                return;
+            }
+
         } else {                /* should never be reached anymore! */
             fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
             exit(1);
