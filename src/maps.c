@@ -3705,7 +3705,7 @@ void index_restore_from_file(void) {
                                             // line.
                 char scanf_format[50];
                 int processed;
-                int i;
+                int i, jj;
 
 //fprintf(stderr,"%s\n",in_string);
 
@@ -3808,7 +3808,8 @@ void index_restore_from_file(void) {
 
                 // Check for control characters in the filename.
                 // Reject any that have them.
-                for (i = 0; i < (int)strlen(temp_record->filename); i++)
+                jj = (int)strlen(temp_record->filename);
+                for (i = 0; i < jj; i++)
                 {
                     if (temp_record->filename[i] < 0x20) {
 
