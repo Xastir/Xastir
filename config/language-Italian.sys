@@ -27,7 +27,6 @@ PULDNFI001|Configura|C|
 PULDNFI002|Apri file di registro|A|
 PULDNFI003|Test||
 PULDNFI004|Esci|x|
-PULDNFI005|Sì sono sicuro!|Y|
 PULDNFI007|Cambia il livello di Debug|D|
 PULDNFI010|Registro TNC|T|
 PULDNFI011|Registro Rete|e|
@@ -99,6 +98,8 @@ MPUPTGR013|Fiumi||
 MPUPTGR014|Laghi||
 MPUPTGR015|Aereoporti, Parchi, ecc||
 MPUPTGR016|Intensità Mappa||
+MPUPTGR017|Timeout (sec)||
+MPUPTGR018|Enable Tiger Maps||
 #
 #
 # Finestra di dialogo mappe
@@ -139,7 +140,6 @@ PULDNOT003|Breve||
 PULDNDP014|Localizza Stazione|L|
 PULDNDP001|Segui Stazione|T|
 PULDNDP022|Scarica il percorso da Findu||
-# SubMenu "Filter Data"
 PULDNDP032|Filtra Dati||
 PULDNDP040|Seleziona Nessuno||
 PULDNDP041|Seleziona Miei||
@@ -156,7 +156,6 @@ PULDNDP045|- Seleziona Oggetti/Dettagli||
 PULDNDP026|- Seleziona Oggetti/Dettagli Meteo||
 PULDNDP039|- Seleziona Oggetti/Dettagli Misura Acqua||
 PULDNDP031|- Seleziona Altri Oggetti/Dettagli||
-# SubMenu "Filter Display"
 PULDNDP033|Visualizza Filtro||
 PULDNDP010|Nominativo|l|
 PULDNDP012|Simboli|Y|
@@ -181,7 +180,6 @@ PULDNDP037|- Visualizza Rotta||
 PULDNDP038|- Visualizza Simbolo||
 PULDNDP005|Distanza/Direzione|D|
 PULDNDP024|Visualizza Età Ultimo Rapporto||
-#
 PULDNDP015|Elimina tutte le stazioni|C|
 PULDNDP016|Elimina tutti i percorsi|T|
 PULDNDP025|Cancella Storico Oggetti/Dettagli||
@@ -342,6 +340,13 @@ WPUPCFD029|Vedi bollettini a distanza zero||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configura Temporizzazioni||
+WPUPCFTM02|Posit TX Interval (min)||
+WPUPCFTM03|Station Ghosting Time (min)||
+WPUPCFTM04|Object/Item TX Interval (min)||
+WPUPCFTM05|Station Clear Time (hours)||
+WPUPCFTM06|GPS Check Interval (sec)||
+WPUPCFTM07|Station Delete Time (days)||
+WPUPCFTM08|Dead-Reckoning Timeout (min)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configura Sistema Coordinate||
@@ -525,6 +530,23 @@ WPUPCFID12|Funzionare da Gateway?||
 WPUPCFID13|Trasmetto i dati al TNC quando sono collegato ad Internet?||
 WPUPCFID14|Scrivo nel log le trasmissioni dalla Rete al TNC?|||
 WPUPCFID15|Parametri Filtro||
+#
+# PopUp "Configure AGWPE"
+WPUPCFIA01|Configure AGWPE||
+WPUPCFIA02|Host ||
+WPUPCFIA03|Port ||
+WPUPCFIA04|(Secondary hosts)||
+WPUPCFIA05|Host1||
+WPUPCFIA06|Port1||
+WPUPCFIA07|Host2||
+WPUPCFIA08|Port2||
+WPUPCFIA09|Pass-code||
+WPUPCFIA10|(Leave Blank if None)||
+WPUPCFIA11|Reconnect on NET failure?||
+WPUPCFIA12|Run as an I-Gate?||
+WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
+WPUPCFIA14|Log I-Gate Transactions?||
+WPUPCFIA15|Transmit RadioPort||
 #
 #Configure Audio Alarms
 WPUPCFA001|Configura Suoni||
@@ -849,6 +871,8 @@ POPEM00029|Trovato!||
 POPEM00030|Simbolo Stazione Meteo||
 POPEM00031|Cambiato al simbolo Meteo '/_', altre opzioni:  '\_'  '/W'  e  '\W'||
 POPEM00032|Attenzione: Stai usando il simbolo Meteo del Servizio Nazionale!||
+POPEM00033|No GPS Data!||
+POPEM00034|Disabling My Position TX Until Valid GPS Data!||
 # 
 # Jump Location 
 JMLPO00001|Posizione Mappa||
@@ -989,5 +1013,3 @@ TIME005|Minute||
 TIME006|Minutes||
 TIME007|Second||
 TIME008|Seconds||
-#
-#
