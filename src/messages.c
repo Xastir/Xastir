@@ -789,11 +789,25 @@ void check_and_transmit_messages(time_t time) {
                         //fprintf(stderr,"%d\n",(int)message_pool[i].next_time);
                     }
 
+/*
 fprintf(stderr,
     "Msg Interval = %3ld seconds or %4.1f minutes\n",
     message_pool[i].next_time,
     message_pool[i].next_time / 60.0);
+*/
 
+                    // Record the interval we're using.  Put it with
+                    // the message in the general message pool, so
+                    // that the Send Message dialog can display it.
+                    // It will only display it if the message is
+                    // actively being transmitted.  If it has been
+                    // cancelled, timed out, or hasn't made it to
+                    // the transmit position yet, it won't be shown.
+                    //
+                    msg_record_interval(message_pool[i].to_call_sign,
+                        message_pool[i].from_call_sign,
+                        message_pool[i].seq,
+                        message_pool[i].next_time); // Interval
 
                     // Start at 7 seconds for the interval.  We set
                     // it to 7 seconds in output_message() above.
@@ -807,13 +821,6 @@ fprintf(stderr,
                     // Limit the max interval to 10 minutes
                     if (message_pool[i].next_time > (time_t)600l)
                         message_pool[i].next_time = (time_t)600l;
-
-/*
-// WE7U:  DEBUG
-// Limit the max interval to 5 minutes
-if (message_pool[i].next_time > (time_t)300l)
-    message_pool[i].next_time = (time_t)300l;
-*/
 
                     message_pool[i].tries++;
 

@@ -821,6 +821,10 @@ void msg_record_ack(char *to_call_sign,
         else
             msg_data[msg_index[record]].acked = (char)1;
 
+        // Set the interval to zero so that we don't display it
+        // anymore in the dialog.
+        msg_data[msg_index[record]].interval = 0;
+
         if (debug_level & 1) {
             fprintf(stderr,"Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
                 msg_data[msg_index[record]].acked,
@@ -836,6 +840,62 @@ void msg_record_ack(char *to_call_sign,
     if (do_update) {
         update_messages(1); // Force an update
     }
+}
+
+
+
+
+
+// Called from check_and_transmit_messages().  Updates the interval
+// field in our message record for the message currently being
+// transmitted.  We'll use this in the Send Message dialog to
+// display the current message interval.
+//
+void msg_record_interval(char *to_call_sign,
+                    char *my_call,
+                    char *seq,
+                    time_t interval) {
+    Message m_fill;
+    long record;
+
+    if (debug_level & 1) {
+        fprintf(stderr,"Recording interval for message to: %s, seq: %s\n",
+            to_call_sign,
+            seq);
+    }
+
+    // Find the corresponding message in msg_data[i]
+
+    substr(m_fill.call_sign, to_call_sign, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.call_sign);
+
+    substr(m_fill.from_call_sign, my_call, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.from_call_sign);
+
+    substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
+    (void)remove_trailing_spaces(m_fill.seq);
+    (void)remove_leading_spaces(m_fill.seq);
+
+    // Look for a message with the same to_call_sign, my_call,
+    // and seq number
+    record = msg_find_data(&m_fill);
+    if(record != -1L) {     // Found a match!
+        if (debug_level & 1) {
+            fprintf(stderr,
+                "Found in msg db, updating interval field %ld -> 1, seq %s, record %ld\n",
+                msg_data[msg_index[record]].interval,
+                seq,
+                record);
+        }
+
+        msg_data[msg_index[record]].interval = interval;
+    }
+    else {
+        if (debug_level & 1)
+            fprintf(stderr,"Matching message not found\n");
+    }
+
+    update_messages(1); // Force an update
 }
 
 
@@ -977,6 +1037,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
     if(record == -1L) {     // No old record found
         m_fill.acked = 0;   // We can't have been acked yet
+        m_fill.interval = 0;
 
         // We'll be sending an ack right away if this is a new
         // message, so might as well set the time now so that we
@@ -1257,6 +1318,9 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                             while (!done && (p_prev != NULL)) {  // Loop until end of list
                                 int j = p_prev->index;  // Snag the index out of the record
                                 char prefix[50];
+                                char interval_str[50];
+                                int offset = 23;    // Offset for highlighting
+
 
                                 //fprintf(stderr,"\nLooping through, reading messages\n");
  
@@ -1295,14 +1359,27 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 }
                                 else prefix[0] = '\0';
 
+                                if (msg_data[msg_index[j]].interval) {
+                                    xastir_snprintf(interval_str,
+                                        sizeof(interval_str),
+                                        ">%3ldsecs",
+                                        msg_data[msg_index[j]].interval);
+                                    // Don't highlight the interval
+                                    // value
+                                    offset = offset + 8;
+                                }
+                                else {
+                                    interval_str[0] = '\0';
+                                }
 
                                 xastir_snprintf(temp2, sizeof(temp2),
-                                    "%s  %-9s>%s%s\n",
+                                    "%s  %-9s%s>%s%s\n",
                                     // Debug code.  Trying to find sorting error
                                     //"%ld  %s  %-9s>%s\n",
                                     //msg_data[msg_index[j]].sec_heard,
                                     stemp,
                                     msg_data[msg_index[j]].from_call_sign,
+                                    interval_str,
                                     prefix,
                                     msg_data[msg_index[j]].message_line);
 
@@ -1328,7 +1405,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                             && ( is_my_call(msg_data[msg_index[j]].from_call_sign, 1)) ) {
 //fprintf(stderr,"Setting underline\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
-                                            pos+23,
+                                            pos+offset,
                                             pos+strlen(temp2),
                                             //XmHIGHLIGHT_SECONDARY_SELECTED); // Underlining
                                             XmHIGHLIGHT_SELECTED);         // Reverse Video
@@ -1336,7 +1413,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     else {  // Message was acked, get rid of highlighting
 //fprintf(stderr,"Setting normal\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
-                                            pos+23,
+                                            pos+offset,
                                             pos+strlen(temp2),
                                             XmHIGHLIGHT_NORMAL);
                                     }
