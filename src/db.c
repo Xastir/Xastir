@@ -13666,9 +13666,9 @@ void check_and_transmit_objects_items(time_t time) {
 
                     // Randomize the distribution a bit, so that all
                     // objects are not transmitted at the same time.
-                    // Allow the random number to vary over 33% of
+                    // Allow the random number to vary over 20% of
                     // the current increment.
-                    randomize = (int)( random() % (increment/3) );
+                    randomize = (int)( random() % (increment/5) );
 //fprintf(stderr,"Randomize = %d\n", randomize);
                     increment = increment - randomize;
                     p_station->transmit_time_increment = increment;
