@@ -37,7 +37,7 @@ FULLDUP off
 GPS off
 HEADERLI off
 HID off
-CWID off
+CWID every 0
 INTERVAL 0
 LFADD off
 LGETCHAR $05

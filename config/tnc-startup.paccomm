@@ -8,7 +8,7 @@
 # lines that begin with a pound sign are comments.
 
 HID off
-CWID off
+CWID every 0
 MON 0
 ECHO off
 #MYCall WB5BBW
