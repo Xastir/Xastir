@@ -148,7 +148,14 @@ Widget configure_defaults_dialog = (Widget)NULL;
 Widget configure_coordinates_dialog = (Widget)NULL;
 Widget change_debug_level_dialog = (Widget)NULL;
 
-Widget position_calculator_dialog = (Widget)NULL;
+
+// WE7U
+Widget coordinate_calc_dialog = (Widget)NULL;
+Widget coordinate_calc_zone = (Widget)NULL;
+Widget coordinate_calc_latitude_easting = (Widget)NULL;
+Widget coordinate_calc_longitude_northing = (Widget)NULL;
+long coordinate_calc_lon;   // In Xastir coordinates
+long coordinate_calc_lat;   // In Xastir coordinates
 struct {
     Widget input_lat_deg;   // Pointers to input field widgets
     Widget input_lat_min;   // (Where to get the data)
@@ -162,7 +169,8 @@ struct {
     Widget output_lon_deg;
     Widget output_lon_min;
     Widget output_lon_dir;
-} position_calculator_array;
+} coordinate_calc_array;
+
 
 int old_station_item;
 int clear_station_item;
@@ -663,47 +671,62 @@ int moving_object = 0;
 /////////////////////////////////////////////////////////////////////////
 
 
-void Position_calculator_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+void Coordinate_calc_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
     XtDestroyWidget(shell);
-    position_calculator_dialog = (Widget)NULL;
+    coordinate_calc_dialog = (Widget)NULL;
 }
 
 
 
 
 
-void Position_calculator_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
-    char *temp;
-    char temp_string[10];
+void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    XmTextSetString(coordinate_calc_zone, "");
+    XmTextSetString(coordinate_calc_latitude_easting, "");
+    XmTextSetString(coordinate_calc_longitude_northing, "");
+}
+
+
+
+
+
+// WE7U
+// Make sure that if an error occurs during computation we don't
+// write a bad value back to the calling widget.  Pop up a message
+// in that case explaining the error.
+//
+void Coordinate_calc_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+//    char *temp;
+//    char temp_string[10];
 
 /*
     // Check each of the three alternate formats to see which one
     // has been entered.
-    temp = XmTextGetString(position_calculator_data.input_lat_deg);
-    temp2 = XmTextGetString(position_calculator_data.input_lat_min);
+    temp = XmTextGetString(coordinate_calc_data.input_lat_deg);
+    temp2 = XmTextGetString(coordinate_calc_data.input_lat_min);
 
 
 
     XtFree(temp);
     XtFree(temp2);
 
-    // Fill in the current value of debug_level
-    xastir_snprintf(temp_string, sizeof(temp_string), "%d", debug_level);
-    XmTextSetString(debug_level_text, temp_string);
+    // Fill in the current value of coordinate_calc_text
+    xastir_snprintf(temp_string, sizeof(temp_string), "%d", temp);
+    XmTextSetString(coordinate_calc_text, temp_string);
 
     // Write output directly to the XmTextStrings pointed to by our array
-    XmTextSetString(position_calculator_data.output_lat_deg, "0");
-    XmTextSetString(position_calculator_data.output_lat_min, "0.0");
-    XmTextSetString(position_calculator_data.output_lat_dir, "N");
+    XmTextSetString(coordinate_calc_data.output_lat_deg, "0");
+    XmTextSetString(coordinate_calc_data.output_lat_min, "0.0");
+    XmTextSetString(coordinate_calc_data.output_lat_dir, "N");
 
-    XmTextSetString(position_calculator_data.output_lon_deg, "0");
-    XmTextSetString(position_calculator_data.output_lon_min, "0.0");
-    XmTextSetString(position_calculator_data.output_lon_dir, "W");
+    XmTextSetString(coordinate_calc_data.output_lon_deg, "0");
+    XmTextSetString(coordinate_calc_data.output_lon_min, "0.0");
+    XmTextSetString(coordinate_calc_data.output_lon_dir, "W");
 */
 
-    Position_calculator_destroy_shell(widget,clientData,callData);
+    Coordinate_calc_destroy_shell(widget,clientData,callData);
 }
 /*
 struct {
@@ -719,22 +742,22 @@ struct {
     Widget output_lon_deg;
     Widget output_lon_min;
     Widget output_lon_dir;
-} position_calculator_array;
+} coordinate_calc_array;
 */
 
 
 
 
 
-// Position Calculator
+// Coordinate Calculator
 //
 // We want all four possible coordinate formats displayed
-// simultaneously.  Hitting enter or "Compute" will cause all of the
-// fields to be updated.
+// simultaneously.  Hitting enter or "Calculate" will cause all of
+// the fields to be updated.
 //
 // The fields should be filled in when this is first called,
 // probably by passing a DD MM.MMM value in the
-// position_calculator_text1 and position_calculator_text2 widgets.
+// coordinate_calc_text1 and coordinate_calc_text2 widgets.
 //
 // When done, this routine will pass back values where?  I suppose
 // we could pass an array of pointers to this function, which
@@ -742,62 +765,206 @@ struct {
 // and where to get it's input from.  It would need to be a static
 // array.
 //
-void Position_calculator(Widget w, XtPointer clientData, XtPointer callData) {
-    static Widget  pane, my_form, button_ok, button_close;
+void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
+    static Widget  pane, form, result_text, label1, label2, label3,
+        label4, label5, label6,
+        button_clear, button_calculate, button_ok, button_cancel;
     Atom delw;
-    Arg al[2];                    /* Arg List */
-    register unsigned int ac = 0;           /* Arg Count */
-    char temp_string[10];
+    Arg args[2];                    // Arg List
+    register unsigned int n = 0;    // Arg Count
+//    char temp_string[10];
 
-    if (!position_calculator_dialog) {
-//        position_calculator_dialog = XtVaCreatePopupShell(langcode("Calc"),xmDialogShellWidgetClass,Global.top,
-        position_calculator_dialog = XtVaCreatePopupShell(langcode("Coordinate Calc"),xmDialogShellWidgetClass,Global.top,
+    if (!coordinate_calc_dialog) {
+        coordinate_calc_dialog = XtVaCreatePopupShell(langcode("Coordinate Calculator"),xmDialogShellWidgetClass,Global.top,
                                     XmNdeleteResponse,XmDESTROY,
                                     XmNdefaultPosition, FALSE,
                                     NULL);
 
-        pane = XtVaCreateWidget("Change Debug Level pane",xmPanedWindowWidgetClass, position_calculator_dialog,
+        pane = XtVaCreateWidget("Coordinate_calc pane",xmPanedWindowWidgetClass, coordinate_calc_dialog,
                             XmNbackground, colors[0xff],
                             NULL);
 
-        my_form =  XtVaCreateWidget("Change Debug Level my_form",xmFormWidgetClass, pane,
-                                XmNfractionBase, 5,
+        form =  XtVaCreateWidget("Coordinate_calc form",xmFormWidgetClass, pane,
+                                XmNfractionBase, 4,
                                 XmNbackground, colors[0xff],
                                 XmNautoUnmanage, FALSE,
                                 XmNshadowThickness, 1,
                                 NULL);
 
+//        label1 = XtVaCreateManagedWidget(langcode("UTM"), xmLabelWidgetClass, form,
+        label1 = XtVaCreateManagedWidget("UTM", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_FORM,
+                                XmNtopOffset, 5,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+//        label2 = XtVaCreateManagedWidget(langcode("Latitude or"), xmLabelWidgetClass, form,
+        label2 = XtVaCreateManagedWidget("Latitude or", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_FORM,
+                                XmNtopOffset, 5,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 70,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+//        label3 = XtVaCreateManagedWidget(langcode("Longitude or"), xmLabelWidgetClass, form,
+        label3 = XtVaCreateManagedWidget("Longitude or", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_FORM,
+                                XmNtopOffset, 5,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 200,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+//        label4 = XtVaCreateManagedWidget(langcode("Zone"), xmLabelWidgetClass, form,
+        label4 = XtVaCreateManagedWidget("Zone", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label1,
+                                XmNtopOffset, 2,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 10,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+//        label5 = XtVaCreateManagedWidget(langcode("UTM Easting"), xmLabelWidgetClass, form,
+        label5 = XtVaCreateManagedWidget("UTM Easting", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label1,
+                                XmNtopOffset, 2,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 70,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+//        label6 = XtVaCreateManagedWidget(langcode("UTM Northing"), xmLabelWidgetClass, form,
+        label6 = XtVaCreateManagedWidget("UTM Northing", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, label1,
+                                XmNtopOffset, 2,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 200,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
 
         /*set args for color */
-        ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        n=0;
+        XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
 
-        debug_level_text = XtVaCreateManagedWidget("Change_Debug_Level debug text", xmTextWidgetClass, my_form,
+        coordinate_calc_zone = XtVaCreateManagedWidget("Coordinate_calc zone", xmTextWidgetClass, form,
                             XmNeditable,   TRUE,
                             XmNcursorPositionVisible, TRUE,
                             XmNsensitive, TRUE,
                             XmNshadowThickness,    1,
                             XmNcolumns, 4,
                             XmNwidth, ((5*7)+2),
-                            XmNmaxLength, 4,
+                            XmNmaxLength, 3,
                             XmNbackground, colors[0x0f],
                             XmNtopOffset, 5,
-                            XmNtopAttachment,XmATTACH_FORM,
+                            XmNtopAttachment,XmATTACH_WIDGET,
+                            XmNtopWidget, label4,
                             XmNbottomAttachment,XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_POSITION,
-                            XmNleftPosition, 2,
-                            XmNrightAttachment,XmATTACH_POSITION,
-                            XmNrightPosition, 3,
+                            XmNleftAttachment, XmATTACH_FORM,
+                            XmNleftOffset, 5,
+                            XmNrightAttachment,XmATTACH_NONE,
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
 
-        // Fill in the current value of debug_level
-        xastir_snprintf(temp_string, sizeof(temp_string), "%d", debug_level);
-        XmTextSetString(debug_level_text, temp_string);
+       coordinate_calc_latitude_easting = XtVaCreateManagedWidget("Coordinate_calc lat", xmTextWidgetClass, form,
+                            XmNeditable,   TRUE,
+                            XmNcursorPositionVisible, TRUE,
+                            XmNsensitive, TRUE,
+                            XmNshadowThickness,    1,
+                            XmNcolumns, 13,
+                            XmNwidth, ((13*7)+2),
+                            XmNmaxLength, 12,
+                            XmNbackground, colors[0x0f],
+                            XmNtopOffset, 5,
+                            XmNtopAttachment,XmATTACH_WIDGET,
+                            XmNtopWidget, label4,
+                            XmNbottomAttachment,XmATTACH_NONE,
+                            XmNleftAttachment, XmATTACH_FORM,
+                            XmNleftOffset, 65,
+                            XmNrightAttachment,XmATTACH_NONE,
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, my_form,
+
+        coordinate_calc_longitude_northing = XtVaCreateManagedWidget("Coordinate_calc lon", xmTextWidgetClass, form,
+                            XmNeditable,   TRUE,
+                            XmNcursorPositionVisible, TRUE,
+                            XmNsensitive, TRUE,
+                            XmNshadowThickness,    1,
+                            XmNcolumns, 13,
+                            XmNwidth, ((14*7)+2),
+                            XmNmaxLength, 13,
+                            XmNbackground, colors[0x0f],
+                            XmNtopOffset, 5,
+                            XmNtopAttachment,XmATTACH_WIDGET,
+                            XmNtopWidget, label4,
+                            XmNbottomAttachment,XmATTACH_NONE,
+                            XmNleftAttachment, XmATTACH_FORM,
+                            XmNleftOffset, 195,
+                            XmNrightAttachment,XmATTACH_NONE,
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+
+//        xastir_snprintf(temp_string, sizeof(temp_string), "%d", temp);
+//        XmTextSetString(coordinate_calc_text, temp_string);
+
+        result_text = NULL;
+        result_text = XtVaCreateManagedWidget("Coordinate_calc results",xmTextWidgetClass,form,
+                            XmNrows, 7,
+                            XmNcolumns, 30,
+                            XmNeditable, FALSE,
+                            XmNtraversalOn, FALSE,
+                            XmNeditMode, XmMULTI_LINE_EDIT,
+                            XmNwordWrap, TRUE,
+                            XmNbackground, colors[0xff],
+                            XmNscrollHorizontal, FALSE,
+                            XmNcursorPositionVisible, FALSE,
+                            XmNtopAttachment, XmATTACH_WIDGET,
+                            XmNtopWidget, coordinate_calc_zone,
+                            XmNtopOffset, 5,
+                            XmNbottomAttachment, XmATTACH_NONE,
+                            XmNleftAttachment, XmATTACH_FORM,
+                            XmNleftOffset, 5,
+                            XmNrightAttachment, XmATTACH_FORM,
+                            XmNrightOffset, 5,
+                            NULL);
+
+        button_clear = XtVaCreateManagedWidget(langcode("Clear"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, debug_level_text,
+                                        XmNtopWidget, result_text,
+                                        XmNtopOffset, 5,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 5,
+                                        XmNleftAttachment, XmATTACH_POSITION,
+                                        XmNleftPosition, 0,
+                                        XmNrightAttachment, XmATTACH_POSITION,
+                                        XmNrightPosition, 1,
+                                        XmNbackground, colors[0xff],
+                                        XmNnavigationType, XmTAB_GROUP,
+                                        NULL);
+
+
+        button_calculate = XtVaCreateManagedWidget(langcode("Calculate"),xmPushButtonGadgetClass, form,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, result_text,
                                         XmNtopOffset, 5,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
@@ -810,9 +977,24 @@ void Position_calculator(Widget w, XtPointer clientData, XtPointer callData) {
                                         NULL);
 
 
-        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, my_form,
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, debug_level_text,
+                                        XmNtopWidget, result_text,
+                                        XmNtopOffset, 5,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 5,
+                                        XmNleftAttachment, XmATTACH_POSITION,
+                                        XmNleftPosition, 2,
+                                        XmNrightAttachment, XmATTACH_POSITION,
+                                        XmNrightPosition, 3,
+                                        XmNbackground, colors[0xff],
+                                        XmNnavigationType, XmTAB_GROUP,
+                                        NULL);
+
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, result_text,
                                         XmNtopOffset, 5,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
@@ -823,30 +1005,31 @@ void Position_calculator(Widget w, XtPointer clientData, XtPointer callData) {
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
+        XtAddCallback(button_clear, XmNactivateCallback, Coordinate_calc_clear_data, coordinate_calc_dialog);
+//        XtAddCallback(button_calculate, XmNactivateCallback, Coordinate_calc_destroy_shell, coordinate_calc_dialog);
+        XtAddCallback(button_ok, XmNactivateCallback, Coordinate_calc_change_data, coordinate_calc_dialog);
+        XtAddCallback(button_cancel, XmNactivateCallback, Coordinate_calc_destroy_shell, coordinate_calc_dialog);
 
-        XtAddCallback(button_ok, XmNactivateCallback, Position_calculator_change_data, position_calculator_dialog);
-        XtAddCallback(button_close, XmNactivateCallback, Position_calculator_destroy_shell, position_calculator_dialog);
+        pos_dialog(coordinate_calc_dialog);
 
-        pos_dialog(position_calculator_dialog);
+        delw = XmInternAtom(XtDisplay(coordinate_calc_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(coordinate_calc_dialog, delw, Coordinate_calc_destroy_shell, (XtPointer)coordinate_calc_dialog);
 
-        delw = XmInternAtom(XtDisplay(position_calculator_dialog),"WM_DELETE_WINDOW", FALSE);
-        XmAddWMProtocolCallback(position_calculator_dialog, delw, Position_calculator_destroy_shell, (XtPointer)position_calculator_dialog);
-
-        XtManageChild(my_form);
+        XtManageChild(form);
         XtManageChild(pane);
-
-        XtPopup(position_calculator_dialog,XtGrabNone);
-        fix_dialog_size(position_calculator_dialog);
+        XtPopup(coordinate_calc_dialog,XtGrabNone);
+        fix_dialog_size(coordinate_calc_dialog);
 
         // Move focus to the Close button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
         // have that default function happen.  Note:  We _can_ hit the
         // <SPACE> key, and that activates the option.
-//        XmUpdateDisplay(position_calculator_dialog);
-        XmProcessTraversal(button_close, XmTRAVERSE_CURRENT);
+//        XmUpdateDisplay(coordinate_calc_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
 
-    } else
-        (void)XRaiseWindow(XtDisplay(position_calculator_dialog), XtWindow(position_calculator_dialog));
+    } else {
+        (void)XRaiseWindow(XtDisplay(coordinate_calc_dialog), XtWindow(coordinate_calc_dialog));
+    }
 }
 
 
@@ -12689,7 +12872,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNbackground,              colors[0xff],
                             XmNnavigationType,          XmTAB_GROUP,
                             NULL);
-        XtAddCallback(compute_button, XmNactivateCallback, Position_calculator, configure_station_dialog);
+        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, configure_station_dialog);
 
 
 //----- Frame for table / symbol
