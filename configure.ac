@@ -233,20 +233,23 @@ if test "${use_proj}" = "yes"; then
 fi
 
 
-# Check for libgeotiff and required libraries
-use_geotiff=no
-if test "${use_proj}" = "yes"; then
-  use_geotiff=yes
-  AC_ARG_WITH(geotiff,[  --without-geotiff       Disable geotiff features.],use_geotiff=$withval)
-  if test "${use_geotiff}" = "yes"; then
-    use_geotiff=no
-    AC_CHECK_LIB(tiff, TIFFClose, AC_CHECK_LIB(proj, pj_init, AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
-    LIBS="$LIBS -ltiff -lgeotiff"
-    AC_DEFINE(HAVE_LIBGEOTIFF, , Define to 1 if you have the `geotiff' library (-lgeotiff). )
-    )))
-  fi
-fi
-
+#check for libtiff, libgeotiff
+if test "${use_proj}" = "yes" ; then
+    use_geotiff=yes
+    AC_ARG_WITH(geotiff, [  --without-geotiff       Disable geotiff features.],
+    use_geotiff=$withval)
+    if test "${use_geotiff}" = "yes"; then
+        AC_CHECK_LIB(tiff, TIFFClose, use_tiff=yes
+LIBS="$LIBS -ltiff"
+        AC_DEFINE(HAVE_TIFF, ,Define to 1 if you have the 'tiff' library (-ltiff)))
+	if test "${use_tiff}" = "yes"; then
+           use_geotiff=no
+           AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
+	       LIBS="$LIBS -lgeotiff"
+               AC_DEFINE(HAVE_LIBGEOTIFF, ,Define to 1 if you have the `geotiff' library (-lgeotiff).))
+        fi
+    fi
+fi 
 
 # Check for AX.25 library 
 use_ax25=yes
