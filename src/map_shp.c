@@ -25,6 +25,12 @@
  * Please see separate copyright notice attached to the
  * SHPRingDir_2d() function in this file.
  *
+ * DBFAWK TODO:
+ *  - default.dbfawk when no signature matches
+ *  - scale line widths based on zoom level (see city_flag, for example)
+ *  - center area polygon labels
+ *  - do more config/ *.dbfawk files!
+ *
  */
 #include "config.h"
 #include "snprintf.h"
@@ -3084,7 +3090,11 @@ if (on_screen) {
                             if ((!draw_filled || !map_color_fill) && polygon_hole_storage[ring] == 1) {
                                 // We have a hole drawn as unfilled.
                                 // Draw as a black dashed line.
+#ifdef WITH_DBFAWK
+                                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+#else
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
+#endif
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -3096,7 +3106,7 @@ if (on_screen) {
                                with the exception of what color to use! */
 #ifdef WITH_DBFAWK
                             else if (!weather_alert_flag) {
-                                /* color is already set by dbfawk! */
+                                /* color is already set by dbfawk(?) */
                                 /* And so are lanes and pattern.  Let's
                                    use what was specified. */
                                 (void)XSetLineAttributes(XtDisplay(w),
@@ -3112,10 +3122,12 @@ if (on_screen) {
 #endif /* !WITH_DBFAWK */
                                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                                 if (map_color_fill && draw_filled) {
-
                                     if (polygon_hole_flag) {
+#ifdef WITH_DBFAWK
+                                        (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
+#else
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[color]);
-
+#endif
                                         if (i >= 3) {
                                             (void)XFillPolygon(XtDisplay(w),
                                                 pixmap,
@@ -3131,8 +3143,12 @@ if (on_screen) {
                                                 npoints);
                                         }
                                     }
-                                    else {
+                                    else { /* no holes in this polygon */
                                         if (i >= 3) {
+                                            /* draw the filled polygon */
+#ifdef WITH_DBFAWK
+                                            (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
+#endif
                                             (void)XFillPolygon(XtDisplay(w),
                                                 pixmap,
                                                 gc,
@@ -3148,6 +3164,8 @@ if (on_screen) {
                                         }
                                     }
                                 }
+                                /* draw the polygon border */
+                                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (weather_alert_flag) {
@@ -3180,7 +3198,9 @@ if (on_screen) {
                                         (void)XSetForeground(XtDisplay(w), gc_temp, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[0xff]); // grey
-#endif /* !WITH_DBFAWK */
+#else
+                                    (void)XSetForeground(XtDisplay(w), gc_temp, colors[fill_color]);
+#endif /* WITH_DBFAWK */
                                     if (i >= 3) {
                                         (void)XFillPolygon(XtDisplay(w),
                                             pixmap,
@@ -3202,6 +3222,8 @@ if (on_screen) {
                                         (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
                                         (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
+#else
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[fill_color]);
 #endif /* !WITH_DFBAWK */
                                     if (i >= 3) {
                                         (void)XFillPolygon(XtDisplay (w),
@@ -3219,7 +3241,9 @@ if (on_screen) {
                                     }
                                 }
 
-                                (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
+#ifdef WITH_DBFAWK
+                                (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border color
+#endif
 
                                 // Draw a thicker border for city boundaries
 #ifndef WITH_DBFAWK
@@ -3239,7 +3263,9 @@ if (on_screen) {
                                 else {
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
                                 }
-#endif /* !WITH_DBFAWK */
+#else
+                                (void)XSetForeground(XtDisplay(w), gc, colors[color]); // border
+#endif /* WITH_DBFAWK */
 
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
