@@ -1161,6 +1161,10 @@ void draw_grid(Widget w) {
 #ifdef UT_DEBUG_ALLOC
                 fprintf(stderr,"%d)\n", i);
 #endif
+
+// NOTE:  The below is bad practice.  If the realloc fails, we lose
+// the pointer to what was alloc'ed before and it becomes a memory
+// leak.
                 utm_grid.zone[zone].col[col].point = realloc(utm_grid.zone[zone].col[col].point,
                                                              i * sizeof(XPoint));
                 utm_grid.zone[zone].col[col].nalloced = i;
@@ -1184,6 +1188,10 @@ void draw_grid(Widget w) {
 #ifdef UT_DEBUG_ALLOC
                 fprintf(stderr,"%d)\n", i);
 #endif
+
+// NOTE:  The below is bad practice.  If the realloc fails, we lose
+// the pointer to what was alloc'ed before and it becomes a memory
+// leak.
                 utm_grid.zone[zone].row[row].point = realloc(utm_grid.zone[zone].row[row].point,
                                                              i * sizeof(XPoint));
                 utm_grid.zone[zone].row[row].nalloced = i;
