@@ -1719,7 +1719,11 @@ void draw_shapefile_map (Widget w,
         end_record = nEntities;
     }
 
+
+    // Here's where we actually iterate through the entire file, drawing
+    // each structure as we find it.
     for (structure = start_record; structure < end_record; structure++) {
+        int skip_it = 0;
 
         object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
 
@@ -1911,25 +1915,36 @@ void draw_shapefile_map (Widget w,
                                     break;
                                 case '3':   // A3? = Secondary road & connecting road, state highways
                                     lanes = 3;
-//                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
+                                    // Use the default color instead (black)
+                                    //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
                                 case '4':   // A4? = Local, neighborhood & rural roads, city streets
+                                    // Skip the road if we're above zoom 100
+                                    if (scale_y >= 100)
+                                        skip_it++;
                                     lanes = 1;
-//if (scale_y) > 64
-//ok = 0;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // darkgray
                                     break;
                                 case '5':   // A5? = Vehicular trail passable only by 4WD vehicle
+                                    // Skip the road if we're above zoom 100
+                                    if (scale_y >= 100)
+                                        skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
                                 case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
                                             // service drive, ferry crossing
+                                    // Skip the road if we're above zoom 100
+                                    if (scale_y >= 100)
+                                        skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x07]); // darkgray
                                     break;
                                 case '7':   // A7? = Walkway or pedestrian trail, stairway,
                                             // alley, driveway or service road
+                                    // Skip the road if we're above zoom 100
+                                    if (scale_y >= 100)
+                                        skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
@@ -2016,7 +2031,7 @@ void draw_shapefile_map (Widget w,
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
 
-                    if (ok_to_draw) {
+                    if (ok_to_draw && !skip_it) {
                         (void)XDrawLines(XtDisplay(w), pixmap, gc, points, index, CoordModeOrigin);
                     }
                     break;
@@ -2100,7 +2115,7 @@ void draw_shapefile_map (Widget w,
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x48]); // Blue
                                 if (map_color_fill) {
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
+//                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
                                 }
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
