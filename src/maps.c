@@ -1091,9 +1091,8 @@ void draw_grid(Widget w) {
         utm_grid.hash.lr_y = y_lat_offset  + (screen_height * scale_y);
 
 utm_grid_draw:
-//        // Draw grid in dashed dark gray lines
-//        (void)XSetForeground(XtDisplay (w), gc, colors[0x50]);
-        (void)XSetForeground(XtDisplay(w), gc, colors[0x22]); // Blue
+        // Draw grid in dashed yellow lines
+        (void)XSetForeground(XtDisplay(w), gc, colors[0x27]);
 
 
 
