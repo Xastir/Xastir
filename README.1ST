@@ -1405,6 +1405,8 @@ WINDOWS/CYGWIN NOTES:
      Cygwin, which the install script doesn't know about.  Edit the Makefile
      to add a ".exe" after those to names and try again.  It should complete
      ok.
+
+     "configure" still doesn't find libgeotiff.  Am investigating why.
  
      -------------------------
 
