@@ -825,10 +825,11 @@ void draw_grid(Widget w) {
         // for drawing the smaller grid
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
 
+
 // Draw the minor UTM grids.  These are based off the central
 // meridian running up the middle of each zone (3 degrees from
 // either side of the standard six-degree zones).  Even the
-// irregular zones go off the same medians.  UTM grids are defined
+// irregular zones key off the same medians.  UTM grids are defined
 // in terms of meters instead of lat/long, so they don't line up
 // with the left/right edges of the zones or with the longitude
 // lines.
@@ -842,7 +843,7 @@ void draw_grid(Widget w) {
 // have sizes of 3/9/12 degrees (width) instead of 6 degrees.
 
 
-        // Now setup for drawing zone grid(s)
+        // Set up for drawing zone grid(s)
         if (scale_x < 15)
             utm_grid_spacing_m =    100;
         else if (scale_x < 150)
@@ -867,31 +868,30 @@ void draw_grid(Widget w) {
         if (utm_grid_clear(1))  // Had a problem
             return;
 
-        // Go find top left point
+        // Find top left point of current view
         xx = x_long_offset;
         yy = y_lat_offset;
         convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
         n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
 
-        // Fix the coordinates to the nearest subgrid intersection,
-        // based on our current grid spacing.  Bump the northing up
-        // by one subgrid.
+        // Move the coordinates to the nearest subgrid intersection,
+        // based on our current grid spacing.  The grid intersection
+        // we calculate here is northwest of our view's northwest
+        // corner.
         e[0] /= utm_grid_spacing_m;
         e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
         n[0] /= utm_grid_spacing_m;
         n[0]  = (double)((int)n[0] * utm_grid_spacing_m);
+        n[0] += utm_grid_spacing_m;
+
 
 //WE7U
-// Commenting out the below line makes lines near major zone
-// boundaries worse.  Adding another identical line makes the line
-// drawing problem reverse direction.  It's probably a clue.  It
-// appears that the horizontal grid lines get messed up in cases
+// It appears that the horizontal grid lines get messed up in cases
 // where the top horizontal line doesn't make it all the way across
 // the screen before it goes out of view.  That's a major clue!
-// Looks like the left end of it being above the current view is
-// concurrent with the problem showing up.
+// Looks like the left end of the grid line being above the current
+// view is concurrent with the problem showing up.
 //
-        n[0] += utm_grid_spacing_m;
 
 
         e[1] = e[0];
@@ -1081,6 +1081,13 @@ void draw_grid(Widget w) {
                     if (z1 != z2 && zone+1 < UTM_GRID_MAX_ZONES) {
                         // copy over last points to start off new
                         // zone
+
+//WE7U:  This is where we can end up linking up/down one grid width
+//between zones!!!  Without it though, we end up have a blank
+//section to the right of the zone boundary.  Perhaps we could do
+//this here, but when we get the next points calculated, we could
+//check to see if we're off by about one grid width in the vertical
+//direction.  If so, shift the initial point by that amount?
 
 #ifdef UT_DEBUG
                         fprintf(stderr,"ztm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
