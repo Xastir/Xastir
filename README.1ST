@@ -373,7 +373,7 @@ First Time Install:
 
        Apply the patch to geo_trans.c BEFORE compiling libgeotiff.
        The patch might not apply to anything later than 1.1.3.
-       Contact we7u@mail.com if you have troubles with this patch.
+       Contact archer@eskimo.com if you have troubles with this patch.
        So far libgeotiff-1.1.5 release candidate appears to be
        better in this regard.  Use it if available.
 
