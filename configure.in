@@ -202,7 +202,7 @@ echo
 echo
 echo Xastir will be installed in $prefix/bin.
 if test "x$xastirpath" != "x" ; then
-	echo Warning: You have an old copy of Xastir at $xastirpath.
+        echo Warning: You have an old copy of Xastir at $xastirpath.
 fi
 
 XASTIR_MSG_CONFIGURE_END

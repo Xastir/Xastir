@@ -141,7 +141,7 @@ To use online maps or findu.com historical data, you'll need wget installed.
    upgrade your installed version for this feature to work correctly from
    within Xastir:
     Wget:
-	ftp://ftp.gnu.org/gnu/wget/
+        ftp://ftp.gnu.org/gnu/wget/
 
 
 See below for instructions on installing all of these libraries. Once the 

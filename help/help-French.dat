@@ -1,10 +1,10 @@
 HELP-INDEX>ME LIRE EN PREMIER - License
 
-			ME LIRE EN PREMIER pour XASTIR
+                        ME LIRE EN PREMIER pour XASTIR
 
 Traduction Francaise par F1SJE F1SJE@F1SJE.FRPA.FRA.EU
 Correction et derniers peaufinages F1IOL@F6KBF.FRPA.FRA.EU
-			
+                        
 !!! NOTE: Ces documentations ne sont peut-être pas à jour ou incomplètes
 
 Les plus récentes informations sont dans le README.1ST dans le répertoire
@@ -42,8 +42,8 @@ http://www.gnu.org
 
 HELP-INDEX>Bienvenue! Et notes de l'auteur.
 
-			Bienvenue dans Xastir
-			
+                        Bienvenue dans Xastir
+                        
 XASTIR, ou X-windows Amateur Station Tracking and Information Reporting.
 
 C'est un programme APRS(tm) dont les sources sont ouvertes et libres 
@@ -89,7 +89,7 @@ sélectionnez vous faites passer l'option en gris.
 
 HELP-INDEX>Configuration de la station
 
-				Configuration de la station
+                                Configuration de la station
   
 Entrez votre indicatif/SSID.
 
@@ -120,7 +120,7 @@ Idem pour la hauteur, ce n'est pas la hauteur au dessus du sol
 mais la hauteur au dessus du niveau de la mer.
 
 Chiffre a utiliser    0   1   2   3    4    5    6     7     8     9 
-Hauteur		     10  20  40  80  160  320  640  1280  2560  5120
+Hauteur              10  20  40  80  160  320  640  1280  2560  5120
 
 Exemple : Entrez 7 pour 1280m
 
@@ -147,8 +147,8 @@ les paramètres courants.
 
 HELP-INDEX>Comment utiliser mon GPS avec Xastir
 
-			Comment utiliser mon GPS avec Xastir
-			
+                        Comment utiliser mon GPS avec Xastir
+                        
 Vous avez 3 solutions, un GPS en réseau , un GPS sur port série ou un GPS
 sur port série avec TNC et câble HSP.
 L'intérêt d'un GPS en réseau est que vous pouvez le partager avec d'autres 
@@ -193,7 +193,7 @@ TNC Série avec HSP et GPS :
 
 HELP-INDEX>Configurer les Defauts
 
-				Configurer les Defauts
+                                Configurer les Defauts
 
 cliquez sur Configurer/Defaut.
 
@@ -207,7 +207,7 @@ les paramètres courants.
 
 HELP-INDEX>Configurer le port GPS
 
-				Configurer le port GPS
+                                Configurer le port GPS
 cliquez sur Configurer/Interfaces
 Ajouter
 Série GPS pour un GPS seul, vous utiliserez un port série style ttyS1.
@@ -235,8 +235,8 @@ les paramètres courants.
 
 HELP-INDEX>Configurer le port TNC
 
-				Configurer le port TNC
-				
+                                Configurer le port TNC
+                                
 cliquez sur Configurer/Interface
 Ajouter
 Choisir votre TNC 
@@ -263,7 +263,7 @@ les paramètres courants.
 
 HELP-INDEX>Configurer la connexion à Internet
 
-			Configurer la connexion à Internet
+                        Configurer la connexion à Internet
 
 Vous devez connaître un serveur et un n° de port, par defaut 
 www.aprs.net port 10151. Un mot de passe valide autorisera votre
@@ -288,8 +288,8 @@ Sa page d'accueil est  "http://web.usna.navy.mil/~bruninga/aprs.html"
 
 HELP-INDEX>Configurer alertes sonores
 
-				Configurer alertes sonores
-				
+                                Configurer alertes sonores
+                                
 Bien évidement vous devez avoir une carte son ! il vous faudra aussi un
 programme qui joue les .wav, mettez le chemin complet dans la fenêtre 
 commande audio.
@@ -319,7 +319,7 @@ les mesures anglaises sont disponibles.
 
 HELP-INDEX>Ligne de status inférieure
 
-				Ligne de status inférieure
+                                Ligne de status inférieure
 
 En bas de la fenêtre vous pouvez voir différents messages :
 
@@ -334,8 +334,8 @@ Un ">" pour des données sortantes et un "<" pour des données entrantes.
 
 HELP-INDEX>Mouvements de la carte (Zoom et N.S.E.W) et menu options
 
-	Mouvements de la carte (Zoom et N.S.E.W) et menu options
-		
+        Mouvements de la carte (Zoom et N.S.E.W) et menu options
+                
 Les mouvements de la carte sont très simple, la facilité et la rapidité
 des mouvements dépend de la vitesse du processeur et du niveau de détail
 des cartes chargées.
@@ -349,8 +349,8 @@ loin un choix vous sera proposé.
 
 HELP-INDEX>Menu Cartes et choix de cartes
 
-			Menu Cartes et choix de cartes
-			
+                        Menu Cartes et choix de cartes
+                        
 Carte automatique Actif/Inactif
 Si actif toutes les cartes du sous répertoire "map" et toutes celle des
 répertoires dessous seront affichées si elles correspondent à la région
@@ -375,8 +375,8 @@ les paramètres courants.
 
 HELP-INDEX>Options Visualisation
 
-				Options Visualisation
-				
+                                Options Visualisation
+                                
 Ces options vous permettent d'afficher des données autour des stations
 se trouvant sur la carte.
 
@@ -419,8 +419,8 @@ direction du vent, rafales, humidité)
 
 HELP-INDEX>Messages
 
-				Messages
-				
+                                Messages
+                                
 Composer un message et message de groupe
 C'est a peu prêt la même chose. Composer un message enverra votre
 message à une unique station, inversement vous ne recevrez des 
@@ -457,16 +457,16 @@ Configure un message de réponse automatique.
 
 HELP-INDEX>Effacer toutes les stations
 
-				Effacer toutes les stations
-				
+                                Effacer toutes les stations
+                                
 cliquez sur fichier/Effacer toutes les stations enlevera toutes
 les station de votre écran et de la base de données station.
 
 
 HELP-INDEX>Relire un fichier journal
 
-				Relire un fichier journal
-				
+                                Relire un fichier journal
+                                
 cliquez sur Fichier/ouvrir un fichier journal. Choisissez un
 fichier journal, votre station va se comporter comme si elle
 recevait en émmettait de nouveau, simulant les évènements du 
@@ -476,8 +476,8 @@ renvoyer les messages à un fichier journal !
 
 HELP-INDEX>Localiser une Station
 
-				Localiser une Station
-				
+                                Localiser une Station
+                                
 Cliquer sur examiner/localiser une station, une fenêtre s'ouvre,
 entrez un indicatif ou une partie. Par défaut Xastir cherchera
 la correspondance exacte (D'une station ou d'un objet). Case exact
@@ -488,8 +488,8 @@ Cliquer sur annuler fermera la fenêtre.
 
 HELP-INDEX>Table des symboles
 
-				Table des symboles
-				
+                                Table des symboles
+                                
 
 
 

@@ -400,7 +400,7 @@ void Station_List_fill(int type, int new_offset) {
         // check boundaries
         new_offset += cur_offset - last_offset[type];   // adjust for database changes
 
-	if (count == 0) count = 1;                      // empty
+        if (count == 0) count = 1;                      // empty
         if (count - new_offset < rows)                  // bottom
             new_offset = count - rows;                  // keep page filled, if possible
         if (new_offset < 0)                             // top

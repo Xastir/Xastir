@@ -742,9 +742,9 @@ void create_image(Widget w) {
             colors[0xfd] = (int)GetPixelByName(w,"white");
             break;
 
-		case 11 :
-			colors[0xfd] = (int)GetPixelByName(w, "black");
-			break;
+                case 11 :
+                        colors[0xfd] = (int)GetPixelByName(w, "black");
+                        break;
 
         default:
             colors[0xfd] = (int)GetPixelByName(appshell,"gray73");
@@ -880,8 +880,8 @@ void refresh_image(Widget w) {
     (void)XCopyArea(XtDisplay(w),pixmap,pixmap_alerts,gc,0,0,screen_width,screen_height,0,0);
 
     if (!wx_alert_style && !disable_all_maps) {
-	    statusline(langcode("BBARSTA034"),1);
-	    load_alert_maps(w, ALERT_MAP_DIR);  // These write onto pixmap_alerts
+            statusline(langcode("BBARSTA034"),1);
+            load_alert_maps(w, ALERT_MAP_DIR);  // These write onto pixmap_alerts
     }
 
     /* copy over map and alert data to final pixmap */
@@ -2237,7 +2237,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(save_button,          XmNactivateCallback,Save_Config,NULL);
     XtAddCallback(test_button,          XmNactivateCallback,Test,NULL);
     if (!debug_level) {
-	    XtSetSensitive(test_button, False);
+            XtSetSensitive(test_button, False);
     }
 
     XtAddCallback(debug_level_button,   XmNactivateCallback, Change_Debug_Level,NULL);
@@ -2831,7 +2831,7 @@ void create_gc(Widget w) {
                         DefaultDepthOfScreen(XtScreen(w)));
 
     pixmap_stipple=XCreateBitmapFromData(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
-					 Stipple, STIPPLE_WIDTH, STIPPLE_HEIGHT);
+                                         Stipple, STIPPLE_WIDTH, STIPPLE_HEIGHT);
 
     display_up=1;
 
@@ -3264,7 +3264,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     time_t nexttime;
     int do_time;
     int max;
-	int i;
+        int i;
     static int last_alert_on_screen;
 
     do_time = 0;
@@ -3351,7 +3351,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 sec_next_gps = sec_now()+gps_time;
                 /*printf("Check GPS\n");*/
                 /* set dtr lines down */
-				/* works for SERIAL_GPS and SERIAL_TNC_HSP_GPS */
+                                /* works for SERIAL_GPS and SERIAL_TNC_HSP_GPS */
                 dtr_all_set(1);
                 if(gps_stop_now)
                     gps_stop_now = 0;
@@ -3471,7 +3471,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
     printf("data_lock\n");
 
                 if (data_avail) {
-                    int data_type;		/* 0=AX25, 1=GPS */
+                    int data_type;              /* 0=AX25, 1=GPS */
 
                     switch (port_data[data_port].device_type) {
                         /* NET Data stream */
@@ -5646,7 +5646,7 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
                 if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
                     && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
                     && ( (temp[length - 12] == 'o') || (temp[length - 12] == 'O')
-		            || (temp[length - 12] == 'k') || (temp[length - 12] == 'K') ) )
+                            || (temp[length - 12] == 'k') || (temp[length - 12] == 'K') ) )
                     fprintf(f,"%s\n",temp);
                 XtFree(temp);
             }

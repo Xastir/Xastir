@@ -1207,7 +1207,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
 
     if (debug_level & 128)
-	printf("Display station called for Single=%d.\n", single);
+        printf("Display station called for Single=%d.\n", single);
 
     if (!symbol_display)
         return;
@@ -1415,7 +1415,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
 
     if (show_amb && p_station->pos_amb)
-	    draw_ambiguity(p_station->coord_lon,p_station->coord_lat,p_station->pos_amb,temp_sec_heard,pixmap_final);
+            draw_ambiguity(p_station->coord_lon,p_station->coord_lat,p_station->pos_amb,temp_sec_heard,pixmap_final);
 
 //WE7U
     // Check for DF'ing data, draw DF circles if present and enabled
@@ -1442,7 +1442,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
 
     if (p_station->aprs_symbol.area_object.type != AREA_NONE)
-	    draw_area(p_station->coord_lon, p_station->coord_lat,
+            draw_area(p_station->coord_lon, p_station->coord_lat,
             p_station->aprs_symbol.area_object.type,
             p_station->aprs_symbol.area_object.color,
             p_station->aprs_symbol.area_object.sqrt_lat_off,
@@ -2355,8 +2355,8 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             /* Current Power Gain ... */
             if (strlen(p_station->power_gain) == 7)
                 phg_decode(langcode("WPUPSTI014"), p_station->power_gain, temp, sizeof(temp) );
-	        else if (p_station->flag & (ST_OBJECT|ST_ITEM))
-		        //sprintf(temp, langcode("WPUPSTI014"), "none");
+                else if (p_station->flag & (ST_OBJECT|ST_ITEM))
+                        //sprintf(temp, langcode("WPUPSTI014"), "none");
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI014"), "none");
 
             else if (units_english_metric)
@@ -5431,19 +5431,19 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
     char nrq[3+1];
 
     if (p_station->aprs_symbol.aprs_type == '\\' && p_station->aprs_symbol.aprs_symbol == 'l') {
-	    /* This check needs to come first because the area object extension can look
-	       exactly like what extract_speed_course will attempt to decode. */
-	    extract_area(p_station, data);
+            /* This check needs to come first because the area object extension can look
+               exactly like what extract_speed_course will attempt to decode. */
+            extract_area(p_station, data);
     } else {
-	    clear_area(p_station); // we got a packet with a non area symbol, so clear the data
+            clear_area(p_station); // we got a packet with a non area symbol, so clear the data
 
-	    if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
+            if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
             //printf("extracted speed/course\n");
-	        if (atof(temp2) > 0) {
+                if (atof(temp2) > 0) {
                 //printf("course is non-zero\n");
-		        //sprintf(p_station->speed,"%06.2f",atof(temp1));     // in knots
+                        //sprintf(p_station->speed,"%06.2f",atof(temp1));     // in knots
                 xastir_snprintf(p_station->speed, sizeof(p_station->speed), "%06.2f",atof(temp1));
-		        strcpy(p_station->course, temp2);                    // in degrees
+                        strcpy(p_station->course, temp2);                    // in degrees
             }
 
             if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
@@ -5451,10 +5451,10 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                 strcpy(p_station->bearing,bearing);
                 strcpy(p_station->NRQ,nrq);
                 p_station->signal_gain[0] = '\0';   // And blank out the shgd values
-	        }
-	    } else {
-	        if (extract_powergain(data,temp1)) {
-		        strcpy(p_station->power_gain,temp1);
+                }
+            } else {
+                if (extract_powergain(data,temp1)) {
+                        strcpy(p_station->power_gain,temp1);
 
                 if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
                     //printf("extracted bearing and NRQ\n");
@@ -5462,9 +5462,9 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                     strcpy(p_station->NRQ,nrq);
                     p_station->signal_gain[0] = '\0';   // And blank out the shgd values
                 }
-	        }
+                }
             else {
-		        if (extract_omnidf(data,temp1)) {
+                        if (extract_omnidf(data,temp1)) {
                     strcpy(p_station->signal_gain,temp1);   // Grab the SHGD values
                     p_station->bearing[0] = '\0';   // And blank out the bearing/NRQ values
                     p_station->NRQ[0] = '\0';
@@ -5472,13 +5472,13 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                     // The spec shows speed/course before DFS, but example packets that
                     // come with DOSaprs show DFSxxxx/speed/course.  We'll take care of
                     // that possibility by trying to decode speed/course again.
-	                if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
+                        if (extract_speed_course(data,temp1,temp2)) {  // ... from Mic-E, etc.
                         //printf("extracted speed/course\n");
-	                    if (atof(temp2) > 0) {
+                            if (atof(temp2) > 0) {
                             //printf("course is non-zero\n");
-		                    //sprintf(p_station->speed,"%06.2f",atof(temp1));     // in knots
+                                    //sprintf(p_station->speed,"%06.2f",atof(temp1));     // in knots
                             xastir_snprintf(p_station->speed, sizeof(p_station->speed), "%06.2f",atof(temp1));
-		                    strcpy(p_station->course,temp2);                    // in degrees
+                                    strcpy(p_station->course,temp2);                    // in degrees
                         }
                     }
 
@@ -5492,8 +5492,8 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                         //p_station->signal_gain[0] = '\0';   // And blank out the shgd values
                     }
                 }
-	        }
-	    }
+                }
+            }
         if (extract_signpost(data, temp2)) {
             //printf("extracted signpost data\n");
             strcpy(p_station->signpost,temp2);
@@ -6342,7 +6342,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                             p_station->call_sign);
                     }
                     moving = 1;                         // it's moving if it has a trail
-				}
+                                }
                 else {
                     if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0) {
                         if (debug_level & 256) {
@@ -6350,7 +6350,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                 p_station->call_sign);
                         }
                         moving = 1;                     // declare it moving, if it has a speed
-					}
+                                        }
                     else {
                         if (debug_level & 256) {
                             printf("Position defined: %d, Changed: %s\n",
@@ -6366,7 +6366,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                     p_station->call_sign);
                             }
                             moving = 1;                 // it's moving if it has changed the position
-						}
+                                                }
                         else {
                             if (debug_level & 256) {
                                 printf("Station %s still appears stationary.\n",
@@ -6377,9 +6377,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                     last_lat,             last_lon);
                             }
                             moving = 0;
-						}
-					}
-				}
+                                                }
+                                        }
+                                }
                 changed_pos = 0;
                 if (moving == 1) {                      
                     p_station->flag |= (ST_MOVING);
@@ -6401,13 +6401,13 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                         p_station->call_sign);
                                 }
                                 (void)store_trail_point(p_station,last_lon,last_lat,last_stn_sec,last_alt,last_speed,last_course,last_flag);
-							}
-						}
+                                                        }
+                                                }
                         //if (   p_station->coord_lon != last_lon
                         //    || p_station->coord_lat != last_lat ) {
                         // we don't store redundant points (may change this
-						// later ?)
-						//
+                                                // later ?)
+                                                //
                         // there are often echoes delayed 15 minutes or so
                         // it looks ugly on the trail, so I want to discard them
                         // This also discards immediate echoes
@@ -6420,7 +6420,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                 p_station->call_sign);
                         }
                     }
-					else {
+                                        else {
                         if (debug_level & 256 || debug_level & 1)
                             printf("Speed over %d mph\n",TRAIL_MAX_SPEED);
                     }
@@ -6437,7 +6437,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         if (debug_level & 256) {
                             printf("Adding Solid Trail for %s\n",
                             p_station->call_sign);
-						}
+                                                }
                         draw_trail(da,p_station,1);         // update trail
                         scrupd = 1;
                     }
@@ -6505,7 +6505,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             value = (float)calc_distance_course(l_lat,l_lon,
                     p_station->coord_lat,p_station->coord_lon,temp_data,sizeof(temp_data));
             distance = value * cvt_kn2len;
-	
+        
             /* check ranges */
             if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && sound_play_prox_message) {
                 //sprintf(station_id,"%s < %.3f %s",p_station->call_sign, distance,
@@ -6519,39 +6519,39 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 #ifdef HAVE_FESTIVAL
             if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && festival_speak_proximity_alert) {
                 if (units_english_metric) {
-		    if (distance < 1.0)
-		        //sprintf(station_id, langcode("SPCHSTR005"), p_station->call_sign,
+                    if (distance < 1.0)
+                        //sprintf(station_id, langcode("SPCHSTR005"), p_station->call_sign,
                 //            (int)(distance * 1760), langcode("SPCHSTR004")); // say it in yards
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), p_station->call_sign,
                             (int)(distance * 1760), langcode("SPCHSTR004")); // say it in yards
-		    else if ((int)((distance * 10) + 0.5) % 10)
-		        //sprintf(station_id, langcode("SPCHSTR006"), p_station->call_sign, distance,
-			    //langcode("SPCHSTR003")); // say it in miles with one decimal
+                    else if ((int)((distance * 10) + 0.5) % 10)
+                        //sprintf(station_id, langcode("SPCHSTR006"), p_station->call_sign, distance,
+                            //langcode("SPCHSTR003")); // say it in miles with one decimal
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR006"), p_station->call_sign, distance,
                         langcode("SPCHSTR003")); // say it in miles with one decimal
-		    else
-		        //sprintf(station_id, langcode("SPCHSTR005"), p_station->call_sign, (int)(distance + 0.5),
-			    //langcode("SPCHSTR003")); // say it in miles with no decimal
+                    else
+                        //sprintf(station_id, langcode("SPCHSTR005"), p_station->call_sign, (int)(distance + 0.5),
+                            //langcode("SPCHSTR003")); // say it in miles with no decimal
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), p_station->call_sign, (int)(distance + 0.5),
                         langcode("SPCHSTR003")); // say it in miles with no decimal
-	        } else {
-		    if (distance < 1.0)
+                } else {
+                    if (distance < 1.0)
                 //sprintf(station_id, langcode("SPCHSTR005"), p_station->call_sign,
                 //  (int)(distance * 1000), langcode("SPCHSTR002")); // say it in meters
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), p_station->call_sign,
                         (int)(distance * 1000), langcode("SPCHSTR002")); // say it in meters
-		    else if ((int)((distance * 10) + 0.5) % 10)
-		        //sprintf(station_id, langcode("SPCHSTR006"), p_station->call_sign, distance,
-			    //langcode("SPCHSTR001")); // say it in kilometers with one decimal
+                    else if ((int)((distance * 10) + 0.5) % 10)
+                        //sprintf(station_id, langcode("SPCHSTR006"), p_station->call_sign, distance,
+                            //langcode("SPCHSTR001")); // say it in kilometers with one decimal
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR006"), p_station->call_sign, distance,
                         langcode("SPCHSTR001")); // say it in kilometers with one decimal
-		    else
+                    else
                 //sprintf(station_id, langcode("SPCHSTR005"), p_station->call_sign, (int)(distance + 0.5),
                 //  langcode("SPCHSTR001")); // say it in kilometers with no decimal
                 xastir_snprintf(station_id, sizeof(station_id), langcode("SPCHSTR005"), p_station->call_sign, (int)(distance + 0.5),
                     langcode("SPCHSTR001")); // say it in kilometers with no decimal
-		}
-		SayText(station_id);
+                }
+                SayText(station_id);
             }
 #endif
             /* FG really should check the path before we do this and add setup for these ranges */
@@ -6722,26 +6722,26 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     strp[10] = '\0';
     switch (my_amb) {
     case 1: // 1/10th minute
-	temp_data[6] = strp[7] = '5';
-	break;
+        temp_data[6] = strp[7] = '5';
+        break;
     case 2: // 1 minute
-	temp_data[5] = strp[6] = '5';
-	temp_data[6] = '0';
-	strp[7]      = '0';
-	break;
+        temp_data[5] = strp[6] = '5';
+        temp_data[6] = '0';
+        strp[7]      = '0';
+        break;
     case 3: // 10 minutes
-	temp_data[3] = strp[4] = '5';
-	temp_data[5] = temp_data[6] = '0';
-	strp[6]      = strp[7]      = '0';
-	break;
+        temp_data[3] = strp[4] = '5';
+        temp_data[5] = temp_data[6] = '0';
+        strp[6]      = strp[7]      = '0';
+        break;
     case 4: // 1 degree
-	temp_data[2] = strp[3] = '3';
-	temp_data[3] = temp_data[5] = temp_data[6] = '0';
-	strp[4]      = strp[6]      = strp[7]      = '0';
-	break;
+        temp_data[2] = strp[3] = '3';
+        temp_data[3] = temp_data[5] = temp_data[6] = '0';
+        strp[4]      = strp[6]      = strp[7]      = '0';
+        break;
     case 0:
     default:
-	break;
+        break;
     }
     p_station->coord_lat = convert_lat_s2l(temp_data);
     p_station->coord_lon = convert_lon_s2l(strp);
@@ -8023,26 +8023,26 @@ int extract_object(char *call, char **info, char *origin) {
         }
     } else if ((*info)[0] == ')') {             // item
         // 3 - 9 character item name with any printable ASCII character
-	if (strlen((*info)) > 1+3) {
-	    for (i = 1; i <= 9; i++) {
-		if ((*info)[i] == '!' || (*info)[i] == '_') {
-		    call[i-1] = '\0';
-		    break;
-		}
-		call[i-1] = (*info)[i];
-	    }
-	    call[9] = '\0';  // In case we never saw '!' || '_'
-	    (*info) = &(*info)[i];
+        if (strlen((*info)) > 1+3) {
+            for (i = 1; i <= 9; i++) {
+                if ((*info)[i] == '!' || (*info)[i] == '_') {
+                    call[i-1] = '\0';
+                    break;
+                }
+                call[i-1] = (*info)[i];
+            }
+            call[9] = '\0';  // In case we never saw '!' || '_'
+            (*info) = &(*info)[i];
             // Remove leading spaces ? They look bad, but are allowed by the APRS Reference ???
             //(void)remove_trailing_spaces(call);   // This statement messed up our searching!!! Don't use it!
             if (valid_object(call)) {
                 // info length is at least 1
                 ok = 1;
             }
-	}
+        }
     } else {
-	printf("Not an object, nor an item!!! call=%s, info=%s, origin=%s.\n",
-	       call, *info, origin);
+        printf("Not an object, nor an item!!! call=%s, info=%s, origin=%s.\n",
+               call, *info, origin);
     }
     return(ok);
 }
@@ -8157,9 +8157,9 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     char origin[MAX_CALL+1];
     int ok;
     int third_party;
-	char backup[MAX_LINE_SIZE+1];
+        char backup[MAX_LINE_SIZE+1];
 
-	strcpy(backup, line);
+        strcpy(backup, line);
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
@@ -8253,7 +8253,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
     if (!dbadd)
     {
-	return(ok);
+        return(ok);
     }
 
     if (ok && info[0] == '}') {                                 // look for third-party traffic
@@ -8411,7 +8411,7 @@ void search_tracked_station(DataRow **p_tracked) {
                         CONVERT_HP_NORMAL);
 
         printf("Searching for stations close to tracked station %s at %s %s ...\n",
-	        t->call_sign,lat,lon);
+                t->call_sign,lat,lon);
     }
 
     while (next_station_time(&curr)) {
@@ -8422,55 +8422,55 @@ void search_tracked_station(DataRow **p_tracked) {
 
             distance =  (float)calc_distance_course(t->coord_lat,
                                                     t->coord_lon, 
-					                                curr->coord_lat,
+                                                                        curr->coord_lat,
                                                     curr->coord_lon,
-					                                bearing,
+                                                                        bearing,
                                                     sizeof(bearing)) * cvt_kn2len;
             if (debug_level & 1) 
                 printf("Looking at %s: distance %.3f bearing %s (%s)\n",
-	                curr->call_sign,distance,bearing,convert_bearing_to_name(bearing,1));
+                        curr->call_sign,distance,bearing,convert_bearing_to_name(bearing,1));
 
             /* check ranges (copied from earlier prox alert code, above) */
             if ((distance > atof(prox_min)) && (distance < atof(prox_max))) {
                 if (debug_level & 1) 
-	                printf(" tracked station is near %s!\n",curr->call_sign);
+                        printf(" tracked station is near %s!\n",curr->call_sign);
 
                 if (sound_play_prox_message) {
-	                sprintf(station_id,"%s < %.3f %s from %s",t->call_sign, distance,
-		                units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
-		                curr->call_sign);
-	                statusline(station_id,0);
-	                play_sound(sound_command,sound_prox_message);
+                        sprintf(station_id,"%s < %.3f %s from %s",t->call_sign, distance,
+                                units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+                                curr->call_sign);
+                        statusline(station_id,0);
+                        play_sound(sound_command,sound_prox_message);
                 }
 #ifdef HAVE_FESTIVAL
                 if (festival_speak_tracked_proximity_alert) {
-	                if (units_english_metric) {
-	                    if (distance < 1.0)
-	                        sprintf(station_id, langcode("SPCHSTR007"), t->call_sign,
-		                        (int)(distance * 1760), langcode("SPCHSTR004"),
-		                        convert_bearing_to_name(bearing,1), curr->call_sign);
-	                    else if ((int)((distance * 10) + 0.5) % 10)
-	                        sprintf(station_id, langcode("SPCHSTR008"), t->call_sign, distance,
-		                        langcode("SPCHSTR003"), convert_bearing_to_name(bearing,1),
-		                        curr->call_sign);
-	                    else
-	                        sprintf(station_id, langcode("SPCHSTR007"), t->call_sign, (int)(distance + 0.5),
-		                        langcode("SPCHSTR003"), convert_bearing_to_name(bearing,1),
-		                        curr->call_sign);
-	                } else {		/* metric */
-	                    if (distance < 1.0)
-	                        sprintf(station_id, langcode("SPCHSTR007"), t->call_sign,
-		                        (int)(distance * 1000), langcode("SPCHSTR002"), 
-		                        convert_bearing_to_name(bearing,1), curr->call_sign);
-	                    else if ((int)((distance * 10) + 0.5) % 10)
-	                        sprintf(station_id, langcode("SPCHSTR008"), t->call_sign, distance,
-		                        langcode("SPCHSTR001"), 
-		                        convert_bearing_to_name(bearing,1), curr->call_sign);
-	                    else
-	                        sprintf(station_id, langcode("SPCHSTR007"), t->call_sign, (int)(distance + 0.5),
-		                        langcode("SPCHSTR001"), convert_bearing_to_name(bearing,1),
-		                        curr->call_sign);
-	                }
+                        if (units_english_metric) {
+                            if (distance < 1.0)
+                                sprintf(station_id, langcode("SPCHSTR007"), t->call_sign,
+                                        (int)(distance * 1760), langcode("SPCHSTR004"),
+                                        convert_bearing_to_name(bearing,1), curr->call_sign);
+                            else if ((int)((distance * 10) + 0.5) % 10)
+                                sprintf(station_id, langcode("SPCHSTR008"), t->call_sign, distance,
+                                        langcode("SPCHSTR003"), convert_bearing_to_name(bearing,1),
+                                        curr->call_sign);
+                            else
+                                sprintf(station_id, langcode("SPCHSTR007"), t->call_sign, (int)(distance + 0.5),
+                                        langcode("SPCHSTR003"), convert_bearing_to_name(bearing,1),
+                                        curr->call_sign);
+                        } else {                /* metric */
+                            if (distance < 1.0)
+                                sprintf(station_id, langcode("SPCHSTR007"), t->call_sign,
+                                        (int)(distance * 1000), langcode("SPCHSTR002"), 
+                                        convert_bearing_to_name(bearing,1), curr->call_sign);
+                            else if ((int)((distance * 10) + 0.5) % 10)
+                                sprintf(station_id, langcode("SPCHSTR008"), t->call_sign, distance,
+                                        langcode("SPCHSTR001"), 
+                                        convert_bearing_to_name(bearing,1), curr->call_sign);
+                            else
+                                sprintf(station_id, langcode("SPCHSTR007"), t->call_sign, (int)(distance + 0.5),
+                                        langcode("SPCHSTR001"), convert_bearing_to_name(bearing,1),
+                                        curr->call_sign);
+                        }
                     if (debug_level & 1) 
                         printf(" %s\n",station_id);
                     SayText(station_id);
@@ -8545,7 +8545,7 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
                 new_lon += x_ofs/2;
             set_map_position(w, new_lat, new_lon);      // center map to new position
         }
- 	    search_tracked_station(&p_station);
+            search_tracked_station(&p_station);
     }
 }
 

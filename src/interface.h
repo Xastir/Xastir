@@ -130,8 +130,8 @@ typedef struct {
     int    transmit_data;                         /* Data transmit out of this port          */
     int    reconnect;                             /* reconnect on net failure                */
     int    connect_on_startup;                    /* connect to this device on startup       */
-	int    gps_retrieve;                          /* Character to cause SERIAL_TNC_AUX_GPS to spit out current GPS data */
-	int    set_time;							  /* Set System Time from GPS on this port   */
+        int    gps_retrieve;                          /* Character to cause SERIAL_TNC_AUX_GPS to spit out current GPS data */
+        int    set_time;                                                          /* Set System Time from GPS on this port   */
 } ioparam;
 
 

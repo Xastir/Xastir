@@ -22,12 +22,12 @@
 
 #--------------------------------------------------------------------------
 
-use POSIX;			# provides acos() function
-					    
+use POSIX;                      # provides acos() function
+                                            
 # some default values:
-$width  = 1280;			# seems to be the maximum supported by mapblast
-$height = 1024;			# seems to be the maximum supported by mapblast
-$pfx    = "../../pixelmaps/";	# prefix for path
+$width  = 1280;                 # seems to be the maximum supported by mapblast
+$height = 1024;                 # seems to be the maximum supported by mapblast
+$pfx    = "../../pixelmaps/";   # prefix for path
 $pfx    = "";
 
 # undefined values:
@@ -56,37 +56,37 @@ while (@ARGV) {
 }
 
 if (!$help && $arg && $arg !~ /^\-/) {
-    $file = $arg;			# last arg is file name
+    $file = $arg;                       # last arg is file name
 } else {
     print("ERROR: Map file name is missing\n");
     $help = 1;
 }
 
 if (!$help) {
-    if ($lat == 9999) {		# we don't yet have a latitude
+    if ($lat == 9999) {         # we don't yet have a latitude
         if ($file =~ /N(\d{1,2}(\.\d+)?)/)  { $lat =  $1 }
-	if ($file =~ /S(\d{1,2}(\.\d+)?)/)  { $lat = -$1 }
+        if ($file =~ /S(\d{1,2}(\.\d+)?)/)  { $lat = -$1 }
     }
-    if ($lon == 9999) {		# we don't yet have a longitude
+    if ($lon == 9999) {         # we don't yet have a longitude
         if ($file =~ /E(\d{1,3}(\.\d+)?)/)  { $lon =  $1 }
         if ($file =~ /W(\d{1,3}(\.\d+)?)/)  { $lon = -$1 }
     }
-    if ($scale == 0) {		# we don't yet have a map scale
+    if ($scale == 0) {          # we don't yet have a map scale
         if ($file =~ /\-(\d+)/)  { $scale =  $1 }
         if ($file =~ /\-(\d+)k/) { $scale =  $1 * 1000 }
         if ($file =~ /\-(\d+)M/) { $scale =  $1 * 1000000 }
     }
-    if ($lat == 9999) {		# we need a latitude
+    if ($lat == 9999) {         # we need a latitude
         print("ERROR: Latitude is missing\n");
-	$help = 1;
+        $help = 1;
     }
-    if ($lon == 9999) {		# we need a longitude
+    if ($lon == 9999) {         # we need a longitude
         print("ERROR: Longitude is missing\n");
-	$help = 1;
+        $help = 1;
     }
-    if ($scale == 0) {		# we need a map scale
+    if ($scale == 0) {          # we need a map scale
         print("ERROR: Map scale is missing\n");
-	$help = 1;
+        $help = 1;
     }
 }
     
@@ -95,7 +95,7 @@ if ($help) {
     exit 0;
 }
 
-if ($pfx && $pfx !~ /\/$/) { $pfx .= "/" }	# add trailing '/' if missing
+if ($pfx && $pfx !~ /\/$/) { $pfx .= "/" }      # add trailing '/' if missing
 
 #--------------------------------------------------------------------------
 
@@ -112,11 +112,11 @@ if (abs($lat) > 89) {
 
 # This scaling factor is just a wild guess!
 # But I need one, and this one is nice AND works quite well... ;-)
-$scale_y = 100.0 * pi();		# pixel/degree at 1M map scale
+$scale_y = 100.0 * pi();                # pixel/degree at 1M map scale
 
-$scale_x = $scale_y * calcScale($lat);	# adjust horizontal scale for latitude
+$scale_x = $scale_y * calcScale($lat);  # adjust horizontal scale for latitude
 
-$scale_y *= (1000000 / $scale);		# adjust for current map scale
+$scale_y *= (1000000 / $scale);         # adjust for current map scale
 $scale_x *= (1000000 / $scale);
 
 #--------------------------------------------------------------------------
@@ -191,7 +191,7 @@ sub dist {
 
 #--------------------------------------------------------------------------
 
-sub calcScale {    		# EW / NS scaling
+sub calcScale {                 # EW / NS scaling
     my ($lat) = @_;
     return(dist($lat,-1.0/120.0,$lat,1.0/120.0) / 1852.0);
 }

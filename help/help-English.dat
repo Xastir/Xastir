@@ -790,7 +790,7 @@ FILENAME        Agnes_Mountain.xpm.gz
 TIEPOINT        0       0       -121.00120491   48.37481943
 TIEPOINT        1337    1999    -120.87619806   48.24982052
 #
-IMAGESIZE	1338	2000
+IMAGESIZE       1338    2000
 
 The IMAGESIZE is the size of the graphic file in pixels. Xastir will use that
 information and the tiepoints to skip the map if it doesn't fit in the current

@@ -54,4 +54,4 @@ int xastir_snprintf();
 #  define xastir_snprintf snprintf
 #endif
 
-#endif	/* !XASTIR_COMPAT_SNPRINTF_H_ */
+#endif  /* !XASTIR_COMPAT_SNPRINTF_H_ */

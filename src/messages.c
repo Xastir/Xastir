@@ -50,7 +50,7 @@
 
 
 char group_data_file[400];
-char *group_data_list = NULL;	// Need this NULL for Solaris!
+char *group_data_list = NULL;   // Need this NULL for Solaris!
 int  group_data_count;
 int  group_data_max;
 
@@ -164,10 +164,10 @@ static int group_active(char *from) {
     group_build_list(group_data_file);
     current_group_stat = group_stat;
     }
-    if (group_data_list != NULL)	// Causes segfault on Solaris 2.5 without this!
+    if (group_data_list != NULL)        // Causes segfault on Solaris 2.5 without this!
         return (int)(bsearch(from, group_data_list, (size_t)group_data_count, (size_t)10, group_comp) != NULL);
     else
-	return(0);
+        return(0);
 }
 
 

@@ -360,12 +360,12 @@ void save_data(void)  {
             strcpy (name, name_temp);
             strcat (name, "ONSTARTUP");
             store_int (fout, name, devices[i].connect_on_startup);
-			strcpy (name, name_temp);
-			strcat(name, "GPSRETR");
-			store_int (fout, name, devices[i].gps_retrieve);
-			strcpy (name, name_temp);
-			strcat (name, "SETTIME");
-			store_int (fout, name, devices[i].set_time);
+                        strcpy (name, name_temp);
+                        strcat(name, "GPSRETR");
+                        store_int (fout, name, devices[i].gps_retrieve);
+                        strcpy (name, name_temp);
+                        strcat (name, "SETTIME");
+                        store_int (fout, name, devices[i].set_time);
         }
         /* TNC */
         store_int (fout, "TNC_LOG_DATA", log_tnc_data);
@@ -430,10 +430,10 @@ void save_data(void)  {
         store_string (fout, "SOUND_WX_ALERT_FILE", sound_wx_alert_message);
 
 #ifdef HAVE_FESTIVAL
-	    /* Festival speech settings */
-	store_int (fout, "SPEAK_NEW_STATION",festival_speak_new_station);
-	store_int (fout, "SPEAK_PROXIMITY_ALERT",festival_speak_proximity_alert);
-	store_int (fout, "SPEAK_TRACKED_ALERT",festival_speak_tracked_proximity_alert);
+            /* Festival speech settings */
+        store_int (fout, "SPEAK_NEW_STATION",festival_speak_new_station);
+        store_int (fout, "SPEAK_PROXIMITY_ALERT",festival_speak_proximity_alert);
+        store_int (fout, "SPEAK_TRACKED_ALERT",festival_speak_tracked_proximity_alert);
         store_int (fout, "SPEAK_BAND_OPENING",festival_speak_band_opening);
         store_int (fout, "SPEAK_MESSAGE_ALERT",festival_speak_new_message_alert);
         store_int (fout, "SPEAK_MESSAGE_BODY",festival_speak_new_message_body);
@@ -789,15 +789,15 @@ void load_data_or_default(void) {
         if (!get_int (name, &devices[i].connect_on_startup))
             devices[i].connect_on_startup = 0;
 
-		strcpy (name, name_temp);
-		strcat (name, "GPSRETR");
-		if (!get_int (name, &devices[i].gps_retrieve))
-			devices[i].gps_retrieve = 0;
+                strcpy (name, name_temp);
+                strcat (name, "GPSRETR");
+                if (!get_int (name, &devices[i].gps_retrieve))
+                        devices[i].gps_retrieve = 0;
 
-		strcpy (name, name_temp);
-		strcat (name, "SETTIME");
-		if (!get_int (name, &devices[i].set_time))
-			devices[i].set_time = 0;
+                strcpy (name, name_temp);
+                strcat (name, "SETTIME");
+                if (!get_int (name, &devices[i].set_time))
+                        devices[i].set_time = 0;
     }
 
     /* TNC */

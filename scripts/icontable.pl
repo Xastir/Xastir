@@ -27,7 +27,7 @@
 #     typical call:  icontable.pl > symbols.xpm
 
 #--------------------------------------------------------------------------
-					    
+                                            
 # symbols file from XASTIR V1.1, change the path for your environment
 $SYMBFILE = "/usr/local/xastir/symbols/symbols.dat";
 
@@ -55,28 +55,28 @@ sub setuppics {
       my %col = ();
 SYM:  while(<FH>) {
         last if (/DONE/);
-	if (/TABLE (.)/) {
-	  $table = $1;
+        if (/TABLE (.)/) {
+          $table = $1;
           if(length($_)>20) { $descr = 1 }
-	  next;
-	}
-	if (/APRS (.)/) {
-	  $symbol = $1;
-	  next if ($table ne '/' && $table ne '\\');   # ignore other
-	  $pixstr = '';
-	  for ($i=0;$i<20;$i++) {
-	    $line = <FH>;
-	    $line =~ s/\n//;
-	    $line =~ s/\r//;
-	    next SYM if (length($line) != 20);
-	    $pixstr .= $line;
-	    for ($j=0;$j<20;$j++) {
-	      $c = substr($line,$j,1);
-	      $col{$c} = $c;
-	    }
-	  }
-	  $sympix{$table.$symbol} = $pixstr;
-	}
+          next;
+        }
+        if (/APRS (.)/) {
+          $symbol = $1;
+          next if ($table ne '/' && $table ne '\\');   # ignore other
+          $pixstr = '';
+          for ($i=0;$i<20;$i++) {
+            $line = <FH>;
+            $line =~ s/\n//;
+            $line =~ s/\r//;
+            next SYM if (length($line) != 20);
+            $pixstr .= $line;
+            for ($j=0;$j<20;$j++) {
+              $c = substr($line,$j,1);
+              $col{$c} = $c;
+            }
+          }
+          $sympix{$table.$symbol} = $pixstr;
+        }
       }
       $str = "";
       for ($i=0;$i<20;$i++) {
@@ -96,25 +96,25 @@ SYM:  while(<FH>) {
       $pix = "";
       foreach $table ("/","\\") {
         for ($i=2;$i<8;$i++) {                  # symbol row
-	  $pix .=  "\"".("q" x 337)."\",\n";    # black hor line
-	  for ($j=0;$j<20;$j++) {               # scan line
-	    $pix .= "\"";                       # start of scan line
-	    for ($k=0;$k<16;$k++) {             # symbol column
-	      $pix .= "q";                      # vert line
-	      $symbol = chr($i*16+$k);
-	      $pix .= substr(getpic($table.$symbol),$j*20,20);
-	    }
+          $pix .=  "\"".("q" x 337)."\",\n";    # black hor line
+          for ($j=0;$j<20;$j++) {               # scan line
+            $pix .= "\"";                       # start of scan line
+            for ($k=0;$k<16;$k++) {             # symbol column
+              $pix .= "q";                      # vert line
+              $symbol = chr($i*16+$k);
+              $pix .= substr(getpic($table.$symbol),$j*20,20);
+            }
             $pix .= "q\",\n";                   # vert line
-	  }
-	}
-	if ($table eq "\\") {           # {
-	  $pix .=  "\"".("q" x 337)."\"};\n";      # black hor line
-	} else {
-	  $pix .=  "\"".("q" x 337)."\",\n";       # black hor line
-	  for ($i=0;$i<4;$i++) {
-	    $pix .=  "\"".("." x 337)."\",\n";     # hor space
-	  }
-	}
+          }
+        }
+        if ($table eq "\\") {           # {
+          $pix .=  "\"".("q" x 337)."\"};\n";      # black hor line
+        } else {
+          $pix .=  "\"".("q" x 337)."\",\n";       # black hor line
+          for ($i=0;$i<4;$i++) {
+            $pix .=  "\"".("." x 337)."\",\n";     # hor space
+          }
+        }
       }
       printf($head.$pix);
       close(FH);

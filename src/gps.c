@@ -69,7 +69,7 @@ int decode_gps_rmc( char *data,
 
     char *temp_ptr;
     char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
-	char sampletime[10];
+        char sampletime[10];
     char long_pos_x[10];
     char long_ew;
     char lat_pos_y[9];
@@ -104,44 +104,44 @@ int decode_gps_rmc( char *data,
                     strncpy(temp_data,temp_ptr,2);
                     if (temp_data[0]=='A') {    /* V is a warning but we can get good data still ? */
                         temp_ptr=strtok(NULL,",");  /* get latitude */
-                    	if (temp_ptr!=NULL && temp_ptr[4]=='.') {
+                        if (temp_ptr!=NULL && temp_ptr[4]=='.') {
                             strncpy(lat_pos_y,temp_ptr,8);
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
                             lat_pos_y[8]='\0';
                             temp_ptr=strtok(NULL,",");  /* get N-S */
                             if (temp_ptr!=NULL) {
-                            	strncpy(temp_data,temp_ptr,1);
-                            	lat_ns=toupper((int)temp_data[0]);
-                            	if(lat_ns =='N' || lat_ns =='S') {
-                               	    temp_ptr=strtok(NULL,",");  /* get long */
+                                strncpy(temp_data,temp_ptr,1);
+                                lat_ns=toupper((int)temp_data[0]);
+                                if(lat_ns =='N' || lat_ns =='S') {
+                                    temp_ptr=strtok(NULL,",");  /* get long */
                                     if (temp_ptr!=NULL && temp_ptr[5] == '.') {
-	                                strncpy(long_pos_x,temp_ptr,9);
+                                        strncpy(long_pos_x,temp_ptr,9);
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
-                                    	long_pos_x[9]='\0';
-                                    	temp_ptr=strtok(NULL,",");  /* get E-W */
-                                    	if (temp_ptr!=NULL) {
-                                       	    strncpy(temp_data,temp_ptr,1);
+                                        long_pos_x[9]='\0';
+                                        temp_ptr=strtok(NULL,",");  /* get E-W */
+                                        if (temp_ptr!=NULL) {
+                                            strncpy(temp_data,temp_ptr,1);
                                             long_ew=toupper((int)temp_data[0]);
                                             if (long_ew =='E' || long_ew =='W') {
                                                 temp_ptr=strtok(NULL,",");  /* Get speed */
-                                            	if (temp_ptr!=0) {
+                                                if (temp_ptr!=0) {
                                                     strncpy(speed,temp_ptr,9);
                                                     speed_unit='K';
                                                     temp_ptr=strtok(NULL,",");  /* Get course */
                                                     if (temp_ptr!=NULL) {
-                                                    	strncpy(course,temp_ptr,7);
-                                                    	temp_ptr=strtok(NULL,",");   /* get date of fix */
+                                                        strncpy(course,temp_ptr,7);
+                                                        temp_ptr=strtok(NULL,",");   /* get date of fix */
                                                         if (temp_ptr!=NULL) {
                                                             strncpy(sampledate, temp_ptr, 6);
                                                             sampledate[6]='\0';
                                                         }
-                                                    	/* Data good? */
-                                                    	ok=1;
-                                                    	xastir_snprintf(long_pos, long_pos_length, "%s%c", long_pos_x,long_ew);
-                                                    	xastir_snprintf(lat_pos, lat_pos_length, "%s%c", lat_pos_y, lat_ns);
-                                                    	strcpy(spd,speed);
-                                                    	xastir_snprintf(unit, unit_length, "%c", speed_unit);
-                                                    	strcpy(cse,course);
+                                                        /* Data good? */
+                                                        ok=1;
+                                                        xastir_snprintf(long_pos, long_pos_length, "%s%c", long_pos_x,long_ew);
+                                                        xastir_snprintf(lat_pos, lat_pos_length, "%s%c", lat_pos_y, lat_ns);
+                                                        strcpy(spd,speed);
+                                                        xastir_snprintf(unit, unit_length, "%c", speed_unit);
+                                                        strcpy(cse,course);
 
                                                         /* Translate date/time into time_t */
                                                         /* GPS time is in UTC.
@@ -311,7 +311,7 @@ void gps_data_find(char *gps_line_data, int port) {
     if (got_gps_gpgga==1 && got_gps_gprmc==1) { /* decode data and shutdown gps port for timed interval */
         if (debug_level & 128)
             printf("Yes.\n");
-	    statusline(langcode("BBARSTA037"),0);
+            statusline(langcode("BBARSTA037"),0);
         if (!gps_stop_now) {
             gps_stop_now=1;
             if (decode_gps_rmc(gps_gprmc,long_pos,

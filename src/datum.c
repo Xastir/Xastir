@@ -313,10 +313,10 @@ void datum_shift(double *latitude, double *longitude, short fromDatumID, short t
 }
 
 /*
-	Function to convert latitude and longitude in decimal degrees from WGS84 to
-	another datum or from another datum to WGS84. The arguments to this function
-	include a direction flag 'fromWGS84', pointers to double precision latitude
-	and longitude, and an index to the gDatum[] array.
+        Function to convert latitude and longitude in decimal degrees from WGS84 to
+        another datum or from another datum to WGS84. The arguments to this function
+        include a direction flag 'fromWGS84', pointers to double precision latitude
+        and longitude, and an index to the gDatum[] array.
 */
 void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, short datumID)
 {
@@ -326,66 +326,66 @@ void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, sho
 
     double phi = *latitude * PI / 180.0;
     double lambda = *longitude * PI / 180.0;
-    double a0, b0, es0, f0;			/* Reference ellipsoid of input data */
-    double a1, b1, es1, f1;			/* Reference ellipsoid of output data */
-    double psi;					/* geocentric latitude */
-    double x, y, z;				/* 3D coordinates with respect to original datum */
-    double psi1;				/* transformed geocentric latitude */
+    double a0, b0, es0, f0;                     /* Reference ellipsoid of input data */
+    double a1, b1, es1, f1;                     /* Reference ellipsoid of output data */
+    double psi;                                 /* geocentric latitude */
+    double x, y, z;                             /* 3D coordinates with respect to original datum */
+    double psi1;                                /* transformed geocentric latitude */
 
-    if (datumID == D_WGS_84)			// do nothing if current datum is WGS84
-	return;
+    if (datumID == D_WGS_84)                    // do nothing if current datum is WGS84
+        return;
 
-    if (fromWGS84) {				/* convert from WGS84 to new datum */
-	a0 = gEllipsoid[E_WGS_84].a;				/* WGS84 semimajor axis */
-	f0 = 1.0 / gEllipsoid[E_WGS_84].invf;			/* WGS84 flattening */
-	a1 = gEllipsoid[gDatum[datumID].ellipsoid].a;
-	f1 = 1.0 / gEllipsoid[gDatum[datumID].ellipsoid].invf;
+    if (fromWGS84) {                            /* convert from WGS84 to new datum */
+        a0 = gEllipsoid[E_WGS_84].a;                            /* WGS84 semimajor axis */
+        f0 = 1.0 / gEllipsoid[E_WGS_84].invf;                   /* WGS84 flattening */
+        a1 = gEllipsoid[gDatum[datumID].ellipsoid].a;
+        f1 = 1.0 / gEllipsoid[gDatum[datumID].ellipsoid].invf;
     }
-    else {					/* convert from datum to WGS84 */
-	a0 = gEllipsoid[gDatum[datumID].ellipsoid].a;		/* semimajor axis */
-	f0 = 1.0 / gEllipsoid[gDatum[datumID].ellipsoid].invf;	/* flattening */
-	a1 = gEllipsoid[E_WGS_84].a;				/* WGS84 semimajor axis */
-	f1 = 1.0 / gEllipsoid[E_WGS_84].invf;			/* WGS84 flattening */
-	dx = -dx;
-	dy = -dy;
-	dz = -dz;
+    else {                                      /* convert from datum to WGS84 */
+        a0 = gEllipsoid[gDatum[datumID].ellipsoid].a;           /* semimajor axis */
+        f0 = 1.0 / gEllipsoid[gDatum[datumID].ellipsoid].invf;  /* flattening */
+        a1 = gEllipsoid[E_WGS_84].a;                            /* WGS84 semimajor axis */
+        f1 = 1.0 / gEllipsoid[E_WGS_84].invf;                   /* WGS84 flattening */
+        dx = -dx;
+        dy = -dy;
+        dz = -dz;
     }
 
-    b0 = a0 * (1 - f0); 			/* semiminor axis for input datum */
-    es0 = 2 * f0 - f0*f0;			/* eccentricity^2 */
+    b0 = a0 * (1 - f0);                         /* semiminor axis for input datum */
+    es0 = 2 * f0 - f0*f0;                       /* eccentricity^2 */
 
-    b1 = a1 * (1 - f1);				/* semiminor axis for output datum */
-    es1 = 2 * f1 - f1*f1;			/* eccentricity^2 */
+    b1 = a1 * (1 - f1);                         /* semiminor axis for output datum */
+    es1 = 2 * f1 - f1*f1;                       /* eccentricity^2 */
 
     /* Convert geodedic latitude to geocentric latitude, psi */
     if (*latitude == 0.0 || *latitude == 90.0 || *latitude == -90.0)
-	psi = phi;
+        psi = phi;
     else
-	psi = atan((1 - es0) * tan(phi));
+        psi = atan((1 - es0) * tan(phi));
 
     /* Calculate x and y axis coordinates with respect to the original ellipsoid */
     if (*longitude == 90.0 || *longitude == -90.0) {
-	x = 0.0;
-	y = fabs(a0 * b0 / sqrt(b0*b0 + a0*a0*pow(tan(psi), 2.0)));
+        x = 0.0;
+        y = fabs(a0 * b0 / sqrt(b0*b0 + a0*a0*pow(tan(psi), 2.0)));
     }
     else {
-	x = fabs((a0 * b0) /
-		 sqrt((1 + pow(tan(lambda), 2.0)) * (b0*b0 + a0*a0 * pow(tan(psi), 2.0))));
-	y = fabs(x * tan(lambda));
+        x = fabs((a0 * b0) /
+                 sqrt((1 + pow(tan(lambda), 2.0)) * (b0*b0 + a0*a0 * pow(tan(psi), 2.0))));
+        y = fabs(x * tan(lambda));
     }
 
     if (*longitude < -90.0 || *longitude > 90.0)
-	x = -x;
+        x = -x;
     if (*longitude < 0.0)
-	y = -y;
+        y = -y;
 
     /* Calculate z axis coordinate with respect to the original ellipsoid */
     if (*latitude == 90.0)
-	z = b0;
+        z = b0;
     else if (*latitude == -90.0)
-	z = -b0;
+        z = -b0;
     else
-	z = tan(psi) * sqrt((a0*a0 * b0*b0) / (b0*b0 + a0*a0 * pow(tan(psi), 2.0)));
+        z = tan(psi) * sqrt((a0*a0 * b0*b0) / (b0*b0 + a0*a0 * pow(tan(psi), 2.0)));
 
     /* Calculate the geocentric latitude with respect to the new ellipsoid */
     psi1 = atan((z - dz) / sqrt((x - dx)*(x - dx) + (y - dy)*(y - dy)));
@@ -398,10 +398,10 @@ void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, sho
 
     /* Correct the resultant for negative x values */
     if (x-dx < 0.0) {
-	if (y-dy > 0.0)
-	    *longitude = 180.0 + *longitude;
-	else
-	    *longitude = -180.0 + *longitude;
+        if (y-dy > 0.0)
+            *longitude = 180.0 + *longitude;
+        else
+            *longitude = -180.0 + *longitude;
     }
 }
 
@@ -526,7 +526,7 @@ char utm_letter_designator(double lat)
 
 
 void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
-	       const char* utmZone, double *lat,  double *lon)
+               const char* utmZone, double *lat,  double *lon)
 {
     //converts UTM coords to lat/long.  Equations from USGS Bulletin 1532 
     //East Longitudes are positive, West longitudes are negative. 
@@ -553,10 +553,10 @@ void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEast
 
     ZoneNumber = strtoul(utmZone, &ZoneLetter, 10);
     if ((*ZoneLetter - 'N') >= 0)
-	NorthernHemisphere = 1;//point is in northern hemisphere
+        NorthernHemisphere = 1;//point is in northern hemisphere
     else {
-	NorthernHemisphere = 0;//point is in southern hemisphere
-	y -= 10000000.0;//remove 10,000,000 meter offset used for southern hemisphere
+        NorthernHemisphere = 0;//point is in southern hemisphere
+        y -= 10000000.0;//remove 10,000,000 meter offset used for southern hemisphere
     }
 
     LongOrigin = (ZoneNumber - 1)*6 - 180 + 3;  //+3 puts origin in middle of zone
@@ -567,8 +567,8 @@ void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEast
     mu = M/(a*(1-eccSquared/4-3*eccSquared*eccSquared/64-5*eccSquared*eccSquared*eccSquared/256));
 
     phi1Rad = mu + (3*e1/2-27*e1*e1*e1/32)*sin(2*mu)
-	         + (21*e1*e1/16-55*e1*e1*e1*e1/32)*sin(4*mu)
-	         + (151*e1*e1*e1/96)*sin(6*mu);
+                 + (21*e1*e1/16-55*e1*e1*e1*e1/32)*sin(4*mu)
+                 + (151*e1*e1*e1/96)*sin(6*mu);
     phi1 = phi1Rad*rad2deg;
 
     N1 = a/sqrt(1-eccSquared*sin(phi1Rad)*sin(phi1Rad));
@@ -578,10 +578,10 @@ void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEast
     D = x/(N1*k0);
 
     *lat = phi1Rad - (N1*tan(phi1Rad)/R1)*(D*D/2-(5+3*T1+10*C1-4*C1*C1-9*eccPrimeSquared)*D*D*D*D/24
-					   +(61+90*T1+298*C1+45*T1*T1-252*eccPrimeSquared-3*C1*C1)*D*D*D*D*D*D/720);
+                                           +(61+90*T1+298*C1+45*T1*T1-252*eccPrimeSquared-3*C1*C1)*D*D*D*D*D*D/720);
     *lat *= rad2deg;
 
     *lon = (D-(1+2*T1+C1)*D*D*D/6+(5-2*C1+28*T1-3*C1*C1+8*eccPrimeSquared+24*T1*T1)
-	    *D*D*D*D*D/120)/cos(phi1Rad);
+            *D*D*D*D*D/120)/cos(phi1Rad);
     *lon = LongOrigin + (*lon) * rad2deg;
 }

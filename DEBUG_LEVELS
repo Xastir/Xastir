@@ -28,20 +28,20 @@ xa_config.c &1 &2
 Here's how things are after KB6MER tweaked it all...
 
 New Scheme
-1	General basic debugging (any system)
-2	Messages, WX, Objects, and Items, Port Data Flow
-4	X Object Debugging
-8	X Window Object Debugging
-16	Map Debugging (maps.c)
-32	Language Debugging (maps.c)
-64	Database Object Debugging
-128	GPS Interface Detailed debugging
-256	station and trail display detailed debugging
-512	Map import/export function debugging
-1024	Internet Transaction debugging
+1       General basic debugging (any system)
+2       Messages, WX, Objects, and Items, Port Data Flow
+4       X Object Debugging
+8       X Window Object Debugging
+16      Map Debugging (maps.c)
+32      Language Debugging (maps.c)
+64      Database Object Debugging
+128     GPS Interface Detailed debugging
+256     station and trail display detailed debugging
+512     Map import/export function debugging
+1024    Internet Transaction debugging
 
-2048	Levels 2048 and above will require modification to the
-	main.c file to change the bounds checking, and are
-	available for future use.
+2048    Levels 2048 and above will require modification to the
+        main.c file to change the bounds checking, and are
+        available for future use.
 
 

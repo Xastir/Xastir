@@ -1291,7 +1291,7 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
 void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay, long x_long,long y_lat,
                  char *callsign_text, char *alt_text, char *course_text, char *speed_text, char *my_distance,
                  char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, Pixmap where, char orient,
-		 char area_type) {
+                 char area_type) {
     long x_offset,y_offset;
     int length;
     int ghost;
@@ -1317,9 +1317,9 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                             posyr -= 6;
                         if ( (!ghost || show_old_data) && strlen(course_text)>0)
                             posyr -= 6;
-			if (area_type == AREA_LINE_RIGHT)
-			    posyr += 8;
-			// we may eventually have more adjustments for different types of areas
+                        if (area_type == AREA_LINE_RIGHT)
+                            posyr += 8;
+                        // we may eventually have more adjustments for different types of areas
 
                         length=(int)strlen(alt_text);
                         if ( (!ghost || show_old_data) && length>0) {

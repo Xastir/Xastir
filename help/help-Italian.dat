@@ -64,7 +64,7 @@ la sua pagina è "http://web.usna.navy.mil/~bruninga/aprs.html"
 
 HELP-INDEX>Novità in Xastir 1.0
 
-			Novità in Xastir 1.0
+                        Novità in Xastir 1.0
 
 Over the past year, Xastir has been under active development, and this new
 release is the culmination of those efforts. Development has been run by
@@ -429,7 +429,7 @@ sperimentato per reagire a tentativi di intrusione.
 Configurazione del GPS
 
 
-				Configurazione GPS Seriali
+                                Configurazione GPS Seriali
 
 Imposta la porta seriale che usata dal vostro GPS.  Valori comuni sono 
 /dev/ttyS0 (dos com1) e /dev/ttyS1 (dos com2).
@@ -961,7 +961,7 @@ $          Telefono                     Simbolo $
 -          Casa con antenna Omnidirezionale
 .          Piccola x
 /          Punto rosso
-0          0 in un quadrato     	    Cerchio
+0          0 in un quadrato                 Cerchio
 1          1 in un quadrato
 2          2 in un quadrato     
 3          3 in un quadrato
@@ -970,7 +970,7 @@ $          Telefono                     Simbolo $
 6          6 in un quadrato     
 7          7 in un quadrato
 8          8 in un quadrato     
-9          9 in un quadrato     	     GAS
+9          9 in un quadrato                  GAS
 :          Fuoco                         ?
 ;          Tenda                         Tenda
 <          Motocicletta                  Banderuola
@@ -978,7 +978,7 @@ $          Telefono                     Simbolo $
 >          Auto                          Auto
 ?          POS Antenna                   ? in un quadrato     
 @          URAGANO/TEMPESTA              URAGANO/TEMPESTA
-A          Pronto Soccorso		 		 Quadrato
+A          Pronto Soccorso                               Quadrato
 B          BBS                           Neve a vento
 C          Canoa
 D          D in un cerchio
@@ -989,7 +989,7 @@ H          Hotel/Letto
 I          TCP/IP                        ?
 J          J in un cerchio               Fulmine
 K          Scuola Casa
-L          Faro				 Faro
+L          Faro                          Faro
 M          Mac
 N          NTS                           ?
 O          Pallone Aerostatico
@@ -998,7 +998,7 @@ Q          Cerchio con Cerchietti        Cerchio con Cerchietti
 R          RV                            Ristorante
 S          Shuttle                       Satellite
 T          Temporale (cloud/bolt)        Temporale (cloud/bolt)
-U          Scuolabus		         	 Sole
+U          Scuolabus                             Sole
 V          VOR TAC                       VOR TAC Symbol
 W          National Weather Service      NWS-Digi
 X          Elicottero

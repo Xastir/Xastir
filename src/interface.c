@@ -2038,12 +2038,12 @@ void port_write(int port) {
 
             if (port_data[port].write_in_pos != port_data[port].write_out_pos && port_data[port].status == DEVICE_UP){
                 if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03){
-					if (debug_level & 128) {
-						printf("Writing command [%x] on port %d, at pos %d\n",
-							*(port_data[port].device_write_buffer + 
-								port_data[port].write_out_pos),
-							port, port_data[port].write_out_pos);
-					}
+                                        if (debug_level & 128) {
+                                                printf("Writing command [%x] on port %d, at pos %d\n",
+                                                        *(port_data[port].device_write_buffer + 
+                                                                port_data[port].write_out_pos),
+                                                        port, port_data[port].write_out_pos);
+                                        }
                     wait_max = 0;
                     bytes_input = port_data[port].bytes_input + 40;
                     while (port_data[port].bytes_input != bytes_input && port_data[port].status == DEVICE_UP && wait_max < 100){
@@ -2317,7 +2317,7 @@ int del_device(int port) {
 
         case(DEVICE_SERIAL_TNC_HSP_GPS):
 
-		case(DEVICE_SERIAL_TNC_AUX_GPS):
+                case(DEVICE_SERIAL_TNC_AUX_GPS):
             switch (port_data[port].device_type){
                 case DEVICE_SERIAL_TNC:
                     if (debug_level & 2)
@@ -2360,18 +2360,18 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                     usleep(3000000);    // 3secs
                     break;
 
-				case DEVICE_SERIAL_TNC_AUX_GPS:
-					if (debug_level & 2)
-						printf("Close a Serial TNC w/AUX GPS\n");
-					begin_critical_section(&devices_lock,
-						"interface.c:del_device");
-					sprintf(temp, "config/%s", devices[port].tnc_down_file);
-					end_critical_section(&devices_lock,
-						"interface.c:del_device");
-					(void)command_file_to_tnc_port(port,
-						get_data_base_dir(temp));
-					usleep(3000000);
-					break;
+                                case DEVICE_SERIAL_TNC_AUX_GPS:
+                                        if (debug_level & 2)
+                                                printf("Close a Serial TNC w/AUX GPS\n");
+                                        begin_critical_section(&devices_lock,
+                                                "interface.c:del_device");
+                                        sprintf(temp, "config/%s", devices[port].tnc_down_file);
+                                        end_critical_section(&devices_lock,
+                                                "interface.c:del_device");
+                                        (void)command_file_to_tnc_port(port,
+                                                get_data_base_dir(temp));
+                                        usleep(3000000);
+                                        break;
 
                 default:
                     break;
@@ -2522,7 +2522,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             case DEVICE_SERIAL_TNC_HSP_GPS:
 
-			case DEVICE_SERIAL_TNC_AUX_GPS:
+                        case DEVICE_SERIAL_TNC_AUX_GPS:
                 switch (dev_type) {
                     case DEVICE_SERIAL_TNC:
                         if (debug_level & 2)
@@ -2548,7 +2548,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                         break;
 
-					case DEVICE_SERIAL_TNC_AUX_GPS:
+                                        case DEVICE_SERIAL_TNC_AUX_GPS:
                         if (debug_level & 2)
                             printf("Opening a Serial TNC w/AUX GPS device\n");
 
@@ -2696,7 +2696,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
 
-				case DEVICE_SERIAL_TNC_AUX_GPS:
+                                case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (ok == 1) {
                         xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port_avail].tnc_up_file);
                         (void)command_file_to_tnc_port(port_avail,get_data_base_dir(temp));
@@ -2830,7 +2830,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
 
-				case DEVICE_SERIAL_TNC_AUX_GPS:
+                                case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (devices[i].connect_on_startup == 1 || override) {
                         (void)add_device(i,devices[i].device_type,devices[i].device_name,"",-1,
                             devices[i].sp,devices[i].style,0);
@@ -3405,7 +3405,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                     port_dtr(port,0);           // make DTR normal
 
-            	case DEVICE_SERIAL_TNC_AUX_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
 
                 case DEVICE_SERIAL_TNC:
 

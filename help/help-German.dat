@@ -909,7 +909,7 @@ FILENAME        Agnes_Mountain.xpm.gz
 TIEPOINT        0       0       -121.00120491   48.37481943
 TIEPOINT        1337    1999    -120.87619806   48.24982052
 #
-IMAGESIZE	1338	2000
+IMAGESIZE       1338    2000
 
 Mit IMAGESIZE wird die Bildgröße in Pixel angegeben. Xastir benutzt diese
 Information, um Karten, die nicht in den aktuell dargestellten Ausschnitt

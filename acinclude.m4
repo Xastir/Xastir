@@ -211,13 +211,13 @@ AC_DEFUN(AC_REMOVE_FORBIDDEN,
   if test -n "$__val"; then
     __new=""
     ac_save_IFS=$IFS
-    IFS=" 	"
+    IFS="       "
     for i in $__val; do
       case "$__forbid" in
         *" $i "*) AC_MSG_WARN([found forbidden $i in $1, removing it]) ;;
-	*) # Careful to not add spaces, where there were none, because otherwise
-	   # libtool gets confused, if we change e.g. CXX
-	   if test -z "$__new" ; then __new=$i ; else __new="$__new $i" ; fi ;;
+        *) # Careful to not add spaces, where there were none, because otherwise
+           # libtool gets confused, if we change e.g. CXX
+           if test -z "$__new" ; then __new=$i ; else __new="$__new $i" ; fi ;;
       esac
     done
     IFS=$ac_save_IFS
@@ -325,9 +325,9 @@ dnl this was AC_PROG_CC. I had to include it manually, since I had to patch it
     if test "$xastir_use_debug_code" = "yes"; then
       AC_PROG_CC_G
       if test $ac_cv_prog_cc_g = yes; then
-	CFLAGS="-g"
-	case $host in
-   	*-*-linux-gnu)
+        CFLAGS="-g"
+        case $host in
+        *-*-linux-gnu)
            CFLAGS="$CFLAGS -ansi -W -Wall -pedantic -Wshadow -Wpointer-arith -Wmissing-prototypes -Wwrite-strings -D_XOPEN_SOURCE -D_BSD_SOURCE"
          ;;
         esac
@@ -354,7 +354,7 @@ dnl this was AC_PROG_CC. I had to include it manually, since I had to patch it
      CFLAGS="$CFLAGS"
 
      if test "$xastir_use_strict_options" = "yes"; then
-	CFLAGS="$CFLAGS -W -Wall -ansi -pedantic -Wshadow -Wpointer-arith -Wmissing-prototypes -Wwrite-strings"
+        CFLAGS="$CFLAGS -W -Wall -ansi -pedantic -Wshadow -Wpointer-arith -Wmissing-prototypes -Wwrite-strings"
      fi
     fi
 
@@ -429,8 +429,8 @@ dnl dependencies between AC_PROG_CPP and AC_PROG_CC (or is it automake?)
       AC_PROG_CXX_G
       if test $ac_cv_prog_cxx_g = yes; then
         CXXFLAGS="-g"
-	case $host in  dnl
-   	*-*-linux-gnu)
+        case $host in  dnl
+        *-*-linux-gnu)
            CXXFLAGS="$CXXFLAGS -ansi -D_XOPEN_SOURCE -D_BSD_SOURCE -Wbad-function-cast -Wcast-align -Wundef -Wconversion"
          ;;
         esac
@@ -458,25 +458,25 @@ dnl dependencies between AC_PROG_CPP and AC_PROG_CC (or is it automake?)
 
 dnl WABA: Nothing wrong with RTTI, keep it on.
 dnl    XASTIR_CHECK_COMPILER_FLAG(fno-rtti,
-dnl	[
-dnl	  CXXFLAGS="$CXXFLAGS -fno-rtti"
-dnl	])
+dnl     [
+dnl       CXXFLAGS="$CXXFLAGS -fno-rtti"
+dnl     ])
 
     XASTIR_CHECK_COMPILER_FLAG(fno-check-new,
-	[
-	  CXXFLAGS="$CXXFLAGS -fno-check-new"
-	])
+        [
+          CXXFLAGS="$CXXFLAGS -fno-check-new"
+        ])
 
     if test "$GXX" = "yes"; then
        CXXFLAGS="$CXXFLAGS"
 
        if test true || test "$xastir_use_debug_code" = "yes"; then
-	 CXXFLAGS="$CXXFLAGS -Wall -pedantic -W -Wpointer-arith -Wmissing-prototypes -Wwrite-strings"
+         CXXFLAGS="$CXXFLAGS -Wall -pedantic -W -Wpointer-arith -Wmissing-prototypes -Wwrite-strings"
 
          XASTIR_CHECK_COMPILER_FLAG(Wno-long-long,
-	 [
-	   CXXFLAGS="$CXXFLAGS -Wno-long-long"
-	 ])
+         [
+           CXXFLAGS="$CXXFLAGS -Wno-long-long"
+         ])
          XASTIR_CHECK_COMPILER_FLAG(fno-builtin,
          [
            CXXFLAGS="$CXXFLAGS -fno-builtin"
@@ -485,7 +485,7 @@ dnl	])
        fi
 
        if test "$xastir_use_strict_options" = "yes"; then
-	CXXFLAGS="$CXXFLAGS -Wcast-qual -Wbad-function-cast -Wshadow -Wcast-align"
+        CXXFLAGS="$CXXFLAGS -Wcast-qual -Wbad-function-cast -Wshadow -Wcast-align"
        fi
 
        if test "$xastir_very_strict" = "yes"; then
@@ -495,19 +495,19 @@ dnl	])
   fi
 
     XASTIR_CHECK_COMPILER_FLAG(fexceptions,
-	[
-	  USE_EXCEPTIONS="-fexceptions"
-	],
-	  USE_EXCEPTIONS=
-	)
+        [
+          USE_EXCEPTIONS="-fexceptions"
+        ],
+          USE_EXCEPTIONS=
+        )
     AC_SUBST(USE_EXCEPTIONS)
 
     XASTIR_CHECK_COMPILER_FLAG(frtti,
-	[
-	  USE_RTTI="-frtti"
-	],
-	  USE_RTTI=
-	)
+        [
+          USE_RTTI="-frtti"
+        ],
+          USE_RTTI=
+        )
     AC_SUBST(USE_RTTI)
 
     case "$host" in
@@ -946,15 +946,15 @@ fi
 dnl ----------------------------------------------------------------------
 dnl
 dnl AC_FIND_MOTIF : find OSF/Motif or LessTif, and provide variables
-dnl	to easily use them in a Makefile.
+dnl     to easily use them in a Makefile.
 dnl
 dnl Adapted from a macro by Andreas Zeller.
 dnl
 dnl The variables provided are :
-dnl	link_motif		(e.g. -L/usr/lesstif/lib -lXm)
-dnl	include_motif		(e.g. -I/usr/lesstif/lib)
-dnl	motif_libraries		(e.g. /usr/lesstif/lib)
-dnl	motif_includes		(e.g. /usr/lesstif/include)
+dnl     link_motif              (e.g. -L/usr/lesstif/lib -lXm)
+dnl     include_motif           (e.g. -I/usr/lesstif/lib)
+dnl     motif_libraries         (e.g. /usr/lesstif/lib)
+dnl     motif_includes          (e.g. /usr/lesstif/include)
 dnl
 dnl The link_motif and include_motif variables should be fit to put on
 dnl your application's link line in your Makefile.
@@ -1117,7 +1117,7 @@ if test "$with_motif" != "no"; then
                 include_motif="-I$motif_includes"
                 MOTIF_CFLAGS="-I$motif_includes"
         fi
-	AC_DEFINE(HAVE_MOTIF)
+        AC_DEFINE(HAVE_MOTIF)
 else
         with_motif="no"
 fi
@@ -1145,15 +1145,15 @@ AC_MSG_RESULT(
 dnl ----------------------------------------------------------------------
 dnl
 dnl AC_FIND_XPM : find libXpm, and provide variables
-dnl	to easily use them in a Makefile.
+dnl     to easily use them in a Makefile.
 dnl
 dnl Adapted from a macro by Andreas Zeller.
 dnl
 dnl The variables provided are :
-dnl	link_xpm		(e.g. -L/usr/lesstif/lib -lXm)
-dnl	include_xpm		(e.g. -I/usr/lesstif/lib)
-dnl	xpm_libraries		(e.g. /usr/lesstif/lib)
-dnl	xpm_includes		(e.g. /usr/lesstif/include)
+dnl     link_xpm                (e.g. -L/usr/lesstif/lib -lXm)
+dnl     include_xpm             (e.g. -I/usr/lesstif/lib)
+dnl     xpm_libraries           (e.g. /usr/lesstif/lib)
+dnl     xpm_includes            (e.g. /usr/lesstif/include)
 dnl
 dnl The link_xpm and include_xpm variables should be fit to put on
 dnl your application's link line in your Makefile.
@@ -1190,19 +1190,19 @@ then
     #
     if test "$xpm_includes" = ""
     then
-	AC_CACHE_VAL(ac_cv_xpm_includes,
-	[
-	ac_xpm_save_CFLAGS="$CFLAGS"
-	ac_xpm_save_CPPFLAGS="$CPPFLAGS"
-	#
-	CFLAGS="$X_CFLAGS $CFLAGS"
-	CPPFLAGS="$X_CFLAGS $CPPFLAGS"
-	#
-	AC_TRY_COMPILE([#include <X11/xpm.h>],[int a;],
-	[
-	# X11/xpm.h is in the standard search path.
-	ac_cv_xpm_includes=
-	],
+        AC_CACHE_VAL(ac_cv_xpm_includes,
+        [
+        ac_xpm_save_CFLAGS="$CFLAGS"
+        ac_xpm_save_CPPFLAGS="$CPPFLAGS"
+        #
+        CFLAGS="$X_CFLAGS $CFLAGS"
+        CPPFLAGS="$X_CFLAGS $CPPFLAGS"
+        #
+        AC_TRY_COMPILE([#include <X11/xpm.h>],[int a;],
+        [
+        # X11/xpm.h is in the standard search path.
+        ac_cv_xpm_includes=
+        ],
     [
     # Else clause for first AC_TRY_COMPILE statement
     #
@@ -1213,51 +1213,51 @@ then
     xpm_libraries="/usr/lib/libXm.so"
     xpm_skip_linking=1
     ],
-	[
-	# X11/xpm.h or Xm/XpmI.h are not in the standard search path.
-	# Locate one of them and put its directory in `xpm_includes'
-	#
-	# Other directories are just guesses.
-	for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
-		   /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
-		   /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
-		   /usr/dt/include /usr/openwin/include /usr/X11R6/include \
-		   /usr/dt/*/include /opt/*/include /usr/include/Xpm* \
-		   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
-		   "${prefix}"/include/* /usr/include/* /usr/local/include/*
-	do
-	    if test -f "$dir/X11/xpm.h"
-	    then
-		  ac_cv_xpm_includes="$dir"
+        [
+        # X11/xpm.h or Xm/XpmI.h are not in the standard search path.
+        # Locate one of them and put its directory in `xpm_includes'
+        #
+        # Other directories are just guesses.
+        for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
+                   /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
+                   /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
+                   /usr/dt/include /usr/openwin/include /usr/X11R6/include \
+                   /usr/dt/*/include /opt/*/include /usr/include/Xpm* \
+                   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
+                   "${prefix}"/include/* /usr/include/* /usr/local/include/*
+        do
+            if test -f "$dir/X11/xpm.h"
+            then
+                  ac_cv_xpm_includes="$dir"
         else
           if test -f "$dir/Xm/XpmI.h"
           then
             ac_cv_xpm_includes="$dir"
             xpm_libraries="/usr/lib/libXm.so"
           fi
-	    fi
-	done
-	]) ])
-	#
-	CFLAGS="$ac_xpm_save_CFLAGS"
-	CPPFLAGS="$ac_xpm_save_CPPFLAGS"
-	])
-	xpm_includes="$ac_cv_xpm_includes"
+            fi
+        done
+        ]) ])
+        #
+        CFLAGS="$ac_xpm_save_CFLAGS"
+        CPPFLAGS="$ac_xpm_save_CPPFLAGS"
+        ])
+        xpm_includes="$ac_cv_xpm_includes"
     fi
 
     if test -z "$xpm_includes"
     then
-	xpm_includes_result="default path"
-	XPM_CFLAGS=""
+        xpm_includes_result="default path"
+        XPM_CFLAGS=""
     else
-	if test "$xpm_includes" = "no"
-	then
-	    xpm_includes_result="told not to use them"
-	    XPM_CFLAGS="-DNO_XPM"
-	else
-	    xpm_includes_result="$xpm_includes"
-	    XPM_CFLAGS="-I$xpm_includes"
-	fi
+        if test "$xpm_includes" = "no"
+        then
+            xpm_includes_result="told not to use them"
+            XPM_CFLAGS="-DNO_XPM"
+        else
+            xpm_includes_result="$xpm_includes"
+            XPM_CFLAGS="-I$xpm_includes"
+        fi
     fi
     #
     #
@@ -1265,21 +1265,21 @@ then
     #
     if test "$xpm_libraries" = ""
     then
-	AC_CACHE_VAL(ac_cv_xpm_libraries,
-	[
-	ac_xpm_save_LIBS="$LIBS"
-	ac_xpm_save_CFLAGS="$CFLAGS"
-	ac_xpm_save_CPPFLAGS="$CPPFLAGS"
-	#
-	LIBS="-lXpm $X_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
-	CFLAGS="$XPM_CFLAGS $X_CFLAGS $CFLAGS"
-	CPPFLAGS="$XPM_CFLAGS $X_CFLAGS $CPPFLAGS"
-	#
-	AC_TRY_LINK([#include <X11/xpm.h>],[XpmAttributesSize();],
-	[
-	# libXpm.a is in the standard search path.
-	ac_cv_xpm_libraries=
-	],
+        AC_CACHE_VAL(ac_cv_xpm_libraries,
+        [
+        ac_xpm_save_LIBS="$LIBS"
+        ac_xpm_save_CFLAGS="$CFLAGS"
+        ac_xpm_save_CPPFLAGS="$CPPFLAGS"
+        #
+        LIBS="-lXpm $X_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+        CFLAGS="$XPM_CFLAGS $X_CFLAGS $CFLAGS"
+        CPPFLAGS="$XPM_CFLAGS $X_CFLAGS $CPPFLAGS"
+        #
+        AC_TRY_LINK([#include <X11/xpm.h>],[XpmAttributesSize();],
+        [
+        # libXpm.a is in the standard search path.
+        ac_cv_xpm_libraries=
+        ],
     [
     # Else clause of AC_TRY_LINK
     AC_TRY_LINK([#include <Xm/XpmI.h>],[XpmAttributesSize();],
@@ -1287,60 +1287,60 @@ then
     # libXm.a is in the standard search path for Solaris.
     ac_cv_xpm_libraries=
     ],
-	[
-	# libXpm.a or libXm.a are not in the standard search path.
-	# Locate one of them and put its directory in `xpm_libraries'
-	#
-	# Other directories are just guesses.
-	for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
-		   /usr/lib/Xlt2.0 /usr/lib/Xlt1.2 /usr/lib/Xlt1.1 \
-		   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
-		   /usr/dt/lib /usr/openwin/lib /usr/X11/lib \
-		   /usr/dt/*/lib /opt/*/lib /usr/lib/Xpm* \
-		   /usr/lesstif*/lib /usr/lib/Lesstif* \
-		   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
-		   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
-	    for ext in "sl" "so" "a"; do
-		  if test -d "$dir" && test -f "$dir/libXpm.$ext"
+        [
+        # libXpm.a or libXm.a are not in the standard search path.
+        # Locate one of them and put its directory in `xpm_libraries'
+        #
+        # Other directories are just guesses.
+        for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
+                   /usr/lib/Xlt2.0 /usr/lib/Xlt1.2 /usr/lib/Xlt1.1 \
+                   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
+                   /usr/dt/lib /usr/openwin/lib /usr/X11/lib \
+                   /usr/dt/*/lib /opt/*/lib /usr/lib/Xpm* \
+                   /usr/lesstif*/lib /usr/lib/Lesstif* \
+                   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
+                   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
+            for ext in "sl" "so" "a"; do
+                  if test -d "$dir" && test -f "$dir/libXpm.$ext"
           then
-		    ac_cv_xpm_libraries="$dir"
-		    break 2
+                    ac_cv_xpm_libraries="$dir"
+                    break 2
           fi
           if test -d "$dir" && test -f "$dir/libXm.$ext"
           then
             ac_cv_xpm_libraries="$dir"
             break 2
           fi
-	    done
-	done
-	]) ])
-	#
-	LIBS="$ac_xpm_save_LIBS"
-	CFLAGS="$ac_xpm_save_CFLAGS"
-	CPPFLAGS="$ac_xpm_save_CPPFLAGS"
-	])
-	#
-	xpm_libraries="$ac_cv_xpm_libraries"
+            done
+        done
+        ]) ])
+        #
+        LIBS="$ac_xpm_save_LIBS"
+        CFLAGS="$ac_xpm_save_CFLAGS"
+        CPPFLAGS="$ac_xpm_save_CPPFLAGS"
+        ])
+        #
+        xpm_libraries="$ac_cv_xpm_libraries"
     fi
     if test -z "$xpm_libraries"
     then
-	xpm_libraries_result="default path"
-	XPM_LIBS="-lXpm"
+        xpm_libraries_result="default path"
+        XPM_LIBS="-lXpm"
     else
-	if test "$xpm_libraries" = "no"
-	then
-	    xpm_libraries_result="told not to use it"
-	    XPM_LIBS=""
-	else
+        if test "$xpm_libraries" = "no"
+        then
+            xpm_libraries_result="told not to use it"
+            XPM_LIBS=""
+        else
         if test "$xpm_skip_linking" = "1"
         then
             xpm_libraries_result="default path"
             XPM_LIBS=""
         else
             xpm_libraries_result="$xpm_libraries"
-	        XPM_LIBS="-L$xpm_libraries -lXpm"
+                XPM_LIBS="-L$xpm_libraries -lXpm"
         fi
-	fi
+        fi
     fi
 
     if test "$xpm_skip_linking" = "1"
@@ -1359,22 +1359,22 @@ then
     CPPFLAGS="$XPM_CFLAGS $X_CFLAGS $CPPFLAGS"
 
     AC_TRY_LINK([#include <X11/xpm.h>],[XpmAttributesSize();],
-	[
-	#
-	# link passed
-	#
-	AC_DEFINE(HAVE_XPM)
-	],
-	[
-	#
-	# link failed
-	#
-	xpm_libraries_result="test link failed"
-	xpm_includes_result="test link failed"
-	with_xpm="no"
-	XPM_CFLAGS="-DNO_XPM"
-	XPM_LIBS=""
-	]) dnl AC_TRY_LINK
+        [
+        #
+        # link passed
+        #
+        AC_DEFINE(HAVE_XPM)
+        ],
+        [
+        #
+        # link failed
+        #
+        xpm_libraries_result="test link failed"
+        xpm_includes_result="test link failed"
+        with_xpm="no"
+        XPM_CFLAGS="-DNO_XPM"
+        XPM_LIBS=""
+        ]) dnl AC_TRY_LINK
 
     LIBS="$ac_xpm_save_LIBS"
     CFLAGS="$ac_xpm_save_CFLAGS $XPM_CFLAGS"
@@ -1413,9 +1413,9 @@ dnl
 AC_DEFUN(AM_FUNC_OBSTACK,
 [AC_CACHE_CHECK([for obstacks], am_cv_func_obstack,
  [AC_TRY_LINK([#include "obstack.h"],
-	      [struct obstack *mem;obstack_free(mem,(char *) 0)],
-	      am_cv_func_obstack=yes,
-	      am_cv_func_obstack=no)])
+              [struct obstack *mem;obstack_free(mem,(char *) 0)],
+              am_cv_func_obstack=yes,
+              am_cv_func_obstack=no)])
  if test $am_cv_func_obstack = yes; then
    AC_DEFINE(HAVE_OBSTACK,1,[Define if libc includes obstacks])
  else
@@ -1437,13 +1437,13 @@ if test "$no_x" = ""; then
  dnl Motif (LessTif)
  dnl
  AC_ARG_WITH(motif,
- [  --without-motif		  Do not use Motif, even if detected],
- [		case "${withval}" in
- 		  y | ye | yes )	usemotif=yes ;;
- 		  n | no )		usemotif=no ;;
- 		  * )			usemotif=yes ;;
- 		esac],
- [		with_motif=yes])
+ [  --without-motif               Do not use Motif, even if detected],
+ [              case "${withval}" in
+                  y | ye | yes )        usemotif=yes ;;
+                  n | no )              usemotif=no ;;
+                  * )                   usemotif=yes ;;
+                esac],
+ [              with_motif=yes])
 
  dnl
  dnl If you ask not to have Xbae then you can't have Motif either.
@@ -1452,10 +1452,10 @@ if test "$no_x" = ""; then
  dnl To make sure people know about this, we'll be harsh and abort.
  dnl
  if test "$with_Xbae" = "no" -a "$with_motif" = "yes" ; then
- 	AC_MSG_ERROR(Cannot build Motif/LessTif interface without Xbae)
+        AC_MSG_ERROR(Cannot build Motif/LessTif interface without Xbae)
  fi
  if test "$with_Xbae" = "yes" -a "$with_motif" = "no" ; then
- 	AC_MSG_ERROR(Cannot use Xbae without Motif/LessTif)
+        AC_MSG_ERROR(Cannot use Xbae without Motif/LessTif)
  fi
 
  dnl
@@ -1494,7 +1494,7 @@ AC_DEFUN(XASTIR_MISC_TESTS,
         AC_MSG_WARN([you have no crypt in either libcrypt or libc.
 You should install libcrypt from another source or configure with PAM
 support])
-	xastir_have_crypt=no
+        xastir_have_crypt=no
       ]))
    AC_SUBST(LIBCRYPT)
    if test $xastir_have_crypt = yes; then

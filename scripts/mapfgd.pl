@@ -19,64 +19,64 @@ foreach $mapdir (@dirlist)
     local ($dlat, $dlon, $inifile);
     foreach $file (sort grep (! /^\./, readdir (DIR)))
     {
-	# Only examine .tif files.
-	next unless $file =~ /\.tif$/;
-	next unless $file =~ /^[oOcCfFkKlLpPjJgG]/;
-	$fullfile = $mapdir . '/' . $file;
-	$inifile = $mapdir . '/' . $file;
-	$inifile =~ s/\.tif$/.fgd/;
-	next if (-f $inifile);
-	open (INI, ">$inifile");
-	$file =~ /^([oOcCfFkKlLpPjJgG])([0-9][0-9])([0-9][0-9][0-9])([a-hA-H])([1-8])/;
-	$letter = $1;
-	$mlat = $2;
-	$mlon = $3;
-	$mlats = $4;
-	$mlons = $5;
+        # Only examine .tif files.
+        next unless $file =~ /\.tif$/;
+        next unless $file =~ /^[oOcCfFkKlLpPjJgG]/;
+        $fullfile = $mapdir . '/' . $file;
+        $inifile = $mapdir . '/' . $file;
+        $inifile =~ s/\.tif$/.fgd/;
+        next if (-f $inifile);
+        open (INI, ">$inifile");
+        $file =~ /^([oOcCfFkKlLpPjJgG])([0-9][0-9])([0-9][0-9][0-9])([a-hA-H])([1-8])/;
+        $letter = $1;
+        $mlat = $2;
+        $mlon = $3;
+        $mlats = $4;
+        $mlons = $5;
 
-	if ($letter eq 'c') {
-	    $dlon = 0-$mlon-2;
-	    printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
-	    $dlon = 0-$mlon;
-	    printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
-	    $dlat = $mlat+1;
-	    printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-	    $dlat = $mlat;
-	    printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-	} else {
-	    if (($letter eq 'f') || ($letter eq 'g')){
-		$dlon = 0-$mlon-1;
-		printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
-		$dlon = 0-$mlon-(.125*$mlons)+.125;
-		printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
-		$dlat = $mlat+.375+(.125*(&lettonum ($mlats)));
-		printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-		$dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
-		printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-	    } else {
-		if ($letter eq 'k') {
-		    $dlon = 0-$mlon-1;
-		    printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
-		    $dlon = 0-$mlon-(.125*$mlons)+.25;
-		    printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
-		    $dlat = $mlat+.375+(.125*(&lettonum ($mlats)));
-		    printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-		    $dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
-		    printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-		} else {
-		    $dlon = 0-$mlon-(.125*$mlons);
-		    printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
-		    $dlon = 0-$mlon-(.125*$mlons)+.125;
-		    printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
-		    $dlat = $mlat+(.125*(&lettonum ($mlats)));
-		    printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-		    $dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
-		    printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-		}
-	    }
-	}
+        if ($letter eq 'c') {
+            $dlon = 0-$mlon-2;
+            printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
+            $dlon = 0-$mlon;
+            printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
+            $dlat = $mlat+1;
+            printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+            $dlat = $mlat;
+            printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+        } else {
+            if (($letter eq 'f') || ($letter eq 'g')){
+                $dlon = 0-$mlon-1;
+                printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
+                $dlon = 0-$mlon-(.125*$mlons)+.125;
+                printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
+                $dlat = $mlat+.375+(.125*(&lettonum ($mlats)));
+                printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+                $dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
+                printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+            } else {
+                if ($letter eq 'k') {
+                    $dlon = 0-$mlon-1;
+                    printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
+                    $dlon = 0-$mlon-(.125*$mlons)+.25;
+                    printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
+                    $dlat = $mlat+.375+(.125*(&lettonum ($mlats)));
+                    printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+                    $dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
+                    printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+                } else {
+                    $dlon = 0-$mlon-(.125*$mlons);
+                    printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
+                    $dlon = 0-$mlon-(.125*$mlons)+.125;
+                    printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
+                    $dlat = $mlat+(.125*(&lettonum ($mlats)));
+                    printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+                    $dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
+                    printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+                }
+            }
+        }
 
-	close (INI);
+        close (INI);
     }
     closedir (DIR);
 }
@@ -107,10 +107,10 @@ sub nextlet
     if ($scale eq 'c') 
     {$nlat++;return 'a';}
     if ($scale eq 'f') {
-	if ($let eq 'a') 
-	{return 'e';}
-	if ($let eq 'e') 
-	{$nlat++;return 'a';}
+        if ($let eq 'a') 
+        {return 'e';}
+        if ($let eq 'e') 
+        {$nlat++;return 'a';}
     }    
     if ($let eq 'a')
     {return 'b';}
@@ -133,18 +133,18 @@ sub nextnum
 {
     local ($let,$scale) = @_;
     if ($scale eq 'c') {
-	$nlon+=2;
-	if ($nlon < 100) {
-	    $nlon="0$nlon";
-	}
-	return '1';
+        $nlon+=2;
+        if ($nlon < 100) {
+            $nlon="0$nlon";
+        }
+        return '1';
     }
     if ($scale eq 'f') {
-	$nlon++;
-	if ($nlon < 100) {
-	    $nlon="0$nlon";
-	}
-	return '1';
+        $nlon++;
+        if ($nlon < 100) {
+            $nlon="0$nlon";
+        }
+        return '1';
     }
     if ($let eq '1')
     {return '2';}
@@ -163,7 +163,7 @@ sub nextnum
     if ($let eq '8')
     {$nlon++;
      if ($nlon < 100) {
-	 $nlon="0$nlon";
+         $nlon="0$nlon";
      }
      return '1';}
 }
@@ -179,25 +179,25 @@ sub lastnum
 {
     local ($let,$scale) = @_;
     if ($scale eq 'c') {
-	$nlon-=2; 
-	if ($nlon < 100) {
-	    $nlon="0$nlon";
-	}
-	return '1';
+        $nlon-=2; 
+        if ($nlon < 100) {
+            $nlon="0$nlon";
+        }
+        return '1';
     }
     if ($scale eq 'f') {
-	$nlon--; 
-	if ($nlon < 100) {
-	    $nlon="0$nlon";
-	}
-	return '1';
+        $nlon--; 
+        if ($nlon < 100) {
+            $nlon="0$nlon";
+        }
+        return '1';
     }
     if ($let eq '1') {
-	$nlon--; 
-	if ($nlon < 100) {
-	    $nlon="0$nlon";
-	}
-	return '8';
+        $nlon--; 
+        if ($nlon < 100) {
+            $nlon="0$nlon";
+        }
+        return '8';
     }
     if ($let eq '2')
     {return '1';}
@@ -220,10 +220,10 @@ sub lastlet
     if ($scale eq 'c') 
     {$nlat--;return 'a';}
     if ($scale eq 'f') {
-	if ($let eq 'a') 
-	{$nlat--;return 'e';}
-	if ($let eq 'e') 
-	{return 'a';}
+        if ($let eq 'a') 
+        {$nlat--;return 'e';}
+        if ($let eq 'e') 
+        {return 'a';}
     }    
     if ($let eq 'a')
     {$nlat--;return 'h';}

@@ -420,62 +420,62 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,long y_lat_cor
                         switch (destination_pixmap) {
 
                             case DRAW_TO_PIXMAP:
-			                    // We must be drawing maps 'cuz this is the pixmap we use for it.
-			                    if (map_color_fill)
-			                        (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, npoints, Complex,CoordModeOrigin);
-			                    break;
+                                            // We must be drawing maps 'cuz this is the pixmap we use for it.
+                                            if (map_color_fill)
+                                                (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, npoints, Complex,CoordModeOrigin);
+                                            break;
 
                             case DRAW_TO_PIXMAP_ALERTS:
-			                    // We must be drawing weather alert maps 'cuz this is the pixmap we use for it.
-			                    // This GC is used only for pixmap_alerts
-			                    (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)fill_color]);
+                                            // We must be drawing weather alert maps 'cuz this is the pixmap we use for it.
+                                            // This GC is used only for pixmap_alerts
+                                            (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)fill_color]);
 
-			                    // This is how we tint it instead of obscuring the whole map
-			                    (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
-			                    /*
-			                      Options are:
-			                      GXclear         0                       (Don't use)
-			                      GXand           src AND dst             (Darker colors, black can result from overlap)
-			                      GXandReverse    src AND (NOT dst)       (Darker colors)
-			                      GXcopy          src                     (Don't use)
-			                      GXandInverted   (NOT src) AND dst       (Pretty colors)
-			                      GXnoop          dst                     (Don't use)
-			                      GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
-			                      GXor            src OR dst              (More pastel colors, too bright?)
-			                      GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
-			                      GXequiv         (NOT src) XOR dst       (Bright, very readable)
-			                      GXinvert        (NOT dst)               (Don't use)
-			                      GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
-			                      GXcopyInverted  (NOT src)               (Don't use)
-			                      GXorInverted    (NOT src) OR dst        (Bright, not very readable)
-			                      GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
-			                      GXset           1                       (Don't use)
-			                    */
+                                            // This is how we tint it instead of obscuring the whole map
+                                            (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
+                                            /*
+                                              Options are:
+                                              GXclear         0                       (Don't use)
+                                              GXand           src AND dst             (Darker colors, black can result from overlap)
+                                              GXandReverse    src AND (NOT dst)       (Darker colors)
+                                              GXcopy          src                     (Don't use)
+                                              GXandInverted   (NOT src) AND dst       (Pretty colors)
+                                              GXnoop          dst                     (Don't use)
+                                              GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
+                                              GXor            src OR dst              (More pastel colors, too bright?)
+                                              GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
+                                              GXequiv         (NOT src) XOR dst       (Bright, very readable)
+                                              GXinvert        (NOT dst)               (Don't use)
+                                              GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
+                                              GXcopyInverted  (NOT src)               (Don't use)
+                                              GXorInverted    (NOT src) OR dst        (Bright, not very readable)
+                                              GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
+                                              GXset           1                       (Don't use)
+                                            */
 
 
-			                    // Here we wish to tint the existing map instead of obscuring it.  We'll use
-			                    // gc_tint here instead of gc.
-			                    (void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints, Complex,CoordModeOrigin);
-			                    break;
+                                            // Here we wish to tint the existing map instead of obscuring it.  We'll use
+                                            // gc_tint here instead of gc.
+                                            (void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints, Complex,CoordModeOrigin);
+                                            break;
 
                             case DRAW_TO_PIXMAP_FINAL:
-			                    // We must be drawing symbols/tracks 'cuz this is the pixmap we use for it.
-			                    (void)XFillPolygon (XtDisplay (w), pixmap_final, gc, points, npoints, Complex,CoordModeOrigin);
-			                    break;
-		                }
+                                            // We must be drawing symbols/tracks 'cuz this is the pixmap we use for it.
+                                            (void)XFillPolygon (XtDisplay (w), pixmap_final, gc, points, npoints, Complex,CoordModeOrigin);
+                                            break;
+                                }
 
-		                line_behavior = first_behavior;
-		            }
-		            if (line_behavior & 0x01)
-		                (void)XSetLineAttributes (XtDisplay (w), gc, 2, LineSolid, CapButt,JoinMiter);
-		            else
-		                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+                                line_behavior = first_behavior;
+                            }
+                            if (line_behavior & 0x01)
+                                (void)XSetLineAttributes (XtDisplay (w), gc, 2, LineSolid, CapButt,JoinMiter);
+                            else
+                                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
 
-		            if (color == (unsigned char)0x56)
-		                (void)XSetLineAttributes (XtDisplay (w), gc, 10, LineSolid, CapButt,JoinMiter);
+                            if (color == (unsigned char)0x56)
+                                (void)XSetLineAttributes (XtDisplay (w), gc, 10, LineSolid, CapButt,JoinMiter);
 
                     // Set the color for drawing lines/borders
-		            (void)XSetForeground (XtDisplay (w), gc, colors[(int)last_color]);
+                            (void)XSetForeground (XtDisplay (w), gc, colors[(int)last_color]);
 
                     switch (destination_pixmap) {
 
@@ -488,10 +488,10 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,long y_lat_cor
                             break;
 
                         case DRAW_TO_PIXMAP_ALERTS:
-			                // This GC is used only for pixmap_alerts
-			                (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)last_color]);
+                                        // This GC is used only for pixmap_alerts
+                                        (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)last_color]);
 
-			                // Here we wish to tint the existing map instead of obscuring it.  We'll use
+                                        // Here we wish to tint the existing map instead of obscuring it.  We'll use
                             // gc_tint here instead of gc.
                             (void)XDrawLines (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints,CoordModeOrigin);
                             break;
@@ -6133,57 +6133,57 @@ static int map_onscreen(long left, long right, long top, long bottom) {
 
     if (debug_level & 16)
       printf("x_long_offset: %ld, y_lat_offset: %ld, max_x_long_offset: %ld, max_y_lat_offset: %ld\n",
-	     x_long_offset, y_lat_offset, (long)max_x_long_offset, (long)max_y_lat_offset);
+             x_long_offset, y_lat_offset, (long)max_x_long_offset, (long)max_y_lat_offset);
 
     if (((left <= x_long_offset) && (x_long_offset <= right) &&
-	 (top <= y_lat_offset) && (y_lat_offset <= bottom)) ||
-	((left <= x_long_offset) && (x_long_offset <= right) &&
-	 (top <= (long)max_y_lat_offset) && ((long)max_y_lat_offset <= bottom)) ||
-	((left <= (long)max_x_long_offset) && ((long)max_x_long_offset <= right) &&
-	 (top <= y_lat_offset) && (y_lat_offset <= bottom)) ||
-	((left <= (long)max_x_long_offset) && ((long)max_x_long_offset <= right) &&
-	 (top <= (long)max_y_lat_offset) && ((long)max_y_lat_offset <= bottom)) ||
-	((x_long_offset <= left) && (left <= (long)max_x_long_offset) &&
-	 (y_lat_offset <= top) && (top <= (long)max_y_lat_offset)) ||
-	((x_long_offset <= left) && (left <= (long)max_x_long_offset) &&
-	 (y_lat_offset <= bottom) && (bottom <= (long)max_y_lat_offset)) ||
-	((x_long_offset <= right) && (right <= (long)max_x_long_offset) &&
-	 (y_lat_offset <= top) && (top <= (long)max_y_lat_offset)) ||
-	((x_long_offset <= right) && (right <= (long)max_x_long_offset) &&
-	 (y_lat_offset <= bottom) && (bottom <= (long)max_y_lat_offset)))
+         (top <= y_lat_offset) && (y_lat_offset <= bottom)) ||
+        ((left <= x_long_offset) && (x_long_offset <= right) &&
+         (top <= (long)max_y_lat_offset) && ((long)max_y_lat_offset <= bottom)) ||
+        ((left <= (long)max_x_long_offset) && ((long)max_x_long_offset <= right) &&
+         (top <= y_lat_offset) && (y_lat_offset <= bottom)) ||
+        ((left <= (long)max_x_long_offset) && ((long)max_x_long_offset <= right) &&
+         (top <= (long)max_y_lat_offset) && ((long)max_y_lat_offset <= bottom)) ||
+        ((x_long_offset <= left) && (left <= (long)max_x_long_offset) &&
+         (y_lat_offset <= top) && (top <= (long)max_y_lat_offset)) ||
+        ((x_long_offset <= left) && (left <= (long)max_x_long_offset) &&
+         (y_lat_offset <= bottom) && (bottom <= (long)max_y_lat_offset)) ||
+        ((x_long_offset <= right) && (right <= (long)max_x_long_offset) &&
+         (y_lat_offset <= top) && (top <= (long)max_y_lat_offset)) ||
+        ((x_long_offset <= right) && (right <= (long)max_x_long_offset) &&
+         (y_lat_offset <= bottom) && (bottom <= (long)max_y_lat_offset)))
       in_window = 1;
     else {
-	// find min and max borders to look at
-	//this routine are for those odd sized maps
-	if ((long)left > x_long_offset)
-	  map_border_min_x = (long)left;
-	else
-	  map_border_min_x = x_long_offset;
+        // find min and max borders to look at
+        //this routine are for those odd sized maps
+        if ((long)left > x_long_offset)
+          map_border_min_x = (long)left;
+        else
+          map_border_min_x = x_long_offset;
 
-	if (right < (long)max_x_long_offset)
-	  map_border_max_x = (long)right;
-	else
-	  map_border_max_x = (long)max_x_long_offset;
+        if (right < (long)max_x_long_offset)
+          map_border_max_x = (long)right;
+        else
+          map_border_max_x = (long)max_x_long_offset;
 
-	if ((long)top > y_lat_offset)
-	  map_border_min_y = (long)top;
-	else
-	  map_border_min_y = y_lat_offset;
+        if ((long)top > y_lat_offset)
+          map_border_min_y = (long)top;
+        else
+          map_border_min_y = y_lat_offset;
 
-	if (bottom < (long)max_y_lat_offset)
-	  map_border_max_y = (long)bottom;
-	else
-	  map_border_max_y = (long)max_y_lat_offset;
+        if (bottom < (long)max_y_lat_offset)
+          map_border_max_y = (long)bottom;
+        else
+          map_border_max_y = (long)max_y_lat_offset;
 
-	// do difficult check inside map
-	for (x_test = map_border_min_x;(x_test <= map_border_max_x && !in_window); x_test += ((scale_x * screen_width) / 10)) {
-	    for (y_test = map_border_min_y;(y_test <= map_border_max_y && !in_window);y_test += ((scale_y * screen_height) / 10)) {
-		if ((x_long_offset <= x_test) && (x_test <= (long)max_x_long_offset) && (y_lat_offset <= y_test) &&
-		    (y_test <= (long)max_y_lat_offset))
+        // do difficult check inside map
+        for (x_test = map_border_min_x;(x_test <= map_border_max_x && !in_window); x_test += ((scale_x * screen_width) / 10)) {
+            for (y_test = map_border_min_y;(y_test <= map_border_max_y && !in_window);y_test += ((scale_y * screen_height) / 10)) {
+                if ((x_long_offset <= x_test) && (x_test <= (long)max_x_long_offset) && (y_lat_offset <= y_test) &&
+                    (y_test <= (long)max_y_lat_offset))
 
-		  in_window = 1;
-	    }
-	}
+                  in_window = 1;
+            }
+        }
     }
     return (in_window);
 }
@@ -6196,71 +6196,71 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
 #pragma pack(1)
     struct {
-	    char name[32];
-    	short file_attributes;
-    	short version;
-    	long creation_date;
-    	long modification_date;
-    	long backup_date;
-    	long modification_number;
-    	long app_info;
-    	long sort_info;
-    	char database_type[4];
-    	char creator_type[4];
-    	long unique_id_seed;
-    	long next_record_list;
-    	short number_of_records;
+            char name[32];
+        short file_attributes;
+        short version;
+        long creation_date;
+        long modification_date;
+        long backup_date;
+        long modification_number;
+        long app_info;
+        long sort_info;
+        char database_type[4];
+        char creator_type[4];
+        long unique_id_seed;
+        long next_record_list;
+        short number_of_records;
     } pdb_hdr;
 
     struct {
-    	long record_data_offset;
-    	char category;
-    	char id[3];
+        long record_data_offset;
+        char category;
+        char id[3];
     } prl;
 
     struct {
-    	long left_bounds;
-    	long right_bounds;
-    	long top_bounds;
-    	long bottom_bounds;
-    	char menu_name[12];
-    	short granularity;
-    	char sort_order;
-    	char fill[33];
+        long left_bounds;
+        long right_bounds;
+        long top_bounds;
+        long bottom_bounds;
+        char menu_name[12];
+        short granularity;
+        char sort_order;
+        char fill[33];
     } pmf_hdr;
 
     struct {
-    	char type;
-    	char sub_type;
-    	short minimum_zoom;
+        char type;
+        char sub_type;
+        short minimum_zoom;
     } record_hdr;
 
     struct {
-    	short next_vector;
-    	short left_bounds;
-    	short right_bounds;
-    	short top_bounds;
-    	short bottom_bounds;
-    	short line_start_x;
-    	short line_start_y;
+        short next_vector;
+        short left_bounds;
+        short right_bounds;
+        short top_bounds;
+        short bottom_bounds;
+        short line_start_x;
+        short line_start_y;
     } vector_hdr;
 
     struct {
-    	unsigned char next_x;
-    	unsigned char next_y;
+        unsigned char next_x;
+        unsigned char next_y;
     } vector_point;
 
     struct {
-    	short next_label;
-    	short start_x;
-    	short start_y;
-    	char symbol_set;
-    	char symbol_char;
-    	char color;
-    	char treatment;
-    	short fill;
-    	char text[20];
-    } label_record;	
+        short next_label;
+        short start_x;
+        short start_y;
+        char symbol_set;
+        char symbol_char;
+        char color;
+        char treatment;
+        short fill;
+        char text[20];
+    } label_record;     
 
     FILE *f;
     char filename[200];
@@ -6387,24 +6387,24 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                     record_hdr.type,
                                     0,
                                     destination_pixmap);
-			                }
+                                        }
 
-			                // DNN: Only line_x and line_y are scaled,
-			                // not map_left and map_top
-			                map_plot (w,
+                                        // DNN: Only line_x and line_y are scaled,
+                                        // not map_left and map_top
+                                        map_plot (w,
                                 max_x,
                                 max_y,
                                 map_left + (line_x * scale),
                                 map_top + (line_y * scale),
                                 0,
-				                0,
+                                                0,
                                 destination_pixmap);
-			            }
+                                    }
                         else {
-			                vector = False;
+                                        vector = False;
                         }
-		            }
-		        }
+                            }
+                        }
                 else if (record_hdr.type == 0) {  // We have a label
                     long label_x_cord;
                     long label_y_cord;
@@ -6533,9 +6533,9 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                         }
                     }
                 }   // End of while
-	        }
-	    }
-	    fclose(f);
+                }
+            }
+            fclose(f);
         if (debug_level & 1)
             printf("Closed file\n");
     }
@@ -6804,7 +6804,7 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
             else {  // check edges and corners - quick check
             */
 
-	        in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary);
+                in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary);
 
             if (alert)
                 alert->flags[0] = in_window ? 'Y' : 'N';

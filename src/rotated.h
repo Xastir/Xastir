@@ -57,7 +57,7 @@ int     XRotDrawAlignedString(Display*, XFontStruct*, float,
 int     XRotDrawAlignedImageString(Display*, XFontStruct*, float,
                                    Drawable, GC, int, int, char*, int);
 XPoint *XRotTextExtents(Display*, XFontStruct*, float,
-			int, int, char*, int);
+                        int, int, char*, int);
 }
 
 #else

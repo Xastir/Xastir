@@ -79,7 +79,7 @@ http://www.tapr.org
 
 HELP-INDEX>Que hay de nuevo en Xastir 1.1
 
-	    Que hay de nuevo en Xastir 1.1
+            Que hay de nuevo en Xastir 1.1
 
 Esta nueva versión, Xastir 1.1, agrega nuevos rasgos significantes y perfeccionamientos  
 a la interface del usuario. Al contrario de 1.0, 
@@ -467,7 +467,7 @@ Para información de Objeto y Artículo, por favor vea el tema de ayuda "Objetos y
 
 HELP-INDEX>Objetos y Artículos
 
-				Objetos y Artículos
+                                Objetos y Artículos
 
 La opción de crear Objeto/Artículo en el botón derecho pulsado el menú traeará un diálogo  
 con la posición de basado objeto en donde usted pulsó el botón del ratón.  
@@ -1000,7 +1000,7 @@ Para usar una unidad de GPS con Xastir usted tienes tres opciones,
 un GPS Conectado a una red o a un serial GPS,
 o a un serial GPS con un TNC y cable HSP.
 
-			    GPS conectado a una red:   
+                            GPS conectado a una red:   
   
 La ventaja de usar un GPS conectado a una red
 es que usted puedes compartir el GPS con otros programas.   
@@ -1038,7 +1038,7 @@ Un diálogo con los tipos de Interfaces aparecerá,
 Pulse sobre el "Serial GPS" y después en el botón Agregar.   
   
                Unas pocas opciones para fijar.
-	       
+               
 Primero entre el puerto serial en donde el dispositivo
 está conectado (como "/dev/ttyS1 (COM2)"). 
 Próximo si usted seleccionas "Activar en Inicio",
@@ -1549,99 +1549,99 @@ puedes obtenerlo desde http://www.tapr.org/
 
                    Tabla de símbolo
 
-Símbolo	Grupo/				Grupo/
+Símbolo Grupo/                          Grupo/
 
-!	Triángulo w/!			Triángulo w/!
-"	Lluvia Nube			Lluvia Nube
-#	Digi				DIGI         
-$	Símbolo	 telefónico		$ Símbolo
-%	DX				DX 
-&	GATE-HF 			GATE
-'	Avión pequeño			Avión Caído
-(	Nube 				nube
-)	TBD                           
-*	NIEVE Hojuela	 		NIEVE Hojuela  
-+	Cruz roja                     
-,	Inverso  L
--	w/omni casa                  
-.	X pequeña
-/	Punto rojo                       
-0	0 en una caja			 Círculo
-1	1 en una caja
-2	2 en una caja
-3	3 en una caja
-4	4 en una caja
-5	5 en una caja
-6	6 en una caja
-7	7 en una caja
-8	8 en una caja
-9	9 en un GAS de la caja
-:	Bombero				?
-;	Tienda 				tienda
-<	motocicleta			Banderín
-=	Máquina de tren                  
->	Automóvil 			automóvil 
-?	Antena POS			? en una caja
-@	HURRICAN/TORMENTA		HURRICAN/TORMENTA 
-A	Primero auxilio			Caja
-B	BBS 				Blowing Nieve 
-C	Canoa                         
-D	D en un círculo                 
-E	E en un circulo			Pila de Humo
-F	F en un círculo                 
-G	Reja Antena Cuadrada		?
-H	Hotel/Cama                     
-I	TCP/IP				?
-J	J en un círculo			descarga
-K	Escuela                  
-L	Casa Iluminada			Casa Iluminada
-M	Mac                           
-N	NTS				?
-O	Globo                       
-P	Carro  de  Patrulla   		Rx
-Q	Circle con Círculos 		Círculo con Círculos
-R	RV				Restaurante
-S	Transbordador			Satélite
-T	Tormenta (cloud/bolt)		Tormenta (cloud/bolt)
-U	Autobús escolar			Sol
-V	VOR TAC 			VOR TAC Símbolo
-W	Servicio  del Tiempo Nacional	NWS-Digi
-X	Helicóptero
-Y	Velero                     
-Z	Windows
-[	corredor   	 	 	WC
-\	DF Triángulo
-]	Packet Mail Box
-^	Avión grande			Avión Grande
-_	Estación Meteorológica		WS-Digi
-`	Plato de satélite              
-a	Ambulancia
-b	Bicicleta   	  	  	vuela nube
-c	antena de DX                     
-d	depto de bombero.  	  	Antena de DX
-e	Caballo				Aguanieve nube 
-f	Camión de bombero		FC Nube
-g	planeador			Banderín (2)
-h	Hospital   	   		HAM
-i	Isla				Isla
-j	Jeep				Jeep
-k	Camión				Camión 
-l	Punto pequeño			Punto pequeño
-m	MIC				Milla Poste
-n	N				Triángulo Pequeño
-o	EOC				Punto en Círculos 
-p	Cachorro   	   		Punto en Círculos 
-q	GS Antena			Antena de GS
-r	Antena Torre			Antena Torre
-s	Bote				Barco
-t	TS				?
-u	18 Rueda de Camión
-v	Carro de mudanzas   	   	Punto en Círculos 
-w	H20				Diluvio
-x	X Windows			Punto Rojo
-y	Casa w/Yagi	 		Casa w/yagi 
-z					X Windows
-{	NIEBLA				NIEBLA
-|	Línea Negra			Línea negra
-}	TCP				TCP
-~	Velero				Velero
+!       Triángulo w/!                   Triángulo w/!
+"       Lluvia Nube                     Lluvia Nube
+#       Digi                            DIGI         
+$       Símbolo  telefónico             $ Símbolo
+%       DX                              DX 
+&       GATE-HF                         GATE
+'       Avión pequeño                   Avión Caído
+(       Nube                            nube
+)       TBD                           
+*       NIEVE Hojuela                   NIEVE Hojuela  
++       Cruz roja                     
+,       Inverso  L
+-       w/omni casa                  
+.       X pequeña
+/       Punto rojo                       
+0       0 en una caja                    Círculo
+1       1 en una caja
+2       2 en una caja
+3       3 en una caja
+4       4 en una caja
+5       5 en una caja
+6       6 en una caja
+7       7 en una caja
+8       8 en una caja
+9       9 en un GAS de la caja
+:       Bombero                         ?
+;       Tienda                          tienda
+<       motocicleta                     Banderín
+=       Máquina de tren                  
+>       Automóvil                       automóvil 
+?       Antena POS                      ? en una caja
+@       HURRICAN/TORMENTA               HURRICAN/TORMENTA 
+A       Primero auxilio                 Caja
+B       BBS                             Blowing Nieve 
+C       Canoa                         
+D       D en un círculo                 
+E       E en un circulo                 Pila de Humo
+F       F en un círculo                 
+G       Reja Antena Cuadrada            ?
+H       Hotel/Cama                     
+I       TCP/IP                          ?
+J       J en un círculo                 descarga
+K       Escuela                  
+L       Casa Iluminada                  Casa Iluminada
+M       Mac                           
+N       NTS                             ?
+O       Globo                       
+P       Carro  de  Patrulla             Rx
+Q       Circle con Círculos             Círculo con Círculos
+R       RV                              Restaurante
+S       Transbordador                   Satélite
+T       Tormenta (cloud/bolt)           Tormenta (cloud/bolt)
+U       Autobús escolar                 Sol
+V       VOR TAC                         VOR TAC Símbolo
+W       Servicio  del Tiempo Nacional   NWS-Digi
+X       Helicóptero
+Y       Velero                     
+Z       Windows
+[       corredor                        WC
+\       DF Triángulo
+]       Packet Mail Box
+^       Avión grande                    Avión Grande
+_       Estación Meteorológica          WS-Digi
+`       Plato de satélite              
+a       Ambulancia
+b       Bicicleta                       vuela nube
+c       antena de DX                     
+d       depto de bombero.               Antena de DX
+e       Caballo                         Aguanieve nube 
+f       Camión de bombero               FC Nube
+g       planeador                       Banderín (2)
+h       Hospital                        HAM
+i       Isla                            Isla
+j       Jeep                            Jeep
+k       Camión                          Camión 
+l       Punto pequeño                   Punto pequeño
+m       MIC                             Milla Poste
+n       N                               Triángulo Pequeño
+o       EOC                             Punto en Círculos 
+p       Cachorro                        Punto en Círculos 
+q       GS Antena                       Antena de GS
+r       Antena Torre                    Antena Torre
+s       Bote                            Barco
+t       TS                              ?
+u       18 Rueda de Camión
+v       Carro de mudanzas               Punto en Círculos 
+w       H20                             Diluvio
+x       X Windows                       Punto Rojo
+y       Casa w/Yagi                     Casa w/yagi 
+z                                       X Windows
+{       NIEBLA                          NIEBLA
+|       Línea Negra                     Línea negra
+}       TCP                             TCP
+~       Velero                          Velero
