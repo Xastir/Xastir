@@ -266,10 +266,10 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     else
         devices[TNC_port].transmit_data=0;
 
-        if (XmToggleButtonGetState(TNC_GPS_set_time))
-                devices[TNC_port].set_time=1;
-        else
-                devices[TNC_port].set_time=0;
+    if (XmToggleButtonGetState(TNC_GPS_set_time))
+        devices[TNC_port].set_time=1;
+    else
+        devices[TNC_port].set_time=0;
 
     set_port_speed(TNC_port);
     devices[TNC_port].style=device_style;
@@ -335,38 +335,35 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 /* config_TNC_dialog = XtVaCreatePopupShell(device_type ? langcode("WPUPCFT023"):langcode("WPUPCFT001"),
  -- replaced by KB6MER with the lines below for adding AUX GPS type TNC
 */
-                switch(device_type)
-                {
-                        case DEVICE_SERIAL_TNC:
-                                tmp=langcode("WPUPCFT001");
-                                break;
+        switch(device_type) {
+            case DEVICE_SERIAL_TNC:
+                tmp=langcode("WPUPCFT001");
+                break;
 
-                        case DEVICE_SERIAL_TNC_HSP_GPS:
-                                tmp=langcode("WPUPCFT023");
-                                break;
+            case DEVICE_SERIAL_TNC_HSP_GPS:
+                tmp=langcode("WPUPCFT023");
+                break;
 
-                        case DEVICE_SERIAL_TNC_AUX_GPS:
-                                tmp=langcode("WPUPCFT028");
+            case DEVICE_SERIAL_TNC_AUX_GPS:
+                tmp=langcode("WPUPCFT028");
                 if (debug_level & 128) {
                     printf("Storing %d to gps_retrieve for %d\n",
                     DEFAULT_GPS_RETR, port);
                 }
-                                devices[port].gps_retrieve=DEFAULT_GPS_RETR;
-                                break;
+                devices[port].gps_retrieve=DEFAULT_GPS_RETR;
+                break;
 
-                        default:
-                                sprintf(tmp, langcode("WPUPCFT029"), (int)device_type);
-                                break;
-                }
+            default:
+                sprintf(tmp, langcode("WPUPCFT029"), (int)device_type);
+                break;
+        }
 
-                config_TNC_dialog = XtVaCreatePopupShell(
-                        tmp,
-/* End of KB6MER modification -- Hopefully this is a good cleanup */
-
-                                    xmDialogShellWidgetClass,Global.top,
-                                    XmNdeleteResponse,XmDESTROY,
-                                    XmNdefaultPosition, FALSE,
-                                    NULL);
+        config_TNC_dialog = XtVaCreatePopupShell(
+                            tmp,
+                            xmDialogShellWidgetClass,Global.top,
+                            XmNdeleteResponse,XmDESTROY,
+                            XmNdefaultPosition, FALSE,
+                            NULL);
 
         pane = XtVaCreateWidget("Config_TNC pane",xmPanedWindowWidgetClass, config_TNC_dialog,
                           XmNbackground, colors[0xff],
@@ -400,6 +397,9 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNbackground, colors[0xff],
                                       NULL);
 
+        switch(device_type) {
+            case DEVICE_SERIAL_TNC_HSP_GPS:
+            case DEVICE_SERIAL_TNC_AUX_GPS:
                 TNC_GPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
@@ -410,6 +410,11 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
+                break;
+            case DEVICE_SERIAL_TNC:
+            default:
+                break;
+        }
 
         device = XtVaCreateManagedWidget(langcode("WPUPCFT003"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
@@ -838,7 +843,17 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             XmTextFieldSetString(TNC_device_name_data,TNC_PORT);
             XmToggleButtonSetState(TNC_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(TNC_transmit_data,TRUE,FALSE);
-                        XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
+
+            switch(device_type) {
+                case DEVICE_SERIAL_TNC_HSP_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
+                    XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
+                    break;
+                case DEVICE_SERIAL_TNC:
+                default:
+                    break;
+            }
+
             XmToggleButtonSetState(speed_4800,TRUE,FALSE);
             device_speed=4;
             XmToggleButtonSetState(style_8n1,TRUE,FALSE);
@@ -866,10 +881,18 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
             else
                 XmToggleButtonSetState(TNC_transmit_data,FALSE,FALSE);
 
-                        if (devices[TNC_port].set_time)
-                                XmToggleButtonSetState(TNC_GPS_set_time, TRUE, FALSE);
-                        else
-                                XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
+            switch(device_type) {
+                case DEVICE_SERIAL_TNC_HSP_GPS:
+                case DEVICE_SERIAL_TNC_AUX_GPS:
+                    if (devices[TNC_port].set_time)
+                        XmToggleButtonSetState(TNC_GPS_set_time, TRUE, FALSE);
+                    else
+                        XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
+                    break;
+                case DEVICE_SERIAL_TNC:
+                default:
+                    break;
+            }
 
             switch (devices[TNC_port].sp) {
                 case(B300):
@@ -1005,6 +1028,7 @@ int GPS_port;
 Widget config_GPS_dialog = (Widget)NULL;
 Widget GPS_device_name_data;
 Widget GPS_active_on_startup;
+Widget GPS_set_time;
 
 
 
@@ -1040,10 +1064,16 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" )
 
     strcpy(devices[GPS_port].device_name,XmTextFieldGetString(GPS_device_name_data));
     (void)remove_trailing_spaces(devices[GPS_port].device_name);
+
     if(XmToggleButtonGetState(GPS_active_on_startup))
         devices[GPS_port].connect_on_startup=1;
     else
         devices[GPS_port].connect_on_startup=0;
+
+    if (XmToggleButtonGetState(GPS_set_time))
+        devices[GPS_port].set_time=1;
+    else
+        devices[GPS_port].set_time=0;
 
     set_port_speed(GPS_port);
     devices[GPS_port].style=device_style;
@@ -1140,10 +1170,21 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbackground, colors[0xff],
                                       NULL);
 
+        GPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, GPS_active_on_startup,
+                                      XmNtopOffset, 7,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+ 
         frame = XtVaCreateManagedWidget("Config_GPS frame", xmFrameWidgetClass, form,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopOffset,10,
-                                    XmNtopWidget, GPS_active_on_startup,
+                                    XmNtopWidget, GPS_set_time,
                                     XmNbottomAttachment,XmATTACH_NONE,
                                     XmNleftAttachment, XmATTACH_FORM,
                                     XmNleftOffset, 10,
@@ -1315,6 +1356,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
             /* first time port */
             XmTextFieldSetString(GPS_device_name_data,GPS_PORT);
             XmToggleButtonSetState(GPS_active_on_startup,TRUE,FALSE);
+            XmToggleButtonSetState(GPS_set_time, FALSE, FALSE);
             XmToggleButtonSetState(speed_4800,TRUE,FALSE);
             device_speed=4;
             XmToggleButtonSetState(style_8n1,TRUE,FALSE);
@@ -1329,6 +1371,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS" );
                 XmToggleButtonSetState(GPS_active_on_startup,TRUE,FALSE);
             else
                 XmToggleButtonSetState(GPS_active_on_startup,FALSE,FALSE);
+
+            if (devices[GPS_port].set_time)
+                XmToggleButtonSetState(GPS_set_time,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(GPS_set_time,FALSE,FALSE);
 
             switch (devices[GPS_port].sp) {
                 case(B300):
@@ -2294,6 +2341,8 @@ Widget NGPS_host_name_data;
 Widget NGPS_host_port_data;
 Widget NGPS_active_on_startup;
 Widget NGPS_host_reconnect_data;
+Widget NGPS_set_time;
+
 
 
 
@@ -2340,6 +2389,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" 
         devices[NGPS_port].reconnect=1;
     else
         devices[NGPS_port].reconnect=0;
+
+    if (XmToggleButtonGetState(NGPS_set_time))
+        devices[NGPS_port].set_time=1;
+    else
+        devices[NGPS_port].set_time=0;
 
     /* reopen or open port*/
     if (devices[NGPS_port].connect_on_startup==1 || was_up)
@@ -2472,10 +2526,21 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbackground, colors[0xff],
                                       NULL);
 
+        NGPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, NGPS_host_reconnect_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+ 
         sep = XtVaCreateManagedWidget("Config_NGPS sep", xmSeparatorGadgetClass,form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, NGPS_host_reconnect_data,
+                                      XmNtopWidget, NGPS_set_time,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -2523,6 +2588,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
             XmTextFieldSetString(NGPS_host_port_data,"1234");
             XmToggleButtonSetState(NGPS_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(NGPS_host_reconnect_data,TRUE,FALSE);
+            XmToggleButtonSetState(NGPS_set_time, FALSE, FALSE);
         } else {
             /* reconfig */
 
@@ -2541,6 +2607,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS" );
             else
                 XmToggleButtonSetState(NGPS_host_reconnect_data,FALSE,FALSE);
 
+            if (devices[NGPS_port].set_time)
+                XmToggleButtonSetState(NGPS_set_time, TRUE, FALSE);
+            else
+                XmToggleButtonSetState(NGPS_set_time, FALSE, FALSE);
+ 
 end_critical_section(&devices_lock, "interface_gui.c:Config_NGPS" );
 
         }
