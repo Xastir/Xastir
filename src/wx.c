@@ -23,16 +23,16 @@
  */
 
 
-/*
- * The code currently supports these types of weather stations:
- *
- *   Peet Brothers Ultimeter 2000 (Data logging mode)
- *   Peet Brothers Ultimeter 2000 (Packet mode)
- *   Peet Brothers Ultimeter 2000 (Complete Record Mode)
- *   Peet Brothers Ultimeter-II
- *   Qualimetrics Q-Net?
- *   Radio Shack WX-200/Huger WM-918/Oregon Scientific WM-918
- */
+//
+// The code currently supports these types of weather stations:
+//
+//   Peet Brothers Ultimeter 2000 (Set to Data logging mode)
+//   Peet Brothers Ultimeter 2000 (Set to Packet mode)
+//   Peet Brothers Ultimeter 2000 (Set to Complete Record Mode)
+//   Peet Brothers Ultimeter-II
+//   Qualimetrics Q-Net?
+//   Radio Shack WX-200/Huger WM-918/Oregon Scientific WM-918
+//
 
 
 // Need to modify code to use WX_rain_gauge_type.  Peet brothers.
@@ -483,9 +483,16 @@ void wx_last_data_check(void) {
 
 
 
-/************************************************************************/
-/* Decode Peet Brothers Ultimeter 2000 weather data (Data logging mode) */
-/************************************************************************/
+//*********************************************************************
+// Decode Peet Brothers Ultimeter 2000 weather data (Data logging mode)
+//
+// This function is called from db.c:data_add() only.  Used for
+// decoding incoming packets, not for our own weather station data.
+//
+// The Ultimeter 2000 can be in any of three modes, Data Logging Mode,
+// Packet Mode, or Complete Record Mode.  This routine handles only
+// the Data Logging Mode.
+//*********************************************************************
 void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
     time_t last_speed_time;
     float last_speed;
@@ -615,9 +622,16 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
 
 
 
-/*******************************************************************/
-/*  Decode Peet Brothers Ultimeter 2000 weather data (Packet mode) */
-/*******************************************************************/
+//********************************************************************
+// Decode Peet Brothers Ultimeter 2000 weather data (Packet mode)
+//
+// This function is called from db.c:data_add() only.  Used for
+// decoding incoming packets, not for our own weather station data.
+//
+// The Ultimeter 2000 can be in any of three modes, Data Logging Mode,
+// Packet Mode, or Complete Record Mode.  This routine handles only
+// the Packet Mode.
+//********************************************************************
 void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
     time_t last_speed_time;
     float last_speed;
@@ -777,9 +791,12 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
 
 
 
-/*******************************************/
-/*  Decode Peet Brothers U-II weather data */
-/*******************************************/
+//*****************************************************************
+// Decode Peet Brothers Ultimeter-II weather data
+//
+// This function is called from db.c:data_add() only.  Used for
+// decoding incoming packets, not for our own weather station data.
+//*****************************************************************
 void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int type) {
     time_t last_speed_time;
     float last_speed;
@@ -886,13 +903,20 @@ int rswnc(unsigned char c) {
 
 
 
-/***********************************************************/
-/* wx fill data field                                      */
-/* from: 0=local station, 1=regular decode (other stations)*/
-/* type: type of WX packet                                 */
-/* data: the packet of WX data                             */
-/* fill: the station data to fill                          */
-/***********************************************************/
+//*********************************************************
+// wx fill data field
+// from: 0=local station, 1=regular decode (other stations)
+// type: type of WX packet
+// data: the packet of WX data
+// fill: the station data to fill
+//
+// This function is called only by wx.c:wx_decode()
+//
+// It's always called with a first parameter of 0, so we
+// must use this only for our own serially-connected or
+// network connected weather station, and not for decoding
+// other people's weather packets.
+//*********************************************************
 void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     time_t last_speed_time;
     float last_speed;
@@ -1677,13 +1701,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
 
-/***********************************************************/
-/* Decode WX data line                                     */
-/* wx_line: raw wx data to decode                          */
-/* This is called from main.c:UpdateTime() only.  It       */
-/* decodes data for networked WX interfaces only.   It     */
-/* wx_fill_data() to do the real work.                     */
-/***********************************************************/
+//**********************************************************
+// Decode WX data line
+// wx_line: raw wx data to decode
+// This is called from main.c:UpdateTime() only.  It
+// decodes data for serially-connected and network-connected
+// WX interfaces only.   It calls wx_fill_data() to do the
+// real work.
+//**********************************************************
 void wx_decode(unsigned char *wx_line, int port) {
     DataRow *p_station;
     int decoded;

@@ -6266,15 +6266,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
             case (APRS_WX4):            // '#'          Peet Bros U-II (mph)
             case (APRS_WX6):            // '*'          Peet Bros U-II (km/h)
-            case (APRS_WX3):            // '!'          Ultimeter 2000 (data logging mode)
-            case (APRS_WX5):            // '$ULTW'      Ultimeter 2000 (packet mode)
+            case (APRS_WX3):            // '!'          Peet Bros Ultimeter 2000 (data logging mode)
+            case (APRS_WX5):            // '$ULTW'      Peet Bros Ultimeter 2000 (packet mode)
                 if (get_weather_record(p_station)) {    // get existing or create new weather record
                     weather = p_station->weather_data;
-                    if (type == APRS_WX3)
+                    if (type == APRS_WX3)   // Peet Bros Ultimeter 2000 data logging mode
                         decode_U2000_L(1,(unsigned char *)data,weather);
-                    else if (type == APRS_WX5)
+                    else if (type == APRS_WX5) // Peet Bros Ultimeter 2000 packet mode
                         decode_U2000_P(1,(unsigned char *)data,weather);
-                    else
+                    else    // Peet Bros Ultimeter-II
                         decode_Peet_Bros(1,(unsigned char *)data,weather,type);
                     p_station->record_type = (char)type;
                     strcpy(weather->wx_time, get_time(temp_data));
