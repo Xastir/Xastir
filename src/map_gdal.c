@@ -654,6 +654,26 @@ void Draw_OGR_Labels( Widget w,
     int my_color = color;
 
 
+    // Recursively call this routine if we have a lot of points, so
+    // that we draw labels at multiple points along the line.  The
+    // number of points skipped should probably be tied to the zoom
+    // level so that we get an appropriate number of labels at each
+    // scale.  The goal should probably be two or three labels max
+    // per object.
+    //
+    if (num_points > 15) {
+        int skip = 10 * scale_y;
+
+        Draw_OGR_Labels(w,
+            pixmap,
+            featureH,
+            geometryH,
+            &xpoints[skip],
+            num_points - skip,
+            color);
+    }
+
+
     if (num_points > 1) {
         // Compute the label rotation angle
         float diff_X = (int)xpoints[1].x - xpoints[0].x;
