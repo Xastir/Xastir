@@ -715,7 +715,7 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 #	    BDB_LIBADD="$BDB_LIBADD -ldb"; dblib="berkeley"; dbname=db,
 #            dblib="no")
 #        fi
-#	LIBS=$saved_LIBS
+	LIBS=$saved_LIBS
 
 	LDFLAGS=$BDB_SAVE_LDFLAGS
 ])
