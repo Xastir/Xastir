@@ -2874,6 +2874,20 @@ void Station_data_destroy_track( /*@unused@*/ Widget widget, XtPointer clientDat
 
 
 
+// This function merely reformats the button callback in order to
+// call wx_alert_double_click_action, which expects the paramter in
+// calldata instead of in clientData.
+//
+void Station_data_wx_alert(Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+//fprintf(stderr, "Station_data_wx_alert start\n");
+    wx_alert_finger_output( w, clientData);
+//fprintf(stderr, "Station_data_wx_alert end\n");
+}
+
+
+
+
+
 void Station_data_add_fcc(Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     char temp[500];
     FccAppl my_data;
@@ -3938,10 +3952,11 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
     char temp[300];
     unsigned int n;
     Atom delw;
-    static Widget  pane, form, button_cancel, button_message, button_fcc,
-      button_rac, button_clear_track, button_trace, button_messages, button_object_modify,
-      button_direct, button_version, station_icon, station_call, station_type,
-      station_data_auto_update_w;
+    static Widget  pane, form, button_cancel, button_message,
+        button_nws, button_fcc, button_rac, button_clear_track,
+        button_trace, button_messages, button_object_modify,
+        button_direct, button_version, station_icon, station_call,
+        station_type, station_data_auto_update_w;
     Arg args[20];
     Pixmap icon;
     Position x,y;    // For saving current dialog position
@@ -4154,11 +4169,38 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
-            XtAddCallback(button_object_modify, XmNactivateCallback, Modify_object, (XtPointer)p_station);
+            XtAddCallback(button_object_modify,
+                XmNactivateCallback,
+                Modify_object,
+                (XtPointer)p_station);
+        }
+
+        // Add Snag NWS Info button if it is an object or item and
+        // has "WXSVR" in its path somewhere.
+        if ( ( (p_station->flag & ST_OBJECT) || (p_station->flag & ST_ITEM) )
+                && (p_station->node_path_ptr != NULL)
+                && ( strstr(p_station->node_path_ptr, "WXSVR") != NULL ) ) {
+            button_nws = XtVaCreateManagedWidget(langcode("WPUPSTI064"),xmPushButtonGadgetClass, form,
+ 
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, button_messages,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 2,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 3,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+            XtAddCallback(button_nws,
+                XmNactivateCallback,
+                Station_data_wx_alert,
+                (XtPointer)p_station->call_sign);
         }
 
         // Add FCC button only if probable match
-        if ((! strncmp(station,"A",1)) || (! strncmp(station,"K",1)) ||
+        else if ((! strncmp(station,"A",1)) || (! strncmp(station,"K",1)) ||
             (! strncmp(station,"N",1)) || (! strncmp(station,"W",1))  ) {
             button_fcc = XtVaCreateManagedWidget(langcode("WPUPSTI003"),xmPushButtonGadgetClass, form,
                             XmNtopAttachment, XmATTACH_NONE,
@@ -4172,14 +4214,17 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
-            XtAddCallback(button_fcc, XmNactivateCallback, Station_data_add_fcc,(XtPointer)p_station->call_sign);
+            XtAddCallback(button_fcc,
+                XmNactivateCallback,
+                Station_data_add_fcc,
+                (XtPointer)p_station->call_sign);
 
             if ( ! check_fcc_data())
                 XtSetSensitive(button_fcc,FALSE);
         }
 
         // Add RAC button only if probable match
-        if (!strncmp(station,"VE",2) || !strncmp(station,"VA",2)) {
+        else if (!strncmp(station,"VE",2) || !strncmp(station,"VA",2)) {
             button_rac = XtVaCreateManagedWidget(langcode("WPUPSTI004"),xmPushButtonGadgetClass, form,
                             XmNtopAttachment, XmATTACH_NONE,
                             XmNbottomAttachment, XmATTACH_WIDGET,
@@ -4192,7 +4237,10 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
-            XtAddCallback(button_rac, XmNactivateCallback, Station_data_add_rac,(XtPointer)p_station->call_sign);
+            XtAddCallback(button_rac,
+                XmNactivateCallback,
+                Station_data_add_rac,
+                (XtPointer)p_station->call_sign);
 
             if ( ! check_rac_data())
                 XtSetSensitive(button_rac,FALSE);

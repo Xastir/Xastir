@@ -99,11 +99,11 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_detailed_alert_
 
 
 
-void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointer callData) {
-    char *choice;
-    XmListCallbackStruct *selection = callData;
-    char handle[14];
-    char *ptr;
+// This gets/displays the "finger" output from the WXSVR.  Called
+// from both the Station Info "NWS" button and by double-clicking on
+// the view weather alerts window.
+//
+void wx_alert_finger_output( Widget widget, char *handle) {
     static Widget pane, my_form, mess, button_cancel,wx_detailed_alert_list;
     Atom delw;
     Arg al[20];                     // Arg List
@@ -113,20 +113,6 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
     register FILE *pp;
     extern FILE *popen(const char *, const char *);
 
-
-    XmStringGetLtoR(selection->item, XmFONTLIST_DEFAULT_TAG, &choice);
-    //fprintf(stderr,"Selected item %d (%s)\n", selection->item_position, choice);
-
-    // Grab the first 13 characters.  Remove spaces.  This is our handle
-    // into the weather server for the full weather alert text.
-
-    strncpy(handle,choice,sizeof(handle));
-    handle[13] = '\0';  // Terminate the string
-    // Remove spaces
-    ptr = handle;
-    while ( (ptr = strpbrk(handle, " ")) )
-        memmove(ptr, ptr+1, strlen(ptr)+1);
-    handle[9] = '\0';   // Terminate after first 9 chars
 
     if (debug_level & 1)
         fprintf(stderr,"Handle: %s\n",handle);
@@ -263,6 +249,38 @@ end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_cl
         }
         pclose (pp);
     }
+}
+
+
+
+
+
+void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointer callData) {
+    char *choice;
+    XmListCallbackStruct *selection = callData;
+    char handle[14];
+    char *ptr;
+
+
+    XmStringGetLtoR(selection->item, XmFONTLIST_DEFAULT_TAG, &choice);
+    //fprintf(stderr,"Selected item %d (%s)\n", selection->item_position, choice);
+
+    // Grab the first 13 characters.  Remove spaces.  This is our handle
+    // into the weather server for the full weather alert text.
+
+    strncpy(handle,choice,sizeof(handle));
+    handle[13] = '\0';  // Terminate the string
+    // Remove spaces
+    ptr = handle;
+    while ( (ptr = strpbrk(handle, " ")) )
+        memmove(ptr, ptr+1, strlen(ptr)+1);
+    handle[9] = '\0';   // Terminate after first 9 chars
+
+    if (debug_level & 1)
+        fprintf(stderr,"Handle: %s\n",handle);
+
+    wx_alert_finger_output( widget, handle);
+
     XtFree(choice);
 }
 
