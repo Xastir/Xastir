@@ -49,6 +49,7 @@
 #include <netinet/in.h>     // Moved ahead of inet.h as reports of some *BSD's not
                             // including this as they should.
 #include <arpa/inet.h>
+#include <netinet/tcp.h>    // Needed for TCP_NODELAY setsockopt() (disabling Nagle algorithm)
 
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
@@ -1943,7 +1944,13 @@ static void* net_connect_thread(void *arg) {
             fprintf(stderr,"after htons\n");
         len = (int)sizeof(address);
         flag = 1;
-        (void)setsockopt(port_data[port].channel, SOL_SOCKET, SO_KEEPALIVE, (char *) &flag, sizeof(int));
+
+        // Turn on the socket keepalive option
+        (void)setsockopt(port_data[port].channel,  SOL_SOCKET, SO_KEEPALIVE, (char *) &flag, sizeof(int));
+
+        // Disable the Nagle algorithm (speeds things up)
+        (void)setsockopt(port_data[port].channel, IPPROTO_TCP,  TCP_NODELAY, (char *) &flag, sizeof(int));
+
         if (debug_level & 2)
             fprintf(stderr,"after setsockopt\n");
         pthread_testcancel();  // Check for thread termination request
