@@ -475,6 +475,7 @@ int label_color_guess;
 int sdts_elevation_in_meters = 1;   // Default meters
 int hypsography_layer = 0;          // Topo contours
 int hydrography_layer = 0;          // Underwater contours
+int water_layer = 0;
 int roads_trails_layer = 0;
 int railroad_layer = 0;
 int misc_transportation_layer = 0;
@@ -717,6 +718,7 @@ void guess_vector_attributes( Widget w,
                     break;
     
                 case 'H':   // Hydrography (water)
+                    water_layer++;
                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
                     label_color_guess = 0x1a;   // Steel Blue
                     break;
@@ -3225,6 +3227,7 @@ clear_dangerous();
     //
     hypsography_layer = 0;
     hydrography_layer = 0;
+    water_layer = 0;
     roads_trails_layer = 0;
     railroad_layer = 0;
     misc_transportation_layer = 0;
@@ -3771,13 +3774,31 @@ features_processed++;
                         featureH,
                         geometry_type);
 
+                    // Special handling for TIGER water polygons,
+                    // which are represented as polylines instead of
+                    // polygons.
+                    //
+// How do we get the TIGER water drawn as filled polygons???
+                    //
                     if (label_color_guess != -1) {
-                        Draw_OGR_Lines(w,
-                            featureH,
-                            geometryH,
-                            1,
-                            transformH,
-                            fast_extents);
+                        if (water_layer && strstr(driver_type,"TIGER")) {
+//fprintf(stderr,"TIGER water layer\n");
+
+                            Draw_OGR_Lines(w,
+                                featureH,
+                                geometryH,
+                                1,
+                                transformH,
+                                fast_extents);
+                        }
+                        else {  // Normal processing
+                            Draw_OGR_Lines(w,
+                                featureH,
+                                geometryH,
+                                1,
+                                transformH,
+                                fast_extents);
+                        }
                     }
                     break;
 
