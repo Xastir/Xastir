@@ -1209,8 +1209,8 @@ void draw_shapefile_map (Widget w,
             printf("*** Found some lakes ***\n");
     }
 
-
-    if (weather_alert_flag) {
+    // If we're doing weather alerts and index is not filled in yet
+    if (weather_alert_flag && (alert->index == -1) ) {
 
         // For weather alerts:
         // Need to figure out from the initial characters of the filename which
@@ -1352,7 +1352,7 @@ void draw_shapefile_map (Widget w,
     }
 
     // Search for specific record if we're doing alerts
-    if (weather_alert_flag) {
+    if (weather_alert_flag && (alert->index == -1) ) {
         int done = 0;
         char *string1;
         char *string2;
@@ -1414,6 +1414,12 @@ void draw_shapefile_map (Widget w,
                     break;
             }
         }
+        alert->index = found_shape; // Fill it in 'cuz we just found it
+    }
+    else if (weather_alert_flag) {
+        // We've been here before and we already know the index into the
+        // file to fetch this particular shape.
+        found_shape = alert->index;
     }
 
 
@@ -8069,13 +8075,15 @@ void load_alert_maps (Widget w, char *dir) {
 // alert struct and to determine whether the alert is within our
 // viewport.  We don't really wish to draw the alerts at this stage.
 // That comes just a bit later in this routine.
-            map_search (w,
-                alert_scan,
-                &alert_list[i],
-                &alert_count,
-                (int)(alert_status[i + 2] == DATA_VIA_TNC || alert_status[i + 2] == DATA_VIA_LOCAL),
-                DRAW_TO_PIXMAP_ALERTS);
+            if (!alert_list[i].filename[0]) {   // If filename is empty
+                map_search (w,
+                    alert_scan,
+                    &alert_list[i],
+                    &alert_count,
+                    (int)(alert_status[i + 2] == DATA_VIA_TNC || alert_status[i + 2] == DATA_VIA_LOCAL),
+                    DRAW_TO_PIXMAP_ALERTS);
 //printf("Title1:%s\n",alert_list[i].title);
+            }
         }
     }
 
@@ -8086,19 +8094,19 @@ void load_alert_maps (Widget w, char *dir) {
     if (!alert_count)
         XtAppWarning (app_context, "Alert Map count overflow: load_alert_maps\b\n");
 
-    for (i = MAX_ALERT - 1; i > alert_count; i--) {
-        if (alert[i].flags[0] == 'Y' || alert[i].flags[0] == 'N')
-            alert_update_list (&alert[i], ALERT_TITLE);
-    }
+//    for (i = MAX_ALERT - 1; i > alert_count; i--) {
+//        if (alert[i].flags[0] == 'Y' || alert[i].flags[0] == 'N')
+//            alert_update_list (&alert[i], ALERT_TITLE);
+//    }
 
     // Draw each alert map in the alert_list for which we have a
     // filename.
-    for (i = 0; i < alert_list_count; i++) {
+//    for (i = 0; i < alert_list_count; i++) {
 
 //printf("Title2:%s\n",alert_list[i].title);
 
-        if (alert_list[i].filename[0]) {    // If filename is non-zero
-            alert[0] = alert_list[i];       // Reordering the alert_list???
+//        if (alert_list[i].filename[0]) {    // If filename is non-zero
+//            alert[0] = alert_list[i];       // Reordering the alert_list???
 
             // The last parameter denotes drawing into pixmap_alerts
             // instead of pixmap or pixmap_final.
@@ -8110,15 +8118,15 @@ void load_alert_maps (Widget w, char *dir) {
 //                '\0',
 //                DRAW_TO_PIXMAP_ALERTS);
 
-            alert_update_list (&alert[0], ALERT_ALL);
+//            alert_update_list (&alert[0], ALERT_ALL);
 //printf("Title3:%s\n",alert_list[i].title);
-        }
-    }
+//        }
+//    }
 
     //printf("Calling alert_sort_active()\n");
 
     // Mark all of the active alerts in the list
-    alert_sort_active ();
+//    alert_sort_active ();
 
     //printf("Drawing all active alerts\n");
 
@@ -8143,6 +8151,7 @@ void load_alert_maps (Widget w, char *dir) {
             //printf("Title4:%s\n",alert_list[i].title);
 
 
+            // Attempt to draw all but cancelled alerts
             if (alert_list[i].alert_level != 'C') {
                 draw_map (w,
                     dir,

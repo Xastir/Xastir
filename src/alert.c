@@ -1386,6 +1386,7 @@ printf("Zone:%s%s\n",prefix,suffix);
                     // cancelled alert active again if we did.
                 }
             } else {    // No similar alert, add a new one to the list
+                entry[i].index = -1;    // Haven't found it in a file yet
                 (void)alert_add_entry(&entry[i]);
             }
 

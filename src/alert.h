@@ -53,6 +53,7 @@ typedef struct {
     */
     char flags[16];
     char filename[64];
+    int  index;         // Index into shapefile
     char seq[10];
     char issue_date_time[10];
     char desc0[68];     // Space for additional text.
