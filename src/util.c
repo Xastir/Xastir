@@ -1286,6 +1286,12 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice
     else {  // UTM Area
         char E_W[25] = "ABCDEFGHJKLMNPQRSTUVWXYZ";
         char N_S[21] = "ABCDEFGHJKLMNPQRSTUV";
+
+
+        if (!nice_format) { 
+            space_string[0] = '\0';
+        }
+
  
         // Calculate the indexes into the 2-letter digraph arrays.
         start = atoi(utmZone);
