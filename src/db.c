@@ -2184,10 +2184,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     strcpy(temp_wx_wind,"");
 
     if (Display_.weather && Display_.weather_text && weather != NULL) {
-        if ( (strlen(weather->wx_temp) > 0)
-             && (weather->wx_temp[0] != ' ')
-             && (weather->wx_temp[0] != '.') ) {
-
+        if (strlen(weather->wx_temp) > 0) {
             strcpy(tmp,"T:");
             if (Display_.temperature_only)
                 tmp[0] = '\0';
@@ -2201,31 +2198,23 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
 
         if (!Display_.temperature_only) {
-            if ( (strlen(weather->wx_hum) > 0)
-                 && (weather->wx_hum[0] != ' ')
-                 && (weather->wx_hum[0] != '.') ) {
+            if (strlen(weather->wx_hum) > 0) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "H:%.0f%%", atof(weather->wx_hum));
                 strcat(temp_wx_temp,wx_tm);
             }
 
-            if ( (strlen(weather->wx_speed) > 0)
-                 && (weather->wx_speed[0] != ' ')
-                 && (weather->wx_speed[0] != '.') ) {
+            if (strlen(weather->wx_speed) > 0) {
                 xastir_snprintf(temp_wx_wind, sizeof(temp_wx_wind), "S:%.0f%s ",
                                 atof(weather->wx_speed)*cvt_mi2len,un_spd);
             }
 
-            if ( (strlen(weather->wx_gust) > 0)
-                 && (weather->wx_gust[0] != ' ')
-                 && (weather->wx_gust[0] != '.') ) {
+            if (strlen(weather->wx_gust) > 0) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "G:%.0f%s ",
                                 atof(weather->wx_gust)*cvt_mi2len,un_spd);
                 strcat(temp_wx_wind,wx_tm);
             }
 
-            if ( (strlen(weather->wx_course) > 0)
-                 && (weather->wx_course[0] != ' ')
-                 && (weather->wx_course[0] != '.') ) {
+            if (strlen(weather->wx_course) > 0) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "C:%.0f°", atof(weather->wx_course));
                 strcat(temp_wx_wind,wx_tm);
             }
@@ -3766,9 +3755,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
 
-        if ( (strlen(weather->wx_gust) > 0)
-             && (weather->wx_gust[0] != ' ')
-             && (weather->wx_gust[0] != '.') ) {
+        if (strlen(weather->wx_gust) > 0) {
             if (units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI028"),weather->wx_gust);
             else
@@ -3781,10 +3768,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XmTextInsert(si_text, pos, temp);
         pos += strlen(temp);
 
-        if ( (strlen(weather->wx_temp) > 0)
-             && (weather->wx_temp[0] != ' ')
-             && (weather->wx_temp[0] != '.') ) {
- 
+        if (strlen(weather->wx_temp) > 0) {
             if (units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI030"),weather->wx_temp);
             else {
@@ -3795,9 +3779,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if ( (strlen(weather->wx_hum) > 0)
-                && (weather->wx_hum[0] != ' ')
-                && (weather->wx_hum[0] != '.') ) {
+        if (strlen(weather->wx_hum) > 0) {
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI031"),weather->wx_hum);
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
@@ -3808,11 +3790,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
         // DK7IN: ??? units_english ???
         if (strlen(weather->wx_hum) > 0
-                && weather->wx_hum[0] != ' '
-                && weather->wx_hum[0] != '.'
                 && strlen(weather->wx_temp) > 0
-                && weather->wx_temp[0] != ' '
-                && weather->wx_temp[0] != '.'
                 && (!units_english_metric) &&
                 (atof(weather->wx_hum) > 0.0) ) {
 
@@ -3824,9 +3802,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if ( (strlen(weather->wx_baro) > 0)
-             && (weather->wx_baro[0] != ' ')
-             && (weather->wx_baro[0] != '.') ) {
+        if (strlen(weather->wx_baro) > 0) {
             if (!units_english_metric) {  // hPa
                 xastir_snprintf(temp, sizeof(temp),
                     langcode("WPUPSTI033"),
@@ -3850,9 +3826,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             }
         }
 
-        if ( (strlen(weather->wx_snow) > 0)
-             && (weather->wx_snow[0] != ' ')
-             && (weather->wx_snow[0] != '.') ) {
+        if (strlen(weather->wx_snow) > 0) {
             if(units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI035"),atof(weather->wx_snow)/100.0);
             else
@@ -3864,25 +3838,14 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if ( ( (strlen(weather->wx_rain) > 0)
-               && (weather->wx_rain[0] != ' ')
-               && (weather->wx_rain[0] != '.') )
-             ||
-             ( (strlen(weather->wx_prec_00) > 0)
-               && (weather->wx_prec_00[0] != ' ')
-               && (weather->wx_prec_00[0] != '.') )
-             ||
-             ( (strlen(weather->wx_prec_24) > 0)
-               && (weather->wx_prec_24[0] != ' ')
-               && (weather->wx_prec_24[0] != '.') ) ) {
+        if (strlen(weather->wx_rain) > 0 || strlen(weather->wx_prec_00) > 0
+                || strlen(weather->wx_prec_24) > 0) {
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI036"));
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
         }
 
-        if ( (strlen(weather->wx_rain) > 0)
-             && (weather->wx_rain[0] != ' ')
-             && (weather->wx_rain[0] != '.') ) {
+        if (strlen(weather->wx_rain) > 0) {
             if (units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI038"),atof(weather->wx_rain)/100.0);
             else
@@ -3892,9 +3855,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if ( (strlen(weather->wx_prec_24) > 0)
-             && (weather->wx_prec_24[0] != ' ')
-             && (weather->wx_prec_24[0] != '.') ) {
+        if (strlen(weather->wx_prec_24) > 0) {
             if(units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI040"),atof(weather->wx_prec_24)/100.0);
             else
@@ -3904,9 +3865,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if ( (strlen(weather->wx_prec_00) > 0)
-             && (weather->wx_prec_00[0] != ' ')
-             && (weather->wx_prec_00[0] != '.') ) {
+        if (strlen(weather->wx_prec_00) > 0) {
             if (units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI042"),atof(weather->wx_prec_00)/100.0);
             else
@@ -3916,9 +3875,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if ( (strlen(weather->wx_rain_total) > 0)
-             && (weather->wx_rain_total[0] != ' ')
-             && (weather->wx_rain_total[0] != '.') ) {
+        if (strlen(weather->wx_rain_total) > 0) {
             xastir_snprintf(temp, sizeof(temp), "\n%s",langcode("WPUPSTI046"));
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
@@ -4800,6 +4757,10 @@ int is_weather_data(char *data, int len) {
 // "temp".  Modifies "data" to remove the found data from the
 // string.  Returns a 1 if found, 0 if not found.
 //
+// PE1DNN
+// If the item is contained in the string but does not contain a
+// value then regard the item as "not found" in the weather string.
+//
 int extract_weather_item(char *data, char type, int datalen, char *temp) {
     int i,ofs,found,len;
 
@@ -4815,8 +4776,17 @@ int extract_weather_item(char *data, char type, int datalen, char *temp) {
         substr(temp,data+ofs,datalen);
         for (i=ofs-1;i<len-datalen;i++)        // delete item from info field
             data[i] = data[i+datalen+1];
-        if (debug_level & 2) {
-            fprintf(stderr,"extract_weather_item: %s\n",temp);
+        if((temp[0] == ' ') || (temp[0] == '.')) {
+            // found it, but it doesn't contain a value!
+            // Clean up and report "not found" - PE1DNN
+            temp[0] = '\0';
+            found = 0;
+        }
+        else
+        {
+            if (debug_level & 2) {
+                fprintf(stderr,"extract_weather_item: %s\n",temp);
+            }
         }
     } else
         temp[0] = '\0';
@@ -4832,6 +4802,10 @@ int extract_weather_item(char *data, char type, int datalen, char *temp) {
 // whether the data is present.  Returns a 1 if found, 0 if not
 // found.
 //
+// PE1DNN
+// If the item is contained in the string but does not contain a
+// value then regard the item as "not found" in the weather string.
+//
 int test_extract_weather_item(char *data, char type, int datalen) {
     int ofs,found,len;
 
@@ -4843,6 +4817,13 @@ int test_extract_weather_item(char *data, char type, int datalen) {
             if (!is_weather_data(data+ofs+1, datalen))
                 found=0;
         }
+
+    if(found && ((data[ofs+1] == ' ') || (data[ofs+1] == '.'))) {
+        // found it, but it doesn't contain a value!
+        // report "not found" - PE1DNN
+        found = 0;
+    }
+
     //fprintf(stderr,"test_extract: %c %d\n",type,found);
     return(found);
 }
@@ -5037,27 +5018,14 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
         (void)extract_weather_item(data,'P',3,weather->wx_prec_00);   // rainfall (1/100 inch) since midnight
 
-        if (extract_weather_item(data,'h',2,weather->wx_hum)) {       // humidity (in %, 00 = 100%)
-            if (weather->wx_hum[0] != '.'
-                    && weather->wx_hum[0] != ' ') {
+        if (extract_weather_item(data,'h',2,weather->wx_hum))         // humidity (in %, 00 = 100%)
                 xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d",(atoi(weather->wx_hum)+99)%100+1);
-            }
-            else {  // Truncate it
-                weather->wx_hum[0] = '\0';
-            }
-        }
 
         if (extract_weather_item(data,'b',5,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
-            if (weather->wx_baro[0] != '.'
-                    && weather->wx_baro[0] != ' ') {
-                xastir_snprintf(weather->wx_baro,
-                    sizeof(weather->wx_baro),
-                    "%0.1f",
-                    (float)(atoi(weather->wx_baro)/10.0));
-            }
-            else {  // Truncate it
-                weather->wx_baro[0] = '\0';
-            }
+            xastir_snprintf(weather->wx_baro,
+                sizeof(weather->wx_baro),
+                "%0.1f",
+                (float)(atoi(weather->wx_baro)/10.0));
 
         (void)extract_weather_item(data,'s',3,weather->wx_snow);      // snowfall (in inches) in the last 24 hours
                                                                       // was 1/100 inch, APRS reference says inch! ??
@@ -5075,8 +5043,6 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 sizeof(weather->wx_fuel_moisture),
                 "%03d",
                 (atoi(weather->wx_fuel_moisture)+99)%100+1);
-
-
 
 //    extract_weather_item(data,'w',3,temp);                          // ?? text wUII
 
@@ -5216,12 +5182,9 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
         p2++;   // Skip the description text, "/TS", "/HC", "/TD", "/TY", "/ST", or "/SC"
 
 
-	// Extract the sustained wind speed in knots
-        (void)extract_weather_item(p2,'/',3,weather->wx_speed);
-        if ( (weather->wx_speed[0] == '.')
-                || (weather->wx_speed[0] == ' ') )
-            weather->wx_speed[0] = '\0';
-        else    // Convert from knots to MPH
+	    // Extract the sustained wind speed in knots
+        if(extract_weather_item(p2,'/',3,weather->wx_speed))
+            // Convert from knots to MPH
             xastir_snprintf(weather->wx_speed,
                 sizeof(weather->wx_speed),
                 "%0.1f",
@@ -5230,11 +5193,8 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 //fprintf(stderr,"%s\n",data);
 
         // Extract gust speed in knots
-        (void)extract_weather_item(p2,'^',3,weather->wx_gust); // gust (peak wind speed in knots)
-        if ( (weather->wx_gust[0] == '.')
-                || (weather->wx_gust[0] == ' ') )
-            weather->wx_gust[0] = '\0';
-        else    // Convert from knots to MPH
+        if (extract_weather_item(p2,'^',3,weather->wx_gust)) // gust (peak wind speed in knots)
+            // Convert from knots to MPH
             xastir_snprintf(weather->wx_gust,
                 sizeof(weather->wx_gust),
                 "%0.1f",
@@ -5245,37 +5205,22 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 	// Pressure is already in millibars/hPa.  No conversion
         // needed.
         if (extract_weather_item(p2,'/',4,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
-            if (weather->wx_baro[0] != '.'
-                    && weather->wx_baro[0] != ' ') {
-                xastir_snprintf(weather->wx_baro,
-                    sizeof(weather->wx_baro),
-                    "%0.1f",
-                    (float)(atoi(weather->wx_baro)));
-            }
-            else {  // Truncate it
-                weather->wx_baro[0] = '\0';
-            }
+            xastir_snprintf(weather->wx_baro,
+                sizeof(weather->wx_baro),
+                "%0.1f",
+                (float)(atoi(weather->wx_baro)));
 
 //fprintf(stderr,"%s\n",data);
 
         (void)extract_weather_item(p2,'>',3,weather->wx_hurricane_radius); // Nautical miles
-        if ( (weather->wx_hurricane_radius[0] == '.')
-                || (weather->wx_hurricane_radius[0] == ' ') )
-            weather->wx_hurricane_radius[0] = '\0';
 
 //fprintf(stderr,"%s\n",data);
 
         (void)extract_weather_item(p2,'&',3,weather->wx_trop_storm_radius); // Nautical miles
-        if ( (weather->wx_trop_storm_radius[0] == '.')
-                || (weather->wx_trop_storm_radius[0] == ' ') )
-            weather->wx_trop_storm_radius[0] = '\0';
 
 //fprintf(stderr,"%s\n",data);
 
         (void)extract_weather_item(p2,'%',3,weather->wx_whole_gale_radius); // Nautical miles
-        if ( (weather->wx_whole_gale_radius[0] == '.')
-                || (weather->wx_whole_gale_radius[0] == ' ') )
-            weather->wx_whole_gale_radius[0] = '\0';
 
 //fprintf(stderr,"%s\n",data);
 
