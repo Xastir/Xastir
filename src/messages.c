@@ -666,42 +666,56 @@ void check_and_transmit_messages(time_t time) {
                     char *last_ack_ptr;
                     char last_ack[5+1];
 
-                    /* sending message let the tnc and net transmits check to see if we should */
-                    if (debug_level & 2)
-                        fprintf(stderr,"Time %ld Active time %ld next time %ld\n",(long)time,(long)message_pool[i].active_time,(long)message_pool[i].next_time);
 
-                    if (debug_level & 2)
-                        fprintf(stderr,"Send message#%d to <%s> from <%s>:%s-%s\n",
-                            message_pool[i].tries,message_pool[i].to_call_sign,message_pool[i].from_call_sign,message_pool[i].message_line,message_pool[i].seq);
+                    if (message_pool[i].tries < MAX_TRIES) {
+ 
+                        /* sending message let the tnc and net transmits check to see if we should */
+                        if (debug_level & 2)
+                            fprintf(stderr,
+                                "Time %ld Active time %ld next time %ld\n",
+                                (long)time,
+                                (long)message_pool[i].active_time,
+                                (long)message_pool[i].next_time);
 
-                    pad_callsign(to_call,message_pool[i].to_call_sign);
+                        if (debug_level & 2)
+                            fprintf(stderr,"Send message#%d to <%s> from <%s>:%s-%s\n",
+                                message_pool[i].tries,
+                                message_pool[i].to_call_sign,
+                                message_pool[i].from_call_sign,
+                                message_pool[i].message_line,
+                                message_pool[i].seq);
 
-                    // Add Leading ":" as per APRS Spec.
-                    // Add trailing '}' to signify that we're
-                    // Reply/Ack protocol capable.
-                    last_ack_ptr = get_most_recent_ack(to_call);
-                    if (last_ack_ptr != NULL)
-                        xastir_snprintf(last_ack,
-                            sizeof(last_ack),
-                            "%s",
-                            last_ack_ptr);
-                    else
-                        last_ack[0] = '\0';
+                        pad_callsign(to_call,message_pool[i].to_call_sign);
+
+                        // Add Leading ":" as per APRS Spec.
+                        // Add trailing '}' to signify that we're
+                        // Reply/Ack protocol capable.
+                        last_ack_ptr = get_most_recent_ack(to_call);
+                        if (last_ack_ptr != NULL)
+                            xastir_snprintf(last_ack,
+                                sizeof(last_ack),
+                                "%s",
+                                last_ack_ptr);
+                        else
+                            last_ack[0] = '\0';
                         
-                    xastir_snprintf(temp, sizeof(temp), ":%s:%s{%s}%s",
-                            to_call,
-                            message_pool[i].message_line,
-                            message_pool[i].seq,
-                            last_ack);
+                        xastir_snprintf(temp, sizeof(temp), ":%s:%s{%s}%s",
+                                to_call,
+                                message_pool[i].message_line,
+                                message_pool[i].seq,
+                                last_ack);
 
-                    if (debug_level & 2)
-                        fprintf(stderr,"MESSAGE OUT>%s<\n",temp);
+                        if (debug_level & 2)
+                            fprintf(stderr,"MESSAGE OUT>%s<\n",temp);
 
-                    transmit_message_data(message_pool[i].to_call_sign,temp,message_pool[i].path);
+                        transmit_message_data(message_pool[i].to_call_sign,
+                            temp,
+                            message_pool[i].path);
 
-                    message_pool[i].active_time = time + message_pool[i].next_time;
+                        message_pool[i].active_time = time + message_pool[i].next_time;
 
-                    //fprintf(stderr,"%d\n",(int)message_pool[i].next_time);
+                        //fprintf(stderr,"%d\n",(int)message_pool[i].next_time);
+                    }
 
                     // Start at 7 seconds for the interval.  We set
                     // it to 7 seconds in output_message() above.
