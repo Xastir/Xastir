@@ -151,6 +151,7 @@ void destroy_shp_hash() {
         hashtable_destroy(shp_hash, 1);  // destroy the hashtable, freeing
                                          // what's left of the entries
         shp_hash=NULL;
+        if (iterator) free(iterator);
     }
 }
 
@@ -237,7 +238,7 @@ void purge_shp_hash() {
     time_t secs_now;
     //struct tm *time_now;
     int ret;
-    char timestring[256];
+    //    char timestring[256];
 
 
     secs_now = sec_now();

@@ -70,6 +70,7 @@ hashtable_iterator_value(struct hashtable_itr *i)
     if (i->e) {
         return i->e->v;
     } else {
+        return NULL;
     }
 
 }
