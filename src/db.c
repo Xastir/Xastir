@@ -13643,6 +13643,9 @@ void check_and_transmit_objects_items(time_t time) {
                     // We should transmit this object/item as it has
                     // hit its transmit interval.
 
+                    int randomize;
+
+
                     if (first) {    // "Transmitting objects/items"
                         statusline(langcode("BBARSTA042"),1);
                         first = 0;
@@ -13660,7 +13663,16 @@ void check_and_transmit_objects_items(time_t time) {
                     if (increment > OBJECT_rate) {
                         increment = OBJECT_rate;
                     }
+
+                    // Randomize the distribution a bit, so that all
+                    // objects are not transmitted at the same time.
+                    // Allow the random number to vary over 33% of
+                    // the current increment.
+                    randomize = (int)( random() % (increment/3) );
+//fprintf(stderr,"Randomize = %d\n", randomize);
+                    increment = increment - randomize;
                     p_station->transmit_time_increment = increment;
+
 //fprintf(stderr,"check_and_transmit_objects_items():Setting tx_increment to %d:%s\n",
 //    increment,
 //    p_station->call_sign);
