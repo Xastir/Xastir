@@ -190,7 +190,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             c0 = strstr(line, ":}"); // Find start of 3rd party packet
             if (c0 == NULL) {   // Not 3rd party packet
                 if (debug_level & 1024)
-                    printf(" Not 3rd party HeardQ: %s\n",line);
+                    fprintf(stderr," Not 3rd party HeardQ: %s\n",line);
                 return(1);
             }
 
@@ -198,7 +198,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             // want to keep the '}' character because our own
             // transmissions out RF have that character as well.
             if (debug_level & 1024)
-                printf("3rd party HeardQ: %s\n",line);
+                fprintf(stderr,"3rd party HeardQ: %s\n",line);
             strcpy(line2,c0+1);
 
             break;
@@ -214,7 +214,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             strcpy(line2,line);
 
             if (debug_level & 1024)
-                printf(" COMPLETE SENT PACKET: %s\n",line2);
+                fprintf(stderr," COMPLETE SENT PACKET: %s\n",line2);
 
             break;
 
@@ -258,10 +258,10 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             if (debug_level & 1024) {
                 switch (queue_type) {
                     case HEARD:
-                        printf("HEARD Deleting record: %s\n",ptr->data);
+                        fprintf(stderr,"HEARD Deleting record: %s\n",ptr->data);
                         break;
                     case SENT:
-                        printf(" SENT Deleting record: %s\n",ptr->data);
+                        fprintf(stderr," SENT Deleting record: %s\n",ptr->data);
                         break;
                     default:
                         break;
@@ -289,7 +289,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
 
         else {  // Record is current.  Check for a match.
 
-            //printf("\n\t\t%s\n\t\t%s\n",ptr->data,match_line);
+            //fprintf(stderr,"\n\t\t%s\n\t\t%s\n",ptr->data,match_line);
 
             if (strcmp(ptr->data,match_line) == 0) {
                 // We found a dupe!  We're done with the loop.
@@ -298,10 +298,10 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
                 if (debug_level & 1024) {
                     switch (queue_type) {
                         case HEARD:
-                            printf("HEARD*     Found dupe: %s\n",match_line);
+                            fprintf(stderr,"HEARD*     Found dupe: %s\n",match_line);
                             break;
                         case SENT:
-                            printf("SENT*      Found dupe: %s\n",match_line);
+                            fprintf(stderr,"SENT*      Found dupe: %s\n",match_line);
                         default:
                             break;
                     }
@@ -328,11 +328,11 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
                 case DEVICE_SERIAL_TNC:
                 case DEVICE_AX25_TNC:
                 case DEVICE_SERIAL_KISS_TNC:
-                    printf("        Found RF dupe: %s\n",match_line);
+                    fprintf(stderr,"        Found RF dupe: %s\n",match_line);
                     break;
 
                 default:
-                    printf("       Found NET dupe: %s\n",match_line);
+                    fprintf(stderr,"       Found NET dupe: %s\n",match_line);
                     break;
             }
         }
@@ -351,10 +351,10 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             if (debug_level & 1024) {
                 switch (queue_type) {
                     case HEARD:
-                        printf("HEARD   Adding record: %s\n",match_line);
+                        fprintf(stderr,"HEARD   Adding record: %s\n",match_line);
                         break;
                     case SENT:
-                        printf(" SENT   Adding record: %s\n",match_line);
+                        fprintf(stderr," SENT   Adding record: %s\n",match_line);
                         break;
                     default:
                         break;
@@ -504,7 +504,7 @@ void output_igate_net(char *line, int port, int third_party) {
                     "REJECT: Packet was gated before or shouldn't be gated\n");
                 log_data(LOGFILE_IGATE,temp);
 
-                printf(temp);
+                fprintf(stderr,temp);
         }
         return;
     }
@@ -532,7 +532,7 @@ void output_igate_net(char *line, int port, int third_party) {
                 "REJECT: Third party traffic\n");
             log_data(LOGFILE_IGATE,temp);
 
-            printf(temp);
+            fprintf(stderr,temp);
         }
         return;
     }
@@ -564,7 +564,7 @@ void output_igate_net(char *line, int port, int third_party) {
                 "REJECT: From my call\n");
             log_data(LOGFILE_IGATE,temp);
 
-            printf(temp);
+            fprintf(stderr,temp);
         }
         return;
     }
@@ -595,7 +595,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                 port);
             log_data(LOGFILE_IGATE,temp);
 
-            printf(temp);
+            fprintf(stderr,temp);
         }
         return;
     }
@@ -647,7 +647,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                     log_data(LOGFILE_IGATE,temp);
 
                 if (debug_level & 1024)
-                    printf("%s\n",temp);
+                    fprintf(stderr,"%s\n",temp);
 
                 // Write this data out to the Inet port The "1"
                 // means raw format, the last digit says to _not_
@@ -702,7 +702,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
                 sizeof(temp),
                 "REJECT: Unregistered net user!\n");
             log_data(LOGFILE_IGATE,temp);
-            printf(temp);
+            fprintf(stderr,temp);
         }
         return;
     }
@@ -734,7 +734,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
                 sizeof(temp),
                 "REJECT: RF->RF talk\n");
             log_data(LOGFILE_IGATE,temp);
-            printf(temp);
+            fprintf(stderr,temp);
         }
         return;
     }
@@ -745,7 +745,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
     // shouldn't be heard via TNC.  Write data out to interfaces.
     for (x=0; x<MAX_IFACE_DEVICES;x++) {
 
-        //printf("%d\n",x);
+        //fprintf(stderr,"%d\n",x);
 
 //WE7U
         // Check here against "heard" queue for each interface.
@@ -763,7 +763,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
                 && not_a_dupe(HEARD, x, line, NO_FORCED_INSERT)
                 && not_a_dupe( SENT, x, line, NO_FORCED_INSERT) ) {
 
-            //printf("output_igate_rf: Not a dupe port %d, transmitting\n",x);
+            //fprintf(stderr,"output_igate_rf: Not a dupe port %d, transmitting\n",x);
 
             switch (port_data[x].device_type) {
                 case DEVICE_SERIAL_TNC_AUX_GPS:
@@ -801,7 +801,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                             log_data(LOGFILE_IGATE,temp);
 
                         if (debug_level & 1024)
-                            printf(temp);
+                            fprintf(stderr,temp);
 
                         // ok write this data out to the RF port
 
@@ -829,7 +829,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                                 "REJECT: NET->RF on port [%d]\n",
                                 x);
                             log_data(LOGFILE_IGATE,temp);
-                            printf(temp);
+                            fprintf(stderr,temp);
                         }
                     }
 
@@ -889,10 +889,10 @@ void load_NWS_stations(char *file) {
                         // add data
                         (void)sscanf(line,"%s",NWS_station_data[NWS_stations-1].call);
                         if (debug_level & 1024)
-                            printf("LINE:%s\n",line);
+                            fprintf(stderr,"LINE:%s\n",line);
                     }
                     else {
-                        printf("Can't allocate data space for NWS station\n");
+                        fprintf(stderr,"Can't allocate data space for NWS station\n");
                     }
                 }
             }
@@ -900,7 +900,7 @@ void load_NWS_stations(char *file) {
         (void)fclose(f);
     }
     else
-        printf("Couldn't open NWS stations file: %s\n", file);
+        fprintf(stderr,"Couldn't open NWS stations file: %s\n", file);
 }
 
 
@@ -916,7 +916,7 @@ int check_NWS_stations(char *call) {
     int ok,i;
 
     if (debug_level & 1024)
-	    printf("igate.c::check_NWS_stations %s\n", call);
+	    fprintf(stderr,"igate.c::check_NWS_stations %s\n", call);
 
     if (call == NULL)
         return(0);
@@ -929,7 +929,7 @@ int check_NWS_stations(char *call) {
         if (strcasecmp(call,NWS_station_data[i].call)==0) {
             ok=1; // match found 
 	        if (debug_level && 1024) {
-                printf("NWS-MATCH:(%s) (%s)\n",NWS_station_data[i].call,call);
+                fprintf(stderr,"NWS-MATCH:(%s) (%s)\n",NWS_station_data[i].call,call);
 	        }
         }
     }
@@ -980,7 +980,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 sizeof(temp),
                 "REJECT: Unregistered net user!\n");
             log_data(LOGFILE_IGATE,temp);
-            printf(temp);
+            fprintf(stderr,temp);
         }
         return;
     }
@@ -1001,7 +1001,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 sizeof(temp),
                 "REJECT: No nws-stations.txt file!\n");
             log_data(LOGFILE_IGATE,temp);
-            printf(temp);
+            fprintf(stderr,temp);
         }
         return;
     }
@@ -1010,7 +1010,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
     if (last_nws_stations_file_time < file_time(get_user_base_dir("data/nws-stations.txt"))) {
         last_nws_stations_file_time = file_time(get_user_base_dir("data/nws-stations.txt"));
         load_NWS_stations(get_user_base_dir("data/nws-stations.txt"));
-        //printf("NWS Station file time is old\n");
+        //fprintf(stderr,"NWS Station file time is old\n");
     }
 
     // Look for NWS station in file data
@@ -1028,12 +1028,12 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 sizeof(temp),
                 "REJECT: No matching station in nws-stations.txt file!\n");
             log_data(LOGFILE_IGATE,temp);
-            printf(temp);
+            fprintf(stderr,temp);
         }
         return;
     }
 
-    //printf("SENDING NWS VIA TNC!!!!\n");
+    //fprintf(stderr,"SENDING NWS VIA TNC!!!!\n");
     // write data out to interfaces
     for (x=0; x<MAX_IFACE_DEVICES;x++) {
 
@@ -1090,7 +1090,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                             log_data(LOGFILE_IGATE,temp);
 
                         if (debug_level & 1024)
-                            printf(temp);
+                            fprintf(stderr,temp);
 
                         // ok write this data out to the RF port
 
@@ -1118,7 +1118,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                                 "REJECT: NET->RF on port [%d]\n",
                                 x);
                             log_data(LOGFILE_IGATE,temp);
-                            printf(temp);
+                            fprintf(stderr,temp);
                         }
                     }
 

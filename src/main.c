@@ -1708,7 +1708,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     if (have_utm) {
         zone_letter = toupper(str_ptr[i-1]);
         zone_number = atoi(str_ptr);
-        //printf("Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
+        //fprintf(stderr,"Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
         // Save it away for later use
         xastir_snprintf(full_zone,
             sizeof(full_zone),
@@ -1718,7 +1718,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         have_lat_lon = 0;
     }
     else {
-        //printf("Bad zone, not a UTM coordinate\n");
+        //fprintf(stderr,"Bad zone, not a UTM coordinate\n");
         // Skip zone widget for lat/lon, it's not used.
         have_lat_lon = 1;   // Wishful thinking.  We'll zero it later if not.
     }
@@ -1732,11 +1732,11 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // be a zero.
     if ( have_utm && (i != 6) && (i != 7) ) {
         have_utm = 0;
-        //printf("Bad Easting value: Not 6 or 7 chars\n");
+        //fprintf(stderr,"Bad Easting value: Not 6 or 7 chars\n");
     }
     if ( have_utm && (i == 7) && (str_ptr[0] != '0') ) {
         have_utm = 0;
-        //printf("Bad Easting value: 7 chars but first one not 0\n");
+        //fprintf(stderr,"Bad Easting value: 7 chars but first one not 0\n");
     }
     if (have_utm) {
         int j;
@@ -1753,11 +1753,11 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         }
         if (have_utm) { // If we still think it's a valid UTM number
             easting = atol(str_ptr);
-            //printf("Easting: %lu\n",easting);
+            //fprintf(stderr,"Easting: %lu\n",easting);
         }
         else {
             have_utm = 0;
-            //printf("Bad Easting value\n");
+            //fprintf(stderr,"Bad Easting value\n");
         }
     }
     else if (have_lat_lon) {
@@ -1782,19 +1782,19 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         ptr = rindex(temp_string, 'N');
         if (ptr != NULL) {  // Found an 'N'
             *ptr = ' ';     // Convert it to a space
-            //printf("Found an 'N', converted to %s\n", temp_string);
+            //fprintf(stderr,"Found an 'N', converted to %s\n", temp_string);
         }
         ptr = rindex(temp_string, 'S');
         if (ptr != NULL) {  // Found an 'S'
             *ptr = ' ';     // Convert it to a space
             south++;
-            //printf("Found an 'S', converted to %s\n", temp_string);
+            //fprintf(stderr,"Found an 'S', converted to %s\n", temp_string);
         }
         ptr = rindex(temp_string, '-');
         if (ptr != NULL) {  // Found an '-'
             *ptr = ' ';     // Convert it to a space
             south++;
-            //printf("Found an '-', converted to %s\n", temp_string);
+            //fprintf(stderr,"Found an '-', converted to %s\n", temp_string);
         }
 
         // Tokenize the string
@@ -1807,7 +1807,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
                 temp_string[j] = '\0';          // Terminate the substring
                 if ( (j + 1) < i) {             // If not at the end
                     temp[substring++] = j + 1;  // Save an index to the new substring
-                    //printf("%s",&temp_string[j+1]);
+                    //fprintf(stderr,"%s",&temp_string[j+1]);
                 }
             }
         }
@@ -1815,13 +1815,13 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         // temp[] array now contains indexes into all of the
         // substrings.  Some may contain empty strings.
 
-        //printf("Substrings: %d\n", substring);
-        //printf("temp_string: %s\n",temp_string);
+        //fprintf(stderr,"Substrings: %d\n", substring);
+        //fprintf(stderr,"temp_string: %s\n",temp_string);
 
 
         //for (j = 0; j < substring; j++) {
         //    if (strlen(&temp_string[temp[j]]) > 0) {
-        //        printf("%s\n", &temp_string[temp[j]]);
+        //        fprintf(stderr,"%s\n", &temp_string[temp[j]]);
         //    }
         //}
 
@@ -1848,7 +1848,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         if (south) {
             latitude = -latitude;
         }
-        //printf("%f\n", latitude);
+        //fprintf(stderr,"%f\n", latitude);
 
         // Test for valid values of latitude
         if ( (latitude < -90.0) || (latitude > 90.0) ) {
@@ -1867,7 +1867,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // Check for exactly seven chars.
     if (have_utm && (i != 7) ) {
         have_utm = 0;
-        //printf("Bad Northing value: Not 7 chars\n");
+        //fprintf(stderr,"Bad Northing value: Not 7 chars\n");
     }
     if (have_utm) {
         int j;
@@ -1884,11 +1884,11 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         }
         if (have_utm) { // If we still think it's a valid UTM number
             northing = atol(str_ptr);
-            //printf("Northing: %lu\n",northing);
+            //fprintf(stderr,"Northing: %lu\n",northing);
         }
         else {
             have_utm = 0;
-            //printf("Bad Northing value\n");
+            //fprintf(stderr,"Bad Northing value\n");
         }
     }
     else if (have_lat_lon) {
@@ -1914,18 +1914,18 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         if (ptr != NULL) {  // Found an 'W'
             *ptr = ' ';     // Convert it to a space
             west++;
-            //printf("Found an 'W', converted to %s\n", temp_string);
+            //fprintf(stderr,"Found an 'W', converted to %s\n", temp_string);
         }
         ptr = rindex(temp_string, 'E');
         if (ptr != NULL) {  // Found an 'E'
             *ptr = ' ';     // Convert it to a space
-            //printf("Found an 'E', converted to %s\n", temp_string);
+            //fprintf(stderr,"Found an 'E', converted to %s\n", temp_string);
         }
         ptr = index(temp_string, '-');
         if (ptr != NULL) {  // Found an '-'
             *ptr = ' ';     // Convert it to a space
             west++;
-            //printf("Found an '-', converted to %s\n", temp_string);
+            //fprintf(stderr,"Found an '-', converted to %s\n", temp_string);
         }
 
         // Tokenize the string
@@ -1938,7 +1938,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
                 temp_string[j] = '\0';          // Terminate the substring
                 if ( (j + 1) < i) {             // If not at the end
                     temp[substring++] = j + 1;  // Save an index to the new substring
-                    //printf("%s",&temp_string[j+1]);
+                    //fprintf(stderr,"%s",&temp_string[j+1]);
                 }
             }
         }
@@ -1946,13 +1946,13 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         // temp[] array now contains indexes into all of the
         // substrings.  Some may contain empty strings.
 
-        //printf("Substrings: %d\n", substring);
-        //printf("temp_string: %s\n",temp_string);
+        //fprintf(stderr,"Substrings: %d\n", substring);
+        //fprintf(stderr,"temp_string: %s\n",temp_string);
 
 
         //for (j = 0; j < substring; j++) {
         //    if (strlen(&temp_string[temp[j]]) > 0) {
-        //        printf("%s\n", &temp_string[temp[j]]);
+        //        fprintf(stderr,"%s\n", &temp_string[temp[j]]);
         //    }
         //}
 
@@ -1979,7 +1979,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         if (west) {
             longitude = -longitude;
         }
-        //printf("%f\n", longitude);
+        //fprintf(stderr,"%f\n", longitude);
 
 
         // Test for valid values of longitude
@@ -2005,7 +2005,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
             &latitude,
             &longitude);
         if (debug_level & 1)
-            printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
+            fprintf(stderr,"Latitude: %f, Longitude: %f\n",latitude,longitude);
         Coordinate_calc_output(full_zone,
             northing,
             easting,
@@ -2025,7 +2025,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
             full_zone,
             sizeof(full_zone));
         if (debug_level & 1)
-            printf("Zone: %s, Easting: %f, Northing: %f\n", full_zone, double_easting, double_northing);
+            fprintf(stderr,"Zone: %s, Easting: %f, Northing: %f\n", full_zone, double_easting, double_northing);
         // Round the UTM values as we convert them to longs
         xastir_snprintf(temp_string,sizeof(temp_string),"%7.0f",double_northing);
         northing = (long)(atof(temp_string));
@@ -2069,32 +2069,32 @@ void Coordinate_calc_change_data(Widget widget, XtPointer clientData, XtPointer 
     if ( (coordinate_calc_array.calling_dialog != NULL)
             && (coordinate_calc_array.input_lat_deg != NULL) )
         XmTextSetString(coordinate_calc_array.input_lat_deg, coordinate_calc_lat_deg);
-    //printf("%s\n",coordinate_calc_lat_deg);
+    //fprintf(stderr,"%s\n",coordinate_calc_lat_deg);
 
     if ( (coordinate_calc_array.calling_dialog != NULL)
             && (coordinate_calc_array.input_lat_min != NULL) )
         XmTextSetString(coordinate_calc_array.input_lat_min, coordinate_calc_lat_min);
-    //printf("%s\n",coordinate_calc_lat_min);
+    //fprintf(stderr,"%s\n",coordinate_calc_lat_min);
 
     if ( (coordinate_calc_array.calling_dialog != NULL)
             && (coordinate_calc_array.input_lat_dir != NULL) )
         XmTextSetString(coordinate_calc_array.input_lat_dir, coordinate_calc_lat_dir);
-    //printf("%s\n",coordinate_calc_lat_dir);
+    //fprintf(stderr,"%s\n",coordinate_calc_lat_dir);
 
     if ( (coordinate_calc_array.calling_dialog != NULL)
             && (coordinate_calc_array.input_lon_deg != NULL) )
         XmTextSetString(coordinate_calc_array.input_lon_deg, coordinate_calc_lon_deg);
-    //printf("%s\n",coordinate_calc_lon_deg);
+    //fprintf(stderr,"%s\n",coordinate_calc_lon_deg);
 
     if ( (coordinate_calc_array.calling_dialog != NULL)
             && (coordinate_calc_array.input_lon_min != NULL) )
         XmTextSetString(coordinate_calc_array.input_lon_min, coordinate_calc_lon_min);
-    //printf("%s\n",coordinate_calc_lon_min);
+    //fprintf(stderr,"%s\n",coordinate_calc_lon_min);
 
     if ( (coordinate_calc_array.calling_dialog != NULL)
             && (coordinate_calc_array.input_lon_dir != NULL) )
         XmTextSetString(coordinate_calc_array.input_lon_dir, coordinate_calc_lon_dir);
-    //printf("%s\n",coordinate_calc_lon_dir);
+    //fprintf(stderr,"%s\n",coordinate_calc_lon_dir);
 
     Coordinate_calc_destroy_shell(widget,clientData,callData);
 }
@@ -2459,7 +2459,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
         xastir_snprintf(temp_string, sizeof(temp_string), "%s %s%s",
             str_ptr1, str_ptr2, str_ptr3);
         XmTextSetString(coordinate_calc_latitude_easting, temp_string);
-        //printf("String: %s\n", temp_string);
+        //fprintf(stderr,"String: %s\n", temp_string);
         // We're done with these variables.  Free the space.
         XtFree(str_ptr1);
         XtFree(str_ptr2);
@@ -2483,7 +2483,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
         xastir_snprintf(temp_string, sizeof(temp_string), "%s %s%s",
             str_ptr1, str_ptr2, str_ptr3);
         XmTextSetString(coordinate_calc_longitude_northing, temp_string);
-        //printf("String: %s\n", temp_string);
+        //fprintf(stderr,"String: %s\n", temp_string);
         // We're done with these variables.  Free the space.
         XtFree(str_ptr1);
         XtFree(str_ptr2);
@@ -2564,7 +2564,7 @@ void create_image(Widget w) {
     busy_cursor(appshell);
 
     if (debug_level & 4)
-        printf("Create image start\n");
+        fprintf(stderr,"Create image start\n");
 
     // If we're in the middle of ID'ing, wait a bit.
     if (pending_ID_message)
@@ -2731,7 +2731,7 @@ void create_image(Widget w) {
     last_alert_redraw=sec_now();        // set last time of screen redraw
 
     if (debug_level & 4)
-        printf("Create image stop\n");
+        fprintf(stderr,"Create image stop\n");
 }
 
 
@@ -2762,7 +2762,7 @@ void refresh_image(Widget w) {
     busy_cursor(appshell);
 
     if (debug_level & 4)
-        printf("Refresh image start\n");
+        fprintf(stderr,"Refresh image start\n");
 
     // If we're in the middle of ID'ing, wait a bit.
     if (pending_ID_message)
@@ -2854,7 +2854,7 @@ void refresh_image(Widget w) {
     last_alert_redraw=sec_now();
 
     if (debug_level & 4)
-        printf("Refresh image stop\n");
+        fprintf(stderr,"Refresh image stop\n");
 }
 
 
@@ -2879,7 +2879,7 @@ void redraw_symbols(Widget w) {
         (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
     }
 else
-    printf("wait_to_redraw\n");
+    fprintf(stderr,"wait_to_redraw\n");
 }
 
 
@@ -3030,10 +3030,10 @@ void Object_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientD
         (void)fclose(f);
 
         if (debug_level & 1)
-            printf("Clearing Object/Item history file...\n");
+            fprintf(stderr,"Clearing Object/Item history file...\n");
     }
     else {
-        printf("Couldn't open file for writing: %s\n", file);
+        fprintf(stderr,"Couldn't open file for writing: %s\n", file);
     }
 }
 
@@ -3113,7 +3113,7 @@ void check_statusline_timeout(void) {
         // during that time.
 
         if (last_id_time < (sec_now() - (9 * 60))) {
-            //printf("Identifying at nine minutes\n");
+            //fprintf(stderr,"Identifying at nine minutes\n");
             //sleep(1);
         }
 
@@ -3540,16 +3540,16 @@ void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
     input_y = event->y;
 
     if (event->type == ButtonPress) {
-        //printf("Mouse_button_handler, button pressed %d\n", event->button);
+        //fprintf(stderr,"Mouse_button_handler, button pressed %d\n", event->button);
     }
 
     if (event->type == ButtonRelease) {
-        //printf("Mouse_button_handler, button released %d\n", event->button);
+        //fprintf(stderr,"Mouse_button_handler, button released %d\n", event->button);
         return;
     }
 
     if (event->button != Button3) {
-        //printf("Pressed a mouse button, but not Button3: %x\n",event->button);
+        //fprintf(stderr,"Pressed a mouse button, but not Button3: %x\n",event->button);
         return;
     }
 
@@ -3678,7 +3678,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     char *title, *t;
 
     if(debug_level & 8)
-        printf("Create appshell start\n");
+        fprintf(stderr,"Create appshell start\n");
 
 
     t = _("X Amateur Station Tracking and Information Reporting");
@@ -6446,7 +6446,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(trackme_button,FALSE,TRUE);
 
     if(debug_level & 8)
-        printf("Create appshell stop\n");
+        fprintf(stderr,"Create appshell stop\n");
 }   // end of create_appshell()
 
 
@@ -6463,7 +6463,7 @@ void create_gc(Widget w) {
     int ret_val;
 
     if (debug_level & 8)
-        printf("Create gc start\n");
+        fprintf(stderr,"Create gc start\n");
 
     if (gc != 0)
         return;
@@ -6623,7 +6623,7 @@ void create_gc(Widget w) {
                     xbm_path, &_w, &_h, &pixmap_50pct_stipple, &_xh, &_yh);
 
     if (ret_val != 0) {
-        printf("Bitmap not found: %s\n",xbm_path);
+        fprintf(stderr,"Bitmap not found: %s\n",xbm_path);
         exit(1);
     }
 
@@ -6632,7 +6632,7 @@ void create_gc(Widget w) {
                     xbm_path, &_w, &_h, &pixmap_25pct_stipple, &_xh, &_yh);
 
     if (ret_val != 0) {
-        printf("Bitmap not found: %s\n",xbm_path);
+        fprintf(stderr,"Bitmap not found: %s\n",xbm_path);
         exit(1);
     }
 
@@ -6641,7 +6641,7 @@ void create_gc(Widget w) {
                     xbm_path, &_w, &_h, &pixmap_13pct_stipple, &_xh, &_yh);
 
     if (ret_val != 0) {
-        printf("Bitmap not found: %s\n",xbm_path);
+        fprintf(stderr,"Bitmap not found: %s\n",xbm_path);
         exit(1);
     }
 
@@ -6650,7 +6650,7 @@ void create_gc(Widget w) {
                     xbm_path, &_w, &_h, &pixmap_wx_stipple, &_xh, &_yh);
 
     if (ret_val != 0) {
-        printf("Bitmap not found: %s\n",xbm_path);
+        fprintf(stderr,"Bitmap not found: %s\n",xbm_path);
         exit(1);
     }
 
@@ -6659,7 +6659,7 @@ void create_gc(Widget w) {
     wait_to_redraw=0;
 
     if (debug_level & 8)
-        printf("Create gc stop\n");
+        fprintf(stderr,"Create gc stop\n");
 }
 
 
@@ -6674,7 +6674,7 @@ void da_expose(Widget w, /*@unused@*/ XtPointer client_data, XtPointer call_data
 
     /* Call a routine to create a Graphics Context */
     create_gc(w);
-    /*printf("Expose event\n");*/
+    /*fprintf(stderr,"Expose event\n");*/
     /* First get the various dimensions */
     XtVaGetValues(w,
                 XmNwidth, &width,
@@ -6708,7 +6708,7 @@ void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPoin
             XmNheight,  screen_height,
             NULL);
 
-        /*  printf("Size x:%ld, y:%ld\n",screen_width,screen_height);*/
+        /*  fprintf(stderr,"Size x:%ld, y:%ld\n",screen_width,screen_height);*/
         if (pixmap)
             (void)XFreePixmap(XtDisplay(w),pixmap);
 
@@ -6772,7 +6772,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             XmNheight, &height,
             0);
 
-    /*printf("input event %d %d\n",event->type,ButtonPress);*/
+    /*fprintf(stderr,"input event %d %d\n",event->type,ButtonPress);*/
     redraw=0;
 
     // Snag the current pointer position
@@ -6780,7 +6780,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     input_y = event->xbutton.y;
 
     if (event->type == ButtonRelease) {
-        //printf("ButtonRelease %d %d\n",event->xbutton.button,Button3);
+        //fprintf(stderr,"ButtonRelease %d %d\n",event->xbutton.button,Button3);
         if (event->xbutton.button == Button1) {
 
 // Left mouse button release
@@ -6918,7 +6918,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
                             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
                         }
-                        //printf("%s  %s\n", str_lat, str_long);
+                        //fprintf(stderr,"%s  %s\n", str_lat, str_long);
                     }
 
                     Station_info(w, "2", NULL);
@@ -6969,22 +6969,22 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     // Use the new ratio between scales to compute
                     // this, computed from the new midpoint.
                     //
-                    //printf("scale_x:%ld\tscale_y:%ld\n", get_x_scale(new_mid_x, new_mid_y, scale_y), scale_y );
+                    //fprintf(stderr,"scale_x:%ld\tscale_y:%ld\n", get_x_scale(new_mid_x, new_mid_y, scale_y), scale_y );
                     ratio = ((float)get_x_scale(new_mid_x,new_mid_y,scale_y) / (float)scale_y);
 
-                    //printf("Ratio: %f\n", ratio);
-                    //printf("x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
+                    //fprintf(stderr,"Ratio: %f\n", ratio);
+                    //fprintf(stderr,"x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
                     if ( new_scale_y < (long)((new_scale_x / ratio) + 0.5) ) {
                         new_scale_y =  (long)((new_scale_x / ratio) + 0.5);
-                        //printf("Changed y\n");
+                        //fprintf(stderr,"Changed y\n");
                     }
-                    //printf("x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
+                    //fprintf(stderr,"x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
 
                     display_zoom_image(1);          // Check range and do display, recenter
 
                     menu_x = input_x;
                     menu_y = input_y;
-                    //printf("Drag/zoom/center happened\n");
+                    //fprintf(stderr,"Drag/zoom/center happened\n");
                 }
             }
             mouse_zoom = 0;
@@ -7039,7 +7039,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
         }
     }
     else if (event->type == ButtonPress) {
-        //printf("ButtonPress %d %d\n",event->xbutton.button,Button3);
+        //fprintf(stderr,"ButtonPress %d %d\n",event->xbutton.button,Button3);
         if (event->xbutton.button == Button1) {
 
 // Left mouse button press
@@ -7068,7 +7068,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
         // We want to branch from the keysym instead of the keycode
         (void)XLookupString( (XKeyEvent *)event, buffer, bufsize, &key, &compose );
-        //printf("main.c:da_input():keycode %d\tkeysym %ld\t%s\n", event->xkey.keycode, key, buffer);
+        //fprintf(stderr,"main.c:da_input():keycode %d\tkeysym %ld\t%s\n", event->xkey.keycode, key, buffer);
 
         // keycode 99, keysym 65365 is PageUp (0xffda on sun kbd)
         if ((key == 65365) || (key == 0xffda)) {
@@ -7153,14 +7153,14 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
         if (event->type == MotionNotify) {
             input_x = event->xmotion.x;
             input_y = event->xmotion.y;
-            /*printf("da_input2 x %d y %d\n",input_x,input_y);*/
+            /*fprintf(stderr,"da_input2 x %d y %d\n",input_x,input_y);*/
         }
     }
 
     if (redraw) {
         create_image(w);
         (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
-        /*printf("Current x %ld y %ld\n",mid_x_long_offset,mid_y_lat_offset);*/
+        /*fprintf(stderr,"Current x %ld y %ld\n",mid_x_long_offset,mid_y_lat_offset);*/
     }
 }
 
@@ -7225,7 +7225,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 int temp_alert_count;
 
-                //printf("Redraw on new data\n");
+                //fprintf(stderr,"Redraw on new data\n");
 
                 // check if alert_redraw_on_update is set and it has been at least xx seconds since
                 // last weather alert redraw.
@@ -7242,7 +7242,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     }
 
                 //if (alert_redraw_on_update) {
-                    //printf("Alert redraw on update: %ld\t%ld\t%ld\n",sec_now(),last_alert_redraw,WX_ALERTS_REFRESH_TIME);
+                    //fprintf(stderr,"Alert redraw on update: %ld\t%ld\t%ld\n",sec_now(),last_alert_redraw,WX_ALERTS_REFRESH_TIME);
 
                     if (!pending_ID_message) {
                         refresh_image(da);  // Much faster than create_image.
@@ -7305,7 +7305,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             /* check gps start up, GPS on GPSPORT */
             if(sec_now() > sec_next_gps) {
                 sec_next_gps = sec_now()+gps_time;
-                /*printf("Check GPS\n");*/
+                /*fprintf(stderr,"Check GPS\n");*/
                 /* set dtr lines down */
                                 /* works for SERIAL_GPS and SERIAL_TNC_HSP_GPS */
                 dtr_all_set(1);
@@ -7324,14 +7324,14 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                          * so that we exit CONV if necessary
                          */
                         if (debug_level & 128) {
-                            printf( "Retrieving GPS AUX port %d\n", i);
+                            fprintf(stderr,"Retrieving GPS AUX port %d\n", i);
                         }
                         sprintf(tmp, "%c%c",
                             '\3',
                             devices[i].gps_retrieve);
 
                         if (debug_level & 1) {
-                            printf( "Using %d %d to retrieve GPS\n",
+                            fprintf(stderr,"Using %d %d to retrieve GPS\n",
                                 '\3',
                                 devices[i].gps_retrieve);
                         }
@@ -7347,7 +7347,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 net_next_time = net_last_time + 450;    // Check every 7.5 minutes
                 //net_next_time = net_last_time + 30;   // This statement is for debug
 
-                /*printf("Checking for reconnects\n");*/
+                /*fprintf(stderr,"Checking for reconnects\n");*/
                 check_ports();
             }
 
@@ -7360,7 +7360,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     do_time = 1;
                 } else {
                     /* check for update */
-                    /*printf("Checking --- time %ld time to update %ld\n",sec_now(),last_time+next_time);*/
+                    /*fprintf(stderr,"Checking --- time %ld time to update %ld\n",sec_now(),last_time+next_time);*/
                     if(sec_now() >= (last_time + next_time)) {
                         next_time += next_time;
                         if (next_time > max_transmit_time)
@@ -7376,7 +7376,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             if ( my_position_valid
                     && (transmit_now || (sec_now() > posit_next_time) ) ) {
 
-                //printf("Transmitting posit\n");
+                //fprintf(stderr,"Transmitting posit\n");
 
                 // Check for proper symbol in case we're a weather station
                 (void)check_weather_symbol();
@@ -7388,7 +7388,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     // speed/turns, etc.
                     posit_next_time = posit_last_time + sb_POSIT_rate;
                     sb_last_heading = sb_current_heading;
-                    //printf("Sending Posit\n");
+                    //fprintf(stderr,"Sending Posit\n");
                 }
                 else {
                     // Schedule next fixed posit time, set in
@@ -7398,7 +7398,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 transmit_now = 0;
                 // Output to ALL net/tnc ports that are enabled & have tx enabled
-//printf("Sending posit\n");
+//fprintf(stderr,"Sending posit\n");
                 output_my_aprs_data();
 
                 // Decrement the my_position_valid variable if we're
@@ -7408,19 +7408,19 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // position goes stale, we'll stop sending posits.
                 if (using_gps_position && my_position_valid) {
                     my_position_valid--;
-//printf("my_position_valid:%d\n",my_position_valid);
+//fprintf(stderr,"my_position_valid:%d\n",my_position_valid);
 
                     if (!my_position_valid) { // We just went to zero!
                         // Waiting for GPS data..
                         statusline(langcode("BBARSTA041"),1);
-//printf("my_position_valid just went to zero!\n");
+//fprintf(stderr,"my_position_valid just went to zero!\n");
                     }
                 }
             }
 //          if (do_time || transmit_now) {
 //              transmit_now = 0;
 //              /* output to ALL net/tnc ports */
-//              /*printf("Output data\n");*/
+//              /*fprintf(stderr,"Output data\n");*/
 //              output_my_aprs_data();
 //          }
 
@@ -7471,12 +7471,12 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             while (max < 20 && !XtAppPending(app_context)) {
 
 if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
-    printf("data_lock\n");
+    fprintf(stderr,"data_lock\n");
 
                 if (data_avail) {
                     int data_type;              /* 0=AX25, 1=GPS */
 
-                    //printf("device_type: %d\n",port_data[data_port].device_type);
+                    //fprintf(stderr,"device_type: %d\n",port_data[data_port].device_type);
 
                     switch (port_data[data_port].device_type) {
                         /* NET Data stream */
@@ -7547,7 +7547,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_SERIAL_GPS:
 
                         case DEVICE_NET_GPSD:
-                            /*printf("GPS Data <%s>\n",incoming_data);*/
+                            /*fprintf(stderr,"GPS Data <%s>\n",incoming_data);*/
                             gps_data_find((char *)incoming_data,data_port);
                             break;
 
@@ -7562,7 +7562,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             break;
 
                         default:
-                            printf("Data from unknown source\n");
+                            fprintf(stderr,"Data from unknown source\n");
                             break;
                     }
                     data_avail=0;
@@ -7571,7 +7571,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                     max=20;
 
 if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
-    printf("data_lock\n");
+    fprintf(stderr,"data_lock\n");
 
             }
             /* END- get data from interface */
@@ -7595,7 +7595,7 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
 
 void quit(int sig) {
     if(debug_level & 15)
-        printf("Caught %d\n",sig);
+        fprintf(stderr,"Caught %d\n",sig);
 
     save_data();
 
@@ -7603,7 +7603,7 @@ void quit(int sig) {
     shutdown_all_active_or_defined_port(-1);
 
     if (debug_level & 1)
-        printf("Exiting..\n");
+        fprintf(stderr,"Exiting..\n");
 
     exit (sig);
 }
@@ -7673,7 +7673,7 @@ void pos_dialog(Widget w) {
     }
     XtVaSetValues(w,XmNx,last_popup_x,XmNy,last_popup_y,NULL);
 
-    //printf("max_x:%d max_y:%d x:%d y:%d wd:%d ht:%d last_x:%d last_y:%d\n",
+    //fprintf(stderr,"max_x:%d max_y:%d x:%d y:%d wd:%d ht:%d last_x:%d last_y:%d\n",
         //max_x,max_y,x,y,wd,ht,last_popup_x,last_popup_y);
 }
 
@@ -7783,7 +7783,7 @@ void check_range(void) {
 
     // Adjust scaling based on latitude of new center
     new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
-    //printf("x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
+    //fprintf(stderr,"x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
 
     // scale_x will always be bigger than scale_y, so no problem here...
     if ((width*new_scale_x) > 129600000l)
@@ -7807,9 +7807,9 @@ void display_zoom_image(int recenter) {
     Dimension width, height;
 
     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
-    //printf("Before,  x: %lu,  y: %lu\n",new_scale_x,new_scale_y);
+    //fprintf(stderr,"Before,  x: %lu,  y: %lu\n",new_scale_x,new_scale_y);
     check_range();              // keep map inside world and calc x scaling
-    //printf("After,   x: %lu,  y: %lu\n\n",new_scale_x,new_scale_y);
+    //fprintf(stderr,"After,   x: %lu,  y: %lu\n\n",new_scale_x,new_scale_y);
     if (new_mid_x != mid_x_long_offset
             || new_mid_y != mid_y_lat_offset
             || new_scale_x != scale_x
@@ -9944,7 +9944,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
                 (void)fclose(f);
             }
             else
-                printf("Couldn't open file: %s\n", HELP_FILE);
+                fprintf(stderr,"Couldn't open file: %s\n", HELP_FILE);
 
             button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                     xmPushButtonGadgetClass, 
@@ -10061,7 +10061,7 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
             (void)fclose(f);
         }
         else
-            printf("Couldn't open file: %s\n", HELP_FILE);
+            fprintf(stderr,"Couldn't open file: %s\n", HELP_FILE);
 
         button_ok = XtVaCreateManagedWidget(langcode("WPUPHPI002"),
                 xmPushButtonGadgetClass, 
@@ -10180,7 +10180,7 @@ void map_properties_fill_in (void) {
 
         while (current != NULL) {
 
-            //printf("%s\n",current->filename);
+            //fprintf(stderr,"%s\n",current->filename);
 
             // Make sure it's a file and not a directory
             if (current->filename[strlen(current->filename)-1] != '/') {
@@ -10332,7 +10332,7 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
                 // path/filename portion.
                 temp2 = temp + 27;
 
-//printf("New string:%s\n",temp2);
+//fprintf(stderr,"New string:%s\n",temp2);
 
                 // Update this file or directory in the in-memory
                 // map index, setting the "draw_field" field to 1.
@@ -10382,7 +10382,7 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
                 // path/filename portion.
                 temp2 = temp + 27;
 
-//printf("New string:%s\n",temp2);
+//fprintf(stderr,"New string:%s\n",temp2);
 
                 // Update this file or directory in the in-memory
                 // map index, setting the "draw_field" field to 0.
@@ -10470,7 +10470,7 @@ void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer
                 // path/filename portion.
                 temp2 = temp + 27;
 
-//printf("New string:%s\n",temp2);
+//fprintf(stderr,"New string:%s\n",temp2);
 
                 // Update this file or directory in the in-memory
                 // map index, setting the "auto_maps" field to 1.
@@ -10520,7 +10520,7 @@ void map_properties_auto_maps_no(Widget widget, XtPointer clientData, XtPointer 
                 // path/filename portion.
                 temp2 = temp + 27;
 
-//printf("New string:%s\n",temp2);
+//fprintf(stderr,"New string:%s\n",temp2);
 
                 // Update this file or directory in the in-memory
                 // map index, setting the "auto_maps" field to 0.
@@ -10572,7 +10572,7 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
     new_layer = atoi(temp);
     XtFree(temp);
 
-//printf("New layer selected is: %d\n", new_layer);
+//fprintf(stderr,"New layer selected is: %d\n", new_layer);
 
     // Get the list and the count from the dialog
     XtVaGetValues(map_properties_list,
@@ -10596,7 +10596,7 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
                 // path/filename portion.
                 temp2 = temp + 27;
 
-//printf("New string:%s\n",temp2);
+//fprintf(stderr,"New string:%s\n",temp2);
 
                 // Update this file or directory in the in-memory
                 // map index, setting/resetting the "selected" field
@@ -10938,11 +10938,11 @@ map_properties_auto_maps_no, map_properties_dialog);
                     &draw_filled,
                     &auto_maps);
 
-//printf("Layer:%05d, Filled:%01d, %s\n",map_layer,draw_filled,temp);
+//fprintf(stderr,"Layer:%05d, Filled:%01d, %s\n",map_layer,draw_filled,temp);
 
 //                map_index_update_selected(temp,
 //                    XmListPosSelected(map_properties_list,x));
-//printf("%s\n",temp);
+//fprintf(stderr,"%s\n",temp);
                 XtFree(temp);
             }
         }
@@ -11059,7 +11059,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
         (void)fclose(f);
     }
     else
-        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
+        fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
 
     map_chooser_destroy_shell(widget,clientData,callData);
     create_image(da);
@@ -11328,13 +11328,13 @@ void sort_list(char *filename,int size, Widget list, int *item) {
     if(f_pointer!=NULL)
         (void)fclose(f_pointer);
     else
-        printf("Couldn't open file: %s\n", ptr_filename);
+        fprintf(stderr,"Couldn't open file: %s\n", ptr_filename);
 
 
     if(f_data!=NULL)
         (void)fclose(f_data);
     else
-        printf("Couldn't open file: %s\n", filename);
+        fprintf(stderr,"Couldn't open file: %s\n", filename);
 }
 
 
@@ -11366,7 +11366,7 @@ void map_chooser_init (void) {
             current = map_index_head;
             done = 0;
             while (current != NULL && !done) {
-                //printf("%s\n",current->filename);
+                //fprintf(stderr,"%s\n",current->filename);
 
                 if (strcmp(temp,current->filename) == 0) {
                     current->selected = 1;
@@ -11378,7 +11378,7 @@ void map_chooser_init (void) {
         (void)fclose(f);
     }
     else {
-        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
+        fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
     }
 }
 
@@ -11410,7 +11410,7 @@ void map_chooser_fill_in (void) {
         while (current != NULL) {
             int ok = 0;
 
-            //printf("%s\n",current->filename);
+            //fprintf(stderr,"%s\n",current->filename);
 
             // Check whether we're supposed to show dirs and files or
             // just dirs.  First we check for dirs, which are always
@@ -12353,7 +12353,7 @@ void read_file_selection_now(Widget w, XtPointer clientData, XtPointer callData)
     XmFileSelectionBoxCallbackStruct *cbs =(XmFileSelectionBoxCallbackStruct*)callData;
 
     if(XmStringGetLtoR(cbs->value,XmFONTLIST_DEFAULT_TAG,&file)) {
-        // printf("FILE is %s\n",file);
+        // fprintf(stderr,"FILE is %s\n",file);
 
         // Make sure we're not already reading a file and the user actually
         // selected a file (if not, the last character will be a '/').
@@ -12364,7 +12364,7 @@ void read_file_selection_now(Widget w, XtPointer clientData, XtPointer callData)
             if (read_file_ptr != NULL)
                 read_file = 1;
             else
-                printf("Couldn't open file: %s\n", file);
+                fprintf(stderr,"Couldn't open file: %s\n", file);
 
         }
         XtFree(file);
@@ -14735,7 +14735,7 @@ int Setup_object_data(char *line, int line_length) {
     int bearing;
 
 
-    //printf("Setup_object_data\n");
+    //fprintf(stderr,"Setup_object_data\n");
 
     xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(object_name_data));
     (void)remove_trailing_spaces(line);
@@ -14822,7 +14822,7 @@ int Setup_object_data(char *line, int line_length) {
 
     strcpy(comment,XmTextFieldGetString(object_comment_data));
     (void)remove_trailing_spaces(comment);
-    //printf("Comment Field was: %s\n",comment);
+    //fprintf(stderr,"Comment Field was: %s\n",comment);
 
     sec = sec_now();
     day_time = gmtime(&sec);
@@ -14871,7 +14871,7 @@ int Setup_object_data(char *line, int line_length) {
 
     // Altitude Field
     xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_altitude_data));
-    //printf("Altitude entered: %s\n", line);
+    //fprintf(stderr,"Altitude entered: %s\n", line);
     altitude[0] = '\0'; // Start with empty string
     if (strlen(line) != 0) {   // Altitude was entered (we only handle feet currently)
         // Need to check for all digits, and 1 to 6 digits
@@ -14887,8 +14887,8 @@ int Setup_object_data(char *line, int line_length) {
 
     // Area Objects
     if (Area_object_enabled) {
-        //printf("Area_bright: %d\n", Area_bright);
-        //printf("Area_filled: %d\n", Area_filled);
+        //fprintf(stderr,"Area_bright: %d\n", Area_bright);
+        //fprintf(stderr,"Area_filled: %d\n", Area_filled);
        if (Area_bright) {  // Bright color
             xastir_snprintf(complete_area_color, sizeof(complete_area_color), "%2s", Area_color);
         } else {              // Dim color
@@ -14908,14 +14908,14 @@ int Setup_object_data(char *line, int line_length) {
         lat_offset = (int)sqrt(atof(line));
         if (lat_offset > 99)
             lat_offset = 99;
-        //printf("Line: %s\tlat_offset: %d\n", line, lat_offset);
+        //fprintf(stderr,"Line: %s\tlat_offset: %d\n", line, lat_offset);
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_lon_offset_data));
         lon_offset = (int)sqrt(atof(line));
         if (lon_offset > 99)
             lon_offset = 99;
-        //printf("Line: %s\tlon_offset: %d\n", line, lon_offset);
+        //fprintf(stderr,"Line: %s\tlon_offset: %d\n", line, lon_offset);
 
-        //printf("Corridor Field: %s\n", XmTextFieldGetString(ob_corridor_data) );
+        //fprintf(stderr,"Corridor Field: %s\n", XmTextFieldGetString(ob_corridor_data) );
         // Corridor
         complete_corridor[0] = '\0';
         if ( (Area_type == 1) || (Area_type == 6) ) {
@@ -14925,12 +14925,12 @@ int Setup_object_data(char *line, int line_length) {
                 temp = atoi(line);
                 if ( (temp > 0) && (temp <= 999) ) {
                     xastir_snprintf(complete_corridor, sizeof(complete_corridor), "{%d}", temp);
-                    //printf("%s\n",complete_corridor);
+                    //fprintf(stderr,"%s\n",complete_corridor);
                 }
             }
         }
 
-        //printf("Complete_corridor: %s\n", complete_corridor);
+        //fprintf(stderr,"Complete_corridor: %s\n", complete_corridor);
 
         xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
             last_object,
@@ -14947,10 +14947,10 @@ int Setup_object_data(char *line, int line_length) {
             complete_corridor,
             altitude);
 
-        //printf("String is: %s\n", line);
+        //fprintf(stderr,"String is: %s\n", line);
     } else if (Signpost_object_enabled) {
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(signpost_data));
-        //printf("Signpost entered: %s\n", line);
+        //fprintf(stderr,"Signpost entered: %s\n", line);
         if (strlen(line) != 0) {   // Signpost data was entered
             // Need to check for all digits, and 1 to 3 digits
             temp = atoi(line);
@@ -15042,16 +15042,16 @@ int Setup_object_data(char *line, int line_length) {
 
     // We need to tack the comment on the end, but need to make
     // sure we don't go over the maximum length for an object.
-    //printf("Comment: %s\n",comment);
+    //fprintf(stderr,"Comment: %s\n",comment);
     if (strlen(comment) != 0) {
         temp = 0;
         while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) ) {
-            //printf("temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
+            //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
             line[strlen(line) + 1] = '\0';
             line[strlen(line)] = comment[temp++];
         }
     }
-    //printf("line: %s\n",line);
+    //fprintf(stderr,"line: %s\n",line);
 
 // NOTE:  Compressed mode will be shorter still.  Account
 // for that when compressed mode is implemented for objects.
@@ -15234,7 +15234,7 @@ int Setup_item_data(char *line, int line_length) {
 
     // Altitude Field
     xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_altitude_data));
-    //printf("Altitude entered: %s\n", line);
+    //fprintf(stderr,"Altitude entered: %s\n", line);
     altitude[0] = '\0'; // Start with empty string
     if (strlen(line) != 0) {   // Altitude was entered (we only handle feet currently)
         // Need to check for all digits, and 1 to 6 digits
@@ -15269,12 +15269,12 @@ int Setup_item_data(char *line, int line_length) {
         lat_offset = (int)sqrt(atof(line));
         if (lat_offset > 99)
             lat_offset = 99;
-        //printf("Line: %s\tlat_offset: %d\n", line, lat_offset);
+        //fprintf(stderr,"Line: %s\tlat_offset: %d\n", line, lat_offset);
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_lon_offset_data));
         lon_offset = (int)sqrt(atof(line));
         if (lon_offset > 99)
             lon_offset = 99;
-        //printf("Line: %s\tlon_offset: %d\n", line, lon_offset);
+        //fprintf(stderr,"Line: %s\tlon_offset: %d\n", line, lon_offset);
 
         // Corridor
         complete_corridor[0] = '\0';
@@ -15285,7 +15285,7 @@ int Setup_item_data(char *line, int line_length) {
                 temp = atoi(line);
                 if ( (temp > 0) && (temp <= 999) ) {
                     xastir_snprintf(complete_corridor, sizeof(complete_corridor), "{%d}", temp);
-                    //printf("%s\n",complete_corridor);
+                    //fprintf(stderr,"%s\n",complete_corridor);
                 }
             }
         }
@@ -15304,7 +15304,7 @@ int Setup_item_data(char *line, int line_length) {
             altitude);
     } else if (Signpost_object_enabled) {
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(signpost_data));
-        //printf("Signpost entered: %s\n", line);
+        //fprintf(stderr,"Signpost entered: %s\n", line);
         if (strlen(line) != 0) {   // Signpost data was entered
             // Need to check for all digits, and 1 to 3 digits
             temp = atoi(line);
@@ -15391,16 +15391,16 @@ int Setup_item_data(char *line, int line_length) {
 
     // We need to tack the comment on the end, but need to make
     // sure we don't go over the maximum length for an item.
-    //printf("Comment: %s\n",comment);
+    //fprintf(stderr,"Comment: %s\n",comment);
     if (strlen(comment) != 0) {
         temp = 0;
         while ( (strlen(line) < (64 + strlen(last_object))) && (temp < (int)strlen(comment)) ) {
-            //printf("temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
+            //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
             line[strlen(line) + 1] = '\0';
             line[strlen(line)] = comment[temp++];
         }
     }
-    //printf("line: %s\n",line);
+    //fprintf(stderr,"line: %s\n",line);
 
 // NOTE:  Compressed mode will be shorter still.  Account
 // for that when compressed mode is implemented for items.
@@ -15419,7 +15419,7 @@ int Setup_item_data(char *line, int line_length) {
 void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char line[43+1+40];                 // ???
 
-    //printf("Object_change_data_set\n");
+    //fprintf(stderr,"Object_change_data_set\n");
 
     if (Setup_object_data(line, sizeof(line))) {
 
@@ -15542,7 +15542,7 @@ void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
  *  Select a symbol graphically
  */
 void Ob_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    //printf("Trying to change a symbol\n");
+    //fprintf(stderr,"Trying to change a symbol\n");
     symbol_change_requested_from = 2;   // Tell Select_symbol who to return the data to
     Select_symbol(widget, clientData, callData);
 }
@@ -15602,7 +15602,7 @@ void  Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
         Area_object_enabled = 0;
         DF_object_enabled = 0;
 
-        //printf("Signpost Objects are ENABLED\n");
+        //fprintf(stderr,"Signpost Objects are ENABLED\n");
 
         // Call Set_Del_Object again, causing it to redraw with the new options.
         //Set_Del_Object( widget, clientData, callData );
@@ -15627,7 +15627,7 @@ void  Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
     else {
         Signpost_object_enabled = 0;
 
-        //printf("Signpost Objects are DISABLED\n");
+        //fprintf(stderr,"Signpost Objects are DISABLED\n");
 
         // Call Set_Del_Object again, causing it to redraw with the new options.
         //Set_Del_Object( widget, clientData, callData );
@@ -15663,7 +15663,7 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
         Signpost_object_enabled = 0;
         DF_object_enabled = 0;
 
-        //printf("Area Objects are ENABLED\n");
+        //fprintf(stderr,"Area Objects are ENABLED\n");
 
         // Call Set_Del_Object again, causing it to redraw with the new options.
         //Set_Del_Object( widget, clientData, callData );
@@ -15693,7 +15693,7 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
     else {
         Area_object_enabled = 0;
 
-        //printf("Area Objects are DISABLED\n");
+        //fprintf(stderr,"Area Objects are DISABLED\n");
 
         // Call Set_Del_Object again, causing it to redraw with the new options.
         //Set_Del_Object( widget, clientData, callData );
@@ -15734,7 +15734,7 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         Signpost_object_enabled = 0;
         DF_object_enabled = 1;
 
-        //printf("DF Objects are ENABLED\n");
+        //fprintf(stderr,"DF Objects are ENABLED\n");
 
         // Call Set_Del_Object again, causing it to redraw with the new options.
         //Set_Del_Object( widget, clientData, callData );
@@ -15768,7 +15768,7 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
     else {
         DF_object_enabled = 0;
 
-        //printf("DF Objects are DISABLED\n");
+        //fprintf(stderr,"DF Objects are DISABLED\n");
 
         // Call Set_Del_Object again, causing it to redraw with the new options.
         //Set_Del_Object( widget, clientData, callData );
@@ -15802,14 +15802,14 @@ void Area_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     if(state->set) {
         Area_type = atoi(which);    // Set to shape desired
         if ( (Area_type == 1) || (Area_type == 6) ) {   // If either line type
-            //printf("Line type: %d\n", Area_type);
+            //fprintf(stderr,"Line type: %d\n", Area_type);
             XtSetSensitive(ob_corridor,TRUE);
             XtSetSensitive(ob_corridor_data,TRUE);
             XtSetSensitive(ob_corridor_miles,TRUE);
             XtSetSensitive(open_filled_toggle,FALSE);
         }
         else {  // Not line type
-            //printf("Not line type: %d\n", Area_type);
+            //fprintf(stderr,"Not line type: %d\n", Area_type);
             XtSetSensitive(ob_corridor,FALSE);
             XtSetSensitive(ob_corridor_data,FALSE);
             XtSetSensitive(ob_corridor_miles,FALSE);
@@ -15818,9 +15818,9 @@ void Area_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     }
     else {
         Area_type = 0;  // Open circle
-        //printf("Type zero\n");
+        //fprintf(stderr,"Type zero\n");
     }
-    //printf("Area type: %d\n", Area_type);
+    //fprintf(stderr,"Area type: %d\n", Area_type);
 }
 
 
@@ -15842,7 +15842,7 @@ void Area_color_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
         Area_color[1] = '0';    // Black
         Area_color[2] = '\0';
     }
-    //printf("Area color: %s\n", Area_color);
+    //fprintf(stderr,"Area color: %s\n", Area_color);
 }
 
 
@@ -15856,11 +15856,11 @@ void Area_bright_dim_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 
     if(state->set) {
         Area_bright = atoi(which);
-        //printf("Bright colors are ENABLED: %d\n", Area_bright);
+        //fprintf(stderr,"Bright colors are ENABLED: %d\n", Area_bright);
     }
     else {
         Area_bright = 0;
-        //printf("Bright colors are DISABLED: %d\n", Area_bright);
+        //fprintf(stderr,"Bright colors are DISABLED: %d\n", Area_bright);
     }
 }
 
@@ -15875,11 +15875,11 @@ void Area_open_filled_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
 
     if(state->set) {
         Area_filled = atoi(which);
-        //printf("Filled shapes ENABLED: %d\n", Area_filled);
+        //fprintf(stderr,"Filled shapes ENABLED: %d\n", Area_filled);
     }
     else {
         Area_filled = 0;
-        //printf("Filled shapes DISABLED: %d\n", Area_filled);
+        //fprintf(stderr,"Filled shapes DISABLED: %d\n", Area_filled);
     }
 }
 
@@ -15892,7 +15892,7 @@ void  Omni_antenna_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
  
     if(state->set) {
-        //printf("Omni Antenna ENABLED\n");
+        //fprintf(stderr,"Omni Antenna ENABLED\n");
         XmToggleButtonSetState(beam_antenna_toggle, FALSE, FALSE);
         XtSetSensitive(frameomni,TRUE);
         XtSetSensitive(framebeam,FALSE);
@@ -15900,7 +15900,7 @@ void  Omni_antenna_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
         Beam_antenna_enabled = 0;
    }
     else {
-        //printf("Omni Antenna DISABLED\n");
+        //fprintf(stderr,"Omni Antenna DISABLED\n");
         XtSetSensitive(frameomni,FALSE);
         Omni_antenna_enabled = 0;
     }
@@ -15915,7 +15915,7 @@ void  Beam_antenna_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
  
     if(state->set) {
-        //printf("Beam Antenna ENABLED\n");
+        //fprintf(stderr,"Beam Antenna ENABLED\n");
         XmToggleButtonSetState(omni_antenna_toggle, FALSE, FALSE);
         XtSetSensitive(frameomni,FALSE);
         XtSetSensitive(framebeam,TRUE);
@@ -15923,7 +15923,7 @@ void  Beam_antenna_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
         Beam_antenna_enabled = 1;
    }
     else {
-        //printf("Beam Antenna DISABLED\n");
+        //fprintf(stderr,"Beam Antenna DISABLED\n");
         XtSetSensitive(framebeam,FALSE);
         Beam_antenna_enabled = 0;
     }
@@ -15946,7 +15946,7 @@ void Ob_signal_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     }
     object_shgd[4] = '\0';
 
-    //printf("SHGD: %s\n",object_shgd);
+    //fprintf(stderr,"SHGD: %s\n",object_shgd);
 }
 
 
@@ -15966,7 +15966,7 @@ void Ob_height_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     }
     object_shgd[4] = '\0';
 
-    //printf("SHGD: %s\n",object_shgd);
+    //fprintf(stderr,"SHGD: %s\n",object_shgd);
 }
 
 
@@ -15986,7 +15986,7 @@ void Ob_gain_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer
     }
     object_shgd[4] = '\0';
 
-    //printf("SHGD: %s\n",object_shgd);
+    //fprintf(stderr,"SHGD: %s\n",object_shgd);
 }
 
 
@@ -16006,7 +16006,7 @@ void Ob_directivity_toggle( /*@unused@*/ Widget widget, XtPointer clientData, Xt
     }
     object_shgd[4] = '\0';
 
-    //printf("SHGD: %s\n",object_shgd);
+    //fprintf(stderr,"SHGD: %s\n",object_shgd);
 }
 
 
@@ -16026,7 +16026,7 @@ void Ob_width_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointe
     }
     object_NRQ[3] = '\0';
 
-    //printf("NRQ: %s\n", object_NRQ);
+    //fprintf(stderr,"NRQ: %s\n", object_NRQ);
 }
 
 
@@ -16087,18 +16087,18 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
 
 /*
     if (p_station != NULL)
-        printf("Have a pointer to an object.  ");
+        fprintf(stderr,"Have a pointer to an object.  ");
     else
-        printf("No pointer, new object?       ");
+        fprintf(stderr,"No pointer, new object?       ");
     if (calldata != NULL) {
         if (strcmp(calldata,"2") == 0)
-            printf("Set_Del_Object: calldata: 2.  Move object.\n");
+            fprintf(stderr,"Set_Del_Object: calldata: 2.  Move object.\n");
         else if (strcmp(calldata,"1") == 0)
-            printf("Set_Del_Object: calldata: 1.  Modify object.\n");
+            fprintf(stderr,"Set_Del_Object: calldata: 1.  Modify object.\n");
         else if (strcmp(calldata,"0") == 0)
-            printf("Set_Del_Object: calldata: 0.  New object.\n");
+            fprintf(stderr,"Set_Del_Object: calldata: 0.  New object.\n");
         else
-            printf("Set_Del_Object: calldata: invalid.  New object.\n");
+            fprintf(stderr,"Set_Del_Object: calldata: invalid.  New object.\n");
     }
 */
 
@@ -16118,7 +16118,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
     // how we were called.
     //
     if (p_station != NULL) {  // We were called from the Modify_object() function
-        //printf("Got a pointer!\n");
+        //fprintf(stderr,"Got a pointer!\n");
         lon = p_station->coord_lon;     // Fill in values from the original object
         lat = p_station->coord_lat;
     }
@@ -16147,13 +16147,13 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
 /*
         if (calldata != NULL) {
             if (strcmp(calldata,"2") == 0)
-                printf("Set_Del_Object: calldata: 2.  Move object.\n");
+                fprintf(stderr,"Set_Del_Object: calldata: 2.  Move object.\n");
             else if (strcmp(calldata,"1") == 0)
-                printf("Set_Del_Object: calldata: 1.  Modify object.\n");
+                fprintf(stderr,"Set_Del_Object: calldata: 1.  Modify object.\n");
             else if (strcmp(calldata,"0") == 0)
-                printf("Set_Del_Object: calldata: 0.  New object.\n");
+                fprintf(stderr,"Set_Del_Object: calldata: 0.  New object.\n");
             else
-                printf("Set_Del_Object: calldata: invalid.  New object.\n");
+                fprintf(stderr,"Set_Del_Object: calldata: invalid.  New object.\n");
         }
 */
 
@@ -16161,7 +16161,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         // Check to see whether we should even be here at all!
         if ( !(p_station->flag & ST_OBJECT)
                 && !(p_station->flag & ST_ITEM)) {  // Not an object or item
-            //printf("flag: %i\n", (int)p_station->flag);
+            //fprintf(stderr,"flag: %i\n", (int)p_station->flag);
             popup_message(langcode("POPEM00022"), "Not an Object/Item!");
             return;
         }
@@ -16187,7 +16187,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         }
     }
 
-    //printf("Area:Signpost:DF  %i:%i:%i\n",Area_object_enabled,Signpost_object_enabled,DF_object_enabled);
+    //fprintf(stderr,"Area:Signpost:DF  %i:%i:%i\n",Area_object_enabled,Signpost_object_enabled,DF_object_enabled);
 
 // Ok.  The stage is now set to draw the proper type of dialog for the
 // type of object we're interested in currently.
@@ -16880,7 +16880,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
 //----- Frame for signpost info
 if (Signpost_object_enabled) {
 
-        //printf("Drawing signpost data\n");
+        //fprintf(stderr,"Drawing signpost data\n");
 
         signpost_frame = XtVaCreateManagedWidget("Set_Del_Object signpost_frame", 
                 xmFrameWidgetClass, 
@@ -16968,7 +16968,7 @@ if (Signpost_object_enabled) {
 //----- Frame for area info
 else if (Area_object_enabled) {
 
-        //printf("Drawing Area data\n");
+        //fprintf(stderr,"Drawing Area data\n");
 
         area_frame = XtVaCreateManagedWidget("Set_Del_Object area_frame", 
                 xmFrameWidgetClass, 
@@ -17353,7 +17353,7 @@ else if (Area_object_enabled) {
 //----- Frame for DF-omni info
 else if (DF_object_enabled) {
 
-        //printf("Drawing DF data\n");
+        //fprintf(stderr,"Drawing DF data\n");
 
         // "Omni Antenna"
         omni_antenna_toggle = XtVaCreateManagedWidget(langcode("POPUPOB041"),
@@ -18072,7 +18072,7 @@ else if (DF_object_enabled) {
 //----- No Special options selected.  We need a widget here for the next widget to attach to.
         if (!DF_object_enabled && !Area_object_enabled && !Signpost_object_enabled) {
 
-            //printf("No special object types\n");
+            //fprintf(stderr,"No special object types\n");
 
             ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", 
                     xmSeparatorGadgetClass,
@@ -18499,12 +18499,12 @@ if (Area_object_enabled) {
 //                        && (p_station->aprs_symbol.aprs_symbol == '\\' )) {
                 if (DF_object_enabled) {
                     XtSetSensitive(ob_frame,FALSE);
-                    //printf("Found a DF object\n");
+                    //fprintf(stderr,"Found a DF object\n");
 
                     // Decide if it was an omni-DF object or a beam heading object
                     if (p_station->NRQ[0] == '\0') {    // Must be an omni-DF object
-                        //printf("omni-DF\n");
-                        //printf("Signal_gain: %s\n", p_station->signal_gain);
+                        //fprintf(stderr,"omni-DF\n");
+                        //fprintf(stderr,"Signal_gain: %s\n", p_station->signal_gain);
 
                         XmToggleButtonSetState(omni_antenna_toggle, TRUE, TRUE);
 
@@ -18646,7 +18646,7 @@ if (Area_object_enabled) {
                         }
                     }
                     else {  // Must be a beam-heading object
-                        //printf("beam-heading\n");
+                        //fprintf(stderr,"beam-heading\n");
 
                         XmToggleButtonSetState(beam_antenna_toggle, TRUE, TRUE);
 
@@ -18790,7 +18790,7 @@ if (Area_object_enabled) {
 
         else  { // We're in the middle of moving an object, calldata was "2"
             // Fill in new lat/long values
-            //printf("Here we will fill in the new lat/long values\n");
+            //fprintf(stderr,"Here we will fill in the new lat/long values\n");
             x = (mid_x_long_offset - ((screen_width  * scale_x)/2) + (input_x * scale_x));
             y = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (input_y * scale_y));
             if (x < 0)
@@ -18871,11 +18871,11 @@ if (Area_object_enabled) {
     if (calldata != NULL) { // If we're doing a "move" operation
         if (strcmp(calldata,"2") == 0) {
             if ((p_station->flag & ST_ITEM) != 0) {     // Moving an Item
-                //printf("Item\n");
+                //fprintf(stderr,"Item\n");
                 Item_change_data_set(w,object_dialog,object_dialog);    // Move it now!
             }
             else {                                      // Moving an Object
-                //printf("Object\n");
+                //fprintf(stderr,"Object\n");
                 Object_change_data_set(w,object_dialog,object_dialog);  // Move it now!
             }
         }
@@ -18947,7 +18947,7 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
     transmit_compressed_posit = (int)XmToggleButtonGetState(compressed_posit_tx);
 
     strcpy(old_callsign,my_callsign);
-    /*printf("Changing Configure station data\n");*/
+    /*fprintf(stderr,"Changing Configure station data\n");*/
 
     xastir_snprintf(my_callsign, sizeof(my_callsign), "%s",
             XmTextFieldGetString(station_config_call_data));
@@ -19092,7 +19092,7 @@ void Power_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer c
     }
     my_phg[8] = '\0';
 
-    //printf("PHG: %s\n",my_phg);
+    //fprintf(stderr,"PHG: %s\n",my_phg);
 }
 
 
@@ -19111,7 +19111,7 @@ void Height_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer 
     }
     my_phg[8] = '\0';
 
-    //printf("PHG: %s\n",my_phg);
+    //fprintf(stderr,"PHG: %s\n",my_phg);
 }
 
 
@@ -19131,7 +19131,7 @@ void Gain_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer ca
     }
     my_phg[8] = '\0';
 
-    //printf("PHG: %s\n",my_phg);
+    //fprintf(stderr,"PHG: %s\n",my_phg);
 }
 
 
@@ -19151,7 +19151,7 @@ void Directivity_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
     }
     my_phg[8] = '\0';
 
-    //printf("PHG: %s\n",my_phg);
+    //fprintf(stderr,"PHG: %s\n",my_phg);
 }
 
 
@@ -19194,7 +19194,7 @@ void Posit_compressed_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoi
  */
 void Configure_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
 
-    //printf("Trying to change a symbol\n");
+    //fprintf(stderr,"Trying to change a symbol\n");
     symbol_change_requested_from = 1;   // Tell Select_symbol who to return the data to
     Select_symbol(widget, clientData, callData);
 }
@@ -20761,34 +20761,34 @@ int main(int argc, char *argv[], char *envp[]) {
     strcpy(user_dir,user_info->pw_dir);
 
     /*
-        printf("User %s, Dir %s\n",user_info->pw_name,user_dir);
-        printf("User dir %s\n",get_user_base_dir(""));
-        printf("Data dir %s\n",get_data_base_dir(""));
+        fprintf(stderr,"User %s, Dir %s\n",user_info->pw_name,user_dir);
+        fprintf(stderr,"User dir %s\n",get_user_base_dir(""));
+        fprintf(stderr,"Data dir %s\n",get_data_base_dir(""));
     */
 
     /* check user directories */
     if (filethere(get_user_base_dir("")) != 1) {
-        printf("Making user dir\n");
+        fprintf(stderr,"Making user dir\n");
         (void)mkdir(get_user_base_dir(""),S_IRWXU);
     }
 
     if (filethere(get_user_base_dir("config")) != 1) {
-        printf("Making user config dir\n");
+        fprintf(stderr,"Making user config dir\n");
         (void)mkdir(get_user_base_dir("config"),S_IRWXU);
     }
 
     if (filethere(get_user_base_dir("data")) != 1) {
-        printf("Making user data dir\n");
+        fprintf(stderr,"Making user data dir\n");
         (void)mkdir(get_user_base_dir("data"),S_IRWXU);
     }
 
     if (filethere(get_user_base_dir("logs")) != 1) {
-        printf("Making user log dir\n");
+        fprintf(stderr,"Making user log dir\n");
         (void)mkdir(get_user_base_dir("logs"),S_IRWXU);
     }
 
     if (filethere(get_user_base_dir("tracklogs")) != 1) {
-        printf("Making user tracklogs dir\n");
+        fprintf(stderr,"Making user tracklogs dir\n");
         (void)mkdir(get_user_base_dir("tracklogs"),S_IRWXU);
     }
 
@@ -20854,20 +20854,20 @@ int main(int argc, char *argv[], char *envp[]) {
     while ((ag = getopt(argc, argv, "v:l:012346789ti")) != EOF) {
         switch (ag) {
         case 't':
-            printf("Trap segfault\n");
+            fprintf(stderr,"Trap segfault\n");
         trap_segfault = (int)TRUE;
         break;
         case 'v':
-                printf ("debug");
+                fprintf(stderr,"debug");
                 if (optarg) {
                     debug_level = atoi(optarg);
-                    printf (" level %d", debug_level);
+                    fprintf(stderr," level %d", debug_level);
                 }
-                printf ("\n");
+                fprintf(stderr,"\n");
                 break;
 
             case 'l':
-                printf ("Language is");
+                fprintf(stderr,"Language is");
                 if (optarg) {
                     strcpy(lang_to_use_or,"");
                     if (strcasecmp(optarg,"ENGLISH") == 0) {
@@ -20886,17 +20886,17 @@ int main(int argc, char *argv[], char *envp[]) {
                         strcpy(lang_to_use_or,"Portuguese");
                     } else {
                         ag_error++;
-                        printf(" INVALID");
+                        fprintf(stderr," INVALID");
                     }
                     if (!ag_error)
-                        printf(" %s", lang_to_use_or);
+                        fprintf(stderr," %s", lang_to_use_or);
 
                 }
-                printf ("\n");
+                fprintf(stderr,"\n");
                 break;
 
         case 'i':
-            printf("Install Colormap\n");
+            fprintf(stderr,"Install Colormap\n");
             install_colormap = (int)TRUE;
             break;
 
@@ -20907,17 +20907,17 @@ int main(int argc, char *argv[], char *envp[]) {
     }
 
     if (ag_error){
-        printf("\nXastir Command line Options\n\n");
-        printf("-v level      Set the debug level\n\n");
-        printf("-lDutch       Set the language to Dutch\n");
-        printf("-lEnglish     Set the language to English\n");
-        printf("-lFrench      Set the language to French\n");
-        printf("-lGerman      Set the language to German\n");
-        printf("-lItalian     Set the language to Italian\n");
-        printf("-lPortuguese  Set the language to Portuguese\n");
-        printf("-lSpanish     Set the language to Spanish\n");
-        printf("-i            Install private Colormap\n");
-        printf("\n");
+        fprintf(stderr,"\nXastir Command line Options\n\n");
+        fprintf(stderr,"-v level      Set the debug level\n\n");
+        fprintf(stderr,"-lDutch       Set the language to Dutch\n");
+        fprintf(stderr,"-lEnglish     Set the language to English\n");
+        fprintf(stderr,"-lFrench      Set the language to French\n");
+        fprintf(stderr,"-lGerman      Set the language to German\n");
+        fprintf(stderr,"-lItalian     Set the language to Italian\n");
+        fprintf(stderr,"-lPortuguese  Set the language to Portuguese\n");
+        fprintf(stderr,"-lSpanish     Set the language to Spanish\n");
+        fprintf(stderr,"-i            Install private Colormap\n");
+        fprintf(stderr,"\n");
         exit(0);
     }
 
@@ -20968,7 +20968,7 @@ int main(int argc, char *argv[], char *envp[]) {
     // Note that this symlink will probably not fail.  It's easy to
     // create a symlink that points to nowhere.
     if (symlink(get_data_base_dir(temp),get_user_base_dir("config/help.dat")) == -1) {
-        printf("Error creating database link\n");
+        fprintf(stderr,"Error creating database link\n");
         exit(0);
     }
 
@@ -20978,7 +20978,7 @@ int main(int argc, char *argv[], char *envp[]) {
     // Note that this symlink will probably not fail.  It's easy to
     // create a symlink that points to nowhere.
     if (symlink(get_data_base_dir(temp),get_user_base_dir("config/language.sys")) == -1) {
-        printf("Error creating database link\n");
+        fprintf(stderr,"Error creating database link\n");
         exit(0);
     }
 
@@ -20989,7 +20989,7 @@ int main(int argc, char *argv[], char *envp[]) {
     /* Initialize the festival speech synthesis port */
     if (SayTextInit())
     {
-        printf("Error connecting to Festival speech server.\n");
+        fprintf(stderr,"Error connecting to Festival speech server.\n");
         exit(0);
     }  
 #endif
@@ -21026,7 +21026,7 @@ int main(int argc, char *argv[], char *envp[]) {
             // DK7IN: scanf again uses '.' instead of ','
 
             if (!display) {
-                printf("%s: can't open display, exiting...\n", argv[0]);
+                fprintf(stderr,"%s: can't open display, exiting...\n", argv[0]);
                 exit (-1);
             }
 
@@ -21077,10 +21077,10 @@ int main(int argc, char *argv[], char *envp[]) {
             XtAppMainLoop(app_context);
 
         } else
-            printf("Error in language file! Exiting...\n");
+            fprintf(stderr,"Error in language file! Exiting...\n");
 
     } else
-        printf("Error in Color file! Exiting...\n");
+        fprintf(stderr,"Error in Color file! Exiting...\n");
 
     quit(0);
     return 0;
