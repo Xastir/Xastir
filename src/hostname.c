@@ -48,7 +48,7 @@
 
 
 #ifndef __LCLINT__
-  #ifdef USING_SOLARIS
+  #ifdef __solaris__
     jmp_buf ret_place;
   #else
     static  sigjmp_buf ret_place;       /* Jump address if alarm */

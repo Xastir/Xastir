@@ -738,7 +738,7 @@ time_t time_from_aprsstring(char *aprs_time) {
     time_t timenw;
     long zone;
 
-#ifdef USING_SOLARIS
+#ifdef __solaris__
     extern time_t timezone;
 #endif
 

@@ -20649,7 +20649,7 @@ int main(int argc, char *argv[], char *envp[]) {
     static char lang_to_use_or[30];
     char temp[100];
 
-#ifdef USING_SOLARIS
+#ifdef __solaris__
     extern char *optarg;
 #endif
 

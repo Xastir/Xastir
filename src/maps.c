@@ -35,7 +35,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 
-#ifdef USING_SOLARIS
+#ifdef __solaris__
 #include <strings.h>
 #endif
 
@@ -49,7 +49,7 @@
 #include <netinet/in.h>
 #include <Xm/XmAll.h>
 
-#ifdef USING_SOLARIS
+#ifdef __solaris__
   #ifndef NO_XPM
     #include <Xm/XpmI.h>
   #endif

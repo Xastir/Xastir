@@ -50,7 +50,7 @@
                             // including this as they should.
 #include <arpa/inet.h>
 
-#ifdef USING_MAC_OS_X
+#ifdef __MacOSX__
 #include <netdb.h>
 #endif
 
@@ -1126,10 +1126,10 @@ int serial_init (int port) {
             if (fscanf(lock,"%d %s %s",&myintpid,temp,temp1) == 3) {
                 //fprintf(stderr,"Current lock %d %s %s\n",mypid,temp,temp1);
                 mypid = (pid_t)myintpid;
-#ifdef USING_MAC_OS_X
+#ifdef __MacOSX__
                 status = getpgrp();
 #else
-  #ifdef USING_SOLARIS
+  #ifdef __solaris__
                 status = getpgid(mypid);
   #else
     #ifdef GETPGRP_VOID
@@ -1381,7 +1381,7 @@ static void* net_connect_thread(void *arg) {
     int len;
     int result;
 
-#ifdef USING_SOLARIS
+#ifdef __solaris__
     char flag;
 #else
     int flag;
@@ -2214,10 +2214,10 @@ void port_read(int port) {
     */
     struct sockaddr from;
 
-#ifdef USING_SOLARIS
+#ifdef __solaris__
     unsigned int    from_len;
 #else
-#ifdef USING_MAC_OS_X
+#ifdef __MacOSX__
     int             from_len;
 #else
     socklen_t       from_len;
@@ -2261,10 +2261,10 @@ void port_read(int port) {
                     * the packet came - PE1DNN
                     */
 
-#ifdef USING_SOLARIS
+#ifdef __solaris__
                     from_len = (unsigned int)sizeof(from);
 #else
-#ifdef USING_MAC_OS_X
+#ifdef __MacOSX__
                     from_len = (int)sizeof(from);
 #else
                     from_len = (socklen_t)sizeof(from);
