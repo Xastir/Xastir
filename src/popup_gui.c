@@ -229,8 +229,10 @@ void popup_ID_message(char *banner, char *message) {
         //"-*-helvetica-bold-r-*-*-14-*-*-*-*-80-*-*";
         //"-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*";
         //"-*-helvetica-*-*-*-*-*-240-100-100-*-*-*-*";
-        "-*-helvetica-*-*-*-*-*-240-75-75-*-*-*-*";
+        "-*-helvetica-*-*-*-*-*-240-*-*-*-*-*-*";
         //"-*-fixed-*-r-*-*-*-*-*-*-*-200-*-*";
+//        "-*-helvetica-bold-r-*-*-12-240-1075-1075-*-80-*-*";	// Test for bad font
+ 
     static XFontStruct *font=NULL;
     float my_rotation = 0.0;
     int x = (int)(screen_width/10);
@@ -252,9 +254,16 @@ void popup_ID_message(char *banner, char *message) {
         (void)XFillRectangle(XtDisplay(appshell),pixmap_alerts,gc,0,0,screen_width,screen_height);
 
         /* load font */
-        if(!font)
+        if(!font) {
             font=(XFontStruct *)XLoadQueryFont (XtDisplay(da), fontname);
-
+            if (font == NULL) {	// Couldn't get the font!!!
+                printf("popup_ID_message: Couldn't get font %s\n",
+                    fontname);
+                pending_ID_message = 0;
+                return;
+            }
+        }
+ 
         (void)XSetForeground (XtDisplay(da), gc, colors[0x08]);
 
         //printf("%0.1f\t%s\n",my_rotation,label_text);

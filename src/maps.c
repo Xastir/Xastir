@@ -997,8 +997,14 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
 
 
     /* load font */
-    if(!font) 
+    if(!font) {
         font=(XFontStruct *)XLoadQueryFont (XtDisplay (w), fontname);
+        if (font == NULL) {	// Couldn't get the font!!!
+            printf("draw_rotated_label_text: Couldn't get font %s\n",
+                fontname);
+            return;
+        }
+    }
 
 
     // Code to determine the bounding box corner points for the rotated text
