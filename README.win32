@@ -144,9 +144,18 @@ required:
 [ ] tiff (install sources for this one too? TBD)
 [ ] unzip
 [ ] vim (a text editor, optional)
-[ ] wget (Optional:  Can use libcurl instead)
-[ ] XFree86-f100:      100 dpi fonts
-[ ] XFree86-prog:      Headers
+[ ] wget (Optional: Can use libcurl instead)
+[ ] xorg-x11-base
+[ ] xorg-x11-bin
+[ ] xorg-x11-bin-dlls
+[ ] xorg-x11-bin-lndir
+[ ] xorg-x11-devel: Headers
+[ ] xorg-x11-etc
+[ ] xorg-x11-f100:  100 dpi fonts
+[ ] xorg-x11-fnts
+[ ] xorg-x11-libs-data
+[ ] xorg-x11-xwin
+[ ] xwinwm
 [ ] zip
 
 Clicking on the small circle with the two arrows will run you
