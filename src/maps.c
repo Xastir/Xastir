@@ -1166,7 +1166,8 @@ void draw_shapefile_map (Widget w,
     int             high_water_mark_index = 0;
 
     typedef struct _label_string {
-        char label[50];
+        char   label[50];
+        int    found;
         struct _label_string *next;
     } label_string;
 
@@ -1636,6 +1637,8 @@ void draw_shapefile_map (Widget w,
         printf( "File Bounds: (%15.10g,%15.10g)\n\t(%15.10g,%15.10g)\n",
             adfBndsMin[0], adfBndsMin[1], adfBndsMax[0], adfBndsMax[1] );
 
+    // Check the bounding box for this shapefile.  If none of the
+    // file is within our viewport, we can skip the entire file.
     if (! map_visible_lat_lon(  adfBndsMin[1],       // Bottom
                                 adfBndsMax[1],       // Top
                                 adfBndsMin[0],       // Left
@@ -1765,8 +1768,8 @@ void draw_shapefile_map (Widget w,
             alert->right_boundary  = object->dfXMax;
         }
 
-        // Here we check the bounding box against our current viewport.
-        // If we can't see it, don't draw it.  bottom/top/left/right
+        // Here we check the bounding box for this shape against our
+        // current viewport.  If we can't see it, don't draw it.
         if ( map_visible_lat_lon( object->dfYMin,       // Bottom
                                   object->dfYMax,       // Top
                                   object->dfXMin,       // Left
@@ -2149,37 +2152,78 @@ void draw_shapefile_map (Widget w,
 
 //WE7U
                         if (ok == 1 && ok_to_draw) {
+                            int new_label = 1;
+                            int mod_number;
+
+                            // Set up the mod_number, which is used
+                            // below to determine how many of each
+                            // identical label to draw at each zoom
+                            // level.
+                            if      (scale_y <= 2)
+                                mod_number = 1;
+                            else if (scale_y <= 4)
+                                mod_number = 3;
+                            else if (scale_y <= 8)
+                                mod_number = 5;
+                            else if (scale_y <= 16)
+                                mod_number = 10;
+                            else
+                                mod_number = 5;
+
 // Change "United States Highway 2" into "US 2" and "State Highway 204"
 // into "State 204"?
 
                             // Check whether we've written out this string
                             // already:  Look for a match in our linked list
+
+// The problem with this method is that we might get strings
+// "written" at the extreme top or right edge of the display, which
+// means the strings wouldn't be visible, but Xastir thinks that it
+// wrote the string out visibly.  To partially counteract this I've
+// set it up to write only some of the identical strings.  This
+// still doesn't help in the cases where a street only comes in from
+// the top or right and doesn't have an intersection with another
+// street (and therefore another label) within the view.  Still need
+// to rotate labels properly as well.
+
                             ptr2 = label_ptr;
                             while (ptr2 != NULL) {   // Step through the list
                                 if (strcasecmp(ptr2->label,temp) == 0) {    // Found a match
-                                    //printf("Found a match!\n");
-                                    skip_label++;
+                                    //printf("Found a match!\t%s\n",temp);
+                                    new_label = 0;
+                                    ptr2->found = ptr2->found + 1;  // Increment the "found" quantity
+
+// Need to change this "mod" number based on zoom level, so that
+// long strings don't overwrite each other, and so that we don't
+// get too many or too few labels drawn.
+                                    // Draw a number of labels
+                                    // appropriate for the zoom
+                                    // level.
+                                    if ( ((ptr2->found - 1) % mod_number) != 0 )
+                                        skip_label++;
                                     ptr2 = NULL; // End the loop
                                 }
                                 else {
                                     ptr2 = ptr2->next;
                                 }
                             }
-                            if (!skip_label) {
-
-                                // Draw the string
+                            if (!skip_label) {  // Draw the string
                                 (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                            }
+                            if (new_label) {
 
                                 // Create a new record for this string
                                 // and add it to the head of the list.
-// Remember to add a "free"
+                                // Make sure to "free" this linked
+                                // list.
                                 //printf("Creating a new record: %s\n",temp);
                                 ptr2 = (label_string *)malloc(sizeof(label_string));
                                 xastir_snprintf(ptr2->label,sizeof(ptr2->label),"%s",temp);
+                                ptr2->found = 1;
                                 ptr2->next = label_ptr;
                                 label_ptr = ptr2;
                                 //if (label_ptr->next == NULL)
-                                    //printf("only one record\n");
+                                //    printf("only one record\n");
                             }
                         }
                     }
