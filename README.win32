@@ -653,6 +653,16 @@ preprocessor sanity check.  Google provided the 1.10 release, so the
 instructions still work...  but follow them "literally.""
 -- Steve Peters, N1TYE
 
+Yet another note from Henk, not verified yet:
+
+"I got the same error and looked a bit into it. It turns out that
+for this to work, the package "gcc-c++: GCC C++ compiler" needs to
+be installed. At least then the configuration part of LittleCMS
+release 1.12 works and "make" + "make install" does not report
+problems. I have not checked if it is functional though, but I guess
+so."
+-- Henk, PE1DNN
+
 Note that Xastir's "./configure" stage may fail trying to compile in
 ImageMagick support.  If this happens, make sure you have the
 ImageMagick development package installed if using RPM packages, or
