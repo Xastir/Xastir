@@ -1664,17 +1664,17 @@ void draw_shapefile_map (Widget w,
                     temp = "";
 
                     if (road_flag) {
-                        if (fieldcount >=10) {
+                        if (fieldcount >=10) {  // Need at least 10 fields if we're snagging #9, else segfault
                             // For roads, we need to use SIGN1 if it exists, else use DESCRIP if it exists.
                             temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
                         }
                         if ( (temp == NULL) || (strlen(temp) == 0) ) {
-                            if (fieldcount >=13) {
+                            if (fieldcount >=13) {  // Need at least 13 fields if we're snagging #12, else segfault
                                 temp = DBFReadStringAttribute( hDBF, structure, 12 );    // DESCRIP
                             }
                         }
                     } else if (lake_flag || river_flag) {
-                        if (fieldcount >=14) {
+                        if (fieldcount >=14) {  // Need at least 14 fields if we're snagging #13, else segfault
                             temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
                         }
                     }
@@ -1743,7 +1743,7 @@ void draw_shapefile_map (Widget w,
                     if (road_flag) {
                         int lanes = 0;
 
-                        if (fieldcount >= 7) {
+                        if (fieldcount >= 7) {  // Need at least 7 fields if we're snagging #6, else segfault
                             lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
                         }
                         if (lanes != (int)NULL) {
