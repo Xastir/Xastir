@@ -475,6 +475,11 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
 
     jj = 0;
 
+// The example in the docs shows that the packet starts with a space
+// character.  Watch out for that.  We currently skip over this part
+// of the string entirely:  " 2:Fm " and go straight for the
+// callsign at offset 42.
+
     // Copy the source callsign
     ii = 42;
     while (input_string[ii] != ' ') {
@@ -4297,7 +4302,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     send_agwpe_packet(port_avail,
                         atoi(devices[port_avail].device_host_filter_string), // AGWPE radio port
                         '\0',       // type
-                        "WE7U-3",   // FromCall
+                        "TEST-3",   // FromCall
                         "APRS",     // ToCall
                         NULL,       // Path
                         "Test",     // Data
@@ -4308,7 +4313,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     send_agwpe_packet(port_avail,
                         atoi(devices[port_avail].device_host_filter_string), // AGWPE radio port
                         '\0',       // type
-                        "WE7U-3",   // FromCall
+                        "TEST-3",   // FromCall
                         "APRS",     // ToCall
                         "RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1", // Path
                         "Testing this darned thing!",   // Data
@@ -5193,6 +5198,8 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             log_data(LOGFILE_TNC,(char *)data_txt);
         }
     }
+
+//fprintf(stderr,"Data_txt:%s\n", data_txt);
 }
 
 
@@ -5566,6 +5573,8 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     // "I" packets if we re-receive our own packet from the internet
     // feeds.
     decode_ax25_line( data_txt, DATA_VIA_LOCAL, port, 1);
+
+//fprintf(stderr,"Data_txt:%s\n", data_txt);
 }
 
 
