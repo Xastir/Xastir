@@ -640,6 +640,8 @@ void draw_geo_image_map (Widget w,
         return; // Done indexing this file
     }
 
+    if (interrupt_drawing_now)
+        return;
 
     // Check whether map is inside our current view
     //                bottom        top    left        right
@@ -670,6 +672,8 @@ void draw_geo_image_map (Widget w,
 
     atb.valuemask = 0;
 
+    if (interrupt_drawing_now)
+        return;
 
 // Best here would be to add the process ID or user ID to the filename
 // (to keep the filename distinct for different users), and to check
@@ -781,6 +785,8 @@ void draw_geo_image_map (Widget w,
 
     //fprintf(stderr,"File = %s\n",file);
 
+    if (interrupt_drawing_now)
+        return;
 
 // The status line is not updated yet, probably 'cuz we're too busy
 // getting the map in this thread and aren't redrawing?
@@ -806,6 +812,9 @@ void draw_geo_image_map (Widget w,
     }
     (void)fclose (f);
 
+    if (interrupt_drawing_now)
+        return;
+
     image = ReadImage(image_info, &exception);
 
     if (image == (Image *) NULL) {
@@ -829,6 +838,13 @@ void draw_geo_image_map (Widget w,
     atb.width = image->columns;
     atb.height = image->rows;
 
+    if (interrupt_drawing_now) {
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
 
     // gamma setup
     if (imagemagick_options.gamma_flag == 0 ||
@@ -862,10 +878,26 @@ void draw_geo_image_map (Widget w,
     else
         imagemagick_options.gamma_flag = 0;
 
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
     if (imagemagick_options.gamma_flag) {
         if (debug_level & 16)
             fprintf(stderr,"gamma=%s\n", gamma);
         GammaImage(image, gamma);
+    }
+
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
     }
 
     if (imagemagick_options.contrast != 0) {
@@ -874,10 +906,26 @@ void draw_geo_image_map (Widget w,
         ContrastImage(image, imagemagick_options.contrast);
     }
 
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
     if (imagemagick_options.negate != -1) {
         if (debug_level & 16)
             fprintf(stderr,"negate=%d\n", imagemagick_options.negate);
         NegateImage(image, imagemagick_options.negate);
+    }
+
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
     }
 
     if (imagemagick_options.equalize) {
@@ -886,10 +934,26 @@ void draw_geo_image_map (Widget w,
         EqualizeImage(image);
     }
 
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
     if (imagemagick_options.normalize) {
         if (debug_level & 16)
             fprintf(stderr,"normalize");
         NormalizeImage(image);
+    }
+
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
     }
 
 #if (MagickLibVersion >= 0x0539)
@@ -900,10 +964,26 @@ void draw_geo_image_map (Widget w,
     }
 #endif  // MagickLibVersion >= 0x0539
 
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
     if (imagemagick_options.modulate[0] != '\0') {
         if (debug_level & 16)
             fprintf(stderr,"modulate=%s\n", imagemagick_options.modulate);
         ModulateImage(image, imagemagick_options.modulate);
+    }
+
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
     }
 
     // If were are drawing to a low bpp display (typically < 8bpp)
@@ -927,6 +1007,14 @@ void draw_geo_image_map (Widget w,
         // Quantize down to 128 will go here...
     }
 
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
@@ -937,10 +1025,26 @@ void draw_geo_image_map (Widget w,
         return;
     }
 
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
     index_pack = GetIndexes(image);
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
         if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+    if (interrupt_drawing_now) {
+        if (image) 
             DestroyImage(image);
         if (image_info)
             DestroyImageInfo(image_info);
@@ -989,6 +1093,14 @@ void draw_geo_image_map (Widget w,
         }
     }
 
+    if (interrupt_drawing_now) {
+        if (image) 
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
 #ifdef TIMING_DEBUG
     time_mark(0);
 #endif  // TIMING_DEBUG
@@ -1032,6 +1144,9 @@ void draw_geo_image_map (Widget w,
     // We don't have ImageMagick libs compiled in, so use the
     // XPM library instead.
 
+    if (interrupt_drawing_now)
+        return;
+
     /*  XpmReadFileToImage is the call we wish to avoid if at all
      *  possible.  On large images this can take quite a while.  We
      *  check above to see whether the image is inside our viewport,
@@ -1046,6 +1161,12 @@ void draw_geo_image_map (Widget w,
     if (debug_level & 16) {
         fprintf(stderr,"Image size %d %d\n", (int)atb.width, (int)atb.height);
         fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+    }
+
+    if (interrupt_drawing_now) {
+        if (xi)
+            XDestroyImage (xi);
+        return;
     }
 
 #endif  // HAVE_IMAGEMAGICK
@@ -1127,10 +1248,25 @@ void draw_geo_image_map (Widget w,
 #ifdef TIMING_DEBUG
     time_mark(0);
 #endif  // TIMING_DEBUG
+
     // loop over map pixel rows
     for (map_y_0 = map_y_min, c_y = (double)c_y_min;
                 (map_y_0 <= map_y_max) || (map_proj == 1 && !map_done && scr_y < screen_height);
                 map_y_0++, c_y += map_c_dy) {
+
+        if (interrupt_drawing_now) {
+#ifdef HAVE_IMAGEMAGICK
+            if (image)
+                DestroyImage(image);
+            if (image_info)
+                DestroyImageInfo(image_info);
+#else   // HAVE_IMAGEMAGICK
+            if (xi)
+                XDestroyImage (xi);
+#endif  // HAVE_IMAGEMAGICK
+            return;
+        }
+
         scr_y = (c_y - y_lat_offset) / scale_y;
         if (scr_y != scr_yp) {                  // don't do a row twice
             scr_yp = scr_y;                     // remember as previous y
@@ -1234,4 +1370,5 @@ void draw_geo_image_map (Widget w,
     time_mark(0);
 #endif  // TIMING_DEBUG
 }
+
 

@@ -4128,6 +4128,9 @@ void load_alert_maps (Widget w, char *dir) {
 
     for (ii = alert_max_count - 1; ii >= 0; ii--) {
 
+        if (interrupt_drawing_now)
+            return;
+
         //  Check whether the alert slot is filled/empty
         if (alert_list[ii].title[0] == '\0') // Empty slot
             continue;
@@ -4311,6 +4314,8 @@ static void insert_map_sorted(char *filename){
 void load_auto_maps (Widget w, char *dir) {
     map_index_record *current = map_index_head;
 
+    if (interrupt_drawing_now)
+        return;
 
     // Skip the sorting of the maps if we don't need to do it
     if (re_sort_maps) {
@@ -4360,6 +4365,9 @@ void load_auto_maps (Widget w, char *dir) {
     // set to 1.
     current = map_sorted_list_head;
     while  (current != NULL) {
+
+    if (interrupt_drawing_now)
+        return;
 
         // Debug
 //        fprintf(stderr,"Drawing level:%05d, file:%s\n",
