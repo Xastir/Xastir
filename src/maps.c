@@ -1310,8 +1310,6 @@ void create_map_from_trail(char *call_sign) {
 
 
 
-
-
  
 /**********************************************************
  * draw_shapefile_map()

@@ -3348,7 +3348,12 @@ void port_read(int port) {
 // probably leave it here.  Smaller numbers are better as long as
 // port_read() doesn't use too much CPU.
 
-            FD_ZERO(&rd);
+// Try to change this to a select that waits on data and a timeout,
+// so that if data doesn't come in within a certain period of time,
+// we wake up to check whether the socket has gone down.  Else, we
+// go back into the select to wait for more data or a timeout.
+
+           FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
             tmv.tv_usec = 50000;   // 50 ms
@@ -3579,6 +3584,11 @@ void port_write(int port) {
             // Delay here so that the thread doesn't use high
             // amounts of CPU doing _nothing_.  Take this delay out
             // and the thread will take lots of CPU time.
+
+// Try to change this to a select that waits on data and a timeout,
+// so that if data doesn't come in within a certain period of time,
+// we wake up to check whether the socket has gone down.  Else, we
+// go back into the select to wait for more data or a timeout.
 
             /*usleep(100);*/
             FD_ZERO(&wd);
