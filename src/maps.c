@@ -1136,6 +1136,7 @@ void draw_shapefile_map (Widget w,
     int             lake_flag = 0;
     int             river_flag = 0;
     int             path_flag = 0;
+    int             mapshots_labels_flag = 0;
     int             weather_alert_flag = 0;
     char            *filename;  // filename itself w/o directory
     char            search_param1[10];
@@ -1340,6 +1341,7 @@ void draw_shapefile_map (Widget w,
             }
             else if (strstr(filename,"lkA")) {      // Minor Roads
                 road_flag++;
+                mapshots_labels_flag++;
                 if (debug_level & 16) {
                     printf("*** Found some roads (mapshots minor roads) ***\n");
                     break;
@@ -1349,6 +1351,7 @@ void draw_shapefile_map (Widget w,
             }
             else if (strstr(filename,"lkB")) {      // Major Roads
                 road_flag++;
+                mapshots_labels_flag++;
                 if (debug_level & 16) {
                     printf("*** Found some roads (mapshots major roads) ***\n");
                     break;
@@ -1718,6 +1721,7 @@ void draw_shapefile_map (Widget w,
                                   object->dfXMin,       // Left
                                   object->dfXMax) ) {   // Right
             const char *temp;
+            char temp2[50];
             int jj;
 
             //printf("Shape %d is visible, drawing it\t", structure);
@@ -1746,7 +1750,25 @@ void draw_shapefile_map (Widget w,
                     temp = "";
 
                     if (road_flag) {
-                        if (fieldcount >=10) {  // Need at least 10 fields if we're snagging #9, else segfault
+                        if (mapshots_labels_flag) {
+                            char temp3[3];
+                            char temp4[31];
+                            char temp5[5];
+                            char temp6[3];
+
+                            temp = DBFReadStringAttribute( hDBF, structure, 4 );
+                            xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 5 );
+                            xastir_snprintf(temp4,sizeof(temp4),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 6 );
+                            xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 7 );
+                            xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
+                            xastir_snprintf(temp2,sizeof(temp2),"%s %s %s %s",
+                                temp3,temp4,temp5,temp6);
+                            temp = temp2;
+                        }
+                        else if (fieldcount >=10) {  // Need at least 10 fields if we're snagging #9, else segfault
                             // For roads, we need to use SIGN1 if it exists, else use DESCRIP if it exists.
                             temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
                         }
