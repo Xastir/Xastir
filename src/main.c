@@ -23,6 +23,12 @@
  */
 
 
+// Uncomment this line if we wish to have a listening socket at port
+// 2023 for multiple client connects.  "telnet localhost 2023" works
+// great for testing.
+//#define ENABLE_LOCAL_SERVER_PORT
+
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -149,6 +155,7 @@
 #include "rotated.h"
 #include "datum.h"
 #include "igate.h"
+#include "x_spider.h"
 
 
 #include <Xm/XmAll.h>
@@ -216,10 +223,20 @@
 uid_t euid;
 gid_t egid;
 
+
+#ifdef ENABLE_LOCAL_SERVER_PORT
+int enable_local_server_port = 1;
+#else   // ENABLE_LOCAL_SERVER_PORT
+int enable_local_server_port = 0;
+#endif  // ENABLE_LOCAL_SERVER_PORT
+
+
 // Used in segfault handler
 char dangerous_operation[200];
 
 FILE *file_wx_test;
+
+int server_pid = 0;
 
 int serial_char_pacing;  // Inter-char delay in ms for serial ports.
 int dtr_on = 1;
@@ -10027,9 +10044,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     time_t nexttime;
     int do_time;
     int max;
-        int i;
+    int i;
     static int last_alert_on_screen;
     char station_num[30];
+    char line[MAX_LINE_SIZE+1];
+    int n;
 
 
     do_time = 0;
@@ -10544,6 +10563,39 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 //                struct timeval tmv;
 
 
+// Check the x_spider server for incoming data
+                if (enable_local_server_port) {
+                    // Check whether the x_spider server pipe has any data
+                    // for us.  Process it if found.
+                    n = readline(pipe_server_to_xastir, line, MAX_LINE_SIZE);
+                    if (n < 0) {
+                        //fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
+                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                            // This is normal if we have no data to read
+                            //fprintf(stderr,"EAGAIN or EWOULDBLOCK\n");
+                        }
+                        else {  // Non-normal error.  Report it.
+                            fprintf(stderr,"UpdateTime: Readline error: %d\n",errno);
+                        }
+                    }
+                    else {
+                        // Knock off the linefeed at the end
+                        line[n-1] = '\0';
+
+                        if (log_net_data)
+                            log_data(LOGFILE_NET,(char *)line);
+
+//fprintf(stderr,"server data: %s\n", line);
+
+                        packet_data_add(langcode("WPUPDPD006"),(char *)line);
+                        decode_ax25_line((char *)line,'I',0, 1);
+
+                        max++;  // Count the number of packets processed
+                    }
+                }
+// End of x_spider server check code
+
+
 if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
     fprintf(stderr,"data_lock\n");
 
@@ -10551,6 +10603,24 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                     int data_type;              /* 0=AX25, 1=GPS */
 
                     //fprintf(stderr,"device_type: %d\n",port_data[data_port].device_type);
+
+
+                    if (enable_local_server_port) {
+// Send data to the x_spider server
+                        if (writen(pipe_xastir_to_server, incoming_data, incoming_data_length) != incoming_data_length) {
+                            fprintf(stderr,
+                                "UpdateTime: Writen error: %d\n",
+                                errno);
+                        }
+                        // Terminate it with a linefeed
+                        if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                            fprintf(stderr,
+                                "UpdateTime: Writen error: %d\n",
+                                errno);
+                        }
+                    }
+// End of x_spider server send code
+
 
                     switch (port_data[data_port].device_type) {
                         /* NET Data stream */
@@ -10719,6 +10789,32 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
 
 
 
+
+void shut_down_server(void) {
+
+    // Shut down the server if it was enabled
+    if (server_pid) {
+
+        // Send to the main server process
+//        kill(server_pid, 1);
+
+        // Send to all processes in our process group.  This will
+        // cause the server and all of its children to die.
+        kill(0, 1);
+
+        sleep(1);
+
+        // Send a more forceful kill signal in case the "nice" kill
+        // signal didn't work.
+//        kill(server_pid, 9);
+        kill(0, 9);
+    }
+}
+
+
+
+
+
 void quit(int sig) {
     if(debug_level & 15)
         fprintf(stderr,"Caught %d\n",sig);
@@ -10727,6 +10823,8 @@ void quit(int sig) {
 
     /* shutdown all interfaces */
     shutdown_all_active_or_defined_port(-1);
+
+    shut_down_server();
 
     if (debug_level & 1)
         fprintf(stderr,"Exiting..\n");
@@ -10753,6 +10851,9 @@ void segfault(/*@unused@*/ int sig) {
     if (dangerous_operation[0] != '\0')
         fprintf(stderr, "Possibly died at: %s\n", dangerous_operation);
     fprintf(stderr, "%02d:%02d:%02d\n", get_hours(), get_minutes(), get_seconds() );
+
+    shut_down_server();
+
     quit(-1);
 }
 
@@ -27675,6 +27776,18 @@ int main(int argc, char *argv[]) {
         fprintf(stderr,"-v level      Set the debug level\n\n");
         fprintf(stderr,"\n");
         exit(0);    // Exiting after dumping out command-line options
+    }
+
+
+    // Start the listening socket.  If we fork it early we end up
+    // with much smaller process memory allocated for it and all its
+    // children.  The server will authenticate each client that
+    // connects.  We'll share all of our data with the server, which
+    // will send it to all connected/authenticated clients.
+    // Anything transmitted by the clients will come back to us and
+    // standard igating rules should apply from there.
+    if (enable_local_server_port) {
+        server_pid = Fork_server();
     }
 
     // initialize interfaces

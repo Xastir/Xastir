@@ -95,6 +95,7 @@
 #include "util.h"
 #include "wx.h"
 #include "hostname.h"
+#include "x_spider.h"
 
 #ifdef HAVE_LIBAX25
 #include <netax25/ax25.h>
@@ -7376,6 +7377,29 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
     }
 
 
+    if (enable_local_server_port) {
+// Send data to the x_spider server
+
+        xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
+                VERSIONFRM, data_txt_save);
+ 
+        if (writen(pipe_xastir_to_server,
+                data_txt,
+                strlen(data_txt)) != strlen(data_txt)) {
+            fprintf(stderr,
+                "UpdateTime: Writen error: %d\n",
+                errno);
+        }
+        // Terminate it with a linefeed
+        if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+            fprintf(stderr,
+                "UpdateTime: Writen error: %d\n",
+                errno);
+        }
+    }
+// End of x_spider server send code
+
+
     // Note that this will only log one TNC line per transmission now matter
     // how many TNC's are defined.  It's a representative sample of what we're
     // sending out.  At least one TNC interface must be enabled in order to
@@ -7763,6 +7787,29 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
         if (log_tnc_data)
             log_data(LOGFILE_TNC,(char *)data_txt);
     }
+
+
+    if (enable_local_server_port) {
+// Send data to the x_spider server
+
+        xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
+            VERSIONFRM, message);
+
+        if (writen(pipe_xastir_to_server,
+                data_txt,
+                strlen(data_txt)) != strlen(data_txt)) {
+            fprintf(stderr,
+                "UpdateTime: Writen error: %d\n",
+                errno);
+        }
+        // Terminate it with a linefeed
+        if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+            fprintf(stderr,
+                "UpdateTime: Writen error: %d\n",
+                errno);
+        }
+    }
+// End of x_spider server send code
 
 
     // Decode our own transmitted packets.

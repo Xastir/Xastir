@@ -611,7 +611,10 @@ void output_igate_net(char *line, int port, int third_party) {
 
 begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
-    igate_options = devices[port].igate_options;
+    if (port)
+        igate_options = devices[port].igate_options;
+    else
+        igate_options = 1;
 
 end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 

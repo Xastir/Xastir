@@ -31,9 +31,13 @@
 #define NET_CONNECT_TIMEOUT 20
 #define SERV_TCP_PORT       2023
 
-
 char *pname;
+extern int pipe_xastir_to_server;
+extern int pipe_server_to_xastir;
 
+extern int writen(register int fd, register char *ptr, register int nbytes);
+extern int readline(register int fd, register char *ptr, register int maxlen);
+extern int Fork_server(void);
 
 #endif /* XASTIR_SERVER_H */
 

@@ -49,6 +49,9 @@
 //#define TRANSMIT_RAW_WX
 
 
+extern int enable_local_server_port;
+
+
 extern char altnet_call[];
 extern int altnet;
 extern Widget iface_da;

@@ -132,6 +132,7 @@
 #endif  // HAVE_NETDB_H
 
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/ioctl.h>
 
 #if TIME_WITH_SYS_TIME
@@ -159,6 +160,7 @@
 #endif  // HAVE_LIBINTL_H
 
 //#include "xastir.h"
+//#include "interface.c"
 
 #ifndef SIGRET
 #define SIGRET  void
@@ -174,11 +176,14 @@ typedef struct _pipe_object {
 
 pipe_object *pipe_head = NULL;
 //int master_fd = -1; // Start with an invalid value
+
+pipe_object *xastir_pipe = NULL;
+
+int pipe_xastir_to_server = -1;
+int pipe_server_to_xastir = -1;
+
+
  
-
-
-
-
 /*
 // Read "n" bytes from a descriptor.  Use in place of read() when fd
 // is a stream socket.  This routine is from "Unix Network
@@ -227,6 +232,12 @@ int writen(register int fd, register char *ptr, register int nbytes) {
         nleft -= nwritten;
         ptr += nwritten;
     }
+
+//    fprintf(stderr,
+//        "writen: %d bytes written, %d bytes left to write\n",
+//        nleft,
+//        nbytes - nleft);
+
     return(nbytes - nleft);
 }
 
@@ -318,10 +329,10 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
         fprintf(stderr,"str_echo2: Couldn't set socket non-blocking\n");
     }
 
-    // Set pipe to be non-blocking.
+    // Set read-end of pipe to be non-blocking.
     //
     if (fcntl(pipe_from_parent, F_SETFL, O_NONBLOCK) < 0) {
-        fprintf(stderr,"str_echo2: Couldn't set pipe_from_parent non-blocking\n");
+        fprintf(stderr,"str_echo2: Couldn't set read-end of pipe_from_parent non-blocking\n");
     }
 
 
@@ -333,9 +344,9 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
         //
  
         n = readline(sockfd, line, MAXLINE);
-//        if (n == 0) {
-//            return; // Connection terminated
-//        }
+        if (n == 0) {
+            return; // Connection terminated
+        }
         if (n < 0) {
             //fprintf(stderr,"str_echo2: Readline error: %d\n",errno);
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -347,7 +358,7 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
             }
         }
         else {  // We received some data.  Send it down the pipe.
-            fprintf(stderr,"str_echo2: %s\n",line);
+//            fprintf(stderr,"str_echo2: %s\n",line);
             if (writen(pipe_to_parent, line, n) != n) {
                 fprintf(stderr,"str_echo2: Writen error: %d\n",errno);
             }
@@ -359,9 +370,9 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
         //
  
         n = readline(pipe_from_parent, line, MAXLINE);
-//        if (n == 0) {
-//            return; // Connection terminated
-//        }
+        if (n == 0) {
+            exit(0);    // Connection terminated
+        }
         if (n < 0) {
             //fprintf(stderr,"str_echo2: Readline error: %d\n",errno);
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -380,7 +391,7 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
         }
 
         // Slow the loop down to prevent excessive CPU.
-        usleep(250000); // 250ms
+        usleep(10000); // 10ms
     }
 }
 
@@ -439,9 +450,27 @@ int pipe_check(void) {
         //
  
         n = readline(p->to_parent[0], line, MAXLINE);
-//        if (n == 0) {
-//            return; // Connection terminated
-//        }
+        if (n == 0) {
+            pipe_object *q = pipe_head;
+ 
+//            fprintf(stderr,"Client connection terminated.\n");
+            // Close the pipe
+            close(p->to_child[1]);
+            close(p->to_parent[0]);
+
+            // Unlink this record from our list
+            if (q == p) {   // Beginning of list?
+                pipe_head = q->next;
+            }
+            else {
+                while (q->next != p && q != NULL)
+                    q = q->next;    
+                if (q != NULL)
+                    q->next = p->next;
+            }
+            free(p);    // Free the malloc'd memory.
+            wait(0);    // Reap the status of the dead process
+        }
         if (n < 0) {
             //fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -462,16 +491,74 @@ int pipe_check(void) {
 
                 if (q != p) {
                     if (writen(q->to_child[1], line, n) != n) {
-                        fprintf(stderr,"pipe_check: Writen error: %d\n",errno);
+                        fprintf(stderr,"pipe_check: Writen error1: %d\n",errno);
                     }
                 }
                 q = q->next;
             }
+
+            // Here we send it to Xastir itself.  We use a couple of
+            // global variables just like channel_data() does, but
+            // we don't have to protect them in the same manner as
+            // we only have one process on each end.
+            //
+
+// Send it down the pipe to Xastir's main thread.  Knock off any
+// carriage return that might be present.  We only want a linefeed
+// on the end.
+            if (n > 0 && (line[n-1] == '\r' || line[n-1] == '\n')) {
+                line[n-1] = '\0';
+                n--;
+            }
+            if (n > 0 && (line[n-1] == '\r' || line[n-1] == '\n')) {
+                line[n-1] = '\0';
+                n--;
+            }
+            // Add the linefeed on the end
+            strncat(line,"\n",1);
+            n++;
+
+//fprintf(stderr,"Data available, sending to server\n");
+            if (writen(pipe_server_to_xastir, line, n) != n) {
+                fprintf(stderr, "pipe_check: Writen error2: %d\n", errno);
+            }
+ 
         }
 
         p = p->next;
     }
 
+
+    // Check the pipe from Xastir's main thread to see if it is
+    // sending us any data
+    n = readline(pipe_xastir_to_server, line, MAXLINE);
+    if (n == 0) {
+        exit(0); // Connection terminated
+    }
+    if (n < 0) {
+        //fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            // This is normal if we have no data to read
+            //fprintf(stderr,"EAGAIN or EWOULDBLOCK\n");
+        }
+        else {  // Non-normal error.  Report it.
+            fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
+        }
+    }
+    else {  // We received some data.  Send it down all of the
+            // pipes.
+// Also send it down the socket.
+        pipe_object *q = pipe_head;
+
+        while (q != NULL) {
+//          fprintf(stderr,"pipe_check: %s\n",line);
+
+            if (writen(q->to_child[1], line, n) != n) {
+                fprintf(stderr,"pipe_check: Writen error1: %d\n",errno);
+            }
+            q = q->next;
+        }
+    }
 
     return(0);
 }
@@ -506,7 +593,8 @@ int pipe_check(void) {
 // socket and exit from the child process.  Notify the main process
 // as well?
 //
-int main(int argc, char *argv[]) {
+//int main(int argc, char *argv[]) {
+void Server(void) {
     int sockfd, newsockfd, clilen, childpid;
     struct sockaddr_in cli_addr, serv_addr;
     pipe_object *p;
@@ -680,10 +768,10 @@ int main(int argc, char *argv[]) {
         close(p->to_parent[1]); // Close write end of pipe
         close(p->to_child[0]);  // Close read end of pipe
 
-        // Set pipe to be non-blocking.
+        // Set read-end of pipe to be non-blocking.
         //
         if (fcntl(p->to_parent[0], F_SETFL, O_NONBLOCK) < 0) {
-            fprintf(stderr,"x_spider: Couldn't set pipe_to_parent non-blocking\n");
+            fprintf(stderr,"x_spider: Couldn't set read-end of pipe_to_parent non-blocking\n");
         }
 
 finis:
@@ -692,7 +780,7 @@ finis:
         // pipe_check() function once we get to that stage of
         // coding.
         //
-        usleep(250000); // 250ms
+        usleep(10000); // 10ms
     }
 }
 
@@ -710,35 +798,92 @@ finis:
 // integrated with Xastir, instead of having to have a socket to
 // communicate between Xastir and the server.
 //
-/*
-void Fork_server(void) {
+int Fork_server(void) {
     int childpid;
+ 
+ 
+    // Allocate a pipe before we fork.
+    //
+    xastir_pipe = (pipe_object *)malloc(sizeof(pipe_object));
+    if (xastir_pipe == NULL) {
+        fprintf(stderr,"x_spider: Couldn't malloc pipe_object\n");
+        return(0);
+    }
 
+    if (pipe(xastir_pipe->to_child) < 0 || pipe(xastir_pipe->to_parent) < 0) {
+        fprintf(stderr,"x_spider: Can't create pipes\n");
+        free(xastir_pipe);    // Free the malloc'd memory.
+        return(0);
+    }
  
     if ( (childpid = fork()) < 0) {
         fprintf(stderr,"Fork_server: Fork error\n");
+
+        // Close pipes
+        close(xastir_pipe->to_child[0]);
+        close(xastir_pipe->to_child[1]);
+        close(xastir_pipe->to_parent[0]);
+        close(xastir_pipe->to_parent[1]);
+        free(xastir_pipe);    // Free the malloc'd memory.
+        return(0);
     }
     else if (childpid == 0) {
         //
         // Child process
         //
+        close(xastir_pipe->to_child[1]);  // Close write end of pipe
+        close(xastir_pipe->to_parent[0]); // Close read end of pipe
+
+        // Assign the global variables
+        pipe_server_to_xastir = xastir_pipe->to_parent[1];
+        pipe_xastir_to_server = xastir_pipe->to_child[0];
+
+        // Set read-end of pipe to be non-blocking.
+        //
+        if (fcntl(pipe_xastir_to_server, F_SETFL, O_NONBLOCK) < 0) {
+            fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_server non-blocking\n");
+        }
 
         // Go into an infinite loop here which restarts the
         // listening process whenever it dies.
         //
-        while (1) {
+//        while (1) {
             fprintf(stderr,"Starting Server...\n");
+
             Server();
+ 
             fprintf(stderr,"Server process died.\n");
-        }
+//        }
     }
     //
     // Parent process
     //
 
+    close(xastir_pipe->to_parent[1]); // Close write end of pipe
+    close(xastir_pipe->to_child[0]);  // Close read end of pipe
+
+    // Assign the global variables so that Xastir itself will know
+    // how to talk to the pipes
+    pipe_server_to_xastir = xastir_pipe->to_parent[0];
+    pipe_xastir_to_server = xastir_pipe->to_child[1];
+
+    // Set read-end of pipe to be non-blocking.
+    //
+    if (fcntl(pipe_server_to_xastir, F_SETFL, O_NONBLOCK) < 0) {
+        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_server_to_xastir non-blocking\n");
+    }
+
+//    // Set write-end of pipe to be non-blocking.
+//    //
+//    if (fcntl(pipe_xastir_to_server, F_SETFL, O_NONBLOCK) < 0) {
+//        fprintf(stderr,"x_spider: Couldn't set read-end of pipe_xastir_to_server non-blocking\n");
+//    }
+
     // We don't need to do anything here except return back to the
-    // calling routine.
+    // calling routine with the PID of the new server process, so
+    // that it can request the server and all it's children to quit
+    // when Xastir quits or segfaults.
+    return(childpid);   // Really the parent PID in this case
 }
-*/
 
 
