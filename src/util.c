@@ -2762,7 +2762,7 @@ void time_mark(int start)
 
     if (start) {
         gettimeofday(&t_start, NULL);
-        puts("\nstart: 0.000000s");
+        fprintf(stderr,"\nstart: 0.000000s");
     }
     else {
         gettimeofday(&t_cur, NULL);

@@ -7521,7 +7521,7 @@ void extract_area(DataRow *p_station, char *data) {
             }
             else {
                 if (debug_level & 2)
-                    puts("Bad area color (/)");
+                    fprintf(stderr,"Bad area color (/)");
                 return;
             }
         }
@@ -7531,7 +7531,7 @@ void extract_area(DataRow *p_station, char *data) {
             }
             else {
                 if (debug_level & 2)
-                    puts("Bad area color (1)");
+                    fprintf(stderr,"Bad area color (1)");
                 return;
             }
         }
@@ -7542,7 +7542,7 @@ void extract_area(DataRow *p_station, char *data) {
         }
         else {
             if (debug_level & 2)
-                puts("Bad area sqrt_lat_off");
+                fprintf(stderr,"Bad area sqrt_lat_off");
             return;
         }
         temp_area.sqrt_lat_off = val;
@@ -7553,7 +7553,7 @@ void extract_area(DataRow *p_station, char *data) {
         }
         else {
             if (debug_level & 2)
-                puts("Bad area sqrt_lon_off");
+                fprintf(stderr,"Bad area sqrt_lon_off");
             return;
         }
         temp_area.sqrt_lon_off = val;
@@ -7575,14 +7575,14 @@ void extract_area(DataRow *p_station, char *data) {
                 }
                 else {
                     if (debug_level & 2)
-                        puts("Bad corridor width identifier");
+                        fprintf(stderr,"Bad corridor width identifier");
                     temp_area.corridor_width = 0;
                     return;
                 }
             }
             else {
                 if (debug_level & 2)
-                    puts("No corridor width specified");
+                    fprintf(stderr,"No corridor width specified");
                 temp_area.corridor_width = 0;
             }
         }
