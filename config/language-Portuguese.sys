@@ -154,13 +154,14 @@ PULDNDP015|Anular todas as estações|A|
 PULDNDP016|Limpar rastos|L|
 PULDNDP025|Limpar história de Objecto/Item||
 PULDNDP026|Mostrar Objects/Items metereológicos||
-PULDNDP027|Display Stations||
+PULDNDP027|Display Local Stations||
 PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations|| 
+PULDNDP029|Display Moving Stations||
 PULDNDP030|Display WX Stations||
 PULDNDP031|Display Objects/Items||
 PULDNDP032|Filter Symbols||
 PULDNDP033|Filter Info||
+PULDNDP034|Display Non-Local Stations||
 #
 # Inglesa/métrica
 PULDNUT001|Activar unidades Inglesas||

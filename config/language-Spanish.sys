@@ -73,7 +73,7 @@ PULDNMP007|Condados Alerta Mapa WX||
 PULDNMP005|Color de fondo|C|
 PULDNMP006|Etiquetas de estns|E|
 PULDNMP011|Menú Indicador del Ratón|R|
-PULDNMP008|Intensidad del Mapa|I|                                              
+PULDNMP008|Intensidad del Mapa|I|
 PULDNMP020|Enable/Configure Tigermap||
 PULDNMP021|Auto Map - Disable Raster Maps||
 #
@@ -156,13 +156,14 @@ PULDNDP015|Anular Todas las estns|A|
 PULDNDP016|Limpiar Rastros|n|
 PULDNDP025|Clear Object/Item History||
 PULDNDP026|Display Weather Objects/Items||
-PULDNDP027|Display Stations||
+PULDNDP027|Display Local Stations||
 PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations|| 
+PULDNDP029|Display Moving Stations||
 PULDNDP030|Display WX Stations||
 PULDNDP031|Display Objects/Items||
 PULDNDP032|Filter Symbols||
 PULDNDP033|Filter Info||
+PULDNDP034|Display Non-Local Stations||
 #
 # Inglesa/Metrica
 PULDNUT001|Activar Unidades Inglesa||

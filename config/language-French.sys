@@ -72,7 +72,7 @@ PULDNMP007|Activer alertes météo|M|
 PULDNMP005|Couleur de fond|f|
 PULDNMP006|Style du texte de station|S|
 PULDNMP011|Menu souris|e|
-PULDNMP008|Intensité des cartes|I|                                             
+PULDNMP008|Intensité des cartes|I|
 PULDNMP020|Enable/Configure Tigermap||
 PULDNMP021|Auto Map - Disable Raster Maps||
 #
@@ -155,13 +155,14 @@ PULDNDP015|Effacer toutes stations!!!|E|
 PULDNDP016|Effacer toutes pistes!!!|f|
 PULDNDP025|Clear Object/Item History||
 PULDNDP026|Display Weather Objects/Items||
-PULDNDP027|Display Stations||
+PULDNDP027|Display Local Stations||
 PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations|| 
+PULDNDP029|Display Moving Stations||
 PULDNDP030|Display WX Stations||
 PULDNDP031|Display Objects/Items||
 PULDNDP032|Filter Symbols||
 PULDNDP033|Filter Info||
+PULDNDP034|Display Non-Local Stations||
 #
 # Units
 PULDNUT001|Activer mesures anglaises||

@@ -155,13 +155,14 @@ PULDNDP015|Clear All Stations!!!|A|
 PULDNDP016|Clear All Trails!!!|C|
 PULDNDP025|Clear Object/Item History||
 PULDNDP026|Display WX Objects/Items||
-PULDNDP027|Display Stations||
+PULDNDP027|Display Local Stations||
 PULDNDP028|Display Non-Moving Stations||
 PULDNDP029|Display Moving Stations||
 PULDNDP030|Display WX Stations||
 PULDNDP031|Display Objects/Items||
 PULDNDP032|Filter Symbols||
 PULDNDP033|Filter Info||
+PULDNDP034|Display Non-Local Stations||
 #
 # Units
 PULDNUT001|Enable English Units|E|

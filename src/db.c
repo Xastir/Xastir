@@ -1882,8 +1882,17 @@ int ok_to_draw_symbol(DataRow *p_station) {
     }
     else {    // Not an object or item
 
-        // Check whether we wish to display normal stations
-        if (symbol_display_stations) {
+        // Check whether we wish to display normal local stations
+        if (p_station->flag & ST_LOCAL &&
+            !symbol_display_local_stations)
+            return 0;
+
+        // Check whether we wish to display normal nonlocal stations
+        if (!(p_station->flag & ST_LOCAL) &&
+            !symbol_display_nonlocal_stations)
+            return 0;
+
+        if (symbol_display_local_stations || symbol_display_nonlocal_stations) {
 
             // Check for weather
             if (p_station->weather_data) {
