@@ -8088,7 +8088,8 @@ void load_alert_maps (Widget w, char *dir) {
 // alerts end up drawn on top of the less important alerts?
 
     for (i = alert_list_count - 1; i >= 0; i--) {
-        if (alert_list[i].flags[0] == 'Y' && (level = alert_active (&alert_list[i], ALERT_ALL))) {
+//        if (alert_list[i].flags[0] == 'Y' && (level = alert_active (&alert_list[i], ALERT_ALL))) {
+        if ( (level = alert_active(&alert_list[i], ALERT_ALL) ) ) {
             if (level >= (int)sizeof (fill_color))
                 level = 0;
 
