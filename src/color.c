@@ -37,6 +37,11 @@ static color_load color_choice[MAX_COLORS];
 static int colors_loaded;
 static int rm, gm, bm; // rgb masks
 static int rs, gs, bs; // rgb shifts
+int visual_depth;
+
+
+
+
 
 /**********************************************************************************/
 /* load color file                                                                */
@@ -86,6 +91,10 @@ int load_color_file(void) {
     }
     return(ok);
 }
+
+
+
+
 
 /**********************************************************************************/
 /* GetPixelbyName                                                                 */
@@ -184,6 +193,9 @@ void setup_visual_info(Display* dpy, int scr) {
             }
             else if (debug_level & 16)
                 fprintf(stderr,"\tID:           0x%lx\n", vp->visualid);
+    
+            // Store color depth for use by other routines.
+            visual_depth = vp->depth;
 
             if (debug_level & 16) {
                 fprintf(stderr,"\tScreen:       %d\n",  vp->screen);
@@ -222,6 +234,10 @@ void setup_visual_info(Display* dpy, int scr) {
     }
 }
 
+
+
+
+
 void pack_pixel_bits(unsigned short r, unsigned short g, unsigned short b, unsigned long* pixel)
 {
     switch (visual_type) {
@@ -259,3 +275,5 @@ void pack_pixel_bits(unsigned short r, unsigned short g, unsigned short b, unsig
         break;
     }
 }
+
+

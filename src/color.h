@@ -40,6 +40,7 @@ typedef enum {
     RGB_OTHER
 } Pixel_Format;
 extern Pixel_Format visual_type;
+extern int visual_depth;
 
 /* from color.c */
 extern int load_color_file(void);

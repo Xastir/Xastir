@@ -147,6 +147,34 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm,
 
 
 
+/********************(**********************************************
+* check_trans()
+*
+* See if this pixel's color should be transparent
+*
+* We only call this from blocks where ImageMagick is used, so we're
+* ok to use IM calls.
+******************************************(************************/
+
+int check_trans (XColor c, unsigned long c_trans_color) {
+    //    fprintf (stderr, "pix = %li,%lx, chk = %li,%lx.\n",c.pixel,c.pixel,c_trans_color,c_trans_color);
+    // need to load an array from the geo file of colors to zap
+    // for now, just a static list to test
+
+    //    if ( c.pixel == (unsigned long) 0x000000 ) {
+    //    return 1; // black background
+    //}
+    if ( c.pixel == c_trans_color ) {
+        return 1;
+    }
+
+    return 0; // everything else is OK to draw
+}
+
+
+
+
+
 // For this particular case we need to snag a remote .geo file and
 // then start the process all over again.  The URL we'll need to use
 // looks something like this:
@@ -657,10 +685,28 @@ void draw_geo_image_map (Widget w,
             }
 
             if (strncasecmp(line, "TRANSPARENT", 11) == 0) { 
-                // need to make this read a list of colors to zap out
-                (void)sscanf (line + 12, "%li", &trans_color); 
+                // need to make this read a list of colors to zap
+                // out.  Use 32-bit unsigned values, so we can
+                // handle 32-bit color displays.
+                (void)sscanf (line + 12, "%lx", &trans_color);
+
+                // Mask it with the color depth so that we don't
+                // check too many bits when looking for the
+                // transparent color.
+//fprintf(stderr,"Transparent: %lx\n",trans_color);
+//fprintf(stderr,"Visual depth: %d\n", visual_depth);
+                if (visual_depth <= 8) {
+                    trans_color = trans_color & 0x0000000ffl;
+                }
+                else if (visual_depth <= 16) {
+                     trans_color = trans_color & 0x00000ffffl;
+                }
+                else if (visual_depth <= 24) {
+                     trans_color = trans_color & 0x000ffffffl;
+                }
+
                 do_check_trans = 1;
-//fprintf(stderr,"Transparent %lx\n",trans_color);
+//fprintf(stderr,"New Transparent: %lx\n",trans_color);
             }
             if (strncasecmp(line, "CROP", 4) == 0) { 
                 (void)sscanf (line + 5, "%d %d %d %d", 
@@ -1591,7 +1637,8 @@ fprintf(stderr,"2 ");
                     pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
                                     &my_colors[l].pixel);
 
-                if ( check_trans(my_colors[l],trans_color) ) {
+                if (check_trans(my_colors[l],trans_color) ) {
+
                     // Found a transparent color.  Leave it alone.
                     leave_unchanged++;
 //fprintf(stderr,"Found transparency\n");
@@ -1883,7 +1930,7 @@ fprintf(stderr,"2 ");
                         trans_skip = 1; // possibly transparent
                         if (image->storage_class == PseudoClass) {
                             if ( do_check_trans && 
-                                 check_trans(my_colors[index_pack[l]],trans_color) ) {
+                                    check_trans(my_colors[index_pack[l]],trans_color) ) {
                                 trans_skip = 1;
                             } else {
                                 XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
@@ -1895,7 +1942,7 @@ fprintf(stderr,"2 ");
                                             pixel_pack[l].blue * raster_map_intensity,
                                             &my_colors[0].pixel);
                             if ( do_check_trans && 
-                                 check_trans(my_colors[0], trans_color) ) {
+                                    check_trans(my_colors[0],trans_color) ) {
                                 trans_skip = 1;
                             } else {
                                 XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
@@ -1936,32 +1983,6 @@ fprintf(stderr,"2 ");
     time_mark(0);
 #endif  // TIMING_DEBUG
 #endif  // NO_GRAPHICS
-}
-
-
-
-
-
-/*********************************************
-* check_trans()
-*
-* See if this pixel's color should be transparent
-*
-*********************************************/
-
-int check_trans (XColor c, unsigned long c_trans_color) {
-    //    fprintf (stderr, "pix = %li,%lx, chk = %li,%lx.\n",c.pixel,c.pixel,c_trans_color,c_trans_color);
-    // need to load an array from the geo file of colors to zap
-    // for now, just a static list to test
-
-    //    if ( c.pixel == (unsigned long) 0x000000 ) {
-    //    return 1; // black background
-    //}
-    if ( c.pixel == c_trans_color ) {
-        return 1;
-    }
-
-    return 0; // everything else is OK to draw
 }
 
 
