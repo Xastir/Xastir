@@ -109,6 +109,10 @@ static int *RTree_hitarray=NULL;
 int RTree_hitarray_size=0;
 int RTree_hitarray_index=0;
 
+
+
+
+
 //This trivial routine is used by the RTreeSearch as a callback when it finds
 // a match.
 int RTreeSearchCallback(int id, void* arg) 
@@ -131,6 +135,10 @@ int RTreeSearchCallback(int id, void* arg)
     return 1;  // signal to keep searching for more matches
 }
 #endif // USE_RTREE
+
+
+
+
 
 /*******************************************************************
  * create_shapefile_map()
@@ -3910,7 +3918,13 @@ if (on_screen) {
     XSetFillStyle(XtDisplay(w), gc, FillSolid);
 }
 // End of draw_shapefile_map()
+
+
+
+
+
 #ifdef WITH_DBFAWK
+
 // This function will delete any pre-loaded dbfawk sigs and clear Dbf_sigs
 // This will trigger a  reload the first time a shapfile is redisplayed
 void clear_dbfawk_sigs() {
@@ -3921,7 +3935,8 @@ void clear_dbfawk_sigs() {
     }
 }
         
-#endif 
+#endif  // WITH_DBFAWK
+
 
 #endif  // HAVE_LIBSHP
 
