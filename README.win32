@@ -253,9 +253,9 @@ run a dos2unix program on it to convert it to the proper format.
 
 
 [ ] Step 5)  Download Xastir sources.  Start up Xwindows using your
-shortcut.  Type the five lines below into the shell exactly as
-shown.  Hit <ENTER> when asked for a password after typing line
-four (the "login" command):
+shortcut.  Type the six lines below into the shell exactly as shown.
+Hit <ENTER> when asked for a password after typing line four (the
+"login" command):
 
   cd ~
   touch .cvspass
