@@ -4397,6 +4397,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
 
+    // Print button
+    print_button = XtVaCreateManagedWidget(langcode("PULDNFI015"),
+            xmPushButtonWidgetClass,
+            filepane,
+            XmNmnemonic, langcode_hotkey("PULDNFI015"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback( print_button, XmNactivateCallback, Print_properties, NULL );
+
     config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
             xmCascadeButtonGadgetClass,
             filepane,
@@ -4497,17 +4507,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL);
 
 
-
-    // Print button
-    print_button = XtVaCreateManagedWidget(langcode("PULDNFI015"),
-            xmPushButtonWidgetClass,
-            filepane,
-            XmNmnemonic, langcode_hotkey("PULDNFI015"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-    XtAddCallback( print_button, XmNactivateCallback, Print_properties, NULL );
-
     (void)XtVaCreateManagedWidget("create_appshell sep1b",
             xmSeparatorGadgetClass,
             filepane,
@@ -4515,30 +4514,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-
-
-    test_button = XtVaCreateManagedWidget(langcode("PULDNFI003"),
-            xmPushButtonWidgetClass,
-            filepane,
-            XmNmnemonic, langcode_hotkey("PULDNFI003"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
-    debug_level_button = XtVaCreateManagedWidget(langcode("PULDNFI007"),
-            xmPushButtonWidgetClass,
-            filepane,
-            XmNmnemonic, langcode_hotkey("PULDNFI007"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
-    (void)XtVaCreateManagedWidget("create_appshell sep1c",
-            xmSeparatorGadgetClass,
-            filepane,
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
 
     exitpane  = XmCreatePulldownMenu(filepane,
             "exitpane",
@@ -4703,6 +4678,22 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
+    test_button = XtVaCreateManagedWidget(langcode("PULDNFI003"),
+            xmPushButtonWidgetClass,
+            configpane,
+            XmNmnemonic, langcode_hotkey("PULDNFI003"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    debug_level_button = XtVaCreateManagedWidget(langcode("PULDNFI007"),
+            xmPushButtonWidgetClass,
+            configpane,
+            XmNmnemonic, langcode_hotkey("PULDNFI007"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
     units_choice_button = XtVaCreateManagedWidget(langcode("PULDNUT001"),
             xmToggleButtonGadgetClass,
             configpane,
@@ -4757,18 +4748,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(map_chooser_button,   XmNactivateCallback,Map_chooser,NULL);
-
-#if defined(HAVE_IMAGEMAGICK)
-    tiger_config_button= XtVaCreateManagedWidget(langcode("PULDNMP020"),
-            xmPushButtonGadgetClass,
-            mappane,
-            XmNmnemonic,langcode_hotkey("PULDNMP020"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-    XtAddCallback(tiger_config_button,   XmNactivateCallback,Config_tiger,NULL);
-#endif  // HAVE_IMAGEMAGICK
-
 
     // Map Display Bookmarks
     jump_button = XtVaCreateManagedWidget(langcode("PULDNMP012"),
@@ -5266,6 +5245,19 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_icon_outline1,   XmNactivateCallback,Map_icon_outline,"1");
     XtAddCallback(map_icon_outline2,   XmNactivateCallback,Map_icon_outline,"2");
     XtAddCallback(map_icon_outline3,   XmNactivateCallback,Map_icon_outline,"3");
+
+
+#if defined(HAVE_IMAGEMAGICK)
+    tiger_config_button= XtVaCreateManagedWidget(langcode("PULDNMP020"),
+            xmPushButtonGadgetClass,
+            mappane,
+            XmNmnemonic,langcode_hotkey("PULDNMP020"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(tiger_config_button,   XmNactivateCallback,Config_tiger,NULL);
+#endif  // HAVE_IMAGEMAGICK
+
 
 
     (void)XtVaCreateManagedWidget("create_appshell sep2b",
