@@ -14903,23 +14903,24 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
 
 //fprintf(stderr,"\t\tUnused digi: %s\tPath: %s\n", Substring[ii], path);
 
-    // Check for RELAY or my_callsign in the strings.  If neither
-    // found then exit this routine.
+    // Check for RELAY, WIDE1-1 (the new relay) or my_callsign in
+    // the strings.  If neither found then exit this routine.
     if (       (strcmp(Substring[ii], "RELAY")     != 0)
+            && (strcmp(Substring[ii], "WIDE1-1")   != 0)
             && (strcmp(Substring[ii], my_callsign) != 0) ) {
         // Some other callsign found in this digi field.  Don't
         // relay the packet.
-//fprintf(stderr,"Not relay or %s, skipping\n", my_callsign);
+//fprintf(stderr,"Not relay, wide1-1, or %s, skipping\n", my_callsign);
         return;
     }
 
 
-    // Ok, we made it!  We have either RELAY or my_callsign that
+    // Ok, we made it!  We have RELAY, WIDE1-1, or my_callsign that
     // hasn't been digipeated through, and we wish to change that
-    // fact.  Put in our callsign for both cases and add an asterisk
-    // to the end of the call.  Also had to fix up the KISS transmit
-    // routine so that it'll set the digipeated bit for each
-    // callsign that has an asterisk.
+    // fact.  Put in our callsign for all three cases and add an
+    // asterisk to the end of the call.  Also had to fix up the KISS
+    // transmit routine so that it'll set the digipeated bit for
+    // each callsign that has an asterisk.
 
     // Contruct the new digi call, with the trailing asterisk
     xastir_snprintf(new_digi,

@@ -4326,9 +4326,9 @@ void split_string( char *data, char *cptr[], int max ) {
 
 
 // This function checks to make sure an unproto path falls within
-// the socially acceptable values, such as only one RELAY which may
-// appear only as the first option, use of WIDE4-4 and higher should
-// be questioned, etc.
+// the socially acceptable values, such as only one RELAY or
+// WIDE1-1 which may appear only as the first option, use of WIDE4-4
+// and higher should be questioned, etc.
 //
 // "MAX_WIDES" is defined in util.h
 //
