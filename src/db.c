@@ -65,7 +65,7 @@
 #define TRAIL_MAX_SPEED     900         /* max. acceptible speed for drawing trails, in mph */
 #define MY_TRAIL_COLOR      0x16        /* trail color index reserved for my station */
 #define MY_TRAIL_DIFF_COLOR   0         /* all my calls (SSIDs) use different colors (0/1) */
-#define TRAIL_ECHO_TIME      30         /* check for delayed echos of last 30 minutes */
+#define TRAIL_ECHO_TIME      30         /* check for delayed echos during last 30 minutes */
 
 // Station Info
 Widget  db_station_popup = (Widget)NULL;
@@ -9526,9 +9526,13 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         // we don't store redundant points (may change this
                                                 // later ?)
                                                 //
-                        // there are often echoes delayed 15 minutes or so
-                        // it looks ugly on the trail, so I want to discard them
-                        // This also discards immediate echoes
+                        // There are often echoes delayed 15 minutes
+                        // or so it looks ugly on the trail, so I
+                        // want to discard them This also discards
+                        // immediate echoes. Duplicates back in time
+                        // up to TRAIL_ECHO_TIME minutes are
+                        // discarded.
+                        //
                         if (!is_trailpoint_echo(p_station)) {
                             (void)store_trail_point(p_station,
                                 p_station->coord_lon,
@@ -10103,9 +10107,11 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     //if (   p_station->coord_lon != last_lon
     //    || p_station->coord_lat != last_lat ) {
     // we don't store redundant points (may change this later ?)
-    // there are often echoes delayed 15 minutes or so
-    // it looks ugly on the trail, so I want to discard them
-    // This also discards immediate echoes
+    // There are often echoes delayed 15 minutes or so it looks ugly
+    // on the trail, so I want to discard them This also discards
+    // immediate echoes.  Duplicates back in time up to
+    // TRAIL_ECHO_TIME minutes are discarded.
+    //
     if (!is_trailpoint_echo(p_station)) {
         (void)store_trail_point(p_station,
                                 p_station->coord_lon,
