@@ -24,16 +24,16 @@ MENUTB0009|Aide|A|
 # Menu "File"
 PULDNFI001|Configurer|C|
 PULDNFI002|Ouvrir le fichier de journal|O|
+PULDNFI003|Test|e|
+PULDNFI004|Quitter|Q|
+PULDNFI005|Yes I'm Sure!|Y|
+PULDNFI007|Changer niveau de débogage|d|
 PULDNFI010|Activer archivage TNC|T|
 PULDNFI011|Activer archivage réseau|r|
 PULDNFI012|Activer archivage IGate|I|
 PULDNFI013|Activer archivage météo|m|
 PULDNFI014|Activer instantanés PNG||
 PULDNFI015|Imprimer carte|p|
-PULDNFI003|Test|e|
-PULDNFI007|Changer niveau de débogage|d|
-PULDNFI004|Quitter|Q|
-PULDNFI005|Yes I'm Sure!|Y|
 #
 # Menu "View"
 PULDNVI001|Bulletins|B|
@@ -311,25 +311,25 @@ WPUPCFT007|2400 bps||
 WPUPCFT008|4800 bps||
 WPUPCFT009|9600 bps||
 WPUPCFT010|19200 bps||
-WPUPCFT019|38400 bps||
-WPUPCFT020|57600 bps||
-WPUPCFT021|115200 bps||
-WPUPCFT022|230400 bps||
-WPUPCFT015|Type de port||
-WPUPCFT016|8,N,1||
-WPUPCFT017|7,E,1||
-WPUPCFT018|7,O,1||
 WPUPCFT011|Voies UnProto||
 WPUPCFT012|Voie 1: %s via ||
 WPUPCFT013|Voie 2: %s via ||
 WPUPCFT014|Voie 3: %s via ||
+WPUPCFT015|Type de port||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
 WPUPCFT023|Configurer TNC +HSP GPS||
 WPUPCFT024|Type de données||
 WPUPCFT025|Auto detection||
 WPUPCFT026|Type binaire||
 WPUPCFT027|Type ASCII||
 WPUPCFT028|Configurer TNC +AUX GPS||
-WPUPCFG029|COnfigurer TNC +INVALID ENUM||
+WPUPCFT029|COnfigurer TNC +INVALID ENUM||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configurer port météo||

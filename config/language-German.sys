@@ -30,16 +30,16 @@ MENUTB0009|Hilfe|H|
 # Menu "Datei"
 PULDNFI001|Einstellungen|E|
 PULDNFI002|Protokolldatei laden|P|
+PULDNFI003|Test|T|
+PULDNFI004|Beenden|B|
+PULDNFI005|Yes I'm Sure!|Y|
+PULDNFI007|Debug Level ändern|D|
 PULDNFI010|TNC protokollieren||
 PULDNFI011|Netz protokollieren||
 PULDNFI012|IGate protokollieren||
 PULDNFI013|Wetter protokollieren||
 PULDNFI014|PNG Schnapschüsse ein||
 PULDNFI015|Karte drucken|d|
-PULDNFI003|Test|T|
-PULDNFI007|Debug Level ändern|D|
-PULDNFI004|Beenden|B|
-PULDNFI005|Yes I'm Sure!|Y|
 #
 # Menu "Zeige"
 PULDNVI001|Berichte|B|
@@ -317,18 +317,18 @@ WPUPCFT007|2400 bps||
 WPUPCFT008|4800 bps||
 WPUPCFT009|9600 bps||
 WPUPCFT010|19200 bps||
-WPUPCFT019|38400 bps||
-WPUPCFT020|57600 bps||
-WPUPCFT021|115200 bps||
-WPUPCFT022|230400 bps||
-WPUPCFT015|Port Datenbits||
-WPUPCFT016|8,N,1||
-WPUPCFT017|7,E,1||
-WPUPCFT018|7,O,1||
 WPUPCFT011|UnProto Pfade||
 WPUPCFT012|Pfad 1: %s via ||
 WPUPCFT013|Pfad 2: %s via ||
 WPUPCFT014|Pfad 3: %s via ||
+WPUPCFT015|Port Datenbits||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
 WPUPCFT023|Einstellungen für TNC mit GPS über HSP-Kabel||
 WPUPCFT024|Datenart||
 WPUPCFT025|Automatisch||
