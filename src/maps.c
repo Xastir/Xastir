@@ -2474,10 +2474,12 @@ void draw_shapefile_map (Widget w,
                             sizeof(gps_label),
                             filename);
 
-                        // Knock off the ".shp" portion of the label
+                        // Knock off the "_Color.shp" portion of the
+                        // label.  Find the last underline character
+                        // and change it to an end-of-string.
                         jj = strlen(gps_label);
                         while ( !done && (jj > 0) ) {
-                            if (gps_label[jj] == '.') {
+                            if (gps_label[jj] == '_') {
                                 gps_label[jj] = '\0';   // Terminate it here
                                 done++;
                             }
@@ -2487,24 +2489,21 @@ void draw_shapefile_map (Widget w,
 
                         // Check for a color in the filename: i.e.
                         // "Team2TrackRed.shp"
-                        if (strstr(filenm,"Red.shp")) {
+                        if (strstr(filenm,"_Red.shp")) {
                             gps_color = 0x0c; // Red
                         }
-                        else if (strstr(filenm,"Orange.shp")) {
+                        else if (strstr(filenm,"_Orange.shp")) {
 //                            gps_color = 0x06; // orange
 //                            gps_color = 0x19; // orange2
 //                            gps_color = 0x41; // DarkOrange3 (good medium orange)
                             gps_color = 0x62; // orange3 (brighter)
                         }
-                        else if (strstr(filenm,"White.shp")) {
+                        else if (strstr(filenm,"_White.shp")) {
                             gps_color = 0x0f; // white
                         }
-                        else if (strstr(filenm,"Green.shp")) {
+                        else if (strstr(filenm,"_Green.shp")) {
                             gps_color = 0x64; // ForestGreen
                         }
-//                        else if (strstr(filenm,".shp")) {
-//                            gps_color = 0x41;   // DarkOrange3
-//                        }
                         else {  // Default color
                             gps_color = 0x08; // black
                         }
