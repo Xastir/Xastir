@@ -5143,8 +5143,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     FILE *f;                        // Filehandle of image file
     char line[MAX_FILENAME];        // One line from GEO file
     char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
-    //N0VH
-//    char remote_callsign[400];    // Ascii callsign, read from GEO file, used for findu lookups only
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
@@ -5225,8 +5223,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     XImage *xi;                 // Temp XImage used for reading in current image
 #endif // HAVE_IMAGEMAGICK
 
-//    int findu_flag = 0;
-    //    //N0VH
     int terraserver_flag = 0;
     char map_it[MAX_FILENAME];
     int geo_image_width = 0;    // Image width  from GEO file
@@ -5281,15 +5277,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             if (strncasecmp (line, "PROJECTION", 10) == 0)
                 (void)sscanf (line + 11, "%8s",geo_projection); // ignores leading and trailing space (nice!)
 
-	    //N0VH
-//            if (strncasecmp (line, "FINDU", 5) == 0)
-//                findu_flag = 1;
-//            else if (strncasecmp (line, "TERRASERVER", 11) == 0)
             if (strncasecmp (line, "TERRASERVER", 11) == 0)
                 terraserver_flag = 1;
-
-//            if (strncasecmp (line, "CALL", 4) == 0)
-//                (void)sscanf (line + 5, "%s", remote_callsign);
 
 #ifdef HAVE_IMAGEMAGICK
             if (strncasecmp(line, "GAMMA", 5) == 0)
@@ -5352,70 +5341,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
 
 #ifdef HAVE_IMAGEMAGICK
-    //N0VH
-/*    if (findu_flag) {  // Must generate our own calibration data for some maps
-
-        // Tiepoint for upper left screen corner
-        //
-        tp[0].img_x = 0;                // Pixel Coordinates
-        tp[0].img_y = 0;                // Pixel Coordinates
-        tp[0].x_long = x_long_offset;   // Xastir Coordinates
-        tp[0].y_lat  = y_lat_offset;    // Xastir Coordinates
-
-        // Tiepoint for lower right screen corner
-        //
-        tp[1].img_x =  screen_width - 1; // Pixel Coordinates
-        tp[1].img_y = screen_height - 1; // Pixel Coordinates 
-
-        tp[1].x_long = x_long_offset + (( screen_width) * scale_x); // Xastir Coordinates
-        tp[1].y_lat  =  y_lat_offset + ((screen_height) * scale_y); // Xastir Coordinates
-
-        left = (double)((x_long_offset - 64800000l )/360000.0);   // Lat/long Coordinates
-        top = (double)(-((y_lat_offset - 32400000l )/360000.0));  // Lat/long Coordinates
-        right = (double)(((x_long_offset + ((screen_width) * scale_x) ) - 64800000l)/360000.0);//Lat/long Coordinates
-        bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_y) ) - 32400000l)/360000.0));//Lat/long Coordinates
-
-        map_width = right - left;   // Lat/long Coordinates
-        map_height = top - bottom;  // Lat/long Coordinates
-
-        geo_image_width  = screen_width;
-        geo_image_height = screen_height;
-
-        if (debug_level >= 2) {
-          printf("left side is %f\n", left);
-          printf("right side is %f\n", right);
-          printf("top  is %f\n", top);
-          printf("bottom is %f\n", bottom);
-          printf("screen width is %li\n", screen_width);
-          printf("screen height is %li\n", screen_height);
-          printf("map width is %f\n", map_width);
-          printf("map height is %f\n", map_height);
-        }
-
-        long_center = (left + right)/2.0l;
-        lat_center  = (top + bottom)/2.0l;
-
-	if (findu_flag) {   // Set up the URL for 2 weeks worth of raw data.
-            xastir_snprintf(fileimg, sizeof(fileimg),
-                "\'http://64.34.101.121/cgi-bin/rawposit.cgi?call=%s&start=336&length=336\'",
-                remote_callsign);
-	}
-
-        if (debug_level & 512) {
-          printf("left side is %f\n", left);
-          printf("right side is %f\n", right);
-          printf("top  is %f\n", top);
-          printf("bottom is %f\n", bottom);
-          printf("lat center is %f\n", lat_center);
-          printf("long center is %f\n", long_center);
-          printf("screen width is %li\n", screen_width);
-          printf("screen height is %li\n", screen_height);
-          printf("map width is %f\n", map_width);
-          printf("map height is %f\n", map_height);
-          printf("fileimg is %s\n", fileimg);
-        }
-    }
-*/
     if (terraserver_flag) {
 //http://terraservice.net/download.ashx?t=1&s=10&x=2742&y=26372&z=10&w=820&h=480
         if (scale_y <= 4) {
@@ -5647,8 +5572,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     // Check to see if we have to use "wget" to go get an internet map
     if ( (strncasecmp ("http", fileimg, 4) == 0)
             || (strncasecmp ("ftp", fileimg, 3) == 0)
-	    //N0VH
-//            || (findu_flag)
             || (terraserver_flag) ) {
 #ifdef HAVE_IMAGEMAGICK
         char *ext;
@@ -5656,10 +5579,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         if (debug_level & 16)
             printf("ftp or http file: %s\n", fileimg);
 
-	//N0VH
-//        if (findu_flag)
-//            ext = "log";
-//        else if (terraserver_flag)
         if (terraserver_flag)
             ext = "jpg";
         else
@@ -5704,22 +5623,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 // The status line is not updated yet, probably 'cuz we're too busy
 // getting the map in this thread and aren't redrawing?
 
-
-    //N0VH
-    // Here we do the findu stuff, if the findu_flag is set.  Else we do an imagemap.
-/*    if (findu_flag) {
-        // We have the log data we're interested in within the /var/tmp/xastir_<username>_map.log file.
-        // Cause that file to be read by the "File->Open Log File" routine.  HTML
-        // tags will be ignored just fine.
-        read_file_ptr = fopen(file, "r");
-        if (read_file_ptr != NULL)
-            read_file = 1;
-        else
-            printf("Couldn't open file: %s\n", file);
-
-        return;
-    }
-*/
 
 #ifdef HAVE_IMAGEMAGICK
     GetExceptionInfo(&exception);
