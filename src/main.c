@@ -3113,14 +3113,17 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     if (y > 64800000l)
                     y = 64800000l;          //  90°S
 
-                    if (coordinate_system == USE_DDDDDD) {
-                    convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
-                    convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
-                    } else {    // Assume coordinate_system == USE_DDMMMM
-                    convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
-                    convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
+                    if (debug_level & 1) {
+                        // This math is only used for the printf below.
+                        if (coordinate_system == USE_DDDDDD) {
+                            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
+                            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
+                        } else {    // Assume coordinate_system == USE_DDMMMM
+                            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
+                            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
+                        }
+                        //printf("%s %s\n", str_lat, str_long);
                     }
-                    //printf("%s %s\n", str_lat, str_long);
 
                     Station_info(w, "2", NULL);
                 }
@@ -3475,6 +3478,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // We also refresh the Station_info dialog here if
             // it is currently drawn.
             if (sec_now() >= (last_weather_cycle + 30)) {    // Every 30 seconds
+                // Note that we also write timestamps out to all of the log files
+                // from this routine.  It works out well with the 30 second update
+                // rate of cycle_weather().
                 (void)cycle_weather();
                 last_weather_cycle = sec_now();
 
