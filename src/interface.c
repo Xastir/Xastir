@@ -7695,6 +7695,9 @@ unsigned char *select_unproto_path(int port) {
     // entered paths get used.
     devices[port].unprotonum = (devices[port].unprotonum + 1 + bump_up) % 3;
 
+    // Make sure the path is in upper-case
+    (void)to_upper(unproto_path_txt);
+
     return((unsigned char *)unproto_path_txt);
 }
 
@@ -8303,6 +8306,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 void output_my_data(char *message, int incoming_port, int type, int loopback_only, int use_igate_path, char *path) {
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
+    char temp[MAX_LINE_SIZE+5];
     char path_txt[MAX_LINE_SIZE+5];
     char *unproto_path = NULL;
     char output_net[100];
@@ -8644,15 +8648,15 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 // For packets that we're igating we end up with a CR or
                 // LF on the end of them.  Remove that so the display
                 // looks nice.
-                xastir_snprintf(data_txt,
-                    sizeof(data_txt),
+                xastir_snprintf(temp,
+                    sizeof(temp),
                     "%s>%s,%s:%s",
                     my_callsign,
                     VERSIONFRM,
                     unproto_path,
                     message);
-                makePrintable(data_txt);
-                packet_data_add("TX ", data_txt, port);
+                makePrintable(temp);
+                packet_data_add("TX ", temp, port);
 
 
             }
@@ -8751,9 +8755,11 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     // feeds.
     if (incoming_port == -1) {   // We were sending to all ports
         // Pretend we received it from port 1
+//fprintf(stderr,"output_my_data 1:%s\n", data_txt);
         decode_ax25_line( data_txt, DATA_VIA_LOCAL, 1, 1);
     }
     else {  // We were sending to a specific port
+//fprintf(stderr,"output_my_data 2:%s\n", data_txt);
         decode_ax25_line( data_txt, DATA_VIA_LOCAL, incoming_port, 1);
     }
 
