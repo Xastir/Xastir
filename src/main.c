@@ -1339,6 +1339,24 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 // Find the extents of every map we have
 // 
 void Index_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
+    map_index_record *current;
+    map_index_record *temp;
+
+
+    // Point to the list
+    current = map_index_head;
+
+    // Empty the global list pointer
+    map_index_head = NULL;
+
+    // Delete the map_index linked list
+    while (current != NULL) {
+        temp = current;
+        current = temp->next;
+        free(temp);
+    }
+
+    // Create a new list from scratch
     map_indexer();
 }
 
