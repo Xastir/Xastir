@@ -669,6 +669,7 @@ void save_data(void)  {
 
 	store_int (fout, "TRACK_ME", track_me);
     store_int (fout, "MAP_CHOOSER_EXPAND_DIRS", map_chooser_expand_dirs);
+    store_int (fout, "ST_DIRECT_TIMEOUT", st_direct_timeout);
 
         if (debug_level & 1)
             printf ("Save Data Stop\n");
@@ -1349,6 +1350,9 @@ void load_data_or_default(void) {
 
     if (!get_int ("MAP_CHOOSER_EXPAND_DIRS", &map_chooser_expand_dirs,0,1,0))
         map_chooser_expand_dirs = 0;
+
+    if (!get_int ("ST_DIRECT_TIMEOUT", &st_direct_timeout,1,60*60*24*30,60*60))
+        map_chooser_expand_dirs = 60*60;    // One hour default
 
     input_close();
 }
