@@ -1071,7 +1071,7 @@ void alert_build_list(Message *fill) {
     char *ptr;
     DataRow *p_station;
     int compressed_wx_packet = 0;
-    char uncompressed_wx[1024];
+    char uncompressed_wx[10000];
 
 
     //fprintf(stderr,"Message_line:%s\n",fill->message_line);
@@ -1315,6 +1315,8 @@ void alert_build_list(Message *fill) {
                 strcat(uncompressed_wx,",");
                 strcat(uncompressed_wx,prefix); 
                 strcat(uncompressed_wx,suffix);
+                // Terminate it every time
+                uncompressed_wx[9999] = '\0';
 
                 // Here we keep looping until we hit another alpha
                 // portion.  We need to look at the field separator
@@ -1378,6 +1380,8 @@ void alert_build_list(Message *fill) {
                             strcat(uncompressed_wx,",");
                             strcat(uncompressed_wx,prefix); 
                             strcat(uncompressed_wx,suffix);
+                            // Terminate it every time
+                            uncompressed_wx[9999] = '\0';
                         }
                     }
                     else if (ptr[0] == '-') {
@@ -1434,6 +1438,8 @@ void alert_build_list(Message *fill) {
                             strcat(uncompressed_wx,",");
                             strcat(uncompressed_wx,prefix); 
                             strcat(uncompressed_wx,suffix);
+                            // Terminate it every time
+                            uncompressed_wx[9999] = '\0';
                         }
                         else {  // New prefix (not a number)
                             // Start at the top of the outer loop again
