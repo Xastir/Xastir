@@ -67,12 +67,18 @@ int posit_start = 336;
 int posit_length = 336;
 
 
+
+
+
 void track_gui_init(void)
 {
     init_critical_section( &track_station_dialog_lock );
     init_critical_section( &download_findu_dialog_lock );
     strcpy(tracking_station_call,"");
 }
+
+
+
 
 
 /**** Track STATION ******/
@@ -409,8 +415,23 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     strcpy(download_trail_station_call,temp);
     //Download_trail_destroy_shell(w, clientData, callData);
 
+
+// New URL's for findu.  The second one looks very promising.
+//http://www.findu.com/cgi-bin/raw.cgi?call=k4hg-8&time=1
+//http://www.findu.com/cgi-bin/rawposit.cgi?call=k4hg-8&time=1
+//
+// The last adds this to the beginning of the line:
+//
+//      "20030619235323,"
+//
+// which is a date/timestamp.  We'll need to do some extra stuff
+// here in order to actually use that date/timestamp though.
+// Setting the read_file_ptr to the downloaded file won't do it.
+
+
     xastir_snprintf(fileimg, sizeof(fileimg),
-        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d",
+        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d",         // Old
+//        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d&time=1",// New
         download_trail_station_call,posit_start,posit_length);
 #ifdef HAVE_LIBCURL
     if (curl_getfile(fileimg, log_filename)) {
@@ -457,6 +478,9 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 }
 
 
+
+
+
 void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) {
 
     int temp;
@@ -472,6 +496,8 @@ void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) 
         XmNmaximum, posit_start,
         NULL);
 }
+
+
 
 
 
