@@ -2760,13 +2760,18 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         } else if (coordinate_system == USE_DDMMSS) {
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DMS_NORMAL);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DMS_NORMAL);
+            str_lat[2]='°'; str_long[3]='°';
+            str_lat[5]='\''; str_long[6]='\'';
         } else {    // Assume coordinate_system == USE_DDMMMM
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
+            str_lat[2]='°'; str_long[3]='°';
         }
         xastir_snprintf(my_text, sizeof(my_text), "%s  %s", str_lat, str_long);
     }
 
+    strcat(my_text,"  ");
+    strcat(my_text,sec_to_loc(x,y));
     XmTextFieldSetString(textarea, my_text);
     XtManageChild(textarea);
 }
@@ -5128,7 +5133,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNsensitive,           STIPPLE,
             XmNshadowThickness,     1,
             XmNcolumns,             30,
-            XmNwidth,               ((30*FONT_WIDTH)+2),
+            XmNwidth,               ((29*FONT_WIDTH)+2),
             XmNtopOffset,           4,
             XmNtopAttachment,       XmATTACH_NONE,
             XmNbottomAttachment,    XmATTACH_FORM,
@@ -5147,8 +5152,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNcursorPositionVisible, FALSE,
             XmNsensitive,           STIPPLE,
             XmNshadowThickness,     1,
-            XmNcolumns,             21,
-            XmNwidth,               ((21*FONT_WIDTH)+2),
+            XmNcolumns,             35,
+            XmNwidth,               ((24*FONT_WIDTH)+2),
             XmNtopAttachment,       XmATTACH_NONE,
             XmNbottomAttachment,    XmATTACH_FORM,
             XmNleftAttachment,      XmATTACH_WIDGET,
@@ -5168,7 +5173,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNsensitive,           STIPPLE,
             XmNshadowThickness,     1,
             XmNcolumns,             14,
-            XmNwidth,               ((14*FONT_WIDTH)+2),
+            XmNwidth,               ((10*FONT_WIDTH)+2),
             XmNtopAttachment,       XmATTACH_NONE,
             XmNbottomAttachment,    XmATTACH_FORM,
             XmNleftAttachment,      XmATTACH_WIDGET,
@@ -5188,7 +5193,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNsensitive,           STIPPLE,
             XmNshadowThickness,     1,
             XmNcolumns,             12,
-            XmNwidth,               ((12*FONT_WIDTH)+2),
+            XmNwidth,               ((10*FONT_WIDTH)+2),
             XmNtopAttachment,       XmATTACH_NONE,
             XmNbottomAttachment,    XmATTACH_FORM,
             XmNleftAttachment,      XmATTACH_WIDGET,
