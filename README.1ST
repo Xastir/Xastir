@@ -1136,6 +1136,63 @@ MANDRAKE LINUX NOTES:
 END OF MANDRAKE LINUX NOTES.
      -----------------------------------------------------------------------
 
+     -----------------------------------------------------------------------
+WINDOWS/CYGWIN NOTES:
+
+     Date: Tue, 4 Feb 2003 07:50:31 -0500
+     From: Charles Suprin
+
+     I regularly run xastir under Cygwin.  It seems to work just fine in
+     network mode.  Every once in a while it might hiccup but that is likely
+     a cygwin problem not an Xastir one.  A significant number of times
+     Xastir has crashed on startup and updating my cygwin has solved the
+     problem.
+
+     I do not use maps, gps, or a radio with it.  Mostly because I have not
+     had time to get around to it.
+
+     This morning I did a make distclean&& ./configure &&make.  Everything
+     went fine until the linking stage.  I needed to link with the following
+     command.  Under cygwin, the order of the linking matters. and
+     duplicates are not allowed:
+
+
+         gcc -I/usr/X11R6/include -g -O2 -Wall -pipe -o xastir alert.o
+         bulletin_gui.o color.o datum.o db.o draw_symbols.o fcc_data.o
+         festival.o gps.o hostname.o igate.o interface.o interface_gui.o
+         lang.o list_gui.o locate_gui.o location.o location_gui.o main.o
+         maps.o messages.o messages_gui.o popup_gui.o rac_data.o rotated.o
+         sound.o track_gui.o util.o view_message_gui.o wx.o wx_gui.o
+         xa_config.o snprintf.o -L/usr/lib -lXm -L/usr/X11R6/lib -lSM -lICE
+         -lXt -lX11 -lXext -lSM -lICE
+
+
+     It is running right now in X.  It has over 2000 stations reported.
+     I am very happy with it.
+
+     WE7U:  Install default Cygwin plus these packages via a network
+     install.  Note that clicking on some of these causes others to
+     be selected and downloaded as well:
+
+            devel/autoconf
+            devel/automake
+            devel/binutils
+            devel/cvs
+            devel/gcc
+            devel/make
+            devel/rcs
+            editors/vim
+            text/less
+            utils/patch
+            web/wget
+            XFree86/fvwm
+            XFree86/lesstif
+            XFree86/XFree86-prog
+
+END OF WINDOWS/CYGWIN NOTES.
+     -----------------------------------------------------------------------
+
+
 CVS Instructions:
 -----------------
      For those who think CVS might be a bit too complicated to deal with,
