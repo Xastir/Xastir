@@ -762,6 +762,9 @@ guess_vector_attributes(w,
         // Draw the points
         for ( ii = 0; ii < num_points; ii++ ) {
             double X1, Y1, Z1;
+            XPoint xpoint;
+
+
 
 
             // Get the point!
@@ -789,6 +792,17 @@ guess_vector_attributes(w,
                 (float)X1,
                 gc,
                 pixmap);
+
+            xpoint.x = (short)X1;
+            xpoint.y = (short)Y1;
+
+            // Draw the corresponding label
+            Draw_OGR_Labels(w,
+                pixmap,
+                featureH,
+                geometryH,
+                &xpoint,
+                1); // Number of points
         }
     }
 }
