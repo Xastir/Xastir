@@ -9541,7 +9541,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
     XmString *list;
 
 
-    popup_message("TBD","Not Implemented Yet!");
+    popup_message("Not Implemented Yet!","User-selectable map_layer/draw_filled");
 
     // We need to run through the map_list widget, getting the map
     // layer and filled/unfilled (if appropriate) for each selected
@@ -9692,11 +9692,13 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 
 
 
+//WE7U
 // Counts the number of "selected" fields with a value of 1 in the
-// in-memory map index.  Updates the Maps Selected count in the map
-// chooser.
+// in-memory map index.  Updates the "Dirs/Maps Selected" count in
+// the map chooser.
 void map_chooser_update_quantity(void) {
-    int quantity = 0;
+    int dir_quantity = 0;
+    int map_quantity = 0;
     static char str_quantity[100];
     map_index_record *current = map_index_head;
     XmString x_str;
@@ -9704,13 +9706,25 @@ void map_chooser_update_quantity(void) {
     // Count the "selected" fields in the map index with value of 1
     while (current != NULL) {
         if (current->selected) {
-            quantity++;
+
+            if (current->filename[strlen(current->filename)-1] == '/') {
+                // It's a directory
+                dir_quantity++;
+            }
+            else {
+                // It's a map
+                map_quantity++;
+            }
         }
         current = current->next;
     }
    
-    // Update the Maps Selected label in the Map Chooser
-    xastir_snprintf(str_quantity,sizeof(str_quantity),"%d",quantity);
+    // Update the "Dirs/Maps Selected" label in the Map Chooser
+    xastir_snprintf(str_quantity,
+        sizeof(str_quantity),
+        "%d/%d",
+        dir_quantity,
+        map_quantity);
     x_str = XmStringCreateLocalized(str_quantity);
     XtVaSetValues(map_chooser_maps_selected_data,
         XmNlabelString, x_str,
@@ -10992,7 +11006,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        map_chooser_maps_selected_data = XtVaCreateManagedWidget("0",
+        map_chooser_maps_selected_data = XtVaCreateManagedWidget("0/0",
                 xmLabelWidgetClass,
                 my_form,
                 XmNtopAttachment,           XmATTACH_FORM,
