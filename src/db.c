@@ -12436,7 +12436,8 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         while (p_station != NULL) {
             if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects
                 if ( ((p_station->flag & ST_VIATNC) != 0)   // test "via TNC" flag
-                        && ((p_station->flag & ST_DIRECT) != 0) ) { // And "direct" flag
+                     && ((p_station->flag & ST_DIRECT) != 0) // And "direct" flag
+                     && !is_my_call(p_station->call_sign,1) ) { // and not me
                     if (strlen(temp)+strlen(p_station->call_sign) < 65) {
                         strncat(temp,
                             " ",
