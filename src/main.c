@@ -12780,13 +12780,13 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
     xb = XmStringCreateLtoR("\nXastir V" VERSION "\n\n" ABOUT_MSG, XmFONTLIST_DEFAULT_TAG);
 
-    xa = XmStringCreateLtoR(_("\n\n\nLibraries used: \n"), XmFONTLIST_DEFAULT_TAG);
+    xa = XmStringCreateLtoR("\n\n\nLibraries used: " XASTIR_INSTALLED_LIBS, XmFONTLIST_DEFAULT_TAG);
     xms = XmStringConcat(xb, xa);
     XmStringFree(xa);
     XmStringFree(xb);
     //xms is still defined
 
-    xa = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);  // Add a newline
+    xa = XmStringCreateLtoR("\n\n", XmFONTLIST_DEFAULT_TAG);  // Add some newlines
     xb = XmStringConcat(xms, xa);
     XmStringFree(xa);
     XmStringFree(xms);

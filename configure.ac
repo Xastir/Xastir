@@ -266,7 +266,42 @@ CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = 
 LDFLAGS=`echo "$LDFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
 #LIBS=`echo "$LIBS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
 changequote([,]) 
-  
+ 
+
+# Create the ILIBS defined variable
+if test "${has_axlib}" = "yes"; then
+  ILIBS="AX25"
+fi
+if test "${use_festival}" = "yes"; then
+  ILIBS="$ILIBS Festival"
+fi
+if test "${use_gpsman}" = "yes"; then
+  ILIBS="$ILIBS GPSMan"
+fi
+if test "${use_shapelib}" = "yes"; then
+  ILIBS="$ILIBS ShapeLib"
+fi
+if test "${use_imagemagick}" = "yes"; then
+  ILIBS="$ILIBS ImageMagick"
+fi
+if test "${use_proj}" = "yes"; then
+  ILIBS="$ILIBS libProj"
+fi
+if test "${use_geotiff}" = "yes"; then
+  ILIBS="$ILIBS GeoTiff"
+fi
+if test "${use_gdal}" = "yes"; then
+  ILIBS="$ILIBS GDAL/OGR"
+fi
+if test "${use_pcre}" = "yes"; then
+  ILIBS="$ILIBS PCRE"
+fi
+if test "${use_dbfawk}" = "yes"; then
+  ILIBS="$ILIBS Dbfawk"
+fi
+AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
+
+
 # 
 # Remove extraneous spaces from output variables (asthetic) 
 # 
@@ -319,6 +354,10 @@ AC_OUTPUT
 #echo "X_EXTRA_LIBS: $X_EXTRA_LIBS" 
 
 
+# Write out the library information to "summary.log"
+echo "$ILIBS" >summary.log
+
+
 echo ===========================================
 echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured using the 
 echo following external libraries.
@@ -341,4 +380,4 @@ if test "x$xastirpath" != "x" ; then
 fi 
 echo "Type 'make' to build Xastir (Use 'gmake' instead on some systems)." 
 
- 
+
