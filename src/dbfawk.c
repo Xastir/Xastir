@@ -213,6 +213,7 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
     }
 
 //WE7U2
+// Frees memory
     awk_free_symtab(symtbl);
     return head;
 }
@@ -225,6 +226,7 @@ void dbfawk_free_sig(dbfawk_sig_info *sig) {
     if (sig) {
         if (sig->prog)
 //WE7U2
+// Frees memory
             awk_free_program(sig->prog);
         if (sig) {
             free(sig);
