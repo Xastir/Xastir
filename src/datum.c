@@ -646,6 +646,12 @@ static void calcPhi(double *phi, double e, double t)
 
 
 
+//WE7U
+// This function appears to have a problem in the south polar
+// region.  85 40 30s/85 40 30w shows the problem.  Latitude ends up
+// _much_ too small in this case, placing us into the north polar
+// region instead.
+
 // Converts from UTM/UPS coordinates to Lat/Long coordinates.
 //
 void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
