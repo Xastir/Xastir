@@ -14116,6 +14116,7 @@ void  read_file_line(FILE *f) {
     char line[MAX_LINE_SIZE+1];
     char cin;
     int pos;
+    char *ptr;
 
     pos = 0;
     line[0] = '\0';
@@ -14129,7 +14130,6 @@ void  read_file_line(FILE *f) {
                 if (cin == (char)10) {                  // Found LF as EOL char
                     line[pos] = '\0';                   // Always add a terminating zero after last char
                     pos = 0;                            // start next line
-                    char *ptr;
 
                     // Get rid of <br> HTML tag at end of line here.
                     // Findu track files have them.
