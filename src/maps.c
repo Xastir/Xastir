@@ -1617,7 +1617,8 @@ void draw_shapefile_map (Widget w,
                 case 'w':   // County Warning Area File
                     if (fieldcount >= (search_field1 + 1) ) {
                         string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                        if (!strncasecmp(search_param1,string1,strlen(string1))) {
+                        if ( !strncasecmp(search_param1,string1,strlen(string1))
+                                && (strlen(string1) != 0) ) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
                             done++;
                             found_shape = i;
@@ -1627,7 +1628,8 @@ void draw_shapefile_map (Widget w,
                 case 'o':   // Offshore Marine Area File
                     if (fieldcount >= (search_field1 + 1) ) {
                         string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                        if (!strncasecmp(search_param1,string1,strlen(string1))) {
+                        if ( !strncasecmp(search_param1,string1,strlen(string1))
+                                && (strlen(string1) != 0) ) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
                             done++;
                             found_shape = i;
@@ -1637,7 +1639,8 @@ void draw_shapefile_map (Widget w,
                 case 'm':   // Marine Area File
                     if (fieldcount >= (search_field1 + 1) ) {
                         string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                        if (!strncasecmp(search_param1,string1,strlen(string1))) {
+                        if ( !strncasecmp(search_param1,string1,strlen(string1))
+                                && (strlen(string1) != 0) ) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
                             done++;
                             found_shape = i;
@@ -1647,7 +1650,8 @@ void draw_shapefile_map (Widget w,
                 case 'z':   // Zone File
                     if (fieldcount >= (search_field1 + 1) ) {
                         string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                        if (!strncasecmp(search_param1,string1,strlen(string1))) {
+                        if ( !strncasecmp(search_param1,string1,strlen(string1))
+                                && (strlen(string1) != 0) ) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
                             done++;
                             found_shape = i;
@@ -1664,6 +1668,8 @@ void draw_shapefile_map (Widget w,
         // file to fetch this particular shape.
         found_shape = alert->index;
     }
+
+    //printf("Found shape: %d\n", found_shape);
 
     if (debug_level & 16)
         printf("Calling SHPOpen()\n");
