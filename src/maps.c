@@ -134,6 +134,7 @@ struct FtpFile {
 #include "draw_symbols.h"
 #include "rotated.h"
 #include "color.h"
+#include "xa_config.h"
 
 #define DOS_HDR_LINES 8
 #define GRID_MORE 5000
@@ -1393,7 +1394,9 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
     int     i, ti, last_vtx;
     double  tX;
     double  *a, *b;
-    double  dx0, dx1, dy0, dy1, v1, v2 ,v3;
+    double  dx0, dx1, dy0, dy1;
+    //double  v1, v2;
+    double  v3;
    
     tX = 0.0;
     a = psCShape->padfX;
@@ -1411,9 +1414,14 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
       
     // All vertices at the corners of the extrema (rightmost lowest,
     // leftmost lowest, topmost rightest, ...) must be less than pi
-    // wide.  If they werent they couldnt be extrema.  Of course the
-    // following will fail if the Extents are even a little wrong.
-   
+    // wide.  If they werent they couldn't be extrema.  Of course
+    // the following will fail if the Extents are even a little
+    // wrong.
+ 
+    // WE7U:  Give "ti" a starting value else the compiler will
+    // complain if "-Wall" flag is turned on.
+    ti = psCShape->panPartStart[Ring];
+
     for ( i = psCShape->panPartStart[Ring]; i < last_vtx; i++ ) {
         if ( b[i] == psCShape->dfYMax && a[i] > tX ) {
             ti = i;
@@ -1421,7 +1429,7 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
     }
 
     if (debug_level & 16) {
-        printf ("(shpgeo:SHPRingDir) highest Rightmost Pt is vtx %d (%f, %f)\n",
+        printf ("maps.c:SHPRingDir: highest Rightmost Pt is vtx %d (%f, %f)\n",
             ti,
             a[ti],
             b[ti]);
@@ -1431,7 +1439,7 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
     // The sign of the cross product of two vectors indicates the
     // right or left half-plane which we can use to indicate Ring
     // Dir
-    if ( ti > psCShape->panPartStart[Ring] & ti < last_vtx ) {
+    if ( (ti > psCShape->panPartStart[Ring]) & (ti < last_vtx) ) {
         dx0 = a[ti-1] - a[ti];
         dx1 = a[ti+1] - a[ti];
         dy0 = b[ti-1] - b[ti];
@@ -1452,7 +1460,7 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
     v3 = ( (dx0 * dy1) - (dx1 * dy0) );
 
     if (debug_level & 16) {
-        printf ("(shpgeo:SHPRingDir)  cross product for vtx %d was %f n",
+        printf ("maps.c:SHPRingDir:  cross product for vtx %d was %f n",
             ti, v3); 
     }
 
@@ -1646,6 +1654,8 @@ void draw_shapefile_map (Widget w,
     unsigned long   my_lat, my_long;
     long            x,y;
     int             ok, index;
+    int             polygon_hole_flag;
+    int             *polygon_hole_storage;
     int             gps_flag = 0;
     char            gps_label[100];
     int             gps_color = 0x0c;
@@ -2448,6 +2458,10 @@ void draw_shapefile_map (Widget w,
 
 
                 case SHPT_POINT:
+                    // We hit this case once for each point shape in
+                    // the file, iff that shape is within our
+                    // viewport.
+
 
                     if (debug_level & 16)
                         fprintf(stderr,"Found Point Shapefile\n");
@@ -2528,6 +2542,9 @@ void draw_shapefile_map (Widget w,
 
 
                 case SHPT_ARC:
+                    // We hit this case once for each polyline shape
+                    // in the file, iff at least part of that shape
+                    // is within our viewport.
 
                     if (debug_level & 16)
                         fprintf(stderr,"Found Polylines\n");
@@ -3308,18 +3325,20 @@ void draw_shapefile_map (Widget w,
 
                     // Each polygon can be made up of multiple
                     // rings, and each ring has multiple points that
-                    // define it.
+                    // define it.  We hit this case once for each
+                    // polygon shape in the file, iff at least part
+                    // of that shape is within our viewport.
 
 
 
 
 
 //WE7U
-// We don't handle the "hole" drawing in polygon shapefiles, where
-// clockwise direction around the ring means a fill, and CCW means a
-// hole in the polygon.  Once we do handle this correctly, delete
-// this note and the note in the main function comment block above.
-//
+// We don't currently handle the "hole" drawing in polygon
+// shapefiles, where clockwise direction around the ring means a
+// fill, and CCW means a hole in the polygon.  Once we do handle
+// this correctly, delete this note and the note in the main
+// function comment block above.
 //
 // Could try to implement the holes in several ways:
 //
@@ -3394,17 +3413,13 @@ void draw_shapefile_map (Widget w,
 
 /*
     // Determine first whether we have any CCW rotation of vertices
-    // in the Shape.  If so, we need to go through the below steps.
-    // If not, just draw the filled polygon directly.
+    // in the Shape (hole rings).  If so, we need to go through the
+    // below steps.  If not, draw the filled polygon directly.
 
-// Note:  We probably need to use a temporary GC for drawing these
-// regions as I can't find a way to set the clip-mask to NULL after
-// we're finished.
+// Note:  We need to use a temporary GC for drawing these regions as
+// I can't find a way to set the clip-mask to NULL after we're
+// finished!
 
-    // Creates separate structures for each hole.  It might be good
-    // to separate out the main polygon (without holes) as well for
-    // speed reasons: Use that for drawing when we have our Region
-    // set up instead of the full polygon + holes.
     holes = create_hole_list();
 
     if (!holes) {   // No holes in this shape.  Draw it the easy way.
@@ -3419,42 +3434,33 @@ void draw_shapefile_map (Widget w,
     else {  // Holes found in the shape.  Draw it the hard way.
 
         // Create three regions and rotate between them due to the
-        // XSubtractRegion() call needing three parameters.  If we
-        // later find that two of the parameters can be repeated, we
-        // can simplify our code.  We'll rotate through them mod 3.
+        // XSubtractRegion() needing three parameters.  If we later
+        // find that two of the parameters can be repeated, we can
+        // simplify our code.  We'll rotate through them mod 3.
         Region region[3];
 
         int temp_region1 = 0;
         int temp_region2;
         int temp_region3;
-//        XRectangle rectangle;   // Used only for method 7
+        XRectangle rectangle;   // Used only for method 7
 
 
-        // Draw the polygon region, whether we skip the hole
-        // vertices shouldn't matter at this point except perhaps
-        // for speed.  They lie inside the rest of the filled region
-        // so those areas just get filled more than once.
+// Method 7:
+// Create a rectangle region.  That way we won't have to draw all
+// parts of the polygon twice.  Make the  rectangle the size of the
+// Shape extents.
 
-// Speed-up:  Create a rectangle region instead of a polygon.  That
-// way we won't draw the polygon twice.
-
-// Method 6: Creating a Polygon clip-mask.
-        region[temp_region1] = XPolygonRegion(Xpoint points,
-            int n,
-            WindingRule);
-
-// Method 7: Creating a Rectangular clip-mask.
         // Create empty region
-        //region[temp_region1] = XCreateRegion();
+        region[temp_region1] = XCreateRegion();
 
-        // Draw a rectangle region inside it
-        //rectangle.x      = (short) x;
-        //rectangle.y      = (short) y;
-        //rectangle.width  = (unsigned short) width;
-        //rectangle.height = (unsigned short) height;
-        //XUnionRectWithRegion(&rectangle,
-        //    region[temp_region1],
-        //    region[temp_region1]);
+        // Draw a rectangular clip-mask inside it
+        rectangle.x      = (short) x;
+        rectangle.y      = (short) y;
+        rectangle.width  = (unsigned short) width;
+        rectangle.height = (unsigned short) height;
+        XUnionRectWithRegion(&rectangle,
+            region[temp_region1],
+            region[temp_region1]);
 
         // Create a region for each set of hole vertices (CCW
         // rotation of the vertices) and subtract each from the
@@ -3490,9 +3496,8 @@ void draw_shapefile_map (Widget w,
         XDestroyRegion(region[temp_region1]);
 
         // Draw the original polygon onto the correct pixmap.
-        // Whether or not we subtract out the hole vectors here
-        // doesn't matter (except for speed reasons):  They won't
-        // get drawn due to the region clip-mask.
+        // We can skip the hole rings for improvements in drawing
+        // speed.
         (void)XFillPolygon(XtDisplay(w),
             pixmap,
             gc,
@@ -3513,43 +3518,98 @@ void draw_shapefile_map (Widget w,
 //if (object->nParts > 1)
 //fprintf(stderr,"Number of parts: %d\n", object->nParts);
 
-                    // Read the vertices for each ring
+//WE7U
+// Unfortunately, for Polygon shapes we must make one pass through
+// the entire set of rings to see if we have any "hole" rings (as
+// opposed to "fill" rings).  If we have any "hole" rings, we must
+// handle the drawing of the Shape quite differently.
+//
+// Read the vertices for each ring in the Shape.  Test whether we
+// have a hole ring.  If so, save the ring index away for the next
+// step when we actually draw the shape.
+//
+// An alternative, and not quite as optimal: Set a flag when we find
+// our _first_ hole ring and quit this loop.  Saves a bit of time,
+// but not as much as we could by saving the indexes.
+
+                    polygon_hole_flag = 0;
+
+                    // Allocate storage for a flag for each ring in
+                    // this Shape.
+                    // !!Remember to free this storage later!!
+                    polygon_hole_storage = (int *)malloc(object->nParts*sizeof(int));
+ 
+                    for (ring = 0; ring < object->nParts; ring++ ) {
+
+                        // Testing for fill or hole ring.  This will
+                        // determine how we ultimately draw the
+                        // entire shape.
+                        //
+                        // Tests Polygon for CW / CCW  ( R+ / R- )
+                        //
+                        // return 1  for R+ (CW or a fill)
+                        // return -1 for R- (CCW or a hole in the polygon)
+                        // return 0  for error
+                        //
+                        switch ( SHPRingDir_2d( object, ring) ) {
+                            case  0:    // Error in trying to compute whether fill or hole
+                            case  1:    // It's a fill ring
+                                // Do nothing for these two cases
+                                // except clear the hole_flag in our
+                                // storage
+                                polygon_hole_storage[ring] = 0;
+                                break;
+                            case -1:    // It's a hole ring
+                                polygon_hole_flag++;
+//                                fprintf(stderr, "Ring %d/%d is a polygon hole\n",
+//                                    ring,
+//                                    object->nParts);
+// Add it to a list of hole rings here and set a flag.  That way we
+// won't have to run through SHPRingDir_2d again in the next loop.
+                                polygon_hole_storage[ring] = 1;
+                                break;
+                        }
+                    }
+                    if (polygon_hole_flag) {
+//                        fprintf(stderr, "%s:Found %d hole rings in shape %d\n",
+//                            file,
+//                            polygon_hole_flag,
+//                            structure);
+                    }
+//WE7U
+
+
+
+
+
+                    // Read the vertices for each ring in the Shape
                     for (ring = 0; ring < object->nParts; ring++ ) {
                         int endpoint;
                         int glacier_flag = 0;
                         const char *temp;
+                        int hole_flag = 0;
 
 
 
 
 
-//WE7U
-// Testing for fill or hole ring.  This will determine how we
-// ultimately draw the entire shape.
-//
-// Tests Polygon for CW / CCW  ( R+ / R- )
-//
-// return 1  for R+ (CW or a fill)
-// return -1 for R- (CCW or a hole in the polygon)
-// return 0  for error
-//
-switch ( SHPRingDir_2d( object, ring) ) {
-    case  0:    // Error in trying to compute whether fill or hole
-    case  1:    // It's a fill ring
-        // Do nothing for these two cases
-        break;
-    case -1:    // It's a hole ring
-//        fprintf(stderr, "Ring %d/%d is a polygon hole\n",
-//            ring,
-//            object->nParts);
-        break;
-}
-//WE7U
+                        if (polygon_hole_flag) {
+                            // We know that at least one ring for
+                            // this Shape is a "hole" ring.  We need
+                            // to draw the shape quite differently
+                            // because of this.
+                            if (polygon_hole_storage[ring]) {
+                                //hole_flag++;
+//                              fprintf(stderr, "Ring %d/%d is a polygon hole\n",
+//                                  ring,
+//                                  object->nParts);
+                            }
+                        }
 
 
 
 
-
+ 
                         if (lake_flag || river_flag) {
                             if ( mapshots_labels_flag && (fieldcount >= 3) ) {
                                 temp = DBFReadStringAttribute( hDBF, structure, 2 );    // CFCC Field
@@ -3668,7 +3728,20 @@ switch ( SHPRingDir_2d( object, ring) ) {
                         }
 
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
-                            if (quad_overlay_flag) {
+
+//WE7U: Test code for polygon holes, just so we can see some of
+//them in action.
+                            if (hole_flag) {
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
+                                if (map_color_fill && draw_filled) {
+                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
+                                }
+                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+ 
+                            }
+                            else if (quad_overlay_flag) {
+// End of test code
+//                            if (quad_overlay_flag) {
                                 (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
@@ -3735,6 +3808,14 @@ switch ( SHPRingDir_2d( object, ring) ) {
                             }
                         }
                     }
+                    // Free the storage that we allocated to hold
+                    // the "hole" flags for the shape.
+                    free(polygon_hole_storage);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Done with drawing shapes, now draw labels
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
                     temp = "";
 
                     if (lake_flag) {
