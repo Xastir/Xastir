@@ -896,7 +896,8 @@ before running xastir.
 To load NAS for xastir to use simply type "nasd -local -b" from cygwin. This
 command will load the NAS server in the background and will only allow local
 users to access it.  For more command options type "nasd -help" from within
-cygwin.
+cygwin.  Some people have trouble with the "-local" option, so try
+it without that option as well ("nasd -b").
 
 After NAS is loaded you can load xastir as you normally would.
 
