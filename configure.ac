@@ -229,7 +229,7 @@ else
   # Should we be checking for X11 headers in this section as well?
   # We check for Motif/Lesstif header files in a section below.
   #
-  AC_MSG_ERROR(*** X11 libraries not found... This isn't going to work, giving up. ***)
+  AC_MSG_ERROR(*** Cannot find X11 libraries:  Please Install X-Windows ***)
 fi 
 
 AM_CONDITIONAL(HasX11, test "$have_x" = 'yes') 
@@ -270,7 +270,7 @@ AC_SUBST(LIBS)
 AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes",
   AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes",
     AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes",
-      AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install one of them. ***))))
+      AC_MSG_ERROR(*** Cannot find Motif include files:  Please install Motif, OpenMotif, or Lesstif development package. ***))))
 #
 AC_FUNC_ALLOCA 
 AC_HEADER_DIRENT 
@@ -344,7 +344,7 @@ if test "$wget" != "/usr/bin"; then
         if test "$wget" != "/opt/sfw/bin"; then
           AC_CHECK_PROG(wget, [wget --version], /sw/bin, no, /sw/bin)
           if test "$wget" != "/sw/bin"; then 
-            AC_MSG_WARN(*** Missing wget (or it is not in the path).  Building w/o wget support. ***) 
+            AC_MSG_WARN(*** Cannot find wget:  Building w/o wget support. ***) 
           fi
         fi
       fi
@@ -378,7 +378,7 @@ if test "$convert" != "/usr/bin"; then
             if test "$convert" != "/opt/sfw/bin"; then
               AC_CHECK_PROG(convert, [convert], /sw/bin, no, /sw/bin)
               if test "$convert" != "/sw/bin"; then 
-                AC_MSG_WARN(*** Missing convert (or it is not in the path).  Building w/o convert support. ***) 
+                AC_MSG_WARN(*** Cannot find convert:  Building w/o convert support. ***) 
               fi
             fi
           fi
@@ -403,7 +403,7 @@ fi
 # 
 #AC_CHECK_PROG(lpr, [lpr --version], yes, no) 
 #if test "$lpr" = "no"; then 
-#  AC_MSG_WARN(*** Missing lpr (or it is not in the path).  Building w/o lpr support. ***) 
+#  AC_MSG_WARN(*** Cannot find lpr:  Building w/o lpr support. ***) 
 #fi 
 # 
 # End of lpr checks 
@@ -431,7 +431,7 @@ if test "$gv" != "/usr/X11R6/bin"; then
             if test "$gv" != "/opt/sfw/bin"; then
               AC_CHECK_PROG(gv, [gv -v], /sw/bin, no, /sw/bin)
               if test "$gv" != "/sw/bin"; then 
-                AC_MSG_WARN(*** Missing gv (or it is not in the path).  Building w/o gv support. ***) 
+                AC_MSG_WARN(*** Cannot find gv:  Building w/o gv support. ***) 
               fi
             fi
           fi
@@ -463,7 +463,7 @@ if test "$cp" != "/bin"; then
         if test "$cp" != "/opt/sfw/bin"; then
           AC_CHECK_PROG(cp, [cp -version], /sw/bin, no, /sw/bin)
           if test "$cp" != "/sw/bin"; then 
-            AC_MSG_WARN(*** Missing cp (or it is not in the path).  Building w/o cp support. ***) 
+            AC_MSG_WARN(*** Cannot find cp:  Building w/o cp support. ***) 
           fi
         fi
       fi
@@ -514,7 +514,7 @@ then
     LIBS="${XASTIR_SHAPE_LIB_PATH} ${XASTIR_SHAPELIB_LIB} ${LIBS}" 
     use_shapelib=yes 
   else 
-    AC_MSG_WARN(*** Shapelib library files not found or not in the path.  Building w/o Shapelib support. ***) 
+    AC_MSG_WARN(*** Cannot find Shapelib library files:  Building w/o Shapelib support. ***) 
   fi 
 else 
   #
@@ -545,11 +545,11 @@ else
       CFLAGS="${SHP_CFLAGS} ${CFLAGS}"
       use_shapelib=yes 
     else 
-      AC_MSG_WARN(*** Shapelib library files not found or not in the path.  Building w/o Shapelib support. ***) 
+      AC_MSG_WARN(*** Cannot find Shapelib library files:  Building w/o Shapelib support. ***) 
     fi 
   else
     # We failed to find Shapelib
-    AC_MSG_WARN(*** Shapelib header files not found or not in the path.  Building w/o Shapelib support. ***) 
+    AC_MSG_WARN(*** Cannot find Shapelib header files:  Building w/o Shapelib support. ***) 
   fi
 fi 
 #
@@ -843,7 +843,7 @@ else
   if test "$use_imagemagick" = "yes"; then
     MAGIC_BIN="/sw/bin/Magick-config"
   else
-    AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
+    AC_MSG_WARN(*** Cannot find Magick-config:  Building w/o ImageMagick support. ***) 
   fi
 fi
 #
@@ -878,11 +878,11 @@ if test "$use_imagemagick" = "yes"; then
   else
     AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no")
     if test "$use_imagemagick" = "no"; then
-      AC_MSG_WARN(*** Missing ImageMagick include files.  Building w/o ImageMagick support. ***)
+      AC_MSG_WARN(*** Cannot find ImageMagick include files:  Building w/o ImageMagick support. ***)
     else
       AC_CHECK_LIB([Magick], [WriteImage], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
       if test "$use_imagemagick" = "no"; then
-        AC_MSG_WARN(*** Missing ImageMagick library.  Building w/o ImageMagick support. ***)
+        AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
       fi
     fi
   fi
