@@ -353,6 +353,7 @@ WPUPCFT026|Tipo Binário||
 WPUPCFT027|Tipo ASCII||
 WPUPCFT028|Configurar TNC com GPS AUX||
 WPUPCFT029|Configurar TNC com ENUM INVÁLIDO||
+WPUPCFT030|Configure KISS TNC||
 #
 # Configurar a porta da estação meteorológica
 WPUPCFWX01|Configurar a porta da estação meteorológica||

@@ -270,7 +270,7 @@ void Config_TNC_change_data(Widget widget, XtPointer clientData, XtPointer callD
     }
 
     /* device type */
-    type=DEVICE_SERIAL_TNC;
+    type=DEVICE_SERIAL_TNC; // Default in case not defined next
     if (TNC_device)
         type=TNC_device; // Modified to support more than two types
 
@@ -300,6 +300,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
             break;
 
         case DEVICE_SERIAL_TNC:
+        case DEVICE_SERIAL_KISS_TNC:
         default:
             break;
     }
@@ -384,6 +385,10 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 tmp=langcode("WPUPCFT001");
                 break;
 
+            case DEVICE_SERIAL_KISS_TNC:
+                tmp=langcode("WPUPCFT030");
+                break;
+
             case DEVICE_SERIAL_TNC_HSP_GPS:
                 tmp=langcode("WPUPCFT023");
                 break;
@@ -395,11 +400,6 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                     DEFAULT_GPS_RETR, port);
                 }
                 devices[port].gps_retrieve=DEFAULT_GPS_RETR;
-                break;
-
-//WE7U:  Fix this
-            case DEVICE_SERIAL_KISS_TNC:
-                tmp=langcode("WPUPCFT028");
                 break;
 
             default:
@@ -4865,43 +4865,43 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
         if (devices[i].device_type!=DEVICE_NONE) {
             switch(devices[i].device_type) {
                 case DEVICE_SERIAL_TNC:
-                    s='0';
+                    s='0';  // Select icon for status bar
                     break;
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-                    s='1';
+                    s='1';  // Select icon for status bar
                     break;
 
                 case DEVICE_SERIAL_GPS:
-                    s='2';
+                    s='2';  // Select icon for status bar
                     break;
 
                 case DEVICE_SERIAL_WX:
-                    s='3';
+                    s='3';  // Select icon for status bar
                     break;
 
                 case DEVICE_NET_WX:
-                    s='3';
+                    s='3';  // Select icon for status bar
                     break;
 
                 case DEVICE_NET_STREAM:
-                    s='4';
+                    s='4';  // Select icon for status bar
                     break;
 
                 case DEVICE_AX25_TNC:
-                    s='5';
+                    s='5';  // Select icon for status bar
                     break;
 
                 case DEVICE_SERIAL_KISS_TNC:
-                    s='5';
+                    s='5';  // Select icon for status bar
                     break;
 
                 case DEVICE_NET_GPSD:
-                    s='6';
+                    s='6';  // Select icon for status bar
                     break;
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
-                    s='7';
+                    s='7';  // Select icon for status bar
                     break;
 
                 default:

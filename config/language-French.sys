@@ -354,6 +354,7 @@ WPUPCFT026|Type binaire||
 WPUPCFT027|Type ASCII||
 WPUPCFT028|Configurer TNC +AUX GPS||
 WPUPCFT029|COnfigurer TNC +INVALID ENUM||
+WPUPCFT030|Configure KISS TNC||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configurer port météo||

@@ -355,6 +355,7 @@ WPUPCFT026|Dati binari||
 WPUPCFT027|Dati ASCII||
 WPUPCFT028|Configura TNC con cavo AUX per GPS||
 WPUPCFT029|Configura TNC con INVALID ENUM||
+WPUPCFT030|Configure KISS TNC||
 #
 #Configura Porta Meteo
 WPUPCFWX01|Configura Porta Meteo||

@@ -354,6 +354,7 @@ WPUPCFT026|Binary Type||
 WPUPCFT027|ASCII Type||
 WPUPCFT028|Configure TNC w/AUX GPS||
 WPUPCFT029|Configure TNC w/INVALID ENUM||
+WPUPCFT030|Configure KISS TNC||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configure WX Port||

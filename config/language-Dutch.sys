@@ -358,6 +358,7 @@ WPUPCFT026|Binair Type||
 WPUPCFT027|ASCII Type||
 WPUPCFT028|TNC Instelling m/HSP GPS||
 WPUPCFT029|TNC Instelling m/AUX GPS||
+WPUPCFT030|Configure KISS TNC||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|WX Poort Instelling||

@@ -355,6 +355,7 @@ WPUPCFT026|Tipo Binario||
 WPUPCFT027|Tipo ASCII||
 WPUPCFT028|Configurar el TNC c/AUX GPS||
 WPUPCFT029|Configurar el TNC c/MAL ENUM||
+WPUPCFT030|Configure KISS TNC||
 #
 # Configurar el Puerto de la Estación Meteorológica
 WPUPCFWX01|Configurar el Puerto de la Estación Meteorológica||

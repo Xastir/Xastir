@@ -360,6 +360,7 @@ WPUPCFT026|Binär||
 WPUPCFT027|ASCII||
 WPUPCFT028|Einstellungen für TNC mit GPS über AUX-Kabel||
 WPUPCFT029|Einstellungen für TNC mit GPS über INVALID ENUM||
+WPUPCFT030|Configure KISS TNC||
 # 
 # PopUp "Einstellungen Wetterstation"
 WPUPCFWX01|Einstellungen Wetterstation||
