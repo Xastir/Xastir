@@ -11972,12 +11972,13 @@ void load_alert_maps (Widget w, char *dir) {
             // Expire old alerts (zero the title string)
             if (sec_now() >= alert_list[ii].expiration) {
                 if (debug_level & 2) {
-                    fprintf(stderr,"Expiring alert: %s:%lu, sec_now:%lu\n",
+                    fprintf(stderr,"load_alert_maps: Expiring alert: %s:%lu, sec_now:%lu\n",
                         alert_list[ii].title,
                         alert_list[ii].expiration,
                        sec_now());
                 }
                 alert_list[ii].title[0] = '\0'; // Clear this alert
+                alert_list_count--;
                 continue;   // Skip this alert (it's empty!)
             }
 
