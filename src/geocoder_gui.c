@@ -26,6 +26,7 @@
 #include "snprintf.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <Xm/XmAll.h>
 #ifdef HAVE_XBAE_MATRIX_H
