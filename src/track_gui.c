@@ -430,7 +430,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         return;
     }
 #else   // HAVE_WGET
-    fprintf(stderr,"libcurl and 'wget' not installed.  Can't download trail\n");
+    fprintf(stderr,"libcurl or 'wget' not installed.  Can't download trail\n");
 #endif  // HAVE_WGET
 #endif
 

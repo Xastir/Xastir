@@ -4184,6 +4184,11 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
     fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
 #else   // NO_GRAPHICS
 
+#ifndef HAVE_GV
+    fprintf(stderr,"GV support not compiled into Xastir!\n");
+#else   // HAVE_GV
+
+
    char xpm_filename[MAX_FILENAME];
     char ps_filename[MAX_FILENAME];
     char mono[50] = "";
@@ -4401,6 +4406,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 
     //popup_message( langcode("PRINT0015"), langcode("PRINT0014") );
 
+#endif  // HAVE_GV
 #endif // NO_GRAPHICS
 
 }
@@ -6825,7 +6831,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             return;
         }
 #else   // HAVE_WGET
-        fprintf(stderr,"libcurl and 'wget' not installed.  Can't download image\n");
+        fprintf(stderr,"libcurl or 'wget' not installed.  Can't download image\n");
 #endif  // HAVE_WGET
 #endif  // HAVE_LIBCURL
 
@@ -7575,7 +7581,7 @@ void draw_tiger_map (Widget w) {
        return;
     }
 #else   // HAVE_WGET
-        fprintf(stderr,"libcurl and 'wget' not installed.  Can't download image\n");
+        fprintf(stderr,"libcurl or 'wget' not installed.  Can't download image\n");
 #endif  // HAVE_WGET
 #endif  // HAVE_LIBCURL
 
