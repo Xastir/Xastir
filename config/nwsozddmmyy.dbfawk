@@ -6,6 +6,7 @@
 #   color   - color to draw the road
 #   name    - name of the road for labels
 #   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
 #   pattern - line pattern for road, river, etc.
 #   display_level - highest zoom level at which to display the feature
 #   label_level - highest zoom level at which to display the label
@@ -31,7 +32,7 @@ dbffields="ID:NAME"}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
-BEGIN_RECORD {key=""; lanes=4; color=11; name=""; filled=1; pattern=1; display_level=8192; label_level=512; symbol=""}
+BEGIN_RECORD {key=""; lanes=2; fill_color=11; color=8; name=""; filled=1; pattern=0; display_level=8192; label_level=512; symbol=""}
 
 /^ID=(..)(.*)$/ {key="$1_$2"; next}
 /^NAME=(.*)$/ {name="$1"; next}
