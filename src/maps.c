@@ -4089,91 +4089,181 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
     f = fopen (file, "r");
     if (f != NULL) {
         while (!feof (f)) {     // Loop through entire file
+
             if ( get_line (f, line, MAX_FILENAME) ) {  // Snag one line of data
                 if (strlen(line) > 0) {
 
-//NOTE:  How do we handle running off the end of "line" while using "index"?
+                    //NOTE:  We handle running off the end of "line"
+                    //via the "continue" statement.  Skip the line
+                    //if we don't find enough parameters while
+                    //parsing.
 
                     // Find State feature resides in
                     i = index(line,',');    // Find ',' after state field
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     i[0] = '\0';
                     strncpy(state,line,49);
                     clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
+
                     // Find Name
                     j = index(i+1, ',');    // Find ',' after Name.  Note that there may be commas in the name.
-                    while (j[1] != '\"') {
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
+                    while ( (j != NULL) && (j[1] != '\"') ) {
                         k = j;
                         j = index(k+1, ',');
                     }
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     j[0] = '\0';
                     strncpy(name,i+1,199);
                     clean_string(name);
 
                     // Find Type
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     i[0] = '\0';
                     strncpy(type,j+1,99);
                     clean_string(type);
 
                     // Find County          // Can there be commas in the county name?
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     j[0] = '\0';
                     strncpy(county,i+1,99);
                     clean_string(county);
 
                     // Find ?
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     i[0] = '\0';
 
                     // Find ?
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     j[0] = '\0';
 
                     // Find latitude (DDMMSSN)
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     i[0] = '\0';
                     strncpy(latitude,j+1,14);
                     clean_string(latitude);
 
                     // Find longitude (DDDMMSSW)
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     j[0] = '\0';
                     strncpy(longitude,i+1,14);
                     clean_string(longitude);
 
                     // Find another latitude
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     i[0] = '\0';
 
                     // Find another longitude
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     j[0] = '\0';
 
                     // Find ?
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     i[0] = '\0';
 
                     // Find ?
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     j[0] = '\0';
 
                     // Find ?
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     i[0] = '\0';
 
                     // Find ?
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     j[0] = '\0';
 
                     // Find altitude
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     i[0] = '\0';
 
                     // Find population
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip this line
+                    }
+
                     if ( j != NULL ) {
                         j[0] = '\0';
                         strncpy(population,i+1,14);
@@ -4727,6 +4817,11 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     // Find State feature resides in
                     i = index(line,',');    // Find ',' after state
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
                     strncpy(state,line+1,49);
                     state[strlen(state)-1] = '\0';
@@ -4735,82 +4830,167 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 // of the text someday, i.e. "Cassidy, Lake".
                     // Find Name
                     j = index(i+1, ',');    // Find ',' after Name.  Note that there may be commas in the name.
-                    while (j[1] != '\"') {
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
+                    while ( (j != NULL) && (j[1] != '\"') ) {
                         k = j;
                         j = index(k+1, ',');
                     }
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     j[0] = '\0';
                     strncpy(name,i+2,199);
                     name[strlen(name)-1] = '\0';
 
                     // Find Type
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
                     strncpy(type,j+2,99);
                     type[strlen(type)-1] = '\0';
 
                     // Find County          // Can there be commas in the county name?
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     j[0] = '\0';
                     strncpy(county,i+2,99);
                     county[strlen(county)-1] = '\0';
 
                     // Find ?
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
 
                     // Find ?
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     j[0] = '\0';
 
                     // Find latitude (DDMMSSN)
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
                     strncpy(latitude,j+2,14);
                     latitude[strlen(latitude)-1] = '\0';
 
                     // Find longitude (DDDMMSSW)
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     j[0] = '\0';
                     strncpy(longitude,i+2,14);
                     longitude[strlen(longitude)-1] = '\0';
 
                     // Find another latitude
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
 
                     // Find another longitude
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     j[0] = '\0';
 
                     // Find ?
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
 
                     // Find ?
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     j[0] = '\0';
 
                     // Find ?
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
 
                     // Find ?
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     j[0] = '\0';
 
                     // Find altitude
                     i = index(j+1, ',');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
 
                     // Find population
                     j = index(i+1, ',');
+
+                    if (j == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     j[0] = '\0';
                     strncpy(population,i+2,14);
                     population[strlen(population)-1] = '\0';
  
                     // Find quad name (last field)
                     i = index(j+1, '"');
+
+                    if (i == NULL) {    // Comma not found
+                        continue;   // Skip line
+                    }
+
                     i[0] = '\0';
                     strncpy(quad,j+2,14);
                     quad[strlen(quad)] = '\0';
