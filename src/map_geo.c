@@ -1247,9 +1247,9 @@ fprintf(stderr,"2 ");
             else {  // QuantumDepth = 8
                 if (debug_level & 16)
                     fprintf(stderr,"Color quantum is [0..255]\n");
-                my_colors[l].red   = temp_pack.red   << 8;
-                my_colors[l].green = temp_pack.green << 8;
-                my_colors[l].blue  = temp_pack.blue  << 8;
+                my_colors[l].red   = (temp_pack.red << 8) * raster_map_intensity;
+                my_colors[l].green = (temp_pack.green << 8) * raster_map_intensity;
+                my_colors[l].blue  = (temp_pack.blue << 8) * raster_map_intensity;
             }
 
             // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
@@ -1534,9 +1534,9 @@ fprintf(stderr,"2 ");
                                 trans_skip = 0; // draw it
                             }
                         } else {
-                            pack_pixel_bits(pixel_pack[l].red,
-                                            pixel_pack[l].green,
-                                            pixel_pack[l].blue,
+                            pack_pixel_bits(pixel_pack[l].red * raster_map_intensity,
+                                            pixel_pack[l].green * raster_map_intensity,
+                                            pixel_pack[l].blue * raster_map_intensity,
                                             &my_colors[0].pixel);
                             if ( do_check_trans && 
                                  check_trans(my_colors[0], trans_color) ) {

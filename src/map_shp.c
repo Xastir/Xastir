@@ -424,16 +424,6 @@ int shape_ring_direction ( SHPObject *psObject, int Ring ) {
 
 
 
-//WE7U: Temporary.  For OGR debugging.
-//
-//#ifdef HAVE_LIBGDAL
-//extern void draw_ogr_map(Widget w, char *dir, char *filenm, alert_entry *alert, u_char alert_color, int destination_pixmap, int draw_filled);
-//#endif  // HAVE_LIBGDAL
-
-
-
-
- 
 /**********************************************************
  * draw_shapefile_map()
  *
@@ -687,17 +677,6 @@ void draw_shapefile_map (Widget w,
     label_string *label_ptr = NULL;
     label_string *ptr2 = NULL;
 
-
-
-//#ifdef HAVE_LIBGDAL
-//    draw_ogr_map (w,
-//        dir,
-//        filenm,
-//        alert,
-//        alert_color,
-//        destination_pixmap,
-//        draw_filled);
-//#endif  // HAVE_LIBGDAL
 
 
 #ifdef WITH_DBFAWK
@@ -2676,6 +2655,8 @@ void draw_shapefile_map (Widget w,
 // rings.  We now know which rings are fills and which are holes and
 // have recorded the data.
 
+// Speedup:  Only loop through the vertices once, by determining
+// hole/fill polygons as we go.
 
 
 //WE7U3
