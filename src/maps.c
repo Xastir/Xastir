@@ -3921,6 +3921,38 @@ void Snapshot(void) {
 
 
 
+// Function to remove double-quote characters and spaces that occur
+// outside of the double-quote characters.
+void clean_string(char *input) {
+    char *i;
+    char *j;
+
+
+    //printf("|%s|\t",input);
+
+    // Remove any double quote characters
+    i = index(input,'"');   // Find first quote character, if any
+
+    if (i != NULL) {
+        j = index(i+1,'"'); // Find second quote character, if any
+
+        if (j != NULL) {    // Found two quote characters
+            j[0] = '\0';    // Terminate the string at the 2nd quote
+            strcpy(input,i+1);
+        }
+        else {  // We only found one quote character.  What to do?
+            printf("clean_string: Only one quote found!\n");
+        }
+    }
+    //printf("|%s|\n",input);
+
+    // Remove leading/trailing spaces?
+}
+
+
+
+
+
 //NOTE:  This function has a problem if a non-gnis file is labeled
 //with a ".gnis" extension.  It causes a segfault in Xastir.  More
 //error checking needs to be done in order to prevent this.
@@ -3936,6 +3968,10 @@ void Snapshot(void) {
 // A typical filename would be: "WA.deci.gz".   Do not get the other
 // types of files which are columnar.  The files that we parse are
 // comma-delimited and have quotes around each field.
+
+// Some of the files have quotes around some fields, but not others,
+// and some have an extreme amount of spaces at the end of each
+// line.  Some also have spaces, after a field but before a comma.
 //
 void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
 {
@@ -4010,10 +4046,10 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
 //NOTE:  How do we handle running off the end of "line" while using "index"?
 
                     // Find State feature resides in
-                    i = index(line,',');    // Find ',' after state
+                    i = index(line,',');    // Find ',' after state field
                     i[0] = '\0';
-                    strncpy(state,line+1,49);
-                    state[strlen(state)-1] = '\0';
+                    strncpy(state,line,49);
+                    clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
@@ -4024,20 +4060,20 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
                         j = index(k+1, ',');
                     }
                     j[0] = '\0';
-                    strncpy(name,i+2,199);
-                    name[strlen(name)-1] = '\0';
+                    strncpy(name,i+1,199);
+                    clean_string(name);
 
                     // Find Type
                     i = index(j+1, ',');
                     i[0] = '\0';
-                    strncpy(type,j+2,99);
-                    type[strlen(type)-1] = '\0';
+                    strncpy(type,j+1,99);
+                    clean_string(type);
 
                     // Find County          // Can there be commas in the county name?
                     j = index(i+1, ',');
                     j[0] = '\0';
-                    strncpy(county,i+2,99);
-                    county[strlen(county)-1] = '\0';
+                    strncpy(county,i+1,99);
+                    clean_string(county);
 
                     // Find ?
                     i = index(j+1, ',');
@@ -4050,14 +4086,14 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
                     // Find latitude (DDMMSSN)
                     i = index(j+1, ',');
                     i[0] = '\0';
-                    strncpy(latitude,j+2,14);
-                    latitude[strlen(latitude)-1] = '\0';
+                    strncpy(latitude,j+1,14);
+                    clean_string(latitude);
 
                     // Find longitude (DDDMMSSW)
                     j = index(i+1, ',');
                     j[0] = '\0';
-                    strncpy(longitude,i+2,14);
-                    longitude[strlen(longitude)-1] = '\0';
+                    strncpy(longitude,i+1,14);
+                    clean_string(longitude);
 
                     // Find another latitude
                     i = index(j+1, ',');
@@ -4091,11 +4127,11 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
                     j = index(i+1, ',');
                     if ( j != NULL ) {
                         j[0] = '\0';
-                        strncpy(population,i+2,14);
+                        strncpy(population,i+1,14);
                     } else {
                         strncpy(population,"0",14);
                     } 
-                    population[strlen(population)-1] = '\0';
+                    clean_string(population);
  
                     lat_dd[0] = latitude[0];
                     lat_dd[1] = latitude[1];
