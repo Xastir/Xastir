@@ -3282,6 +3282,7 @@ void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
+
     // Snag the current pointer position
     input_x = event->x;
     input_y = event->y;
@@ -3295,17 +3296,24 @@ void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
         return;
     }
 
-    if (event->button != Button3)
+    if (event->button != Button3) {
+        //printf("Pressed a mouse button, but not Button3: %x\n",event->button);
         return;
+    }
 
     // Right mouse button press
     menu_x=input_x;
     menu_y=input_y;
-    if (right_menu_popup != NULL) {
+    if (right_menu_popup != NULL) { // If popup menu defined
+
         // Bring up the popup menu
-        if (right_menu_popup!=NULL) {
-            XmMenuPosition(right_menu_popup,(XButtonPressedEvent *)event);
-            XtManageChild(right_menu_popup);
+        XmMenuPosition(right_menu_popup,(XButtonPressedEvent *)event);
+        XtManageChild(right_menu_popup);
+
+        // Check whether any modifiers are pressed.
+        // If so, pop up a warning message.
+        if (event->state != 0) {
+            popup_message(langcode("POPUPMA023"),langcode("POPUPMA024"));
         }
     }
 }
@@ -7655,6 +7663,11 @@ void Speed_enable_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer
 
     redraw_on_new_data = 2;     // Immediate screen update
 }
+
+
+
+
+
 void Speed_short_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;

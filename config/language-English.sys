@@ -207,6 +207,8 @@ POPUPMA014|Pan right|r|
 POPUPMA020|Measure||
 POPUPMA021|Move||
 POPUPMA022|TrackMe||
+POPUPMA023|Modifiers Found!||
+POPUPMA024|Please turn OFF CapsLock/NumLock/ScrollLock/other modifiers||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

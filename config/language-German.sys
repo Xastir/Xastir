@@ -213,6 +213,8 @@ POPUPMA014|nach rechts||
 POPUPMA020|Messen||
 POPUPMA021|Bewegen||
 POPUPMA022|TrackMe||
+POPUPMA023|Modifiers Found!||
+POPUPMA024|Please turn OFF CapsLock/NumLock/ScrollLock/other modifiers||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||

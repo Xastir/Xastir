@@ -208,6 +208,8 @@ POPUPMA014|Sposta a destra||
 POPUPMA020|Misurazione distanze|D|
 POPUPMA021|Muovi||
 POPUPMA022|TrackMe||
+POPUPMA023|Modifiers Found!||
+POPUPMA024|Please turn OFF CapsLock/NumLock/ScrollLock/other modifiers||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||

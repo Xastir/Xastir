@@ -206,6 +206,8 @@ POPUPMA014|Ir para a direita|r|
 POPUPMA020|Medida||
 POPUPMA021|Movimento||
 POPUPMA022|TrackMe||
+POPUPMA023|Modifiers Found!||
+POPUPMA024|Please turn OFF CapsLock/NumLock/ScrollLock/other modifiers||
 #
 # Menú dos estados das linhas de etiquetas
 BBARZM0001|Foco %s||
