@@ -28,6 +28,8 @@ make
 
 %install
 rm -rf $RPM_BUILD_ROOT
+gzip -9nf xastir.1
+mv xastir.1.gz $RPM_BUILD_ROOT/usr/man/man1
 make DESTDIR=$RPM_BUILD_ROOT install
 
 %clean
@@ -73,6 +75,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/xastir/maps/z_overlay/placeholder
 /usr/local/xastir/sounds/placeholder
 /usr/local/xastir/symbols/symbols.dat
+/usr/man/man1/xastir.1.gz
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL
 %doc LICENSE NEWS README README.1ST TODO UPDATES
 
