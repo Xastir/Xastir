@@ -8445,10 +8445,11 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
     } prl;
 
     // Two placeholder bytes where were added in version 3.  We
-    // effectively skip these with fseek() below.
-//    struct {
-//        short placeholder;
-//    } pdb_ph;
+    // skip these below automatically using the fseek calls and the
+    // record offsets.
+    //struct {
+    //    short placeholder;
+    //} pdb_ph;
 
     struct {
         long left_bounds;
@@ -8531,9 +8532,14 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                 (unsigned int)ntohl(prl.record_data_offset));
         }
 
+        // Save the current pointer into the file
         record_ptr = ftell(fn);
-        fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
+        // record_ptr should now be point to the next record list in
+        // the sequence (if there is another one).
 
+        // Point to the map file header corresponding to the record
+        // list we just read in & snag it.
+        fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
         fread(&pmf_hdr, sizeof(pmf_hdr), 1, fn);
 
         scale = ntohs(pmf_hdr.granularity);
@@ -8570,8 +8576,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
             /* read vectors */
             for (record_count = 2; record_count <= records; record_count++) {
 
+                // Point to the next record list header & snag it
                 fseek(fn, record_ptr, SEEK_SET);
-
                 fread(&prl, sizeof(prl), 1, fn);
 
                 if (debug_level & 512) {
@@ -8580,9 +8586,11 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                         (unsigned int)ntohl(prl.record_data_offset));
                 }
 
+                // Save a pointer to the next record list header
                 record_ptr = ftell(fn);
-                fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
 
+                // Point to the next map file header & snag it
+                fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
                 fread(&record_hdr, sizeof(record_hdr), 1, fn);
 
                 if (debug_level & 512) {
