@@ -27,6 +27,10 @@
 #ifndef _XASTIR_H
 #define _XASTIR_H
 
+
+//#define SERIAL_KISS_RELAY_DIGI
+
+
 #include <X11/Intrinsic.h>
 
 //#include "db.h"

@@ -11739,11 +11739,12 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     }
 
     if (devices[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+
+#ifdef SERIAL_KISS_RELAY_DIGI
 //        fprintf(stderr,"KISS RELAY short_path: %s\n", short_path);
 //        fprintf(stderr,"KISS RELAY   new_path: %s\n", new_path);
-
-//WE7U
-//        send_ax25_frame(port, call, destination, new_path, info);
+        send_ax25_frame(port, call, destination, new_path, info);
+#endif
 
     }
     else if (devices[port].device_type == DEVICE_AX25_TNC) {

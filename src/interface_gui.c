@@ -293,11 +293,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
     if(XmToggleButtonGetState(TNC_transmit_data)) {
         devices[TNC_port].transmit_data=1;
-        if (devices[TNC_port].device_type == DEVICE_SERIAL_KISS_TNC)
+        if (devices[TNC_port].device_type == DEVICE_SERIAL_KISS_TNC) {
 
-// Use the TRUE option later once we get relay digipeating working
-//            XtSetSensitive(TNC_relay_digipeat, TRUE);
-XtSetSensitive(TNC_relay_digipeat, FALSE);
+#ifdef SERIAL_KISS_RELAY_DIGI
+            XtSetSensitive(TNC_relay_digipeat, TRUE);
+#else
+            XtSetSensitive(TNC_relay_digipeat, FALSE);
+#endif  // SERIAL_KISS_RELAY_DIGI
+
+        }
 
     }
     else {
@@ -536,8 +540,11 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-// Remove this line once relay digipeating is functional
-XtSetSensitive(TNC_relay_digipeat, FALSE);
+#ifdef SERIAL_KISS_RELAY_DIGI
+                XtSetSensitive(TNC_relay_digipeat, TRUE);
+#else
+                XtSetSensitive(TNC_relay_digipeat, FALSE);
+#endif  // SERIAL_KISS_RELAY_DIGIPEAT
 
                 break;
  
@@ -1254,9 +1261,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                         XmToggleButtonSetState(TNC_fullduplex, FALSE, FALSE);
 
                     if (devices[TNC_port].transmit_data) {
-// Use the TRUE option later once we have relay digipeating working
-//                        XtSetSensitive(TNC_relay_digipeat, TRUE);
-XtSetSensitive(TNC_relay_digipeat, FALSE);
+
+#ifdef SERIAL_KISS_RELAY_DIGI
+                        XtSetSensitive(TNC_relay_digipeat, TRUE);
+#else
+                        XtSetSensitive(TNC_relay_digipeat, FALSE);
+#endif  // SERIAL_KISS_RELAY_DIGI
 
                     }
                     else
