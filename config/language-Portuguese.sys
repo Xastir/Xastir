@@ -698,7 +698,7 @@ WPUPSTI040|%0.2f (plg/dia)  ||
 WPUPSTI041|%0.2f (mm/desde a meia noite)||
 WPUPSTI042|%0.2f (mm/desde a meia noite)||
 WPUPSTI043|Rota de dados: %s||
-WPUPSTI044|Comentários: %s||
+WPUPSTI044|Comentários %02d/%02d %02d:%02d : %s||
 WPUPSTI045|Limpar rastro||
 WPUPSTI046|Total de chuva: ||
 WPUPSTI047|%0.2f (mm)||
@@ -713,7 +713,7 @@ WPUPSTI055|Repetido desde:||
 WPUPSTI056|Activar actualização automática||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF dirigido:||
-WPUPSTI059|Estados: %s||
+WPUPSTI059|Estados %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Temp do combustível: %02.1f°C  ||
 WPUPSTI061|Temp do combustível: %s°F   ||
 WPUPSTI062|Mistura do combustível: %s%%   ||

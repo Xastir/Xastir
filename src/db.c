@@ -3676,10 +3676,24 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         while (ptr != NULL) {
             // We don't care if the pointer is NULL.  This will
             // succeed anyway.  It'll just make an empty string.
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI059"),ptr->text_ptr);
+
+            //Also print the sec_heard timestamp.
+            sec = ptr->sec_heard;
+            time = localtime(&sec);
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                langcode("WPUPSTI059"),
+                time->tm_mon + 1,
+                time->tm_mday,
+                time->tm_hour,
+                time->tm_min,
+                ptr->text_ptr);
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
+
             xastir_snprintf(temp, sizeof(temp), "\n");
+
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
             ptr = ptr->next;    // Advance to next record (if any)
@@ -3706,10 +3720,24 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         while (ptr != NULL) {
             // We don't care if the pointer is NULL.  This will
             // succeed anyway.  It'll just make an empty string.
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI044"),ptr->text_ptr);
+
+            //Also print the sec_heard timestamp.
+            sec = ptr->sec_heard;
+            time = localtime(&sec);
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                langcode("WPUPSTI044"),
+                time->tm_mon + 1,
+                time->tm_mday,
+                time->tm_hour,
+                time->tm_min,
+                ptr->text_ptr);
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
+
             xastir_snprintf(temp, sizeof(temp), "\n");
+
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
             ptr = ptr->next;    // Advance to next record (if any)
@@ -9293,6 +9321,7 @@ void add_status(DataRow *p_station, char *status_string) {
     int add_it = 0;
     int len;
 
+
     len = strlen(status_string);
 
     // Eliminate line-end chars
@@ -9342,6 +9371,14 @@ void add_status(DataRow *p_station, char *status_string) {
                     // Found a matching string
                     //fprintf(stderr,"Found match:
                     //%s:%s\n",p_station->call_sign,status_string);
+
+                    // Update the timestamp 'cuz we just heard that
+                    // status string again.
+                    ptr->sec_heard = sec_now();
+
+//WE7U2:  We should probably move it up to the top of the list in
+//order to keep the times in order...
+
                     return; // No need to add the new string
                 }
                 ptr = ptr->next;
@@ -9396,6 +9433,9 @@ void add_status(DataRow *p_station, char *status_string) {
             // Fill in the string
             strncpy(p_station->status_data->text_ptr,status_string,len+1);
 
+            // Fill in the timestamp
+            p_station->status_data->sec_heard = sec_now();
+
             //fprintf(stderr,"Station:%s\tStatus:%s\n\n",p_station->call_sign,p_station->status_data->text_ptr);
         }
     }
@@ -9411,6 +9451,7 @@ void add_comment(DataRow *p_station, char *comment_string) {
     CommentRow *ptr;
     int add_it = 0;
     int len;
+
 
     len = strlen(comment_string);
 
@@ -9449,6 +9490,14 @@ void add_comment(DataRow *p_station, char *comment_string) {
                 if (strcmp(ptr->text_ptr, comment_string) == 0) {
                     // Found a matching string
                     //fprintf(stderr,"Found match: %s:%s\n",p_station->call_sign,comment_string);
+
+                    // Update the timestamp 'cuz we just heard that
+                    // comment string again.
+                    ptr->sec_heard = sec_now();
+
+//WE7U2:  We should probably move it up to the top of the list in
+//order to keep the times in order...
+
                     return; // No need to add the new string
                 }
                 ptr = ptr->next;
@@ -9499,6 +9548,9 @@ void add_comment(DataRow *p_station, char *comment_string) {
 
             // Fill in the string
             strncpy(p_station->comment_data->text_ptr,comment_string,len+1);
+
+            // Fill in the timestamp
+            p_station->comment_data->sec_heard = sec_now();
         }
     }
 }

@@ -701,7 +701,7 @@ WPUPSTI040|%0.2f Inch/Tag  ||
 WPUPSTI041|%0.2f mm/seit 0:00||
 WPUPSTI042|%0.2f Inch/seit 0:00||
 WPUPSTI043|Datenpfad: %s||
-WPUPSTI044|Kommentar: %s||
+WPUPSTI044|Kommentar %02d/%02d %02d:%02d : %s||
 WPUPSTI045|Lösche Spur||
 WPUPSTI046|Regen gesamt: ||
 WPUPSTI047|%0.2f mm||
@@ -716,7 +716,7 @@ WPUPSTI055|Echo gehört von:||
 WPUPSTI056|Automatische Aktualisierung||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|Peil-Richtung:||
-WPUPSTI059|Status: %s||
+WPUPSTI059|Status %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Brennstofftemp.: %02.1f°C  ||
 WPUPSTI061|Brennstofftemp.: %s°F   ||
 WPUPSTI062|Brennstofffeuchte: %s%%   ||

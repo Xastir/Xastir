@@ -706,7 +706,7 @@ WPUPSTI040|%0.2f (inch/dag)  ||
 WPUPSTI041|%0.2f (mm/sinds middernacht)||
 WPUPSTI042|%0.2f (inch/sinds middernacht)||
 WPUPSTI043|Data pad: %s||
-WPUPSTI044|Commentaar: %s||
+WPUPSTI044|Commentaar %02d/%02d %02d:%02d : %s||
 WPUPSTI045|Wis Spoor||
 WPUPSTI046|Totaal Regen: ||
 WPUPSTI047|%0.2f (mm)||
@@ -721,7 +721,7 @@ WPUPSTI055|Echo vanaf:||
 WPUPSTI056|Zet Automatisch Bijwerken Aan||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF Richting:||
-WPUPSTI059|Status: %s||
+WPUPSTI059|Status %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Ontbrandings Temp: %02.1føC  ||
 WPUPSTI061|Ontbrandings Temp: %søF   ||
 WPUPSTI062|Vochtigheids Gehalte in Brandstof: %s%%   ||

@@ -698,7 +698,7 @@ WPUPSTI040|%0.2f (plg/día)  ||
 WPUPSTI041|%0.2f (mm/desde medianoche)||
 WPUPSTI042|%0.2f (mm/desde medianoche)||
 WPUPSTI043|Ruta de Datos: %s||
-WPUPSTI044|Comentarios: %s||
+WPUPSTI044|Comentarios %02d/%02d %02d:%02d : %s||
 WPUPSTI045|Limpiar Rastro||
 WPUPSTI046|Total lluvia: ||
 WPUPSTI047|%0.2f (mm)||
@@ -713,7 +713,7 @@ WPUPSTI055|Repetido desde:||
 WPUPSTI056|Activar Actualizaciones Automática||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|Orientando DF:||
-WPUPSTI059|Estados: %s||
+WPUPSTI059|Estados %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Incendio Temp: %02.1f°C  ||
 WPUPSTI061|Incendio Temp: %s°F   ||
 WPUPSTI062|Humedad de Incendio: %s%%  ||

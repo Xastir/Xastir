@@ -695,7 +695,7 @@ WPUPSTI040|%0.2f (inch/day)  ||
 WPUPSTI041|%0.2f (mm/since midnight)||
 WPUPSTI042|%0.2f (inch/since midnight)||
 WPUPSTI043|Data path: %s||
-WPUPSTI044|Comments: %s||
+WPUPSTI044|Comment %02d/%02d %02d:%02d : %s||
 WPUPSTI045|Clear Track||
 WPUPSTI046|Total Rain: ||
 WPUPSTI047|%0.2f (mm)||
@@ -710,7 +710,7 @@ WPUPSTI055|Echoed from:||
 WPUPSTI056|Enable Automatic Updates||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF Bearing:||
-WPUPSTI059|Status: %s||
+WPUPSTI059|Status  %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Fuel Temp: %02.1f°C  ||
 WPUPSTI061|Fuel Temp: %s°F   ||
 WPUPSTI062|Fuel Moisture: %s%%   ||

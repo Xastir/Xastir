@@ -695,7 +695,7 @@ WPUPSTI040|%0.2f (pollici/Giorno)  ||
 WPUPSTI041|%0.2f (mm/da mezzanotte)||
 WPUPSTI042|%0.2f (pollici/da mezzanotte)||
 WPUPSTI043|Percorso dei dati: %s||
-WPUPSTI044|Commenti: %s||
+WPUPSTI044|Commenti %02d/%02d %02d:%02d : %s||
 WPUPSTI045|Elimina traccia||
 WPUPSTI046|Pioggia totale: ||
 WPUPSTI047|%0.2f (mm)||
@@ -710,7 +710,7 @@ WPUPSTI055|Ripetuto da:||
 WPUPSTI056|Abilita Aggiornamento Automatico||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|Puntamento DF:||
-WPUPSTI059|Stato: %s||
+WPUPSTI059|Stato %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Temp Carburante: %02.1f°C  ||
 WPUPSTI061|Temp Carburante: %s°F   ||
 WPUPSTI062|Umidità Carburante: %s%%   ||

@@ -179,6 +179,7 @@ pipe_object *pipe_head = NULL;
 
 
 
+/*
 // Read "n" bytes from a descriptor.  Use in place of read() when fd
 // is a stream socket.  This routine is from "Unix Network
 // Programming".
@@ -203,13 +204,14 @@ int readn(register int fd, register char *ptr, register int nbytes) {
     }
     return(nbytes - nleft); // Return >= 0
 }
+*/
 
 
 
 
 
 // Write "n" bytes to a descriptor.  Use in place of write() when fd
-// is a stream socket.  This routine is from rom "Unix Network
+// is a stream socket.  This routine is from "Unix Network
 // Programming".
 //
 int writen(register int fd, register char *ptr, register int nbytes) {

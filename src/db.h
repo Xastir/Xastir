@@ -301,8 +301,9 @@ typedef struct _TrackRow{
 // allocated list of text.  Every different comment field will be
 // stored in a separate line.
 typedef struct _CommentRow{
-    char   *text_ptr;               // Ptr to the comment text
-    struct _CommentRow *next;       // Ptr to next record or NULL
+    char   *text_ptr;           // Ptr to the comment text
+    time_t sec_heard;           // Latest timestamp for this comment/status
+    struct _CommentRow *next;   // Ptr to next record or NULL
 } CommentRow;
 
 

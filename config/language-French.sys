@@ -694,7 +694,7 @@ WPUPSTI040|%0.2f (pouces/jour)  ||
 WPUPSTI041|%0.2f (mm/depuis minuit)||
 WPUPSTI042|%0.2f (pouces/depuis minuit)||
 WPUPSTI043|Route des donnés: %s||
-WPUPSTI044|Commentaire: %s||
+WPUPSTI044|Commentaire %02d/%02d %02d:%02d : %s||
 WPUPSTI045|Effacer la piste||
 WPUPSTI046|Pluie Totale: ||
 WPUPSTI047|%0.2f (mm)||
@@ -709,7 +709,7 @@ WPUPSTI055|Echo de:||
 WPUPSTI056|Activer actualisation automatique||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|Relèvement DF:||
-WPUPSTI059|Etat: %s||
+WPUPSTI059|Etat %02d/%02d %02d:%02d : %s||
 WPUPSTI060|Temp combustible: %02.1f°C  ||
 WPUPSTI061|Temp combustible: %s°F   ||
 WPUPSTI062|Humidité combustible: %s%%   ||
