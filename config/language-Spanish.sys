@@ -1021,8 +1021,8 @@ GPS011|Violeta||
 #
 # Diálogo de Propiedades de Mapa
 MAPP001|Propiedades de Mapa||
-MAPP002| Max   Min    Dibuja   Mapa||
-MAPP003| Zoom  Zoom  Capa   Llenado  AutoMapa   Sendero/NombreArchivo||
+MAPP002|Max   Min  Dibuja   Mapa  Auto||
+MAPP003|Zoom  Zoom  Capa  Llenado Mapa Sendero/NombreArchivo||
 MAPP004|Cambie Capa->||
 MAPP005|Llenado->||
 MAPP006|Sí||

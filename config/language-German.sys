@@ -1030,8 +1030,8 @@ GPS011|Violett||
 #
 # Karten-Eigenschaften Dialog
 MAPP001|Karten-Eigenschaften||
-MAPP002| Max   Min    Karten gefüllt  automat.||
-MAPP003| Zoom  Zoom  Ebene  zeichnen  Karte     Pfad/Dateiname||
+MAPP002|Max   Min   Karten gefüllt automat.||
+MAPP003|Zoom  Zoom  Ebene  zeichnen Karte Pfad/Dateiname||
 MAPP004|Ebene ändern->||
 MAPP005|gefüllt->||
 MAPP006|Ja ||

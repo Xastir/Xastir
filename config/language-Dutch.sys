@@ -1034,8 +1034,8 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Kaart eigenschappen||
-MAPP002| Max   Min   Kaart    Teken||
-MAPP003| Zoom  Zoom  Laag    Vulling  AutoKaart Path/Bestandsnaam||
+MAPP002|Max   Min   Kaart  Teken Auto||
+MAPP003|Zoom  Zoom  Laag Vulling Kaart Path/Bestandsnaam||
 MAPP004|Verander Laag->||
 MAPP005|Vulling->||
 MAPP006|Ja||

@@ -12379,7 +12379,7 @@ void map_properties_fill_in (void) {
 
                 xastir_snprintf(temp,
                     sizeof(temp),
-                    "%s %s %s %s %s %s",
+                    "%s %s %s %s %s  %s",
                     temp_max_zoom,
                     temp_min_zoom,
                     temp_layer,

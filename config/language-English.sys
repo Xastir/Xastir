@@ -1031,7 +1031,7 @@ GPS011|Violet||
 # Map Properties Dialog
 MAPP001|Map Properties||
 MAPP002|Max   Min    Map         Auto||
-MAPP003|Zoom  Zoom  Layer  Fill  Map  Path/Filename||
+MAPP003|Zoom  Zoom  Layer  Fill  Map   Path/Filename||
 MAPP004|Change Layer->||
 MAPP005|Filled->||
 MAPP006|Yes||
