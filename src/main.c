@@ -788,6 +788,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     long northing = 0;
     double latitude;
     double longitude;
+    char temp_string[1024];
 
 
     // Goal is to suck in the format provided, figure out what
@@ -840,7 +841,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // valid zone.
     str_ptr = XmTextGetString(coordinate_calc_zone);
     i = strlen(str_ptr);
-    have_utm = 1;
+    have_utm = 1;   // Wishful thinking.  We'll zero it if not.
     if ( (i == 2) || (i == 3) ) {   // String is the correct length: Has
                                     // to be either 2 or 3 chars total.
         int j;
@@ -876,7 +877,7 @@ printf("Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
     else {
 printf("Bad zone, not a UTM coordinate\n");
         // Skip zone widget for lat/lon, it's not used.
-        have_lat_lon = 1;
+        have_lat_lon = 1;   // Wishful thinking.  We'll zero it if not.
     }
     // We're done with that variable.  Free the space.
     XtFree(str_ptr);
@@ -918,6 +919,7 @@ printf("Bad Easting value\n");
     }
     else if (have_lat_lon) {
 // Process the string to see if it's a latitude value
+        have_lat_lon = 0;   // Code not implemented yet.
     }
     // We're done with that variable.  Free the space.
     XtFree(str_ptr); 
@@ -954,6 +956,7 @@ printf("Bad Northing value\n");
     }
     else if (have_lat_lon) {
 // Process the string to see if it's a longitude value
+        have_lat_lon = 0;   // Code not implemented yet.
     }
     // We're done with that variable.  Free the space.
     XtFree(str_ptr);
@@ -977,6 +980,17 @@ printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
     }
     else if (have_lat_lon) {
 // Process lat/lon values
+        // Code not implemented yet.
+    }
+    else {  // Dump out some helpful text
+        xastir_snprintf(temp_string,
+            sizeof(temp_string),
+            "%s\n%s\n%s\n%s",
+            "Use one of these formats:  48.00000N   122.00000W",
+            "                           48 00.000N  122 00.000W",
+            "                           48 00 00N   122 00 00W",
+            "                           10T  0574598  5316888");
+        XmTextSetString(coordinate_calc_result_text, temp_string);
     }
 }
 
