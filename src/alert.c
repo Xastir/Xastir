@@ -871,7 +871,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
     if (strlen(alert->title) == 0) {
         if (debug_level & 2)
             fprintf(stderr,"alert_active:NULL\n");
-        return(NULL);
+        return(0);
     }
  
     if (debug_level & 2)
