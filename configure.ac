@@ -231,7 +231,7 @@ AC_ARG_WITH(libproj,[  --without-libproj       Disable libproj features.],use_pr
 if test "${use_proj}" = "yes"; then
   use_proj=no
   AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
-    AC_DEFINE(HAVE_LIBPROJ, , Define to 1 if you have the `libproj' library (-lproj). )
+    AC_DEFINE(HAVE_PROJ, , Define to 1 if you have the `libproj' library (-lproj). )
   )
 fi
 
