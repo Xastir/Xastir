@@ -290,10 +290,14 @@ static void zero_bulletin_processing(Message *fill) {
                 // in time here.
                 if (first_new_bulletin_time > (fill->sec_heard) )
                     first_new_bulletin_time = fill->sec_heard;
- 
-                // Set the flag that gets the whole ball rolling
-                new_bulletin_flag = 1;
+
+                // Check whether we really wish to pop them up
+                if (pop_up_new_bulletins
+                        && view_zero_distance_bulletins) { 
+                    // Set the flag that gets the whole ball rolling
+                    new_bulletin_flag = 1;
 //fprintf(stderr,"Filled in distance, setting new_bulletin_flag\n");
+                }
             }
         }
         else {

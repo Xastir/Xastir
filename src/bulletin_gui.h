@@ -34,7 +34,6 @@ extern void bulletin_message(char from, char *call_sign, char *tag, char *packet
 // From bulletin_gui.c
 extern void prep_for_popup_bulletins();
 extern void check_for_new_bulletins();
-extern void popup_bulletins(void);
 extern void bulletin_gui_init(void);
 
 #endif  // __XASTIR_BULLETIN_GUI_H
