@@ -163,6 +163,7 @@ extern Selections Select_;
 
 typedef struct _what_to_display {
     int callsign;
+    int label_all_trackpoints;
     int symbol;
     int symbol_rotate;
     int trail;

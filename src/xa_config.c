@@ -505,6 +505,7 @@ void save_data(void)  {
 
         // display values
         store_int (fout, "DISPLAY_CALLSIGN",              Display_.callsign);
+        store_int (fout, "DISPLAY_LABEL_ALL_TRACKPOINTS", Display_.label_all_trackpoints);
         store_int (fout, "DISPLAY_SYMBOL",                Display_.symbol);
         store_int (fout, "DISPLAY_SYMBOL_ROTATE",         Display_.symbol_rotate);
         store_int (fout, "DISPLAY_STATION_PHG",           Display_.phg);
@@ -1098,7 +1099,8 @@ void load_data_or_default(void) {
     // display values
     if (!get_int ("DISPLAY_CALLSIGN", &Display_.callsign, 0, 1, 1))
         Display_.callsign = 1;
-
+    if (!get_int ("DISPLAY_LABEL_ALL_TRACKPOINTS", &Display_.label_all_trackpoints, 0, 1, 0))
+        Display_.label_all_trackpoints = 0;
     if (!get_int ("DISPLAY_SYMBOL",        &Display_.symbol, 0, 1, 1))
         Display_.symbol = 1;
     if (!get_int ("DISPLAY_SYMBOL_ROTATE", &Display_.symbol_rotate, 0, 1, 1))

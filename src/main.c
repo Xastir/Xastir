@@ -407,6 +407,7 @@ Selections Select_ = { 0, // none
 };
 
 What_to_display Display_ = { 1, // callsign
+                             1, // label_all_trackpoints
                              1, // symbol
                              1, // symbol_rotate
                              1, // trail
@@ -456,6 +457,7 @@ Widget select_other_objects_button;
 
 
 Widget display_callsign_button;
+Widget display_label_all_trackpoints_button;
 Widget display_symbol_button;
 Widget display_symbol_rotate_button;
 Widget display_trail_button;
@@ -505,6 +507,7 @@ static void Select_gauge_objects_toggle(Widget w, XtPointer clientData, XtPointe
 
 
 static void Display_callsign_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Display_label_all_trackpoints_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_symbol_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_symbol_rotate_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_trail_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -6095,6 +6098,19 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if (no_data_selected())
         XtSetSensitive(display_callsign_button, FALSE);
 
+    display_label_all_trackpoints_button = XtVaCreateManagedWidget(langcode("PULDNDP052"),
+            xmToggleButtonGadgetClass,
+            filter_display_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(display_label_all_trackpoints_button, XmNvalueChangedCallback, Display_label_all_trackpoints_toggle, "1");
+    if (Display_.label_all_trackpoints)
+        XmToggleButtonSetState(display_label_all_trackpoints_button, TRUE, FALSE);
+    if (!Display_.callsign || no_data_selected())
+        XtSetSensitive(display_label_all_trackpoints_button, FALSE);
 
     display_symbol_button = XtVaCreateManagedWidget(langcode("PULDNDP012"),
             xmToggleButtonGadgetClass,
@@ -13397,17 +13413,32 @@ void set_sensitive_select_types(int sensitive)
     }
 }
 
+
+
+
+
 void set_sensitive_display(int sensitive)
 {
     XtSetSensitive(display_callsign_button,      sensitive);
+
+    if (!Display_.callsign) {
+        XtSetSensitive(display_label_all_trackpoints_button, FALSE);
+    }
+    else {
+        XtSetSensitive(display_label_all_trackpoints_button, sensitive);
+    }
+ 
     XtSetSensitive(display_symbol_button,        sensitive);
+
     if (!Display_.symbol) {
         XtSetSensitive(display_symbol_rotate_button, FALSE);
     }
     else {
         XtSetSensitive(display_symbol_rotate_button, sensitive);
     }
+
     XtSetSensitive(display_phg_button,           sensitive);
+
     if (!Display_.phg) {
         XtSetSensitive(display_default_phg_button,   FALSE);
         XtSetSensitive(display_phg_of_moving_button, FALSE);
@@ -13458,6 +13489,10 @@ void set_sensitive_display(int sensitive)
         XtSetSensitive(display_dr_symbol_button, sensitive);
     }
 }
+
+
+
+
 
 void Select_none_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
@@ -13817,10 +13852,30 @@ void Display_callsign_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoi
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    if (state->set)
+    if (state->set) {
         Display_.callsign = atoi(which);
-    else
+        XtSetSensitive(display_label_all_trackpoints_button, TRUE);
+    }
+    else {
         Display_.callsign = 0;
+        XtSetSensitive(display_label_all_trackpoints_button, FALSE);
+    }
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Display_label_all_trackpoints_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set)
+        Display_.label_all_trackpoints = atoi(which);
+    else
+        Display_.label_all_trackpoints = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }

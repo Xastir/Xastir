@@ -6366,8 +6366,17 @@ int delete_trail(DataRow *fill) {
 }
 
 
+
+
+
 /*
- *  Draw trail on screen
+ *  Draw trail on screen.  If solid=1, draw type LineSolid, else
+ *  draw type LineOnOffDash.
+ *
+ *  If label_all_trackpoints=1, add the callsign next to each
+ *  trackpoint.  We may modify this and just add the callsign at the
+ *  start/end of each new track segment.
+ *
  */
 void draw_trail(Widget w, DataRow *fill, int solid) {
     char short_dashed[2]  = {(char)1,(char)5};
@@ -6459,6 +6468,24 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                         // draw position point itself
                         (void)XSetForeground(XtDisplay(w),gc,col_dot);
                         (void)XDrawPoint(XtDisplay(w),pixmap_final,gc,lon0,lat0);
+
+                        // Draw the callsign to go with the point if
+                        // label_all_trackpoints=1.
+                        //
+                        if (Display_.callsign && Display_.label_all_trackpoints) {
+                            if (lat0 != lat1 && lon0 != lon1) {
+                                draw_nice_string(da,
+                                    pixmap_final,
+                                    letter_style,
+                                    lon1+10,
+                                    lat1,
+                                    fill->call_sign,
+                                    0x08,
+                                    0x0f,
+                                    strlen(fill->call_sign));
+                            }
+                        }
+
                     }
 /*                  (void)XDrawLine(XtDisplay(w), pixmap_final, gc,         // draw trail segment
                         (lon0-x_long_offset)/scale_x,(lat0-y_lat_offset)/scale_y,
