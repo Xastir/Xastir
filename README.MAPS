@@ -1041,6 +1041,92 @@ MAP CACHING (WORKS WITH ONLINE TIGERMAPS):
     This is currently (Dec 2004) controlled with a compile time maximum
     age setting.  See map_cache.h for specifics and for brief
     documentation about all of the map_cache functions. 
+
+
+
+SUMMARY OF DISTANCE/AREA/ANGLE CALCULATIONS:
+
+
+    DISTANCE:
+    ---------
+    *) Haversine formula (2-parameter atan version) for computing
+    distance between two points, for our general distance routines:
+
+        calc_distance()
+        calc_distance_course()
+        distance_from_my_station()
+
+    *) Haversine formula (2-parameter atan version) in "Measure" for
+    both the X/Y offsets and the total distance.
+
+    Haversine formula is more accurate for shorter distances than
+    spherical trigonometry calculations.  Both methods are equivalent
+    for longer distances.  Both are Great-Circle calculations (as
+    opposed to Rhumb-line or planar geometry).  See the GIS FAQ for info
+    on these methods.  Dr. Math website mentions both of these and
+    refers people to the same GIS FAQ.
+
+
+    AREA:
+    -----
+    *) Area of a spherical rectangle from Dr. Math's website for the
+    "Measure" function.  There are errors in their last two derived
+    formulas.  They have been notified of it.  Our implemented code
+    is correct.
+
+    *) The area calculation for CAD Object Polygons is probably not
+    spherical, but closer to planar.  It might take some doing to calculate
+    the area of irregular polygons on a spherical surface.  We use Greene's
+    Theorem to compute the area based on the vectors.  The lengths of each
+    vector are computed via the Haversine formula, so it's not strictly a
+    planar area calculation either.  Somewhere in-between planar and spherical?
+    This should be plenty good enough for areas that are less than 12 miles on
+    a side (that's about where planar geometry starts to diverge from spherical
+    trigonometry), perhaps also for somewhat larger areas than this due to the
+    advantage of computing the vector lengths with the Haversine formula.
+
+
+    ANGLE:
+    ------
+    *) Great Circle departure angle for the "Measure" function.
+
+    *) Great Circle departure angle for the calc_distance_course()
+    function.
+
+    *) Dead-reckoning angle is essentially a Rhumb-line calculation
+    (constant heading), with a few caveats:
+
+        We compute the next point along a constant angle based on the last
+        position transmitted, the time elapsed, and the course desired.
+        This then gets corrupted a bit either by the standard APRS grid that
+        it has to snap to (and the position snapped to for the previous
+        position) and/or by the relatively course angle available for Base-91
+        compressed positions.
+
+        Standard APRS positions give 1-degree angular resolution but 60-foot or
+        so grid points.  Base-91 Compressed positions give something like 1 to
+        3-foot grid points but less angular resolution (+/- 2 degrees.  We
+        can't win!
+
+        The end result is that we start off like a drunk sailer due to our
+        short transmit times and the above limitations, then the angle smooths
+        out as the time increases between the transmits.  You can see this
+        easily at zoom level 1 when you place an object, when you make a change
+        to an object, or move an object (transmit rate goes up for any of these
+        conditions).
+
+    Dead-reckoning effectively does a Rhumb-Line calculation as it is
+    trying to do a constant heading.  That means it is not the shortest
+    distance between the points.  I'm still trying to get my head around
+    that last concept as it is counter-intuitive to someone versed in
+    compass/maps on land and with shorter distances.
+
+    A Great-Circle route is the shortest distance between two points on
+    a sphere, whereas a Rhumb-line is what you get if you move along a
+    constant compass heading and is a bit longer.
+
+    We probably do not need to go to ellipsoid calculations for Xastir.
+    Spherical calculations should be easily accurate enough for what we do.
  
 
 
