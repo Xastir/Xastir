@@ -1040,7 +1040,8 @@ IMAGESIZE <pixels horizontally> <pixels vertically>
 This specifies the size of the image in pixels. If this is not set, the image
 will be loaded each map redraw, regardless if it is on screen or not.
 IMAGESIZE is a REQUIRED OPTION if a URL is specified.  For local files, it's
-now an optional parameter.
+an optional parameter (we use ImageMagick to query the image size for local
+files).
 
 DATUM <datum>
 This feature is not implemented.
