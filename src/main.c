@@ -132,7 +132,7 @@
 
 #define STATUSLINE_ACTIVE 10    /* status line is cleared after 10 seconds */
 #define REPLAY_DELAY       0    /* delay between replayed packets in sec, 0 is ok */
-#define REDRAW_WAIT        2    /* delay between consecutive redraws in seconds (file load) */
+#define REDRAW_WAIT        3    /* delay between consecutive redraws in seconds (file load) */
 
 
 #define XmFONTLIST_DEFAULT_MY "fixed"
@@ -7812,10 +7812,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             if (Display_.dr_data
                     && ((sec_now() - sec_last_dr_update) > update_DR_rate) ) {
-                if (!pending_ID_message) {
-                    redraw_symbols(w);
-                    sec_last_dr_update = sec_now();
-                }
+                redraw_on_new_data = 1;
+                sec_last_dr_update = sec_now();
             }
 
 
