@@ -3019,7 +3019,8 @@ void clean_string(char *input) {
         if (j != NULL) {    // Found two quote characters
             j[0] = '\0';    // Terminate the string at the 2nd quote
             // Can't use strcpy here because it can't work with
-            // overlapping strings.
+            // overlapping strings.  strcpy is a dangerous function
+            // anyway and shouldn't be used.
             memmove(input, i+1, j-i);
         }
         else {  // We only found one quote character.  What to do?
