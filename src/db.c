@@ -3107,9 +3107,10 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
     // Change to:
     temp = XmTextGetString(tactical_text);
 
-    strncpy(tactical_pointer->tactical_call_sign,
-        temp,
-        MAX_CALLSIGN);
+    xastir_snprintf(tactical_pointer->tactical_call_sign,
+        MAX_CALLSIGN,
+        "%s",
+        temp);
 
     fprintf(stderr,
         "Assigned tactical call \"%s\" to %s\n",
@@ -3171,9 +3172,9 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNcursorPositionVisible, TRUE,
                 XmNsensitive, TRUE,
                 XmNshadowThickness,    1,
-                XmNcolumns, 15,
-                XmNwidth, ((15*7)+2),
-                XmNmaxLength, 15,
+                XmNcolumns, MAX_CALLSIGN-1,
+                XmNwidth, ((MAX_CALLSIGN*7)+2),
+                XmNmaxLength, MAX_CALLSIGN-1,
                 XmNbackground, colors[0x0f],
                 XmNtopOffset, 5,
                 XmNtopAttachment,XmATTACH_FORM,
@@ -3267,7 +3268,6 @@ void Assign_Tactical_Call( Widget w, XtPointer clientData, XtPointer calldata) {
     DataRow *p_station = clientData;
 
     //fprintf(stderr,"Object Name: %s\n", p_station->call_sign);
-//    strcpy(p_station->tactical_call_sign,"Team 7");
     tactical_pointer = p_station;
     Change_tactical(w, p_station, NULL);
 }
@@ -6600,7 +6600,6 @@ void init_station(DataRow *p_station) {
     p_station->pos_amb            = 0;            // No ambiguity
     p_station->call_sign[0]       = '\0';         // ?????
     p_station->tactical_call_sign[0] = '\0';
-//    strcpy(p_station->tactical_call_sign, "Team 5");
     p_station->sec_heard          = 0;
     p_station->time_sn            = 0;
     p_station->flag               = 0;            // set all flags to inactive
