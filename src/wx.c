@@ -35,6 +35,19 @@
  */
 
 
+// Need to modify code to use WX_rain_gauge_type.  Peet brothers.
+// See http://www.peetbros.com, FAQ's and owner's manuals for
+// details:
+//
+//  Peet Bros Ultimeter II:   0.1"/0.5mm or 0.01"/0.25mm
+//      Divide by 10 or 100 from the serial output.
+//
+//  Peet Bros Ultimeter 2000, 800, & 100:  0.01"/0.25mm or 0.1mm
+//      If 0.01" gauge, divide by 100.  If 0.1mm gauge, convert to
+//      proper English units.
+
+
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -468,10 +481,6 @@ void wx_last_data_check(void) {
 
 
 
-
-
-// New:
-// WX_rain_gauge_type:  0 = tenth inch, 1 = hundredth inch
 
 
 /************************************************************************/
@@ -1331,16 +1340,32 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 /* todays rain total (on some units) */
                 if (data[28]!='-') {
                     substr(temp_data1,(char *)(data+28),4);
-                    xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00), "%0.2f",(
-                            float)strtol(temp_data1,&temp_conv,16)/100.0);
+
+//                    if (WX_rain_gauge_type == 0) {  // Tenth inch rain gauge
+//                        xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
+//                            "%0.2f",(float)strtol(temp_data1,&temp_conv,16)/10.0);
+//                    }
+//                    else {                          // Hundredth inch rain gauge
+                        xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
+                            "%0.2f",(float)strtol(temp_data1,&temp_conv,16)/100.0);
+//                    }
+
                 } else
                     weather->wx_prec_00[0]=0;
 
                /* rain total long term */
                 if (data[432]!='-') {
                     substr(temp_data1,(char *)(data+432),4);
-                    xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+
+//                    if (WX_rain_gauge_type == 0) {  // Tenth inch rain gauge
+//                        xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+//                            "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+//                    }
+//                    else {                          // Hundredth inch rain gauge
+                        xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                             "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+//                    }
+
                     /* Since local station only */
                     compute_rain(atof(weather->wx_rain_total));
 
