@@ -14802,6 +14802,9 @@ int main(int argc, char *argv[], char *envp[]) {
 
     xastir_snprintf(temp, sizeof(temp), "help/help-%s.dat", lang_to_use);
     (void)unlink(get_user_base_dir("config/help.dat"));
+
+    // Note that this symlink will probably not fail.  It's easy to
+    // create a symlink that points to nowhere.
     if (symlink(get_data_base_dir(temp),get_user_base_dir("config/help.dat")) == -1) {
         printf("Error creating database link\n");
         exit(0);
@@ -14809,6 +14812,9 @@ int main(int argc, char *argv[], char *envp[]) {
 
     xastir_snprintf(temp, sizeof(temp), "config/language-%s.sys", lang_to_use);
     (void)unlink(get_user_base_dir("config/language.sys"));
+
+    // Note that this symlink will probably not fail.  It's easy to
+    // create a symlink that points to nowhere.
     if (symlink(get_data_base_dir(temp),get_user_base_dir("config/language.sys")) == -1) {
         printf("Error creating database link\n");
         exit(0);

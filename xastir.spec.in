@@ -65,6 +65,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/xastir/help/help-French.dat
 /usr/local/xastir/help/help-German.dat
 /usr/local/xastir/help/help-Italian.dat
+/usr/local/xastir/help/help-Portuguese.sys
 /usr/local/xastir/help/help-Spanish.dat
 /usr/local/xastir/maps/filled/placeholder
 /usr/local/xastir/maps/transparent/placeholder
