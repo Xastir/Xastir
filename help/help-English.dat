@@ -1455,10 +1455,11 @@ may use XXXCALL, WIDE. Most of you will only need one path. If you are in a
 remote area and your signal is difficult to get out you may need more. Check
 with a local group and ask what path may be best for your area.  Some areas
 use the more efficient flooding protocols, in which case you might use WIDE3-3
-or RELAY,WIDE3-3.
+or RELAY,WIDE3-3.  If no paths are entered it will default to RELAY,WIDE.
 
 If you are IGating to RF, you may enter a specific path to use for the packets
 you send to RF. If you leave this blank, the UNPROTO paths above will be used.
+If the UNPROTO paths are blank, RELAY,WIDE will be used.
 
 TNC Startup and Shutdown files. These fields specify a filename that is
 located in the /usr/local/xastir/config directory. Each file is a standard
@@ -1495,9 +1496,9 @@ The TNC Port is the Unix serial device that the TNC is hooked to.
 Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc..
 
 Now set the bps rate under port settings, and the parameters under port
-style. Port Style setting 8N1 is used for 8 data bits, No parity and 1 stop
-bit. 7E1 is used for 7 data bits, even parity and 1 stop bit. 7O1 is used for
-7 data bits, odd parity, and 1 stop bit. These parameters must match your TNC.
+style. For KISS operation is should be set to "8,N,1" which means 8 data
+bits, No parity and 1 stop bit. The dialog will be changed later to
+prevent selection of the other options.
 
 Choose the correct IGate operation for this device. You may have several TNC
 devices, and this option can be different for each device. If you are not
@@ -1513,19 +1514,21 @@ may use XXXCALL, WIDE. Most of you will only need one path. If you are in a
 remote area and your signal is difficult to get out you may need more. Check
 with a local group and ask what path may be best for your area.  Some areas
 use the more efficient flooding protocols, in which case you might use WIDE3-3
-or RELAY,WIDE3-3.
+or RELAY,WIDE3-3.  If no paths are entered it will default to RELAY,WIDE.
 
 If you are IGating to RF, you may enter a specific path to use for the packets
 you send to RF. If you leave this blank, the UNPROTO paths above will be used.
+If the UNPROTO paths are blank, RELAY,WIDE will be used.
 
 Next configure the KISS parameters: TXdelay is the time (in 10ms units) needed
 between the keying of the radio and when it is ready to send data. Persistence
 and slottime are the channel access parameters: Slottime is how often the
 channel access algorithm is executed, and should usually be set to 10.
 Persistence is how aggressively your station tries to grab the channel when
-free, and should be ideally set to 256 divided by the number of stations on the
+free, and should be ideally set to 255 divided by the number of stations on the
 channel. Full duplex allows the transmission to begin while there are packets
-being received on the channel, this should be disabled in most cases.
+being received on the channel, this should be disabled in most cases (set to
+"0").
 
 HELP-INDEX>Configure AX.25 TNC Devices
 
@@ -1558,10 +1561,11 @@ may use XXXCALL, WIDE. Most of you will only need one path. If you are in a
 remote area and your signal is difficult to get out you may need more. Check
 with a local group and ask what path may be best for your area.  Some areas
 use the more efficient flooding protocols, in which case you might use WIDE3-3
-or RELAY,WIDE3-3.
+or RELAY,WIDE3-3.  If no paths are entered it will default to RELAY,WIDE.
 
 If you are IGating to RF, you may enter a specific path to use for the packets
 you send to RF. If you leave this blank, the UNPROTO paths above will be used.
+If the UNPROTO paths are blank, RELAY,WIDE will be used.
 
 NOTE: To use AX.25 devices with Xastir you will need to run the program as
 "root". If you want to run Xastir as another user you may want to set the
