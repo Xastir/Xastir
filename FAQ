@@ -306,6 +306,9 @@ The Answers
 
     Second, check that ALTNET support in File|Configure|Defaults isn't enabled.
 
+    Third, the "Display Symbols" button in the Stations menu must be
+    checked in order to see stations on the map screen.
+
     4.6 Who is this APX112 guy who all my stuff is getting sent to? Who are
         these RELAY, WIDE and TRACE people digipeating packets, and why are
         they putting different callsigns in the fields where their names used
