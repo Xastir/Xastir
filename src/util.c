@@ -1130,8 +1130,8 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
     double utmNorthing;
     double utmEasting;
     char utmZone[10];
-//    char E_W[25] = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-//    char N_S[21] = "ABCDEFGHJKLMNPQRSTUV";
+    char E_W[25] = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    char N_S[21] = "ABCDEFGHJKLMNPQRSTUV";
     int start;
     int my_east, my_north;
     unsigned int int_utmEasting, int_utmNorthing;
@@ -1191,11 +1191,6 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
     // zone.
 
 
-    // NOTE:  This works at the equator, but not further N/S.  The
-    // 100,000 meter squares are numbered from the left edge of the
-    // row, so we have to start each row in each zone with the
-    // correct letter, whether that is A, J, or S.  Just dividing
-    // the easting by 100,000 doesn't get us there!
     my_east = (int)(utmEasting / 100000.0) - 1;
     my_east = my_east + start;
     my_east = my_east % 24;
@@ -1228,16 +1223,14 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
 // Need special processing for UPS area (A/B/Y/Z bands)?
 
 
-    xastir_snprintf(str, str_len, "MGRS: Not Implemented Yet");
-
-//    xastir_snprintf(str,
-//        str_len,
-//        "%s %c%c %d %d",
-//        utmZone,
-//        E_W[my_east],
-//        N_S[my_north],
-//        int_utmEasting,
-//        int_utmNorthing );
+    xastir_snprintf(str,
+        str_len,
+        "%s %c%c %d %d",
+        utmZone,
+        E_W[my_east],
+        N_S[my_north],
+        int_utmEasting,
+        int_utmNorthing );
 }
 
 
