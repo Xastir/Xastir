@@ -1252,10 +1252,10 @@ void draw_shapefile_map (Widget w,
                 // Need fields 0/1:
                 search_field1 = 0;  // STATE
                 search_field2 = 3;  // FIPS
-                snprintf(search_param1,sizeof(search_param1),"%c%c",
+                xastir_snprintf(search_param1,sizeof(search_param1),"%c%c",
                     alert->title[0],
                     alert->title[1]);
-                snprintf(search_param2,sizeof(search_param2),"%c%c%c",
+                xastir_snprintf(search_param2,sizeof(search_param2),"%c%c%c",
                     alert->title[4],
                     alert->title[5],
                     alert->title[6]);
@@ -1268,7 +1268,7 @@ void draw_shapefile_map (Widget w,
                 // Need field 0
                 search_field1 = 0;  // WFO
                 search_field2 = -1;
-                snprintf(search_param1,sizeof(search_param1),"%c%c%c",
+                xastir_snprintf(search_param1,sizeof(search_param1),"%c%c%c",
                     alert->title[4],
                     alert->title[5],
                     alert->title[6]);
@@ -1281,7 +1281,7 @@ void draw_shapefile_map (Widget w,
                 // Need field 0
                 search_field1 = 0;  // ID
                 search_field2 = -1;
-                snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
+                xastir_snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
                     alert->title[0],
                     alert->title[1],
                     alert->title[3],
@@ -1297,7 +1297,7 @@ void draw_shapefile_map (Widget w,
                 // Need field 0
                 search_field1 = 0;  // ID
                 search_field2 = -1;
-                snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
+                xastir_snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
                     alert->title[0],
                     alert->title[1],
                     alert->title[3],
@@ -1314,7 +1314,7 @@ void draw_shapefile_map (Widget w,
                 // Need field 4
                 search_field1 = 4;  // STATE_ZONE
                 search_field2 = -1;
-                snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c",
+                xastir_snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c",
                     alert->title[0],
                     alert->title[1],
                     alert->title[4],

@@ -1137,7 +1137,7 @@ printf("Zone:%s%s\n",prefix,suffix);
                         start_number = (int)atoi(suffix);
                         end_number = (int)atoi(ending);
                         for ( k=start_number+1; k<=end_number; k++) {
-                            snprintf(temp,4,"%03d",k);
+                            xastir_snprintf(temp,4,"%03d",k);
 // And another zone...
 printf("Zone:%s%s\n",prefix,temp);
                         }
