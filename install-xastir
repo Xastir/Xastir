@@ -1,0 +1,40 @@
+#!/bin/sh
+
+
+# $Id$
+# Copyright (C) 2004 The Xastir Group
+
+
+echo
+echo
+echo
+echo Please note that a subdirectory called "xastir" will be created
+echo here and populated with the latest Xastir source code.  If you
+echo already have an "xastir" directory and are running the script
+echo from there, you may want to run it from one directory higher up
+echo instead.  Just stop this script and run these commands instead:
+echo
+echo "    cd .."
+echo "    ./xastir/install-xastir"
+echo
+echo
+echo Press ENTER to continue downloading the latest Xastir sources:
+read
+
+
+# Set up an anonymous login for the CVS server
+#
+echo Press the ENTER key when asked for a password.
+cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login
+
+
+# Fetch the latest Xastir sources
+#
+cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir
+
+
+# Run the update script to configure/compile/install it
+#
+cd xastir; ./update-xastir
+
+
