@@ -177,11 +177,13 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # D80 - open space
 # D81 - golf course
 # D82 - cemetery
+# Color is "tgr_park_1"
+/^CFCC=D8[01]/ {filled=1;  fill_color=114; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
 # D83 - national park
 # D84 - national forest
 # D85 - state or local park or forest
 # color is "tgr_forest_1"
-/^CFCC=D8/ {filled=1;  fill_color=116; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
+/^CFCC=D8[3-5]/ {filled=1;  fill_color=116; fill_style=2; fill_stipple=0; display_level=64; font_size=1; next}
 # D90 - special purpose landmark
 # D91 - post office box-only ZIP Code location
 # D92 - urbanizacion (Puerto Rico)
