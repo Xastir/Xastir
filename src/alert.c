@@ -68,7 +68,8 @@
 //
 // When converting to using Shapefile maps, we could either save the
 // shapefile designator in this same global alert_tag string, or we
-// could compute it on the fly from this data:
+// could compute it on the fly from the data.
+//
 // Stuff from Dale, paraphrased by Curt:
 //
 // The clue to which shapefile to use is in the 4th char (which
@@ -296,31 +297,39 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     strncpy(filename, alert->filename, 32);
     title_e[32] = title_m[32] = alert_f[32] = filename[32] = '\0';
 
+    // Truncate at '.'
     if ((ptr = strpbrk(filename, ".")))
         *ptr = '\0';
 
+    // Get rid of '/' characters
     if ((ptr = strrchr(filename, '/'))) {
         ptr++;
         memmove(filename, ptr, strlen(ptr)+1);
     }
 
+    // Get rid of ' ', '_', or '-' characters
     while ((ptr = strpbrk(filename, "_ -")))
         memmove(ptr, ptr+1, strlen(ptr)+1);
 
     for (i = 0; i < alert_list_count; i++) {
+
         // Shorten the title
         normal_title(alert_list[i].title, title_m);
+
         strncpy(alert_f, alert_list[i].filename, 32);
         alert_f[32] = '\0';
 
+        // Truncate at '.'
         if ((ptr = strpbrk(alert_f, ".")))
             *ptr = '\0';
 
+        // Get rid of '/' characters
         if ((ptr = strrchr(alert_f, '/'))) {
             ptr++;
             memmove(alert_f, ptr, strlen(ptr)+1);
         }
 
+        // Get rid of ' ', '_', or '-' characters
         while ((ptr = strpbrk(alert_f, "_ -")))
             memmove(ptr, ptr+1, strlen(ptr)+1);
 
@@ -438,7 +447,8 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
             for (level = 0; a_ptr->alert_level != l_list[level] && level < (int)sizeof(l_list); level++);
         }
         else if (a_ptr->expiration < (now - 3600)) {    // More than an hour past the expiration,
-            a_ptr->title[0] = '\0';                     // so delete it from list.
+            a_ptr->title[0] = '\0';                     // so delete it from list by clearing
+                                                        // out the title.
         }
         else if (a_ptr->flags[0] == '?') {  // Expired between 1sec and 1hr and found '?'
             a_ptr->flags[0] = '-';
@@ -454,7 +464,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 //
 // alert_compare()
 //
-// Used via qsort as the compare function in alert_sort_active()
+// Used by qsort as the compare function in alert_sort_active()
 // function below.
 //
 static int alert_compare(const void *a, const void *b) {
@@ -528,6 +538,7 @@ int alert_display_request(void) {
 
     // Iterate through entire alert_list
     for (i = 0, alert_count = 0; i < alert_list_count; i++) {
+
         // If it's an active alert (not expired), and flags == 'Y'
         // (meaning it is within our viewport), set the flag to '?'.
         if (alert_active(&alert_list[i], ALERT_ALL) && (alert_list[i].flags[0] == 'Y' ||
@@ -716,6 +727,8 @@ static void alert_build_list(Message *fill) {
 // Called from db.c:decode_message() function when a new alert is
 // received, and from maps.c:load_alert_maps() functions (both of
 // them).
+// It returns the string length of the global alert_tag variable.
+// Divide this by 3 and we know the number of alerts that we have.
 //
 int alert_message_scan(void) {
     char *a_ptr;
