@@ -380,6 +380,7 @@ void save_data(void)  {
         store_int (fout, "DISPLAY_COURSE",        symbol_course_display);
         store_int (fout, "DISPLAY_DIST_COURSE",   symbol_dist_course_display);
         store_int (fout, "DISPLAY_STATION_WX",    symbol_weather_display);
+        store_int (fout, "DISPLAY_STATION_WX_OBJ",wx_obj_display_enable);
         store_int (fout, "DISPLAY_STATION_PHG",   show_phg);
         store_int (fout, "DISPLAY_MOBILES_PHG",   show_phg_mobiles);
         store_int (fout, "DISPLAY_DEFAULT_PHG",   show_phg_default);
@@ -862,7 +863,8 @@ void load_data_or_default(void) {
                 wx_display_short = 0;
                 break;
     }
-
+    if (!get_int ("DISPLAY_STATION_WX_OBJ", &wx_obj_display_enable, 0, 1, 0))
+        wx_obj_display_enable = 0;
     if (!get_int ("DISPLAY_STATION_PHG", &show_phg, 0, 1, 0))
         show_phg = 0;
     if (!get_int ("DISPLAY_MOBILES_PHG", &show_phg_mobiles, 0, 1, 0))

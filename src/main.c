@@ -256,6 +256,7 @@ Widget speed_enable_button;
 Widget course_button;
 Widget dist_course_button;
 Widget wx_enable_button;
+Widget wx_obj_enable_button;
 Widget station_phg_button;
 Widget station_phg_mobiles_button;
 Widget station_phg_default_button;
@@ -293,8 +294,10 @@ int symbol_weather_display;     // Switch for Weather info display
 Widget wx_short_button;
 static void WX_enable_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void WX_short_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void WX_obj_enable_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 int wx_display_enable;
 int wx_display_short;
+int wx_obj_display_enable;
 
 Widget phg_on, phg_off;
 static void Station_phg_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -4509,6 +4512,21 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(wx_short_button,FALSE);
 
 
+    wx_obj_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP026"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(wx_obj_enable_button,XmNvalueChangedCallback,WX_obj_enable_toggle,"1");
+    if (wx_obj_display_enable)
+        XmToggleButtonSetState(wx_obj_enable_button,TRUE,FALSE);
+    if (!wx_display_enable || !symbol_display_enable)
+        XtSetSensitive(wx_obj_enable_button,FALSE);
+
+
     station_phg_button = XtVaCreateManagedWidget(langcode("PULDNDP008"),
             xmToggleButtonGadgetClass,
             stationspane,
@@ -7655,8 +7673,10 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
         XtSetSensitive(course_button,TRUE);
         XtSetSensitive(dist_course_button,TRUE);
         XtSetSensitive(wx_enable_button,TRUE);
-        if (wx_display_enable)
+        if (wx_display_enable) {
             XtSetSensitive(wx_short_button,TRUE);
+            XtSetSensitive(wx_obj_enable_button,TRUE);
+        }
         XtSetSensitive(station_phg_button,TRUE);
         if (show_phg) {
             XtSetSensitive(station_phg_mobiles_button,TRUE);
@@ -7678,6 +7698,7 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
         XtSetSensitive(dist_course_button,FALSE);
         XtSetSensitive(wx_enable_button,FALSE);
         XtSetSensitive(wx_short_button,FALSE);
+        XtSetSensitive(wx_obj_enable_button,FALSE);
         XtSetSensitive(station_phg_button,FALSE);
         XtSetSensitive(station_phg_mobiles_button,FALSE);
         XtSetSensitive(station_phg_default_button,FALSE);
@@ -7779,10 +7800,12 @@ void WX_enable_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
     if(state->set) {
         wx_display_enable = atoi(which);
         XtSetSensitive(wx_short_button, TRUE);
+        XtSetSensitive(wx_obj_enable_button, TRUE);
     }
     else {
         wx_display_enable = 0;
         XtSetSensitive(wx_short_button, FALSE);
+        XtSetSensitive(wx_obj_enable_button, FALSE);
     }
 
     symbol_weather_display = wx_display_enable;
@@ -7804,6 +7827,26 @@ void WX_short_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer cal
         wx_display_short = atoi(which);
     else
         wx_display_short = 0;
+
+    symbol_weather_display = wx_display_enable;
+    if (wx_display_enable && !wx_display_short)
+        symbol_weather_display = 2;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void WX_obj_enable_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        wx_obj_display_enable = atoi(which);
+    else
+        wx_obj_display_enable = 0;
 
     symbol_weather_display = wx_display_enable;
     if (wx_display_enable && !wx_display_short)

@@ -129,6 +129,7 @@ extern int symbol_display;
 extern int symbol_rotate;
 extern int wx_display_enable;
 extern int wx_display_short;
+extern int wx_obj_display_enable;
 extern int colors[256];
 extern int max_trail_colors;
 extern int trail_colors[32];

@@ -154,6 +154,7 @@ PULDNDP007|Percorsi delle stazioni|i|
 PULDNDP015|Elimina tutte le stazioni|C|
 PULDNDP016|Elimina tutti i percorsi|T|
 PULDNDP025|Clear Object/Item History||
+PULDNDP026|Display Weather Objects||
 #
 # Sistema di misura
 PULDNUT001|Sistema inglese||
