@@ -444,10 +444,10 @@ First Time Install:
      -----------------------------------------------------------------------
 MAC OS X NOTES:
 
-     See http://homepage.mac.com/opzeeland1/ for installation instructions.
-     Versions of Xastir starting at 1.0.6 have more support built-in for
-     Mac OS X.  You may be able to follow the normal compile method instead
-     of editing Xastir source files.
+     See http://members.chello.nl/~m.vanopzeeland/xastir.html for
+     installation instructions.  Versions of Xastir starting at 1.0.6 have
+     more support built-in for Mac OS X.  You may be able to follow the
+     normal compile method instead of editing Xastir source files.
 
      Current changes required to src/Makefile after running "./configure":
 
