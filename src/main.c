@@ -7601,13 +7601,26 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 // are valid, as we'll only get four positions out
                 // maximum per valid GPS position.  If the GPS
                 // position goes stale, we'll stop sending posits.
+                // We initialize it to one if we turn on a GPS
+                // interface, so we'll get at the very most one
+                // posit sent out with a stale position, each time
+                // we open a GPS interface.
                 if (using_gps_position && my_position_valid) {
                     my_position_valid--;
 //fprintf(stderr,"my_position_valid:%d\n",my_position_valid);
 
-                    if (!my_position_valid) { // We just went to zero!
+                    if (!my_position_valid) {   // We just went to zero!
                         // Waiting for GPS data..
                         statusline(langcode("BBARSTA041"),1);
+
+                        // If the user intends to send posits, GPS
+                        // interface is enabled, and we're not
+                        // getting GPS data, warn the user that
+                        // posits are disabled.
+                        if (!transmit_disable && !posit_tx_disable) {
+                            popup_message(langcode("POPEM00033"),
+                                langcode("POPEM00034"));
+                        }
 //fprintf(stderr,"my_position_valid just went to zero!\n");
                     }
                 }

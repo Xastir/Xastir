@@ -846,6 +846,8 @@ POPEM00029|Trouvé!||
 POPEM00030|Weather Station Symbol||
 POPEM00031|Changed to WX symbol '/_', other options:  '\_'  '/W'  and  '\W'||
 POPEM00032|Warning: Using National Weather Service Symbol!||
+POPEM00033|No GPS Data!||
+POPEM00034|Disabling My Position TX Until Valid GPS Data!||
 #
 # Jump Location 
 JMLPO00001|Lieu de la carte||

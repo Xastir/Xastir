@@ -3184,10 +3184,12 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     case DEVICE_SERIAL_GPS:
                         if (debug_level & 2)
                             fprintf(stderr,"Opening a Serial GPS device\n");
-                        my_position_valid = 0;  // Must wait for valid GPS parsing
+                        // Must wait for valid GPS parsing after
+                        // sending one posit.
+                        my_position_valid = 1;
                         using_gps_position++;
                         statusline(langcode("BBARSTA041"),1);
-//fprintf(stderr,"my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
+//fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
@@ -3200,20 +3202,24 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                         if (debug_level & 2)
                             fprintf(stderr,"Opening a Serial TNC w/HSP GPS device\n");
-                        my_position_valid = 0;  // Must wait for valid GPS parsing
+                        // Must wait for valid GPS parsing after
+                        // sending one posit.
+                        my_position_valid = 1;
                         using_gps_position++;
                         statusline(langcode("BBARSTA041"),1);
-//fprintf(stderr,"my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
+//fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                         if (debug_level & 2)
                             fprintf(stderr,"Opening a Serial TNC w/AUX GPS device\n");
-                        my_position_valid = 0;  // Must wait for valid GPS parsing
+                        // Must wait for valid GPS parsing after
+                        // sending one posit.
+                        my_position_valid = 1;
                         using_gps_position++;
                         statusline(langcode("BBARSTA041"),1);
-//fprintf(stderr,"my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
+//fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
  
                         break;
 
@@ -3347,10 +3353,12 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 if (ok == 1) {
                     xastir_snprintf(logon_txt, sizeof(logon_txt), "R\r\n");
                     port_write_string(port_avail,logon_txt);
-                    my_position_valid = 0;  // Must wait for valid GPS parsing
+                    // Must wait for valid GPS parsing after sending
+                    // one posit.
+                    my_position_valid = 1;
                     using_gps_position++;
                     statusline(langcode("BBARSTA041"),1);
-//fprintf(stderr,"my_position_valid = 0, using_gps_position:%d\n",using_gps_position);
+//fprintf(stderr,"my_position_valid = 1, using_gps_position:%d\n",using_gps_position);
                 }
                 break;
 

@@ -851,6 +851,8 @@ POPEM00029|Gevonden!||
 POPEM00030|Weer Station Symbool||
 POPEM00031|Veranderd in WX symbool '/_', andere opties:  '\_'  '/W'  and  '\W'||
 POPEM00032|Waarschuwing: Gebruik Nationaal Weer Service Symbool!||
+POPEM00033|No GPS Data!||
+POPEM00034|Disabling My Position TX Until Valid GPS Data!||
 #
 # Jump Location
 JMLPO00001|Kaart Lokatie||
