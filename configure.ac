@@ -70,8 +70,9 @@ XASTIR_DETECT_BINARIES
 if test "x${festival}" != "xno"; then
   use_festival=yes
 fi
+
+#  echo GPSMAN is ${gpsman}
 if test "x${gpsman}" != "xno"; then
-  echo GPSMAN is ${gpsman}
   use_gpsman=yes
 fi
 
