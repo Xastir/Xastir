@@ -8028,30 +8028,61 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         /*@unused@*/ XtPointer callData) {
     VerticeRow *tmp;
     double area;
+    int n;
 
 
     // Check whether we're currently working on a polygon.  If not,
     // get out of here.
     if (polygon_last_x == -1 || polygon_last_y == -1) {
+
+        // Tell the code that we're starting a new polygon by wiping
+        // out the first position.
+        polygon_last_x = -1;    // Invalid position
+        polygon_last_y = -1;    // Invalid position 
+
         return;
     }
 
     // Find the last vertice in the linked list.  That will be the
     // first vertice we recorded for the object.
 
-// We should check for at least three vertices here, and check that
-// the polygon is closed (first point == last point).
-
+    // Check for at least three vertices.  We don't need to check
+    // that the first/last point are equal:  We force it below by
+    // copying the first vertice to the last.
+    //
+    n = 0;
     if (CAD_list_head != NULL) {
  
         // Walk the linked list.  Stop at the last record.
         tmp = CAD_list_head->start;
         if (tmp != NULL) {
+            n++;
             while (tmp->next != NULL) {
                 tmp = tmp->next;
+                n++;
             }
-            CAD_vertice_allocate(tmp->latitude, tmp->longitude);
+            if (n > 2) {
+                // We have more than a point or a line, therefore
+                // can copy the first point to the last, closing the
+                // polygon.
+                CAD_vertice_allocate(tmp->latitude, tmp->longitude);
+            }
         }
+    }
+
+#ifdef CAD_DEBUG
+    fprintf(stderr,"n = %d\n",n);
+#endif
+
+    if (n < 3) {
+        // Not enough points to compute an area.
+
+        // Tell the code that we're starting a new polygon by wiping
+        // out the first position.
+        polygon_last_x = -1;    // Invalid position
+        polygon_last_y = -1;    // Invalid position 
+
+        return;
     }
  
     // Walk the linked list again, computing the area of the
