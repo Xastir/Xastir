@@ -540,7 +540,6 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
 
     substr(m_fill.from_call_sign, from_call, MAX_CALLSIGN);
     substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
-    m_fill.acked = 0;
 
     // Look for a message with the same call_sign, from_call_sign,
     // and seq number
@@ -567,6 +566,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     strcpy(m_fill.packet_time,get_time(time_data));
 
     if(record == -1L) {
+        m_fill.acked = 0;
         msg_input_database(&m_fill);
     }
     else {
@@ -578,6 +578,13 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     if (type == MESSAGE_MESSAGE)
         all_messages(from,call_sign,from_call,data);
 
+    // Check for my callsign.  If found, update any open message
+    // dialogs
+    if (       is_my_call(m_fill.from_call_sign, 1)
+            || is_my_call(m_fill.call_sign, 1) ) {
+        update_messages(1); // Force an update
+    }
+ 
     if (debug_level & 1)
         printf("msg_data_add end\n");
 }
@@ -8009,13 +8016,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     if (debug_level & 1)
         printf("6b\n");
     //--------------------------------------------------------------------------
-    if (!done && strlen(msg_id) > 0) {          // other message with linenumber
+    if (!done && strlen(msg_id) > 0) {          // other message with linenumber (msg from me?)
         if (debug_level & 2) printf("found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
         msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from);
         new_message_data += look_for_open_group_data(addr);
         if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
                      || check_popup_window(call, 0) != -1 || check_popup_window(addr, 1) != -1)
             update_messages(1); // Force an update
+
         /* Now if I have Igate on and I allow to retransmit station data           */
         /* check if this message is to a person I have heard on my TNC within an X */
         /* time frame. If if is a station I heard and all the conditions are ok    */

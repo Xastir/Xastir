@@ -3022,7 +3022,7 @@ void check_ports(void) {
 //***********************************************************
 // output_my_aprs_data
 // This is the function responsible for sending out my own
-// posits.  The next function below this one handles object
+// posits.  The next function below this one handles objects,
 // messages and the like (output_my_data).
 //***********************************************************
 void output_my_aprs_data(void) {
