@@ -1377,7 +1377,7 @@ void draw_shapefile_map (Widget w,
                         xbm_path, &_w, &_h, &pixmap_wx_stipple, &_xh, &_yh);
 
         if (ret_val != 0) {
-            fprintf(stderr,"Bitmap not found: %s\n",xbm_path);
+            fprintf(stderr,"XReadBitmapFile() failed: Bitmap not found? %s\n",xbm_path);
             exit(1);
         }
 
