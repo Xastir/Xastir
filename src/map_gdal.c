@@ -515,18 +515,14 @@ fprintf(stderr,"4\n");
 
 
 
-//        /* And dump each feature individually */
-//        while( (feature = OGR_L_GetNextFeature( layer )) != NULL )
-//        {
-//            OGR_F_DumpReadable( feature, stderr );
-//            OGR_F_Destroy( feature );
-//        }
-
+        // Dump each feature individually
+//        if ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
         while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
             OGRSpatialReferenceH spatial;
             OGRGeometryH shape;
             int num, ii;
-            double pdfX, pdfY, pdfZ;
+            double X1, Y1, Z1, X2, Y2, Z2;
+            int polygon = 0;
 
 //            OGR_F_DumpReadable( feature, stderr );
 
@@ -545,21 +541,79 @@ fprintf(stderr,"4\n");
             if (num == 0) {
                 // Get number of elements (polygons)
                 num = OGR_G_GetGeometryCount(shape);
-                fprintf(stderr,"Polygon: Number of elements: %d\n",num);
+//                fprintf(stderr,"Polygon: Number of elements: %d\n",num);
+                if (num) {
+                    polygon++;
+                }
             }
             else {
-                fprintf(stderr,"Point/Line: Number of points: %d\n",num);
+//                fprintf(stderr,"Point/Line: Number of points: %d\n",num);
             }
 
 
+/*
             // Print out the points
             for (ii=0; ii < num; ii++) {
                 OGR_G_GetPoint(shape,
                     ii,
-                    &pdfX,
-                    &pdfY,
-                    &pdfZ);
-//                fprintf(stderr,"%f\t%f\t%f\n",pdfX,pdfY,pdfZ);
+                    &X1,
+                    &Y1,
+                    &Z1);
+                fprintf(stderr,"%f\t%f\t%f\n",pdfX,pdfY,pdfZ);
+            }
+*/
+
+            // If point or line feature, draw in normal manner.
+            // If polygon feature, do we do the "rotation one way =
+            // fill, rotation the other way = hole" thing?
+
+
+// At this point it'd be nice to either have all of the coordinates
+// in WGS84 lat/long, or WGS84 Xastir coordinate system.  It'd be
+// very nice if the coordinate transformation calls could do the
+// latter one for us.  We'd then just draw the darn things.
+
+
+            if (num > 0) {
+
+(void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+
+                if (!polygon) {
+                    // Draw lines/points
+
+                    // Get the first point
+                    OGR_G_GetPoint(shape,
+                        0,
+                        &X2,
+                        &Y2,
+                        &Z2);
+
+                    for (ii = 1; ii < num; ii++) {
+
+                        X1 = X2;
+                        Y1 = Y2;
+                        Z1 = Z2;
+
+                        // Get the next point
+                        OGR_G_GetPoint(shape,
+                            ii,
+                            &X2,
+                            &Y2,
+                            &Z2);
+
+                        draw_vector_ll(da,
+                            (float)Y1,
+                            (float)X1,
+                            (float)Y2,
+                            (float)X2,
+                            gc,
+                            pixmap);
+                    }
+                }
+                else {
+                    // Draw polygons
+                }
             }
             OGR_F_Destroy( feature );
         }
