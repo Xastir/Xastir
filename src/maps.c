@@ -1676,6 +1676,7 @@ void draw_shapefile_map (Widget w,
     int             lake_flag = 0;
     int             river_flag = 0;
     int             railroad_flag = 0;
+    int             school_flag = 0;
     int             path_flag = 0;
     int             city_flag = 0;
     int             quad_overlay_flag = 0;
@@ -1952,6 +1953,18 @@ void draw_shapefile_map (Widget w,
                 mapshots_labels_flag++;
                 if (debug_level & 16) {
                     fprintf(stderr,"*** Found water (mapshots rivers/streams/lakes/glaciers) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (  strstr(filename,"elm")       // Elementary school district
+                    || strstr(filename,"mid")       // Middle school district
+                    || strstr(filename,"sec")       // Secondary school district
+                    || strstr(filename,"uni") ) {   // Unified school district
+                school_flag++;
+                if (debug_level & 16) {
+                    fprintf(stderr,"*** Found school district ***\n");
                     break;
                 }
                 else
@@ -2353,7 +2366,7 @@ void draw_shapefile_map (Widget w,
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
         else if (railroad_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x01]); // purple
-        else if (city_flag)
+        else if (city_flag || school_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]); // yellow
         else
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
