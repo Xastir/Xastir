@@ -148,7 +148,7 @@ void db_init(void)
     last_emergency_callsign[0] = '\0';
 
     // Seed the random number generator
-    srand(255);
+    srand(1);
 }
 
 
@@ -13647,7 +13647,7 @@ void check_and_transmit_objects_items(time_t time) {
                     // hit its transmit interval.
 
                     float randomize;
-                    int fifth_increment;
+                    int one_fifth_increment;
                     int new_increment;
 
 
@@ -13666,16 +13666,24 @@ void check_and_transmit_objects_items(time_t time) {
                     // objects are not transmitted at the same time.
                     // Allow the random number to vary over 20%
                     // (one-fifth) of the newly computed increment.
-                    fifth_increment = (short)((increment / 5) + 0.5);
-//fprintf(stderr,"fifth_increment: %d\n", fifth_increment);
- 
-                    randomize = rand() / RAND_MAX;
+                    one_fifth_increment = (int)((increment / 5) + 0.5);
+//fprintf(stderr,"one_fifth_increment: %d\n", one_fifth_increment);
+
+                    // Scale the random number from 0.0 to 1.0.
+                    // Must convert at least one of the numbers to a
+                    // float else randomize will be zero every time.
+                    randomize = rand() / (float)RAND_MAX;
 //fprintf(stderr,"randomize: %f\n", randomize);
 
-                    randomize = randomize * fifth_increment;
+                    // Scale it to the range we want (0% to 20% of
+                    // the interval)
+                    randomize = randomize * one_fifth_increment;
 //fprintf(stderr,"scaled randomize: %f\n", randomize);
 
-                    new_increment = increment - (short)(randomize + 0.5);
+                    // Subtract it from the increment, use
+                    // poor-man's rounding to turn the random number
+                    // into an int (so we get the full range).
+                    new_increment = increment - (int)(randomize + 0.5);
                     p_station->transmit_time_increment = (short)new_increment;
 
 //fprintf(stderr,"check_and_transmit_objects_items():Setting tx_increment to %d:%s\n",
