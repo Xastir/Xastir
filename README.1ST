@@ -404,9 +404,12 @@ First Time Install:
      This is now the only format for weather alert maps.
      The instructions aren't clear in this package, but just installing the
      library is sufficient:
-       make lib
-       make lib_install
 
+       make lib
+       su (root)
+       make lib_install
+       exit (from root)
+ 
      You may also need to tweak "/etc/ld.so.conf" to contain the proper path
      to the libraries and then run ldconfig to update "/etc/ld.so.cache".
      Once this is done the loader should be able to find the Shapelib library.
