@@ -6,6 +6,7 @@
 # lines that begin with a pound sign are comments.
 #
 #
+HID off
 B E 0
 DIGI on
 ECho off

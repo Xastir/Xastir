@@ -8,6 +8,7 @@
 int terminal
 
 ECHO off
+HID off
 MYAlias RELAY
 B E 0
 DIGI on

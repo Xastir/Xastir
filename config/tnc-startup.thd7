@@ -44,6 +44,7 @@ TC 0
 # This will setup the TH-D7 TNC for use with APRS.
 #--------------------------------------------------
 #
+HID off
 AWlen 8
 BBSMsgs ON
 B E 0

@@ -5,6 +5,7 @@
 # This is the TNC Startup file for the TNC2-UI TNC.
 # lines that begin with a pound sign are comments.
 
+HID off
 MONITOR OFF
 ECHO OFF
 LF OFF
