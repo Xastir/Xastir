@@ -619,7 +619,6 @@ void guess_vector_attributes( Widget w,
                 label_color_guess = 0x1a;
             }
             else {
-// DEBUG:
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
             }
             (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -660,7 +659,6 @@ void guess_vector_attributes( Widget w,
                 label_color_guess = 0x1a;
             }
             else {
-// DEBUG:
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
             }
             (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -3103,6 +3101,18 @@ clear_dangerous();
     }
 
 
+    // If we put these flags down in the layer loop, we end up with
+    // all black lines being drawn.  Perhaps the layer that defines
+    // the types isn't the same layer that contains the vectors that
+    // get drawn?
+    //
+    hypsography_layer = 0;
+    hydrography_layer = 0;
+    roads_trails_layer = 0;
+    railroad_layer = 0;
+    misc_transportation_layer = 0;
+
+
     // Loop through all layers in the data source.
     //
     numLayers = OGR_DS_GetLayerCount(datasourceH);
@@ -3177,12 +3187,6 @@ int features_processed = 0;
         // Determine what kind of layer we're dealing with and set
         // some flags.
         //
-        hypsography_layer = 0;
-        hydrography_layer = 0;
-        roads_trails_layer = 0;
-        railroad_layer = 0;
-        misc_transportation_layer = 0;
-
         if (layerH == OGR_DS_GetLayerByName(datasourceH, "AHPF")) {
             hypsography_layer++;    // Topo contours
             fprintf(stderr,"Hypsography Layer (topo contours)\n");
