@@ -10497,6 +10497,8 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 // should be only a few maps that contain all of the alert maps, and we
 // can compute which map some of them might be in.  We need to fill in
 // the alert structure with the filename that alert is found in.
+// For alerts we're not drawing the maps, we're just computing the
+// full filename for the alert and filling that struct field in.
 /////////////////////////////////////////////////////////////////////
 void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int warn, int destination_pixmap) {
     struct dirent *dl = NULL;
@@ -11952,7 +11954,18 @@ void load_alert_maps (Widget w, char *dir) {
 // Figure out how to pass a quantity of zones off to the map drawing
 // routines, then we can draw them all with one pass through each
 // map file.  Alphanumerically sort the zones to make it easier for
-// the map drawing functions.
+// the map drawing functions?  Note that the indexing routines fill
+// in both the filename and the shapefile index for each record.
+//
+// Alternative:  Call map_draw for each filename listed and have the
+// draw_shapefile function iterate through the array looking for all
+// filename matches, pulling non-negative indexes out of each index
+// field for matches and drawing them.  That should be fast and
+// require no sorting of the array.  Downside:  The alerts won't be
+// layered based on alert level unless we modify the above:  Drawing
+// each file once for each alert-level in the proper layering order.
+// Perhaps we could keep a list of which filenames have been called,
+// and only call each one once per load_alert_maps() call.
 
 
     alert_count = MAX_ALERT - 1;
@@ -11960,8 +11973,9 @@ void load_alert_maps (Widget w, char *dir) {
     // Check for message alerts, draw alerts if they haven't expired yet
     // and they're in our view.
     if (alert_message_scan ()) {
-        // Returns number of wx alerts * 3.  Scans through messages
-        // looking for alerts and adds them to our alert_list.
+        // Returns number of wx alerts * 3.  Scans through complete
+        // message list looking for alerts and adds them to our
+        // alert_list.  What about really old alerts?
 
         // Set up our path to the wx alert maps
         memset (alert_scan, 0, sizeof (alert_scan));    // Zero our alert_scan string
@@ -11971,44 +11985,53 @@ void load_alert_maps (Widget w, char *dir) {
 
         //fprintf(stderr,"Weather Alerts, alert_scan: %s\t\talert_status: %s\n", alert_scan, alert_status);
 
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// NOTE:  This first loop would be better served by a separate
+// function that is called only when a new alert arrives,
+// automatically filling in the map filename at that point.  More
+// efficient anyway.  It wouldn't have to process the entire list.
+//
         // Iterate through the weather alerts we currently have on
         // our list.  It looks like we wish to just fill in the
         // alert struct and to determine whether the alert is within
         // our viewport here.  We don't really wish to draw the
         // alerts at this stage, that comes just a bit later in this
         // routine.
-//
-// NOTE:  This first loop would be better served by a separate
-// function that is called only when a new alert arrives,
-// automatically filling in the map filename at that point.  More
-// efficient anyway.  It wouldn't have to process the entire list.
-//
         for (ii = 0; ii < alert_max_count; ii++) {
 
             // Check whether alert slot is empty/filled
-            if (alert_list[ii].title[0] == '\0') // It's empty, skip
-                // this iteration of the loop and advance to the
-                // next slot.
+            if (alert_list[ii].title[0] == '\0') {  // It's empty,
+                // skip this iteration of the loop and advance to
+                // the next slot.
                 continue;
+            }
+            else if (!alert_list[ii].filename[0]) { // Filename is
+                // empty, we need to fill it in.
 
-            // The last parameter denotes loading into pixmap_alerts instead
-            // of pixmap or pixmap_final.  Note that just calling map_search
-            // gets the alert areas drawn on the screen via the draw_map()
-            // function.
-            //fprintf(stderr,"load_alert_maps() Title: %s\n",alert_list[ii].title);
+                //fprintf(stderr,"load_alert_maps() Title: %s\n",alert_list[ii].title);
 
-            if ( (alert_list[ii].title[0] != '\0')       // Alert in the slot
-                    && (!alert_list[ii].filename[0]) ) { // but filename is empty
+                // The last parameter denotes loading into
+                // pixmap_alerts instead of pixmap or pixmap_final.
+                // Note that just calling map_search does not get
+                // the alert areas drawn on the screen.  The
+                // draw_map() function called by map_search just
+                // fills in the filename field in the struct and
+                // exits.
                 map_search (w,
                     alert_scan,
                     &alert_list[ii],
                     &alert_count,
                     (int)(alert_status[ii + 2] == DATA_VIA_TNC || alert_status[ii + 2] == DATA_VIA_LOCAL),
                     DRAW_TO_PIXMAP_ALERTS);
-//fprintf(stderr,"Title1:%s\n",alert_list[ii].title);
+
+                //fprintf(stderr,"Title1:%s\n",alert_list[ii].title);
             }
         }
     }
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
 // Just for a test
@@ -12018,8 +12041,16 @@ void load_alert_maps (Widget w, char *dir) {
     if (!alert_count)
         XtAppWarning (app_context, "Alert Map count overflow: load_alert_maps\b\n");
 
+
 // Are we drawing them in reverse order so that the important 
 // alerts end up drawn on top of the less important alerts?
+// Actually, since the alert_list isn't currently ordered at all,
+// perhaps we need to order it by priority, then by map file, so
+// that we can draw the shapes from each map file in the correct
+// order.  This might cause each map file to be drawn up to three
+// times (once for each priority level), but that's better than
+// calling each map for each zone as is done now.
+
 
     for (ii = alert_max_count - 1; ii >= 0; ii--) {
 
@@ -12034,9 +12065,6 @@ void load_alert_maps (Widget w, char *dir) {
 
             // The last parameter denotes drawing into pixmap_alert
             // instead of pixmap or pixmap_final.
-
-// Why do we need to draw alerts again here?  Looks like it's to get
-// the right tint color.
 
             //fprintf(stderr,"Drawing %s\n",alert_list[ii].filename);
             //fprintf(stderr,"Title4:%s\n",alert_list[ii].title);
