@@ -3443,7 +3443,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 // This one currently tries to do local logging even if
 // transmit is disabled.
 //*****************************************************************************
-void output_my_data(char *message, int port, int type, int loopback_only, int use_igate_path) {
+void output_my_data(char *message, int port, int type, int loopback_only, int use_igate_path, char *path) {
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
     char output_net[100];
@@ -3526,6 +3526,18 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                             VERSIONFRM,devices[i].unproto_igate);
                             done++;
                         }
+                    }
+//WE7U
+                    // Check whether a path was passed to us as a
+                    // parameter:
+                    if ( (path != NULL) && (strlen(path) != 0) ) {
+                        xastir_snprintf(data_txt, sizeof(data_txt),
+                            "%c%s %s VIA %s\r", '\3', "UNPROTO",
+                            VERSIONFRM, path);
+                        xastir_snprintf(data_txt_save, sizeof(data_txt_save),
+                            "%s>%s,%s:", my_callsign,
+                            VERSIONFRM, path);
+                        done++;
                     }
 
                     // We look for a non-null path entry starting at the current

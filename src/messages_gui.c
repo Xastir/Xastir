@@ -123,11 +123,12 @@ void reverse_path(char *input_string) {
 
     // j now tells us how many were found.  Now go in the reverse
     // order and concatenate the substrings together.  Get rid of
-    // "RELAY" calls as we're doing it?
+    // "RELAY" and "TCPIP" calls as we're doing it.
     input_string[0] = '\0'; // Clear out the old string first
     for ( i = j - 1; i >= 0; i-- ) {
         if ( (input_string[indexes[i]+1] != '\0')
-                && (strncasecmp(&input_string[indexes[i]+1],"RELAY",5) != 0) ) {
+                && (strncasecmp(&input_string[indexes[i]+1],"RELAY",5) != 0)
+                && (strncasecmp(&input_string[indexes[i]+1],"TCPIP",5) != 0) ) {
 
             // Snag each callsign into temp:
             strncpy(temp, &input_string[indexes[i]+1], indexes[i+1] - indexes[i]);
@@ -187,6 +188,47 @@ printf("Found a TRACE\n");
 
 
 
+void get_path_data(char *callsign, char *path) {
+    DataRow *p_station;
+
+
+    if (search_station_name(&p_station,callsign,1)) {  // Found callsign
+        char new_path[200];
+
+        xastir_snprintf(new_path,sizeof(new_path),p_station->node_path_ptr);
+
+        printf("\nPath from %s: %s\n",
+            callsign,
+            new_path);
+
+// We need to chop off the first call, remove asterisks and
+// injection ID's, and reverse the order of the callsigns.  We need
+// to do the same thing in the callback for button_submit_call, so
+// that we get a new path whenever the callsign is changed.  Create
+// a new TextFieldWidget to hold the path info, which gets filled in
+// here (and the callback) but can be changed by the user.  Must
+// find a nice way to use this path from output_my_data() as well.
+
+        reverse_path(new_path);
+
+        printf("  Path to %s: %s\n",
+            callsign,
+            new_path);
+
+        strcpy(path,new_path);
+    }
+    else {  // Couldn't find callsign.  It's
+            // not in our station database.
+        printf("Path from %s: No Path Known\n",callsign);
+
+        strcpy(path,"");
+    }
+}
+
+ 
+
+
+
 void Send_message_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int i; 
 
@@ -215,6 +257,8 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_des
 
 void Check_new_call_messages( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int i, pos;
+    char call_sign[MAX_CALLSIGN+1];
+    char path[200];
 
     i=atoi((char *)clientData);
     /* clear window*/
@@ -234,6 +278,17 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call
 
         // Set the cursor position to 0
         XtVaSetValues(mw[i].send_message_text,XmNcursorPosition,pos,NULL);
+
+        // Go get the reverse path for the new callsign entered
+        strcpy(call_sign,XmTextFieldGetString(mw[i].send_message_call_data));
+        // Try lowercase
+        get_path_data(call_sign, path);
+        if (strlen(path) == 0) {
+            // Try uppercase
+            (void)to_upper(call_sign);
+            get_path_data(call_sign, path);
+        }
+        XmTextFieldSetString(mw[i].send_message_path, path);
     }
 
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call_messages" );
@@ -256,6 +311,7 @@ void Clear_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char temp1[MAX_CALL+1];
     char temp2[302];
+    char path[200];
     int i;
 
     i=atoi((char *)clientData);
@@ -272,6 +328,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
         strcpy(temp2,XmTextFieldGetString(mw[i].send_message_message_data));
         (void)remove_trailing_spaces(temp2);
 
+        strcpy(path,XmTextFieldGetString(mw[i].send_message_path));
+        (void)remove_trailing_spaces(path);
+
         if(debug_level & 2)
             printf("Send message to <%s> from <%s> :%s\n",temp1,mw[i].to_call_sign,temp2);
 
@@ -282,7 +341,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
             auto_reply=0;
             XmToggleButtonSetState(auto_msg_toggle,FALSE,FALSE);
             statusline(langcode("BBARSTA011"),0);       // Auto Reply Messages OFF
-            output_message(mw[i].to_call_sign,temp1,temp2);
+            output_message(mw[i].to_call_sign,temp1,temp2,path);
             XmTextFieldSetString(mw[i].send_message_message_data,"");
 //            if (mw[i].message_group!=1)
 //                XtSetSensitive(mw[i].button_ok,FALSE);
@@ -417,7 +476,7 @@ void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     int groupon;
     int box_len;
     Atom delw;
-    DataRow *p_station;
+//    DataRow *p_station;
 
     groupon=0;
     box_len=90;
@@ -451,10 +510,10 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
         mw[i].message_group = groupon;
         mw[i].send_message_dialog = XtVaCreatePopupShell(temp,xmDialogShellWidgetClass,Global.top,
-                                XmNdeleteResponse,XmDESTROY,
-                                XmNdefaultPosition, FALSE,
-                                XmNtitleString,"Send Message",
-                                NULL);
+                        XmNdeleteResponse,XmDESTROY,
+                        XmNdefaultPosition, FALSE,
+                        XmNtitleString,"Send Message",
+                        NULL);
 
         mw[i].pane = XtVaCreateWidget("Send_message pane",xmPanedWindowWidgetClass, mw[i].send_message_dialog,
                         XmNbackground, colors[0xff],
@@ -492,119 +551,152 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         mw[i].send_message_text = XmCreateScrolledText(mw[i].form,"Send_message smt",args,n);
 
         mw[i].call = XtVaCreateManagedWidget(langcode(groupon == 0  ? "WPUPMSB003": "WPUPMSB004"),
-                            xmLabelWidgetClass, mw[i].form,
-                            XmNtopAttachment, XmATTACH_NONE,
-                            XmNbottomAttachment, XmATTACH_FORM,
-                            XmNbottomOffset, 85,
-                            XmNleftAttachment, XmATTACH_FORM,
-                            XmNleftOffset, 10,
-                            XmNrightAttachment, XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            NULL);
+                        xmLabelWidgetClass, mw[i].form,
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 85,
+                        XmNleftAttachment, XmATTACH_FORM,
+                        XmNleftOffset, 10,
+                        XmNrightAttachment, XmATTACH_NONE,
+                        XmNbackground, colors[0xff],
+                        NULL);
 
         mw[i].send_message_call_data = XtVaCreateManagedWidget("Send_message smcd", xmTextFieldWidgetClass, mw[i].form,
-                                    XmNeditable,   TRUE,
-                                    XmNcursorPositionVisible, TRUE,
-                                    XmNsensitive, TRUE,
-                                    XmNshadowThickness,    1,
-                                    XmNcolumns, 15,
-                                    XmNwidth, ((15*7)+2),
-                                    XmNmaxLength, 15,
-                                    XmNbackground, colors[0x0f],
-                                    XmNtopAttachment, XmATTACH_NONE,
-                                    XmNbottomAttachment, XmATTACH_FORM,
-                                    XmNbottomOffset, 80,
-                                    XmNleftAttachment, XmATTACH_WIDGET,
-                                    XmNleftWidget, mw[i].call,
-                                    XmNleftOffset, 10,
-                                    XmNrightAttachment,XmATTACH_NONE,
-                                    XmNnavigationType, XmTAB_GROUP,
-                                    XmNtraversalOn, TRUE,
-                                    NULL);
+                        XmNeditable,   TRUE,
+                        XmNcursorPositionVisible, TRUE,
+                        XmNsensitive, TRUE,
+                        XmNshadowThickness,    1,
+                        XmNcolumns, 10,
+                        XmNwidth, ((10*7)+2),
+                        XmNmaxLength, 10,
+                        XmNbackground, colors[0x0f],
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 80,
+                        XmNleftAttachment, XmATTACH_WIDGET,
+                        XmNleftWidget, mw[i].call,
+                        XmNleftOffset, 5,
+                        XmNrightAttachment,XmATTACH_NONE,
+                        XmNnavigationType, XmTAB_GROUP,
+                        XmNtraversalOn, TRUE,
+                        NULL);
 
         xastir_snprintf(temp, sizeof(temp), langcode(groupon == 0 ? "WPUPMSB005": "WPUPMSB006"));
 
         mw[i].button_submit_call = XtVaCreateManagedWidget(temp,xmPushButtonGadgetClass, mw[i].form,
-                                        XmNleftAttachment, XmATTACH_WIDGET,
-                                        XmNleftWidget, mw[i].send_message_call_data,
-                                        XmNleftOffset, 20,
-                                        XmNtopAttachment, XmATTACH_NONE,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 80,
-                                        XmNrightAttachment, XmATTACH_NONE,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        XmNtraversalOn, TRUE,
-                                        NULL);
+                        XmNleftAttachment, XmATTACH_WIDGET,
+                        XmNleftWidget, mw[i].send_message_call_data,
+                        XmNleftOffset, 10,
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 80,
+                        XmNrightAttachment, XmATTACH_NONE,
+                        XmNbackground, colors[0xff],
+                        XmNnavigationType, XmTAB_GROUP,
+                        XmNtraversalOn, TRUE,
+                        NULL);
 
         mw[i].button_clear_msg = XtVaCreateManagedWidget(langcode("WPUPMSB007"),xmPushButtonGadgetClass, mw[i].form,
-                                        XmNleftAttachment, XmATTACH_WIDGET,
-                                        XmNleftWidget, mw[i].button_submit_call,
-                                        XmNleftOffset, 10,
-                                        XmNtopAttachment, XmATTACH_NONE,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 80,
-                                        XmNrightAttachment, XmATTACH_NONE,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        XmNtraversalOn, TRUE,
-                                        NULL);
+                        XmNleftAttachment, XmATTACH_WIDGET,
+                        XmNleftWidget, mw[i].button_submit_call,
+                        XmNleftOffset, 10,
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 80,
+                        XmNrightAttachment, XmATTACH_NONE,
+                        XmNbackground, colors[0xff],
+                        XmNnavigationType, XmTAB_GROUP,
+                        XmNtraversalOn, TRUE,
+                        NULL);
+
+//WE7U
+        mw[i].path = XtVaCreateManagedWidget(langcode("WPUPMSB010"),
+                        xmLabelWidgetClass, mw[i].form,
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 85,
+                        XmNleftAttachment, XmATTACH_WIDGET,
+                        XmNleftWidget, mw[i].button_clear_msg,
+                        XmNleftOffset, 10,
+                        XmNrightAttachment, XmATTACH_NONE,
+                        XmNbackground, colors[0xff],
+                        NULL);
+
+        mw[i].send_message_path = XtVaCreateManagedWidget("Send_message path", xmTextFieldWidgetClass, mw[i].form,
+                        XmNeditable,   TRUE,
+                        XmNcursorPositionVisible, TRUE,
+                        XmNsensitive, TRUE,
+                        XmNshadowThickness,    1,
+                        XmNcolumns, 26,
+                        XmNwidth, ((26*7)+2),
+                        XmNmaxLength, 199,
+                        XmNbackground, colors[0x0f],
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 80,
+                        XmNleftAttachment, XmATTACH_WIDGET,
+                        XmNleftWidget, mw[i].path,
+                        XmNleftOffset, 5,
+                        XmNrightAttachment,XmATTACH_NONE,
+                        XmNnavigationType, XmTAB_GROUP,
+                        XmNtraversalOn, TRUE,
+                        NULL);
 
         mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),xmLabelWidgetClass, mw[i].form,
-                                        XmNtopAttachment, XmATTACH_NONE,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 45,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment, XmATTACH_NONE,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 45,
+                        XmNleftAttachment, XmATTACH_FORM,
+                        XmNleftOffset, 10,
+                        XmNrightAttachment, XmATTACH_NONE,
+                        XmNbackground, colors[0xff],
+                        NULL);
 
         mw[i].send_message_message_data = XtVaCreateManagedWidget("Send_message smmd", xmTextFieldWidgetClass, mw[i].form,
-                                        XmNeditable,   TRUE,
-                                        XmNcursorPositionVisible, TRUE,
-                                        XmNsensitive, TRUE,
-                                        XmNshadowThickness,    1,
-                                        XmNcolumns, 64,
-                                        XmNwidth, ((64*7)+2),
-                                        XmNmaxLength, 255,
-                                        XmNbackground, colors[0x0f],
-                                        XmNtopAttachment, XmATTACH_NONE,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 40,
-                                        XmNleftAttachment, XmATTACH_WIDGET,
-                                        XmNleftWidget, mw[i].message,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_NONE,
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        XmNtraversalOn, TRUE,
-                                        NULL);
+                        XmNeditable,   TRUE,
+                        XmNcursorPositionVisible, TRUE,
+                        XmNsensitive, TRUE,
+                        XmNshadowThickness,    1,
+                        XmNcolumns, 64,
+                        XmNwidth, ((64*7)+2),
+                        XmNmaxLength, 255,
+                        XmNbackground, colors[0x0f],
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 40,
+                        XmNleftAttachment, XmATTACH_WIDGET,
+                        XmNleftWidget, mw[i].message,
+                        XmNleftOffset, 10,
+                        XmNrightAttachment,XmATTACH_NONE,
+                        XmNnavigationType, XmTAB_GROUP,
+                        XmNtraversalOn, TRUE,
+                        NULL);
 
         mw[i].button_ok = XtVaCreateManagedWidget(langcode("WPUPMSB009"),xmPushButtonGadgetClass, mw[i].form,
-                                        XmNtopAttachment, XmATTACH_NONE,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 1,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 2,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        XmNtraversalOn, TRUE,
-                                        NULL);
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 5,
+                        XmNleftAttachment, XmATTACH_POSITION,
+                        XmNleftPosition, 1,
+                        XmNrightAttachment, XmATTACH_POSITION,
+                        XmNrightPosition, 2,
+                        XmNbackground, colors[0xff],
+                        XmNnavigationType, XmTAB_GROUP,
+                        XmNtraversalOn, TRUE,
+                        NULL);
 
         mw[i].button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, mw[i].form,
-                                        XmNtopAttachment, XmATTACH_NONE,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 3,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 4,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        XmNtraversalOn, TRUE,
-                                        NULL);
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset, 5,
+                        XmNleftAttachment, XmATTACH_POSITION,
+                        XmNleftPosition, 3,
+                        XmNrightAttachment, XmATTACH_POSITION,
+                        XmNrightPosition, 4,
+                        XmNbackground, colors[0xff],
+                        XmNnavigationType, XmTAB_GROUP,
+                        XmNtraversalOn, TRUE,
+                        NULL);
 
         xastir_snprintf(mw[i].win, sizeof(mw[i].win), "%d", i);
         XtAddCallback(mw[i].button_ok, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
@@ -619,41 +711,13 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
         XtAddCallback(mw[i].button_submit_call, XmNactivateCallback,  Check_new_call_messages, (XtPointer)mw[i].win);
 
-
-
-//WE7U
         if (clientData != NULL) {
+            char path[200];
+
             XmTextFieldSetString(mw[i].send_message_call_data, group);
-            if (search_station_name(&p_station,group,1)) {  // Found callsign
-                char new_path[200];
-
-                xastir_snprintf(new_path,sizeof(new_path),p_station->node_path_ptr);
-
-                printf("\nPath from %s: %s\n",
-                    group,
-                    new_path);
-
-// We need to chop off the first call, remove asterisks and
-// injection ID's, and reverse the order of the callsigns.  We need
-// to do the same thing in the callback for button_submit_call, so
-// that we get a new path whenever the callsign is changed.  Create
-// a new TextFieldWidget to hold the path info, which gets filled in
-// here (and the callback) but can be changed by the user.  Must
-// find a nice way to use this path from output_my_data() as well.
-
-                reverse_path(new_path);
-
-                printf("  Path to %s: %s\n",
-                    group,
-                    new_path);
-            }
-            else {  // Couldn't find callsign.  It's
-                    // not in our station database.
-                printf("Path from %s: No Path Known\n",group);
-            }
+            get_path_data(group, path);
+            XmTextFieldSetString(mw[i].send_message_path, path);
         }
-
-
 
         pos_dialog(mw[i].send_message_dialog);
 

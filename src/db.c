@@ -2576,7 +2576,9 @@ void Station_query_trace(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@
 
     pad_callsign(call,station);
     xastir_snprintf(temp, sizeof(temp), ":%s:?APRST", call);
-    transmit_message_data(station,temp);
+
+// WE7U: It'd be nice to return via the reverse path here
+    transmit_message_data(station,temp,NULL);
 }
 
 
@@ -2590,7 +2592,9 @@ void Station_query_messages(/*@unused@*/ Widget w, XtPointer clientData, /*@unus
 
     pad_callsign(call,station);
     xastir_snprintf(temp, sizeof(temp), ":%s:?APRSM", call);
-    transmit_message_data(station,temp);
+
+// WE7U: It'd be nice to return via the reverse path here
+    transmit_message_data(station,temp,NULL);
 }
 
 
@@ -2604,7 +2608,9 @@ void Station_query_direct(/*@unused@*/ Widget w, XtPointer clientData, /*@unused
 
     pad_callsign(call,station);
     xastir_snprintf(temp, sizeof(temp), ":%s:?APRSD", call);
-    transmit_message_data(station,temp);
+
+// WE7U:It'd be nice to return via the reverse path here
+    transmit_message_data(station,temp,NULL);
 }
 
 
@@ -2618,7 +2624,9 @@ void Station_query_version(/*@unused@*/ Widget w, XtPointer clientData, /*@unuse
 
     pad_callsign(call,station);
     xastir_snprintf(temp, sizeof(temp), ":%s:?VER", call);
-    transmit_message_data(station,temp);
+
+// WE7U:It'd be nice to return via the reverse path here
+    transmit_message_data(station,temp,NULL);
 }
 
 
@@ -2630,7 +2638,7 @@ void General_query(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     char temp[50];
 
     xastir_snprintf(temp, sizeof(temp), "?APRS?%s", location);
-    output_my_data(temp,-1,0,0,0);  // Not igating
+    output_my_data(temp,-1,0,0,0,NULL);  // Not igating
 }
 
 
@@ -2638,7 +2646,7 @@ void General_query(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
 
 
 void IGate_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
-    output_my_data("?IGATE?",-1,0,0,0); // Not igating
+    output_my_data("?IGATE?",-1,0,0,0,NULL); // Not igating
 }
 
 
@@ -2646,7 +2654,7 @@ void IGate_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
 
 
 void WX_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
-    output_my_data("?WX?",-1,0,0,0);    // Not igating
+    output_my_data("?WX?",-1,0,0,0,NULL);    // Not igating
 }
 
 
@@ -8881,7 +8889,9 @@ int process_directed_query(char *call,char *path,char *message,char from) {
             }
             p_station = p_station->n_next;
         }
-        transmit_message_data(call,temp);
+
+// WE7U:It'd be nice to return via the reverse path here
+        transmit_message_data(call,temp,NULL);
         ok = 1;
     }
     if (!ok && strncmp(message,"APRSH",5)==0) {
@@ -8904,13 +8914,17 @@ int process_directed_query(char *call,char *path,char *message,char from) {
             ||  strncmp(message,"PING?",5)==0) && from != 'F') {
         pad_callsign(from_call,call);
         xastir_snprintf(temp, sizeof(temp), ":%s:PATH= %s>%s",from_call,call,path);    // correct format ?????
-        transmit_message_data(call,temp);
+
+// WE7U:It'd be nice to return via the reverse path here
+        transmit_message_data(call,temp,NULL);
         ok = 1;
     }
     if (!ok && strncasecmp("VER",message,3) == 0 && from != 'F') { // not in Reference !???
         pad_callsign(from_call,call);
         xastir_snprintf(temp, sizeof(temp), ":%s:%s",from_call,VERSIONLABEL);
-        transmit_message_data(call,temp);
+
+// WE7U:It'd be nice to return via the reverse path here
+        transmit_message_data(call,temp,NULL);
         if (debug_level & 1)
             printf("Sent to %s:%s\n",call,temp);
     }
@@ -8935,7 +8949,7 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *m
     if (!ok && strncmp(message,"IGATE?",6)==0) {
         if (operate_as_an_igate && from != 'F') {
             xastir_snprintf(temp, sizeof(temp), "<IGATE,MSG_CNT=%d,LOC_CNT=%d",(int)igate_msgs_tx,stations_types(3));
-            output_my_data(temp,port,0,0,0);    // Not igating
+            output_my_data(temp,port,0,0,0,NULL);    // Not igating
         }
         ok = 1;
     }
@@ -9377,12 +9391,15 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             // the (possibly) truncated msg_id.  This is per Bob B's
             // Reply/Ack spec, sent to xastir-dev on Nov 14, 2001.
             xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,orig_msg_id);
-            transmit_message_data(call,ack);
+
+//WE7U Need to figure out the reverse path for this one instead of
+//passing a NULL for the path:
+            transmit_message_data(call,ack,NULL);
             if (auto_reply == 1) {
                 if (debug_level & 2)
                     printf("Send autoreply to <%s> from <%s> :%s\n",call,my_callsign,auto_reply_message);
                 if (!is_my_call(call,1))
-                    output_message(my_callsign,call,auto_reply_message);
+                    output_message(my_callsign,call,auto_reply_message,"");
             }
         }
 
@@ -9589,13 +9606,16 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
 
             pad_callsign(from_call,call);         /* ack the message */
             xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,msg_id);
-            transmit_message_data(call,ack);
+
+//WE7U:  Need to figure out the reverse path instead of using a null
+//path here:
+            transmit_message_data(call,ack,NULL);
             if (auto_reply == 1) {
                 if (debug_level & 2)
                     printf("Send autoreply to <%s> from <%s> :%s\n",call,my_callsign,auto_reply_message);
 
                 if (!is_my_call(call,1))
-                    output_message(my_callsign,call,auto_reply_message);
+                    output_message(my_callsign,call,auto_reply_message,"");
             }
         }
         done = 1;
@@ -10907,10 +10927,10 @@ void check_and_transmit_objects_items(time_t time) {
 
                 // Attempt to transmit the object/item again
                 if (object_tx_disable) {
-                    output_my_data(line,-1,0,1,0);    // Local loopback only, not igating
+                    output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
                 }
                 else {
-                    output_my_data(line,-1,0,0,0);    // Transmit/loopback object data, not igating
+                    output_my_data(line,-1,0,0,0,NULL);    // Transmit/loopback object data, not igating
                 }
             }
         }

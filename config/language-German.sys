@@ -505,6 +505,7 @@ WPUPMSB006|Neue Gruppe||
 WPUPMSB007|Lösche Nachrichten||
 WPUPMSB008|Nachricht:||
 WPUPMSB009|Sende jetzt!||
+WPUPMSB010|Path:||
 #
 # PopUp "Automatische Antwort"
 WPUPARM001|Automatische Antwort ändern||

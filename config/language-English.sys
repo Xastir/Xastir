@@ -499,6 +499,7 @@ WPUPMSB006|New Group||
 WPUPMSB007|Clear Messages||
 WPUPMSB008|Message:||
 WPUPMSB009|Send Now!||
+WPUPMSB010|Path:||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Change Auto Reply||

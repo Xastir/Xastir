@@ -317,7 +317,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:clear_outgoing_messa
 // Adds a message to the outgoing message queue.  Doesn't actually
 // cause a transmit.  "check_and_transmit_messages()" is the
 // function which actually gets things moving.
-void output_message(char *from, char *to, char *message) {
+void output_message(char *from, char *to, char *message, char *path) {
     int ok,i,j;
     char message_out[MAX_MESSAGE_OUTPUT_LENGTH+1];
     int last_space, message_ptr, space_loc;
@@ -427,6 +427,11 @@ void output_message(char *from, char *to, char *message) {
                 strcpy(message_pool[i].from_call_sign,from);
                 strcpy(message_pool[i].message_line,message_out);
 
+                if (path != NULL)
+                    strncpy(message_pool[i].path,path,200);
+                else
+                    strcpy(message_pool[i].path,"");
+
 //                // We compute the base-90 sequence number here
 //                // This allows it to range from "!!" to "zz"
 //                xastir_snprintf(message_pool[i].seq,
@@ -461,7 +466,7 @@ void output_message(char *from, char *to, char *message) {
 
 
 
-void transmit_message_data(char *to, char *message) {
+void transmit_message_data(char *to, char *message, char *path) {
     DataRow *p_station;
 
     if (debug_level & 2)
@@ -475,26 +480,26 @@ void transmit_message_data(char *to, char *message) {
         if (strcmp(to,my_callsign)!=0) {
             /* check to see if it was heard via a TNC otherwise send it to the last port heard */
             if ((p_station->flag & ST_VIATNC) != 0) {        // heard via TNC ?
-                output_my_data(message,p_station->heard_via_tnc_port,0,0,0);
+                output_my_data(message,p_station->heard_via_tnc_port,0,0,0,path);
                 /* station heard via tnc but in the past hour? */
                 /* if not heard with in the hour try via net */
                 if (!heard_via_tnc_in_past_hour(to)) {
                     if (p_station->data_via==DATA_VIA_NET) {
-                        /* try last port herd */
-                        output_my_data(message,p_station->last_port_heard,0,0,0);
+                        /* try last port heard */
+                        output_my_data(message,p_station->last_port_heard,0,0,0,path);
                     }
                 }
             } else {
                 /* if not a TNC then a NET port? */
                 if (p_station->data_via==DATA_VIA_NET) {
                     /* try last port herd */
-                    output_my_data(message,p_station->last_port_heard,0,0,0);
+                    output_my_data(message,p_station->last_port_heard,0,0,0,path);
                 } else {
                     /* Not a TNC or a NET try all possible */
                     if (debug_level & 2)
                         printf("VIA any way\n");
 
-                    output_my_data(message,-1,0,0,0);
+                    output_my_data(message,-1,0,0,0,path);
                 }
             }
         } else {
@@ -503,7 +508,7 @@ void transmit_message_data(char *to, char *message) {
             if (debug_level & 2)
                 printf("My call VIA any way\n");
 
-            output_my_data(message,-1,0,0,0);
+            output_my_data(message,-1,0,0,0,path);
         }
     } else {
         /* no data found try every way*/
@@ -511,7 +516,7 @@ void transmit_message_data(char *to, char *message) {
         if (debug_level & 2)
             printf("VIA any way\n");
 
-        output_my_data(message,-1,0,0,0);
+        output_my_data(message,-1,0,0,0,path);
     }
 }
 
@@ -559,7 +564,7 @@ void check_and_transmit_messages(time_t time) {
                     if (debug_level & 2)
                         printf("MESSAGE OUT>%s<\n",temp);
 
-                    transmit_message_data(message_pool[i].to_call_sign,temp);
+                    transmit_message_data(message_pool[i].to_call_sign,temp,message_pool[i].path);
 
                     message_pool[i].active_time = time + message_pool[i].next_time;
 

@@ -45,6 +45,7 @@ typedef struct {
     char to_call_sign[MAX_CALLSIGN+1];
     char from_call_sign[MAX_CALLSIGN+1];
     char message_line[MAX_MESSAGE_OUTPUT_LENGTH+1];
+    char path[200];
     char seq[MAX_MESSAGE_ORDER+1];
     time_t active_time;
     time_t next_time;
@@ -62,7 +63,10 @@ typedef struct {
     Widget send_message_call_data;
     Widget send_message_message_data;
     Widget send_message_text;
-    Widget pane, form, button_ok, button_cancel, button_clear_msg, button_submit_call , call, message ;
+    Widget send_message_path;
+    Widget pane, form, button_ok, button_cancel;
+    Widget button_clear_msg, button_submit_call;
+    Widget call, message, path;
 } Message_Window;
 
 
@@ -73,8 +77,8 @@ extern char auto_reply_message[100];
 extern char group_data_file[];
 
 extern void clear_acked_message(char *from, char *to, char *seq);
-extern void transmit_message_data(char *to, char *message);
-extern void output_message(char *from, char *to, char *message);
+extern void transmit_message_data(char *to, char *message, char *path);
+//extern void output_message(char *from, char *to, char *message);
 extern int check_popup_window(char *from_call_sign, int group);
 extern int look_for_open_group_data(char *to);
 extern void send_queued(char *to);
