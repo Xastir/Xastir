@@ -710,7 +710,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
 //printf("\n");
 
-                // Clear the message window
+                // Clear the text from message window
                 XmTextReplace(mw[mw_p].send_message_text,
                     (XmTextPosition) 0,
                     XmTextGetLastPosition(mw[mw_p].send_message_text),
@@ -854,8 +854,6 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 //                                            pos,
 //                                            pos+strlen(temp2),
 //                                            temp2);
- 
-                                    // Insert the text at the end
                                     XmTextInsert(mw[mw_p].send_message_text,
                                             pos,
                                             temp2);
@@ -866,7 +864,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                             && ( is_my_call(msg_data[msg_index[j]].from_call_sign, 1)) ) {
 //printf("Setting underline\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
-                                            pos,
+                                            pos+23,
                                             pos+strlen(temp2),
                                             //XmHIGHLIGHT_SECONDARY_SELECTED); // Underlining
                                             XmHIGHLIGHT_SELECTED);         // Reverse Video
@@ -874,16 +872,12 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     else {  // Message was acked, get rid of highlighting
 //printf("Setting normal\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
-                                            pos,
+                                            pos+23,
                                             pos+strlen(temp2),
                                             XmHIGHLIGHT_NORMAL);
                                     }
 
 //printf("Text: %s\n",temp2); 
-//                                    XmTextReplace(mw[mw_p].send_message_text,
-//                                            pos,
-//                                            pos+strlen(temp2),
-//                                            temp2);
 
                                     pos += strlen(temp2);
 
