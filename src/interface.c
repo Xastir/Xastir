@@ -5027,16 +5027,21 @@ void port_read(int port) {
 // This select that waits on data and a timeout, so that if data
 // doesn't come in within a certain period of time, we wake up to
 // check whether the socket has gone down.  Else, we go back into
-// the select to wait for more data or a timeout.
+// the select to wait for more data or a timeout.  FreeBSD has a
+// problem if this is less than 1ms.  Linux works ok down to 100us.
+// We don't need it anywhere near that short though.  We just need
+// to check whether the main thread has requested the interface be
+// closed, and so need to have this short enough to have reasonable
+// response time to the user.
 
 //sched_yield();  // Yield to other threads
 
-            // Set up the select to block until data ready or 200ms
+            // Set up the select to block until data ready or 100ms
             // timeout, whichever occurs first.
             FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 500000;    // 500 ms
+            tmv.tv_usec = 100000;    // 100 ms
             (void)select(0,&rd,NULL,NULL,&tmv);
         }
     }
@@ -5300,11 +5305,16 @@ void port_write(int port) {
 // so that if data doesn't come in within a certain period of time,
 // we wake up to check whether the socket has gone down.  Else, we
 // go back into the select to wait for more data or a timeout.
+// FreeBSD has a problem if this is less than 1ms.  Linux works ok
+// down to 100us.  We don't need it anywhere near that short though.
+// We just need to check whether the main thread has requested the
+// interface be closed, and so need to have this short enough to
+// have reasonable response time to the user.
 
             FD_ZERO(&wd);
             FD_SET(port_data[port].channel, &wd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 500000;  // Delay 500ms
+            tmv.tv_usec = 100000;  // Delay 100ms
             (void)select(0,NULL,&wd,NULL,&tmv);
         }
     }
