@@ -3088,7 +3088,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     // list rest of trail data
     if (p_station->track_data != NULL) {
         for (last=(p_station->track_data->trail_inp-1+MAX_TRACKS)%MAX_TRACKS;
-                last != p_station->track_data->trail_out;
+                last != p_station->track_data->trail_out;   // Stop at last data point
                 last = (last-1+MAX_TRACKS)%MAX_TRACKS) {
             sec  = p_station->track_data->sec[last];
             time = localtime(&sec);
@@ -4352,7 +4352,7 @@ int new_trail_color(char *call) {
 
 // Trail storage in ring buffer (1 is the oldest point)
 // inp         v                   
-//      [.][1][.][.][.][.][.][.][.]   at least 1 point in buffer,
+//      [.][1][.][.][.][.][.][.][.]   at least one previous point in buffer,
 // out      v                         else no allocated trail memory
 
 // inp                  v
@@ -4362,6 +4362,11 @@ int new_trail_color(char *call) {
 // inp      v  
 //      [9][1][2][3][4][5][6][7][8]   buffer full (wrap around)
 // out      v
+//
+// Note that if we only have one point for a station, we won't have
+// any track_data structs allocated.  If we have two points, we'll
+// have the oldest point saved in the track_data structure and the
+// most current point saved in our station variables.
 
 
 /*
@@ -4396,6 +4401,7 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
     }
     else if (p_station->track_data->trail_out ==
                 p_station->track_data->trail_inp) {   // ring buffer is full
+        // Lose the oldest point we have saved
         p_station->track_data->trail_out =   // increment and keep inside buffer
             (p_station->track_data->trail_out+1) % MAX_TRACKS;
     }
@@ -4587,11 +4593,6 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
     if (fill->track_data != NULL) {
 
         // trail should have at least two points:
-
-//WE7U:  This isn't true.  The track_data only needs to have one
-//point, and the current position would be our other point.  Fix
-//this.
-
         if ( (fill->track_data->trail_inp - fill->track_data->trail_out +
                 MAX_TRACKS) % MAX_TRACKS != 1) {
             if (debug_level & 256) {
@@ -4698,6 +4699,10 @@ void month2str(int month, char *str) {
     }
 }
 
+
+
+
+
 void wday2str(int wday, char *str) {
 
     switch (wday) {
@@ -4711,6 +4716,8 @@ void wday2str(int wday, char *str) {
         default:        strcpy(str,"   "); break;
     }
 }
+
+
 
 
 
@@ -4752,6 +4759,9 @@ void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,lon
 }
 
 
+
+
+
 /*
  *  Export trail for one station to file
  */
@@ -4775,6 +4785,8 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
 
 // WE7U:  Not true.  track_data needs to only have one point, and
 // the other point necessary is the current data point.  Fix this.
+// It looks like we'll miss sending the latest position to the file
+// with this code.
 
         if ((p_station->track_data->trail_inp - p_station->track_data->trail_out+MAX_TRACKS)%MAX_TRACKS != 1) {
             for (i = p_station->track_data->trail_out;
