@@ -610,11 +610,14 @@ void draw_geo_image_map (Widget w,
                 if (fileimg[0] != '/' ) { // not absolute path
                     // make it relative to the .geo file
                     char temp[MAX_FILENAME];
+
                     strncpy(temp, file, MAX_FILENAME); // grab .geo file name
                     temp[MAX_FILENAME-1] = '\0';
                     (void)get_map_dir(temp);           // leaves just the path and trailing /
                     if (strlen(temp) < (MAX_FILENAME - 1 - strlen(fileimg)))
-                        strcat(temp, fileimg);
+                        strncat(temp,
+                            fileimg,
+                            sizeof(temp) - strlen(temp));
                     strcpy(fileimg, temp);
                 }
             }

@@ -5527,9 +5527,11 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
     alert_count = MAX_ALERT - 1;
 
     // Set up our path to the wx alert maps
-    memset (alert_scan, 0, sizeof (alert_scan));    // Zero our alert_scan string
-    strncpy (alert_scan, dir, MAX_FILENAME-10); // Fetch the base directory
-    strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
+    memset(alert_scan, 0, sizeof (alert_scan));    // Zero our alert_scan string
+    strncpy(alert_scan, dir, MAX_FILENAME-10); // Fetch the base directory
+    strncat(alert_scan, // Complete alert directory is now set up in the string
+        "/",
+        sizeof(alert_scan) - strlen(alert_scan));
     dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
     // Iterate through the weather alerts we currently have on

@@ -3466,7 +3466,9 @@ if (on_screen) {
 
                             // Append the name of the quad
                             temp = DBFReadStringAttribute( hDBF, structure, 0 );
-                            strcat(quad_label,temp);
+                            strncat(quad_label,
+                                temp,
+                                sizeof(quad_label) - strlen(quad_label));
                         }
                         else {
                             quad_label[0] = '\0';

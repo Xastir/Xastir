@@ -6240,7 +6240,9 @@ void modify_device_list(int option, int port) {
                                 dtype[devices[i].device_type].device_name,
                                 devices[i].device_name,
                                 devices[i].comment);
-                            strcat(temp,"    ");
+                            strncat(temp,
+                                "    ",
+                                sizeof(temp) - strlen(temp));
                             break;
 
                         case DEVICE_SERIAL_MKISS_TNC:
@@ -6253,7 +6255,9 @@ void modify_device_list(int option, int port) {
                                 devices[i].device_name,
                                 atoi(devices[i].radio_port),
                                 devices[i].comment);
-                            strcat(temp,"    ");
+                            strncat(temp,
+                                "    ",
+                                sizeof(temp) - strlen(temp));
                             break;
 
                         case DEVICE_NET_DATABASE:
@@ -6270,7 +6274,9 @@ void modify_device_list(int option, int port) {
                                 devices[i].device_host_name,
                                 devices[i].sp,
                                 devices[i].comment);
-                            strcat(temp,"    ");
+                            strncat(temp,
+                                "    ",
+                                sizeof(temp) - strlen(temp));
                             break;
 
                         case DEVICE_AX25_TNC:
@@ -6282,7 +6288,9 @@ void modify_device_list(int option, int port) {
                                 dtype[devices[i].device_type].device_name,
                                 devices[i].device_name,
                                 devices[i].comment);
-                            strcat(temp,"    ");
+                            strncat(temp,
+                                "    ",
+                                sizeof(temp) - strlen(temp));
                             break;
 
                         default:
@@ -6348,7 +6356,9 @@ void modify_device_list(int option, int port) {
                                 dtype[devices[i].device_type].device_name,
                                 devices[i].device_name,
                                 devices[i].comment);
-                            strcat(temp,"    ");
+                            strncat(temp,
+                                "    ",
+                                sizeof(temp) - strlen(temp));
                             break;
 
                         case DEVICE_SERIAL_MKISS_TNC:
@@ -6362,7 +6372,9 @@ void modify_device_list(int option, int port) {
                                 devices[i].device_name,
                                 atoi(devices[i].radio_port),
                                 devices[i].comment);
-                            strcat(temp,"    ");
+                            strncat(temp,
+                                "    ",
+                                sizeof(temp) - strlen(temp));
                             break;
 
                         case DEVICE_NET_DATABASE:
@@ -6380,7 +6392,9 @@ void modify_device_list(int option, int port) {
                                 devices[i].device_host_name,
                                 devices[i].sp,
                                 devices[i].comment);
-                            strcat(temp,"    ");
+                            strncat(temp,
+                                "    ",
+                                sizeof(temp) - strlen(temp));
                             break;
 
                         case DEVICE_AX25_TNC:
@@ -6393,7 +6407,9 @@ void modify_device_list(int option, int port) {
                                 dtype[devices[i].device_type].device_name,
                                 devices[i].device_name,
                                 devices[i].comment);
-                            strcat(temp,"    ");
+                            strncat(temp,
+                                "    ",
+                                sizeof(temp) - strlen(temp));
                             break;
 
                         default:

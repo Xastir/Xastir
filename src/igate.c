@@ -243,7 +243,9 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
     if ( (c1 != NULL) && (c2 != NULL) ) {           // Found both separators
         strncpy(match_line,line2,(int)(c1 - line2));// Copy source/destination portion
         match_line[(int)(c1-line2)] = '\0';         // Terminate the substring
-        strcat(match_line,c2+1);                    // Copy info portion
+        strncat(match_line,                         // Copy info portion
+            c2+1,
+            sizeof(match_line) - strlen(match_line));
     }
     else {  // At least one separator was not found, copy entire string
         xastir_snprintf(match_line,

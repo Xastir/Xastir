@@ -258,7 +258,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
 // calltemp doesn't appear to get used anywhere...
 
     /* add end of field data */
-    strcat(temp,"|");
+    strncat(temp, "|", sizeof(temp) - strlen(temp));
     len=(int)strlen(temp);
     found=0;
     line_pos=0;

@@ -183,7 +183,7 @@ void reverse_path(char *input_string) {
     reverse_path[strlen(reverse_path) - 1] = '\0';
 
     // Save the new path back into the string we were given.
-    strcat(input_string,reverse_path);
+    strncat(input_string, reverse_path, len);
 }
 
 

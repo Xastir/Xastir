@@ -525,7 +525,9 @@ int pipe_check(char *client_address) {
                 strncpy(line2, line, sizeof(line2));
 
                 // Add white space to the end.
-                strcat(line2,"                                    ");
+                strncat(line2,
+                    "                                    ",
+                    sizeof(line2) - strlen(line2));
 
                 // Snag the callsign string
 

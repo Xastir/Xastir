@@ -218,10 +218,17 @@ char *host_lookup(char *host, char *ip, int time) {
                                 if (strlen(temp)>7) {
                                     /* IP found */
                                     if((strlen(ip_addr)+strlen(temp))<sizeof(ip_addr)) {
-                                        if (ips>0)
-                                            strcat(ip_addr," ");
 
-                                        strcat(ip_addr,temp);
+                                        if (ips>0) {
+                                            strncat(ip_addr,
+                                                " ",
+                                                sizeof(ip_addr) - strlen(ip_addr));
+                                        }
+
+                                        strncat(ip_addr,
+                                            temp,
+                                            sizeof(ip_addr) - strlen(ip_addr));
+
                                         ips++;
                                     }
                                 }
