@@ -23,7 +23,7 @@
  *
  */
 #include "config.h"
-//#include "snprintf.h"
+#include "snprintf.h"
 
 //#include <stdio.h>
 //#include <stdlib.h>
@@ -57,8 +57,8 @@
 //#include <math.h>
 
 //#include "xastir.h"
-//#include "maps.h"
-//#include "alert.h"
+#include "maps.h"
+#include "alert.h"
 //#include "util.h"
 //#include "main.h"
 //#include "datum.h"
@@ -167,20 +167,34 @@ void map_gdal_init() {
 
 #ifdef HAVE_LIBGDAL
 
-int gdal_main() {
-/*
-    GDALDatasetH  hDataset;
+void draw_gdal_map(Widget w,
+                   char *dir,
+                   char *filenm,
+                   alert_entry *alert,
+                   u_char alert_color,
+                   int destination_pixmap,
+                   int draw_filled) {
 
-    hDataset = GDALOpen( pszFilename, GA_ReadOnly );
+    GDALDatasetH hDataset;
+    char file[MAX_FILENAME];    // Complete path/name of image
+
+
+    xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
+
+printf("Calling GDALOpen on file: %s\n", file);
+
+    hDataset = GDALOpenShared( file, GA_ReadOnly );
+
+printf("Returned from open\n");
+
     if( hDataset == NULL )
     {
-        ...;
+        fprintf(stderr,"GDAL couldn't open file: %s\n", file);
     }
 
-    GDALClose(hDataset);
-*/
+fprintf(stderr,"GDAL opened the file!\n");
 
-    return(0);
+    GDALClose(hDataset);
 }
 
 
