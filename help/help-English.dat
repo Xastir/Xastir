@@ -305,8 +305,11 @@ stations that also have altnet configured, and have the same altnet call
 entered.
 
 "Disable Posit Dupe-Checks" disables the check for duplicate copies of a
-position. This should only be used when a station might move somewhere and
-immediately back; this is almost never needed in practice.
+position. This should only be used when a station might return to exactly the
+same position (within 60' or so for non-compressed positions) and you wish to
+see the duplicate positions and/or tracks displayed on the map.  This option
+is almost never needed in practice, but can be useful for special events like
+search and rescue operations.
 
 HELP-INDEX>Configure Timing
 
@@ -603,12 +606,12 @@ implemented on all versions of APRS(tm) programs, and some of the details of
 how they are displayed may also be different on other programs.
 For the other three, probability circles, signposts and DF objects, see below.
 
-Objects are retransmitted at the rate specified in File|Configure|Timings.
-"killed" objects are also retransmitted in this manner, until they expire
-from the queue (which they currently never do!). Objects are persistent
-across Xastir sessions, and are stored in ~/.xastir/config/object.log. This
-file may be cleared by selecting "Clear Object/Item history" from the
-Stations menu.
+Objects/Items are retransmitted at a decaying rate up to the max interval
+specified in File|Configure|Timings.  "killed" objects/items are also
+retransmitted in this manner until they expire from the queue (currently 20
+transmits).  Objects/Items are persistent across Xastir sessions, and are
+stored in ~/.xastir/config/object.log. This file may be cleared by selecting
+"Clear Object/Item history" from the Stations menu.
 
 The Object/Item creation option in the right click menu will bring up a dialog
 with the position of your object filled in based on where you clicked the
