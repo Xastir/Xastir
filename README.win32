@@ -359,6 +359,24 @@ installed on your system, with minimal map support.  Later sections
 of this document detail adding additional map libraries in order to
 give you access to the full mapping capability of Xastir.
 
+Note:  Sometimes on WinXP and perhaps Win2k the configure script
+will hang on the "checking for devices" line.  It's unknown what
+causes this.  You can force it by editing the top portion of
+"acinclude.m4" so that it looks like this (just deleting a bunch of
+lines):
+
+  # test for devices
+  AC_DEFUN([XASTIR_DETECT_DEVICES],
+  [
+  AC_MSG_CHECKING([for devices])
+  ac_tnc_port=com1
+  ac_gps_port=com2
+  AC_DEFINE_UNQUOTED([TNC_PORT], "$ac_tnc_port", [Default TNC port.])
+  AC_DEFINE_UNQUOTED([GPS_PORT], "$ac_gps_port", [Default GPS port.])
+  AC_MSG_RESULT(found $ac_tnc_port and $ac_gps_port)
+  ])
+
+Then re-running the "./bootstrap.sh" and following commands.
 
 [ ] Step 7)  Create a link to the Xastir executable.  Type the
 following commands into the BASH shell:
