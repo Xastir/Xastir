@@ -411,7 +411,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         printf("%s",tempfile);
 
     if ( system(tempfile) ) {   // Go get the file
-        printf("Couldn't download the image\n");
+        printf("Couldn't download the trail\n");
         return;
     }
 

@@ -5401,7 +5401,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             printf("%s",tempfile);
 
         if ( system(tempfile) ) {   // Go get the file
-            printf("Couldn't download the image\n");
+            printf("Couldn't download the geo or Terraserver image\n");
             return;
         }
 
@@ -6107,7 +6107,7 @@ void draw_tiger_map (Widget w) {
        printf("%s",tempfile);
 
     if (system(tempfile)) {   // Go get the file
-       printf("Couldn't download the image\n");
+       printf("Couldn't download the Tigermap image\n");
        return;
     }
 
