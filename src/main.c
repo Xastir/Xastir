@@ -18776,6 +18776,11 @@ int main(int argc, char *argv[], char *envp[]) {
             }
 
             XtRealizeWidget(Global.top);
+
+//WE7U
+            // Read the current map index file into the index linked list
+            index_restore_from_file();
+
             create_appshell(display, argv[0], argc, argv);      // does the init
 
             /* reset language attribs for numeric, program needs decimal in US for all data! */

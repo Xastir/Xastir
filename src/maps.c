@@ -10419,9 +10419,37 @@ map_index_record *map_index_head = NULL;
 
 // Saves the linked list pointed to by map_index_head to a file.
 void index_save_to_file() {
-//    FILE *f;
+    FILE *f;
+    map_index_record *current;
 
-printf("Saving index to file (someday).\n");
+
+    printf("Saving map index to file\n");
+
+    f = fopen(MAP_INDEX_DATA,"w");
+
+    if (f == NULL) {
+        printf("Couldn't create/update map index file: %s\n",
+            MAP_INDEX_DATA);
+        return;
+    }
+
+    current = map_index_head;
+
+    while (current != NULL) {
+
+        // Write each object out to the file
+        if (fwrite(current, sizeof(map_index_record), 1, f) != 1) {
+            // Failed to write
+            printf("Couldn't write objects to map index file: %s\n",
+                MAP_INDEX_DATA);
+            current = NULL; // All done
+        }
+        else {
+            // Good write
+            current = current->next;
+        }
+    }
+    (void)fclose(f);
 }
 
 
@@ -10431,17 +10459,46 @@ printf("Saving index to file (someday).\n");
 // Snags the file and creates the linked list pointed to by the
 // map_index_head pointer.
 //
-void index_restore_from_file() {
-//    FILE *f;
+void index_restore_from_file(void) {
+    FILE *f;
+    map_index_record temp;
+    map_index_record *current;
 
-printf("Restoring index from file (someday).\n");
+
+    printf("Restoring map index from file\n");
+
+    f = fopen(MAP_INDEX_DATA,"r");
+    if (f == NULL)  // No file yet
+        return;
+
+    while (!feof (f)) { // Loop through entire file
+
+        // Read one object from the file
+        if (fread(&temp, sizeof(map_index_record), 1, f) == 1) {
+
+            // Malloc space for the data and add it to the head of
+            // the linked list
+            current = (map_index_record *)malloc(sizeof(map_index_record));
+            current->next = map_index_head;
+            map_index_head = current;
+            
+            strncpy(current->filename,temp.filename,399);
+            current->filename[399] = '\0';
+            current->bottom = temp.bottom;
+            current->top = temp.top;
+            current->left = temp.left;
+            current->right = temp.right;
+
+            //printf("Restored: %s\n",current->filename);
+        }
+    }
+    (void)fclose(f);
 }
 
 
 
 
 
-//
 // map_indexer()
 //
 // Recurses through the map directories finding map extents
