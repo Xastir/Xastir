@@ -39,6 +39,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <errno.h>
 
 // Needed for Solaris
 #include <strings.h>
@@ -5197,7 +5198,8 @@ static void* snapshot_thread(void *arg) {
             (Pixmap)NULL,                               // Pixmap shapemask
             NULL ) == XpmSuccess ) {                    // XpmAttributes *attributes
         fprintf(stderr,"ERROR writing %s\n", xpm_filename );
-    } else {  // We now have the xpm file created on disk
+    }
+    else {  // We now have the xpm file created on disk
 
         chmod( xpm_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
 
@@ -5215,7 +5217,15 @@ static void* snapshot_thread(void *arg) {
             png_filename );
 
         if ( system( command ) != 0 ) {
-            fprintf(stderr,"convert failed to convert snapshot from xpm to png\n");
+            // We _may_ have had an error.  Check errno to make
+            // sure.
+            if (errno) {
+                fprintf(stderr, "%s\n", strerror(errno));
+                fprintf(stderr,
+                    "Failed to convert snapshot: %s -> %s\n",
+                    xpm_filename,
+                    png_filename);
+            }
         }
         else {
             chmod( png_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
