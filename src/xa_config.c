@@ -895,8 +895,8 @@ void load_data_or_default(void) {
     if (!get_int ("DISPLAY_UNITS_ENGLISH", &units_english_metric, 0, 1, 0))
         units_english_metric = 0;
 
-    if (!get_int ("DISPLAY_DEAD_RECKONING_INFO", &show_DR, 0, 1, 0))
-        show_DR = 0;
+    if (!get_int ("DISPLAY_DEAD_RECKONING_INFO", &show_DR, 0, 1, 1))
+        show_DR = 1;
 
     if (!get_int ("DISABLE_TRANSMIT", &transmit_disable, 0, 1, 0))
         transmit_disable = 0;
