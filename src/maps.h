@@ -95,6 +95,8 @@ extern int  locate_place(Widget w, char *name, char *state, char *county, char *
 extern void maps_init(void);
 extern time_t last_snapshot;
 
+extern int grid_size;
+
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_IMAGEMAGICK)
 extern float imagemagick_gamma_adjust;

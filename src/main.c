@@ -6566,6 +6566,21 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 Pan_down( w, client_data, call_data );
             TrackMouse(w, (XtPointer)text2, event, NULL);
         }
+
+        // keycode 35, keysym 61 is Equals
+        // keycode 35, keysim 43 is Plus
+        // keycode 86, keysim 65451 is KP_Add
+        if (key == 61 || key == 43 || key == 65451) {
+            grid_size++;
+            redraw = 1;
+        }
+
+        // keycode 48, keysym 45 is Minus
+        // keycode 82, keysym 65453 is KP_Subtract
+        if (key == 45 || key == 65453) {
+            grid_size--;
+            redraw = 1;
+        }
     }
     else {
         if (event->type == MotionNotify) {

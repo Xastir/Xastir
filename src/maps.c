@@ -151,7 +151,9 @@ float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma corre
 const time_t *map_index_timestamp;
 extern int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right);
 static int map_onscreen_index(char *filename);
- 
+
+
+int grid_size = 0;
 
 
 
@@ -281,7 +283,6 @@ int convert_to_xastir_coordinates ( unsigned long* x,
  **********************************************************/
 void draw_grid(Widget w) {
     int coord;
-    unsigned int stepx,stepy;
     unsigned char dash[2];
 
     if (!long_lat_grid)
@@ -297,28 +298,44 @@ void draw_grid(Widget w) {
     else { // Not UTM coordinate system, draw some lat/long lines
         unsigned int x,x1,x2;
         unsigned int y,y1,y2;
+        unsigned int stepsx[3];
+        unsigned int stepsy[3];
+        int step;
+        stepsx[0] = 72000*100;    stepsy[0] = 36000*100;
+        stepsx[1] =  7200*100;    stepsy[1] =  3600*100;
+        stepsx[2] =   300*100;    stepsy[2] =   150*100;
 
         //printf("scale_x: %ld\n",scale_x);
-        stepx = 72000*100;stepy = 36000*100;
-        if (scale_x <= 6000) { stepy = 3600*100; stepx = 7200*100; }
-        if (scale_x <= 300)  { stepx = 300*100 ; stepy = 150*100;  }
+        step = 0;
+        if (scale_x <= 6000) step = 1;
+        if (scale_x <= 300)  step = 2;
 
-        /* draw vertival lines */	
+        step += grid_size;
+        if (step < 0) {
+            grid_size -= step;
+            step = 0;
+        }
+        else if (step > 2) {
+            grid_size -= (step - 2);
+            step = 2;
+        }
+
+        /* draw vertival lines */
         if (y_lat_offset >= 0)
             y1 = 0;
         else
-            y1 = -y_lat_offset/scale_y; 
+            y1 = -y_lat_offset/scale_y;
 
         y2 = (180*60*60*100-y_lat_offset)/scale_y;
 
         if (y2 > screen_height)
             y2 = screen_height-1;
 
-        coord = x_long_offset+stepx-(x_long_offset%stepx);
+        coord = x_long_offset+stepsx[step]-(x_long_offset%stepsx[step]);
         if (coord < 0)
             coord = 0;
 
-        for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepx) {
+        for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepsx[step]) {
 
             x = (coord-x_long_offset)/scale_x;
 
@@ -342,21 +359,21 @@ void draw_grid(Widget w) {
             (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x, y1, x, y2);
         }
 
-        /* draw horizontal lines */	
+        /* draw horizontal lines */
         if (x_long_offset >= 0)
             x1 = 0;
         else
-            x1 = -x_long_offset/scale_x; 
+            x1 = -x_long_offset/scale_x;
 
         x2 = (360*60*60*100-x_long_offset)/scale_x;
         if (x2 > screen_width)
             x2 = screen_width-1;
 
-        coord = y_lat_offset+stepy-(y_lat_offset%stepy);
+        coord = y_lat_offset+stepsy[step]-(y_lat_offset%stepsy[step]);
         if (coord < 0)
             coord = 0;
 
-        for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepy) {
+        for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepsy[step]) {
 
             y = (coord-y_lat_offset)/scale_y;
 
