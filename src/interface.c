@@ -839,7 +839,11 @@ int ax25_init(int port) {
 //    if (port_data[port].channel == -1) {
 
     ENABLE_SETUID_PRIVILEGE;
-    port_data[port].channel = socket(PF_INET, SOCK_SEQPACKET, htons(proto));   // proto = AF_AX25
+#if __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
+    port_data[port].channel = socket(PF_INET, SOCK_DGRAM, htons(proto));   // proto = AF_AX25
+#else
+    port_data[port].channel = socket(PF_INET, SOCK_PACKET, htons(proto));
+#endif    
     DISABLE_SETUID_PRIVILEGE;
 
     if (port_data[port].channel == -1) {
