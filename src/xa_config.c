@@ -641,6 +641,7 @@ void save_data(void)  {
         }
 
 	store_int (fout, "TRACK_ME", track_me);
+    store_int (fout, "MAP_CHOOSER_EXPAND_DIRS", map_chooser_expand_dirs);
 
         if (debug_level & 1)
             printf ("Save Data Stop\n");
@@ -1320,6 +1321,9 @@ void load_data_or_default(void) {
 
     if (!get_int ("TRACK_ME", &track_me,0,1,0))
         track_me = 0;	// No tracking
+
+    if (!get_int ("MAP_CHOOSER_EXPAND_DIRS", &map_chooser_expand_dirs,0,1,0))
+        map_chooser_expand_dirs = 0;
 
     input_close();
 }

@@ -188,6 +188,8 @@ static void Help_Index(Widget w, XtPointer clientData, XtPointer callData);
 Widget map_list;
 
 void map_chooser_fill_in (void);
+int map_chooser_expand_dirs = 0;
+ 
  
 Widget map_chooser_dialog = (Widget)NULL;
 static void Map_chooser(Widget w, XtPointer clientData, XtPointer callData);
@@ -10011,16 +10013,30 @@ void map_chooser_fill_in (void) {
         n=1;
 
         while (current != NULL) {
+            int ok = 0;
 
             //printf("%s\n",current->filename);
 
-            XmListAddItem(map_list,
-                str_ptr = XmStringCreateLtoR(current->filename,
-                                XmFONTLIST_DEFAULT_TAG),
-                                n);
-            n++;
+            // Check whether we're supposed show dirs and files or
+            // just dirs.  First we check for dirs, which are always
+            // shown.
+            if (current->filename[strlen(current->filename)-1] == '/') {
+                ok++;
+            }
+            // Else check if we're supposed to show files
+            else if (map_chooser_expand_dirs) {
+                ok++;
+            }
+
+            if (ok) {
+                XmListAddItem(map_list,
+                    str_ptr = XmStringCreateLtoR(current->filename,
+                                 XmFONTLIST_DEFAULT_TAG),
+                                 n);
+                n++;
+                XmStringFree(str_ptr);
+            }
             current = current->next;
-            XmStringFree(str_ptr);
         }
 
         (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
@@ -10657,9 +10673,29 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
 
 
+void Expand_Dirs_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        map_chooser_expand_dirs = atoi(which);
+    else
+        map_chooser_expand_dirs = 0;
+
+    // Kill/resurrect the Map Chooser so that the changes take
+    // effect.
+    map_chooser_destroy_shell( w, map_chooser_dialog, (XtPointer) NULL);
+    Map_chooser( w, (XtPointer)NULL, (XtPointer) NULL);
+}
+
+
+
+
+
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_none, button_V, button_ok,
-            button_cancel, mess, button_C, button_F, button_O, rowcol;
+            button_cancel, mess, button_C, button_F, button_O,
+            rowcol, expand_dirs_button;
     Atom delw;
     int i;
     Arg al[10];                    /* Arg List */
@@ -10712,11 +10748,31 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         // Find the names of all the map files on disk and put them into map_list
         map_chooser_fill_in();
 
-        // This is the label at the top: "Select Maps"
+        expand_dirs_button = XtVaCreateManagedWidget(langcode("PULDNMMC06"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(expand_dirs_button,XmNvalueChangedCallback,Expand_Dirs_toggle,"1");
+        if(map_chooser_expand_dirs)
+            XmToggleButtonSetState(expand_dirs_button,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(expand_dirs_button,FALSE,FALSE);
+
+        // This is the "Select Maps" label
         mess = XtVaCreateManagedWidget(langcode("WPUPMCP002"),
                 xmLabelWidgetClass, 
                 my_form,
-                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, expand_dirs_button,
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,

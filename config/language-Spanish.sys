@@ -106,6 +106,7 @@ PULDNMMC02|Vectores de Mapas|V|
 PULDNMMC03|250k Topos|2|
 PULDNMMC04|100k Topos|1|
 PULDNMMC05|24k Topos|4|
+PULDNMMC06|Expand Directories||
 #
 # Colores de fondo del mapa
 PULDNMBC01|Gris||

@@ -105,6 +105,7 @@ PULDNMMC02|Cartes vectorielles|V|
 PULDNMMC03|Topogr. 250k|2|
 PULDNMMC04|Topogr. 100k|1|
 PULDNMMC05|Topogr. 24k|4|
+PULDNMMC06|Expand Directories||
 #
 # PullDown "Map Background Color"
 PULDNMBC01|Gris||
