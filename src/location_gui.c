@@ -35,6 +35,7 @@
 #include "xa_config.h"
 #include "util.h"
 #include "lang.h"
+#include "snprintf.h"
 
 
 Widget location_dialog = (Widget)NULL;
@@ -266,7 +267,14 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
     Widget my_text = (Widget) clientData;
     int len,n,found;
 
-    strcpy(name,XmTextFieldGetString(my_text));
+
+    temp_ptr = XmTextFieldGetString(my_text);
+    xastir_snprintf(name,
+        sizeof(name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(name);
     XmTextFieldSetString(my_text,"");
     /* should check for name used already */

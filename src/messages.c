@@ -186,6 +186,8 @@ static int group_active(char *from) {
 int look_for_open_group_data(char *to) {
     int i,found;
     char temp1[MAX_CALLSIGN+1];
+    char *temp_ptr;
+
 
 begin_critical_section(&send_message_dialog_lock, "messages.c:look_for_open_group_data" );
 
@@ -193,7 +195,14 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:look_for_open_grou
      for(i = 0; i < MAX_MESSAGE_WINDOWS; i++) {
         /* find station  */
         if(mw[i].send_message_dialog != NULL) {
-            strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
+
+            temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
+            xastir_snprintf(temp1,
+                sizeof(temp1),
+                "%s",
+                temp_ptr);
+            XtFree(temp_ptr);
+
             (void)to_upper(temp1);
             /*fprintf(stderr,"Looking at call <%s> for <%s>\n",temp1,to);*/
             if(strcmp(temp1,to)==0) {
@@ -215,6 +224,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:look_for_open_group_
 int check_popup_window(char *from_call_sign, int group) {
     int i,found,j,ret;
     char temp1[MAX_CALLSIGN+1];
+    char *temp_ptr;
 
 
     ret =- 1;
@@ -225,7 +235,14 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window
     for (i = 0; i < MAX_MESSAGE_WINDOWS; i++) {
         /* find station  */
         if (mw[i].send_message_dialog != NULL) {
-            strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
+
+            temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
+            xastir_snprintf(temp1,
+                sizeof(temp1),
+                "%s",
+                temp_ptr);
+            XtFree(temp_ptr);
+
             /*fprintf(stderr,"Looking at call <%s> for <%s>\n",temp1,from_call_sign);*/
             if (strcasecmp(temp1, from_call_sign) == 0) {
                 found = i;
@@ -670,6 +687,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
     int found;
     char lowest[3];
     char temp1[MAX_CALLSIGN+1];
+    char *temp_ptr;
 
 
     (void)remove_trailing_spaces(seq);  // This is IMPORTANT here!!!
@@ -722,7 +740,14 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_acked_messag
                             for (ii=0;ii<MAX_MESSAGE_WINDOWS;ii++) {
                                 /* find station  */
                                 if (mw[ii].send_message_dialog!=NULL) {
-                                    strcpy(temp1,XmTextFieldGetString(mw[ii].send_message_call_data));
+
+                                    temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
+                                    xastir_snprintf(temp1,
+                                        sizeof(temp1),
+                                        "%s",
+                                        temp_ptr);
+                                    XtFree(temp_ptr);
+
                                     (void)to_upper(temp1);
                                     //fprintf(stderr,"%s\t%s\n",temp1,from);
 //                                    if (strcmp(temp1,from)==0) {

@@ -11114,9 +11114,16 @@ static Widget center_zoom_latitude,
 
 void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     unsigned long x, y;
+    char *temp_ptr;
 
-    f_center_latitude  = atof( XmTextFieldGetString(center_zoom_latitude) ); 
-    f_center_longitude = atof( XmTextFieldGetString(center_zoom_longitude) ); 
+
+    temp_ptr = XmTextFieldGetString(center_zoom_latitude);
+    f_center_latitude  = atof(temp_ptr); 
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(center_zoom_longitude);
+    f_center_longitude = atof(temp_ptr);
+    XtFree(temp_ptr);
 
     //Convert to Xastir coordinate system for lat/long
     convert_to_xastir_coordinates(&x,
@@ -11124,7 +11131,9 @@ void Center_Zoom_do_it( /*@unused@*/ Widget widget, XtPointer clientData, /*@unu
         f_center_longitude,
         f_center_latitude);
 
-    scale_y = atoi( XmTextFieldGetString(center_zoom_zoom_level) ); 
+    temp_ptr = XmTextFieldGetString(center_zoom_zoom_level);
+    scale_y = atoi(temp_ptr);
+    XtFree(temp_ptr);
 
     new_mid_x = x;
     new_mid_y = y;
@@ -18654,25 +18663,97 @@ void Configure_audio_alarm_destroy_shell( /*@unused@*/ Widget widget, XtPointer 
 
 
 void Configure_audio_alarm_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
-    strcpy(sound_command,XmTextFieldGetString(audio_alarm_config_play_data));
+    char *temp_ptr;
+
+
+    temp_ptr = XmTextFieldGetString(audio_alarm_config_play_data);
+    xastir_snprintf(sound_command,
+        sizeof(sound_command),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(sound_command);
-    strcpy(sound_new_station,XmTextFieldGetString(audio_alarm_config_play_ons_data));
+
+    temp_ptr = XmTextFieldGetString(audio_alarm_config_play_ons_data);
+    xastir_snprintf(sound_new_station,
+        sizeof(sound_new_station),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(sound_new_station);
-    strcpy(sound_new_message,XmTextFieldGetString(audio_alarm_config_play_onm_data));
+
+    temp_ptr = XmTextFieldGetString(audio_alarm_config_play_onm_data);
+    xastir_snprintf(sound_new_message,
+        sizeof(sound_new_message),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(sound_new_message);
-    strcpy(sound_prox_message,XmTextFieldGetString(audio_alarm_config_play_onpx_data));
+
+    temp_ptr = XmTextFieldGetString(audio_alarm_config_play_onpx_data);
+    xastir_snprintf(sound_prox_message,
+        sizeof(sound_prox_message),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(sound_prox_message);
-    strcpy(prox_min,XmTextFieldGetString(prox_min_data));
+
+    temp_ptr = XmTextFieldGetString(prox_min_data);
+    xastir_snprintf(prox_min,
+        sizeof(prox_min),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(prox_min);
-    strcpy(prox_max,XmTextFieldGetString(prox_max_data));
+
+    temp_ptr = XmTextFieldGetString(prox_max_data);
+    xastir_snprintf(prox_max,
+        sizeof(prox_max),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(prox_max);
-    strcpy(sound_band_open_message,XmTextFieldGetString(audio_alarm_config_play_onbo_data));
+
+    temp_ptr = XmTextFieldGetString(audio_alarm_config_play_onbo_data);
+    xastir_snprintf(sound_band_open_message,
+        sizeof(sound_band_open_message),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(sound_band_open_message);
-    strcpy(bando_min,XmTextFieldGetString(bando_min_data));
+
+    temp_ptr = XmTextFieldGetString(bando_min_data);
+    xastir_snprintf(bando_min,
+        sizeof(bando_min),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(bando_min);
-    strcpy(bando_max,XmTextFieldGetString(bando_max_data));
+
+    temp_ptr = XmTextFieldGetString(bando_max_data);
+    xastir_snprintf(bando_max,
+        sizeof(bando_max),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(bando_max);
-    strcpy(sound_wx_alert_message,XmTextFieldGetString(audio_alarm_config_wx_alert_data));
+
+    temp_ptr = XmTextFieldGetString(audio_alarm_config_wx_alert_data);
+    xastir_snprintf(sound_wx_alert_message,
+        sizeof(sound_wx_alert_message),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(sound_wx_alert_message);
 
     if(XmToggleButtonGetState(audio_alarm_config_play_on_new_station))
@@ -19806,69 +19887,120 @@ int Setup_object_data(char *line, int line_length) {
     char prob_min[20+1];
     char prob_max[20+1];
     int bearing;
+    char *temp_ptr;
+    char *temp_ptr2;
 
 
     //fprintf(stderr,"Setup_object_data\n");
 
-    xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(object_name_data));
+    temp_ptr = XmTextFieldGetString(object_name_data);
+    xastir_snprintf(line,
+        line_length,
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(line);
     //(void)to_upper(line);      Not per spec.  Don't use this.
     if (!valid_object(line))
         return(0);
 
+    // Copy object name into "last_object"
     strcpy(last_object,line);
 
-    strcpy(line,XmTextFieldGetString(object_lat_data_ns));
-    if((char)toupper((int)line[0]) == 'S')
+    temp_ptr = XmTextFieldGetString(object_lat_data_ns);
+    if((char)toupper((int)temp_ptr[0]) == 'S')
         line[0] = 'S';
     else
         line[0] = 'N';
+    XtFree(temp_ptr);
 
     // Check latitude for out-of-bounds
-    temp = atoi(XmTextFieldGetString(object_lat_data_deg));
+    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+    temp = atoi(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp > 90) || (temp < 0) )
         return(0);
-    temp3 = atof(XmTextFieldGetString(object_lat_data_min));
+
+    temp_ptr = XmTextFieldGetString(object_lat_data_min);
+    temp3 = atof(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp3 >= 60.0) || (temp3 < 0.0) )
         return(0);
     if ( (temp == 90) && (temp3 != 0.0) )
         return(0);
 
+    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
     xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
-        atoi(XmTextFieldGetString(object_lat_data_deg)),
-        atof(XmTextFieldGetString(object_lat_data_min)), line[0]);
+        atoi(temp_ptr),
+        atof(temp_ptr2), line[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
+    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
     xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
-        atoi(XmTextFieldGetString(object_lat_data_deg)),
-        atof(XmTextFieldGetString(object_lat_data_min)), line[0]);
+        atoi(temp_ptr),
+        atof(temp_ptr2), line[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
-    strcpy(line,XmTextFieldGetString(object_lon_data_ew));
+    temp_ptr = XmTextFieldGetString(object_lon_data_ew);
+    xastir_snprintf(line,
+        line_length,
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     if((char)toupper((int)line[0]) == 'E')
         line[0] = 'E';
     else
         line[0] = 'W';
 
     // Check longitude for out-of-bounds
-    temp = atoi(XmTextFieldGetString(object_lon_data_deg));
+    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+    temp = atoi(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp > 180) || (temp < 0) )
         return(0);
 
-    temp3 = atof(XmTextFieldGetString(object_lon_data_min));
+    temp_ptr = XmTextFieldGetString(object_lon_data_min);
+    temp3 = atof(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp3 >= 60.0) || (temp3 < 0.0) )
         return(0);
 
     if ( (temp == 180) && (temp3 != 0.0) )
         return(0);
 
+    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
     xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
-        atoi(XmTextFieldGetString(object_lon_data_deg)),
-        atof(XmTextFieldGetString(object_lon_data_min)), line[0]);
+        atoi(temp_ptr),
+        atof(temp_ptr2), line[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
+    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
     xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
-        atoi(XmTextFieldGetString(object_lon_data_deg)),
-        atof(XmTextFieldGetString(object_lon_data_min)), line[0]);
+        atoi(temp_ptr),
+        atof(temp_ptr2), line[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
-    strcpy(line,XmTextFieldGetString(object_group_data));
+    temp_ptr = XmTextFieldGetString(object_group_data);
+    xastir_snprintf(line,
+        line_length,
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     last_obj_grp = line[0];
     if(isalpha((int)last_obj_grp))
         last_obj_grp = toupper((int)line[0]);          // todo: toupper in dialog
@@ -19890,10 +20022,22 @@ int Setup_object_data(char *line, int line_length) {
         last_obj_overlay = '\0';
     }
 
-    strcpy(line,XmTextFieldGetString(object_symbol_data));
+    temp_ptr = XmTextFieldGetString(object_symbol_data);
+    xastir_snprintf(line,
+        line_length,
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     last_obj_sym = line[0];
 
-    strcpy(comment,XmTextFieldGetString(object_comment_data));
+    temp_ptr = XmTextFieldGetString(object_comment_data);
+    xastir_snprintf(comment,
+        sizeof(comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(comment);
     //fprintf(stderr,"Comment Field was: %s\n",comment);
 
@@ -19905,7 +20049,10 @@ int Setup_object_data(char *line, int line_length) {
     // Handle Generic Options
 
     // Speed/Course Fields
-    xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_course_data));
+    temp_ptr = XmTextFieldGetString(ob_course_data);
+    xastir_snprintf(line, line_length, "%s", temp_ptr);
+    XtFree(temp_ptr);
+
     xastir_snprintf(speed_course, sizeof(speed_course), "%s", ".../");
     course = 0;
     if (strlen(line) != 0) {    // Course was entered
@@ -19918,7 +20065,10 @@ int Setup_object_data(char *line, int line_length) {
             xastir_snprintf(speed_course, sizeof(speed_course), "%s", "360/");
         }
     }
-    xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_speed_data));
+    temp_ptr = XmTextFieldGetString(ob_speed_data);
+    xastir_snprintf(line, line_length, "%s", temp_ptr);
+    XtFree(temp_ptr);
+
     speed = 0;
     if (strlen(line) != 0) { // Speed was entered (we only handle knots currently)
         // Need to check for 1 to three digits, no alpha characters
@@ -19943,7 +20093,10 @@ int Setup_object_data(char *line, int line_length) {
     }
 
     // Altitude Field
-    xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_altitude_data));
+    temp_ptr = XmTextFieldGetString(ob_altitude_data);
+    xastir_snprintf(line, line_length, "%s", temp_ptr);
+    XtFree(temp_ptr);
+
     //fprintf(stderr,"Altitude entered: %s\n", line);
     altitude[0] = '\0'; // Start with empty string
     if (strlen(line) != 0) {   // Altitude was entered (we only handle feet currently)
@@ -19978,12 +20131,19 @@ int Setup_object_data(char *line, int line_length) {
         } else {  // Can't fill in a line
             complete_area_type = Area_type;
         }
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_lat_offset_data));
+        temp_ptr = XmTextFieldGetString(ob_lat_offset_data);
+        xastir_snprintf(line, line_length, "%s", temp_ptr);
+        XtFree(temp_ptr);
+
         lat_offset = (int)sqrt(atof(line));
         if (lat_offset > 99)
             lat_offset = 99;
         //fprintf(stderr,"Line: %s\tlat_offset: %d\n", line, lat_offset);
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_lon_offset_data));
+
+        temp_ptr = XmTextFieldGetString(ob_lon_offset_data);
+        xastir_snprintf(line, line_length, "%s", temp_ptr);
+        XtFree(temp_ptr);
+
         lon_offset = (int)sqrt(atof(line));
         if (lon_offset > 99)
             lon_offset = 99;
@@ -19993,7 +20153,11 @@ int Setup_object_data(char *line, int line_length) {
         // Corridor
         complete_corridor[0] = '\0';
         if ( (Area_type == 1) || (Area_type == 6) ) {
-            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_corridor_data));
+
+            temp_ptr = XmTextFieldGetString(ob_corridor_data);
+            xastir_snprintf(line, line_length, "%s", temp_ptr);
+            XtFree(temp_ptr);
+
             if (strlen(line) != 0) {    // We have a line and some corridor data
                 // Need to check for 1 to three digits only
                 temp = atoi(line);
@@ -20024,7 +20188,10 @@ int Setup_object_data(char *line, int line_length) {
         //fprintf(stderr,"String is: %s\n", line);
 
     } else if (Signpost_object_enabled) {
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(signpost_data));
+        temp_ptr = XmTextFieldGetString(signpost_data);
+        xastir_snprintf(line, line_length, "%s", temp_ptr);
+        XtFree(temp_ptr);
+
         //fprintf(stderr,"Signpost entered: %s\n", line);
         if (strlen(line) != 0) {   // Signpost data was entered
             // Need to check for between one and three characters
@@ -20063,7 +20230,10 @@ int Setup_object_data(char *line, int line_length) {
             if (strlen(speed_course) != 7)
                 strcpy(speed_course,"000/000");
 
-            bearing = atoi(XmTextFieldGetString(ob_bearing_data));
+            temp_ptr = XmTextFieldGetString(ob_bearing_data);
+            bearing = atoi(temp_ptr);
+            XtFree(temp_ptr);
+
             if ( (bearing < 1) || (bearing > 360) )
                 bearing = 360;
 
@@ -20086,13 +20256,19 @@ int Setup_object_data(char *line, int line_length) {
 
         if (Probability_circles_enabled) {
 
-            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
+            temp_ptr = XmTextFieldGetString(probability_data_min);
+            xastir_snprintf(line, line_length, "%s", temp_ptr);
+            XtFree(temp_ptr);
+
             //fprintf(stderr,"Probability min circle entered: %s\n", line);
             if (strlen(line) != 0) {   // Probability circle data was entered
                 xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
             }
 
-            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
+            temp_ptr = XmTextFieldGetString(probability_data_max);
+            xastir_snprintf(line, line_length, "%s", temp_ptr);
+            XtFree(temp_ptr);
+
             //fprintf(stderr,"Probability max circle entered: %s\n", line);
             if (strlen(line) != 0) {   // Probability circle data was entered
                 xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
@@ -20221,9 +20397,14 @@ int Setup_item_data(char *line, int line_length) {
     char prob_min[20+1];
     char prob_max[20+1];
     int bearing;
+    char *temp_ptr;
+    char *temp_ptr2;
 
 
-    xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(object_name_data));
+    temp_ptr = XmTextFieldGetString(object_name_data);
+    xastir_snprintf(line, line_length, "%s", temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(line);
     //(void)to_upper(line);     Not per spec.  Don't use this.
 
@@ -20240,44 +20421,65 @@ int Setup_item_data(char *line, int line_length) {
 
     strcpy(last_object,line);
 
-    strcpy(line,XmTextFieldGetString(object_lat_data_ns));
-    if((char)toupper((int)line[0]) == 'S')
+    temp_ptr = XmTextFieldGetString(object_lat_data_ns);
+    if((char)toupper((int)temp_ptr[0]) == 'S')
         line[0] = 'S';
     else
         line[0] = 'N';
+    XtFree(temp_ptr);
 
     // Check latitude for out-of-bounds
-    temp = atoi(XmTextFieldGetString(object_lat_data_deg));
+    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+    temp = atoi(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp > 90) || (temp < 0) )
         return(0);
 
-    temp3 = atof(XmTextFieldGetString(object_lat_data_min));
+    temp_ptr = XmTextFieldGetString(object_lat_data_min);
+    temp3 = atof(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp3 >= 60.0) || (temp3 < 0.0) )
         return(0);
 
     if ( (temp == 90) && (temp3 != 0.0) )
         return(0);
 
+    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
     xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
-            atoi(XmTextFieldGetString(object_lat_data_deg)),
-            atof(XmTextFieldGetString(object_lat_data_min)),line[0]);
+            atoi(temp_ptr),
+            atof(temp_ptr2),line[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
+    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
     xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
-            atoi(XmTextFieldGetString(object_lat_data_deg)),
-            atof(XmTextFieldGetString(object_lat_data_min)),line[0]);
+            atoi(temp_ptr),
+            atof(temp_ptr2),line[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
-    strcpy(line,XmTextFieldGetString(object_lon_data_ew));
-    if((char)toupper((int)line[0]) == 'E')
+    temp_ptr = XmTextFieldGetString(object_lon_data_ew);
+    if((char)toupper((int)temp_ptr[0]) == 'E')
         line[0] = 'E';
     else
         line[0] = 'W';
+    XtFree(temp_ptr);
 
     // Check longitude for out-of-bounds
-    temp = atoi(XmTextFieldGetString(object_lon_data_deg));
+    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+    temp = atoi(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp > 180) || (temp < 0) )
         return(0);
 
-    temp3 = atof(XmTextFieldGetString(object_lon_data_min));
+    temp_ptr = XmTextFieldGetString(object_lon_data_min);
+    temp3 = atof(temp_ptr);
+    XtFree(temp_ptr);
 
     if ( (temp3 >= 60.0) || (temp3 < 0.0) )
         return(0);
@@ -20285,18 +20487,27 @@ int Setup_item_data(char *line, int line_length) {
     if ( (temp == 180) && (temp3 != 0.0) )
         return(0);
 
+    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
     xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
-            atoi(XmTextFieldGetString(object_lon_data_deg)),
-            atof(XmTextFieldGetString(object_lon_data_min)),line[0]);
+            atoi(temp_ptr),
+            atof(temp_ptr2),line[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
+    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
     xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
-            atoi(XmTextFieldGetString(object_lon_data_deg)),
-            atof(XmTextFieldGetString(object_lon_data_min)),line[0]);
+            atoi(temp_ptr),
+            atof(temp_ptr2),line[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
-    strcpy(line,XmTextFieldGetString(object_group_data));
-    last_obj_grp = line[0];
+    temp_ptr = XmTextFieldGetString(object_group_data);
+    last_obj_grp = temp_ptr[0];
     if(isalpha((int)last_obj_grp))
-        last_obj_grp = toupper((int)line[0]);          // todo: toupper in dialog
+        last_obj_grp = toupper((int)temp_ptr[0]);          // todo: toupper in dialog
+    XtFree(temp_ptr);
 
     // Check for overlay character
     if (last_obj_grp != '/' && last_obj_grp != '\\') {
@@ -20315,16 +20526,26 @@ int Setup_item_data(char *line, int line_length) {
         last_obj_overlay = '\0';
     }
 
-    strcpy(line,XmTextFieldGetString(object_symbol_data));
-    last_obj_sym = line[0];
+    temp_ptr = XmTextFieldGetString(object_symbol_data);
+    last_obj_sym = temp_ptr[0];
+    XtFree(temp_ptr);
 
-    strcpy(comment,XmTextFieldGetString(object_comment_data));
+    temp_ptr = XmTextFieldGetString(object_comment_data);
+    xastir_snprintf(comment,
+        sizeof(comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(comment);
 
     // Handle Generic Options
 
     // Speed/Course Fields
-    xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_course_data));
+    temp_ptr = XmTextFieldGetString(ob_course_data);
+    xastir_snprintf(line, line_length, "%s", temp_ptr);
+    XtFree(temp_ptr);
+
     sprintf(speed_course,".../");   // Start with invalid-data string
     course = 0;
     if (strlen(line) != 0) {    // Course was entered
@@ -20337,7 +20558,10 @@ int Setup_item_data(char *line, int line_length) {
             sprintf(speed_course, "360/");
         }
     }
-    xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_speed_data));
+    temp_ptr = XmTextFieldGetString(ob_speed_data);
+    xastir_snprintf(line, line_length, "%s", temp_ptr);
+    XtFree(temp_ptr);
+
     speed = 0;
     if (strlen(line) != 0) { // Speed was entered (we only handle knots currently)
         // Need to check for 1 to three digits, no alpha characters
@@ -20361,7 +20585,10 @@ int Setup_item_data(char *line, int line_length) {
     }
 
     // Altitude Field
-    xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_altitude_data));
+    temp_ptr = XmTextFieldGetString(ob_altitude_data);
+    xastir_snprintf(line, line_length, "%s", temp_ptr);
+    XtFree(temp_ptr);
+
     //fprintf(stderr,"Altitude entered: %s\n", line);
     altitude[0] = '\0'; // Start with empty string
     if (strlen(line) != 0) {   // Altitude was entered (we only handle feet currently)
@@ -20393,12 +20620,18 @@ int Setup_item_data(char *line, int line_length) {
         } else {  // Can't fill in a line
             complete_area_type = Area_type;
         }
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_lat_offset_data));
+        temp_ptr = XmTextFieldGetString(ob_lat_offset_data);
+        xastir_snprintf(line, line_length, "%s", temp_ptr);
+        XtFree(temp_ptr);
+
         lat_offset = (int)sqrt(atof(line));
         if (lat_offset > 99)
             lat_offset = 99;
         //fprintf(stderr,"Line: %s\tlat_offset: %d\n", line, lat_offset);
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_lon_offset_data));
+        temp_ptr = XmTextFieldGetString(ob_lon_offset_data);
+        xastir_snprintf(line, line_length, "%s", temp_ptr);
+        XtFree(temp_ptr);
+
         lon_offset = (int)sqrt(atof(line));
         if (lon_offset > 99)
             lon_offset = 99;
@@ -20407,7 +20640,11 @@ int Setup_item_data(char *line, int line_length) {
         // Corridor
         complete_corridor[0] = '\0';
         if ( (Area_type == 1) || (Area_type == 6) ) {
-            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_corridor_data));
+
+            temp_ptr = XmTextFieldGetString(ob_corridor_data);
+            xastir_snprintf(line, line_length, "%s", temp_ptr);
+            XtFree(temp_ptr);
+
             if (strlen(line) != 0) {    // We have a line and some corridor data
                 // Need to check for 1 to three digits only
                 temp = atoi(line);
@@ -20432,7 +20669,10 @@ int Setup_item_data(char *line, int line_length) {
             altitude);
 
     } else if (Signpost_object_enabled) {
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(signpost_data));
+        temp_ptr = XmTextFieldGetString(signpost_data);
+        xastir_snprintf(line, line_length, "%s", temp_ptr);
+        XtFree(temp_ptr);
+
         //fprintf(stderr,"Signpost entered: %s\n", line);
         if (strlen(line) != 0) {   // Signpost data was entered
             // Need to check for between one and three characters
@@ -20469,7 +20709,10 @@ int Setup_item_data(char *line, int line_length) {
             if (strlen(speed_course) != 7)
                 strcpy(speed_course,"000/000");
 
-            bearing = atoi(XmTextFieldGetString(ob_bearing_data));
+            temp_ptr = XmTextFieldGetString(ob_bearing_data);
+            bearing = atoi(temp_ptr);
+            XtFree(temp_ptr);
+
             if ( (bearing < 1) || (bearing > 360) )
                 bearing = 360;
 
@@ -20491,14 +20734,20 @@ int Setup_item_data(char *line, int line_length) {
  
         if (Probability_circles_enabled) {
 
-            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
+            temp_ptr = XmTextFieldGetString(probability_data_min);
+            xastir_snprintf(line, line_length, "%s", temp_ptr);
+            XtFree(temp_ptr);
+
             //fprintf(stderr,"Probability min circle entered: %s\n",
             //line);
             if (strlen(line) != 0) {   // Probability circle data was entered
                 xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
             }
 
-            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
+            temp_ptr = XmTextFieldGetString(probability_data_max);
+            xastir_snprintf(line, line_length, "%s", temp_ptr);
+            XtFree(temp_ptr);
+
             //fprintf(stderr,"Probability max circle entered: %s\n",
             //line);
             if (strlen(line) != 0) {   // Probability circle data was entered
@@ -20779,12 +21028,20 @@ void Ob_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientD
 void updateObjectPictureCallback(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char table, overlay;
     char symb, group;
+    char *temp_ptr;
+
 
     XtVaSetValues(object_icon, XmNlabelPixmap, Ob_icon0, NULL);         // clear old icon
     XtManageChild(object_icon);
 
-    group = (XmTextFieldGetString(object_group_data))[0];
-    symb  = (XmTextFieldGetString(object_symbol_data))[0];
+    temp_ptr = XmTextFieldGetString(object_group_data);
+    group = temp_ptr[0];
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(object_symbol_data);
+    symb  = temp_ptr[0];
+    XtFree(temp_ptr);
+
     if (group == '/' || group == '\\') {
         // No overlay character
         table   = group;
@@ -20820,19 +21077,26 @@ void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
     char signpost_name[10];
+    char *temp_ptr;
 
 
     // Save name and comment fields temporarily
+    temp_ptr = XmTextFieldGetString(object_name_data);
     xastir_snprintf(signpost_name,
         sizeof(signpost_name),
         "%s",
-        XmTextFieldGetString(object_name_data));
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(signpost_name);
- 
+
+    temp_ptr = XmTextFieldGetString(object_comment_data); 
     xastir_snprintf(comment,
         sizeof(comment),
         "%s",
-        XmTextFieldGetString(object_comment_data));
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(comment);
 
  
@@ -20904,19 +21168,26 @@ void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
     char signpost_name[10];
+    char *temp_ptr;
 
 
     // Save name and comment fields temporarily
+    temp_ptr = XmTextFieldGetString(object_name_data);
     xastir_snprintf(signpost_name,
         sizeof(signpost_name),
         "%s",
-        XmTextFieldGetString(object_name_data));
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(signpost_name);
- 
+
+    temp_ptr = XmTextFieldGetString(object_comment_data); 
     xastir_snprintf(comment,
         sizeof(comment),
         "%s",
-        XmTextFieldGetString(object_comment_data));
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(comment);
 
  
@@ -20988,19 +21259,26 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
     char signpost_name[10];
+    char *temp_ptr;
 
 
     // Save name and comment fields temporarily
+    temp_ptr = XmTextFieldGetString(object_name_data);
     xastir_snprintf(signpost_name,
         sizeof(signpost_name),
         "%s",
-        XmTextFieldGetString(object_name_data));
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(signpost_name);
- 
+
+    temp_ptr = XmTextFieldGetString(object_comment_data); 
     xastir_snprintf(comment,
         sizeof(comment),
         "%s",
-        XmTextFieldGetString(object_comment_data));
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(comment);
 
  
@@ -21083,19 +21361,25 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
     char temp_data[40];
     char comment[43+1];     // max 43 characters of comment
     char signpost_name[10];
+    char *temp_ptr;
 
 
     // Save name and comment fields temporarily
+    temp_ptr = XmTextFieldGetString(object_name_data);
     xastir_snprintf(signpost_name,
         sizeof(signpost_name),
         "%s",
-        XmTextFieldGetString(object_name_data));
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(signpost_name);
- 
+
+    temp_ptr = XmTextFieldGetString(object_comment_data); 
     xastir_snprintf(comment,
         sizeof(comment),
         "%s",
-        XmTextFieldGetString(object_comment_data));
+        temp_ptr);
+    XtFree(temp_ptr);
     (void)remove_trailing_spaces(comment);
 
  
@@ -24491,68 +24775,100 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
     int ok = 1;
     int temp2;
     int temp3;
+    char *temp_ptr;
+    char *temp_ptr2;
+
 
     transmit_compressed_posit = (int)XmToggleButtonGetState(compressed_posit_tx);
 
     strcpy(old_callsign,my_callsign);
     /*fprintf(stderr,"Changing Configure station data\n");*/
 
-    xastir_snprintf(my_callsign, sizeof(my_callsign), "%s",
-            XmTextFieldGetString(station_config_call_data));
+    temp_ptr = XmTextFieldGetString(station_config_call_data);
+    xastir_snprintf(my_callsign,
+        sizeof(my_callsign),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(my_callsign);
     (void)to_upper(my_callsign);
 
-    strcpy(temp, XmTextFieldGetString(station_config_slat_data_ns));
-    if((char)toupper((int)temp[0])=='S')
+    temp_ptr = XmTextFieldGetString(station_config_slat_data_ns);
+    if((char)toupper((int)temp_ptr[0])=='S')
         temp[0]='S';
     else
         temp[0]='N';
+    XtFree(temp_ptr);
 
     // Check latitude for out-of-bounds
-    temp2 = atoi(XmTextFieldGetString(station_config_slat_data_deg));
+    temp_ptr = XmTextFieldGetString(station_config_slat_data_deg);
+    temp2 = atoi(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp2 > 90) || (temp2 < 0) )
         ok = 0;
 
-    temp3 = atof(XmTextFieldGetString(station_config_slat_data_min));
+    temp_ptr = XmTextFieldGetString(station_config_slat_data_min);
+    temp3 = atof(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp3 >= 60.0) || (temp3 < 0.0) )
         ok = 0;
 
     if ( (temp2 == 90) && (temp3 != 0.0) )
         ok = 0;
 
+    temp_ptr = XmTextFieldGetString(station_config_slat_data_deg);
+    temp_ptr2 = XmTextFieldGetString(station_config_slat_data_min);
     xastir_snprintf(my_lat, sizeof(my_lat), "%02d%06.3f%c",
-        atoi(XmTextFieldGetString(station_config_slat_data_deg)),
-        atof(XmTextFieldGetString(station_config_slat_data_min)),temp[0]);
+        atoi(temp_ptr),
+        atof(temp_ptr2),temp[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
-    strcpy(temp,XmTextFieldGetString(station_config_slong_data_ew));
-    if((char)toupper((int)temp[0])=='E')
+    temp_ptr = XmTextFieldGetString(station_config_slong_data_ew);
+    if((char)toupper((int)temp_ptr[0])=='E')
         temp[0]='E';
     else
         temp[0]='W';
+    XtFree(temp_ptr);
 
     // Check longitude for out-of-bounds
-    temp2 = atoi(XmTextFieldGetString(station_config_slong_data_deg));
+    temp_ptr = XmTextFieldGetString(station_config_slong_data_deg);
+    temp2 = atoi(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp2 > 180) || (temp2 < 0) )
         ok = 0;
 
-    temp3 = atof(XmTextFieldGetString(station_config_slong_data_min));
+    temp_ptr = XmTextFieldGetString(station_config_slong_data_min);
+    temp3 = atof(temp_ptr);
+    XtFree(temp_ptr);
+
     if ( (temp3 >= 60.0) || (temp3 < 0.0) )
         ok = 0;
 
     if ( (temp2 == 180) && (temp3 != 0.0) )
         ok = 0;
 
+    temp_ptr = XmTextFieldGetString(station_config_slong_data_deg);
+    temp_ptr2 = XmTextFieldGetString(station_config_slong_data_min);
     xastir_snprintf(my_long, sizeof(my_long), "%03d%06.3f%c",
-            atoi(XmTextFieldGetString(station_config_slong_data_deg)),
-            atof(XmTextFieldGetString(station_config_slong_data_min)),temp[0]);
+            atoi(temp_ptr),
+            atof(temp_ptr2),temp[0]);
+    XtFree(temp_ptr);
+    XtFree(temp_ptr2);
 
-    strcpy(temp,XmTextFieldGetString(station_config_group_data));
-    my_group=temp[0];
+    temp_ptr = XmTextFieldGetString(station_config_group_data);
+    my_group=temp_ptr[0];
     if(isalpha((int)my_group))
-        my_group = toupper((int)temp[0]);
+        my_group = toupper((int)temp_ptr[0]);
+    XtFree(temp_ptr);
 
-    strcpy(temp,XmTextFieldGetString(station_config_symbol_data));
-    my_symbol = temp[0];
+    temp_ptr = XmTextFieldGetString(station_config_symbol_data);
+    my_symbol = temp_ptr[0];
+    XtFree(temp_ptr);
 
     if(isdigit((int)my_phg[3]) && isdigit((int)my_phg[4]) && isdigit((int)my_phg[5]) && isdigit((int)my_phg[6])) {
         my_phg[0] = 'P';
@@ -24569,7 +24885,13 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
         position_amb_chars = 0;
     }
 
-    strcpy(my_comment,XmTextFieldGetString(station_config_comment_data));
+    temp_ptr = XmTextFieldGetString(station_config_comment_data);
+    xastir_snprintf(my_comment,
+        sizeof(my_comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(my_comment);
 
     /* TO DO: KILL only my station data? */
@@ -24611,12 +24933,20 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
 void updateSymbolPictureCallback( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char table, overlay;
     char symb, group;
+    char *temp_ptr;
+
 
     XtVaSetValues(station_config_icon, XmNlabelPixmap, CS_icon0, NULL);         // clear old icon
     XtManageChild(station_config_icon);
 
-    group = (XmTextFieldGetString(station_config_group_data))[0];
-    symb  = (XmTextFieldGetString(station_config_symbol_data))[0];
+    temp_ptr = XmTextFieldGetString(station_config_group_data);
+    group = temp_ptr[0];
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(station_config_symbol_data);
+    symb  = temp_ptr[0];
+    XtFree(temp_ptr);
+
     if (group == '/' || group == '\\') {
         table   = group;
         overlay = ' ';

@@ -579,6 +579,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 temp_ptr = XmTextFieldGetString(SL_call[type][row]);
                 xastir_snprintf(temp_call, sizeof(temp_call), "%s", temp_ptr);
                 XtFree(temp_ptr);
+
                 if (strcmp(temp_call,p_station->call_sign) !=0 ) {
                     XmTextFieldSetString(SL_call[type][row],p_station->call_sign);
                     if (ghost)

@@ -109,9 +109,17 @@ end_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station_d
  */
 void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
     char temp2[200];
+    char *temp_ptr;
+
 
     /* find station and go there */
-    strcpy(locate_station_call,XmTextFieldGetString(locate_station_data));
+    temp_ptr = XmTextFieldGetString(locate_station_data);
+    xastir_snprintf(locate_station_call,
+        sizeof(locate_station_call),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(locate_station_call);
     /*fprintf(stderr,"looking for %s\n",locate_station_call);*/
     if (locate_station(da, locate_station_call, (int)XmToggleButtonGetState(locate_case_data),
@@ -327,14 +335,51 @@ end_critical_section(&locate_place_dialog_lock, "locate_gui.c:Locate_place_destr
  *  Locate a place by centering the map at its position
  */
 void Locate_place_now(Widget w, XtPointer clientData, XtPointer callData) {
+    char *temp_ptr;
+
 
     /* find place and go there */
-    strcpy(locate_place_name, XmTextFieldGetString(locate_place_data));
-    strcpy(locate_state_name, XmTextFieldGetString(locate_state_data));
-    strcpy(locate_county_name, XmTextFieldGetString(locate_county_data));
-    strcpy(locate_quad_name, XmTextFieldGetString(locate_quad_data));
-    strcpy(locate_type_name, XmTextFieldGetString(locate_type_data));
-    strcpy(locate_gnis_filename, XmTextFieldGetString(locate_gnis_file_data));
+    temp_ptr = XmTextFieldGetString(locate_place_data);
+    xastir_snprintf(locate_place_name,
+        sizeof(locate_place_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(locate_state_data);
+    xastir_snprintf(locate_state_name,
+        sizeof(locate_state_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(locate_county_data);
+    xastir_snprintf(locate_county_name,
+        sizeof(locate_county_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(locate_quad_data);
+    xastir_snprintf(locate_quad_name,
+        sizeof(locate_quad_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(locate_type_data);
+    xastir_snprintf(locate_type_name,
+        sizeof(locate_type_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    temp_ptr = XmTextFieldGetString(locate_gnis_file_data);
+    xastir_snprintf(locate_gnis_filename,
+        sizeof(locate_gnis_filename),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(locate_place_name);
     (void)remove_trailing_spaces(locate_state_name);

@@ -123,9 +123,17 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[MAX_CALL+1];
     char temp2[200];
     int found = 0;
+    char *temp_ptr;
+
 
     /* find station and go there */
-    strcpy(temp,XmTextFieldGetString(track_station_data));
+    temp_ptr = XmTextFieldGetString(track_station_data);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(temp);
     strcpy(tracking_station_call,temp);
     track_case  = (int)XmToggleButtonGetState(track_case_data);
@@ -392,6 +400,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 #endif  // HAVE_WGET
 #endif
     char log_filename[200];
+    char *temp_ptr;
 
 
     busy_cursor(appshell);
@@ -410,7 +419,13 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     XmScaleGetValue(posit_start_value , &posit_start);
     XmScaleGetValue(posit_length_value , &posit_length);
     /* find station and go there */
-    strcpy(temp,XmTextFieldGetString(download_trail_station_data));
+    temp_ptr = XmTextFieldGetString(download_trail_station_data);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(temp);
     strcpy(download_trail_station_call,temp);
     //Download_trail_destroy_shell(w, clientData, callData);

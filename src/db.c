@@ -1003,6 +1003,8 @@ void update_messages(int force) {
     char stemp[20];
     long i;
     int mw_p;
+    char *temp_ptr;
+
 
     if ( message_update_time() || force) {
 
@@ -1028,7 +1030,12 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
                 // Snag the callsign you're dealing with from the message dialogue
                 if (mw[mw_p].send_message_call_data != NULL) {
-                    strcpy(temp1,XmTextFieldGetString(mw[mw_p].send_message_call_data));
+                    temp_ptr = XmTextFieldGetString(mw[mw_p].send_message_call_data);
+                    xastir_snprintf(temp1,
+                        sizeof(temp1),
+                        "%s",
+                        temp_ptr);
+                    XtFree(temp_ptr);
 
                     new_message_data--;
                     if (new_message_data<0)

@@ -261,6 +261,8 @@ void Check_new_call_messages( /*@unused@*/ Widget w, XtPointer clientData, /*@un
     int i, pos;
     char call_sign[MAX_CALLSIGN+1];
     char path[200];
+    char *temp_ptr;
+
 
     i=atoi((char *)clientData);
     /* clear window*/
@@ -282,7 +284,13 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call
         XtVaSetValues(mw[i].send_message_text,XmNcursorPosition,pos,NULL);
 
         // Go get the reverse path for the new callsign entered
-        strcpy(call_sign,XmTextFieldGetString(mw[i].send_message_call_data));
+        temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
+        xastir_snprintf(call_sign,
+            sizeof(call_sign),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         // Try lowercase
         get_path_data(call_sign, path);
         if (strlen(path) == 0) {
@@ -315,6 +323,8 @@ void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/
     char temp2[302];
     char path[200];
     int i;
+    char *temp_ptr;
+
 
     i=atoi((char *)clientData);
 
@@ -323,14 +333,32 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_n
     if (mw[i].send_message_dialog) {
 
         /* find station and go there */
-        strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
+        temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
+        xastir_snprintf(temp1,
+            sizeof(temp1),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         (void)remove_trailing_spaces(temp1);
         (void)to_upper(temp1);
 
-        strcpy(temp2,XmTextFieldGetString(mw[i].send_message_message_data));
+        temp_ptr = XmTextFieldGetString(mw[i].send_message_message_data);
+        xastir_snprintf(temp2,
+            sizeof(temp2),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         (void)remove_trailing_spaces(temp2);
 
-        strcpy(path,XmTextFieldGetString(mw[i].send_message_path));
+        temp_ptr = XmTextFieldGetString(mw[i].send_message_path);
+        xastir_snprintf(path,
+            sizeof(path),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         (void)remove_trailing_spaces(path);
         (void)to_upper(path);
 
@@ -367,15 +395,24 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_now
 void Clear_message_from( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char temp1[MAX_CALL+1];
     int i;
+    char *temp_ptr;
 /* int pos;*/
+
 
     i=atoi((char *)clientData);
 
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_from" );
 
     if (mw[i].send_message_dialog) {
+
         /* find station and go there */
-        strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
+        temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
+        xastir_snprintf(temp1,
+            sizeof(temp1),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         (void)remove_trailing_spaces(temp1);  
         (void)to_upper(temp1);
         /*fprintf(stderr,"Clear message from <%s> to <%s>\n",temp1,my_callsign);*/
@@ -394,6 +431,8 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_fr
 void Clear_message_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char temp1[MAX_CALL+1];
     int i;
+    char *temp_ptr;
+
 
     i=atoi((char *)clientData);
 
@@ -401,7 +440,13 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_
 
     if (mw[i].send_message_dialog) {
         /* find station and go there */
-        strcpy(temp1,XmTextFieldGetString(mw[i].send_message_call_data));
+        temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
+        xastir_snprintf(temp1,
+            sizeof(temp1),
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
+
         (void)remove_trailing_spaces(temp1);  
         (void)to_upper(temp1);
         /*fprintf(stderr,"Clear message to <%s>\n",temp1);*/
@@ -822,8 +867,13 @@ end_critical_section(&auto_msg_dialog_lock, "messages_gui.c:Auto_msg_destroy_she
 
 void Auto_msg_set_now(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[110];
+    char *temp_ptr;
 
-    substr(temp,XmTextFieldGetString(auto_msg_set_data),99);
+
+    temp_ptr = XmTextFieldGetString(auto_msg_set_data);
+    substr(temp, temp_ptr, 99);
+    XtFree(temp_ptr);
+
     (void)remove_trailing_spaces(temp);
     strcpy(auto_reply_message,temp);
     Auto_msg_destroy_shell(w, clientData, callData);
