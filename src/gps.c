@@ -56,6 +56,7 @@ int gps_stop_now;
 
 
 
+// This function is destructive to its first parameter
 int decode_gps_rmc( char *data,
                     char *long_pos,
                     int long_pos_length,
@@ -176,6 +177,10 @@ int decode_gps_rmc( char *data,
 }
 
 
+
+
+
+// This function is destructive to its first parameter
 int decode_gps_gga( char *data,
                     char *long_pos,
                     int long_pos_length,
@@ -280,6 +285,8 @@ void gps_data_find(char *gps_line_data, int port) {
     time_t t;
     struct timeval tv;
     struct timezone tz;
+    char temp_str[MAX_GPS_STRING];
+
 
     if (strncmp(gps_line_data,"$GPRMC,",7)==0 && !gps_stop_now) {
         if (debug_level & 128) {
@@ -290,7 +297,18 @@ void gps_data_find(char *gps_line_data, int port) {
         }
         statusline(langcode("BBARSTA015"),0);
         strcpy(gps_gprmc,gps_line_data);
+        strcpy(temp_str,gps_line_data);
         got_gps_gprmc=1;
+        decode_gps_rmc( temp_str,
+                        long_pos,
+                        sizeof(long_pos),
+                        lat_pos,
+                        sizeof(lat_pos),
+                        spd,
+                        sunit,
+                        sizeof(sunit),
+                        cse,
+                        &t);    /* mod station data */
     }
 
     if(strncmp(gps_line_data,"$GPGGA,",7)==0 && !gps_stop_now) {
@@ -302,7 +320,16 @@ void gps_data_find(char *gps_line_data, int port) {
         }
         statusline(langcode("BBARSTA016"),0);
         strcpy(gps_gpgga,gps_line_data);
+        strcpy(temp_str,gps_line_data);
         got_gps_gpgga=1;
+        decode_gps_gga( temp_str,
+                        long_pos,
+                        sizeof(long_pos),
+                        lat_pos,
+                        sizeof(lat_pos),
+                        sats,
+                        alt,
+                        aunit); /* mod station data */
     }
 
     if (debug_level & 128)
@@ -314,7 +341,8 @@ void gps_data_find(char *gps_line_data, int port) {
             statusline(langcode("BBARSTA037"),0);
         if (!gps_stop_now) {
             gps_stop_now=1;
-            if (decode_gps_rmc(gps_gprmc,long_pos,
+            if (decode_gps_rmc(gps_gprmc,
+                                long_pos,
                                 sizeof(long_pos),
                                 lat_pos,
                                 sizeof(lat_pos),
@@ -323,21 +351,27 @@ void gps_data_find(char *gps_line_data, int port) {
                                 sizeof(sunit),
                                 cse,
                                 &t)==1) { /* mod station data */
+
                 if (debug_level & 128) {
                     printf("Checking for Time Set on %d (%d)\n",
                         port, devices[port].set_time);
                 }
+
                 if (devices[port].set_time) {
                     tv.tv_sec=t;
                     tv.tv_usec=0;
                     tz.tz_minuteswest=0;
                     tz.tz_dsttime=0;
+
                     if (debug_level & 128) {
                         printf("Setting Time %ld EUID: %d, RUID: %d\n",
                             (long)t, (int)getuid(), (int)getuid());
                     }
+#ifdef __linux__
                     settimeofday(&tv, &tz);
+#endif
                 }
+
                 if (debug_level & 128)
                     printf("RMC <%s> <%s><%s> %c <%s>\n",
                         long_pos,lat_pos,spd,sunit[0],cse);
