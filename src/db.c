@@ -6737,8 +6737,15 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     // starting just past it.
     // Check for valid symbol table character.  Should be '/' or '\' only.
     if (info[7] != '/' && info[7] != '\\') {
-        if (debug_level & 1)
-            printf("Returned from data_add\n");
+        if (info[6] == '/' || info[6] == '\\') {
+            printf("decode_Mic_E: Symbol table (%c) and symbol (%c) reversed?  Call=%s\n",
+                info[7],
+                info[6],
+                call_sign);
+        }
+        if (debug_level & 1) {
+            printf("Returned from data_add, invalid symbol table character: %c\n",info[7]);
+        }
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
                     // so that it won't get added to the database at all.
     }
@@ -6746,7 +6753,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     // Check for valid symbol.  Should be between '!' and '~' only.
     if (info[6] < '!' || info[6] > '~') {
         if (debug_level & 1)
-            printf("Returned from data_add\n");
+            printf("Returned from data_add, invalid symbol\n");
 
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
                     // so that it won't get added to the database at all.
@@ -6755,7 +6762,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     // Check for minimum MIC-E size.
     if (strlen(info) < 8) {
         if (debug_level & 1)
-            printf("Returned from data_add\n");
+            printf("Returned from data_add, packet too short\n");
 
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
                     // so that it won't get added to the database at all.
@@ -6968,10 +6975,10 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     ok = data_add(APRS_MICE,call_sign,path,new_info,from,port,NULL,third_party);
 
     if (debug_level & 1)
-        printf("Returned from data_add\n");
+        printf("Returned from data_add, end of function\n");
 
     return(ok);
-}
+}   // End of decode_Mic_E()
 
 
 
