@@ -9157,7 +9157,12 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
 
     do_time = 0;
-    nexttime = 1;  // Start UpdateTime again 1 milliseconds after we've completed
+
+    // Start UpdateTime() again 2 milliseconds after we've
+    // completed.  Note:  Setting this to a '1' or '0' can cause
+    // some systems (RedHat/FreeBSD) to spin their wheels a lot,
+    // using up great amounts of CPU time.
+    nexttime = 2;
 
     (void)sound_done();
 
