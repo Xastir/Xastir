@@ -780,17 +780,14 @@ if test "$use_imagemagick" = "yes"; then
 # 
   case "$host" in 
   *-*apple-darwin* ) 
-      #
-      # Do nothing
-      #
+      AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
       ;; 
   * ) 
       AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no")
       if test "$use_imagemagick" = "no"; then
         AC_MSG_WARN(*** Missing ImageMagick include files.  Building w/o ImageMagick support. ***)
       else
-        AC_CHECK_LIB([Magick], [WriteImage],
-        AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]) gpslc="\$(GPSL)", use_imagemagick="no")
+        AC_CHECK_LIB([Magick], [WriteImage], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
         if test "$use_imagemagick" = "no"; then
           AC_MSG_WARN(*** Missing ImageMagick library.  Building w/o ImageMagick support. ***)
         fi
