@@ -147,14 +147,16 @@ int main(int argc, char *argv[])
 	while (*p && *p != ':') ++p;
 	if (*p == ':')
 	  *p++ = '\0';
-	getnum[nf] = DBFGetFieldIndex(dbf, getfld[nf] = sp);
-	gettypes[nf] = DBFGetFieldInfo(dbf, nf, junk, &w, &prec);
-	printf("getnum[%s] = %d (type %d)\n",sp,getnum[nf],gettypes[nf]);
+	getnum[nf] = DBFGetFieldIndex(dbf, (getfld[nf] = strdup(sp)));
+	gettypes[nf] = DBFGetFieldInfo(dbf, getnum[nf], junk, &w, &prec);
+	//	fprintf(stderr,"getnum[%s] = %d (type %d)\n",getfld[nf],getnum[nf],gettypes[nf]);
 	sp = p;
       }
       /* now actually read the whole file */
       for (i = 0; i < DBFGetRecordCount(dbf); i++ ) {
 	int j;
+
+	awk_exec_begin_record(rs); /* execute a BEGIN_RECORD rule if any */
 	for (j = 0; j < nf; j++ )
 	{
 	  char qbuf[1024];
@@ -174,27 +176,31 @@ int main(int argc, char *argv[])
 	    sprintf(qbuf,"%s=??",getfld[j]);
 	    break;
 	  }
-	  fprintf(stderr,"qbuf(%d,%d): %s\n",getnum[j],gettypes[j],qbuf);
+	  fprintf(stderr,"%d, %d: qbuf(num %d, type %d): %s\n",i,j,getnum[j],gettypes[j],qbuf);
 	  awk_exec_program(rs,qbuf,strlen(qbuf));
 	}
-	printf("name=%s, ",name);
-	printf("key=%s, ",key);
-	printf("color=%d, ", color);
-	printf("lanes=%d, ", lanes);
-	printf("filled=%d, ",filled);
-	printf("pattern=%d, ",pattern);
-	printf("display_level=%d, ",display_level);
-	printf("label_level=%d\n",label_level);
+	awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
+	fprintf(stderr,"name=%s, ",name);
+	fprintf(stderr,"key=%s, ",key);
+	fprintf(stderr,"color=%d, ", color);
+	fprintf(stderr,"lanes=%d, ", lanes);
+	fprintf(stderr,"filled=%d, ",filled);
+	fprintf(stderr,"pattern=%d, ",pattern);
+	fprintf(stderr,"display_level=%d, ",display_level);
+	fprintf(stderr,"label_level=%d\n",label_level);
+
       }
       DBFClose(dbf);
     } else {			/* use cmdline args */
+      awk_exec_begin_record(rs);
       for (args = 1; args < argc; args++) {
 	fprintf(stderr,"==> %s\n",argv[args]);
         awk_exec_program(rs,argv[args],strlen(argv[args]));
         print_symtbl(symtbl);
       }
+      awk_exec_end_record(rs);
     }
-    awk_exec_end(rs);               /* execute an END rule if any */
+    awk_exec_end(rs);		/* execute an END rule if any */
     print_symtbl(symtbl);
     awk_free_program(rs);
     awk_free_symtab(symtbl);

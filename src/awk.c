@@ -36,6 +36,7 @@
  * Alan Crosswell, n2ygk@weca.org
  *
  * TODO
+ *   find minlen=-1 segfault (fencepost decrementing len=0 on buffer full)
  *   permit embedded ;#} inside string assignment (balance delims)
  *   implement \t, \n, \0[x]nn etc.
  *   instantiate new symbols instead of ignoring them?
@@ -576,6 +577,8 @@ awk_program *awk_load_program_array(awk_symtab *this, /* symtab that goes w/this
  * {action}
  * /pattern/ {action}
  * BEGIN {action}
+ * BEGIN_RECORD {action}
+ * END_RECORD {action}
  * END {action}
  * # comments...
  * (blank lines)
@@ -651,7 +654,11 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
             r->pattern = dupe(p);
             break;
         case 'B':               /* BEGIN? */
-            if (strncmp(cp,"BEGIN",5) == 0) {
+            if (strncmp(cp,"BEGIN_RECORD",12) == 0) {
+                r = awk_new_rule();
+                r->ruletype = BEGIN_REC;
+                cp += 12;        /* strlen("BEGIN_RECORD") */
+            } else if (strncmp(cp,"BEGIN",5) == 0) {
                 r = awk_new_rule();
                 r->ruletype = BEGIN;
                 cp += 5;        /* strlen("BEGIN") */
@@ -661,7 +668,11 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
             }
             break;
         case 'E':               /* END? */
-            if (strncmp(cp,"END",3) == 0) {
+            if (strncmp(cp,"END_RECORD",10) == 0) {
+                r = awk_new_rule();
+                r->ruletype = END_REC;
+                cp += 10;        /* strlen("END_RECORD") */
+            } else if (strncmp(cp,"END",3) == 0) {
                 r = awk_new_rule();
                 r->ruletype = END;
                 cp += 3;        /* strlen("END") */
@@ -749,7 +760,11 @@ int awk_compile_program(awk_program *rs)
             pe = pcre_study(re, 0, &error); /* optimize the regexp */
         } else if (r->ruletype == BEGIN) {
             rs->begin = r;
-        }else if (r->ruletype == END) {
+        } else if (r->ruletype == BEGIN_REC) {
+            rs->begin_rec = r;
+        } else if (r->ruletype == END_REC) {
+            rs->end_rec = r;
+        } else if (r->ruletype == END) {
             rs->end = r;
         }
         r->code = awk_compile_action(rs->symtbl,r->act); /* compile the action */
@@ -802,6 +817,17 @@ int awk_exec_program(awk_program *this, char *buf, int len)
 
 
 /*
+ * awk_exec_begin_record: run the special BEGIN_RECORD rule, if any
+ */
+int awk_exec_begin_record(awk_program *this)
+{
+    if (this && this->begin_rec)
+        return awk_exec_action(this->symtbl,this->begin_rec->code);
+    else
+        return 0;
+}
+
+/*
  * awk_exec_begin: run the special BEGIN rule, if any
  */
 int awk_exec_begin(awk_program *this)
@@ -812,6 +838,16 @@ int awk_exec_begin(awk_program *this)
         return 0;
 }
 
+/*
+ * awk_exec_end_record: run the special END_RECORD rule, if any
+ */
+int awk_exec_end_record(awk_program *this)
+{
+    if (this && this->end_rec)
+        return awk_exec_action(this->symtbl,this->end_rec->code);
+    else
+        return 0;
+}
 
 /*
  * awk_exec_end: run the special END rule, if any
