@@ -2,7 +2,7 @@ HELP-INDEX>READ ME FIRST - License
 
                           READ ME FIRST - License
 
-For the most current information please read the README.1ST file in the Xastir
+For the most current information please read the README file in the Xastir
 directory.  Also see the LICENSE and COPYING files for additional information.
 
 Remember this program is intended to be used by the HAM community, in the USA
@@ -182,7 +182,7 @@ compressed format for objects and items, which can help reduce RF channel
 congestion. See the help topic "Configure Default Operation".
 
 Xastir now drops root privileges when not needed if run setuid root. Please
-read the information about this in README.1ST; this change provides only
+read the information about this in INSTALL; this change provides only
 limited protection.
 
 Xastir now supports being run with a private colormap with the commandline
@@ -893,7 +893,7 @@ of the map chooser.
 Enable Weather Alert Counties
 This toggles the display of county warning area maps for severe weather.
 These maps can be obtained and installed according to the directions in the
-README.1ST file. They are displayed on screen when special weather alert
+README.MAPS file. They are displayed on screen when special weather alert
 messages are received, and expire after a time or can be remotely cancelled.
 The weather alert text can be seen under View|Weather Alerts.
 
@@ -950,7 +950,7 @@ but support for the new ESRI shapefile format for weather alerts should
 be completed soon.
 
 Details of locations to obtain many of the above types of maps are found in
-the file README.1ST
+the file README.MAPS
 
 Map Locations
 Any map file should be stored in the /usr/local/xastir/maps directory on your
@@ -958,8 +958,7 @@ computer. You can create any number of directories under this directory to
 help organize and separate your data. The maps will be listed in
 alphabetical order with their relative path, unless the layering is specified.
 
-Hints on installing and organizing maps are found in README.1ST.
- 
+Hints on installing and organizing maps are found in README.MAPS. 
 Maps in a pixel graphics format actually need a combination of two files,
 a data file with a graphic pixmap (.xpm) (or other format if you compiled
 with ImageMagick), and a calibration file (.geo). The .xpm file is the
@@ -1094,7 +1093,7 @@ selected the GNIS file as a map and have enabled Map Labels in the Maps menu.
 WX County Maps
 All WX County maps should be stored in the /usr/local/xastir/Counties and
 Xastir only supports the new shapefile standard. Installation is explained in
-the README.1ST section on obtaining maps.
+README.MAPS.
 
 As NWS messages are received, different areas will get tinted to designate
 areas of concern.  They are color-coded to specify different types of
@@ -1463,7 +1462,7 @@ U.S. callsign, the Search FCC/RAC Database button will become active,
 otherwise this button will be inactive.  The FCC and RAC files should be
 placed in the /usr/local/xastir/fcc directory, and case is important!
 Pressing this button adds the station's name and address into the Station
-Info box.  Instructions for installing these databases are in the README.1ST
+Info box.  Instructions for installing these databases are in the README.MAPS
 file.
 
 Xastir will create index files for each database file upon startup. If a newer
@@ -1762,7 +1761,7 @@ If the UNPROTO paths are blank, RELAY,WIDE will be used.
 
 NOTE: To use AX.25 devices with Xastir you will need to run the program as
 "root". If you want to run Xastir as another user you may want to set the
-suid bit on the Xastir program file. Please see README.1ST for more
+suid bit on the Xastir program file. Please see INSTALL file for more
 information; current Xastir drops the extra privileges but has not been audited
 for exploits. Use in this fashion in a multi-user environment at your own risk!
 
@@ -1820,7 +1819,7 @@ Selecting "Allow Transmitting" will tell Xastir that any outgoing Internet
 data can be sent to this device.
 
 Enter the host name (or IP address) and the port number of the Internet
-Server you want to contact.  A list of possible servers is in README.1ST.
+Server you want to contact. 
 
 Enter a valid pass-code to validate your connection, this will allow your
 data to be transmitted via an Igate. If you don't have a pass-code, use the 
@@ -2196,7 +2195,7 @@ Other notable improvements:
 * Maps can be printed if certain tools and libraries are present.
 * Support for retrieving historical track data from findu.com.
 * Xastir now compiles and runs on Mac OS X, Solaris and FreeBSD with only
-  minimal changes; see README.1ST for details. 
+  minimal changes; see README for details. 
 * Several major bugs found in 1.0 have been corrected, including the problems
   loading DOS maps and the problems with the weather reporting. Other minor
   bugs and memory leaks have been fixed. And several more errors have been

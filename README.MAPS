@@ -1,6 +1,5 @@
-
-Getting Data Files for Xastir:
-------------------------------
+Getting Maps and other Data Files for Xastir:
+---------------------------------------------
 
       NOTE:  Set map FILES to permissions 644 ("rw-r--r--"), map
       DIRECTORIES to 755 ("rwxr-xr-x") using the "chmod" command.
