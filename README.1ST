@@ -1154,7 +1154,8 @@ WINDOWS/CYGWIN NOTES:
      This morning I did a make distclean&& ./configure &&make.  Everything
      went fine until the linking stage.  I needed to link with the following
      command.  Under cygwin, the order of the linking matters. and
-     duplicates are not allowed:
+     duplicates are not allowed.  (WE7U:  Run this command from the src
+     directory):
 
 
          gcc -I/usr/X11R6/include -g -O2 -Wall -pipe -o xastir alert.o
@@ -1230,9 +1231,11 @@ WINDOWS/CYGWIN NOTES:
 
         export PATH=$PATH:/usr/local/lib
 
-     I haven't actually managed to get Xastir to find these installed
-     libraries yet, so there may be other fixes required in order to use
-     Shapelib...
+     I haven't actually managed to get configure to find these installed
+     libraries yet.  Run configure, then add "#define HAVE_SHAPELIB 1" to
+     the config.h file.  Run make, then run the link line listed above from
+     the src directory, but add "-L/usr/local/lib -lshp" to the end of it.
+     Once all that is done, run make install.
 
      Note that one user running Cygwin on XP had it crash every time his
      screensaver kicked in.
