@@ -1972,10 +1972,13 @@ int valid_path(char *path) {
 
     for (i=0,j=0; i<len; i++) {
         ch = path[i];
+
         if (ch == '>' || ch == ',') {   // found digi call separator
+            // We're at the start of a callsign entry in the path
+
             if (ast > 1 || (ast == 1 && i-j > 10) || (ast == 0 && (i == j || i-j > 9))) {
                 if (debug_level & 1)
-                    fprintf(stderr, "valid_path: More than one * in call or wrong call size\n");
+                    fprintf(stderr, "valid_path(): Bad Path: More than one * in call or wrong call size\n");
                 return(0);              // more than one asterisk in call or wrong call size
             }
             ast = 0;                    // reset local asterisk counter
@@ -1986,35 +1989,43 @@ int valid_path(char *path) {
             else
                 type |= 0x01;           // set AEA flag (found '>')
             hops++;                     // count hops
-        } else {                        // digi call character or asterisk
+        }
+
+        else {                          // digi call character or asterisk
+            // We're in the middle of a callsign entry
+
             if (ch == '*') {
                 ast++;                  // count asterisks in call
                 allast++;               // count asterisks in path
-            } else
-                if ((ch <'A' || ch > 'Z') && (ch <'0' || ch > '9')
-                        && ch != '-'
-                        && ch != 'q') { // New anti-loop stuff from aprsd
-                    if (debug_level & 1)
-                        fprintf(stderr, "valid_path: Anti-loop stuff from aprsd\n");
-                    return(0);          // wrong character in path
-                }
+            }
+            else if ((ch <'A' || ch > 'Z')
+                    && (ch <'0' || ch > '9')
+                    && ch != '-'
+                    && ch != 'q'        // Q-construct stuff
+                    && ch != 'r'        // Q-construct stuff
+                    && ch != 'o') {     // Q-construct stuff
+
+                if (debug_level & 1)
+                    fprintf(stderr, "valid_path: Bad Path: Anti-loop stuff from aprsd\n");
+                return(0);          // wrong character in path
+            }
         }
     }
     if (ast > 1 || (ast == 1 && i-j > 10) || (ast == 0 && (i == j || i-j > 9))) {
         if (debug_level & 1)
-            fprintf(stderr, "valid_path: More than one * or wrong call size (2)\n");
+            fprintf(stderr, "valid_path: Bad Path: More than one * or wrong call size (2)\n");
         return(0);                      // more than one asterisk or wrong call size
     }
 
     if (type == 0x03) {
         if (debug_level & 1)
-            fprintf(stderr, "valid_path: Wrong format, both > and , in path\n");
+            fprintf(stderr, "valid_path: Bad Path: Wrong format, both > and , in path\n");
         return(0);                      // wrong format, both '>' and ',' in path
     }
 
     if (hops > 9) {                     // [APRS Reference chapter 3]
         if (debug_level & 1)
-            fprintf(stderr, "valid_path: hops > 9\n");
+            fprintf(stderr, "valid_path: Bad Path: hops > 9\n");
         return(0);                      // too much hops, destination + 0-8 digipeater addresses
     }
 
@@ -2177,7 +2188,8 @@ int valid_call(char *call) {
         if (len-del == 2) {                     // 2 char SSID
             if (call[del+1] < '1' || call[del+1] > '9')                         //  -1 ...  -9
                 del = 0;
-        } else {                                // 3 char SSID
+        }
+        else {                                  // 3 char SSID
             if (call[del+1] != '1' || call[del+2] < '0' || call[del+2] > '5')   // -10 ... -15
                 del = 0;
         }
