@@ -1,6 +1,7 @@
 2003-02-13  kg4ijb@sourceforge.net
 
 	* Removed old configure files and added new ac
+    * Removed files that are generated locally
 
 2003-02-02 23:16  jtwilley
 
