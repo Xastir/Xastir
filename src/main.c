@@ -2863,6 +2863,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
+
 #if !defined(NO_GRAPHICS) && defined(HAVE_IMAGEMAGICK)
 void Gamma_adjust_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
@@ -2870,6 +2871,10 @@ void Gamma_adjust_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientDat
     XtDestroyWidget(shell);
     gamma_adjust_dialog = (Widget)NULL;
 }
+
+
+
+
 
 void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
@@ -2892,6 +2897,10 @@ void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer cal
     XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
+
+
+
+
 void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_close;
     Atom delw;
@@ -2900,7 +2909,8 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     char temp_string[10];
 
     if (!gamma_adjust_dialog) {
-        gamma_adjust_dialog = XtVaCreatePopupShell("Adjust Gamma Correction",
+        // Gamma Correction
+        gamma_adjust_dialog = XtVaCreatePopupShell(langcode("GAMMA002"),
                                                    xmDialogShellWidgetClass, Global.top,
                                                    XmNdeleteResponse,        XmDESTROY,
                                                    XmNdefaultPosition,       FALSE,
@@ -3003,6 +3013,7 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
         (void)XRaiseWindow(XtDisplay(gamma_adjust_dialog), XtWindow(gamma_adjust_dialog));
 }
 #endif
+
 
 
 
@@ -3640,7 +3651,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(geotiff_intensity[10], XmNactivateCallback,Geotiff_intensity,"1.0");
 #endif
 #if defined(HAVE_IMAGEMAGICK)
-    gamma_adjust_button = XtVaCreateManagedWidget("Adjust Gamma Correction",
+    // Adjust Gamma Correction
+    gamma_adjust_button = XtVaCreateManagedWidget(langcode("GAMMA001"),
                                                   xmPushButtonWidgetClass, mappane,
                                                   XmNmnemonic,             "G",
                                                   XmNbackground,           colors[0xff],
@@ -7232,7 +7244,7 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
             open=1;
         }
         if (!help_view_dialog) {
-            xastir_snprintf(title, sizeof(title), "Help - %s", temp);
+            xastir_snprintf(title, sizeof(title), "%s - %s", langcode("MENUTB0009"), temp);
             help_view_dialog = XtVaCreatePopupShell(title,xmDialogShellWidgetClass,Global.top,
                                   XmNdeleteResponse,XmDESTROY,
                                   XmNdefaultPosition, FALSE,
@@ -11144,7 +11156,7 @@ int Setup_object_data(char *line, int line_length) {
                     ext_lon_str,
                     last_obj_sym,
                     course,
-                    speed,
+                    speed,  // In knots
                     ""));    // PHG, must be blank in this case
         }
         else {
@@ -11470,7 +11482,7 @@ int Setup_item_data(char *line, int line_length) {
                     ext_lon_str,
                     last_obj_sym,
                     course,
-                    speed,
+                    speed,  // In knots
                     ""));    // PHG, must be blank in this case
         }
         else {

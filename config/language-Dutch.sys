@@ -860,3 +860,8 @@ SMARTB009|Turn Slope:||
 SMARTB010|Wait Time (secs):||
 #
 #
+# Gamma Adjust Dialog
+GAMMA001|Adjust Gamma Correction||
+GAMMA002|Gamma Correction||
+#
+#
