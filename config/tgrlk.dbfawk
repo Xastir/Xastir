@@ -45,6 +45,50 @@ BEGIN_RECORD {key=""; lanes=1; color=11; name=""; filled=0; pattern=1; display_l
 /^FEDIRS=(.+)$/ {name="$(name) $1"; next}
 # Census Feature Class Codes are used to set lanes, color, display_level, etc.
 # CFCC A..: roads
+# A11 - primary limited access road or interstate highway, unseparated
+# A12 - primary limited access road or interstate highway, unseparated in tunnel
+# A13 - primary limited access road or interstate highway, unseparated, underpassing
+# A14 - primary limited access road or interstate highway, unseparated, with rail line in center
+# A15 - primary limited access road or interstate highway, separated
+# A16 - primary limited access road or interstate highway, separated, in tunnel
+# A17 - primary limited access road or interstate highway, separated, underpassing
+# A18 - primary limited access road or interstate highway, separated, with rail line in center
+# A21 - primary road without limit access, US highways, unseparated
+# A22 -primary road without limit access, US highways, unseparated, in tunnel
+# A23 - primary road without limit access, US highways, underpassing
+# A24 - primary road without limit access, US highways, unseparated, with rail line in center
+# A25 - primary road without limit access, US highways, separated
+# A26 - primary road without limit access, US highways, separated, in tunnel
+# A27 - primary road without limit access, US highways, separated, underpassing
+# A28 - primary road without limit access, US highways, separated, with rail line in center
+# A31 - secondary and connection road, state highways, unseperated
+# A32 - " in tunnel
+# A33 - " underpassing
+# A34 - " with rail line in center
+# A35 - secondary and connection road, state highways, seperated
+# A36 - " in tunnel
+# A37 - " underpassing
+# A38 - " with rail line in center
+# A41 - local, neighborhood and rural road, city street, unseparated
+# A42 - " in tunnel
+# A43 - " underpassing
+# A44 - " with rail line in center
+# A45 - local, neighborhood and rural road, city street, separated
+# A46 - " in tunnel
+# A47 - " underpassing
+# A48 - " with rail line in center
+# A51 - vehicular trail, unseparated
+# A52 - " in tunnel
+# A53 - " underpassing
+# A61 - cul-de-sac
+# A62 - traffic circle
+# A63 - access ramp
+# A64 - service drive
+# A65 - ferry crossing
+# A71 - walkway or trail
+# A72 - stairway
+# A73 - alley
+# A74 - driveway
 /^CFCC=A1/ {lanes=4; color=4; label_level=512; next}
 /^CFCC=A2/ {lanes=3; color=8; label_level=256; next}
 /^CFCC=A3/ {lanes=2; color=8; label_level=128; next}
@@ -52,19 +96,136 @@ BEGIN_RECORD {key=""; lanes=1; color=11; name=""; filled=0; pattern=1; display_l
 /^CFCC=A3[7-8]/ {display_level=128; next}
 /^CFCC=A4/ {display_level=96; label_level=16; color=40; lanes=1; next}
 /^CFCC=A5/ {lanes=2; color=40; display_level=64; next}
-/^CFCC=A65/ {lanes=2, color=8, pattern=2; next}
+/^CFCC=A65/ {lanes=2; color=8; pattern=2; next}
 /^CFCC=A6[^5]/ {color=40; display_level=64; next}
 /^CFCC=A7[12]/ {lanes=1; color=12; pattern=2; display_level=64; next}
 /^CFCC=A7[03-9]/ {lanes=1; color=40; pattern=2; display_level=64; next}
 # need to implement these:
 # B: railroads
+# B01 - railroad track
+# B02 - " in tunnel
+# B03 - " underpassing
+# B11 - railroad main line
+# B12 - " in tunnel
+# B13 - " underpassing
+# B21 - railroad spur
+# B22 - " in tunnel
+# B23 - " underpassing
+# B31 - railroad yard track
+# B32 - " in tunnel
+# B33 - " underpassing
+# B40 - railroad ferry crossing
+# B50 - other rail line
+# B51 - carline (streetcars, etc.)
+# B52 - cog railroad, incline railway or logging tram
 /^CFCC=B/ {lanes=1; color=1; pattern=1; display_level=128; next}
 # C: transmission lines
+# C00 - misc ground transportation
+# C10 - pileine
+# C20 - power transmission line
+# C30 - other ground transportation
+# C31 - aerial tramway
 # D: landmarks
+# D00 - unknown
+# D10 - military installation
+# D20 - multihousehold or transient quarters
+# D21 - apartment building or complex
+# D22 - rooming or boarding house
+# D23 - trailer cour or mobile home park
+# D24 - marina
+# D25 - crew-of-vessel area
+# D26 - housing facility for workers
+# D27 - hotel, motel, resort, spa, YMCA, YWCA
+# D28 - campground
+# D29 - shelter or mission
+# D30 - custodial facility
+# D31 - hospital
+# D32 - halfway house
+# D33 - nursing home
+# D34 - county home or poor farm
+# D35 - orphanage
+# D36 - jail 
+# D37 - federal penetentiary, state prison, or prison farm
+# D40 - unknown educational or religious
+# D41 - sorority or fraternity
+# D42 - convent or monastery
+# D43 - educational institution
+# D44 - religious institution
+# D50 - transportation terminal
+# D51 - airport
+# D52 - train station
+# D53 - bus terminal
+# D54 - marine terminal
+# D55 - seaplane anchorage
+# D70 - tower
+# D71 - lookout tower
+# D80 - open space
+# D81 - golf course
+# D82 - cemetery
+# D83 - national park
+# D84 - national forest
+# D85 - state or local park or forest
+# D90 - special purpose landmark
+# D91 - post office box-only ZIP Code location
+# D92 - urbanizacion (Puerto Rico)
 # E: physical featuers
+# E00 - unknown physical feature
+# E10 - fence line
+# E20 - topgraphic feature
+# E21 - ridge line
+# E22 - mountain peak
+# E23 - island
 # F: legal boundaries
+# F00 - nonvisible boundary
+# F10 - jurisdictional boundary
+# F11 - offset boundary
+# F12 - corridor boundary
+# F13 - interpolate boundary across water
+# F14 - superseded boundary
+# F15 - superseded boundary, corrected
+# F20 - data base topology
+# F21 - automated feature extension to lenghten physical feature
+# F22 - irregular feature extension, determined manually
+# F23 - closure extension
+# F24 - separation line
+# F25 - centerline
+# F30 - point-to-point line
+# F40 - property line
+# F50 - Zip Code boundary
+# F60 - map edge
+# F70 - statistical boundardy
+# F71 - 1980 "
+# F72 - 1990 "
+# F73 - internal use
+# F74 - 1990 " ...
+# F80 - other tabulation boundary
+# F81 - internal use
+# F82 - internal use
 # (G not used by census;  tig2aprs uses for special maps)
 # H: hydrography
+# H00 - water feature
+# H01 - shoreline of perennial water feature
+# H02 - shoreline of intermittent "
+# H10 - stream
+# H11 - perennial stream
+# H12 - intermittent stream
+# H13 - braided stream or river
+# H20 - canal, ditch or aqueduct
+# H21 - perennial "
+# H22 - intermittent "
+# H30 - lake or pond
+# H31 - perennial "
+# H32 - intermittent "
+# H40 - reservoir
+# H41 - perennial "
+# H42 - intermittent "
+# H50 - bay, estuary, gulf, sound, sea, ocean
+# H51 - bay, estuary, gulf or sound
+# H52 - sea or ocean
+# H60 - gravel pit or quarry filled with water
+# H70 - nonvisibile....
+# H80 - special water features
+# H81 - glacier
 /^CFCC=H/ {lanes=0; color=26;}
 /^CFCC=H02/ {pattern=2; next}
 /^CFCC=H[1-6]2/ {lanes=1; pattern=2; next}
@@ -72,6 +233,7 @@ BEGIN_RECORD {key=""; lanes=1; color=11; name=""; filled=0; pattern=1; display_l
 /^CFCC=H7/ {display_level=0; label_level=0; next}
 /^CFCC=H8/ {lanes=1}
 /^CFCC=H81/ {color=15; next}
+# X00 - feature not yet classified
 # just a demo of the END_RECORD and END rules:
 #END_RECORD {name="$name ($key)";}
 #END {}
