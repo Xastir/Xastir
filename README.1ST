@@ -76,7 +76,7 @@ password:
   exit (from root) (not needed on Cygwin)
 
 3) Xastir should now be installed in /usr/local/bin (the default on
-most systesm).  You can run it by typing this from a shell:
+most systems).  You can run it by typing this from a shell:
 
     xastir &
 
@@ -1310,9 +1310,9 @@ WINDOWS/CYGWIN NOTES:
      From the "xterm" window, type "/usr/local/bin/xastir &".  Xastir should
      start right up.
 
-     Some map libraries (ImageMagick, Shapelib) have been tested (see
-     below), while libgeotiff, libproj have not.  Anyone doing so is
-     encouraged to share their findings with the Xastir mailing lists.
+     Some map libraries (ImageMagick, Shapelib, libproj, libgeotiff) have
+     been tested (see below) on Cygwin.  Anyone testing more libraries is
+     encouraged to share their findings on the Xastir mailing lists.
 
      As far as what Xastir paths look like from within Windows (in case
      you're moving maps around with Explorer):  Just prefix them all with
@@ -1428,8 +1428,10 @@ WINDOWS/CYGWIN NOTES:
      to add a ".exe" after those two names and try again.  It should
      complete ok.
 
-     "configure" still doesn't find libgeotiff.  Am investigating why.
- 
+     Go to the Xastir source directory, run "configure", "make", and
+     "make install" again.  It should find libtiff/libproj/libgeotiff at the
+     configure stage and compile in support for them.
+
      -------------------------
 
  
