@@ -636,6 +636,11 @@ static void data_out_ax25(int port, unsigned char *string) {
 // bp       raw packet data
 // len      length of raw packet data
 // buffer   buffer to write readable packet data to
+//
+// Note that db.c:decode_ax25_header does much the same thing for
+// Serial KISS interface packets.  Consider combining the two
+// functions.  process_ax25_packet() would be the earlier and more
+// thought-out function.
 //***********************************************************
 
 char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {

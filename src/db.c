@@ -11507,19 +11507,24 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 
     strcat(result,":");
 
+
     // Check the Control and PID bytes and toss packets that are
     // AX.25 connect/disconnect or information packets.  We only
     // want to process UI packets in Xastir.
 
-    // Control byte should be 0x03 (UI Frame)
-    if (incoming_data[ptr++] != 0x03) {
 
-// An MKISS tnc (2-ports or more) can encode the channel in
-// the control byte, so we don't really want to throw packets out
-// because of this.
-//        return(0);
+    // Control byte should be 0x03 (UI Frame).  Strip the poll-bit
+    // from the PID byte before doing the comparison.
+    if ( (incoming_data[ptr++] & (~0x10)) != 0x03) {
 
+//WE7U
+        // An MKISS tnc (2-ports or more) can encode the channel in
+        // the control byte, so we don't really want to throw
+        // packets out because of this.  How do we know we're
+        // running MKISS though?
+        return(0);
     }
+
 
     // PID byte should be 0xf0 (normal AX.25 text)
     if (incoming_data[ptr++] != 0xf0)
