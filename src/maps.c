@@ -4209,7 +4209,7 @@ void Snapshot(void) {
         // ImageMagick command "convert" installed.
         xastir_snprintf(command,
             sizeof(command),
-            "%s -quality 100 %s %s",
+            "%s -quality 100 -colors 256 %s %s",
             CONVERT_PATH,
             xpm_filename,
             png_filename );
