@@ -111,7 +111,7 @@ void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointe
     char temp[1024];
     XmString item;
     register FILE *pp;
-    extern FILE *popen();
+    extern FILE *popen(const char *, const char *);
 
 
     XmStringGetLtoR(selection->item, XmFONTLIST_DEFAULT_TAG, &choice);

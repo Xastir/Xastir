@@ -296,8 +296,8 @@ extern Widget text4;
 extern Widget log_indicator;
 extern void display_zoom_status(void);
 extern void statusline(char *status_text,int update);
-extern int SayTextInit();
-extern int SayText();
+extern int SayTextInit(void);
+extern int SayText(char *text);
 extern Widget auto_msg_toggle;
 
 // Symbol update stuff

@@ -3643,7 +3643,7 @@ void Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
 
 
 
-inline int no_data_selected()
+inline int no_data_selected(void)
 {
     return (
         Select_.none || (
@@ -9464,7 +9464,7 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 
 
-void Set_Log_Indicator(){
+void Set_Log_Indicator(void) {
 	if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate)) {
 	    XmTextFieldSetString(log_indicator, "Logging");
             XtVaSetValues(log_indicator, XmNbackground, (int)GetPixelByName(Global.top,"RosyBrown"), NULL);
@@ -21687,7 +21687,10 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 /////////////////////////////////////////////   main   /////////////////////////////////////////////
 
 
-int main(int argc, char *argv[], char *envp[]) {
+// Third argument is now deprecated
+//int main(int argc, char *argv[], char *envp[]) {
+
+int main(int argc, char *argv[]) {
     int ag, ag_error, trap_segfault;
     uid_t user_id;
     struct passwd *user_info;

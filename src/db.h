@@ -165,7 +165,7 @@ extern void msg_copy_data(Message *to, Message *from);
 #define msg_copy_data(to, from) memmove((Message *)to, (Message *)from, sizeof(Message))
 #endif /* MSG_DEBUG */
 
-extern int message_update_time ();
+extern int message_update_time(void);
 
 
 enum AreaObjectTypes {

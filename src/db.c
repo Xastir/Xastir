@@ -484,7 +484,7 @@ void msg_copy_data(Message *to, Message *from) {
 
 
 // Returns 1 if it's time to update the messages again
-int message_update_time () {
+int message_update_time (void) {
     if ( sec_now() > (last_message_update + message_update_delay) )
         return(1);
     else

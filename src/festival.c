@@ -103,7 +103,7 @@ static time_t festival_connect_attempt_time = (time_t)0;
 
 // Set up default struct
 //
-void festival_default_info() {
+void festival_default_info(void) {
 
     if (info == NULL) { // First time through
 
@@ -182,7 +182,7 @@ static int festival_socket_open(const char *host, int port) {
 
 // Close socket to server
 //
-int festivalClose() {
+int festivalClose(void) {
 
     //fprintf(stderr,"festivalClose()\n");
 
@@ -212,7 +212,7 @@ int festivalClose() {
 // Open socket to server.  Close the connection if one is already
 // open.
 //
-int festivalOpen() {
+int festivalOpen(void) {
 
 
     //fprintf(stderr,"festivalOpen()\n");
@@ -438,7 +438,7 @@ int SayText(char *text) {
 
 
 
-int SayTextInit() {
+int SayTextInit(void) {
 
     if (festivalOpen() == -1) {
         fprintf(stderr,"SayText: Couldn't open socket to Festival\n");
