@@ -127,7 +127,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                 xastir_snprintf(status, sizeof(status), "   ");
 
             xastir_snprintf(temp, sizeof(temp),
-                    "%-9s %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %-20s %s",
+"%-9s %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %-20s %s  %s%s%s%s",
                     alert_list[n].from,
                     alert_list[n].to,
                     alert_list[n].issue_date_time[0],
@@ -145,7 +145,11 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                     status,
                     alert_list[n].title,
                     alert_list[n].alert_tag,
-                    alert_list[n].seq);
+                    alert_list[n].seq,
+                    alert_list[n].desc0,
+                    alert_list[n].desc1,
+                    alert_list[n].desc2,
+                    alert_list[n].desc3);
 
 
             item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
@@ -221,9 +225,15 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
         XtSetArg(al[ac], XmNselectionPolicy, XmMULTIPLE_SELECT); ac++;
+
+        XtSetArg(al[ac], XmNvisualPolicy, XmCONSTANT); ac++;
+        XtSetArg(al[ac], XmNscrollingPolicy,XmAUTOMATIC); ac++;
         XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
-        XtSetArg(al[ac], XmNlistSizePolicy, XmVARIABLE); ac++;
-        XtSetArg(al[ac], XmNscrollBarDisplayPolicy, XmSTATIC); ac++;
+        XtSetArg(al[ac], XmNscrollBarDisplayPolicy,XmAS_NEEDED); ac++;
+//        XtSetArg(al[ac], XmNscrollBarDisplayPolicy, XmSTATIC); ac++;
+        XtSetArg(al[ac], XmNlistSizePolicy, XmCONSTANT); ac++;
+//        XtSetArg(al[ac], XmNlistSizePolicy, XmVARIABLE); ac++;
+
         XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ac++;
         XtSetArg(al[ac], XmNtopWidget, mess); ac++;
         XtSetArg(al[ac], XmNtopOffset, 5); ac++;

@@ -7742,7 +7742,31 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
     }
     if (debug_level & 1)
-        printf("6\n");
+        printf("6a\n");
+    //--------------------------------------------------------------------------
+    if (!done && strncmp(addr,"SKY",3) == 0) {  // NWS weather alert additional info
+        //printf("found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
+        msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
+        (void)alert_message_scan();
+        done = 1;
+        if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
+            char short_path[100];
+
+            shorten_path(path,short_path);
+            //sprintf(ipacket_message,"}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
+            xastir_snprintf(ipacket_message,
+                sizeof(ipacket_message),
+                "}%s>%s,TCPIP,%s*::%s:%s",
+                call,
+                short_path,
+                my_callsign,
+                addr9,
+                message);
+            output_nws_igate_rf(call,path,ipacket_message,port,third_party);
+        }
+    }
+    if (debug_level & 1)
+        printf("6b\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0) {          // other message with linenumber
         if (debug_level & 2) printf("found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);

@@ -942,6 +942,13 @@ int alert_on_screen(void) {
 // shapefiles to determine what areas to light up.  In the above
 // example read ">" as "thru" and "-" as "and".
 //
+//
+// RIWWSW>APRS::NWS-WARN :191800z,WINTER_STORM,WY_Z014, GREEN MOUNTAINS {JBNBA
+// RIWWSW>APRS::SKYRIW   :WINTER STORM WARNING CONTINUING TODAY {JBNBB
+// RIWWSW>APRS::SKYRIW   :THROUGH SATURDAY {JBNBC
+//
+//
+//
 static void alert_build_list(Message *fill) {
     alert_entry entry[5], *list_ptr;    // We might need up to five structs to split
                                         // up a message into individual map areas.
@@ -958,6 +965,67 @@ static void alert_build_list(Message *fill) {
 
     if (debug_level & 1)
         printf("alert_build_list\n");
+
+    // Check for "SKY" text in the "call_sign" field.
+    if (strncmp(fill->call_sign,"SKY",3) == 0) {
+        //printf("Sky Message: %s\n",fill->message_line);
+
+        // Find a matching alert_record, check whether or not it is
+        // expired.  If not, add this additional text into the
+        // "desc[0123]" fields, in order.  Check that the
+        // FROM callsign and the first four chars after the curly
+        // brace match.  The next character specifies which message
+        // block to fill in.  In order they should be:
+        //
+        // B = "desc0"
+        // C = "desc1"
+        // D = "desc2"
+        // E = "desc3".
+        //
+        // A matching alert record would have the same "from" field
+        // and the first four characters of the "seq" field would
+        // match.
+        //
+        // Need to make this SKY data expire from the message list
+        // somehow?
+        // 
+        // Remember to blank out these fields when we expire an
+        // alert.  Check that all other fields are cleared in this
+        // case as well.
+        //
+
+        // Run through the alert_list looking for a match to the
+        // FROM and first four chars of SEQ
+        for (i = 0; i < alert_list_count; i++) {
+            if ( (strcasecmp(alert_list[i].from, fill->from_call_sign) == 0)
+                    && ( strncmp(alert_list[i].seq,fill->seq,4) == 0 ) ) {
+
+printf("%d:Found a matching alert to a SKY message:\t",i);
+
+                switch (fill->seq[4]) {
+                    case 'B':
+                        strcpy(alert_list[i].desc0,fill->message_line);
+printf("Wrote into desc0: %s\n",fill->message_line);
+                        break;
+                    case 'C':
+                        strcpy(alert_list[i].desc1,fill->message_line);
+printf("Wrote into desc1: %s\n",fill->message_line);
+                        break;
+                    case 'D':
+                        strcpy(alert_list[i].desc2,fill->message_line);
+printf("Wrote into desc2: %s\n",fill->message_line);
+                        break;
+                    case 'E':
+                    default:
+                        strcpy(alert_list[i].desc3,fill->message_line);
+printf("Wrote into desc3: %s\n",fill->message_line);
+                        break;
+                }
+//                return; // All done with this sky message
+            }
+        }
+        return;
+    }
 
     if (fill->active == RECORD_ACTIVE) {
         int ignore_title = 0;

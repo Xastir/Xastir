@@ -55,6 +55,10 @@ typedef struct {
     char filename[64];
     char seq[10];
     char issue_date_time[10];
+    char desc0[68];     // Space for additional text.
+    char desc1[68];     // Spec allows 67 chars per
+    char desc2[68];     // message.
+    char desc3[68];     //
 } alert_entry;
 
 extern alert_entry *alert_list;
