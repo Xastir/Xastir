@@ -79,29 +79,39 @@ selected by default, plus select the additional packages listed
 below.  Note that enabling some of these packages causes others to
 be selected as well, that's ok and necessary:
 
-    Archive/unzip
-    Archive/zip
-    Devel/autoconf
-    Devel/automake
-    Devel/binutils
-    Devel/cvs
-    Devel/gcc
-    Devel/make
-    Devel/rcs
-    Editors/vim
-    Graphics/tiff (install sources for this one too? TBD)
-    Interpreters/m4
-    Interpreters/perl (install 5.6.1 instead of 5.8.0)
-    Libs/curl
-    Libs/curl-devel
-    Libs/tcltk
-    Text/less
-    Utils/diff
-    Utils/patch
-    Web/wget (or can use libcurl instead)
-    XFree86/lesstif
-    XFree86/XFree86-prog
-
+    Archive
+        unzip
+        zip
+    Devel
+        autoconf
+        automake
+        binutils
+        cvs
+        gcc
+        make
+        rcs
+    Editors
+        vim
+    Graphics
+        tiff (install sources for this one too? TBD)
+    Interpreters
+        m4
+        perl (install 5.6.1 instead of 5.8.0)
+    Libs
+        curl
+        curl-devel
+        tcltk
+    Text
+        less
+    Utils
+        diff
+        patch
+    Web
+        wget (or can use libcurl instead)
+    XFree86
+        XFree86-prog:Headers
+        lesstif
+ 
 In order to see the more detailed list of packages, you'll have to
 click on the '+' symbols to the left of the various categories.
 Clicking on the small circle with the two arrows will run you
@@ -111,6 +121,10 @@ through the various select/de-select options for each package.
 Step 1d)  Click Next and the packages will get downloaded/installed.
 Repeat the above if you have network difficulties, until the install
 succeeds.
+
+Some servers fail to download some files and require the user to
+press enter between downloads when it fails on these files.  If this
+happens, back up and select another server.
 
 
 Step 1e)  At the end of the install it'll ask you if you wish to
@@ -137,6 +151,10 @@ Step 3)  Test Cygwin and create startup shortcuts:
 Double-click on the shortcut you just made.  You should get a shell
 window that looks very much like a DOS window.  It's a BASH shell
 window and understands Unix commands instead of DOS commands.
+
+When running this shortcut for the first time from WinXP, several
+errors may occur.  Repeat as necessary until the BASH window appears
+without incident.
 
 Type "exit" and then press <Enter> to make the BASH window
 disappear.
@@ -235,7 +253,13 @@ to install some libraries, then recompile Xastir so that it knows to
 use them.  See the instructions below.
 
 The README.MAPS file has instructions for where to get maps and where
-to put them under the Xastir heirarchy. 
+to put them under the Xastir heirarchy.
+
+If you have any WinAPRS, dosAPRS, or pocketAPRS maps, now is a good
+time to place them in the /cygwin/usr/local/xastir/maps folder (or a
+subdirectory of it).  You can also use "*.geo" files and the
+associated image files with Xastir.  You may place them in this
+directory (or a subdirectory of it) as well.
 
 What Xastir paths look like from within Windows (in case you're
 moving maps around with Explorer):  Just prefix them all with
@@ -315,9 +339,14 @@ from the BASH shell:
     tar xzvf shapelib-1.2.10.tar.gz
 
 1) Edit Shapelib's Makefile to remove the space after the "-h"
-on the line that starts like this:
+on the line that looks like this:
 
-    /usr/bin/ld -G -h libshp.so.1 ...
+    /usr/bin/ld -G -h libshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lc
+
+Change it to this (one space missing):
+
+    /usr/bin/ld -G -hlibshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lc
+
 
 then type:
 
@@ -345,6 +374,7 @@ installed Cygwin in the default location.  From inside a BASH shell
 you can get to your home directory just by typing "cd" and then
 pressing <Enter>.  When you see things like "~/.profile" it is
 really referring to the file ".profile" in your home directory (~).
+This is a different file than the ".bash_profile" file.
 
 It appears that Cygwin uses the PATH variable to look for both
 binaries and libraries.  Add this line to the file (create the
@@ -364,6 +394,9 @@ The installed copy of Xastir should now have Shapelib support.  You
 can download NOAA weather alert maps and many other sorts of maps,
 and Xastir will recognize and use them.  Note that weather alert
 shapefiles must go into the /usr/local/xastir/Counties directory.
+All other shapefiles must go into the /cygwin/user/local/xastir/maps
+directory.
+
 See the README.MAPS file for where to get the maps.
 
 
@@ -428,7 +461,8 @@ Finish the Xastir build and install:
     make
     make install
 
-Add this to your ~/.profile file:
+Add this to your ~/.profile file (note this is a different file than
+the .bash_profile file):
 
     export MAGICK_HOME=/usr
 
@@ -600,7 +634,7 @@ How to make Sound Alerts work under Cygwin
 ------------------------------------------
 (from Kirk Mefford, kc2elo)
 "I figured I'd share exactly what I did to make the sound alerts work in
-xastir under Cygwin. Sound support seems to be just one of the many many quirks
+xastir under Cygwin. Sound support seems to be just one of the many quirks
 of trying to use *nix native software under Microsoft OS's. Hope this helps
 someone else.
 
@@ -609,8 +643,8 @@ FYI: This was tested under Win2000
 Sound alert support under Cygwin using Network Audio Server (NAS)
 
 I downloaded http://nas.intra-links.net/files/nas-1.6-win-binary.zip and
-decompressed the archive with winzip (any zip utility should work fine) into a
-temporary folder.
+decompressed the archive with winzip (any zip utility should work fine) into
+a temporary folder.
 
 I deleted the "cygwin1.dll" and "README.txt" files that came in the package
 since they aren't needed and the extra cygwin1.dll can cause problems.
@@ -618,8 +652,8 @@ since they aren't needed and the extra cygwin1.dll can cause problems.
 Then copy the remaining files from the package into the /bin directory under
 cygwin.
 
-All that is needed to make nas available to xastir is to load the server before
-running xastir.
+All that is needed to make nas available to xastir is to load the server
+before running xastir.
 
 To load NAS for xastir to use simply type "nasd -local -b" from cygwin. This
 command will load the NAS server in the background and will only allow local
@@ -636,8 +670,8 @@ The "Audio Play Command" box should be changed to "auplay"
 Then ensure the audio files listed to play are located in
 "/usr/local/xastir/sounds" directory.
 
-Click ok to accept the changes and be sure to save your config before exiting
-xastir or sound will not work the next time it is loaded.
+Click ok to accept the changes and be sure to save your config before
+exiting xastir or sound will not work the next time it is loaded.
 
 Turn up the volume on your PC speakers and enjoy the noise xastir makes."
 
