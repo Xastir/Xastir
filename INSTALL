@@ -242,6 +242,16 @@ First Time Install:
        Download the lestif-devel (if it exists) and lestif, and install it
        as your distribution instructs you to install pacakges.
 
+     If you get the message:
+
+       "*** Cannot find Motif include files: Please install one of
+        Motif/OpenMotif/Lesstif development packages.  ***"
+
+     even though you've got the Motif libraries and headers installed in the
+     proper places, you might need to add this to the configure line:
+
+        "--x-includes=/usr/X11R6/include"
+
 
    3. OPTIONAL:  Install geoTIFF support.  Allows using USGS DRG topo maps or
      other types of geoTIFF maps/images and has the ability to tile smaller
