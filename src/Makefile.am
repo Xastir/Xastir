@@ -6,7 +6,7 @@
 bin_PROGRAMS = xastir
 noinst_PROGRAMS = testawk
 
-SUBDIRS = rtree
+SUBDIRS = @SUBRTREE@
 
 xastir_SOURCES = \
     alert.c alert.h \
@@ -68,7 +68,7 @@ testawk_SOURCES = \
     awk.c \
     dbfawk.c
 
-xastir_LDADD=-Lrtree -lrtree
+xastir_LDADD=@LIBRTREE@
 
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
