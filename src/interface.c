@@ -1555,7 +1555,7 @@ int OpenTrac_decode_country(unsigned char *element,
 
 
 
-// 0x16 - Display Name (UTF-8 text)
+// 0x16 Display Name (UTF-8 text)
 //
 // Modifies: displayname
 // 
@@ -1580,7 +1580,7 @@ int OpenTrac_decode_displayname(unsigned char *element,
 
 
 
-// 0x17 - Waypoint Name (up to 6 chars, uppercase)
+// 0x17 Waypoint Name (up to 6 chars, uppercase)
 //
 // Modifies: waypoint
 // 
@@ -1933,7 +1933,7 @@ int OpenTrac_decode_availablenets(unsigned char *element,
 
 
 
-// 0x32 - Maidenhead Locator (4 or 6 chars)
+// 0x32 Maidenhead Locator (4 or 6 chars)
 //
 // Modifies: maidenhead
 // 
@@ -1961,7 +1961,7 @@ int OpenTrac_decode_maidenhead(unsigned char *element,
 
 
 
-// 0x33 - Radio Capabilities
+// 0x33 Radio Capabilities
 //
 //WE7U
 // Modifies: Nothing yet
@@ -2041,6 +2041,42 @@ int OpenTrac_decode_acreg(unsigned char *element,
 
 
 
+// 0x40 Surface Observation Report
+//
+// Modifies: Nothing
+// 
+int OpenTrac_surface_observation(unsigned char *element,
+                                 int           element_len) {
+
+//WE7U: Need to pass back the data .
+
+    fprintf(stderr, "Surface Observation Report Element\n");
+
+    return 0;
+}
+
+
+
+
+
+// 0x41 Rainfall History
+//
+// Modifies: Nothing
+// 
+int OpenTrac_rainfall_history(unsigned char *element,
+                              int           element_len) {
+
+//WE7U: Need to pass back the data .
+
+    fprintf(stderr, "Rainfall History Element\n");
+
+    return 0;
+}
+
+
+
+
+
 // 0x42 River Flow Gauge - 1/64 m^3/sec, centimeters
 //
 // Modifies: Nothing.
@@ -2073,7 +2109,42 @@ int OpenTrac_decode_rivergauge(unsigned char *element,
 
 
 
-// 0x0100 - Emergency / Distress Call
+// 0x43 Storm
+//
+// Modifies: Nothing.
+// 
+int OpenTrac_decode_storm(unsigned char *element,
+                          int           element_len) {
+
+// WE7U:  Need to pass back storm info.
+
+    fprintf(stderr, "Storm Report Element\n");
+    return 0;
+}
+
+
+
+ 
+
+// 0x50 Shape
+//
+// Modifies: Nothing.
+// 
+int OpenTrac_decode_shape(unsigned char *element,
+                          int           element_len) {
+
+// WE7U:  Need to pass back Shape info.
+
+    fprintf(stderr, "Shape Element\n");
+
+    return 0;
+}
+
+ 
+
+
+
+// 0x0100 Emergency / Distress Call
 //
 // Modifies: nothing
 //
@@ -2088,7 +2159,7 @@ int OpenTrac_flag_emergency(void) {
 
 
 
-// 0x0101 - Attention / Ident
+// 0x0101 Attention / Ident
 //
 // Modifies: nothing
 //
@@ -2103,7 +2174,7 @@ int OpenTrac_flag_attention(void) {
 
 
 
-// 0x0300 - HAZMAT (UN ID in lower 14 bits)
+// 0x0300 HAZMAT (UN ID in lower 14 bits)
 //
 // Modifies: hazmat_id
 // 
@@ -2698,10 +2769,14 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     aircraft_id);
                 break;
             case (0x40): // Surface Observation Report
-                fprintf(stderr, "Surface Observation Report Element\n");
+                OpenTrac_surface_observation(
+                    data,
+                    elen);
                 break;
             case (0x41): // Rainfall History
-                fprintf(stderr, "Rainfall History Element\n");
+                OpenTrac_rainfall_history(
+                    data,
+                    elen);
                 break;
             case (0x42): // River Flow Gauge
                 OpenTrac_decode_rivergauge(
@@ -2709,10 +2784,14 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     elen);
                 break;
             case (0x43): // Storm Report
-                fprintf(stderr, "Storm Report Element\n");
+                OpenTrac_decode_storm(
+                    data,
+                    elen);
                 break;
             case (0x50): // Shape
-                fprintf(stderr, "Shape Element\n");
+                OpenTrac_decode_shape(
+                    data,
+                    elen);
                 break;
             case (0x100): // Emergency/distress flag
                 OpenTrac_flag_emergency();
