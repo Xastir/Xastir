@@ -607,17 +607,6 @@ void draw_geo_image_map (Widget w,
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
-    }
-    else {
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
-    }
-    statusline(map_it,0);       // Loading/Indexing ...
-
-
-    // Check whether we're indexing or drawing the map
-    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
-            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
         // We're indexing only.  Save the extents in the index.
         if (terraserver_flag || toposerver_flag) {
@@ -636,6 +625,10 @@ void draw_geo_image_map (Widget w,
                 tp[0].x_long,   // Left
                 tp[1].x_long);  // Right
         }
+
+        // Update statusline
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+        statusline(map_it,0);       // Loading/Indexing ...
 
         return; // Done indexing this file
     }
@@ -669,6 +662,9 @@ void draw_geo_image_map (Widget w,
         fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
     }
 
+    // Update statusline
+    xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
+    statusline(map_it,0);       // Loading/Indexing ...
 
     atb.valuemask = 0;
 

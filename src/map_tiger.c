@@ -339,6 +339,12 @@ void draw_tiger_map (Widget w) {
         get_user_base_dir("tmp"),
         "gif");
 
+
+    if (interrupt_drawing_now) {
+        return;
+    }
+
+
 #ifdef HAVE_LIBCURL
     curl = curl_easy_init();
 
@@ -402,6 +408,10 @@ void draw_tiger_map (Widget w) {
 #endif  // HAVE_LIBCURL
 
 
+    if (interrupt_drawing_now) {
+        return;
+    }
+
 
     // For debugging the MagickError/MagickWarning segfaults.
     //system("cat /dev/null >/var/tmp/xastir_hacker_map.gif");
@@ -434,6 +444,14 @@ void draw_tiger_map (Widget w) {
     }
     (void)fclose (f);
 
+
+    if (interrupt_drawing_now) {
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+
     image = ReadImage(image_info, &exception);
 
     if (image == (Image *) NULL) {
@@ -441,6 +459,16 @@ void draw_tiger_map (Widget w) {
         //fprintf(stderr,"MagickWarning\n");
         return;
     }
+
+
+    if (interrupt_drawing_now) {
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
 
     if (debug_level & 512)
         fprintf(stderr,"Color depth is %i \n", (int)image->depth);
@@ -469,6 +497,16 @@ void draw_tiger_map (Widget w) {
         ModulateImage(image, tempstr);
     }
 
+
+    if (interrupt_drawing_now) {
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+
     // If were are drawing to a low bpp display (typically < 8bpp)
     // try to reduce the number of colors in an image.
     // This may take some time, so it would be best to do ahead of
@@ -490,6 +528,16 @@ void draw_tiger_map (Widget w) {
         // Quantize down to 128 will go here...
     }
 
+
+    if (interrupt_drawing_now) {
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
     if (!pixel_pack) {
         fprintf(stderr,"pixel_pack == NULL!!!");
@@ -500,6 +548,16 @@ void draw_tiger_map (Widget w) {
         return;
     }
 
+
+    if (interrupt_drawing_now) {
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+
     index_pack = GetIndexes(image);
     if (image->storage_class == PseudoClass && !index_pack) {
         fprintf(stderr,"PseudoClass && index_pack == NULL!!!");
@@ -509,6 +567,16 @@ void draw_tiger_map (Widget w) {
             DestroyImageInfo(image_info);
         return;
     }
+
+
+    if (interrupt_drawing_now) {
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
 
     if (image->storage_class == PseudoClass && image->colors <= 256) {
         for (l = 0; l < (int)image->colors; l++) {
@@ -551,6 +619,17 @@ void draw_tiger_map (Widget w) {
                        my_colors[l].red, my_colors[l].blue, my_colors[l].green);
         }
     }
+
+
+    if (interrupt_drawing_now) {
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+
     /*
     * Here are the corners of our viewport, using the Xastir
     * coordinate system.  Notice that Y is upside down:
@@ -696,6 +775,17 @@ void draw_tiger_map (Widget w) {
 
     // loop over map pixel rows
     for (map_y_0 = map_y_min, c_y = (double)c_y_min; (map_y_0 <= map_y_max); map_y_0++, c_y += map_c_dy) {
+
+
+        if (interrupt_drawing_now) {
+            if (image)
+                DestroyImage(image);
+            if (image_info)
+                DestroyImageInfo(image_info);
+            return;
+        }
+
+
         scr_y = (c_y - y_lat_offset) / scale_y;
         if (scr_y != scr_yp) {                  // don't do a row twice
             scr_yp = scr_y;                     // remember as previous y
@@ -741,4 +831,6 @@ void draw_tiger_map (Widget w) {
 }
 #endif //HAVE_IMAGEMAGICK
 ///////////////////////////////////////////// End of Tigermap code ///////////////////////////////////////
+
+
 

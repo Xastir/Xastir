@@ -261,6 +261,11 @@ void draw_palm_image_map(Widget w,
                 map_right); // Right
 
             fclose(fn);
+
+            // Update the statusline for this map name.
+            xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+            statusline(status_text,0);       // Loading/Indexing ...
+
             return; // Done indexing this file
         }
 
@@ -269,14 +274,7 @@ void draw_palm_image_map(Widget w,
 
 
             // Update the statusline for this map name
-            // Check whether we're indexing or drawing the map
-            if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
-                    || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-                xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
-            }
-            else {
-                xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
-            }
+            xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
             statusline(status_text,0);       // Loading/Indexing ...
 
 
@@ -285,6 +283,11 @@ void draw_palm_image_map(Widget w,
 
             /* read vectors */
             for (record_count = 2; record_count <= records; record_count++) {
+
+                if (interrupt_drawing_now) {
+                    fclose(fn);
+                    return;
+                }
 
                 // Point to the next record list header & snag it
                 fseek(fn, record_ptr, SEEK_SET);
@@ -532,3 +535,5 @@ void draw_palm_image_map(Widget w,
         fprintf(stderr,"Couldn't open file: %s\n", filename);
     }
 }
+
+

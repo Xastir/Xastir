@@ -603,7 +603,7 @@ void draw_geotiff_image_map (Widget w,
                 return;    // Skip this map
             }
         }
-    }
+    }   // End of if have_fgd
 
 
     /*
@@ -1065,6 +1065,14 @@ void draw_geotiff_image_map (Widget w,
         return;         /* Skip this map */
     }
 
+
+    if (interrupt_drawing_now) {
+        GTIFFree (gtif);
+        XTIFFClose (tif);
+        return;
+    }
+
+
 /*
 From running in debug mode:
             Width: 5493
@@ -1136,18 +1144,6 @@ Samples Per Pixel: 1
         fprintf(stderr,"Loading geoTIFF map: %s\n", file);
 
 
-    /* Put "Loading..." message on status line */
-    // Check whether we're indexing or drawing the map
-    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
-            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
-    }
-    else {
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
-    }
-    statusline(map_it,0);       // Loading/Indexing ...
-
-
     /*
      * Snag the original map colors out of the colormap embedded
      * inside the tiff file.
@@ -1202,6 +1198,12 @@ Samples Per Pixel: 1
          * non datum-shifted values to work with the tiff file, and the
          * datum-shifted values to plot the points in Xastir.
          */
+
+        if (interrupt_drawing_now) {
+            GTIFFree (gtif);
+            XTIFFClose (tif);
+            return;
+        }
 
         if (debug_level & 16)
             fprintf(stderr,"\nNW neat-line corner = %f\t%f\n",
@@ -1265,6 +1267,11 @@ Samples Per Pixel: 1
             fprintf(stderr,"Problem in translating\n");
         }
 
+        if (interrupt_drawing_now) {
+            GTIFFree (gtif);
+            XTIFFClose (tif);
+            return;
+        }
 
         if (debug_level & 16)
             fprintf(stderr,"NE neat-line corner = %f\t%f\n",
@@ -1328,6 +1335,11 @@ Samples Per Pixel: 1
             fprintf(stderr,"Problem in translating\n");
         }
 
+        if (interrupt_drawing_now) {
+            GTIFFree (gtif);
+            XTIFFClose (tif);
+            return;
+        }
 
         if (debug_level & 16)
             fprintf(stderr,"SW neat-line corner = %f\t%f\n",
@@ -1391,6 +1403,11 @@ Samples Per Pixel: 1
             fprintf(stderr,"Problem in translating\n");
         }
 
+        if (interrupt_drawing_now) {
+            GTIFFree (gtif);
+            XTIFFClose (tif);
+            return;
+        }
 
         if (debug_level & 16)
             fprintf(stderr,"SE neat-line corner = %f\t%f\n",
@@ -1473,6 +1490,11 @@ Samples Per Pixel: 1
         SE_y = height - 1;
     }
 
+    if (interrupt_drawing_now) {
+        GTIFFree (gtif);
+        XTIFFClose (tif);
+        return;
+    }
 
     // Here's where we crop off part of the black border for USGS maps.
     if (crop_it)    // USGS maps only
@@ -1617,6 +1639,11 @@ right_crop = width - 1;
         }
     }
 
+    if (interrupt_drawing_now) {
+        GTIFFree (gtif);
+        XTIFFClose (tif);
+        return;
+    }
 
     // Each data value should be an 8-bit value, which is a
     // pointer into a color
@@ -2141,6 +2168,7 @@ right_crop = width - 1;
 
     view_top_minus_pixel_height = (unsigned long)(view_min_y - steph);
 
+
     // Iterate over the rows of interest only.  Using the rectangular
     // top/bottom crop values for these is ok at this point.
     //
@@ -2154,6 +2182,16 @@ right_crop = width - 1;
     for ( row = top_crop; (int)row < bottom_crop + 1; row+= SkipRows )
     {
         int skip = 0;
+
+
+        if (interrupt_drawing_now) {
+            if (imageMemory)
+                free(imageMemory);
+            GTIFFree (gtif);
+            XTIFFClose (tif);
+            return;
+        }
+
 
         // Our offset from the top row of the map neatline
         // (kind of... ignoring rotation anyway).

@@ -550,8 +550,8 @@ draw_dos_map(Widget w,
       fprintf(stderr,"Top Boundary: %ld, Bottom Boundary: %ld\n", (long)top_boundary,(long)bottom_boundary);
       fprintf(stderr,"Total vector points: %ld, total labels: %ld\n",total_vector_points, total_labels);
     }
-      
-      
+
+ 
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
          || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
@@ -564,29 +564,33 @@ draw_dos_map(Widget w,
                           right_boundary);        // Right
       
       (void)fclose (f);
-      
+
+      // Update the statusline 
+      xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+      statusline(map_it,0);       // Loading/Indexing ...
+     
       return; // Done indexing this file
     }
       
-      
+    if (interrupt_drawing_now) {
+        (void)fclose(f);
+        return;
+    }
+   
     in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary, 1);
       
     if (in_window) {
       unsigned char last_behavior, special_fill = (unsigned char)FALSE;
-      object_behavior = '\0';
-	
-	
-      // Check whether we're indexing or drawing the map
-      if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
-           || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
-      }
-      else {
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
-      }
+
+
+      // Update the statusline
+      xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
       statusline(map_it,0);       // Loading/Indexing ...
-      
-      
+
+      object_behavior = '\0';
+
+
+	
       if (debug_level & 16)
         fprintf(stderr,"in Boundary %s\n", map_it);
       
@@ -601,6 +605,12 @@ draw_dos_map(Widget w,
       color = 0;
       dos_flag = 0;
       for (count = 0l;count < total_vector_points && !feof (f) && !dos_labels; count++) {
+
+        if (interrupt_drawing_now) {
+            (void)fclose(f);
+            return;
+        }
+ 
         if (strncmp ("DOS ", map_type, 4) == 0) {
           (void)fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f);
           while ((ptr = strpbrk (Buffer, "\r\n")) != NULL && !dos_labels) {
@@ -884,12 +894,20 @@ draw_dos_map(Widget w,
       (void)XSetForeground (XtDisplay (w), gc, colors[20]);
       line_width = 2;
       (void)XSetLineAttributes (XtDisplay (w), gc, line_width, LineSolid, CapButt,JoinMiter);
-      
+
       
       // Here is the map label section of the code for both DOS & Windows-type maps
       if (map_labels) {
+
         /* read labels */
         for (count = 0l; count < total_labels && !feof (f); count++) {
+
+          if (interrupt_drawing_now) {
+              (void)fclose(f);
+              return;
+          }
+
+
           //DOS-Type Map Labels
           embedded_object = 0;
           if (strcmp (map_type, "DOS ") == 0) {   // Handle DOS-type map labels/embedded objects

@@ -1205,18 +1205,6 @@ void draw_shapefile_map (Widget w,
     }
 
 
-    // Update the statusline for this map name
-    // Check whether we're indexing or drawing the map
-    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
-            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
-    }
-    else {
-        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
-    }
-    statusline(status_text,0);       // Loading/Indexing ...
-
-
     // Set a default line width for all maps.  This will most likely
     // be modified for particular maps in later code.
     (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
@@ -1324,6 +1312,15 @@ void draw_shapefile_map (Widget w,
     for (structure = start_record; structure < end_record; structure++) {
         int skip_it = 0;
         int skip_label = 0;
+
+
+        if (interrupt_drawing_now) {
+            if (panWidth)
+                free(panWidth);
+            DBFClose( hDBF );   // Clean up open file descriptors
+            SHPClose( hSHP );
+            return;
+        }
 
         // Have had segfaults before at the SHPReadObject() call
         // when the Shapefile was corrupted.
@@ -3297,3 +3294,5 @@ if (on_screen) {
 // End of draw_shapefile_map()
 
 #endif  // HAVE_LIBSHP
+
+

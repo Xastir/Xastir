@@ -424,6 +424,11 @@ void draw_gnis_map (Widget w,
                     else if (coord_lon >= min_lon && coord_lon <= max_lon
                             && coord_lat <= min_lat && coord_lat >= max_lat) {
 
+                        if (interrupt_drawing_now) {
+                            (void)fclose(f);
+                            return;
+                        }
+
                         if (debug_level & 16) {
                             fprintf(stderr,"%s\t%s\t%s\t%s\t%s\t%s\t\t",
                                     state, name, type, county, latitude, longitude);
