@@ -4,6 +4,7 @@ bin_PROGRAMS = xastir
 
 xastir_SOURCES = \
     alert.c alert.h \
+    awk.c awk.h \
     bulletin_gui.c bulletin_gui.h \
     color.c color.h \
     datum.c datum.h \

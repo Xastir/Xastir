@@ -167,6 +167,13 @@ LIBS="$LIBS -lshp"
 AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
 break)])
  
+# Check for pcre
+use_pcre=no
+AC_CHECK_HEADERS(pcre.h pcre/pcre.h, [AC_CHECK_LIB(pcre, pcre_compile, use_pcre=yes
+LIBS="$LIBS -lpcre"
+AC_DEFINE(HAVE_LIBPCRE, , Define to 1 if you have the `pcre' library (-lpcre). )
+break)])
+ 
 # Check for XPM
 AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )))
 AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEFINE(HAVE_LIBXPM_IN_XM, , Define to 1 if the `Xm' library (-lXm) is used for Xpm. )))
@@ -280,6 +287,7 @@ echo
 echo Building with AX25.......... : $has_axlib 
 echo Building with GeoTiff....... : $use_geotiff 
 echo Building with ShapeLib...... : $use_shapelib 
+echo Building with pcre.......... : $use_pcre
 echo Building with ImageMagick... : $use_imagemagick 
 echo Building with Festival...... : $use_festival 
 echo Building with GPSMan........ : $use_gpsman

@@ -42,6 +42,7 @@ Short summary of libraries Xastir can use:
 Motif or OpenMotif or LessTiff  Required  The GUI widget set
 pthreads                        Required  Threading capability
 Shapelib                      Recommended ESRI Shapefile maps and wx alerts
+pcre			      Recommended used with Shapefile maps
 Xpm                             Optional  XPM images
 ImageMagick                     Optional  MANY graphics images
 libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
@@ -144,6 +145,8 @@ For ESRI Shapefile format maps/weather alert maps:
     Shapelib:
         http://gdal.velocet.ca/projects/shapelib/index.html
         http://wetnet.net/~we7u/xastir/
+    pcre:
+        http://www.pcre.org
 
 For ImageMagick support for maps in any of 68 major graphics formats,
    including the capability to use online maps and weather radar images:
