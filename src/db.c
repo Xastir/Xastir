@@ -11835,7 +11835,7 @@ strcat(big_string,small_string);
 sprintf(small_string,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\tpath: %s\n\tinfo: %s\n",
     port, call, destination, new_path, info);
 strcat(big_string,small_string);
-fprintf(stderr,"%s",big_string);
+//fprintf(stderr,"%s",big_string);
 
 
 // Example packet:

@@ -1891,7 +1891,13 @@ void fix_up_callsign(unsigned char *data) {
     int ssid = 0;
     int i;
     int j = 0;
+    int digipeated_flag = 0;
 
+
+    // Check whether we've digipeated through this callsign yet.
+    if (strstr(data,"*") != 0) {
+         digipeated_flag++;
+    }
 
     // Change callsign to upper-case and pad out to six places with
     // space characters.
@@ -1900,6 +1906,8 @@ void fix_up_callsign(unsigned char *data) {
 
         if (data[i] == '-') {   // Stop at '-'
             break;
+        }
+        else if (data[i] == '*') {
         }
         else {
             new_call[j++] = data[i];
@@ -1913,12 +1921,13 @@ void fix_up_callsign(unsigned char *data) {
     // terminating zero character.
     if ( (i < strlen(data)) && (data[i++] == '-') ) {   // We might have an SSID
         if (data[i] != '\0')
-            ssid = data[i++] - 0x30;
-        if (data[i] != '\0')
-            ssid = (ssid * 10) + data[i] - 0x30;
+            ssid = atoi(&data[i]);
+//            ssid = data[i++] - 0x30;    // Convert from ascii to int
+//        if (data[i] != '\0')
+//            ssid = (ssid * 10) + (data[i] - 0x30);
     }
 
-    //fprintf(stderr,"SSID:%d\n",ssid);
+//fprintf(stderr,"SSID:%d\t",ssid);
 
     if (ssid >= 0 && ssid <= 15) {
         new_call[6] = ssid | 0x30;  // Set 2 reserved bits
@@ -1927,15 +1936,17 @@ void fix_up_callsign(unsigned char *data) {
         new_call[6] = 0x30;     // Set 2 reserved bits
     }
 
-    // Check for an asterisk, which means it's been digipeated through
-    // the callsign already
-    if (strstr(data,"*") != 0) {
-        new_call[6] = new_call[6] | 0x80; // Set the 'H' bit
+    if (digipeated_flag) {
+        new_call[6] = new_call[6] | 0x40; // Set the 'H' bit
+    }
+ 
+    // Shift each byte one bit to the left
+    for (i = 0; i < 7; i++) {
+        new_call[i] = new_call[i] << 1;
+        new_call[i] = new_call[i] & 0xfe;
     }
 
-    // Shift each byte one bit to the left
-    for (i = 0; i < 7; i++)
-        new_call[i] = new_call[i] << 1;
+//fprintf(stderr,"Last:%0x\n",new_call[6]);
 
     // Write over the top of the input string with the newly
     // formatted callsign
