@@ -311,6 +311,12 @@ Getting Maps and other Data Files for Xastir:
       additional map downloads are needed if these are the only maps that you
       want to use.
 
+      A .geo with only the word "TOPOSERVER" in it will retrieve a topographic
+      map of the area from terraserver.  You need "wget" or libcurl, plus
+      ImageMagick installed, and support for them compiled into Xastir.  No
+      additional map downloads are needed if these are the only maps that you
+      want to use.
+
      PocketAPRS maps:
 
       The latest WinAPRS distribution includes the full collection of 
