@@ -25514,6 +25514,8 @@ int main(int argc, char *argv[]) {
                                        &argc, argv,
                                        fallback_resources,
                                        XmNmappedWhenManaged, FALSE,
+                                       XmNwidth, 10,
+                                       XmNheight, 10,
                                        NULL);
             // DK7IN: now scanf and printf use "," instead of "."
             // that leads to several problems in the initialisation
