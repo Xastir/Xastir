@@ -2312,29 +2312,29 @@ fprintf(stderr,"Origin Call: %s\nOrigin SSID: %d\n",origin_call,origin_ssid);
 
         strncat(buffer,(char *)origin_call,10);
 
-        strcat(buffer,">");
-        strcat(buffer,(char *)dest);
+        strncat(buffer,">",1);
+        strncat(buffer,(char *)dest,10);
 
         for(i = 0; i < (int)digis; i++) {
-            strcat(buffer,",");
-            strcat(buffer,(char *)digi[i]);
+            strncat(buffer,",",1);
+            strncat(buffer,(char *)digi[i],10);
             /* at the last digi always put a '*' when h_bit is set */
             if (i == (int)(digis - 1)) {
                 if (digi_h[i] == (unsigned char)0x80) {
                     /* this digi must have transmitted the packet */
-                    strcat(buffer,"*");
+                    strncat(buffer,"*",1);
                 }
             } else {
                 if (digi_h[i] == (unsigned char)0x80) {
                     /* only put a '*' when the next digi has no h_bit */
                     if (digi_h[i + 1] != (unsigned char)0x80) {
                         /* this digi must have transmitted the packet */
-                        strcat(buffer,"*");
+                        strncat(buffer,"*",1);
                     }
                 }
             }
         }
-        strcat(buffer,":");
+        strncat(buffer,":",1);
 
 
         // If we parsed a position, finish creating an APRS packet.
@@ -2391,41 +2391,43 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
                             entity_serial);
                     }
 
-                    strcat(buffer,")"); // APRS Item packet
-                    strcat(buffer,entity_name);   // Entity name
-                    strcat(buffer,"!");
+                    strncat(buffer,")",1);          // APRS Item packet
+                    strncat(buffer,entity_name,9);  // Entity name
+                    strncat(buffer,"!",1);
 
                     // Convert the high-resolution lat/long data to
                     // Base-91 compressed position:
-                    strcat(buffer,
+                    strncat(buffer,
                         compress_posit(lat_str,
                             aprs_symbol_table,
                             lon_str,
                             aprs_symbol_char,
                             course % 360,           // Course
                             (int)(speed / 1.852),   // kph -> knots
-                            ""));   // PHG, we don't use it here
+                            ""),    // PHG, we don't use it here
+                        13);
                 }
                 else {
                     // Entity is zero.  Create an APRS position packet.
 
-                    strcat(buffer,"!"); // APRS non-messaging position packet
+                    strncat(buffer,"!",1); // APRS non-messaging position packet
 
                     // Convert the high-resolution lat/long data to
                     // Base-91 compressed position:
-                    strcat(buffer,
+                    strncat(buffer,
                         compress_posit(lat_str,
                             aprs_symbol_table,
                             lon_str,
                             aprs_symbol_char,
                             course % 360,           // Course
                             (int)(speed / 1.852),   // kph -> knots
-                            ""));   // PHG, we don't use it here
+                            ""),    // PHG, we don't use it here
+                        13);
 
                     if (strlen(displayname)) {
                         // Add displayname to the comment field
-                        strcat(comment," ");
-                        strcat(comment,displayname);
+                        strncat(comment," ",1);
+                        strncat(comment,displayname,50);
                     }
                 }
 
@@ -2435,7 +2437,7 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
 // much.  Item and position packets probably have different
 // restriction on length of comment field as well.
 
-                strcat(buffer,comment);
+                strncat(buffer,comment,50);
 
                 // Altitude should be in feet "/A=001234", and placed in
                 // the comment field of an APRS packet.
@@ -2443,7 +2445,7 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
                     sizeof(alt_str),
                     " /A=%06d",
                     (int)(altitude * 3.28084)); // meters to feet
-                strcat(buffer,alt_str);
+                strncat(buffer,alt_str,10);
             }
         }
 
