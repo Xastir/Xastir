@@ -99,9 +99,18 @@ CVS Instructions:
      Once you specify a revision tag (RELEASE or STABLE), that option becomes
      "sticky" for future checkouts and updates.  That means you only need to
      type "cvs update" in order to update your code to the latest sources
-     containing that tag.  I believe that "-r HEAD" will make the cvs update
-     command track to the most recently submitted versions again (will make the
-     RELEASE or STABLE options unsticky).
+     containing that tag.
+
+       cvs update -A
+
+     will make the cvs update command track to the most recently submitted
+     versions again (will make the RELEASE or STABLE options unsticky).  To
+     review:
+
+       cvs update -A            # To get to developers sources.
+       cvs update -r STABLE     # To get to latest stable sources.
+       cvs update -r RELEASE    # To get to latest released sources.
+
 
      Even more CVS commands (most people won't need these):
      ------------------------------------------------------
