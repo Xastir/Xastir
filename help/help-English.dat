@@ -65,6 +65,15 @@ on APRS(tm) can be found in the APRSdos documentation written by
 Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
+HELP-INDEX>What's new in Xastir BETA
+(This is an informal list that will be formally written before the next
+release)
+
+REFRESH tags on .geos
+Beginnings of Opentrac support- see opentrac.org
+yellow2->yellow3 on tracks to be visable on polygon fill (minor)
+MAP_SCALE_CHECK/FUZZYRASTER to avoid useless map loading
+
 HELP-INDEX>What's new in Xastir 1.2
 
                     What's new in Xastir 1.2
