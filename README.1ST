@@ -1278,10 +1278,20 @@ WINDOWS/CYGWIN NOTES:
 
         export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib
 
-     I haven't managed to get "configure" to automatically find these
-     installed libraries yet.  Instead, run "./configure", then add "#define
-     HAVE_SHAPELIB 1" to the "config.h" file.  Run "make", then run the link
-     line listed above from the src directory, but add:
+     Now do this to copy the Shapelib libraries into a place where
+     "configure" can find them.  Eventually the scripts will be tweaked to
+     account for this on Cygwin, so that the files won't have to be moved:
+
+        cd /usr/local/lib
+        cp * /usr/lib
+
+     Now you should be ready to configure and compile:
+
+         ./configure
+         make
+
+     After the "make" fails (at the link stage near the end), run the link
+     line listed above (run it while in the src directory), but add:
 
         -L/usr/local/lib -lshp
 
@@ -1291,7 +1301,8 @@ WINDOWS/CYGWIN NOTES:
      -------------------
      Download the ImageMagick cygwin binary from www.imagemagick.org or one
      of it's mirrors.  Extract it somewhere, then copy the files/directories
-     into the /usr tree.  Edit the config.h file, adding:
+     into the /usr tree (/usr/include and /usr/lib).  Edit the config.h
+     file, adding:
 
         #define HAVE_IMAGEMAGICK 1
 
