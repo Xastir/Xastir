@@ -35,7 +35,11 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#ifdef HAVE_STRING_H
+#  include <string.h>
+#else
+#  include <strings.h>
+#endif
 #include <ctype.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -1020,5 +1024,4 @@ void send_queued(char *to) {
 
     }
 }
-
 

@@ -3900,6 +3900,18 @@ void port_dtr(int port, int dtr) {
         sg &= 0xff;
 
 #ifdef TIOCM_DTR
+
+// ugly HPUX hack - n8ysz 20041206
+
+#ifndef MDTR 
+#define MDTR 99999
+#if (TIOCM_DTR == 99999)
+#include <sys/modem.h>
+#endif 
+#endif
+
+// end ugly hack
+
         sg = TIOCM_DTR;
 #endif  // TIOCM_DIR
 
@@ -5074,7 +5086,12 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
         }
     }
     transmit_txt2[j++] = KISS_FEND;
-    transmit_txt2[j++] = '\0';  // Terminate the string
+
+    // Terminate the string, but don't increment the 'j' counter.
+    // We don't want to send the NULL byte out the KISS interface,
+    // just make sure the string is terminated in all cases.
+    //
+    transmit_txt2[j] = '\0';
 
 
 //-------------------------------------------------------------------
@@ -5159,7 +5176,14 @@ void send_kiss_config(int port, int device, int command, int value) {
     transmit_txt[j++] = value & 0xff;
 
     transmit_txt[j++] = KISS_FEND;
-    transmit_txt[j++] = '\0';  // Terminate the string
+
+    // Terminate the string, but don't increment the 'j' counter.
+    // We don't want to send the NULL byte out the KISS interface,
+    // just make sure the string is terminated in all cases.
+    //
+    transmit_txt[j] = '\0';
+
+
 
 
 //-------------------------------------------------------------------
@@ -8815,5 +8839,3 @@ int tnc_get_data_type(char *buf, int port) {
 
     return(type);
 }
-
-

@@ -35,7 +35,11 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <strings.h>
+#ifdef HAVE_STRING_H
+#  include <string.h>
+#else
+#  include <strings.h>
+#endif
 #include <ctype.h>
 #include <sys/types.h>
 
@@ -464,5 +468,4 @@ end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_mes
         (void)XRaiseWindow(XtDisplay(All_messages_dialog), XtWindow(All_messages_dialog));
     }
 }
-
 
