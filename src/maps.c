@@ -3404,8 +3404,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
 
 
                         if (ok == 1) {  // If ok to draw it
-                            // colors[0x08] = Black
-                            (void)draw_label_text ( w, x, y, strlen(name), colors[0x08], (char *)name);
+                            draw_nice_string(w, pixmap, 0, x, y, (char*)name, 0xf, 0x10, strlen(name));
                         }
 
                     }
