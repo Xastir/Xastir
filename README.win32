@@ -579,8 +579,16 @@ HIGHLY RECOMMENDED:  If you create a file called "terraserver.geo"
 in the /usr/local/xastir/maps directory, containing the single line
 "TERRASERVER", and select it with the Map Chooser, you should see
 satellite images on the map screen.  This is assuming that you have
-an internet connection up and running of course.
+an internet connection up and running of course.  It fetches the
+images from the Microsoft Terraserver.
 
+Also create a "toposerver.geo" file in the same area somewhere.
+Inside that file put the keyword "TOPOSERVER".  Selecting this map
+will fetch topo maps from the Microsoft Terraserver.
+
+This means if you're online, you can have access to street maps
+(Tigermap server), satellite images (Terraserver), and topo maps
+(again Terraserver)!
 
 
 OPTIONAL:  Install geoTIFF support:
