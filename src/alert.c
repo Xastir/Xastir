@@ -36,25 +36,25 @@
 
 
 //
-// In the alert structure, flags is size 16, of which only the first
-// two are currently used:
+// In the alert structure, flags[] is size 16.  Only the first two
+// positions in the array are currently used.
 //
-// flags[0] ?  Initial state or ready-to-recompute state
+// alert_entry.flags[0] ?  Initial state or ready-to-recompute state
 //          -   Expired between 1 sec and 1 hour
 //          Y   Active alert within viewport
 //          N   Active alert outside viewport
 //
-// flags[1] DATA_VIA_TNC
+// alert_entry.flags[1] DATA_VIA_TNC
 //          DATA_VIA_LOCAL
 //
-// alert_tag    alert_level
-//  CANCL       C
-//  TEST        T
-//  WARN        R
-//  WATCH       Y
-//  ADVIS       B
-//  Other       G
-//  Unset       ?
+// alert_entry.alert_tag    .alert_level
+//              CANCL       C
+//              TEST        T
+//              WARN        R
+//              WATCH       Y
+//              ADVIS       B
+//              Other       G
+//              Unset       ?
 //
 //
 //
@@ -66,6 +66,50 @@
 // with the State subdirectory to search for this map file
 // ("/usr/local/xastir/Counties/MS").  See maps.c:load_alert_maps().
 //
+// When converting to using Shapefile maps, we could either save the
+// shapefile designator in this same global alert_tag string, or we
+// could compute it on the fly from this data:
+// Stuff from Dale, paraphrased by Curt:
+//
+// The clue to which shapefile to use is in the 4th char (which
+// is the first following an '_')
+//
+// C = county file (c_??????)
+// A = County Warning File (w_?????)
+// Z = Zone File (z_????? or mz_??????)
+//
+// Alerts are comma-delimited on the air s.t. after the
+// :NWS-?????: the first field is the time in zulu (or local
+// with no 'z'), the 2nd is the warning type
+// (severe_thunderstorm etc.), the 3rd and up to 7th are s.t.
+// the first 2 letters are the state or marine zone (1st field
+// in both the county and zone .dbf files) followed by an
+// underline char '_', the area type as above (C, Z, or A),
+// then a 3 digit numerical code derived from:
+//
+// Counties:  the fips code (4th field in the .dbf)
+//
+// Zones: the zone number (2nd field in the .dbf)
+//
+// Marine Zones: have proper code in 1st field with addition of '_' in correct place.
+//
+// CWA: 2nd field has cwa-, these are always "CW_A" plus the cwa
+//
+// You must ignore anything after a space in the alert.
+//
+// We will probably want to add the "issue time" to the alert record
+// and parse that out if it's present.  Change the view dialog to
+// show expiration time, issue time, who the alert is apparently
+// from, and the stuff after the curly brace.  Some of that info
+// will be useful soon in a finger command to the weather server.
+//
+// New compressed-mode weather alert packets:
+//
+// LZKNPW>APRS::NWS-ADVIS:221000z,ARZ003>007-012>016-021> ;025-030>034-037>047-052>057-062>069{LLSAA
+//
+// The trick is to step thru the data base contained in the
+// shapefiles to determine what areas to light up.  In the above
+// example read ">" as "thru" and "-" as "and".
 
 
 #include "config.h"
