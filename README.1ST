@@ -35,6 +35,12 @@ the build process.
 Note that Xastir can be built with very few additional libraries.  Most
 of the additional libraries enable support for additional map formats.
 
+SmartBeaconing(tm) was invented by Tony Arnerich (KD7TA) and Steve
+Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
+other authors as long as proper credit is given and the term
+SmartBeaconing(tm) is used.  Thanks to Tony and Steve for that
+contribution.
+
 -- The Xastir Group.
 
 

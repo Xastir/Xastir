@@ -28,6 +28,12 @@ $Revision$
    VE6LFM   Lloyd Miller
    WE7U     Curt Mills
 
+   SmartBeaconing(tm) was invented by Tony Arnerich (KD7TA) and Steve
+   Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
+   other authors as long as proper credit is given and the term
+   SmartBeaconing(tm) is used to describe it.  So be it.  Thanks Tony
+   and Steve!.
+
    Thanks go to all the people who have made individual contributions to
    the Xastir project by sending bug-reports, patches and otherwise have
    supported the project. Patch contributors are listed in the UPDATES
