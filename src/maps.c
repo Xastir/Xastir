@@ -698,14 +698,15 @@ void draw_grid(Widget w) {
 
         // Vertical lines:
 
-        // Draw the vertical vectors (except for the irregular regions)
-        for (i = -180; i <= 0; i += 6) {
+        // Draw the vertical vectors (except for the irregular
+        // regions and the prime meridian)
+        for (i = -180; i < 0; i += 6) {
             draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
         }
         for (i = 42; i <= 180; i += 6) {
             draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
         }
-
+ 
         // Draw the partial vectors from 80S to the irregular region
         draw_vector_ll(w, -80.0,  6.0, 56.0,  6.0, gc_tint, pixmap_final);
         draw_vector_ll(w, -80.0, 12.0, 72.0, 12.0, gc_tint, pixmap_final);
@@ -724,17 +725,31 @@ void draw_grid(Widget w) {
 
         // Horizontal lines:
 
+        // Draw the 8 degree spaced lines, except for the equator
+        for (i = -80; i < 0; i += 8) {
+            draw_vector_ll(w, (float)i, -180.0, (float)i, 180.0, gc_tint, pixmap_final);
+        }
         // Draw the 8 degree spaced lines 
-        for (i = -80; i <= 72; i += 8) {
-            draw_vector_ll(w, (float)i,  -180.0, (float)i,  180.0, gc_tint, pixmap_final);
+        for (i = 8; i <= 72; i += 8) {
+            draw_vector_ll(w, (float)i, -180.0, (float)i, 180.0, gc_tint, pixmap_final);
         }
 
         // Draw the one 12 degree spaced line
-        draw_vector_ll(w,  84.0, -180.0, 84.0, 180.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, 84.0, -180.0, 84.0, 180.0, gc_tint, pixmap_final);
+
+        // Set to solid line for the equator.  Make it extra wide as
+        // well.
+        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineSolid, CapButt,JoinMiter);
+
+        // Draw the equator as a solid line
+        draw_vector_ll(w, 0.0, -180.0, 0.0, 180.0, gc_tint, pixmap_final);
+
+        // Draw the prime meridian in the same manner
+        draw_vector_ll(w, 84.0, 0.0, -80.0, 0.0, gc_tint, pixmap_final);
 
 
-        // Set the line width in the GC to 1 pixel wide for drawing
-        // the smaller grid
+        // Set the line width and style in the GC to 1 pixel wide
+        // for drawing the smaller grid
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
  
 //WE7U
