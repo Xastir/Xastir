@@ -141,7 +141,7 @@ Other language options are:
     xastir -lItalian
     xastir -lSpanish
 
-The chosen language will be stored in the user's config file, so it is
+The chosen language will be stored in your config file, so it is
 preserved for the next time you call Xastir without this option.
 For new installs Xastir will default to English until you change the
 language with this command line option.
@@ -718,7 +718,7 @@ HELP-INDEX>Map files and WX Counties
 
 Map Types
 Xastir will work with various types of map files. All DosAPRS, Windows/Mac
-APRS(TM) Map files are supported. Additionally, Xastir natively supports
+APRS(TM) map files are supported. Additionally, Xastir natively supports
 PocketAPRS format maps, GNIS (Geographic Names Information System) labels
 and XPixmap format graphics. Xastir also can be compiled to use external
 libraries to support GeoTIFF topographic maps, and ESRI shapefile maps.
@@ -761,7 +761,7 @@ FILENAME   world1.xpm
 TIEPOINT   0          0        -180        90
 TIEPOINT   640        320      180         -90
 
-This is a simple file with 4 basic components.
+This is a simple file with 4 basic components:
 o The first line specifies the file this .geo data is used with, if using
   compressed .xpm files the ".gz" extension is optional here. If no path
   is specified with the graphics file name, Xastir looks for the file in
@@ -796,7 +796,7 @@ The IMAGESIZE is the size of the graphic file in pixels. Xastir will use that
 information and the tiepoints to skip the map if it doesn't fit in the current
 view. If this information is omitted, Xastir will always load the graphic.
 
-There are several "special" .geo files that Xastir can use.
+There are several "special" .geo files that Xastir can use:
 o A file with just the word "TIGERMAP" will cause Xastir to retrieve an
   online Tiger map of the area on screen.
 o A file with just the word "TERRASERVER" will cause Xastir to retrieve a
@@ -1054,14 +1054,14 @@ Station Info will display any data decoded by Xastir.
 The information available may include: Number of packets heard, the time
 last heard, the device the packet came from, station comments, 
 power/height/gain of the station, course/distance from your station,
-weather information, and previous positions. 
-For moving stations a tracklog is following with the most recent entries
-on top. A '+' in front indicates that a new track starts at that point
-(if there was a large gap in time or position). A star at the end of a
-line indicates that this station could be heard direct (without a digi)
-at that specific position.
+weather information, and previous positions.
 
-Only for your own station, there is an "Echoed from" field, listing the
+For moving stations a tracklog follows with the most recent entries on top.
+A '+' in front indicates that a new track starts at that point (if there was
+a large gap in time or position). A star at the end of a line indicates that
+this station could be heard direct (without a digi) at that specific position.
+
+For your own station, there is an "Echoed from" field, listing the
 last six digipeaters that heard you directly. This is useful for setting
 non-generic paths.
 
@@ -1184,7 +1184,7 @@ If this is the first time you have used this then the box will have no
 entries in it. To add a bookmark to the list: Position the main map to
 the area and zoom level you want to use. Enter a unique name in the
 "New Name" area, then click on add. Your entry will be added to the
-list (in alphabetical order).  You can add as many map display bokkmarks
+list (in alphabetical order).  You can add as many map display bookmarks
 as you want. To use one of the bookmarks mark its name and click
 "Activate!". The main map will then show the stored area and zoom level.
 You can similarly delete a bookmark by clicking on the bookmark name and
