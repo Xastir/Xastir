@@ -8698,13 +8698,25 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             strcpy(p_station->origin,origin);           // to keep them separated from calls
         if (origin == NULL || origin[0] == '\0')        // normal call
             p_station->origin[0] = '\0';                // undefine possible former object with same name
+
+
+//-----------------------------------------------------------------------------
+//WE7U
+// We need some work here to properly set the ST_DIRECT bit for
+// various types of paths.  We need to account for WIDEn-N and
+// TRACEn-N digi's:  They won't have an asterisk until they count
+// down to 1.  Also, setting ST_DIRECT should be a one-way trip.  We
+// shouldn't be clearing that bit except for new records and if a
+// timer expires (haven't heard it direct for a very long time).
+
         if (!third_party
                 && ((p_station->flag & ST_VIATNC) != 0)
                 && (p_station->node_path_ptr != NULL)
                 && strchr(p_station->node_path_ptr,'*') == NULL)
-            p_station->flag |= (ST_DIRECT);              // set "local" flag
+            p_station->flag |= (ST_DIRECT);              // set "direct" flag
         else
-            p_station->flag &= (~ST_DIRECT);             // clear "local" flag
+            p_station->flag &= (~ST_DIRECT);             // clear "direct" flag
+//-----------------------------------------------------------------------------
 
         p_station->num_packets += 1;
         redo_list = (int)TRUE;          // we may need to update the lists
