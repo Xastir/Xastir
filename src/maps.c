@@ -631,12 +631,6 @@ void draw_vector_ll(Widget w,
 
 
 
-// If non-zero, draw irregular UTM grids in Svalbard and SW Norway
-// areas.
-int MGRS_grid = 0;
-
-
-
 //#define UT_DEBUG
 //#define UT_DEBUG_VERB
 //#define UT_DEBUG_ALLOC
