@@ -345,6 +345,7 @@ Widget speech_config_play_on_new_station,
        speech_config_play_on_new_message_alert,
        speech_config_play_on_new_message_body,
        speech_config_play_on_prox,
+       speech_config_play_on_trak,
        speech_config_play_on_bando,
        speech_config_play_on_new_wx_alert;
 
@@ -358,6 +359,7 @@ static void Configure_speech(Widget w, XtPointer clientData, XtPointer callData)
 /* yes, but not a buffered one.  Ken,  N7IPB                             */
 int festival_speak_new_station = FALSE;
 int festival_speak_proximity_alert;
+int festival_speak_tracked_proximity_alert;
 int festival_speak_band_opening;
 int festival_speak_new_message_alert;
 int festival_speak_new_message_body;
@@ -7635,6 +7637,11 @@ void Configure_speech_change_data(Widget widget, XtPointer clientData, XtPointer
     else
         festival_speak_proximity_alert=0;
 
+    if(XmToggleButtonGetState(speech_config_play_on_trak))
+        festival_speak_tracked_proximity_alert=1;
+    else
+        festival_speak_tracked_proximity_alert=0;
+
     if(XmToggleButtonGetState(speech_config_play_on_bando))
         festival_speak_band_opening=1;
     else
@@ -7744,9 +7751,24 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 #endif /* HAVE_FESTIVAL */
                                       NULL);
 
-        speech_config_play_on_bando  = XtVaCreateManagedWidget(langcode("WPUPCFSP07"),xmToggleButtonWidgetClass,my_form,
+        speech_config_play_on_trak  = XtVaCreateManagedWidget(langcode("WPUPCFSP09"),xmToggleButtonWidgetClass,my_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, speech_config_play_on_prox,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset ,10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+#ifndef HAVE_FESTIVAL
+                                      XmNsensitive, FALSE,
+#endif /* HAVE_FESTIVAL */
+                                      NULL);
+
+        speech_config_play_on_bando  = XtVaCreateManagedWidget(langcode("WPUPCFSP07"),xmToggleButtonWidgetClass,my_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, speech_config_play_on_trak,
                                       XmNtopOffset, 12,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
@@ -7843,6 +7865,11 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
             XmToggleButtonSetState(speech_config_play_on_prox,TRUE,FALSE);
         else
             XmToggleButtonSetState(speech_config_play_on_prox,FALSE,FALSE);
+
+        if(festival_speak_tracked_proximity_alert)
+            XmToggleButtonSetState(speech_config_play_on_trak,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(speech_config_play_on_trak,FALSE,FALSE);
 
         if(festival_speak_band_opening)
             XmToggleButtonSetState(speech_config_play_on_bando,TRUE,FALSE);

@@ -425,7 +425,9 @@ void save_data(void)  {
 
 #ifdef HAVE_FESTIVAL
 	    /* Festival speech settings */
-	    store_int (fout, "SPEAK_PROXIMITY_ALERT",festival_speak_proximity_alert);
+	store_int (fout, "SPEAK_NEW_STATION",festival_speak_new_station);
+	store_int (fout, "SPEAK_PROXIMITY_ALERT",festival_speak_proximity_alert);
+	store_int (fout, "SPEAK_TRACKED_ALERT",festival_speak_tracked_proximity_alert);
         store_int (fout, "SPEAK_BAND_OPENING",festival_speak_band_opening);
         store_int (fout, "SPEAK_MESSAGE_ALERT",festival_speak_new_message_alert);
         store_int (fout, "SPEAK_MESSAGE_BODY",festival_speak_new_message_body);
@@ -893,8 +895,14 @@ void load_data_or_default(void) {
 #ifdef HAVE_FESTIVAL
     /* Festival Speech defaults */
 
+    if (!get_int ("SPEAK_NEW_STATION",&festival_speak_new_station))
+        festival_speak_new_station = 0;
+
     if (!get_int ("SPEAK_PROXIMITY_ALERT",&festival_speak_proximity_alert))
         festival_speak_proximity_alert = 0;
+
+    if (!get_int ("SPEAK_TRACKED_ALERT",&festival_speak_tracked_proximity_alert))
+        festival_speak_tracked_proximity_alert = 0;
 
     if (!get_int ("SPEAK_BAND_OPENING",&festival_speak_band_opening))
         festival_speak_band_opening = 0;

@@ -52,6 +52,8 @@ extern double calc_distance(long lat1, long lon1, long lat2, long lon2);
 extern double calc_distance_course(long lat1, long lon1, long lat2, long lon2, char *course_deg, int course_deg_length);
 extern double distance_from_my_station(char *call_sign, char *course_deg);
 
+extern char *convert_bearing_to_name(char *bearing, int opposite);
+
 extern int  filethere(char *fn);
 extern int  filecreate(char *fn);
 extern time_t file_time(char *fn);

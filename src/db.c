@@ -6346,7 +6346,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             value = (float)calc_distance_course(l_lat,l_lon,
                     p_station->coord_lat,p_station->coord_lon,temp_data,sizeof(temp_data));
             distance = value * cvt_kn2len;
-
+	
             /* check ranges */
             if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && sound_play_prox_message) {
                 //sprintf(station_id,"%s < %.3f %s",p_station->call_sign, distance,
@@ -8157,6 +8157,107 @@ int locate_station(Widget w, char *call, int follow_case, int get_match, int cen
 
 
 /*
+ *  Look for other stations that the tracked one has gotten close to.
+ *  and speak a proximity warning.
+ *   TODO: 
+ *    - sort matches by distance
+ *    - set upper bound on number of matches so we don't speak forever
+ *    - use different proximity distances for different station types?
+ *    - look for proximity to embedded map objects
+ */
+void search_tracked_station(DataRow **p_tracked) {
+    DataRow *t = (*p_tracked);
+    DataRow *curr = NULL;
+
+
+    if (debug_level & 1) {
+        char lat[20],lon[20];
+    
+        convert_lat_l2s(t->coord_lat,
+                        lat,
+                        sizeof(lat),
+                        CONVERT_HP_NORMAL);
+        convert_lon_l2s(t->coord_lon,
+                        lon,
+                        sizeof(lat),
+                        CONVERT_HP_NORMAL);
+
+        printf("Searching for stations close to tracked station %s at %s %s ...\n",
+	        t->call_sign,lat,lon);
+    }
+
+    while (next_station_time(&curr)) {
+        if (curr != t && curr->flag&ST_ACTIVE) {
+            float distance;
+            char bearing[10];
+            char station_id[600];
+
+            distance =  (float)calc_distance_course(t->coord_lat,
+                                                    t->coord_lon, 
+					                                curr->coord_lat,
+                                                    curr->coord_lon,
+					                                bearing,
+                                                    sizeof(bearing)) * cvt_kn2len;
+            if (debug_level & 1) 
+                printf("Looking at %s: distance %.3f bearing %s (%s)\n",
+	                curr->call_sign,distance,bearing,convert_bearing_to_name(bearing,1));
+
+            /* check ranges (copied from earlier prox alert code, above) */
+            if ((distance > atof(prox_min)) && (distance < atof(prox_max))) {
+                if (debug_level & 1) 
+	                printf(" tracked station is near %s!\n",curr->call_sign);
+
+                if (sound_play_prox_message) {
+	                sprintf(station_id,"%s < %.3f %s from %s",t->call_sign, distance,
+		                units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+		                curr->call_sign);
+	                statusline(station_id,0);
+	                play_sound(sound_command,sound_prox_message);
+                }
+#ifdef HAVE_FESTIVAL
+                if (festival_speak_tracked_proximity_alert) {
+	                if (units_english_metric) {
+	                    if (distance < 1.0)
+	                        sprintf(station_id, langcode("SPCHSTR007"), t->call_sign,
+		                        (int)(distance * 1760), langcode("SPCHSTR004"),
+		                        convert_bearing_to_name(bearing,1), curr->call_sign);
+	                    else if ((int)((distance * 10) + 0.5) % 10)
+	                        sprintf(station_id, langcode("SPCHSTR008"), t->call_sign, distance,
+		                        langcode("SPCHSTR003"), convert_bearing_to_name(bearing,1),
+		                        curr->call_sign);
+	                    else
+	                        sprintf(station_id, langcode("SPCHSTR007"), t->call_sign, (int)(distance + 0.5),
+		                        langcode("SPCHSTR003"), convert_bearing_to_name(bearing,1),
+		                        curr->call_sign);
+	                } else {		/* metric */
+	                    if (distance < 1.0)
+	                        sprintf(station_id, langcode("SPCHSTR007"), t->call_sign,
+		                        (int)(distance * 1000), langcode("SPCHSTR002"), 
+		                        convert_bearing_to_name(bearing,1), curr->call_sign);
+	                    else if ((int)((distance * 10) + 0.5) % 10)
+	                        sprintf(station_id, langcode("SPCHSTR008"), t->call_sign, distance,
+		                        langcode("SPCHSTR001"), 
+		                        convert_bearing_to_name(bearing,1), curr->call_sign);
+	                    else
+	                        sprintf(station_id, langcode("SPCHSTR007"), t->call_sign, (int)(distance + 0.5),
+		                        langcode("SPCHSTR001"), convert_bearing_to_name(bearing,1),
+		                        curr->call_sign);
+	                }
+	                if (debug_level & 1) 
+	                    printf(" %s\n",station_id);
+	                SayText(station_id);
+                }
+#endif  /* HAVE_FESTIVAL */
+            }
+        }
+    }   // end of while
+}
+
+
+
+
+
+/*
  *  Change map position if neccessary while tracking a station
  *      we call it with defined station call and position
  */
@@ -8216,6 +8317,7 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
                 new_lon += x_ofs/2;
             set_map_position(w, new_lat, new_lon);      // center map to new position
         }
+ 	    search_tracked_station(&p_station);
     }
 }
 

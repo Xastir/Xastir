@@ -152,6 +152,7 @@ extern char sound_band_open_message[];
 extern char sound_wx_alert_message[];
 extern int festival_speak_new_station;
 extern int festival_speak_proximity_alert;
+extern int festival_speak_tracked_proximity_alert;
 extern int festival_speak_band_opening;
 extern int festival_speak_new_message_alert;
 extern int festival_speak_new_message_body;

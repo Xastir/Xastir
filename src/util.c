@@ -1025,6 +1025,49 @@ double distance_from_my_station(char *call_sign, char *course_deg) {
 
 
 
+/*********************************************************************/
+/* convert_bearing_to_name - converts a bearing in degrees to        */
+/*   name for the bearing.  Expects the degrees as a text string     */
+/*   since that's what the preceding functions output.               */
+/* Set the opposite flag true for the inverse bearing (from vs to)   */
+/*********************************************************************/
+
+static struct {
+    double low,high;
+    char *dircode,*lang;
+} directions[] = {
+    {327.5,360,"N","SPCHDIRN00"},
+    {0,22.5,"N","SPCHDIRN00"},
+    {22.5,67.5,"NE","SPCHDIRNE0"},
+    {67.5,112.5,"E","SPCHDIRE00"},
+    {112.5,157.5,"SE","SPCHDIRSE0"},
+    {157.5,202.5,"S","SPCHDIRS00"},
+    {202.5,247.5,"SW","SPCHDIRSW0"},
+    {247.5,292.5,"W","SPCHDIRW00"},
+    {292.5,327.5,"NW","SPCHDIRNW0"},
+};
+
+
+
+char *convert_bearing_to_name(char *bearing, int opposite) {
+    double deg = atof(bearing);
+    int i;
+
+    if (opposite) {
+        if (deg > 180) deg -= 180.0;
+        else if (deg <= 180) deg += 180.0;
+    }
+    for (i = 0; i < sizeof(directions)/sizeof(directions[0]); i++) {
+        if (deg >= directions[i].low && deg < directions[i].high)
+            return langcode(directions[i].lang);
+    }
+    return "?";
+}
+
+
+
+
+
 int filethere(char *fn) {
     FILE *f;
     int ret;
