@@ -393,22 +393,25 @@ SmartBeaconing:
 
 High rate
 The interval (in seconds) at which beacons are sent when the speed is above the
-High speed setting.
+High speed setting.  This parameter is also used to compute a beacon rate based
+on speed when traveling between the high and low speeds.
 
 High speed
 The speed threshold that will cause beacons at the rate specified above.
 
 Low rate
 The interval (in minutes) at which beacons are sent when the speed is below the
-Low speed setting.
+Low speed setting.  Basically consider this to be the stopped beacon rate.
+This parameter is not used at all when traveling at a rate of speed higher than
+"Low speed".
 
 Low speed
 The speed threshold that will cause beacons at the rate specified above.
 
 Minimum Turn
-The minimum degrees that corner pegging can occur. This will be at the
-highest speed, lower speeds will require more degrees of turn to trigger a
-posit.
+The minimum degrees that corner pegging can occur at "High speed" or above.
+Lower speeds will require more degrees of turn to trigger a posit, based on
+the value of "Turn Slope" below.
 
 Turn Slope
 Fudget factor for making turns less sensitive at lower speeds.  No real units
