@@ -151,7 +151,10 @@ Getting Maps and other Data Files for Xastir:
      Be wary of DRG-E or DOQQ files that are compressed with MrSID
      compression.  That is a proprietary compression format for
      which we do not have access to the decoding algorithm.  We
-     cannot use those from within Xastir.
+     cannot use those from within Xastir.  There's possible good news
+     lurking on the horizon though:  LizardTech has mentioned on the
+     gdal-dev mailing list that they might be supporting open-source
+     with a driver for gdal sometime soon.
 
      SDTS format maps:
 
@@ -160,6 +163,15 @@ Getting Maps and other Data Files for Xastir:
       The "hypsography" maps contain topo lines.  They look very nice overlaid
       on top of terraserver satellite images.  Note that for some types of maps
       you also need to download a data dictionary file to go with them.
+
+     MapInfo TAB/MID/MIF format maps:
+
+      http://www.mapinfo.com
+      http://research.umbc.edu/~roswell/mipage.html
+
+     TIGER/Line format maps:
+
+      http://www.census.gov/geo/www/tiger/tiger2002/tgr2002.html
 
      Shapefile format maps:
 
