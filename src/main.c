@@ -12720,7 +12720,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
                 XmNminimum, 5,          // 0.5 = Thirty seconds
-                XmNmaximum, 45*10,      // 45 minutes
+                XmNmaximum, 60*10,      // 60 minutes
                 XmNdecimalPoints, 1,    // Move decimal point over one
                 XmNshowValue, TRUE,
                 XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
