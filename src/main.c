@@ -576,9 +576,10 @@ int gps_details_selected = 0;       // Whether name/color have been selected yet
 Widget gpsfilename_text;            // Short name of gps map (no color/type)
 char gps_map_filename[MAX_FILENAME];// Chosen name of gps map (including color)
 char gps_map_filename_base[MAX_FILENAME];   // Same minus ".shp"
+char gps_map_filename_base2[MAX_FILENAME];   // Same minus ".shp" and color
 char gps_temp_map_filename[MAX_FILENAME];
 char gps_temp_map_filename_base[MAX_FILENAME];  // Same minus ".shp"
-char gps_dbfawk_format[]="BEGIN_RECORD {key=\"\"; lanes=1; color=%d; name=\"\"; filled=0; pattern=0; display_level=256; label_level=128; label_color=8; symbol=\"\"}\n";
+char gps_dbfawk_format[]="BEGIN_RECORD {key=\"\"; lanes=1; color=%d; name=\"%s\"; filled=0; pattern=0; display_level=256; label_level=128; label_color=8; symbol=\"\"}\n";
 int gps_map_color = 0;              // Chosen color of gps map
 int gps_map_color_offset;           // offset into colors array of that color.
 char gps_map_type[30];              // Type of GPS download
@@ -12946,6 +12947,13 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
             short_filename,
             gps_map_type,
             color_text);
+
+        // Same without ".shp" *or* color
+        xastir_snprintf(gps_map_filename_base2,
+            sizeof(gps_map_filename_base2),
+            "%s_%s",
+            short_filename,
+            gps_map_type);
     }
 
 //fprintf(stderr,"%s\t%s\n",gps_map_filename,gps_map_filename_base);
@@ -13394,7 +13402,8 @@ void check_for_new_gps_map(void) {
                                 gps_map_filename_base);
                 f=fopen(temp,"w"); // open for write
                 if (f != NULL) {
-                    fprintf(f,gps_dbfawk_format,gps_map_color_offset);
+                    fprintf(f,gps_dbfawk_format,gps_map_color_offset,
+                            gps_map_filename_base2);
                     fclose(f);
                 }
             }
