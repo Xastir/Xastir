@@ -112,6 +112,7 @@ Getting Maps and other Data Files for Xastir:
       find GPS -type f -exec chmod 777 {} \;
 
 
+
     Download some maps:
 
       If you compiled with ImageMagick and have wget or libcurl installed,
@@ -185,100 +186,47 @@ Getting Maps and other Data Files for Xastir:
 
       ftp://aprs.rutgers.edu/pub/hamradio/APRS/maps02/
       http://www.cnunix.com/ftp/hamradio/rutgers.mirror/maps/maps2/
-       Get at least WORLDHI.MAP
       ftp://aprs.rutgers.edu/pub/hamradio/APRS/
+      ftp://ftp.tapr.org/aprssig/maps/
 
-      You can also use any of the other maps available from this site. They
-      were created from tiger line maps and are very detailed. They also work
-      well with the "Map Levels" function for controlling map detail.
+       WORLDHI.MAP is suggested as a basic view of the world map.
+
+      You can use any of the other maps available from this site. Many of
+      them were created from tiger line maps, but they are several years out of
+      date. It is suggested that you don't use these as your primary
+      street-level maps; the newer shapefile-based maps are usually preferable.
+      In cases where you cannot compile shapefile support, these maps suffice.
+
       
-      Also try:
-       ftp://ftp.tapr.org/aprssig/maps/
+     PocketAPRS vector maps:
 
-     GeoTIFF Map files:
+      The WinAPRS 2.51 distribution included the full collection of 
+      PocketAPRS vector maps for the USA. The download is about 60Mb, from the
+      TAPR ftp site.
 
-      If you compiled in geoTIFF support, you can find DRG topo maps at GIS
-      Data Depot (http://www.gisdatadepot.com) for the U.S. You used to be able
-      to find links to maps at http://mcmcweb.er.usgs.gov/drg/free_drg.html,
-      but that page doesn't appear to exist anymore.  Try this one instead:
+      Also try:  
+       ftp://ftp.tapr.org/aprssig/palmstuff/palmmaps/
 
-        http://www.bianifc.org/gis_gps/gps/drgfree.html
+   
+     Shapefile format maps (Requires shapefile support):
 
-      or try a google search with "free drg maps" as the search query.
+      Shapefile format maps are slowly becoming the standard vector format of
+      maps used with Xastir. Xastir 1.3.2 and above by default enable dbfawk
+      support for parsing shapefile metadata, see below.
 
-      The 7.5' topo maps work the best so far.  Be sure to install the .tif AND
-      the .fgd files side-by-side into the map directories. Without the .fgd
-      file Xastir won't be able to crop the white border from the map.  Xastir
-      currently knows how to handle NAD27, NAD83, and WGS84 geoTIFF files.
-      GeoTIFF files created in other datums will be displayed at an incorrect
-      location with Xastir. The .tfw files included with most geoTIFF images
-      are not used by Xastir.
+      A nice world map is available at http://aprsworld.net/gisdata/world/
+      thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
+      of the World (for Antarctica).  Note that this file is currently
+      available only in uncompressed or in tar/bzip2 format.  To decompress
+      the latter file, you'd type "bunzip2 filename" and then
+      "tar xvf filename".
 
-      If you must make FGD files by hand, the included script mapfgd.pl can
-      create them for you from the USGS geoTIFF files. The format Xastir is
-      looking for is the following:
+      The latest Tiger/Line 2003 data converted to shapefile format is
+      available from http://xastir.tamu.edu/. These maps only work with dbfawk
+      support, and only contain vectors; no filled regions such as water. 
+      FIXME
 
-        1.5.1.1  WEST BOUNDING COORDINATE:  -122.000000
-        1.5.1.2  EAST BOUNDING COORDINATE:  -120.000000  
-        1.5.1.3  NORTH BOUNDING COORDINATE:  48.000000 
-        1.5.1.4  SOUTH BOUNDING COORDINATE:  47.000000 
-
-     -or-
-
-        1.5.1.1  West_Bounding_Coordinate:  -122.000000
-        1.5.1.2  East_Bounding_Coordinate:  -120.000000  
-        1.5.1.3  North_Bounding_Coordinate:  48.000000 
-        1.5.1.4  South_Bounding_Coordinate:  47.000000 
-
-      Notes about DRG-Enhanced (DRG-E) files:
-      * The DRG-E files will draw over the correct spots if you remove
-      the .fgd file, but will overflow their boundaries and
-
-      * The DRG-E files will draw over the correct spots with decent
-      boundary trimming (as far as I can tell, which isn't very far:
-      correct me!) if you use a .fgd file taken from 'real' DRG files
-      from USGS.
-
-      Basically: get rid of the .fgd file from the DRG-E!!
-
-      Be wary of DRG-E or DOQQ files that are compressed with MrSID
-      compression.  That is a proprietary compression format for
-      which we do not have access to the decoding algorithm.  We
-      cannot use those from within Xastir.  There's possible good news
-      lurking on the horizon though:  LizardTech has mentioned on the
-      gdal-dev mailing list that they might be supporting open-source
-      with a driver for gdal sometime soon.
-
-     SDTS format maps:
-
-        http://edc.usgs.gov/geodata/
-
-      The "hypsography" maps contain topo lines.  They look very nice overlaid
-      on top of terraserver satellite images.  Note that for some types of maps
-      you also need to download a data dictionary file to go with them.
-
-      Also note that the various datasets appear to reuse filenames.  You may
-      need to separate each one into its own subdirectory in order to keep all
-      of the files from getting overwritten by new maps.
-
-     MapInfo TAB/MID/MIF format maps:
-
-      http://www.mapinfo.com
-      http://research.umbc.edu/~roswell/mipage.html
-
-     TIGER/Line format maps:
-
-      http://www.census.gov/geo/www/tiger/tiger2002/tgr2002.html
-
-     Shapefile format maps:
-
-      Some shapefile format maps are available at: 
-      http://www.nws.noaa.gov/geodata/
-
-      Tiger97 maps converted to shapefile downloadable from:
-      http://www.mapshots.com
-
-      Newer Tiger/Line 2000 map data is available from:
+      Tiger/Line 2000 map data is available from:
       http://www.esri.com/data/download/census2000_tigerline/index.html
       but requires free registration.  A example of these types of files can
       be found at "http://wetnet.net/~we7u/xastir/maps/shapefile/USA/WA/".
@@ -320,19 +268,24 @@ Getting Maps and other Data Files for Xastir:
         Landmark Polygons Multi-Landmark    tgr*lpy3.shp
         Water Polygons Multi-Names          tgr*wat2.shp
 
+      Older Tiger97 maps converted to shapefile downloadable from:
+      http://www.mapshots.com
 
-      Other shapefiles are available from esri.com, geographynetwork.com
+      Some other shapefile format maps are available at:
+      http://www.nws.noaa.gov/geodata/
+
+      Still other shapefiles are available from esri.com, geographynetwork.com
       and gisdatadepot.com (from their "free data" link).  Lot's of useful
       stuff at these sites, just look around.  You can also check
-      with our County GIS office for shapefiles of your county.  You can
+      with your County GIS office for shapefiles of your county.  You can
       convert them from State Plane to Lat/Long projection using
       instructions later in this document.
 
-      Also, get the usgs_24kgrid.zip file from
+      If you also use GeoTIFF images, get the handy usgs_24kgrid.zip file from
       http://data.geocomm.com/quadindex/.  This file provides a grid of all of
       the 7.5' maps and their names for the U.S.
 
-***** A nice world map is available at http://aprsworld.net/gisdata/world/
+      A nice world map is available at http://aprsworld.net/gisdata/world/
       thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
       of the World (for Antartica).  Note that this file is currently
       available only in uncompressed or in tar/bzip2 format.  To decompress
@@ -692,19 +645,60 @@ Getting Maps and other Data Files for Xastir:
        dbfadd posts 35 'X\m ' Finish
     ---------
 
-    Tiger/Line format maps:
 
-      If you have GDAL/OGR library added to Xastir, you should (very soon)
-      be able to use Tiger/Line maps.  The developers are working to add
-      this capability.
+     GeoTIFF Map files (requires GeoTIFF):
 
-      2002 map data can be found here:
+      If you compiled in geoTIFF support, you can use USGS DRG topographic
+      maps. These are primarily useful to U.S. users. DRG topo maps can be
+      found for free for most states, and can be purchased for others.
 
-        http://www.census.gov/geo/www/tiger/tiger2002/tgr2002.html
+        http://www.bianifc.org/gis_gps/gps/drgfree.html
+        http://www.gisdatadepot.com
 
-      2003 map data can be found here:
+      or try a google search with "free drg maps" as the search query.
 
-        http://www.census.gov/geo/www/tiger/tiger2003/tgr2003.html
+      The 7.5' topo maps work the best so far.  Be sure to install the .tif AND
+      the .fgd files side-by-side into the map directories. Without the .fgd
+      file Xastir won't be able to crop the white border from the map.  Xastir
+      currently knows how to handle NAD27, NAD83, and WGS84 geoTIFF files.
+      GeoTIFF files created in other datums will be displayed at an incorrect
+      location with Xastir. The .tfw files included with most geoTIFF images
+      are not used by Xastir.
+
+      If you must make FGD files by hand, the included script mapfgd.pl can
+      create them for you from the USGS geoTIFF files. The format Xastir is
+      looking for is the following:
+
+        1.5.1.1  WEST BOUNDING COORDINATE:  -122.000000
+        1.5.1.2  EAST BOUNDING COORDINATE:  -120.000000  
+        1.5.1.3  NORTH BOUNDING COORDINATE:  48.000000 
+        1.5.1.4  SOUTH BOUNDING COORDINATE:  47.000000 
+
+     -or-
+
+        1.5.1.1  West_Bounding_Coordinate:  -122.000000
+        1.5.1.2  East_Bounding_Coordinate:  -120.000000  
+        1.5.1.3  North_Bounding_Coordinate:  48.000000 
+        1.5.1.4  South_Bounding_Coordinate:  47.000000 
+
+      Notes about DRG-Enhanced (DRG-E) files:
+      * The DRG-E files will draw over the correct spots if you remove
+      the .fgd file, but will overflow their boundaries and
+
+      * The DRG-E files will draw over the correct spots with decent
+      boundary trimming (as far as I can tell, which isn't very far:
+      correct me!) if you use a .fgd file taken from 'real' DRG files
+      from USGS.
+
+      Basically: get rid of the .fgd file from the DRG-E!!
+
+      Be wary of DRG-E or DOQQ files that are compressed with MrSID
+      compression.  That is a proprietary compression format for
+      which we do not have access to the decoding algorithm.  We
+      cannot use those from within Xastir.  There's possible good news
+      lurking on the horizon though:  LizardTech has mentioned on the
+      gdal-dev mailing list that they might be supporting open-source
+      with a driver for gdal sometime soon.
 
 
     .geo files/online maps & graphics:
@@ -762,21 +756,14 @@ Getting Maps and other Data Files for Xastir:
           are all ImageMagick options, and are documented there, and
           briefly in the xastir help file.
 
-     PocketAPRS maps:
-
-      The latest WinAPRS distribution includes the full collection of 
-      PocketAPRS vector maps for the USA. The download is about 60Mb, from the
-      TAPR ftp site.
-
-      Also try:  
-       ftp://ftp.tapr.org/aprssig/palmstuff/palmmaps/
-
+     
      "Find Address" feature (US only):
 
       The "Find Address" feature is based on the open source geocoder by
       Dan Egnor and as such uses the same format for the data. You can
       download preprocessed data based on Census Tiger 2003 data at:
       http://www.dementia.org/geocoder/tgr2003/
+
 
      Geographic Names Information System Labels:
 
@@ -810,16 +797,9 @@ Getting Maps and other Data Files for Xastir:
         sed -e 's/[ ]*$//g' < inputfile > outputfile
 
 
-     County Warning maps:
-      All WX County maps should be stored in /usr/local/share/xastir/Counties
-
-      WinAPRS style:
-       Xastir no longer suppports WinAPRS style county maps. Please download
-       and install the shapefile format maps as described below.
-
-      Shapefile style:
-
-       The shapefile format weather maps may be found here:
+     County weather Warning maps (requires shapefile support):
+      
+       The latest shapefile format weather maps may be found here:
          http://www.nws.noaa.gov/geodata/
 
        or more easily found here (but not guaranteed to be the most
@@ -842,23 +822,45 @@ Getting Maps and other Data Files for Xastir:
         AWIPS Counties
 
       Unzip those files in the /usr/local/share/xastir/Counties/ directory and
-      Xastir should find them and use them for weather alerts.
-
-      These are what I currently have loaded:
-
-            c_28au03.shp (plus .dbf & .shx)
-            fz04my04.shp (plus .dbf & .shx)
-            hz02oc01.shp (plus .dbf & .shx)
-            mz15jl04.shp (plus .dbf & .shx)
-            oz24mr04.shp (plus .dbf & .shx)
-            w_28au03.shp (plus .dbf & .shx)
-            z_15jl04.shp (plus .dbf & .shx)
+      Xastir should find them and use them for weather alerts. Be sure to
+      include the .shp, .shx, .and dbf.
            
        Note that you can also use the county file as the background polygon
        filled map for drawing county lands and borders.  Either make a link
        to these files from your maps directory, or copy the files there so
        that they show up in the Map Chooser.
- 
+
+     Raw Tiger/Line format maps (requires GDAL/ORG):
+
+      If you have GDAL/OGR library added to Xastir, you should (very soon)
+      be able to use Tiger/Line maps.  The developers are working to add
+      this capability.
+
+      2002 map data can be found here:
+
+        http://www.census.gov/geo/www/tiger/tiger2002/tgr2002.html
+
+      2003 map data can be found here:
+
+        http://www.census.gov/geo/www/tiger/tiger2003/tgr2003.html
+
+     SDTS format maps (requires GDAL/OGR):
+
+        http://edc.usgs.gov/geodata/
+
+      The "hypsography" maps contain topo lines.  They look very nice overlaid
+      on top of terraserver satellite images.  Note that for some types of maps
+      you also need to download a data dictionary file to go with them.
+
+      Also note that the various datasets appear to reuse filenames.  You may
+      need to separate each one into its own subdirectory in order to keep all
+      of the files from getting overwritten by new maps.
+
+     MapInfo TAB/MID/MIF format maps (requires GDAL/OGR):
+
+      http://www.mapinfo.com
+      http://research.umbc.edu/~roswell/mipage.html
+
 
      Download audio files:
 

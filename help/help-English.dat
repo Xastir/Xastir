@@ -71,6 +71,10 @@ split_gnis and ozi2geo scripts, need to add to section on scripts
 serial mkiss interface
 move objects without confirm
 new timing params wrt trails, need to add to config|timing part
+geocoder (already in docs)
+exponential/random backoff for everything
+dbfawk default, memory leaks fixed
+
 
 HELP-INDEX>What's new in Xastir 1.3
 

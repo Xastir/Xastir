@@ -219,8 +219,8 @@ First Time Install:
      If you already have Motif or OpenMotif on your system, including
      the development headers, then you won't need to install LessTif. Most
      distributions include one of these; step 2a describes building from
-     source, while 2b and 2c describe installing from prebuilt packages on
-     RedHat and SuSE.  Now that OpenMotif is available, you may be happier
+     source, while 2b describes installing from prebuilt packages on
+     your distribution. Now that OpenMotif is available, you may be happier
      running it than LessTif, but either one should work with Xastir.
 
         2a. Download LessTif version 0.91.1 or higher or download OpenMotif.
@@ -237,26 +237,10 @@ First Time Install:
         Or you can try any other OSF/Motif(R) version 1.2
 
 
-       2b. Install LessTif (for RED HAT !!)
+       2b. Install LessTif or OpenMotif (from a package)
 
-       download lestif-devel-0.91.1-1.i386.rpm or newer and install it
-       download lestif-0.91.1-1.i386.rpm  or newer and install it
-
-       Follow any install instructions with LessTif,
-
-       you may need to
-        edit /etc/ld.so.conf
-        and run:
-        /sbin/ldconfig (as root)
-
-
-       2c. Install LessTif (for older SuSE systems !!)
-
-       download lesstif.rpm and lesstifd.rpm and install
-       them.  As root:
-
-         rpm -U lesstif.rpm
-         rpm -U lesstifd.rpm
+       Download the lestif-devel (if it exists) and lestif, and install it
+       as your distribution instructs you to install pacakges.
 
 
    3. OPTIONAL:  Install geoTIFF support.  Allows using USGS DRG topo maps or
@@ -362,11 +346,11 @@ First Time Install:
        order to copy one libtiff header file into the libgeotiff source
        directory.
 
-
-     NOTE: You may need to snag some files from your exact libtiff source
-       distribution and place them into your /usr/include directory before
-       libgeotiff will compile.  Note:  I said use files from the EXACT same
-       distribution of libtiff that you already have installed!
+     -----------------------
+     Pre 3.6.0 libtiff NOTE: You may need to snag some files from your exact
+       libtiff source distribution and place them into your /usr/include
+       directory before libgeotiff will compile.  Note:  I said use files from
+       the EXACT same distribution of libtiff that you already have installed!
 
             libtiff/tiffconf.h
             libtiff/tiffiop.h
@@ -392,6 +376,7 @@ First Time Install:
        With libgeotiff-1.2.1/libtiff-3.6.0-beta or newer you shouldn't
        need to copy these files across.  The newer libtiff and libgeotiff
        can work together using public interfaces.
+     ------------------------
 
         tar xzvf libgeotiff-1.1.5.tar.gz (or newer)
         cd libgeotiff-1.1.5
@@ -414,7 +399,7 @@ First Time Install:
 
    4. RECOMMENDED:  Install ESRI Shapefile support.  Allows using many sources
      of online polygon, polyline, and point maps, including ones from NOAA.
-     This is now the only format for weather alert maps.
+     This is also the format for weather alert maps.
      The instructions aren't clear in this package, but just installing the
      library is sufficient:
 
@@ -634,6 +619,7 @@ First Time Install:
         "make" ("gmake" for Solaris or *BSD)
 
      This builds XASTIR, You should not get any error or warning messages.
+
 
      If you wish to install Xastir in a location other than the default
      ("/usr/local/bin" and "/usr/local/share/xastir" directories), you may
