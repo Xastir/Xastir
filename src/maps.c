@@ -7143,7 +7143,7 @@ Samples Per Pixel: 1
     if (debug_level & 16) {
         printf ("            Width: %ld\n", width);
         printf ("           Height: %ld\n", height);
-        printf ("      Photometric: %ld\n", photometric);
+        printf ("      Photometric: %d\n", photometric);
         printf ("   Rows Per Strip: %ld\n", rowsPerStrip);
         printf ("  Bits Per Sample: %d\n", bitsPerSample);
         printf ("Samples Per Pixel: %d\n", samplesPerPixel);

@@ -482,7 +482,8 @@ Widget raw_wx_tx;
 #endif
 Widget compressed_posit_tx;
 Widget compressed_objects_items_tx;
-Widget smart_beacon_enable;
+Widget new_bulletin_popup_enable;
+int pop_up_new_bulletins = 0;
 Widget altnet_active;
 Widget altnet_text;
 Widget debug_level_text;
@@ -623,6 +624,7 @@ int sb_low_speed_limit = 2;     // Speed below which SmartBeaconing(tm) is disab
 int sb_high_speed_limit = 60;   // Speed above which we'll beacon at the
                                 // POSIT_fast rate (mph)
 Widget smart_beacon_dialog = (Widget)NULL;
+Widget smart_beacon_enable = (Widget)NULL;
 Widget sb_hi_rate_data = (Widget)NULL;
 Widget sb_hi_mph_data = (Widget)NULL;
 Widget sb_lo_rate_data = (Widget)NULL;
@@ -818,6 +820,8 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
         char *str_ptr1;
         int i;
 
+        smart_beaconing = (int)XmToggleButtonGetState(smart_beacon_enable);
+
         str_ptr1 = XmTextGetString(sb_hi_rate_data);
         i = atoi(str_ptr1);
         if (i == 0)
@@ -916,8 +920,20 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNshadowThickness, 1,
                                 NULL);
 
-        label1 = XtVaCreateManagedWidget(langcode("SMARTB002"), xmLabelWidgetClass, form,
+        smart_beacon_enable = XtVaCreateManagedWidget(langcode("SMARTB011"),xmToggleButtonWidgetClass,form,
                                 XmNtopAttachment, XmATTACH_FORM,
+                                XmNtopOffset, 10,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset,5,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNbackground, colors[0xff],
+                                XmNnavigationType, XmTAB_GROUP,
+                                NULL);
+
+        label1 = XtVaCreateManagedWidget(langcode("SMARTB002"), xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_WIDGET,
+                                XmNtopWidget, smart_beacon_enable,
                                 XmNtopOffset, 10,
                                 XmNbottomAttachment, XmATTACH_NONE,
                                 XmNleftAttachment, XmATTACH_FORM,
@@ -936,7 +952,9 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNmaxLength, 5,
                                 XmNbackground, colors[0x0f],
                                 XmNtopOffset, 5,
-                                XmNtopAttachment,XmATTACH_FORM,
+                                XmNtopAttachment,XmATTACH_WIDGET,
+                                XmNtopWidget, smart_beacon_enable,
+                                XmNtopOffset, 10,
                                 XmNbottomAttachment,XmATTACH_NONE,
                                 XmNleftAttachment, XmATTACH_WIDGET,
                                 XmNleftWidget, label1,
@@ -1188,6 +1206,11 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 
     // Fill in the current values
     if (smart_beacon_dialog != NULL) {
+
+        if(smart_beaconing)
+            XmToggleButtonSetState(smart_beacon_enable,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(smart_beacon_enable,FALSE,FALSE);
 
         xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_posit_fast);
         XmTextSetString(sb_hi_rate_data, temp_string);
@@ -8850,12 +8873,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     transmit_compressed_objects_items = (int)XmToggleButtonGetState(compressed_objects_items_tx);
 
-    smart_beaconing = (int)XmToggleButtonGetState(smart_beacon_enable);
-
-    //if (smart_beaconing)
-    //    printf("SmartBeaconing(tm) Enabled\n");
-    //else
-    //    printf("SmartBeaconing(tm) Disabled\n");
+    pop_up_new_bulletins = (int)XmToggleButtonGetState(new_bulletin_popup_enable);
 
     altnet = (int)(XmToggleButtonGetState(altnet_active));
 
@@ -9426,7 +9444,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
 
-        smart_beacon_enable = XtVaCreateManagedWidget(langcode("WPUPCFD027"),xmToggleButtonWidgetClass,my_form,
+        new_bulletin_popup_enable = XtVaCreateManagedWidget(langcode("WPUPCFD027"),xmToggleButtonWidgetClass,my_form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
                                         XmNtopWidget, compressed_objects_items_tx,
                                         XmNbottomAttachment, XmATTACH_NONE,
@@ -9437,11 +9455,10 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
 
-
 #ifdef TRANSMIT_RAW_WX
         raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),xmToggleButtonWidgetClass,my_form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, smart_beacon_enable,
+                                        XmNtopWidget, new_bulletin_popup_enable,
                                         XmNbottomAttachment, XmATTACH_NONE,
                                         XmNleftAttachment, XmATTACH_FORM,
                                         XmNleftOffset, 10,
@@ -9723,10 +9740,10 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         else
             XmToggleButtonSetState(compressed_objects_items_tx,FALSE,FALSE);
 
-        if(smart_beaconing)
-            XmToggleButtonSetState(smart_beacon_enable,TRUE,FALSE);
+        if(pop_up_new_bulletins)
+            XmToggleButtonSetState(new_bulletin_popup_enable,TRUE,FALSE);
         else
-            XmToggleButtonSetState(smart_beacon_enable,FALSE,FALSE);
+            XmToggleButtonSetState(new_bulletin_popup_enable,FALSE,FALSE);
 
         XmToggleButtonSetState(altnet_active, altnet, FALSE);
 

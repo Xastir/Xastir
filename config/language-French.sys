@@ -289,7 +289,7 @@ WPUPCFD023|Données météo non traités?||
 WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Activer réseau alterne?|A|
 WPUPCFD026|Transmettre position à quel intervalle?||
-WPUPCFD027|Enable SmartBeaconing(tm)||
+WPUPCFD027|Pop up new bulletins||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||
@@ -857,6 +857,8 @@ SMARTB007|Low Speed (kph):||
 SMARTB008|Minimum Turn (deg):||
 SMARTB009|Turn Slope:||
 SMARTB010|Wait Time (secs):||
+SMARTB011|Enable SmartBeaconing(tm)||
+#
 #
 #
 # Gamma Adjust Dialog

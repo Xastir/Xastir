@@ -916,7 +916,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
     // Bring up the bulletins dialog if it's a new bulletin and
     // within our range.
-    if (bring_up_bulletins) {
+    if (bring_up_bulletins && pop_up_new_bulletins) {
         popup_bulletins();
         //printf("%05d:%9s:%c:%c:%9s:%s:%s\n",
         //    distance, call_sign, type, from, from_call, data, seq);

@@ -288,7 +288,7 @@ WPUPCFD023|Transmitir infos WX em Raw?||
 WPUPCFD024|Comprimir objecto/item durante a transmissão?||
 WPUPCFD025|Activar rede alternativa?|A|
 WPUPCFD026|Enviar reportes de posição em que intervalos?||
-WPUPCFD027|Activar SmartBeaconing(tm)||
+WPUPCFD027|Pop up new bulletins||
 #
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||
@@ -856,6 +856,8 @@ SMARTB007|Velocidade baixa (kph):||
 SMARTB008|Voltar ao minimo (deg):||
 SMARTB009|Turn Slope:||
 SMARTB010|Tempo de espera (secs):||
+SMARTB011|Activar SmartBeaconing(tm)||
+#
 #
 #
 # Gamma Adjust Dialog
