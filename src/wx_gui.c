@@ -321,12 +321,13 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             if (sec_now() >= alert_list[nn].expiration) {
                 //xastir_snprintf(status, sizeof(status), "Exp");
                 if (debug_level & 2) {
-                    fprintf(stderr,"Expiring alert: %s:%lu, sec_now:%lu\n",
+                    fprintf(stderr,"wx_alert_update_list: Expiring alert: %s:%lu, sec_now:%lu\n",
                         alert_list[nn].title,
                         alert_list[nn].expiration,
                         sec_now());
                 }
                 alert_list[nn].title[0] = '\0'; // Clear this alert
+                alert_list_count--;
                 continue;   // Skip this alert (it's empty!)
             }
 
