@@ -3891,6 +3891,18 @@ if (on_screen) {
     XSetFillStyle(XtDisplay(w), gc, FillSolid);
 }
 // End of draw_shapefile_map()
+#ifdef WITH_DBFAWK
+// This function will delete any pre-loaded dbfawk sigs and clear Dbf_sigs
+// This will trigger a  reload the first time a shapfile is redisplayed
+void clear_dbfawk_sigs() {
+    //    fprintf(stderr,"Clearing signatures.\n");
+    if (Dbf_sigs ) {
+        dbfawk_free_sigs(Dbf_sigs);
+        Dbf_sigs = NULL;
+    }
+}
+        
+#endif 
 
 #endif  // HAVE_LIBSHP
 
