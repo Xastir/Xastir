@@ -68,10 +68,10 @@ server until you obtain this file and are presented with a list of
 packages to install.
 
 
-Step 1c)  Select Packages: Select the default Cygwin packages _plus_
-the packages listed below.  Note that enabling some of these
-packages causes others to be selected as well, that's ok and
-necessary:
+Step 1c)  Select Packages:  Leave the packages selected that were
+selected by default, plus select the additional packages listed
+below.  Note that enabling some of these packages causes others to
+be selected as well, that's ok and necessary:
 
     devel/autoconf
     devel/automake
@@ -92,6 +92,10 @@ necessary:
     XFree86/lesstif
     XFree86/XFree86-prog
 
+In order to see the more detailed list of packages, you'll have to
+click on the '+' symbols to the left of the various categories.
+Clicking on the small circle with the two arrows will run you
+through the various select/de-select options for each package.
 
 Step 1d)  Click Next and the packages will get downloaded/installed.
 Repeat the above if you have network difficulties, until the install
@@ -379,6 +383,12 @@ and your .profile doesn't end up getting sourced.  There must be a
 better way.
 
 
+
+NOTE:  The below has worked at times with careful selection of the
+various libraries, but appears to have a problem with the latest
+Cygwin releases plus the latest libproj/libgeotiff releases.  We're
+working on the problem, but you may wish to skip these libraries for
+now in order to get a working Xastir installation.
 
 OPTIONAL:  Install geoTIFF support:
 -----------------------------------
