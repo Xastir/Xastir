@@ -23,6 +23,9 @@ county_DATA=placeholder
 fccdir=${prefix}/xastir/fcc
 fcc_DATA=placeholder
 
+gnisdir=${prefix}/xastir/GNIS
+gnis_DATA=placeholder
+
 mapdir=${prefix}/xastir/maps
 map_DATA=placeholder
 
