@@ -7565,7 +7565,7 @@ void create_gc(Widget w) {
 
     if (debug_level & 8)
         fprintf(stderr,"Create gc stop\n");
-}
+}   // create_gc()
 
 
 
@@ -7647,7 +7647,9 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 // Copy the new drawing to the screen.  This is of course a
 // temporary thing to test out the concepts.  Later we'll implement
 // storage for the points and an automatic refresh:  Every time we
-// refresh symbols we'll refresh the overlays.
+// refresh symbols we'll refresh the overlays.  We'll also need a
+// way to turn on/off the overlay display, probably from the Map
+// menu.
 //
         (void)XCopyArea(XtDisplay(da),
             pixmap_final,
