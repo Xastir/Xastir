@@ -37,6 +37,7 @@
 #include "main.h"
 #include "util.h"
 #include "color.h"
+#include "maps.h"
 
 #define ANGLE_UPDOWN 30         /* prefer horizontal cars if less than 45 degrees */
 
@@ -2692,45 +2693,118 @@ end_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol" 
 
 
 
-// Function to draw a dead-reckoning symbols.
+// Function to draw dead-reckoning symbols.
 //
 void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
-    int my_course = atoi(p_station->course);   // In ° true
-    int shaft_length = 0;
-    float bearing_radians;
-    long off_x, off_y;
+    int my_course;
     long x_long, y_lat;
+    long x_long2, y_lat2;
+    double lat_m;
     long x, y;
+    long x2, y2;
     double diameter;
     long max_x, max_y;
     double range;
+    double temp;
     int color = trail_colors[p_station->trail_color];
+    float temp_latitude, temp_latitude2;
+    float temp_longitude, temp_longitude2;
 
 
     x_long = p_station->coord_lon;
     y_lat = p_station->coord_lat;
 
-    range = (double)((sec_now()-p_station->sec_heard)*(1.1508/3600)*(atof(p_station->speed)));
+    // Compute distance in statute miles
+    range = (double)((sec_now()-p_station->sec_heard)
+            *(1.1508/3600)*(atof(p_station->speed)));
 
-    // Adjust so that it fits our screen angles.  We're off by
-    // 90 degrees.
-    my_course = (my_course - 90) % 360;
-
-    shaft_length = ( range /
-        (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214) );
-
-    // Draw shaft at proper angle.
-    bearing_radians = (my_course/360.0) * 2.0 * M_PI;
-
-    off_y = (long)( shaft_length * sin(bearing_radians) );
-    off_x = (long)( shaft_length * cos(bearing_radians) );
-
+    // x/y are screen location for start position
     x = (x_long - x_long_offset)/scale_x;
     y = (y_lat - y_lat_offset)/scale_y;
 
-    /* max off screen values */
+    // max off screen values
     max_x = screen_width+800l;
     max_y = screen_height+800l;
+
+    y_lat2 = y_lat;
+    x_long2 = x_long;
+
+    // Compute the latest DR'ed position for the object
+    compute_current_DR_position(p_station,
+        &x_long2,
+        &y_lat2);
+
+    // x2/y2 are screen location for ghost symbol (DR'ed position)
+    x2 = (x_long2 - x_long_offset)/scale_x;
+    y2 = (y_lat2 - y_lat_offset)/scale_y;
+
+
+/*
+    if ((x2 - x) > 0) {
+        my_course = (int)( 57.29578
+            * atan( (double)((y2-(y*1.0)) / (x2-(x*1.0) ) ) ) );
+    }
+    else {
+        my_course = (int)( 57.29578
+            * atan( (double)((y2-(y*1.0)) / (x-(x2*1.0) ) ) ) );
+    }
+*/
+
+    // Use the mid-latitude formulas for calculating the rhumb line
+    // course.  Modified to minimize the number of conversions we
+    // need to do.
+//    lat_m = (double)( (y_lat + y_lat2) / 2.0 );
+
+    // Convert from Xastir coordinate system
+//    lat_m = (double)( -((lat_m - 32400000l) / 360000.0) );
+
+    lat_m = -((y_lat - 32400000l) / 360000.0)
+            + -((y_lat2 - 32400000l) / 360000.0);
+    lat_m = lat_m / 2.0;
+
+    convert_from_xastir_coordinates(&temp_longitude2,
+        &temp_latitude2,
+        x_long2,
+        y_lat2);
+
+    convert_from_xastir_coordinates(&temp_longitude,
+        &temp_latitude,
+        x_long,
+        y_lat);
+
+    temp = (double)( (temp_longitude2 - temp_longitude)
+            / (temp_latitude2 - temp_latitude) );
+
+    // Calculate course and convert to degrees
+    my_course = (int)( 57.29578 * atan( cos(lat_m) * temp) );
+
+    // The arctan function returns values between -90 and +90.  To
+    // obtain the true course we apply the following rules:
+    if (temp_latitude2 > temp_latitude
+            && temp_longitude2 > temp_longitude) {
+        // Do nothing.
+    }
+    else if (temp_latitude2 < temp_latitude
+            && temp_longitude2 > temp_longitude) {
+        my_course = 180 - my_course;
+    }
+    else if (temp_latitude2 < temp_latitude
+            && temp_longitude2 < temp_longitude) {
+        my_course = 180 + my_course;
+    }
+    else if (temp_latitude2 > temp_latitude
+            && temp_longitude2 < temp_longitude) {
+        my_course = 360 - my_course;
+    }
+    else {
+        // ??
+        // Do nothing.
+    }
+
+//fprintf(stderr,"course:%d\n", my_course);
+
+    // Convert to screen angle
+//    my_course = my_course + 90;
 
     if (Display_.dr_arc &&
             ((x_long>=0) && (x_long<=129600000l)) &&
@@ -2744,13 +2818,20 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
                 ((y_lat>y_lat_offset) &&
                 (y_lat<(y_lat_offset+(long)(screen_height*scale_y))))) {
 
+            double xdiff, ydiff;
+
             // Range is in miles.  Bottom term is in
             // meters before the 0.0006214
             // multiplication factor which converts it
             // to miles.  Equation is:  2 * ( range(mi)
             // / x-distance across window(mi) )
-            diameter = 2.0 * ( range/
-                (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+//            diameter = 2.0 * ( range/
+//                (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+            xdiff = (x2-x) * 1.0;
+            ydiff = (y2-y) * 1.0;
+
+            // a squared + b squared = c squared
+            diameter = 2.0 * sqrt( (double)( (ydiff*ydiff) + (xdiff*xdiff) ) );
 
             //fprintf(stderr,"Range:%f\tDiameter:%f\n",range,diameter);
 
@@ -2766,6 +2847,9 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
             //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
             (void)XSetForeground(XtDisplay(da),gc,color);
 
+/*
+// Commenting out the arc until the math is correct for it.  It
+// draws in the wrong places currently.
             (void)XDrawArc(XtDisplay(da),where,gc,
                 (int)(x-(diameter/2)),
                 (int)(y-(diameter/2)),
@@ -2778,6 +2862,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
                 (unsigned int)diameter, (unsigned int)diameter,
                 -64*my_course,
                 -64/2*arc_degrees);
+*/
             }
         }
     }
@@ -2788,8 +2873,8 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
         (void)XDrawLine(XtDisplay(da),where,gc,
             x,
             y,
-            x + off_x,
-            y + off_y);
+            x2,
+            y2);
     }
 
     if (Display_.dr_symbol) {
@@ -2797,8 +2882,8 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
             p_station->aprs_symbol.aprs_type,
             p_station->aprs_symbol.aprs_symbol,
             p_station->aprs_symbol.special_overlay,
-            ((x+off_x)*scale_x)+x_long_offset,
-            ((y+off_y)*scale_y)+y_lat_offset,
+            x_long2,
+            y_lat2,
             "",
             "",
             "",
