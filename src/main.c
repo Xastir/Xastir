@@ -10140,14 +10140,22 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
         // up again.
         //
         if (time_went_backwards == 0) {
+            char temp[110];
+
             // This is our first time through UpdateTime() since the
             // time went in the wrong direction.  Dump out a
             // message to the user.
             time_went_backwards++;
-            fprintf(stderr,"\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-            fprintf(stderr,    "!!         System time jumped backwards!        !!\n");
-            fprintf(stderr,    "!! Xastir sleeping, else will use excessive CPU !!\n");
-            fprintf(stderr,    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n");
+            get_timestamp(temp);
+
+            fprintf(stderr,"\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            fprintf(stderr,    "!!  System time jumped backwards %d seconds!\n",
+                (int)(last_updatetime - sec_now()) );
+            fprintf(stderr,    "!! Xastir sleeping, else will use excessive CPU\n");
+            fprintf(stderr,    "!! %s\n",
+                temp);
+            fprintf(stderr,    "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n");
+            time_went_backwards++;
         }
         usleep(1);   // Sleep for 1uS.
     }
