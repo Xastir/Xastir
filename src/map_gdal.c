@@ -74,9 +74,9 @@
 
 #ifdef HAVE_LIBGDAL
 
-#warning********************************************************************************
-#warning GDAL library support not implemented yet.  Coming soon to an Xastir near you!!!
-#warning********************************************************************************
+#warning******************************************
+#warning GDAL library support not implemented yet.
+#warning******************************************
 
 // WE7U - Getting rid of stupid compiler warnings in GDAL
 #define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
@@ -188,16 +188,16 @@ void draw_gdal_map(Widget w,
     char file[MAX_FILENAME];    // Complete path/name of image
     GDALDriverH   hDriver;
     double adfGeoTransform[6];
-    double map_x_mind, map_x_maxd, map_dxd; // decimal degrees
-    double map_y_mind, map_y_maxd, map_dyd; // decimal degrees
+//    double map_x_mind, map_x_maxd, map_dxd; // decimal degrees
+//    double map_y_mind, map_y_maxd, map_dyd; // decimal degrees
     unsigned long map_x_min, map_x_max; // xastir units
     unsigned long map_y_min, map_y_max; // xastir units
     long map_dx, map_dy; // xastir units
     double scr_m_dx, scr_m_dy; // screen pixels per map pixel
     unsigned long map_s_x_min, map_s_x_max, map_s_x; // map pixels
-    unsigned long map_s_y_min, map_s_y_max, map_s_y; // map pixels
+//    unsigned long map_s_y_min, map_s_y_max, map_s_y; // map pixels
     unsigned long scr_s_x_min, scr_s_x_max, scr_s_x; // screen pixels
-    unsigned long scr_s_y_min, scr_s_y_max, scr_s_y; // screen pixels
+//    unsigned long scr_s_y_min, scr_s_y_max, scr_s_y; // screen pixels
         
     // 
     GDALRasterBandH hBand = NULL;
@@ -209,7 +209,7 @@ void draw_gdal_map(Widget w,
     const char *pszProjection;
     float *pafScanline;
     int nXSize;
-    int width,height;
+    unsigned int width,height;
     GDALColorTableH hColorTable;
     GDALColorInterp hColorInterp;
     GDALPaletteInterp hPalInterp;
@@ -302,6 +302,12 @@ void draw_gdal_map(Widget w,
      * bottom edge of map = scr_s_y_max
      * 
      */
+
+
+// Setting some variables that haven't been set yet.
+map_s_x_min = 0;
+scr_s_x_min = 0;
+
 
     // calculate map range on screen
     scr_s_x_max = map_s_x_max = 0ul;
