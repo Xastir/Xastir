@@ -187,10 +187,16 @@ AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEF
 # Check for ImageMagick 
 XASTIR_CHECK_IMAGEMAGICK
  
+# Check for libproj
+use_proj=no
+AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
+AC_DEFINE(HAVE_LIBPROJ, , Define to 1 if you have the `libproj' library (-lproj). )
+)
+ 
 # Check for libgeotiff and required libraries
 use_geotiff=no
 AC_CHECK_LIB(tiff, TIFFClose, AC_CHECK_LIB(proj, pj_init, AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
-LIBS="$LIBS -ltiff -lproj -lgeotiff"
+LIBS="$LIBS -ltiff -lgeotiff"
 AC_DEFINE(HAVE_LIBGEOTIFF, , Define to 1 if you have the `geotiff' library (-lgeotiff). )
 )))
  
@@ -318,6 +324,7 @@ echo Building with Festival...... : $use_festival
 echo Building with GPSMan........ : $use_gpsman
 echo Building with ShapeLib...... : $use_shapelib 
 echo Building with ImageMagick... : $use_imagemagick 
+echo Building with libproj....... : $use_proj
 echo Building with GeoTiff....... : $use_geotiff 
 echo Building with GDAL.......... : $use_gdal
 echo Building with pcre.......... : $use_pcre
