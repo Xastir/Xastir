@@ -486,7 +486,7 @@ void draw_tiger_map (Widget w,
 
         if (CURLE_OK != res) {
             fprintf(stderr, "curl told us %d\n", res);
-            fprintf(stderr, "curlerr is %s\n", curlerr);
+            fprintf(stderr, "curlerr: %s\n", curlerr);
         }
 
         if (ftpfile.stream)
