@@ -29,7 +29,7 @@ if [ -d $OLD ]; then
 			rr=`expr $rr + $r`
 		    else
 			# clean up the source directory
-			rm -rf $NEW/$i
+			rm -rf $OLD/$i
 		    fi
 		else
 		    # hope they are in the same FS!
