@@ -7060,8 +7060,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         if (p_station->node_path_ptr != NULL)
             free(p_station->node_path_ptr);
         // Malloc and store the new path
-        p_station->node_path_ptr = (char *)malloc(sizeof(path) + 1);
-        substr(p_station->node_path_ptr,path,sizeof(path));
+        p_station->node_path_ptr = (char *)malloc(strlen(path) + 1);
+        substr(p_station->node_path_ptr,path,strlen(path));
  
         p_station->flag |= ST_ACTIVE;
         if (third_party)
