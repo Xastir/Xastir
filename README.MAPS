@@ -1,6 +1,89 @@
 
 $Id$
 
+
+Recommended Configurations for:
+
+  U.S. Users:
+  -----------
+
+    Minimum:  Shapelib, pcre, "--with-dbfawk"
+    --------
+      Allows use of all built-in map types plus 2003 Tigermap data,
+      shapefile weather alerts, and local ESRI Shapefile format
+      maps, including U.S. satellite/image/topo maps via internet.
+
+    Medium:  Shapelib, pcre, lcms, ImageMagick, libcurl/wget,
+    -------  "--with-dbfawk"
+
+      Allows use of all the above plus internet maps and local image
+      maps.
+
+    Maximum:  Shapelib, pcre, lcms, ImageMagick, libcurl/wget,
+    --------  libtif, libproj, libgeotff, "--with-dbfawk"
+
+      Allows use of all the above plus USGS topo maps.
+
+    Bleeding edge:  GDAL/OGR
+    --------------
+      Adds more map types, but they're not fully supported yet.  You
+      can certainly get some use out of them though, like overlaying
+      SDTS contour vectors on top of terraserver satellite images.
+
+  Rest of World:
+  --------------
+
+    Minimum:  lcms, ImageMagick, libcurl/wget
+    --------
+      Allows use of all built-in map types plus local and internet
+      image maps, including Canadian topo maps via internet.
+
+    Medium:  lcms, ImageMagick, libcurl/wget, Shapelib, pcre,
+    -------  "--with-dbfawk"
+
+      Allows use of all the above plus ESRI Shapefile maps.
+
+    Maximum:  libproj/libtiff/libgeotiff/GDAL/OGR
+    --------
+      Adds more map types.  Some of these may not be useful in your
+      part of the world.  GDAL/OGR stuff is not fully supported yet.
+
+
+Map Type:           Libraries Required/Notes:
+---------------     -------------------------
+DosAPRS             Built-in.
+WinAPRS             Built-in.
+X-APRS              Built-in.
+MacAPRS             Built-in.
+PocketAPRS          Built-in.
+USGS GNIS           Built-in.  Can split into county-sized chunks
+                    using xastir/scripts/split_gnis.pl to speed
+                    things up.
+Address Lookup      Built-in.
+Weather Alerts      Shapelib
+pre-2003 Tigermaps  Shapelib
+2003 Tigermaps      Shapelib, pcre, plus configure flag:
+                    "--with-dbfawk"
+ESRI Shapefiles     Shapelib
+Image Maps          ImageMagick.  Often need lcms library and others
+                    as well (whatever it takes to make ImageMagick
+                    happy).  Can also use the XPM library for some
+                    image types without installing ImageMagick.
+Internet Maps       ImageMagick plus wget or libcurl.  Often need
+                    lcms library and others as well (whatever it
+                    takes to make ImageMagick happy).
+UI-View Maps        Convert from .INF to .GEO format using
+                    xastir/scripts/inf2geo.pl
+OziExplorer Maps    Convert some maps to .GEO format using
+                    xastir/scripts/ozi2geo.pl
+USGS DRG Topo       libtiff, libtiff-devel, libproj, libgeotiff
+USGS SDTS           GDAL/OGR.  Preliminary.
+MapInfo             GDAL/OGR.  Preliminary.
+Tiger/Line Raw      GDAL/OGR.  Preliminary.
+Microstation DGN    GDAL/OGR.  Preliminary.
+S57                 GDAL/OGR.  Preliminary.
+
+
 Getting Maps and other Data Files for Xastir:
 ---------------------------------------------
 
