@@ -7117,7 +7117,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     XtManageChild(text);
 
-    (void)XtCreateManagedWidget("MAIN",
+    (void)XtCreateWidget("MAIN",
             xmMainWindowWidgetClass,
             appshell,
             NULL,
@@ -7140,6 +7140,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 //              XmNheight,      (screen_height+60+2),   // DK7IN: added 2 because height had been smaller everytime
                 XmNheight,      (screen_height + 60),   // we7u:  Above statement makes mine grow by 2 each time
                 NULL);
+
+    // Actually manage the main application widget
+    XtManageChild(appshell);
 
     // Show the window
     XtPopup(appshell,XtGrabNone);
