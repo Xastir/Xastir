@@ -507,6 +507,7 @@ POPUPOB039|Señal - Altura(HAAT) - Ganancia - Dirección||
 POPUPOB040|Dirigiendo - Ancho de la orientación||
 POPUPOB041|Antena Omni-direccional||
 POPUPOB042|Antena Direccional||
+POPUPOB043|Useless||
 #
 # Configurar Internet
 WPUPCFI001|Configurar Internet||

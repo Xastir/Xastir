@@ -503,6 +503,7 @@ POPUPOB039|Signal - Hauteur (HAAT) - Gain - Directivité||
 POPUPOB040|Largeur de faisceau - Relèvement||
 POPUPOB041|Antenne omni||
 POPUPOB042|Antenne dirigée||
+POPUPOB043|Useless||
 #
 # PopUp "Configure Internet"
 WPUPCFI001|Configurer Internet||

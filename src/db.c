@@ -3491,20 +3491,36 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             p_station->coord_lon,temp1_my_course,sizeof(temp1_my_course));
 
         // n7tap: This is a quick hack to get some more useful values for
-        //        distance to near ojects.  I will translate the strings someday.
+        //        distance to near ojects.
         if (units_english_metric) {
-            if (value*1.15078 < 0.99)
-                xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), "%d yards",(int)(value*1.15078*1760));
-
-            else
-                xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), langcode("WPUPSTI020"),value*1.15078);
+            if (value*1.15078 < 0.99) {
+                xastir_snprintf(temp_my_distance,
+                    sizeof(temp_my_distance),
+                    "%d %s",
+                    (int)(value*1.15078*1760),
+                    langcode("SPCHSTR004"));    // yards
+            }
+            else {
+                xastir_snprintf(temp_my_distance,
+                    sizeof(temp_my_distance),
+                    langcode("WPUPSTI020"),     // miles
+                    value*1.15078);
+            }
         }
         else {
-            if (value*1.852 < 0.99)
-                xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), "%d meters",(int)(value*1.852*1000));
-
-            else
-                xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), langcode("WPUPSTI021"),value*1.852);
+            if (value*1.852 < 0.99) {
+                xastir_snprintf(temp_my_distance,
+                    sizeof(temp_my_distance),
+                    "%d %s",
+                    (int)(value*1.852*1000),
+                    langcode("SPCHSTR002"));    // meters
+            }
+            else {
+                xastir_snprintf(temp_my_distance,
+                    sizeof(temp_my_distance),
+                    langcode("WPUPSTI021"),     // km
+                    value*1.852);
+            }
         }
         xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s°",temp1_my_course);
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI022"),temp_my_distance,temp_my_course);

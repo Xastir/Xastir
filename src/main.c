@@ -3103,37 +3103,53 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     strcat(my_text,sec_to_loc(x,y));
     // begin dist/bearing
     if ( do_dbstatus ) {
-      ml_lat = convert_lat_s2l(my_lat);
-      ml_lon = convert_lon_s2l(my_long);
+        ml_lat = convert_lat_s2l(my_lat);
+        ml_lon = convert_lon_s2l(my_long);
 
-      // Get distance in nautical miles.
-      value = (float)calc_distance_course(ml_lat,ml_lon,y,x,
-                                          temp1_my_course,sizeof(temp1_my_course));
+        // Get distance in nautical miles.
+        value = (float)calc_distance_course(ml_lat,ml_lon,y,x,
+                temp1_my_course,sizeof(temp1_my_course));
 
-      // n7tap: This is a quick hack to get some more useful values for
-      //        distance to near ojects.  I will translate the strings someday.
-      // (copied from db.c:station_data_fill_in)
-      if (units_english_metric) {
-        if (value*1.15078 < 0.99)
-          xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), "%d yards",(int)(value*1.15078*1760));
-        
-        else
-          xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), langcode("WPUPSTI020"),value*1.15078);
-      }
-      else {
-        if (value*1.852 < 0.99)
-          xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), "%d meters",(int)(value*1.852*1000));
-        
-        else
-          xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), langcode("WPUPSTI021"),value*1.852);
-      }
-      xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s°",temp1_my_course);
+        // n7tap: This is a quick hack to get some more useful values for
+        //        distance to near ojects.
+        // (copied from db.c:station_data_fill_in)
+        if (units_english_metric) {
+            if (value*1.15078 < 0.99) {
+                xastir_snprintf(temp_my_distance,
+                    sizeof(temp_my_distance),
+                    "%d %s",
+                    (int)(value*1.15078*1760),
+                    langcode("SPCHSTR004"));    // yards
+            } 
+            else {
+                xastir_snprintf(temp_my_distance,
+                    sizeof(temp_my_distance),
+                    langcode("WPUPSTI020"),     // miles
+                    value*1.15078);
+            }
+        }
+        else {
+            if (value*1.852 < 0.99) {
+                xastir_snprintf(temp_my_distance,
+                    sizeof(temp_my_distance),
+                    "%d %s",
+                    (int)(value*1.852*1000),
+                    langcode("SPCHSTR002"));    // meters
+            }
+            else {
+                xastir_snprintf(temp_my_distance,
+                    sizeof(temp_my_distance),
+                    langcode("WPUPSTI021"),     // km
+                    value*1.852);
+            }
+        }
+        xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s°",temp1_my_course);
 
 
-      strcat(my_text," ");
-      strcat(my_text,temp_my_distance);
-      strcat(my_text," ");
-      strcat(my_text,temp_my_course);
+        strcat(my_text," ");
+        strcat(my_text,temp_my_distance);
+        strcat(my_text," ");
+        strcat(my_text,temp_my_course);
     }
 
     XmTextFieldSetString(textarea, my_text);
@@ -19206,7 +19222,7 @@ else if (DF_object_enabled) {
                 NULL);
 
         // Useless
-        woption0 = XtVaCreateManagedWidget("Useless",
+        woption0 = XtVaCreateManagedWidget(langcode("POPUPOB043"),
                 xmToggleButtonGadgetClass,
                 width_box,
                 MY_FOREGROUND_COLOR,
