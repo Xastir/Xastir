@@ -108,6 +108,7 @@ extern int redraw_on_new_data;
 
 extern void sort_list(char *filename,int size, Widget list, int *item);
 
+extern Colormap cmap;
 
 
 

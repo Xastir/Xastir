@@ -3546,7 +3546,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
-    Colormap cmap;
+/*    Colormap cmap;  KD6ZWR - now set in main()*/
     int DirectClass = 0;
     char tempfile[2000];
     double left, right, top, bottom, map_width, map_height;
@@ -4103,7 +4103,7 @@ if (findu_flag) {
     //else
         //printf("Colormap Not Allocated\n");
 
-    cmap = DefaultColormap(XtDisplay(w), DefaultScreen(XtDisplay(w)));
+/*    cmap = DefaultColormap(XtDisplay(w), DefaultScreen(XtDisplay(w)));  KD6ZWR - now set in main()*/
 
     for (l = 0; l < (int)image->colors; l++) {
         // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
@@ -4746,7 +4746,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     int num_colors;             /* Number of colors in the geotiff colormap */
     uint16 *red_orig, *green_orig, *blue_orig; /* Used for storing geotiff colors */
     XColor my_colors[256];      /* Used for translating colormaps */
-    Colormap cmap;
+/*    Colormap cmap;  KD6ZWR - now set in main()*/
     unsigned long west_bounding = 0;
     unsigned long east_bounding = 0;
     unsigned long north_bounding = 0;
@@ -5687,7 +5687,7 @@ Samples Per Pixel: 1
      * "geotiff_map_intensity" variable below.
      */
 
-    cmap = DefaultColormap( XtDisplay (w), DefaultScreen( XtDisplay (w) ) );
+/*    cmap = DefaultColormap( XtDisplay (w), DefaultScreen( XtDisplay (w) ) );  KD6ZWR - now set in main()*/
     {
         int l;
         // float geotiff_map_intensity = 1.00;    // Change this to reduce the

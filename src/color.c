@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <Xm/XmAll.h>
 
+#include "xastir.h"
 #include "color.h"
 #include "xa_config.h"
 
@@ -93,7 +94,7 @@ int load_color_file(void) {
 Pixel GetPixelByName( Widget w, char *colorname) {
     Display *dpy = XtDisplay(w);
     int scr = DefaultScreen(dpy);
-    Colormap cmap=DefaultColormap(dpy,scr);
+/*    Colormap cmap=DefaultColormap(dpy,scr);  KD6ZWR - now set in main() */
     /*XColor color, ignore;*/
     char warning[200];
     int i,found;

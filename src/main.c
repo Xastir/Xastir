@@ -528,6 +528,8 @@ int colors[256];                /* screen colors */
 int trail_colors[32];           /* station trail colors, duh */
 int current_trail_color;        /* what color to draw station trails with */
 int max_trail_colors = 32; 
+int install_colormap;           /* KD6ZWR - should we install priv colormap */
+Colormap cmap;                  /* KD6ZWR - current colormap */
 
 int redo_list;                  // Station List update request
 int redraw_on_new_data;         // Station redraw request
@@ -14775,6 +14777,7 @@ int main(int argc, char *argv[], char *envp[]) {
     last_popup_y = 0;
     trap_segfault = 0;
     debug_level = 0;
+    install_colormap = 0;
     last_sound_pid = 0;
 
     my_last_course = 0;
@@ -14799,10 +14802,10 @@ int main(int argc, char *argv[], char *envp[]) {
 
     strcpy(lang_to_use_or,"");
     ag_error=0;
-    while ((ag = getopt(argc, argv, "v:l:012346789t")) != EOF) {
+    while ((ag = getopt(argc, argv, "v:l:012346789ti")) != EOF) {
         switch (ag) {
         case 't':
-            printf("Trap segfault");
+            printf("Trap segfault\n");
         trap_segfault = (int)TRUE;
         break;
         case 'v':
@@ -14843,6 +14846,11 @@ int main(int argc, char *argv[], char *envp[]) {
                 printf ("\n");
                 break;
 
+        case 'i':
+            printf("Install Colormap\n");
+            install_colormap = (int)TRUE;
+            break;
+
             default:
                 ag_error++;
                 break;
@@ -14859,6 +14867,7 @@ int main(int argc, char *argv[], char *envp[]) {
         printf("-lSpanish     Set the language to Spanish\n");
         printf("-lItalian     Set the language to Italian\n");
         printf("-lPortuguese  Set the language to Portuguese\n");
+        printf("-i            Install private Colormap\n");
         printf("\n");
         exit(0);
     }
@@ -14969,6 +14978,14 @@ int main(int argc, char *argv[], char *envp[]) {
                 printf("%s: can't open display, exiting...\n", argv[0]);
                 exit (-1);
             }
+
+            /* KD6ZWR - Get colormap */
+            cmap = DefaultColormapOfScreen ( XtScreen( Global.top));
+            if ( install_colormap ) {
+                cmap = XCopyColormapAndFree ( display, cmap );
+                XtVaSetValues ( Global.top, XmNcolormap, cmap, NULL);
+            }
+
 
             XtRealizeWidget(Global.top);
             create_appshell(display, argv[0], argc, argv);      // does the init
