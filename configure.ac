@@ -24,10 +24,7 @@ echo "Configuring AC_PACKAGE_NAME AC_PACKAGE_VERSION"
 echo ""
 
 # Take out the dots in order to create the TOCALL
-SHORT_VERSION="AC_PACKAGE_VERSION"
-SHORT_VERSION=`echo $SHORT_VERSION | sed -e 's/\.//g'`
-AC_SUBST(SHORT_VERSION)
-AC_DEFINE_UNQUOTED(XASTIR_TOCALL, "APX$SHORT_VERSION", [Defines the version tocall])
+AC_DEFINE_UNQUOTED(XASTIR_TOCALL, "`echo AC_PACKAGE_VERSION | sed -e 's/^/APX/' -e 's/\.//g'`", [Defines the version tocall])
 
 
 

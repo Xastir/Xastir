@@ -1,3 +1,7 @@
+2003-02-27 16:23  jtwilley
+
+	* configure.ac: cleaned up messy XASTIR_TOCALL
+
 2003-02-24 kd6zwr
 
 	* db.c: made my_station_gps_change update sec_heard
