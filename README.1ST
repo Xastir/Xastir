@@ -823,6 +823,14 @@ END OF MANDRAKE LINUX NOTES.
      Xastir is run. On new installs Xastir will default to English unless
      you use this command line option.
 
+   11. Automatic Identification:  Xastir can auto-ID via voice if Festival is
+   compiled in and/or via a message splashed across the screen.  It does this
+   identification every 9.5 minutes if enabled.  These identification modes
+   were designed for broadcasting Xastir across fast-scan television (for
+   events perhaps).  Set the "ATV_SCREEN_ID" variable to 1 to enable the
+   screen message, and "SPEAK_ID" variable to 1 to enable festival to speak
+   the message.  These variables are in the ~/.xastir/config/xastir.cnf file.
+
 
 You probably want to download some maps and additional data files. The
 instructions for this are below in the "Getting data files for Xastir" section.
