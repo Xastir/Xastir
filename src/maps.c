@@ -1528,7 +1528,8 @@ void draw_shapefile_map (Widget w,
     }
 
     // NOTE: Setting the color here and in the "else" may not stick if we do more
-    //       complex drawing further down like a SteelBlue lake with a black boundary.
+    //       complex drawing further down like a SteelBlue lake with a black boundary,
+    //       or if we have labels turned on which resets our color to black.
     if (weather_alert_flag) {
         char xbm_path[500];
         int _w, _h, _xh, _yh;
@@ -1739,14 +1740,9 @@ void draw_shapefile_map (Widget w,
                     }
 
                     if (ok_to_draw) {
-                        int temp;
-
-                        //printf("Index = %d\n", index);
-                        //(void)XSetForeground (XtDisplay (w), gc, colors[(int)0x4e]);
-                        temp = XDrawLines (XtDisplay(w), pixmap, gc, points, index, CoordModeOrigin);
-                        if (temp != 0) {
-                            //printf("*** BAD XDrawLines return value: %d ***\n", temp);
-                        }
+                        if (river_flag || lake_flag)
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // SteelBlue
+                        (void)XDrawLines(XtDisplay(w), pixmap, gc, points, index, CoordModeOrigin);
                     }
                     break;
 
@@ -1827,17 +1823,19 @@ void draw_shapefile_map (Widget w,
                         }
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
                             if (lake_flag) {
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // SteelBlue
                                 if (map_color_fill) {
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
-                                    (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // reset to SteelBlue for next shape
                                 }
-                                else
-                                    (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (river_flag) {
-                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // SteelBlue
+                                if (map_color_fill)
+                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
+                                else
+                                    (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (weather_alert_flag) {
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
