@@ -693,15 +693,23 @@ if test "$IRIX" = "yes"
 then
   AC_MSG_WARN(Skipping library tests because they CONFUSE Irix.)
 else
-  AC_CHECK_LIB(shp, DBFOpen, XASTIR_SHAPELIB_LIB="-lshp")
-  if test "$XASTIR_SHAPELIB_LIB" = "-lshp"
+  AC_CHECK_HEADERS(libshp/shapefil.h, XASTIR_SHAPELIB_INC="yes")
+  if test "$XASTIR_SHAPELIB_INC" = "yes"
   then
-    dnl CFLAGS="-DUSE_SHAPELIB ${CFLAGS}"
-    AC_DEFINE_UNQUOTED(HAVE_SHAPELIB, 1, [Define if you have ShapeLib])
-    LIBS="${XASTIR_SHAPELIB_LIB} ${LIBS}"
-    dnl AC_SUBST(CFLAGS)
-    AC_MSG_RESULT(Shapelib support found and will be compiled in.)
-    use_shapelib=yes
+    AC_CHECK_LIB(shp, DBFOpen, XASTIR_SHAPELIB_LIB="-lshp")
+    if test "$XASTIR_SHAPELIB_LIB" = "-lshp"
+    then
+      dnl CFLAGS="-DUSE_SHAPELIB ${CFLAGS}"
+      AC_DEFINE_UNQUOTED(HAVE_SHAPELIB, 1, [Define if you have ShapeLib])
+      LIBS="${XASTIR_SHAPELIB_LIB} ${LIBS}"
+      dnl AC_SUBST(CFLAGS)
+      AC_MSG_RESULT(Shapelib support found and will be compiled in.)
+      use_shapelib=yes
+    else
+      AC_MSG_RESULT(Shapelib library files not found.)
+    fi
+  else
+    AC_MSG_RESULT(Shapelib header files not found.)
   fi
 fi
 ])

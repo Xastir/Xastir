@@ -42,6 +42,9 @@
 /* Define to 1 if you have the `nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
 
+/* Define to 1 if you have the <libshp/shapefil.h> header file. */
+#undef HAVE_LIBSHP_SHAPEFIL_H
+
 /* Define to 1 if you have the `Xp' library (-lXp). */
 #undef HAVE_LIBXP
 
