@@ -87,9 +87,9 @@ static symbol_label *map_symbol_label_ptr;
 
 /* MAP counters */
 
-static long vectors_num;
-static long text_label_num;
-static long object_label_num;
+//static long vectors_num;
+//static long text_label_num;
+//static long object_label_num;
 
 
 
@@ -323,7 +323,7 @@ draw_dos_map(Widget w,
   char map_type[5];
   char map_version[5];
   char file_name[33];
-  char *ext;
+//  char *ext;
   char map_title[33];
   char map_creator[8];
   unsigned long creation_date;
