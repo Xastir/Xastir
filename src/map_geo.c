@@ -139,6 +139,303 @@ struct FtpFile {
 extern int npoints;		/* tsk tsk tsk -- globals */
 extern int mag;
 
+void draw_geo_image_map (Widget w, char *dir, char *filenm, 
+    alert_entry *alert, u_char alert_color, int destination_pixmap,
+    int draw_filled);
+
+
+
+
+
+// For this particular case we need to snag a remote .geo file and
+// then start the process all over again.  The URL we'll need to use
+// looks something like this:
+//
+// http://mm.aprs.net/toporama.cgi?set=50|lat=44.59333|lon=-75.72933|width=800|height=600|zoom=1
+//
+// Where the lat/lon are the center of our view, and the
+// width/height depend on our window size.  The "set" parameter
+// decides whether we're fetching 50k or 250k maps.
+//
+void draw_toporama_map (Widget w, 
+        char *dir,
+        char *filenm, 
+        alert_entry *alert,
+        u_char alert_color,
+        int destination_pixmap,
+        int draw_filled,
+        int toporama_flag) {    // 50 or 250
+
+    char fileimg[MAX_FILENAME+1];   // Ascii name of image file, read from GEO file
+    char map_it[MAX_FILENAME];
+    char local_filename[MAX_FILENAME];
+    char file[MAX_FILENAME+1];      // Complete path/name of image file
+    FILE *f;                        // Filehandle of image file
+    double lat_center = 0;
+    double long_center = 0;
+    double left, right, top, bottom;
+    int my_screen_width, my_screen_height;
+    float my_zoom = 1.0;
+#ifdef HAVE_LIBCURL
+    CURL *curl;
+    CURLcode res;
+    char curlerr[CURL_ERROR_SIZE];
+    struct FtpFile ftpfile;
+#else
+#ifdef HAVE_WGET
+    char tempfile[MAX_FILENAME];
+#endif  // HAVE_WGET
+#endif  // HAVE_LIBCURL
+
+
+    //fprintf(stderr, "Found TOPORAMA in a .geo file, %dk scale\n", toporama_flag);
+
+
+#ifdef HAVE_IMAGEMAGICK
+ 
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+        // We're indexing only.  Save the extents in the index.
+        // Force the extents to the edges of the earth for the index
+        // file.
+        index_update_xastir(filenm, // Filename only
+            64800000l,      // Bottom
+            0l,             // Top
+            0l,             // Left
+            129600000l);    // Right
+
+        // Update statusline
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+        statusline(map_it,0);       // Loading/Indexing ...
+
+        return; // Done indexing this file
+    }
+
+
+    // Compute the parameters we'll need for the URL, fetch the .geo
+    // file at that address, then pass that .geo file off to
+    // draw_geo_image_map().  This will cause us to fetch the image
+    // file corresponding to the .geo file and display it.  We may
+    // also need to tweak the zoom parameter for our current zoom
+    // level so that things match up properly.
+
+
+    // Compute the center of our view in decimal lat/long.
+    left = (double)((x_long_offset - 64800000l )/360000.0);   // Lat/long Coordinates
+    top = (double)(-((y_lat_offset - 32400000l )/360000.0));  // Lat/long Coordinates
+    right = (double)(((x_long_offset + ((screen_width) * scale_x) ) - 64800000l)/360000.0);//Lat/long Coordinates
+    bottom = (double)(-(((y_lat_offset + ((screen_height) * scale_y)) - 32400000l)/360000.0));//Lat/long Coordinates
+
+    long_center = (left + right)/2.0l;
+    lat_center  = (top + bottom)/2.0l;
+
+    // We now have the center in decimal lat/long.  We also have the
+    // screen width and height in pixels, which we can use in the
+    // URL as well (depending on the zoom parameter and how to make
+    // the finished display look nice).
+
+
+    // Compute the size of the image we want to snag.  It should be
+    // easy to get darn near anything to work, although the size and
+    // scale of the image will drastically affect how nicely the
+    // finished map display will look.
+
+
+    // Compute the zoom parameter for the URL.
+
+
+    // A test URL that works, just to get things going.  This URL
+    // requests 1:50k scale maps ("set=50").
+    //xastir_snprintf(fileimg, sizeof(fileimg),
+    //    "\"http://mm.aprs.net/toporama.cgi?set=50|lat=44.59333|lon=-75.72933|width=800|height=600|zoom=1\"");
+
+    // Compute our custom URL based on our map view and the
+    // requested map scale.
+    //
+    if (toporama_flag == 50) {
+        if (scale_y > 32) {
+            my_screen_width = (int)(screen_width * (scale_y/32));
+            my_screen_height = (int)(screen_height * (scale_y/32));
+            my_zoom = 1.0;
+        }
+        else if (scale_y <= 16) {
+            my_screen_width = (int)(screen_width / 2);
+            my_screen_height = (int)(screen_height / 2);
+            my_zoom = 1.0;
+        }
+        else {
+            my_screen_width = (int)screen_width;
+            my_screen_height = (int)screen_height;
+            my_zoom = 1.0;
+        }
+    }
+    else {  // toporama_flag == 250
+        if (scale_y > 128) {
+            my_screen_width = (int)(screen_width * (scale_y/128));
+            my_screen_height = (int)(screen_height * (scale_y/128));
+            my_zoom = 1.0;
+        }
+        else if (scale_y <= 64) {
+            my_screen_width = (int)(screen_width / 2);
+            my_screen_height = (int)(screen_height / 2);
+            my_zoom = 1.0;
+        }
+        else {
+            my_screen_width = (int)screen_width;
+            my_screen_height = (int)screen_height;
+            my_zoom = 1.0;
+        }
+    }
+             
+    xastir_snprintf(fileimg, sizeof(fileimg),
+        "http://mm.aprs.net/toporama.cgi?set=%d|lat=%f|lon=%f|width=%d|height=%d|zoom=%0.1f",
+        toporama_flag,  // Scale, 50 or 250
+        lat_center,
+        long_center,
+        my_screen_width,
+        my_screen_height,
+        my_zoom);
+
+fprintf(stderr,"%s\n", fileimg);
+
+    // Create a local filename that we'll save to.
+    xastir_snprintf(local_filename,
+        sizeof(local_filename),
+        "%s/map.geo",
+        get_user_base_dir("tmp"));
+
+    // Erase any previously existing local file by the same
+    // name.  This avoids the problem of having an old map image
+    // here and the code trying to display it when the download
+    // fails.
+    unlink( local_filename );
+
+
+    // Call wget or libcurl to fetch the .geo file.  Best would be
+    // to create a generic "fetch" routine which would fetch a
+    // remote file, then go back and rework all of the various map
+    // routines to use it.
+
+#ifdef HAVE_LIBCURL
+    curl = curl_easy_init();
+
+    if (curl) { 
+
+        /* verbose debug is keen */
+        //curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
+        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
+
+        /* write function */
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
+
+        /* download from fileimg */
+        curl_easy_setopt(curl, CURLOPT_URL, fileimg);
+
+        /* save as local_filename */
+        ftpfile.filename = local_filename;
+        ftpfile.stream = NULL;
+        curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
+
+        res = curl_easy_perform(curl);
+
+        curl_easy_cleanup(curl);
+
+        if (CURLE_OK != res) {
+            fprintf(stderr, "curl told us %d\n", res);
+            fprintf(stderr, "curlerr is %s\n", curlerr);
+        }
+
+        if (ftpfile.stream)
+            fclose(ftpfile.stream);
+
+        // Return if we had trouble
+        if (CURLE_OK != res) {
+            return;
+        }
+
+    } else { 
+        fprintf(stderr,"Couldn't download the toporama .geo file\n");
+        return;
+    }
+
+
+#else
+#ifdef HAVE_WGET
+    xastir_snprintf(tempfile, sizeof(tempfile),
+        "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s \'%s\' 2> /dev/null\n",
+        WGET_PATH,
+        local_filename,
+        fileimg);
+
+    if (debug_level & 16)
+        fprintf(stderr,"%s",tempfile);
+
+//fprintf(stderr,"Getting file\n");
+    if ( system(tempfile) ) {   // Go get the file
+        fprintf(stderr,"Couldn't download the toporama geo file\n");
+        return;
+    }
+#else   // HAVE_WGET
+    fprintf(stderr,"libcurl or 'wget' not installed.  Can't download toporama .geo file\n");
+#endif  // HAVE_WGET
+#endif  // HAVE_LIBCURL
+
+    // Set permissions on the file so that any user can overwrite it.
+    chmod(local_filename, 0666);
+
+    // We now re-use the "file" variable.  It'll hold the
+    //name of the map file now instead of the .geo file.
+    strcpy(file,local_filename);  // Tell ImageMagick where to find it
+
+
+
+// Check whether we got a reasonable ~/.xastir/tmp/map.geo file from
+// the fetch.  If so, pass it off to the routine which can draw it.
+
+    // We also need to write a valid IMAGESIZE line into the .geo
+    // file.  We know these parameters because they should match
+    // screen_width/screen_height.
+    //
+    xastir_snprintf(map_it,
+        sizeof(map_it),
+        "IMAGESIZE\t%d\t%d\n",
+        my_screen_width,
+        my_screen_height);
+
+// Another thing we might need is a TRANSPARENT line, for the grey
+// color we see crossing over the U.S. border and obscuring maps on
+// this side of the border.
+
+    f = fopen (local_filename, "a");
+    if (f != NULL) {
+        fprintf(f, "%s", map_it);
+        (void)fclose (f);
+    }
+    else {
+        fprintf(stderr,"Couldn't open file: %s to add IMAGESIZE tag\n", local_filename);
+        return;
+    }
+
+
+    // Call draw_geo_image_map() with our newly-fetched .geo file,
+    // passing it most of the parameters that we were originally
+    // passed in order to effect the map draw.
+    draw_geo_image_map (w,
+        get_user_base_dir("tmp"),
+        "map.geo",
+        alert,
+        alert_color,
+        destination_pixmap,
+        draw_filled);
+
+#endif  // HAVE_IMAGEMAGICK
+}
+ 
+
+
+
 
 /**********************************************************
  * draw_geo_image_map()
@@ -233,7 +530,7 @@ void draw_geo_image_map (Widget w,
 #ifdef HAVE_WGET
     char tempfile[MAX_FILENAME];
 #endif  // HAVE_WGET
-#endif
+#endif  // HAVE_LIBCURL
     char gamma[16];
     struct {
         float r_gamma;
@@ -259,9 +556,10 @@ void draw_geo_image_map (Widget w,
     XImage *xi;                 // Temp XImage used for reading in current image
 #endif // HAVE_IMAGEMAGICK
 
-    int terraserver_flag = 0;
-    int toposerver_flag = 0;
-    int tigerserver_flag = 0;
+    int terraserver_flag = 0;   // U.S. satellite images via terraserver
+    int toposerver_flag = 0;    // U.S. topo's via terraserver
+    int tigerserver_flag = 0;   // U.S. Street maps via census.gov
+    int toporama_flag = 0;      // Canadian topo's from mm.aprs.net (originally from Toporama)
     char map_it[MAX_FILENAME];
     int geo_image_width = 0;    // Image width  from GEO file
     int geo_image_height = 0;   // Image height from GEO file
@@ -343,6 +641,15 @@ void draw_geo_image_map (Widget w,
 #endif  // HAVE_IMAGEMAGICK
                 toposerver_flag = 1;
             }
+
+            // Check for Canadian topo map request
+            if (strncasecmp (line, "TOPORAMA-50k", 12) == 0) {
+                toporama_flag = 50;
+            }
+            if (strncasecmp (line, "TOPORAMA-250k", 13) == 0) {
+                toporama_flag = 250;
+            }
+
 
             // Check whether we're indexing or drawing the map.
             // Exclude setting the map refresh interval from
@@ -426,6 +733,28 @@ void draw_geo_image_map (Widget w,
 
         return;
     }
+
+
+    if (toporama_flag) {
+
+#ifdef HAVE_IMAGEMAGICK
+        // Pass all of the parameters to it.  We'll need to use them
+        // to call draw_geo_image_map() again shortly, after we
+        // fetch the remote .geo file.
+        //
+        draw_toporama_map(w,
+            dir,
+            filenm,
+            alert,
+            alert_color,
+            destination_pixmap,
+            draw_filled,
+            toporama_flag);
+#endif  // HAVE_IMAGEMAGICK
+
+        return;
+    }
+
 
 
 // DK7IN: I'm experimenting with the adjustment of topo maps with
@@ -533,7 +862,7 @@ void draw_geo_image_map (Widget w,
     //
     // DK7IN: we should check what we got from the geo file
     //   we use geo_image_width, but it might not be initialised...
-    //   and it's wrong if the '\n' is missing a the end...
+    //   and it's wrong if the '\n' is missing at the end...
 
     /*
     * Here are the corners of our viewport, using the Xastir
