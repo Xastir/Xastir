@@ -15485,70 +15485,127 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
 
 
 
-// Make sure not to corrupt our position of the object when we
-// receive the packet back via loopback/RF/internet.  In particular
-// the position and the last_modified_time should stay constant in
-// this case so that dead-reckoning can continue to move the object
-// consistently, plus we won't compound errors as we go.
-//
 // Calculate new position based on speed/course/modified-time.
 // We'll call it from Create_object_item_tx_string() and from the
 // modify object/item routines to calculate a new position and stuff
 // it into the record along with the modification time before we
-// start off in a new direction.  We'd also need to transmit the
-// corner point (the point at which we changed direction), but that
-// probably comes for free due to the way we kick up the transmit
-// rate for new/changed objects.
-//
-// Another Xastir sees empty strings on it's server port when these
-// objects are transmitted to it.  Investigate.  Sometimes does it
-// when speed is 0, but not totally consistent.
+// start off in a new direction.
 //
 // Input:   *p_station
 //
 // Outputs: *x_long, *y_lat in Xastir coordinate system (100ths of
 //           seconds)
 //
+//
+// From http://home.t-online.de/home/h.umland/Chapter12.pdf
+//
+// Dead-reckoning using distance in km, course C:
+// Lat_B° = Lat_A° + ( (360/40031.6) * distance * cos C )
+//
+// Dead-reckoning using distance in nm, course C:
+// Lat_B° = Lat_A° + ( (distance/60) * cos C )
+//
+// Lat_M° = (Lat_A° + Lat_B°) / 2
+//
+// Dead-reckoning using distance in km, course C:
+// Lon_B° = Lon_A° + ( (360/40031.6) * distance * (sin C / cos Lat_M) )
+//
+// Dead-reckoning using distance in nm, course C:
+// Lon_B° = Lon_A° + ( (distance/60) * (sin C / cos Lat_M) )
+//
+// If resulting longitude exceeds +/- 180°, subtract/add 360°.
+//
+//
 void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat) {
     int my_course = atoi(p_station->course); // In ° true
     double range;
-    float bearing_radians;
-    double off_x, off_y;
+    float bearing_radians, lat_M_radians;
+    float lat_A, lat_B, lon_A, lon_B, lat_M;
+    int ret;
 
 
-    *x_long = p_station->coord_lon;
-    *y_lat = p_station->coord_lat;
+    // Get distance in nautical miles
+    range = (double)( (sec_now() - p_station->sec_heard)
+            * ( atof(p_station->speed) / 3600.0 ) );
 
-    // Compute range in miles
-    range = (double)((sec_now()-p_station->sec_heard)*(1.1508/3600)*(atof(p_station->speed)));
+fprintf(stderr,"Distance:%fnm, Time:%d\n",
+    range,
+    (int)(sec_now() - p_station->sec_heard));
 
-    // Get the bearing in radians, as that's what sin/cos functions
-    // use here.
+    // Bearing in radians
     bearing_radians = (my_course/360.0) * 2.0 * M_PI;
 
-    // Compute offsets in miles.
-    off_y = (double)( range * sin(bearing_radians) );
-    off_x = (double)( range * cos(bearing_radians) );
-//    fprintf(stderr,"range: %f, off_x: %f, off_y: %f\n", range, off_x, off_y);
+    // Convert lat/long to floats
+    ret = convert_from_xastir_coordinates( &lon_A,
+        &lat_A,
+        p_station->coord_lon,
+        p_station->coord_lat);
 
-    // Convert off_y/off_x to hundredths of seconds (Xastir coordinate
-    // system), then add to x_long/y_lat to get current position of
-    // object/item.
-    off_x = off_x * 60.0 * 60.0 * 100.0;
-    off_y = off_y * 60.0 * 60.0 * 100.0;
+    // Check if conversion ok
+    if (!ret) {
+        // Problem during conversion.  Exit without changes.
+        *x_long = p_station->coord_lon;
+        *y_lat = p_station->coord_lat;
+        return;
+    }
 
-    // Correct the Y offset to correspond with the Xastir coordinate
-    // system.
-    off_y = -off_y;
-    fprintf(stderr,"\trange: %f, off_x: %f, off_y: %f\n", range, off_x, off_y);
+    // Compute new latitude
+    lat_B = lat_A + ( (range/60.0) * cos(bearing_radians) );
 
-    // Add the offsets to our object's lat/long.  Coordinates are in
-    // Xastir coordinate format (100'ths of seconds).  Offsets are
-    // in miles.
+    // Compute mid-range latitude
+    lat_M = (lat_A + lat_B) / 2.0;
 
-// This code isn't correct yet.  Need to convert units.
-//    *x_long = *x_long + (long)off_x;
-//    *y_lat = *y_lat + (long)off_y;
+    // Convert lat_M to radians
+    lat_M_radians = (lat_M/360.0) * 2.0 * M_PI;
+
+    // Compute new longitude
+    lon_B = lon_A
+        + ( (range/60.0) * ( sin(bearing_radians) / cos(lat_M_radians) ) );
+
+    // Test for out-of-bounds longitude, correct if so.
+    if (lon_B < -360.0)
+        lon_B = lon_B + 360.0;
+    if (lon_B >  360.0)
+        lon_B = lon_B - 360.0;
+
+fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
+
+    ret = convert_to_xastir_coordinates(x_long,
+        y_lat,
+        lon_B,
+        lat_B);
+
+    // Check if conversion ok
+    if (!ret) {
+        // Problem during conversion.  Exit without changes.
+        *x_long = p_station->coord_lon;
+        *y_lat = p_station->coord_lat;
+        return;
+    }
+
+// Possible Problems:
+// *) Compressed objects/items don't go through this code?
+// *) Looks like direction is slightly off from dead-reckoning local
+//    display.  Due to screen angle vs. lat/lon angle differences?
+// *) Another Xastir sees empty strings on it's server port when
+//    these objects are transmitted to it.  Investigate.  Sometimes
+//    does it when speed is 0, but not consistent.
+// *) Make sure not to corrupt our position of the object when we
+//    receive the packet back via loopback/RF/internet.  In
+//    particular the position and the last_modified_time should stay
+//    constant in this case so that dead-reckoning can continue to
+//    move the object consistently, plus we won't compound errors as
+//    we go.
+// *) Change to using last_modified_time for DR.
+// *) Transmit the corner point (the point at which we changed
+//    direction).  That probably comes for free due to the way we
+//    kick up the transmit rate for new/changed objects.
+// *) Make sure not to corrupt object position when we receive the
+//    packet back via loopback/RF/internet.  In particular the
+//    position and last_modified_time should stay constant so that
+//    dead-reckoning can continue to move the object consistently,
+//    plus we won't compound errors as we go.
+ 
 }
 
 
@@ -15752,27 +15809,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                 sizeof(speed_course) - strlen(speed_course));
             speed = temp;
 
-
-
-
-
-//WE7U
-            // Speed is non-zero.  Compute the new dead-reckoned
-            // position.  Make sure not to corrupt our position of
-            // the object when we receive the packet back via
-            // loopback/RF/internet.  In particular the position and
-            // the last_modified_time should stay constant in this
-            // case so that dead-reckoning can continue to move the
-            // object consistently, plus we won't compound errors as
-            // we go.
-            //
-            // Compute new lat/long from speed/course (course can be
-            // 0), last_modified_time, and coord_lat/coord_lon.
-//
-// Another Xastir sees empty strings on it's server port when these
-// objects are transmitted to it.  Investigate.  Sometimes does it
-// when speed is 0, but not totally consistent.
-//
+            // Speed is non-zero.  Compute the current dead-reckoned
+            // position and use that instead.
             compute_current_DR_position(p_station,
                 &x_long,
                 &y_lat);
@@ -15791,10 +15829,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                 CONVERT_LP_NOSP);
 
 fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
-
-
-
-
 
         }
         else {
