@@ -3259,6 +3259,10 @@ void refresh_image(Widget w) {
     /* set last time of screen redraw*/
     last_alert_redraw=sec_now();
 
+    // We just refreshed the screen, so don't try to erase any
+    // zoom-in boxes via XOR.
+    zoom_box_x1 = -1;
+
     if (debug_level & 4)
         fprintf(stderr,"Refresh image stop\n");
 }
@@ -3296,6 +3300,10 @@ void redraw_symbols(Widget w) {
     else {
         fprintf(stderr,"wait_to_redraw\n");
     }
+
+    // We just refreshed the screen, so don't try to erase any
+    // zoom-in boxes via XOR.
+    zoom_box_x1 = -1;
 }
 
 
@@ -8623,6 +8631,10 @@ void da_expose(Widget w, /*@unused@*/ XtPointer client_data, XtPointer call_data
         event->height,
         event->x,
         event->y);
+
+    // We just refreshed the screen, so don't try to erase any
+    // zoom-in boxes via XOR.
+    zoom_box_x1 = -1;
 }
 
 
@@ -9641,6 +9653,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     if (!pending_ID_message) {
                         refresh_image(da);  // Much faster than create_image.
                         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+                        // We just refreshed the screen, so don't
+                        // try to erase any zoom-in boxes via XOR.
+                        zoom_box_x1 = -1;
                     }
 
                     // Here we use temp_alert_count as a temp holding place for the
@@ -10392,7 +10408,12 @@ void new_image(Widget da) {
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now)
             return;
+
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+        // We just refreshed the screen, so don't try to erase any
+        // zoom-in boxes via XOR.
+        zoom_box_x1 = -1;
 
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now)
