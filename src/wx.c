@@ -1037,8 +1037,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             if (data[6]!='-') {
                 substr(temp_data1,(char *)(data+6),4);
                 if (!from) {    // From local station
-//WE7U
-// Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
@@ -1137,8 +1135,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             if (data[14]!='-') {
                 substr(temp_data1,(char *)(data+14),4);
                 if (!from) {  // From local station
-//WE7U
-// Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
@@ -1290,8 +1286,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             if (data[17]!='-') {
                 substr(temp_data1,(char *)(data+17),4);
                 if (!from) {    // From local station
-//WE7U
-// Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
@@ -1500,8 +1494,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 // todays rain total (on some units)
                 if (data[28]!='-') {
                     substr(temp_data1,(char *)(data+28),4);
-//WE7U
-// Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
@@ -1525,8 +1517,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 /* rain total long term */
                 if ((char)data[432]!='-') {
                     substr(temp_data1,(char *)(data+432),4);
-//WE7U
-// Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
@@ -1908,6 +1898,9 @@ void wx_decode(unsigned char *wx_line, int port) {
     float t1,t2,t3,t4,t5,t6,t9,t10,t11,t12;
     int t7,t8;
 
+
+    //printf("wx_decode: %s\n",wx_line);
+
     find=0;
     len=strlen((char *)wx_line);
     if (len>10 || ((int)wx_line[0]!=0 && port_data[port].data_type==1)) {
@@ -2003,12 +1996,13 @@ void wx_decode(unsigned char *wx_line, int port) {
                         &t1,&t2,&t3,&t4,&t5,&t6,&t7,&t8,&t9,&t10,&t11,&t12)) {
 
                     // Found Dallas One-Wire Weather Station
+                    if (debug_level & 1)
+                        printf("Found OWW ARNE-mode one-wire weather station data\n");
 
-printf("Found OWW ARNE-mode one-wire weather station data\n");
                     weather->wx_sec_time=sec_now();
                     wx_fill_data(0,DALLAS_ONE_WIRE,wx_line,p_station);
                     decoded=1;
-		}
+                }
 
                 else if (strncmp("&CR&",wx_line,4)==0
                         && is_xnum_or_dash((char *)(wx_line+5),44)
