@@ -30,7 +30,7 @@
  *
  */
 #include "config.h"
-#if defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE)
+#if defined(DBFAWK) && defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE)
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
