@@ -7298,6 +7298,9 @@ int process_directed_query(char *call,char *path,char *message,char from) {
     char temp[100];
     int ok;
 
+    if (debug_level & 1)
+        printf("process_directed_query: %s\n",message);
+
     ok = 0;
     if (!ok && strncmp(message,"APRSD",5) == 0 && from != 'F') {  // stations heard direct
         pad_callsign(from_call,call);
@@ -7349,6 +7352,8 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         //sprintf(temp,":%s:%s",from_call,VERSIONLABEL);
         xastir_snprintf(temp, sizeof(temp), ":%s:%s",from_call,VERSIONLABEL);
         transmit_message_data(call,temp);
+        if (debug_level & 1)
+            printf("Sent to %s:%s\n",call,temp);
     }
     return(ok);
 }
@@ -7795,7 +7800,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     if (debug_level & 1)
         printf("7\n");
     //--------------------------------------------------------------------------
-    if (!done && len > 5 && message[0] == '?' && is_my_call(addr,1)) { // directed query
+    if (!done && len > 2 && message[0] == '?' && is_my_call(addr,1)) { // directed query
+        // Smallest query known is "?WX".
+        if (debug_level & 1)
+            printf("Received a directed query\n");
         done = process_directed_query(call,path,message+1,from);
     }
     if (debug_level & 1)
@@ -7811,6 +7819,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         new_message_data++;      // ??????
         if (check_popup_window(addr, 1) != -1)
             update_messages(0); // No force
+
+        // Could be response to a query.  Popup a messsage.
+        if ( (message[0] != '?') && is_my_call(addr,1) )
+            popup_message(langcode("POPEM00018"),message);
+ 
         // done = 1;
     }
     if (debug_level & 1)
