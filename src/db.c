@@ -4320,7 +4320,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 /*
  *  List station info and trail
  *  If calldata is non-NULL, then we drop straight through to the
- *  Modify->Object dialog.
+ *  Modify->Object or Assign_Tactical_Call dialogs.
  */
 void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
     DataRow *p_station;
@@ -4938,6 +4938,17 @@ end_critical_section(&db_station_popup_lock, "db.c:Station_info_destroy_shell" )
 
 
 
+// Global parameter so that we can pass another value to the below
+// function from the Station_info() function.  We need to be able to
+// pass this value off to the Station_data() function for special
+// operations like moves, where objects are on top of each other.
+//
+XtPointer station_info_select_global = NULL;
+
+
+
+
+
 /*
  *  Station Info Selection PopUp window: Quit with selected station
  */
@@ -4967,7 +4978,16 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info_select_destroy
         // DK7IN ?? should we not first close the PopUp, then call Station_data ??
         if (found) {
             xastir_snprintf(temp2, sizeof(temp2), "%s", temp);
-            Station_data(widget,temp2,NULL);
+
+            // Call it with the global parameter at the last, so we
+            // can pass special parameters down that we couldn't
+            // directly pass to Station_info_select_destroy_shell().
+            Station_data(widget, temp2, station_info_select_global);
+
+            // Clear the global variable so that nothing else calls
+            // it with the wrong parameter
+            station_info_select_global = NULL;
+
             XtFree(temp);
         }
 /*
@@ -5042,6 +5062,16 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
         if (num_found == 1) { // We only found one station, so it's easy
             Station_data(w,p_found->call_sign,clientData);
         } else {            // We found more: create dialog to choose a station
+
+            // Set up this global variable so that we can pass it
+            // off to Station_data from the
+            // Station_info_select_destroy_shell() function above.
+            // Without this global variable we don't have enough
+            // parameters passed to the final routine, so we can't
+            // move an object that is on top of another.  With it,
+            // we can.
+            station_info_select_global = clientData;
+
             if (db_station_popup != NULL)
                 Station_info_destroy_shell(db_station_popup, db_station_popup, NULL);
 
