@@ -18311,11 +18311,11 @@ void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
         Set_Del_Object( widget, global_parameter1, global_parameter2 );
 
 
-        temp_data[0] = '\\';
+        temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_group_data,temp_data);
 
-        temp_data[0] = '!';
+        temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_symbol_data,temp_data);
 
@@ -18395,11 +18395,11 @@ void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         Set_Del_Object( widget, global_parameter1, global_parameter2 );
 
 
-        temp_data[0] = '\\';
+        temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_group_data,temp_data);
 
-        temp_data[0] = '!';
+        temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_symbol_data,temp_data);
 
@@ -18490,11 +18490,11 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
         XtSetSensitive(ob_course,TRUE);
         XtSetSensitive(ob_course_data,TRUE);
 
-        temp_data[0] = '\\';
+        temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_group_data,temp_data);
 
-        temp_data[0] = '!';
+        temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_symbol_data,temp_data);
 
@@ -18584,11 +18584,11 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         Set_Del_Object( widget, global_parameter1, global_parameter2 );
 
 
-        temp_data[0] = '\\';
+        temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_group_data,temp_data);
 
-        temp_data[0] = '!';
+        temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_symbol_data,temp_data);
 
@@ -21738,11 +21738,11 @@ if (Area_object_enabled) {
 
                 XtSetSensitive(ob_frame,FALSE);
             } else {  // Normal object/item
-                temp_data[0] = '\\';
+                temp_data[0] = '/';
                 temp_data[1] = '\0';
                 XmTextFieldSetString(object_group_data,temp_data);
 
-                temp_data[0] = '!';
+                temp_data[0] = '/';
                 temp_data[1] = '\0';
                 XmTextFieldSetString(object_symbol_data,temp_data);
             }
