@@ -230,7 +230,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 # H70 - nonvisibile....
 # H80 - special water features
 # H81 - glacier
-/^CFCC=H/ {lanes=0; color=26; fill_color=26}
+/^CFCC=H/ {lanes=0; color=26; fill_color=26; label_color=26}
 /^CFCC=H02/ {pattern=2; next}
 /^CFCC=H[1-6]2/ {lanes=1; pattern=2; next}
 /^CFCC=H[1-6][013-9]/ {lanes=1; next}
