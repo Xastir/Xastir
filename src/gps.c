@@ -29,7 +29,7 @@
 #include <ctype.h>
 #include <Xm/XmAll.h>
 
-/* The following files support setting the system time from the GPS */
+// The following files support setting the system time from the GPS
 #if TIME_WITH_SYS_TIME
   // Define needed by some versions of Linux in order to define
   // strptime()
@@ -85,14 +85,14 @@ int decode_gps_rmc( char *data,
 
     char *temp_ptr;
     char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
-        char sampletime[10];
+    char sampletime[7];
     char long_pos_x[11];
     char long_ew;
     char lat_pos_y[10];
     char lat_ns;
-    char speed[9];
+    char speed[10];
     char speed_unit;
-    char course[7];
+    char course[8];
     char sampledate[7];
 
 #ifdef HAVE_STRPTIME
@@ -102,207 +102,163 @@ int decode_gps_rmc( char *data,
     struct tm stm;
 #endif // HAVE_STRPTIME
  
-    int ok;
 
 // We should check for a minimum line length before parsing,
 // and check for end of input while tokenizing.
 
-    ok=0;
+    if ( (data == NULL) || (strlen(data) < 37) )
+        return(0);  // Not enough data to parse position from.
 
-    if ( (data == NULL) || (strlen(data) < 37) )  // Not enough data to parse position from.
-        return(ok);
+    if (strncmp(data,"$GPRMC,",7) != 0)   // No GPRMC found
+        return(0);
 
-    if (strncmp(data,"$GPRMC,",7)==0) {
+    if(strchr(data,',') == NULL)  // No comma found
+        return(0);
 
-        if(strchr(data,',')!=NULL) {
+    (void)strtok(data,",");   // get GPRMC and skip it
+    temp_ptr=strtok(NULL,",");   // get time
 
-            (void)strtok(data,",");   /* get GPRMC and skip it */
-            temp_ptr=strtok(NULL,",");   /* get time */
+    if (temp_ptr == NULL)   // No comma found
+        return(0);
 
-            if (temp_ptr != NULL) {
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(sampletime, temp_ptr, 6);
+    sampletime[6] = '\0';
 
-                // strncpy is ok here as long as nulls not in data.
-                // We null-terminate it ourselves to make sure it's
-                // terminated.
-                strncpy(sampletime, temp_ptr, 6);
-                sampletime[6] = '\0';
+    temp_ptr=strtok(NULL,",");  // get fix status
 
-                temp_ptr=strtok(NULL,",");  /* get fix status */
+    if (temp_ptr == NULL) // No comma found
+        return(0);
 
-                if (temp_ptr!=NULL) {
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(temp_data,temp_ptr,2);
+    temp_data[2] = '\0';
 
-                    // strncpy is ok here as long as nulls not in
-                    // data.  We null-terminate it ourselves to make
-                    // sure it's terminated.
-                    strncpy(temp_data,temp_ptr,2);
-                    temp_data[2] = '\0';
+    if (temp_data[0] != 'A')  // V is a warning but we can get good data still ?
+        return(0);  // Didn't find 'A' in the proper spot
 
-                    if (temp_data[0]=='A') {    /* V is a warning but we can get good data still ? */
-                        temp_ptr=strtok(NULL,",");  /* get latitude */
-                        if (temp_ptr!=NULL && temp_ptr[4]=='.') {
+    temp_ptr=strtok(NULL,",");  // get latitude
 
-                            // strncpy is ok here as long as nulls
-                            // not in data.  We null-terminate it
-                            // ourselves to make sure it's
-                            // terminated.
-                            strncpy(lat_pos_y,temp_ptr,9);
-                            lat_pos_y[9] = '\0';
+    if (temp_ptr == NULL || temp_ptr[4] != '.')
+        return(0);  // Doesn't look like latitude
+
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(lat_pos_y,temp_ptr,9);
+    lat_pos_y[9] = '\0';
 
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
 
-                            // Check for comma char
-                            if (lat_pos_y[8] == ',')
-                                lat_pos_y[8] = '\0';
-                            lat_pos_y[9]='\0';
-                            temp_ptr=strtok(NULL,",");  /* get N-S */
-                            if (temp_ptr!=NULL) {
+    // Check for comma char
+    if (lat_pos_y[8] == ',')
+        lat_pos_y[8] = '\0';
 
-                                // strncpy is ok here as long as
-                                // nulls not in data.  We
-                                // null-terminate it ourselves to
-                                // make sure it's terminated.
-                                strncpy(temp_data,temp_ptr,1);
-                                temp_data[1] = '\0';
+    temp_ptr=strtok(NULL,",");  // get N-S
 
-                                lat_ns=toupper((int)temp_data[0]);
-                                if(lat_ns =='N' || lat_ns =='S') {
-                                    temp_ptr=strtok(NULL,",");  /* get long */
-                                    if (temp_ptr!=NULL && temp_ptr[5] == '.') {
+    if (temp_ptr == NULL)   // No comma found
+        return(0);
 
-                                        // strncpy is ok here as
-                                        // long as nulls not in
-                                        // data.  We null-terminate
-                                        // it ourselves to make sure
-                                        // it's terminated.
-                                        strncpy(long_pos_x,temp_ptr,10);
-                                        long_pos_x[10] = '\0';
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(temp_data,temp_ptr,1);
+    temp_data[1] = '\0';
+
+    lat_ns=toupper((int)temp_data[0]);
+
+    if(lat_ns != 'N' && lat_ns != 'S')
+        return(0);  // Doesn't look like latitude
+
+    temp_ptr=strtok(NULL,",");  // get long
+
+    if (temp_ptr == NULL || temp_ptr[5] != '.')
+        return(0);  // Doesn't look like longitude
+
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(long_pos_x,temp_ptr,10);
+    long_pos_x[10] = '\0';
 
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
 
-                                        // Check for comma char
-                                        if (long_pos_x[9] == ',')
-                                            long_pos_x[9] = '\0';
-                                        long_pos_x[10]='\0';
-                                        temp_ptr=strtok(NULL,",");  /* get E-W */
-                                        if (temp_ptr!=NULL) {
+    // Check for comma char
+    if (long_pos_x[9] == ',')
+        long_pos_x[9] = '\0';
 
-                                            // strncpy is ok here as
-                                            // long as nulls not in
-                                            // data.  We
-                                            // null-terminate it
-                                            // ourselves to make
-                                            // sure it's terminated.
-                                            strncpy(temp_data,temp_ptr,1);
-                                            temp_data[1] = '\0';
+    temp_ptr=strtok(NULL,",");  // get E-W
 
-                                            long_ew=toupper((int)temp_data[0]);
-                                            if (long_ew =='E' || long_ew =='W') {
-                                                temp_ptr=strtok(NULL,",");  /* Get speed */
-                                                if (temp_ptr!=0) {
+    if (temp_ptr == NULL)   // No comma found
+        return(0);
 
-                                                    // strncpy is ok
-                                                    // here as long
-                                                    // as nulls not
-                                                    // in data.  We
-                                                    // null-terminate
-                                                    // it ourselves
-                                                    // to make sure
-                                                    // it's
-                                                    // terminated.
-                                                    strncpy(speed,temp_ptr,9);
-                                                    speed[9] = '\0';
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(temp_data,temp_ptr,1);
+    temp_data[1] = '\0';
 
-                                                    speed_unit='K';
-                                                    temp_ptr=strtok(NULL,",");  /* Get course */
-                                                    if (temp_ptr!=NULL) {
+    long_ew=toupper((int)temp_data[0]);
 
-                                                        // strncpy
-                                                        // is ok
-                                                        // here as
-                                                        // long as
-                                                        // nulls not
-                                                        // in data.
-                                                        // We
-                                                        // null-terminate
-                                                        // it
-                                                        // ourselves
-                                                        // to make
-                                                        // sure it's
-                                                        // terminated.
-                                                        strncpy(course,temp_ptr,7);
-                                                        course[7] = '\0';
+    if (long_ew != 'E' && long_ew != 'W')
+        return(0);  // Doesn't look like longitude
 
-                                                        temp_ptr=strtok(NULL,",");   /* get date of fix */
+    temp_ptr=strtok(NULL,",");  // Get speed
 
-                                                        if (temp_ptr!=NULL) {
+    if (temp_ptr == 0)  // No comma found
+        return(0);
 
-                                                            // strncpy
-                                                            // is ok
-                                                            // here
-                                                            // as
-                                                            // long
-                                                            // as
-                                                            // nulls
-                                                            // not
-                                                            // in
-                                                            // data.
-                                                            // We
-                                                            // null-terminate
-                                                            // it
-                                                            // ourselves
-                                                            // to
-                                                            // make
-                                                            // sure
-                                                            // it's
-                                                            // terminated.
-                                                            strncpy(sampledate, temp_ptr, 6);
-                                                            sampledate[6] = '\0';
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(speed,temp_ptr,9);
+    speed[9] = '\0';
 
-                                                        }
-                                                        /* Data good? */
-                                                        ok=1;
-                                                        xastir_snprintf(long_pos, long_pos_length, "%s%c", long_pos_x,long_ew);
-                                                        xastir_snprintf(lat_pos, lat_pos_length, "%s%c", lat_pos_y, lat_ns);
-                                                        strcpy(spd,speed);
-                                                        xastir_snprintf(unit, unit_length, "%c", speed_unit);
-                                                        strcpy(cse,course);
+    speed_unit='K';
+    temp_ptr=strtok(NULL,",");  // Get course
+
+    if (temp_ptr == NULL)   // No comma found
+        return(0);
+
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(course,temp_ptr,7);
+    course[7] = '\0';
+
+    temp_ptr=strtok(NULL,",");   // get date of fix
+
+    if (temp_ptr == NULL)   // No comma found
+        return(0);
+
+    // strncpy is ok here as long as nulls not in data.  We null-terminate it ourselves to make sure it's terminated.
+    strncpy(sampledate, temp_ptr, 6);
+    sampledate[6] = '\0';
+
+
+    // Data is good
+    xastir_snprintf(long_pos, long_pos_length, "%s%c", long_pos_x,long_ew);
+    xastir_snprintf(lat_pos, lat_pos_length, "%s%c", lat_pos_y, lat_ns);
+    xastir_snprintf(spd, 10, "%s", speed);
+    xastir_snprintf(unit, unit_length, "%c", speed_unit);
+    xastir_snprintf(cse, 10, "%s", course);
 
 #ifdef HAVE_STRPTIME
-                                                        /* Translate date/time into time_t */
-                                                        /* GPS time is in UTC.
-                                                         * First, save existing TZ
-                                                         * Then set conversion to
-                                                         * UTC, then set back to
-                                                         * existing TZ
-                                                         */
-                                                        tzp=getenv("TZ");
-                                                        if ( tzp == NULL ) {
-                                                            tzp = "";
-                                                        }
-                                                        xastir_snprintf(tzn, 512, "TZ=%s", tzp);
-                                                        putenv("TZ=UTC");
-                                                        tzset();
-                                                        xastir_snprintf(sampledatime, 15, "%s%s", sampledate, sampletime);
-                                                        (void)strptime(sampledatime, "%d%m%y%H%M%S", &stm);
-                                                        *stim=mktime(&stm);
-                                                        putenv(tzn);
-                                                        tzset();
-#endif  // HAVE_STRPTIME
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    // Translate date/time into time_t GPS time is in UTC.  First,
+    // save existing TZ Then set conversion to UTC, then set back to
+    // existing TZ.
+    tzp=getenv("TZ");
+    if ( tzp == NULL ) {
+        tzp = "";
     }
+    xastir_snprintf(tzn, 512, "TZ=%s", tzp);
+    putenv("TZ=UTC");
+    tzset();
+    xastir_snprintf(sampledatime, 15, "%s%s", sampledate, sampletime);
+    (void)strptime(sampledatime, "%d%m%y%H%M%S", &stm);
+    *stim=mktime(&stm);
+    putenv(tzn);
+    tzset();
+#endif  // HAVE_STRPTIME
+
     //fprintf(stderr,"Speed %s\n",spd);
-    return(ok);
+    return(1);
 }
 
 
@@ -328,166 +284,145 @@ int decode_gps_gga( char *data,
     char sats_visible[4];
     char altitude[8];
     char alt_unit;
-    int ok;
+
 
 // We should check for a minimum line length before parsing,
 // and check for end of input while tokenizing.
 
-    ok=0;
 
     if ( (data == NULL) || (strlen(data) < 35) )  // Not enough data to parse position from.
-        return(ok);
+        return(0);
 
-    if (strncmp(data,"$GPGGA,",7)==0) {
-        if (strchr(data,',')!=NULL) {
-            if (strtok(data,",")!=NULL) {   /* get GPGGA and skip it */
-                if(strtok(NULL,",")!=NULL) { /* get time and skip it */
-                    temp_ptr = strtok(NULL,","); /* get latitude */
-                    if (temp_ptr !=NULL) {
+    if (strncmp(data,"$GPGGA,",7) != 0)
+        return(0);
 
-                        // strncpy is ok here as long as nulls not
-                        // in data.  We null-terminate it ourselves
-                        // to make sure it's terminated.
-                        strncpy(lat_pos_y,temp_ptr,9);
-                        lat_pos_y[9] = '\0';
+    if (strchr(data,',') == NULL)
+        return(0);
+
+    if (strtok(data,",") == NULL) // get GPGGA and skip it
+        return(0);
+
+    if(strtok(NULL,",") == NULL)    // get time and skip it
+        return(0);
+
+    temp_ptr = strtok(NULL,",");    // get latitude
+
+    if (temp_ptr == NULL)
+        return(0);
+
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(lat_pos_y,temp_ptr,9);
+    lat_pos_y[9] = '\0';
 
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
 
-                        // Check for comma char
-                        if (lat_pos_y[8] == ',')
-                            lat_pos_y[8] = '\0';
-                        lat_pos_y[9]='\0';
-                        temp_ptr = strtok(NULL,",");    /* get N-S */
-                        if (temp_ptr!=NULL) {
+    // Check for comma char
+    if (lat_pos_y[8] == ',')
+        lat_pos_y[8] = '\0';
 
-                            // strncpy is ok here as long as nulls
-                            // not in data.  We null-terminate it
-                            // ourselves to make sure it's
-                            // terminated.
-                            strncpy(temp_data,temp_ptr,1);
-                            temp_data[1] = '\0';
+    temp_ptr = strtok(NULL,",");    // get N-S
 
-                            lat_ns=toupper((int)temp_data[0]);
-                            if(lat_ns == 'N' || lat_ns == 'S') {
-                                temp_ptr = strtok(NULL,",");                             /* get long */
-                                if(temp_ptr!=NULL) {
+    if (temp_ptr == NULL)
+        return(0);
 
-                                    // strncpy is ok here as long as
-                                    // nulls not in data.  We
-                                    // null-terminate it ourselves
-                                    // to make sure it's terminated.
-                                    strncpy(long_pos_x,temp_ptr,10);
-                                    long_pos_x[0] = '\0';
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(temp_data,temp_ptr,1);
+    temp_data[1] = '\0';
+
+    lat_ns=toupper((int)temp_data[0]);
+
+    if(lat_ns != 'N' && lat_ns != 'S')
+        return(0);
+
+    temp_ptr = strtok(NULL,",");    // get long
+
+    if(temp_ptr == NULL)
+        return(0);
+
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(long_pos_x,temp_ptr,10);
+    long_pos_x[10] = '\0';
 
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
 
-                                    // Check for comma char
-                                    if (long_pos_x[9] == ',')
-                                        long_pos_x[9] = '\0';
-                                    long_pos_x[10]='\0';
-                                    temp_ptr = strtok(NULL,",");                          /* get E-W */
-                                    if (temp_ptr!=NULL) {
+    // Check for comma char
+    if (long_pos_x[9] == ',')
+        long_pos_x[9] = '\0';
 
-                                        // strncpy is ok here as
-                                        // long as nulls not in
-                                        // data.  We null-terminate
-                                        // it ourselves to make sure
-                                        // it's terminated.
-                                        strncpy(temp_data,temp_ptr,1);
-                                        temp_data[1] = '\0';
+    temp_ptr = strtok(NULL,",");    // get E-W
 
-                                        long_ew=toupper((int)temp_data[0]);
-                                        if (long_ew == 'E' || long_ew == 'W') {
-                                            temp_ptr = strtok(NULL,",");                    /* get FIX Quality */
-                                            if (temp_ptr!=NULL) {
+    if (temp_ptr == NULL)
+        return(0);
 
-                                                // strncpy is ok
-                                                // here as long as
-                                                // nulls not in
-                                                // data.  We
-                                                // null-terminate it
-                                                // ourselves to make
-                                                // sure it's
-                                                // terminated.
-                                                strncpy(temp_data,temp_ptr,2);
-                                                temp_data[2] = '\0';
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(temp_data,temp_ptr,1);
+    temp_data[1] = '\0';
 
-                                                 if(temp_data[0]=='1' || temp_data[0] =='2' ) {
-                                                    temp_ptr=strtok(NULL,",");                /* Get sats vis */
-                                                    if (temp_ptr!=NULL) {
+    long_ew=toupper((int)temp_data[0]);
 
-                                                        // strncpy
-                                                        // is ok
-                                                        // here as
-                                                        // long as
-                                                        // nulls not
-                                                        // in data.
-                                                        // We
-                                                        // null-terminate
-                                                        // it
-                                                        // ourselves
-                                                        // to make
-                                                        // sure it's
-                                                        // terminated.
-                                                        strncpy(sats_visible,temp_ptr,4);
-                                                        sats_visible[4] = '\0';
+    if (long_ew != 'E' && long_ew != 'W')
+        return(0);
 
-                                                        temp_ptr=strtok(NULL,",");             /* get hoz dil */
-                                                        if (temp_ptr!=NULL) {
-                                                            temp_ptr=strtok(NULL,",");          /* Get altitude */
-                                                            if (temp_ptr!=NULL) {
-                                                                strcpy(altitude,temp_ptr);       /* Get altitude */
-                                                                temp_ptr=strtok(NULL,",");       /* get UNIT */
-                                                                if (temp_ptr!=NULL) {
+    temp_ptr = strtok(NULL,",");    // get FIX Quality
 
-                                                                    // strncpy
-                                                                    // is
-                                                                    // ok
-                                                                    // here
-                                                                    // as
-                                                                    // long
-                                                                    // as
-                                                                    // nulls
-                                                                    // not
-                                                                    // in
-                                                                    // data.
-                                                                    // We
-                                                                    // null-terminate
-                                                                    // it
-                                                                    // ourselves
-                                                                    // to
-                                                                    // make
-                                                                    // sure
-                                                                    // it's
-                                                                    // terminated.
-                                                                    strncpy(temp_data,temp_ptr,1);/* get UNIT */
-                                                                    temp_data[1] = '\0';
+    if (temp_ptr == NULL)
+        return(0);
 
-                                                                    alt_unit=temp_data[0];
-                                                                    /* Data good? */
-                                                                    ok=1;
-                                                                    xastir_snprintf(long_pos, long_pos_length, "%s%c", long_pos_x, long_ew);
-                                                                    xastir_snprintf(lat_pos, lat_pos_length, "%s%c", lat_pos_y, lat_ns);
-                                                                    strcpy(sats,sats_visible);
-                                                                    strcpy(alt,altitude);
-                                                                    sprintf(aunit,"%c",alt_unit);
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return(ok);
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(temp_data,temp_ptr,2);
+    temp_data[2] = '\0';
+
+    if(temp_data[0] != '1' && temp_data[0] != '2' )
+        return(0);
+
+    temp_ptr=strtok(NULL,",");      // Get sats vis
+
+    if (temp_ptr == NULL)
+        return(0);
+
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(sats_visible,temp_ptr,3);
+    sats_visible[3] = '\0';
+
+    temp_ptr=strtok(NULL,",");      // get hoz dil
+
+    if (temp_ptr == NULL)
+        return(0);
+
+    temp_ptr=strtok(NULL,",");      // Get altitude
+
+    if (temp_ptr == NULL)
+        return(0);
+
+    strncpy(altitude,temp_ptr,7);   // Get altitude
+    altitude[7] = '\0';
+
+    temp_ptr=strtok(NULL,",");      // get UNIT
+
+    if (temp_ptr == NULL)
+        return(0);
+
+    // strncpy is ok here as long as nulls not in data.  We
+    // null-terminate it ourselves to make sure it's terminated.
+    strncpy(temp_data,temp_ptr,1);  // get UNIT
+    temp_data[1] = '\0';
+
+    alt_unit=temp_data[0];
+
+    // Data is good
+    xastir_snprintf(long_pos, long_pos_length, "%s%c", long_pos_x, long_ew);
+    xastir_snprintf(lat_pos, lat_pos_length, "%s%c", lat_pos_y, lat_ns);
+    xastir_snprintf(sats, 4, "%s", sats_visible);
+    xastir_snprintf(alt, 8, "%s", altitude);
+    xastir_snprintf(aunit, 2, "%c", alt_unit);
+
+    return(1);
 }
 
 
@@ -534,7 +469,7 @@ int gps_data_find(char *gps_line_data, int port) {
         strncpy(gps_gprmc, gps_line_data, MAX_GPS_STRING);
         gps_gprmc[MAX_GPS_STRING] = '\0';   // Terminate it
 
-        strcpy(temp_str, gps_gprmc);
+        xastir_snprintf(temp_str, sizeof(temp_str), "%s", gps_gprmc);
         // decode_gps_rmc is destructive to its first parameter
         if (decode_gps_rmc( temp_str,
                             long_pos,
@@ -545,8 +480,8 @@ int gps_data_find(char *gps_line_data, int port) {
                             gps_sunit,
                             sizeof(gps_sunit),
                             gps_cse,
-                            &t ) == 1) {    /* mod station data */
-            /* got GPS data */
+                            &t ) == 1) {    // mod station data
+            // got GPS data
             have_valid_string++;
             if (debug_level & 128)
                 fprintf(stderr,"RMC <%s> <%s><%s> %c <%s>\n",
@@ -608,7 +543,7 @@ int gps_data_find(char *gps_line_data, int port) {
         strncpy(gps_gpgga, gps_line_data, MAX_GPS_STRING);
         gps_gpgga[MAX_GPS_STRING] = '\0';   // Terminate it
 
-        strcpy(temp_str, gps_gpgga);
+        xastir_snprintf(temp_str, sizeof(temp_str), "%s", gps_gpgga);
 
         // decode_gps_gga is destructive to its first parameter
         if ( decode_gps_gga( temp_str,
@@ -618,8 +553,8 @@ int gps_data_find(char *gps_line_data, int port) {
                              sizeof(lat_pos),
                              gps_sats,
                              gps_alt,
-                             aunit) == 1) { /* mod station data */
-            /* got GPS data */
+                             aunit) == 1) { // mod station data
+            // got GPS data
             have_valid_string++;
             if (debug_level & 128)
                 fprintf(stderr,"GGA <%s> <%s> <%s> <%s> %c\n",
@@ -652,9 +587,9 @@ int gps_data_find(char *gps_line_data, int port) {
         if (!gps_stop_now)
             gps_stop_now=1;
 
-        /* If HSP port, shutdown gps for timed interval */
+        // If HSP port, shutdown gps for timed interval
         if (port_data[port].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
-            /* return dtr to normal */
+            // return dtr to normal
             port_dtr(port,0);
         }
     }
