@@ -674,6 +674,53 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 
 
 
+// create_mask()
+//
+// Create a rectangular X11 Region.  It should be the size of the
+// extents for the outer polygon.
+//
+// Remember the initial polygon vertices so that we can use them in
+// "draw_polygon_with_mask()" below.
+//
+void create_mask(void) {
+    fprintf(stderr,"Create mask:");
+}
+
+
+ 
+
+
+// create_hole_in_mask()
+//
+// Create a hole in an X11 Region, using a polygon as input.  X11
+// Region must have been created with "create_mask()" before this
+// function is called.
+//
+void create_hole_in_mask(void) {
+    fprintf(stderr,"Hole:");
+}
+
+
+
+
+
+// draw_polygon_with_mask()
+//
+// Draws a polygon onto a pixmap using an X11 Region to mask areas
+// that shouldn't be drawn (holes).  X11 Region is created with the
+// "create_mask()" function, and holes in it are created with the
+// "create_hole_in_mask()" function.  The polygon used to create the
+// initial X11 Region was saved away during the creation.  Now we
+// just draw it to the pixmap using the X11 Region as a mask.
+//
+void draw_polygon_with_mask(void) {
+    fprintf(stderr,"Draw w/mask\n");
+}
+
+
+
+
+
 // Draw_OGR_Polygons().
 //
 // A function which can be recursively called.  Tracks the recursion
@@ -857,31 +904,55 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                 if (draw_filled) { // Draw a filled polygon
 
 // Note that this is problematic, as we have to worry about fill and
-// hole polygons, so we really need to define X11 regions, work them
+// hole polygons, so we really need to define X11 Regions, work them
 // against each other, then apply the final result to the drawing
 // area.  We can't do this polygon by polygon:  We have to do the
-// region thing for each set and then apply the region when we're
-// all done.
+// X11 Region thing for each set and then apply the Region when
+// we're all done.
 //
 // Also note that we might have a multipolygon file, in which case
-// we'll be doing a set of regions (and applying each set) for each
-// set of polygons.
+// we'll be doing a set of X11 Regions (and applying each set) for
+// each set of polygons.
 
 
 
 // Initial attempt:  Draw just the filled polygons.  Skip the hole
-// polygons.  Later I'll implement X11 regions like the Shapefile
+// polygons.  Later I'll implement X11 Regions like the Shapefile
 // code has.  It'd be very nice to implement separate functions for
-// creating the initial region, then calling another routine that
-// will make a hole in it, repeating until we run out of hole
+// creating the initial X11 Region, then calling another routine
+// that will make a hole in it, repeating until we run out of hole
 // polygons, then drawing the initial outer-ring polygon onto the
-// pixmap using the resulting "holey" region for a mask.
+// pixmap using the resulting "holey" X11 Region for a mask.
 //
-// create_filled_region()  Have it remember the initial polygon.
-// create_hole_in_region()
-// draw_region_to_pixmap()
+// If we have no inner polygons, skip the whole X11 Region thing and
+// just draw a filled polygon to the pixmap for speed.
 //
 
+
+// if object_num > 1, create a X11 Region here.  We'll be poking
+// holes in that X11 Region for following iterations, until we get
+// to the end of this section and kk==object_num, at which point
+// we'll call draw_polygon_with_mask().  Make sure to assign X11
+// Region to a new pointer per object, so that we can call this
+// function recursively.
+//
+if (object_num > 1) {   // Multiple rings
+    if (kk == 0) {   // Outer ring (fill)
+        create_mask();
+    }
+    else {  // Inner ring (hole)
+        create_hole_in_mask();
+    }
+
+    // Draw the original polygon to the pixmap
+    // using the X11 Region as a mask.
+    if (kk == (object_num - 1)) {
+        draw_polygon_with_mask();
+    }
+}
+
+
+ 
                     //
                     if (!polygon_hole) {    // It's a fill polygon (outer ring)
 
