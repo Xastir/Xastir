@@ -1,6 +1,7 @@
 
 $Id$
 
+
 General steps to configure/compile/install Xastir:
 (See detailed steps and library installation instructions below)
 ----------------------------------------------------------------------
@@ -12,10 +13,17 @@ General steps to configure/compile/install Xastir:
   cd xastir
   tar xzvf xastir*
 
+An alternative to the above steps is to use CVS to download the
+Xastir sources.  See README.CVS for those instructions.   CVS allows
+you to easily keep up to date with the developers.
 
 2) Go into the xastir directory to build the executable:
 
   cd xastir*
+
+If you used CVS to fetch the sources, you need one more step here
+before you run configure:  "./bootstrap.sh"
+
   ./configure
   make
   su (become the root user)
@@ -23,8 +31,8 @@ General steps to configure/compile/install Xastir:
   chmod 4555 /usr/local/bin/xastir (if you use kernel ax.25, see below) 
   exit (from root)
 
-3) Xastir should now be installed in /usr/local/bin (the default on
-most systems).  You can run it by typing this from a shell:
+3) Xastir should be installed in /usr/local/bin (the default on most
+systems).  You can run it by typing this from a shell:
 
     xastir &
 
@@ -43,22 +51,29 @@ libcurl or wget                 Optional  Internet images as maps
 GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
 
 Installing only the required libs gives you these capabilities:
-PocketAPRS/aprsDOS/WinAPRS/MacAPRS maps, GNIS labels, serial port and
-internet gateway connectivity.
+
+    PocketAPRS maps
+    aprsDOS maps
+    WinAPRS maps
+    MacAPRS maps
+    GNIS labels
+    serial port and internet gateway connectivity.
 
 Adding XPM or ImageMagick libs, ImageMagick's "convert" utility, and
 the "gv" utility gives you printing capability.  Postscript or
 emulated postscript printing capability is required for this as well.
-XPM or ImageMagick libs and "convert" also give the capability to
-create automatic PNG images on disk from the map screen (useful for
-web pages!).
 
-Shapelib support also gives you the capability to use Tiger 2000
-maps which were converted to Shapefile format by ESRI.  This allows
-you to use free detailed street maps for any point in the U.S.
+Adding XPM or ImageMagick libs plus "convert" also give the
+capability to create automatic PNG images on disk from the map
+screen (useful for web pages!).
 
-Adding other optional libraries listed gives you the additional
-capabilities listed above.
+Adding Shapelib support also gives you the capability to use Tiger
+2000 maps which were converted to Shapefile format by ESRI.  This
+allows you to use free detailed street maps for any point in the
+U.S.
+
+Adding other libraries gives you the additional capabilities listed
+above.
 
 
 Things you need for this version:
@@ -160,12 +175,8 @@ See below for instructions on installing all of these libraries. Once the
   compiling in support for the new features.
 
 
-Unpack the Xastir source code anywhere..
- usually like this:
-  tar xvzf xastir-x.x.x.tgz (where x.x.x is the version number)
-
-If you have installed before, read the "Previous Install" notes for information
-on changes in file location and permissions.
+If you have installed Xastir before, read the "UPGRADE" file for
+information on changes in file location and permissions.
 
 
 First Time Install:

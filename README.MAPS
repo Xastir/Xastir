@@ -54,10 +54,10 @@ Getting Maps and other Data Files for Xastir:
            Overlay/
 
       Please note that the map directories are entirely up to the user
-      now. Use the map layering facilities to determine the order in
-      which they will be drawn, and to determine which will draw filled
-      areas. Note that raster maps will always draw filled, not matter
-      what the setting suggests.
+      now. Use the map layering facilities (Map Chooser->Properties) to
+      determine the order in which they will be drawn, and to determine
+      which will draw filled areas.  Note that raster maps will always draw
+      filled, not matter what the setting suggests.
 
       Map types available by extension:
 
@@ -195,7 +195,10 @@ Getting Maps and other Data Files for Xastir:
 
       Other shapefiles are available from esri.com, geographynetwork.com
       and gisdatadepot.com (from their "free data" link).  Lot's of useful
-      stuff at these sites, just look around.
+      stuff at these sites, just look around.  You can also check
+      with our County GIS office for shapefiles of your county.  You can
+      convert them from State Plane to Lat/Long projection using
+      instructions later in this document.
 
       Also get the usgs_24kgrid.zip file from gisdatadepot.com.  This
       file provides a grid of all of the 7.5' maps and their names
@@ -347,8 +350,13 @@ Getting Maps and other Data Files for Xastir:
        and install the shapefile format maps as described below.
 
       Shapefile style:
+
        The shapefile format weather maps may be found here:
          http://www.nws.noaa.gov/geodata/
+
+       or more easily found here (but not guaranteed to be the most
+       current:
+         http://wetnet.net/~we7u/xastir/Counties/
 
         The files of interest are:
 

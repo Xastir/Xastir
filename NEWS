@@ -28,7 +28,7 @@ routines.
 
 CAUTION:
 
-     1. Before you start xastir for the first time BACKUP your
+     1. Before you start Xastir for the first time BACKUP your
      data files if this is an upgrade from a previous version.
 
      2. DON'T USE YOUR OLD CONFIG FILE.. MAKE A NEW ONE.........
