@@ -703,12 +703,16 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
     if (Dbf_sigs == NULL)
         Dbf_sigs = dbfawk_load_sigs(get_data_base_dir("config"),".dbfawk");
+
     if (debug_level & 16)
         fprintf(stderr,"DBFAWK signatures %sfound in %s.\n",
                 (Dbf_sigs)?" ":"NOT ",get_data_base_dir("config"));
-    /* set up default dbfawk when no sig matches */
-    dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
-    dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
+
+    if (dbfawk_default_sig == NULL) {
+        /* set up default dbfawk when no sig matches */
+        dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
+        dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
+    }
 #endif
 
     //fprintf(stderr,"*** Alert color: %d ***\n",alert_color);
