@@ -15787,12 +15787,11 @@ if (current->temp_select) {
                     current->map_layer);
                 }
 
-                if (current->draw_filled == 0) {
-                    xastir_snprintf(temp_filled,
-                        sizeof(temp_filled),
-                        "     ");
-                }
-                else {
+                xastir_snprintf(temp_filled,
+                    sizeof(temp_filled),
+                    "     ");
+
+                if (current->draw_filled) {
                     int len, start;
 
                     // Center the string in the column
@@ -15801,46 +15800,39 @@ if (current->temp_select) {
 
                     if (start < 0)
                         start = 0;
-                    else
-                        // Note "start" or strlen must be less than
-                        // sizeof(temp_filled)
-                        xastir_snprintf(temp_filled, start, "     ");
 
+                    // Insert the string.  Fill with spaces on the
+                    // end.
                     xastir_snprintf(&temp_filled[start],
-                        5-start,
-                        "%s",
+                        sizeof(temp_filled)-start,
+                        "%s     ",
                         langcode("MAPP006"));
-                    // Fill with spaces past the end
-                    strncat(temp_filled, "     ", 5);
+
                     // Truncate it so it fits our column width.
                     temp_filled[5] = '\0';
                 }
 
-                if (current->auto_maps == 0) {
-                    xastir_snprintf(temp_auto,
-                        sizeof(temp_auto),
-                        "     ");
-                }
-                else {
+                xastir_snprintf(temp_auto,
+                    sizeof(temp_auto),
+                    "     ");
+
+                if (current->auto_maps) {
                     int len, start;
 
                     // Center the string in the column
                     len = strlen(langcode("MAPP006"));
                     start = (int)( (5 - len) / 2 + 0.5);
+
                     if (start < 0)
                         start = 0;
-                    else
-                        // Note:  "start" must be less than
-                        // sizeof(temp_auto)
-                        xastir_snprintf(temp_auto,
-                            start,
-                            "     ");
+
+                    // Insert the string.  Fill with spaces on the
+                    // end.
                     xastir_snprintf(&temp_auto[start],
-                        5-start,
-                        "%s",
+                        sizeof(temp_filled)-start,
+                        "%s     ",
                         langcode("MAPP006"));
-                    // Fill with spaces past the end
-                    strncat(temp_auto, "     ", 5);
+
                     // Truncate it so it fits our column width.
                     temp_auto[5] = '\0';
                 }
