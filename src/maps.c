@@ -4120,18 +4120,25 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                     // first 2 characters of the filename.
                                     // 
                                     if (strncasecmp(alert->filename,dl->d_name,2) == 0) {
-                                        // We have a match
-                                        //fprintf(stderr,"%s\n",fullpath);
-                                        // Force last three characters to
+                                        // We have a match for the
+                                        // first few characters.
+                                        // Check that last three are
                                         // "shp"
-                                        dl->d_name[strlen(dl->d_name)-3] = 's';
-                                        dl->d_name[strlen(dl->d_name)-2] = 'h';
-                                        dl->d_name[strlen(dl->d_name)-1] = 'p';
 
-                                        // Save the filename in the alert
-                                        strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
-                                        done++;
-                                        //fprintf(stderr,"%s\n",dl->d_name);
+                                        //fprintf(stderr,"%s\n",fullpath);
+
+                                        if ( (dl->d_name[strlen(dl->d_name)-3] == 's'
+                                                || dl->d_name[strlen(dl->d_name)-3] == 'S')
+                                            && (dl->d_name[strlen(dl->d_name)-2] == 'h'
+                                                || dl->d_name[strlen(dl->d_name)-2] == 'H')
+                                            && (dl->d_name[strlen(dl->d_name)-1] == 'p'
+                                                || dl->d_name[strlen(dl->d_name)-1] == 'P') ) {
+                                            // We have an exact match.
+                                            // Save the filename in the alert
+                                            strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
+                                            done++;
+                                            //fprintf(stderr,"%s\n",dl->d_name);
+                                        }
                                     }
                                     break;
 
