@@ -1088,6 +1088,13 @@ MODULATE <brightness, saturation, hue>
 eg: MODULATE 90,150,100
 These are percents, 100,100,100 is the default.
 
+REFRESH <seconds>
+eg: REFRESH 900
+This tag is used for dynamic URL's such as weather radar, where you
+wish Xastir to auto-redraw the map at a specified interval.  By
+adding this tag to weather radar .geo's, you can watch the weather
+move across your screen.
+
 Special/nonstandard .geo files:
 
 TERRASERVER
