@@ -172,6 +172,7 @@ PULDNDP035|Enable Dead-Reckoning||
 PULDNDP036|Enable Dead-Reckoning Arcs||
 PULDNDP037|Enable Dead-Reckoning Course||
 PULDNDP038|Enable Dead-Reckoning Symbols||
+PULDNDP039|Display Water Gage Objects||
 #
 # Units
 PULDNUT001|Engels||

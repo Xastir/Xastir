@@ -282,6 +282,7 @@ Widget course_button;
 Widget dist_course_button;
 Widget wx_enable_button;
 Widget wx_obj_enable_button;
+Widget gage_obj_enable_button;
 Widget station_phg_button;
 Widget station_phg_mobiles_button;
 Widget station_phg_default_button;
@@ -320,9 +321,11 @@ Widget wx_short_button;
 static void WX_enable_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void WX_short_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void WX_obj_enable_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Gage_obj_enable_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 int wx_display_enable;
 int wx_display_short;
 int wx_obj_display_enable;
+int gage_obj_display_enable;
 
 Widget phg_on, phg_off;
 static void Station_phg_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -4646,6 +4649,21 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(wx_obj_enable_button,TRUE,FALSE);
     if (!symbol_display_enable || !symbol_display_objects)
         XtSetSensitive(wx_obj_enable_button,FALSE);
+
+    gage_obj_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP039"),
+            xmToggleButtonGadgetClass,
+            symbol_filter_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(gage_obj_enable_button,XmNvalueChangedCallback,Gage_obj_enable_toggle,"1");
+    if (gage_obj_display_enable)
+        XmToggleButtonSetState(gage_obj_enable_button,TRUE,FALSE);
+    if (!symbol_display_enable || !symbol_display_objects)
+        XtSetSensitive(gage_obj_enable_button,FALSE);
+ 
     // End of Symbol Filtering
 
 
@@ -8081,8 +8099,10 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
             XtSetSensitive(symbols_WX_button, TRUE);
         }
         XtSetSensitive(symbols_objects_button, TRUE);
-        if (symbol_display_objects)
+        if (symbol_display_objects) {
             XtSetSensitive(wx_obj_enable_button,TRUE);
+            XtSetSensitive(gage_obj_enable_button,TRUE);
+        }
         XtSetSensitive(symbols_rotate_button, TRUE);
         XtSetSensitive(call_button,TRUE);
         XtSetSensitive(speed_enable_button,TRUE);
@@ -8117,6 +8137,7 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
         XtSetSensitive(symbols_WX_button, FALSE);
         XtSetSensitive(symbols_objects_button, FALSE);
         XtSetSensitive(wx_obj_enable_button,FALSE);
+        XtSetSensitive(gage_obj_enable_button,FALSE);
         XtSetSensitive(symbols_rotate_button, FALSE);
         XtSetSensitive(call_button,FALSE);
         XtSetSensitive(speed_enable_button,FALSE);
@@ -8261,10 +8282,12 @@ void Symbols_objects_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoin
     if(state->set) {
         symbol_display_objects = atoi(which);
         XtSetSensitive(wx_obj_enable_button, TRUE);
+        XtSetSensitive(gage_obj_enable_button, TRUE);
     }
     else {
         symbol_display_objects = 0;
         XtSetSensitive(wx_obj_enable_button, FALSE);
+        XtSetSensitive(gage_obj_enable_button, FALSE);
     }
 
     redraw_on_new_data = 2;     // Immediate screen update
@@ -8484,6 +8507,22 @@ void WX_obj_enable_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointe
         wx_obj_display_enable = atoi(which);
     else
         wx_obj_display_enable = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Gage_obj_enable_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        gage_obj_display_enable = atoi(which);
+    else
+        gage_obj_display_enable = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }

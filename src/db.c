@@ -1882,6 +1882,11 @@ int ok_to_draw_symbol(DataRow *p_station) {
             if (p_station->weather_data) {
                 ok = wx_obj_display_enable;
             }
+            // Check if water gage and we wish to see it
+            else if (p_station->aprs_symbol.aprs_type == '/'
+                    && p_station->aprs_symbol.aprs_symbol == 'w') {
+                ok = gage_obj_display_enable;
+            }
             else {  // Object doesn't contain weather
                 ok = 1;
             }
