@@ -1208,6 +1208,7 @@ void draw_shapefile_map (Widget w,
     int             high_water_mark_i = 0;
     int             high_water_mark_index = 0;
     char            quad_label[100];
+    char            status_text[300];
 
     typedef struct _label_string {
         char   label[50];
@@ -1757,6 +1758,11 @@ void draw_shapefile_map (Widget w,
 
         return;     // The file contains no shapes in our viewport
     }
+
+
+    // Update the statusline for this map name
+    xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+    statusline(status_text,0);       // Loading ...
 
 
     // Set a default line width for all maps.  This will most likely
@@ -3953,6 +3959,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
     unsigned long top_extent = 0l;
     unsigned long left_extent = 0l;
     unsigned long right_extent = 0l;
+    char status_text[300];
 
 
     //printf("draw_gnis_map starting: %s/%s\n",dir,filenm);
@@ -3964,6 +3971,15 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
     max_lat = y_lat_offset;
     min_lon = x_long_offset;
     max_lon = x_long_offset + (long)(screen_width  * scale_x);
+
+
+    // The map extents in the map index are checked in draw_map to
+    // see whether we should draw the map at all.
+
+    // Update the statusline for this map name
+    xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+    statusline(status_text,0);       // Loading ...
+
 
     // Attempt to open the file
     f = fopen (file, "r");
@@ -4515,7 +4531,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
 // Might also need to place a label at that position on the map in
 // case that GNIS file isn't currently selected.
 //
-int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
+int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
         char *quad_in, char *type_in, char *filename_in, int follow_case, int get_match ) {
     char file[2000];                // Complete path/name of GNIS file
     FILE *f;                        // Filehandle of GNIS file
@@ -5281,7 +5297,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
         // We're indexing only.  Save the extents in the index.
-        index_update_xastir(fileimg,    // Full filename
+        index_update_xastir(file,   // Full filename
             tp[1].y_lat,    // Bottom
             tp[0].y_lat,    // Top
             tp[0].x_long,   // Left
@@ -6065,8 +6081,8 @@ void draw_tiger_map (Widget w) {
     }
 
 
-//WE7U:  For debugging the MagickError/MagickWarning segfaults.
-//    system("cat /dev/null >/var/tmp/xastir_hacker_map.gif");
+    // For debugging the MagickError/MagickWarning segfaults.
+    //system("cat /dev/null >/var/tmp/xastir_hacker_map.gif");
 
 
     // Set permissions on the file so that any user can overwrite it.
@@ -8725,6 +8741,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
     long record_ptr;
     long line_x, line_y;
     int vector;
+    char status_text[300];
 
 
     xastir_snprintf(filename, sizeof(filename), "%s/%s", dir, filenm);
@@ -8808,6 +8825,12 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
 
         if (map_onscreen(map_left, map_right, map_top, map_bottom)) {
+
+
+            // Update the statusline for this map name
+            xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+            statusline(status_text,0);       // Loading ...
+
 
             max_x = (long)(screen_width + MAX_OUTBOUND);
             max_y = (long)(screen_height + MAX_OUTBOUND);
@@ -9202,7 +9225,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 
     // Palm map?
     else if (ext != NULL && strcasecmp (ext, "pdb") == 0) {
-        //printf("calling draw_palm_image_map: %s/%s\n", dir, filenm);
+        //printf("calling draw_palmimage_map: %s/%s\n", dir, filenm);
         draw_palm_image_map (w, dir, filenm, destination_pixmap);
     }
 
@@ -10253,7 +10276,7 @@ map_index_record *map_index_head = NULL;
 // Function called by the various draw_* functions when in indexing
 // mode.  Causes an update of the index list in memory.  Input
 // parameters are in the Xastir coordinate system due to speed
-// considerations.
+// considerations.  Records are inserted in alphanumerical order.
 void index_update_xastir(char *filename,
                   unsigned long bottom,
                   unsigned long top,
@@ -10261,6 +10284,8 @@ void index_update_xastir(char *filename,
                   unsigned long right) {
 
     map_index_record *current = map_index_head;
+    map_index_record *previous = map_index_head;
+    map_index_record *temp_record = map_index_head;
     int done = 0;
 
 
@@ -10270,41 +10295,89 @@ void index_update_xastir(char *filename,
     //if (map_index_head == NULL)
     //    printf("Empty list\n");
 
+    // Skip dbf and shx map extensions.  Really should make this
+    // case-independent...
+    if (       strstr(filename,"shx")
+            || strstr(filename,"dbf")
+            || strstr(filename,"SHX")
+            || strstr(filename,"DBF")) {
+        return;
+    }
+
     // Search for a matching filename in the linked list
     while ((current != NULL) && !done) {
+        int test;
 
         //printf("Comparing %s to\n          %s\n",current->filename,filename);
 
-        if (strcmp(current->filename,filename) == 0) {
+        test = strcmp(current->filename,filename);
+        if (test == 0) {
             // Found a match!
             //printf("Found: Updating entry for %s\n",filename);
+            temp_record = current;
             done++; // Exit the while loop
         }
-        else {
+        else if (test > 0) {    // Found a string past us in the
+                                // alphabet.  Insert ahead of this
+                                // last record.
+
+            //printf("\n%s\n%s\n",current->filename,filename);
+
+            //printf("Not Found: Inserting an index record for %s\n",filename);
+            temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+
+            if (previous == current) {  // Start of list!
+                // Insert new record at head of list
+                temp_record->next = map_index_head;
+                map_index_head = temp_record;
+                //printf("Inserting at head of list\n");
+            }
+            else {
+                // Insert new record before "current"
+                previous->next = temp_record;
+                temp_record->next = current;
+                //printf("Inserting before current\n");
+            }
+            //printf("Adding:%d:%s\n",strlen(filename),filename);
+        
+            //current = current->next;
+            done++;
+        }
+        else {  // Haven't gotten to the correct insertion point yet
+            previous = current; // Save ptr to last record
             current = current->next;
         }
     }
 
     if (!done) {  // Matching record not found, add a
-        // record to the head of the list
+        // record to the end of the list
         //printf("Not Found: Adding an index record for %s\n",filename);
-        current = (map_index_record *)malloc(sizeof(map_index_record));
-        current->next = map_index_head;
-        map_index_head = current;
+        temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+        temp_record->next = NULL;
+
+        if (previous == NULL) { // Empty list
+            map_index_head = temp_record;
+            //printf("First record in new list\n");
+        }
+        else {  // Else at end of list
+            previous->next = temp_record;
+            //printf("Adding to end of list: %s\n",filename);
+        }
+
         //printf("Adding:%d:%s\n",strlen(filename),filename);
     }
 
     // Update the values.  By this point we have a struct to fill
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
-    strncpy(current->filename,filename,399);
-    current->filename[399] = '\0';
-//    xastir_snprintf(current->filename,strlen(current->filename),"%s",filename);
+    strncpy(temp_record->filename,filename,399);
+    temp_record->filename[399] = '\0';
+//    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
 
-    current->bottom = bottom;
-    current->top = top;
-    current->left = left;
-    current->right = right;
+    temp_record->bottom = bottom;
+    temp_record->top = top;
+    temp_record->left = left;
+    temp_record->right = right;
 }
 
 
@@ -10314,7 +10387,8 @@ void index_update_xastir(char *filename,
 // Function called by the various draw_* functions when in indexing
 // mode.  Causes an update of the index list in memory.  Input
 // parameters are in lat/long, which are converted to Xastir
-// coordinates for storage due to speed considerations.
+// coordinates for storage due to speed considerations.  Records are
+// inserted in alphanumerical order.
 void index_update_ll(char *filename,
                   double bottom,
                   double top,
@@ -10322,6 +10396,8 @@ void index_update_ll(char *filename,
                   double right) {
 
     map_index_record *current = map_index_head;
+    map_index_record *previous = map_index_head;
+    map_index_record *temp_record = map_index_head;
     int done = 0;
     unsigned long temp_left, temp_right, temp_top, temp_bottom;
     int ok;
@@ -10333,35 +10409,88 @@ void index_update_ll(char *filename,
     //if (map_index_head == NULL)
     //    printf("Empty list\n");
 
+    // Skip dbf and shx map extensions.  Really should make this
+    // case-independent...
+    if (       strstr(filename,"shx")
+            || strstr(filename,"dbf")
+            || strstr(filename,"SHX")
+            || strstr(filename,"DBF")) {
+        return;
+    }
+
     // Search for a matching filename in the linked list
     while ((current != NULL) && !done) {
+        int test;
 
         //printf("Comparing %s to\n          %s\n",current->filename,filename);
 
-        if (strcmp(current->filename,filename) == 0) {
+        test = strcmp(current->filename,filename);
+
+        if (test == 0) {
             // Found a match!
             //printf("Found: Updating entry for %s\n",filename);
+            temp_record = current;
             done++; // Exit the while loop
         }
-        else {
+
+        else if (test > 0) {
+            // Found a string past us in the alphabet.  Insert ahead
+            // of this last record.
+
+            //printf("\n%s\n%s\n",current->filename,filename);
+
+            //printf("Not Found: Inserting an index record for %s\n",filename);
+            temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+
+            if (previous == current) {  // Start of list!
+                // Insert new record at head of list
+                temp_record->next = map_index_head;
+                map_index_head = temp_record;
+                //printf("Inserting at head of list\n");
+            }
+            else {
+                // Insert new record before "current"
+                previous->next = temp_record;
+                temp_record->next = current;
+                //printf("Inserting before current\n");
+            }
+            //printf("Adding:%d:%s\n",strlen(filename),filename);
+
+            //current = current->next;
+            done++;
+        }
+        else {  // Haven't gotten to the correct insertion point yet
+            previous = current; // Save ptr to last record
             current = current->next;
         }
     }
 
-    if (!done) {  // Matching record not found, add a
-        // record to the head of the list
+    if (!done) {    // Matching record not found, didn't find alpha
+                    // chars after our string either, add record to
+                    // the end of the list.
+
         //printf("Not Found: Adding an index record for %s\n",filename);
-        current = (map_index_record *)malloc(sizeof(map_index_record));
-        current->next = map_index_head;
-        map_index_head = current;
+        temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+        temp_record->next = NULL;
+
+        if (previous == NULL) { // Empty list
+            map_index_head = temp_record;
+            //printf("First record in new list\n");
+        }
+        else {  // Else at end of list
+            previous->next = temp_record;
+            //printf("Adding to end of list: %s\n",filename);
+        }
+
+        //printf("Adding:%d:%s\n",strlen(filename),filename);
     }
 
     // Update the values.  By this point we have a struct to fill
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
-    strncpy(current->filename,filename,399);
-    current->filename[399] = '\0';
-//    xastir_snprintf(current->filename,strlen(current->filename),"%s",filename);
+    strncpy(temp_record->filename,filename,399);
+    temp_record->filename[399] = '\0';
+//    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
 
     ok = convert_to_xastir_coordinates( &temp_left,
         &temp_top,
@@ -10377,10 +10506,10 @@ void index_update_ll(char *filename,
     if (!ok)
         printf("%s\n\n",filename);
  
-    current->bottom = temp_bottom;
-    current->top = temp_top;
-    current->left = temp_left;
-    current->right = temp_right;
+    temp_record->bottom = temp_bottom;
+    temp_record->top = temp_top;
+    temp_record->left = temp_left;
+    temp_record->right = temp_right;
 }
 
 
@@ -10401,6 +10530,11 @@ void index_update_ll(char *filename,
 // storing the data in a hash instead of a linked list.  This is
 // just an initial implementation to see what speedups are possible.
 // Hashing might be next.  --we7u
+//
+//WE7U
+// Note that since we've alphanumerically ordered the list, we can
+// stop when we hit something after this filename in the alphabet.
+// It'll speed things up a bit.  Make this change sometime soon.
 //
 int index_retrieve(char *filename,
                    unsigned long *bottom,
@@ -10434,6 +10568,8 @@ int index_retrieve(char *filename,
 
 
 // Saves the linked list pointed to by map_index_head to a file.
+// Keeps the same order as the memory linked list.
+//
 void index_save_to_file() {
     FILE *f;
     map_index_record *current;
@@ -10460,7 +10596,7 @@ void index_save_to_file() {
             // comma-delimited line
             xastir_snprintf(out_string,
                 sizeof(out_string),
-                "%ld,%ld,%ld,%ld,%s\n",
+                "%08ld,%08ld,%08ld,%09ld,%s\n",
                 current->bottom,
                 current->top,
                 current->left,
@@ -10484,15 +10620,20 @@ void index_save_to_file() {
 
 
 // Snags the file and creates the linked list pointed to by the
-// map_index_head pointer.
+// map_index_head pointer.  The memory linked list keeps the same
+// order as the entries in the file.
 //
 void index_restore_from_file(void) {
     FILE *f;
     map_index_record *current;
+    map_index_record *temp_record;
     char in_string[500];
 
 
     //printf("Restoring map index from file\n");
+
+    map_index_head = NULL;  // Starting with empty list
+    current = NULL;
 
     f = fopen(MAP_INDEX_DATA,"r");
     if (f == NULL)  // No file yet
@@ -10502,25 +10643,37 @@ void index_restore_from_file(void) {
 
         // Read one object from the file
         if ( get_line (f, in_string, 500) ) {   // Snag one line of data
-            if (strlen(in_string) >= 8) {
+
+            if (strlen(in_string) >= 8) {   // We have some data
 
                 // Malloc space for the data and add it to the head of
                 // the linked list
-                current = (map_index_record *)malloc(sizeof(map_index_record));
-                current->next = map_index_head;
-                map_index_head = current;
- 
+                temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+                temp_record->next = NULL;
+
+                if (current == NULL) {  // Empty list
+                    map_index_head = temp_record;
+                    current = temp_record;
+                }
+                else {
+                    current->next = temp_record;
+                    current = temp_record;
+                }
+
+                // Fill in the values
                 sscanf(in_string,
                     "%ld,%ld,%ld,%ld,%400c",
-                    &current->bottom,
-                    &current->top,
-                    &current->left,
-                    &current->right,
-                    current->filename);
+                    &temp_record->bottom,
+                    &temp_record->top,
+                    &temp_record->left,
+                    &temp_record->right,
+                    temp_record->filename);
 
-                current->filename[399] = '\0';
+                temp_record->filename[399] = '\0';
 
-                //printf("Restored: %s\n",current->filename);
+                // Link the new record to the end of the list
+
+                //printf("Restored: %s\n",temp_record->filename);
             }
         }
     }
@@ -10771,11 +10924,56 @@ void load_alert_maps (Widget w, char *dir) {
 /**********************************************************
  * load_auto_maps()
  *
- * Recurses through the map directories looking for maps
- * to load.
+ * NEW:  Uses the in-memory map_index to scan through the
+ * maps.
+ *
+ * OLD: Recurses through the map directories looking for
+ * maps to load.
  **********************************************************/
 void load_auto_maps (Widget w, char *dir) {
-    map_search (w, dir, NULL, NULL, (int)TRUE, DRAW_TO_PIXMAP);
+    map_index_record *current = map_index_head;
+    char directory[8000];
+    char filename[500];
+    int i;
+    int done;
+
+
+    //map_search (w, dir, NULL, NULL, (int)TRUE, DRAW_TO_PIXMAP);
+
+    while (current != NULL) {
+
+        // Snag the complete path/filename
+        xastir_snprintf(directory,sizeof(directory),"%s",current->filename);
+
+        // Find the last '/' character
+        done = 0;
+        for (i = strlen(directory); i > 0 && !done; i--) {
+            if (directory[i] == '/') {
+                done++;
+            }
+        }
+
+        if (!done) {
+            printf("Couldn't find slash in path/filename\n");
+        }
+        else {
+            // Copy the filename portion to "filename"
+            xastir_snprintf(filename,sizeof(filename),"%s",&current->filename[i+2]);
+
+            // Insert a '\0' after the last '/' char in the path
+            directory[i+2] = '\0';
+
+            //printf("%s\t%s\n",directory,filename);
+
+            draw_map (w,
+                directory,
+                filename,
+                NULL,
+                '\0',
+                DRAW_TO_PIXMAP);
+        }
+        current = current->next;
+    }
 }
 
 
