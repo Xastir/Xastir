@@ -5281,9 +5281,9 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
             speed  = current->speed;
             course = current->course;
             alt    = current->altitude;
-            if ((current->flag & TR_LOCAL) != '\0')
+            if ((current->flag & TR_NEWTRK) != '\0')
                 newtrk = 1;
-
+ 
             exp_trailpos(f,lat0,lon0,sec,speed,course,alt,newtrk);
 
             newtrk = 0;
