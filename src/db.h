@@ -178,7 +178,8 @@ extern void msg_clear_data(Message *clear);
 extern void msg_copy_data(Message *to, Message *from);
 #else   // MSG_DEBUG
 #define msg_clear_data(clear) memset((Message *)clear, 0, sizeof(Message))
-#define msg_copy_data(to, from) memmove((Message *)to, (Message *)from, sizeof(Message))
+#define msg_copy_data(to, from) memmove((Message *)to, (Message *)from, \
+                                        sizeof(Message))
 #endif /* MSG_DEBUG */
 
 extern int message_update_time(void);
@@ -319,28 +320,34 @@ typedef struct _MultipointRow{
 
 
 
-// Break DataRow into several structures.  DataRow will contain the parameters
-// that are common across all types of stations.  DataRow will contain a pointer
-// to TrackRow if it is a moving station, and contain a pointer to WeatherRow
-// if it is a weather station.  If no weather or track data existed, the
-// pointers will be NULL.  This new way of storing station data will save a LOT
-// of memory.  If a station suddenly starts moving or spitting out weather data
-// the new structures will be allocated, filled in, and pointers to them
+// Break DataRow into several structures.  DataRow will contain the
+// parameters that are common across all types of stations.  DataRow
+// will contain a pointer to TrackRow if it is a moving station, and
+// contain a pointer to WeatherRow if it is a weather station.  If no
+// weather or track data existed, the pointers will be NULL.  This new
+// way of storing station data will save a LOT of memory.  If a
+// station suddenly starts moving or spitting out weather data the new
+// structures will be allocated, filled in, and pointers to them
 // installed in DataRow.
 //
-// Station storage now is organized as an ordered linked list. We have both
-// sorting by name and by time last heard
+// Station storage now is organized as an ordered linked list. We have
+// both sorting by name and by time last heard
 //
 // todo: check the string length!
 //
+
 typedef struct _DataRow {
 
     struct _DataRow *n_next;    // pointer to next element in name ordered list
-    struct _DataRow *n_prev;    // pointer to previous element in name ordered list
-    struct _DataRow *t_next;    // pointer to next element in time ordered list (newer)
-    struct _DataRow *t_prev;    // pointer to previous element in time ordered list (older)
+    struct _DataRow *n_prev;    // pointer to previous element in name ordered
+                                // list
+    struct _DataRow *t_next;    // pointer to next element in time ordered
+                                // list (newer)
+    struct _DataRow *t_prev;    // pointer to previous element in time ordered
+                                // list (older)
 
-    char call_sign[MAX_CALLSIGN+1]; // call sign or name index or object/item name
+    char call_sign[MAX_CALLSIGN+1]; // call sign or name index or object/item
+                                    // name
     char *tactical_call_sign;   // Tactical callsign.  NULL if not assigned
     APRS_Symbol aprs_symbol;
     long coord_lon;             // Xastir coordinates 1/100 sec, 0 = 180°W
@@ -361,7 +368,8 @@ typedef struct _DataRow {
 //    char station_time_type;
 
     short flag;                 // several flags, see below
-    char pos_amb;               // Position ambiguity, 0 = none, 1 = 0.1 minute...
+    char pos_amb;               // Position ambiguity, 0 = none,
+                                // 1 = 0.1 minute...
     int trail_color;            // trail color (when assigned)
     char record_type;
     char data_via;              // L local, T TNC, I internet, F file
@@ -372,7 +380,7 @@ typedef struct _DataRow {
     int  last_port_heard;
     unsigned int  num_packets;
     char *node_path_ptr;        // Pointer to path string
-    char altitude[MAX_ALTITUDE]; // in meters (feet gives better resolution ???)
+    char altitude[MAX_ALTITUDE]; // in meters (feet gives better resolution ??)
     char speed[MAX_SPEED+1];    // in knots
     char course[MAX_COURSE+1];
     char bearing[MAX_COURSE+1];
@@ -386,8 +394,10 @@ typedef struct _DataRow {
     CommentRow *comment_data;   // Ptr to comment records or NULL
 
     // Below two pointers are NULL if only one position has been received
-    TrackRow *oldest_trackpoint; // Pointer to oldest track point in doubly-linked list
-    TrackRow *newest_trackpoint; // Pointer to newest track point in doubly-linked list
+    TrackRow *oldest_trackpoint; // Pointer to oldest track point in
+                                 // doubly-linked list
+    TrackRow *newest_trackpoint; // Pointer to newest track point in
+                                 // doubly-linked list
 
     // When the station is an object, it can include coordinates
     // of related points. Currently these are being used to draw
@@ -412,12 +422,16 @@ typedef struct _DataRow {
 ///////////////////////////////////////////////////////////////////////
  
     char origin[MAX_CALLSIGN+1]; // call sign originating an object
-    short object_retransmit;     // Number of times to retransmit object.  -1 = forever
-                                 // Used currently to stop sending killed objects.
-    time_t last_transmit_time;   // Time we last transmitted an object/item.  Used to
-                                 // implement decaying transmit time algorithm
-    short transmit_time_increment; // Seconds to add to transmit next time around.  Used
-                                 // to implement decaying transmit time algorithm
+    short object_retransmit;     // Number of times to retransmit object.
+                                 // -1 = forever
+                                 // Used currently to stop sending killed
+                                 // objects.
+    time_t last_transmit_time;   // Time we last transmitted an object/item.
+                                 // Used to implement decaying transmit time
+                                 // algorithm
+    short transmit_time_increment; // Seconds to add to transmit next time
+                                   // around.  Used to implement decaying
+                                   // transmit time algorithm
     char signpost[5+1];          // Holds signpost data
     int  df_color;
     char sats_visible[MAX_SAT];
@@ -446,7 +460,8 @@ typedef struct _CADRow {
     int line_type;              // Border linetype
     int line_width;             // Border line width
     float computed_area;        // Area in square kilometers
-    float raw_probability;      // Probability of area (POA) or probability of detection (POD)
+    float raw_probability;      // Probability of area (POA) or probability of
+                                // detection (POD)
     long label_latitude;        // Latitude for label placement
     long label_longitude;       // Longitude for label placement
     char label[40];             // Name of polygon
@@ -461,7 +476,8 @@ extern CADRow *CAD_list_head;
 // station flag definitions
 #define ST_OBJECT       0x01    // station is an object
 #define ST_ITEM         0x02    // station is an item
-#define ST_ACTIVE       0x04    // station is active (deleted objects are inactive)
+#define ST_ACTIVE       0x04    // station is active (deleted objects are
+                                // inactive)
 #define ST_MOVING       0x08    // station is moving
 #define ST_DIRECT       0x10    // heard direct (not via digis)
 #define ST_VIATNC       0x20    // station heard via TNC
@@ -476,7 +492,8 @@ extern void clear_data(DataRow *clear);
 extern void copy_data(DataRow *to, DataRow *from);
 #else   // DATA_DEBUG
 #define clear_data(clear) memset((DataRow *)clear, 0, sizeof(DataRow))
-#define copy_data(to, from) memmove((DataRow *)to, (DataRow *)from, sizeof(DataRow))
+#define copy_data(to, from) memmove((DataRow *)to, (DataRow *)from, \
+                                    sizeof(DataRow))
 #endif /* DATA_DEBUG */
 
 
@@ -485,7 +502,8 @@ extern void db_init(void);
 //
 extern int is_my_call(char *call, int exact);
 void mscan_file(char msg_type, void (*function)(Message *fill));
-extern void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout);
+extern void msg_record_ack(char *to_call_sign, char *my_call, char *seq,
+                           int timeout);
 extern void display_file(Widget w);
 extern void clean_data_file(void);
 extern void read_file_line(FILE *f);
@@ -515,15 +533,20 @@ extern void mdelete_messages_to(char *to);
 extern void init_message_data(void);
 extern void check_message_remove(void);
 extern int  new_message_data;
-extern time_t msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char type, char from, long *record_out);
+extern time_t msg_data_add(char *call_sign, char *from_call, char *data,
+                           char *seq, char type, char from, long *record_out);
 
 // stations
 extern int st_direct_timeout;   // Interval that ST_DIRECT flag stays set
 extern long stations;
-extern DataRow *n_first;  // pointer to first element in name ordered station list
-extern DataRow *n_last;   // pointer to last element in name ordered station list
-extern DataRow *t_first;  // pointer to first element in time ordered station list
-extern DataRow *t_last;   // pointer to last element in time ordered station list
+extern DataRow *n_first;  // pointer to first element in name ordered station
+                          // list
+extern DataRow *n_last;   // pointer to last element in name ordered station
+                          // list
+extern DataRow *t_first;  // pointer to first element in time ordered station
+                          // list
+extern DataRow *t_last;   // pointer to last element in time ordered station
+                          // list
 extern void init_station_data(void);
 extern int station_data_auto_update;
 extern int  next_station_name(DataRow **p_curr);
@@ -535,14 +558,20 @@ extern int  search_station_time(DataRow **p_time, time_t heard, int serial);
 extern void check_station_remove(void);
 extern void delete_all_stations(void);
 extern void station_del(char *callsign);
-extern void my_station_add(char *my_call_sign, char my_group, char my_symbol, char *my_long, char *my_lat, char *my_phg, char *my_comment, char my_amb);
-extern void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, char speedu, char *alt, char *sats);
-extern int  locate_station(Widget w, char *call, int follow_case, int get_match, int center_map);
+extern void my_station_add(char *my_call_sign, char my_group, char my_symbol,
+                           char *my_long, char *my_lat, char *my_phg, 
+                           char *my_comment, char my_amb);
+extern void my_station_gps_change(char *pos_long, char *pos_lat, char *course, 
+                                  char *speed, char speedu, char *alt, 
+                                  char *sats);
+extern int  locate_station(Widget w, char *call, int follow_case, 
+                           int get_match, int center_map);
 extern void update_station_info(Widget w);
 
 // objects/items
 extern void check_and_transmit_objects_items(time_t time);
-extern int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length);
+extern int Create_object_item_tx_string(DataRow *p_station, char *line, 
+                                        int line_length);
 extern time_t last_object_check;
 
 // trails
