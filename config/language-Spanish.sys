@@ -78,6 +78,7 @@ PULDNMP020|Activar/Configurar Tigermap||
 PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
 PULDNMP022|Indezar Mapas en Inicio||
 PULDNMP023|Re-Indezar Mapas|R|
+PULDNMP024|Map Re-Index: ALL Maps|A|
 #
 # Menú "Configurar Tigermapa"
 MPUPTGR001|Rejilla||

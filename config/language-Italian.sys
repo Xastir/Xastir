@@ -79,6 +79,7 @@ PULDNMP020|Abilita/Configura Tigermap||
 PULDNMP021|Mappe Automatche - Disabilita Mappe Raster||
 PULDNMP022|Indicizza Mappe all' Avvio||
 PULDNMP023|Re-Indicizza le Mappe|R|
+PULDNMP024|Map Re-Index: ALL Maps|A|
 #
 #
 # PopUp "Configure Tigermap"

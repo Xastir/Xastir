@@ -77,7 +77,8 @@ PULDNMP008|Map Intensity|I|
 PULDNMP020|Enable/Configure Tigermap||
 PULDNMP021|Auto Map - Disable Raster Maps||
 PULDNMP022|Index Maps on Startup||
-PULDNMP023|Re-Index Maps|R|
+PULDNMP023|Map Re-Index: New Maps|R|
+PULDNMP024|Map Re-Index: ALL Maps|A|
 #
 #
 # PopUp "Configure Tigermap"

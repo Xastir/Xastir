@@ -84,6 +84,7 @@ PULDNMP020|Aanzetten/Configureren Tigermap||
 PULDNMP021|Automatische Kaartkeuze - Zet Raster Kaarten Uit||
 PULDNMP022|Indexeer Kaarten bij het Starten||
 PULDNMP023|Herindexeer Kaarten|R|
+PULDNMP024|Map Re-Index: ALL Maps|A|
 #
 #
 # PopUp "Configureren Tigermap"

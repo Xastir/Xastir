@@ -76,6 +76,7 @@ PULDNMP020|Activar/configurar tigermap||
 PULDNMP021|Auto Map - Desactivar raster mapas||
 PULDNMP022|Indexar mapas no começo||
 PULDNMP023|Mapas re-indexados|R|
+PULDNMP024|Map Re-Index: ALL Maps|A|
 #
 #
 # PopUp "Configurar tigermap"
