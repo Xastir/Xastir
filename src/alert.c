@@ -63,7 +63,7 @@ int alert_redraw_on_update = 0;
 
 
 //
-// Function to convert "County Warning Area" text to "CWA"
+// Function to convert "County Warning Area" to "CWA" in a string.
 // Called from alert_match() and alert_update_list() functions.
 //
 void normal_title(char *incoming_title, char *outgoing_title) {
@@ -128,7 +128,8 @@ void alert_print_list(void) {
 
 
 //
-// This function add a new alert to our alert list.
+// This function adds a new alert to our alert list.
+// Returns address of entry in alert_list or NULL.
 // Called from alert_build_list() function.
 //
 /*@null@*/ static alert_entry *alert_add_entry(alert_entry *entry) {
@@ -182,6 +183,8 @@ void alert_print_list(void) {
 
 
 //
+// Function used for matching on alerts.
+// Returns address of matching entry in alert_list or NULL.
 // Called from alert_build_list(), alert_update_list(), and
 // alert_active() functions.
 //
@@ -207,6 +210,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         memmove(ptr, ptr+1, strlen(ptr)+1);
 
     for (i = 0; i < alert_list_count; i++) {
+        // Shorten the title
         normal_title(alert_list[i].title, title_m);
         strncpy(alert_f, alert_list[i].filename, 32);
         alert_f[32] = '\0';
@@ -239,6 +243,8 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
 
 //
+// Updates alert_list from updated variables in alert.  Also updates
+// flags in the entire alert_list?
 // Called from maps.c:load_alert_maps() functions (both copies of it,
 // compiled in with different map support).
 //
@@ -247,6 +253,8 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
     int i;
     char title_e[33], title_m[33];
 
+    // Find the matching alert in the alert_list, copy updated
+    // parameters from alert into the alert_list entry.
     if ((ptr = alert_match(alert, match_level))) {
         if (!ptr->filename[0]) {
             strncpy(ptr->filename, alert->filename, 32);
@@ -258,12 +266,26 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
             ptr->right_boundary = alert->right_boundary;
         }
         ptr->flags[0] = alert->flags[0];
+
+        // Shorten title
         normal_title(alert->title, title_e);
+
+        // Force the string to be terminated
         title_e[32] = title_m[32] = '\0';
+
+        // Now interate through the entire alert_list
         for (i = 0; i < alert_list_count; i++) {
+
+            // If flag was '?' or has changed
             if ((alert_list[i].flags[0] == '?' || alert_list[i].flags[0] != ptr->flags[0])) {
+
+                // Shorten the title
                 normal_title(alert_list[i].title, title_m);
+
+                // If the titles are the same
                 if (strcmp(title_e, title_m) == 0) {
+
+                    // Update parameters
                     if (!alert_list[i].filename[0]) {
                         strncpy(alert_list[i].filename, alert->filename, 32);
                         alert_list[i].filename[32] = '\0';
@@ -554,7 +576,8 @@ static void alert_build_list(Message *fill) {
 //
 // This function scans the message list to find new alerts.  It adds
 // current alerts to our alert list via the alert_build_list()
-// function.
+// function.  It also builds the alert_tag string which contains
+// three characters per alert, and the on-screen status of each.
 //
 // Called from db.c:decode_message() function when a new alert is
 // received, and from maps.c:load_alert_maps() functions (both of
@@ -579,6 +602,7 @@ int alert_message_scan(void) {
         (void)alert_active(&alert_list[i], ALERT_ALL);
 
     // Scan the message list for alerts, add new ones to our alert list.
+    // This calls alert_build_list() function for each message found.
     mscan_file(MESSAGE_NWS, alert_build_list);
 
     // Blank out the alert tag
