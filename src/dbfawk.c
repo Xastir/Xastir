@@ -30,14 +30,14 @@
  *
  */
 #include "config.h"
-#ifdef HAVE_LIBSHP
+#if defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE)
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <dirent.h>
 #include "awk.h"
 #include "dbfawk.h"
-
-static awk_symtab *symtbl = NULL;
 
 /*
  * dbfawk_sig:  Generate a signature for a DBF file.
@@ -56,10 +56,10 @@ int dbfawk_sig(DBFHandle dbf, char *sig, int size)
     for (i = 0, sp=sig; sp < &sig[size-XBASE_FLDHDR_SZ] && i < nf ; i++) {
       DBFGetFieldInfo(dbf,i,sp,&width,&prec);
       sp += strlen(sp);
-      *sp++ = ':';		/* field name separator */
+      *sp++ = ':';              /* field name separator */
     }
     if (i)
-      *--sp = '\0';		/* clobber the trailing sep */
+      *--sp = '\0';             /* clobber the trailing sep */
   }
   return nf;
 }
@@ -70,7 +70,7 @@ int dbfawk_sig(DBFHandle dbf, char *sig, int size)
  */
 dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
 {
-  dbfawk_field_info *fi, *head, *prev;
+  dbfawk_field_info *fi, *head = NULL, *prev;
   int nf;
   char *sp;
 
@@ -101,13 +101,99 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
 }
 
 /*
- * dbfawk_load_sig:  Load up dbfawk signature mappings
- *  Reads config/*.dbfawk and registers dbffields "signature".
+ * dbfawk_load_sigs:  Load up dbfawk signature mappings
+ *  Reads *.dbfawk and registers dbffields "signature".
+ *  Returns head of sig_info list.
+ *
+ *  TODO - consider whether it makes sense to use a private symtbl,
+ *   compile and then free here or require the caller to pass in a
+ *   symtbl that has dbfinfo declared.
  */
+
+dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
+                                  const char *ftype) /* filetype */
+{
+    DIR *d;
+    struct dirent *e;
+    int ftlen;
+    dbfawk_sig_info *i, *head = NULL;
+    awk_symtab *symtbl;
+    char dbfinfo[1024];         /* local copy of signature */
+
+    if (!dir || !ftype)
+        return NULL;
+    ftlen = strlen(ftype);
+    d = opendir(dir);
+    if (!d)
+        return NULL;
+
+    symtbl = awk_new_symtab();
+    awk_declare_sym(symtbl,"dbfinfo",STRING,dbfinfo,sizeof(dbfinfo));
+
+    while ((e = readdir(d)) != NULL) {
+        int len = strlen(e->d_name);
+
+        *dbfinfo = '\0';
+        if (len > ftlen && (strcmp(&e->d_name[len-ftlen],ftype) == 0)) {
+            fprintf(stderr,"match: %s\n",e->d_name);
+            if (!head) {
+                i = head = calloc(1,sizeof(dbfawk_sig_info));
+            } else {
+                i->next = calloc(1,sizeof(dbfawk_sig_info));
+                i = i->next;
+            }
+            i->prog = awk_load_program_file(symtbl,e->d_name);
+            if (awk_compile_program(i->prog) < 0) {
+                fprintf(stderr,"%s: failed to parse\n",e->d_name);
+            } else {
+                /* dbfinfo must be defined in BEGIN rule */
+                awk_exec_begin(i->prog); 
+                i->sig = strdup(dbfinfo);
+                fprintf(stderr,"sig: %s\n",i->sig);
+                awk_uncompile_program(i->prog);
+            }
+        }
+    }
+
+    awk_free_symtab(symtbl);
+    return head;
+}
+
+void dbfawk_free_sig(dbfawk_sig_info *sig) 
+{
+    if (sig) {
+        if (sig->prog)
+            awk_free_program(sig->prog);
+        if (sig)
+            free(sig);
+    }
+}
+
+void dbfawk_free_sigs(dbfawk_sig_info *list) 
+{
+    dbfawk_sig_info *x, *p;
+
+    for (p = list; p; ) {
+        x = p;
+        p = p->next;
+        dbfawk_free_sig(x);
+    }
+}
 
 /*
- * dbfawk_find_sig:  Given a DBF file's "signature", find (and
- *  compile if necessary) the appropriate dbfawk program.
+ * dbfawk_find_sig:  Given a DBF file's "signature", find the appropriate
+ * awk program.  
  */
 
-#endif /* HAVE_LIBSHP */
+dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info, const char *sig)
+{
+    dbfawk_sig_info *result = NULL;
+
+    for (result = info; result; result = result->next) {
+        if (strcmp(result->sig,sig) == 0)
+            return result;
+    }
+    return NULL;
+}
+
+#endif /* HAVE_LIBSHP && HAVE_LIBPCRE */

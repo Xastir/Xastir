@@ -324,6 +324,18 @@ awk_action *awk_compile_action(awk_symtab *this, const char *act)
     return first;
 }
 
+/*
+ * awk_free_action: Free the compiled action
+ */
+void awk_free_action(awk_action *a)
+{
+    while (a) {
+        awk_action *p = a;
+        a = p->next_act;
+        free(p);
+    }
+}
+
 /* 
  * awk_eval_expr: expand $vars into dest and do type conversions as
  *  needed.  For strings, just write directly into dest->val.  For
@@ -511,6 +523,12 @@ void awk_free_rule(awk_rule *r)
                 free((char *)r->act);
             if (r->pattern)
                 free((char *)r->pattern);
+            if (r->tables)
+                pcre_free((void *)r->tables);
+            if (r->re)
+                pcre_free(r->re);
+            if (r->pe)
+                pcre_free(r->pe);
         }
         free(r);
     }
@@ -605,16 +623,6 @@ static void garbage(const char *file,
     fputs("^\n\n",stderr);
 }
 
-static char *dupe(char *s) 
-{
-    int l = strlen(s);
-    char *r = malloc(l+1);
-    
-    if (r)
-        strcpy(r,s);
-    return r;
-}
-
 awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program */
                         const char *file) /* rules filename */
 {
@@ -658,7 +666,7 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
             }
             if (*cp != '\0')    /* zap end of pattern */
                 *cp++ = '\0';
-            r->pattern = dupe(p);
+            r->pattern = strdup(p);
             break;
         case 'B':               /* BEGIN? */
             if (strncmp(cp,"BEGIN_RECORD",12) == 0) {
@@ -712,7 +720,7 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
             }
             if (*cp != '\0')    /* zap end of act */
                 *cp++ = '\0';
-            r->act = dupe(p);
+            r->act = strdup(p);
             r->flags |= AR_MALLOC;
             /* make sure there's no extraneous junk on the line */
             while (*cp && isspace(*cp)) ++cp;
@@ -732,27 +740,26 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
 }
 
 /*
- * awk_compile_program: Once loaded (from array or file), the program is compiled.
+ * awk_compile_program: Once loaded (from array or file), the program is compiled.  Check for already compiled program.
  */
 int awk_compile_program(awk_program *rs)
 {
-    pcre_extra *pe;
-    const unsigned char *tables;
     const char *error;
     awk_rule *r;
     int erroffset;
 
     if (!rs)
         return -1;
-    tables = pcre_maketables(); /* NLS locale parse tables */
 
     for (r = rs->head; r; r = r->next_rule) {
         if (r->ruletype == REGEXP) {
-            r->re = pcre_compile(r->pattern, /* the pattern */
-                                 0,         /* default options */
-                                 &error,    /* for error message */
-                                 &erroffset,        /* for error offset */
-                                 tables);   /* NLS locale character tables */
+            r->tables = pcre_maketables(); /* NLS locale parse tables */
+            if (!r->re)
+                r->re = pcre_compile(r->pattern, /* the pattern */
+                                     0, /* default options */
+                                     &error, /* for error message */
+                                     &erroffset, /* for error offset */
+                                     r->tables); /* NLS locale character tables */
             if (!r->re) {
                 int i;
                 
@@ -763,7 +770,8 @@ int awk_compile_program(awk_program *rs)
                 fprintf(stderr,"^\n");
                 return -1;
             }
-            pe = pcre_study(r->re, 0, &error); /* optimize the regexp */
+            if (!r->pe)
+                r->pe = pcre_study(r->re, 0, &error); /* optimize the regexp */
         } else if (r->ruletype == BEGIN) {
             rs->begin = r;
         } else if (r->ruletype == BEGIN_REC) {
@@ -773,9 +781,40 @@ int awk_compile_program(awk_program *rs)
         } else if (r->ruletype == END) {
             rs->end = r;
         }
-        r->code = awk_compile_action(rs->symtbl,r->act); /* compile the action */
+        if (!r->code)
+            r->code = awk_compile_action(rs->symtbl,r->act); /* compile the action */
     }
     return 0;
+}
+
+/* 
+ * awk_uncompile_program: Frees the compiled program (patterns and stmts)
+ * but keeps the program text loaded so it can be recompiled (e.g. with a
+ * new symtbl).
+ */
+void awk_uncompile_program(awk_program *p)
+{
+    awk_rule *r;
+
+    if (!p)
+        return;
+
+    for (r = p->head; r; r = r->next_rule) {
+        if (r->ruletype == REGEXP) {
+            if (r->tables)
+                pcre_free((void *)r->tables);
+            r->tables = NULL;
+            if (r->re)
+                pcre_free(r->re);
+            r->re = NULL;
+            if (r->pe)
+                pcre_free(r->pe);
+            r->pe = NULL;
+        }
+        if (r->code)
+            awk_free_action(r->code); /* free the action */
+        r->code = NULL;
+    }
 }
 
 /*

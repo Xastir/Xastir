@@ -59,9 +59,10 @@ typedef struct awk_action_ {	/* a program statement */
 typedef struct awk_rule_ {
     struct awk_rule_ *next_rule;    /* linked list */
     enum {BEGIN,BEGIN_REC,END_REC,END,REGEXP} ruletype;
-    const char *pattern;        /* the pattern string */
-    pcre *re;                   /* compiled pattern */
-    pcre_extra *pe;             /* optimized pattern */
+    const char *pattern;        /* pcre pattern string */
+    const u_char *tables;       /* pcre NLS tables */
+    pcre *re;                   /* pcre compiled pattern */
+    pcre_extra *pe;             /* pcre optimized pattern */
     const char *act;            /* the program string */
     awk_action *code;		/* compiled program */
     int flags;			/* some flags */
@@ -102,6 +103,7 @@ extern int awk_compile_stmt(awk_symtab *this,
                     const char *stmt,
                     int len);
 extern awk_action *awk_compile_action(awk_symtab *this, const char *act);
+extern void awk_free_action(awk_action *a);
 extern void awk_eval_expr(awk_symtab *this,
 		      awk_symbol *dest, 
 		      const char *expr,
@@ -118,6 +120,7 @@ extern awk_program *awk_load_program_array(awk_symtab *this,
 extern awk_program *awk_load_program_file(awk_symtab *this,
 			       const char *file);
 extern int awk_compile_program(awk_program *rs);
+extern void awk_uncompile_program(awk_program *rs);
 extern int awk_exec_program(awk_program *this, char *buf, int len);
 extern int awk_exec_begin_record(awk_program *this);
 extern int awk_exec_end_record(awk_program *this);

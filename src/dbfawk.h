@@ -38,13 +38,23 @@
 #endif // _SHAPEFILE_H_INCLUDED
 
 typedef struct dbfawk_field_info_ {
-  struct dbfawk_field_info_ *next;
-  char name[XBASE_FLDHDR_SZ];	/* name of the field */
-  int num;			/* column number */
-  DBFFieldType type;		/* data type */
+    struct dbfawk_field_info_ *next;
+    char name[XBASE_FLDHDR_SZ];   /* name of the field */
+    int num;                      /* column number */
+    DBFFieldType type;            /* data type */
 } dbfawk_field_info;
+
+typedef struct dbfawk_sig_info_ {
+    struct dbfawk_sig_info_ *next;
+    char *sig;                  /* dbfinfo signature */
+    awk_program *prog;          /* the program for this signature */
+} dbfawk_sig_info;
 
 extern int dbfawk_sig(DBFHandle dbf, char *sig, int size);
 extern dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields);
+extern dbfawk_sig_info *dbfawk_load_sigs(const char *dir, const char *ftype);
+extern dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info, const char *sig);
+extern void dbfawk_free_sig(dbfawk_sig_info *sig);
+extern void dbfawk_free_sigs(dbfawk_sig_info *list);
 
 #endif /* !DBFAWK_H*/
