@@ -2701,7 +2701,7 @@ void draw_range_scale(Widget w) {
 
 
     // Find out the screen values
-    XtVaGetValues(da,XmNwidth, &width, XmNheight, &height, 0);
+    XtVaGetValues(da,XmNwidth, &width, XmNheight, &height, NULL);
 
     // Convert points to Xastir coordinate system
 

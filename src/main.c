@@ -3014,7 +3014,7 @@ int create_image(Widget w) {
               XmNmarginWidth,   &margin_width,
               XmNmarginHeight,  &margin_height,
               XmNunitType,      &unit_type,
-              0);
+              NULL);
 
     (void)XSetDashes(XtDisplay(w), gc, 0, medium_dashed , 2);
 
@@ -3242,7 +3242,7 @@ void refresh_image(Widget w) {
               XmNmarginWidth,   &margin_width,
               XmNmarginHeight,  &margin_height,
               XmNunitType,      &unit_type,
-              0);
+              NULL);
 
     (void)XSetDashes(XtDisplay(w), gc, 0, medium_dashed , 2);
 
@@ -9076,7 +9076,7 @@ void da_expose(Widget w, /*@unused@*/ XtPointer client_data, XtPointer call_data
         XmNmarginWidth, &margin_width,
         XmNmarginHeight, &margin_height,
         XmNunitType, &unit_type,
-        0);
+        NULL);
 
     (void)XCopyArea(XtDisplay(w),
         pixmap_final,
@@ -9119,7 +9119,7 @@ void da_resize_execute(Widget w) {
         XtVaGetValues(w,
             XmNwidth,   &width,
             XmNheight,  &height,
-            0);
+            NULL);
 
         screen_width  = (long)width;
         screen_height = (long)height;
@@ -9237,7 +9237,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     XtVaGetValues(w,
             XmNwidth, &width,
             XmNheight, &height,
-            0);
+            NULL);
 
     /*fprintf(stderr,"input event %d %d\n",event->type,ButtonPress);*/
     redraw=0;
@@ -9349,7 +9349,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     && (abs(menu_x - input_x) < 15)
                     && (abs(menu_y - input_y) < 15) ) {
            /*     if(display_up) {
-                    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+                    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,NULL);
                     new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
                     new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
                     new_scale_y = scale_y;          // keep size
@@ -9424,7 +9424,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     //(temp,"Distance x:%d pixels,  y:%d pixels\n",x_distance,y_distance);
                     //popup_message_always(langcode("POPUPMA020"),temp);
 
-                    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+                    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,NULL);
                     a_x = mid_x_long_offset  - ((width *scale_x)/2) + (menu_x*scale_x);
                     a_y = mid_y_lat_offset   - ((height*scale_y)/2) + (menu_y*scale_y);
 
@@ -9554,7 +9554,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     x_center = (menu_x + input_x) /2;
                     y_center = (menu_y + input_y) /2;
 
-                    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+                    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,NULL);
                     new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (x_center*scale_x);
                     new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (y_center*scale_y);
 
@@ -11234,7 +11234,7 @@ void fix_dialog_size(Widget w) {
         XtVaGetValues(w,
                   XmNwidth, &wd,
                   XmNheight, &ht,
-                  0);
+                  NULL);
 
         XtVaSetValues(w,
                   XmNminWidth,wd,
@@ -11255,7 +11255,7 @@ void fix_dialog_vsize(Widget w) {
     if (XtIsRealized(w)){
         XtVaGetValues(w,
                   XmNheight, &ht,
-                  0);
+                  NULL);
 
         XtVaSetValues(w,
                   XmNminHeight,ht,
@@ -11386,7 +11386,7 @@ void new_image(Widget da) {
 void check_range(void) {
     Dimension width, height;
 
-    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+    XtVaGetValues(da, XmNwidth, &width, XmNheight, &height, NULL);
 
     if ((height*new_scale_y) > 64800000l)
         new_mid_y  =  64800000l/2;                               // center between 90°N and 90°S
@@ -11422,7 +11422,7 @@ void check_range(void) {
 void display_zoom_image(int recenter) {
     Dimension width, height;
 
-    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
 //fprintf(stderr,"Before,  x: %lu,  y: %lu\n",new_scale_x,new_scale_y);
     check_range();              // keep map inside world and calc x scaling
 //fprintf(stderr,"After,   x: %lu,  y: %lu\n\n",new_scale_x,new_scale_y);
@@ -11462,7 +11462,7 @@ void Zoom_in( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
         new_scale_y = scale_y / 2;
@@ -11480,7 +11480,7 @@ void Zoom_in_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset;
         new_mid_y = mid_y_lat_offset;
         new_scale_y = scale_y / 2;
@@ -11498,7 +11498,7 @@ void Zoom_out(  /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
         if (width*scale_x < 129600000l || height*scale_y < 64800000l)
@@ -11517,7 +11517,7 @@ void Zoom_out_no_pan( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, 
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset;
         new_mid_y = mid_y_lat_offset;
         if (width*scale_x < 129600000l || height*scale_y < 64800000l)
@@ -11538,7 +11538,7 @@ void Zoom_level( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 
     level=atoi((char *)clientData);
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
         switch(level) {
@@ -11605,7 +11605,7 @@ void Pan_ctr( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
         new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
         new_scale_y = scale_y;          // keep size
@@ -11621,7 +11621,7 @@ void Pan_up( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset;
         new_mid_y = mid_y_lat_offset  - (height*scale_y/4);
         new_scale_y = scale_y;          // keep size
@@ -11637,7 +11637,7 @@ void Pan_up_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset;
         new_mid_y = mid_y_lat_offset  - (height*scale_y/10);
         new_scale_y = scale_y;          // keep size
@@ -11653,7 +11653,7 @@ void Pan_down( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset;
         new_mid_y = mid_y_lat_offset  + (height*scale_y/4);
         new_scale_y = scale_y;          // keep size
@@ -11669,7 +11669,7 @@ void Pan_down_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset;
         new_mid_y = mid_y_lat_offset  + (height*scale_y/10);
         new_scale_y = scale_y;          // keep size
@@ -11685,7 +11685,7 @@ void Pan_left( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset - (width*scale_x/4);
         new_mid_y = mid_y_lat_offset;
         new_scale_y = scale_y;          // keep size
@@ -11701,7 +11701,7 @@ void Pan_left_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset - (width*scale_x/10);
         new_mid_y = mid_y_lat_offset;
         new_scale_y = scale_y;          // keep size
@@ -11717,7 +11717,7 @@ void Pan_right( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset + (width*scale_x/4);
         new_mid_y = mid_y_lat_offset;
         new_scale_y = scale_y;          // keep size
@@ -11733,7 +11733,7 @@ void Pan_right_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     Dimension width, height;
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         new_mid_x = mid_x_long_offset + (width*scale_x/10);
         new_mid_y = mid_y_lat_offset;
         new_scale_y = scale_y;          // keep size
@@ -12039,7 +12039,7 @@ void Center_Zoom( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
             // want.
 
             // Find out the screen values
-            XtVaGetValues(da,XmNwidth, &width, XmNheight, &height, 0);
+            XtVaGetValues(da,XmNwidth, &width, XmNheight, &height, NULL);
 
             // Convert points to Xastir coordinate system
 
@@ -12191,7 +12191,7 @@ void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
     }
 
     if(display_up) {
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
         my_new_lonl = (mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x));
         my_new_latl = (mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y));
         // Check if we are still on the planet... 
@@ -15879,7 +15879,7 @@ void map_properties_fill_in (void) {
         // Save our current place in the dialog
         XtVaGetValues(map_properties_list,
             XmNtopItemPosition, &top_position,
-            0);
+            NULL);
 
 //        fprintf(stderr,"Top Position: %d\n",top_position);
 
@@ -23468,7 +23468,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         }
         else {
             // Get mouse position
-            XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+            XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
             lon = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
             lat = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
         }
@@ -26411,7 +26411,7 @@ if (Area_object_enabled) {
 
 
                 // Get the display parameters
-                XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+                XtVaGetValues(da,XmNwidth, &width,XmNheight, &height, NULL);
 
                 // Find distance from center to top of screen.
                 // top_range = distance from mid_x_long_offset,
