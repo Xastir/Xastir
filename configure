@@ -961,6 +961,18 @@ EOF
       ac_gps_port='"/dev/cuaa1"'
       echo "configure: warning: *** FreeBSD support is not fully implemented yet! ***" 1>&2
       ;;
+
+  *-*-openbsd* )
+      cat >> confdefs.h <<\EOF
+#define XASTIR_SYSTEM "OpenBSD"
+EOF
+
+      ac_tnc_port='"/dev/cuaa0"'
+      ac_gps_port='"/dev/cuaa1"'
+      echo "configure: warning: *** OpenBSD support is not fully implemented yet
+! ***" 1>&2
+      ;;
+
    *-*-*sunos* )
       cat >> confdefs.h <<\EOF
 #define XASTIR_SYSTEM "SunOS"

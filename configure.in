@@ -48,6 +48,12 @@ case $host in
       ac_gps_port='"/dev/cuaa1"'
       AC_MSG_WARN(*** FreeBSD support is not fully implemented yet! ***)
       ;;
+  *-*-openbsd* )
+      AC_DEFINE(XASTIR_SYSTEM, "OpenBSD")
+      ac_tnc_port='"/dev/cuaa0"'
+      ac_gps_port='"/dev/cuaa1"'
+      AC_MSG_WARN(*** OpenBSD support is not fully implemented yet! ***)
+      ;;
    *-*-*sunos* )
       AC_DEFINE(XASTIR_SYSTEM, "SunOS")
       ac_tnc_port='"/dev/cua/a"'

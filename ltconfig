@@ -1255,6 +1255,14 @@ else
     hardcode_direct=yes
     hardcode_shlibpath_var=no
     ;;
+ 
+  # OpenBSD 3  and greater uses gcc -shared to do shared libraries.
+  openbsd*)
+    archive_cmds='$CC -shared -o $lib $libobjs $deplibs $compiler_flags'
+    hardcode_libdir_flag_spec='-R$libdir'
+    hardcode_direct=yes
+    hardcode_shlibpath_var=no
+    ;;
 
   hpux9* | hpux10* | hpux11*)
     case "$host_os" in
