@@ -1984,7 +1984,15 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // Set up call string for display
     if (Display_.callsign)
-        strcpy(temp_call,p_station->call_sign);
+        if (p_station->tactical_call_sign[0]) {
+            // Display tactical callsign instead if it has one
+            // defined.
+            strcpy(temp_call,p_station->tactical_call_sign);
+        }
+        else {
+            // Display normal callsign.
+            strcpy(temp_call,p_station->call_sign);
+        }
     else
         strcpy(temp_call,"");
 
@@ -3074,6 +3082,200 @@ void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
 
 
 
+// Global variables for use with routines following
+Widget change_tactical_dialog = (Widget)NULL;
+Widget tactical_text = (Widget)NULL;
+DataRow *tactical_pointer = NULL;
+
+
+void Change_tactical_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    change_tactical_dialog = (Widget)NULL;
+}
+
+
+
+
+
+void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    char *temp;
+
+    // Small memory leak in below statement:
+    //strcpy(temp, XmTextGetString(tactical_text));
+    // Change to:
+    temp = XmTextGetString(tactical_text);
+
+    strncpy(tactical_pointer->tactical_call_sign,
+        temp,
+        MAX_CALLSIGN);
+
+    fprintf(stderr,
+        "Assigned tactical call \"%s\" to %s\n",
+        temp,
+        tactical_pointer->call_sign);
+
+    XtFree(temp);
+
+    Change_tactical_destroy_shell(widget,clientData,callData);
+}
+
+
+
+
+
+void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
+    static Widget  pane, my_form, button_ok, button_close;
+    Atom delw;
+    Arg al[2];                    /* Arg List */
+    register unsigned int ac = 0;           /* Arg Count */
+
+    if (!change_tactical_dialog) {
+        change_tactical_dialog =
+            XtVaCreatePopupShell(langcode("WPUPSTI065"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
+
+        pane = XtVaCreateWidget("Change Tactical pane",
+                xmPanedWindowWidgetClass,
+                change_tactical_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        my_form =  XtVaCreateWidget("Change Tactical my_form",
+                xmFormWidgetClass,
+                pane,
+                XmNfractionBase, 3,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+
+        /*set args for color */
+        ac=0;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+
+
+        tactical_text = XtVaCreateManagedWidget("Change_Tactical text",
+                xmTextWidgetClass,
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 15,
+                XmNwidth, ((15*7)+2),
+                XmNmaxLength, 15,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+        // Fill in the current value of tactical callsign
+        XmTextSetString(tactical_text, tactical_pointer->tactical_call_sign);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tactical_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tactical_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(button_ok,
+            XmNactivateCallback,
+            Change_tactical_change_data,
+            change_tactical_dialog);
+        XtAddCallback(button_close,
+            XmNactivateCallback,
+            Change_tactical_destroy_shell,
+            change_tactical_dialog);
+
+        pos_dialog(change_tactical_dialog);
+
+        delw = XmInternAtom(XtDisplay(change_tactical_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(change_tactical_dialog, delw, Change_tactical_destroy_shell, (XtPointer)change_tactical_dialog);
+
+        XtManageChild(my_form);
+        XtManageChild(pane);
+
+        XtPopup(change_tactical_dialog,XtGrabNone);
+        fix_dialog_size(change_tactical_dialog);
+
+        // Move focus to the Close button.  This appears to
+        // highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit
+        // the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(change_tactical_dialog);
+        XmProcessTraversal(button_close, XmTRAVERSE_CURRENT);
+
+    } else {
+        (void)XRaiseWindow(XtDisplay(change_tactical_dialog),
+            XtWindow(change_tactical_dialog));
+    }
+}
+
+
+
+
+
+/*
+ *  Assign a tactical call to a station
+ */
+void Assign_Tactical_Call( Widget w, XtPointer clientData, XtPointer calldata) {
+    DataRow *p_station = clientData;
+
+    //fprintf(stderr,"Object Name: %s\n", p_station->call_sign);
+//    strcpy(p_station->tactical_call_sign,"Team 7");
+    tactical_pointer = p_station;
+    Change_tactical(w, p_station, NULL);
+}
+
+
+
+
+
 static void PosTestExpose(Widget parent, XtPointer clientData, XEvent *event, Boolean * continueToDispatch) {
     Position x, y;
 
@@ -3250,6 +3452,16 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
         xastir_snprintf(temp, sizeof(temp), "\n");
+        XmTextInsert(si_text,pos,temp);
+        pos += strlen(temp);
+    }
+
+    // Print the tactical call, if any
+    if (p_station->tactical_call_sign[0]) {
+        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI065"), p_station->tactical_call_sign);
+        XmTextInsert(si_text,pos,temp);
+        pos += strlen(temp);
+        xastir_snprintf(temp, sizeof(temp), "\t");
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
     }
@@ -4462,8 +4674,15 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
 end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
-    if (calldata != NULL) {     // We were called from the Object->Modify menu item
-        Modify_object(w, (XtPointer)p_station, calldata);
+    if (calldata != NULL) {     // We were called from the
+                                // Object->Modify or Assign
+                                // Tactical Call menu items
+        if (strncmp(calldata,"1",1) == 0) {
+            Modify_object(w, (XtPointer)p_station, calldata);
+        }
+        else if (strncmp(calldata,"2",1) == 0) {
+            Assign_Tactical_Call(w, (XtPointer)p_station, calldata);
+        }
         // We just drew all of the above, but now we wish to destroy it and
         // just leave the modify dialog in place.
         Station_data_destroy_shell(w, (XtPointer)db_station_info, NULL);
@@ -4585,7 +4804,7 @@ end_critical_section(&db_station_popup_lock, "db.c:Station_info_select_destroy_s
  *  if only one station in view it shows the data with Station_data()
  *  otherwise we get a selection box
  *  clientData will be non-null if we wish to drop through to the object->modify
- *  dialog.
+ *  or Assign Tactical Call dialogs.
  */
 void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldata) {
     DataRow *p_station;
@@ -6380,6 +6599,8 @@ void init_station(DataRow *p_station) {
     p_station->coord_lon          = 0l;           // 180°W  / position
     p_station->pos_amb            = 0;            // No ambiguity
     p_station->call_sign[0]       = '\0';         // ?????
+    p_station->tactical_call_sign[0] = '\0';
+//    strcpy(p_station->tactical_call_sign, "Team 5");
     p_station->sec_heard          = 0;
     p_station->time_sn            = 0;
     p_station->flag               = 0;            // set all flags to inactive

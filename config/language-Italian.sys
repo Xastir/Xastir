@@ -702,6 +702,8 @@ WPUPSTI060|Temp Carburante: %02.1f°C  ||
 WPUPSTI061|Temp Carburante: %s°F   ||
 WPUPSTI062|Umidità Carburante: %s%%   ||
 WPUPSTI063|Pressione: %0.2f in Hg||
+WPUPSTI064|Fetch NWS Alert||
+WPUPSTI065|Tactical Call: %s||
 #
 # FCC-RAC Call Look up
 STIFCC0001|Ricerca nel database FCC||

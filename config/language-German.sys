@@ -709,6 +709,7 @@ WPUPSTI061|Brennstofftemp.: %s°F   ||
 WPUPSTI062|Brennstofffeuchte: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|NWS Wetterwarnung holen||
+WPUPSTI065|Tactical Call: %s||
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Datenbank Abfrage||

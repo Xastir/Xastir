@@ -713,7 +713,8 @@ WPUPSTI060|Ontbrandings Temp: %02.1føC  ||
 WPUPSTI061|Ontbrandings Temp: %søF   ||
 WPUPSTI062|Vochtigheids Gehalte in Brandstof: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
-WPUPSTIO64|Vraag NWS waarschuwing||
+WPUPSTI064|Vraag NWS waarschuwing||
+WPUPSTI065|Tactical Call: %s||
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Databank Doorzoeken||

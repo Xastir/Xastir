@@ -4420,6 +4420,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3, zl4, zl5, zl6, zl7, zl8, zl9;
     Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
+    Widget TAC1;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
@@ -7372,6 +7373,27 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
 
+    // Assign Tactical Call
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
+//    TAC1=XtCreateManagedWidget(langcode(""),
+    TAC1=XtCreateManagedWidget("Assign Tactical Call",
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    XtAddCallback(TAC1,XmNactivateCallback,Station_info,"2");
+
+
+    XtCreateManagedWidget("create_appshell sep7c",
+            xmSeparatorWidgetClass,
+            right_menu_popup,
+            al,
+            ac);
 
     pan_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell pan sub",
@@ -7465,7 +7487,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     //    NULL);
     XtAddCallback(pan_down,XmNactivateCallback,Pan_down,NULL);
 
-    XtCreateManagedWidget("create_appshell sep7c",
+    XtCreateManagedWidget("create_appshell sep7d",
             xmSeparatorWidgetClass,
             right_menu_popup,
             al,

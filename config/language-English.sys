@@ -703,6 +703,7 @@ WPUPSTI061|Fuel Temp: %s°F   ||
 WPUPSTI062|Fuel Moisture: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Fetch NWS Alert||
+WPUPSTI065|Tactical Call: %s||
 #
 #
 # FCC-RAC Call Look up
