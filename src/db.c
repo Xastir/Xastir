@@ -2187,6 +2187,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         if ( (strlen(weather->wx_temp) > 0)
              && (weather->wx_temp[0] != ' ')
              && (weather->wx_temp[0] != '.') ) {
+
             strcpy(tmp,"T:");
             if (Display_.temperature_only)
                 tmp[0] = '\0';
@@ -3762,7 +3763,10 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XmTextInsert(si_text, pos, temp);
         pos += strlen(temp);
 
-        if (strlen(weather->wx_temp) > 0) {
+        if ( (strlen(weather->wx_temp) > 0)
+             && (weather->wx_temp[0] != ' ')
+             && (weather->wx_temp[0] != '.') ) {
+ 
             if (units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI030"),weather->wx_temp);
             else {
@@ -3773,7 +3777,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if (strlen(weather->wx_hum) > 0) {
+        if ( (strlen(weather->wx_hum) > 0)
+                && (weather->wx_hum[0] != ' ')
+                && (weather->wx_hum[0] != '.') ) {
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI031"),weather->wx_hum);
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
@@ -3783,7 +3789,13 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 // What is Humidex anyway?  Heat Index?  Wind Chill? --we7u
 
         // DK7IN: ??? units_english ???
-        if (strlen(weather->wx_hum) > 0 && strlen(weather->wx_temp) > 0 && (!units_english_metric) &&
+        if (strlen(weather->wx_hum) > 0
+                && weather->wx_hum[0] != ' '
+                && weather->wx_hum[0] != '.'
+                && strlen(weather->wx_temp) > 0
+                && weather->wx_temp[0] != ' '
+                && weather->wx_temp[0] != '.'
+                && (!units_english_metric) &&
                 (atof(weather->wx_hum) > 0.0) ) {
 
             e = (float)(6.112 * pow(10,(7.5 * temp_out_C)/(237.7 + temp_out_C)) * atof(weather->wx_hum) / 100.0);
@@ -4776,9 +4788,10 @@ int extract_weather_item(char *data, char type, int datalen, char *temp) {
 
 
 
-// test-extract single weather data item from information field, on
-// other words, don't change the input string, but just test whether
-// the data is present.  Returns a 1 if found, 0 if not found.
+// test-extract single weather data item from information field.  In
+// other words:  Does not change the input string, but does test
+// whether the data is present.  Returns a 1 if found, 0 if not
+// found.
 //
 int test_extract_weather_item(char *data, char type, int datalen) {
     int ofs,found,len;
@@ -4985,8 +4998,14 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
         (void)extract_weather_item(data,'P',3,weather->wx_prec_00);   // rainfall (1/100 inch) since midnight
 
-        if (extract_weather_item(data,'h',2,weather->wx_hum))   // humidity (in %, 00 = 100%)
-            xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d",(atoi(weather->wx_hum)+99)%100+1);
+        if (extract_weather_item(data,'h',2,weather->wx_hum))         // humidity (in %, 00 = 100%)
+            if (weather->wx_hum[0] != '.'
+                    && weather->wx_hum[0] != ' ') {
+                xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d",(atoi(weather->wx_hum)+99)%100+1);
+            }
+            else {  // Truncate it
+                weather->wx_hum[0] = '\0';
+            }
 
         if (extract_weather_item(data,'b',5,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
             xastir_snprintf(weather->wx_baro,
