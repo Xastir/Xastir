@@ -591,7 +591,7 @@ static dbfawk_sig_info *Dbf_sigs = NULL;
 static awk_symtab *Symtbl = NULL;
 /* default dbfawk rule when no better signature match is found */
 static awk_rule dbfawk_default_rules[] = {
-    { 0, BEGIN, NULL, NULL, 0, 0, "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; name=\"\"; filled=0; pattern=0; display_level=8192; label_level=0",0 },
+    { 0, BEGIN, NULL, NULL, 0, 0, "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=8192; label_level=0",0 },
 };
 #define dbfawk_default_nrules (sizeof(dbfawk_default_rules)/sizeof(dbfawk_default_rules[0]))
 static dbfawk_sig_info *dbfawk_default_sig = NULL;
@@ -3631,6 +3631,9 @@ if (on_screen) {
             high_water_mark_index,
             high_water_mark_i);
     }
+
+    // Set fill style back to defaults
+    XSetFillStyle(XtDisplay(w), gc, FillSolid);
 }
 // End of draw_shapefile_map()
 
