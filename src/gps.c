@@ -175,9 +175,9 @@ int decode_gps_rmc( char *data,
                                                          * existing TZ
                                                          */
                                                         tzp=getenv("TZ");
-							if ( tzp == NULL ) {
-								tzp = "";
-							}
+                                                        if ( tzp == NULL ) {
+                                                            tzp = "";
+                                                        }
                                                         xastir_snprintf(tzn, 512, "TZ=%s", tzp);
                                                         putenv("TZ=UTC");
                                                         tzset();
