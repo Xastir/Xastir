@@ -16,6 +16,7 @@
 # Modified 1.1.4 : May 20 2003, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.3.2 : Jun 08 2004, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.3.x : Sept 1 2004, Han Sytsma <h.l.sytsma@hetnet.nl> / # Henk de Groot <pe1dnn@amsat.org>
+# Modified 1.4.2 : Feb 14 2005, Han Sytsma <h.l.sytsma@hetnet.nl>
 
 #
 # comment lines with pound signs in front are ignored
@@ -469,11 +470,11 @@ WPUPCFT038|TxTail (10 ms stappen)||
 WPUPCFT039|Vol Duplex||
 WPUPCFT040|Configureer Multi-Port KISS TNC||
 WPUPCFT041|Radio poort||
-WPUPCFT042|Dubious UNPROTO Path!||
-WPUPCFT043|Please consider a shorter path such as WIDE2-2 or RELAY,WIDE2-2||
-WPUPCFT044|Dubious IGATE Path!||
-WPUPCFT045|Transmitting w/Dubious UNPROTO Path!||
-WPUPCFT046|Transmitting w/Dubious IGATE Path!||
+WPUPCFT042|Twijfelachtige UNPROTO route!||
+WPUPCFT043|Gebruik liever een kortere route zoals WIDE2-2 of RELAY,WIDE2-2||
+WPUPCFT044|Twijfelachtige IGATE route!||
+WPUPCFT045|Uitzenden met twijfelachtige UNPROTO route!||
+WPUPCFT046|Uitzenden met twijfelachtige IGATE route!||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|WX Poort instelling||
@@ -954,9 +955,9 @@ POPEM00034|Zet Mijn Positie TX uit totdat geldige GPS gegevens beschikbaar zijn!
 POPEM00035|Waarschuwing||
 POPEM00036|Let op||
 POPEM00037|HSP interface aanwezig: GPS timing is verhoogd||
-POPEM00038|Name Conflicts With Existing Object/Item/Station||
-POPEM00039|Illegal characters found, substituting periods in their place||
-POPEM00040|Custom outgoing path was lost||
+POPEM00038|Naam komt overeen met bestaand Object/Item/Station||
+POPEM00039|Niet toegestane tekens gevonden, deze worden door punten vervangen||
+POPEM00040|Handmatig ingestelde uitgaande route is verloren gegaan||
 #
 # Jump Location
 JMLPO00001|Kaart lokatie||
