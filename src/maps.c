@@ -11734,11 +11734,6 @@ void index_restore_from_file(void) {
 
 //printf("%s\n",in_string);
 
-                // Malloc an index record.  We'll add it to the list
-                // only if the data looks reasonable.
-                temp_record = (map_index_record *)malloc(sizeof(map_index_record));
-                temp_record->next = NULL;
-
                 // Tweaked the string below so that it will track
                 // along with MAX_FILENAME-1.  We're constructing
                 // the string "%lu,%lu,%lu,%lu,%d,%d,%2000c", where
@@ -11749,10 +11744,13 @@ void index_restore_from_file(void) {
                     "%lu,%lu,%lu,%lu,%d,%d,%d,%",
                     MAX_FILENAME,
                     "c");
-
                 //printf("%s\n",scanf_format);
 
+                // Malloc an index record.  We'll add it to the list
+                // only if the data looks reasonable.
+                temp_record = (map_index_record *)malloc(sizeof(map_index_record));
                 memset(temp_record->filename, 0, sizeof(temp_record->filename));
+                temp_record->next = NULL;
 
                 processed = sscanf(in_string,
                     scanf_format,
@@ -11765,7 +11763,65 @@ void index_restore_from_file(void) {
                     &temp_record->auto_maps,
                     temp_record->filename);
 
-                // Check if the string is bogus
+                // Do some reasonableness checking on the parameters
+                // we just parsed.
+                if ( (temp_record->bottom < 0l)
+                        || (temp_record->bottom > 64800000l) ) {
+                    processed = 0;  // Reject this record
+                    printf("\nindex_restore_from_file: bottom extent incorrect %lu in map name:\n%s\n",
+                            temp_record->bottom,
+                            temp_record->filename);
+                }
+
+                if ( (temp_record->top < 0l)
+                        || (temp_record->top > 64800000l) ) {
+                    processed = 0;  // Reject this record
+                    printf("\nindex_restore_from_file: top extent incorrect %lu in map name:\n%s\n",
+                            temp_record->top,
+                            temp_record->filename);
+                }
+
+                if ( (temp_record->left < 0l)
+                        || (temp_record->left > 129600000l) ) {
+                    processed = 0;  // Reject this record
+                    printf("\nindex_restore_from_file: left extent incorrect %lu in map name:\n%s\n",
+                            temp_record->left,
+                            temp_record->filename);
+                }
+
+                if ( (temp_record->right < 0l)
+                        || (temp_record->right > 129600000l) ) {
+                    processed = 0;  // Reject this record
+                    printf("\nindex_restore_from_file: right extent incorrect %lu in map name:\n%s\n",
+                            temp_record->right,
+                            temp_record->filename);
+                }
+
+                if ( (temp_record->map_layer < 0)
+                        || (temp_record->map_layer > 99999) ) {
+                    processed = 0;  // Reject this record
+                    printf("\nindex_restore_from_file: map_layer field incorrect %d in map name:\n%s\n",
+                            temp_record->map_layer,
+                            temp_record->filename);
+                }
+
+                if ( (temp_record->draw_filled < 0)
+                        || (temp_record->draw_filled > 1) ) {
+                    processed = 0;  // Reject this record
+                    printf("\nindex_restore_from_file: draw_filled field incorrect %d in map name:\n%s\n",
+                            temp_record->draw_filled,
+                            temp_record->filename);
+                }
+
+                if ( (temp_record->auto_maps < 0)
+                        || (temp_record->auto_maps > 1) ) {
+                    processed = 0;  // Reject this record
+                    printf("\nindex_restore_from_file: auto_maps field incorrect %d in map name:\n%s\n",
+                            temp_record->auto_maps,
+                            temp_record->filename);
+                }
+
+                // Check whether the filename is empty
                 if (strlen(temp_record->filename) == 0) {
                     processed = 0;  // Reject this record
                 }
@@ -11782,6 +11838,7 @@ void index_restore_from_file(void) {
                             temp_record->filename);
                     }
                 }
+
 
                 // Mark the record as non-accessed at this point.
                 // At the stage where we're writing this list off to
