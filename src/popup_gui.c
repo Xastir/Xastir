@@ -103,21 +103,29 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message_dest
 
 
 
+time_t popup_time_out_check_last = (time_t)0l;
+
 void popup_time_out_check(void) {
     int i;
 
-    for (i=0;i<MAX_POPUPS;i++) {
-        if (pw[i].popup_message_dialog!=NULL) {
-            if ((sec_now()-pw[i].sec_opened)>MAX_POPUPS_TIME) {
-                XtPopdown(pw[i].popup_message_dialog);
+    // Check only every two minutes or so
+    if (popup_time_out_check_last + 120 < sec_now()) {
+        popup_time_out_check_last = sec_now();
+
+        for (i=0;i<MAX_POPUPS;i++) {
+            if (pw[i].popup_message_dialog!=NULL) {
+                if ((sec_now()-pw[i].sec_opened)>MAX_POPUPS_TIME) {
+                    XtPopdown(pw[i].popup_message_dialog);
 
 begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
 
-                XtDestroyWidget(pw[i].popup_message_dialog);
-                pw[i].popup_message_dialog = (Widget)NULL;
-                pw[i].popup_message_data = (Widget)NULL;
+                    XtDestroyWidget(pw[i].popup_message_dialog);
+                    pw[i].popup_message_dialog = (Widget)NULL;
+                    pw[i].popup_message_data = (Widget)NULL;
 
 end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_check" );
+
+                }
 
             }
         }
