@@ -13311,7 +13311,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                     path,
                     ipacket_message,
                     port,
-                    third_party);
+                    third_party,
+                    NULL);
 
                 igate_msgs_tx++;
             }
@@ -13668,7 +13669,8 @@ else {
                 path,
                 ipacket_message,
                 port,
-                third_party);
+                third_party,
+                NULL);
 
             igate_msgs_tx++;
         }
@@ -13883,7 +13885,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
 //                shorten_path(path,short_path,sizeof(short_path));
                 //sprintf(ipacket_message,"}%s>%s:%s:%s",call,path,addr9,message);
 //                sprintf(ipacket_message,"}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
-//                output_igate_rf(call,addr,path,ipacket_message,port,third_party);
+//                output_igate_rf(call,addr,path,ipacket_message,port,third_party,NULL);
 //                igate_msgs_tx++;
 //            }
 //        }
@@ -14225,12 +14227,15 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             my_callsign,
             orig_message);
 
+        // If origin, pass "call" to output_igate_rf() as the last
+        // parameter.  This would be the object/item name.
         output_igate_rf((strlen(origin)) ? origin : call,
             (strlen(origin)) ? origin : call,
             path,
             ipacket_message,
             port,
-            third_party);
+            third_party,
+            (strlen(origin)) ? call : NULL);
 
 //fprintf(stderr,"decode_info_field: IGATE>RF %s\n",ipacket_message);
     }

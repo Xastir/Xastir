@@ -763,7 +763,9 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 /* line: data to gate to rf                                     */
 /* port: port data came from                                    */
 /****************************************************************/
-void output_igate_rf(char *from, char *call, char *path, char *line, int port, int third_party) {
+void output_igate_rf(char *from, char *call, char *path, char *line,
+        int port, int third_party, char *object_name) {
+
     char temp[MAX_LINE_SIZE+20];
     int x;
     int first = 1;
@@ -854,7 +856,8 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
  
     // Check whether the source and destination calls have been
     // heard on local RF.
-    if (!check_NWS_stations(from)   // Source call is not listed in nws-stations.txt
+    if (  (   (!object_name && !check_NWS_stations(from)) // Source call not in nws-stations.txt
+            || (object_name && !check_NWS_stations(object_name))) // Object/item not in nws-stations.txt
         && (!heard_via_tnc_in_past_hour(call)==1        // Haven't heard destination call in previous hour
             || heard_via_tnc_in_past_hour(from))) {  // Have heard source call in previous hour
 
