@@ -846,9 +846,9 @@ time_t time_from_aprsstring(char *aprs_time) {
 
             // Now check whether we have any overflows.  According
             // to the "mktime()" man page, we probably don't need to
-            // do this.  It normalizes the time itself.  On all
-            // systems though?
-/*
+            // do this for overflow (It normalizes the time itself),
+            // but I think we still need to for underflow.
+//WE7U: Check this stuff carefully!
             if (alert_time.tm_min > 59) {
                 alert_time.tm_hour++;
                 alert_time.tm_min -= 60;
@@ -885,7 +885,6 @@ time_t time_from_aprsstring(char *aprs_time) {
                     }
                 }
             }
-*/
         }
     }
     else {  // We didn't parse out the day from the input string.
