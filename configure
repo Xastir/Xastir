@@ -1839,8 +1839,8 @@ _ACEOF
 
       ac_tnc_port='"com1"'
       ac_gps_port='"com2"'
-      { echo "$as_me:$LINENO: WARNING: *** Cygwin support is not fully implemented yet! ***" >&5
-echo "$as_me: WARNING: *** Cygwin support is not fully implemented yet! ***" >&2;}
+      { echo "$as_me:$LINENO: WARNING: *** Cygwin support is still preliminary! ***" >&5
+echo "$as_me: WARNING: *** Cygwin support is still preliminary! ***" >&2;}
       ;;
     * )
       { echo "$as_me:$LINENO: WARNING: Host type is not recognized" >&5
