@@ -136,7 +136,7 @@ void map_gdal_init() {
     fprintf(stderr,"\nGDAL Registered Drivers:\n");
     for (jj = 0; jj < ii; jj++) {
         gDriver = GDALGetDriver(jj);
-        printf("%20s   %s\n",
+        printf("%10s   %s\n",
             GDALGetDriverShortName(gDriver),
             GDALGetDriverLongName(gDriver) );
     }
@@ -150,7 +150,7 @@ void map_gdal_init() {
     fprintf(stderr,"OGR Registered Drivers:\n");
     for  (jj = 0; jj < ii; jj++) {
         oDriver = OGRGetDriver(jj);
-        printf("%20s   %s\n",
+        printf("%10s   %s\n",
             "",
             OGR_Dr_GetName(oDriver) );
     }
