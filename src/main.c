@@ -20382,6 +20382,13 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
         // Check whether we changed our callsign
         if (strcasecmp(old_callsign,my_callsign) != 0) {
             station_del(old_callsign);  // move to new sort location...
+
+            // If TrackMe is enabled, copy the new callsign into the
+            // track_station_call variable.  If we don't do this, we
+            // will still be tracking our old callsign.
+            if (track_me) {
+                strcpy(tracking_station_call, my_callsign);
+            }
         }
 
         // Update our parameters
