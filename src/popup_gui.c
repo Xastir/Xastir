@@ -217,23 +217,31 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
 
 
 
+// Must make sure that fonts are not loaded again and again, as this
+// takes a big chunk of memory each time.  Can you say "memory
+// leak"?
+//
+static XFontStruct *id_font=NULL;
+char *id_fontname=
+    //"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1";
+    //"-adobe-helvetica-medium-o-normal--12-120-75-75-p-67-iso8859-1";
+    //"-adobe-helvetica-medium-r-*-*-*-130-*-*-*-*-*-*";
+    //"-*-times-bold-r-*-*-13-*-*-*-*-80-*-*";
+    //"-*-helvetica-bold-r-*-*-14-*-*-*-*-80-*-*";
+    //"-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*";
+    //"-*-helvetica-*-*-*-*-*-240-100-100-*-*-*-*";
+    "-*-helvetica-*-*-*-*-*-240-*-*-*-*-*-*";
+    //"-*-fixed-*-r-*-*-*-*-*-*-*-200-*-*";
+    //"-*-helvetica-bold-r-*-*-12-240-1075-1075-*-80-*-*";	// Test for bad font
+
+
+
+
+ 
 // Routine which pops up a large message for a few seconds in the
 // middle of the screen, then removes it.
 //
 void popup_ID_message(char *banner, char *message) {
-    char *fontname=
-        //"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1";
-        //"-adobe-helvetica-medium-o-normal--12-120-75-75-p-67-iso8859-1";
-        //"-adobe-helvetica-medium-r-*-*-*-130-*-*-*-*-*-*";
-        //"-*-times-bold-r-*-*-13-*-*-*-*-80-*-*";
-        //"-*-helvetica-bold-r-*-*-14-*-*-*-*-80-*-*";
-        //"-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*";
-        //"-*-helvetica-*-*-*-*-*-240-100-100-*-*-*-*";
-        "-*-helvetica-*-*-*-*-*-240-*-*-*-*-*-*";
-        //"-*-fixed-*-r-*-*-*-*-*-*-*-200-*-*";
-//        "-*-helvetica-bold-r-*-*-12-240-1075-1075-*-80-*-*";	// Test for bad font
- 
-    static XFontStruct *font=NULL;
     float my_rotation = 0.0;
     int x = (int)(screen_width/10);
     int y = (int)(screen_height/2);
@@ -247,11 +255,11 @@ void popup_ID_message(char *banner, char *message) {
         (void)XFillRectangle(XtDisplay(appshell),pixmap_alerts,gc,0,0,screen_width,screen_height);
 
         /* load font */
-        if(!font) {
-            font=(XFontStruct *)XLoadQueryFont (XtDisplay(da), fontname);
-            if (font == NULL) {	// Couldn't get the font!!!
+        if(!id_font) {
+            id_font=(XFontStruct *)XLoadQueryFont (XtDisplay(da), id_fontname);
+            if (id_font == NULL) {	// Couldn't get the font!!!
                 fprintf(stderr,"popup_ID_message: Couldn't get font %s\n",
-                    fontname);
+                    id_fontname);
                 pending_ID_message = 0;
                 return;
             }
@@ -265,7 +273,7 @@ void popup_ID_message(char *banner, char *message) {
                 || ( (my_rotation >  90.0) && (my_rotation <  270.0) ) ) {
             my_rotation = my_rotation + 180.0;
             (void)XRotDrawAlignedString(XtDisplay(da),
-                font,
+                id_font,
                 my_rotation,
                 pixmap_alerts,
                 gc,
@@ -276,7 +284,7 @@ void popup_ID_message(char *banner, char *message) {
         }
         else {
             (void)XRotDrawAlignedString(XtDisplay(da),
-                font,
+                id_font,
                 my_rotation,
                 pixmap_alerts,
                 gc,

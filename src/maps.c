@@ -1041,6 +1041,23 @@ void draw_label_text (Widget w, int x, int y, int label_length, int color, char 
 
 
 
+// Must make sure that fonts are not loaded again and again, as this
+// takes a big chunk of memory each time.  Can you say "memory
+// leak"?
+//
+static XFontStruct *rotated_label_font=NULL;
+char *rotated_label_fontname=
+    //"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1";
+    //"-adobe-helvetica-medium-o-normal--12-120-75-75-p-67-iso8859-1";
+    //"-adobe-helvetica-medium-r-*-*-*-130-*-*-*-*-*-*";
+    //"-*-times-bold-r-*-*-13-*-*-*-*-80-*-*";
+    //"-*-helvetica-bold-r-*-*-14-*-*-*-*-80-*-*";
+    "-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*";
+
+
+
+
+
 /**********************************************************
  * draw_rotated_label_text()
  *
@@ -1051,33 +1068,25 @@ void draw_label_text (Widget w, int x, int y, int label_length, int color, char 
  * to use here.
  **********************************************************/
 void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text) {
-    char *fontname=
-//        "-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1";
-//        "-adobe-helvetica-medium-o-normal--12-120-75-75-p-67-iso8859-1";
-//        "-adobe-helvetica-medium-r-*-*-*-130-*-*-*-*-*-*";
-//        "-*-times-bold-r-*-*-13-*-*-*-*-80-*-*";
-//        "-*-helvetica-bold-r-*-*-14-*-*-*-*-80-*-*";
-        "-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*";
-
-    static XFontStruct *font=NULL;
 //    XPoint *corner;
 //    int i;
     float my_rotation = (float)((-rotation)-90);
 
 
     /* load font */
-    if(!font) {
-        font=(XFontStruct *)XLoadQueryFont (XtDisplay (w), fontname);
-        if (font == NULL) {	// Couldn't get the font!!!
+    if(!rotated_label_font) {
+        rotated_label_font=(XFontStruct *)XLoadQueryFont(XtDisplay (w),
+                                                rotated_label_fontname);
+        if (rotated_label_font == NULL) {	// Couldn't get the font!!!
             fprintf(stderr,"draw_rotated_label_text: Couldn't get font %s\n",
-                fontname);
+                rotated_label_fontname);
             return;
         }
     }
 
 
     // Code to determine the bounding box corner points for the rotated text
-//    corner = XRotTextExtents(w,font,my_rotation,x,y,label_text,BLEFT);
+//    corner = XRotTextExtents(w,rotated_label_font,my_rotation,x,y,label_text,BLEFT);
 //    for (i=0;i<5;i++) {
 //        fprintf(stderr,"%d,%d\t",corner[i].x,corner[i].y);
 //    }
@@ -1089,11 +1098,28 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
 
     if (       ( (my_rotation < -90.0) && (my_rotation > -270.0) )
             || ( (my_rotation >  90.0) && (my_rotation <  270.0) ) ) {
+
         my_rotation = my_rotation + 180.0;
-        (void)XRotDrawAlignedString(XtDisplay (w), font, my_rotation, pixmap, gc, x, y, label_text, BRIGHT);
+        (void)XRotDrawAlignedString(XtDisplay (w),
+            rotated_label_font,
+            my_rotation,
+            pixmap,
+            gc,
+            x,
+            y,
+            label_text,
+            BRIGHT);
     }
     else {
-        (void)XRotDrawAlignedString(XtDisplay (w), font, my_rotation, pixmap, gc, x, y, label_text, BLEFT);
+        (void)XRotDrawAlignedString(XtDisplay (w),
+            rotated_label_font,
+            my_rotation,
+            pixmap,
+            gc,
+            x,
+            y,
+            label_text,
+            BLEFT);
     }
 }
 
