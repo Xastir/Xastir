@@ -357,62 +357,27 @@ Getting Maps and other Data Files for Xastir:
 
             http://www.aprs.net/fips/
 
-      An important note about shpproj from Tom Russo, KM5VY:
+      An important note about using shpproj to reproject maps 
 
-      "I have been looking over shpproj's source code and it's very
-      clear that it is doing datum conversions wrong.
+      The shpproj program cannot be used to convert shapefiles unless they're
+      already using the NAD83 or WGS84 datum.  shpproj will do the conversion
+      if you ask it to, but it will do it incorrectly.
 
-      It is apparently written to be built against the very old
-      proj-4.4.3 from USGS that didn't do direct transforms from one
-      projection to another, and could only do proj->"geographic"
-      conversions.
+      A simple program to convert shapefiles between various projections
+      that does do datum conversions correctly is "shpcs2cs," available
+      from
+          <http://www.swcp.com/~russo/shape_web/>
+      That program requires libproj to be installed properly, and uses a 
+      command line format similar to the "cs2cs" program that comes with 
+      libproj.
 
-      It is completely incorrect to do "projection in one
-      datum"->"geographic"->"projection in another datum", but
-      that's precisely what shpproj does.  It is not possible
-      to use this tool to convert a shapefile in NAD27 UTM
-      cooordinates into WGS84 Lat/Lons for use in Xastir!.
-      It does WGS 84 UTM->WGS84 Lat/Lon just fine.
-
-      I have hacked up a variant of "cs2cs" that works directly on
-      shapefiles and does datum conversion correctly (unlike
-      shpproj):
-
-          <http://www.swcp.com/~russo/shape_web/>"
-
-      Another good note from Tom Russo, KM5VY on this topic:
-
-      "...I contacted Frank Warmerdam about the datum conversion issue in
-      shpproj and offered shpcs2cs back to him (since he wrote 99% of it
-      anyway).  He said that ogr2ogr is capable of doing datum conversions as
-      well as coordinate system conversions.  I haven't looked into it, as it
-      looks like it'll take a little more work -- you have to know either the
-      EPSG number or the "Well Known Transformation" (WKT) parameters --- these
-      are the sort that are in .prj files other than the junk that shpproj
-      produces, but they have a lot of detail and I can't construct them in my
-      head as quickly as "+proj=utm +datum=NAD27 +zone=13".  Still, it is more
-      powerful as it can convert between just about anything that OGR can read,
-      in any projection (as long as the projection info's in the input layer),
-      and output any other OGR format in any other projection (as long as you
-      can specify that projection somehow).
-
-      That's a long winded way of saying "You can also use ogr2ogr.  See the
-      gdal distribution for more details."  didididit didit."
-
-      Yet another note from Tom:
-
-      "I just spent a few minutes and now understand a little about how to use
-      ogr2ogr to do projections with datum shifts.  I added a small section to 
-      http://www.swcp.com/~russo/shape_web explaining how to do it, with a link
-      to a site that has all the different WKT and EPSG numbers for J.  Random
-      Projection.  
-
-      I still find "shpcs2cs" easier to use because can remember "+proj=utm
-      +zone=13 +datum=NAD27 +to +proj=latlong +datum=WGS84" much easier than I
-      can remember "-s_srs EPSG:26713 -t_srs EPSG:4326", but there it is.  Some
-      users might find this helpful."
-
-
+      If you already have gdal installed, you should have the "ogr2ogr" 
+      program available to you.  ogr2ogr will not only convert projections
+      and geodetic datum correctly, but will also convert format (ArcView
+      binary format to shapefile, TIGER/Line files to shapefile, etc.).
+      Some detailed instructions for using ogr2ogr to do this conversion
+      are available at 
+          <http://www.swcp.com/~russo/shape_web/>
 
       -----
 
@@ -657,6 +622,11 @@ Getting Maps and other Data Files for Xastir:
 
       or try a google search with "free drg maps" as the search query.
 
+      Additional, current FAA sectional charts can be downloaded from
+        http://aviationtoolbox.org/raw_data/FAA_sectionals/current/
+      These charts are in Lambert Conformal Conic projection, though, and
+      need to be converted with gdalwarp to be usable in xastir (see below).
+ 
       The 7.5' topo maps work the best so far.  Be sure to install the .tif AND
       the .fgd files side-by-side into the map directories. Without the .fgd
       file Xastir won't be able to crop the white border from the map.  Xastir
@@ -700,6 +670,28 @@ Getting Maps and other Data Files for Xastir:
       gdal-dev mailing list that they might be supporting open-source
       with a driver for gdal sometime soon.
 
+      Not all geotiff files available on the net are usable directly in 
+      xastir.  Some of them are in projections that xastir can't use 
+      properly, and others are missing all of the metadata information that
+      is needed to work out how to convert them to Lat/Lon unprojected rasters.
+      If you encounter a geotiff file that has the correct metadata, but is
+      in some projection other than UTM, you can convert that file to a  
+      lat/lon raster if you have gdal installed.  Simply run the following
+      command:
+        gdalwarp -t_srs EPSG:4326 funky_raster.tif usable_raster.tif
+
+      This will warp the geotiff file from whatever projection it was in
+      into an unprojected lat/lon raster that can be directly read into
+      xastir.  Depending on the source projection, you might get a map that
+      doesn't tile well with other maps due to the inclusion of opaque border
+      material, but it can sometimes be the only way to import a map you need
+      to use.  Furthermore, geotiff files in lat/lon format take longer to
+      load in xastir because the optimized file access that works for USGS 
+      maps doesn't work with the lat/lon files. 
+
+      Maps that require gdalwarp include the FAA sectionals mentioned above,
+      and some topo maps in obscure state plane coordinates from various state
+      GIS departments.
 
     .geo files/online maps & graphics:
 

@@ -490,8 +490,8 @@ void draw_geotiff_image_map (Widget w,
     register float total_avg_y_increment;
     unsigned long view_left_minus_pixel_width;
     unsigned long view_top_minus_pixel_height;
-
-
+    int proj_is_latlong;
+    short PCS;
 
     if (debug_level & 16)
         fprintf(stderr,"%s/%s\n", dir, filenm);
@@ -694,7 +694,13 @@ void draw_geotiff_image_map (Widget w,
             GTIFPrintDefn (&defn, stdout);
     }
 
- 
+    proj_is_latlong=FALSE;
+    if( !GTIFKeyGet(gtif,ProjectedCSTypeGeoKey, &PCS,0,1))
+      {
+	fprintf(stderr,"Warning: no PCS in geotiff file %s, assuming map is in lat/lon!\n", filenm);
+	proj_is_latlong=TRUE;
+      }
+
     /* Fetch a few TIFF fields for this image */
     if ( !TIFFGetField (tif, TIFFTAG_IMAGEWIDTH, &width) ) {
         width = 5493;
@@ -749,7 +755,7 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
-        if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )   // Do all 4 of these in one call?
+        if ( proj_is_latlong || GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )   // Do all 4 of these in one call?
         {
             if (debug_level & 16) {
                 fprintf(stderr,"  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
@@ -771,7 +777,7 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
-        if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16) {
                 fprintf(stderr,"  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
@@ -792,7 +798,7 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
-        if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16) {
                 fprintf(stderr,"  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
@@ -813,7 +819,7 @@ void draw_geotiff_image_map (Widget w,
                 fprintf(stderr,"(%11.3f,%11.3f)\n", xxx, yyy );
             }
         }
-        if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16) {
                 fprintf(stderr,"  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
@@ -1260,7 +1266,7 @@ Samples Per Pixel: 1
         yyy = (double)f_NW_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if ( GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )     // Do all 4 in one call?
+        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )     // Do all 4 in one call?
         {
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
@@ -1338,7 +1344,7 @@ Samples Per Pixel: 1
         yyy = (double)f_NE_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if ( GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
@@ -1416,7 +1422,7 @@ Samples Per Pixel: 1
         yyy = (double)f_SW_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if ( GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
@@ -1494,7 +1500,7 @@ Samples Per Pixel: 1
         yyy = (double)f_SE_y_bounding;
 
         /* Convert lat/long to projected coordinates */
-        if ( GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
+        if (  proj_is_latlong || GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
             if (debug_level & 16)
                 fprintf(stderr,"%11.3f,%11.3f\n", xxx, yyy);
@@ -2209,7 +2215,7 @@ right_crop = width - 1;
     // probably).  A higher number means less rows skipped,
     // which improves the look but slows the map drawing down.
     //
-    if (have_PixelScale) {
+    if (have_PixelScale && !proj_is_latlong) {
         SkipRows = (int)( ( scale_y / ( *PixelScale * 3.15 ) ) + 0.5 );
         if (SkipRows < 1)
             SkipRows = 1;
