@@ -270,7 +270,8 @@ AC_SUBST(LIBS)
 AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes",
   AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes",
     AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes",
-      AC_MSG_ERROR(*** Cannot find Motif include files:  Please install Motif, OpenMotif, or Lesstif development package. ***))))
+      AC_CHECK_FILE(/usr/X11R6/include/Xm/Xm.h,MOTIF_INC="yes",
+        AC_MSG_ERROR(*** Cannot find Motif include files:  Please install Motif, OpenMotif, or Lesstif development package. ***)))))
 #
 AC_FUNC_ALLOCA 
 AC_HEADER_DIRENT 
