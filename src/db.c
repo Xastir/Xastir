@@ -3941,6 +3941,16 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
 
     db_station_info_callsign = (char *) clientData; // Used for auto-updating this dialog
 
+
+    if (search_station_name(&p_station,station,1)   // find call
+        && (p_station->flag & ST_ACTIVE) != 0) {    // ignore deleted objects
+    }
+    else {
+        fprintf(stderr,"Couldn't find station in database\n");
+        return; // Don't update current/create new dialog
+    }
+
+ 
     // If we haven't calculated our decoration offsets yet, do so now
     if ( (decoration_offset_x == 0) && (decoration_offset_y == 0) ) {
         compute_decorations();
@@ -3981,6 +3991,10 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
 
     if (db_station_info == NULL) {
+        // Start building the dialog from the bottom up.  That way
+        // we can keep the buttons attached to the bottom of the
+        // form and the correct height, and let the text widget
+        // grow/shrink as the dialog is resized.
 
         db_station_info = XtVaCreatePopupShell(langcode("WPUPSTI001"),xmDialogShellWidgetClass,Global.top,
                         XmNdeleteResponse,XmDESTROY,
@@ -3998,153 +4012,15 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                         XmNshadowThickness, 1,
                         NULL);
 
-        if (search_station_name(&p_station,station,1)           // find call
-                  && (p_station->flag & ST_ACTIVE) != 0) {   // ignore deleted objects
-            icon = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),
-                    20,20,DefaultDepthOfScreen(XtScreen(appshell)));
 
-            symbol(db_station_info,0,p_station->aprs_symbol.aprs_type,
-                p_station->aprs_symbol.aprs_symbol,
-                p_station->aprs_symbol.special_overlay,icon,0,0,0,' ');
-
-            station_icon = XtVaCreateManagedWidget("Station Data icon", xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_FORM,
-                                XmNtopOffset, 2,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 5,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNlabelType, XmPIXMAP,
-                                XmNlabelPixmap,icon,
-                                XmNbackground, colors[0xff],
-                                NULL);
-
-            station_type = XtVaCreateManagedWidget("Station Data type", xmTextFieldWidgetClass, form,
-                                XmNeditable,   FALSE,
-                                XmNcursorPositionVisible, FALSE,
-                                XmNtraversalOn, FALSE,
-                                XmNshadowThickness,       0,
-                                XmNcolumns,5,
-                                XmNwidth,((5*7)+2),
-                                XmNbackground, colors[0xff],
-                                XmNtopAttachment,XmATTACH_FORM,
-                                XmNtopOffset, 2,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget,station_icon,
-                                XmNleftOffset,10,
-                                XmNrightAttachment,XmATTACH_NONE,
-                                NULL);
-
-            xastir_snprintf(temp, sizeof(temp), "%c%c%c", p_station->aprs_symbol.aprs_type,
-                p_station->aprs_symbol.aprs_symbol,
-                p_station->aprs_symbol.special_overlay);
-
-            XmTextFieldSetString(station_type, temp);
-            XtManageChild(station_type);
-
-            station_call = XtVaCreateManagedWidget("Station Data call", xmTextFieldWidgetClass, form,
-                                XmNeditable,   FALSE,
-                                XmNcursorPositionVisible, FALSE,
-                                XmNtraversalOn, FALSE,
-                                XmNshadowThickness,       0,
-                                XmNcolumns,15,
-                                XmNwidth,((15*7)+2),
-                                XmNbackground, colors[0xff],
-                                XmNtopAttachment,XmATTACH_FORM,
-                                XmNtopOffset, 2,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, station_type,
-                                XmNleftOffset,10,
-                                XmNrightAttachment,XmATTACH_NONE,
-                                NULL);
-
-            XmTextFieldSetString(station_call,p_station->call_sign);
-            XtManageChild(station_call);
-
-            station_data_auto_update_w = XtVaCreateManagedWidget(langcode("WPUPSTI056"),
-                                xmToggleButtonGadgetClass, form,
-                                XmNtopAttachment,XmATTACH_FORM,
-                                XmNtopOffset, 2,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, station_call,
-                                XmNleftOffset,10,
-                                XmNrightAttachment,XmATTACH_NONE,
-                                XmNbackground,colors[0xff],
-                                NULL);
-            XtAddCallback(station_data_auto_update_w,XmNvalueChangedCallback,station_data_auto_update_toggle,"1");
-
-            n=0;
-            XtSetArg(args[n], XmNrows, 15); n++;
-            XtSetArg(args[n], XmNcolumns, 100); n++;
-            XtSetArg(args[n], XmNeditable, FALSE); n++;
-            XtSetArg(args[n], XmNtraversalOn, FALSE); n++;
-            XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
-            XtSetArg(args[n], XmNwordWrap, TRUE); n++;
-            XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
-            XtSetArg(args[n], XmNscrollHorizontal, FALSE); n++;
-            XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
-            XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
-            XtSetArg(args[n], XmNtopWidget, station_icon); n++;
-            XtSetArg(args[n], XmNtopOffset, 5); n++;
-            XtSetArg(args[n], XmNbottomAttachment, XmATTACH_NONE); n++;
-            XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
-            XtSetArg(args[n], XmNleftOffset, 5); n++;
-            XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
-            XtSetArg(args[n], XmNrightOffset, 5); n++;
-
-            si_text = NULL;
-            si_text = XmCreateScrolledText(form,"Station_data",args,n);
+// Start with the bottom row, left button
 
 
-end_critical_section(&db_station_info_lock, "db.c:Station_data" );
-
-            // Fill in the si_text widget with real data
-            station_data_fill_in( w, (XtPointer)db_station_info_callsign, NULL);
- 
-begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
-
-        }
-
-
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
-                            XmNtopAttachment, XmATTACH_WIDGET,
-                            XmNtopWidget,XtParent(si_text),
-                            XmNtopOffset,10,
-                            XmNbottomAttachment, XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_POSITION,
-                            XmNleftPosition, 3,
-                            XmNrightAttachment, XmATTACH_POSITION,
-                            XmNrightPosition, 4,
-                            XmNrightOffset, 5,
-                            XmNbackground, colors[0xff],
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
-        XtAddCallback(button_cancel, XmNactivateCallback, Station_data_destroy_shell, db_station_info);
-
-        // [ Store Track ] or single Position
-        button_store_track = XtVaCreateManagedWidget(langcode("WPUPSTI054"),xmPushButtonGadgetClass, form,
-                            XmNtopAttachment, XmATTACH_WIDGET,
-                            XmNtopWidget,XtParent(si_text),
-                            XmNtopOffset,10,
-                            XmNbottomAttachment, XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_FORM,
-                            XmNleftOffset,5,
-                            XmNrightAttachment, XmATTACH_POSITION,
-                            XmNrightPosition, 1,
-                            XmNbackground, colors[0xff],
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
-        XtAddCallback(button_store_track,   XmNactivateCallback, Station_data_store_track ,(XtPointer)p_station);
-
+        button_clear_track = NULL;  // Need this later, don't delete!
         if (p_station->newest_trackpoint != NULL) {
             // [ Clear Track ]
             button_clear_track = XtVaCreateManagedWidget(langcode("WPUPSTI045"),xmPushButtonGadgetClass, form,
-                            XmNtopAttachment, XmATTACH_WIDGET,
-                            XmNtopWidget,button_store_track,
-                            XmNtopOffset,1,
+                            XmNtopAttachment, XmATTACH_NONE,
                             XmNbottomAttachment, XmATTACH_FORM,
                             XmNbottomOffset,5,
                             XmNleftAttachment, XmATTACH_FORM,
@@ -4162,9 +4038,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             // and should find another solution
             // [ Station Version Query ]
             button_version = XtVaCreateManagedWidget(langcode("WPUPSTI052"),xmPushButtonGadgetClass, form,
-                            XmNtopAttachment, XmATTACH_WIDGET,
-                            XmNtopWidget,button_store_track,
-                            XmNtopOffset,1,
+                            XmNtopAttachment, XmATTACH_NONE,
                             XmNbottomAttachment, XmATTACH_FORM,
                             XmNbottomOffset,5,
                             XmNleftAttachment, XmATTACH_FORM,
@@ -4177,85 +4051,9 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XtAddCallback(button_version, XmNactivateCallback, Station_query_version ,(XtPointer)p_station->call_sign);
         }            
 
-    if ( ((p_station->flag & ST_OBJECT) == 0) && ((p_station->flag & ST_ITEM) == 0) ) { // Not an object/
-        // fprintf(stderr,"Not an object or item...\n");
-        // [Send Message]
-        button_message = XtVaCreateManagedWidget(langcode("WPUPSTI002"),xmPushButtonGadgetClass, form,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget,XtParent(si_text),
-                XmNtopOffset,10,
-                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_POSITION,
-                                XmNleftPosition, 1,
-                                XmNrightAttachment, XmATTACH_POSITION,
-                                XmNrightPosition, 2,
-                                XmNbackground, colors[0xff],
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
-        XtAddCallback(button_message, XmNactivateCallback, Send_message_call ,(XtPointer)p_station->call_sign);
-    } else {
-        // fprintf(stderr,"Found an object or item...\n");
-        button_object_modify = XtVaCreateManagedWidget(langcode("WPUPSTI053"),xmPushButtonGadgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget,XtParent(si_text),
-                                XmNtopOffset,10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_POSITION,
-                                XmNleftPosition, 1,
-                                XmNrightAttachment, XmATTACH_POSITION,
-                                XmNrightPosition, 2,
-                                XmNbackground, colors[0xff],
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
-        XtAddCallback(button_object_modify, XmNactivateCallback, Modify_object, (XtPointer)p_station);
-    }
-
-    // Add FCC button only if probable match
-        if ((! strncmp(station,"A",1)) || (! strncmp(station,"K",1)) ||
-            (! strncmp(station,"N",1)) || (! strncmp(station,"W",1))  ) {
-            button_fcc = XtVaCreateManagedWidget(langcode("WPUPSTI003"),xmPushButtonGadgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget,XtParent(si_text),
-                                XmNtopOffset,10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_POSITION,
-                                XmNleftPosition, 2,
-                                XmNrightAttachment, XmATTACH_POSITION,
-                                XmNrightPosition, 3,
-                                XmNbackground, colors[0xff],
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
-            XtAddCallback(button_fcc, XmNactivateCallback, Station_data_add_fcc,(XtPointer)p_station->call_sign);
-
-            if ( ! check_fcc_data())
-                XtSetSensitive(button_fcc,FALSE);
-        }
-
-    // Add RAC button only if probable match
-        if (!strncmp(station,"VE",2) || !strncmp(station,"VA",2)) {
-            button_rac = XtVaCreateManagedWidget(langcode("WPUPSTI004"),xmPushButtonGadgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget,XtParent(si_text),
-                                XmNtopOffset,10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_POSITION,
-                                XmNleftPosition, 2,
-                                XmNrightAttachment, XmATTACH_POSITION,
-                                XmNrightPosition, 3,
-                                XmNbackground, colors[0xff],
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
-            XtAddCallback(button_rac, XmNactivateCallback, Station_data_add_rac,(XtPointer)p_station->call_sign);
-
-            if ( ! check_rac_data())
-                XtSetSensitive(button_rac,FALSE);
-        }
-
         // [ Trace Query ]
         button_trace = XtVaCreateManagedWidget(langcode("WPUPSTI049"),xmPushButtonGadgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget,button_store_track,
-                                XmNtopOffset,1,
+                                XmNtopAttachment, XmATTACH_NONE,
                                 XmNbottomAttachment, XmATTACH_FORM,
                                 XmNbottomOffset,5,
                                 XmNleftAttachment, XmATTACH_POSITION,
@@ -4269,9 +4067,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
         // [ Un-Acked Messages Query ]
         button_messages = XtVaCreateManagedWidget(langcode("WPUPSTI050"),xmPushButtonGadgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget,button_store_track,
-                                XmNtopOffset,1,
+                                XmNtopAttachment, XmATTACH_NONE,
                                 XmNbottomAttachment, XmATTACH_FORM,
                                 XmNbottomOffset,5,
                                 XmNleftAttachment, XmATTACH_POSITION,
@@ -4285,9 +4081,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
         // [ Direct Stations Query ]
         button_direct = XtVaCreateManagedWidget(langcode("WPUPSTI051"),xmPushButtonGadgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget,button_store_track,
-                                XmNtopOffset,1,
+                                XmNtopAttachment, XmATTACH_NONE,
                                 XmNbottomAttachment, XmATTACH_FORM,
                                 XmNbottomOffset,5,
                                 XmNleftAttachment, XmATTACH_POSITION,
@@ -4298,6 +4092,228 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNnavigationType, XmTAB_GROUP,
                                 NULL);
         XtAddCallback(button_direct, XmNactivateCallback, Station_query_direct ,(XtPointer)p_station->call_sign);
+
+
+// Now proceed to the row above it, left button first
+
+
+        // [ Store Track ] or single Position
+        button_store_track = XtVaCreateManagedWidget(langcode("WPUPSTI054"),xmPushButtonGadgetClass, form,
+                            XmNtopAttachment, XmATTACH_NONE,
+//XmNtopWidget,XtParent(si_text),
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, (button_clear_track) ? button_clear_track : button_version,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_FORM,
+                            XmNleftOffset,5,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 1,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+        XtAddCallback(button_store_track,   XmNactivateCallback, Station_data_store_track ,(XtPointer)p_station);
+
+        if ( ((p_station->flag & ST_OBJECT) == 0) && ((p_station->flag & ST_ITEM) == 0) ) { // Not an object/
+            // fprintf(stderr,"Not an object or item...\n");
+            // [Send Message]
+            button_message = XtVaCreateManagedWidget(langcode("WPUPSTI002"),xmPushButtonGadgetClass, form,
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, button_trace,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 1,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 2,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+            XtAddCallback(button_message, XmNactivateCallback, Send_message_call ,(XtPointer)p_station->call_sign);
+        } else {
+            // fprintf(stderr,"Found an object or item...\n");
+            button_object_modify = XtVaCreateManagedWidget(langcode("WPUPSTI053"),xmPushButtonGadgetClass, form,
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, button_trace,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 1,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 2,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+            XtAddCallback(button_object_modify, XmNactivateCallback, Modify_object, (XtPointer)p_station);
+        }
+
+        // Add FCC button only if probable match
+        if ((! strncmp(station,"A",1)) || (! strncmp(station,"K",1)) ||
+            (! strncmp(station,"N",1)) || (! strncmp(station,"W",1))  ) {
+            button_fcc = XtVaCreateManagedWidget(langcode("WPUPSTI003"),xmPushButtonGadgetClass, form,
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, button_messages,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 2,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 3,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+            XtAddCallback(button_fcc, XmNactivateCallback, Station_data_add_fcc,(XtPointer)p_station->call_sign);
+
+            if ( ! check_fcc_data())
+                XtSetSensitive(button_fcc,FALSE);
+        }
+
+        // Add RAC button only if probable match
+        if (!strncmp(station,"VE",2) || !strncmp(station,"VA",2)) {
+            button_rac = XtVaCreateManagedWidget(langcode("WPUPSTI004"),xmPushButtonGadgetClass, form,
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, button_messages,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 2,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 3,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+            XtAddCallback(button_rac, XmNactivateCallback, Station_data_add_rac,(XtPointer)p_station->call_sign);
+
+            if ( ! check_rac_data())
+                XtSetSensitive(button_rac,FALSE);
+        }
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_WIDGET,
+                            XmNbottomWidget, button_direct,
+                            XmNbottomOffset, 1,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 3,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 4,
+                            XmNrightOffset, 5,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+        XtAddCallback(button_cancel, XmNactivateCallback, Station_data_destroy_shell, db_station_info);
+
+
+// Now build from the top of the dialog to the buttons.
+
+
+        icon = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),
+                    20,20,DefaultDepthOfScreen(XtScreen(appshell)));
+
+        symbol(db_station_info,0,p_station->aprs_symbol.aprs_type,
+            p_station->aprs_symbol.aprs_symbol,
+            p_station->aprs_symbol.special_overlay,icon,0,0,0,' ');
+
+        station_icon = XtVaCreateManagedWidget("Station Data icon", xmLabelWidgetClass, form,
+                                XmNtopAttachment, XmATTACH_FORM,
+                                XmNtopOffset, 2,
+                                XmNbottomAttachment, XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_FORM,
+                                XmNleftOffset, 5,
+                                XmNrightAttachment, XmATTACH_NONE,
+                                XmNlabelType, XmPIXMAP,
+                                XmNlabelPixmap,icon,
+                                XmNbackground, colors[0xff],
+                                NULL);
+
+        station_type = XtVaCreateManagedWidget("Station Data type", xmTextFieldWidgetClass, form,
+                                XmNeditable,   FALSE,
+                                XmNcursorPositionVisible, FALSE,
+                                XmNtraversalOn, FALSE,
+                                XmNshadowThickness,       0,
+                                XmNcolumns,5,
+                                XmNwidth,((5*7)+2),
+                                XmNbackground, colors[0xff],
+                                XmNtopAttachment,XmATTACH_FORM,
+                                XmNtopOffset, 2,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget,station_icon,
+                                XmNleftOffset,10,
+                                XmNrightAttachment,XmATTACH_NONE,
+                                NULL);
+
+        xastir_snprintf(temp, sizeof(temp), "%c%c%c", p_station->aprs_symbol.aprs_type,
+            p_station->aprs_symbol.aprs_symbol,
+            p_station->aprs_symbol.special_overlay);
+
+        XmTextFieldSetString(station_type, temp);
+        XtManageChild(station_type);
+
+        station_call = XtVaCreateManagedWidget("Station Data call", xmTextFieldWidgetClass, form,
+                                XmNeditable,   FALSE,
+                                XmNcursorPositionVisible, FALSE,
+                                XmNtraversalOn, FALSE,
+                                XmNshadowThickness,       0,
+                                XmNcolumns,15,
+                                XmNwidth,((15*7)+2),
+                                XmNbackground, colors[0xff],
+                                XmNtopAttachment,XmATTACH_FORM,
+                                XmNtopOffset, 2,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, station_type,
+                                XmNleftOffset,10,
+                                XmNrightAttachment,XmATTACH_NONE,
+                                NULL);
+
+        XmTextFieldSetString(station_call,p_station->call_sign);
+        XtManageChild(station_call);
+
+        station_data_auto_update_w = XtVaCreateManagedWidget(langcode("WPUPSTI056"),
+                                xmToggleButtonGadgetClass, form,
+                                XmNtopAttachment,XmATTACH_FORM,
+                                XmNtopOffset, 2,
+                                XmNbottomAttachment,XmATTACH_NONE,
+                                XmNleftAttachment, XmATTACH_WIDGET,
+                                XmNleftWidget, station_call,
+                                XmNleftOffset,10,
+                                XmNrightAttachment,XmATTACH_NONE,
+                                XmNbackground,colors[0xff],
+                                NULL);
+        XtAddCallback(station_data_auto_update_w,XmNvalueChangedCallback,station_data_auto_update_toggle,"1");
+
+        n=0;
+        XtSetArg(args[n], XmNrows, 15); n++;
+        XtSetArg(args[n], XmNcolumns, 100); n++;
+        XtSetArg(args[n], XmNeditable, FALSE); n++;
+        XtSetArg(args[n], XmNtraversalOn, FALSE); n++;
+        XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
+        XtSetArg(args[n], XmNwordWrap, TRUE); n++;
+        XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
+        XtSetArg(args[n], XmNscrollHorizontal, FALSE); n++;
+        XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
+        XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+        XtSetArg(args[n], XmNtopWidget, station_icon); n++;
+        XtSetArg(args[n], XmNtopOffset, 5); n++;
+        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_WIDGET); n++;
+        XtSetArg(args[n], XmNbottomWidget, button_store_track); n++;
+        XtSetArg(args[n], XmNbottomOffset, 1); n++;
+        XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNleftOffset, 5); n++;
+        XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNrightOffset, 5); n++;
+
+        si_text = NULL;
+        si_text = XmCreateScrolledText(form,"Station_data",args,n);
+
+
+end_critical_section(&db_station_info_lock, "db.c:Station_data" );
+
+        // Fill in the si_text widget with real data
+        station_data_fill_in( w, (XtPointer)db_station_info_callsign, NULL);
+ 
+begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
+
 
         if (restore_position) {
             XtVaSetValues(db_station_info,XmNx,x - decoration_offset_x,XmNy,y - decoration_offset_y,NULL);
@@ -4322,7 +4338,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
             XtPopup(db_station_info,XtGrabNone);
 
-            fix_dialog_size(db_station_info);
+//            fix_dialog_size(db_station_info);
             XmTextShowPosition(si_text,0);
 
             // Move focus to the Cancel button.  This appears to highlight t
