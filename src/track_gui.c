@@ -404,11 +404,11 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     //Download_trail_destroy_shell(w, clientData, callData);
 
     xastir_snprintf(fileimg, sizeof(fileimg),
-        "\'http://64.34.101.121/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d\'",
+        "\'http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d\'",
         download_trail_station_call,posit_start,posit_length);
 
     xastir_snprintf(tempfile, sizeof(tempfile),
-            "wget -S -N -t 1 -T 30 -O %s %s 2> /dev/null\n",
+            "wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
             log_filename,
             fileimg);
 
