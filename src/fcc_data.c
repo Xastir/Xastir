@@ -65,6 +65,9 @@ char *call_only(char *callsign) {
 /*      appl.dat must have a time stamp newer than the index file time  */
 /*      stamp. Use the touch command on the appl.dat file to make the   */
 /*      time current if necessary.                                      */
+//    How this works:  The index file contains a few callsigns and their
+//    offsets into the large database file.  The code uses these as
+//    jump-off points to look for a particular call, to speed things up.
 /* ******************************************************************** */
 int build_fcc_index(int type){
     FILE *fdb;
@@ -237,7 +240,10 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
     data->renewal_notice=' ';
     strcpy(temp,callsign);
     (void)call_only(temp);
+
     xastir_snprintf(calltemp, sizeof(calltemp), "%-6.6s", temp);
+// calltemp doesn't appear to get used anywhere...
+
     /* add end of field data */
     strcat(temp,"|");
     len=(int)strlen(temp);
@@ -250,14 +256,20 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
     if (! (callsign[0] == 'A' || callsign[0] == 'K' || callsign[0] == 'N' || callsign[0] == 'W') )
         return(0);  // Not found
 
-    /* ====================================================================    */
-    /*    Search thru the index, get the RBA                */
-    /*                                    */
+    // ====================================================================
+    // Search thru the index, get the RBA 
+    // 
+    // This gives us a jumping-off point to start looking in the right
+    // neighborhood for the callsign of interest.
+    //
     fndx=fopen(get_user_base_dir("data/appl.ndx"),"r");
     if (fndx!=NULL){
         (void)fgets(index,(int)sizeof(index),fndx);
         strncpy(char_offset,&index[6],16);
 
+        // Search through the indexes looking for a callsign which is
+        // close to the callsign of interest.  If callsign is later in
+        // the alphabet than the current index, snag the next index.
         while (!feof(fndx) && strncmp(callsign,index,6) > 0) {
             strncpy(char_offset,&index[6],16);
             (void)fgets(index,(int)sizeof(index),fndx);
@@ -267,11 +279,13 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
         return (0);
     }
     call_offset = atol(char_offset);
+
     (void)fclose(fndx);
 
     /* ====================================================================    */
     /*    Continue with the original search                */
     /*                                                                */
+
     f=NULL;
     switch (which) {
         case(1):
@@ -431,14 +445,26 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                                 }
                             }
                         }
+                        else {
+                            // Check whether we passed the alphabetic
+                            // location for the callsign.  Return if so.
+                            if ( (temp[0] < line[pos]) ||
+                                    ( (temp[0] == line[pos]) && (temp[1] < line[pos+1]) ) ) {
+                                popup_message("Callsign Search", "Callsign Not Found!");
+                                //printf("%c%c\t%c%c\n",temp[0],temp[1],line[pos],line[pos+1]);
+                                (void)fclose(f);
+                                return(0);
+                            }
+                        }
                     }
                 }
             }
         }
         (void)fclose(f);
-    } else
+    } else {
         printf("Could not open FCC appl data base at: %s\n", get_data_base_dir("fcc/") );
-
+    }
     return(found);
 }
+
 
