@@ -298,7 +298,7 @@ setting for a beam should be quite a bit below the forward gain of the beam.
 This is because with directivity set, the PHG circle is only offset by 1/3rd
 of its size toward the specified direction. Setting gain higher will enlarge
 the whole circle unrealistically, rather than increasing the directivity.
-There was talk several years ago about ammending the specifications to better
+There was talk several years ago about amending the specifications to better
 deal with beam antennas, but nothing was changed.
 
 Enter a comment, not required but it will add insight on your station.
@@ -505,12 +505,16 @@ In the first box on the left general status messages are displayed for a
 short time.
 
 The second box displays the current lat/long and Maidenhead grid square
-position of the mouse over the map. 
+position of the mouse over the map. If file|configure|Dist/Bearing Status is
+selected, this box will also contain the course and bearing of this station
+relative to yours.
 
 A third box is used to display how many stations are in the database.
 
 The fourth box will display the current zoom level and will display "Tr" if
 the station tracking is on. 
+
+The fifth box indicates whether logging is enabled.
 
 The last area will display the device status for each interface. Each will
 display in order first to last or 0 to 9. The interface status is separated
