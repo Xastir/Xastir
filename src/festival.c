@@ -91,7 +91,7 @@
 #include "xastir.h"
 #include "snprintf.h"
 
-FT_Info *info;      
+FT_Info *info;
 
 
 
@@ -102,45 +102,41 @@ void festival_default_info()
     info->server_port = FESTIVAL_DEFAULT_SERVER_PORT;
     info->text_mode = FESTIVAL_DEFAULT_TEXT_MODE;
     info->server_fd = -1;
-    
+
     return ;
 }
 
 
 
 static int festival_socket_open(const char *host, int port)
-{   
+{
     /* Return an FD to a remote server */
     struct sockaddr_in serv_addr;
     struct hostent *serverhost;
     int fd;
 
-    fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-    if (fd < 0)  
-    {
-    fprintf(stderr,"festival_client: can't get socket\n");
-    return -1;
-    }
-    memset(&serv_addr, 0, sizeof(serv_addr));
-    if ((int)(serv_addr.sin_addr.s_addr = inet_addr(host)) == -1)
-    {
-    /* its a name rather than an ipnum */
-    serverhost = gethostbyname(host);
-    if (serverhost == (struct hostent *)0)
-    {
-        fprintf(stderr,"festival_client: gethostbyname failed\n");
+    if ((fd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+        fprintf(stderr,"festival_client: can't get socket\n");
         return -1;
     }
-    memmove(&serv_addr.sin_addr,serverhost->h_addr, (size_t)serverhost->h_length);
+
+    memset(&serv_addr, 0, sizeof(serv_addr));
+
+    if ((int)(serv_addr.sin_addr.s_addr = inet_addr(host)) == -1) {
+        /* its a name rather than an ipnum */
+        serverhost = gethostbyname(host);
+        if (serverhost == (struct hostent *)0) {
+            fprintf(stderr,"festival_client: gethostbyname failed\n");
+            return -1;
+        }
+        memmove(&serv_addr.sin_addr,serverhost->h_addr, (size_t)serverhost->h_length);
     }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(port);
 
-    if (connect(fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0)
-    {
-    fprintf(stderr,"festival_client: connect to server failed\n");
-    return -1;
+    if (connect(fd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) != 0) {
+        fprintf(stderr,"festival_client: connect to server failed\n");
+        return -1;
     }
     return fd;
 }

@@ -839,7 +839,7 @@ int ax25_init(int port) {
 //    if (port_data[port].channel == -1) {
 
     ENABLE_SETUID_PRIVILEGE;
-    port_data[port].channel = socket(AF_INET, SOCK_PACKET, htons(proto));
+    port_data[port].channel = socket(PF_INET, SOCK_SEQPACKET, htons(proto));   // proto = AF_AX25
     DISABLE_SETUID_PRIVILEGE;
 
     if (port_data[port].channel == -1) {
@@ -1396,7 +1396,7 @@ static void* net_connect_thread(void *arg) {
     // Create a socket if we don't have one yet for this channel
     if (port_data[port].channel == -1) {
         pthread_testcancel();   // Check for thread termination request
-        port_data[port].channel = socket(AF_INET, SOCK_STREAM, 0);
+        port_data[port].channel = socket(PF_INET, SOCK_STREAM, 0);
         pthread_testcancel();   // Check for thread termination request
     }
 
@@ -1796,7 +1796,7 @@ int net_detach(int port) {
         usleep(100000); // 100ms
 
         // Snag a socket again.  We'll use it next time around.
-        port_data[port].channel = socket(AF_INET, SOCK_STREAM, 0);
+        port_data[port].channel = socket(PF_INET, SOCK_STREAM, 0);
 
         ok = 1;
     }
