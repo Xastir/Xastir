@@ -407,6 +407,11 @@ scr_s_x_min = 0;
 
 
 
+// Prototype
+void Draw_Polygons(OGRGeometryH geometry, int level);
+ 
+
+
 // The GDAL docs say to use these flags to compile:
 // `gdal-config --libs` `gdal-config * --cflags`
 // but so far they return: "-L/usr/local/lib -lgdal" and
@@ -1018,7 +1023,6 @@ void draw_ogr_map(Widget w,
         while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
             OGRGeometryH geometry;
             int num = 0;
-            int rings = 0;
             int ii;
             double X1, Y1, Z1, X2, Y2, Z2;
 //            char *buffer;
@@ -1210,70 +1214,7 @@ void draw_ogr_map(Widget w,
                 case 6:             // MultiPolygon
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
-
-                    // Get the number of rings in the polygon
-                    rings = OGR_G_GetGeometryCount(geometry);
-//                    fprintf(stderr,"  Rings: %d  ",rings);
-
-//fprintf(stderr, "Points: ");
-                    // Run through each ring found
-                    for ( ii = 0; ii < rings; ii++) {
-                        OGRGeometryH polygon;
-                        int polygon_points;
-
-                        polygon = OGR_G_GetGeometryRef(geometry, ii);
-                        polygon_points = OGR_G_GetPointCount(polygon);
-
-                        if (polygon_points > 0) {
-                            int kk;
-
-//fprintf(stderr,"%d  ", polygon_points);
-                            // This can get complicated:  Polygons
-                            // are composed of rings.  If a ring
-                            // goes in one direction, it's a fill,
-                            // if the other direction, it's a hole
-                            // in the polygon.
-
-                            // Get the first point
-                            OGR_G_GetPoint(polygon,
-                                0,
-                                &X2,
-                                &Y2,
-                                &Z2);
-
-                            for ( kk = 1; kk < polygon_points; kk++ ) {
-
-                                X1 = X2;
-                                Y1 = Y2;
-                                Z1 = Z2;
-
-                                // Get the next point
-                                OGR_G_GetPoint(polygon,
-                                    kk,
-                                    &X2,
-                                    &Y2,
-                                    &Z2);
-
-// Optimization:
-// It should be faster here to draw the entire Polyline with one X11
-// call, instead of drawing each line segment in turn.  Change to
-// that method at some point.
-//
-// We should be able to store them in an array, call the Translate()
-// function on all of them at once, and then call an X11 function to
-// draw the entire line at once.
-
-                                draw_vector_ll(da,
-                                    (float)Y1,
-                                    (float)X1,
-                                    (float)Y2,
-                                    (float)X2,
-                                    gc,
-                                    pixmap);
-                            }
-                        }
-                    }
-//fprintf(stderr, "\n");
+                    Draw_Polygons(geometry, 1);
                     break;
 
                 case 7:             // GeometryCollection
@@ -1292,6 +1233,107 @@ void draw_ogr_map(Widget w,
 }
 
 
+
+
+
+// Draw_Polygons().
+//
+// A function which can be recursively called.  Tracks the recursion
+// depth so that we can recover if we exceed the maximum.  If we
+// keep finding geometries below us, keep calling the same function.
+// Simple and efficient.
+// 
+// This can get complicated for Shapefiles:  Polygons are composed
+// of rings.  If a ring goes in one direction, it's a fill, if the
+// other direction, it's a hole in the polygon.
+//
+// Optimization:
+// It should be faster here to draw the entire Polyline with one X11
+// call, instead of drawing each line segment in turn.  Change to
+// that method at some point.
+//
+// We should be able to store them in an array, call the Translate()
+// function on all of them at once, and then call an X11 function to
+// draw the entire line at once.
+//
+void Draw_Polygons(OGRGeometryH geometry, int level) {
+    int kk;
+    int object_num = 0;
+
+
+    if (geometry == NULL)
+        return;
+
+    // Check for more objects below this one, recursing into any
+    // objects found.  "level" keeps us from recursing too far (we
+    // don't want infinite recursion here).  These objects may be
+    // rings or they may be other polygons in a collection.
+    // 
+    object_num = OGR_G_GetGeometryCount(geometry);
+
+    // Iterate through the objects found.  If another geometry is
+    // detected, call this function again recursively.  That will
+    // cause all of the lower objects to get drawn.
+    //
+    for ( kk = 0; kk < object_num; kk++ ) {
+        OGRGeometryH child;
+        int sub_object_num;
+
+        // This may be a ring, or another object with rings.
+        child = OGR_G_GetGeometryRef(geometry, kk);
+
+        sub_object_num = OGR_G_GetGeometryCount(child);
+
+        if (sub_object_num) {
+            // We found geometries below this.  Recurse.
+            if (level < 5) {
+fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
+                Draw_Polygons(child, level+1);
+            }
+        }
+        else {  // Draw
+            int polygon_points;
+
+            polygon_points = OGR_G_GetPointCount(child);
+
+            if (polygon_points > 2) {
+                double X1, Y1, Z1;
+                double X2, Y2, Z2;
+                int mm;
+
+                // Get the first point
+                OGR_G_GetPoint(child,
+                    0,
+                    &X2,
+                    &Y2,
+                    &Z2);
+
+                for ( mm = 1; mm < polygon_points; mm++ ) {
+
+                    X1 = X2;
+                    Y1 = Y2;
+                    Z1 = Z2;
+
+                    // Get the next point
+                    OGR_G_GetPoint(child,
+                        mm,
+                        &X2,
+                        &Y2,
+                        &Z2);
+
+                    draw_vector_ll(da,
+                        (float)Y1,
+                        (float)X1,
+                        (float)Y2,
+                        (float)X2,
+                        gc,
+                        pixmap);
+                }
+            }
+        }
+    }
+}
+ 
 
 #endif // HAVE_LIBGDAL
 
