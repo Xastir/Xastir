@@ -600,7 +600,27 @@ time_t max_transmit_time;       /* max time between transmits */
 time_t last_alert_redraw;       /* last time alert caused a redraw */
 time_t sec_next_gps;            /* next gps check */
 time_t gps_time;                /* gps delay time */ 
-time_t POSIT_rate;              // Posit rate timer 
+time_t POSIT_rate;              // Posit & object/item rate timer 
+
+
+// SmartBeaconing stuff.  If enabled, POSIT_rate is only used for
+// objects & items, sb_POSIT_rate computed via SmartBeaconing will
+// be used for posits.
+int smart_beaconing = 0;        // Master enable/disable for SmartBeaconing mode
+int sb_POSIT_rate;              // Computed SmartBeaconing posit rate (secs)
+int sb_last_heading;            // Heading at time of last posit
+int sb_current_heading;         // Most recent heading parsed from GPS sentence
+int sb_turn_min = 20;           // Min threshold for corner pegging (degrees)
+int sb_turn_slope = 25;         // Threshold slope for corner pegging (degrees/mph)
+int sb_turn_time = 5;           // Time between other beacon & turn beacon (secs)
+int sb_posit_fast = 60;         // Fast beacon rate (secs)
+int sb_posit_slow = 30;         // Slow beacon rate (mins)
+int sb_low_speed_limit = 2;     // Speed below which SmartBeaconing is disabled &
+                                // we'll beacon at the POSIT_slow rate (mph)
+int sb_high_speed_limit = 60;   // Speed above which we'll beacon at the
+                                // POSIT_fast rate (mph)
+
+
 time_t GPS_time;                /* gps time out */
 time_t last_statusline;         // last update of statusline or 0 if inactive
 time_t sec_old;                 /* station old after */
@@ -4885,11 +4905,25 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // Time to spit out a posit?
             if ( (transmit_now) || (sec_now() > posit_next_time) ) {
 
+                //printf("Transmitting posit\n");
+
                 // Check for proper symbol in case we're a weather station
                 (void)check_weather_symbol();
 
                 posit_last_time = sec_now();
-                posit_next_time = posit_last_time + POSIT_rate;  // Set in Configure->Defaults dialog
+
+                if (smart_beaconing) {
+                    // Schedule next computed posit time based on
+                    // speed/turns, etc.
+                    posit_next_time = posit_last_time + sb_POSIT_rate;
+                    sb_last_heading = sb_current_heading;
+                }
+                else {
+                    // Schedule next fixed posit time, set in
+                    // Configure->Defaults dialog
+                    posit_next_time = posit_last_time + POSIT_rate;
+                }
+
                 transmit_now = 0;
                 // Output to ALL net/tnc ports that are enabled & have tx enabled
                 output_my_aprs_data();

@@ -96,6 +96,23 @@ extern char SOUND_DIR[];
 extern time_t WX_ALERTS_REFRESH_TIME;
 extern time_t gps_time;
 extern time_t POSIT_rate;
+
+extern time_t posit_last_time;
+extern time_t posit_next_time;
+
+extern int smart_beaconing;
+extern int sb_POSIT_rate;
+extern int sb_last_heading;
+extern int sb_current_heading;
+extern time_t sb_last_posit_time;
+extern int sb_turn_min;
+extern int sb_turn_slope;
+extern int sb_turn_time;
+extern int sb_posit_fast;
+extern int sb_posit_slow;
+extern int sb_low_speed_limit;
+extern int sb_high_speed_limit;
+
 extern int output_station_type;
 extern int symbol_display_enable;
 extern int symbol_display_rotate;

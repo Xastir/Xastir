@@ -7319,6 +7319,80 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
 
 
+// Code to compute SmartBeaconing rates
+void compute_smart_beacon(char *current_course, char *current_speed) {
+    int course;
+    int speed;
+    int turn_threshold;
+    time_t secs_since_beacon;
+    int heading_change_since_beacon;
+
+//
+// Need to convert everything from knots to mph/kph
+//
+
+    course = atoi(current_course);
+    speed = atoi(current_speed);
+    sb_current_heading = course;    // Save current heading for use later
+    secs_since_beacon = sec_now() - posit_last_time;
+    heading_change_since_beacon = abs(course - sb_last_heading);
+    if (heading_change_since_beacon > 180)
+        heading_change_since_beacon = 360 - heading_change_since_beacon;
+
+    // Check for the low speed threshold, set to slow posit rate if
+    // we're going slow.
+    if (speed <= sb_low_speed_limit) {
+        //printf("Slow speed\n");
+
+        // Check to see if we're just crossing the threshold, if so,
+        // beacon.  This keeps dead-reckoning working properly on
+        // other people's displays.
+        if (sb_POSIT_rate != (sb_posit_slow * 60) ) { // Previous rate was _not_ the slow rate
+            posit_next_time = 0;    // Force a posit right away
+            //printf("Stopping, POSIT!\n");
+        }
+
+        // Set to slow posit rate
+        sb_POSIT_rate = sb_posit_slow * 60; // Convert to seconds
+    }
+    else {  // We're moving faster than the low speed limit
+
+        // Check to see if we're just starting to move
+        if ( (secs_since_beacon > sb_turn_time)    // Haven't beaconed for a bit
+                && (sb_POSIT_rate == (sb_posit_slow * 60) ) ) { // Last rate was the slow rate
+            posit_next_time = 0;    // Force a posit right away
+            //printf("Starting to move, POSIT!\n");
+        }
+
+        // Adjust turn threshold according to speed
+        turn_threshold = (sb_turn_min + sb_turn_slope) / speed;
+
+        // Corner-pegging
+        if ( (heading_change_since_beacon > turn_threshold)
+                && (secs_since_beacon > sb_turn_time) ) {
+            posit_next_time = 0;    // Force a posit right away
+            //printf("Corner, POSIT!\tOld:%d\tNew:%d\tDifference:%d\n",
+            //    sb_last_heading,
+            //    course,
+            //    heading_change_since_beacon);
+        }
+
+        // Adjust rate according to speed
+        if (speed > sb_high_speed_limit) {  // We're above the high limit
+            sb_POSIT_rate = sb_posit_fast;
+            //printf("Setting fast rate\n");
+        }
+        else {  // We're between the high/low limits.  Set a between rate
+            sb_POSIT_rate = (sb_posit_fast * sb_high_speed_limit) / speed;
+            //printf("Setting medium rate\n");
+        }
+    }
+}
+
+
+
+
+
 void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, /*@unused@*/ char speedu, char *alt, char *sats) {
     long pos_long_temp, pos_lat_temp;
     char temp_data[40];   // short term string storage
@@ -7326,6 +7400,10 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     char temp_long[12];
     DataRow *p_station;
     DataRow *p_time;
+
+    // Recompute the SmartBeaconing parameters based on current/past
+    // course & speed
+    compute_smart_beacon(course, speed);
 
     p_station = NULL;
     if (!search_station_name(&p_station,my_callsign,1)) {  // find my data in the database
