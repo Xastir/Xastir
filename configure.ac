@@ -241,6 +241,12 @@ else
   CPPFLAGS="$CPPFLAGS -DXASTIR_DATA_BASE=\\\"${datadir}/xastir\\\""
 fi 
  
+
+# Add a special option that makes Cygwin link much faster (from
+# Henk de Groot)
+LDFLAGS="-Wl,--no-keep-memory $LDFLAGS"
+
+
 # 
 # Assure we have this order for these LIBS: "-lXm -lXt -lX11" by 
 # adding them to the beginning.  Add spaces around them for the 
@@ -267,7 +273,7 @@ CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = 
 LDFLAGS=`echo "$LDFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
 #LIBS=`echo "$LIBS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
 changequote([,]) 
- 
+
 
 # Create the ILIBS defined variable
 if test "${has_axlib}" = "yes"; then
