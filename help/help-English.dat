@@ -1474,7 +1474,7 @@ These hybrid interface types implement the options of both serial TNCs and
 GPSs. Please consult the configuration help for both serial TNCs and serial
 GPSs for further information on the configuration of these devices.
 
-HELP-INDEX>Configure serial KISS TNC
+HELP-INDEX>Configure Serial KISS TNC
 
                      Configure Serial KISS TNC
 
@@ -1491,6 +1491,11 @@ set up communications with it when the program first starts.
 
 Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
+
+Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic with either
+your callsign or "RELAY" in the path. This option is only recommended for
+base stations in regions where there are few other RELAY stations in the
+area. Consult with a local group about the best setting for your region. 
 
 The TNC Port is the Unix serial device that the TNC is hooked to.
 Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc..
@@ -1541,6 +1546,13 @@ set up communications with it when the program first starts.
 
 Selecting "Allow Transmitting" will tell Xastir that any outgoing RF data can
 be sent to this device for broadcast.
+
+Selecting "RELAY Digipeat?" will tell Xastir to digipeat traffic with either
+your callsign or "RELAY" in the path. This option is only recommended for
+base stations in regions where there are few other RELAY stations in the
+area.  Consult with a local group about the best setting for your region.
+This is only needed if you are not using any other software that performs
+this function, such as aprsdigi or DIGI_NED.
 
 Choose the correct IGate operation for this device. You may have several TNC
 devices and this option can be different for each device. If you are not
