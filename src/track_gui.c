@@ -401,6 +401,12 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         "%s/map.log",
         get_user_base_dir("tmp"));
 
+    // Erase any previously existing local file by the same name.
+    // This avoids the problem of having an old tracklog here and
+    // the code trying to display it when the download fails.
+    unlink( log_filename );
+
+
     XmScaleGetValue(posit_start_value , &posit_start);
     XmScaleGetValue(posit_length_value , &posit_length);
     /* find station and go there */

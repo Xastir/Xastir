@@ -361,6 +361,10 @@ void draw_tiger_map (Widget w,
         get_user_base_dir("tmp"),
         "gif");
 
+    // Erase any previously existing local file by the same name.
+    // This avoids the problem of having an old map image here and
+    // the code trying to display it when the download fails.
+    unlink( local_filename );
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {

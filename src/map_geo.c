@@ -783,6 +783,12 @@ fprintf(stderr,"1 ");
             "%s/map.%s",
             get_user_base_dir("tmp"),ext);
 
+        // Erase any previously existing local file by the same
+        // name.  This avoids the problem of having an old map image
+        // here and the code trying to display it when the download
+        // fails.
+        unlink( local_filename );
+
 #ifdef HAVE_LIBCURL
         curl = curl_easy_init();
 
