@@ -680,8 +680,18 @@ void draw_shapefile_map (Widget w,
         struct _label_string *next;
     } label_string;
 
-    label_string *label_ptr = NULL;
+    // Define hash table for label pointers
+    label_string *label_hash[256];
+    // And the index into it
+    int hash_index = 0;
+
     label_string *ptr2 = NULL;
+
+
+    // Initialize the hash table label pointers
+    for (i = 0; i < 256; i++) {
+        label_hash[i] = NULL;
+    }
 
 
 #ifdef WITH_DBFAWK
@@ -2535,12 +2545,22 @@ void draw_shapefile_map (Widget w,
 // the top or right and doesn't have an intersection with another
 // street (and therefore another label) within the view.
 
-                            ptr2 = label_ptr;
+                            // Hash index is just the first
+                            // character.  Tried using lower 6 bits
+                            // of first two chars and lower 7 bits
+                            // of first two chars but the result was
+                            // slower than just using the first
+                            // character.
+                            hash_index = temp[0];
+
+                            ptr2 = label_hash[hash_index];
                             while (ptr2 != NULL) {   // Step through the list
-                                if (strcasecmp(ptr2->label,temp) == 0) {    // Found a match
-                                    //fprintf(stderr,"Found a match!\t%s\n",temp);
-                                    new_label = 0;
-                                    ptr2->found = ptr2->found + 1;  // Increment the "found" quantity
+                                // Check 2nd character (fast!)
+                                if (ptr2->label[1] == temp[1]) {
+                                    if (strcasecmp(ptr2->label,temp) == 0) {    // Found a match
+                                        //fprintf(stderr,"Found a match!\t%s\n",temp);
+                                        new_label = 0;
+                                        ptr2->found = ptr2->found + 1;  // Increment the "found" quantity
 
 // We change this "mod" number based on zoom level, so that long
 // strings don't overwrite each other, and so that we don't get too
@@ -2554,12 +2574,16 @@ void draw_shapefile_map (Widget w,
 // only count a string as written if the start of it is onscreen and
 // the angle is correct for it to be written on the screen.
 
-                                    // Draw a number of labels
-                                    // appropriate for the zoom
-                                    // level.
-                                    if ( ((ptr2->found - 1) % mod_number) != 0 )
-                                        skip_label++;
-                                    ptr2 = NULL; // End the loop
+                                        // Draw a number of labels
+                                        // appropriate for the zoom
+                                        // level.
+                                        if ( ((ptr2->found - 1) % mod_number) != 0 )
+                                            skip_label++;
+                                        ptr2 = NULL; // End the loop
+                                    }
+                                    else {
+                                        ptr2 = ptr2->next;
+                                    }
                                 }
                                 else {
                                     ptr2 = ptr2->next;
@@ -2625,9 +2649,14 @@ void draw_shapefile_map (Widget w,
 
                                 xastir_snprintf(ptr2->label,sizeof(ptr2->label),"%s",temp);
                                 ptr2->found = 1;
-                                ptr2->next = label_ptr;
-                                label_ptr = ptr2;
-                                //if (label_ptr->next == NULL)
+
+                                // We use first character of string
+                                // as our hash index.
+                                hash_index = temp[0];
+
+                                ptr2->next = label_hash[hash_index];
+                                label_hash[hash_index] = ptr2;
+                                //if (label_hash[hash_index]->next == NULL)
                                 //    fprintf(stderr,"only one record\n");
                             }
                         }
@@ -3617,13 +3646,16 @@ if (on_screen) {
     }
 
 
-    // Free our linked list of strings, if any
-    ptr2 = label_ptr;
-    while (ptr2 != NULL) {
-        label_ptr = ptr2->next;
-        //fprintf(stderr,"free: %s\n",ptr2->label);
-        free(ptr2);
-        ptr2 = label_ptr;
+    // Free our hash of label strings, if any.  Each hash entry may
+    // have a linked list attached below it.
+    for (i = 0; i < 256; i++) {
+        ptr2 = label_hash[i];
+        while (ptr2 != NULL) {
+            label_hash[i] = ptr2->next;
+            //fprintf(stderr,"free: %s\n",ptr2->label);
+            free(ptr2);
+            ptr2 = label_hash[i];
+        }
     }
 
 #ifdef WITH_DBFAWK
