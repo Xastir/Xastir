@@ -12389,7 +12389,9 @@ int process_query( /*@unused@*/ char *call_sign, /*@unused@*/ char *path,char *m
     if (!ok && strncmp(message,"APRS?",5)==0) {
         ok = 1;
     }
-    if (!ok && strncmp(message,"IGATE?",6)==0) {
+    if (!ok
+            && strncmp(message,"IGATE?",6)==0
+            && port != -1) {    // Not from a log file
         if (operate_as_an_igate && from != 'F') {
             xastir_snprintf(temp, sizeof(temp), "<IGATE,MSG_CNT=%d,LOC_CNT=%d",(int)igate_msgs_tx,stations_types(3));
             output_my_data(temp,port,0,0,0,NULL);    // Not igating
@@ -12754,7 +12756,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             /* check if this message is to a person I have heard on my TNC within an X */
             /* time frame. If if is a station I heard and all the conditions are ok    */
             /* spit the ACK out on the TNC -FG                                         */
-            if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) {
+            if (operate_as_an_igate>1
+                    && from==DATA_VIA_NET
+                    && !is_my_call(call,1)
+                    && port != -1) {    // Not from a log file
                 char short_path[100];
 
                 /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); { */
@@ -12841,10 +12846,12 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
 
 #endif  // HAVE_FESTIVAL
+
         // Only send an ack out once per 30 seconds
-        if ( (from != 'F')  // Not from a log file
-                && ((last_ack_sent + 30 ) < sec_now())
-                && !satellite_ack_mode ) {  // Disable separate ack's for satellite work
+        if ( from != 'F'  // Not from a log file
+                && (last_ack_sent + 30 ) < sec_now()
+                && !satellite_ack_mode // Disable separate ack's for satellite work
+                && port != -1 ) {   // Not from a log file
 
             //fprintf(stderr,"Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
 
@@ -12893,7 +12900,10 @@ else {
         (void)alert_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
 
         done = 1;
-        if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
+        if (operate_as_an_igate>1
+                && from==DATA_VIA_NET
+                && !is_my_call(call,1)
+                && port != -1) { // Not from a log file
             char short_path[100];
 
             shorten_path(path,short_path,sizeof(short_path));
@@ -12918,7 +12928,10 @@ else {
         (void)alert_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
 
         done = 1;
-        if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
+        if (operate_as_an_igate>1
+                && from==DATA_VIA_NET
+                && !is_my_call(call,1)
+                && port != -1) { // Not from a log file
             char short_path[100];
 
             shorten_path(path,short_path,sizeof(short_path));
@@ -12952,7 +12965,11 @@ else {
         /* check if this message is to a person I have heard on my TNC within an X */
         /* time frame. If if is a station I heard and all the conditions are ok    */
         /* spit the message out on the TNC -FG                                     */
-        if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1) && !is_my_call(addr,1)) {
+        if (operate_as_an_igate>1
+                && from==DATA_VIA_NET
+                && !is_my_call(call,1)
+                && !is_my_call(addr,1)
+                && port != -1) {    // Not from a log file
             char short_path[100];
 
             /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,
@@ -12978,7 +12995,10 @@ else {
     if (debug_level & 1)
         fprintf(stderr,"7\n");
     //--------------------------------------------------------------------------
-    if (!done && len > 2 && message[0] == '?' && is_my_call(addr,1)) { // directed query
+    if (!done && len > 2
+            && message[0] == '?'
+            && port != -1   // Not from a log file
+            && is_my_call(addr,1)) { // directed query
         // Smallest query known is "?WX".
         if (debug_level & 1)
             fprintf(stderr,"Received a directed query\n");
@@ -13396,7 +13416,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
                 my_data);
 
 //fprintf(stderr,"decode_info_field: IGATE>NET %s\n",line);
-            output_igate_net(line, port,third_party);
+            output_igate_net(line, port, third_party);
         }
     }
     if (debug_level & 1)
@@ -14211,9 +14231,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
     if (ok) {
 
-        // Attempt to digipeat this packet if we should.  If port=-1,
+        // Attempt to digipeat this packet if we should.  If port=-2,
         // we received this packet from the x_spider server and we
-        // should not attempt to digipeat it.
+        // should not attempt to digipeat it.  If port=-1, it's from
+        // a log file.  Again, don't digipeat it.
         if (port >= 0)
             relay_digipeat(call_sign, path, info, port);
  
@@ -14274,8 +14295,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         // Add it to the HEARD queue for this interface.  We use this
         // for igating purposes.  If some other igate beat us to this
         // packet, we don't want to duplicate it over the air.  If
-        // port=-1, we received it from the x_spider server and we
-        // should not save it in the queue.
+        // port=-2, we received it from the x_spider server and we
+        // should not save it in the queue.  If port=-1, the packet
+        // came from a log file and again we shouldn't save it to
+        // the queue.
         if (port >= 0)
             insert_into_heard_queue(port, backup);
     }
@@ -14304,7 +14327,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     }
 
 
-    if (port == -1) {    // We received this packet from an x_spider
+    if (port == -2) {    // We received this packet from an x_spider
         // server.  We need to dump it out all of our
         // transmit-enabled ports.
 
@@ -14350,7 +14373,8 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
 //fprintf(stderr,"decode_ax25_line: IGATE>NET %s\n",tmp_line);
 //fprintf(stderr,"call: %s\tcall_sign: %s\n", call, call_sign);
-            output_igate_net(tmp_line, port,0); // 0="not third-party"
+
+            output_igate_net(tmp_line, port, 0); // 0="not third-party"
         }
     }
 

@@ -10768,10 +10768,12 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         packet_data_add(langcode("WPUPDPD006"),
                             (char *)line);
 
-                        // Set port to -1 here
+                        // Set port to -2 here to designate that it
+                        // came from x_spider.  -1 = from a log
+                        // file, 0 - 14 = from normal interfaces.
                         decode_ax25_line((char *)line,
                             'I',
-                            -1,
+                            -2, // Port -2 signifies x_spider data
                             1);
 
                         max++;  // Count the number of packets processed

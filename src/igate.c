@@ -490,6 +490,11 @@ void output_igate_net(char *line, int port, int third_party) {
     if (line[0] == '\0')
         return;
 
+    // Don't igate packets read in from a log file (port -1).
+    // Packets from x_spider (port -2) are ok to igate.
+    if (port == -1)
+        return;
+
 //fprintf(stderr,"Igating: %s\n", line);
 
     // Should we Igate from RF->NET?
@@ -637,9 +642,9 @@ void output_igate_net(char *line, int port, int third_party) {
 begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
     // If received from x_spider port or it's our own tactical call
-    if (port < -1)
+    if (port < -2)
         igate_options = 0;
-    else if (port == -1)    // From x_spider server port
+    else if (port == -2)    // From x_spider server port
         igate_options = 1;
     else
         igate_options = devices[port].igate_options;
