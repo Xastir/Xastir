@@ -8210,8 +8210,13 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
     int done;
 
 
-    if (debug_level & 1)
-        fprintf(stderr,"Sending out port: %d, type: %d\n", incoming_port, type);
+    if (debug_level & 1) {
+        fprintf(stderr,
+            "Sending out port: %d, type: %d, path: %s\n",
+            incoming_port,
+            type,
+            path);
+    }
 
     if (message == NULL)
         return;
