@@ -422,7 +422,20 @@ First Time Install:
      files needed to use GPSMan with Garmin GPS'es from within Xastir (sets
      GPS type, serial port, etc within GPSMan's configs).
 
-   8. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+   8. OPTIONAL: Install Festival for speech support
+      To use speech you must have a sound card and the 'festival' speech
+      synthesis software installed. Install Festival and start it in 'server'
+      mode prior to starting up XASTIR.  The normal command for this is
+      "festival --server &". More info about the speech features is in the
+      Xastir help file. An easy way to get festival installed on some systems
+      is to go to rpmfind.com and search for both festival and festival-dev,
+      then install the RPM's found. Red Hat RPM's installed onto SuSE 7.3 with
+      no problems. Note that the default voice doesn't speak numbers very well.
+      Edit /usr/share/festival/voices.scm and put "ked_diphone" at the first of
+      the "defvar default-voice-priority-list". This will change the default
+      voice to "ked_diphone".
+
+   9. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
         "./bootstrap.sh" (This step needed only for those using CVS)
@@ -472,7 +485,7 @@ First Time Install:
      see the notes above about ldconfig.
 
 
-   9. Kernel AX.25 Interfaces
+   10. Kernel AX.25 Interfaces
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -536,7 +549,7 @@ First Time Install:
      extra privileges. Use this in a multi-user environment at your own risk!
 
 
-   10. Serially-Connected TNC's
+   11. Serially-Connected TNC's
 
      NOTE:  Xastir is designed by amateur radio operators, for amateur
      radio operators.  It is intended to be used only by them.  If there's
@@ -655,7 +668,7 @@ First Time Install:
      >    being yet another root exploit-in-waiting.
 
 
-   11. Start up XASTIR and read the help files to configure it. If you have 
+   12. Start up XASTIR and read the help files to configure it. If you have 
      problems, please consult the FAQ file.
 
      You can now start XASTIR. On most systems that the path is set up in
@@ -681,27 +694,7 @@ First Time Install:
      Xastir is run. On new installs Xastir will default to English unless
      you use this command line option.
 
-   12. Automatic Identification:  Xastir can auto-ID via voice if Festival is
-   compiled in and/or via a message splashed across the screen.  It does this
-   identification every 9.5 minutes if enabled.  These identification modes
-   were designed for broadcasting Xastir across fast-scan television (for
-   events perhaps).  Set the "ATV_SCREEN_ID" variable to 1 to enable the
-   screen message, and "SPEAK_ID" variable to 1 to enable festival to speak
-   the message.  These variables are in the ~/.xastir/config/xastir.cnf file.
-
-   To use speech you must have a sound card and the 'festival' speech
-   synthesis software installed.  Install Festival and start it in 'server'
-   mode prior to starting up XASTIR.  The normal command for this is
-   "festival --server &".  More info about the speech features is in the
-   Xastir help file.  An easy way to get festival installed on some systems
-   is to go to rpmfind.com and search for both festival and
-   festival-dev, then install the RPM's found.  Red Hat RPM's installed onto
-   SuSE 7.3 with no problems.  Note that the default voice doesn't speak
-   numbers very well.  Edit /usr/share/festival/voices.scm and put
-   "ked_diphone" at the first of the "defvar default-voice-priority-list".
-   This will change the default voice to "ked_diphone".
-
-
+   
    FESTIVAL NOTE:  From: J. Lance Cotton:
    One thing that I found that I had to do to finally get festival to work was
    to get rid of the 'only localhost can connect to the server' pref in the

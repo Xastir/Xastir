@@ -16,10 +16,13 @@ README
      2a   CVS usage
      3    Quick startup
      4    Upgrading
-     5    Boring legal stuff
-     6    Mailing list
-     7    Documentation
-     8    Obtaining help
+     5    Identification notes
+     6    OS-specific notes
+     7    Gating weather alerts
+     8    Boring legal stuff
+     9    Mailing list
+    10    Documentation
+    11    Obtaining help
 
   ------------------------------------------------------------------------
 
@@ -32,15 +35,40 @@ README
 
      (1) WHAT IS XASTIR?
 
-          Xastir is an APRS client program that uses amateur radio and internet
-          services to convey GPS mapping, weather, and positional data in a
-          graphical application.  It has been developed by and for amateur
-          radio enthusiasts to provide real-time data in an easy to use
-          package.
+          Xastir is an open-source project to create a free X11 graphical
+          APRS(tm) client. APRS use amateur radio and internet services to
+          convey GPS mapping, weather, and positional data in a graphical
+          application.  It has been developed by and for amateur radio
+          enthusiasts to provide real-time data in an easy to use package.
+
+          Xastir currently runs under several flavors of Linux and BSD Unix.
+          A few people are running Xastir on Solaris Unix, FreeBSD, Lindows
+          and Mac OS X, but there may be small changes necessary in order to
+          get Xastir to configure/compile on some systems.  There are a few
+          notes below which may help in this task.  Most of the developers use
+          Linux which makes it the best supported platform at the moment.
 
           Xastir is an open-source project: Most sources, documentation, and
           binaries are available under the GPL license, with a few modules
           available under other open-source or public domain licenses.
+
+          More information on Xastir can be found at:
+
+            http://www.xastir.org
+            http://xastir.sourceforge.net
+            http://sourceforge.net/projects/xastir/
+
+          including the latest releases, the anonymous CVS access (lets you
+          download the latest developers' code), and information on how to join
+          Xastir mailing lists.
+
+          SmartBeaconing(tm) was invented by Tony Arnerich (KD7TA) and Steve
+          Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
+          other authors as long as proper credit is given and the term
+          SmartBeaconing(tm) is used.  Thanks to Tony and Steve for that
+          contribution!
+
+             -- The Xastir Group.
 
      (2) HOW TO GET XASTIR
 
@@ -49,50 +77,220 @@ README
           You can get the latest version of Xastir from there.
 
           You might try www.xastir.org for help and information.
-          The new web site will soon be:
+          The web site is:
           <http://xastir.sourceforge.net>.
 
 
      (2a) CVS USAGE
 
           You might obtain the *very latest* version of Xastir that
-          is still under development by using CVS. CVS means
-          'Concurrent Versions System' and is a tool for developers to
-          always keep source code up to date. Try 'man cvs' on your
-          shell for more information about CVS ;-)
-
-          This intended only for users that know a fair bit about
-          Xastir. Be aware that the versions of Xastir that you get
-          by CVS are still being developed, and may be buggy. The
-          Xastir devteam will in *NO WAY* take any responsibility for
-          whatever might happen to you or your computer if you use a
-          CVS version of Xastir.
-
-          To obtain Xastir over CVS, go to the Xastir project page
-          at SourceForge:  <http://sourceforge.net/projects/xastir/>,
-          Click on CVS, then follow the instructions listed.
-
-          Notes:
-
-               (1) you can 'cvs logout', but you don't need to.
-               (2) you don't need to go through this whole
-               process every time; if you want to get a CVS
-               version of Xastir at a later time, you can just
-               'cd ~/xastir' and type 'cvs update -A'.
-               (3) if you experience errors when using 'export',
-               you might be using tclsh or csh as a shell. If so,
-               try using the command 'setenv' instead of 'export':
-               'setenv CVSROOT
+          is still under development by using CVS. 
+          
+          See the file README.CVS for more details.
 
      (3) QUICK STARTUP
 
-           INCLUDED IN 'README.1ST'
+           INCLUDED IN 'INSTALL'
 
      (4) UPGRADING
 
-           INCLUDED IN 'README.1ST'
+           INCLUDED IN 'UPGRADE'
 
-     (5) BORING LEGAL STUFF
+     (5) IDENTIFICATION NOTES
+          Packet radio modes, by their very nature, typically identify
+          themselves with every transmission. Xastir has a few features
+          targeted to people who used Xastir in demonstrataions and other
+          broadcasts where Xastir iself is used over radio.
+
+          Xastir can auto-ID via voice if Festival is compiled in and/or via a
+          message splashed across the screen. It does this identification
+          every 9.5 minutes if enabled. These identification modes were
+          designed for broadcasting Xastir across fast-scan television (for
+          events perhaps). Set the "ATV_SCREEN_ID" variable to 1 to enable the
+          screen message, and "SPEAK_ID" variable to 1 to enable festival to
+          speak the message. These variables are in the
+          ~/.xastir/config/xastir.cnf file.
+
+
+     (6) OS SPECIFIC NOTES
+      ----------------------------------------------------------------------
+      MAC OS X NOTES:
+
+     No changes necessary now for Mac OS X!
+
+     You may want to install everything to /sw though, so that the normal
+     user can find it easily and add maps.  To do this, run this instead:
+
+        ./configure --prefix=/sw
+
+     That will cause Xastir to be installed in /sw/xastir/* directories, and
+     the executable will go into /sw/bin/xastir.
+
+       END OF MAC OS X NOTES.
+     -----------------------------------------------------------------------
+
+     -----------------------------------------------------------------------
+       FreeBSD NOTES:
+
+     Like all software that uses autoconf, Xastir requires GNU make, so use
+     gmake instead of make.
+
+     The version of autoconf used to generate configuration files for
+     Xastir is 2.13.  If you have autoconf 2.52 installed, there will be
+     difficulties.  
+
+     Contact Jack Twilley <jmt@twilley.org> for more help in getting Xastir
+     configured and built under FreeBSD.
+
+       END OF FreeBSD NOTES.
+     -----------------------------------------------------------------------
+
+     -----------------------------------------------------------------------
+       SOLARIS NOTES:
+
+     Changes required for Solaris 2.5 -> 7.0.  Other versions may require
+     slightly different changes.
+
+     After running "configure", edit src/Makefile and make these changes:
+
+       Solaris 2.5 -> 2.6:
+         NOTE: Solaris 2.5 -> 2.6 do not install Xpm.  If you've installed it
+         you'll need to delete "-DNO_XPM" from src/Makefile, make sure the
+         headers are in the search path, and add "-lXpm" to the LIBS or
+         LDFLAGS line in src/Makefile.
+
+       Solaris 7.0 notes from Chris Bell:
+       ----------------------------------
+         Date: Fri, 11 Jan 2002 16:38:57 -0800
+         From: Chris Bell <cbell@junknet.com>
+         To: "Curt Mills, WE7U" <hacker@tc.fluke.com>
+         Cc: xastir-dev@krypton.hscs.virginia.edu
+         Subject: Re: [Xastir-Dev] Autoconf fixes for various OS'es 
+
+         YAY!!! Xpm is properly detected for solaris7!!!!  On my system, (with
+         geotiff and imagemagick) I still have to tweak the geotiff detection
+         to avoid the system libtiff: 
+
+         ===================================================================
+         RCS file: /usr/local/cvs/xastir/configure,v
+         retrieving revision 1.51
+         diff -c -r1.51 configure
+         *** configure   2002/01/11 21:33:54     1.51
+         --- configure   2002/01/12 00:28:01
+         ***************
+         *** 4986,4992 ****
+             echo $ac_n "(cached) $ac_c" 1>&6
+           else
+             ac_save_LIBS="$LIBS"
+         ! LIBS="-lgeotiff  $LIBS"
+           cat > conftest.$ac_ext <<EOF
+           #line 4992 "configure"
+           #include "confdefs.h"
+         --- 4986,4992 ----
+             echo $ac_n "(cached) $ac_c" 1>&6
+           else
+             ac_save_LIBS="$LIBS"
+         ! LIBS="-L/usr/local/lib -R/usr/local/lib -lgeotiff -ltiff $LIBS"
+           cat > conftest.$ac_ext <<EOF
+           #line 4992 "configure"
+           #include "confdefs.h"
+ 
+         Also, the generated Makefile needs the -L/usr/local/lib
+         -R/usr/local/lib added, and -lposix4 added to the link lib line.
+ 
+         It is compiling now, I will let you know if there are any runtime
+         problems.  
+ 
+         I also installed the latest patches for the OS... the latest
+         Openwindows patch finally fixes the X header warnings, so we don't
+         have to fear turning -Wall back on.  (patch # 108376-33) Probably a
+         good tidbit for the readme...
+ 
+         I am trying to get enough parts to build more systems for testing
+         solaris 8.   I tried it on my brother's system over the holidays, and
+         it worked just like 7.  
+       -----------------------------------------------------------------------
+
+     Note that Solaris 2.5 doesn't have support for snprintf().  The code
+     has been tweaked to switch to sprintf() for these calls in this case,
+     which allows more places for buffer overflow problems (this is a
+     security issue as well as a stability issue).  Solaris 2.6 and later
+     has support for snprintf().
+
+     Solaris 7.0 has Xpm support built into Motif, so you'll be able to
+     use Xpm map files within Xastir.
+
+     You need BSD-make installed on your system in order to compile Xastir.
+     Type "gmake" instead of "make" to build Xastir, and substitute "gmake"
+     for "make" in the following instructions.
+
+     ---
+     From: Chris Bell
+
+     A note to add, the auto* tools from sunfreeware (precompiled packages)
+     need the environment variable M4 set to gnu m4 (M4=/usr/local/bin/m4)
+     to work.  I also set LDFLAGS to '-L/usr/local/lib -R/usr/local/lib' (to
+     avoid the ancient libtiff in /usr/openwin/lib) before running configure,
+     then the tests (and final link) work properly.
+
+     Chris.
+
+        END OF SOLARIS NOTES.
+      ----------------------------------------------------------------------- 
+
+      -----------------------------------------------------------------------
+        MANDRAKE LINUX NOTES:
+
+      With Mandrake Linux 8.x? you may get linker errors when it tries to
+      link in the "Xp" library.  To fix this, edit xastir/src/Makefile,
+      adding "-lXp" to the LIBS line, then type "make" again.
+
+        END OF MANDRAKE LINUX NOTES.
+      -----------------------------------------------------------------------
+
+
+     (7) GATING WEATHER ALERTS
+
+      Gating NWS Weather Alerts to RF:
+       --------------------------------
+      If you wish to gate NWS weather alerts from the internet onto RF, you'll
+      need to create a text file in the users directory as 
+      ~/.xastir/data/nws-stations.txt
+      List each NWS station that you would like to transmit via RF. Wildcards
+      are implied for lengths of 3 or greater. Here's what an example file
+      looks like:
+
+      ------------- Cut Here -------------
+      #
+      # Seattle, WA
+      SEANPW
+      #
+      # Portland, OR (any alert type)
+      PDX
+      #
+      # Pendleton, OR
+      PDTNPW
+      #
+      # Medford, OR
+      MFRNPW
+      #
+      ------------- Cut Here -------------
+
+      All text should start at the beginning of the line.
+
+      Once that file is in place, you'll need to hook up to at least one
+      internet server that is feeding you the weather alerts. You'll also need
+      to have at least one RF interface up and running with transmit enabled on
+      that interface. Make sure that "Interfaces->Disable Transmit: All" is not
+      selected.  You should now be gating NWS weather messages to RF.
+
+      Turn on igate logging and look at that log file to view what you're
+      sending out via RF. Don't forget to turn off logging or set up
+      auto-rollover of the log files, else your hard drive might fill up with
+      logging info. Auto-rollover of log files is typically accomplished via
+      CRON.
+
+     (8) BORING LEGAL STUFF
 
           Xastir is Copyright © by Frank Giannandrea. Xastir is
           distributed according to the GNU General Public
@@ -113,7 +311,7 @@ README
 
           You didn't pay for it, so don't expect magic.
 
-     (6) MAILING LIST
+     (9) MAILING LIST
 
           There are currently a couple of mailing lists about Xastir.
           xastir@krypton.hscs.virginia.edu is the one relevant for posts about
@@ -148,21 +346,21 @@ README
           that should be removed or fixed, amazing problems that even
           stump the guru's, etc... are what we want to see here.
 
-     (7) DOCUMENTATION
+     (10) DOCUMENTATION
 
           We're trying to keep the documentation up to date. If you
           feel that anything is missing here, or that anything should
           be added etc, please email xastir@krypton.hscs.virginia.edu about it,
           thank you.
 
-     (10) OBTAINING HELP
+     (11) OBTAINING HELP
 
           Please read the file FAQ, and make sure you've followed any relevant
-          instructions in README.1ST. If the problem still exists, feel free to
+          instructions in INSTALL. If the problem still exists, feel free to
           ask on the Xastir mailinglist, as described above.
 
 
   ------------------------------------------------------------------------
 (c) 1999 Frank Giannandrea
-(c) 2000-2002 The Xastir Group
+(c) 2000-2003 The Xastir Group
 

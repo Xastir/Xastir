@@ -1,0 +1,31 @@
+Previous Install Notes:
+-----------------------
+     Backup all previous installed data!
+
+  Xastir 0.1.0 users (if there are any of you still around!):
+
+     For Xastir version 0.1.0 and below there are new file locations:
+     All map data, tnc config data, and support files now go under the
+     /usr/local/xastir directory. All personal config data, logs, etc are
+     user the (user home dir)/.xastir directory (which will be created after
+     xastir starts). You can copy (after your first xastir startup) your
+     xastir.cnf file to your (user home dir)/.xastir/config directory. MAKE
+     SURE YOU DELETE all lines referencing Files! Xastir may not run properly
+     if you don't!
+
+     If you have Xastir version 0.1.1 then your files are in the right place,
+     just follow the typical build instructions.
+
+  Xastir 0.2.0 users:
+
+     Xastir 0.2.0 and newer have new device controls so you will need to
+     setup your devices again with 0.2.0.
+     Look at File->Configure->Interfaces and File->Configure->Defaults
+
+  Xastir 0.3.x, 0.9.x, 1.0.x, 1.1.0:
+
+     Versions above 1.1 drop privileges if they are run as root. If any of the
+     Xastir files are owned by root, on only readable by root, they will cause
+     problems. Fix these files by "chmod 644 filename" where filename is the
+     problem file.
+ 
