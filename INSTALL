@@ -395,6 +395,19 @@ First Time Install:
      sure the header files are installed. These are often in a separate package
      called ImageMagick-devel or similar.
 
+     Note that Xastir's "./configure" stage may fail trying to compile in
+     ImageMagick support.  If this happens, make sure you have the ImageMagick
+     development package installed if using RPM packages, or have installed
+     the ImageMagick header files.  If it still fails, check the "config.log"
+     file _very_ carefully.  Often ImageMagick tests fail due to some other
+     library that ImageMagick depends upon being absent, such as liblcms,
+     libbz2, or others.  This can also cause AX.25 support to be dropped in our
+     current "configure" script.  We're working on that.
+
+     Until the RPM packagers for ImageMagick include all of the dependent
+     libraries in their RPM dependency list, the best way to assure that
+     ImageMagick is installed properly is to install it from sources.
+
 
    6. OPTIONAL:  If your system doesn't have wget or libcurl/libcurl-devel
      installed, and you want to use online maps, install either or both of

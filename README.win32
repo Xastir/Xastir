@@ -489,6 +489,19 @@ Note:  The Cygwin binary for ImageMagick-5.5.6 fails at the link
 stage trying to link to "liblcms", which is the "little cms engine"
 library.  Don't try to use that version.
 
+Note that Xastir's "./configure" stage may fail trying to compile in
+ImageMagick support.  If this happens, make sure you have the
+ImageMagick development package installed if using RPM packages, or
+have installed the ImageMagick header files.  If it still fails,
+check the "config.log" file _very_ carefully.  Often ImageMagick
+tests fail due to some other library that ImageMagick depends upon
+being absent, such as liblcms, libbz2, or others.
+
+Until the RPM packagers for ImageMagick include all of the dependent
+libraries in their RPM dependency list, the best way to assure that
+ImageMagick is installed properly is to install it from sources.
+
+
 ImageMagick:
         http://www.imagemagick.org/
 
