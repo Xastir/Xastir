@@ -8121,6 +8121,40 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) {   // message for me
         time_t last_ack_sent;
         long record;
+        char ack_string[6];
+
+        // Check for Reply/Ack protocol, which looks like this:
+        // {XX}BB, where XX is the sequence number for the message,
+        // and BB is the ack for the previous message from my
+        // station.
+        ack_string[0] = '\0';   // Terminate the string
+
+        if (msg_id[2] == '}') { // They're sending Reply/Ack protocol!
+
+            msg_id[2] = '\0';   // Terminate it here so that rest of
+                                // decode works properly.  We can
+                                // get duplicate messages otherwise.
+
+            // Separate out the extra ack so that we can deal with
+            // it properly.
+            if (strlen(msg_id) > 4) {   // We have 2 ack chars
+                ack_string[0] = msg_id[3];
+                ack_string[1] = msg_id[4];
+                ack_string[2] = '\0';
+            }
+            else if (strlen(msg_id) > 3) {  // We have 1 ack chars
+                ack_string[0] = msg_id[3];
+                ack_string[1] = '\0';
+            }
+            if (strlen(ack_string) != 0) {  // Have an ack to deal with
+
+printf("Found Reply/Ack protocol.  Extra ack for me!\n");
+// Remember to put this code into the UI message area as well.
+
+                clear_acked_message(call,addr,ack_string);  // got an ACK for me
+                msg_record_ack(call,addr,ack_string);   // Record the ack for this message
+            }
+        }
 
         // printf("found Msg w line to me: |%s| |%s|\n",message,msg_id);
         last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record); // id_fixed
