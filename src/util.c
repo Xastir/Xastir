@@ -1473,10 +1473,16 @@ void log_data(char *file, char *line) {
 //
 void disown_object_item(char *call_sign, char *new_owner) {
 
-    // TBD
+    // TBD.  Add code here...
 
-    printf("(Not implemented yet) Disowning '%s': '%s' is taking over control.\n",
-        call_sign, new_owner);
+    if (is_my_call(new_owner,1)) {
+        printf("(Not implemented yet) Commenting out %s in object.log\n",
+            call_sign);
+    }
+    else {
+        printf("(Not implemented yet) Disowning '%s': '%s' is taking over control.\n",
+            call_sign, new_owner);
+    }
 }
 
 
@@ -1489,12 +1495,17 @@ void disown_object_item(char *call_sign, char *new_owner) {
 //
 // We need to check for objects of the same name in the file,
 // deleting lines that have the same name, and adding new records to
-// the end.
+// the end.  Actually  BAD IDEA!  We want to keep the history of the
+// object so that we can trace its movements later.
 //
 // Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
 //
-void log_object_item(char *line) {
+// Change this function so that deleted objects/items get disowned
+// instead (commented out in the file so that they're not
+// transmitted again after a restart).
+//
+void log_object_item(char *line, int disable_object, char *object_name) {
     char *file;
     FILE *f;
 
@@ -1507,6 +1518,12 @@ void log_object_item(char *line) {
 
         if (debug_level & 1)
             printf("Saving object/item to file: %s",line);
+
+        // Comment out all instances of the object/item?
+        if (disable_object) {
+            disown_object_item(object_name, my_callsign);
+       }
+
     }
     else {
         printf("Couldn't open file for appending: %s\n", file);
@@ -1538,13 +1555,15 @@ void reload_object_item(void) {
         while (fgets(line, 300, f) != NULL) {
             if (debug_level & 1)
                 printf("Loading object/item from file: %s",line);
-    
-            xastir_snprintf(line2,sizeof(line2),"%s>%s:%s",my_callsign,VERSIONFRM,line);
+   
+            if (line[0] != '#') {   // Skip comment lines
+                xastir_snprintf(line2,sizeof(line2),"%s>%s:%s",my_callsign,VERSIONFRM,line);
 
-            // Decode this packet.  This will put it into our
-            // station database and cause it to be transmitted at
-            // regular intervals.  Port is set to -1 here.
-            decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
+                // Decode this packet.  This will put it into our
+                // station database and cause it to be transmitted at
+                // regular intervals.  Port is set to -1 here.
+                decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
+            }
         }
         (void)fclose(f);
 

@@ -13818,7 +13818,7 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
     if (Setup_object_data(line, sizeof(line))) {
 
         // Update this object in our save file
-        log_object_item(line);
+        log_object_item(line,0,last_object);
 
         if (object_tx_disable)
             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
@@ -13848,7 +13848,7 @@ void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
     if (Setup_item_data(line,sizeof(line))) {
 
         // Update this item in our save file
-        log_object_item(line);
+        log_object_item(line,0,last_object);
 
         if (object_tx_disable)
             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
@@ -13879,8 +13879,9 @@ void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 
         line[10] = '_';                         // mark as deleted object
 
-        // Update this object in our save file
-        log_object_item(line);
+        // Update this object in our save file, then comment all
+        // instances out in the file.
+        log_object_item(line,1,last_object);
 
         if (object_tx_disable)
             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
@@ -13914,8 +13915,9 @@ void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
             i++;
         }
 
-        // Update this item in our save file
-        log_object_item(line);
+        // Update this item in our save file, then comment all
+        // instances out in the file.
+        log_object_item(line,1,last_object);
 
         if (object_tx_disable)
             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
