@@ -18757,8 +18757,10 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
     XmScaleGetValue(trail_segment_distance_max, &value); // Degrees
     trail_segment_distance = (int)value;
 
+#ifdef HAVE_GPSMAN
     XmScaleGetValue(RINO_download_timeout, &value); // Degrees
     RINO_download_interval = (int)value;
+#endif  // HAVE_GPSMAN
 
     redraw_on_new_data=2;
     Configure_timing_destroy_shell(widget,clientData,callData);
