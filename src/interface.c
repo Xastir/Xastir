@@ -3267,7 +3267,7 @@ int serial_detach(int port) {
             port_data[port].active = DEVICE_NOT_IN_USE;
         }
 
-        // Now delete lock
+        // Delete lockfile
         xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s", get_device_name_only(port_data[port].device_name));
         if (debug_level & 2)
             fprintf(stderr,"Delete lock file %s\n",fn);
@@ -3302,6 +3302,7 @@ int serial_init (int port) {
     char temp[100];
     char temp1[100];
     pid_t status;
+    int ii;
 
     status = -9999;
 
@@ -3316,6 +3317,26 @@ int serial_init (int port) {
 
     // clear port status
     port_data[port].status = DEVICE_DOWN;
+
+
+    // Check whether we have a port with the same device already
+    // open.  Check all ports except this one and check for
+    // DEVICE_IN_USE.  If found, check whether the device_name
+    // matches.  If a match, skip initializing this port.
+    //
+    for (ii = 0; ii < MAX_IFACE_DEVICES; ii++) {
+        if (ii != port) {
+            if (port_data[ii].active == DEVICE_IN_USE) {
+                if (strcmp(port_data[ii].device_name, port_data[port].device_name) == 0) {
+                    // Found a port with the same device_name which
+                    // is already active.  Skip bringing up another
+                    // interface on the same port.
+                    return(-1);
+                }
+            }
+        }
+    }
+
 
     // check for lock file
     xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s",
