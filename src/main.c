@@ -280,7 +280,9 @@ What_to_display Display_ = { 1, // callsign
                              1, // altitude
 
                              1, // weather
-                             1, // weather_short
+                             1, // weather_text
+                             1, // temperature_only
+                             1, // wind_barb
 
                              1, // ambiguity
                              1, // phg
@@ -326,7 +328,9 @@ Widget display_speed_short_button;
 Widget display_altitude_button;
 
 Widget display_weather_button;
-Widget display_weather_short_button;
+Widget display_weather_text_button;
+Widget display_temperature_only_button;
+Widget display_wind_barb_button;
 
 Widget display_ambiguity_button;
 Widget display_phg_button;
@@ -372,7 +376,9 @@ static void Display_speed_short_toggle(Widget w, XtPointer clientData, XtPointer
 static void Display_altitude_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
 static void Display_weather_toggle(Widget w, XtPointer clientData, XtPointer calldata);
-static void Display_weather_short_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Display_weather_text_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Display_temperature_only_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Display_wind_barb_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
 static void Display_ambiguity_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Display_phg_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -5087,7 +5093,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(display_weather_button, FALSE);
 
 
-    display_weather_short_button = XtVaCreateManagedWidget(langcode("PULDNDP018"),
+    display_weather_text_button = XtVaCreateManagedWidget(langcode("PULDNDP046"),
             xmToggleButtonGadgetClass,
             filter_display_pane,
             XmNvisibleWhenOff, TRUE,
@@ -5095,11 +5101,41 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback(display_weather_short_button, XmNvalueChangedCallback, Display_weather_short_toggle, "1");
-    if (Display_.weather_short)
-        XmToggleButtonSetState(display_weather_short_button, TRUE, FALSE);
+    XtAddCallback(display_weather_text_button, XmNvalueChangedCallback, Display_weather_text_toggle, "1");
+    if (Display_.weather_text)
+        XmToggleButtonSetState(display_weather_text_button, TRUE, FALSE);
     if (!Display_.weather || no_data_selected())
-        XtSetSensitive(display_weather_short_button, FALSE);
+        XtSetSensitive(display_weather_text_button, FALSE);
+
+
+    display_temperature_only_button = XtVaCreateManagedWidget(langcode("PULDNDP018"),
+            xmToggleButtonGadgetClass,
+            filter_display_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(display_temperature_only_button, XmNvalueChangedCallback, Display_temperature_only_toggle, "1");
+    if (Display_.temperature_only)
+        XmToggleButtonSetState(display_temperature_only_button, TRUE, FALSE);
+    if (!Display_.weather || !Display_.weather_text || no_data_selected())
+        XtSetSensitive(display_temperature_only_button, FALSE);
+
+
+    display_wind_barb_button = XtVaCreateManagedWidget(langcode("PULDNDP047"),
+            xmToggleButtonGadgetClass,
+            filter_display_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(display_wind_barb_button, XmNvalueChangedCallback, Display_wind_barb_toggle, "1");
+    if (Display_.wind_barb)
+        XmToggleButtonSetState(display_wind_barb_button, TRUE, FALSE);
+    if (!Display_.weather || no_data_selected())
+        XtSetSensitive(display_wind_barb_button, FALSE);
 
 
     (void)XtVaCreateManagedWidget("create_appshell sep3d",
@@ -8452,10 +8488,19 @@ void set_sensitive_display(int sensitive)
     XtSetSensitive(display_dist_bearing_button, sensitive);
     XtSetSensitive(display_weather_button,      sensitive);
     if (!Display_.weather) {
-        XtSetSensitive(display_weather_short_button, FALSE);
+        XtSetSensitive(display_weather_text_button,     FALSE);
+        XtSetSensitive(display_temperature_only_button, FALSE);
+        XtSetSensitive(display_wind_barb_button,        FALSE);
     }
     else {
-        XtSetSensitive(display_weather_short_button, sensitive);
+        XtSetSensitive(display_weather_text_button, sensitive);
+        if (!Display_.weather_text) {
+            XtSetSensitive(display_temperature_only_button, FALSE);
+        }
+        else {
+            XtSetSensitive(display_temperature_only_button, sensitive);
+        }
+        XtSetSensitive(display_wind_barb_button, sensitive);
     }
     XtSetSensitive(display_trail_button,      sensitive);
     XtSetSensitive(display_last_heard_button, sensitive);
@@ -8952,11 +8997,15 @@ void Display_weather_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoin
 
     if (state->set) {
         Display_.weather = atoi(which);
-        XtSetSensitive(display_weather_short_button, TRUE);
+        XtSetSensitive(display_weather_text_button,     TRUE);
+        XtSetSensitive(display_temperature_only_button, TRUE);
+        XtSetSensitive(display_wind_barb_button,        TRUE);
     }
     else {
         Display_.weather = 0;
-        XtSetSensitive(display_weather_short_button, FALSE);
+        XtSetSensitive(display_weather_text_button,     FALSE);
+        XtSetSensitive(display_temperature_only_button, FALSE);
+        XtSetSensitive(display_wind_barb_button,        FALSE);
     }
 
     redraw_on_new_data = 2;     // Immediate screen update
@@ -8966,14 +9015,50 @@ void Display_weather_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoin
 
 
 
-void Display_weather_short_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+void Display_weather_text_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set) {
+        Display_.weather_text = atoi(which);
+        XtSetSensitive(display_temperature_only_button, TRUE);
+    }
+    else {
+        Display_.weather_text = 0;
+        XtSetSensitive(display_temperature_only_button, FALSE);
+    }
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Display_temperature_only_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if (state->set)
-        Display_.weather_short = atoi(which);
+        Display_.temperature_only = atoi(which);
     else
-        Display_.weather_short = 0;
+        Display_.temperature_only = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Display_wind_barb_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set)
+        Display_.wind_barb = atoi(which);
+    else
+        Display_.wind_barb = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }

@@ -393,18 +393,20 @@ void save_data(void)  {
 
         // display values
         store_int (fout, "DISPLAY_CALLSIGN",              Display_.callsign);
-        store_int (fout, "DISPLAY_SYMBOL",
-                   Display_.symbol  ? Display_.symbol_rotate + 1 : 0);
+        store_int (fout, "DISPLAY_SYMBOL",                Display_.symbol);
+        store_int (fout, "DISPLAY_SYMBOL_ROTATE",         Display_.symbol_rotate);
         store_int (fout, "DISPLAY_STATION_PHG",           Display_.phg);
         store_int (fout, "DISPLAY_DEFAULT_PHG",           Display_.default_phg);
         store_int (fout, "DISPLAY_MOBILES_PHG",           Display_.phg_of_moving);
         store_int (fout, "DISPLAY_ALTITUDE",              Display_.altitude);
         store_int (fout, "DISPLAY_COURSE",                Display_.course);
-        store_int (fout, "DISPLAY_SPEED",
-                   Display_.speed   ? 2 - Display_.speed_short : 0);
+        store_int (fout, "DISPLAY_SPEED",                 Display_.speed);
+        store_int (fout, "DISPLAY_SPEED_SHORT",           Display_.speed_short);
         store_int (fout, "DISPLAY_DIST_COURSE",           Display_.dist_bearing);
-        store_int (fout, "DISPLAY_STATION_WX",
-                   Display_.weather ? 2 - Display_.weather_short : 0);
+        store_int (fout, "DISPLAY_WEATHER",               Display_.weather);
+        store_int (fout, "DISPLAY_STATION_WX",            Display_.weather_text);
+        store_int (fout, "DISPLAY_TEMP_ONLY",             Display_.temperature_only);
+        store_int (fout, "DISPLAY_WIND_BARB",             Display_.wind_barb);
         store_int (fout, "DISPLAY_STATION_TRAILS",        Display_.trail);
         store_int (fout, "DISPLAY_LAST_HEARD",            Display_.last_heard);
         store_int (fout, "DISPLAY_POSITION_AMB",          Display_.ambiguity);
@@ -878,78 +880,34 @@ void load_data_or_default(void) {
     if (!get_int ("DISPLAY_CALLSIGN", &Display_.callsign, 0, 1, 1))
         Display_.callsign = 1;
 
-    if (!get_int ("DISPLAY_SYMBOL", &i, 0, 2, 2)) {
+    if (!get_int ("DISPLAY_SYMBOL",        &Display_.symbol, 0, 1, 1))
         Display_.symbol = 1;
+    if (!get_int ("DISPLAY_SYMBOL_ROTATE", &Display_.symbol_rotate, 0, 1, 1))
         Display_.symbol_rotate = 1;
-    }
-    else {
-        switch (i) {
-        case 0:
-            Display_.symbol        = 0;
-            Display_.symbol_rotate = 0;
-            break;
-        case 1:
-            Display_.symbol        = 1;
-            Display_.symbol_rotate = 0;
-            break;
-        case 2:
-            Display_.symbol        = 1;
-            Display_.symbol_rotate = 1;
-            break;
-        }
-    }
     if (!get_int ("DISPLAY_STATION_PHG", &Display_.phg, 0, 1, 0))
         Display_.phg = 0;
     if (!get_int ("DISPLAY_DEFAULT_PHG", &Display_.default_phg, 0, 1, 0))
         Display_.default_phg = 0;
     if (!get_int ("DISPLAY_MOBILES_PHG", &Display_.phg_of_moving, 0, 1, 0))
         Display_.phg_of_moving = 0;
-    if (!get_int ("DISPLAY_ALTITUDE",    &Display_.altitude, 0, 1, 0))
+    if (!get_int ("DISPLAY_ALTITUDE", &Display_.altitude, 0, 1, 0))
         Display_.altitude = 0;
     if (!get_int ("DISPLAY_COURSE",      &Display_.course, 0, 1, 0))
         Display_.course = 0;
-    if (!get_int ("DISPLAY_SPEED", &i, 0, 2, 0)) {
+    if (!get_int ("DISPLAY_SPEED",       &Display_.speed, 0, 1, 0))
         Display_.speed       = 0;
+    if (!get_int ("DISPLAY_SPEED_SHORT", &Display_.speed_short, 0, 1, 0))
         Display_.speed_short = 0;
-    }
-    else {
-        switch (i) {
-        case 0:
-            Display_.speed       = 0;
-            Display_.speed_short = 0;
-            break;
-        case 1:
-            Display_.speed       = 1;
-            Display_.speed_short = 1;
-            break;
-        case 2:
-            Display_.speed       = 1;
-            Display_.speed_short = 0;
-            break;
-        }
-    }
     if (!get_int ("DISPLAY_DIST_COURSE", &Display_.dist_bearing, 0, 1, 0))
         Display_.dist_bearing = 0;
-    if (!get_int ("DISPLAY_STATION_WX", &i, 0, 2, 0)) {
-        Display_.weather       = 0;
-        Display_.weather_short = 0;
-    }
-    else {
-        switch (i) {
-        case 0:
-            Display_.weather       = 0;
-            Display_.weather_short = 0;
-            break;
-        case 1:
-            Display_.weather       = 1;
-            Display_.weather_short = 1;
-            break;
-        case 2:
-            Display_.weather       = 1;
-            Display_.weather_short = 0;
-            break;
-        }
-    }
+    if (!get_int ("DISPLAY_WEATHER",    &Display_.weather, 0, 1, 0))
+        Display_.weather = 0;
+    if (!get_int ("DISPLAY_STATION_WX", &Display_.weather_text, 0, 1, 0))
+        Display_.weather_text     = 0;
+    if (!get_int ("DISPLAY_TEMP_ONLY",  &Display_.temperature_only, 0, 1, 0))
+        Display_.temperature_only = 0;
+    if (!get_int ("DISPLAY_WIND_BARB",  &Display_.wind_barb, 0, 1, 0))
+        Display_.wind_barb = 0;
     if (!get_int ("DISPLAY_STATION_TRAILS", &Display_.trail, 0, 1, 1))
         Display_.trail = 1;
     if (!get_int ("DISPLAY_LAST_HEARD", &Display_.last_heard, 0, 1, 0))

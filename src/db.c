@@ -1982,13 +1982,13 @@ void display_station(Widget w, DataRow *p_station, int single) {
     time_t temp_sec_heard;
     int temp_show_last_heard;
     long l_lon, l_lat;
-    WeatherRow *weather;
     char orient;
     float value;
     char tmp[7+1];
     int speed_ok = 0;
     int course_ok = 0;
     Pixmap drawing_target;
+    WeatherRow *weather = p_station->weather_data;
 
 
     if (debug_level & 128)
@@ -2134,49 +2134,48 @@ void display_station(Widget w, DataRow *p_station, int single) {
     strcpy(temp_wx_temp,"");
     strcpy(temp_wx_wind,"");
 
-    if (Display_.weather && p_station->weather_data != NULL) {
-        weather = p_station->weather_data;
+    if (Display_.weather && Display_.weather_text && weather != NULL) {
         if ( (strlen(weather->wx_temp) > 0)
-                && (weather->wx_temp[0] != ' ')
-                && (weather->wx_temp[0] != '.') ) {
+             && (weather->wx_temp[0] != ' ')
+             && (weather->wx_temp[0] != '.') ) {
             strcpy(tmp,"T:");
-            if (Display_.weather_short)
+            if (Display_.temperature_only)
                 tmp[0] = '\0';
 
             if (units_english_metric)
                 xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°F ",
-                    tmp, atof(weather->wx_temp));
+                                tmp, atof(weather->wx_temp));
             else
                 xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°C ",
-                    tmp,((atof(weather->wx_temp)-32.0)*5.0)/9.0);
+                                tmp,((atof(weather->wx_temp)-32.0)*5.0)/9.0);
         }
 
-        if (!Display_.weather_short) {
+        if (!Display_.temperature_only) {
             if ( (strlen(weather->wx_hum) > 0)
-                    && (weather->wx_hum[0] != ' ')
-                    && (weather->wx_hum[0] != '.') ) {
+                 && (weather->wx_hum[0] != ' ')
+                 && (weather->wx_hum[0] != '.') ) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "H:%.0f%%", atof(weather->wx_hum));
                 strcat(temp_wx_temp,wx_tm);
             }
 
             if ( (strlen(weather->wx_speed) > 0)
-                    && (weather->wx_speed[0] != ' ')
-                    && (weather->wx_speed[0] != '.') ) {
+                 && (weather->wx_speed[0] != ' ')
+                 && (weather->wx_speed[0] != '.') ) {
                 xastir_snprintf(temp_wx_wind, sizeof(temp_wx_wind), "S:%.0f%s ",
-                        atof(weather->wx_speed)*cvt_mi2len,un_spd);
+                                atof(weather->wx_speed)*cvt_mi2len,un_spd);
             }
 
             if ( (strlen(weather->wx_gust) > 0)
-                    && (weather->wx_gust[0] != ' ')
-                    && (weather->wx_gust[0] != '.') ) {
+                 && (weather->wx_gust[0] != ' ')
+                 && (weather->wx_gust[0] != '.') ) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "G:%.0f%s ",
-                        atof(weather->wx_gust)*cvt_mi2len,un_spd);
+                                atof(weather->wx_gust)*cvt_mi2len,un_spd);
                 strcat(temp_wx_wind,wx_tm);
             }
 
             if ( (strlen(weather->wx_course) > 0)
-                    && (weather->wx_course[0] != ' ')
-                    && (weather->wx_course[0] != '.') ) {
+                 && (weather->wx_course[0] != ' ')
+                 && (weather->wx_course[0] != '.') ) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "C:%.0f°", atof(weather->wx_course));
                 strcat(temp_wx_wind,wx_tm);
             }
@@ -2185,9 +2184,11 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 temp_wx_wind[strlen(temp_wx_wind)-1] = '\0';  // delete blank at EOL
             }
         }
+
         if (temp_wx_temp[strlen(temp_wx_temp)-1] == ' ')
             temp_wx_temp[strlen(temp_wx_temp)-1] = '\0';  // delete blank at EOL
     }
+
 
     (void)remove_trailing_asterisk(p_station->call_sign);  // DK7IN: is this needed here?
 
@@ -2327,7 +2328,6 @@ _do_the_drawing:
     }
 
     // Draw additional stuff if this is a storm
-    weather = p_station->weather_data;
     if ( (weather != NULL)
          && (   (weather->wx_hurricane_radius[0]  != '\0')
                 || (weather->wx_trop_storm_radius[0] != '\0')
@@ -2375,15 +2375,16 @@ _do_the_drawing:
     }
 
 
-    // Draw wind barbs if we have wind
-    if (weather != NULL && atoi(weather->wx_speed) >= 5) {
+    // Draw wind barb if selected and we have wind
+    if (Display_.weather && Display_.wind_barb &&
+        weather != NULL && atoi(weather->wx_speed) >= 5) {
         draw_wind_barb(p_station->coord_lon,
                        p_station->coord_lat,
                        weather->wx_speed,
                        weather->wx_course,
                        temp_sec_heard,
                        drawing_target);
-        }
+    }
 
 
     // Draw other points associated with the station, if any.

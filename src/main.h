@@ -158,7 +158,9 @@ typedef struct _what_to_display {
     int altitude;
 
     int weather;
-    int weather_short;
+    int weather_text;
+    int temperature_only;
+    int wind_barb;
 
     int ambiguity;
     int phg;
