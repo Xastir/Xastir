@@ -59,7 +59,7 @@
 //   |              |        |     |      |       |                                     |
 //  from            to       |     |    title   title                               issue_date
 //                           |  alert_tag
-//                        activity
+//                        activity (expiration)
 //
 //
 // The code should also handle the case where the packet looks like
@@ -381,7 +381,7 @@ void alert_print_list(void) {
                 alert_list[i].alert_level,                  // T
                 alert_list[i].alert_tag,                    // TORNDO
 
-                alert_list[i].activity,                     // 191915z
+                alert_list[i].activity,                     // 191915z (expiration)
 
                 (unsigned long)(alert_list[i].expiration),  // 1019234700
 
@@ -961,7 +961,7 @@ int alert_on_screen(void) {
 //   |              |        |     |      |       |                                     |
 //  from            to       |     |    title   title                               issue_date
 //                           |  alert_tag
-//                        activity
+//                        activity (expiration)
 //
 //
 // The code should also handle the case where the packet looks like
