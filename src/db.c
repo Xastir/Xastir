@@ -86,7 +86,7 @@ void redraw_symbols(Widget w);
 int  delete_weather(DataRow *fill);
 void Station_data_destroy_track(Widget widget, XtPointer clientData, XtPointer callData);
 void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, char speedu, char *alt, char *sats);
-void station_shortcuts_update_function(int hash_key);
+void station_shortcuts_update_function(int hash_key, DataRow *p_rem);
 
 int  extract_speed_course(char *info, char *speed, char *course);
 int  extract_bearing_NRQ(char *info, char *bearing, char *nrq);
@@ -6365,7 +6365,12 @@ void remove_name(DataRow *p_rem) {      // todo: return pointer to next element
     // pointer.
     if (update_shortcuts) {
 //fprintf(stderr,"\t\t\t\t\t\tRemoval of hash key: %i\n", hash_key);
-        station_shortcuts_update_function(hash_key);
+
+        // The -1 tells the function to redo all of the hash table
+        // pointers because we deleted one of them.  Later we could
+        // optimize this so that only the specific pointer is fixed
+        // up.
+        station_shortcuts_update_function(-1, NULL);
     }
 }
 
@@ -6520,14 +6525,14 @@ void delete_station_memory(DataRow *p_del) {
     if (station_shortcuts[hash_key] == NULL) {
         // New hash key entry point found.  Fill in the pointer.
 //fprintf(stderr,"\t\t\t\t\t\tNew hash key: %i\n", hash_key);
-        station_shortcuts_update_function(hash_key);
+        station_shortcuts_update_function(hash_key, p_new);
     }
     else if (p_new->n_prev == NULL) {
         // We just inserted at the beginning of the list.  Assume
         // that we inserted at the beginning of our hash_key
         // segment.
 //fprintf(stderr,"\t\t\t\t\t\tBeginning hash_key1: %i\n", hash_key);
-        station_shortcuts_update_function(hash_key);
+        station_shortcuts_update_function(hash_key, p_new);
     }
     else if (p_new->n_prev != NULL) {
         int hash_key_prev;
@@ -6540,7 +6545,7 @@ void delete_station_memory(DataRow *p_del) {
        
         if (hash_key != hash_key_prev) {
 //fprintf(stderr,"\t\t\t\t\t\tBeginning hash_key2: %i\n", hash_key);
-            station_shortcuts_update_function(hash_key);
+            station_shortcuts_update_function(hash_key, p_new);
         }
     }
 
@@ -6597,7 +6602,12 @@ void move_station_name(DataRow *p_curr, DataRow *p_name) {
 // have to traverse in both directions to find a callsign in the
 // search_station_name() function.
 //
-void station_shortcuts_update_function(int hash_key_in) {
+// If hash_key_in is -1, we need to redo all of the hash keys.  If
+// it is between 0 and 16383, then we need to redo just that one
+// hash key.  The 2nd parameter is either NULL for a removed record,
+// or a pointer to a new station record in the case of an addition.
+//
+void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
     int ii;
     DataRow *ptr;
     int prev_hash_key = 0x0000;
@@ -6608,42 +6618,55 @@ void station_shortcuts_update_function(int hash_key_in) {
 // that we wish to update:  We should be able to speed things up by
 // updating one hash key instead of all 16384 pointers.
 
+    if ( (hash_key_in != -1)
+            && (hash_key_in >= 0)
+            && (hash_key_in < 16384) ) {
+
+        // We're adding/changing a hash key entry
+        station_shortcuts[hash_key_in] = p_rem;
+//fprintf(stderr,"%i ",hash_key_in);
+    }
+    else {
+        // We're removing a hash key entry.  Clear and rebuild the
+        // entire hash table.
+
 //??????????????????????????????????????????????????
     // Clear all of the pointers before we begin????
 //??????????????????????????????????????????????????
-    for (ii = 0; ii < 16384; ii++) {
-        station_shortcuts[ii] = NULL;
-    }
-
-    ptr = n_first;  // Start of list
-
-
-    // Loop through entire list, writing the pointer into the
-    // station_shortcuts array whenever a new character is
-    // encountered.  Do this until the end of the array or the end
-    // of the list.
-    //
-    while ( (ptr != NULL) && (prev_hash_key < 16384) ) {
-
-        // We create the hash key out of the lower 7 bits of the
-        // first two characters, creating a 14-bit key (1 of 16384)
-        //
-        hash_key = (int)((ptr->call_sign[0] & 0x7f) << 7);
-        hash_key = hash_key | (int)(ptr->call_sign[1] & 0x7f);
-
-        if (hash_key > prev_hash_key) {
-
-            // We found the next hash_key.  Store the pointer at the
-            // correct location.
-            if (hash_key < 16384) {
-                station_shortcuts[hash_key] = ptr;
-//fprintf(stderr,"%i ", hash_key);
-            }
-            prev_hash_key = hash_key;
+        for (ii = 0; ii < 16384; ii++) {
+            station_shortcuts[ii] = NULL;
         }
-        ptr = ptr->n_next;
-    }
+
+        ptr = n_first;  // Start of list
+
+
+        // Loop through entire list, writing the pointer into the
+        // station_shortcuts array whenever a new character is
+        // encountered.  Do this until the end of the array or the end
+        // of the list.
+        //
+        while ( (ptr != NULL) && (prev_hash_key < 16384) ) {
+
+            // We create the hash key out of the lower 7 bits of the
+            // first two characters, creating a 14-bit key (1 of 16384)
+            //
+            hash_key = (int)((ptr->call_sign[0] & 0x7f) << 7);
+            hash_key = hash_key | (int)(ptr->call_sign[1] & 0x7f);
+
+            if (hash_key > prev_hash_key) {
+
+                // We found the next hash_key.  Store the pointer at the
+                // correct location.
+                if (hash_key < 16384) {
+                    station_shortcuts[hash_key] = ptr;
+//fprintf(stderr,"%i ", hash_key);
+                }
+                prev_hash_key = hash_key;
+            }
+            ptr = ptr->n_next;
+        }
 //fprintf(stderr,"\n");
+    }
 }
 
 
