@@ -1399,6 +1399,84 @@ void log_data(char *file, char *line) {
 
 
 
+//
+// Logging function called by object/item create/modify routines.
+// We log each object/item as one line in a file.
+//
+// We need to check for objects of the same name in the file,
+// deleting lines that have the same name, and adding new records to
+// the end.
+//
+// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
+void log_object_item(char *line) {
+    char *file;
+    FILE *f;
+
+    file = get_user_base_dir("config/object.log");
+
+    f=fopen(file,"a");
+    if (f!=NULL) {
+        fprintf(f,"%s\n",line);
+        (void)fclose(f);
+
+        if (debug_level & 1)
+            printf("Saving object/item to file: %s",line);
+    }
+    else {
+        printf("Couldn't open file for appending: %s\n", file);
+    }
+}
+
+
+
+
+
+//
+// Function to load saved objects and items back into Xastir.  This
+// is called on startup.  This implements persistent objects/items
+// across Xastir restarts.
+//
+// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
+void reload_object_item(void) {
+    char *file;
+    FILE *f;
+    char line[300+1];
+    char line2[300+1];
+
+    file = get_user_base_dir("config/object.log");
+
+    f=fopen(file,"r");
+    if (f!=NULL) {
+        while (fgets(line, 300, f) != NULL) {
+            if (debug_level & 1)
+                printf("Loading object/item from file: %s",line);
+    
+            xastir_snprintf(line2,sizeof(line2),"%s>%s:%s",my_callsign,VERSIONFRM,line);
+
+            // Decode this packet.  This will put it into our
+            // station database and cause it to be transmitted at
+            // regular intervals.  Port is set to -1 here.
+            decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
+        }
+        (void)fclose(f);
+
+        // Update the screen
+        redraw_symbols(da);
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
+    else {
+        printf("Couldn't open file for reading: %s\n", file);
+    }
+}
+
+
+
+
+
 time_t sec_now(void) {
     time_t timenw;
     time_t ret;

@@ -137,6 +137,7 @@ extern int tigermap_timeout;
 #endif
 
 extern void sort_list(char *filename,int size, Widget list, int *item);
+extern void redraw_symbols(Widget w);
 
 extern Colormap cmap;
 

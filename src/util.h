@@ -64,6 +64,8 @@ extern int  filethere(char *fn);
 extern int  filecreate(char *fn);
 extern time_t file_time(char *fn);
 extern void log_data(char *file, char *line);
+extern void log_object_item(char *line);
+extern void reload_object_item(void);
 extern time_t sec_now(void);
 extern char *get_time(char *time_here);
 
