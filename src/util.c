@@ -746,12 +746,15 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
 
     //printf("%s\n",lon);
 
+    // Set up csT bytes for course/speed if both are non-zero
     c = s = t = ' ';
     if (last_course > 0 || last_speed > 0) {
         c = (char)(last_course/4 + 33);
         s = pow(1.08, (double)last_speed) + 32;
         t = 'C';
-    } else if (strlen(phg) >= 6) {
+    }
+    // Else set up csT bytes for PHG if within parameters
+    else if (strlen(phg) >= 6) {
         double power, height, gain, range, s_temp;
 
 
@@ -787,8 +790,15 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
 
         t = 'C';
     }
-    xastir_snprintf(pos, sizeof(pos), "%c%s%s%c%c%c%c", group, lat, lon, symbol, c, s, t);
-    //printf("New compressed pos: %s\n",pos);
+    // Note that we can end up with three spaces at the end if no
+    // course/speed/phg were supplied.  Need to knock this down to
+    // one space (One space means: Don't use the csT bytes).
+    if ( (c == ' ') && (s == ' ') && (t == ' ') )
+        xastir_snprintf(pos, sizeof(pos), "%c%s%s%c ", group, lat, lon, symbol);
+    else
+        xastir_snprintf(pos, sizeof(pos), "%c%s%s%c%c%c%c", group, lat, lon, symbol, c, s, t);
+
+    //printf("New compressed pos: (%s)\n",pos);
     return pos;
 }
 

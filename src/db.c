@@ -5505,6 +5505,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     float lon = 0;
     float lat = 0;
     float range;
+    int skip;
 
 
     if (debug_level & 1)
@@ -5542,17 +5543,20 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
         x1 = my_data[5] - '!';  x2 = my_data[6] - '!';  x3 = my_data[7] - '!';  x4 = my_data[8] - '!';
 
         // Have a 'c' byte?
-        if (len >= 10) {
+        if (len > 10) {
             c = (int)(my_data[10] - '!');
+            skip = 11;
         }
-        else {
+        else {  // No 'c' byte.  Not per spec, but we decode the packet ok.
             c = -1; // Causes us to ignore csT
+            skip = 10;
         }
       
         // Have 's' and 'T' bytes? 
         if (len >= 13) { 
             s = (int)(my_data[11] - '!');
             T = (int)(my_data[12] - '!');
+            skip = 13;
         }
         else {  // Not enough chars for csT, so zero them
             c = -1; // This causes us to ignore csT
@@ -5633,7 +5637,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
                 }
             }
         }
-        (*info) += 13;                  // delete position from comment
+        (*info) += skip;    // delete position from comment
     }
 
     if (debug_level & 1) {
@@ -9490,6 +9494,9 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
 
 
 //WE7U6
+// We have a lot of code duplication between Setup_object_data,
+// Setup_item_data, and Create_object_item_tx_string.
+//
 // Make sure to look at the "transmit_compressed_objects_items" variable
 // to decide whether to send a compressed packet.
 /*
@@ -9512,6 +9519,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     char complete_corridor[6];
     char altitude[10];
     char speed_course[8];
+    int speed;
+    int course;
     int temp;
     long temp2;
     char signpost[6];
@@ -9549,7 +9558,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         return(0);
     }
 
-
     // Lat/lon are in Xastir coordinates, so we need to convert
     // them to APRS string format here.
     convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
@@ -9558,6 +9566,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
     object_group = p_station->aprs_symbol.aprs_type;
     object_symbol = p_station->aprs_symbol.aprs_symbol;
+
 
     strcpy(comment,p_station->comments);
     (void)remove_trailing_spaces(comment);
@@ -9581,18 +9590,21 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     // Speed/Course Fields
     //sprintf(speed_course,".../");   // Start with invalid-data string
     xastir_snprintf(speed_course, sizeof(speed_course), ".../");   // Start with invalid-data string
+    course = 0;
     if (strlen(p_station->course) != 0) {    // Course was entered
         // Need to check for 1 to three digits only, and 001-360 degrees)
         temp = atoi(p_station->course);
         if ( (temp >= 1) && (temp <= 360) ) {
             //sprintf(speed_course,"%03d/",temp);
             xastir_snprintf(speed_course, sizeof(speed_course), "%03d/",temp);
+            course = temp;
         }
         else if (temp == 0) {   // Spec says 001 to 360 degrees...
             //sprintf(speed_course,"360/");
             xastir_snprintf(speed_course, sizeof(speed_course), "360/");
         }
     }
+    speed = 0;
     if (strlen(p_station->speed) != 0) { // Speed was entered (we only handle knots currently)
         // Need to check for 1 to three digits, no alpha characters
         temp = atoi(p_station->speed);
@@ -9600,6 +9612,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
             //sprintf(tempstr,"%03d",temp);
             xastir_snprintf(tempstr, sizeof(tempstr), "%03d",temp);
             strcat(speed_course, tempstr);
+            speed = temp;
         }
         else {
             strcat(speed_course, "...");
@@ -9788,6 +9801,12 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     else {  // Else it's a normal object/item
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
             if (transmit_compressed_objects_items) {
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
                 xastir_snprintf(line, line_length, ";%-9s*%s%s",
                     p_station->call_sign,
                     time,
@@ -9795,8 +9814,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                         object_group,
                         lon_str,
                         object_symbol,
-                        0,  // Course
-                        0,  // Speed
+                        course,
+                        speed,
                         ""));   // PHG, must be blank
             }
             else {
@@ -9813,14 +9832,20 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         }
         else {  // It's an item
             if (transmit_compressed_objects_items) {
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+ 
                 xastir_snprintf(line, line_length, ")%s!%s",
                     p_station->call_sign,
                     compress_posit(lat_str,
                         object_group,
                         lon_str,
                         object_symbol,
-                        0,  // Course
-                        0,  // Speed
+                        course,
+                        speed,
                         ""));   // PHG, must be blank
             }
             else {
@@ -9859,7 +9884,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
  
     // We need to tack the comment on the end, but need to make
     // sure we don't go over the maximum length for an object/item.
-    //printf("Comment: %s\n",comment);
     if (strlen(comment) != 0) {
         temp = 0;
         if ((p_station->flag & ST_OBJECT) != 0) {

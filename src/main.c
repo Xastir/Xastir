@@ -10296,8 +10296,10 @@ void Object_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@
 
 //WE7U6
 // Convert this eventually to populate a DataRow struct, then call
-// data.c:Create_object_item_tx_string().
-
+// data.c:Create_object_item_tx_string().  Right now we have a lot
+// of code duplication between Setup_object_data, Setup_item_data,
+// and Create_object_item_tx_string.
+//
 // Make sure to look at the "transmit_compressed_objects_items" variable
 // to decide whether to send a compressed packet.
 /*
@@ -10318,6 +10320,8 @@ int Setup_object_data(char *line, int line_length) {
     char complete_corridor[6];
     char altitude[10];
     char speed_course[8];
+    int speed;
+    int course;
     int temp;
     long temp2;
     float temp3;
@@ -10407,22 +10411,26 @@ int Setup_object_data(char *line, int line_length) {
     // Speed/Course Fields
     xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_course_data));
     xastir_snprintf(speed_course, sizeof(speed_course), "%s", ".../");
+    course = 0;
     if (strlen(line) != 0) {    // Course was entered
         // Need to check for 1 to three digits only, and 001-360 degrees)
         temp = atoi(line);
         if ( (temp >= 1) && (temp <= 360) ) {
             xastir_snprintf(speed_course, sizeof(speed_course), "%03d/", temp);
+            course = temp;
         } else if (temp == 0) {   // Spec says 001 to 360 degrees...
             xastir_snprintf(speed_course, sizeof(speed_course), "%s", "360/");
         }
     }
     xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_speed_data));
+    speed = 0;
     if (strlen(line) != 0) { // Speed was entered (we only handle knots currently)
         // Need to check for 1 to three digits, no alpha characters
         temp = atoi(line);
         if ( (temp >= 0) && (temp <= 999) ) {
             xastir_snprintf(line, line_length, "%03d", temp);
             strcat(speed_course,line);
+            speed = temp;
         }
         else {
             strcat(speed_course,"...");
@@ -10584,9 +10592,9 @@ int Setup_object_data(char *line, int line_length) {
                     last_obj_grp,
                     ext_lon_str,
                     last_obj_sym,
-                    0,  // Course
-                    0,  // Speed
-                    ""));    // PHG, must be blank
+                    course,
+                    speed,
+                    ""));    // PHG, must be blank in this case
         }
         else {
             xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
@@ -10626,8 +10634,10 @@ printf("line: %s\n",line);
 
 //WE7U6
 // Convert this eventually to populate a DataRow struct, then call
-// data.c:Create_object_item_tx_string().
-
+// data.c:Create_object_item_tx_string().  Right now we have a lot
+// of code duplication between Setup_object_data, Setup_item_data,
+// and Create_object_item_tx_string.
+//
 // Make sure to look at the "transmit_compressed_objects_items" variable
 // to decide whether to send a compressed packet.
 /*
@@ -10645,6 +10655,8 @@ int Setup_item_data(char *line, int line_length) {
     char complete_corridor[6];
     char altitude[10];
     char speed_course[8];
+    int speed;
+    int course;
     int temp;
     long temp2;
     float temp3;
@@ -10739,22 +10751,26 @@ int Setup_item_data(char *line, int line_length) {
     // Speed/Course Fields
     xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_course_data));
     sprintf(speed_course,".../");   // Start with invalid-data string
+    course = 0;
     if (strlen(line) != 0) {    // Course was entered
         // Need to check for 1 to three digits only, and 001-360 degrees)
         temp = atoi(line);
         if ( (temp >= 1) && (temp <= 360) ) {
             xastir_snprintf(speed_course, sizeof(speed_course), "%03d/", temp);
+            course = temp;
         } else if (temp == 0) {   // Spec says 001 to 360 degrees...
             sprintf(speed_course, "360/");
         }
     }
     xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(ob_speed_data));
+    speed = 0;
     if (strlen(line) != 0) { // Speed was entered (we only handle knots currently)
         // Need to check for 1 to three digits, no alpha characters
         temp = atoi(line);
         if ( (temp >= 0) && (temp <= 999) ) {
             xastir_snprintf(line, line_length, "%03d", temp);
             strcat(speed_course,line);
+            speed = temp;
         } else {
             strcat(speed_course,"...");
         }
@@ -10902,9 +10918,9 @@ int Setup_item_data(char *line, int line_length) {
                     last_obj_grp,
                     ext_lon_str,
                     last_obj_sym,
-                    0,  // Course
-                    0,  // Speed
-                    ""));    // PHG, must be blank
+                    course,
+                    speed,
+                    ""));    // PHG, must be blank in this case
         }
         else {
             xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
