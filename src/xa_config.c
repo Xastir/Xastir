@@ -455,7 +455,7 @@ void save_data(void)  {
 
             strcpy (name, name_temp);
             strcat (name, "TNC_FULLDUPLEX");
-            store_string (fout, name, devices[i].fullduplex);
+            store_int (fout, name, devices[i].fullduplex);
 
             strcpy (name, name_temp);
             strcat (name, "SPEED");
@@ -961,8 +961,8 @@ void load_data_or_default(void) {
 
         strcpy (name, name_temp);
         strcat (name, "TNC_FULLDUPLEX");
-        if (!get_string (name, devices[i].fullduplex))
-            strcpy (devices[i].fullduplex, "0");
+        if (!get_int (name, &devices[i].fullduplex, 0, 1, 0))
+            devices[i].fullduplex = 0;
 
         strcpy (name, name_temp);
         strcat (name, "SPEED");

@@ -156,7 +156,7 @@ typedef struct {
     char   persistence[4];                        /* KISS parameter */
     char   slottime[4];                           /* KISS parameter */
     char   txtail[4];                             /* KISS parameter */
-    char   fullduplex[2];                         /* KISS parameter */
+    int    fullduplex;                            /* KISS parameter */
     int    relay_digipeat;                        /* If 1: interface should RELAY digipeat */
 } ioparam;
 

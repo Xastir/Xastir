@@ -363,8 +363,13 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
         strcpy(devices[TNC_port].txtail,XmTextFieldGetString(TNC_txtail));
         send_kiss_config(TNC_port,0,0x04,atoi(devices[TNC_port].txtail));
  
-        strcpy(devices[TNC_port].fullduplex,XmTextFieldGetString(TNC_fullduplex));
-        send_kiss_config(TNC_port,0,0x05,atoi(devices[TNC_port].fullduplex));
+        if (XmToggleButtonGetState(TNC_fullduplex))
+            devices[TNC_port].fullduplex=1;
+        else
+            devices[TNC_port].fullduplex=0;
+        send_kiss_config(TNC_port,0,0x05,devices[TNC_port].fullduplex);
+
+
     }
     else {
         strcpy(devices[TNC_port].tnc_up_file,XmTextFieldGetString(TNC_up_file_data));
@@ -398,7 +403,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
 void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int port) {
     static Widget  pane, form, form2, button_ok, button_cancel,
                 frame, frame2, frame3, frame4,
-                setup, setup1, setup2, setup3, setup4, setup5,
+                setup, setup1, setup2, setup3, setup4,
                 device, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
@@ -1014,34 +1019,16 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup5 = XtVaCreateManagedWidget("FullDuplex (0=Off, 1=On)", xmLabelWidgetClass, form2,
-                                    XmNtopAttachment,XmATTACH_WIDGET,
-                                    XmNtopWidget, setup4,
-                                    XmNtopOffset, 10,
-                                    XmNbottomAttachment,XmATTACH_NONE,
-                                    XmNleftAttachment, XmATTACH_POSITION,
-                                    XmNleftPosition, 3,
-                                    XmNrightAttachment,XmATTACH_NONE,
-                                    XmNbackground, colors[0xff],
-                                    NULL);
-
-                TNC_fullduplex = XtVaCreateManagedWidget("Config_TNC FullDuplex", xmTextFieldWidgetClass, form2,
-                                    XmNeditable,   TRUE,
-                                    XmNcursorPositionVisible, TRUE,
-                                    XmNsensitive, TRUE,
-                                    XmNshadowThickness,    1,
-                                    XmNcolumns, 3,
-                                    XmNwidth, ((6*7)+2),
-                                    XmNmaxLength, 3,
-                                    XmNbackground, colors[0x0f],
-                                    XmNtopAttachment,XmATTACH_WIDGET,
+                TNC_fullduplex = XtVaCreateManagedWidget("Full Duplex",xmToggleButtonWidgetClass,form2,
+                                    XmNtopAttachment, XmATTACH_WIDGET,
                                     XmNtopWidget, setup4,
                                     XmNtopOffset, 5,
-                                    XmNbottomAttachment,XmATTACH_FORM,
+                                    XmNbottomAttachment, XmATTACH_FORM,
                                     XmNbottomOffset, 5,
-                                    XmNleftAttachment,XmATTACH_POSITION,
-                                    XmNleftPosition, 5,
-                                    XmNrightAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNleftOffset, 10,
+                                    XmNrightAttachment, XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
                                     NULL);
 
                 break;
@@ -1180,6 +1167,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                     break;
                 case DEVICE_SERIAL_KISS_TNC:
                     XmToggleButtonSetState(TNC_relay_digipeat, TRUE, FALSE);
+                    XmToggleButtonSetState(TNC_fullduplex, FALSE, FALSE);
                     break;
                 case DEVICE_SERIAL_TNC:
                 default:
@@ -1210,7 +1198,6 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                 XmTextFieldSetString(TNC_persistence,"63");
                 XmTextFieldSetString(TNC_slottime,"20");
                 XmTextFieldSetString(TNC_txtail,"10");
-                XmTextFieldSetString(TNC_fullduplex,"0");
             }
             else {
                 XmTextFieldSetString(TNC_up_file_data,"tnc-startup.sys");
@@ -1245,10 +1232,16 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                         XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
                     break;
                 case  DEVICE_SERIAL_KISS_TNC:
+
                     if (devices[TNC_port].relay_digipeat)
                         XmToggleButtonSetState(TNC_relay_digipeat, TRUE, FALSE);
                     else
                         XmToggleButtonSetState(TNC_relay_digipeat, FALSE, FALSE);
+
+                    if (devices[TNC_port].fullduplex)
+                        XmToggleButtonSetState(TNC_fullduplex, TRUE, FALSE);
+                    else
+                        XmToggleButtonSetState(TNC_fullduplex, FALSE, FALSE);
 
                     if (devices[TNC_port].transmit_data) {
 // Use the TRUE option later once we have relay digipeating working
@@ -1383,7 +1376,6 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                 XmTextFieldSetString(TNC_persistence,devices[TNC_port].persistence);
                 XmTextFieldSetString(TNC_slottime,devices[TNC_port].slottime);
                 XmTextFieldSetString(TNC_txtail,devices[TNC_port].txtail);
-                XmTextFieldSetString(TNC_fullduplex,devices[TNC_port].fullduplex);
             }
             else {
                 XmTextFieldSetString(TNC_up_file_data,devices[TNC_port].tnc_up_file);

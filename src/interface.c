@@ -3265,7 +3265,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
                     send_kiss_config(port_avail,0,0x03,atoi(devices[port_avail].slottime));
                     send_kiss_config(port_avail,0,0x04,atoi(devices[port_avail].txtail));
-                    send_kiss_config(port_avail,0,0x05,atoi(devices[port_avail].fullduplex));
+                    send_kiss_config(port_avail,0,0x05,devices[port_avail].fullduplex);
                     break;
 
                 default:
