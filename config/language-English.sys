@@ -136,7 +136,6 @@ PULDNOT003|Short||
 PULDNDP014|Find Station|F|
 PULDNDP001|Track Station|T|
 PULDNDP022|Fetch Findu Trail|u|
-# SubMenu "Filter Data"
 PULDNDP032|Filter Data||
 PULDNDP040|Select None||
 PULDNDP041|Select Mine||
@@ -153,7 +152,6 @@ PULDNDP045|Select Objects/Items||
 PULDNDP026|- Select WX Objects/Items||
 PULDNDP039|- Select Water Gauge Objects/Items||
 PULDNDP031|- Select Other Objects/Items||
-# SubMenu "Filter Display"
 PULDNDP033|Filter Display||
 PULDNDP010|Display Callsign||
 PULDNDP012|Display Symbol||
@@ -178,7 +176,6 @@ PULDNDP037|- Display Course||
 PULDNDP038|- Display Symbol||
 PULDNDP005|Display Dist/Bearing||
 PULDNDP024|Display Last Report Age||
-#
 PULDNDP015|Clear All Stations!!!|A|
 PULDNDP016|Clear All Trails!!!|C|
 PULDNDP025|Clear Object/Item History||
