@@ -7392,7 +7392,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     static int last_alert_on_screen;
 
     do_time = 0;
-    nexttime = 10;  // Start UpdateTime again 10 milliseconds after we've completed
+    nexttime = 15;  // Start UpdateTime again 15 milliseconds after we've completed
 
     (void)sound_done();
 
