@@ -7321,6 +7321,54 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
 // Code to compute SmartBeaconing rates.
 //
+// SmartBeaconing was invented by Steve Bragg (KA9MVA) and Tony Arnerich
+// (KD7TA).  It's main goal is to change the beacon rate based on speed
+// and cornering.  It does speed-variant corner pegging and
+// speed-variant posit rate.
+
+// Some tweaks have been added to the generic SmartBeaconing algorithm,
+// but are current labeled as experimental and commented out:  1) We do
+// a posit as soon as we first cross below the sb_low_speed_limit, and
+// 2) We do a posit as soon as we cross above the sb_low_speed_limit if
+// we haven't done a posit for sb_turn_time seconds.  These tweaks are
+// intended to help show that the mobile station has stopped (so that
+// dead-reckoning doesn't keep it moving across the map on other
+// people's displays) and to more quickly show that the station is
+// moving again (for the case where they're in stop-and-go traffic
+// perhaps).
+//
+// It's possible that these new tweaks won't work well for the case
+// where a station is traveling near the speed of sb_low_speed_limit.
+// In this case they'll generate a posit each time they go below it and
+// every time they go above it if they haven't done a posit in
+// sb_turn_time seconds.  This could result in a lot of posits very
+// quickly.  We may need to add yet another limit just above the
+// sb_low_speed_limit for hysteresis, and not posit until we cross above
+// that new limit.
+//
+// Several special SmartBeaconing parameters come into play here:
+//
+// sb_turn_min          Minimum degrees at which corner pegging will
+//                      occur.  The next parameter affects this for
+//                      lower speeds.
+//
+// sb_turn_slope        Fudget factor for making turns less sensitive at
+//                      lower speeds, in units of degrees per 10 mph.
+//
+// sb_turn_time         Dead-time before/after a corner peg beacon.
+//                      Units are in seconds.
+//
+// sb_posit_fast        Fast posit rate, used if >= sb_high_speed_limit.
+//                      Units are in seconds.
+//
+// sb_posit_slow        Slow posit rate, used if <= sb_low_speed_limit.
+//                      Units are in minutes.
+//
+// sb_low_speed_limit   Low speed limit, units are in Mph.
+//
+// sb_high_speed_limit  High speed limit, units are in Mph.
+//
+//
 //  Input: Course in degrees
 //         Speed in knots
 //
@@ -7336,14 +7384,18 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 // With the defaults compiled into the code, here are the
 // turn_thresholds for a few speeds:
 //
-// > 60mph  20 degrees
-//   50mph  25 degrees
-//   40mph  26 degrees
-//   30mph  28 degrees
-//   20mph  33 degrees
-//   10mph  45 degrees
-//    3mph 103 degrees (we limit it to 80 now)
-//    2mph 145 degrees (we limit it to 80 now)
+// Example: sb_turn_min = 20
+//          sb_turn_slope = 25
+//          sb_high_speed_limit = 60
+//
+//      > 60mph  20 degrees
+//        50mph  25 degrees
+//        40mph  26 degrees
+//        30mph  28 degrees
+//        20mph  33 degrees
+//        10mph  45 degrees
+//        3mph 103 degrees (we limit it to 80 now)
+//        2mph 145 degrees (we limit it to 80 now)
 //
 // I added a max threshold of 80 degrees into the code.  145 degrees
 // is unreasonable to expect except for perhaps switchback or 'U'
@@ -7428,8 +7480,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
             //printf("Setting medium rate\n");
 
             // Adjust turn threshold according to speed
-            turn_threshold = turn_threshold
-                + ( (sb_turn_slope * 10) / speed);
+            turn_threshold += (int)( (sb_turn_slope * 10) / speed);
         }
 
         // Force a maximum turn threshold of 80 degrees (still too
