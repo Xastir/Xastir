@@ -150,6 +150,13 @@ required:
 Clicking on the small circle with the two arrows will run you
 through the various select/de-select options for each package.
 
+Note regarding Perl:  On some Windows systems, Perl 5.8 can cause
+page faults when compiling Xastir.  If this happens to you, start up
+the Cygwin install program again and install Perl 5.6.1 instead.
+Retry the compile.  If this works for you, every time you update
+Cygwin you'll have to check the Perl version to make sure that it
+doesn't update you to 5.8.
+
 
 [ ] Step 1d)  Click Next and the packages will get downloaded and
 installed.  Repeat the above if you have network difficulties, until
