@@ -141,7 +141,7 @@ required:
 [ ]     less
     Utils
 [ ]     bzip2
-[ ]     diff
+[ ]     diffutils
 [ ]     patch
     Web
 [ ]     wget (or can use libcurl instead)
