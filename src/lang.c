@@ -163,8 +163,10 @@ int load_language_file(char *filename) {
                                         if(strlen(temp_ptr)<=MAX_LANG_CODE) {
                                             lcok=1;
                                             for (lt=0; lt <lang_code_number && lcok; lt++) {
-                                                if(strcmp(lang_code[lt],temp_ptr)==0)
+                                                if(strcmp(lang_code[lt],temp_ptr)==0) {
                                                     lcok=0;
+                                                    break;
+                                                }
                                             }
                                             if(lcok) {
                                                 strcpy(lang_code[lang_code_number],temp_ptr);
