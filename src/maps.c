@@ -3534,6 +3534,8 @@ struct {
 //  {"rtt",tiger,draw_ogr_map},
 //  {"rtz",tiger,draw_ogr_map},
   {"tab",mapinfo,draw_ogr_map},
+  {"mid",mapinfo,draw_ogr_map},
+  {"mif",mapinfo,draw_ogr_map},
 #endif  // HAVE_LIBGDAL
 
   {NULL,none,NULL}
