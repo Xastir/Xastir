@@ -33,7 +33,7 @@
 
 #------------------------------------------------------------------------------------------------
 
-
+use lib "/usr/local/lib";
 use Coordinate;		# Snag WE7U's Coordinate module
 
 
