@@ -16267,8 +16267,7 @@ void map_properties_deselect_maps(Widget widget, XtPointer clientData, XtPointer
                NULL);
 
     // Run through the widget's list, deselecting every line
-    for(x=1; x<=i;x++)
-    {
+    for(x=1; x<=i;x++) {
         if (XmListPosSelected(map_properties_list,x)) {
             XmListDeselectPos(map_properties_list,x);
         }
@@ -16293,9 +16292,12 @@ void map_properties_select_all_maps(Widget widget, XtPointer clientData, XtPoint
                NULL);
 
     // Run through the widget's list, selecting every line
-    for(x=1; x<=i;x++)
-    {
-          XmListSelectPos(map_properties_list,x,TRUE);
+    for(x=1; x<=i;x++) {
+        // Deselect each one first, in case already selected
+        XmListDeselectPos(map_properties_list,x);
+
+        // Select/highlight that position
+        XmListSelectPos(map_properties_list,x,TRUE);
     }
 }
 
