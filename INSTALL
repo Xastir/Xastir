@@ -145,8 +145,7 @@ For speech support via the festival speech synthesis software you need:
 
 For ESRI Shapefile format maps/weather alert maps:
     Shapelib:
-        http://shapelib.maptools.org
-        http://gdal.velocet.ca/projects/shapelib/index.html
+        http://shapelib.maptools.org/
         http://wetnet.net/~we7u/xastir/
     pcre:
         http://www.pcre.org
