@@ -239,6 +239,13 @@ CPPFLAGS=$save_CPPFLAGS
 LDFLAGS=$save_LDFLAGS 
 LIBS=$save_LIBS])
   fi
+
+  # any post-confirmation tests go here
+  if test "$use_imagemagick" == "yes"; then
+    AC_CHECK_HEADERS(magick/xwindow.h magick/xwindows.h, [], [], [#include <stdio.h>
+#include <sys/types.h>
+#include <magick/api.h>])
+  fi
 else
   use_imagemagick="no"
 fi
