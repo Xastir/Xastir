@@ -1017,7 +1017,7 @@ void load_data_or_default(void) {
     if (!get_long ("DEFAULT_STATION_CLEAR", (long *)&sec_clear, 1l, 604800l, 43200l))
         sec_clear = (time_t)43200l;
 
-    if (!get_long("DEFAULT_STATION_REMOVE", (long *)&sec_remove, 1l, 604800l, sec_clear*2)) {
+    if (!get_long("DEFAULT_STATION_REMOVE", (long *)&sec_remove, 1l, 604800*2, sec_clear*2)) {
         sec_remove = sec_clear*2;
     // In the interests of keeping the memory used by Xastir down, I'm
     // commenting out the below lines.  When hooked to one or more internet
