@@ -721,7 +721,10 @@ void Coordinate_calc_output(char *full_zone, long northing,
 
     // Latitude:  Switch to integer arithmetic to avoid
     // floating-point rounding errors.
-    temp = (long)(latitude * 100000);
+    // We _do_ need to round it first though so that we don't lose
+    // accuracy.
+    xastir_snprintf(temp_string,sizeof(temp_string),"%8.0f",latitude * 100000.0);
+    temp = atol(temp_string);
     if (temp < 0) {
         south++;
         temp = labs(temp);
@@ -738,7 +741,10 @@ void Coordinate_calc_output(char *full_zone, long northing,
 
     // Longitude:  Switch to integer arithmetic to avoid
     // floating-point rounding errors.
-    temp = (long)(longitude * 100000);
+    // We _do_ need to round it first though so that we don't lose
+    // accuracy.
+    xastir_snprintf(temp_string,sizeof(temp_string),"%9.0f",longitude * 100000.0);
+    temp = atol(temp_string);
     if (temp < 0) {
         west++;
         temp = labs(temp);
