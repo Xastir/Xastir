@@ -922,6 +922,23 @@ if test "$use_geotiff" = "yes"; then
 fi
 #
 # End of libgeotiff/libtiff/libproj checks 
+
+
+ 
+# Check for gpsman/gpsmanshp
+# 
+# Make sure to check /usr/local/lib & /usr/local/include as well 
+# 
+use_gpsman=no
+AC_CHECK_FILE(/usr/lib/tcl8.3/gpsmanshp/gpsmanshp.so,
+  AC_CHECK_FILE(/home/src/gpsman/gpsman-pre6.0/gpsman.tcl,use_gpsman="yes",
+    AC_MSG_WARN(*** Cannot find gpsman.tcl ***)),
+      AC_MSG_WARN(*** Cannot find gpsmanshp.so ***))
+if test "$use_gpsman" = "yes"; then
+  AC_DEFINE_UNQUOTED(HAVE_GPSMAN, 1, [Define if you have GPSMan/gpsmanshp Packages])
+fi
+#
+# End of gpsman/gpsmanshp checks 
  
  
  
@@ -1073,6 +1090,7 @@ echo Building with GeoTiff....... : $use_geotiff
 echo Building with ShapeLib...... : $use_shapelib 
 echo Building with ImageMagick... : $use_imagemagick 
 echo Building with Festival...... : $use_festival 
+echo Building with GPSMan........ : $use_gpsman
 echo 
 echo Xastir will be installed in $prefix/bin. 
 if test "x$xastirpath" != "x" ; then 
