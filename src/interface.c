@@ -1729,8 +1729,8 @@ int net_detach(int port) {
 // This routine changes callsign chars to proper uppercase chars or
 // numerals, fixes the callsign to six bytes, shifts the letters left by
 // one bit, and puts the SSID number into the proper bits in the seventh
-// byte.  The callsign as processed will be nearly ready for inclusion
-// in an AX.25 header.
+// byte.  The callsign as processed is ready for inclusion in an
+// AX.25 header.
 //
 void fix_up_callsign(char *data) {
     unsigned char new_call[8] = "       ";  // Start with seven spaces
@@ -1739,8 +1739,10 @@ void fix_up_callsign(char *data) {
     int j = 0;
 
 
+    // Change callsign to upper-case and pad out to six places with
+    // space characters.
     for (i = 0; i < strlen(data); i++) {
-        toupper(data[i]);   // Change everything to upper-case
+        toupper(data[i]);
 
         if (data[i] == '-') {   // Stop at '-'
             break;
@@ -1750,8 +1752,6 @@ void fix_up_callsign(char *data) {
         }
     }
     new_call[7] = '\0';
-    // Callsign should now be six chars, with space padding on the
-    // right.
 
     //printf("new_call:(%s)\n",new_call);
 
@@ -1769,11 +1769,16 @@ void fix_up_callsign(char *data) {
     if (ssid >= 0 && ssid <= 15) {
         new_call[6] = ssid | 0x30;  // Set 2 reserved bits
     }
+    else {  // Whacko SSID.  Set it to zero
+        new_call[6] = 0x30;     // Set 2 reserved bits
+    }
 
     // Shift each byte one bit to the left
     for (i = 0; i < 7; i++)
         new_call[i] = new_call[i] << 1;
 
+    // Write over the top of the input string with the newly
+    // formatted callsign
     strcpy(data,new_call);
 }
 
@@ -1782,6 +1787,9 @@ void fix_up_callsign(char *data) {
 
 
 // WE7U
+// Create an AX25 frame and then turn it into a KISS packet.  Dump
+// it into the transmit queue.
+//
 void send_ax25_frame(int port, char *source, char *destination, char *path, char *data) {
     unsigned char temp_source[15];
     unsigned char temp_dest[15];
@@ -1790,24 +1798,27 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     unsigned char transmit_txt[MAX_LINE_SIZE*2];
     unsigned char transmit_txt2[MAX_LINE_SIZE*2];
     unsigned char c;
-    int i, j, erd, write_in_pos_hold;
+    int i, j;
+    int erd;
+    int write_in_pos_hold;
 
  
     //printf("KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
     transmit_txt[0] = '\0';
 
+    // Format the destination callsign
     strcpy(temp_dest,destination);
     fix_up_callsign(temp_dest);
     strcat(transmit_txt,temp_dest);
 
+    // Format the source callsign
     strcpy(temp_source,source);
     fix_up_callsign(temp_source);
     strcat(transmit_txt,temp_source);
 
-    // Need to break up the path into individual callsigns and send them
-    // one by one to fix_up_callsign()
-
+    // Break up the path into individual callsigns and send them one
+    // by one to fix_up_callsign()
     j = 0;
     if ( (path != NULL) && (strlen(path) != 0) ) {
         while (path[j] != '\0') {
@@ -1828,7 +1839,8 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
         }
     }
 
-    // Set the end-of-address bit
+    // Set the end-of-address bit on the last callsign in the
+    // address field
     transmit_txt[strlen(transmit_txt) - 1] |= 0x01;
 
     // Add the Control byte
@@ -1841,17 +1853,16 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     pid[1] = '\0';
     strcat(transmit_txt,pid);
 
-    // Append the information
+    // Append the information chars
     strcat(transmit_txt,data);
 
-    // Need to add the KISS framing characters and do the proper
-    // escapes.
-
+    // Add the KISS framing characters and do the proper escapes.
     j = 0;
     transmit_txt2[j++] = KISS_FEND;
 
-    transmit_txt2[j++] = 0x00;  // Note, this is where different
-                                // interfaces would be specified.
+    // Note:  This byte is where different interfaces would be
+    // specified:
+    transmit_txt2[j++] = 0x00;
 
     for (i = 0; i < strlen(transmit_txt); i++) {
         c = transmit_txt[i];
@@ -1873,8 +1884,9 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
 //-------------------------------------------------------------------
 // Had to snag code from port_write_string() below because our string
-// needs to have 0x00 chars in it.  port_write_string() can't handle
-// that case.
+// needs to have 0x00 chars inside it.  port_write_string() can't
+// handle that case.  It's a good thing the transmit queue stuff
+// could handle it.
 //-------------------------------------------------------------------
 
     erd = 0;
