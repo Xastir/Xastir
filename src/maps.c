@@ -4761,6 +4761,7 @@ int index_retrieve(char *filename,
             // We're not there yet.  Try the next map in the index.
             //
             current = current->next;
+//fprintf(stderr,"next\n");
         }
 
         else if (needle < haystack) {
@@ -4771,6 +4772,7 @@ int index_retrieve(char *filename,
             if (first_iteration) {
                 first_iteration = 0; // Don't look through the list again.
                 current = map_index_head;
+//fprintf(stderr,"past it\n");
             }
 
             else {
@@ -4778,7 +4780,7 @@ int index_retrieve(char *filename,
                 // We're done.  We didn't find it in the index.
                 // Save the pointer away for next time.
                 last_index_lookup = current;
-
+//fprintf(stderr,"did not find\n");
                 return(status);
             }
         }
@@ -4789,6 +4791,7 @@ int index_retrieve(char *filename,
             // each is a match.  Test the entire string now for a
             // match.
             //
+//fprintf(stderr,"first char match\n");
             if (strcmp(current->filename,filename) == 0) {
                 // Found a match!
                 status = 1;
@@ -4801,7 +4804,12 @@ int index_retrieve(char *filename,
                 *map_layer = current->map_layer;
                 *draw_filled = current->draw_filled;
                 *auto_maps = current->auto_maps;
+//fprintf(stderr,"Found it\n");
                 break;  // Exit the while loop
+            }
+            else {
+                // Rest of string didn't match
+                current = current->next;
             }
         }
 
@@ -4809,6 +4817,7 @@ int index_retrieve(char *filename,
             // We should never get here, as we've already hit all
             // conditions possible.
             current = current->next;
+//fprintf(stderr,"Got to never-never land\n");
         }
 
         // If we hit the end of the list and need to start at the
@@ -4818,6 +4827,7 @@ int index_retrieve(char *filename,
             // list.
             first_iteration = 0; // Don't look through the list again.
             current = map_index_head;
+//fprintf(stderr,"Starting over\n");
         }
     }
 
