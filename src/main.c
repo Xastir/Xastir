@@ -2722,7 +2722,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     coordinate_calculator_button = XtVaCreateManagedWidget(langcode("COORD001"),
                         xmPushButtonGadgetClass,mappane,
-                        XmNmnemonic, langcode_hotkey("Coordinate Calculator"),
+                        XmNmnemonic, langcode_hotkey("COORD001"),
                         XmNbackground,colors[0xff],NULL);
 
     (void)XtVaCreateManagedWidget("create_appshell sep2",xmSeparatorGadgetClass,mappane,XmNbackground,colors[0xff],NULL);
