@@ -2413,7 +2413,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
        weather_button, wx_station_button, locate_button, locate_place_button, jump_button, alert_button,
        config_button, defaults_button, coordinates_button, station_button,
        map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
-       map_levels_button, map_labels_button, map_fill_button,
+       map_levels_button, map_labels_button, map_fill_button, coordinate_calculator_button,
        Map_background_color_Pane, map_background_button, map_pointer_menu_button,
 #ifdef HAVE_GEOTIFF
        Map_intensity_Pane, map_intensity_button,
@@ -2717,6 +2717,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     locate_place_button = XtVaCreateManagedWidget(langcode("PULDNMP014"),xmPushButtonGadgetClass,mappane,
                         XmNmnemonic,langcode_hotkey("PULDNMP014"),XmNbackground,colors[0xff],NULL);
+
+    coordinate_calculator_button = XtVaCreateManagedWidget(langcode("COORD001"),
+                        xmPushButtonGadgetClass,mappane,
+                        XmNmnemonic, langcode_hotkey("Coordinate Calculator"),
+                        XmNbackground,colors[0xff],NULL);
 
     (void)XtVaCreateManagedWidget("create_appshell sep2",xmSeparatorGadgetClass,mappane,XmNbackground,colors[0xff],NULL);
 
@@ -3284,6 +3289,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(wx_station_button,    XmNactivateCallback,WX_station,NULL);
     XtAddCallback(jump_button,          XmNactivateCallback, Jump_location, NULL);
     XtAddCallback(locate_place_button,  XmNactivateCallback,Locate_place,NULL);
+    XtAddCallback(coordinate_calculator_button, XmNactivateCallback,Coordinate_calc,"");
  
     XtAddCallback(send_message_to_button,       XmNactivateCallback,Send_message,NULL);
     XtAddCallback(open_messages_group_button,   XmNactivateCallback,Send_message,"*");
