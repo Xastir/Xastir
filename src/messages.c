@@ -103,7 +103,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:clear_message_window
 
 static int group_comp(const void *a, const void *b) {
     if (!*(char *)a)
-      return ((int)(*(char *)b != '\0'));
+        return ((int)(*(char *)b != '\0'));
     return strcasecmp(a, b);
 }
 
@@ -137,8 +137,8 @@ void group_build_list(char *filename) {
     group_data_count = 3;
 // If we are in special group look for messages.
     if (altnet) {
-	strcpy(&group_data_list[group_data_count*10], altnet_call);
-	group_data_count++;
+        strcpy(&group_data_list[group_data_count*10], altnet_call);
+        group_data_count++;
     }
 //
 
@@ -168,8 +168,8 @@ void group_build_list(char *filename) {
             (void)fgets(&group_data_list[group_data_count*10], 10, f);
             if ((ptr = strchr(&group_data_list[group_data_count*10], '\n')))
                 *ptr = '\0';
-	    else
-		while ((i = fgetc(f)) != EOF && i != '\n'); // clean-up after long group name
+            else
+                while ((i = fgetc(f)) != EOF && i != '\n'); // clean-up after long group name
 
             if (group_data_list[group_data_count*10])
                 group_data_count++;
@@ -190,15 +190,18 @@ static int group_active(char *from) {
     static char altgroup[10];
 
     (void)remove_trailing_spaces(from);
-// If we cycle to/from special group or file changes, rebuild group list.
-    if ((!stat(group_data_file, &group_stat) && (current_group_stat.st_size != group_stat.st_size ||
-	  current_group_stat.st_mtime != group_stat.st_mtime || current_group_stat.st_ctime != group_stat.st_ctime)) ||
-	(altgroup && strcasecmp(altgroup, VERSIONFRM))) {
-	group_build_list(group_data_file);
-	current_group_stat = group_stat;
-	strcpy(altgroup, VERSIONFRM);
+
+    // If we cycle to/from special group or file changes, rebuild group list.
+    if ((!stat(group_data_file, &group_stat)
+            && (current_group_stat.st_size != group_stat.st_size
+                || current_group_stat.st_mtime != group_stat.st_mtime
+                || current_group_stat.st_ctime != group_stat.st_ctime))
+                || (altgroup && strcasecmp(altgroup, VERSIONFRM))) {
+        group_build_list(group_data_file);
+        current_group_stat = group_stat;
+        strcpy(altgroup, VERSIONFRM);
     }
-    if (group_data_list != NULL)        // Causes segfault on Solaris 2.5 without this!
+    if (group_data_list != NULL)    // Causes segfault on Solaris 2.5 without this!
         return (int)(bsearch(from, group_data_list, (size_t)group_data_count, (size_t)10, group_comp) != NULL);
     else
         return(0);
