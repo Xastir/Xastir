@@ -631,6 +631,12 @@ void draw_vector_ll(Widget w,
 
 
 
+// If non-zero, draw irregular UTM grids in Svalbard and SW Norway
+// areas.
+int MGRS_grid = 0;
+
+
+
 //#define UT_DEBUG
 //#define UT_DEBUG_VERB
 //#define UT_DEBUG_ALLOC
@@ -658,6 +664,7 @@ void draw_vector_ll(Widget w,
 // to the respective poles, the Universal Polar Stereographic (UPS)
 // is used.
 //
+// For MGRS UTM grid only:
 // UTM Zone 32 has been widened to 9° (at the expense of zone 31)
 // between latitudes 56° and 64° (band V) to accommodate southwest
 // Norway. Thus zone 32 extends westwards to 3°E in the North Sea.
@@ -759,35 +766,47 @@ void draw_grid(Widget w) {
         for (i = 42; i <= 180; i += 6) {
             draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
         }
- 
-        // Draw the partial vectors from 80S to the irregular region
-        draw_vector_ll(w, -80.0,    6.0,  56.0,    6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   12.0,  72.0,   12.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   18.0,  72.0,   18.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   24.0,  72.0,   24.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   30.0,  72.0,   30.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -80.0,   36.0,  72.0,   36.0, gc_tint, pixmap_final);
 
-        // Draw the short vertical vectors in the irregular region 
-        draw_vector_ll(w,  56.0,    3.0,  64.0,    3.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  64.0,    6.0,  72.0,    6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0,    9.0,  84.0,    9.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0,   21.0,  84.0,   21.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  72.0,   33.0,  84.0,   33.0, gc_tint, pixmap_final);
+        if (MGRS_grid) {
+            // For MGRS, we need to draw irregular zones in certain
+            // areas.
 
-        // Draw the short vertical vectors above the irregular region 
-        draw_vector_ll(w,  84.0,    6.0,  84.0,    6.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   12.0,  84.0,   12.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   18.0,  84.0,   18.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   24.0,  84.0,   24.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   30.0,  84.0,   30.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,   36.0,  84.0,   36.0, gc_tint, pixmap_final);
+            // Draw the partial vectors from 80S to the irregular region
+            draw_vector_ll(w, -80.0,    6.0,  56.0,    6.0, gc_tint, pixmap_final);
+            draw_vector_ll(w, -80.0,   12.0,  72.0,   12.0, gc_tint, pixmap_final);
+            draw_vector_ll(w, -80.0,   18.0,  72.0,   18.0, gc_tint, pixmap_final);
+            draw_vector_ll(w, -80.0,   24.0,  72.0,   24.0, gc_tint, pixmap_final);
+            draw_vector_ll(w, -80.0,   30.0,  72.0,   30.0, gc_tint, pixmap_final);
+            draw_vector_ll(w, -80.0,   36.0,  72.0,   36.0, gc_tint, pixmap_final);
 
-        // Now draw the short vertical vectors in the polar regions
-        draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final);
-        draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
-        draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
+            // Draw the short vertical vectors in the irregular region 
+            draw_vector_ll(w,  56.0,    3.0,  64.0,    3.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  64.0,    6.0,  72.0,    6.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  72.0,    9.0,  84.0,    9.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  72.0,   21.0,  84.0,   21.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  72.0,   33.0,  84.0,   33.0, gc_tint, pixmap_final);
+
+            // Draw the short vertical vectors above the irregular region 
+            draw_vector_ll(w,  84.0,    6.0,  84.0,    6.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  84.0,   12.0,  84.0,   12.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  84.0,   18.0,  84.0,   18.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  84.0,   24.0,  84.0,   24.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  84.0,   30.0,  84.0,   30.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  84.0,   36.0,  84.0,   36.0, gc_tint, pixmap_final);
+
+            // Now draw the short vertical vectors in the polar regions
+            draw_vector_ll(w, -90.0, -180.0, -80.0, -180.0, gc_tint, pixmap_final);
+            draw_vector_ll(w, -90.0,  180.0, -80.0,  180.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
+            draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
+        }
+        else {
+            // Draw normal zone boundaries used for civilian UTM
+            // grid.
+            for (i = 6; i < 42; i += 6) {
+                draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
+            }
+        }
 
 
         // Horizontal lines:
