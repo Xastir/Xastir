@@ -1,11 +1,12 @@
 
 $Id$
 
-This file has two parts.  The first part describes the new structure
-for debug levels.  The second part describes the debug_level
-definitions that were in the old code and which files they were in.
-The debug level structure was modified in February of 2002 by
-KB6MER.  Questions/comments/flames can be sent to kb6mer@arrl.net
+This file has three parts.  The first part describes the new structure for
+debug levels.  The second part describes the debug_level definitions that
+were in the old code and which files they were in.  The third part
+describes how to use use debugging at run time.  The debug level structure
+was modified in February of 2002 by KB6MER.  Questions/comments/flames can
+be sent to kb6mer@arrl.net
 
 Here's how things are after KB6MER tweaked it all...
 
@@ -53,7 +54,6 @@ wx.c >2 &1
 xa_config.c &1 &2
 
 
-Copyright (C) 2002-2004 The Xastir Group
 
 
 ------------------------------------------------------------------
@@ -114,4 +114,9 @@ file.  You could then type "tail -f xastir.log | grep map_cache" in
 another window and watch that subset of the error messages there.
 That way you won't miss anything.
 
+
+
+
+------------------------------------------------------------------
+Copyright (C) 2002-2005 The Xastir Group
 
