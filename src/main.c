@@ -8328,6 +8328,8 @@ void coordinates_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
 
     // Update any active view lists so their coordinates get updated
     Station_List_fill(1,0);     // Update View->Mobile Station list (has lat/lon or UTM info on it)
+    // Force redraw
+    redraw_on_new_data = 2;
 }
 
 
