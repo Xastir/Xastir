@@ -195,4 +195,11 @@ int main(int argc, char *argv[])
     awk_free_symtab(symtbl);
     exit(0);
 }
-#endif /* WITH_DBFAWK */
+#else /* !WITH_DBFAWK */
+
+main()
+{
+  fprintf(stderr,"DBFAWK support not compiled.\n");
+  exit(1);
+}
+#endif /* !WITH_DBFAWK */
