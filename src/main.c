@@ -1846,7 +1846,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // display.
     if (have_utm) {
         // Process UTM values
-        utm_to_ll(gDatum[E_WGS_84].ellipsoid,
+        utm_to_ll(E_WGS_84,
             (double)northing,
             (double)easting,
             full_zone,
@@ -1865,7 +1865,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         // Process lat/lon values
         double_northing = (double)northing;
         double_easting = (double)easting;
-        ll_to_utm(gDatum[E_WGS_84].ellipsoid,
+        ll_to_utm(E_WGS_84,
             (double)latitude,
             (double)longitude,
             &double_northing,
