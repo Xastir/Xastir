@@ -12098,8 +12098,13 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_LP_NOSP);
     convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_LP_NOSP);
 
+    // Check for an overlay character.  Replace the group character
+    // (table char) with the overlay if present.
+    if (p_station->aprs_symbol.special_overlay != '\0') // Overlay character
+        object_group = p_station->aprs_symbol.special_overlay;
+    else    // No overlay character
+        object_group = p_station->aprs_symbol.aprs_type;
 
-    object_group = p_station->aprs_symbol.aprs_type;
     object_symbol = p_station->aprs_symbol.aprs_symbol;
 
     // In this case we grab only the first comment field (if it
