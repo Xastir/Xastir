@@ -12175,15 +12175,15 @@ map_index_record *map_index_head = NULL;
 
 
 
-// Function to dissect and free all of the records in the map index
+// Function to dissect and free all of the records in a map index
 // linked list, leaving it totally empty.
 //
-void free_map_index(void) {
+void free_map_index(map_index_record *index_list_head) {
     map_index_record *current;
     map_index_record *temp;
 
 
-    current = map_index_head;
+    current = index_list_head;
 
     while (current != NULL) {
         temp = current;
@@ -12191,7 +12191,67 @@ void free_map_index(void) {
         free(temp);
     }
 
-    map_index_head = NULL;
+    index_list_head = NULL;
+}
+
+
+
+
+
+// Function to copy just the properties fields from the backup map
+// index to the primary index.  Must match each record before
+// copying.  Once it's done, it frees the backup map index.
+//
+void map_index_copy_properties(map_index_record *primary_index_head,
+        map_index_record *backup_index_head) {
+    map_index_record *primary;
+    map_index_record *backup;
+
+
+    backup = backup_index_head;
+
+    // Walk the backup list, comparing the filename field with the
+    // primary list.  When a match is found, copy just the
+    // Properties fields (map_layer/draw_filled/auto_maps/selected)
+    // across to the primary record.
+    //
+    while (backup != NULL) {
+        int done = 0;
+
+        primary = primary_index_head;
+
+        while (!done && primary != NULL) {
+
+            if (strcmp(primary->filename, backup->filename) == 0) { // If match
+
+                if (debug_level & 16) {
+                    fprintf(stderr,"Match: %s\t%s\n",
+                        primary->filename,
+                        backup->filename);
+                }
+
+                // Copy the Properties across
+                primary->map_layer   = backup->map_layer;
+                primary->draw_filled = backup->draw_filled;
+                primary->auto_maps   = backup->auto_maps;
+                primary->selected    = backup->selected;
+
+                // Done copying this backup record.  Go on to the
+                // next.  Skip the rest of the primary list for this
+                // iteration.
+                done++;
+            }
+            else {  // No match, walk the primary list looking for one.
+                primary = primary->next;
+            }
+        }
+
+        // Walk the backup list
+        backup = backup->next;
+    }
+
+    // We're done copying.  Free the backup list.
+    free_map_index(backup_index_head);
 }
 
 
@@ -13372,6 +13432,7 @@ void map_indexer(int parameter) {
     int check_times = 1;
     FILE *f;
     map_index_record *current;
+    map_index_record *backup_list_head = NULL;
 
 
     if (debug_level & 16)
@@ -13398,8 +13459,10 @@ void map_indexer(int parameter) {
 
 
     if (parameter == 1) {   // Full indexing instead of timestamp-check indexing
-        // Delete the in-memory map index
-        free_map_index();
+
+        // Move the in-memory index to a backup pointer
+        backup_list_head = map_index_head;
+        map_index_head = NULL;
 
 //        // Set the timestamp to 0 so that everything gets indexed
 //        map_index_timestamp = (time_t)0l;
@@ -13424,6 +13487,14 @@ void map_indexer(int parameter) {
 
     if (debug_level & 16)
         fprintf(stderr,"map_indexer() middle\n");
+
+
+    if (parameter == 1) {   // Full indexing instead of timestamp-check indexing
+        // Copy the Properties from the backup list to the new list,
+        // then free the backup list.
+        map_index_copy_properties(map_index_head, backup_list_head);
+    }
+
  
     // Save the updated index to the file
     index_save_to_file();
