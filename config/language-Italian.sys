@@ -286,7 +286,7 @@ WPUPCFD019|Stazione mobile con ora UTC (con secondi)||
 WPUPCFD021|Posizione della Stazione con dati meteo||
 WPUPCFD022|Posizione stazione, Data e ora UTC, dati meteo||
 WPUPCFD023|Devo trasmettere i dati Meteo?||
-WPUPCFD024|Devo comprimere i dati della posizione quando trasmetto i dati meteo?||
+WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Attivare rete alternativa?|A|
 WPUPCFD026|Intervallo per invio rapporti posizione|||
 #
@@ -392,6 +392,7 @@ WPUPCFS024|cerchio di.18 kilometres||
 WPUPCFS025|cerchio di1.85 kilometres||
 WPUPCFS026|cerchio di18.53 kilometres||
 WPUPCFS027|cerchio di 111.19 kilometres||
+WPUPCFS029|Send compressed posits|C|
 #
 # PopUp "Oggetto/Entità"
 POPUPOB001|Oggetto/Entità||

@@ -9478,7 +9478,7 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
 
 
 //WE7U6
-// Make sure to look at the "transmit_compressed_posit" variable
+// Make sure to look at the "transmit_compressed_objects_items" variable
 // to decide whether to send a compressed packet.
 /*
  *  Create the transmit string for Objects/Items.
@@ -9775,7 +9775,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
     else {  // Else it's a normal object/item
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
-            if (transmit_compressed_posit) {
+            if (transmit_compressed_objects_items) {
                 xastir_snprintf(line, line_length, ";%-9s*%s%s",
                     p_station->call_sign,
                     time,
@@ -9800,7 +9800,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
             }
         }
         else {  // It's an item
-            if (transmit_compressed_posit) {
+            if (transmit_compressed_objects_items) {
                 xastir_snprintf(line, line_length, ")%s!%s",
                     p_station->call_sign,
                     compress_posit(lat_str,

@@ -475,6 +475,7 @@ Pixmap CS_icon0, CS_icon;
 Widget raw_wx_tx;
 #endif
 Widget compressed_posit_tx;
+Widget compressed_objects_items_tx;
 Widget altnet_active;
 Widget altnet_text;
 Widget debug_level_text;
@@ -539,6 +540,7 @@ static void  Satellite_msg_ack_toggle( Widget widget, XtPointer clientData, XtPo
  
 Widget auto_msg_toggle;
 Widget satellite_msg_ack_toggle;
+Widget posamb0,posamb1,posamb2,posamb3,posamb4;
  
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -606,7 +608,8 @@ time_t sec_next_raw_wx;         /* raw wx transmit data */
 int transmit_raw_wx;            /* transmit raw wx data? */
 #endif
 
-int transmit_compressed_posit;  /* transmit location in compressed format? */
+int transmit_compressed_posit;  // transmit location in compressed format?
+int transmit_compressed_objects_items;  // Same for objects & items
 
 int output_station_type;        /* Broadcast station type */
 
@@ -8238,7 +8241,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     transmit_raw_wx = (int)XmToggleButtonGetState(raw_wx_tx);
 #endif
 
-    transmit_compressed_posit = (int)XmToggleButtonGetState(compressed_posit_tx);
+    transmit_compressed_objects_items = (int)XmToggleButtonGetState(compressed_objects_items_tx);
 
     altnet = (int)(XmToggleButtonGetState(altnet_active));
 
@@ -8797,7 +8800,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 
 
         // Miscellaneous Options
-        compressed_posit_tx = XtVaCreateManagedWidget(langcode("WPUPCFD024"),xmToggleButtonWidgetClass,my_form,
+        compressed_objects_items_tx = XtVaCreateManagedWidget(langcode("WPUPCFD024"),xmToggleButtonWidgetClass,my_form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
                                         XmNtopWidget, frame5,
                                         XmNtopOffset, 10,
@@ -8812,7 +8815,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 #ifdef TRANSMIT_RAW_WX
         raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),xmToggleButtonWidgetClass,my_form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, compressed_posit_tx,
+                                        XmNtopWidget, compressed_objects_items_tx,
                                         XmNbottomAttachment, XmATTACH_NONE,
                                         XmNleftAttachment, XmATTACH_FORM,
                                         XmNleftOffset, 10,
@@ -9089,10 +9092,10 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             XmToggleButtonSetState(raw_wx_tx,FALSE,FALSE);
 #endif
 
-        if(transmit_compressed_posit)
-            XmToggleButtonSetState(compressed_posit_tx,TRUE,FALSE);
+        if(transmit_compressed_objects_items)
+            XmToggleButtonSetState(compressed_objects_items_tx,TRUE,FALSE);
         else
-            XmToggleButtonSetState(compressed_posit_tx,FALSE,FALSE);
+            XmToggleButtonSetState(compressed_objects_items_tx,FALSE,FALSE);
 
         XmToggleButtonSetState(altnet_active, altnet, FALSE);
 
@@ -10295,7 +10298,7 @@ void Object_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@
 // Convert this eventually to populate a DataRow struct, then call
 // data.c:Create_object_item_tx_string().
 
-// Make sure to look at the "transmit_compressed_posit" variable
+// Make sure to look at the "transmit_compressed_objects_items" variable
 // to decide whether to send a compressed packet.
 /*
  *  Setup APRS Information Field for Objects
@@ -10571,7 +10574,7 @@ int Setup_object_data(char *line, int line_length) {
                 altitude);
         }
     } else {  // Else it's a normal object
-        if (transmit_compressed_posit) {
+        if (transmit_compressed_objects_items) {
 //WE7U
 // Need to compute "csT" at some point and add it to the object
             xastir_snprintf(line, line_length, ";%-9s*%s%s",
@@ -10625,7 +10628,7 @@ printf("line: %s\n",line);
 // Convert this eventually to populate a DataRow struct, then call
 // data.c:Create_object_item_tx_string().
 
-// Make sure to look at the "transmit_compressed_posit" variable
+// Make sure to look at the "transmit_compressed_objects_items" variable
 // to decide whether to send a compressed packet.
 /*
  *  Setup APRS Information Field for Items
@@ -10890,7 +10893,7 @@ int Setup_item_data(char *line, int line_length) {
                 altitude);
         }
     } else {  // Else it's a normal item
-        if (transmit_compressed_posit) {
+        if (transmit_compressed_objects_items) {
 //WE7U
 // Need to compute "csT" at some point and add it to the item
             xastir_snprintf(line, line_length, ")%s!%s",
@@ -14058,6 +14061,8 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
     int temp2;
     int temp3;
 
+    transmit_compressed_posit = (int)XmToggleButtonGetState(compressed_posit_tx);
+
     strcpy(old_callsign,my_callsign);
     /*printf("Changing Configure station data\n");*/
 
@@ -14263,6 +14268,37 @@ void Directivity_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
 
 
 
+void Posit_compressed_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        transmit_compressed_posit = atoi(which);
+    else
+        transmit_compressed_posit = 0;
+
+    if(transmit_compressed_posit) {
+        // Compressed posits don't allow position ambiguity
+        position_amb_chars = 0;
+        XtSetSensitive(posamb0,FALSE);
+        XtSetSensitive(posamb1,FALSE);
+        XtSetSensitive(posamb2,FALSE);
+        XtSetSensitive(posamb3,FALSE);
+        XtSetSensitive(posamb4,FALSE);
+    }
+    else {  // Position ambiguity ok for this mode
+        XtSetSensitive(posamb0,TRUE);
+        XtSetSensitive(posamb1,TRUE);
+        XtSetSensitive(posamb2,TRUE);
+        XtSetSensitive(posamb3,TRUE);
+        XtSetSensitive(posamb4,TRUE);
+    }
+}
+
+
+
+
+
 //WE7U4
 /*
  *  Select a symbol graphically
@@ -14294,7 +14330,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 slong,
                 slong_deg, slong_min, slong_ew,
                 sts, group, st_symbol, comment,
-                posamb,option_box,posamb0,posamb1,posamb2,posamb3,posamb4,
+                posamb,option_box,
                 sep, configure_button_symbol, compute_button;
     char temp_data[40];
     Atom delw;
@@ -14341,10 +14377,24 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNtopOffset,               5,
                             XmNbottomAttachment,        XmATTACH_NONE,
                             XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            2,
+                            XmNleftPosition,            1,
                             XmNrightAttachment,         XmATTACH_NONE,
                             NULL);
 
+//WE7U44
+        compressed_posit_tx = XtVaCreateManagedWidget(langcode("WPUPCFS029"),xmToggleButtonWidgetClass,cs_form,
+                            XmNtopAttachment,           XmATTACH_FORM,
+                            XmNtopOffset,               10,
+                            XmNbottomAttachment,        XmATTACH_NONE,
+                            XmNleftAttachment,          XmATTACH_POSITION,
+                            XmNleftPosition,            3,
+                            XmNrightAttachment,         XmATTACH_NONE,
+                            XmNbackground,              colors[0xff],
+                            XmNnavigationType,          XmTAB_GROUP,
+                            NULL);
+
+        XtAddCallback(compressed_posit_tx,XmNvalueChangedCallback,Posit_compressed_toggle,"1");
+ 
         slat = XtVaCreateManagedWidget(langcode("WPUPCFS003"),xmLabelWidgetClass, cs_form,
                             XmNtopAttachment,           XmATTACH_WIDGET,
                             XmNtopWidget,               call,
@@ -14369,7 +14419,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNtopWidget,               call,
                             XmNbottomAttachment,        XmATTACH_NONE,
                             XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            2,
+                            XmNleftPosition,            1,
                             XmNrightAttachment,         XmATTACH_NONE,
                             NULL);
 
@@ -14466,7 +14516,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNtopWidget,               slat,
                             XmNbottomAttachment,        XmATTACH_NONE,
                             XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            2,
+                            XmNleftPosition,            1,
                             XmNrightAttachment,         XmATTACH_NONE,
                             NULL);
 
@@ -15221,6 +15271,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         // update symbol picture
         (void)updateSymbolPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
 
+
         if (my_phg[0]=='P') {
             switch (my_phg[3]) {
                 case '0':
@@ -15365,31 +15416,51 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         XmTextFieldSetString(station_config_comment_data,my_comment);
 
 
-        Configure_station_pos_amb = position_amb_chars;
-        switch (Configure_station_pos_amb) {
-            case(0):
-                XmToggleButtonSetState(posamb0,TRUE,FALSE);
-                break;
+        if(transmit_compressed_posit) {
+            // Compressed posits don't allow position ambiguity
+            XmToggleButtonSetState(compressed_posit_tx,TRUE,FALSE);
+            position_amb_chars = 0;
+            XtSetSensitive(posamb0,FALSE);
+            XtSetSensitive(posamb1,FALSE);
+            XtSetSensitive(posamb2,FALSE);
+            XtSetSensitive(posamb3,FALSE);
+            XtSetSensitive(posamb4,FALSE);
+        }
+        else {  // Position ambiguity ok for this mode
+            XmToggleButtonSetState(compressed_posit_tx,FALSE,FALSE);
 
-            case(1):
-                XmToggleButtonSetState(posamb1,TRUE,FALSE);
-                break;
+            XtSetSensitive(posamb0,TRUE);
+            XtSetSensitive(posamb1,TRUE);
+            XtSetSensitive(posamb2,TRUE);
+            XtSetSensitive(posamb3,TRUE);
+            XtSetSensitive(posamb4,TRUE);
+ 
+            Configure_station_pos_amb = position_amb_chars;
+            switch (Configure_station_pos_amb) {
+                case(0):
+                    XmToggleButtonSetState(posamb0,TRUE,FALSE);
+                    break;
 
-            case(2):
-                XmToggleButtonSetState(posamb2,TRUE,FALSE);
-                break;
+                case(1):
+                    XmToggleButtonSetState(posamb1,TRUE,FALSE);
+                    break;
 
-            case(3):
-                XmToggleButtonSetState(posamb3,TRUE,FALSE);
-                break;
+                case(2):
+                    XmToggleButtonSetState(posamb2,TRUE,FALSE);
+                    break;
 
-            case(4):
-                XmToggleButtonSetState(posamb4,TRUE,FALSE);
-                break;
+                case(3):
+                    XmToggleButtonSetState(posamb3,TRUE,FALSE);
+                    break;
 
-            default:
-                XmToggleButtonSetState(posamb0,TRUE,FALSE);
-                break;
+                case(4):
+                    XmToggleButtonSetState(posamb4,TRUE,FALSE);
+                    break;
+
+                default:
+                    XmToggleButtonSetState(posamb0,TRUE,FALSE);
+                    break;
+            }
         }
 
         pos_dialog(configure_station_dialog);

@@ -484,6 +484,8 @@ void save_data(void)  {
 
         store_int (fout, "BST_COMPRESSED_POSIT", transmit_compressed_posit);
 
+        store_int (fout, "COMPRESSED_OBJECTS_ITEMS", transmit_compressed_objects_items);
+
         /* -dk7in- variable beacon interval */
         /*         mobile:   max  2 min */
         /*         fixed:    max 15 min  */
@@ -972,6 +974,10 @@ void load_data_or_default(void) {
     /* compressed posit transmit */
     if (!get_int ("BST_COMPRESSED_POSIT", &transmit_compressed_posit,0,1,0))
         transmit_compressed_posit = 0;
+
+    /* compressed objects/items transmit */
+    if (!get_int ("COMPRESSED_OBJECTS_ITEMS", &transmit_compressed_objects_items,0,1,0))
+        transmit_compressed_objects_items = 0;
 
     /* Audio Alarms*/
     if (!get_string ("SOUND_COMMAND", sound_command))

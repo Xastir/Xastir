@@ -285,7 +285,7 @@ WPUPCFD019|Station mobile + heure/secondes Zulu||
 WPUPCFD021|Position de station + météo||
 WPUPCFD022|Position de station + date/heure Zulu + météo||
 WPUPCFD023|Données météo non traités?||
-WPUPCFD024|Compresser la position à la transmission?||
+WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Activer réseau alterne?|A|
 WPUPCFD026|Transmettre position à quel intervalle?|||
 #
@@ -391,6 +391,7 @@ WPUPCFS024|.18 kilomètres||
 WPUPCFS025|1.85 kilomètres||
 WPUPCFS026|18.53 kilomètres||
 WPUPCFS027|111.19 kilomètres||
+WPUPCFS029|Send compressed posits|C|
 #
 # PopUp "Object/Item"
 POPUPOB001|Objet/Article||

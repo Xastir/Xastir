@@ -125,6 +125,7 @@ extern int transmit_raw_wx;
 #endif
 
 extern int transmit_compressed_posit;
+extern int transmit_compressed_objects_items;
 extern int log_igate;
 extern int log_tnc_data;
 extern int log_net_data;

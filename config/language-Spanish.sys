@@ -286,7 +286,7 @@ WPUPCFD019|Estación Móvil c/Horas-segundos Zúlu|u|
 WPUPCFD021|Posición de la estación c/Tiempo|T|
 WPUPCFD022|Posición de la estación, fecha-hora Zulu, y Tiempo|f|
 WPUPCFD023|Transmitir datos WX en Raw?||
-WPUPCFD024|Dato de posición comprimida cuando transmita?||
+WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Activar Red Alternada?|A|
 WPUPCFD026|Enviar reportes de posición en qué intervalos?||
 #
@@ -392,6 +392,7 @@ WPUPCFS024|.18 kilómetro||
 WPUPCFS025|1.85 kilómetros||
 WPUPCFS026|18.53 kilómetros||
 WPUPCFS027|111.19 kilómetros||
+WPUPCFS029|Send compressed posits|C|
 #
 # Diálogo de Objeto/Artículo
 POPUPOB001|Objeto/Arículo||

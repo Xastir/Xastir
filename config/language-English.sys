@@ -285,7 +285,7 @@ WPUPCFD019|Mobile Station w/Zulu time-seconds|u|
 WPUPCFD021|Station Position w/weather|S|
 WPUPCFD022|Station Position, Zulu date-time, and weather|t|
 WPUPCFD023|Transmit Raw WX data?|R|
-WPUPCFD024|Compress position data when transmitting?|C|
+WPUPCFD024|Compress object/item data when transmitting?|C|
 WPUPCFD025|Activate Alternate net?|A|
 WPUPCFD026|Send position reports at what intervals?||
 #
@@ -391,6 +391,7 @@ WPUPCFS024|.18 kilometres||
 WPUPCFS025|1.85 kilometres||
 WPUPCFS026|18.53 kilometres||
 WPUPCFS027|111.19 kilometres||
+WPUPCFS029|Send compressed posits|C|
 #
 # PopUp "Object/Item"
 POPUPOB001|Object/Item||
