@@ -1191,13 +1191,16 @@ directory and re-untaring the source again than trying to recompile
 in that blown directory.  Make Clean doesn't do a thing and the old
 settings and mistakes stick arround no matter what you try."
 
+Make sure you've got Shapelib installed on your system else Xastir
+won't find GDAL.  Both are needed.
+
 Download "gdal-1.2.0b.tar.gz".  In a cygwin window, type the
 following:
 
 
     tar xzvf gdal-1.2.0b.tar.gz
     cd gdal-1.2.0b
-    ./configure
+    ./configure --with-jpeg=internal --with-libtiff=internal
     make
     make install
 
