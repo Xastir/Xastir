@@ -73,6 +73,7 @@ The Questions
     4.14 Why do I see strong blue tinting for the maps?
     4.15 My config file got munged.  How do I recover?
     4.16 Why can't I set my position in Xastir correctly?
+    4.17 Why do I get black map images when I use ImageMagick?
 
 5.  Features
 
@@ -595,6 +596,13 @@ The Answers
 
         export LANG=en_US; xastir &
 
+    4.17 Why do I get black map images when I use ImageMagick?
+
+    It may be due to bugs in your particular version of ImageMagick,
+    but more likely it's related to the color-depth of your
+    X-Server.  If you are using 8-bit, 24-bit, or 32-bit
+    color-depth:  Try 16-bit, which is the color-depth best
+    supported by the Xastir code.
 
 5.  Features
 
