@@ -41,6 +41,7 @@
 #include <math.h>
 #include <string.h>
 #include "rotated.h"
+#include "snprintf.h"
 
 
 /* ---------------------------------------------------------------------- */
@@ -176,10 +177,16 @@ static char *my_strdup(char *str) {
         return NULL;
     
     s=(char *)malloc((unsigned)(strlen(str)+1));
-    if(s!=NULL) 
-        strcpy(s, str);
-    else
+
+    if(s!=NULL) {
+        xastir_snprintf(s,
+            strlen(str)+1,
+            "%s",
+            str);
+    }
+    else {
         fprintf(stderr,"Couldn't allocate memory in my_strdup()\n");
+    }
     
     return s;
 }

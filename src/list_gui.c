@@ -517,8 +517,12 @@ void Station_List_fill(int type, int new_offset) {
                 top_sn   = -1;
             }
         } else {
-            if (type != LST_TIM)
-                strcpy(top_call[type],p_station->call_sign);    // remember call at list top
+            if (type != LST_TIM) {
+                xastir_snprintf(top_call[type],
+                    MAX_CALLSIGN+1,
+                    "%s",
+                    p_station->call_sign);  // remember call at list top
+            }
             else {
                 top_time = p_station->sec_heard;                // remember time station was heard
                 top_sn   = p_station->time_sn;                  // remember time serial number
@@ -1116,31 +1120,52 @@ void Station_List(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
     type=atoi((char *)clientData);
     switch(type) {
         case LST_ALL:
-            strcpy(temp,langcode("LHPUPNI000"));        // All Stations
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                langcode("LHPUPNI000"));        // All Stations
             break;
 
         case LST_MOB:
-            strcpy(temp,langcode("LHPUPNI001"));        // Mobile Stations
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                langcode("LHPUPNI001"));        // Mobile Stations
             break;
 
         case LST_WX:
-            strcpy(temp,langcode("LHPUPNI002"));        // Weather Stations
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                langcode("LHPUPNI002"));        // Weather Stations
             break;
 
         case LST_TNC:
-            strcpy(temp,langcode("LHPUPNI003"));        // Local Stations
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                langcode("LHPUPNI003"));        // Local Stations
             break;
 
         case LST_TIM:
-            strcpy(temp,langcode("LHPUPNI004"));        // Last Stations
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                langcode("LHPUPNI004"));        // Last Stations
             break;
 
         case LST_OBJ:
-            strcpy(temp,langcode("LHPUPNI005"));        // Objects/Items
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                langcode("LHPUPNI005"));        // Objects/Items
             break;
 
         case LST_MYOBJ:
-            strcpy(temp,langcode("LHPUPNI006"));        // My Objects/Items
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                langcode("LHPUPNI006"));        // My Objects/Items
             break;
 
         default:

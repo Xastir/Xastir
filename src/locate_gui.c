@@ -73,12 +73,12 @@ void locate_gui_init(void)
 {
     init_critical_section( &locate_station_dialog_lock );
     init_critical_section( &locate_place_dialog_lock );
-    strcpy(locate_station_call,"");
-    strcpy(locate_place_name,"");
-    strcpy(locate_state_name,"");
-    strcpy(locate_county_name,"");
-    strcpy(locate_quad_name,"");
-    strcpy(locate_type_name,"");
+    locate_station_call[0] = '\0';
+    locate_place_name[0] = '\0';
+    locate_state_name[0] = '\0';
+    locate_county_name[0] = '\0';
+    locate_quad_name[0] = '\0';
+    locate_type_name[0] = '\0';
 }
 
 

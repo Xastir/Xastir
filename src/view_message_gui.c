@@ -159,8 +159,11 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
             data1[95]='\0';
             strncpy(data2, message+95, 95);
         } else {
-            strcpy(data1, message);
-            strcpy(data2, "");
+            xastir_snprintf(data1,
+                sizeof(data1),
+                "%s",
+                message);
+            data2[0] = '\0';
         }
 
         if (strncmp(call_sign, "java",4) == 0) {

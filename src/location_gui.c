@@ -242,8 +242,17 @@ void location_delete(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     }
 
     if (ok==1){
-        strcpy(filen,get_user_base_dir("config/locations.sys"));
-        strcpy(filen_bak,get_user_base_dir("config/locations.sys-tmp"));
+
+        xastir_snprintf(filen,
+            sizeof(filen),
+            "%s",
+            get_user_base_dir("config/locations.sys"));
+
+        xastir_snprintf(filen_bak,
+            sizeof(filen_bak),
+            "%s",
+            get_user_base_dir("config/locations.sys-tmp"));
+
         (void)unlink(filen);
         (void)rename(filen_bak,filen);
     }
@@ -304,9 +313,7 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
             fout = fopen(get_user_base_dir("config/locations.sys"),"a");
             if (fout!=NULL) {
                 convert_lat_l2s(mid_y_lat_offset, s_lat, sizeof(s_lat), CONVERT_HP_NOSP);
-                //strcpy(s_lat+2,s_lat+3);
                 convert_lon_l2s(mid_x_long_offset, s_long, sizeof(s_long), CONVERT_HP_NOSP);
-                //strcpy(s_long+3,s_long+4);
                 fprintf(fout,"%s|%s %s %ld\n",name,s_lat,s_long,scale_y);
                 (void)fclose(fout);
             }

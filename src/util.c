@@ -67,7 +67,7 @@ extern int pthread_mutexattr_setkind_np(pthread_mutexattr_t *attr, int kind);
 
 
 int position_amb_chars;
-char echo_digis[6][9+1];
+char echo_digis[6][MAX_CALLSIGN+1];
 
 #define ACCEPT_0N_0E    /* set this to see stations at 0N/0E on the map */
 
@@ -792,6 +792,7 @@ char *get_line(FILE *f, char *linedata, int maxline) {
 
 
 
+/*
 char *new_get_line(FILE *f, char *linedata, int maxline) {
     char *ptr;
     int pos;
@@ -813,10 +814,12 @@ char *new_get_line(FILE *f, char *linedata, int maxline) {
 
     if (ptr) {
         for (ptr++; *ptr == '\r' || *ptr == '\n'; ptr++);
-            strcpy(Buffer, ptr);
+// The below statement makes no sense
+//            strcpy(Buffer, ptr);
     }
     return(linedata);
 }
+*/
 
 
 
@@ -1510,7 +1513,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
     long temp;
 
 
-    strcpy(str,"");
+    str[0] = '\0';
     deg = (float)(lat - 32400000l) / 360000.0;
  
     // Switch to integer arithmetic to avoid floating-point
@@ -1584,7 +1587,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
     int ideg, imin;
     long temp;
 
-    strcpy(str,"");
+    str[0] = '\0';
     deg = (float)(lon - 64800000l) / 360000.0;
 
     // Switch to integer arithmetic to avoid floating-point rounding
@@ -2085,10 +2088,16 @@ void disown_object_item(char *call_sign, char *new_owner) {
     }
 
     ptr =  get_user_base_dir("config/object.log");
-    strcpy(file,ptr);
+    xastir_snprintf(file,
+        sizeof(file),
+        "%s",
+        ptr);
 
     ptr =  get_user_base_dir("config/object-temp.log");
-    strcpy(file_temp,ptr);
+    xastir_snprintf(file_temp,
+        sizeof(file_temp),
+        "%s",
+        ptr);
 
     //fprintf(stderr,"%s\t%s\n",file,file_temp);
 
@@ -2752,7 +2761,10 @@ int valid_path(char *path) {
 
         // We now need to insert the destination into the middle of
         // the string.  Save part of it in another variable first.
-        strcpy(rest,path);
+        xastir_snprintf(rest,
+            sizeof(rest),
+            "%s",
+            path);
         //fprintf(stderr,"Rest:%s\n",rest);
         xastir_snprintf(path,len+1,"%s,%s",dest,rest);
         //fprintf(stderr,"New Path:%s\n",path);
@@ -2844,7 +2856,11 @@ int valid_call(char *call) {
 
         if (debug_level & 1) {
             char filtered_data[MAX_LINE_SIZE+1];
-            strcpy(filtered_data, call);
+
+            xastir_snprintf(filtered_data,
+                sizeof(filtered_data),
+                "%s",
+                call);
             makePrintable(filtered_data);
             fprintf(stderr,"valid_call: Command Prompt removed from: %s",
                 filtered_data);
@@ -2862,7 +2878,10 @@ int valid_call(char *call) {
         if (debug_level & 1) {
             char filtered_data[MAX_LINE_SIZE+1];
 
-            strcpy(filtered_data, call);
+            xastir_snprintf(filtered_data,
+                sizeof(filtered_data),
+                "%s",
+                call);
             makePrintable(filtered_data);
             fprintf(stderr," result: %s", filtered_data);
         }
@@ -2985,7 +3004,8 @@ int valid_inet_name(char *name, char *info, char *origin) {
             return(0);                  // not printable
 
     if (len > 5 && strncmp(name,"aprsd",5) == 0) {
-        strcpy(origin, "INET");
+        strncpy(origin, "INET", 5);
+        origin[4] = '\0';   // Terminate it
         return(1);                      // aprsdXXXX is ok
     }
 
@@ -3005,7 +3025,8 @@ int valid_inet_name(char *name, char *info, char *origin) {
             }
         }
         if (ok) {
-            strcpy(origin, "INET-NWS");
+            strncpy(origin, "INET-NWS", 9);
+            origin[8] = '\0';
             return(1);                      // weather alerts
         }
     }
@@ -3029,7 +3050,7 @@ void upd_echo(char *path) {
 
     if (echo_digis[5][0] != '\0') {
         for (i=0;i<5;i++) {
-            strcpy(echo_digis[i], echo_digis[i+1]);
+            strncpy(echo_digis[i], echo_digis[i+1], MAX_CALLSIGN+1);
         }
         echo_digis[5][0] = '\0';
     }
@@ -3474,7 +3495,7 @@ void spell_it_out(char *text) {
 
     // Only use the new string if it kind'a looks like a callsign
     if (number_found_before_dash)
-        strcpy(text,buffer);
+        strncpy(text, buffer, 2000);
 }
 
 

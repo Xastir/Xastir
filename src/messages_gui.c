@@ -36,6 +36,9 @@
 #include "lang.h"
 
 
+#define MAX_PATH 200
+
+
 Widget auto_msg_on, auto_msg_off;
 Widget auto_msg_dialog = (Widget)NULL;
 Widget auto_msg_set_data = (Widget)NULL;
@@ -187,7 +190,7 @@ void reverse_path(char *input_string) {
 
 
 
-void get_path_data(char *callsign, char *path) {
+void get_path_data(char *callsign, char *path, int max_length) {
     DataRow *p_station;
 
 
@@ -216,14 +219,17 @@ void get_path_data(char *callsign, char *path) {
                 callsign,
                 new_path);
 
-        strcpy(path,new_path);
+        xastir_snprintf(path,
+            max_length,
+            "%s",
+            new_path);
     }
     else {  // Couldn't find callsign.  It's
             // not in our station database.
         if(debug_level & 2)
             fprintf(stderr,"Path from %s: No Path Known\n",callsign);
 
-        strcpy(path,"");
+        path[0] = '\0';
     }
 }
 
@@ -244,7 +250,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_d
     }
 
     mw[i].send_message_dialog = (Widget)NULL;
-    strcpy(mw[i].to_call_sign,"");
+    mw[i].to_call_sign[0] = '\0';
     mw[i].send_message_call_data = (Widget)NULL;
     mw[i].send_message_message_data = (Widget)NULL;
     mw[i].send_message_text = (Widget)NULL;
@@ -260,7 +266,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_des
 void Check_new_call_messages( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int i, pos;
     char call_sign[MAX_CALLSIGN+1];
-    char path[200];
+    char path[MAX_PATH+1];
     char *temp_ptr;
 
 
@@ -292,11 +298,11 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call
         XtFree(temp_ptr);
 
         // Try lowercase
-        get_path_data(call_sign, path);
+        get_path_data(call_sign, path, MAX_PATH);
         if (strlen(path) == 0) {
             // Try uppercase
             (void)to_upper(call_sign);
-            get_path_data(call_sign, path);
+            get_path_data(call_sign, path, MAX_PATH);
         }
         XmTextFieldSetString(mw[i].send_message_path, path);
     }
@@ -506,7 +512,10 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
     char call[20];
 
     if(clientData !=NULL) {
-        strcpy(call,(char *)clientData);
+        xastir_snprintf(call,
+            sizeof(call),
+            "%s",
+            (char *)clientData);
         Send_message(Global.top,call,NULL);
     }           
 }
@@ -544,14 +553,19 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         if (clientData != NULL) {
             substr(group,(char *)clientData, MAX_CALLSIGN);
             if (group[0] == '*') {
-                strcpy(mw[i].to_call_sign,"***");
+                strncpy(mw[i].to_call_sign,"***",4);
+                mw[i].to_call_sign[3] = '\0';   // Terminate it
                 memmove(group, &group[1], strlen(group));
                 groupon=1;
                 box_len=100;
-            } else
-                strcpy(mw[i].to_call_sign, my_callsign);
-        } else
-            strcpy(mw[i].to_call_sign, my_callsign);
+            } else {
+                strncpy(mw[i].to_call_sign, my_callsign, MAX_CALLSIGN+1);
+                mw[i].to_call_sign[MAX_CALLSIGN] = '\0';    // Terminate it
+            }
+        } else {
+            strncpy(mw[i].to_call_sign, my_callsign, MAX_CALLSIGN+1);
+            mw[i].to_call_sign[MAX_CALLSIGN] = '\0';    // Terminate it
+        }
 
         xastir_snprintf(temp, sizeof(temp), langcode(groupon==0 ? "WPUPMSB001": "WPUPMSB002"),
                 (i+1));
@@ -800,7 +814,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
             char path[200];
 
             XmTextFieldSetString(mw[i].send_message_call_data, group);
-            get_path_data(group, path);
+            get_path_data(group, path, MAX_PATH);
             XmTextFieldSetString(mw[i].send_message_path, path);
         }
 
@@ -875,7 +889,10 @@ void Auto_msg_set_now(Widget w, XtPointer clientData, XtPointer callData) {
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(temp);
-    strcpy(auto_reply_message,temp);
+    xastir_snprintf(auto_reply_message,
+        sizeof(auto_reply_message),
+        "%s",
+        temp);
     Auto_msg_destroy_shell(w, clientData, callData);
 }
 

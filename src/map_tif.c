@@ -194,7 +194,10 @@ int read_fgd_file ( char* tif_filename,
 
 
     /* Read the .fgd file to find corners of the map neat-line */
-    strcpy( fgd_file, tif_filename);
+    xastir_snprintf(fgd_file,
+        sizeof(fgd_file),
+        "%s",
+        tif_filename);
     length = strlen(fgd_file);
 
     /* Change the extension to ".fgd" */

@@ -74,7 +74,7 @@ void track_gui_init(void)
 {
     init_critical_section( &track_station_dialog_lock );
     init_critical_section( &download_findu_dialog_lock );
-    strcpy(tracking_station_call,"");
+    tracking_station_call[0] = '\0';
 }
 
 
@@ -106,7 +106,7 @@ void Track_station_clear(Widget w, XtPointer clientData, XtPointer callData) {
     /* clear station */
     track_station_on=0;
     //track_station_data=NULL;
-    //strcpy(tracking_station_call,"");
+    //tracking_station_call[0] = '\0';
 
     // Clear the TrackMe button as well
     XmToggleButtonSetState(trackme_button,FALSE,TRUE);
@@ -135,7 +135,10 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(temp);
-    strcpy(tracking_station_call,temp);
+    xastir_snprintf(tracking_station_call,
+        sizeof(tracking_station_call),
+        "%s",
+        temp);
     track_case  = (int)XmToggleButtonGetState(track_case_data);
     track_match = (int)XmToggleButtonGetState(track_match_data);
     found = locate_station(da, temp, track_case, track_match, 0);
@@ -149,7 +152,7 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
             popup_message(langcode("POPEM00025"),temp2);
         }
     } else {
-        strcpy(tracking_station_call,""); // Empty it out again
+        tracking_station_call[0] = '\0';    // Empty it out again
         track_station_on = 0;
         xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00002"), temp);
         popup_message(langcode("POPEM00003"),temp2);
@@ -427,7 +430,11 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(temp);
-    strcpy(download_trail_station_call,temp);
+   
+    xastir_snprintf(download_trail_station_call,
+        sizeof(download_trail_station_call),
+        "%s",
+        temp);        
     //Download_trail_destroy_shell(w, clientData, callData);
 
 
