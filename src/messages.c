@@ -437,20 +437,40 @@ void clear_outgoing_messages_to(char *callsign) {
 //
 void change_path_outgoing_messages_to(char *callsign, char *new_path) {
     int ii;
+    char my_callsign[20];
 
 
-    fprintf(stderr,"Changing path on msgs to callsign: %s\n", callsign);
+//fprintf(stderr,
+//    "Changing all outgoing msgs to %s to new path: %s\n",
+//    callsign,
+//    new_path);
+
+    xastir_snprintf(my_callsign,
+        sizeof(my_callsign),
+        "%s",
+        callsign);
+
+    remove_trailing_spaces(my_callsign);
 
     // Run through the entire outgoing message queue
     for (ii = 0; ii < MAX_OUTGOING_MESSAGES; ii++) {
 
-        // If it matches the callsign we're talking to
-        if (strcasecmp(message_pool[ii].to_call_sign,callsign) == 0) {
+        if (message_pool[ii].active == MESSAGE_ACTIVE) {
+ 
+//fprintf(stderr,"\t'%s'\n\t'%s'\n",
+//    message_pool[ii].to_call_sign,
+//    my_callsign);
 
-            xastir_snprintf(message_pool[ii].path,
-                sizeof(message_pool[ii].path),
-                "%s",
-                new_path);
+            // If it matches the callsign we're talking to
+            if (strcasecmp(message_pool[ii].to_call_sign,my_callsign) == 0) {
+
+//fprintf(stderr,"\tFound an outgoing queued msg to change path on.\n");
+
+                xastir_snprintf(message_pool[ii].path,
+                    sizeof(message_pool[ii].path),
+                    "%s",
+                    new_path);
+            }
         }
     }
 }
@@ -930,6 +950,8 @@ void check_delayed_transmit_queue(void) {
             char new_path[MAX_LINE_SIZE+1];
 
 
+//fprintf(stderr, "Found active record\n");
+
             active_records++;
 
 
@@ -949,6 +971,10 @@ void check_delayed_transmit_queue(void) {
                 // the path saved with the outgoing message.  Change
                 // the path to match the new path.
                 //
+//fprintf(stderr,
+//    "Changing queued ack's to new path: %s\n",
+//    new_path);
+
                 xastir_snprintf(ptr->path,
                     sizeof(ptr->path),
                     "%s",
@@ -1070,6 +1096,8 @@ void check_and_transmit_messages(time_t time) {
                             new_path,
                             sizeof(new_path));
 
+//fprintf(stderr,"get_send_message_path(%s) returned: %s\n",to_call,new_path);
+ 
                         if (new_path[0] != '\0'
                                 && strcmp(new_path,message_pool[i].path) != 0) {
 

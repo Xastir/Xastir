@@ -256,9 +256,13 @@ void get_send_message_path(char *callsign, char *path, int path_size) {
     int found = -1;
     char *temp_ptr;
     char temp1[MAX_LINE_SIZE+1];
+    char my_callsign[20];
     
 
-//fprintf(stderr,"Looking for %s\n", callsign);
+    xastir_snprintf(my_callsign,sizeof(my_callsign),"%s",callsign); 
+    remove_trailing_spaces(my_callsign);
+
+//fprintf(stderr,"Looking for %s\n", my_callsign);
     for(ii = 0; ii < MAX_MESSAGE_WINDOWS; ii++) {
 
         // find matching callsign
@@ -272,7 +276,7 @@ void get_send_message_path(char *callsign, char *path, int path_size) {
             XtFree(temp_ptr);
 
             (void)to_upper(temp1);
-            if(strcmp(temp1,callsign)==0) {
+            if(strcmp(temp1,my_callsign)==0) {
                 found = ii;
                 break;
             }
@@ -310,7 +314,7 @@ void get_send_message_path(char *callsign, char *path, int path_size) {
         path_size,
         "%s",
         temp1);
-fprintf(stderr,"Found custom path: %s\n", path);
+//fprintf(stderr,"Found custom path: %s\n", path);
 }
 
 
