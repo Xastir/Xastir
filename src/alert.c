@@ -326,7 +326,7 @@
 
 
 alert_entry *alert_list = NULL;
-static int alert_list_count = 0;           // Count of active alerts
+int alert_list_count = 0;           // Count of active alerts
 int alert_max_count = 0;     // Alerts we've allocated space for
 char *alert_status = NULL;
 static int alert_status_size = 0;
