@@ -4084,6 +4084,8 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     // information
                     //
                     if (strlen(passwd) != 0) {
+                        char callsign_base[15];
+                        int jj;
 
                         // Write login/password out as 255-byte strings
                         //
@@ -4092,16 +4094,25 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                             logon_txt[ii] = '\0';
                         }
 
+                        // Compute the callsign base string
+                        // (callsign minus SSID)
+                        strcpy(callsign_base,my_callsign);
+                        for (jj = 0; jj < strlen(my_callsign); jj++) {
+                            // Change '-' into end of string
+                            if (callsign_base[jj] == '-')
+                                callsign_base[jj] = '\0';
+                        }
+                        
                         xastir_snprintf(logon_txt, 255,
                             "%s",
-                            my_callsign);
+                            callsign_base);
 
                         xastir_snprintf(&logon_txt[255], 255,
                             "%s",
                             passwd);
 
-//fprintf(stderr,"Lengths: %d %d\n", strlen(my_callsign), strlen(passwd));
-//fprintf(stderr,"%s  %s\n", my_callsign, passwd);
+//fprintf(stderr,"Lengths: %d %d\n", strlen(callsign_base), strlen(passwd));
+//fprintf(stderr,"%s  %s\n", callsign_base, passwd);
 
                         // Send the packet 
                         send_agwpe_packet(port_avail,
