@@ -212,8 +212,8 @@ First Time Install:
          ./configure
          make
          su (root)
-         make install (as root)
-         ldconfig
+         make install
+         /sbin/ldconfig
          exit (from root)
 
         Or you can try any other OSF/Motif(R) version 1.2
@@ -229,7 +229,7 @@ First Time Install:
        you may need to
         edit /etc/ld.so.conf
         and run:
-        ldconfig
+        /sbin/ldconfig (as root)
 
 
        2c. Install LessTif (for older SuSE systems !!)
@@ -249,9 +249,9 @@ First Time Install:
        3a.  Check/Edit your startup files:
        -----------------------------
        Check that /usr/local/lib, /usr/lib, and /usr/X11R6/lib are
-       all listed in /etc/ld.so.conf, and run ldconfig to re-create
-       the system's cache file. If you don't have permission to
-       edit this file:
+       all listed in /etc/ld.so.conf, and run /sbin/ldconfig to
+       re-create the system's cache file. If you don't have
+       permission to edit this file:
             Edit ~/.bashrc, ~/.bash_profile, .cshrc, or
             .login and add:
 
@@ -280,7 +280,11 @@ First Time Install:
         cd ..
         ./configure
         make
-        su -c 'make install'
+        su (root)
+        make install
+        /sbin/ldconfig
+        exit (from root)
+
         libproj should now be installed in:
 
             /usr/local/include/
@@ -361,7 +365,7 @@ First Time Install:
         ./configure
         make
         su (root)
-        make install (as root)
+        make install
         /sbin/ldconfig (tells the loader about the new libraries)
         exit (from root)
        libgeotiff should now be installed in:
@@ -384,13 +388,13 @@ First Time Install:
        make lib
        su (root)
        make lib_install
-       ldconfig
+       /sbin/ldconfig
        exit (from root)
  
      You may also need to tweak "/etc/ld.so.conf" to contain the proper path
-     to the libraries and then run ldconfig to update "/etc/ld.so.cache".
+     to the libraries and then run /sbin/ldconfig to update "/etc/ld.so.cache".
      Once this is done the loader should be able to find the Shapelib library.
-     Must run ldconfig as root for the system to be able to re-create its
+     Must run /sbin/ldconfig as root for the system to be able to re-create its
      cache file.
 
      For MacOSX:  Bill Owen, N2RKL, suggested the following for
@@ -557,8 +561,10 @@ First Time Install:
         cd gdal
         ./configure --without-jasper --without-ld-shared
         make
-        su -c 'make install'
-        su -c 'ldconfig'
+        su (root)
+        make install
+        /sbin/ldconfig
+        exit (from root)
  
 
       Here's another GDAL configure command which forces GDAL to use its own
@@ -629,7 +635,7 @@ First Time Install:
      If you later install additional libraries and just can't get
      ./configure to see them, remove the config.cache file via this
      command:  "rm config.cache", and then re-run configure.  Also
-     see the notes above about ldconfig.
+     see the notes above about /sbin/ldconfig.
 
 
    11. Kernel AX.25 Interfaces
@@ -824,7 +830,7 @@ First Time Install:
 
      If you see errors at this point that say something like "Can't load
      xxx library" this means you forgot to either update /etc/ld.so.conf
-     and run ldconfig, or add the LD_LIBRARY_PATH variable for your shell,
+     and run /sbin/ldconfig, or add the LD_LIBRARY_PATH variable for your shell,
      and the "ld" loader can't link the libraries with the Xastir executable
      to get it running in memory.  Note that if you're running Xastir as
      SUID root, the LD_LIBRARY_PATH variable is ignored.
