@@ -14953,6 +14953,14 @@ void map_chooser_init (void) {
 
     busy_cursor(appshell);
 
+    // First run through our in-memory map index, clearing all of
+    // the selected bits.
+    current = map_index_head;
+    while (current != NULL) {
+        current->selected = 0;
+        current = current->next;
+    }
+
     (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
 
     f=fopen(SELECTED_MAP_DATA,"r");
