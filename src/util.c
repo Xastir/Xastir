@@ -1461,6 +1461,29 @@ void log_data(char *file, char *line) {
 
 
 //
+// Disown function called by object/item decode routines.
+// If an object/item is received that matches something in our
+// object.log file, we immediately cease to transmit that object and
+// we mark each line containing that object in our log file with a
+// hash mark ('#').  This comments out that object so that the next
+// time we reboot, we won't start transmitting it again.
+
+// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
+void disown_object_item(char *call_sign, char *new_owner) {
+
+    // TBD
+
+    printf("(Not implemented yet) Disowning '%s': '%s' is taking over control.\n",
+        call_sign, new_owner);
+}
+
+
+
+
+
+//
 // Logging function called by object/item create/modify routines.
 // We log each object/item as one line in a file.
 //
