@@ -1594,6 +1594,8 @@ void draw_shapefile_map (Widget w,
         found_shape = alert->index;
     }
 
+    if (debug_level & 16)
+        printf("Calling SHPOpen()\n");
 
     // Open the .shx/.shp files for reading.
     // These are the index and the vertice files.
@@ -1661,6 +1663,10 @@ void draw_shapefile_map (Widget w,
 
     // Check the bounding box for this shapefile.  If none of the
     // file is within our viewport, we can skip the entire file.
+
+    if (debug_level & 16)
+        printf("Calling map_visible_lat_lon on the entire shapefile\n");
+
     if (! map_visible_lat_lon(  adfBndsMin[1],       // Bottom
                                 adfBndsMax[1],       // Top
                                 adfBndsMin[0],       // Left
@@ -1792,6 +1798,10 @@ void draw_shapefile_map (Widget w,
 
         // Here we check the bounding box for this shape against our
         // current viewport.  If we can't see it, don't draw it.
+
+        if (debug_level & 16)
+            printf("Calling map_visible_lat_lon on a shape\n");
+
         if ( map_visible_lat_lon( object->dfYMin,       // Bottom
                                   object->dfYMax,       // Top
                                   object->dfXMin,       // Left
@@ -1805,8 +1815,10 @@ void draw_shapefile_map (Widget w,
             int y1 = 0;
 
 
-            //printf("Shape %d is visible, drawing it\t", structure);
-            //printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
+            if (debug_level & 16) {
+                printf("Shape %d is visible, drawing it.", structure);
+                printf( "  Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
+            }
 
             if (alert)
                 alert->flags[0] = 'Y';
@@ -1823,6 +1835,7 @@ void draw_shapefile_map (Widget w,
                     }
                 }
                 printf("\n");
+                printf("Done with field contents\n");
             }
 
 
@@ -1837,6 +1850,9 @@ void draw_shapefile_map (Widget w,
 
 
                 case SHPT_ARC:
+
+                    if (debug_level & 16)
+                        printf("Found Polylines\n");
 
 // Draw the PolyLines themselves:
 
@@ -1880,7 +1896,6 @@ void draw_shapefile_map (Widget w,
                             y1 = (int)y;
                         }
 
-
                         // XDrawLines uses 16-bit unsigned integers
                         // (shorts).  Make sure we stay within the
                         // limits.
@@ -1895,7 +1910,6 @@ void draw_shapefile_map (Widget w,
                             //printf("%d %d\t", points[index].x, points[index].y);
                             index++;
                         }
-
                         if (index > high_water_mark_index)
                             high_water_mark_index = index;
 
@@ -2011,8 +2025,11 @@ void draw_shapefile_map (Widget w,
                                     break;
                             }
                         }
-                        else if (fieldcount >= 7) {  // Need at least 7 fields if we're snagging #6, else segfault
-                            lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
+                        else {  // Must not be a mapshots or ESRI Tiger map
+                            if (fieldcount >= 7) {  // Need at least 7 fields if we're snagging #6, else segfault
+                                lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
+                            }
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                         }
 
                         if (lanes != (int)NULL) {
@@ -2164,7 +2181,7 @@ void draw_shapefile_map (Widget w,
                             else
                                 (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
                         }
-                        else {  // We don't know how wide to make it
+                        else {  // We don't know how wide to make it, not a mapshots or ESRI Tiger maps
                             if (dashed_line)
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
                             else
@@ -2176,7 +2193,7 @@ void draw_shapefile_map (Widget w,
                             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // Steel Blue
                     }   // End of river_flag/lake_flag code
 
-                    else {  // Set default line width
+                    else {  // Set default line width, use whatever color is already defined by this point.
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
 
@@ -2247,6 +2264,7 @@ void draw_shapefile_map (Widget w,
                             char temp5[5];
                             char temp6[3];
 
+
                             temp = DBFReadStringAttribute( hDBF, structure, 4 );
                             xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
                             temp = DBFReadStringAttribute( hDBF, structure, 5 );
@@ -2277,8 +2295,13 @@ void draw_shapefile_map (Widget w,
                     if (temp != temp2) {
                         // temp points to an unchangeable string
 
-                        strncpy(temp2,temp,sizeof(temp2));  // Copy the string so we can change it
-                        temp = temp2;                       // Point temp to it (for later use)
+                        if (temp != NULL) { // NOAA interstates file has a NULL at this point
+                            strncpy(temp2,temp,sizeof(temp2));  // Copy the string so we can change it
+                            temp = temp2;                       // Point temp to it (for later use)
+                        }
+                        else {
+                            temp2[0] = '\0';
+                        }
                     }
                     else {  // We're already set to work on temp2!
                     }
@@ -2467,6 +2490,9 @@ void draw_shapefile_map (Widget w,
 
                 case SHPT_POLYGON:
 
+                    if (debug_level & 16)
+                        printf("Found Polygons\n");
+
                     // Each polygon can be made up of multiple
                     // rings, and each ring has multiple points that
                     // define it.
@@ -2621,12 +2647,11 @@ void draw_shapefile_map (Widget w,
 
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
-                            else {
+                            else {  // Use whatever color is defined by this point.
                                 (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                         }
-
                     }
                     temp = "";
 
