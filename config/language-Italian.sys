@@ -275,8 +275,8 @@ WPUPCFG005|GPS Autonomo||
 WPUPCFG006|GPS Collegato al TNC(con cavo HSP)||
 WPUPCFG007|GPS Collegato al TNC usando CTL-E||
 WPUPCFG008|Ora dal GPS (Rileva ogni)||
-WPUPCFG009|10 sec||
-WPUPCFG010|20 sec||
+WPUPCFG009|5 sec||
+WPUPCFG010|15 sec||
 WPUPCFG011|30 sec||
 WPUPCFG012|1 minuto||
 WPUPCFG013|2 Minuti||

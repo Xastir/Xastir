@@ -6211,12 +6211,12 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
         sec_remove = (time_t)(24*3600);
 
     switch(GPS_time) {
-        case(10):
-            gps_time=(time_t)10l;
+        case(5):
+            gps_time=(time_t)5l;
             break;
 
-        case(20):
-            gps_time=(time_t)20l;
+        case(15):
+            gps_time=(time_t)15l;
             break;
 
         case(30):
@@ -6629,14 +6629,14 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                                             time_box3,
                                             XmNbackground, colors[0xff],
                                             NULL);
-        XtAddCallback(toption1,XmNvalueChangedCallback,gps_time_toggle,"10");
+        XtAddCallback(toption1,XmNvalueChangedCallback,gps_time_toggle,"5");
 
 
         toption2 = XtVaCreateManagedWidget(langcode("WPUPCFG010"),xmToggleButtonGadgetClass,
                                             time_box3,
                                             XmNbackground, colors[0xff],
                                             NULL);
-        XtAddCallback(toption2,XmNvalueChangedCallback,gps_time_toggle,"20");
+        XtAddCallback(toption2,XmNvalueChangedCallback,gps_time_toggle,"15");
 
 
         toption3 = XtVaCreateManagedWidget(langcode("WPUPCFG011"),xmToggleButtonGadgetClass,
@@ -6975,14 +6975,14 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 
 
         switch(gps_time) {
-            case(10):
+            case(5):
                 XmToggleButtonSetState(toption1,TRUE,FALSE);
-                GPS_time=(time_t)10l;
+                GPS_time=(time_t)5l;
                 break;
 
-            case(20):
+            case(15):
                 XmToggleButtonSetState(toption2,TRUE,FALSE);
-                GPS_time=(time_t)20l;
+                GPS_time=(time_t)15l;
                 break;
 
             case(30):

@@ -279,8 +279,8 @@ WPUPCFG005|Losse GPS||
 WPUPCFG006|Via TNC Verbonden GPS (HSP Kabel)||
 WPUPCFG007|Via TNC Verbondem GPS met gebruik van CTL-E||
 WPUPCFG008|GPS Tijd (Lees elke)||
-WPUPCFG009|10 sec||
-WPUPCFG010|20 sec||
+WPUPCFG009|5 sec||
+WPUPCFG010|15 sec||
 WPUPCFG011|30 sec||
 WPUPCFG012|1 minuut||
 WPUPCFG013|2 minuten||

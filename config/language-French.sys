@@ -274,8 +274,8 @@ WPUPCFG005|GPS seul||
 WPUPCFG006|TNC branché au GPS (Cable HSP)||
 WPUPCFG007|TNC branché au GPS avec CTL-E||
 WPUPCFG008|Intervalle de temps GPS||
-WPUPCFG009|10 sec||
-WPUPCFG010|20 sec||
+WPUPCFG009|5 sec||
+WPUPCFG010|15 sec||
 WPUPCFG011|30 sec||
 WPUPCFG012|1 min||
 WPUPCFG013|2 min||
