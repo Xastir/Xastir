@@ -4022,6 +4022,9 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
 }
 
 
+
+
+
 /*
  *  Export trail data for one or all stations to file
  */
@@ -6633,9 +6636,10 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
         /* check to see if enough to change pos on screen */
         if ((pos_long_temp>x_long_offset) && (pos_long_temp<(x_long_offset+(long)(screen_width *scale_x)))) {
             if ((pos_lat_temp>y_lat_offset) && (pos_lat_temp<(y_lat_offset+(long)(screen_height*scale_y)))) {
-                if((labs((p_station->coord_lon+(scale_x/2))-pos_long_temp)/scale_x)>0 || (labs((p_station->coord_lat+(scale_y/2))-pos_lat_temp)/scale_y)>0) {
+                if((labs((p_station->coord_lon+(scale_x/2))-pos_long_temp)/scale_x)>0
+                        || (labs((p_station->coord_lat+(scale_y/2))-pos_lat_temp)/scale_y)>0) {
                     //redraw_on_new_data = 1;   // redraw next chance
-                    redraw_on_new_data = 2;     // better response?
+                    //redraw_on_new_data = 2;     // better response?
                     if (debug_level & 256) {
                         printf("Redraw on new gps data \n");
                     }
@@ -6680,8 +6684,34 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     my_last_speed=(int)(atof(speed)*1.1508);
     strcpy(p_station->sats_visible,sats);
 
+    //if (   p_station->coord_lon != last_lon
+    //    || p_station->coord_lat != last_lat ) {
+    // we don't store redundant points (may change this later ?)
+    // there are often echoes delayed 15 minutes or so
+    // it looks ugly on the trail, so I want to discard them
+    // This also discards immediate echoes
+    if (!is_trailpoint_echo(p_station)) {
+        (void)store_trail_point(p_station,
+                                p_station->coord_lon,
+                                p_station->coord_lat,
+                                p_station->sec_heard,
+                                p_station->altitude,
+                                p_station->speed,
+                                p_station->course,
+                                p_station->flag);
+    }
+    if (debug_level & 256) {
+        printf("Adding Solid Trail for %s\n",
+        p_station->call_sign);
+    }
+    draw_trail(da,p_station,1);         // update trail
+    display_station(da,p_station,1);    // update symbol
+
     if (track_station_on == 1)          // maybe we are tracking ourselves?
         track_station(da,tracking_station_call,p_station);
+
+    //redraw_on_new_data = 1;   // redraw next chance
+    redraw_on_new_data = 2;     // Immediate update of symbols/tracks
 }
 
 
