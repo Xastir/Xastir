@@ -3200,11 +3200,13 @@ void port_dtr(int port, int dtr) {
 void dtr_all_set(int dtr) {
     int i;
 
-    for (i = 0; i < MAX_IFACE_DEVICES; i++)
-        if (port_data[i].device_type == DEVICE_SERIAL_TNC_HSP_GPS && port_data[i].status == DEVICE_UP)
+//fprintf(stderr,"dtr_all_set(%d)\t",dtr);
+    for (i = 0; i < MAX_IFACE_DEVICES; i++) {
+        if (port_data[i].device_type == DEVICE_SERIAL_TNC_HSP_GPS
+                && port_data[i].status == DEVICE_UP) {
             port_dtr(i,dtr);
-
-
+        }
+    }
 }
 
 
