@@ -10,17 +10,15 @@
 #
 AC_INIT(xastir, 1.1.4, xastir@xastir.org)
 
-
-
 AC_PREREQ(2.53)
-
-echo ""
-echo "Configuring AC_PACKAGE_NAME AC_PACKAGE_VERSION"
-echo ""
 
 AC_CONFIG_SRCDIR([src/xastir.h])
 AM_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE
+
+echo ""
+echo "Configuring AC_PACKAGE_NAME AC_PACKAGE_VERSION"
+echo ""
 
 # Take out the dots in order to create the TOCALL
 SHORT_VERSION="AC_PACKAGE_VERSION"
@@ -28,10 +26,6 @@ SHORT_VERSION=`echo $SHORT_VERSION | sed -e 's/\.//g'`
 AC_SUBST(SHORT_VERSION)
 
 AC_DEFINE_UNQUOTED(XASTIR_TOCALL, "APX$SHORT_VERSION", [Defines the version tocall])
-
-echo ""
-echo "TOCALL = APX$SHORT_VERSION"
-echo ""
 
 # Check for host type
 AC_CANONICAL_HOST
@@ -45,9 +39,6 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_AWK
 #AC_PROG_YACC
-# AC_PROG_LIBTOOL
-#echo "end of program checks"
-
 
 # Liberated from ethereal's configure.in
 #
@@ -973,18 +964,10 @@ AC_CONFIG_FILES([Makefile \
  
 AC_OUTPUT 
  
-echo "" 
-echo "        LIBS: $LIBS" 
-echo "     LDFLAGS: $LDFLAGS" 
-echo "      CFLAGS: $CFLAGS" 
-echo "    CPPFLAGS: $CPPFLAGS" 
-echo "      X_LIBS: $X_LIBS" 
-echo "  X_PRE_LIBS: $X_PRE_LIBS" 
-echo "X_EXTRA_LIBS: $X_EXTRA_LIBS" 
- 
-echo 
-echo "AC_PACKAGE_NAME AC_PACKAGE_VERSION" 
- 
+echo ===========================================
+echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured using the 
+echo following external libraries.
+echo  
 echo 
 echo Building with AX25.......... : $has_axlib 
 echo Building with GeoTiff....... : $use_geotiff 
