@@ -476,10 +476,13 @@ int gps_data_find(char *gps_line_data, int port) {
 
     char long_pos[20],lat_pos[20],aunit[2];
     time_t t;
-    struct timeval tv;
-    struct timezone tz;
     char temp_str[MAX_GPS_STRING+1];
     int have_valid_string = 0;
+#ifndef __CYGWIN__
+    struct timeval tv;
+    struct timezone tz;
+#endif  // __CYGWIN__
+ 
 
 
     if (strncmp(gps_line_data,"$GPRMC,",7)==0) {
@@ -530,6 +533,11 @@ int gps_data_find(char *gps_line_data, int port) {
                     port, devices[port].set_time);
             }
 
+// Don't set the time if it's a Cygwin system.  Causes problems with
+// date, plus time can be an hour off if daylight savings time is
+// enabled on Windows.
+//
+#ifndef __CYGWIN__
             if (devices[port].set_time) {
                 tv.tv_sec=t;
                 tv.tv_usec=0;
@@ -540,6 +548,7 @@ int gps_data_find(char *gps_line_data, int port) {
                     fprintf(stderr,"Setting Time %ld EUID: %d, RUID: %d\n",
                         (long)t, (int)getuid(), (int)getuid());
                 }
+
 #ifdef HAVE_SETTIMEOFDAY
 
 ENABLE_SETUID_PRIVILEGE;
@@ -547,7 +556,11 @@ ENABLE_SETUID_PRIVILEGE;
 DISABLE_SETUID_PRIVILEGE;
 
 #endif  // HAVE_SETTIMEOFDAY
+
             }
+
+#endif  // __CYGWIN__
+
         }
     }
     else {
