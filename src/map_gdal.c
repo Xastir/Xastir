@@ -135,7 +135,9 @@ void map_gdal_init() {
     fprintf(stderr,"\nGDAL Registered Drivers:\n");
     for (jj = 0; jj < ii; jj++) {
         hDriver = GDALGetDriver(jj);
-        printf("\t%s\n", GDALGetDriverLongName(hDriver) );
+        printf("%12s   %s\n",
+            GDALGetDriverShortName(hDriver),
+            GDALGetDriverLongName(hDriver) );
     }
     fprintf(stderr,"\n");
 
