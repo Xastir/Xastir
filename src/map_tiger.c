@@ -134,7 +134,9 @@ extern int mag;
  * N0VH
  **********************************************************/
 #ifdef HAVE_IMAGEMAGICK
-void draw_tiger_map (Widget w) {
+void draw_tiger_map (Widget w,
+        char *filenm,
+        int destination_pixmap) {
     char file[MAX_FILENAME];        // Complete path/name of image file
     FILE *f;                        // Filehandle of image file
     char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
@@ -203,6 +205,27 @@ void draw_tiger_map (Widget w) {
 
     xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), "tigermap");
     statusline(map_it,0);       // Loading ...
+
+
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+        // We're indexing only.  Save the extents in the index.
+        // Force the extents to the edges of the earth for the
+        // index file.
+        index_update_xastir(filenm, // Filename only
+            64800000l,      // Bottom
+            0l,             // Top
+            0l,             // Left
+            129600000l);    // Right
+
+        // Update statusline
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+        statusline(map_it,0);       // Loading/Indexing ...
+
+        return; // Done indexing this file
+    }
 
 
     // Tiepoint for upper left screen corner

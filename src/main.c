@@ -306,7 +306,6 @@ Widget map_bgcolor[12];
 static void Map_background(Widget w, XtPointer clientData, XtPointer calldata);
 int map_background_color;       /* Background color for maps */
 
-int tiger_flag;
 #if !defined(NO_GRAPHICS)
 Widget raster_intensity[11];
 static void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata);
@@ -606,7 +605,6 @@ int ATV_screen_ID;
 
 #ifdef HAVE_IMAGEMAGICK //N0VH
 Widget configure_tiger_dialog = (Widget) NULL;
-Widget tiger_enable_widget;
 Widget tiger_cities,
        tiger_grid,
        tiger_counties,
@@ -2972,14 +2970,6 @@ int create_image(Widget w) {
         return(0);
  
     statusline(langcode("BBARSTA003"),1);       // Loading Maps
-
-#ifdef HAVE_IMAGEMAGICK
-    //
-    //  If tigermaps are enabled, then load them.
-    //
-    if (tiger_flag && !disable_all_maps)
-        draw_tiger_map(w);
-#endif // HAVE_IMAGEMAGICK
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
@@ -13952,11 +13942,6 @@ void Configure_tiger_destroy_shell( /*@unused@*/ Widget widget, XtPointer client
 
 void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
 
-    if(XmToggleButtonGetState(tiger_enable_widget))
-        tiger_flag=TRUE;
-    else
-        tiger_flag=FALSE;
-
     if(XmToggleButtonGetState(tiger_grid))
         tiger_show_grid=TRUE;
     else
@@ -14055,7 +14040,7 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
 //
 //
 void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    static Widget tiger_pane, tiger_form, button_ok, button_cancel, tiger_label1, sep, sep2;
+    static Widget tiger_pane, tiger_form, button_ok, button_cancel, tiger_label1, sep;
     int intensity_length;
     int timeout_length;
 
@@ -14087,38 +14072,10 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        tiger_enable_widget = XtVaCreateManagedWidget(langcode("MPUPTGR018"),
-                xmToggleButtonWidgetClass, 
-                tiger_form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 10,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        sep = XtVaCreateManagedWidget("Config Tigermap sep", 
-                xmSeparatorGadgetClass,
-                tiger_form,
-                XmNorientation, XmHORIZONTAL,
-                XmNtopAttachment,XmATTACH_WIDGET,
-                XmNtopWidget, tiger_enable_widget,
-                XmNtopOffset, 5,
-                XmNbottomAttachment,XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNrightAttachment,XmATTACH_FORM,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
         tiger_label1  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),
                 xmLabelWidgetClass,
                 tiger_form,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, sep,
+                XmNtopAttachment, XmATTACH_FORM,
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
@@ -14399,7 +14356,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        sep2 = XtVaCreateManagedWidget("Config Tigermap sep2", 
+        sep = XtVaCreateManagedWidget("Config Tigermap sep", 
                 xmSeparatorGadgetClass,
                 tiger_form,
                 XmNorientation, XmHORIZONTAL,
@@ -14417,7 +14374,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 xmPushButtonGadgetClass, 
                 tiger_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, sep2,
+                XmNtopWidget, sep,
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
@@ -14436,7 +14393,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 xmPushButtonGadgetClass, 
                 tiger_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, sep2,
+                XmNtopWidget, sep,
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
@@ -14460,11 +14417,6 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         delw = XmInternAtom(XtDisplay(configure_tiger_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(configure_tiger_dialog, delw, Configure_tiger_destroy_shell,
                 (XtPointer)configure_tiger_dialog);
-
-        if(tiger_flag)
-            XmToggleButtonSetState(tiger_enable_widget,TRUE,FALSE);
-        else
-            XmToggleButtonSetState(tiger_enable_widget,FALSE,FALSE);
 
         if(tiger_show_grid)
             XmToggleButtonSetState(tiger_grid,TRUE,FALSE);
@@ -23776,7 +23728,6 @@ int main(int argc, char *argv[]) {
     posit_last_time = 0l;
     posit_next_time = 0l;
     wait_to_redraw=1;
-    tiger_flag = FALSE;
 
     last_popup_x = 0;
     last_popup_y = 0;

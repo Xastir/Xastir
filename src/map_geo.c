@@ -266,6 +266,7 @@ void draw_geo_image_map (Widget w,
 
     int terraserver_flag = 0;
     int toposerver_flag = 0;
+    int tigerserver_flag = 0;
     char map_it[MAX_FILENAME];
     int geo_image_width = 0;    // Image width  from GEO file
     int geo_image_height = 0;   // Image height from GEO file
@@ -334,6 +335,9 @@ void draw_geo_image_map (Widget w,
 
             if (strncasecmp (line, "TERRASERVER", 11) == 0)
                 terraserver_flag = 1;
+
+            if (strncasecmp (line, "TIGERMAP", 8) == 0)
+                tigerserver_flag = 1;
 
             if (strncasecmp (line, "TOPOSERVER", 10) == 0) {
                 // Set to max brightness as it looks weird when the
@@ -412,6 +416,16 @@ void draw_geo_image_map (Widget w,
         fprintf(stderr,"Couldn't open file: %s\n", file);
         return;
     }
+
+
+    // Check whether Tigermap has been selected.  If so, run off to
+    // another routine to service this request.
+    //
+    if (tigerserver_flag) {
+        draw_tiger_map(w, filenm, destination_pixmap);
+        return;
+    }
+
 
 // DK7IN: I'm experimenting with the adjustment of topo maps with
 // Transverse Mercator projection. Those maps have equal scaling
@@ -610,6 +624,7 @@ void draw_geo_image_map (Widget w,
             // don't kill Xastir in the ReadImage routine.
             f = fopen (image_info->filename, "r");
             if (f == NULL) {
+fprintf(stderr,"1 ");
                 fprintf(stderr,"File %s could not be read\n",image_info->filename);
                 return;
             }
@@ -874,6 +889,7 @@ void draw_geo_image_map (Widget w,
     // don't kill Xastir in the ReadImage routine.
     f = fopen (image_info->filename, "r");
     if (f == NULL) {
+fprintf(stderr,"2 ");
         fprintf(stderr,"File %s could not be read\n",image_info->filename);
         return;
     }
