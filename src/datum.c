@@ -690,8 +690,7 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
         //
         // We're dealing with a UPS coordinate (near the poles)
         // instead of a UTM coordinate.  Need to do entirely
-        // different sorts of math?  If so, add an "else" before the
-        // "if" keyword below.
+        // different sorts of math.
         //
         double e, t, rho;
         const double k0 = 0.994;
