@@ -2139,9 +2139,11 @@ void fix_up_callsign(unsigned char *data) {
 // use this routine.
 //
 void port_write_binary(int port, unsigned char *data, int length) {
-    int i,erd;
+    int ii,erd;
     int write_in_pos_hold;
 
+
+fprintf(stderr,"Sending to AGWPE:\n");
 
     erd = 0;
 
@@ -2150,8 +2152,11 @@ void port_write_binary(int port, unsigned char *data, int length) {
 
     write_in_pos_hold = port_data[port].write_in_pos;
 
-    for (i = 0; i < length && !erd; i++) {
-        port_data[port].device_write_buffer[port_data[port].write_in_pos++] = data[i];
+    for (ii = 0; ii < length && !erd; ii++) {
+
+fprintf(stderr,"%02x ",data[ii]);
+
+        port_data[port].device_write_buffer[port_data[port].write_in_pos++] = data[ii];
         if (port_data[port].write_in_pos >= MAX_DEVICE_BUFFER)
             port_data[port].write_in_pos = 0;
 
@@ -2168,6 +2173,9 @@ void port_write_binary(int port, unsigned char *data, int length) {
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:send_ax25_frame(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
+
+fprintf(stderr,"\n");
+
 }
 
 
@@ -2520,7 +2528,7 @@ void port_read(int port) {
                     pthread_testcancel();   // Check for thread termination request
                     // Get one character
                     port_data[port].scan = (int)read(port_data[port].channel,&cin,1);
-//fprintf(stderr,"%c",cin);
+//fprintf(stderr," in:%x ",cin);
                     pthread_testcancel();   // Check for thread termination request
                 }
 
@@ -2619,24 +2627,22 @@ void port_read(int port) {
 
 
 //WE7U:AGWPE
-                        // Process AGWPE packets here.  Massage the
-                        // frames so that they look like normal
-                        // serial packets to the Xastir decoding
-                        // functions?
-                        //
-                        // Check for enough bytes to complete a
-                        // header (36 bytes).  If enough, check the
-                        // datalength to see if an entire packet has
-                        // been read.  If so, run that packet
-                        // through a conversion routine to convert
-                        // it to a TAPR2-style packet.
-                        //
-                        // Right now we're not taking into account
-                        // multiple radio ports that AGWPE is
-                        // capable of.  Just assume that we'll
-                        // receive from all radio ports, but
-                        // transmit out port 0.
-                        //
+// Process AGWPE packets here.  Massage the frames so that they look
+// like normal serial packets to the Xastir decoding functions?
+//
+// We turn on monitoring of packets when we first connect.  We now
+// need to throw away all but the "U" packets, which are unconnected
+// information packets.
+//
+// Check for enough bytes to complete a header (36 bytes).  If
+// enough, check the datalength to see if an entire packet has been
+// read.  If so, run that packet through a conversion routine to
+// convert it to a TAPR2-style packet.
+//
+// Right now we're not taking into account multiple radio ports that
+// AGWPE is capable of.  Just assume that we'll receive from all
+// radio ports, but transmit out port 0.
+//
                         if (port_data[port].device_type == DEVICE_NET_AGWPE) {
                             int bytes_available = 0;
                             long frame_length = 0;
@@ -2644,10 +2650,24 @@ void port_read(int port) {
 
                             skip = 1;   // Keeps next block of code from
                                         // trying to process this data.
+
+                            // Add it to the buffer
+                            if (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) ) {
+                                port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)cin;
+                                port_data[port].read_in_pos++;
+                                port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
+                            } else {
+                                if (debug_level & 2)
+                                    fprintf(stderr,"Port read overrun (1) on %d\n",port);
+
+                                port_data[port].read_in_pos = 0;
+                            }
  
                             bytes_available = port_data[port].read_in_pos - port_data[port].read_out_pos;
                             if (bytes_available < 0)
                                 bytes_available = (bytes_available + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
+
+//fprintf(stderr," bytes_avail:%d ",bytes_available);
  
                             if (bytes_available >= 36) {
                                 // We have a full AGWPE header,
@@ -2667,12 +2687,12 @@ void port_read(int port) {
                                 count[3] = (unsigned char)port_data[port].device_read_buffer[my_pointer];
 
                                 frame_length = 0;
-                                frame_length = frame_length | (count[0] << 24);
-                                frame_length = frame_length | (count[1] << 16);
-                                frame_length = frame_length | (count[2] <<  8);
-                                frame_length = frame_length | (count[3]      );
+                                frame_length = frame_length | (count[0]      );
+                                frame_length = frame_length | (count[1] <<  8);
+                                frame_length = frame_length | (count[2] << 16);
+                                frame_length = frame_length | (count[3] << 24);
 
-fprintf(stderr,"Found complete AGWPE header: DataLength: %d\n",frame_length);
+//fprintf(stderr,"Found complete AGWPE header: DataLength: %d\n",frame_length);
 
                                // Have a complete AGWPE packet?  If
                                 // so, convert it to a more standard
@@ -2682,8 +2702,14 @@ fprintf(stderr,"Found complete AGWPE header: DataLength: %d\n",frame_length);
                                 if (bytes_available >= (frame_length + 36)) {
 //                                    char input_string[MAX_DEVICE_BUFFER];
 //                                    char output_string[MAX_DEVICE_BUFFER];
-
-fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame.\n",frame_length + 36);
+int ii;
+fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame:\n",frame_length + 36);
+my_pointer = port_data[port].read_out_pos;
+for (ii = 0; ii < frame_length + 36; ii++) {
+    fprintf(stderr,"%02x ",(unsigned char)port_data[port].device_read_buffer[my_pointer]);
+    my_pointer = (my_pointer + 1) % MAX_DEVICE_BUFFER;
+}
+fprintf(stderr,"\n");
 fprintf(stderr,"Code to actually decode the packet:  Coming soon!\n");
 
                                     //strcpy(input_string, port_data[port].device_read_buffer);
@@ -3867,12 +3893,12 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     //
                     if (strlen(passwd) != 0) {
                         xastir_snprintf(logon_txt, sizeof(logon_txt),
-                            "%c%c%c%c%c%c%c%c%s%s%c%c%c%c%c%c%c%c",
+"%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
                             '\0','\0','\0','\0',    // RadioPort 0
-                            '\0','\0','\0','P',     // Login Info Header
-                            "          ",           // CallFrom
-                            "          ",           // CallTo
-                            '\0','\0','\2','\0',    // DataLen (512)
+                            'P','\0','\0','\0',     // Login Info Header
+'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallFrom
+'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallTo
+                            '\0','\2','\0','\0',    // DataLen (512)
                             '\0','\0','\0','\0');   // User
                         port_write_binary(port_avail, logon_txt, 36);
 
@@ -3893,18 +3919,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                             passwd);
                         port_write_binary(port_avail, logon_txt, 256);
                     }
-
-                    // Ask to receive "Monitor" frames
-                    //
-                    xastir_snprintf(logon_txt, sizeof(logon_txt),
-                        "%c%c%c%c%c%c%c%c%s%s%c%c%c%c%c%c%c%c",
-                        '\0','\0','\0','\0',    // RadioPort 0
-                        '\0','\0','\0','m',     // Monitor Frame Header
-                        "          ",           // CallFrom
-                        "          ",           // CallTo
-                        '\0','\0','\0','\0',    // DataLen
-                        '\0','\0','\0','\0');   // User
-                    port_write_binary(port_avail, logon_txt, 36);
                 }
                 break;
 
@@ -3949,6 +3963,32 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     send_kiss_config(port_avail,0,0x05,devices[port_avail].fullduplex);
                     break;
 
+                case DEVICE_NET_AGWPE:
+                    // Query for the AGWPE version
+                    //
+                    xastir_snprintf(logon_txt, sizeof(logon_txt),
+"%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
+                        '\0','\0','\0','\0',    // RadioPort 0
+                        'R','\0','\0','\0',     // Query Version Header
+'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallFrom
+'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallTo
+                        '\0','\0','\0','\0',    // DataLen
+                        '\0','\0','\0','\0');   // User
+                    port_write_binary(port_avail, logon_txt, 36);
+ 
+                    // Ask to receive "Monitor" frames
+                    //
+                    xastir_snprintf(logon_txt, sizeof(logon_txt),
+"%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c",
+                        '\0','\0','\0','\0',    // RadioPort 0
+                        'm','\0','\0','\0',     // Monitor Frame Header
+'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallFrom
+'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0',  // CallTo
+                        '\0','\0','\0','\0',    // DataLen
+                        '\0','\0','\0','\0');   // User
+                    port_write_binary(port_avail, logon_txt, 36);
+                    break;
+ 
                 default:
                     break;
             }
