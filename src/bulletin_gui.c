@@ -72,8 +72,8 @@ static xastir_mutex display_bulletins_dialog_lock;
 int bulletin_range;
 int new_bulletin_flag = 0;
 int new_bulletin_count = 0;
-time_t first_new_bulletin_time = 0;
-time_t last_new_bulletin_time = 0;
+static time_t first_new_bulletin_time = 0;
+static time_t last_new_bulletin_time = 0;
 
 
 
@@ -109,7 +109,7 @@ void popup_bulletins(void) {
 
 
 
-void  bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char *packet_message, time_t sec_heard) {
+void bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char *packet_message, time_t sec_heard) {
     char temp[200];
     char temp_my_course[10];
     char temp_text[30];
@@ -142,10 +142,7 @@ void  bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char 
 
 begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
 
-        if ((Display_bulletins_dialog == NULL)) {   // Dialog not up
-        }
- 
-        if ((Display_bulletins_dialog != NULL)) {
+        if ((Display_bulletins_dialog != NULL)) {   // Dialog is up
             strncpy(temp_text, temp, 14);
             temp_text[14] = '\0';
 
@@ -199,6 +196,85 @@ static void scan_bulletin_file(void) {
 
 
 
+// bulletin_data_add
+//
+// Adds the bulletin to the message database.  Updates the Bulletins
+// dialog if it is up.  Causes Bulletins dialog to pop up if the
+// bulletin matches certain parameters.
+//
+long temp_bulletin_record;
+
+void bulletin_data_add(char *call_sign, char *from_call, char *data,
+        char *seq, char type, char from) {
+    int distance = -1;
+
+    // Update the View->Bulletins dialog if it's up
+    bulletin_message(from,
+        from_call,
+        call_sign,
+        data,
+        sec_now());
+
+    // Add to the message database
+    (void)msg_data_add(call_sign,
+        from_call,
+        data,
+        "",
+        MESSAGE_BULLETIN,
+        from,
+        &temp_bulletin_record);
+
+    // If we received a NEW bulletin
+    if (temp_bulletin_record == -1L) {
+        char temp[10];
+
+        // We add to the distance in order to come up with 0.0
+        // if the distance is not known at all (no position
+        // found yet).
+        distance = (int)(distance_from_my_station(from_call,temp) + 0.9999);
+
+        if ( (bulletin_range == 0)
+                || (distance <= bulletin_range && distance > 0) ) {
+            // We have a _new_ bulletin that's within our
+            // current range setting.  Note that it's also possible
+            // to have a zero distance for the bulletin (we haven't
+            // heard a posit from the sending station yet), then get
+            // a posit later.
+
+            if (debug_level & 1) {
+                fprintf(stderr,"New bulletin:");
+                fprintf(stderr,"%05d:%9s:%c:%c:%9s:%s:%s  ",
+                    distance,
+                    call_sign,
+                    type,
+                    from,
+                    from_call,
+                    data,
+                    seq);
+                fprintf(stderr,"  Distance ok:%d miles",distance);
+            }
+
+            if (pop_up_new_bulletins) {
+                popup_bulletins();
+                if (debug_level & 1)
+                    fprintf(stderr,"\n");
+            }
+            else {
+                if (debug_level & 1) {
+                    fprintf(stderr,", but popups disabled!\n");
+                }
+            }
+        }
+        else {
+//            fprintf(stderr,", but distance didn't work out!\n");
+        }
+    }
+}
+
+
+
+
+
 // Find each bulletin that is within our range _and_ within our time
 // parameters for new bulletins.  Count them only.  Results returned
 // in the new_bulletin_count variable.
@@ -246,7 +322,6 @@ static void count_new_bulletins(void) {
 
 
 
-//WE7U
 // Function called by mscan_file for each bulletin with zero for the
 // position_known flag.  See next function find_zero_position_bulletins()
 //
@@ -292,11 +367,21 @@ static void zero_bulletin_processing(Message *fill) {
                     first_new_bulletin_time = fill->sec_heard;
 
                 // Check whether we really wish to pop them up
-                if (pop_up_new_bulletins
-                        && view_zero_distance_bulletins) { 
-                    // Set the flag that gets the whole ball rolling
-                    new_bulletin_flag = 1;
-//fprintf(stderr,"Filled in distance, setting new_bulletin_flag\n");
+                if (pop_up_new_bulletins) { 
+                    int distance;
+                    char temp_my_course[10];
+ 
+                    distance = (int)(distance_from_my_station(fill->from_call_sign,
+                        temp_my_course) + 0.9999);
+
+                    if ( (bulletin_range == 0)
+                            || (distance <= bulletin_range && distance > 0) ) {
+                        if (debug_level & 1) {
+                            fprintf(stderr,"Filled in distance for earlier bulletin:%d miles\n",
+                                distance);
+                        }
+                        popup_bulletins();
+                    }
                 }
             }
         }
@@ -316,37 +401,6 @@ static void zero_bulletin_processing(Message *fill) {
 //
 static void find_zero_position_bulletins(void) {
     mscan_file(MESSAGE_BULLETIN, zero_bulletin_processing);
-}
-
-
-
-
-
-// Function called from db.c:msg_data_add() when a new bulletin has
-// come in and we have pop_up_new_bulletins enabled.  We set some
-// variables and then wait for UpdateTime() to check whether any new
-// bulletins are within our range after the timestamp recorded here
-// has aged a bit.  This gives a few seconds for a posit to come in
-// from the callsign as well, which may place the station outside
-// our range.
-void prep_for_popup_bulletins() {
-
-    // Record the time that this most recent bulletin came in
-    last_new_bulletin_time = sec_now();
-
-    // Update the "first" time only if we don't have a timestamp in
-    // it already.  This is the time that we _started_ getting this
-    // string of new bulletins.  We may get several in a row, in
-    // which case "first" and "last" times will differ.
-    if (first_new_bulletin_time == 0)
-        first_new_bulletin_time = last_new_bulletin_time + 1;
-
-    // Set the flag that gets the whole ball rolling
-    new_bulletin_flag = 1;
-
-//fprintf(stderr,"prep_for_popup_bulletins: Setting new_bulletin_flag\n");
-
-    //fprintf(stderr,"Setting new_bulletin_flag and last_new_bulletin_time\n");
 }
 
 
@@ -413,7 +467,7 @@ void check_for_new_bulletins() {
     }
 
     // Reset so that we can do it all over again later.  We need
-    // mutex locks protecting these two variables.
+    // mutex locks protecting these variables.
     first_new_bulletin_time = last_new_bulletin_time + 1;
     new_bulletin_flag = 0;
 }

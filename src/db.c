@@ -629,6 +629,7 @@ long msg_find_data(Message *m_fill) {
                 if (strcmp(tempfill,tempfile)>=0) { /* at end or beyond */
                     if (strcmp(tempfill, tempfile) == 0) {
                         return_record = record_end;
+//fprintf(stderr,"record %ld",return_record);
                     }
 
                     done=1;
@@ -642,6 +643,7 @@ long msg_find_data(Message *m_fill) {
                             msg_data[msg_index[record_mid]].seq);
                     if (strcmp(tempfill,tempfile)==0) {
                         return_record = record_mid;
+//fprintf(stderr,"record: %ld",return_record);
                     }
                 }
             }
@@ -653,6 +655,7 @@ long msg_find_data(Message *m_fill) {
 
                 if (strcmp(tempfill, tempfile) == 0) {
                     return_record = record_mid;
+//fprintf(stderr,"record %ld",return_record);
                     done = 1;
                     break;
                 }
@@ -790,7 +793,7 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
 
 // Returns the time_t for last_ack_sent, or 0.
 // Also returns the record number found if not passed a NULL pointer
-// in record_out.
+// in record_out or -1L if it's a new record.
 time_t msg_data_add(char *call_sign, char *from_call, char *data,
         char *seq, char type, char from, long *record_out) {
     Message m_fill;
@@ -798,8 +801,8 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     char time_data[MAX_TIME];
     int do_msg_update = 0;
     time_t last_ack_sent;
-    int bring_up_bulletins = 0;
     int distance = -1;
+    char temp[10];
 
 
     if (debug_level & 1)
@@ -826,6 +829,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     // Look for a message with the same call_sign, from_call_sign,
     // and seq number
     record = msg_find_data(&m_fill);
+//fprintf(stderr,"RECORD %ld  \n",record);
     msg_clear_data(&m_fill);
     if(record != -1L) { /* fill old data */
         msg_get_data(&m_fill, record);
@@ -878,51 +882,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         last_ack_sent = (time_t)0;
         //fprintf(stderr,"New msg: Setting last_ack_sent to 0\n");
 
-        if (type == MESSAGE_BULLETIN) { // Found a bulletin
-            char temp[10];
-
-            // We add to the distance in order to come up with 0.0
-            // if the distance is not known at all (no position
-            // found yet).
-            distance = (int)(distance_from_my_station(from_call,temp) + 0.9999);
-
-            // Note:  The old method caused bulletins of distance
-            // zero to bring up the View->Bulletins dialog.  It gets
-            // very annoying very quickly.  We instead now wait for
-            // a posit to come in from the station so that the
-            // distance is known.  The user can either set
-            // bulletin_range to zero or leave the View->Bulletins
-            // dialog up to see the zero-distance bulletins.
-            if ((distance <= bulletin_range) || (bulletin_range == 0))
-
-            // New method:  Pop it up only if distance is non-zero
-            // and within range, or range setting set to zero.
-            //
-            // Problem with this method:  If a bulletin comes w/no
-            // posit, then a posit is received later and it's within
-            // range, the View->Bulletin dialog doesn't pop up.
-            // Distance is not saved with each bulletin, but saved
-            // in the station database.  We'd have to periodically
-            // scan the bulletins and compute distance (not knowing
-            // which bulletins were new and required the dialog to
-            // pop up), or store the distance with the bulletins
-            // themselves and if it changed from zero to a finite
-            // value, check if within range.
-//            if ( (bulletin_range == 0)
-//                || ( (distance <= bulletin_range) && (distance > 0) ) )
-            {
-                // We have a _new_ bulletin that's within our
-                // current range setting.  Pop up the Bulletins
-                // dialog.  Note that it's also possible to have a
-                // zero distance for the bulletin (we haven't heard
-                // a posit from the sending station yet), then get a
-                // posit from them right after a new bulletin.  In
-                // this case we might get a blank bulletin dialog or
-                // a dialog with no new bulletins showing.
-                bring_up_bulletins++;
-            }
-        }
-        else {  // Not a bulletin
+        if (type != MESSAGE_BULLETIN) { // Not a bulletin
             do_msg_update++;    // Always do an update to the
                                 // message window for new messages
         }
@@ -935,6 +895,8 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     if (m_fill.heard_via_tnc != VIA_TNC)
         m_fill.heard_via_tnc = (from == 'T') ? VIA_TNC : NOT_VIA_TNC;
 
+    distance = (int)(distance_from_my_station(from_call,temp) + 0.9999);
+ 
     if (distance != 0) {    // Have a posit from the sending station
         m_fill.position_known = 1;
         //fprintf(stderr,"Position known: %s\n",from_call);
@@ -990,39 +952,12 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         }
     }
  
-    // Bring up the bulletins dialog if it's a new bulletin and
-    // within our range.  We now just set some flags via the
-    // "prep_for_..." call below, then recheck the distance before
-    // we decide to actually bring up the bulletin window.
-    if (bring_up_bulletins && pop_up_new_bulletins) {
-
-        // Record that we _think_ we have a new bulletin.  We'll
-        // check a bit later to see if it's within range.  This give
-        // a bit of time for the posit to come in that matches the
-        // sender of the bulletin.
-
-        //fprintf(stderr,"Calling prep_for_popup_bulletins\n");
-
-        prep_for_popup_bulletins();
-
-        if (debug_level & 1) {
-            fprintf(stderr,"%05d:%9s:%c:%c:%9s:%s:%s\n",
-                distance,
-                call_sign,
-                type,
-                from,
-                from_call,
-                data,
-                seq);
-        }
-
-    }
- 
     if (debug_level & 1)
         fprintf(stderr,"msg_data_add end\n");
 
     // Return the important variables we'll need
     *record_out = record;
+//fprintf(stderr,"\nrecord_out:%ld record %ld\n",*record_out,record);
     return(last_ack_sent);
 
 }   // End of msg_data_add()
@@ -10681,11 +10616,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         fprintf(stderr,"3\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"BLN",3) == 0) {                       // Bulletin
-        long dummy;
-
         // fprintf(stderr,"found BLN: |%s| |%s|\n",addr,message);
-        bulletin_message(from,call,addr,message,sec_now());
-        (void)msg_data_add(addr,call,message,"",MESSAGE_BULLETIN,from,&dummy);
+        bulletin_data_add(addr,call,message,"",MESSAGE_BULLETIN,from);
         done = 1;
     }
     if (debug_level & 1)
