@@ -12720,7 +12720,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             // added after the 'I' perhaps.
             xastir_snprintf(line, sizeof(line), "%s>%s,%s*,I:%s",call,path,my_callsign,my_data);
 
-            //fprintf(stderr,"decode_info_field: IGATE>NET %s\n",line);
+//fprintf(stderr,"decode_info_field: IGATE>NET %s\n",line);
             output_igate_net(line, port,third_party);
         }
     }
@@ -13386,6 +13386,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     char *path0;
     char path[100+1];           // new one, we may add an '*'
     char *info;
+    char info_copy[MAX_LINE_SIZE+1];
     char call[MAX_CALLSIGN+1];
     char origin[MAX_CALLSIGN+1];
     int ok;
@@ -13448,6 +13449,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
     if (ok) {
         strcpy(path,path0);
+        strcpy(info_copy,info);
 
         ok = valid_path(path);                  // check the path and convert it to TAPR format
         // Note that valid_path() also removes igate injection identifiers
@@ -13577,11 +13579,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
                 call,
                 path,
                 my_callsign,
-                info);
+                info_copy);
 
-            //fprintf(stderr,"decode_info_field: IGATE>NET %s\n",line);
+//fprintf(stderr,"decode_ax25_line: IGATE>NET %s\n",tmp_line);
             output_igate_net(tmp_line, port,0); // 0="not third-party"
-//fprintf(stderr,"%s\n",tmp_line);
         }
     }
 

@@ -470,6 +470,8 @@ void output_igate_net(char *line, int port, int third_party) {
     if (line[0] == '\0')
         return;
 
+//fprintf(stderr,"Igating: %s\n", line);
+
     // Should we Igate from RF->NET?
     if (operate_as_an_igate <= 0)
         return;

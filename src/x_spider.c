@@ -617,6 +617,7 @@ int pipe_check(void) {
             if (p->authenticated) {
 
 //fprintf(stderr,"Data available, sending to server\n");
+//fprintf(stderr,"\t%s\n",line);
 
                 if (writen(pipe_server_to_xastir, line, n) != n) {
                     fprintf(stderr, "pipe_check: Writen error2: %d\n", errno);
