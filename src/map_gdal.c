@@ -77,8 +77,9 @@
 #warning
 #warning
 #warning GDAL/OGR library support is not fully implemented yet!
-#warning Preliminary TIGER/Line, Shapefile, mid/mif/tab (MapInfo)
-#warning support is working.
+#warning Preliminary TIGER/Line, Shapefile, mid/mif/tab (MapInfo),
+#warning and SDTS support is functional, including on-the-fly
+#warning coordinate conversion for both indexing and drawing.
 #warning
 #warning
 
@@ -406,7 +407,7 @@ scr_s_x_min = 0;
 
 
 // Prototype
-void Draw_Polygons(OGRGeometryH geometry, int level);
+void Draw_Polygons(OGRGeometryH geometry, int level, OGRCoordinateTransformationH *transformH);
  
 
 
@@ -438,11 +439,20 @@ void draw_ogr_map(Widget w,
                    int destination_pixmap,
                    int draw_filled) {
 
-    OGRDataSourceH datasource;
+    OGRDataSourceH datasourceH = NULL;
     OGRSFDriverH driver = NULL;
+    OGRSpatialReferenceH map_spatialH = NULL;
+    OGRSpatialReferenceH wgs84_spatialH = NULL;
+    OGRCoordinateTransformationH *transformH = NULL;
     int i, numLayers;
     char full_filename[300];
     const char *ptr;
+    int no_spatial = 1;
+    int geographic = 0;
+    int projected = 0;
+    int local = 0;
+    const char *datum = NULL;
+    const char *geogcs = NULL;
 
 
     if (debug_level & 16)
@@ -462,11 +472,11 @@ void draw_ogr_map(Widget w,
 // Home system segfaults here if a .prj file is present with a
 // shapefile.
 //
-    datasource = OGROpen(full_filename,
+    datasourceH = OGROpen(full_filename,
         0 /* bUpdate */,
         &driver);
 
-    if (datasource == NULL) {
+    if (datasourceH == NULL) {
         fprintf(stderr,
             "Unable to open %s\n",
             full_filename);
@@ -475,6 +485,198 @@ void draw_ogr_map(Widget w,
 
     if (debug_level & 16)
         fprintf(stderr,"Opened datasource\n");
+
+
+    // Set up coordinate translation.  We need it for both indexing
+    // and drawing.
+    //
+    if (OGR_DS_GetLayerCount(datasourceH) > 0) {
+        // We have at least one layer.
+        OGRLayerH layer;
+
+
+        // Snag a pointer to the first layer so that we can get the
+        // spatial info from it, if it exists.
+        //
+        layer = OGR_DS_GetLayer( datasourceH, 0 );
+
+        // Query the coordinate system for the dataset.
+        map_spatialH = OGR_L_GetSpatialRef(layer);
+
+        if (map_spatialH) {
+            const char *temp;
+
+            // We found spatial data
+            no_spatial = 0;
+
+            if (OSRIsGeographic(map_spatialH)) {
+                geographic++;
+            }
+            else if (OSRIsProjected(map_spatialH)) {
+                projected++;
+            }
+            else {
+                local++;
+            }
+
+            // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
+            //
+            if (projected) {
+                temp = OSRGetAttrValue(map_spatialH, "PROJCS", 0);
+                temp = OSRGetAttrValue(map_spatialH, "PROJECTION", 0);
+            }
+            temp = OSRGetAttrValue(map_spatialH, "SPHEROID", 0);
+            datum = OSRGetAttrValue(map_spatialH, "DATUM", 0);
+            geogcs = OSRGetAttrValue(map_spatialH, "GEOGCS", 0);
+        }
+        else {
+
+            fprintf(stderr,"Couldn't get spatial reference\n");
+
+            // For this case, assume that it is WGS84/geographic,
+            // and attempt to index as-is.  If the numbers don't
+            // make sense, we can skip indexing this dataset.
+
+            // Perhaps some layers may have a spatial reference, and
+            // others might not?  Solved this problem by defined
+            // "no_spatial", which will be '1' if no spatial data
+            // was found in any of the layers.  In that case we just
+            // store the extents we find.
+        }
+
+        if ( no_spatial         // No spatial info found, or
+                || (geographic  // Geographic and correct datum
+                    && ( strcasecmp(geogcs,"WGS84") == 0
+                        || strcasecmp(geogcs,"NAD83") == 0) ) ) {
+
+// We also need to check "DATUM", as some datasets have nothing in
+// the "GEOGCS" variable.  Check for "North_American_Datum_1983" or
+// "???".
+
+            transformH = NULL;  // No transform needed
+            fprintf(stderr,
+                "Geographic coordinate system, %s\n",
+                geogcs);
+        }
+        else {  // We have coordinates but they're in the wrong
+                // datum or in a projected/local coordinate system.
+                // Set up a transform to WGS84.
+
+            if (geographic) {
+                fprintf(stderr,
+                    "Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
+                    geogcs);
+            }
+            else if (projected) {
+                fprintf(stderr,
+                    "Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
+                    geogcs);
+            }
+            else if (local) {
+                // Convert to geographic/WGS84?  How?
+
+                fprintf(stderr,
+                    "Found local coordinate system.  Returning\n");
+
+                // Close data source
+                if (datasourceH != NULL) {
+                    OGR_DS_Destroy( datasourceH );
+                }
+
+                return;
+            }
+            else {
+                // Abandon all hope, ye who enter here!  We don't
+                // have a geographic, projected, or local coordinate
+                // system.
+
+                // Close data source
+                if (datasourceH != NULL) {
+                    OGR_DS_Destroy( datasourceH );
+                }
+
+                return;
+            }
+ 
+            wgs84_spatialH = OSRNewSpatialReference(NULL);
+
+            if (wgs84_spatialH == NULL) {
+                fprintf(stderr,
+                    "Couldn't create empty wgs84_spatialH object\n");
+
+                // Close data source
+                if (datasourceH != NULL) {
+                    OGR_DS_Destroy( datasourceH );
+                }
+
+                return;
+            }
+
+            if (OSRSetWellKnownGeogCS(wgs84_spatialH,"WGS84") == OGRERR_FAILURE) {
+ 
+                // Couldn't fill in WGS84 parameters.
+                fprintf(stderr,
+                    "Couldn't fill in wgs84 spatial reference parameters\n");
+
+                // NOTE: DO NOT destroy map_spatialH!  It is part of
+                // the datasource.  You'll get a segfault if you
+                // try, at the point where you destroy the
+                // datasource.
+
+                if (wgs84_spatialH != NULL) {
+                    OSRDestroySpatialReference(wgs84_spatialH);
+                }
+
+                // Close data source
+                if (datasourceH != NULL) {
+                    OGR_DS_Destroy( datasourceH );
+                }
+
+                return;
+            }
+
+            if (map_spatialH == NULL || wgs84_spatialH == NULL) {
+                fprintf(stderr,
+                    "Couldn't transform because map_spatialH or wgs84_spatialH are NULL\n");
+
+                if (wgs84_spatialH != NULL) {
+                    OSRDestroySpatialReference(wgs84_spatialH);
+                }
+
+                // Close data source
+                if (datasourceH != NULL) {
+                    OGR_DS_Destroy( datasourceH );
+                }
+
+                return;
+            }
+            else {
+                // Set up transformation from original datum to
+                // wgs84 datum.
+                transformH = OCTNewCoordinateTransformation(
+                    map_spatialH, wgs84_spatialH);
+
+                if (transformH == NULL) {
+                    // Couldn't create transformation object
+                    fprintf(stderr,
+                        "Couldn't create transformation object\n");
+
+                    if (wgs84_spatialH != NULL) {
+                        OSRDestroySpatialReference(wgs84_spatialH);
+                    }
+
+                    // Close data source
+                    if (datasourceH != NULL) {
+                        OGR_DS_Destroy( datasourceH );
+                    }
+
+                    return;
+                }
+            }
+        }
+    }
+
+
 
     // Implement the indexing functions, so that we can use these
     // map formats from within Xastir.  Without an index, it'll
@@ -499,12 +701,6 @@ void draw_ogr_map(Widget w,
         double file_MinY = 0;
         double file_MaxY = 0;
         int first_extents = 1;
-        int geographic = 0;
-        int projected = 0;
-        int local = 0;
-        int no_spatial = 1;
-        const char *geogcs = NULL;
-        OGRSpatialReferenceH spatial = NULL;
 
 
         xastir_snprintf(status_text,
@@ -525,68 +721,33 @@ void draw_ogr_map(Widget w,
         // the extents for the entire data source without looping
         // through the layers.
         //
-        numLayers = OGR_DS_GetLayerCount(datasource);
+        numLayers = OGR_DS_GetLayerCount(datasourceH);
         for ( i=0; i<numLayers; i++ ) {
             OGRLayerH layer;
             OGREnvelope psExtent;  
 
 
-            layer = OGR_DS_GetLayer( datasource, i );
+            layer = OGR_DS_GetLayer( datasourceH, i );
             if (layer == NULL) {
                 fprintf(stderr,
                     "Unable to open layer %d of %s\n",
                     i,
                     full_filename);
 
+                if (wgs84_spatialH != NULL) {
+                    OSRDestroySpatialReference(wgs84_spatialH);
+                }
+
+                if (transformH != NULL) {
+                    OCTDestroyCoordinateTransformation(transformH);
+                }
+
                 // Close data source
-                OGR_DS_Destroy( datasource );
+                if (datasourceH != NULL) {
+                    OGR_DS_Destroy( datasourceH );
+                }
+
                 return;
-            }
-
-            // Query the coordinate system.  Need to have the
-            // extents in WGS84 lat/long coordinate system in order
-            // to compute the extents properly.
-            //
-            spatial = OGR_L_GetSpatialRef(layer);
-            if (spatial) {
-                const char *temp;
-
-                no_spatial = 0;
-
-                if (OSRIsGeographic(spatial)) {
-                    geographic++;
-                }
-                else if (OSRIsProjected(spatial)) {
-                    projected++;
-                }
-                else {
-                    local++;
-                }
-
-                // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
-                //
-                temp = OSRGetAttrValue(spatial, "DATUM", 0);
-                if (projected) {
-                    temp = OSRGetAttrValue(spatial, "PROJCS", 0);
-                    temp = OSRGetAttrValue(spatial, "PROJECTION", 0);
-                }
-                temp = OSRGetAttrValue(spatial, "SPHEROID", 0);
-                geogcs = OSRGetAttrValue(spatial, "GEOGCS", 0);
-            }
-            else {
-
-                fprintf(stderr,"Couldn't get spatial reference\n");
-
-                // For this case, assume that it is
-                // WGS84/geographic, and attempt to index as-is.  If
-                // the numbers don't make sense, we can skip
-                // indexing this dataset.
-
-                // Perhaps some layers may have a spatial reference,
-                // and others might not?  Solved this problem by
-                // defined "no_spatial", which will be '1' if no
-                // spatial data was found in any of the layers.  In
-                // that case we just store the extents we find.
             }
 
             // Get the extents for this layer.  OGRERR_FAILURE means
@@ -611,6 +772,7 @@ void draw_ogr_map(Widget w,
                     file_MaxX = psExtent.MaxX;
                     file_MinY = psExtent.MinY;
                     file_MaxY = psExtent.MaxY;
+
                     first_extents = 0;
                 }
                 else {
@@ -628,9 +790,11 @@ void draw_ogr_map(Widget w,
             // No need to free layer handle, it belongs to the
             // datasource.
         }
+        // All done looping through the layers.
 
-        // We know how to handle geographic or projected coordinate
-        // systems.  Test for these.
+
+        // We only know how to handle geographic or projected
+        // coordinate systems.  Test for these.
         if ( !first_extents && (geographic || projected || no_spatial) ) {
             // Need to also check datum!  Must be NAD83 or WGS84 and
             // geographic for our purposes.
@@ -638,6 +802,7 @@ void draw_ogr_map(Widget w,
                 || (geographic
                     && ( strcasecmp(geogcs,"WGS84") == 0
                         || strcasecmp(geogcs,"NAD83") == 0) ) ) {
+// Also check "datum" here
 
                 fprintf(stderr,
                     "Geographic coordinate system, %s, adding to index\n",
@@ -666,107 +831,36 @@ void draw_ogr_map(Widget w,
             }
             else {  // We have coordinates but they're in the wrong
                     // datum or in a projected coordinate system.
-                    // Convert to WGS84.
-                OGRSpatialReferenceH wgs84_spatial = NULL;
-                OGRCoordinateTransformationH transformH = NULL;
+                    // Convert to WGS84 coordinates.
+                double x[2];
+                double y[2];
 
+                x[0] = file_MinX;
+                x[1] = file_MaxX;
+                y[0] = file_MinY;
+                y[1] = file_MaxY;
 
-                if (geographic) {
-                    fprintf(stderr,
-                        "Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
-                        geogcs);
-                }
-                else {
-                    fprintf(stderr,
-                        "Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
-                        geogcs);
-                }
- 
+                fprintf(stderr,"Before: %f,%f\t%f,%f\n",
+                    x[0],y[0],
+                    x[1],y[1]);
 
-                wgs84_spatial = OSRNewSpatialReference(NULL);
-                if (wgs84_spatial == NULL) {
-                    fprintf(stderr,
-                        "Couldn't create empty wgs84_spatial object\n");
-                }
-
-                if (OSRSetWellKnownGeogCS(wgs84_spatial,"WGS84") == OGRERR_FAILURE) {
- 
-                    // Couldn't fill in WGS84 parameters.
-                    fprintf(stderr,
-                        "Couldn't fill in wgs84 spatial reference parameters\n");
-                    if (wgs84_spatial != NULL)
-                        OSRDestroySpatialReference(wgs84_spatial);
-                }
-
-                if (spatial == NULL || wgs84_spatial == NULL) {
-                    fprintf(stderr,
-                        "Couldn't transform because spatial or wgs84_spatial are NULL\n");
-                    if (wgs84_spatial != NULL)
-                        OSRDestroySpatialReference(wgs84_spatial);
-                }
-                else {
-                    // Set up transformation from original datum to
-                    // wgs84 datum.
-                    transformH = OCTNewCoordinateTransformation(
-                        spatial, wgs84_spatial);
-
-                    if (transformH == NULL) {
-                        // Couldn't create transformation object
-                        fprintf(stderr,
-                            "Couldn't create transformation object\n");
-                    }
-                    else {
-                        // We're good.  Perform the transform to
-                        // WGS84 coordinates.
-                        double x[2];
-                        double y[2];
-
-                        x[0] = file_MinX;
-                        x[1] = file_MaxX;
-                        y[0] = file_MinY;
-                        y[1] = file_MaxY;
-
-                        fprintf(stderr,"Before: %f,%f\t%f,%f\n",
-                            x[0],y[0],
-                            x[1],y[1]);
-
-                        if (OCTTransform(transformH, 2, x, y, NULL)) {
+                if (OCTTransform(transformH, 2, x, y, NULL)) {
                             
-                            fprintf(stderr," After: %f,%f\t%f,%f\n",
-                            x[0],y[0],
-                            x[1],y[1]);
+                    fprintf(stderr," After: %f,%f\t%f,%f\n",
+                        x[0],y[0],
+                        x[1],y[1]);
  
 // Debug:  Don't add them to the index so that we can experiment
 // with datum translation and such.
 #ifndef WE7U
-                            index_update_ll(filenm, // Filename only
-                                y[0],  // Bottom
-                                y[1],  // Top
-                                x[0],  // Left
-                                x[1]); // Right
+                    index_update_ll(filenm, // Filename only
+                        y[0],  // Bottom
+                        y[1],  // Top
+                        x[0],  // Left
+                        x[1]); // Right
 #endif  // WE7U
-                        }
-                    }
-                    if (transformH != NULL) {
-                        OCTDestroyCoordinateTransformation(transformH);
-                    }
-                }
-                if (wgs84_spatial != NULL) {
-                    OSRDestroySpatialReference(wgs84_spatial);
                 }
             }
-        }
-        else if (local && !first_extents) {
-            // Convert to geographic/WGS84?  How?
-
-            fprintf(stderr,
-                "Found local coordinate system.  Skipping indexing\n");
-        }
-        else {
-            // Abandon all hope, ye who enter here!  We don't have
-            // any extents, or we don't have a geographic,
-            // projected, or local coordinate system.  We don't have
-            // a clue how to index this dataset...
         }
 
         // Debug code:
@@ -778,8 +872,18 @@ void draw_ogr_map(Widget w,
 //            -180.0,  // Left
 //             180.0); // Right
 
+        if (wgs84_spatialH != NULL) {
+            OSRDestroySpatialReference(wgs84_spatialH);
+        }
+
+        if (transformH != NULL) {
+            OCTDestroyCoordinateTransformation(transformH);
+        }
+
         // Close data source
-        OGR_DS_Destroy( datasource );
+        if (datasourceH != NULL) {
+            OGR_DS_Destroy( datasourceH );
+        }
 
         return; // Done indexing the file
     }
@@ -816,7 +920,7 @@ void draw_ogr_map(Widget w,
 
     // Get name/path.  Less than useful since we should already know
     // this.
-    ptr = OGR_DS_GetName(datasource);
+    ptr = OGR_DS_GetName(datasourceH);
     fprintf(stderr,"%s\n", ptr);
 
 
@@ -840,7 +944,7 @@ void draw_ogr_map(Widget w,
  
     // Loop through all layers in the data source.
     //
-    numLayers = OGR_DS_GetLayerCount(datasource);
+    numLayers = OGR_DS_GetLayerCount(datasourceH);
     for ( i=0; i<numLayers; i++ ) {
         OGRLayerH layer;
 //        int jj;
@@ -848,27 +952,49 @@ void draw_ogr_map(Widget w,
         OGRFeatureH feature;
 //        OGRFeatureDefnH layerDefn;
         OGREnvelope psExtent;  
-        OGRSpatialReferenceH spatial2;
         int extents_found = 0;
         char geometry_type_name[50] = "";
         int geometry_type = -1;
 
 
         if (interrupt_drawing_now) {
+
+            if (wgs84_spatialH != NULL) {
+                OSRDestroySpatialReference(wgs84_spatialH);
+            }
+
+            if (transformH != NULL) {
+                OCTDestroyCoordinateTransformation(transformH);
+            }
+
             // Close data source
-            OGR_DS_Destroy( datasource );
+            if (datasourceH != NULL) {
+                OGR_DS_Destroy( datasourceH );
+            }
+
             return;
         }
 
-        layer = OGR_DS_GetLayer( datasource, i );
+        layer = OGR_DS_GetLayer( datasourceH, i );
         if (layer == NULL) {
             fprintf(stderr,
                 "Unable to open layer %d of %s\n",
                 i,
                 full_filename);
 
+            if (wgs84_spatialH != NULL) {
+                OSRDestroySpatialReference(wgs84_spatialH);
+            }
+
+            if (transformH != NULL) {
+                OCTDestroyCoordinateTransformation(transformH);
+            }
+
             // Close data source
-            OGR_DS_Destroy( datasource );
+            if (datasourceH != NULL) {
+                OGR_DS_Destroy( datasourceH );
+            }
+
             return;
         }
 
@@ -913,26 +1039,16 @@ void draw_ogr_map(Widget w,
         }
 
 
-// Do we need to do the below once per layer, or just once per
-// dataset?  Probably each dataset is done in the same coordinate
-// system, so we could set up the translation once for the dataset
-// and use it for indexing or for drawing the entire dataset.
-        // 
-        // Query the coordinate system.  Need to have the extents in
-        // WGS84 lat/long (geographic) coordinate system in order to
-        // compute the extents properly.
-        //
-        spatial2 = OGR_L_GetSpatialRef(layer);
-        if (spatial2) {
+        if (map_spatialH) {
             const char *temp;
             int geographic = 0;
             int projected = 0;
 
-            if (OSRIsGeographic(spatial2)) {
+            if (OSRIsGeographic(map_spatialH)) {
                 fprintf(stderr,"Geographic Coord, ");
                 geographic++;
             }
-            else if (OSRIsProjected(spatial2)) {
+            else if (OSRIsProjected(map_spatialH)) {
                 fprintf(stderr,"Projected Coord, ");
                 projected++;
             }
@@ -942,21 +1058,21 @@ void draw_ogr_map(Widget w,
 
             // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
             //
-            temp = OSRGetAttrValue(spatial2, "DATUM", 0);
+            temp = OSRGetAttrValue(map_spatialH, "DATUM", 0);
             fprintf(stderr,"DATUM: %s, ", temp);
 
             if (projected) {
-                temp = OSRGetAttrValue(spatial2, "PROJCS", 0);
+                temp = OSRGetAttrValue(map_spatialH, "PROJCS", 0);
                 fprintf(stderr,"PROJCS: %s, ", temp);
  
-                temp = OSRGetAttrValue(spatial2, "PROJECTION", 0);
+                temp = OSRGetAttrValue(map_spatialH, "PROJECTION", 0);
                 fprintf(stderr,"PROJECTION: %s, ", temp);
             }
 
-            temp = OSRGetAttrValue(spatial2, "GEOGCS", 0);
+            temp = OSRGetAttrValue(map_spatialH, "GEOGCS", 0);
             fprintf(stderr,"GEOGCS: %s, ", temp);
 
-            temp = OSRGetAttrValue(spatial2, "SPHEROID", 0);
+            temp = OSRGetAttrValue(map_spatialH, "SPHEROID", 0);
             fprintf(stderr,"SPHEROID: %s, ", temp);
 
         }
@@ -1030,8 +1146,20 @@ void draw_ogr_map(Widget w,
             if (interrupt_drawing_now) {
                if (feature != NULL)
                    OGR_F_Destroy( feature );
+
+                if (wgs84_spatialH != NULL) {
+                    OSRDestroySpatialReference(wgs84_spatialH);
+                }
+
+                if (transformH != NULL) {
+                    OCTDestroyCoordinateTransformation(transformH);
+                }
+
                 // Close data source
-                OGR_DS_Destroy( datasource );
+                if (datasourceH != NULL) {
+                    OGR_DS_Destroy( datasourceH );
+                }
+
                 return;
             }
 
@@ -1134,16 +1262,30 @@ void draw_ogr_map(Widget w,
                     // Draw one point
                     if (num > 0) {
                         for ( ii = 0;  ii < num; ii++ ) {
+                            int ok = 1;
+
                             OGR_G_GetPoint(geometry,
                                 ii,
                                 &X1,
                                 &Y1,
                                 &Z1);
-                            draw_point_ll(da,
-                                (float)Y1,
-                                (float)X1,
-                                gc,
-                                pixmap);
+
+                            if (transformH) {
+                                // Convert to WGS84 coordinates.
+                                if (!OCTTransform(transformH, 1, &X1, &Y1, &Z1)) {
+                                    fprintf(stderr,
+                                        "Couldn't convert point to WGS84\n");
+                                    ok = 0;
+                                }
+                            }
+
+                            if (ok) {
+                                draw_point_ll(da,
+                                    (float)Y1,
+                                    (float)X1,
+                                    gc,
+                                    pixmap);
+                            }
                         }
                     } 
                     break;
@@ -1176,6 +1318,14 @@ void draw_ogr_map(Widget w,
                             &Y2,
                             &Z2);
 
+                        if (transformH) {
+                            // Convert to WGS84 coordinates.
+                            if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
+                                fprintf(stderr,
+                                    "Couldn't convert point to WGS84\n");
+                            }
+                        }
+
                         for ( ii = 1; ii < num; ii++ ) {
 
                             X1 = X2;
@@ -1188,6 +1338,14 @@ void draw_ogr_map(Widget w,
                                 &X2,
                                 &Y2,
                                 &Z2);
+
+                            if (transformH) {
+                                // Convert to WGS84 coordinates.
+                                if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
+                                    fprintf(stderr,
+                                        "Couldn't convert point to WGS84\n");
+                                }
+                            }
 
 // Optimization:
 // It should be faster here to draw the entire Polyline with one X11
@@ -1214,7 +1372,7 @@ void draw_ogr_map(Widget w,
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
 
-                    Draw_Polygons(geometry, 1);
+                    Draw_Polygons(geometry, 1, transformH);
                     break;
 
                 case 7:             // GeometryCollection
@@ -1229,8 +1387,19 @@ void draw_ogr_map(Widget w,
         }
         // No need to free layer handle, it belongs to the datasource
     }
+
+    if (transformH != NULL) {
+        OCTDestroyCoordinateTransformation(transformH);
+    }
+
+    if (wgs84_spatialH != NULL) {
+        OSRDestroySpatialReference(wgs84_spatialH);
+    }
+
     // Close data source
-    OGR_DS_Destroy( datasource );
+    if (datasourceH != NULL) {
+        OGR_DS_Destroy( datasourceH );
+    }
 }
 
 
@@ -1257,7 +1426,10 @@ void draw_ogr_map(Widget w,
 // function on all of them at once, and then call an X11 function to
 // draw the entire line at once.
 //
-void Draw_Polygons(OGRGeometryH geometry, int level) {
+void Draw_Polygons(OGRGeometryH geometry,
+        int level,
+        OGRCoordinateTransformationH *transformH) {
+ 
     int kk;
     int object_num = 0;
 
@@ -1289,7 +1461,7 @@ void Draw_Polygons(OGRGeometryH geometry, int level) {
             // We found geometries below this.  Recurse.
             if (level < 5) {
 //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
-                Draw_Polygons(child, level+1);
+                Draw_Polygons(child, level+1, transformH);
             }
         }
         else {  // Draw
@@ -1309,6 +1481,14 @@ void Draw_Polygons(OGRGeometryH geometry, int level) {
                     &Y2,
                     &Z2);
 
+                if (transformH) {
+                    // Convert to WGS84 coordinates.
+                    if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
+                        fprintf(stderr,
+                            "Couldn't convert point to WGS84\n");
+                    }
+                }
+
                 for ( mm = 1; mm < polygon_points; mm++ ) {
 
                     X1 = X2;
@@ -1321,6 +1501,14 @@ void Draw_Polygons(OGRGeometryH geometry, int level) {
                         &X2,
                         &Y2,
                         &Z2);
+
+                    if (transformH) {
+                        // Convert to WGS84 coordinates.
+                        if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
+                            fprintf(stderr,
+                                "Couldn't convert point to WGS84\n");
+                        }
+                    }
 
                     draw_vector_ll(da,
                         (float)Y1,
