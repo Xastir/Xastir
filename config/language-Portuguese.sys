@@ -292,7 +292,7 @@ BBARSTA039|Indexando %s||
 BBARSTA040|Estação de radioamador de APRS %s||
 BBARSTA041|Esperando pela data do GPS..||
 BBARSTA042|Transmitindo objectos/items||
-BBARSTA043|Logging||
+BBARSTA043|Registando||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||
@@ -413,16 +413,16 @@ WPUPCFT026|Tipo Binário||
 WPUPCFT027|Tipo ASCII||
 WPUPCFT028|Configurar TNC com GPS AUX||
 WPUPCFT029|Configurar TNC com ENUM INVÁLIDO||
-WPUPCFT030|Configurar KISS TNC||
-WPUPCFT031|TNC Configuration Files||
-WPUPCFT032|TNC Setup Filename|| 
-WPUPCFT033|TNC Shutdown Filename||
-WPUPCFT034|KISS Parameters||
-WPUPCFT035|TXDelay (10 ms units)||
-WPUPCFT036|Persistence (0 to 255)||
-WPUPCFT037|SlotTime (10 ms units)||
-WPUPCFT038|TxTail (10 ms units)||
-WPUPCFT039|Full Duplex||
+WPUPCFT030|Configurar o TNC em KISS||
+WPUPCFT031|Ficheiros de configuracao do TNC||
+WPUPCFT032|Nome do ficheiro de definicoes do TNC||
+WPUPCFT033|Nome do ficheiro de fecho do TNC||
+WPUPCFT034|Parametros do KISS||
+WPUPCFT035|TXDelay (10 unidades de ms)||
+WPUPCFT036|Persistence (0 a 255)||
+WPUPCFT037|SlotTime (10 unidades de ms)||
+WPUPCFT038|TxTail (10 unidades de ms)||
+WPUPCFT039|Duplex completo (Full Duplex)||
 #
 # Configurar a porta da estação meteorológica
 WPUPCFWX01|Configurar a porta da estação meteorológica||
@@ -551,7 +551,7 @@ WPUPCFIA05|Host1||
 WPUPCFIA06|Porta1||
 WPUPCFIA07|Host2||
 WPUPCFIA08|Porta2||
-WPUPCFIA09|Pass-code||
+WPUPCFIA09|Codigo de passagem||
 WPUPCFIA10|(Deixar em branco se não há nada)||
 WPUPCFIA11|Voltar a ligar se houver uma falha da NET?||
 WPUPCFIA12|Funcionar como uma I-Gate?||
@@ -592,8 +592,8 @@ WPUPTSP005|Rastrear agora!||
 WPUPTSP006|Limpar rastro||
 WPUPTSP007|Receber caminho||
 WPUPTSP008|Indicativo||
-WPUPTSP009|Start Trail (hrs ago)||
-WPUPTSP010|Trail Length (hrs)||
+WPUPTSP009|Comecar rasto (horas atras)||
+WPUPTSP010|Tamanho do rasto (horas)||
 #
 # Menú de mensagens
 WPUPMSB001|Enviar mensagem %d||
@@ -726,7 +726,7 @@ UNIOP00026|%||
 UNIOP00027|inHg||
 UNIOP00028|mm Hg||
 UNIOP00029|Definir o relógio do sistema desde o GPS?||
-UNIOP00030|RELAY Digipeat?||
+UNIOP00030|Digipeater de rele?||
 #
 # Seleccionar estação
 STCHO00001|Seleccionar estação||
@@ -963,8 +963,8 @@ COORD005|UTM||
 COORD006|Latitude ou||
 COORD007|Longitude ou||
 COORD008|Zona||
-COORD009|UTM Easting||
-COORD010|UTM Northing||
+COORD009|UTM indo para este||
+COORD010|UTM indo para norte||
 #
 #
 # Smart Beaconing Dialog
