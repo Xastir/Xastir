@@ -3782,7 +3782,10 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                             /*fprintf(stderr,"FILE %s\n",dl->d_name); */
 
                             // Get the last-modified timestamp for the map file
-                            map_timestamp = (time_t)nfile.st_mtime;
+                            //map_timestamp = (time_t)nfile.st_mtime;
+                            map_timestamp =
+                                (time_t)( (nfile.st_mtime>nfile.st_ctime) ? nfile.st_mtime : nfile.st_ctime );
+
 
                             // Check whether we're doing indexing or
                             // map drawing.  If indexing, we only
