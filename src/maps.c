@@ -27,6 +27,7 @@
  *
  */
 
+//#define MAP_SCALE_CHECK
 
 
 #include "config.h"
@@ -10351,11 +10352,29 @@ if (current_right >= width)
 // Test map visibility (on screen)
 //
 // Input parameters are in Xastir coordinate system (fastest for us)
+// checkpercentage:
+//      0 = don't check
+//      1 = check map size versus viewport scale.  Return 0 if map
+//      is too large/small (percentage-wise) to be displayed.
 //
 // Returns: 0 if map is _not_ visible
 //          1 if map _is_ visible
 //
-static int map_onscreen(long left, long right, long top, long bottom) {
+//
+// Xastir Coordinate System:
+//
+//              0 (90 deg. or 90N)
+//
+// 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
+//
+//          64,800,000 (-90 deg. or 90S)
+//
+static int map_onscreen(long left,
+                        long right,
+                        long top,
+                        long bottom,
+                        int  check_percentage) {
+
     unsigned long max_x_long_offset;
     unsigned long max_y_lat_offset;
     long map_border_min_x;
@@ -10422,6 +10441,55 @@ static int map_onscreen(long left, long right, long top, long bottom) {
             }
         }
     }
+
+
+#ifdef MAP_SCALE_CHECK
+    // Check whether map is too large/small for our current scale?
+    // Check whether the map extents are < XX% of viewscreen size
+    // (both directions), or viewscreen is > XX% of map extents
+    // (either direction).  This will knock out maps that are too
+    // large/small to be displayed at this zoom level.
+//WE7U
+    if (in_window && check_percentage) {
+        long map_x, map_y, view_x, view_y;
+        float percentage = 0.04;
+
+
+        map_x  = right - left;
+        if (map_x < 0)
+            map_x = 0;
+
+        map_y  = bottom - top;
+        if (map_y < 0)
+            map_y = 0;
+
+        view_x = max_x_long_offset - x_long_offset;
+        if (view_x < 0)
+            view_x = 0;
+
+        view_y = max_y_lat_offset - y_lat_offset;
+        if (view_y < 0)
+            view_y = 0;
+
+//fprintf(stderr,"\n map_x: %d\n", map_x);
+//fprintf(stderr," map_y: %d\n", map_y);
+//fprintf(stderr,"view_x: %d\n", view_x);
+//fprintf(stderr,"view_y: %d\n", view_y);
+
+        if ((map_x < (view_x * percentage )) && (map_y < (view_x * percentage))) {
+            in_window = 0;  // Send back "not-visible" flag
+fprintf(stderr,"map too small for view: %d%%\n",(int)(percentage * 100));
+        }
+
+//        if ((view_x < (map_x * percentage)) && (view_y < (map_x * percentage))) {
+//            in_window = 0;  // Send back "not-visible" flag
+//fprintf(stderr,"view too small for map: %d%%\n",(int)(percentage * 100));
+//        }
+
+    }
+#endif  // MAP_SCALE_CHECK
+ 
+
     return (in_window);
 }
 
@@ -10446,11 +10514,24 @@ static int map_onscreen_index(char *filename) {
     if (index_retrieve(filename, &bottom, &top, &left, &right,
             &map_layer, &draw_filled, &auto_maps) ) {
 
-        // Map was in the index, check for visibility
-        if (map_onscreen(left, right, top, bottom)) {
+        // Map was in the index, check for visibility and scale
+        // Check whether the map extents are < XX% of viewscreen
+        // size (both directions), or viewscreen is > XX% of map
+        // extents (either direction).  This will knock out maps
+        // that are too large/small to be displayed at this zoom
+        // level.
+        if (map_onscreen(left, right, top, bottom, 1)) {
             // Map is visible
             onscreen = 1;
             //fprintf(stderr,"Map found in index and onscreen! %s\n",filename);
+
+
+// Check whether the map extents are < XX% of viewscreen size (both
+// directions), or viewscreen is > XX% of map extents (either
+// direction).  This will knock out maps that are too large/small to
+// be displayed at this zoom level.
+
+
         }
         else {  // Map is not visible
             onscreen = 0;
@@ -10648,7 +10729,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm,
         }
 
 
-        if (map_onscreen(map_left, map_right, map_top, map_bottom)) {
+        if (map_onscreen(map_left, map_right, map_top, map_bottom, 1)) {
 
 
             // Update the statusline for this map name
@@ -11333,7 +11414,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             }
 
 
-            in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary);
+            in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary, 1);
 
             if (in_window) {
                 unsigned char last_behavior, special_fill = (unsigned char)FALSE;
