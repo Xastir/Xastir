@@ -742,6 +742,34 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 // that were written before?
 
 
+    // Prevents it from being drawn when the symbol is off-screen.
+    // It'd be better to check for lat/long +/- range to see if it's
+    // on the screen.
+    if ((x_long>=0) && (x_long<=129600000l)) {
+        if ((y_lat>=0) && (y_lat<=64800000l)) {
+            if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+                if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+
+                    // Ok to draw wind barb
+
+                }
+                else {
+                    return;
+                }
+            }
+            else {
+                return;
+            }
+        }
+        else {
+            return;
+        }
+    }
+    else {
+        return;
+    }
+
+
     // Convert from mph to knots for wind speed.
     my_speed = my_speed * 0.8689607;
 
@@ -2324,9 +2352,7 @@ end_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol" 
 
 
 
-// Function to draw a line in the direction of travel.  Use speed in knots to determine the
-// flags and barbs to draw along the shaft.  Course is in true
-// degrees, in the direction that the wind is coming from.
+// Function to draw a dead-reckoning symbols.
 //
 void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
     int my_course = atoi(p_station->course);   // In ° true
