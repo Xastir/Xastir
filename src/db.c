@@ -7764,6 +7764,144 @@ int extract_signpost(char *info, char *signpost) {
 
 
 
+/*
+ *  Extract probability_min data from APRS info field: "Pmin1.23,"
+ *  Please note the ending comma.
+ */
+int extract_probability_min(char *info, char *prob_min) {
+    int len,done;
+    char *c;
+    char *d;
+
+
+//fprintf(stderr,"%s\n",info);
+ 
+    len = (int)strlen(info);
+    if (len < 6) {          // Too short
+//fprintf(stderr,"Pmin too short: %s\n",info);
+        prob_min[0] = '\0';
+        return(0);
+    }
+
+    c = strstr(info,"Pmin");
+    if (c == NULL) {        // Pmin not found
+//fprintf(stderr,"Pmin not found: %s\n",info);
+        prob_min[0] = '\0';
+        return(0);
+    }
+
+    c = c+4;    // Skip the Pmin part
+    // Find the ending comma
+    d = c;
+    done = 0;
+    while (!done) {
+        if (*d == ',') {    // We're done
+            done++;
+        }
+        else {
+            d++;
+        }
+
+        // Check for string too long
+        if ( ((d-c) > 10) && !done) {    // Something is wrong, we should be done by now
+//fprintf(stderr,"Pmin too long: %d,%s\n",d-c,info);
+            prob_min[0] = '\0';
+            return(0);
+        }
+    }
+
+    // Copy the substring across
+    strncpy(prob_min, c, 10);
+    prob_min[d-c] = '\0';
+    prob_min[10] = '\0';    // Just to make sure
+
+    // Delete data from data extension field 
+    d++;    // Skip the comma
+    done = 0;
+    while (!done) {
+        *(c-4) = *d;
+        if (*d == '\0')
+            done++;
+        c++;
+        d++;
+    }
+
+    return(1);
+}
+
+
+
+
+
+/*
+ *  Extract probability_max data from APRS info field: "Pmax1.23,"
+ *  Please note the ending comma.
+ */
+int extract_probability_max(char *info, char *prob_max) {
+    int len,done;
+    char *c;
+    char *d;
+
+
+//fprintf(stderr,"%s\n",info);
+
+    len = (int)strlen(info);
+    if (len < 6) {          // Too short
+//fprintf(stderr,"Pmax too short: %s\n",info);
+        prob_max[0] = '\0';
+        return(0);
+    }
+
+    c = strstr(info,"Pmax");
+    if (c == NULL) {        // Pmax not found
+//fprintf(stderr,"Pmax not found: %s\n",info);
+        prob_max[0] = '\0';
+        return(0);
+    }
+
+    c = c+4;    // Skip the Pmax part
+    // Find the ending comma
+    d = c;
+    done = 0;
+    while (!done) {
+        if (*d == ',') {    // We're done
+            done++;
+        }
+        else {
+            d++;
+        }
+
+        // Check for string too long
+        if ( ((d-c) > 10) && !done) {    // Something is wrong, we should be done by now
+//fprintf(stderr,"Pmax too long: %d,%s\n",d-c,info);
+            prob_max[0] = '\0';
+            return(0);
+        }
+    }
+
+    // Copy the substring across
+    strncpy(prob_max, c, 10);
+    prob_max[d-c] = '\0';
+    prob_max[10] = '\0';    // Just to make sure
+
+    // Delete data from data extension field 
+    d++;    // Skip the comma
+    done = 0;
+    while (!done) {
+        *(c-4) = *d;
+        if (*d == '\0')
+            done++;
+        c++;
+        d++;
+    }
+ 
+    return(1);
+}
+
+
+
+
+
 static void clear_area(DataRow *p_station) {
     p_station->aprs_symbol.area_object.type           = AREA_NONE;
     p_station->aprs_symbol.area_object.color          = AREA_GRAY_LO;
@@ -7960,6 +8098,7 @@ int extract_time(DataRow *p_station, char *data, int type) {
 void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int type) {
     char temp1[7+1];
     char temp2[3+1];
+    char temp3[10+1];
     char bearing[3+1];
     char nrq[3+1];
 
@@ -8028,6 +8167,16 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
         if (extract_signpost(data, temp2)) {
             //fprintf(stderr,"extracted signpost data\n");
             strcpy(p_station->signpost,temp2);
+        }
+
+        if (extract_probability_min(data, temp3)) {
+            //fprintf(stderr,"extracted probability_min data: %s\n",temp3);
+            strcpy(p_station->probability_min,temp3);
+        }
+ 
+        if (extract_probability_max(data, temp3)) {
+            //fprintf(stderr,"extracted probability_max data: %s\n",temp3);
+            strcpy(p_station->probability_max,temp3);
         }
     }
 }

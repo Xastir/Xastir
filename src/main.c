@@ -16816,14 +16816,14 @@ int Setup_object_data(char *line, int line_length) {
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
         //fprintf(stderr,"Probability min circle entered: %s\n", line);
         if (strlen(line) != 0) {   // Probability circle data was entered
-            xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s", line);
+            xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
         } else {  // No data entered, blank it out
             prob_min[0] = '\0';
         }
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
         //fprintf(stderr,"Probability max circle entered: %s\n", line);
         if (strlen(line) != 0) {   // Probability circle data was entered
-            xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s", line);
+            xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
         } else {  // No data entered, blank it out
             prob_max[0] = '\0';
         }
@@ -17221,7 +17221,7 @@ int Setup_item_data(char *line, int line_length) {
         //fprintf(stderr,"Probability min circle entered: %s\n",
         //line);
         if (strlen(line) != 0) {   // Probability circle data was entered
-            xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s", line);
+            xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
         } else {  // No data entered, blank it out
             prob_min[0] = '\0';
         }
@@ -17229,7 +17229,7 @@ int Setup_item_data(char *line, int line_length) {
         //fprintf(stderr,"Probability max circle entered: %s\n",
         //line);
         if (strlen(line) != 0) {   // Probability circle data was entered
-            xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s", line);
+            xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
         } else {  // No data entered, blank it out
             prob_max[0] = '\0';
         }
