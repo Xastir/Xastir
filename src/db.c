@@ -86,7 +86,7 @@ void redraw_symbols(Widget w);
 int  delete_weather(DataRow *fill);
 void Station_data_destroy_track(Widget widget, XtPointer clientData, XtPointer callData);
 void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, char speedu, char *alt, char *sats);
-void station_shortcuts_update_function(void);
+void station_shortcuts_update_function(int hash_key);
 
 int  extract_speed_course(char *info, char *speed, char *course);
 int  extract_bearing_NRQ(char *info, char *bearing, char *nrq);
@@ -130,8 +130,9 @@ char last_emergency_callsign[MAX_CALLSIGN+1];
 int st_direct_timeout = 60 * 60;        // 60 minutes.
 
 // Used in search_station_name() function.  Shortcuts into the
-// station list based on first letter of the callsign/object name.
-DataRow *station_shortcuts[128];
+// station list based on the least-significant 7 bits of the first
+// two letters of the callsign/object name.
+DataRow *station_shortcuts[16384];
 
 
 
@@ -6326,16 +6327,28 @@ void init_station(DataRow *p_station) {
  */
 void remove_name(DataRow *p_rem) {      // todo: return pointer to next element
     int update_shortcuts = 0;
+    int hash_key;   // We use a 14-bit hash key
 
 
     // Do a quick check to see if we're removing a station record
     // that is pointed to by our pointer shortcuts array.
     // If so, update our pointer shortcuts after we're done.
-    if (station_shortcuts[(int)(p_rem->call_sign[0])] == p_rem) {
+    //
+    // We create the hash key out of the lower 7 bits of the first
+    // two characters, creating a 14-bit key (1 of 16384)
+    //
+    hash_key = (int)((p_rem->call_sign[0] & 0x7f) << 7);
+    hash_key = hash_key | (int)(p_rem->call_sign[1] & 0x7f);
+
+    if (station_shortcuts[hash_key] == p_rem) {
+        // Yes, we're trying to remove a record that a hash key
+        // directly points to.  We'll need to redo that hash key
+        // after we remove the record.
         update_shortcuts++;
     }
 
-    // Proceed to the removal
+
+    // Proceed to the station record removal
     if (p_rem->n_prev == NULL)          // first element
         n_first = p_rem->n_next;
     else
@@ -6346,10 +6359,13 @@ void remove_name(DataRow *p_rem) {      // todo: return pointer to next element
     else
         p_rem->n_next->n_prev = p_rem->n_prev;
 
-    // Update our pointer shortcuts
+
+    // Update our pointer shortcuts.  Pass the removed hash_key to
+    // the function so that we can try to redo just that hash_key
+    // pointer.
     if (update_shortcuts) {
-//fprintf(stderr,"\t\t\t\t\t\tRemoval of letter: %c\n", p_rem->call_sign[0]);
-        station_shortcuts_update_function();
+//fprintf(stderr,"\t\t\t\t\t\tRemoval of hash key: %i\n", hash_key);
+        station_shortcuts_update_function(hash_key);
     }
 }
 
@@ -6473,41 +6489,67 @@ void delete_station_memory(DataRow *p_del) {
 /*@null@*/ DataRow *add_new_station(DataRow *p_name, DataRow *p_time, char *call) {
     DataRow *p_new;
     char station_num[30];
-    char first_letter;
+    int hash_key;   // We use a 14-bit hash key
 
 
+    if (call[0] == '\0') {
+        // Do nothing.  No update needed.  Callsign is empty.
+        return(NULL);
+    }
+  
     p_new = insert_new_station(p_name,p_time);  // allocate memory
-    if (p_new != NULL) {
-        init_station(p_new);                    // initialize new station record
-        strcpy(p_new->call_sign,call);
-        stations++;
 
+    if (p_new == NULL) {
+        // Couldn't allocate space for the station
+        return(NULL);
+    }
 
-        // Do some quick checks here to see if we just inserted a new
-        // letter, or inserted at the beginning of a letter group.  If
-        // so, update our pointer shortcuts to match.
-        first_letter = p_new->call_sign[0];
+    init_station(p_new);                    // initialize new station record
+    strcpy(p_new->call_sign,call);
+    stations++;
 
-        if (first_letter == '\0') {
-            // Do nothing.  No update needed.
+    // Do some quick checks to see if we just inserted a new hash
+    // key or inserted at the beginning of a hash key (making the
+    // old pointer incorrect).  If so, update our pointers to match.
+
+    // We create the hash key out of the lower 7 bits of the first
+    // two characters, creating a 14-bit key (1 of 16384)
+    //
+    hash_key = (int)((call[0] & 0x7f) << 7);
+    hash_key = hash_key | (int)(call[1] & 0x7f);
+
+    if (station_shortcuts[hash_key] == NULL) {
+        // New hash key entry point found.  Fill in the pointer.
+//fprintf(stderr,"\t\t\t\t\t\tNew hash key: %i\n", hash_key);
+        station_shortcuts_update_function(hash_key);
+    }
+    else if (p_new->n_prev == NULL) {
+        // We just inserted at the beginning of the list.  Assume
+        // that we inserted at the beginning of our hash_key
+        // segment.
+//fprintf(stderr,"\t\t\t\t\t\tBeginning hash_key1: %i\n", hash_key);
+        station_shortcuts_update_function(hash_key);
+    }
+    else if (p_new->n_prev != NULL) {
+        int hash_key_prev;
+
+        // Compute the hash key for the previous entry in the linked
+        // list.  If it's different, then we just inserted at the
+        // beginning of our hash_key segment.
+        hash_key_prev = (int)((p_new->n_prev->call_sign[0] & 0x7f) << 7);
+        hash_key_prev = hash_key_prev | (int)(p_new->n_prev->call_sign[1] & 0x7f);
+       
+        if (hash_key != hash_key_prev) {
+//fprintf(stderr,"\t\t\t\t\t\tBeginning hash_key2: %i\n", hash_key);
+            station_shortcuts_update_function(hash_key);
         }
-        else if (station_shortcuts[(int)(first_letter)] == NULL) {
-            // New starting letter found
-//fprintf(stderr,"\t\t\t\t\t\tNew letter: %c\n", first_letter);
-            station_shortcuts_update_function();
-        }
-        else if ( (p_new->n_prev != NULL) &&
-                (first_letter != p_new->n_prev->call_sign[0]) ) {
-//fprintf(stderr,"\t\t\t\t\t\tBeginning letter: %c\n", first_letter);
-            station_shortcuts_update_function();
-        }
+    }
 
 
-        // this should not be here...  ??
-        if (!wait_to_redraw) {          // show number of stations in status line
-            xastir_snprintf(station_num, sizeof(station_num), langcode("BBARSTH001"), stations);
-            XmTextFieldSetString(text3, station_num);
-        }
+    // this should not be here...  ??
+    if (!wait_to_redraw) {          // show number of stations in status line
+        xastir_snprintf(station_num, sizeof(station_num), langcode("BBARSTH001"), stations);
+        XmTextFieldSetString(text3, station_num);
     }
     return(p_new);                      // return pointer to new element
 }
@@ -6562,14 +6604,21 @@ void move_station_name(DataRow *p_curr, DataRow *p_name) {
 // have to traverse in both directions to find a callsign in the
 // search_station_name() function.
 //
-void station_shortcuts_update_function(void) {
+void station_shortcuts_update_function(int hash_key_in) {
     int ii;
     DataRow *ptr;
-    int current = 0x00;
+    int prev_hash_key = 0x0000;
+    int hash_key;
 
 
-    // Clear all of the pointers before we begin
-    for (ii = 0; ii < 128; ii++) {
+// I just changed the function so that we can pass in the hash_key
+// that we wish to update:  We should be able to speed things up by
+// updating one hash key instead of all 16384 pointers.
+
+//??????????????????????????????????????????????????
+    // Clear all of the pointers before we begin????
+//??????????????????????????????????????????????????
+    for (ii = 0; ii < 16384; ii++) {
         station_shortcuts[ii] = NULL;
     }
 
@@ -6581,18 +6630,23 @@ void station_shortcuts_update_function(void) {
     // encountered.  Do this until the end of the array or the end
     // of the list.
     //
-    while ( (ptr != NULL) && (current < 0x80) ) {
+    while ( (ptr != NULL) && (prev_hash_key < 16384) ) {
 
-        if (ptr->call_sign[0] > (char)current) {
+        // We create the hash key out of the lower 7 bits of the
+        // first two characters, creating a 14-bit key (1 of 16384)
+        //
+        hash_key = (int)((ptr->call_sign[0] & 0x7f) << 7);
+        hash_key = hash_key | (int)(ptr->call_sign[1] & 0x7f);
 
-            // We found the next letter.  Store the pointer at
-            // the correct location.
-            current = ptr->call_sign[0];
+        if (hash_key > prev_hash_key) {
 
-            if (current < 0x80) {
-                station_shortcuts[(int)(current)] = ptr;
-//fprintf(stderr,"%c ", current);
+            // We found the next hash_key.  Store the pointer at the
+            // correct location.
+            if (hash_key < 16384) {
+                station_shortcuts[hash_key] = ptr;
+//fprintf(stderr,"%i ", hash_key);
             }
+            prev_hash_key = hash_key;
         }
         ptr = ptr->n_next;
     }
@@ -6611,50 +6665,68 @@ void station_shortcuts_update_function(void) {
 // in either direction.  We use this to create/update an array of
 // pointers to dump us into the correct initial letter for the
 // callsign, which reduces search time quite a bit.  We end up doing
-// a linear search only through one letter group.
+// a linear search only through one letter group, instead of the
+// entire linked list.
 //
 // Even better would be to switch to a hash function for station
-// storage.  Zero or very little searching would be required then.
+// storage.  Zero or very little linear searching would be required
+// then, depending on the size/type of hash.
 //
 int search_station_name(DataRow **p_name, char *call, int exact) {
-    // DK7IN: we do a linear search here.
+
+    // DK7IN: we do a linear search here. (Only partially now --we7u)
     // Maybe I set up a tree storage too, to see what is better,
     // tree should be faster in search, list faster at display time.
     // I don't look at case, objects and internet names could have lower case
+
+// Above comments are old now.  Implemented 14-bit hash table for
+// station lookup.  --we7u
+
     int i,j;
     int ok = 1;
     char ch0,ch1;
+    int hash_key;
 
 
     (*p_name) = n_first;                                // start of alphabet
     ch0 = call[0];
+    ch1 = call[1];
     if (ch0 == '\0') {
         // If call is empty, return n_first as the pointer
-        ok = 0;
+        return(0);
     }
-    else {
-        // Look for matching first letter
 
-        (*p_name) = station_shortcuts[(int)(ch0)];
-        if ((*p_name) == NULL) {
-            int jj;
+    // We create the hash key out of the lower 7 bits of the first
+    // two characters, creating a 14-bit key (1 of 16384)
+    //
+    hash_key = (int)((call[0] & 0x7f) << 7);
+    hash_key = hash_key | (int)(call[1] & 0x7f);
 
-            // No index found for that letter.  Walk the array until
-            // we do find one.  That'll be our insertion point (just
-            // ahead of the next letter group).
-            for (jj = (int)(ch0); jj < 0x80; jj++) {
-                if (station_shortcuts[jj] != NULL) {
-                    (*p_name) = station_shortcuts[jj];
-                    break;
-                }
+    // Look for a match using hash table lookup
+    //
+    (*p_name) = station_shortcuts[hash_key];
+    if ((*p_name) == NULL) {    // No entry found.
+        int jj;
+
+        // No index found for that letter.  Walk the array until
+        // we find an entry that is filled.  That'll be our
+        // insertion point (insertion into the list will occur just
+        // ahead of the hash entry).
+        for (jj = hash_key; jj < 16384; jj++) {
+            if (station_shortcuts[jj] != NULL) {
+                (*p_name) = station_shortcuts[jj];
+                break;
             }
         }
-        if ((*p_name) == NULL || (*p_name)->call_sign[0] != ch0) {
-            ok = 0;                                     // nothing found!
-        }
     }
 
-    for (i=1;ok && i<(int)strlen(call);i++) {           // check rest of string
+    if ((*p_name) == NULL
+            || (*p_name)->call_sign[0] != ch0
+            || (*p_name)->call_sign[1] != ch1) {
+        return(0);                                  // nothing found!
+    }
+
+    for ( i = 1; i < (int)strlen(call); i++ ) {         // check rest of string
         ch1 = call[i];
         ch0 = call[i-1];
         while (ok) {
