@@ -1691,6 +1691,14 @@ void alert_build_list(Message *fill) {
             else
                 entry.alert_level = 'G';
 
+
+            // Kludge for fire zones
+            if (!strncmp(entry.alert_tag,"RED_FLAG",8))
+            {
+                // need to replace "Z" in the zone field with "F"
+                if (entry.title[3] == 'Z')
+                    entry.title[3] = 'F';
+            }
             // Look for a similar alert
 
 // We need some improvements here.  We compare these fields:
