@@ -7267,6 +7267,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
                                         f_NW_x_bounding_wgs84,
                                         f_NW_y_bounding_wgs84 ) ) {
         printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
+        printf("Did you follow the instructions for installing PROJ?\n");
         return;
     }
 
@@ -7276,6 +7277,8 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
                                         f_NE_x_bounding_wgs84,
                                         f_NE_y_bounding_wgs84 ) ) {
         printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
+        printf("Did you follow the instructions for installing PROJ?\n");
+ 
         return;
     }
 
@@ -7285,6 +7288,8 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
                                         f_SW_x_bounding_wgs84,
                                         f_SW_y_bounding_wgs84 ) ) {
         printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
+        printf("Did you follow the instructions for installing PROJ?\n");
+ 
         return;
     }
 
@@ -7294,6 +7299,8 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
                                         f_SE_x_bounding_wgs84,
                                         f_SE_y_bounding_wgs84 ) ) {
         printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
+        printf("Did you follow the instructions for installing PROJ?\n");
+ 
         return;
     }
 
