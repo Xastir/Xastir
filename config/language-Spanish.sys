@@ -53,6 +53,7 @@ PULDNVI014|Programar SobreHora||
 # Menú de Configuración
 PULDNCF004|Estación|E|
 PULDNCF001|Predefinidos|P|
+PULDNCF003|Timing|T|
 PULDNCF002|Sistema de Coordenada|C|
 PULDNCF006|Audio Alarmas|A|
 PULDNCF007|Sintetizador de Voz|S|

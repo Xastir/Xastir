@@ -52,6 +52,7 @@ PULDNVI014|Durée de fonctionnement du logiciel||
 # Menu "Configure"
 PULDNCF004|Station|S|
 PULDNCF001|Défauts|D|
+PULDNCF003|Timing|T|
 PULDNCF002|Coordinate System|C|
 PULDNCF006|Alertes sonores|A|
 PULDNCF007|Parole|P|

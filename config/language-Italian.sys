@@ -53,6 +53,7 @@ PULDNVI014|Uptime del programma||
 # Menu' di Configurazione
 PULDNCF004|Dati Stazione|S|
 PULDNCF001|Configurazioni originali|D|
+PULDNCF003|Timing|T|
 PULDNCF002|Coordinate System|C|
 PULDNCF006|Allarmi Audio|A|
 PULDNCF007|Annunci Vocali|p|

@@ -58,6 +58,7 @@ PULDNVI014|Tijd programma beschikbaar||
 # Menu "Configure"
 PULDNCF001|Standaard|S|
 PULDNCF002|Coordinaten aanduiding|C|
+PULDNCF003|Timing|m|
 PULDNCF004|Station|t|
 PULDNCF006|Audio Alarm|A|
 PULDNCF007|Spraak|p|

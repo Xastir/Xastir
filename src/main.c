@@ -147,6 +147,7 @@ Widget Display_data_text;
 int Display_packet_data_type;
 
 Widget configure_defaults_dialog = (Widget)NULL;
+Widget configure_timing_dialog = (Widget)NULL;
 Widget configure_coordinates_dialog = (Widget)NULL;
 Widget coordinate_calc_button_ok = (Widget)NULL;
 Widget change_debug_level_dialog = (Widget)NULL;
@@ -621,6 +622,8 @@ static void Configure_station(Widget w, XtPointer clientData, XtPointer callData
 
 
 static void Configure_defaults(Widget w, XtPointer clientData, XtPointer callData);
+
+static void Configure_timing(Widget w, XtPointer clientData, XtPointer callData);
 
 static void Configure_coordinates(Widget w, XtPointer clientData, XtPointer callData);
 
@@ -3640,7 +3643,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
         localstations_button, laststations_button, objectstations_button, objectmystations_button,
         weather_button, wx_station_button, locate_button, locate_place_button, jump_button, alert_button,
-        config_button, defaults_button, coordinates_button, station_button,
+        config_button, defaults_button, timing_button, coordinates_button, station_button,
         map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
         map_levels_button, map_labels_button, map_fill_button, coordinate_calculator_button,
         Map_background_color_Pane, map_background_button, map_pointer_menu_button,
@@ -4090,6 +4093,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             xmPushButtonGadgetClass,
             configpane,
             XmNmnemonic,langcode_hotkey("PULDNCF001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    timing_button = XtVaCreateManagedWidget(langcode("PULDNCF003"),
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic,langcode_hotkey("PULDNCF003"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
@@ -5606,6 +5617,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(really_exit_button,   XmNactivateCallback,Menu_Quit,NULL);
 
     XtAddCallback(defaults_button,      XmNactivateCallback,Configure_defaults,NULL);
+    XtAddCallback(timing_button,        XmNactivateCallback,Configure_timing,NULL);
     XtAddCallback(coordinates_button,   XmNactivateCallback,Configure_coordinates,NULL);
     XtAddCallback(aa_button,            XmNactivateCallback,Configure_audio_alarms,NULL);
     XtAddCallback(speech_button,        XmNactivateCallback,Configure_speech,NULL);
@@ -12493,36 +12505,7 @@ void Configure_defaults_destroy_shell( /*@unused@*/ Widget widget, XtPointer cli
 
 void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
-    int value;
 
-
-    XmScaleGetValue(ghosting_time, &value); // Minutes
-    sec_old = (time_t)(value * 60); // Convert to seconds
-
-    XmScaleGetValue(clearing_time, &value); // Hours
-    sec_clear = (time_t)(value * 60 * 60);  // Convert to seconds
-
-    XmScaleGetValue(posit_interval, &value);// Minutes * 10
-    POSIT_rate = (long)(value * 60 / 10);   // Convert to seconds
-
-    XmScaleGetValue(gps_interval, &value);  // Seconds
-    gps_time = (long)value;
-
-    XmScaleGetValue(dead_reckoning_time, &value);  // Minutes
-    dead_reckoning_timeout = value * 60;    // Convert to seconds
-
-    XmScaleGetValue(object_item_interval, &value);  // Minutes
-    OBJECT_rate = value * 60;   // Convert to seconds
-
-    // Set the new posit rate into effect immediately
-    posit_next_time = posit_last_time + POSIT_rate;
-
-    // Set the new GPS rate into effect immediately
-    sec_next_gps = sec_now() + gps_time;
-
-    sec_remove = sec_clear*2;
-    if (sec_remove < (time_t)(24*3600))
-        sec_remove = (time_t)(24*3600);
 
     output_station_type = Station_transmit_type;
     if ((output_station_type >= 1) && (output_station_type <= 3)) {
@@ -12606,7 +12589,7 @@ void igate_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
 
 
 void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    static Widget  pane, my_form, my_form2, button_ok, button_cancel,
+    static Widget  pane, my_form, button_ok, button_cancel,
                 frame4, frame5,
                 station_type, type_box,
                 styp1, styp2, styp3, styp4, styp5, styp6,
@@ -12617,6 +12600,12 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
     register unsigned int ac = 0;   /* Arg Count */
 
     if (!configure_defaults_dialog) {
+
+        // Set args for color
+        ac = 0;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+
         configure_defaults_dialog = XtVaCreatePopupShell(langcode("WPUPCFD001"),
                 xmDialogShellWidgetClass,
                 Global.top,
@@ -12641,177 +12630,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        my_form2 =  XtVaCreateWidget("Configure_defaults my_form2",
-                xmFormWidgetClass, 
-                my_form,
-                XmNfractionBase, 2,
-                XmNautoUnmanage, FALSE,
-                XmNshadowThickness, 1,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNrightAttachment, XmATTACH_FORM,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        // Interval for stations being considered old (symbol ghosting)
-        ghosting_time = XtVaCreateManagedWidget("Station Ghosting Time",
-                xmScaleWidgetClass,
-                my_form2,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10 ,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 1,
-                XmNrightOffset, 5,
-                XmNsensitive, TRUE,
-                XmNorientation, XmHORIZONTAL,
-                XmNborderWidth, 1,
-                XmNminimum, 1,      // One minute
-                XmNmaximum, 3*60,   // Three hours
-                XmNshowValue, TRUE,
-                XmNvalue, (int)(sec_old/60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Station Ghosting Time (min)", 15,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        // Interval for station not being displayed
-        clearing_time = XtVaCreateManagedWidget("Station Clear Time",
-                xmScaleWidgetClass,
-                my_form2,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 1,
-                XmNleftOffset, 5,
-                XmNrightAttachment, XmATTACH_FORM,
-                XmNrightOffset, 10,
-                XmNsensitive, TRUE,
-                XmNorientation, XmHORIZONTAL,
-                XmNborderWidth, 1,
-                XmNminimum, 1,      // One hour
-                XmNmaximum, 24*7,   // One week
-                XmNshowValue, TRUE,
-                XmNvalue, (int)(sec_clear/(60*60)),
-                XtVaTypedArg, XmNtitleString, XmRString, "Station Clear Time (hours)", 6,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        // Posit Time
-        posit_interval = XtVaCreateManagedWidget("Posit Interval",
-                xmScaleWidgetClass,
-                my_form2,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, ghosting_time,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 1,
-                XmNrightOffset, 5,
-                XmNsensitive, TRUE,
-                XmNorientation, XmHORIZONTAL,
-                XmNborderWidth, 1,
-                XmNminimum, 5,          // 0.5 = Thirty seconds
-                XmNmaximum, 60*10,      // 60 minutes
-                XmNdecimalPoints, 1,    // Move decimal point over one
-                XmNshowValue, TRUE,
-                XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
-                XtVaTypedArg, XmNtitleString, XmRString, "Posit TX Interval (min)", 6,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        // GPS Time
-        gps_interval = XtVaCreateManagedWidget("GPS Interval",
-                xmScaleWidgetClass,
-                my_form2,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, ghosting_time,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 1,
-                XmNleftOffset, 5,
-                XmNrightAttachment, XmATTACH_FORM,
-                XmNrightOffset, 10,
-                XmNsensitive, TRUE,
-                XmNorientation, XmHORIZONTAL,
-                XmNborderWidth, 1,
-                XmNminimum, 1,      // One second
-                XmNmaximum, 60,     // Sixty seconds
-                XmNshowValue, TRUE,
-                XmNvalue, (int)gps_time,
-                XtVaTypedArg, XmNtitleString, XmRString, "GPS Check Interval (sec)", 6,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        // Dead Reckoning Timeout
-        dead_reckoning_time = XtVaCreateManagedWidget("DR Time (min)",
-                xmScaleWidgetClass,
-                my_form2,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, posit_interval,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 5,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 1,
-                XmNrightOffset, 5,
-                XmNsensitive, TRUE,
-                XmNorientation, XmHORIZONTAL,
-                XmNborderWidth, 1,
-                XmNminimum, 1,      // One minute
-                XmNmaximum, 60,     // Sixty minutes
-                XmNshowValue, TRUE,
-                XmNvalue, (int)(dead_reckoning_timeout / 60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Dead-Reckoning Timeout (min)", 6,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        // Object Item Transmit Interval
-        object_item_interval = XtVaCreateManagedWidget("Object/Item Transmit Interval (min)",
-                xmScaleWidgetClass,
-                my_form2,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, posit_interval,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 5,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 1,
-                XmNleftOffset, 5,
-                XmNrightAttachment, XmATTACH_FORM,
-                XmNrightOffset, 10,
-                XmNsensitive, TRUE,
-                XmNorientation, XmHORIZONTAL,
-                XmNborderWidth, 1,
-                XmNminimum, 5,      // Five minutes
-                XmNmaximum, 120,    // 120 minutes
-                XmNshowValue, TRUE,
-                XmNvalue, (int)(OBJECT_rate / 60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Object/Item TX Interval (min)", 6,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
         // Transmit Station Options
         frame4 = XtVaCreateManagedWidget("Configure_defaults frame4", 
                 xmFrameWidgetClass, 
                 my_form,
-                XmNtopAttachment,XmATTACH_WIDGET,
-                XmNtopWidget, my_form2,
+                XmNtopAttachment,XmATTACH_FORM,
                 XmNtopOffset,10,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
@@ -13207,7 +13030,6 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         delw = XmInternAtom(XtDisplay(configure_defaults_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(configure_defaults_dialog, delw, Configure_defaults_destroy_shell, (XtPointer)configure_defaults_dialog);
 
-        XtManageChild(my_form2);
         XtManageChild(my_form);
         XtManageChild(type_box);
         XtManageChild(igate_box);
@@ -13225,6 +13047,302 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 
     } else
         (void)XRaiseWindow(XtDisplay(configure_defaults_dialog), XtWindow(configure_defaults_dialog));
+}
+
+
+
+
+
+///////////////////////////////////   Configure Timing Dialog   //////////////////////////////////
+
+
+void Configure_timing_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    configure_timing_dialog = (Widget)NULL;
+}
+
+
+
+
+
+void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    int value;
+
+
+    XmScaleGetValue(ghosting_time, &value); // Minutes
+    sec_old = (time_t)(value * 60); // Convert to seconds
+
+    XmScaleGetValue(clearing_time, &value); // Hours
+    sec_clear = (time_t)(value * 60 * 60);  // Convert to seconds
+
+    XmScaleGetValue(posit_interval, &value);// Minutes * 10
+    POSIT_rate = (long)(value * 60 / 10);   // Convert to seconds
+
+    XmScaleGetValue(gps_interval, &value);  // Seconds
+    gps_time = (long)value;
+
+    XmScaleGetValue(dead_reckoning_time, &value);  // Minutes
+    dead_reckoning_timeout = value * 60;    // Convert to seconds
+
+    XmScaleGetValue(object_item_interval, &value);  // Minutes
+    OBJECT_rate = value * 60;   // Convert to seconds
+
+    // Set the new posit rate into effect immediately
+    posit_next_time = posit_last_time + POSIT_rate;
+
+    // Set the new GPS rate into effect immediately
+    sec_next_gps = sec_now() + gps_time;
+
+    sec_remove = sec_clear*2;
+    if (sec_remove < (time_t)(24*3600))
+        sec_remove = (time_t)(24*3600);
+
+    redraw_on_new_data=2;
+    Configure_timing_destroy_shell(widget,clientData,callData);
+}
+
+
+
+
+
+void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    static Widget  pane, my_form, button_ok, button_cancel;
+    Atom delw;
+
+    if (!configure_timing_dialog) {
+        configure_timing_dialog = XtVaCreatePopupShell(langcode("WPUPCFD001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
+
+        pane = XtVaCreateWidget("Configure_timing pane",
+                xmPanedWindowWidgetClass, 
+                configure_timing_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        my_form =  XtVaCreateWidget("Configure_timing my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 2,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Interval for stations being considered old (symbol ghosting)
+        ghosting_time = XtVaCreateManagedWidget("Station Ghosting Time",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10 ,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One minute
+                XmNmaximum, 3*60,   // Three hours
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(sec_old/60),
+                XtVaTypedArg, XmNtitleString, XmRString, "Station Ghosting Time (min)", 15,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Interval for station not being displayed
+        clearing_time = XtVaCreateManagedWidget("Station Clear Time",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One hour
+                XmNmaximum, 24*7,   // One week
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(sec_clear/(60*60)),
+                XtVaTypedArg, XmNtitleString, XmRString, "Station Clear Time (hours)", 6,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Posit Time
+        posit_interval = XtVaCreateManagedWidget("Posit Interval",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, ghosting_time,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 5,          // 0.5 = Thirty seconds
+                XmNmaximum, 60*10,      // 60 minutes
+                XmNdecimalPoints, 1,    // Move decimal point over one
+                XmNshowValue, TRUE,
+                XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
+                XtVaTypedArg, XmNtitleString, XmRString, "Posit TX Interval (min)", 6,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // GPS Time
+        gps_interval = XtVaCreateManagedWidget("GPS Interval",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, ghosting_time,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One second
+                XmNmaximum, 60,     // Sixty seconds
+                XmNshowValue, TRUE,
+                XmNvalue, (int)gps_time,
+                XtVaTypedArg, XmNtitleString, XmRString, "GPS Check Interval (sec)", 6,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Dead Reckoning Timeout
+        dead_reckoning_time = XtVaCreateManagedWidget("DR Time (min)",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, posit_interval,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One minute
+                XmNmaximum, 60,     // Sixty minutes
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(dead_reckoning_timeout / 60),
+                XtVaTypedArg, XmNtitleString, XmRString, "Dead-Reckoning Timeout (min)", 6,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Object Item Transmit Interval
+        object_item_interval = XtVaCreateManagedWidget("Object/Item Transmit Interval (min)",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, posit_interval,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 5,      // Five minutes
+                XmNmaximum, 120,    // 120 minutes
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(OBJECT_rate / 60),
+                XtVaTypedArg, XmNtitleString, XmRString, "Object/Item TX Interval (min)", 6,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, dead_reckoning_time,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, object_item_interval,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(button_ok, XmNactivateCallback, Configure_timing_change_data, configure_timing_dialog);
+        XtAddCallback(button_cancel, XmNactivateCallback, Configure_timing_destroy_shell, configure_timing_dialog);
+
+        pos_dialog(configure_timing_dialog);
+
+        delw = XmInternAtom(XtDisplay(configure_timing_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(configure_timing_dialog, delw, Configure_timing_destroy_shell, (XtPointer)configure_timing_dialog);
+
+        XtManageChild(my_form);
+        XtManageChild(pane);
+
+        XtPopup(configure_timing_dialog,XtGrabNone);
+        fix_dialog_size(configure_timing_dialog);
+
+        // Move focus to the Close button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(configure_timing_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+    } else
+        (void)XRaiseWindow(XtDisplay(configure_timing_dialog), XtWindow(configure_timing_dialog));
 }
 
 

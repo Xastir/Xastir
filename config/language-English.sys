@@ -53,6 +53,7 @@ PULDNVI014|Program Uptime||
 # Menu "Configure"
 PULDNCF004|Station|S|
 PULDNCF001|Defaults|D|
+PULDNCF003|Timing|T|
 PULDNCF002|Coordinate System|o|
 PULDNCF006|Audio Alarms|A|
 PULDNCF007|Speech|p|

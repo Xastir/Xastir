@@ -941,7 +941,7 @@ int check_NWS_stations(char *call) {
 /****************************************************************/
 /* output NWS data to tnc interfaces                            */
 /* from: type of port heard from                                */
-/* call: call sign heard fro                                    */
+/* call: call sign heard from                                   */
 /* line: data to gate to rf                                     */
 /* port: port data came from                                    */
 /****************************************************************/
