@@ -25,6 +25,13 @@
 
 
 
+// Need this one before the #ifdef in order to get the definition of
+// USE_MAP_CACHE, if defined.
+#include "config.h"
+
+#ifdef  USE_MAP_CACHE
+#warning USE_MAP_CACHE Defined (and there was much rejoicing) 
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,12 +44,6 @@
 #include "xastir.h"
 #include "xa_config.h" 
 #include "maps.h" 
-
-
-
-#ifdef  USE_MAP_CACHE
-#warning USE_MAP_CACHE Defined (and there was much rejoicing) 
-
 #include "map_cache.h" 
 #include <db.h>
 
