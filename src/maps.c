@@ -686,8 +686,9 @@ void draw_grid(Widget w) {
     i=j=done=zone_changed=z1=z2=zone=col=col_point=row=row_point=row_point_start = 0;
 
     /* Set the line width in the GC */
-    (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
-    (void)XSetForeground (XtDisplay (w), gc, colors[0x08]); // Black
+    (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
+    (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x08]); // Black
+    (void)(void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
 
     if (coordinate_system == USE_UTM) {
 
@@ -698,37 +699,37 @@ void draw_grid(Widget w) {
 
         // Draw the vertical vectors (except for the irregular regions)
         for (i = -180; i <= 0; i += 6) {
-            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc, pixmap_final);
+            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
         }
         for (i = 42; i <= 180; i += 6) {
-            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc, pixmap_final);
+            draw_vector_ll(w, -80.0,  (float)i, 84.0,  (float)i, gc_tint, pixmap_final);
         }
 
         // Draw the partial vectors from 80S to the irregular region
-        draw_vector_ll(w, -80.0,  6.0, 56.0,  6.0, gc, pixmap_final);
-        draw_vector_ll(w, -80.0, 12.0, 72.0, 12.0, gc, pixmap_final);
-        draw_vector_ll(w, -80.0, 18.0, 72.0, 18.0, gc, pixmap_final);
-        draw_vector_ll(w, -80.0, 24.0, 72.0, 24.0, gc, pixmap_final);
-        draw_vector_ll(w, -80.0, 30.0, 72.0, 30.0, gc, pixmap_final);
-        draw_vector_ll(w, -80.0, 36.0, 72.0, 36.0, gc, pixmap_final);
+        draw_vector_ll(w, -80.0,  6.0, 56.0,  6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0, 12.0, 72.0, 12.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0, 18.0, 72.0, 18.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0, 24.0, 72.0, 24.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0, 30.0, 72.0, 30.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0, 36.0, 72.0, 36.0, gc_tint, pixmap_final);
 
         // Draw the short vertical vectors in the irregular region 
-        draw_vector_ll(w,  56.0,  3.0, 64.0,  3.0, gc, pixmap_final);
-        draw_vector_ll(w,  64.0,  6.0, 72.0,  6.0, gc, pixmap_final);
-        draw_vector_ll(w,  72.0,  9.0, 84.0,  9.0, gc, pixmap_final);
-        draw_vector_ll(w,  72.0, 21.0, 84.0, 21.0, gc, pixmap_final);
-        draw_vector_ll(w,  72.0, 33.0, 84.0, 33.0, gc, pixmap_final);
+        draw_vector_ll(w,  56.0,  3.0, 64.0,  3.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  64.0,  6.0, 72.0,  6.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0,  9.0, 84.0,  9.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0, 21.0, 84.0, 21.0, gc_tint, pixmap_final);
+        draw_vector_ll(w,  72.0, 33.0, 84.0, 33.0, gc_tint, pixmap_final);
 
 
         // Horizontal lines:
 
         // Draw the 8 degree spaced lines 
         for (i = -80; i <= 72; i += 8) {
-            draw_vector_ll(w, (float)i,  -180.0, (float)i,  180.0, gc, pixmap_final);
+            draw_vector_ll(w, (float)i,  -180.0, (float)i,  180.0, gc_tint, pixmap_final);
         }
 
         // Draw the one 12 degree spaced line
-        draw_vector_ll(w,  84.0, -180.0, 84.0, 180.0, gc, pixmap_final);
+        draw_vector_ll(w,  84.0, -180.0, 84.0, 180.0, gc_tint, pixmap_final);
 
 
 
@@ -1091,22 +1092,23 @@ void draw_grid(Widget w) {
         utm_grid.hash.lr_y = y_lat_offset  + (screen_height * scale_y);
 
 utm_grid_draw:
-        // Draw grid in dashed purple lines
-        (void)XSetForeground(XtDisplay(w), gc, colors[0x01]);
-
+        // Draw grid in dashed white lines
+        (void)XSetForeground(XtDisplay(w), gc_tint, colors[0x27]);
+// A good option may be gc_tint: Tint the lines as they go along,
+// making them appear nicely no matter what color is underneath.
 
 
         for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
             for (i=0; i < utm_grid.zone[zone].ncols; i++) {
                 if (utm_grid.zone[zone].col[i].npoints > 1)
-                    (void)XDrawLines(XtDisplay(w), pixmap_final, gc,
+                    (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
                                      utm_grid.zone[zone].col[i].point,
                                      utm_grid.zone[zone].col[i].npoints,
                                      CoordModeOrigin);
             }
             for (i=0; i < utm_grid.zone[zone].nrows; i++) {
                 if (utm_grid.zone[zone].row[i].npoints > 1)
-                    (void)XDrawLines(XtDisplay(w), pixmap_final, gc,
+                    (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
                                      utm_grid.zone[zone].row[i].point,
                                      utm_grid.zone[zone].row[i].npoints,
                                      CoordModeOrigin);
@@ -1161,23 +1163,23 @@ utm_grid_dont_draw:
             x = (coord-x_long_offset)/scale_x;
 
             if ((coord%(648000*100)) == 0) {
-                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
-                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x, y1, x, y2);
-                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+                (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
+                (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
+                (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
                 continue;
             }
             else if ((coord%(72000*100)) == 0) {
                 dash[0] = dash[1] = 8;
-                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
+                (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
             } else if ((coord%(7200*100)) == 0) {
                 dash[0] = dash[1] = 4;
-                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
+                (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
             } else if ((coord%(300*100)) == 0) {
                 dash[0] = dash[1] = 2;
-                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
+                (void)XSetDashes (XtDisplay (w), gc_tint, 0, dash, 2);
             }
 
-            (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x, y1, x, y2);
+            (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x, y1, x, y2);
         }
 
         /* draw horizontal lines */
@@ -1199,22 +1201,22 @@ utm_grid_dont_draw:
             y = (coord-y_lat_offset)/scale_y;
 
             if ((coord%(324000*100)) == 0) {
-                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
-                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x1, y, x2, y);
-                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+                (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
+                (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
+                (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
                 continue;
             } else if ((coord%(36000*100)) == 0) {
                 dash[0] = dash[1] = 8;
-                (void)XSetDashes (XtDisplay (w), gc, 4, dash, 2);
+                (void)XSetDashes (XtDisplay (w), gc_tint, 4, dash, 2);
             } else if ((coord%(3600*100)) == 0) {
                 dash[0] = dash[1] = 4;
-                (void)XSetDashes (XtDisplay (w), gc, 2, dash, 2);
+                (void)XSetDashes (XtDisplay (w), gc_tint, 2, dash, 2);
             } else if ((coord%(150*100)) == 0) {
                 dash[0] = dash[1] = 2;
-                (void)XSetDashes (XtDisplay (w), gc, 1, dash, 2);
+                (void)XSetDashes (XtDisplay (w), gc_tint, 1, dash, 2);
             }
 
-            (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x1, y, x2, y);
+            (void)XDrawLine (XtDisplay (w), pixmap_final, gc_tint, x1, y, x2, y);
         }
     }
 }
