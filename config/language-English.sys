@@ -462,7 +462,7 @@ WPUPCFT040|Configure Multi-Port KISS TNC||
 WPUPCFT041|Radio Port||
 WPUPCFT042|Dubious UNPROTO Path!||
 WPUPCFT043|Please consider a shorter path such as WIDE2-2 or RELAY,WIDE2-2||
-
+WPUPCFT044|Dubious IGATE Path!||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configure WX Port||
