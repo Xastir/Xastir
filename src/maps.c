@@ -225,25 +225,40 @@ long get_x_scale(long x, long y, long ysc) {
  *
  *          64,800,000 (-90 deg. or 90S)
  ***********************************************************/
-void convert_to_xastir_coordinates ( unsigned long* x,
+int convert_to_xastir_coordinates ( unsigned long* x,
                                     unsigned long* y,
                                     float f_longitude,
                                     float f_latitude )
 {
-    if (f_longitude < -180.0)
+    int ok = 1;
+
+
+    if (f_longitude < -180.0) {
         printf("convert_to_xastir_coordinates:Longitude out-of-range (too low):%f\n",f_longitude);
+        ok = 0;
+    }
 
-    if (f_longitude >  180.0)
+    if (f_longitude >  180.0) {
         printf("convert_to_xastir_coordinates:Longitude out-of-range (too high):%f\n",f_longitude);
+        ok = 0;
+    }
 
-    if (f_latitude <  -90.0)
+    if (f_latitude <  -90.0) {
         printf("convert_to_xastir_coordinates:Latitude out-of-range (too low):%f\n",f_latitude);
+        ok = 0;
+    }
 
-    if (f_latitude >   90.0)
+    if (f_latitude >   90.0) {
         printf("convert_to_xastir_coordinates:Latitude out-of-range (too high):%f\n",f_latitude);
+        ok = 0;
+    }
 
-    *y = (unsigned long)(32400000l + (360000.0 * (-f_latitude)));
-    *x = (unsigned long)(64800000l + (360000.0 * f_longitude));
+    if (ok) {
+        *y = (unsigned long)(32400000l + (360000.0 * (-f_latitude)));
+        *x = (unsigned long)(64800000l + (360000.0 * f_longitude));
+    }
+
+    return(ok);
 }
 
 
@@ -901,22 +916,28 @@ int map_visible_lat_lon (double f_bottom_map_boundary,
                   top_map_boundary,
                   left_map_boundary,
                   right_map_boundary;
+    int ok, ok2;
 
-    (void)convert_to_xastir_coordinates ( &left_map_boundary,
+    ok = convert_to_xastir_coordinates ( &left_map_boundary,
                                           &top_map_boundary,
                                           (float)f_left_map_boundary,
                                           (float)f_top_map_boundary );
 
-    (void)convert_to_xastir_coordinates ( &right_map_boundary,
+    ok2 = convert_to_xastir_coordinates ( &right_map_boundary,
                                           &bottom_map_boundary,
                                           (float)f_right_map_boundary,
                                           (float)f_bottom_map_boundary );
 
-
-    return(map_visible( bottom_map_boundary,
+    if (ok && ok2) {
+        return(map_visible( bottom_map_boundary,
                         top_map_boundary,
                         left_map_boundary,
                         right_map_boundary) );
+    }
+    else {
+        printf("map_visible_lat_lon: problem converting coordinates from lat/lon\n");
+        return(0);  // Problem converting, assume that the map is not viewable
+    }
 }
 
 
@@ -1864,30 +1885,39 @@ void draw_shapefile_map (Widget w,
 
                         const char *temp;
                         int ok = 1;
+                        int temp_ok;
 
                         // Snag the label from the .dbf file
                         temp = DBFReadStringAttribute( hDBF, structure, 0 );
 
                         // Convert point to Xastir coordinates
-                        convert_to_xastir_coordinates(&my_long,
+                        temp_ok = convert_to_xastir_coordinates(&my_long,
                             &my_lat,
                             (float)object->padfX[0],
                             (float)object->padfY[0]);
                         //printf("%ld %ld\n", my_long, my_lat);
 
-                        // Convert to screen coordinates.  Careful
-                        // here!  The format conversions you'll need
-                        // if you try to compress this into two
-                        // lines will get you into trouble.
-                        x = my_long - x_long_offset;
-                        y = my_lat - y_lat_offset;
-                        x = x / scale_x;
-                        y = y / scale_y;
+                        if (!temp_ok) {
+                            printf("draw_shapefile_map: Problem converting from lat/lon\n");
+                            ok = 0;
+                            x = 0;
+                            y = 0;
+                        }
+                        else {
+                            // Convert to screen coordinates.  Careful
+                            // here!  The format conversions you'll need
+                            // if you try to compress this into two
+                            // lines will get you into trouble.
+                            x = my_long - x_long_offset;
+                            y = my_lat - y_lat_offset;
+                            x = x / scale_x;
+                            y = y / scale_y;
 
-                        if (x >  16000) ok = 0;     // Skip this point
-                        if (x < -16000) ok = 0;     // Skip this point
-                        if (y >  16000) ok = 0;     // Skip this point
-                        if (y < -16000) ok = 0;     // Skip this point
+                            if (x >  16000) ok = 0;     // Skip this point
+                            if (x < -16000) ok = 0;     // Skip this point
+                            if (y >  16000) ok = 0;     // Skip this point
+                            if (y < -16000) ok = 0;     // Skip this point
+                        }
 
                         if (ok == 1) {
                             char symbol_table = '/';
@@ -1925,47 +1955,56 @@ void draw_shapefile_map (Widget w,
  
                     // Read the vertices for each line
                     for (ring = 0; ring < object->nVertices; ring++ ) {
+                        int temp_ok;
 
                         ok = 1;
 
                         //printf("\t%d:%g %g\t", ring, object->padfX[ring], object->padfY[ring] );
                         // Convert to Xastir coordinates
-                        convert_to_xastir_coordinates(&my_long,
+                        temp_ok = convert_to_xastir_coordinates(&my_long,
                             &my_lat,
                             (float)object->padfX[ring],
                             (float)object->padfY[ring]);
                         //printf("%ld %ld\n", my_long, my_lat);
 
-                        // Convert to screen coordinates.  Careful
-                        // here!  The format conversions you'll need
-                        // if you try to compress this into two
-                        // lines will get you into trouble.
-                        x = my_long - x_long_offset;
-                        y = my_lat - y_lat_offset;
-                        x = x / scale_x;
-                        y = y / scale_y;
-
-
-                        // Save the endpoints of the first line
-                        // segment for later use in label rotation
-                        if (ring == 0) {
-                            // Save the first set of screen coordinates
-                            x0 = (int)x;
-                            y0 = (int)y;
+                        if (!temp_ok) {
+                            printf("draw_shapefile_map: Problem converting from lat/lon\n");
+                            ok = 0;
+                            x = 0;
+                            y = 0;
                         }
-                        else if (ring == 1) {
-                            // Save the second set of screen coordinates
-                            x1 = (int)x;
-                            y1 = (int)y;
-                        }
+                        else {
+                            // Convert to screen coordinates.  Careful
+                            // here!  The format conversions you'll need
+                            // if you try to compress this into two
+                            // lines will get you into trouble.
+                            x = my_long - x_long_offset;
+                            y = my_lat - y_lat_offset;
+                            x = x / scale_x;
+                            y = y / scale_y;
 
-                        // XDrawLines uses 16-bit unsigned integers
-                        // (shorts).  Make sure we stay within the
-                        // limits.
-                        if (x >  16000) ok = 0;     // Skip this point
-                        if (x < -16000) ok = 0;     // Skip this point
-                        if (y >  16000) ok = 0;     // Skip this point
-                        if (y < -16000) ok = 0;     // Skip this point
+
+                            // Save the endpoints of the first line
+                            // segment for later use in label rotation
+                            if (ring == 0) {
+                                // Save the first set of screen coordinates
+                                x0 = (int)x;
+                                y0 = (int)y;
+                            }
+                            else if (ring == 1) {
+                                // Save the second set of screen coordinates
+                                x1 = (int)x;
+                                y1 = (int)y;
+                            }
+    
+                            // XDrawLines uses 16-bit unsigned integers
+                            // (shorts).  Make sure we stay within the
+                            // limits.
+                            if (x >  16000) ok = 0;     // Skip this point
+                            if (x < -16000) ok = 0;     // Skip this point
+                            if (y >  16000) ok = 0;     // Skip this point
+                            if (y < -16000) ok = 0;     // Skip this point
+                        }
  
                         if (ok == 1) {
                             points[index].x = (short)x;
@@ -2415,29 +2454,38 @@ void draw_shapefile_map (Widget w,
                             && map_labels
                             && !skip_it
                             && !skip_label ) {
+                        int temp_ok;
 
                         ok = 1;
 
                         // Convert to Xastir coordinates
-                        convert_to_xastir_coordinates(&my_long,
+                        temp_ok = convert_to_xastir_coordinates(&my_long,
                             &my_lat,
                             (float)object->padfX[0],
                             (float)object->padfY[0]);
                         //printf("%ld %ld\n", my_long, my_lat);
 
-                        // Convert to screen coordinates.  Careful
-                        // here!  The format conversions you'll need
-                        // if you try to compress this into two
-                        // lines will get you into trouble.
-                        x = my_long - x_long_offset;
-                        y = my_lat - y_lat_offset;
-                        x = x / scale_x;
-                        y = y / scale_y;
+                        if (!temp_ok) {
+                            printf("draw_shapefile_map: Problem converting from lat/lon\n");
+                            ok = 0;
+                            x = 0;
+                            y = 0;
+                        }
+                        else {
+                            // Convert to screen coordinates.  Careful
+                            // here!  The format conversions you'll need
+                            // if you try to compress this into two
+                            // lines will get you into trouble.
+                            x = my_long - x_long_offset;
+                            y = my_lat - y_lat_offset;
+                            x = x / scale_x;
+                            y = y / scale_y;
 
-                        if (x >  16000) ok = 0;     // Skip this point
-                        if (x < -16000) ok = 0;     // Skip this point
-                        if (y >  16000) ok = 0;     // Skip this point
-                        if (y < -16000) ok = 0;     // Skip this point
+                            if (x >  16000) ok = 0;     // Skip this point
+                            if (x < -16000) ok = 0;     // Skip this point
+                            if (y >  16000) ok = 0;     // Skip this point
+                            if (y < -16000) ok = 0;     // Skip this point
+                        }
 
                         if (ok == 1 && ok_to_draw) {
                             int new_label = 1;
@@ -2599,59 +2647,69 @@ void draw_shapefile_map (Widget w,
                         i = 0;  // i = Number of points to draw for one ring
                         // index = ptr into the shapefile's array of points
                         for (index = object->panPartStart[ring]; index < endpoint; ) {
+                            int temp_ok;
+
                             ok = 1;
 
                             //printf("\t%d:%g %g\t", index, object->padfX[index], object->padfY[index] );
 
                             // Get vertice and convert to Xastir coordinates
-                            convert_to_xastir_coordinates(&my_long,
+                            temp_ok = convert_to_xastir_coordinates(&my_long,
                                 &my_lat,
                                 (float)object->padfX[index],
                                 (float)object->padfY[index]);
 
                             //printf("%lu %lu\t", my_long, my_lat);
 
-                            // Convert to screen coordinates.  Careful
-                            // here!  The format conversions you'll need
-                            // if you try to compress this into two
-                            // lines will get you into trouble.
-                            x = my_long - x_long_offset;
-                            y = my_lat - y_lat_offset;
-                            x = x / scale_x;
-                            y = y / scale_y;
-
-                            //printf("%ld %ld\t\t", x, y);
-
-                            // Here we check for really wacko points that will cause problems
-                            // with the X drawing routines, and fix them.
-                            if (x >  15000l) x =  15000l;
-                            if (x < -15000l) x = -15000l;
-                            if (y >  15000l) y =  15000l;
-                            if (y < -15000l) y = -15000l;
-
-                            points[i].x = (short)x;
-                            points[i].y = (short)y;
-                            i++;    // Number of points to draw
-
-                            if (i > high_water_mark_i)
-                                high_water_mark_i = i;
-
-
-                            if (i >= MAX_MAP_POINTS) {
-                                i = MAX_MAP_POINTS - 1;
-                                printf("Trying to run past the end of our internal points array: i=%d\n",i);
+                            if (!temp_ok) {
+                                printf("draw_shapefile_map: Problem converting from lat/lon\n");
+                                ok = 0;
+                                x = 0;
+                                y = 0;
                             }
+                            else {
+                                // Convert to screen coordinates.  Careful
+                                // here!  The format conversions you'll need
+                                // if you try to compress this into two
+                                // lines will get you into trouble.
+                                x = my_long - x_long_offset;
+                                y = my_lat - y_lat_offset;
+                                x = x / scale_x;
+                                y = y / scale_y;
 
-                            //printf("%d %d\t", points[i].x, points[i].y);
+                                //printf("%ld %ld\t\t", x, y);
 
-                            index++;
+                                // Here we check for really wacko points that will cause problems
+                                // with the X drawing routines, and fix them.
+                                if (x >  15000l) x =  15000l;
+                                if (x < -15000l) x = -15000l;
+                                if (y >  15000l) y =  15000l;
+                                if (y < -15000l) y = -15000l;
 
-                            if (index > high_water_mark_index)
-                                high_water_mark_index = index;
+                                points[i].x = (short)x;
+                                points[i].y = (short)y;
+                                i++;    // Number of points to draw
 
-                            if (index > endpoint) {
-                                index = endpoint;
-                                printf("Trying to run past the end of shapefile array: index=%d\n",index);
+                                if (i > high_water_mark_i)
+                                    high_water_mark_i = i;
+
+
+                                if (i >= MAX_MAP_POINTS) {
+                                    i = MAX_MAP_POINTS - 1;
+                                    printf("Trying to run past the end of our internal points array: i=%d\n",i);
+                                }
+
+                                //printf("%d %d\t", points[i].x, points[i].y);
+
+                                index++;
+
+                                if (index > high_water_mark_index)
+                                    high_water_mark_index = index;
+
+                                if (index > endpoint) {
+                                    index = endpoint;
+                                    printf("Trying to run past the end of shapefile array: index=%d\n",index);
+                                }
                             }
                         }
 
@@ -2741,31 +2799,41 @@ void draw_shapefile_map (Widget w,
                             && (strlen(temp) != 0)
                             && map_labels
                             && !skip_label ) {
+                        int temp_ok;
+
                         ok = 1;
 
                         // Convert to Xastir coordinates
-                        convert_to_xastir_coordinates(&my_long,
+                        temp_ok = convert_to_xastir_coordinates(&my_long,
                             &my_lat,
                             (float)object->padfX[0],
                             (float)object->padfY[0]);
                         //printf("%ld %ld\n", my_long, my_lat);
 
-                        // Convert to screen coordinates.  Careful
-                        // here!  The format conversions you'll need
-                        // if you try to compress this into two
-                        // lines will get you into trouble.
-                        x = my_long - x_long_offset;
-                        y = my_lat - y_lat_offset;
-                        x = x / scale_x;
-                        y = y / scale_y;
+                        if (!temp_ok) {
+                            printf("draw_shapefile_map: Problem converting from lat/lon\n");
+                            ok = 0;
+                            x = 0;
+                            y = 0;
+                        }
+                        else {
+                            // Convert to screen coordinates.  Careful
+                            // here!  The format conversions you'll need
+                            // if you try to compress this into two
+                            // lines will get you into trouble.
+                            x = my_long - x_long_offset;
+                            y = my_lat - y_lat_offset;
+                            x = x / scale_x;
+                            y = y / scale_y;
 
-                        if (x >  16000) ok = 0;     // Skip this point
-                        if (x < -16000) ok = 0;     // Skip this point
-                        if (y >  16000) ok = 0;     // Skip this point
-                        if (y < -16000) ok = 0;     // Skip this point
+                            if (x >  16000) ok = 0;     // Skip this point
+                            if (x < -16000) ok = 0;     // Skip this point
+                            if (y >  16000) ok = 0;     // Skip this point
+                            if (y < -16000) ok = 0;     // Skip this point
 
-                        if (ok == 1 && ok_to_draw) {
-                            (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                            if (ok == 1 && ok_to_draw) {
+                                 (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                            }
                         }
                     }
                     break;
@@ -6581,18 +6649,25 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     /* convert_to_xastir_coordinates( x,y,longitude,latitude ); */
     if (have_fgd)   /* Must be a USGS file */
     {
+        int temp_ok1, temp_ok2;
+
         crop_it = 1;        /* The map collar needs to be cropped */
 
-        convert_to_xastir_coordinates(  &west_bounding,
+        temp_ok1 = convert_to_xastir_coordinates(  &west_bounding,
                                         &north_bounding,
                                         f_west_bounding,
                                         f_north_bounding );
 
 
-        convert_to_xastir_coordinates(  &east_bounding,
+        temp_ok2 = convert_to_xastir_coordinates(  &east_bounding,
                                         &south_bounding,
                                         f_east_bounding,
                                         f_south_bounding );
+
+        if (!temp_ok1 || !temp_ok2) {
+            printf("draw_geotiff_image_map: problem converting from lat/lon\n");
+            return;
+        }
 
 
         /*
@@ -6938,28 +7013,40 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
      * convert_to_xastir_coordinates( x,y,longitude,latitude )
      */
     // NW corner
-    convert_to_xastir_coordinates(  &NW_x_bounding_wgs84,
-                                    &NW_y_bounding_wgs84,
-                                    f_NW_x_bounding_wgs84,
-                                    f_NW_y_bounding_wgs84 );
+    if (!convert_to_xastir_coordinates(  &NW_x_bounding_wgs84,
+                                        &NW_y_bounding_wgs84,
+                                        f_NW_x_bounding_wgs84,
+                                        f_NW_y_bounding_wgs84 ) ) {
+        printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
+        return;
+    }
 
     // NE corner
-    convert_to_xastir_coordinates(  &NE_x_bounding_wgs84,
-                                    &NE_y_bounding_wgs84,
-                                    f_NE_x_bounding_wgs84,
-                                    f_NE_y_bounding_wgs84 );
+    if (!convert_to_xastir_coordinates(  &NE_x_bounding_wgs84,
+                                        &NE_y_bounding_wgs84,
+                                        f_NE_x_bounding_wgs84,
+                                        f_NE_y_bounding_wgs84 ) ) {
+        printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
+        return;
+    }
 
     // SW corner
-    convert_to_xastir_coordinates(  &SW_x_bounding_wgs84,
-                                    &SW_y_bounding_wgs84,
-                                    f_SW_x_bounding_wgs84,
-                                    f_SW_y_bounding_wgs84 );
+    if (!convert_to_xastir_coordinates(  &SW_x_bounding_wgs84,
+                                        &SW_y_bounding_wgs84,
+                                        f_SW_x_bounding_wgs84,
+                                        f_SW_y_bounding_wgs84 ) ) {
+        printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
+        return;
+    }
 
     // SE corner
-    convert_to_xastir_coordinates(  &SE_x_bounding_wgs84,
-                                    &SE_y_bounding_wgs84,
-                                    f_SE_x_bounding_wgs84,
-                                    f_SE_y_bounding_wgs84 );
+    if (!convert_to_xastir_coordinates(  &SE_x_bounding_wgs84,
+                                        &SE_y_bounding_wgs84,
+                                        f_SE_x_bounding_wgs84,
+                                        f_SE_y_bounding_wgs84 ) ) {
+        printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
+        return;
+    }
 
 
     /*
