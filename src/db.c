@@ -1790,7 +1790,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char orient;
     float value;
     char tmp[7+1];
-    int speed_course_ok = -1;
+    int speed_ok = 0;
+    int course_ok = 0;
 
 
     if (debug_level & 128)
@@ -1838,14 +1839,12 @@ void display_station(Widget w, DataRow *p_station, int single) {
     strcpy(temp_course,"");
 
 
-    // don't display 'fixed' stations speed and course.  We use the
-    // speed_course_ok flag to determine this.
-
+    // don't display 'fixed' stations speed and course.
     if (symbol_speed_display) {
         // Check whether we have speed in the current data and it's
         // non-zero
         if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) > 0) ) {
-            speed_course_ok++;
+            speed_ok++;
             strncpy(tmp, un_spd, sizeof(tmp));
             tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
             if (symbol_speed_display == 1)
@@ -1862,7 +1861,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 tmp[0] = '\0';          // without unit
  
             if ( p_station->newest_trackpoint->speed > 0)
-                speed_course_ok++;
+                speed_ok++;
                 xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
                     p_station->newest_trackpoint->speed * cvt_hm2len, tmp);
         }
@@ -1871,27 +1870,24 @@ void display_station(Widget w, DataRow *p_station, int single) {
     if (symbol_course_display) {
         // Check whether we have course in the current data
         if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
-            speed_course_ok++;
+            course_ok++;
             xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
                 atof(p_station->course));
         }
         // Else check whether the previous position had a course
         else if (p_station->newest_trackpoint != NULL) {
             if( p_station->newest_trackpoint->course > 0 ) {
-                speed_course_ok++;
+                course_ok++;
                 xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
                     (float)p_station->newest_trackpoint->course);
             }
         }
     }
 
-    // If speed and course were both ok, we should have a 1 in our
-    // flag now.  If not, clear them out.
-    if (speed_course_ok != 1) {
+    if (!speed_ok)
         strcpy(temp_speed,"");
+    if (!course_ok)
         strcpy(temp_course,"");
-    }
-
 
     // Set up distance and direction strings for display
     if (symbol_dist_course_display && strcmp(p_station->call_sign,my_callsign)!=0) {
