@@ -14,6 +14,7 @@
 # Modified 1.0.7 : Aug 27 2002, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.1.4 : Apr 15 2003, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.1.4 : May 20 2003, Han Sytsma <h.l.sytsma@hetnet.nl>
+# Modified 1.3.2 : Jun 04 2004, Han Sytsma <h.l.sytsma@hetnet.nl>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -90,7 +91,7 @@ PULDNMP021|Automatische Kaartkeuze - Zet Raster Kaarten Uit||
 PULDNMP022|Indexeer Kaarten bij het Starten||
 PULDNMP023|Index: Voeg nieuwe kaarten toe|n|
 PULDNMP024|Index: Herindexeer ALLE kaarten|H|
-PULDNMP025|Map labels font||
+PULDNMP025|Kaart label font||
 PULDNMP015|Xfontsel||
 #
 #
@@ -104,8 +105,8 @@ MPUPTGR006|Straten||
 MPUPTGR007|Spoorwegen||
 MPUPTGR008|Staat Labels||
 MPUPTGR009|Snelwegen Labels||
-MPUPTGR010|US Hoofdwegen Labels||
-MPUPTGR011|Hoofd Hwy Labels||
+MPUPTGR010|VS Hoofdwegen Labels||
+MPUPTGR011|Hoofd wegen Labels||
 MPUPTGR012|Selecteer Weer Te Geven Items:||
 MPUPTGR013|Rivieren||
 MPUPTGR014|Meren||
@@ -123,8 +124,8 @@ PULDNMMC04|100k Topogr.|1|
 PULDNMMC05|24k Topogr.|4|
 PULDNMMC06|Vouw Dirs Uit|||
 PULDNMMC07|Dirs/Kaarten Geselecteerd:||
-PULDNMMC08|Clear Dirs|C|
-PULDNMMC09|Select All|S|
+PULDNMMC08|Maak Directories leeg|C|
+PULDNMMC09|Selecteer Alles|S|
 #
 # PullDown "Map Background Color"
 PULDNMBC01|Grijs||
@@ -265,9 +266,9 @@ POPUPMA021|Verplaatsen||
 POPUPMA022|Volg Me||
 POPUPMA023|Functie Toetsen Actief!||
 POPUPMA024|Schakel CapsLock/NumLock/ScrollLock/andere Toetsen UIT||
-POPUPMA026|Center & Zoom||
-POPUPMA027|  Latitude||
-POPUPMA028| Longitude||
+POPUPMA026|Centreer & Zoom||
+POPUPMA027|Breedtegraden||
+POPUPMA028| Lengtegraden||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -363,7 +364,7 @@ WPUPCFD026|Met welk Interval Positie Gegevens Verzenden?||
 WPUPCFD027|Nieuwe Berichten Weergeven||
 WPUPCFD028|Waarschuw als Speciale Functie Toetsen Aanstaan||
 WPUPCFD029|Geef Bulletins Zonder Afstand Weer||
-WPUPCFD030|Disable Posit Dupe-Checks||
+WPUPCFD030|Zet Positie Duplicaat Controle Uit||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configureer Tijdsinstelling|||
@@ -374,7 +375,7 @@ WPUPCFTM05|Tijd Tot Verdwijnen Van Kaart (uren)||
 WPUPCFTM06|GPS Status Controle Interval (sec)||
 WPUPCFTM07|Tijd Tot Wissen Station (dagen)||
 WPUPCFTM08|Timeout Berekening Geschatte Waarden (min)||
-WPUPCFTM09|Serial Inter-Char Delay (ms)||
+WPUPCFTM09|Seriele Inter-Char vertraging (ms)||
 WPUPCFTM10|New Track Time (min)||
 WPUPCFTM11|New Track Interval (degrees)||
 #
@@ -386,7 +387,7 @@ WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
 WPUPCFC006|UTM|U|
 WPUPCFC007|MGRS||
-WPUPCFC008|UTM w/special zones||
+WPUPCFC008|UTM w/speciale zones||
 #
 # PopUp "Configure GPS"
 WPUPCFG001|GPS Instelling||
@@ -454,7 +455,7 @@ WPUPCFT037|SlotTime (10 ms stappen)||
 WPUPCFT038|TxTail (10 ms stappen)||
 WPUPCFT039|Vol Duplex||
 WPUPCFT040|Configureer Multi-Port KISS TNC||
-WPUPCFT041|Radio Port||
+WPUPCFT041|Radio Poort||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|WX Poort Instelling||
@@ -576,7 +577,7 @@ WPUPCFID14|I-Gate Transacties Loggen?|||
 WPUPCFID15|Filter Parameters||
 #
 # PopUp "Configure AGWPE"
-WPUPCFIA01|Configure AGWPE||
+WPUPCFIA01|Configureer AGWPE||
 WPUPCFIA02|Host ||
 WPUPCFIA03|Poort ||
 WPUPCFIA04|(Alternatieve hosts)||
@@ -762,7 +763,7 @@ UNIOP00028|mm Hg||
 UNIOP00029|Stel de systeem klok in vanuit GPS?||
 UNIOP00030|RELAY Digipeat?||
 UNIOP00031|m||
-UNIOP00032|Apply||
+UNIOP00032|Toepassen||
 #
 # PopUp "Station Chooser"
 STCHO00001|Station Kiezer||
@@ -883,7 +884,7 @@ LHPUPNI205|Baro||
 LHPUPNI206|RN-H||
 LHPUPNI207|RNSM||
 LHPUPNI208|RN24||
-LHPUPNI209|Lat/Lon or UTM||
+LHPUPNI209|Breedte/Lengte of UTM||
 #
 # Maps WX Alert styles
 PULDNMAT01|Waarschuwings Kaarten boven de andere||
@@ -924,9 +925,9 @@ POPEM00031|Veranderd in WX symbool '/_', andere opties:  '\_'  '/W'  and  '\W'||
 POPEM00032|Waarschuwing: Gebruik Nationaal Weer Service Symbool!||
 POPEM00033|Geen GPS Gegevens!||
 POPEM00034|Zet Mijn Positie TX uit totdat geldige GPS gegevens beschikbaar zijn!||
-POPEM00035|Warning||
-POPEM00036|Notice||
-POPEM00037|HSP interface present: GPS timing has been increased||
+POPEM00035|Waarschuwing||
+POPEM00036|Let op||
+POPEM00037|HSP interface aanwezig: GPS timing is verhoogd||
 #
 # Jump Location
 JMLPO00001|Kaart Lokatie||
@@ -1029,13 +1030,13 @@ GAMMA002|Gamma Correctie||
 #
 #
 # Map labels font Dialog
-MAPFONT001|Change Map Labels Font||
-MAPFONT002|Map Labels Font||
-MAPFONT003|Tiny||
-MAPFONT004|Small||
-MAPFONT005|Medium||
-MAPFONT006|Large||
-MAPFONT007|Huge||
+MAPFONT001|Verander Kaart Labels Font||
+MAPFONT002|Kaart Labels Font||
+MAPFONT003|Miniem||
+MAPFONT004|Klein||
+MAPFONT005|Gemiddeld||
+MAPFONT006|Groot||
+MAPFONT007|Enorm||
 #
 # Distance/Bearing on status line
 PULDNDB001|Afst/Richting Status||
