@@ -2287,11 +2287,8 @@ void draw_ogr_map( Widget w,
     OGRSFDriverH driver = NULL;
     OGRSpatialReferenceH map_spatialH = NULL;
     OGRSpatialReferenceH wgs84_spatialH = NULL;
-int temp100[100000];
     OGRCoordinateTransformationH transformH = NULL;
-int temp101[100000];
     OGRCoordinateTransformationH reverse_transformH = NULL;
-int temp102[100000];
     OGRGeometryH spatial_filter_geometryH = NULL;
     int i, numLayers;
     char full_filename[300];
@@ -2304,13 +2301,12 @@ int temp102[100000];
     const char *datum = NULL;
     const char *geogcs = NULL;
     double ViewX[2], ViewY[2], ViewZ[2];
+    double ViewX2[2], ViewY2[2], ViewZ2[2];
     long ViewLX[2], ViewLY[2];
     float f_latitude0, f_latitude1, f_longitude0, f_longitude1;
+    char status_text[MAX_FILENAME];
+    char short_filenm[MAX_FILENAME];
  
-
-    temp100[0] = 1;
-    temp101[0] = 2;
-    temp102[0] = 3;
  
     if (debug_level & 16)
         fprintf(stderr,"Entered draw_ogr_map function\n");
@@ -2344,7 +2340,28 @@ if (alert) {
         dir,
         filenm);
 
-//    if (debug_level & 16)
+
+    // Create a shorter filename for display (one that fits the
+    // status line more closely).  Subtract the length of the
+    // "Indexing " and/or "Loading " strings as well.
+    if (strlen(filenm) > (41 - 9)) {
+        int avail = 41 - 11;
+        int new_len = strlen(filenm) - avail;
+
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "..%s",
+            &filenm[new_len]);
+    }
+    else {
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "%s",
+            filenm);
+    }
+
+
+    if (debug_level & 16)
         fprintf(stderr,"Opening datasource %s\n", full_filename);
 
     //
@@ -2371,7 +2388,7 @@ clear_dangerous();
     }
 
     if (debug_level & 16)
-        fprintf(stderr,"Opened datasource\n");
+        fprintf(stderr,"Opened datasource %s\n", full_filename);
 
     driver_type = OGR_Dr_GetName(driver);
 
@@ -2405,7 +2422,6 @@ clear_dangerous();
 /////////////////////////////////////////////////////////////////////
 
 
-        char status_text[MAX_FILENAME];
         double file_MinX = 0;
         double file_MaxX = 0;
         double file_MinY = 0;
@@ -2416,7 +2432,7 @@ clear_dangerous();
         xastir_snprintf(status_text,
             sizeof(status_text),
             langcode ("BBARSTA039"),
-            filenm);
+            short_filenm);
         statusline(status_text,0);       // Indexing ...
 
 //        fprintf(stderr,"Indexing %s\n", filenm);
@@ -2717,6 +2733,16 @@ clear_dangerous();
 /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////
 
+
+    xastir_snprintf(status_text,
+        sizeof(status_text),
+        langcode ("BBARSTA028"),
+        short_filenm);
+    statusline(status_text,0);       // Indexing ...
+
+//    fprintf(stderr,"Loading %s\n", filenm);
+
+
  
     // Find out what type of file we're dealing with.  This reports
     // one of:
@@ -2837,7 +2863,9 @@ clear_dangerous();
         int geometry_type = -1;
         int fast_extents = 0;
 int features_processed = 0;
- 
+
+
+//fprintf(stderr,"Layer %d:\n", i); 
 
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
@@ -2911,12 +2939,17 @@ int features_processed = 0;
             datum,                           // Output
             geogcs);                         // Output
 
- 
+
+        // Snag the original values (again if 2nd or later loop
+        // iteration).
+        ViewX2[0] = ViewX[0];
+        ViewX2[1] = ViewX[1];
+        ViewY2[0] = ViewY[0];
+        ViewY2[1] = ViewY[1];
         if (reverse_transformH) {
             // Convert our view coordinates from WGS84 to this map
             // layer's coordinates.
-//            if (!OCTTransform(reverse_transformH, 2, ViewX, ViewY, ViewZ)) {
-            if (!OCTTransform(reverse_transformH, 2, ViewX, ViewY, NULL)) {
+            if (!OCTTransform(reverse_transformH, 2, ViewX2, ViewY2, ViewZ2)) {
                 fprintf(stderr,
                     "Couldn't convert points from WGS84 to map's spatial reference\n");
                 // Use the coordinates anyway (don't exit).  We may be
@@ -2929,7 +2962,7 @@ int features_processed = 0;
         }
 
 //fprintf(stderr,"%2.5f %2.5f   %2.5f %2.5f\n",
-//    ViewY[0], ViewX[0], ViewY[1], ViewX[1]);
+//    ViewY2[0], ViewX2[0], ViewY2[1], ViewX2[1]);
 
 
         // Add these converted points to the spatial_filter_geometry so
@@ -2943,10 +2976,10 @@ int features_processed = 0;
         OGR_G_AssignSpatialReference(spatial_filter_geometryH, map_spatialH);
 
         // Add the corners of the viewport
-        OGR_G_AddPoint(spatial_filter_geometryH, ViewX[0], ViewY[0], ViewZ[0]);
-        OGR_G_AddPoint(spatial_filter_geometryH, ViewX[0], ViewY[1], ViewZ[1]);
-        OGR_G_AddPoint(spatial_filter_geometryH, ViewX[1], ViewY[1], ViewZ[0]);
-        OGR_G_AddPoint(spatial_filter_geometryH, ViewX[1], ViewY[0], ViewZ[1]);
+        OGR_G_AddPoint(spatial_filter_geometryH, ViewX2[0], ViewY2[0], ViewZ2[0]);
+        OGR_G_AddPoint(spatial_filter_geometryH, ViewX2[0], ViewY2[1], ViewZ2[1]);
+        OGR_G_AddPoint(spatial_filter_geometryH, ViewX2[1], ViewY2[1], ViewZ2[0]);
+        OGR_G_AddPoint(spatial_filter_geometryH, ViewX2[1], ViewY2[0], ViewZ2[1]);
 
         // Set spatial filter so that the GetNextFeature() call will
         // only return features that are within our view.  Note that
@@ -2963,10 +2996,7 @@ int features_processed = 0;
         // the features that are outside our borders.  This speeds
         // up map drawing tremendously!
         //
-
-// Establishing this filter causes problems with SDTS contours at
-// present (they disappear).
-//        OGR_L_SetSpatialFilter( layerH, spatial_filter_geometryH);
+        OGR_L_SetSpatialFilter( layerH, spatial_filter_geometryH);
 
  
 
@@ -3362,7 +3392,7 @@ features_processed++;
         }   // End of feature loop
         // No need to free layerH handle, it belongs to the datasource
 
-fprintf(stderr,"Features Processed: %d\n", features_processed);
+//fprintf(stderr,"Features Processed: %d\n\n", features_processed);
     } // End of layer loop
 
     if (transformH != NULL) {
