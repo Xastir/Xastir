@@ -8673,9 +8673,10 @@ int extract_altitude(char *info, char *altitude) {
 
  
 /*
- *  Extract powergain from APRS info field          "PHG1234/" "PHG1234"  from APRS data extension
+ *  Extract powergain and/or range from APRS info field:
+ * "PHG1234/", "PHG1234", or "RNG1234" from APRS data extension.
  */
-int extract_powergain(char *info, char *phgd) {
+int extract_powergain_range(char *info, char *phgd) {
     int i,found,len;
     char *info2;
 
@@ -8686,7 +8687,7 @@ int extract_powergain(char *info, char *phgd) {
     // pointer to them.
     info2 = strstr(info,"RNG");
     if (!info2)
-        info2 = strstr(info,"PNG");
+        info2 = strstr(info,"PHG");
     if (!info2) {
         phgd[0] = '\0';
         return(0);
@@ -9195,7 +9196,7 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                 }
             }
             else {
-                if (extract_powergain(data,temp1)) {
+                if (extract_powergain_range(data,temp1)) {
 
 //fprintf(stderr,"Found power_gain: %s\n", temp1);
 
