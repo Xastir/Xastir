@@ -4207,6 +4207,11 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
         if ( ( (p_station->flag & ST_OBJECT) || (p_station->flag & ST_ITEM) )
                 && (p_station->comment_data != NULL)
                 && ( strstr(p_station->comment_data->text_ptr, "{") != NULL ) ) {
+
+            static char temp[25];
+            char *ptr3;
+
+
             button_nws = XtVaCreateManagedWidget(langcode("WPUPSTI064"),xmPushButtonGadgetClass, form,
  
                             XmNtopAttachment, XmATTACH_NONE,
@@ -4229,9 +4234,6 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             // "comment_data" records, hopefully the first one
             // checked (most recent).
             //
-            static char temp[25];
-            char *ptr3;
-
 
             strncpy(temp,p_station->origin,6);
             temp[6] = '\0';
