@@ -3976,7 +3976,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
 
         Inet_password_data = XtVaCreateManagedWidget("Config_Inet password_data", xmTextFieldWidgetClass, form,
                                       XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, FALSE,
+                                      XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 5,
@@ -4017,7 +4017,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
 
         Inet_filter_data = XtVaCreateManagedWidget("Config_Inet filter_data", xmTextFieldWidgetClass, form,
                                       XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, FALSE,
+                                      XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 30,
@@ -4360,7 +4360,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
 
         Database_password_data = XtVaCreateManagedWidget("Config_Database password_data", xmTextFieldWidgetClass, form,
                                       XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, FALSE,
+                                      XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 5,
@@ -4401,7 +4401,7 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
 
         Database_filter_data = XtVaCreateManagedWidget("Config_Database filter_data", xmTextFieldWidgetClass, form,
                                       XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, FALSE,
+                                      XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 30,
@@ -4782,7 +4782,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
 
         AGWPE_password_data = XtVaCreateManagedWidget("Config_AGWPE password_data", xmTextFieldWidgetClass, form,
                                       XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, FALSE,
+                                      XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 20,
@@ -4835,7 +4835,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
 
         AGWPE_radioport_data = XtVaCreateManagedWidget("Config_AGWPE radioport_data", xmTextFieldWidgetClass, form,
                                       XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, FALSE,
+                                      XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
                                       XmNcolumns, 3,
