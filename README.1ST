@@ -43,18 +43,6 @@ contribution!
 
 -- The Xastir Group.
 
-
-
-NOTE:  If you're running as the ROOT user regularly, stop to
-consider the problems you might get into if you type the wrong
-command, not to mention the problems if someone manages to get
-control of one of your ROOT programs!  (Kiss your files goodbye now,
-while you still can!).  Create another user account and run under
-that login instead of root.  You'll save yourself many headaches in
-the future.  This is speaking from DIRECT experience.
-
-
-
 Short summary of libraries Xastir can use:
 -------------------------------------------------------------------------
 Motif or OpenMotif or LessTiff  Required  The GUI widget set
@@ -123,8 +111,7 @@ Things you need for this version:
 
 For geoTIFF support (such as USGS DRG topo maps) you also need:
     libtiff:
-        http://www.libtiff.org (Version 3.5 or later for SuSE, 3.5.6-beta for
-        Slackware)
+        http://www.libtiff.org
     libproj:
         http://www.remotesensing.org/proj/
      and for datum translations:
@@ -294,71 +281,19 @@ First Time Install:
        Then retry the "make install" portion above.
 
 
-       3c. Upgrade libtiff (Note: This is an entirely different package from LessTif!):
-       --------------------------------------------------------------------------------
+       3c. Upgrade libtiff if needed:
+       -----------------------------
        The best way to install libtiff is to get it from the ftp site
        for your Linux distribution.  You must have libtiff 3.5.5 or
        newer for libgeotiff to compile and run correctly.
 
-       For SuSE Linux:
-       Get libtiff.rpm and tiff.rpm from:
-           ftp://ftp.suse.com/pub/suse/i386/7.0/suse/gra1/
-        su (root)
-        rpm -U libtiff.rpm
-        rpm -U tiff.rpm
-        exit (from root)
+       If you are compling from source, you must use "make install_private",
+       because the private include files are required for libgeotiff to compile
+       and work correctly.
 
-       For Slackware Linux, the libtiff in:
-            ftp://ftp.slackware.com/pub/slackware/slackware-7.1/slakware/d1/
-       is not new enough.  You'll have to install libtiff-3.5.6-beta or newer
-       from sources.
-       Here's how to get it to install correctly for Slackware Linux:
-
-        #######################################################################
-        # tar xzvf tiff-v3.5.6-beta.tar.gz (or newer)
-        # cd tiff-v3.5.6-beta
-        #
-        # ./configure
-        # Change paths to match where libtiff is already
-        # installed on your system, something like this:
-        #
-        #   [ 1] Directory for tools:               /usr/bin
-        #   [ 2] Directory for libraries:           /usr/lib
-        #   [ 3] Directory for include files:       /usr/include
-        #   [ 4] Directory for manual pages:        /usr/man
-        #   [ 5] Directory for HTML documents:      /var/lib/apache/htdocs/tiff
-        #   [ 6] Manual page installation scheme:   bsd-source-cat
-        #
-        # make
-        # su (root)
-        # make install (as root)
-        # make install-private
-        #
-        # Remove any older versions of libtiff and any static libraries:
-        # rm /usr/lib/libtiff.so.3.4
-        # rm /usr/lib/libtiff.a
-        #   (Or can leave libtiff.a in place.  It's a static
-        #    library and we don't use it with Xastir)
-        #
-        # exit (from root)
-        # libtiff should now be installed in:
-        #
-        #   /usr/include/
-        #   /usr/lib/
-        #   /usr/bin/
-        #
-        #
-        # Once Slackware has libtiff 3.5 or newer available, do it
-        # this way instead:
-        # su (root)
-        # installpkg libtiff.tgz
-        # exit (from root)
-        #
-        #######################################################################
-
-       Check that programs like XV, ImageMagick, and the Gimp still run (if
-       you have these programs installed).  Graphics programs that read/write
-       TIFF format depend on libtiff.
+       If you upgrade libtiff, check that programs like XV, ImageMagick, and
+       the Gimp still run (if you have these programs installed).  Graphics
+       programs that read/write TIFF format depend on libtiff.
 
 
        3d. Install libgeotiff:
@@ -408,6 +343,7 @@ First Time Install:
        make lib
        su (root)
        make lib_install
+       ldconfig
        exit (from root)
  
      You may also need to tweak "/etc/ld.so.conf" to contain the proper path
@@ -468,135 +404,7 @@ First Time Install:
      wish to install and use Xastir from your home directory.  There are
      probably many other uses as well.
 
-
-     -----------------------------------------------------------------------
-MAC OS X NOTES:
-
-     See http://members.chello.nl/~m.vanopzeeland/xastir.html for
-     installation instructions.  Versions of Xastir starting at 1.0.6 have
-     more support built-in for Mac OS X.  You may be able to follow the
-     normal compile method instead of editing Xastir source files.
-
-     Current changes required to src/Makefile after running "./configure":
-
-        No changes necessary now for Mac OS X!
-
-END OF MAC OS X NOTES.
-     -----------------------------------------------------------------------
-
-     -----------------------------------------------------------------------
-FreeBSD NOTES:
-
-     ./configure by default will not find libraries in /usr/local/lib, so
-     run the following command instead:
-
-     LDFLAGS="-L/usr/local/lib" ./configure
-
-     Like all software that uses autoconf, Xastir requires GNU make, so use
-     gmake instead of make.
-
-     The version of autoconf used to generate configuration files for
-     Xastir is 2.13.  If you have autoconf 2.52 installed, there will be
-     difficulties.  
-
-     Contact Jack Twilley <jmt@twilley.org> for more help in getting Xastir
-     configured and built under FreeBSD.
-
-END OF FreeBSD NOTES.
-     -----------------------------------------------------------------------
-
-     -----------------------------------------------------------------------
-SOLARIS NOTES:
-
-     Changes required for Solaris 2.5 -> 7.0.  Other versions may require
-     slightly different changes.
-
-     After running "configure", edit src/Makefile and make these changes:
-
-       Solaris 2.5 -> 2.6:
-         NOTE: Solaris 2.5 -> 2.6 do not install Xpm.  If you've installed it you'll need
-         to delete "-DNO_XPM" from src/Makefile, make sure the headers are in the
-         search path, and add "-lXpm" to the LIBS or LDFLAGS line in src/Makefile.
-
-       Solaris 7.0 notes from Chris Bell:
-       ----------------------------------
-         Date: Fri, 11 Jan 2002 16:38:57 -0800
-         From: Chris Bell <cbell@junknet.com>
-         To: "Curt Mills, WE7U" <hacker@tc.fluke.com>
-         Cc: xastir-dev@krypton.hscs.virginia.edu
-         Subject: Re: [Xastir-Dev] Autoconf fixes for various OS'es 
-
-         YAY!!! Xpm is properly detected for solaris7!!!!  On my system, (with
-         geotiff and imagemagick) I still have to tweak the geotiff detection
-         to avoid the system libtiff: 
-
-         ===================================================================
-         RCS file: /usr/local/cvs/xastir/configure,v
-         retrieving revision 1.51
-         diff -c -r1.51 configure
-         *** configure   2002/01/11 21:33:54     1.51
-         --- configure   2002/01/12 00:28:01
-         ***************
-         *** 4986,4992 ****
-             echo $ac_n "(cached) $ac_c" 1>&6
-           else
-             ac_save_LIBS="$LIBS"
-         ! LIBS="-lgeotiff  $LIBS"
-           cat > conftest.$ac_ext <<EOF
-           #line 4992 "configure"
-           #include "confdefs.h"
-         --- 4986,4992 ----
-             echo $ac_n "(cached) $ac_c" 1>&6
-           else
-             ac_save_LIBS="$LIBS"
-         ! LIBS="-L/usr/local/lib -R/usr/local/lib -lgeotiff -ltiff $LIBS"
-           cat > conftest.$ac_ext <<EOF
-           #line 4992 "configure"
-           #include "confdefs.h"
- 
-         Also, the generated Makefile needs the -L/usr/local/lib
-         -R/usr/local/lib added, and -lposix4 added to the link lib line.
- 
-         It is compiling now, I will let you know if there are any runtime
-         problems.  
- 
-         I also installed the latest patches for the OS... the latest
-         Openwindows patch finally fixes the X header warnings, so we don't
-         have to fear turning -Wall back on.  (patch # 108376-33) Probably a
-         good tidbit for the readme...
- 
-         I am trying to get enough parts to build more systems for testing
-         solaris 8.   I tried it on my brother's system over the holidays, and
-         it worked just like 7.  
-       -----------------------------------------------------------------------
-
-     Note that Solaris 2.5 doesn't have support for snprintf().  The code
-     has been tweaked to switch to sprintf() for these calls in this case,
-     which allows more places for buffer overflow problems (this is a
-     security issue as well as a stability issue).  Solaris 2.6 and later
-     has support for snprintf().
-
-     Solaris 7.0 has Xpm support built into Motif, so you'll be able to
-     use Xpm map files within Xastir.
-
-     You need BSD-make installed on your system in order to compile Xastir.
-     Type "gmake" instead of "make" to build Xastir, and substitute "gmake"
-     for "make" in the following instructions.
-
-END OF SOLARIS NOTES.
-     ----------------------------------------------------------------------- 
-
-     -----------------------------------------------------------------------
-MANDRAKE LINUX NOTES:
-
-     With Mandrake Linux 8.x? you may get linker errors when it tries to
-     link in the "Xp" library.  To fix this, edit xastir/src/Makefile,
-     adding "-lXp" to the LIBS line, then type "make" again.
-
-END OF MANDRAKE LINUX NOTES.
-     -----------------------------------------------------------------------
-
-     If you see some errors, could they be because you forgot to install
+     If you see some errors, they be because you are missing
      GNU msgfmt or GNU gettext/xgettext?  These packages are required
      to compile the latest Xastir sources.  Beware of packages with the
      same names installed into /usr/openwin/bin, these are probably NOT
@@ -613,7 +421,8 @@ END OF MANDRAKE LINUX NOTES.
         Linux Version,
         X Window manager (KDE, GNOME, FVWM, etc..)
 
-     Then type (as root)
+
+     To install, type (as root)
         make install
 
 
@@ -850,6 +659,466 @@ END OF MANDRAKE LINUX NOTES.
 You probably want to download some maps and additional data files. The
 instructions for this are below in the "Getting data files for Xastir" section.
 
+Getting Data Files for Xastir:
+------------------------------
+
+      NOTE:  Set map FILES to permissions 644 ("rw-r--r--"), map
+      DIRECTORIES to 755 ("rwxr-xr-x") using the "chmod" command.
+      These permissions will allow anyone on the box to read the map
+      files, and access the map directories. Type these
+      commands exactly as shown in order to set the map directory's
+      permissions properly.  Do this as the root user:
+
+      cd /usr/local/xastir/maps
+      find . -type d -exec chmod 755 {} \;
+      find . -type f -exec chmod 644 {} \;
+
+      You can repeat these commands at anytime, to fix up errant map
+      permissions that are created by downloading/installing new
+      maps.
+
+
+    Download some maps:
+
+      If you compiled with ImageMagick and have wget installed, you can skip
+      this step and use the online Tiger/Terraserver maps exclusively. However,
+      having maps on your computer is often faster than transferring images
+      over a modem, and is not subject to the failures of your internet
+      connection.
+
+      You can have any number of maps in the /usr/local/xastir/maps directory.
+      You can organize the maps however you like. You can also use symbolic
+      links to link to files/directories on other disks. Map files are loaded
+      in the order that they appear in the chooser, unless you adjust the
+      layering priorities ib the properties dialog.
+
+      There are many methods for organizing many maps; the following have
+      proved successful: 
+       Create a USA directory and then one for each state under the USA
+       directory, or have a separate directory for each type of map. For
+       example:
+
+                          /usr/local/xastir/maps/
+                                                /usa/
+                                                /usa/CO/
+                                                /usa/NJ/
+                                                /dos/CO/
+                                                /dos/NJ/
+                                                /pixmaps/CO/
+                                                /pixmaps/NJ/
+
+
+       Note that if you structure your top level map directory like this:
+
+               /usr/local/xastir/maps/
+                                      filled/        (or raster)
+                                      transparent/   (or vector)
+                                      z/
+               /usr/local/xastir/GNIS/ -> /usr/local/xastir/maps/z
+
+       Putting raster maps in the first directory, vector maps in the second,
+       and GNIS files in the third, creating a link from GNIS/ to maps/z, then
+       as you load maps you'll load them in this order: raster, vector, GNIS.
+       This has the advantage that you can layer your maps and still see them
+       all, assuming that you only choose one type of map for the first layer.
+       Some people prefer "raster" and "vector" instead.  This will also work.
+
+       Map types available by extension:
+
+       Vector Format:
+       .shp/.shx/.dbf  Shapefile vector map (need all three files)
+       .pdb            pocketAPRS vector map
+       .map            APRSdos/WinAPRS/MacAPRS vector map
+       .gnis           GNIS labels file (actually points instead of vectors)
+       .geo            Vector map or internet vector map
+
+       Raster Format:
+       .tif/.fgd       geoTIFF raster image map
+       .geo            Raster image map or internet raster image map
+
+      Note:  .geo is listed twice because it can fit in both categories,
+      depending on the base format of the map file that the .geo file
+      points to.  .geo files are handled by the XPM library or by
+      ImageMagick, so most anything that can be handled by those installed
+      libraries can by handled by Xastir.
+
+
+     Dos/Win/MacAPRS style vector/fill maps:
+
+      ftp://aprs.rutgers.edu/pub/hamradio/APRS/maps02/
+       Get at least WORLDHI.MAP
+      ftp://aprs.rutgers.edu/pub/hamradio/APRS/
+
+      You can also use any of the other maps available from this site. They
+      were created from tiger line maps and are very detailed. They also work
+      well with the "Map Levels" function for controlling map detail.
+      
+      Also try:
+       ftp://ftp.tapr.org/aprssig/maps/
+
+     GeoTIFF Map files:
+
+      If you compiled in geoTIFF support, you can find DRG topo maps at
+      GIS Data Depot (http://www.gisdatadepot.com) for the U.S. You can also
+      find links to maps at http://mcmcweb.er.usgs.gov/drg/free_drg.html
+      The 7.5' topo maps work the best so far.  Be sure to install the .tif AND
+      the .fgd files side-by-side into the map directories. Without the .fgd
+      file Xastir won't be able to crop the white border from the map.  Xastir
+      currently knows how to handle NAD27, NAD83, and WGS84 geoTIFF files.
+      GeoTIFF files created in other datums will be displayed at an incorrect
+      location with Xastir. The .tfw files included with most geoTIFF images
+      are not used by Xastir.
+
+      If you must make FGD files by hand, the included script mapfgd.pl can
+      create them for you from the USGS geoTIFF files. The format Xastir is
+      looking for is the following:
+
+        1.5.1.1  WEST BOUNDING COORDINATE:  -122.000000
+        1.5.1.2  EAST BOUNDING COORDINATE:  -120.000000  
+        1.5.1.3  NORTH BOUNDING COORDINATE:  48.000000 
+        1.5.1.4  SOUTH BOUNDING COORDINATE:  47.000000 
+
+     -or-
+
+        1.5.1.1  West_Bounding_Coordinate:  -122.000000
+        1.5.1.2  East_Bounding_Coordinate:  -120.000000  
+        1.5.1.3  North_Bounding_Coordinate:  48.000000 
+        1.5.1.4  South_Bounding_Coordinate:  47.000000 
+
+     Notes about DRG-Enhanced (DRG-E) files:
+     * The DRG-E files will draw over the correct spots if you remove
+     the .fgd file, but will overflow their boundaries and
+
+     * The DRG-E files will draw over the correct spots with decent
+     boundary trimming (as far as I can tell, which isn't very far:
+     correct me!) if you use a .fgd file taken from 'real' DRG files
+     from USGS.
+
+     Basically: get rid of the .fgd file from the DRG-E!!
+
+     Be wary of DRG-E or DOQQ files that are compressed with MrSID
+     compression.  That is a proprietary compression format for
+     which we do not have access to the decoding algorithm.  We
+     cannot use those from within Xastir.
+
+
+     Shapefile format maps:
+
+      Some shapefile format maps are available at: 
+      http://isl715.nws.noaa.gov/mapdata/newcat/ 
+
+      Tiger97 maps converted to shapefile downloadable from:
+      http://www.mapshots.com
+
+      Newer Tiger/Line 2000 map data is avaiable from:
+      http://www.geographynetwork.com/data/tiger2000/ but requires free
+      registration.
+
+      Other shapefiles are available from esri.com, geographynetwork.com
+      and gisdatadepot.com (from their "free data" link).  Lot's of useful
+      stuff at these sites, just look around.
+
+      Also get the usgs_24kgrid.zip file from gisdatadepot.com.  This
+      file provides a grid of all of the 7.5' maps and their names
+      for the U.S.  Check for it under the "Index Grids" link on
+      their web pages.
+
+      A nice world map is available at http://aprsworld.net/gisdata/world/
+      thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
+      of the World (for Antartica).
+
+    .geo files/online maps & graphics:
+
+      If you have ImageMagick and wget installed, .geo files for NWS radars are
+      available from: ftp://gcpoolz.com/geos/Srb_geos.zip . You'll probably
+      want to add an IMAGESIZE line to each one to speed up loading when
+      some radars are offscreen: (bash syntax, modify for your shell...)
+      for a in srb_*; do echo "IMAGESIZE 620 620" >> $a; done
+
+      Tiger maps of the USA are available through the map menu under 
+      "Enable/configure Tigermap". These maps are generated by the census
+      bureau webserver. A .geo with only the word "TERRASERVER" in it will
+      retrieve a satellite photo of the area from terraserver. No additional
+      downloads are needed if these are the only maps that you want to use. 
+
+     PocketAPRS maps:
+
+      The latest WinAPRS distribution includes the full collection of 
+      PocketAPRS vector maps for the USA. The download is about 60Mb, from the
+      TAPR ftp site.
+
+      Also try:  
+       ftp://ftp.tapr.org/aprssig/palmstuff/palmmaps/
+
+     Geographic Names Information System Labels:
+
+      These aren't maps, but are collections of name labels for locations.
+      These display at various zoom levels like Dos/WinAPRS map labels, but are
+      also searchable from the Maps menu.
+
+         http://geonames.usgs.gov/
+         http://geonames.usgs.gov/gnisftp.html
+
+      These files should be named in the form "<ST>.gnis", where <ST> is the
+      abbreviation for the state that they cover, and should be placed in the
+      /usr/local/xastir/GNIS/ directory. To make sure that maps are layered
+      correctly with GNIS labels on the top, it is suggested that you link
+      /usr/local/xastir/maps/z to this GNIS directory.
+
+      Type this as root to create the link and directories:
+       cd /usr/local/xastir/maps
+       ln -s ../GNIS z
+
+      The map files must end in ".gnis" to be used by Xastir, and must be in
+      comma delimited/double quotes format.  These are readily available from
+      http://geonames.usgs.gov/ with such filenames as "AZ_deci". The files
+      must be renamed to <ST>.gnis, and the trailing whitespace should be
+      removed for speed. This can be accomplished in one step with the
+      following command. (bash style...)
+
+   for a in *deci; do sed -e 's/[ ]*$//g' < $a > `basename $a _deci`.gnis; done
+
+      Indivdual files can have whitespace removed as follows:
+        sed -e 's/[ ]*$//g' < inputfile > outputfile
+
+
+     County Warning maps:
+      All WX County maps should be stored in the /usr/local/xastir/Counties
+
+      WinAPRS style:
+       Xastir no longer suppports WinAPRS style county maps. Please download
+       and install the shapefile format maps as described below.
+
+      Shapefile style:
+       The shapefile format weather maps may be found here:
+         http://www.nws.noaa.gov/geodata/
+
+        The files of interest are:
+
+        NWSI Libraries:
+        ---------------
+        County Warning Areas
+        Zone Forecast Areas
+        Coastal and Offshore Marine Zones
+
+        County Libraries:
+        -----------------
+        AWIPS Counties
+
+      Unzip those files in the /usr/local/xastir/Counties/ directory and
+      Xastir should find them and use them for weather alerts.
+
+     Download audio files:
+
+       To play the wav files you will need a program such as vplay to play the
+       audio file through your sound card.
+
+       Grab xastir-sounds.tgz at the ftp site you downloaded Xastir, or at
+        ftp://ftp.tapr.org/software_lib/Linux/xastir/xastir-sounds.tgz
+
+       Untar this archive into the /usr/local directory, assuming Xastir
+       is installed in /usr/local/xastir. (FIXME: thunder.wav is missing?) 
+
+     Download FCC and/or RAC Database files:
+
+       If the FCC database is installed, a Search FCC Database button will
+       appear in the station info box. If the RAC (Radio Amateurs of Canada)
+       database is installed, a Search RAC Database button will appear for
+       callsigns beginning with "VE" or "VA".
+
+
+       To use the FCC lookup:
+       ----------------------
+
+         Download:
+         ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
+
+         (The only file needed from this 60Meg zip is the EN.dat file)
+
+         **** NOTE To use the data base file it must be sorted first!!! ****
+     
+         unzip l_amat.zip
+ 
+         To sort the file: Make sure you have plenty of disk space
+         for this as the file is BIG!
+
+         sort +4 -t \| EN.dat >EN.dat.sorted
+
+         Install it in the xastir/fcc directory:
+
+         su
+         mv EN.dat.sorted /usr/local/xastir/fcc/EN.dat
+
+
+       To use the RAC lookup:
+       ----------------------
+
+         Download:
+         ftp://ftp.rac.ca/pub/cdncaldb.zip
+
+         unzip cdncaldb.zip
+         mv AMATEUR.RPT /usr/local/xastir/fcc/AMACALL.LST
+
+Previous Install Notes:
+-----------------------
+     Backup all previous installed data!
+
+  Xastir 0.1.0 users (if there are any of you still around!):
+
+     For Xastir version 0.1.0 and below there are new file locations:
+     All map data, tnc config data, and support files now go under the
+     /usr/local/xastir directory. All personal config data, logs, etc are
+     user the (user home dir)/.xastir directory (which will be created after
+     xastir starts). You can copy (after your first xastir startup) your
+     xastir.cnf file to your (user home dir)/.xastir/config directory. MAKE
+     SURE YOU DELETE all lines referencing Files! Xastir may not run properly
+     if you don't!
+
+     If you have Xastir version 0.1.1 then your files are in the right place,
+     just follow the typical build instructions.
+
+  Xastir 0.2.0 users:
+
+     Xastir 0.2.0 and newer have new device controls so you will need to
+     setup your devices again with 0.2.0.
+     Look at File->Configure->Interfaces and File->Configure->Defaults
+
+  Xastir 0.3.x, 0.9.x, 1.0.x, 1.1.0:
+
+     Versions above 1.1 drop privileges if they are run as root. If any of the
+     Xastir files are owned by root, on only readable by root, they will cause
+     problems. Fix these files by "chmod 644 filename" where filename is the
+     problem file.
+ 
+
+OS Specific Notes:
+------------------
+
+MAC OS X NOTES:
+
+     See http://members.chello.nl/~m.vanopzeeland/xastir.html for
+     installation instructions.  Versions of Xastir starting at 1.0.6 have
+     more support built-in for Mac OS X.  You may be able to follow the
+     normal compile method instead of editing Xastir source files.
+
+     Current changes required to src/Makefile after running "./configure":
+
+        No changes necessary now for Mac OS X!
+
+END OF MAC OS X NOTES.
+     -----------------------------------------------------------------------
+
+     -----------------------------------------------------------------------
+FreeBSD NOTES:
+
+     ./configure by default will not find libraries in /usr/local/lib, so
+     run the following command instead:
+
+     LDFLAGS="-L/usr/local/lib" ./configure
+
+     Like all software that uses autoconf, Xastir requires GNU make, so use
+     gmake instead of make.
+
+     The version of autoconf used to generate configuration files for
+     Xastir is 2.13.  If you have autoconf 2.52 installed, there will be
+     difficulties.  
+
+     Contact Jack Twilley <jmt@twilley.org> for more help in getting Xastir
+     configured and built under FreeBSD.
+
+END OF FreeBSD NOTES.
+     -----------------------------------------------------------------------
+
+     -----------------------------------------------------------------------
+SOLARIS NOTES:
+
+     Changes required for Solaris 2.5 -> 7.0.  Other versions may require
+     slightly different changes.
+
+     After running "configure", edit src/Makefile and make these changes:
+
+       Solaris 2.5 -> 2.6:
+         NOTE: Solaris 2.5 -> 2.6 do not install Xpm.  If you've installed it you'll need
+         to delete "-DNO_XPM" from src/Makefile, make sure the headers are in the
+         search path, and add "-lXpm" to the LIBS or LDFLAGS line in src/Makefile.
+
+       Solaris 7.0 notes from Chris Bell:
+       ----------------------------------
+         Date: Fri, 11 Jan 2002 16:38:57 -0800
+         From: Chris Bell <cbell@junknet.com>
+         To: "Curt Mills, WE7U" <hacker@tc.fluke.com>
+         Cc: xastir-dev@krypton.hscs.virginia.edu
+         Subject: Re: [Xastir-Dev] Autoconf fixes for various OS'es 
+
+         YAY!!! Xpm is properly detected for solaris7!!!!  On my system, (with
+         geotiff and imagemagick) I still have to tweak the geotiff detection
+         to avoid the system libtiff: 
+
+         ===================================================================
+         RCS file: /usr/local/cvs/xastir/configure,v
+         retrieving revision 1.51
+         diff -c -r1.51 configure
+         *** configure   2002/01/11 21:33:54     1.51
+         --- configure   2002/01/12 00:28:01
+         ***************
+         *** 4986,4992 ****
+             echo $ac_n "(cached) $ac_c" 1>&6
+           else
+             ac_save_LIBS="$LIBS"
+         ! LIBS="-lgeotiff  $LIBS"
+           cat > conftest.$ac_ext <<EOF
+           #line 4992 "configure"
+           #include "confdefs.h"
+         --- 4986,4992 ----
+             echo $ac_n "(cached) $ac_c" 1>&6
+           else
+             ac_save_LIBS="$LIBS"
+         ! LIBS="-L/usr/local/lib -R/usr/local/lib -lgeotiff -ltiff $LIBS"
+           cat > conftest.$ac_ext <<EOF
+           #line 4992 "configure"
+           #include "confdefs.h"
+ 
+         Also, the generated Makefile needs the -L/usr/local/lib
+         -R/usr/local/lib added, and -lposix4 added to the link lib line.
+ 
+         It is compiling now, I will let you know if there are any runtime
+         problems.  
+ 
+         I also installed the latest patches for the OS... the latest
+         Openwindows patch finally fixes the X header warnings, so we don't
+         have to fear turning -Wall back on.  (patch # 108376-33) Probably a
+         good tidbit for the readme...
+ 
+         I am trying to get enough parts to build more systems for testing
+         solaris 8.   I tried it on my brother's system over the holidays, and
+         it worked just like 7.  
+       -----------------------------------------------------------------------
+
+     Note that Solaris 2.5 doesn't have support for snprintf().  The code
+     has been tweaked to switch to sprintf() for these calls in this case,
+     which allows more places for buffer overflow problems (this is a
+     security issue as well as a stability issue).  Solaris 2.6 and later
+     has support for snprintf().
+
+     Solaris 7.0 has Xpm support built into Motif, so you'll be able to
+     use Xpm map files within Xastir.
+
+     You need BSD-make installed on your system in order to compile Xastir.
+     Type "gmake" instead of "make" to build Xastir, and substitute "gmake"
+     for "make" in the following instructions.
+
+END OF SOLARIS NOTES.
+     ----------------------------------------------------------------------- 
+
+     -----------------------------------------------------------------------
+MANDRAKE LINUX NOTES:
+
+     With Mandrake Linux 8.x? you may get linker errors when it tries to
+     link in the "Xp" library.  To fix this, edit xastir/src/Makefile,
+     adding "-lXp" to the LIBS line, then type "make" again.
+
+END OF MANDRAKE LINUX NOTES.
+     -----------------------------------------------------------------------
 
 CVS Instructions:
 -----------------
@@ -984,369 +1253,7 @@ Gating NWS Weather Alerts to RF:
     Auto-rollover of log files is typically accomplished via CRON.
 
 
-Getting Data Files for Xastir:
-------------------------------
 
-      NOTE:  Set map FILES to permissions 644 ("rw-r--r--"), map
-      DIRECTORIES to 755 ("rwxr-xr-x") using the "chmod" command.
-      These permissions will allow anyone on the box to read the map
-      files.  If you try the simple approach and do a recursive
-      chmod command, you'll often make _everything_ 644, including
-      the directories.  Nobody will be able to "cd" into those
-      directories anymore.  This is a common Unix mistake.  I've done
-      it.  Most everyone has done it at least once.  Type these
-      commands exactly as shown in order to set the map directory's
-      permissions properly.  Do this as the root user:
-
-      cd /usr/local/xastir/maps
-      find . -type d -exec chmod 755 {} \;
-      find . -type f -exec chmod 644 {} \;
-
-      You can repeat these commands at anytime, to fix up errant map
-      permissions that are created by downloading/installing new
-      maps.
-
-
-    Download some maps:
-
-      If you compiled with ImageMagick and have wget installed, you can skip
-      this step and use the online Tiger/Terraserver maps exclusively. However,
-      having maps on your computer is often faster than transferring images
-      over a modem, and is not subject to the failures of your internet
-      connection.
-
-      You can have any number of maps in the /usr/local/xastir/maps directory.
-      You can organize the maps however you like. You can also use symbolic
-      links to link to files/directories on other disks. Map files are loaded
-      in the order that they appear in the chooser, and the last map loaded is
-      the top layer, so you may need to make symbolic links or rename map files
-      to get them to layer they way you want. You can select any of these later
-      or use the auto map feature. Auto maps will be very slow if you install
-      many maps, so selecting maps by hand is probably the best plan.
-
-      There are many methods for organizing many maps; the following have
-      proved successful: 
-       Create a USA directory and then one for each state under the USA
-       directory, or have a separate directory for each type of map. For
-       example:
-
-                          /usr/local/xastir/maps/
-                                                /usa/
-                                                /usa/CO/
-                                                /usa/NJ/
-                                                /dos/CO/
-                                                /dos/NJ/
-                                                /pixmaps/CO/
-                                                /pixmaps/NJ/
-
-
-       Note that if you structure your top level map directory like this:
-
-               /usr/local/xastir/maps/
-                                      filled/        (or raster)
-                                      transparent/   (or vector)
-                                      z/
-               /usr/local/xastir/GNIS/ -> /usr/local/xastir/maps/z
-
-       Putting raster maps in the first directory, vector maps in the second,
-       and GNIS files in the third, creating a link from GNIS/ to maps/z, then
-       as you load maps you'll load them in this order: raster, vector, GNIS.
-       This has the advantage that you can layer your maps and still see them
-       all, assuming that you only choose one type of map for the first layer.
-       Some people prefer "raster" and "vector" instead.  This will also work.
-
-       Map types available by extension:
-
-       Vector Format:
-       .shp/.shx/.dbf  Shapefile vector map (need all three files)
-       .pdb            pocketAPRS vector map
-       .map            APRSdos/WinAPRS/MacAPRS vector map
-       .gnis           GNIS labels file (actually points instead of vectors)
-       .geo            Vector map or internet vector map
-
-       Raster Format:
-       .tif/.fgd       geoTIFF raster image map
-       .geo            Raster image map or internet raster image map
-
-      Note:  .geo is listed twice because it can fit in both categories,
-      depending on the base format of the map file that the .geo file
-      points to.  .geo files are handled by the XPM library or by
-      ImageMagick, so most anything that can be handled by those installed
-      libraries can by handled by Xastir.
-
-
-     Dos/Win/MacAPRS style vector/fill maps:
-
-      ftp://aprs.rutgers.edu/pub/hamradio/APRS/maps02/
-       Get at least WORLDHI.MAP
-      ftp://aprs.rutgers.edu/pub/hamradio/APRS/
-
-      You can also use any of the other maps available from this site. They
-      were created from tiger line maps and are very detailed. They also work
-      well with the "Map Levels" function for controlling map detail.
-      
-      Also try:
-       ftp://ftp.tapr.org/aprssig/maps/
-
-     GeoTIFF Map files:
-
-      If you compiled in geoTIFF support, you can find DRG topo maps at
-      GIS Data Depot (http://www.gisdatadepot.com) for the U.S. You can also
-      find links to maps at http://mcmcweb.er.usgs.gov/drg/free_drg.html
-      The 7.5' topo maps work the best so far.  Be sure to install the .tif AND
-      the .fgd files side-by-side into the map directories. Without the .fgd
-      file Xastir won't be able to crop the white border from the map.  Xastir
-      currently knows how to handle NAD27, NAD83, and WGS84 geoTIFF files.
-      GeoTIFF files created in other datums will be displayed at an incorrect
-      location with Xastir. The .tfw files included with most geoTIFF images
-      are not used by Xastir.
-
-      If you must make FGD files by hand (xastir/scripts/mapfgd.pl can create
-      them for you for USGS geoTIFF files),here's the format Xastir is looking
-      for:
-
-        1.5.1.1  WEST BOUNDING COORDINATE:  -122.000000
-        1.5.1.2  EAST BOUNDING COORDINATE:  -120.000000  
-        1.5.1.3  NORTH BOUNDING COORDINATE:  48.000000 
-        1.5.1.4  SOUTH BOUNDING COORDINATE:  47.000000 
-
-     -or-
-
-        1.5.1.1  West_Bounding_Coordinate:  -122.000000
-        1.5.1.2  East_Bounding_Coordinate:  -120.000000  
-        1.5.1.3  North_Bounding_Coordinate:  48.000000 
-        1.5.1.4  South_Bounding_Coordinate:  47.000000 
-
-     Notes about DRG-Enhanced (DRG-E) files:
-     ---------------------------------------
-     From: J. Lance Cotton:
-
-     "I have posted a summary of my tests at:
-
-     http://www.lightningflash.net/~jlc7944/xastir-shots/
-
-     The upshot is :
-
-     * The DRG-E files will draw over the correct spots if you remove
-     the .fgd file, but will overflow their boundaries and
-
-     * The DRG-E files will draw over the correct spots with decent
-     boundary trimming (as far as I can tell, which isn't very far:
-     correct me!) if you use a .fgd file taken from 'real' DRG files
-     from USGS.
-
-     Basically: get rid of the .fgd file from the DRG-E!!
-
-     The reason I couldn't get the maps to display was that I wasn't
-     deleting the map_index.sys file from my ~/.xastir/conf/ directory
-     and so my changes to the .fgd weren't being taken into account.
-     After I started removing the index file between restarts during
-     the testing, it was working as Curt had described."
-
-     Be wary of DRG-E or DOQQ files that are compressed with MrSID
-     compression.  That is a proprietary compression format for
-     which we do not have access to the decoding algorithm.  We
-     cannot use those from within Xastir.
-
-
-     Shapefile format maps:
-
-      Some shapefile format maps are available at: 
-      http://isl715.nws.noaa.gov/mapdata/newcat/ 
-
-      Tiger97 maps converted to shapefile downloadable from:
-      http://www.mapshots.com
-
-      Newer Tiger/Line 2000 map data is avaiable from:
-      http://www.geographynetwork.com/data/tiger2000/ but requires free
-      registration.
-
-      Other shapefiles are available from esri.com, geographynetwork.com
-      and gisdatadepot.com (from their "free data" link).  Lot's of useful
-      stuff at these sites, just look around.
-
-      Also get the usgs_24kgrid.zip file from gisdatadepot.com.  This
-      file provides a grid of all of the 7.5' maps and their names
-      for the U.S.  Check for it under the "Index Grids" link on
-      their web pages.
-
-      A nice world map is available at http://aprsworld.net/gisdata/world/
-      thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
-      of the World (for Antartica).
-
-    .geo files/online maps & graphics:
-
-      If you have ImageMagick and wget installed, .geo files for NWS radars are
-      available from: ftp://gcpoolz.com/geos/Srb_geos.zip . You'll probably
-      want to add an IMAGESIZE line to each one to speed up loading when
-      some radars are offscreen: (bash syntax, modify for your shell...)
-      for a in srb_*; do echo "IMAGESIZE 620 620" >> $a; done
-
-      Tiger maps of the USA are available through the map menu under 
-      "Enable/configure Tigermap". These maps are generated by the census
-      bureau webserver. A .geo with only the word "TERRASERVER" in it will
-      retrieve a satellite photo of the area from terraserver. No additional
-      downloads are needed if these are the only maps that you want to use. 
-
-     PocketAPRS maps:
-
-      The latest WinAPRS distribution includes the full collection of 
-      PocketAPRS vector maps for the USA. The download is about 60Mb, from the
-      TAPR ftp site.
-
-      Also try:  
-       ftp://ftp.tapr.org/aprssig/palmstuff/palmmaps/
-
-     Geographic Names Information System Labels:
-
-      These aren't maps, but are collections of name labels for locations.
-      These display at various zoom levels like Dos/WinAPRS map labels, but are
-      also searchable from the Maps menu.
-
-         http://geonames.usgs.gov/
-         http://geonames.usgs/gov/gnisftp.html
-
-      These files should be named in the form "<ST>.gnis", where <ST> is the
-      abbreviation for the state that they cover, and should be placed in the
-      /usr/local/xastir/GNIS/ directory. To make sure that maps are layered
-      correctly with GNIS labels on the top, it is suggested that you link
-      /usr/local/xastir/maps/z to this GNIS directory.
-
-      Type this as root to create the link and directories:
-       cd /usr/local/xastir/maps
-       ln -s ../GNIS z
-
-      The map files must end in ".gnis" to be used by Xastir, and must be in
-      comma delimited/double quotes format.  These are readily available from
-      http://geonames.usgs.gov/ with such filenames as "AZ.deci.gz". Uncompress
-      them and rename them something like "AZ.gnis".  You must have an
-      xastir/GNIS directory (or link) for the search feature to be able to find
-      these files.  See above for where to put the GNIS files and how to create
-      the symlink so that both mapping and searching of GNIS files will
-      function.
-
-      A note from Chris Bell about these files:
-      ---------------------------------------------------------------------
-      The _deci files are huge,
-      with tons of trailing spaces at the end of each line.  I ran them
-      through sed, and cut out about two thirds of the diskspace required!
-
-          sed -e 's/[ ]*$//g' < CA_deci > CA.gnis
-      ---------------------------------------------------------------------
-
-     County Warning maps:
-      All WX County maps should be stored in the /usr/local/xastir/Counties
-
-      WinAPRS style:
-       Xastir no longer suppports WinAPRS style county maps. Please download
-       and install the shapefile format maps as described below.
-
-      Shapefile style:
-       The shapefile format weather maps may be found here:
-         http://isl715.nws.noaa.gov/mapdata/newcat/
-       The site seems to be in a state of flux, and files missing from the
-       above location can be found here instead:
-         http://www.nws.noaa.gov/geodata/
-
-        The files of interest are:
-
-        WSOM Chapter Libraries:
-        -----------------------
-        County Warning Areas
-        Zone Forecast Areas
-        Coastal and Offshore Marine Zones
-        High Seas Marine Zones (perhaps)
-
-        County Libraries:
-        -----------------
-        AWIPS Counties
-
-      Unzip those files in the /usr/local/xastir/Counties/ directory and
-      Xastir should find them and use them for weather alerts.
-
-     Download audio files:
-
-       To play the wav files you will need a program such as vplay to play the
-       audio file through your sound card.
-
-       Grab xastir-sounds.tgz at the ftp site you downloaded Xastir, or at
-        ftp://ftp.tapr.org/software_lib/Linux/xastir/xastir-sounds.tgz
-
-       Untar this archive into the /usr/local directory, assuming Xastir
-       is installed in /usr/local/xastir. (FIXME: thunder.wav is missing?) 
-
-     Download FCC and/or RAC Database files:
-
-       If the FCC database is installed, a Search FCC Database button will
-       appear in the station info box. If the RAC (Radio Amateurs of Canada)
-       database is installed, a Search RAC Database button will appear for
-       callsigns beginning with "VE" or "VA".
-
-
-       To use the FCC lookup:
-       ----------------------
-
-         Download:
-         ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
-
-         (The only file needed from this 60Meg zip is the EN.dat file)
-
-         **** NOTE To use the data base file it must be sorted first!!! ****
-     
-         unzip l_amat.zip
- 
-         To sort the file: Make sure you have plenty of disk space
-         for this as the file is BIG!
-
-         sort +4 -t \| EN.dat >EN.dat.sorted
-
-         Install it in the xastir/fcc directory:
-
-         su
-         mv EN.dat.sorted /usr/local/xastir/fcc/EN.dat
-
-
-       To use the RAC lookup:
-       ----------------------
-
-         Download:
-         ftp://ftp.rac.ca/pub/cdncaldb.zip
-
-         unzip cdncaldb.zip
-         mv AMATEUR.RPT /usr/local/xastir/fcc/AMACALL.LST
-
-Previous Install Notes:
------------------------
-     Backup all previous installed data!
-
-  Xastir 0.1.0 users (if there are any of you still around!):
-
-     For Xastir version 0.1.0 and below there are new file locations:
-     All map data, tnc config data, and support files now go under the
-     /usr/local/xastir directory. All personal config data, logs, etc are
-     user the (user home dir)/.xastir directory (which will be created after
-     xastir starts). You can copy (after your first xastir startup) your
-     xastir.cnf file to your (user home dir)/.xastir/config directory. MAKE
-     SURE YOU DELETE all lines referencing Files! Xastir may not run properly
-     if you don't!
-
-     If you have Xastir version 0.1.1 then your files are in the right place,
-     just follow the typical build instructions.
-
-  Xastir 0.2.0 users:
-
-     Xastir 0.2.0 and newer have new device controls so you will need to
-     setup your devices again with 0.2.0.
-     Look at File->Configure->Interfaces and File->Configure->Defaults
-
-  Xastir 0.3.x, 0.9.x, 1.0.x, 1.1.0:
-
-     Versions above 1.1 drop privileges if they are run as root. If any of the
-     Xastir files are owned by root, on only readable by root, they will cause
-     problems. Fix these files by "chmod username.groupname filename" where
-     username and groupname are your user and group, and filename is the
-     problem file.
- 
  Current List of APRS Internet Servers:
  --------------------------------------
  Date: Tue, 12 Mar 2002 19:24:01 EST

@@ -69,11 +69,14 @@ HELP-INDEX>What's new in Xastir BETA
 
                     What's new in Xastir BETA
 
+The latest Xastir release adds numerious new capabilities, keeping Xastir a
+benchmark for APRS programs on any operating system.
+
 (This section is an informal list of changes that will be formally written
 before a release)
 
-Serial TNC w/ gps on AUX port
-GPS clock setting
+Support for serial TNCs with gps on the AUX port
+The ability to set the system clock from the GPS.
 Dropping setuid root privs
 Tracked proximity alarms
 Tracking self
@@ -115,6 +118,7 @@ grid density adjustment +=-
 wind barbs
 dead-reckoning
 voice IDs/Screen IDs-config file only
+Map chooser redone, map layering
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -332,11 +336,14 @@ area, signpost, or DF objects/items, and won't currently represent
 altitude in "standard" objects/items.
 
 "Pop up new Bulletins", if selected, will cause Xastir to bring up the bulletin
-dialog when bulletins within the configured range are received.
- 
-You can also select Altnet and choose an altnet call from this dialog. Altnet 
-allows you to have a private APRS(tm) network among the stations that also
-have altnet configured, and have the same altnet call entered.
+dialog when bulletins within the configured range are received. "View 
+zero-distance bulletins" will causes bulletins with no know location not to
+be displayed or cause popups.
+
+You can also select "Activate alternate net?" choose an altnet call from this
+dialog. Altnet  allows you to have a private APRS(tm) network among the
+stations that also have altnet configured, and have the same altnet call
+entered.
 
 HELP-INDEX>Configure Audio Alarms
 
@@ -753,12 +760,19 @@ HELP-INDEX>Map Menu and the Map Chooser
 Map Menu:
 
 Map Chooser
-This will present you with a list of map files in your map directory. Click
-on map names to highlight them, this will cause them to be displayed when
-you click the OK button.  You may select any number of maps. Clicking the
-OK button will display the selected maps. Cancel will abandon any changes.
-There are also shortcut buttons to select all of a certain type of map,
-or deselect all of the maps at once.
+This will present you with a list of map directories and/or files in your map
+directory. Checking the "Expant Dirs" option toggles the expansion of
+directories into individual map files. Clicking the properties button will
+bring up a dialog where you can specify the layer in which maps appear. Higher
+numbers are displayed ontop of lower numbers. You can specify if a map should
+be drawn with color fills. You can also disable or enable a map from being
+considered by the "Auto maps" feature in this dialog. In teh main dialog, click
+on map names to highlight them, this will cause them to be displayed when you
+click the OK button.  You may select any number of maps. Clicking "Clear" will
+select no maps, clicking "Vector" will select only vector maps. The three
+topo options will automatically select all GeoTIFF images of the listed size.
+Clicking the OK button will display the selected maps. Cancel will abandon any
+changes.
 
 Enable/Configure Tigermap
 Turning this option on causes Xastir to download the map from the US census
@@ -815,9 +829,9 @@ GNIS, and ESRI shapefile format maps.
 
 Enable Area Color Fills
 This option controls the filling of vector maps. In certain cases, you
-may want to eliminate the fill to see maps below the top maps. Maps are
-loaded in alphabetical order by type, so renaming maps is a second but
-less elegant way to achieve the look you want.
+may want to eliminate the fill to see maps below the top maps. This is a global
+control, maps may individually have color fill toggled in the properties dialog
+of the map chooser.
 
 Enable Weather Alert Counties
 This toggles the display of county warning area maps for severe weather.
@@ -878,8 +892,7 @@ Map Locations
 Any map file should be stored in the /usr/local/xastir/maps directory on your
 computer. You can create any number of directories under this directory to
 help organize and separate your data. The maps will be listed in
-alphabetical order with their relative path in the Map Chooser dialogue.
-Symbolic links could help to reorganize the order.
+alphabetical order with their relative path, unless the layering is specified.
 
 Hints on installing and organizing maps are found in README.1ST.
  
@@ -994,25 +1007,29 @@ lines like this (but may contain many other lines):
 Xastir uses those four lines in it's calculations to determine the corner
 points of a map, to see whether the map fits in the current viewport (so it
 can decide whether to skip it).  If your map data are USGS topo maps, the .fgd
-file should be readily available to you. An added feature in Xastir is the
-ability to do datum translations from NAD 1927 to WGS 84 datum, which makes the
-USGS topo maps much more positionally accurate on the Xastir screen. If you
-don't have the .fgd file, the map will load fine, but the white borders won't
-be cropped and the size and rotation may be off a tad bit.
+file should be readily available to you. If it is not, the mapfgd.pl script
+can create it for you. If you don't have a .fgd file, the map will load fine,
+but the white borders won't be cropped and the size and rotation may be off a
+tad bit. An added feature in Xastir is the ability to do datum translations
+from NAD 1927 to WGS 84 datum, which makes the USGS topo maps much more
+positionally accurate on the Xastir screen.
 
-Xastir can now use USGS geoTIFF topo maps directly from the CD drive.
+Xastir can use USGS geoTIFF topo maps directly from the CD drive.
 Either manually mount the disk or use automounter to do it for you, and
 make sure you have a symlink created in your maps directory that points
 to where you mounted your CDROM drive.  That's it!
+
 
 Shapefile maps are also a combination of several files, a .shp file, a .dbf
 file, and a .shx file. You only need to select the .shp file to load the map,
 but the other(s) must be present for the map to load correctly.
 
+
 GNIS (Geographic Names Information System) data is a collection of names of
 locations, or geographic features. These labels behave like map labels in
 Dos/WinAPRS maps.  As you zoom in, more labels will appear, assuming you've
 selected the GNIS file as a map and have enabled Map Labels in the Maps menu.
+
 
 WX County Maps
 All WX County maps should be stored in the /usr/local/xastir/Counties and
