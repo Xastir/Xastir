@@ -4610,6 +4610,10 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     char geo_projection[8+1];   // TM, UTM, GK, LATLON etc.
     int map_proj;
 
+//#define TIMING_DEBUG
+#ifdef TIMING_DEBUG
+    time_mark(1);
+#endif
 
     // Get user info
     user_id=getuid();
@@ -5182,10 +5186,19 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         ModulateImage(image, imagemagick_options.modulate);
     }
 
+    // If were are drawing to a low bpp display (typically < 8bpp)
+    // try to reduce the number of colors in an image.
+    // This may take some time, so it would be best to do ahead of
+    // time if it is a static image.
+#if (MagickLibVersion < 0x0540)
+    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128) {
+#else
+    if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, &exception) > 128) {
+#endif
+        if (IsPseudoClass(image))
+            CompressColormap(image); // Remove duplicate colors
 
-    if (IsPseudoClass(image)) {
-        // We may want Quantize here...
-        CompressColormap(image); // does not eliminate distinct colors.
+        // Quantize down to 128 will go here...
     }
 
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
@@ -5207,16 +5220,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
             DestroyImageInfo(image_info);
         return;
     }
-
-#if (MagickLibVersion < 0x0540)
-    if (IsPseudoClass(image) && (GetNumberColors(image, NULL) != image->colors))
-        printf("colors mismatch!!! %d != %d\n", GetNumberColors(image, NULL),
-               image->colors);
-#else
-    if (IsPseudoClass(image) && (GetNumberColors(image, NULL, &exception) != image->colors))
-        printf("colors mismatch!!! %ld != %ld\n", GetNumberColors(image, NULL, &exception),
-               image->colors);
-#endif
 
     if (IsPseudoClass(image) && image->colors <= 256) {
         for (l = 0; l < image->colors; l++) {
@@ -5247,20 +5250,29 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
                 my_colors[l].blue  = temp_pack.blue  << 8;
             }
 
-            //  Get the color allocated.  Allocated pixel color is written to my_colors.pixel
-            XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+            // Get the color allocated on < 8bpp displays. pixel color is written to my_colors.pixel
+            if (visual_type == NOT_TRUE_NOR_DIRECT)
+                XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+            else
+                pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
+                                &my_colors[l].pixel);
+
             if (debug_level & 16)
                 printf("Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel,
                        my_colors[l].red, my_colors[l].blue, my_colors[l].green);
         }
     }
 
+#ifdef TIMING_DEBUG
+    time_mark(0);
+#endif
+
     if (debug_level & 16) {
        printf ("Image size %d %d\n", atb.width, atb.height);
 #if (MagickLibVersion < 0x0540)
-       printf ("Total colors = %d\n", GetNumberColors(image, NULL));
+       printf ("Unique colors = %d\n", GetNumberColors(image, NULL));
 #else
-       printf ("Total colors = %ld\n", GetNumberColors(image, NULL, &exception));
+       printf ("Unique colors = %ld\n", GetNumberColors(image, NULL, &exception));
 #endif
        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
                map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
@@ -5385,6 +5397,10 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     map_act  = 0;
     map_seen = 0;
     scr_y = screen_height - 1;
+
+#ifdef TIMING_DEBUG
+    time_mark(0);
+#endif
     // loop over map pixel rows
     for (map_y_0 = map_y_min, c_y = (double)c_y_min;
                 (map_y_0 <= map_y_max) || (map_proj == 1 && !map_done && scr_y < screen_height);
@@ -5487,6 +5503,10 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     if (xi)
         XDestroyImage (xi);
 #endif // HAVE_IMAGEMAGICK
+
+#ifdef TIMING_DEBUG
+    time_mark(0);
+#endif
 
 #endif // NO_GRAPHICS
 }
