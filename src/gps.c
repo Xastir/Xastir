@@ -83,12 +83,12 @@ int decode_gps_rmc( char *data,
     char course[7];
     char sampledate[7];
 
-#ifndef __CYGWIN__
+#ifdef HAVE_STRPTIME
     char sampledatime[15];
     char *tzp;
     char tzn[512];
     struct tm stm;
-#endif // __CYGWIN__
+#endif // HAVE_STRPTIME
  
     int ok;
 
