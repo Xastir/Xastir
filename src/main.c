@@ -144,7 +144,7 @@
 
 // If next line uncommented, Xastir will use a large font for the
 // station text in the drawing area.
-#define USE_LARGE_STATION_FONT
+//#define USE_LARGE_STATION_FONT
 
 #define LINE_WIDTH 1
 
