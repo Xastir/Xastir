@@ -595,7 +595,7 @@ First Time Install:
       to see what map formats your system will support once GDAL/OGR are fully
       integrated into Xastir, proceed with the following:
 
-        cd src
+        cd ~src (or whereever you keep your sources)
         export CVSROOT=:pserver:anonymous@cvs.remotesensing.org:/cvsroot
         cvs login
         Password: anonymous
