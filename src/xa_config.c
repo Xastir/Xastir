@@ -996,25 +996,25 @@ void load_data_or_default(void) {
     if (!get_int ("SMART_BEACONING", &smart_beaconing,0,1,1))
         smart_beaconing = 0;
 
-    if (!get_int ("SB_TURN_MIN", &sb_turn_min,0,1,1))
+    if (!get_int ("SB_TURN_MIN", &sb_turn_min,1,360,20))
         sb_turn_min = 20;
 
-    if (!get_int ("SB_TURN_SLOPE", &sb_turn_slope,0,1,1))
+    if (!get_int ("SB_TURN_SLOPE", &sb_turn_slope,0,360,25))
         sb_turn_slope = 25;
 
-    if (!get_int ("SB_TURN_TIME", &sb_turn_time,0,1,1))
+    if (!get_int ("SB_TURN_TIME", &sb_turn_time,0,3600,5))
         sb_turn_time = 5;
 
-    if (!get_int ("SB_POSIT_FAST", &sb_posit_fast,0,1,1))
+    if (!get_int ("SB_POSIT_FAST", &sb_posit_fast,1,1440,60))
         sb_posit_fast = 60;
 
-    if (!get_int ("SB_POSIT_SLOW", &sb_posit_slow,0,1,1))
+    if (!get_int ("SB_POSIT_SLOW", &sb_posit_slow,1,1440,30))
         sb_posit_slow = 30;
 
-    if (!get_int ("SB_LOW_SPEED_LIMIT", &sb_low_speed_limit,0,1,1))
+    if (!get_int ("SB_LOW_SPEED_LIMIT", &sb_low_speed_limit,0,999,2))
         sb_low_speed_limit = 2;
 
-    if (!get_int ("SB_HIGH_SPEED_LIMIT", &sb_high_speed_limit,0,1,1))
+    if (!get_int ("SB_HIGH_SPEED_LIMIT", &sb_high_speed_limit,0,999,60))
         sb_high_speed_limit = 60;
 
 
