@@ -142,9 +142,9 @@ required:
 [ ] unzip
 [ ] vim (a text editor, optional)
 [ ] wget (Optional:  Can use libcurl instead)
-[ ] XFree86-prog: Headers
-[ ] XFree86-100:  100 dpi fonts
-[ ] Xfree86-clip:  Windows clipboard integration for X11
+[ ] XFree86-prog:      Headers
+[ ] XFree86-f100:      100 dpi fonts
+[ ] XFree86-xwinclip:  Windows clipboard integration for X11
 [ ] zip
 
 Clicking on the small circle with the two arrows will run you
@@ -201,7 +201,8 @@ the shortcut if you wish.  I named mine "Xwindows".
 Change the properties on the shortcut so that it runs it from your
 home directory on Cygwin, something like "c:\cygwin\home\<user>\".
 Right-click on the new shortcut, then go to the Properties menu to
-change this.
+change this.  You may need to create the home and the user directory
+before you can change the properties on the shortcut.
 
 
 [ ] Step 3)  Test Cygwin and create startup shortcuts:
