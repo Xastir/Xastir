@@ -477,7 +477,7 @@ void alert_print_list(void) {
                 && (alert_list[i].expiration < time(NULL)) ) {
             if (debug_level & 2) {
                 fprintf(stderr,
-                    "Expired Alert->Clearing slot %d, current: %lu, alert: %lu\n",
+                    "alert_add_entry: Expired Alert->Clearing slot %d, current: %lu, alert: %lu\n",
                     i,
                     time(NULL),
                     alert_list[i].expiration );
