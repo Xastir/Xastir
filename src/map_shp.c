@@ -703,7 +703,7 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
     if (Dbf_sigs == NULL)
 //WE7U
-// Allocates memory!  Frees some also.
+// Allocates new memory!
         Dbf_sigs = dbfawk_load_sigs(get_data_base_dir("config"),".dbfawk");
 
     if (debug_level & 16)
@@ -720,6 +720,7 @@ void draw_shapefile_map (Widget w,
 //fprintf(stderr,"a13\n");
 
 //WE7U
+// Allocates new memory!
         // Calls awk_new_program which allocates memory.  Again, we
         // don't need to free this one, as it gets allocated only
         // once per runtime.
@@ -793,7 +794,7 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
     if (Dbf_sigs) {   /* see if we have a .dbfawk file that matches */
 //WE7U
-// Allocates memory!  Also frees memory.
+// Allocates new memory!
         sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig,file);
         if (!sig_info) {
             fprintf(stderr,"No DBFAWK signature for %s!  Using default.\n",filenm);
@@ -846,7 +847,7 @@ void draw_shapefile_map (Widget w,
             /* find out which dbf fields we care to read */
 //WE7U
 // Here's where a bunch of calloc() calls occur.  Some of which
-// don't get freed!  dbfawk_field_list allocates memory.
+// don't get freed!  dbfawk_field_list allocates new memory.
             fld_info = dbfawk_field_list(hDBF, dbffields);
 
         } else {                /* should never be reached anymore! */
@@ -1181,7 +1182,7 @@ void draw_shapefile_map (Widget w,
             int keylen;
             if (sig_info) {
 //WE7U
-// Allocates memory!
+// Allocates new memory!
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
                 keylen = strlen(key);
                 if (debug_level & 16) {
@@ -1674,7 +1675,7 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
             if (sig_info) {
 //WE7U
-// Allocates memory!
+// Allocates new memory!
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
                 if (debug_level & 16) {
                     fprintf(stderr,"dbfawk parse of structure %d: ",structure);
@@ -2667,6 +2668,7 @@ void draw_shapefile_map (Widget w,
                                 //fprintf(stderr,"Creating a new record: %s\n",temp);
                                 ptr2 = (label_string *)malloc(sizeof(label_string));
 //WE7U
+// Allocates new memory!
 //fprintf(stderr,"a14\n");
                                 xastir_snprintf(ptr2->label,sizeof(ptr2->label),"%s",temp);
                                 ptr2->found = 1;
@@ -2779,6 +2781,7 @@ void draw_shapefile_map (Widget w,
                     // !!Remember to free this storage later!!
                     polygon_hole_storage = (int *)malloc(object->nParts*sizeof(int));
 //WE7U
+// Allocates new memory!
 //fprintf(stderr,"a15\n");
 
 // Run through the entire shape (all rings of it) once.  Create an
@@ -3469,6 +3472,7 @@ if (on_screen) {
                     // the "hole" flags for the shape.
                     free(polygon_hole_storage);
 //WE7U
+// Frees memory.
 //fprintf(stderr,"f13\n");
 
                     if (polygon_hole_flag) {
@@ -3670,6 +3674,7 @@ if (on_screen) {
         //fprintf(stderr,"free: %s\n",ptr2->label);
         free(ptr2);
 //WE7U
+// Frees memory.
 //fprintf(stderr,"f14\n");
 
         ptr2 = label_ptr;
@@ -3686,6 +3691,7 @@ if (on_screen) {
             awk_free_program(sig_info->prog);
         free(sig_info);
 //WE7U
+// Frees memory.
 //fprintf(stderr,"f15\n");
 
     }
