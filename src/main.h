@@ -196,7 +196,7 @@ extern int menu_y;
 extern long my_last_altitude;
 extern time_t my_last_altitude_time;
 extern int my_last_course;
-extern int my_last_speed;
+extern int my_last_speed;   // in knots
 extern unsigned igate_msgs_tx;
 extern int symbols_loaded;
 extern GC gc2;
