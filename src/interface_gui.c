@@ -274,6 +274,7 @@ void Config_TNC_change_data(Widget widget, XtPointer clientData, XtPointer callD
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(TNC_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
     /* device type */
@@ -1512,6 +1513,7 @@ void Config_GPS_change_data(Widget widget, XtPointer clientData, XtPointer callD
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(GPS_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" );
@@ -1996,6 +1998,7 @@ void Config_WX_change_data(Widget widget, XtPointer clientData, XtPointer callDa
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(WX_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
@@ -2587,6 +2590,7 @@ void Config_NWX_change_data(Widget widget, XtPointer clientData, XtPointer callD
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(NWX_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" );
@@ -3031,6 +3035,7 @@ void Config_NGPS_change_data(Widget widget, XtPointer clientData, XtPointer call
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(NGPS_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" );
@@ -3359,6 +3364,7 @@ void Config_AX25_change_data(Widget widget, XtPointer clientData, XtPointer call
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(AX25_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" );
@@ -3907,6 +3913,7 @@ void Inet_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(Inet_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
 begin_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
@@ -4309,6 +4316,7 @@ void Database_change_data(Widget widget, XtPointer clientData, XtPointer callDat
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(Database_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
 begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
@@ -4715,6 +4723,7 @@ void AGWPE_change_data(Widget widget, XtPointer clientData, XtPointer callData) 
         /*fprintf(stderr,"Device is up, shutting down\n");*/
         (void)del_device(AGWPE_port);
         was_up=1;
+        usleep(1000000); // Wait for one second
     }
 
 begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
