@@ -237,7 +237,8 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
         XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ac++;
         XtSetArg(al[ac], XmNtopWidget, mess); ac++;
         XtSetArg(al[ac], XmNtopOffset, 5); ac++;
-        XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_NONE); ac++;
+        XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNbottomOffset, 45); ac++;
         XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
         XtSetArg(al[ac], XmNrightOffset, 5); ac++;
         XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
@@ -250,8 +251,8 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
         wx_alert_update_list();
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, my_form,
-                        XmNtopAttachment, XmATTACH_FORM,
-                        XmNtopOffset, 265,
+                        XmNtopAttachment, XmATTACH_NONE,
+//                        XmNtopOffset, 265,
                         XmNbottomAttachment, XmATTACH_FORM,
                         XmNbottomOffset,10,
                         XmNleftAttachment, XmATTACH_POSITION,
@@ -275,7 +276,7 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
         XtManageChild(pane);
 
         XtPopup(wx_alert_shell, XtGrabNone);
-        fix_dialog_vsize(wx_alert_shell);
+//        fix_dialog_vsize(wx_alert_shell);
 
         // Move focus to the Cancel button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
