@@ -480,8 +480,15 @@ void output_igate_net(char *line, int port, int third_party) {
     // gate this into the internet again, it's already been gated to
     // RF, which means it's already been on the 'net.  No looping
     // allowed here...
+    //
+    // We also now support NOGATE and RFONLY options.  If these are
+    // seen in the path, do _not_ gate those packets into the
+    // internet.
+    //
     if ( (strstr(path,"TCPXX") != NULL)
-            || (strstr(path,"TCPIP") != NULL) ) {
+            || (strstr(path,"TCPIP") != NULL)
+            || (strstr(path,"NOGATE") != NULL)
+            || (strstr(path,"RFONLY") != NULL) ) {
  
             if (log_igate && (debug_level & 1024) ) {
 
