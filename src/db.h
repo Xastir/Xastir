@@ -31,9 +31,6 @@
 #define XASTIR_DB_H
 
 
-/* define max tracking pos */
-#define MAX_TRACKS 100
-
 /* define max tnc line size (should be from tnc.h) */
 #define MAX_TNC_LINE_SIZE 300
 
@@ -243,24 +240,6 @@ typedef struct {                //                      strlen
 
 
 
-// Struct for holding track data.  Will keep a dynamically
-// allocated list of track points (sometime in the future).
-typedef struct {
-    // Trail storage is organized as a ring buffer.
-    // It always has at least one valid entry or is not existing!
-    int     trail_color;                // trail color
-    int     trail_inp;                  // ptr to next input into ring buffer
-    int     trail_out;                  // ptr to first trail point
-    long    trail_long_pos[MAX_TRACKS]; // coordinate of trail point
-    long    trail_lat_pos[MAX_TRACKS];  // coordinate of trail point
-    time_t  sec[MAX_TRACKS];            // date/time of position
-    long    speed[MAX_TRACKS];          // in 0.1 km/h   undefined: -1
-    int     course[MAX_TRACKS];         // in degrees    undefined: -1
-    long    altitude[MAX_TRACKS];       // in 0.1 m      undefined: -99999
-    char    flag[MAX_TRACKS];           // several flags, see below
-} TrackRow;
-
-
 // Struct for holding track data.  Keeps a dynamically allocated
 // doubly-linked list of track points.  The first record should have its
 // "prev" pointer set to NULL and the last record should have its "next"
@@ -295,7 +274,7 @@ typedef struct _CommentRow{
 
 // Break DataRow into several structures.  DataRow will contain the parameters
 // that are common across all types of stations.  DataRow will contain a pointer
-// to TrackRow if it is a moving station, and contain a pointer to WeatherRow
+// to TrackRow2 if it is a moving station, and contain a pointer to WeatherRow
 // if it is a weather station.  If no weather or track data existed, the
 // pointers will be NULL.  This new way of storing station data will save a LOT
 // of memory.  If a station suddenly starts moving or spitting out weather data
@@ -322,7 +301,6 @@ typedef struct _DataRow {
     long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
     long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
 
-    TrackRow *track_data;               // Pointer to trail data or NULL if no trail data
     TrackRow2 *oldest_trackpoint;       // Pointer to oldest track point in doubly-linked list
     TrackRow2 *newest_trackpoint;       // Pointer to newest track point in doubly-linked list
     int trail_color;                    // trail color (when assigned)

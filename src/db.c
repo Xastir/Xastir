@@ -2513,8 +2513,12 @@ void Station_data_store_track(Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 
     //busy_cursor(XtParent(w));
     busy_cursor(appshell);
+
+    // Grey-out button so it doesn't get pressed twice
     XtSetSensitive(button_store_track,FALSE);
-    export_trail(p_station);            // store trail to file
+
+    // Store trail to file
+    export_trail(p_station);
 }
 
 
@@ -5203,26 +5207,32 @@ void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,lon
 
     if (newtrk)
         fprintf(f,"\nN  New Track Start\n");
+
     // DK7IN: The format may change in the near future !
     //        Are there any standards? I want to be able to be compatible to
     //        GPS data formats (e.g. G7TO) for easy interchange from/to GPS
     //        How should we present undefined data? (speed/course/altitude)
     convert_lat_l2s(lat, temp, sizeof(temp), CONVERT_UP_TRK);
     fprintf(f,"T  %s",temp);
+
     convert_lon_l2s(lon, temp, sizeof(temp), CONVERT_UP_TRK);
     fprintf(f," %s",temp);
+
     time  = gmtime(&sec);
     month2str(time->tm_mon,month);
     wday2str(time->tm_wday,wday);
     fprintf(f," %s %s %02d %02d:%02d:%02d %04d",wday,month,time->tm_mday,time->tm_hour,time->tm_min,time->tm_sec,time->tm_year+1900);
+
     if (alt > -99999l)
         fprintf(f,"  %5.0fm",(float)(alt/10.0));
     else        // undefined
         fprintf(f,"        ");
+
     if (speed >= 0)
         fprintf(f," %4.0fkm/h",(float)(speed/10.0));
     else        // undefined
         fprintf(f,"          ");
+
     if (course >= 0)                    // DK7IN: is 0 undefined ?? 1..360 ?
         fprintf(f," %3d°\n",course);
     else        // undefined
@@ -5237,71 +5247,72 @@ void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,lon
  *  Export trail for one station to file
  */
 void exp_trailstation(FILE *f, DataRow *p_station) {
-    int i;
-    long lat0, lon0, lat1, lon1;
+    long lat0, lon0;
     int newtrk;
-    time_t sec, sec1;
+    time_t sec;
     long speed;         // 0.1km/h
     int  course;        // degrees
     long alt;           // 0.1m
+    TrackRow2 *current;
 
     if (p_station->origin == NULL || p_station->origin[0] == '\0')
         fprintf(f,"\n#C %s\n",p_station->call_sign);
     else
         fprintf(f,"\n#O %s %s\n",p_station->call_sign,p_station->origin);
+
     newtrk = 1;
 
-    if (p_station->track_data != NULL) {
-        // trail should have at least two points.  There are two
-        // places to store the most current point, in the struct,
-        // and in the tracklog.  If the station only has one point,
-        // there won't be a tracklog.  If it has moved, then it'll
-        // have both.
+    current = p_station->oldest_trackpoint;
 
-        if ((p_station->track_data->trail_inp - p_station->track_data->trail_out+MAX_TRACKS)%MAX_TRACKS != 1) {
-            for (i = p_station->track_data->trail_out;
-                   (p_station->track_data->trail_inp -1 - i +MAX_TRACKS)%MAX_TRACKS > 0;
-                   i = ++i%MAX_TRACKS) {                                    // loop over trail points
-                lon0   = p_station->track_data->trail_long_pos[(i)];                   // Trail segment start
-                lat0   = p_station->track_data->trail_lat_pos[(i)];
-                lon1   = p_station->track_data->trail_long_pos[(i+1)%MAX_TRACKS];      // Trail segment end
-                lat1   = p_station->track_data->trail_lat_pos[(i+1)%MAX_TRACKS];
-                sec    = p_station->track_data->sec[(i)];
-                sec1   = p_station->track_data->sec[(i+1)%MAX_TRACKS];
-                speed  = p_station->track_data->speed[(i)];
-                course = p_station->track_data->course[(i)];
-                alt    = p_station->track_data->altitude[(i)];
-                if ((p_station->track_data->flag[(i)] & TR_LOCAL) != '\0')
-                    newtrk = 1;
-                exp_trailpos(f,lat0,lon0,sec,speed,course,alt,newtrk);
-                newtrk = 0;
-            }
-            // last trail point
-            lon0   = p_station->track_data->trail_long_pos[(i)];                   // Trail segment start
-            lat0   = p_station->track_data->trail_lat_pos[(i)];
-            sec    = p_station->track_data->sec[(i)];
-            speed  = p_station->track_data->speed[(i)];
-            course = p_station->track_data->course[(i)];
-            alt    = p_station->track_data->altitude[(i)];
-            if ((p_station->flag & ST_LOCAL) != 0)
+    // A trail must have at least two points:  One in the struct,
+    // and one in the tracklog.  If the station only has one point,
+    // there won't be a tracklog.  If the station has moved, then
+    // it'll have both.
+
+    if (current != NULL) {  // We have trail points, loop through
+                            // them.  Skip the most current position
+                            // because it is included in the
+                            // tracklog (if we have a tracklog!).
+
+        while (current != NULL) {
+            lon0   = current->trail_long_pos;                   // Trail segment start
+            lat0   = current->trail_lat_pos;
+            sec    = current->sec;
+            speed  = current->speed;
+            course = current->course;
+            alt    = current->altitude;
+            if ((current->flag & TR_LOCAL) != '\0')
                 newtrk = 1;
+
             exp_trailpos(f,lat0,lon0,sec,speed,course,alt,newtrk);
-        }    
-    } else {        // single position
+
+            newtrk = 0;
+
+            // Advance to the next point
+            current = current->next;
+        }
+    }
+    else {  // We don't have any tracklog, so write out the most
+            // current position only.
+    
         if (p_station->altitude[0] != '\0')
             alt = atoi(p_station->altitude)*10;
         else            
             alt = -99999l;
+
         if (p_station->speed[0] != '\0')
             speed = (long)(atof(p_station->speed)*18.52);
         else
             speed = -1;
+
         if (p_station->course[0] != '\0')
             course = atoi(p_station->course);
         else
             course = -1;
+
         exp_trailpos(f,p_station->coord_lat,p_station->coord_lon,p_station->sec_heard,speed,course,alt,newtrk);
     }
+
     fprintf(f,"\n");
 }
 
@@ -5309,9 +5320,12 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
 
 
 
-/*
- *  Export trail data for one or all stations to file
- */
+//
+// Export trail data for one or all stations to file
+//
+// If p_station == NULL, store all stations, else store only one
+// station.
+//
 void export_trail(DataRow *p_station) {
     char file[420];
     FILE *f;
@@ -5321,10 +5335,12 @@ void export_trail(DataRow *p_station) {
 
     sec = sec_now();
     time  = gmtime(&sec);
+
     if (p_station == NULL)
         storeall = 1;
     else
         storeall = 0;
+
     if (storeall) {
         // define filename for storing all station
         xastir_snprintf(file, sizeof(file),
@@ -5336,7 +5352,8 @@ void export_trail(DataRow *p_station) {
             time->tm_hour,
             time->tm_min,
             time->tm_sec);
-    } else {
+    }
+    else {
         // define filename for current station
         xastir_snprintf(file, sizeof(file), "%s/%s.trk", get_user_base_dir("tracklogs"), p_station->call_sign);
     }
@@ -5344,16 +5361,26 @@ void export_trail(DataRow *p_station) {
     // create or open file
     (void)filecreate(file);     // create empty file if it doesn't exist
     // DK7IN: owner should better be set to user, it is now root with kernel AX.25!
+
     f=fopen(file,"a");          // open file for append
     if (f != NULL) {
-        fprintf(f,"# WGS-84 tracklog created by Xastir %04d/%02d/%02d %02d:%02d\n",time->tm_year+1900,time->tm_mon+1,time->tm_mday,time->tm_hour,time->tm_min);
+
+        fprintf(f,
+            "# WGS-84 tracklog created by Xastir %04d/%02d/%02d %02d:%02d\n",
+            time->tm_year+1900,
+            time->tm_mon+1,
+            time->tm_mday,
+            time->tm_hour,
+            time->tm_min);
+
         if (storeall) {
             p_station = n_first;
             while (p_station != NULL) {
                 exp_trailstation(f,p_station);
                 p_station = p_station->n_next;
             }
-        } else {
+        }
+        else {
             exp_trailstation(f,p_station);
         }
         (void)fclose(f);
@@ -5396,9 +5423,8 @@ void init_station_data(void) {
  */        
 void init_station(DataRow *p_station) {
     // the list pointers should already be set
-    p_station->track_data         = NULL;         // no trail
-    p_station->oldest_trackpoint  = NULL;
-    p_station->newest_trackpoint  = NULL;
+    p_station->oldest_trackpoint  = NULL;         // no trail
+    p_station->newest_trackpoint  = NULL;         // no trail
     p_station->trail_color        = 0;
     p_station->weather_data       = NULL;         // no weather
     p_station->coord_lat          = 0l;           //  90°N  \ undefined
