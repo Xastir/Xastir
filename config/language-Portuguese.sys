@@ -163,6 +163,9 @@ PULDNDP032|Simbolos filtrados||
 PULDNDP033|Info filtrada||
 PULDNDP034|Mostrar estações não locais||
 PULDNDP035|Enable Dead-Reckoning||
+PULDNDP036|Enable Dead-Reckoning Arcs||
+PULDNDP037|Enable Dead-Reckoning Course||
+PULDNDP038|Enable Dead-Reckoning Symbols||
 #
 # Inglesa/métrica
 PULDNUT001|Activar unidades Inglesas||

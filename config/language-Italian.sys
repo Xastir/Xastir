@@ -165,6 +165,9 @@ PULDNDP032|Filter Symbols||
 PULDNDP033|Filter Info||
 PULDNDP034|Display Non-Local Stations||
 PULDNDP035|Enable Dead-Reckoning||
+PULDNDP036|Enable Dead-Reckoning Arcs||
+PULDNDP037|Enable Dead-Reckoning Course||
+PULDNDP038|Enable Dead-Reckoning Symbols||
 #
 # Sistema di misura
 PULDNUT001|Sistema inglese||

@@ -2336,14 +2336,13 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
     int my_course = atoi(p_station->course);   // In ° true
     int shaft_length = 0;
     float bearing_radians;
-    long off_x,off_y;
+    long off_x, off_y;
     long x_long, y_lat;
-    long x,y;
+    long x, y;
     double diameter;
     long max_x, max_y;
     double range;
     int color = trail_colors[p_station->trail_color];
-    int draw_dr_arc=1, draw_dr_course=1, draw_dr_symbol=1;
 
 
     x_long = p_station->coord_lon;
@@ -2371,7 +2370,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
     max_x = screen_width+800l;
     max_y = screen_height+800l;
 
-    if (draw_dr_arc &&
+    if (show_DR_arc &&
         ((x_long>=0) && (x_long<=129600000l)) &&
 	((y_lat>=0) && (y_lat<=64800000l))) {
 
@@ -2420,7 +2419,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
         }
     }
 
-    if (draw_dr_course) {
+    if (show_DR_course) {
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,color); // red3
         (void)XDrawLine(XtDisplay(da),where,gc,
@@ -2430,7 +2429,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
             y + off_y);
     }
 
-    if (draw_dr_symbol) {
+    if (show_DR_symbol) {
         draw_symbol(w,
             p_station->aprs_symbol.aprs_type,
             p_station->aprs_symbol.aprs_symbol,

@@ -393,6 +393,10 @@ void save_data(void)  {
         store_int (fout, "DISPLAY_STATION_TRAILS",station_trails);
         store_int (fout, "DISPLAY_UNITS_ENGLISH", units_english_metric);
         store_int (fout, "DISPLAY_DEAD_RECKONING_INFO", show_DR);
+        store_int (fout, "DISPLAY_DEAD_RECKONING_ARC", show_DR_arc);
+        store_int (fout, "DISPLAY_DEAD_RECKONING_COURSE", show_DR_course);
+        store_int (fout, "DISPLAY_DEAD_RECKONING_SYMBOL", show_DR_symbol);
+
 
         // Interface values
         store_int (fout, "DISABLE_TRANSMIT",      transmit_disable);
@@ -897,6 +901,15 @@ void load_data_or_default(void) {
 
     if (!get_int ("DISPLAY_DEAD_RECKONING_INFO", &show_DR, 0, 1, 1))
         show_DR = 1;
+
+    if (!get_int ("DISPLAY_DEAD_RECKONING_ARC", &show_DR_arc, 0, 1, 1))
+        show_DR_arc = 1;
+
+    if (!get_int ("DISPLAY_DEAD_RECKONING_COURSE", &show_DR_course, 0, 1, 1))
+        show_DR_course = 1;
+
+    if (!get_int ("DISPLAY_DEAD_RECKONING_SYMBOL", &show_DR_symbol, 0, 1, 1))
+        show_DR_symbol = 1;
 
     if (!get_int ("DISABLE_TRANSMIT", &transmit_disable, 0, 1, 0))
         transmit_disable = 0;

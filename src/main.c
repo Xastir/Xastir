@@ -346,6 +346,10 @@ static void Station_Last_Heard_toggle(Widget w, XtPointer clientData, XtPointer 
 int show_last_heard;    // Switch for displaying time since last-heard
 
 static void Dead_Reckoning_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Dead_Reckoning_Arc_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Dead_Reckoning_Course_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Dead_Reckoning_Symbol_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+
 
 Widget trails_on, trails_off;
 static void Station_trails_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -520,6 +524,14 @@ Widget altnet_active;
 Widget altnet_text;
 Widget debug_level_text;
 int show_DR;
+int show_DR_arc;
+int show_DR_course;
+int show_DR_symbol;
+Widget dead_reckoning_button;
+Widget dead_reckoning_arc_button;
+Widget dead_reckoning_course_button;
+Widget dead_reckoning_symbol_button;
+
 
 // -------------------------------------------------------------------
 static void UpdateTime( XtPointer clientData, XtIntervalId id );
@@ -3431,7 +3443,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     Widget trackme_frame, measure_frame, move_frame, display_button,
         track_button, download_trail_button,
-        symbols_button, dead_reckoning_button, station_trails_button,
+        symbols_button, station_trails_button,
         station_clear_button, tracks_clear_button, object_history_clear_button, uptime_button,
         save_button,file_button, open_file_button, exit_button, really_exit_button,
         view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
@@ -4859,6 +4871,48 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(dead_reckoning_button,TRUE,FALSE);
     if (!symbol_display_enable)
         XtSetSensitive(dead_reckoning_button,FALSE);
+
+    dead_reckoning_arc_button = XtVaCreateManagedWidget(langcode("PULDNDP036"),
+            xmToggleButtonGadgetClass,
+            info_filter_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(dead_reckoning_arc_button,XmNvalueChangedCallback,Dead_Reckoning_Arc_toggle,"1");
+    if (show_DR_arc)
+        XmToggleButtonSetState(dead_reckoning_arc_button,TRUE,FALSE);
+    if (!symbol_display_enable || !show_DR)
+        XtSetSensitive(dead_reckoning_arc_button,FALSE);
+
+    dead_reckoning_course_button = XtVaCreateManagedWidget(langcode("PULDNDP037"),
+            xmToggleButtonGadgetClass,
+            info_filter_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(dead_reckoning_course_button,XmNvalueChangedCallback,Dead_Reckoning_Course_toggle,"1");
+    if (show_DR_course)
+        XmToggleButtonSetState(dead_reckoning_course_button,TRUE,FALSE);
+    if (!symbol_display_enable || !show_DR)
+        XtSetSensitive(dead_reckoning_course_button,FALSE);
+ 
+    dead_reckoning_symbol_button = XtVaCreateManagedWidget(langcode("PULDNDP038"),
+            xmToggleButtonGadgetClass,
+            info_filter_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(dead_reckoning_symbol_button,XmNvalueChangedCallback,Dead_Reckoning_Symbol_toggle,"1");
+    if (show_DR_symbol)
+        XmToggleButtonSetState(dead_reckoning_symbol_button,TRUE,FALSE);
+    if (!symbol_display_enable || !show_DR)
+        XtSetSensitive(dead_reckoning_symbol_button,FALSE);
 
     station_trails_button = XtVaCreateManagedWidget(langcode("PULDNDP007"),
             xmToggleButtonGadgetClass,
@@ -7990,6 +8044,10 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
         XtSetSensitive(station_old_data_button,TRUE);
         XtSetSensitive(station_DF_button,TRUE);
         XtSetSensitive(station_last_heard_button,TRUE);
+        XtSetSensitive(dead_reckoning_button,TRUE);
+        XtSetSensitive(dead_reckoning_arc_button,TRUE);
+        XtSetSensitive(dead_reckoning_course_button,TRUE);
+        XtSetSensitive(dead_reckoning_symbol_button,TRUE);
     }
     else {
         symbol_display_enable = 0;
@@ -8016,6 +8074,10 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
         XtSetSensitive(station_old_data_button,FALSE);
         XtSetSensitive(station_DF_button,FALSE);
         XtSetSensitive(station_last_heard_button,FALSE);
+        XtSetSensitive(dead_reckoning_button,FALSE);
+        XtSetSensitive(dead_reckoning_arc_button,FALSE);
+        XtSetSensitive(dead_reckoning_course_button,FALSE);
+        XtSetSensitive(dead_reckoning_symbol_button,FALSE);
    }
 
     symbol_display = symbol_display_enable;
@@ -8180,10 +8242,75 @@ void Dead_Reckoning_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    if(state->set)
+    if(state->set) {
         show_DR = atoi(which);
-    else
+        XtSetSensitive(dead_reckoning_arc_button,TRUE);
+        XtSetSensitive(dead_reckoning_course_button,TRUE);
+        XtSetSensitive(dead_reckoning_symbol_button,TRUE);
+    }
+    else {
         show_DR = 0;
+        XtSetSensitive(dead_reckoning_arc_button,FALSE);
+        XtSetSensitive(dead_reckoning_course_button,FALSE);
+        XtSetSensitive(dead_reckoning_symbol_button,FALSE);
+    }
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+/*
+ *  Toggle Dead-Reckoning Arc Display (button callbacks)
+ */
+void Dead_Reckoning_Arc_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        show_DR_arc = atoi(which);
+    else
+        show_DR_arc = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+/*
+ *  Toggle Dead-Reckoning Course Display (button callbacks)
+ */
+void Dead_Reckoning_Course_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        show_DR_course = atoi(which);
+    else
+        show_DR_course = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+/*
+ *  Toggle Dead-Reckoning Symbol Display (button callbacks)
+ */
+void Dead_Reckoning_Symbol_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        show_DR_symbol = atoi(which);
+    else
+        show_DR_symbol = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }
