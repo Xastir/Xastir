@@ -174,9 +174,6 @@ static struct {
 } coordinate_calc_array;
 
 
-int old_station_item;
-int clear_station_item;
-
 // --------------------------- help menu -----------------------------
 Widget help_list;
 Widget help_index_dialog = (Widget)NULL;
@@ -734,6 +731,13 @@ Widget sb_turn_slope_data = (Widget)NULL;
 Widget sb_wait_time_data = (Widget)NULL;
 
 
+Widget ghosting_time = (Widget)NULL;
+Widget clearing_time = (Widget)NULL;
+Widget posit_interval = (Widget)NULL;
+Widget gps_interval = (Widget)NULL;
+//Widget ghosting_time = (Widget)NULL;
+//Widget ghosting_time = (Widget)NULL;
+//Widget ghosting_time = (Widget)NULL;
 
 time_t GPS_time;                /* gps time out */
 time_t last_statusline;         // last update of statusline or 0 if inactive
@@ -12475,36 +12479,6 @@ void Save_Config( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 ///////////////////////////////////   Configure Defaults Dialog   //////////////////////////////////
 
 
-void defaults_old_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
-    char *which = (char *)clientData;
-    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
-
-    if (state->set)
-        old_station_item = atoi(which);
-    else
-        old_station_item = 0;
-
-}
-
-
-
-
-
-void defaults_clear_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
-    char *which = (char *)clientData;
-    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
-
-    if(state->set)
-        clear_station_item = atoi(which);
-    else
-        clear_station_item = 0;
-
-}
-
-
-
-
-
 void Configure_defaults_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -12518,60 +12492,27 @@ void Configure_defaults_destroy_shell( /*@unused@*/ Widget widget, XtPointer cli
 
 void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
+    int value;
 
-    switch(old_station_item) {
-        case(1):
-            sec_old=(time_t)900l;
-            break;
 
-        case(2):
-            sec_old=(time_t)1800l;
-            break;
+    XmScaleGetValue(ghosting_time, &value); // Minutes
+    sec_old = (time_t)(value * 60);
 
-        case(3):
-            sec_old=(time_t)2700l;
-            break;
+    XmScaleGetValue(clearing_time, &value); // Hours
+    sec_clear = (time_t)(value * 60 * 60);
 
-        case(4):
-            sec_old=(time_t)3600l;
-            break;
+    XmScaleGetValue(posit_interval, &value);// Seconds
+    POSIT_rate = (long)value;
 
-        case(5):
-            sec_old=(time_t)5400l;
-            break;
+    XmScaleGetValue(gps_interval, &value);  // Seconds
+    gps_time = (long)value;
 
-        case(6):
-            sec_old=(time_t)7200l;
-            break;
+    // Set the new posit rate into effect immediately
+    posit_next_time = posit_last_time + POSIT_rate;
 
-        default:
-            break;
-    }
+    // Set the new GPS rate into effect immediately
+    sec_next_gps = sec_now() + gps_time;
 
-    switch (clear_station_item) {
-        case(1):
-            sec_clear=(time_t)21600l;
-            break;
-
-        case(2):
-            sec_clear=(time_t)43200l;
-            break;
-
-        case(3):
-            sec_clear=(time_t)86400l;
-            break;
-
-        case(4):
-            sec_clear=(time_t)172800l;
-            break;
-
-        case(5):
-            sec_clear=(time_t)604800l;
-            break;
-
-        default:
-            break;
-    }
     sec_remove = sec_clear*2;
     if (sec_remove < (time_t)(24*3600))
         sec_remove = (time_t)(24*3600);
@@ -12626,75 +12567,6 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
 
 
-/* Posit rate radio buttons */
-void posit_time_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
-    char *which = (char *)clientData;
-    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
-
-    if(state->set)
-        POSIT_rate = (time_t)atoi(which);
-    else
-        POSIT_rate = (time_t)30*60l;    // Default 30 minutes
-
-    // Set the new posit rate into effect immediately
-    posit_next_time = posit_last_time + POSIT_rate;
-}
-
-
-
-
-
-/* GPS sample time radio buttons */
-void gps_time_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
-    char *which = (char *)clientData;
-    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
-
-    if(state->set)
-        GPS_time = (time_t)atoi(which);
-    else
-        GPS_time = (time_t)30l;
-
-    switch(GPS_time) {
-        case(5):
-            gps_time=(time_t)5l;
-            break;
-
-        case(15):
-            gps_time=(time_t)15l;
-            break;
-
-        case(30):
-            gps_time=(time_t)30l;
-            break;
-
-        case(60):
-            gps_time=(time_t)60l;
-            break;
-
-        case(120):
-            gps_time=(time_t)120l;
-            break;
-
-        case(300):
-            gps_time=(time_t)300l;
-            break;
-
-        case(600):
-            gps_time=(time_t)600l;
-            break;
-
-        default:
-            gps_time=(time_t)30l;
-            break;
-    }
-    // Set the new GPS rate into effect immediately
-    sec_next_gps = sec_now() + gps_time;
-}
-
-
-
-
-
 /* Station_transmit type radio buttons */
 void station_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
@@ -12727,22 +12599,15 @@ void igate_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
 
 
 void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    static Widget  pane, my_form, button_ok, button_cancel, frame, frame2, frame3, frame4, frame5, frame6,
-                time, time_box,
-                time_15, time_30, time_45, time_60, time_90, time_120,
-                time2, time_box2,
-                time_6h, time_12h, time_24h, time_48h, time_168h,
-                time3, time_box3,
-                toption1, toption2, toption3, toption4, toption5, toption6, toption7,
+    static Widget  pane, my_form, my_form2, button_ok, button_cancel,
+                frame4, frame5,
                 station_type, type_box,
                 styp1, styp2, styp3, styp4, styp5, styp6,
                 igate_option, igate_box,
-                igtyp0, igtyp1, igtyp2,
-                posit_label, posit_box,
-                poption1, poption2, poption3, poption4, poption5, poption6, poption7, poption8;
+                igtyp0, igtyp1, igtyp2;
     Atom delw;
-    Arg al[2];                    /* Arg List */
-    register unsigned int ac = 0;           /* Arg Count */
+    Arg al[2];                      /* Arg List */
+    register unsigned int ac = 0;   /* Arg Count */
 
     if (!configure_defaults_dialog) {
         configure_defaults_dialog = XtVaCreatePopupShell(langcode("WPUPCFD001"),
@@ -12769,389 +12634,126 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-
-        // Interval for station being considered old
-        frame = XtVaCreateManagedWidget("Configure_defaults frame", 
-                xmFrameWidgetClass, 
+        my_form2 =  XtVaCreateWidget("Configure_defaults my_form2",
+                xmFormWidgetClass, 
                 my_form,
-                XmNtopAttachment,XmATTACH_FORM,
-                XmNtopOffset,10,
-                XmNbottomAttachment,XmATTACH_NONE,
+                XmNfractionBase, 2,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment,XmATTACH_FORM,
-                XmNrightOffset, 10,
+                XmNrightAttachment, XmATTACH_FORM,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        time = XtVaCreateManagedWidget(langcode("WPUPCFD002"),
-                xmLabelWidgetClass,
-                frame,
-                XmNchildType, XmFRAME_TITLE_CHILD,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        /*set args for color */
-        ac=0;
-        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-
-
-        time_box = XmCreateRadioBox(frame,
-                "Configure_defaults Time box",
-                al,
-                ac);
-
-        XtVaSetValues(time_box,
-                XmNpacking, XmPACK_TIGHT,
+        // Interval for stations being considered old (symbol ghosting)
+        ghosting_time = XtVaCreateManagedWidget("Station Ghosting Time",
+                xmScaleWidgetClass,
+                my_form2,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10 ,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
-                XmNnumColumns,5,
-                NULL);
-
-
-        time_15 = XtVaCreateManagedWidget(langcode("WPUPCFD003"),
-                xmToggleButtonGadgetClass,
-                time_box,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One minute
+                XmNmaximum, 3*60,   // Three hours
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(sec_old/60),
+                XtVaTypedArg, XmNtitleString, XmRString, "Station Ghosting Time (min)", 15,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(time_15,XmNvalueChangedCallback,defaults_old_toggle,"1");
-
-
-        time_30 = XtVaCreateManagedWidget(langcode("WPUPCFD004"),
-                xmToggleButtonGadgetClass,
-                time_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_30,XmNvalueChangedCallback,defaults_old_toggle,"2");
-
-
-        time_45 = XtVaCreateManagedWidget(langcode("WPUPCFD005"),
-                xmToggleButtonGadgetClass,
-                time_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_45,XmNvalueChangedCallback,defaults_old_toggle,"3");
-
-
-        time_60 = XtVaCreateManagedWidget(langcode("WPUPCFD006"),
-                xmToggleButtonGadgetClass,
-                time_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_60,XmNvalueChangedCallback,defaults_old_toggle,"4");
-
-
-        time_90 = XtVaCreateManagedWidget(langcode("WPUPCFD007"),
-                xmToggleButtonGadgetClass,
-                time_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_90,XmNvalueChangedCallback,defaults_old_toggle,"5");
-
-
-        time_120 = XtVaCreateManagedWidget(langcode("WPUPCFD008"),
-                xmToggleButtonGadgetClass,
-                time_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_120,XmNvalueChangedCallback,defaults_old_toggle,"6");
-
 
         // Interval for station not being displayed
-        frame2 = XtVaCreateManagedWidget("Configure_defaults frame2", 
-                xmFrameWidgetClass, 
-                my_form,
-                XmNtopAttachment,XmATTACH_WIDGET,
-                XmNtopWidget, frame,
-                XmNtopOffset,10,
-                XmNbottomAttachment,XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment,XmATTACH_FORM,
+        clearing_time = XtVaCreateManagedWidget("Station Clear Time",
+                xmScaleWidgetClass,
+                my_form2,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
                 XmNrightOffset, 10,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        time2 = XtVaCreateManagedWidget(langcode("WPUPCFD009"),
-                xmLabelWidgetClass,
-                frame2,
-                XmNchildType, XmFRAME_TITLE_CHILD,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        time_box2 = XmCreateRadioBox(frame2,
-                "Configure_defaults Time box2",
-                al,
-                ac);
-
-        XtVaSetValues(time_box2,
-                XmNpacking, XmPACK_TIGHT,
+                XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
-                XmNnumColumns,5,
-                NULL);
-
-        time_6h = XtVaCreateManagedWidget(langcode("WPUPCFD010"),
-                xmToggleButtonGadgetClass,
-                time_box2,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One hour
+                XmNmaximum, 24*7,   // One week
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(sec_clear/(60*60)),
+                XtVaTypedArg, XmNtitleString, XmRString, "Station Clear Time (hours)", 6,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(time_6h,XmNvalueChangedCallback,defaults_clear_toggle,"1");
-
-
-        time_12h = XtVaCreateManagedWidget(langcode("WPUPCFD011"),
-                xmToggleButtonGadgetClass,
-                time_box2,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_12h,XmNvalueChangedCallback,defaults_clear_toggle,"2");
-
-
-        time_24h = XtVaCreateManagedWidget(langcode("WPUPCFD012"),
-                xmToggleButtonGadgetClass,
-                time_box2,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_24h,XmNvalueChangedCallback,defaults_clear_toggle,"3");
-
-
-        time_48h = XtVaCreateManagedWidget(langcode("WPUPCFD013"),
-                xmToggleButtonGadgetClass,
-                time_box2,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_48h,XmNvalueChangedCallback,defaults_clear_toggle,"4");
-
-
-        time_168h = XtVaCreateManagedWidget(langcode("WPUPCFD014"),
-                xmToggleButtonGadgetClass,
-                time_box2,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(time_168h,XmNvalueChangedCallback,defaults_clear_toggle,"5");
-
 
         // Posit Time
-        frame6 = XtVaCreateManagedWidget("Configure_defaults frame6", 
-                xmFrameWidgetClass, 
-                my_form,
-                XmNtopAttachment,XmATTACH_WIDGET,
-                XmNtopWidget, frame2,
-                XmNtopOffset,10,
-                XmNbottomAttachment,XmATTACH_NONE,
+        posit_interval = XtVaCreateManagedWidget("Posit Interval",
+                xmScaleWidgetClass,
+                my_form2,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, ghosting_time,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 10,
-                XmNrightAttachment,XmATTACH_FORM,
-                XmNrightOffset, 10,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        posit_label  = XtVaCreateManagedWidget(langcode("WPUPCFD026"),
-                xmLabelWidgetClass,
-                frame6,
-                XmNchildType, XmFRAME_TITLE_CHILD,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        posit_box = XmCreateRadioBox(frame6,
-                "Configure_defaults Posit Options box",
-                al,
-                ac);
-
-        XtVaSetValues(posit_box,
-                XmNpacking, XmPACK_TIGHT,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
-                XmNnumColumns,7,
-                NULL);
-
-        // 30 seconds
-        poption1 = XtVaCreateManagedWidget(langcode("WPUPCFG011"),
-                xmToggleButtonGadgetClass,
-                posit_box,
+                XmNborderWidth, 1,
+                XmNminimum, 30,     // Thirty seconds
+                XmNmaximum, 60*60,  // One hour
+                XmNshowValue, TRUE,
+                XmNvalue, (int)POSIT_rate,
+                XtVaTypedArg, XmNtitleString, XmRString, "Posit Interval (sec)", 6,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(poption1,XmNvalueChangedCallback,posit_time_toggle,"30");
-
-        // 60 seconds
-        poption2 = XtVaCreateManagedWidget(langcode("WPUPCFG012"),
-                xmToggleButtonGadgetClass,
-                posit_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(poption2,XmNvalueChangedCallback,posit_time_toggle,"60");
-
-        // 2 minutes
-        poption3 = XtVaCreateManagedWidget(langcode("WPUPCFG013"),
-                xmToggleButtonGadgetClass,
-                posit_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(poption3,XmNvalueChangedCallback,posit_time_toggle,"120");
-
-        // 5 minutes
-        poption4 = XtVaCreateManagedWidget(langcode("WPUPCFG014"),
-                xmToggleButtonGadgetClass,
-                posit_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(poption4,XmNvalueChangedCallback,posit_time_toggle,"300");
-
-        // 10 minutes
-        poption5 = XtVaCreateManagedWidget(langcode("WPUPCFG015"),
-                xmToggleButtonGadgetClass,
-                posit_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(poption5,XmNvalueChangedCallback,posit_time_toggle,"600");
-
-        // 15 minutes
-        poption6 = XtVaCreateManagedWidget(langcode("WPUPCFD003"),
-                xmToggleButtonGadgetClass,
-                posit_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(poption6,XmNvalueChangedCallback,posit_time_toggle,"900");
-
-        // 30 minutes
-        poption7 = XtVaCreateManagedWidget(langcode("WPUPCFD004"),
-                xmToggleButtonGadgetClass,
-                posit_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(poption7,XmNvalueChangedCallback,posit_time_toggle,"1800");
-
-        // 45 minutes
-        poption8 = XtVaCreateManagedWidget(langcode("WPUPCFD005"),
-                xmToggleButtonGadgetClass,
-                posit_box,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(poption8,XmNvalueChangedCallback,posit_time_toggle,"2700");
-
 
         // GPS Time
-        frame3 = XtVaCreateManagedWidget("Configure_defaults frame3", 
-                xmFrameWidgetClass, 
-                my_form,
-                XmNtopAttachment,XmATTACH_WIDGET,
-                XmNtopWidget, frame6,
-                XmNtopOffset,10,
-                XmNbottomAttachment,XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 10,
-                XmNrightAttachment,XmATTACH_FORM,
+        gps_interval = XtVaCreateManagedWidget("GPS Interval",
+                xmScaleWidgetClass,
+                my_form2,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, ghosting_time,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
                 XmNrightOffset, 10,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        time3  = XtVaCreateManagedWidget(langcode("WPUPCFG008"),
-                xmLabelWidgetClass,
-                frame3,
-                XmNchildType, XmFRAME_TITLE_CHILD,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        time_box3 = XmCreateRadioBox(frame3,
-                "Configure_defaults Time Options box",
-                al,
-                ac);
-
-        XtVaSetValues(time_box3,
-                XmNpacking, XmPACK_TIGHT,
+                XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
-                XmNnumColumns,7,
-                NULL);
-
-        toption1 = XtVaCreateManagedWidget(langcode("WPUPCFG009"),
-                xmToggleButtonGadgetClass,
-                time_box3,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One second
+                XmNmaximum, 60,     // Sixty seconds
+                XmNshowValue, TRUE,
+                XmNvalue, (int)gps_time,
+                XtVaTypedArg, XmNtitleString, XmRString, "GPS Interval (sec)", 6,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-        XtAddCallback(toption1,XmNvalueChangedCallback,gps_time_toggle,"5");
-
-
-        toption2 = XtVaCreateManagedWidget(langcode("WPUPCFG010"),
-                xmToggleButtonGadgetClass,
-                time_box3,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(toption2,XmNvalueChangedCallback,gps_time_toggle,"15");
-
-
-        toption3 = XtVaCreateManagedWidget(langcode("WPUPCFG011"),
-                xmToggleButtonGadgetClass,
-                time_box3,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(toption3,XmNvalueChangedCallback,gps_time_toggle,"30");
-
-        toption4 = XtVaCreateManagedWidget(langcode("WPUPCFG012"),
-                xmToggleButtonGadgetClass,
-                time_box3,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(toption4,XmNvalueChangedCallback,gps_time_toggle,"60");
-
-        toption5 = XtVaCreateManagedWidget(langcode("WPUPCFG013"),
-                xmToggleButtonGadgetClass,
-                time_box3,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(toption5,XmNvalueChangedCallback,gps_time_toggle,"120");
-
-        toption6 = XtVaCreateManagedWidget(langcode("WPUPCFG014"),
-                xmToggleButtonGadgetClass,
-                time_box3,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(toption6,XmNvalueChangedCallback,gps_time_toggle,"300");
-
-        toption7 = XtVaCreateManagedWidget(langcode("WPUPCFG015"),
-                xmToggleButtonGadgetClass,
-                time_box3,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(toption7,XmNvalueChangedCallback,gps_time_toggle,"600");
-
 
         // Transmit Station Options
         frame4 = XtVaCreateManagedWidget("Configure_defaults frame4", 
                 xmFrameWidgetClass, 
                 my_form,
                 XmNtopAttachment,XmATTACH_WIDGET,
-                XmNtopWidget, frame3,
+                XmNtopWidget, my_form2,
                 XmNtopOffset,10,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
@@ -13450,157 +13052,6 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         XtAddCallback(button_ok, XmNactivateCallback, Configure_defaults_change_data, configure_defaults_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_defaults_destroy_shell, configure_defaults_dialog);
 
-        // Set the toggle buttons based on current data
-        switch (sec_old) {
-            case(900l):
-                XmToggleButtonSetState(time_15,TRUE,FALSE);
-                old_station_item=1;
-                break;
-
-            case(1800l):
-                XmToggleButtonSetState(time_30,TRUE,FALSE);
-                old_station_item=2;
-                break;
-
-            case(2700l):
-                XmToggleButtonSetState(time_45,TRUE,FALSE);
-                old_station_item=3;
-                break;
-
-            case(3600l):
-                XmToggleButtonSetState(time_60,TRUE,FALSE);
-                old_station_item=4;
-                break;
-
-            case(5400l):
-                XmToggleButtonSetState(time_90,TRUE,FALSE);
-                old_station_item=5;
-                break;
-
-            case(7200l):
-                XmToggleButtonSetState(time_120,TRUE,FALSE);
-                old_station_item=6;
-                break;
-
-            default:
-                XmToggleButtonSetState(time_120,TRUE,FALSE);
-                old_station_item=6;
-                break;
-        }
-
-        switch(sec_clear) {
-            case(21600l):
-                XmToggleButtonSetState(time_6h,TRUE,FALSE);
-                clear_station_item=1;
-                break;
-
-            case(43200l):
-                XmToggleButtonSetState(time_12h,TRUE,FALSE);
-                clear_station_item=2;
-                break;
-
-            case(86400l):
-                XmToggleButtonSetState(time_24h,TRUE,FALSE);
-                clear_station_item=3;
-                break;
-
-            case(172800l):
-                XmToggleButtonSetState(time_48h,TRUE,FALSE);
-                clear_station_item=4;
-                break;
-
-            case(604800l):
-                XmToggleButtonSetState(time_168h,TRUE,FALSE);
-                clear_station_item=5;
-                break;
-
-            default:
-                XmToggleButtonSetState(time_168h,TRUE,FALSE);
-                clear_station_item=5;
-                break;
-        }
-
-        switch(POSIT_rate) {
-            case(30):
-                XmToggleButtonSetState(poption1,TRUE,FALSE);
-                break;
-
-            case(60):
-                XmToggleButtonSetState(poption2,TRUE,FALSE);
-                break;
-
-            case(120):
-                XmToggleButtonSetState(poption3,TRUE,FALSE);
-                break;
-
-            case(300):
-                XmToggleButtonSetState(poption4,TRUE,FALSE);
-                break;
-
-            case(600):
-                XmToggleButtonSetState(poption5,TRUE,FALSE);
-                break;
-
-            case(900):
-                XmToggleButtonSetState(poption6,TRUE,FALSE);
-                break;
-
-            case(1800):
-                XmToggleButtonSetState(poption7,TRUE,FALSE);
-                break;
-
-            case(2700):
-                XmToggleButtonSetState(poption8, TRUE,FALSE);
-                break;
-
-            default:
-                XmToggleButtonSetState(poption7,TRUE,FALSE);    // 30 minutes
-                break;
-        }
-
-
-        switch(gps_time) {
-            case(5):
-                XmToggleButtonSetState(toption1,TRUE,FALSE);
-                GPS_time=(time_t)5l;
-                break;
-
-            case(15):
-                XmToggleButtonSetState(toption2,TRUE,FALSE);
-                GPS_time=(time_t)15l;
-                break;
-
-            case(30):
-                XmToggleButtonSetState(toption3,TRUE,FALSE);
-                GPS_time=(time_t)30l;
-                break;
-
-            case(60):
-                XmToggleButtonSetState(toption4,TRUE,FALSE);
-                GPS_time=(time_t)60l;
-                break;
-
-            case(120):
-                XmToggleButtonSetState(toption5,TRUE,FALSE);
-                GPS_time=(time_t)120l;
-                break;
-
-            case(300):
-                XmToggleButtonSetState(toption6,TRUE,FALSE);
-                GPS_time=(time_t)300l;
-                break;
-
-            case(600):
-                XmToggleButtonSetState(toption7,TRUE,FALSE);
-                GPS_time=(time_t)600l;
-                break;
-
-            default:
-                XmToggleButtonSetState(toption1,TRUE,FALSE);
-                GPS_time=30;
-                break;
-        }
-
         switch(output_station_type) {
             case(0):
                 XmToggleButtonSetState(styp1,TRUE,FALSE);
@@ -13698,11 +13149,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
         delw = XmInternAtom(XtDisplay(configure_defaults_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(configure_defaults_dialog, delw, Configure_defaults_destroy_shell, (XtPointer)configure_defaults_dialog);
 
+        XtManageChild(my_form2);
         XtManageChild(my_form);
-        XtManageChild(time_box);
-        XtManageChild(time_box2);
-        XtManageChild(posit_box);
-        XtManageChild(time_box3);
         XtManageChild(type_box);
         XtManageChild(igate_box);
         XtManageChild(pane);
