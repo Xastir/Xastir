@@ -881,9 +881,17 @@ if test "$use_imagemagick" = "yes"; then
     if test "$use_imagemagick" = "no"; then
       AC_MSG_WARN(*** Cannot find ImageMagick include files:  Building w/o ImageMagick support. ***)
     else
-      AC_CHECK_LIB([Magick], [WriteImage], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
-      if test "$use_imagemagick" = "no"; then
-        AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
+      AC_CHECK_LIB([Magick], [WriteImage], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), )
+      if test "$use_imagemagick" != "yes"; then
+        #
+        # Try one more location for Cygwin specifically.
+        #
+        AC_CHECK_FILE(/usr/lib/libMagick.dll.a, use_imagemagick="yes", use_imagemagick="no") 
+        if test "$use_imagemagick" = "yes"; then 
+          AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
+        else
+          AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
+        fi 
       fi
     fi
   fi
