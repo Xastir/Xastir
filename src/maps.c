@@ -50,6 +50,9 @@
 
 #ifdef HAVE_X11_XPM_H
 #include <X11/xpm.h>
+#ifdef HAVE_LIBXPM // if we have both, prefer the extra library
+#undef HAVE_XM_XPMI_H
+#endif // HAVE_LIBXPM
 #endif // HAVE_X11_XPM_H
 
 #ifdef HAVE_XM_XPMI_H
