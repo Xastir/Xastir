@@ -405,6 +405,15 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char *temp_ptr;
 
 
+    // Check whether it's ok to do a download currently.
+    if (read_file) {
+        // No, we're already in the middle of reading in some file.
+        // Skip trying to download yet another file.
+        popup_message_always(langcode("POPEM00035"),
+            langcode("POPEM00041"));
+        return;
+    }
+ 
     busy_cursor(appshell);
 
     xastir_snprintf(log_filename,

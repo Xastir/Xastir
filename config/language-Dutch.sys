@@ -958,6 +958,7 @@ POPEM00037|HSP interface aanwezig: GPS timing is verhoogd||
 POPEM00038|Naam komt overeen met bestaand Object/Item/Station||
 POPEM00039|Niet toegestane tekens gevonden, deze worden door punten vervangen||
 POPEM00040|Handmatig ingestelde uitgaande route is verloren gegaan||
+POPEM00041|Processing another file.  Wait a bit, then try again||
 #
 # Jump Location
 JMLPO00001|Kaart lokatie||

@@ -946,6 +946,7 @@ POPEM00037|presente interfaccia HSP: l'intervallo di lettura del GPS viene aumen
 POPEM00038|Name Conflicts With Existing Object/Item/Station||
 POPEM00039|Illegal characters found, substituting periods in their place||
 POPEM00040|Custom outgoing path was lost||
+POPEM00041|Processing another file.  Wait a bit, then try again||
 # 
 # Jump Location 
 JMLPO00001|Posizione Mappa||

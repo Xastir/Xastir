@@ -952,6 +952,7 @@ POPEM00037|HSP Interface vorhanden: GPS-Abfrageintervalle größer||
 POPEM00038|Name Conflicts With Existing Object/Item/Station||
 POPEM00039|Illegal characters found, substituting periods in their place||
 POPEM00040|Custom outgoing path was lost||
+POPEM00041|Processing another file.  Wait a bit, then try again||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
