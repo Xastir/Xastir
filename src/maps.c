@@ -3036,9 +3036,9 @@ static void* snapshot_thread(void *arg) {
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
 
-    if ( !XpmWriteFileFromPixmap( XtDisplay(appshell),    // Display *display
+    if ( !XpmWriteFileFromPixmap( XtDisplay(appshell),  // Display *display
             xpm_filename,                               // char *filename
-            pixmap_final,                               // Pixmap pixmap
+            pixmap_snapshot,                            // Pixmap pixmap
             (Pixmap)NULL,                               // Pixmap shapemask
             NULL ) == XpmSuccess ) {                    // XpmAttributes *attributes
         fprintf(stderr,"ERROR writing %s\n", xpm_filename );
@@ -3181,6 +3181,10 @@ void Snapshot(void) {
 
     doing_snapshot++;
     last_snapshot = sec_now(); // Set up timer for next time
+
+    // Copy pixmap_final to pixmap we'll use for the snapshot
+    (void)XCopyArea(XtDisplay(da),pixmap_final,pixmap_snapshot,gc,0,0,screen_width,screen_height,0,0);
+
  
 //----- Start New Thread -----
 
