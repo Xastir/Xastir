@@ -29,7 +29,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> 
-#include <db.h>
 #include <time.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -38,13 +37,14 @@
 #include "xastir.h"
 #include "xa_config.h" 
 #include "maps.h" 
-#include "map_cache.h" 
 
 
 
 #ifdef  USE_MAP_CACHE
 #warning USE_MAP_CACHE Defined (and there was much rejoicing) 
 
+#include "map_cache.h" 
+#include <db.h>
 
 
 
