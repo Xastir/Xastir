@@ -13624,12 +13624,13 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
             xastir_snprintf(tmp_line,
                 sizeof(tmp_line),
                 "%s>%s,%s*,I:%s",
-                call,
+                call_sign,
                 path,
                 my_callsign,
                 info_copy);
 
 //fprintf(stderr,"decode_ax25_line: IGATE>NET %s\n",tmp_line);
+//fprintf(stderr,"call: %s\tcall_sign: %s\n", call, call_sign);
             output_igate_net(tmp_line, port,0); // 0="not third-party"
         }
     }
