@@ -96,8 +96,8 @@ MPUPTGR013|Rios||
 MPUPTGR014|Lagos||
 MPUPTGR015|Aereopuertos, Parqueos, etc||
 MPUPTGR016|Intensidad de Mapa||
-MPUPTGR017|Timeout (sec)||
-MPUPTGR018|Enable Tiger Maps||
+MPUPTGR017|Descanso (sec)||
+MPUPTGR018|Activar Tiger Mapas||
 #
 # Seleccion de Mapas
 WPUPMCP001|Selección de Mapa||
