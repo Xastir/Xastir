@@ -1608,7 +1608,14 @@ void draw_shapefile_map (Widget w,
 
     switch ( nShapeType ) {
         case SHPT_POINT:
+            printf("Point Shapefile format not implemented: %s\n",file);
             strcpy(sType,"Point");
+            DBFClose( hDBF );   // Clean up open file descriptors
+            SHPClose( hSHP );
+            // Free up any malloc's that we did
+            if (panWidth)
+                free(panWidth);
+            return; // Point type.  Not implemented yet.
             break;
 
         case SHPT_ARC:
@@ -1620,7 +1627,14 @@ void draw_shapefile_map (Widget w,
             break;
 
         case SHPT_MULTIPOINT:
+            printf("Multi-Point Shapefile format not implemented: %s\n",file);
             strcpy(sType,"MultiPoint");
+            DBFClose( hDBF );   // Clean up open file descriptors
+            SHPClose( hSHP );
+            // Free up any malloc's that we did
+            if (panWidth)
+                free(panWidth);
+            return; // Multipoint type.  Not implemented yet.
             break;
 
         default:
