@@ -893,7 +893,7 @@ void draw_shapefile_map (Widget w,
                 break;
 
             case 'z':   // Zone File
-            case 'f':   // Fire zone file
+            case 'f':   // Fire zone file, KS_F033
             default:
                 // Weather alert zones, z_ files:  KS_Z033
                 // STATE_ZONE
