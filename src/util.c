@@ -995,24 +995,37 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
 
 
 /* convert latitude from string to long with 1/100 sec resolution */
-// Input is in DDMM.MMN format (degrees/decimal minutes/direction)
+// Input is in DDMM.MMN, DDMM.MMMN, or DDMM.MMMMN format
+// (degrees/decimal minutes/direction)
 long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
     long centi_sec;
+    char copy[11];
     char n[4];
 
+    strncpy(copy,lat,sizeof(copy));
+    copy[10] = '\0';
     centi_sec=0l;
-    if (lat[4]=='.' && ((char)toupper((int)lat[7])=='N' || (char)toupper((int)lat[8])=='N'
-                    || (char)toupper((int)lat[7])=='S' || (char)toupper((int)lat[8])=='S')) {
-        substr(n, lat, 2);       // degrees
+    if (copy[4]=='.'
+            && (   (char)toupper((int)copy[7])=='N'
+                || (char)toupper((int)copy[8])=='N'
+                || (char)toupper((int)copy[9])=='N'
+                || (char)toupper((int)copy[7])=='S'
+                || (char)toupper((int)copy[8])=='S'
+                || (char)toupper((int)copy[9])=='S')) {
+        substr(n, copy, 2);       // degrees
         centi_sec=atoi(n)*60*60*100;
-        substr(n, lat+2, 2);     // minutes
+        substr(n, copy+2, 2);     // minutes
         centi_sec += atoi(n)*60*100;
-        substr(n, lat+5, 3);     // fractional minutes
-        if (!isdigit((int)n[2]))
+        substr(n, copy+5, 4);     // fractional minutes
+        if ( (!isdigit((int)n[2]))
+                && (n[2] != '\0') )
             n[2] = '0';            /* extend low precision */
+        n[3] = '\0';    // Throw this one away
 
         centi_sec += atoi(n)*6;
-        if ((char)toupper((int)lat[7])=='N' || (char)toupper((int)lat[8])=='N')
+        if (       (char)toupper((int)copy[7])=='N'
+                || (char)toupper((int)copy[8])=='N'
+                || (char)toupper((int)copy[9])=='N')
             centi_sec = -centi_sec;
 
         centi_sec += 90*60*60*100;
@@ -1025,24 +1038,37 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
 
 
 /* convert longitude from string to long with 1/100 sec resolution */
-// Input is in DDDMM.MMW format (degrees/decimal minutes/direction)
+// Input is in DDDMM.MMW format (degrees/decimal minutes/direction),
+// DDDMM.MMMW, or DDDMM.MMMMW format
 long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
     long centi_sec;
+    char copy[12];
     char n[4];
 
+    strncpy(copy,lon,sizeof(copy));
+    copy[11] = '\0';
     centi_sec=0l;
-    if (lon[5]=='.' && ((char)toupper((int)lon[8])=='W' || (char)toupper((int)lon[9])=='W' || (char)toupper((int)lon[8])=='E' || (char)toupper((int)lon[9])=='E')) {
-        substr(n,lon,3);    // degrees 013
+    if (copy[5]=='.'
+            && (   (char)toupper((int)copy[ 8])=='W'
+                || (char)toupper((int)copy[ 9])=='W'
+                || (char)toupper((int)copy[10])=='W'
+                || (char)toupper((int)copy[ 8])=='E'
+                || (char)toupper((int)copy[ 9])=='E'
+                || (char)toupper((int)copy[10])=='E')) {
+        substr(n,copy,3);    // degrees 013
         centi_sec=atoi(n)*60*60*100;
 
-        substr(n,lon+3,2);  // minutes 26
+        substr(n,copy+3,2);  // minutes 26
         centi_sec += atoi(n)*60*100;
         // 01326.66E  01326.660E
-        substr(n,lon+6,3);  // fractional minutes 66E 660
-        if (!isdigit((int)n[2]))
+        substr(n,copy+6,4);  // fractional minutes 66E 660E or 6601
+        if (!isdigit((int)n[2]) && (n[2] != '\0'))
             n[2] = '0';            /* extend low precision */
+        n[3] = '\0';    // Throw this one away
         centi_sec += atoi(n)*6;
-        if ((char)toupper((int)lon[8])=='W' || (char)toupper((int)lon[9])=='W')
+        if (       (char)toupper((int)copy[ 8])=='W'
+                || (char)toupper((int)copy[ 9])=='W'
+                || (char)toupper((int)copy[10])=='W')
             centi_sec = -centi_sec;
         centi_sec +=180*60*60*100;;
     }
