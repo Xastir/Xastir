@@ -8,13 +8,14 @@
 # Maintained by  : The Xastir Group <xastir@xastir.org>
 # Last Modified  : Apr 28 2001, Henk de Groot <pe1dnn@amsat.org>
 # Modified 1.0.3 : Oct 19 2001, Han Sytsma <h.l.sytsma@hetnet.nl>
-# Modified 1.0.4 : Nov 22 2001, Henk de Groot <pe1dnn@amast.org>
-# Modified 1.0.4 : Nov 25 2001, Henk de Groot <pe1dnn@amast.org>
-# Modified 1.0.6 : Dec 16 2001, Henk de Groot <pe1dnn@amast.org>
+# Modified 1.0.4 : Nov 22 2001, Henk de Groot <pe1dnn@amsat.org>
+# Modified 1.0.4 : Nov 25 2001, Henk de Groot <pe1dnn@amsat.org>
+# Modified 1.0.6 : Dec 16 2001, Henk de Groot <pe1dnn@amsat.org>
 # Modified 1.0.7 : Aug 27 2002, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.1.4 : Apr 15 2003, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.1.4 : May 20 2003, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.3.2 : Jun 08 2004, Han Sytsma <h.l.sytsma@hetnet.nl>
+# Modified 1.3.x : Sept 1 2004, Han Sytsma <h.l.sytsma@hetnet.nl> / # Henk de Groot <pe1dnn@amsat.org>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -36,10 +37,10 @@ MENUTB0009|Help|H|
 # Menu "File"
 PULDNFI001|Instelling|I|
 PULDNFI002|Open Log Bestand|O|
-PULDNFI003|Test|T|
+PULDNFI003|Test||
 PULDNFI004|Sluiten|S|
 PULDNFI007|Verander Debug Level|D|
-PULDNFI010|TNC Loggen|L|
+PULDNFI010|TNC Loggen|T|
 PULDNFI011|Net Loggen|N|
 PULDNFI012|IGate Loggen|G|
 PULDNFI013|WX Loggen|W|
@@ -68,14 +69,14 @@ PULDNCF003|Tijdsinstelling|m|
 PULDNCF004|Station|t|
 PULDNCF006|Audio Alarm|A|
 PULDNCF007|Spraak|p|
-PULDNCF008|Instellingen Nu Bewaren!|I|
+PULDNCF008|Instellingen nu bewaren!|I|
 # (Units see PULDNDP006)
 #
 # Menu "Maps"
 PULDNMP001|Kaart Kiezer|K|
 PULDNMP012|Ga naar Lokatie|G|
 PULDNMP014|Lokaliseer Kaart Functie|L|
-PULDNMP013|Zet alle Kaarten uit|Z|
+PULDNMP013|Zet alle kaarten uit|Z|
 PULDNMP002|Automatische Kaart Keuze|A|
 PULDNMP003|Kaart Graadlijnen|G|
 PULDNMP004|Kaart Niveaus||
@@ -108,7 +109,7 @@ MPUPTGR008|Staat Labels||
 MPUPTGR009|Snelwegen Labels||
 MPUPTGR010|VS Hoofdwegen Labels||
 MPUPTGR011|Hoofd wegen Labels||
-MPUPTGR012|Selecteer Weer Te Geven Items:||
+MPUPTGR012|Selecteer weer te geven items:||
 MPUPTGR013|Rivieren||
 MPUPTGR014|Meren||
 MPUPTGR015|Vliegvelden, Parken, enz||
@@ -158,68 +159,71 @@ PULDNOT001|Aan||
 PULDNOT002|Uit||
 PULDNOT003|Kort||
 #
-# Menu "Stations"
-PULDNDP014|Zoek Station|Z|
-PULDNDP001|Volg Station|V|
-PULDNDP022|Spoor Downloaden|p|
-PULDNDP032|Filter Gegevens||
-PULDNDP040|Deselecteer Alles||
-PULDNDP041|Selecteer Mijn||
+# Menu "Display"
+PULDNDP014|Zoek station|Z|
+PULDNDP001|Volg station|V|
+PULDNDP022|Spoor downloaden|p|
+# SubMenu "Filter data"
+PULDNDP032|Filter gegevens||
+PULDNDP040|Deselecteer alles||
+PULDNDP041|Selecteer mijn||
 PULDNDP042|Selecteer TNC||
-PULDNDP027|- Selecteer Directe Stations||
-PULDNDP043|- Selecteer Via Digi||
-PULDNDP034|Selecteer Net||
+PULDNDP027|- Selecteer directe stations||
+PULDNDP043|- Selecteer via digi||
+PULDNDP034|Selecteer net||
 PULDNDP019|Geef verlopen gegevens weer||
-PULDNDP044|Selecteer Stations||
-PULDNDP028|- Selecteer Vaste Stations||
-PULDNDP029|- Selecteer Bewegende Stations||
-PULDNDP030|- Selecteer Weer Stations||
-PULDNDP053|  - Selecteer CWOP WX Stations||
+PULDNDP044|Selecteer stations||
+PULDNDP028|- Selecteer vaste stations||
+PULDNDP029|- Selecteer bewegende stations||
+PULDNDP030|- Selecteer weer stations||
+PULDNDP053|  - Selecteer CWOP WX stations||
 PULDNDP045|Selecteer Objecten/Items||
-PULDNDP026|- Selecteer  Weer Objecten/Items||
-PULDNDP039|- Selecteer  Water Hoogte Objecten/Items||
-PULDNDP031|- Selecteer  Andere Objecten/Items||
-PULDNDP033|Filter Weergave||
+PULDNDP026|- Selecteer  weer Objecten/Items||
+PULDNDP039|- Selecteer  water Hoogte Objecten/Items||
+PULDNDP031|- Selecteer  andere Objecten/Items||
+# SubMenu "Filter Display"
+PULDNDP033|Filter weergave||
 PULDNDP010|Roepnaam|R|
 PULDNDP012|Symbolen|y|
-PULDNDP011|- Draai Symbolen|D|
-PULDNDP007|Station Spoor|t|
+PULDNDP011|- Draai symbolen|D|
+PULDNDP007|Station spoor|t|
 PULDNDP003|Koers|K|
 PULDNDP004|Snelheid|S|
 PULDNDP017|- Geef snelheid kort traject weer||
 PULDNDP002|Hoogte|H|
-PULDNDP009|Weer Informatie|W|
-PULDNDP046|- Weer Tekst||
-PULDNDP018|-- Geef alleen Temperatuur weer||
-PULDNDP047|- Wind Indicator||
-PULDNDP013|Zet Stations Nadering aan||
+PULDNDP009|Weer informatie|W|
+PULDNDP046|- Weer tekst||
+PULDNDP018|-- Geef alleen temperatuur weer||
+PULDNDP047|- Wind indicator||
+PULDNDP013|Zet stations nadering aan||
 PULDNDP008|Stations Vermogen/Winst|V|
-PULDNDP021|- Activeer Standaard Vermogen/Winst||
-PULDNDP020|- Activeer Mobiel Vermogen/Winst||
+PULDNDP021|- Activeer standaard vermogen/winst||
+PULDNDP020|- Activeer mobiel vermogen/winst||
 PULDNDP023|Geef DF cirkels weer||
-PULDNDP035|Activeer Berekening Op Geschatte Waarden||
-PULDNDP036|- Geef Boogsegment Weer||
-PULDNDP037|- Geef Richting Weer||
-PULDNDP038|- Geef Symbool Weer||
+PULDNDP035|Activeer berekening op geschatte waarden||
+PULDNDP036|- Geef boogsegment weer||
+PULDNDP037|- Geef richting weer||
+PULDNDP038|- Geef symbool weer||
 PULDNDP005|Afst/koers|A|
-PULDNDP024|Geeft Tijd Laatste Rapport||
-PULDNDP015|Wis alle Stations|W|
-PULDNDP016|Wis Alle Sporen|S|
-PULDNDP025|Wis Object/Item Geschiedenis||
-PULDNDP048|Herlaad Object/Item Geschiedenis||
-PULDNDP049|Wis Alle Taktische Roepnamen||
-PULDNDP050|Wis Taktische Roepnaam Geschiendenis||
-PULDNDP051|Selecteer Alleen Taktische Roepnamen||
-PULDNDP052|- Label Punten Van Sporenopbouw||
+PULDNDP024|Geeft tijd laatste rapport||
+#
+PULDNDP015|Wis alle stations|W|
+PULDNDP016|Wis Alle sporen|S|
+PULDNDP025|Wis Object/Item geschiedenis||
+PULDNDP048|Herlaad Object/Item geschiedenis||
+PULDNDP049|Wis alle gemarkeerde roepnamen||
+PULDNDP050|Wis gemarkeerde roepnamen geschiedenis||
+PULDNDP051|Selecteer alleen gemarkeerde roepnamen||
+PULDNDP052|- Label route punten||
 #
 # Units
-PULDNUT001|Engels|E|
-PULDNUT002|Metrisch|M|
+PULDNUT001|Engels||
+PULDNUT002|Metrisch||
 #
 # Menu "Messages"
 PULDNMG001|Zend Bericht Naar|Z|
 PULDNMG002|Open Groeps Bericht|O|
-PULDNMG003|Wis Alle Uitgaande Berichten|W|
+PULDNMG003|Wis alle uitgaande berichten|W|
 PULDQUS001|Algemene Stations Aanvraag|G|
 PULDQUS002|IGate Stations Aanvraag|I|
 PULDQUS003|WX Stations Aanvraag|t|
@@ -228,17 +232,17 @@ PULDNMG005|Automatisch Beantwoorden|B|
 PULDNMG006|Sateliet Bevestigings Mode|M|
 #
 # Menu "Interfaces"
-PULDNTNT04|Interface Besturing|I|
-PULDNTNT02|Interface Bewerken|B|
-PULDNTNT03|Zet Verzenden Van Alle Data Uit||
-PULDNTNT05|Zet Verzenden Positie Uit||
-PULDNTNT06|Zet Verzenden Van Objecten Uit||
-PULDNTNT11|Server Port Inschakelen||
-PULDNTNT01|Zend Nu!|Z|
-PULDNTNT07|Volg GPS Spoor|F|
-PULDNTNT08|Volg GPS Routes|R|
-PULDNTNT09|Volg GPS Routepunten|W|
-PULDNTNT10|Laad Garmin RINO Waypoints|G|
+PULDNTNT04|Interface besturing|I|
+PULDNTNT02|Interface bewerken|B|
+PULDNTNT03|Zet verzenden van alle data uit||
+PULDNTNT05|Zet verzenden positie uit||
+PULDNTNT06|Zet verzenden van objecten uit||
+PULDNTNT11|Zet server poort aan||
+PULDNTNT01|Zend nu!|Z|
+PULDNTNT07|Volg GPS spoor|F|
+PULDNTNT08|Volg GPS routes|R|
+PULDNTNT09|Volg GPS routepunten|W|
+PULDNTNT10|Volg Garmin RINO routepunten|G|
 #
 # Menu "Help"
 PULDNHEL01|Informatie|A|
@@ -247,10 +251,10 @@ PULDNHEL02|Help Onderwerpen|I|
 # Mouse Menu Popup
 POPUPMA001|Opties||
 POPUPMA00c|Centreer|C|
-POPUPMA015|Stations Informatie|S|
-POPUPMA002|Zoom In|i|
-POPUPMA003|Zoom Uit|u|
-POPUPMA004|Zoom Niveau|n|
+POPUPMA015|Stations informatie|S|
+POPUPMA002|Zoom in|i|
+POPUPMA003|Zoom uit|u|
+POPUPMA004|Zoom niveau|n|
 POPUPMA005|Niveau 1|1|
 POPUPMA006|Niveau 16|6|
 POPUPMA007|Niveau 64|4|
@@ -261,24 +265,24 @@ POPUPMA017|Hele Wereld|H|
 POPUPMA016|Vorige pos/zoom|p|
 POPUPMA018|Plaats een Object|O|
 POPUPMA019|Verander een Object|V|
-POPUPMA025|Verplaats Mijn Station Naar Dit Punt|H|
+POPUPMA025|Verplaats mijn station naar dit punt|H|
 POPUPMA011|Schuif Omhoog|c|
 POPUPMA012|Schuif Omlaag|h|
 POPUPMA013|Schuif naar Links|l|
 POPUPMA014|Schuif naar Rechts|r|
-POPUPMA020|Afstand Meten||
+POPUPMA020|Afstand meten||
 POPUPMA021|Verplaatsen||
-POPUPMA022|Volg Me||
-POPUPMA023|Functie Toetsen Actief!||
+POPUPMA022|Volg me||
+POPUPMA023|Functie toetsen actief!||
 POPUPMA024|Schakel CapsLock/NumLock/ScrollLock/andere Toetsen UIT||
-POPUPMA026|Centreer & Zoom||
+POPUPMA026|Centreer & zoom||
 POPUPMA027|Breedtegraden||
 POPUPMA028| Lengtegraden||
-POPUPMA029|Teken CAD Objecten||
-POPUPMA030|Start Teken Mode||
-POPUPMA031|Sluit Polygon||
-POPUPMA032|Wis Alle CAD Polygonen||
-POPUPMA033|Eindig Teken Mode||
+POPUPMA029|Teken CAD objecten||
+POPUPMA030|Zet teken modus aan||
+POPUPMA031|Sluit polygoon||
+POPUPMA032|Wis alle CAD polygonen||
+POPUPMA033|Beeindig teken modus||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -301,53 +305,53 @@ BBARSTA013|GPS Poort Openen||
 BBARSTA014|GPS Poort Sluiten||
 BBARSTA015|Kreeg GPS RMC tekst||
 BBARSTA016|Kreeg GPS GGA tekst||
-BBARSTA017|Net Verbinding Naar Host Verbroken||
-BBARSTA018|Net Verbinding Timed Out!||
+BBARSTA017|Net verbinding naar host verbroken||
+BBARSTA018|Verbindingstijd netwerk verstreken!||
 BBARSTA019|Zoeken naar host %s||
-BBARSTA020|Verbonden Met %s||
-BBARSTA021|Net Verbinding Mislukt!||
-BBARSTA022|Kon Socket Niet Binden!||
-BBARSTA023|Geen IP Voor Host!||
-BBARSTA024|Geen Host Gespecificeerd||
-BBARSTA025|Host Gevonden, Verbinding Maken Met %d||
-BBARSTA026|Wachten Op GPS Gegevens Via HSP..||
-BBARSTA027|HSP Vrijmaken, TNC Data Ophalen..||
-BBARSTA028|%s Wordt Geladen||
-BBARSTA029|WX Poort Openen||
-BBARSTA030|WX Poort Sluiten||
-BBARSTA031|Zoeken Naar Hostnaam %d||
-BBARSTA032|WX Data Gedecodeerd||
-BBARSTA033|Echo Van De Digipeater||
-BBARSTA034|Weer Waarschuwings Kaarten Laden||
-BBARSTA035|Wachten Op GPS Gegevens Via AUX..||
-BBARSTA036|HSP Vrijmaken, TNC Data Ophalen..||
-BBARSTA037|GPS Tekst Gedecodeerd||
-BBARSTA038|Positie Verandering Bij Mijn Station||
-BBARSTA039|Bezig Met Indexeren Van: %s||
-BBARSTA040|Amateur APRS Station %s||
+BBARSTA020|Verbonden met %s||
+BBARSTA021|Net verbinding mislukt!||
+BBARSTA022|Kon socket niet binden!||
+BBARSTA023|Geen IP voor host!||
+BBARSTA024|Geen host gespecificeerd||
+BBARSTA025|Host gevonden, Verbinding maken met %d||
+BBARSTA026|Wachten op GPS gegevens via HSP..||
+BBARSTA027|HSP vrijmaken, TNC gegevens ophalen..||
+BBARSTA028|%s wordt geladen||
+BBARSTA029|WX poort openen||
+BBARSTA030|WX poort sluiten||
+BBARSTA031|Zoeken naar hostnaam %d||
+BBARSTA032|WX gegevens gedecodeerd||
+BBARSTA033|Echo van de digipeater||
+BBARSTA034|Weer waarschuwings kaarten laden||
+BBARSTA035|Wachten op GPS gegevens via AUX..||
+BBARSTA036|HSP vrijmaken, TNC gegevens ophalen..||
+BBARSTA037|GPS tekst gedecodeerd||
+BBARSTA038|Positie verandering bij mijn station||
+BBARSTA039|Bezig met indexeren van: %s||
+BBARSTA040|Amateur APRS station %s||
 BBARSTA041|Wacht op GPS gegevens..||
 BBARSTA042|Uitzenden van objecten/items||
 BBARSTA043|Log bijwerken||
 #
 # PopUp "View - Incoming Packet Data"
-WPUPDPD001|Ontvangen Packets Bekijken||
-WPUPDPD002|Alleen TNC Gegevens||
-WPUPDPD003|Alleen Net Gegevens||
-WPUPDPD004|TNC en Net Gegevens||
+WPUPDPD001|Ontvangen packets bekijken||
+WPUPDPD002|Alleen TNC gegevens||
+WPUPDPD003|Alleen Net gegevens||
+WPUPDPD004|TNC en Net gegevens||
 WPUPDPD005|TNC||
 WPUPDPD006|NET||
 #
 # PopUp "View - Find Station"
-WPUPLSP001|Lokaliseer Station||
-WPUPLSP002|Lokaliseer Roepnaam||
+WPUPLSP001|Lokaliseer station||
+WPUPLSP002|Lokaliseer roepnaam||
 WPUPLSP003|Hoofdlettergevoelig||
-WPUPLSP004|Zoek Exact||
-WPUPLSP005|Lokaliseer Nu!||
-WPUPLSP006|Spoed Lokatiseren!||
-WPUPLSP007|FCC/RAC Naslaan||
+WPUPLSP004|Zoek exact||
+WPUPLSP005|Lokaliseer nu!||
+WPUPLSP006|Spoed lokaliseren!||
+WPUPLSP007|FCC/RAC lokalisatie||
 #
 # PopUp "Configure - Defaults"
-WPUPCFD001|Standaardinstellingen Aanpassen||
+WPUPCFD001|Standaardinstellingen aanpassen||
 WPUPCFD002|Na hoeveel tijd moet een station als oud beschouwd worden?||
 WPUPCFD003|15 Minuten||
 WPUPCFD004|30 Minuten||
@@ -368,32 +372,32 @@ WPUPCFD018|Mobiel Station m/Zulu datum-tijd||
 WPUPCFD019|Mobiel Station m/Zulu tijd-secondes||
 WPUPCFD021|Stations Positie m/weer||
 WPUPCFD022|Stations Positie, Zulu datum-tijd en weer||
-WPUPCFD023|Verzend Ruwe WX gegevens?||
-WPUPCFD024|Comprimeer Object/Item Gegevens Bij Uitzenden?||
-WPUPCFD025|Activeer Alternatief net?||
-WPUPCFD026|Met welk Interval Positie Gegevens Verzenden?||
-WPUPCFD027|Nieuwe Berichten Weergeven||
-WPUPCFD028|Waarschuw als Speciale Functie Toetsen Aanstaan||
-WPUPCFD029|Geef Bulletins Zonder Afstand Weer||
-WPUPCFD030|Zet Positie Duplicaat Controle Uit||
+WPUPCFD023|Verzend ruwe WX gegevens?||
+WPUPCFD024|Comprimeer Object/Item gegevens bij uitzenden?||
+WPUPCFD025|Activeer alternatief net?||
+WPUPCFD026|Met welk interval positie gegevens verzenden?||
+WPUPCFD027|Nieuwe berichten weergeven||
+WPUPCFD028|Waarschuw als speciale functie toetsen aanstaan||
+WPUPCFD029|Geef bulletins zonder afstand weer||
+WPUPCFD030|Zet positie duplicaat controle uit||
 #
 # PopUp "Configure - Timing"
-WPUPCFTM01|Configureer Tijdsinstelling|||
-WPUPCFTM02|Interval Verzenden Positie (min)||
-WPUPCFTM03|Tijd Tot Vervagen Station (min)||
-WPUPCFTM04|Max Interval Verzenden Object/Item (min)||
-WPUPCFTM05|Tijd Tot Verdwijnen Van Kaart (uren)||
-WPUPCFTM06|GPS Status Controle Interval (sec)||
-WPUPCFTM07|Tijd Tot Wissen Station (dagen)||
-WPUPCFTM08|Timeout Berekening Geschatte Waarden (min)||
+WPUPCFTM01|Configureer tijdsinstelling|||
+WPUPCFTM02|Interval verzenden positie (min)||
+WPUPCFTM03|Tijd tot vervagen station (min)||
+WPUPCFTM04|Max interval verzenden Object/Item (min)||
+WPUPCFTM05|Tijd tot verdwijnen van kaart (uren)||
+WPUPCFTM06|GPS status controle interval (sec)||
+WPUPCFTM07|Tijd tot wissen station (dagen)||
+WPUPCFTM08|Timeout berekening geschatte waarden (min)||
 WPUPCFTM09|Seriele Inter-Char vertraging (ms)||
-WPUPCFTM10|Tijd Voor Nieuw Spoor (min)||
-WPUPCFTM11|Interval Voor Nieuw Spoor (degrees)||
-WPUPCFTM12|RINO -> Interval Voor Objecten (min), 0 = Uitgeschakeld||
+WPUPCFTM10|Nieuwe volg tijd (min)||
+WPUPCFTM11|Nieuw volg Interval (graden)||
+WPUPCFTM12|RINO -> Objecten Interval (min), 0 = Uitgeschakeld||
 #
 # PopUp "Configure Coordinate System"
-WPUPCFC001|Configureer Coordinaten Stelsel||
-WPUPCFC002|Selecteer Coordinaten Weergave||
+WPUPCFC001|Configureer coordinaten stelsel||
+WPUPCFC002|Selecteer coordinaten weergave||
 WPUPCFC003|dd.dddddd|d|
 WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
@@ -404,12 +408,12 @@ WPUPCFC008|UTM w/speciale zones||
 # PopUp "Configure GPS"
 WPUPCFG001|GPS Instelling||
 WPUPCFG003|Eigen GPS poort||
-WPUPCFG002|Gebruik GPS Positie?||
-WPUPCFG004|GPS Opties||
+WPUPCFG002|Gebruik GPS positie?||
+WPUPCFG004|GPS opties||
 WPUPCFG005|Losse GPS||
-WPUPCFG006|Via TNC Verbonden GPS (HSP Kabel)||
-WPUPCFG007|Via TNC Verbondem GPS met gebruik van CTL-E||
-WPUPCFG008|GPS Tijd (Lees elke)||
+WPUPCFG006|Via TNC verbonden GPS (HSP Kabel)||
+WPUPCFG007|Via TNC verbonden GPS met gebruik van CTL-E||
+WPUPCFG008|GPS tijd (Lees elke)||
 WPUPCFG009|5 sec||
 WPUPCFG010|15 sec||
 WPUPCFG011|30 sec||
@@ -417,31 +421,31 @@ WPUPCFG012|1 minuut||
 WPUPCFG013|2 minuten||
 WPUPCFG014|5 minuten||
 WPUPCFG015|10 minuten||
-WPUPCFG016|Via Netwerk Verbonden GPS||
+WPUPCFG016|Via netwerk verbonden GPS||
 WPUPCFG017|GPSD Host||
 WPUPCFG018|GPSD Poort||
 WPUPCFG019|Netwerk GPS via GPSD||
-WPUPCFG020|Herverbinden na een fout?||
-WPUPCFG021|Via Netwerk Verbonden WX||
+WPUPCFG020|Opnieuw verbinden na een fout?||
+WPUPCFG021|Via netwerk verbonden WX||
 WPUPCFG022|WX Host||
 WPUPCFG023|WX Poort||
 #
 # Configure TNC (baud/style are also for WX)
-WPUPCFT001|TNC Instelling||
+WPUPCFT001|TNC instelling||
 WPUPCFT002|Gebruik TNC?||
 WPUPCFT003|TNC poort||
-WPUPCFT004|Poort Instelling||
+WPUPCFT004|Poort instelling||
 WPUPCFT005|300 bps||
 WPUPCFT006|1200 bps||
 WPUPCFT007|2400 bps||
 WPUPCFT008|4800 bps||
 WPUPCFT009|9600 bps||
 WPUPCFT010|19200 bps||
-WPUPCFT011|UnProto Paden||
+WPUPCFT011|UnProto paden||
 WPUPCFT012|Pad 1: %s via ||
 WPUPCFT013|Pad 2: %s via ||
 WPUPCFT014|Pad 3: %s via ||
-WPUPCFT015|Poort Stijl||
+WPUPCFT015|Poort stijl||
 WPUPCFT016|8,N,1||
 WPUPCFT017|7,E,1||
 WPUPCFT018|7,O,1||
@@ -449,34 +453,34 @@ WPUPCFT019|38400 bps||
 WPUPCFT020|57600 bps||
 WPUPCFT021|115200 bps||
 WPUPCFT022|230400 bps||
-WPUPCFT023|TNC Instelling m/HSP GPS||
-WPUPCFT024|Data Type||
-WPUPCFT025|Auto Detectie||
-WPUPCFT026|Binair Type||
-WPUPCFT027|ASCII Type||
-WPUPCFT028|TNC Instelling m/HSP GPS||
-WPUPCFT029|TNC Instelling m/AUX GPS||
+WPUPCFT023|TNC instelling m/HSP GPS||
+WPUPCFT024|Data type||
+WPUPCFT025|Auto detectie||
+WPUPCFT026|Binair type||
+WPUPCFT027|ASCII type||
+WPUPCFT028|TNC instelling m/HSP GPS||
+WPUPCFT029|TNC instelling m/AUX GPS||
 WPUPCFT030|Configureer KISS TNC||
-WPUPCFT031|TNC Configuratie Bestanden||
-WPUPCFT032|Bestandsnaam Activeren TNC||
-WPUPCFT033|Bestandsnaam DeActiveren TNC||
-WPUPCFT034|KISS Parameters||
+WPUPCFT031|TNC configuratie bestanden||
+WPUPCFT032|Bestandsnaam activeren TNC||
+WPUPCFT033|Bestandsnaam deactiveren TNC||
+WPUPCFT034|KISS parameters||
 WPUPCFT035|TXDelay (10 ms stappen)||
 WPUPCFT036|Persistence (0 tot 255)||
 WPUPCFT037|SlotTime (10 ms stappen)||
 WPUPCFT038|TxTail (10 ms stappen)||
 WPUPCFT039|Vol Duplex||
 WPUPCFT040|Configureer Multi-Port KISS TNC||
-WPUPCFT041|Radio Poort||
+WPUPCFT041|Radio poort||
 #
 # PopUp "Configure WX Port"
-WPUPCFWX01|WX Poort Instelling||
-WPUPCFWX02|Weerstation Aparaat||
-WPUPCFWX03|Regen Meter Correctie (Globale Instelling)||
+WPUPCFWX01|WX Poort instelling||
+WPUPCFWX02|Weerstation apparaat||
+WPUPCFWX03|Regenmeter correctie (globale instelling)||
 WPUPCFWX04|.1 inch/2.5mm||
 WPUPCFWX05|.01 inch/.25mm||
 WPUPCFWX06|.1mm||
-WPUPCFWX07|Geen Correctie||
+WPUPCFWX07|Geen correctie||
 #
 # PopUp "Configure - Station"
 WPUPCFS001|Stations Instelling||
@@ -491,13 +495,13 @@ WPUPCFS009|Station Symbool||
 WPUPCFS010|Groep/overlay||
 WPUPCFS011|Symbool||
 WPUPCFS028|Selecteer||
-WPUPCFS012|Vermogen-Winst||
-WPUPCFS013|PHG Uitschakelen||
-WPUPCFS014|Antenne Winst||
-WPUPCFS015|Antenne Versterking||
+WPUPCFS012|Vermogenswinst||
+WPUPCFS013|PHG uitschakelen||
+WPUPCFS014|Antenne winst||
+WPUPCFS015|Antenne versterking||
 WPUPCFS016|Omni||
 WPUPCFS017|Commentaar:||
-WPUPCFS018|Positie Onzekerheid||
+WPUPCFS018|Positie onzekerheid||
 WPUPCFS019|Geen||
 WPUPCFS020|.11 mijl omtrek||
 WPUPCFS021|1.15 mijl omtrek||
@@ -512,13 +516,13 @@ WPUPCFS029|Verstuur gecomprimeerde positie|C|
 # PopUp "Object/Item"
 POPUPOB001|Object/Item||
 POPUPOB002|Naam||
-POPUPOB003|Plaats Object||
-POPUPOB004|Verwijder Object||
-POPUPOB005|Verander Object||
-POPUPOB006|Maak Een Nieuw Object||
-POPUPOB007|Oppervlakte Object||
-POPUPOB008|Activeer Oppervlakte Object||
-POPUPOB009|Heldere Kleur||
+POPUPOB003|Plaats object||
+POPUPOB004|Verwijder object||
+POPUPOB005|Verander object||
+POPUPOB006|Maak een nieuw object||
+POPUPOB007|Oppervlakte object||
+POPUPOB008|Activeer oppervlakte object||
+POPUPOB009|Heldere kleur||
 POPUPOB010|Kleur-Vulling||
 POPUPOB011|Cirkel||
 POPUPOB012|Rechtse lijn '/'||
@@ -533,28 +537,28 @@ POPUPOB020|Rood||
 POPUPOB021|Violet||
 POPUPOB022|Geel||
 POPUPOB023|Grijs||
-POPUPOB024|Offset Omhoog:||
-POPUPOB025|Offset Links (behalve '/'):||
+POPUPOB024|Offset omhoog:||
+POPUPOB025|Offset links (behalve '/'):||
 POPUPOB026|Doorgang:||
 POPUPOB027|Algemene Opties||
 POPUPOB028|Lokatie||
-POPUPOB029|Activeer Signpost||
+POPUPOB029|Activeer markering||
 POPUPOB030|Gegevens:||
-POPUPOB031|Signpost Object||
-POPUPOB032|Activeer Compressie||
-POPUPOB033|Verwijder Item||
-POPUPOB034|Wijzig Item||
+POPUPOB031|Gemarkeerd object||
+POPUPOB032|Activeer compressie||
+POPUPOB033|Verwijder item||
+POPUPOB034|Wijzig item||
 POPUPOB035|Hoogte (voet):||
 POPUPOB036|Snelheid (knopen):||
 POPUPOB037|Richting:||
-POPUPOB038|DF Object||
+POPUPOB038|DF object||
 POPUPOB039|Signaal - Hoogte(HAAT) - Versterking - Richting||
 POPUPOB040|Straal breedte - Richting||
 POPUPOB041|Rondstraler||
 POPUPOB042|Richtantenne||
 POPUPOB043|Onbruikbaar||
-POPUPOB044|Adopteer Object||
-POPUPOB045|Adopteer Item||
+POPUPOB044|Neem object over||
+POPUPOB045|Neem item over||
 #
 # PopUp "Configure Internet"
 WPUPCFI001|Internet Instelling||
@@ -567,11 +571,11 @@ WPUPCFI007|Host2||
 WPUPCFI008|Poort2||
 WPUPCFI009|Wachtwoord||
 WPUPCFI010|(Bij Geen Blanco Laten)||
-WPUPCFI011|Verbinding Herstellen bij NET Fout?||
+WPUPCFI011|Verbinding herstellen bij NET fout?||
 WPUPCFI012|Laten Werken als I-Gate?||
-WPUPCFI013|Bij I-Gate Berichten Verspreiden via TNC?||
-WPUPCFI014|I-Gate Transacties Loggen?|||
-WPUPCFI015|Filter Parameters||
+WPUPCFI013|Bij I-Gate berichten verspreiden via TNC?||
+WPUPCFI014|I-Gate transacties loggen?|||
+WPUPCFI015|Filter parameters||
 #
 # PopUp "Configure Database"
 WPUPCFID01|Database Instelling (TBD)||
@@ -584,11 +588,11 @@ WPUPCFID07|Host2||
 WPUPCFID08|Poort2||
 WPUPCFID09|Wachtwoord||
 WPUPCFID10|(Bij Geen Blanco Laten)||
-WPUPCFID11|Verbinding herstellen bij NET Fout?||
-WPUPCFID12|Laten Werken als I-Gate?||
-WPUPCFID13|Bij I-Gate Berichten Verspreiden via TNC?||
-WPUPCFID14|I-Gate Transacties Loggen?|||
-WPUPCFID15|Filter Parameters||
+WPUPCFID11|Verbinding herstellen bij NET fout?||
+WPUPCFID12|Laten werken als I-Gate?||
+WPUPCFID13|Bij I-Gate berichten verspreiden via TNC?||
+WPUPCFID14|I-Gate transacties loggen?|||
+WPUPCFID15|Filter parameters||
 #
 # PopUp "Configure AGWPE"
 WPUPCFIA01|Configureer AGWPE||
@@ -600,84 +604,84 @@ WPUPCFIA06|Poort1||
 WPUPCFIA07|Host2||
 WPUPCFIA08|Poort2||
 WPUPCFIA09|Wachtwoord||
-WPUPCFIA10|(Bij Geen Blanco Laten)||
-WPUPCFIA11|Verbinding Herstellen bij NET Fout?||
-WPUPCFIA12|Laten Werken als I-Gate?||
-WPUPCFIA13|Bij I-Gate Berichten Verspreiden via TNC?||
-WPUPCFIA14|I-Gate Transacties Loggen?||
-WPUPCFIA15|Zend op Radio Poort||
+WPUPCFIA10|(Bij geen blanco laten)||
+WPUPCFIA11|Verbinding herstellen bij NET fout?||
+WPUPCFIA12|Laten werken als I-Gate?||
+WPUPCFIA13|Bij I-Gate berichten verspreiden via TNC?||
+WPUPCFIA14|I-Gate transacties loggen?||
+WPUPCFIA15|Zend op radio poort||
 #
 # PopUp "Configure Audio Alarms"
-WPUPCFA001|Audio Alarm Instellen||
-WPUPCFA002|Audio Afspeel Commando||
+WPUPCFA001|Audio alarm instellen||
+WPUPCFA002|Audio afspeel commando||
 WPUPCFA003|Alarm bij||
 WPUPCFA004|Audio bestand om af te spelen||
 WPUPCFA005|Nieuw Station||
 WPUPCFA006|Nieuw Bericht||
 WPUPCFA007|Nadering||
-WPUPCFA008|Band Opening||
-WPUPCFA009|Minimale Afstand||
-WPUPCFA010|Maximale Afstand||
-WPUPCFA011|Weer Waarschuwing||
+WPUPCFA008|Band opening||
+WPUPCFA009|Minimale afstand||
+WPUPCFA010|Maximale afstand||
+WPUPCFA011|Weer waarschuwing||
 #
 # PopUp "Configure Speech"
-WPUPCFSP01|Spraak Instellen||
-WPUPCFSP02|Uitvoer Spraak bij:||
-WPUPCFSP03|Nieuw Station||
-WPUPCFSP04|Waarschuwing Nieuw Bericht||
-WPUPCFSP05|Nieuwe Bericht Inhoud||
-WPUPCFSP06|Naderings Waarschuwing||
-WPUPCFSP07|Band Opening||
-WPUPCFSP08|Nieuwe Weer Waarschuwing||
-WPUPCFSP09|Naderings Waarschuwing van Gevolgd Station||
+WPUPCFSP01|Spraak instellen||
+WPUPCFSP02|Uitvoer spraak bij:||
+WPUPCFSP03|Nieuw station||
+WPUPCFSP04|Waarschuwing nieuw bericht||
+WPUPCFSP05|Nieuwe bericht inhoud||
+WPUPCFSP06|Naderings waarschuwing||
+WPUPCFSP07|Band opening||
+WPUPCFSP08|Nieuwe weer waarschuwing||
+WPUPCFSP09|Naderings waarschuwing van gevolgd station||
 #
 # PopUp "Track Station"
-WPUPTSP001|Volg Station||
-WPUPTSP002|Volg Roepnaam||
+WPUPTSP001|Volg station||
+WPUPTSP002|Volg roepnaam||
 WPUPTSP003|Hoofdlettergevoelig||
 WPUPTSP004|Exact dit station||
-WPUPTSP005|Volg Nu!||
-WPUPTSP006|Stop met Volgen||
-WPUPTSP007|Download Spoor||
+WPUPTSP005|Volg nu!||
+WPUPTSP006|Stop met volgen||
+WPUPTSP007|Download spoor||
 WPUPTSP008|Roepnaam||
-WPUPTSP009|Begin Volgen (uren geleden)||
+WPUPTSP009|Begin volgen (uren geleden)||
 WPUPTSP010|Volgduur (uren)||
 #
 # PopUp "Messages"
-WPUPMSB001|Stuur Bericht, Venster %d||
-WPUPMSB002|Stuur Groeps Bericht, Venster %d||
-WPUPMSB003|Stations Roepnaam:||
-WPUPMSB004|Groeps Roepnaam:||
-WPUPMSB005|Nieuwe Roepnaam||
-WPUPMSB006|Nieuwe Groep||
-WPUPMSB007|Wis Berichten Geschiedenis||
+WPUPMSB001|Stuur bericht, venster %d||
+WPUPMSB002|Stuur groeps bericht, venster %d||
+WPUPMSB003|Stations roepnaam:||
+WPUPMSB004|Groeps roepnaam:||
+WPUPMSB005|Nieuwe roepnaam||
+WPUPMSB006|Nieuwe groep||
+WPUPMSB007|Wis bericht geschiedenis||
 WPUPMSB008|Bericht:||
-WPUPMSB009|Stuur Nu!||
+WPUPMSB009|Stuur nu!||
 WPUPMSB010|Pad:||
-WPUPMSB011|Anulleer Nog Uitstaande Berichten||
+WPUPMSB011|Breek alle openstaande berichten af||
 #
 # PopUp "Auto Reply"
-WPUPARM001|Automatich Antwoord Bericht||
+WPUPARM001|Automatich antwoord bericht||
 WPUPARM002|Antwoord:||
 #
 # PopUp "Help Index"
-WPUPHPI001|Help Inhoud||
+WPUPHPI001|Help inhoud||
 WPUPHPI002|Bekijken||
 #
 # PopUp "Station Info"
 WPUPSTI000|Object van: %s||
-WPUPSTI001|Stations Informatie||
-WPUPSTI002|Stuur Bericht||
-WPUPSTI003|Doorzoek FCC Databank||
-WPUPSTI004|Doorzoek RAC Databank||
+WPUPSTI001|Stations informatie||
+WPUPSTI002|Stuur bericht||
+WPUPSTI003|Doorzoek FCC databank||
+WPUPSTI004|Doorzoek RAC databank||
 WPUPSTI005|Packets ontvangen: %d     Laatst Gehoord: ||
 WPUPSTI006|Gehoord via de TNC aan device %d, ||
 WPUPSTI007|Gehoord ||
-WPUPSTI008|laatste via Lokaal||
+WPUPSTI008|laatste via lokaal||
 WPUPSTI009|laatste via TNC op device %d||
-WPUPSTI010|laatste via Internet op device %d||
-WPUPSTI011|laatste via Bestand||
-WPUPSTI012|laatste via Onbekend||
+WPUPSTI010|laatste via internet op device %d||
+WPUPSTI011|laatste via bestand||
+WPUPSTI012|laatste via onbekend||
 WPUPSTI013|, en is van positie veranderd||
 WPUPSTI014|Huidig Vermogen en Winst: %s||
 WPUPSTI016|Hoogte: %.0f%s ||
@@ -687,7 +691,7 @@ WPUPSTI019|Snelheid: %.1fmph||
 WPUPSTI020|%0.1f Mijl||
 WPUPSTI021|%0.1f km||
 WPUPSTI022|Afstand vanaf mijn station %s, Koers vanaf mijn station %s||
-WPUPSTI023|Laatste Positie ||
+WPUPSTI023|Laatste positie ||
 WPUPSTI024|Weer Gegevens %c:%s||
 WPUPSTI025|Wind Richting: %s Snelheid: %03d km/h||
 WPUPSTI026|Wind Richting: %s Snelheid: %s mph||
@@ -709,31 +713,31 @@ WPUPSTI041|%0.2f (mm/sinds middernacht)||
 WPUPSTI042|%0.2f (inch/sinds middernacht)||
 WPUPSTI043|Data pad: %s||
 WPUPSTI044|Commentaar %02d/%02d %02d:%02d : %s||
-WPUPSTI045|Wis Spoor||
-WPUPSTI046|Totaal Regen: ||
+WPUPSTI045|Wis spoor||
+WPUPSTI046|Totaal regen: ||
 WPUPSTI047|%0.2f (mm)||
 WPUPSTI048|%0.2f (inch)||
-WPUPSTI049|Vraag Trace||
-WPUPSTI050|Vraag Uitstaande Berichten||
-WPUPSTI051|Vraag Direkte Stations||
-WPUPSTI052|Vraag Versie||
-WPUPSTI053|Verander Object||
-WPUPSTI054|Sla Spoor Op||
+WPUPSTI049|Vraag trace||
+WPUPSTI050|Vraag uitstaande berichten||
+WPUPSTI051|Vraag direkte stations||
+WPUPSTI052|Vraag versie||
+WPUPSTI053|Verander object||
+WPUPSTI054|Sla spoor op||
 WPUPSTI055|Echo vanaf:||
-WPUPSTI056|Zet Automatisch Bijwerken Aan||
+WPUPSTI056|Zet automatisch bijwerken aan||
 WPUPSTI057|Omni-DF: %s||
-WPUPSTI058|DF Richting:||
+WPUPSTI058|DF richting:||
 WPUPSTI059|Status %02d/%02d %02d:%02d : %s||
-WPUPSTI060|Ontbrandings Temp: %02.1føC  ||
-WPUPSTI061|Ontbrandings Temp: %søF   ||
-WPUPSTI062|Vochtigheids Gehalte in Brandstof: %s%%   ||
+WPUPSTI060|Ontbrandings temp: %02.1føC  ||
+WPUPSTI061|Ontbrandings temp: %søF   ||
+WPUPSTI062|Vochtigheids gehalte in brandstof: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Vraag NWS waarschuwing||
-WPUPSTI065|Tactical Call: %s||
+WPUPSTI065|Gemarkeerde roepnaam: %s||
 #
 # FCC-RAC Call Look up
-STIFCC0001|FCC Databank Doorzoeken||
-STIFCC0002|RAC Databank Doorzoeken||
+STIFCC0001|FCC databank doorzoeken||
+STIFCC0002|RAC databank doorzoeken||
 STIFCC0003|Naam:||
 STIFCC0004|Straat:||
 STIFCC0005|Plaats:||
@@ -758,7 +762,7 @@ UNIOP00007|Toevoegen||
 UNIOP00008|Wissen||
 UNIOP00009|Eigenschappen||
 UNIOP00010|Uitzenden toestaan?||
-UNIOP00011|Activeren bij Opstarten?||
+UNIOP00011|Activeren bij opstarten?||
 UNIOP00012|km/h||
 UNIOP00013|mph||
 UNIOP00014|C||
@@ -767,8 +771,8 @@ UNIOP00016|mm||
 UNIOP00017|inch||
 UNIOP00018|mm/dag||
 UNIOP00019|inch/dag||
-UNIOP00020|mm/h||
-UNIOP00021|inch/h||
+UNIOP00020|mm/uur||
+UNIOP00021|inch/uur||
 UNIOP00022|mm/mid||
 UNIOP00023|inch/mid||
 UNIOP00024|graden||
@@ -786,15 +790,15 @@ STCHO00001|Station Kiezer||
 #
 # DISPLAY WX ALERT
 WPUPWXA001|Wx Waarschuwing||
-WPUPWXA002|Wx Waarschuwingen Lijst||
+WPUPWXA002|Wx Waarschuwingen lijst||
 #
 # PopUp "Configure - Interfaces"
-WPUPCIF001|Geinstalleerde Interfaces||
-WPUPCIF002|Kies Interface Type||
+WPUPCIF001|Geinstalleerde interfaces||
+WPUPCIF002|Kies interface type||
 #
 # PopUp "Configure AX.25 TNC"
 WPUPCAX001|Configureer AX.25 TNC||
-WPUPCAX002|AX.25 Device naam||
+WPUPCAX002|AX.25 device naam||
 #
 # Interface device names
 IFDNL00000|Geen||
@@ -802,14 +806,14 @@ IFDNL00001|Serieele TNC||
 IFDNL00002|Serieele TNC met GPS op een HSP kabel||
 IFDNL00003|Serieele GPS||
 IFDNL00004|Serieele WX||
-IFDNL00005|Internet Server||
+IFDNL00005|Internet server||
 IFDNL00006|AX25 TNC||
 IFDNL00007|Netwerk GPS (via gpsd)||
 IFDNL00008|Netwerk WX||
 IFDNL00009|Serieele TNC met GPS op een AUX kabel||
 IFDNL00010|Serieele KISS TNC||
-IFDNL00011|Database Via Netwerk (Nog Niet Geimplementeerd)||
-IFDNL00012|AGWPE Via Netwerk||
+IFDNL00011|Database via netwerk (nog niet geimplementeerd)||
+IFDNL00012|AGWPE via Netwerk||
 IFDNL00013|Serieele Multi-Port KISS TNC||
 #
 # Interface device info
@@ -839,28 +843,28 @@ IGPUPCF003|Sta RF->Inet en Inet->RF verkeer toe||
 IGPUPCF004|IGate -> RF Path   ||
 #
 # WX Station
-WXPUPSI000|WX Station||
-WXPUPSI001|WX Station Type||
-WXPUPSI002|Huidige Gegevens||
-WXPUPSI003|Wind Koers||
-WXPUPSI004|Wind Snelheid||
-WXPUPSI005|Wind Piek||
+WXPUPSI000|WX station||
+WXPUPSI001|WX station type||
+WXPUPSI002|Huidige gegevens||
+WXPUPSI003|Wind koers||
+WXPUPSI004|Wind snelheid||
+WXPUPSI005|Wind piek||
 WXPUPSI006|Temp||
-WXPUPSI007|Regen Totaal||
-WXPUPSI008|Regen Dag Totaal||
+WXPUPSI007|Regen totaal||
+WXPUPSI008|Regen dag totaal||
 WXPUPSI009|Baro||
 WXPUPSI010|Vochtigheid||
-WXPUPSI011|Peet Bros ULTIMETER 2000 Type (Data Logging Modus)||
+WXPUPSI011|Peet Bros ULTIMETER 2000 Type (in gegevens logmode)||
 WXPUPSI012|Peet Bros ULTIMETER II Type||
-WXPUPSI013|Peet Bros ULTIMETER 2000 Type (Packet Modus)||
-WXPUPSI014|Regen Huidig Uur Tot.||
-WXPUPSI015|Regen Laatste 24uur Tot.||
+WXPUPSI013|Peet Bros ULTIMETER 2000 Type (in packet mode)||
+WXPUPSI014|Regen huidig uur tot.||
+WXPUPSI015|Regen laatste 24uur tot.||
 WXPUPSI016|Qualimetrics Q-Net||
-WXPUPSI017|Peet Bros ULTIMETER 2000 Type (Complete Modus)||
-WXPUPSI018|Dauw Punt||
-WXPUPSI019|Wind Piek||
-WXPUPSI020|Wind Koude Gevoel||
-WXPUPSI021|Warmte Index||
+WXPUPSI017|Peet Bros ULTIMETER 2000 Type (complete mode)||
+WXPUPSI018|Dauw punt||
+WXPUPSI019|Wind piek||
+WXPUPSI020|Wind koude gevoel||
+WXPUPSI021|Warmte index||
 WXPUPSI022|3-Uur Baro||
 WXPUPSI023|Max Temp.||
 WXPUPSI024|Min Temp.||
@@ -868,11 +872,11 @@ WXPUPSI025|Radio Shack WX-200/Oregon Scientific WM-918||
 WXPUPSI026|Davis Weather Monitor II/Wizard III/Vantage Pro||
 #
 # Station Lists
-LHPUPNI000|Alle Stations||
-LHPUPNI001|Mobiele Stations||
-LHPUPNI002|Weer Stations||
-LHPUPNI003|Lokale Stations (via TNC)||
-LHPUPNI004|Laatste Stations||
+LHPUPNI000|Alle stations||
+LHPUPNI001|Mobiele stations||
+LHPUPNI002|Weer stations||
+LHPUPNI003|Lokale stations (via TNC)||
+LHPUPNI004|Laatste stations||
 LHPUPNI005|Objecten & Items||
 LHPUPNI006|Eigen Objecten & Items||
 LHPUPNI010|#||
@@ -885,8 +889,8 @@ LHPUPNI016|Commentaar||
 LHPUPNI100|CSE||
 LHPUPNI101|SPD||
 LHPUPNI102|ALT.||
-LHPUPNI103|Breedte Gr||
-LHPUPNI104|Lengte Gr||
+LHPUPNI103|Breedte gr||
+LHPUPNI104|Lengte gr||
 LHPUPNI105|#Pack||
 LHPUPNI106|LSV||
 LHPUPNI107|CFMS||
@@ -903,14 +907,14 @@ LHPUPNI208|RN24||
 LHPUPNI209|Breedte/Lengte of UTM||
 #
 # Maps WX Alert styles
-PULDNMAT01|Waarschuwings Kaarten boven de andere||
-PULDNMAT02|Waarschuwings Kaarten onder de andere||
+PULDNMAT01|Waarschuwings kaarten boven de andere||
+PULDNMAT02|Waarschuwings kaarten onder de andere||
 #
 # Error/popup messages
-POPEM00001|Lokaliseer Fout!||
+POPEM00001|Lokaliseer fout!||
 POPEM00002|Station %s is niet gevonden!||
-POPEM00003|Spoor-volg Fout!||
-POPEM00004|Interface Fout!||
+POPEM00003|Spoor-volg fout!||
+POPEM00004|Interface fout!||
 POPEM00005|Ongeldige AX.25 poort naam %s||
 POPEM00006|Ongeldige AX.25 poort naam %s||
 POPEM00007|Ongeldige roepnaam %s||
@@ -921,43 +925,43 @@ POPEM00011|Kan geen verbinding met AX.25 roepnaam maken, %s||
 POPEM00012|AX.25 fout bij uitvoer van UI||
 POPEM00013|AX.25 probleem met axports bestand||
 POPEM00014|AX.25 ongeldige poort naam %s||
-POPEM00015|Fout bij het openen van interface %d Harde Fout||
+POPEM00015|Fout bij het openen van interface %d hardware Fout||
 POPEM00016|Fout bij het openen interface %d Time Out||
-POPEM00017|Niet meer interfaces Beschikbaar!||
+POPEM00017|Geen interfaces meer beschikbaar!||
 POPEM00018|Gegevens Aanvraag - Enkele Bericht Regel||
 POPEM00019|Verzenden is uit voor poort %d||
 POPEM00020|Databank Fout!||
-POPEM00021|AX.25 ondersteunig niet mee gecompileerd in deze Xastir Versie!||
+POPEM00021|AX.25 ondersteunig is niet mee gecompileerd in deze Xastir Versie!||
 POPEM00022|Invoer Fout!||
 POPEM00023|Geen lokatie naam gegeven!||
-POPEM00024|Gegeven Lokatie naam is in gebruik!||
+POPEM00024|Gegeven lokatie naam is in gebruik!||
 POPEM00025|Niet gevonden!||
 POPEM00026|Volgen begint op het moment van verschijnen||
 POPEM00027|Incorrecte gegevens.  Zijn er velden leeg?||
 POPEM00028|Kan bestand niet openen||
 POPEM00029|Gevonden!||
-POPEM00030|Weer Station Symbool||
+POPEM00030|Weer station symbool||
 POPEM00031|Veranderd in WX symbool '/_', andere opties:  '\_'  '/W'  and  '\W'||
-POPEM00032|Waarschuwing: Gebruik Nationaal Weer Service Symbool!||
-POPEM00033|Geen GPS Gegevens!||
+POPEM00032|Waarschuwing: gebruik nationaal weer service symbool!||
+POPEM00033|Geen GPS gegevens!||
 POPEM00034|Zet Mijn Positie TX uit totdat geldige GPS gegevens beschikbaar zijn!||
 POPEM00035|Waarschuwing||
 POPEM00036|Let op||
 POPEM00037|HSP interface aanwezig: GPS timing is verhoogd||
 #
 # Jump Location
-JMLPO00001|Kaart Lokatie||
+JMLPO00001|Kaart lokatie||
 JMLPO00002|GA!||
-JMLPO00003|Nieuwe Lokatie Naam:||
+JMLPO00003|Nieuwe lokatie naam:||
 #
 # Bulletins
 BULMW00001|Bulletins||
-BULMW00002|Beperk Reikwijdte tot (0, is geen limiet)||
-BULMW00003|Verander Reikwijdte||
+BULMW00002|Beperk reikwijdte tot (0, is geen limiet)||
+BULMW00003|Verander reikwijdte||
 #
 # All Message Traffic
-AMTMW00001|Alle Berichten Verkeer||
-AMTMW00002|Beperk Reikwijdte tot (0, is geen limiet)||
+AMTMW00001|Alle berichten verkeer||
+AMTMW00002|Beperk reikwijdte tot (0, is geen limiet)||
 #
 # Speech Strings
 SPCHSTR001|kilometers||
@@ -968,8 +972,8 @@ SPCHSTR005|%s, afstand is %d %s.||
 SPCHSTR006|%s, afstand is %.1f %s.||
 SPCHSTR007|%s, afstand is %d %s %s %s.||
 SPCHSTR008|%s, afstand is %.1f %s %s %s.||
-SPCHSTR009|Nieuwe Weer Waarschuwing||
-SPCHSTR010|Nieuwe Roepnaam||
+SPCHSTR009|Nieuwe weer waarschuwing||
+SPCHSTR010|Nieuwe roepnaam||
 SPCHSTR011|Gehoord, D X, %s, op een afstand van %.1f %s||
 #
 SPCHDIRN00|ten noorden van||
@@ -982,33 +986,33 @@ SPCHDIRSE0|ten zuidoosten van||
 SPCHDIRSW0|ten zuidwesten van||
 #
 # Symbol Selection Dialog
-SYMSEL0001|Selecteer Symbool||
-SYMSEL0002|Primaire Symbolen Databank||
-SYMSEL0003|Secondaire Symbolen Databank||
+SYMSEL0001|Selecteer symbool||
+SYMSEL0002|Primaire symbolen Databank||
+SYMSEL0003|Secondaire symbolen Databank||
 #
 # Print Properties Dialog
-PRINT0001|Print Eigenschappen||
-PRINT0002|Papier Formaat||
-PRINT0003|Draai Beeld Automatisch||
-PRINT0004|Draai Beeld 90ø CCW||
-PRINT0005|Pas Schaal Beeld Automatisch Aan||
+PRINT0001|Print eigenschappen||
+PRINT0002|Papier formaat||
+PRINT0003|Draai beeld automatisch||
+PRINT0004|Draai beeld 90. CCW||
+PRINT0005|Pas schaal beeld automatisch aan||
 PRINT0006|Schaal:||
-PRINT0007|Forceer Standaard Witte Achtergrondkleur||
+PRINT0007|Forceer standaard witte achtergrondkleur||
 PRINT0008|Print in Zwart/Wit||
-PRINT0009|Postscript Resolutie:||
+PRINT0009|Postscript resolutie:||
 PRINT0010|Voorbeeld||
-PRINT0011|Print naar Bestand||
+PRINT0011|Print naar bestand||
 PRINT0012|Bezig met printen naar bestand...||
-PRINT0013|Converteren naar Postscript...||
+PRINT0013|Converteren naar postscript...||
 PRINT0014|Gereed met aanmaken print bestand||
-PRINT0015|Printer Status||
-PRINT0016|Inverteer Kleuren||
+PRINT0015|Printer status||
+PRINT0016|Inverteer kleuren||
 #
 # Locate Feature Dialog
 FEATURE001|Naam:||
 FEATURE002|Provincie:||
 FEATURE003|Land:||
-FEATURE004|Kaart Quad:||
+FEATURE004|Kaart quadrant:||
 FEATURE005|Type:||
 FEATURE006|GNIS Bestand:||
 #
@@ -1059,9 +1063,9 @@ PULDNDB001|Afst/Richting Status||
 #
 #
 # GPS Transfer Operations
-GPS001|GPS Overdracht||
+GPS001|GPS overdracht||
 GPS002|Bestandsnaam||
-GPS003|Selecteer Kleur||
+GPS003|Selecteer kleur||
 GPS004|Rood||
 GPS005|Groen||
 GPS006|Zwart||
