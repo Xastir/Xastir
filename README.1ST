@@ -425,10 +425,14 @@ First Time Install:
 
      "./configure --prefix=/home/apps/xastir"
 
-     While will cause executables to be installed in "/home/apps/xastir/bin/"
+     Which will cause executables to be installed in "/home/apps/xastir/bin/"
      and the rest of Xastir to be installed under the "/home/apps/xastir/xastir/"
      directory.
-  
+ 
+     This is useful if you don't have root access on a machine, but still
+     wish to install and use Xastir from your home directory.  There are
+     probably many other uses as well.
+
 
      -----------------------------------------------------------------------
 MAC OS X NOTES:
