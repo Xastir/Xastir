@@ -810,6 +810,11 @@ new location if it is found. The "GNIS File:" entry is saved between calls
 and between invocations of Xastir.  You must put GNIS files into the
 xastir/GNIS directory in order to use this feature.
 
+Find Address 
+This option brings up a search dialog where you can enter an address. It will 
+center on the map if the address is found. The path to the goecoder file is 
+saved between calls. 
+
 Coordinate Calc
 This option opens a simple calculator that can convert between coordinate
 systems. This is useful for converting positions to the various formats used

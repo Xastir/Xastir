@@ -59,6 +59,7 @@ Installing only the required libs gives you these capabilities:
     WinAPRS maps
     MacAPRS maps
     GNIS labels
+    Address searching
     serial port and internet gateway connectivity.
 
 Adding XPM or ImageMagick libs, ImageMagick's "convert" utility, and
