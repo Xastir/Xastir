@@ -1505,6 +1505,7 @@ void alert_build_list(Message *fill) {
         int ignore_title = 0;
 #define MAX_SUB_ALERTS 5000
         char *title_ptr[MAX_SUB_ALERTS];
+        int ret;
 
 
         if (debug_level & 2)
@@ -1523,15 +1524,18 @@ void alert_build_list(Message *fill) {
         // This fills in the zone numbers (title) for uncompressed
         // alerts with up to five alerts per message.  This doesn't
         // handle filling in the title for compressed alerts though.
-        (void)sscanf(fill->message_line,
-            "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
-            entry.activity,      // 191700z
-            entry.alert_tag,     // WIND
-            &title[0][0],        // CA_Z007
-            &title[1][0],        // ...
-            &title[2][0],        // ...
-            &title[3][0],        // ...
-            &title[4][0]);       // ...
+        ret = sscanf(fill->message_line,
+                "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
+                entry.activity,      // 191700z
+                entry.alert_tag,     // WIND
+                &title[0][0],        // CA_Z007
+                &title[1][0],        // ...
+                &title[2][0],        // ...
+                &title[3][0],        // ...
+                &title[4][0]);       // ...
+
+        if (ret < 3)
+            fprintf(stderr,"sscanf parsed %d values in alert.c (3-7 ok)\n", ret);
 
         // Force a termination for each
         entry.activity[20]  = '\0';
@@ -1568,10 +1572,14 @@ void alert_build_list(Message *fill) {
             // a really long new message and add it to the queue,
             // in which case we'd exit from this routine as soon as
             // it was submitted.
-            (void)sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
+            ret = sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
                 entry.activity,
                 entry.alert_tag,
                 compressed_wx);     // Stick the long string in here
+
+            if (ret != 3)
+                fprintf(stderr,"sscanf parsed %d/3 values in alert.c\n", ret);
+
             compressed_wx[255] = '\0';
 
 //fprintf(stderr,"Line:%s\n",compressed_wx);

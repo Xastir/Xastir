@@ -1945,8 +1945,11 @@ long sort_input_database(char *filename, char *fill, int size) {
 
     ptr_size=(int)sizeof(new_data_ptr);
     xastir_snprintf(ptr_filename, sizeof(ptr_filename), "%s-ptr", filename);
+
     /* get first string to sort on */
-    (void)sscanf(fill,"%1999s",tempfill);
+    if (1 != sscanf(fill,"%1999s",tempfill)) {
+        fprintf(stderr,"sort_input_database(1): sscanf failed to parse\n");
+    }
 
     data_ptr=0l;
     my_data=NULL;
@@ -1988,7 +1991,9 @@ long sort_input_database(char *filename, char *fill, int size) {
                     (void)fseek(my_data,data_ptr,SEEK_SET);
                     if(fread(file_data,(size_t)size,1,my_data)==1) {
                         /* COMPARE HERE */
-                        (void)sscanf(file_data,"%1999s",tempfile);
+                        if (1 != sscanf(file_data,"%1999s",tempfile)) {
+                            fprintf(stderr,"sort_input_database(2): sscanf failed to parse\n");
+                        }
                         if(strcasecmp(tempfill,tempfile)<0) {
                             /* file name comes before */
                             /*fprintf(stderr,"END - Before start\n");*/
@@ -2002,7 +2007,9 @@ long sort_input_database(char *filename, char *fill, int size) {
                             (void)fseek(my_data,data_ptr,SEEK_SET);
                             if(fread(file_data,(size_t)size,1,my_data)==1) {
                                 /* COMPARE HERE */
-                                (void)sscanf(file_data,"%1999s",tempfile);
+                                if (1 != sscanf(file_data,"%1999s",tempfile)) {
+                                    fprintf(stderr,"sort_input_database(3): sscanf failed to parse\n");
+                                }
                                 if(strcasecmp(tempfill,tempfile)>0) {
                                     /* file name comes after */
                                     /*fprintf(stderr,"END - After end\n");*/
@@ -2025,7 +2032,9 @@ long sort_input_database(char *filename, char *fill, int size) {
                                         (void)fseek(my_data,data_ptr,SEEK_SET);
                                         if(fread(file_data,(size_t)size,1,my_data)==1) {
                                             /* COMPARE HERE */
-                                            (void)sscanf(file_data,"%1999s",tempfile);
+                                            if (1 != sscanf(file_data,"%1999s",tempfile)) {
+                                                fprintf(stderr,"sort_input_database(4): sscanf failed to parse\n");
+                                            }
                                             if(strcasecmp(tempfill,tempfile)<0) {
                                                 /* checking comes before */
                                                 /*record_start=0l;*/
