@@ -112,6 +112,7 @@ More weather stations supported via wx200d daemon (WX-200/WM-918/WMR-918/WMR-968
 storm wind radius decoding
 stations menu cleanup
 grid density adjustment +=-
+wind barbs
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -718,7 +719,7 @@ the objects/item was last heard, the path that the most recent packet took, the
 PHG, and the comment of the object/item. A ghosted icon indicates that the
 object has been deleted.
 
-WX stations
+Weather Stations
 This option displays a table of all the APRS(tm) weather stations and their
 data. Data includes wind course, wind speed, wind gust speed, temperature,
 humidity, barometric pressure, rain in the past hour, rain since midnight,
@@ -774,15 +775,15 @@ in a GNIS file to find a specific location.  It will center the map on the
 new location if it is found. The "GNIS File:" entry is saved between calls
 and between invocations of Xastir.
 
-Disable All Maps
-This option disables the loading of any maps. It is most useful when doing
-rapid zooming or panning, because it saves the need to load the maps on each
-redraw.  Note that this option is not saved between sessions.
-
 Coordinate Calc
 This option opens a simple calculator that can convert between coordinate
 systems. This is useful for converting positions to the various formats used by
 different groups of people.
+
+Disable All Maps
+This option disables the loading of any maps. It is most useful when doing
+rapid zooming or panning, because it saves the need to load the maps on each
+redraw.  Note that this option is not saved between sessions.
 
 Enable Auto Maps
 When enabled, any map found in the map directory (or any directory under it)
@@ -793,9 +794,13 @@ All Maps will be merged into the viewing area. If you have a large quantity
 of maps, very detailed maps or a slower computer this can be quite slow. When
 this option is off, maps selected with the Map Chooser will be displayed.
 
+Auto Maps - disable Raster maps
+This option prevents Auto Maps from loading maps which are graphics.
+
 Enable Map Grid
 When enabled, this option will display a grid line every 10 degrees.  As you
-zoom in it switches to a 1 degree spacing.
+zoom in it switches to a 1 degree spacing. The spacing may be manually adjusted
+with the "+" and "-" keys.
 
 Enable Map Levels
 When enabled, this option will try to filter out data when the zoom level shows
@@ -819,7 +824,7 @@ This toggles the display of county warning area maps for severe weather.
 These maps can be obtained and installed according to the directions in the
 README.1ST file. They are displayed on screen when special weather alert
 messages are received, and expire after a time or can be remotely cancelled.
-The weather alert text can be seen under View|WX Alerts.
+The weather alert text can be seen under View|Weather Alerts.
 
 Background color
 This option controls the color of the background behind the maps you have
@@ -1046,76 +1051,106 @@ Fetch Findu Trail
 Downloads historic trail data from findu.com. Slider bars control the starting
 point and duration of data downloaded.
 
-Enable Symbols
-Determines if symbols should be drawn on the map. Most of the options below
-depend on this being enabled.
+Filter Symbols
+This sub-menu allows filtering of the displayed data:
 
-  For old stations the symbol is drawn ghosted and in its standard orientation.
-  Corresponding trails are dashed rather than solid and all data except the
-  callsign disappear from the screen.  Exception:  If "Display Expired Data"
-  is enabled, then the data will not disappear when ghosting a symbol.
+  Display Symbols
+  Determines if symbols should be drawn on the map. The other options depend
+  on this being enabled.
 
-Rotate Symbols
-Some symbols will change their orientation to show the direction in which they
-are traveling.
+   For old stations the symbol is drawn ghosted and in its standard
+   orientation.
+   Corresponding trails are dashed rather than solid and all data except the
+   callsign disappear from the screen.  Exception:  If "Display Expired Data"
+   is enabled, then the data will not disappear when ghosting a symbol.
 
-Enable Callsign
-Determines if the callsign is displayed on the right side of the symbol.
+  Display Local Stations
+  This option displays stations with data received from RF or logfiles.
 
-Enable Speed
-When on, red text will appear below the call sign (or course). This will
-display the last known speed the station is traveling. 
+  Display Non-Local Stations
+  This option displays stations with data received via the Internet.
 
-Display Short Speed
-This option removes display of the measurement units for speed.
+  Display Non-Moving Stations
+  This option displays stations with multiple positions or non-zero speed.
 
-Enable Altitude
-When enabled, blue text will appear above the call sign. This will display the
-last known altitude of the station.
+  Display Moving Stations
+  This option displays stationary stations.
 
-Enable Course
-When enabled, green text will appear below the call sign. This will display the
-last known course (in degrees) the station is traveling.
+  Display WX Stations
+  This option displays Weather Stations.
 
-Enable Dist/Course
-When enabled, two lines of text will be displayed on the left side of the
-stations' icon. The top line will contain the distance from your station to
-this station. The bottom line will contain the course from your station to
-this station.
+  Display Objects/Items
+  This option displays Objects and Items.
 
-Enable Weather Info
-When enabled, the latest weather data (temp,wind speed/course/gust,Humidity) is
-displayed.
+  Display WX Objects/Items
+  This option displays Objects and Items. This includes tropical storms and
+  remote weather stations.
 
-Display Temperature Only
-Displays only the temperature data for the station.
+Filter Info
+This sub-menu allows filtering of the displayed data:
 
-Enable Power/Gain
-When on, Power/Gain Circles will be displayed. Overlapping circles indicate
-that the stations are theoretically within simplex range of one another.
-This is only roughly accurate, especially in areas of variable terrain. 
+  Rotate Symbols
+  Some symbols will change their orientation to show the direction in which
+  they are traveling.
 
-Enable Default Power/Gain
-Enables a default power/gain setting as specified in the APRS(tm) specification.
+  Display Callsign
+  Determines if the callsign is displayed on the right side of the symbol.
 
-Enable Mobile Power/Gain
-Enables power/gain circles for mobile stations.
+  Display Speed
+  When on, red text will appear below the call sign (or course). This will
+  display the last known speed the station is traveling. 
 
-Enable Position Ambiguity
-When enabled, the area in which station using position ambiguity may be located
-within is shaded, with the relevant station in the center.
+  Display Short Speed
+  This option removes display of the measurement units for speed.
 
-Display Expired data
-Causes Xastir to continue to display the station data that normally goes
-away when the symbol is ghosted.  The expiration time can be adjusted in the
-File|Configure|Defaults menu.
+  Display Altitude
+  When enabled, blue text will appear above the call sign. This will display
+  the last known altitude of the station.
 
-Display DF Circles
-When enabled, any DF circles will be displayed on the screen.
+  Display Course
+  When enabled, green text will appear below the call sign. This will display
+  the last known course (in degrees) the station is traveling.
 
-Enable Station trails
-When enabled, any moving station will trail a colored line with the last 100+
-locations.
+  Display Dist/Course
+  When enabled, two lines of text will be displayed on the left side of the
+  stations' icon. The top line will contain the distance from your station to
+  this station. The bottom line will contain the course from your station to
+  this station.
+
+  Display Weather Info
+  When enabled, the latest weather data (temp,wind speed/course/gust,Humidity)
+  is displayed.
+
+  Display Temperature Only
+  Displays only the temperature data for the station.
+
+  Display Power/Gain
+  When on, Power/Gain Circles will be displayed. Overlapping circles indicate
+  that the stations are theoretically within simplex range of one another.
+  This is only roughly accurate, especially in areas of variable terrain. 
+
+  Display Default Power/Gain
+  Enables a default power/gain setting as specified in the APRS(tm)
+  specification.
+
+  Display Mobile Power/Gain
+  Enables power/gain circles for mobile stations.
+
+  Display Position Ambiguity
+  When enabled, the area in which station using position ambiguity may be
+  located within is shaded, with the relevant station in the center.
+
+  Display Expired data
+  Causes Xastir to continue to display the station data that normally goes
+  away when the symbol is ghosted.  The expiration time can be adjusted in the
+  File|Configure|Defaults menu.
+
+  Display DF Circles
+  When enabled, any DF circles will be displayed on the screen.
+
+  Display Station trails
+  When enabled, any moving station will trail a colored line with the last 100+
+  locations.
 
 Clear All Stations
 This will wipe all the data from the station database except yours.
