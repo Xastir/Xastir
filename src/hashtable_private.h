@@ -4,11 +4,14 @@
 
 
 /* Copyright (C) 2002, 2004 Christopher Clark <firstname.lastname@cl.cam.ac.uk> */
+/* Modified by the Xastir Group */
 
 #ifndef __HASHTABLE_PRIVATE_CWC22_H__
 #define __HASHTABLE_PRIVATE_CWC22_H__
 
 #include "hashtable.h"
+#include "xastir.h" /* Defines GC_MALLOC/GC_FREE */
+
 
 /*****************************************************************************/
 struct entry

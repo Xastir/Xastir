@@ -4,11 +4,19 @@
 
 
 /* Copyright (C) 2002, 2004 Christopher Clark  <firstname.lastname@cl.cam.ac.uk> */
+/* Modified by the Xastir Group */
 
+#include <stdlib.h> /* defines NULL */
+#include <stdio.h>
+//#include <string.h>
+//#include <math.h>
+
+#include "xastir.h" /* defines GC_MALLOC/GC_FREE */
 #include "hashtable.h"
 #include "hashtable_private.h"
 #include "hashtable_itr.h"
-#include <stdlib.h> /* defines NULL */
+
+
 
 /*****************************************************************************/
 /* hashtable_iterator    - iterator constructor */
