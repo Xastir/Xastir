@@ -523,7 +523,7 @@ WPUPCFID14|Log de transações do I-Gate?|||
 WPUPCFID15|Filter Parameters||
 #
 # PopUp "Configure AGWPE"
-WPUPCFIA01|Configure AGWPE (TBD)||
+WPUPCFIA01|Configure AGWPE||
 WPUPCFIA02|Host ||
 WPUPCFIA03|Port ||
 WPUPCFIA04|(Secondary hosts)||
@@ -537,7 +537,6 @@ WPUPCFIA11|Reconnect on NET failure?||
 WPUPCFIA12|Run as an I-Gate?||
 WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
 WPUPCFIA14|Log I-Gate Transactions?||
-WPUPCFIA15|Filter Parameters||
 #
 # Configurar Alarmas de Audio
 WPUPCFA001|Configurar alarme de audio||
@@ -734,7 +733,7 @@ IFDNL00008|Est. meteorológica ligada a uma REDE||
 IFDNL00009|TNC com GPS na porta AUX||
 IFDNL00010|Serial KISS TNC||
 IFDNL00011|Networked Database (Not Implemented Yet)||
-IFDNL00012|Networked AGWPE (Not Implemented Yet)||
+IFDNL00012|Networked AGWPE||
 #
 # Info dispositivo interface
 IFDIN00000|%s %d %s sobre série %s||
