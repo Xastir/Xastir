@@ -284,6 +284,137 @@ Getting Maps and other Data Files for Xastir:
       "<shapelib source directory>/contrib/doc" directory.
       -----
 
+      Using "dbfawk" to interpret shapefile DBF data:  Each shapefile
+      map (*.shp, *.shx) comes with a DBase data file (*.dbf) in which
+      each shape in the .shp file has a corresponding set of descriptive
+      data about that shape in the .dbf file.  While shapefiles are all
+      a standard format and will most always draw (possibly after having
+      been reprojected with shpproj), the corresponding .dbf data varies
+      widely depending on the data source.  For example, US Census
+      Tiger/Line files contain 20 attributes for each shape including such
+      values as the name of the shape (i.e. street name), and a "Census
+      Feature Class Code" (CFCC) which indicates whether a shape is a
+      dirt road or a superhighway, for example.   
+
+      In "pre-dbfawk" Xastir, knowledge of the various sources of
+      shape files was built into the program and it was necessary to
+      add code to support new shapefile sources (such as those
+      produced by local government agencies, non-US, etc.).  Xastir
+      with dbfawk moves this logic into metadata files named *.dbfawk.
+      These files are linked to the .shp/.dbf files they belong with in
+      one of two ways:
+        1. "Signature" recognition.  .dbfawk files located in the config/
+           directory are read to find the "dbfinfo" signature, which is
+           simply the ordered list of attribute names found in the .dbf file.
+           If you browse config/*.dbfawk you will see dbfawk's for the most
+           well know shapefile types.  For example, tgrlk.dbfawk matches
+           all the "tgr*lk?.dbf" US Census Tiger/Line files.  When a shapefile
+           map is displayed, it's .dbf signature is matched up with one of
+           the config/*.dbfawk files.
+        2. "Tied" to a file.  If you installed a .dbfawk file in the same
+            directory as the .shp and .dbf files (e.g. sample.shp, sample.dbf
+            get a corresponding sample.dbfawk) then that file is used instead
+            of signature matching.
+      The first method allows a single .dbfawk file to be automatically
+      used for hundreds of standard shapefile maps.  The later allows you
+      to customize how your particulare shapfile map displays.
+
+      What's in a .dbfawk file?  The best documentation of these files
+      is found by looking at the commented examples in config/*.dbfawk.  
+      dbfawk is modeled after the "awk" pattern scanning and processing 
+      language -- but, it is *not* exactly awk:
+        - Regular expression syntax is that used by Perl (the pcre library
+          is used) rather than pure awk.
+        - Action statements are much more limited than full-blown awk.
+        - The concept of records and fields is used since a .dbf record
+          is structured of usually several fields (name, feature type, etc.).
+      That said, what dbfawk does is allow a great degree of control of
+      how and when shapes and their names are displayed.  This is done by
+      setting the values of several "builtin" variables [Technically, these 
+      are only built-in to shapefile support.  Potentially the awk-like 
+      code can be extended to other uses.]:
+        dbfinfo:   the "signature" to match against.
+        dbffields: which fields to read from the .dbf file.
+        color:     what color code to display the shape with.
+        lanes:     width of the shape.
+        name:      name of the shape.
+        key:       search key (used for WX alerts to find the shape)
+	symbol:	   symbol for landmarks, etc.
+	filled:	   draw polygons filled.
+        fillstyle: style of fill (solid, stiple, etc.)
+        pattern:   solid or dashed lines.
+        display_level: at what zoom level to begin displaying the shape
+        label_level: at what zoom level to begin displaying labels
+        label_color: color to use for labels
+      
+      Execution of a dbfawk file:  Just like awk, the file consists of
+      patterns that are matched against input data and actions to take
+      when the pattern matches.  There are four special patterns in dbfawk:
+        BEGIN_RECORD: action is executed just before parsing a record.
+        BEGIN: action is executed just before parsing a field.
+        END: action is executed just after parsing the field.
+        END_RECORD: action is executed just after parsing a record.
+      All other patterns are regular expressions that are matched against
+      a data value of <fieldname>=<value>.  For example:
+        FENAME=Main
+
+      Actions in dbfawk files consist of setting variables and two special
+      actions:
+        next: skips to the next field in the record.
+        skip: skips to the next record.
+      If neither next nor skip is given in the action, then processing falls
+      through to the next pattern/action pair in the dbfawk file.
+      
+      The special dbffields variable is used to list which fields of the
+      record to be processed and in what order.  The order is significant
+      since it may take several DBF fields to build up a complete name.
+      For example, in Tiger/Line, the street name is actually the 
+      concatentation of FEDIRP, FENAME, TYPE, FEDIRS.  Here's an excerpt
+      from tgrlk.dbfawk to demonstrate:
+        BEGIN {dbffields="TLID:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC"}
+        ...
+	/^FEDIRP=(.+)$/ {name="$1 ";next}
+	/^FENAME=United States Highway (.*)$/ {name="$(name)US $1"; next}
+	/^FENAME=State Highway (.*)$/ {name="$(name)State $1";next}
+	/^FENAME=State Route (.*)$/ {name="$(name)SR $1";next}
+	/^FENAME=(.*)$/ {name="$(name)$1; next}
+	/^FETYPE=(.+)$/ {name="$(name) $1"; next}
+	/^FEDIRS=(.+)$/ {name="$(name) $1"; next}
+      
+      Creating and testing dbfawk files:  You can test an existing dbfawk
+      file by setting debug level 16 in Xastir (this will generate a huge
+      amount of map rendering debug output, including dbfawk info):
+       "./xastir -v 16 2>/tmp/log"
+      Or, use "testawk" which reads a .dbf file (or single field assignments
+      on the command line).  For example:
+	./testawk -D . -d tgr36119lkA.dbf 2>&1|less
+	20 Columns,  42427 Records in file
+	sig: TLID:FNODE:TNODE:LENGTH:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC:FRADDL:TOADDL:FRADDR:TOADDR:ZIPL:ZIPR:CENSUS1:CENSUS2:CFCC1:CFCC2:SOURCE
+	DBF Signatures match!
+	name=Hancock Ave, key=80309984, symbol=, color=40, lanes=1, filled=0, pattern=1,display_level=96,label_level=16
+
+      To create a .dbfawk file, you need to understand the layout and contents
+      of your .dbf file.  Use "dbfinfo" and "dbfdump" which are in the shapelib
+      contrib directory.  Dbfinfo will list the field names and dbfdump will
+      dump out all fields of all records.  Take the field names from dbfinfo,
+      and concatenate them together in order, separated by ":" to make the
+      dbfinfo= signature variable assignment.
+
+      Your best bet is to start with an existing .dbfawk file as an example.
+
+      Dbfawk hints and kinks:  You have to think like an awk programmer and
+      realize that the order that rules are listed matters, that it's important
+      to use "next" as soon as it makes sense so other rules aren't looked at
+      unnecessarily and, to use "skip" when you want to fix bad dbf data.
+      For example, my county's Tiger/Line maps have several coding errors
+      where a segment of a main highway is incorrectly labeled as a local 
+      street.  This rule overrides one of those incorrect records:
+	# This Furnace Dock Rd segment is really Rt 9!
+	/^TLID=139773160$/ {name="Briarcliff-Peekskill Pky"; display_level=8192; label_level=512; color=4; lanes=4; skip;}
+      TLID is the Tiger/Line ID which is the unique identifier for this 
+      segment.
+      -----
+
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget or libcurl installed, .geo files

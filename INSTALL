@@ -566,6 +566,15 @@ First Time Install:
      wish to install and use Xastir from your home directory.  There are
      probably many other uses as well.
 
+     If you want to enable optional "dbfawk" support (see README.MAPS) then
+     add "--with-dbfawk" to your "./configure", i.e.
+
+     "./configure --with-dbfawk"
+
+     Note that dbfawk is still being beta-tested and may not work correctly
+     for you.  If you have problems with it, simply rerun "./configure"
+     without the "--with-dbfawk" option and rebuild.
+
      If you see some errors, they be because you are missing
      GNU msgfmt or GNU gettext/xgettext?  These packages are required
      to compile the latest Xastir sources.  Beware of packages with the
