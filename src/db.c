@@ -11747,8 +11747,6 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
 
     }
     else if (devices[port].device_type == DEVICE_AX25_TNC) {
-//#define I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT 1
-#ifdef I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
         char header_txt[MAX_LINE_SIZE+5];
 
         //fprintf(stderr,"AX25 RELAY short_path: %s\n", short_path);
@@ -11770,7 +11768,6 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
         // send packet
         if (port_data[port].status == DEVICE_UP)
             port_write_string(port, info);
-#endif  // I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
     }
 
 // Example packet:

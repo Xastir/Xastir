@@ -3273,14 +3273,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
 
     if(XmToggleButtonGetState(AX25_transmit_data)) {
         devices[AX25_port].transmit_data=1;
-
-// Use the TRUE option once we get AX.25 digipeating working
-//#define I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT 1
-#ifdef I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
         XtSetSensitive(AX25_relay_digipeat, TRUE);
-#else   // I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
-        XtSetSensitive(AX25_relay_digipeat, FALSE);
-#endif  // I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
     }
     else {
         devices[AX25_port].transmit_data=0;
@@ -3401,10 +3394,6 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
-
-#ifndef I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
-	XtSetSensitive(AX25_relay_digipeat, FALSE);
-#endif  // I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
 
         devn = XtVaCreateManagedWidget(langcode("WPUPCAX002"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
