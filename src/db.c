@@ -7776,7 +7776,18 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
 
             case 7:
                 strcat(new_info,"Emergency");
-popup_message("Emergency!",call_sign);
+
+                // Do a popup to alert the operator to this
+                // condition
+                popup_message("Emergency!",call_sign);
+
+                // Bring up the Find Station dialog so that the
+                // operator can go to the location quickly
+                xastir_snprintf(locate_station_call,
+                    sizeof(locate_station_call),
+                    "%s",
+                    call_sign);
+                Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)NULL );
                 break;
 
             default:

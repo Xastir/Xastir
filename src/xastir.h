@@ -167,6 +167,7 @@ extern void set_last_position(void);
 extern void map_pos_last_position(void);
 
 /* from location_gui.c */
+extern char locate_station_call[30];
 extern void Last_location(Widget w, XtPointer clientData, XtPointer callData);
 extern void Jump_location(Widget w, XtPointer clientData, XtPointer callData);
 extern void map_pos(long mid_y, long mid_x, long sz);
