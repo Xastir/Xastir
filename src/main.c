@@ -697,8 +697,17 @@ void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer c
 // WE7U
 // This one needs a bit of work yet (needs to actually _do_ something!).
 void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer callData) {
-    char temp_string[50];
-    xastir_snprintf(temp_string, sizeof(temp_string), "Output should appear here");
+    char temp_string[1024];
+    xastir_snprintf(temp_string,
+        sizeof(temp_string),"%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+        "*** Simulated output ***",
+        "",
+        "             Decimal Degrees:  48.00000N   122.00000W",
+        "     Degrees/Decimal Minutes:  48 00.000N  122 00.000W",
+        "     Degrees/Minutes/Seconds:  48 00 00N   122 00 00W",
+        "Universal Tranverse Mercator:  10T  0574598  5316888",
+        "",
+        "*** Simulated output ***");
     XmTextSetString(coordinate_calc_result_text, temp_string);
 
 
@@ -984,15 +993,16 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
 
         coordinate_calc_result_text = NULL;
         coordinate_calc_result_text = XtVaCreateManagedWidget("Coordinate_calc results",xmTextWidgetClass,form,
-                            XmNrows, 7,
-                            XmNcolumns, 30,
+                            XmNrows, 8,
+                            XmNcolumns, 60,
                             XmNeditable, FALSE,
                             XmNtraversalOn, FALSE,
                             XmNeditMode, XmMULTI_LINE_EDIT,
                             XmNwordWrap, TRUE,
                             XmNbackground, colors[0xff],
-                            XmNscrollHorizontal, FALSE,
+//                            XmNscrollHorizontal, FALSE,
                             XmNcursorPositionVisible, FALSE,
+                            XmNautoShowCursorPosition, True,
                             XmNtopAttachment, XmATTACH_WIDGET,
                             XmNtopWidget, coordinate_calc_zone,
                             XmNtopOffset, 5,
