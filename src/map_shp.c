@@ -1685,25 +1685,8 @@ void draw_shapefile_map (Widget w,
                 draw_filled = filled; /* this overrides map properties! */
                 if (weather_alert_flag) { /* XXX will this fix WX alerts? */
                     fill_style = FillStippled;
-                } else if (filled != 0 && fill_style == FillStippled) {
-                    switch (fill_stipple) {
-                    case 0:
-                        (void)XSetStipple(XtDisplay(w), gc, 
-                                          pixmap_13pct_stipple);
-                        break;
-                    case 1:
-                        (void)XSetStipple(XtDisplay(w), gc, 
-                                          pixmap_25pct_stipple);
-                        break;
-                    default:
-                        (void)XSetStipple(XtDisplay(w), gc, 
-                                          pixmap_25pct_stipple);
-                        break;
-                    }
-                }
+                } 
 
-                (void)XSetFillStyle(XtDisplay(w), gc, fill_style);
-                
                 skip_it = (map_color_levels && (scale_y > display_level));
                 skip_label = (map_color_levels && (scale_y > label_level));
 
@@ -2716,6 +2699,30 @@ void draw_shapefile_map (Widget w,
                     if (debug_level & 16)
                         fprintf(stderr,"Found Polygons\n");
 
+#ifdef WITH_DBFAWK
+                    // User requested filled polygons with stippling.
+                    // Set the stipple now.  need to do here, because if
+                    // done earlier the labels get stippled, too.
+                    (void)XSetFillStyle(XtDisplay(w), gc, fill_style);
+                    if (filled != 0 && fill_style == FillStippled) {
+                
+                        switch (fill_stipple) {
+                        case 0:
+                            (void)XSetStipple(XtDisplay(w), gc, 
+                                              pixmap_13pct_stipple);
+                            break;
+                        case 1:
+                            (void)XSetStipple(XtDisplay(w), gc, 
+                                              pixmap_25pct_stipple);
+                            break;
+                        default:
+                            (void)XSetStipple(XtDisplay(w), gc, 
+                                              pixmap_25pct_stipple);
+                            break;
+                        }
+                    }
+#endif
+
                     // Each polygon can be made up of multiple
                     // rings, and each ring has multiple points that
                     // define it.  We hit this case once for each
@@ -3516,6 +3523,10 @@ if (on_screen) {
 
 #ifdef WITH_DBFAWK
                     temp = name;
+                    // Set fill style back to defaults, or labels will get
+                    // stippled along with polygons!
+                    XSetFillStyle(XtDisplay(w), gc, FillSolid);
+
 #else /* !WITH_DBFAWK */
                     /* labels come from dbfawk, not here... */
 
