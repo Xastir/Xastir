@@ -737,6 +737,7 @@ Widget sb_wait_time_data = (Widget)NULL;
 
 Widget ghosting_time = (Widget)NULL;
 Widget clearing_time = (Widget)NULL;
+Widget removal_time = (Widget)NULL;
 Widget posit_interval = (Widget)NULL;
 Widget gps_interval = (Widget)NULL;
 Widget dead_reckoning_time = (Widget)NULL;
@@ -13071,33 +13072,32 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
     int value;
 
 
-    XmScaleGetValue(ghosting_time, &value); // Minutes
-    sec_old = (time_t)(value * 60); // Convert to seconds
+    XmScaleGetValue(ghosting_time, &value);     // Minutes
+    sec_old = (time_t)(value * 60);             // Convert to seconds
 
-    XmScaleGetValue(clearing_time, &value); // Hours
-    sec_clear = (time_t)(value * 60 * 60);  // Convert to seconds
+    XmScaleGetValue(clearing_time, &value);     // Hours
+    sec_clear = (time_t)(value * 60 * 60);      // Convert to seconds
 
-    XmScaleGetValue(posit_interval, &value);// Minutes * 10
-    POSIT_rate = (long)(value * 60 / 10);   // Convert to seconds
+    XmScaleGetValue(posit_interval, &value);    // Minutes * 10
+    POSIT_rate = (long)(value * 60 / 10);       // Convert to seconds
 
-    XmScaleGetValue(gps_interval, &value);  // Seconds
+    XmScaleGetValue(gps_interval, &value);      // Seconds
     gps_time = (long)value;
 
-    XmScaleGetValue(dead_reckoning_time, &value);  // Minutes
-    dead_reckoning_timeout = value * 60;    // Convert to seconds
+    XmScaleGetValue(dead_reckoning_time, &value);// Minutes
+    dead_reckoning_timeout = value * 60;        // Convert to seconds
 
-    XmScaleGetValue(object_item_interval, &value);  // Minutes
-    OBJECT_rate = value * 60;   // Convert to seconds
+    XmScaleGetValue(object_item_interval, &value);// Minutes
+    OBJECT_rate = value * 60;                   // Convert to seconds
+
+    XmScaleGetValue(removal_time, &value);      // Days
+    sec_remove = (time_t)(value * 60 * 60 * 24);// Convert to seconds
 
     // Set the new posit rate into effect immediately
     posit_next_time = posit_last_time + POSIT_rate;
 
     // Set the new GPS rate into effect immediately
     sec_next_gps = sec_now() + gps_time;
-
-    sec_remove = sec_clear*2;
-    if (sec_remove < (time_t)(24*3600))
-        sec_remove = (time_t)(24*3600);
 
     redraw_on_new_data=2;
     Configure_timing_destroy_shell(widget,clientData,callData);
@@ -13285,11 +13285,36 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        // Interval for station being removed from database
+        removal_time = XtVaCreateManagedWidget("Station Removeal Time",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, dead_reckoning_time,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,      // One Day
+                XmNmaximum, 14,     // Two weeks
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(sec_remove/(60*60*24)),
+                XtVaTypedArg, XmNtitleString, XmRString, "Station Delete Time (days)", 6,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, dead_reckoning_time,
+                XmNtopWidget, removal_time,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
@@ -13307,7 +13332,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 xmPushButtonGadgetClass, 
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, object_item_interval,
+                XmNtopWidget, removal_time,
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
