@@ -122,7 +122,7 @@
 //
 // New compressed-mode weather alert packets:
 //
-// LZKNPW>APRS::NWS-ADVIS:221000z,ARZ003>007-012>016-021> ;025-030>034-037>047-052>057-062>069{LLSAA
+// LZKNPW>APRS::NWS-ADVIS:221000z,WINTER_STORM,ARZ003>007-012>016-021>025-030>034-037>047-052>057-062>069{LLSAA
 //
 // The trick is to step thru the data base contained in the
 // shapefiles to determine what areas to light up.  In the above
@@ -1107,10 +1107,11 @@ printf("Zone:%s%s\n",prefix,suffix);
             else
                 entry[i].alert_level = 'G';
 
+            // Look for a similar alert
             if ((list_ptr = alert_match(&entry[i], ALERT_ALL))) {
                 list_ptr->expiration = entry[i].expiration;
                 strcpy(list_ptr->activity, entry[i].activity);
-            } else {
+            } else {    // No similar alert, add a new one to the list
                 (void)alert_add_entry(&entry[i]);
             }
 
