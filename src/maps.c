@@ -9931,7 +9931,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
     int map_dir_length;
 
     // We'll use the weather alert directory if it's an alert
-    map_dir = alert ? ALERT_MAP_DIR : WIN_MAP_DIR;
+    map_dir = alert ? ALERT_MAP_DIR : SELECTED_MAP_DIR;
 
     map_dir_length = (int)strlen (map_dir);
 
@@ -10782,8 +10782,8 @@ void load_maps (Widget w) {
     if (debug_level & 1)
         printf ("Load maps start\n");
 
-    (void)filecreate(WIN_MAP_DATA);   // Create empty file if it doesn't exist
-    f = fopen (WIN_MAP_DATA, "r");
+    (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
+    f = fopen (SELECTED_MAP_DATA, "r");
     if (f != NULL) {
         if (debug_level & 1)
             printf ("Load maps Open map file\n");
@@ -10805,7 +10805,7 @@ void load_maps (Widget w) {
 
 //printf("%s\n",mapname);
 //start_timer();
-                    draw_map (w, WIN_MAP_DIR, mapname, NULL, '\0', DRAW_TO_PIXMAP);
+                    draw_map (w, SELECTED_MAP_DIR, mapname, NULL, '\0', DRAW_TO_PIXMAP);
 //stop_timer();
 //print_timer_results();
 
@@ -10824,7 +10824,7 @@ void load_maps (Widget w) {
         statusline(" ",1);      // delete status line
     }
     else
-        printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
 
     if (debug_level & 1)
         printf ("Load maps stop\n");

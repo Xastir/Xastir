@@ -718,8 +718,8 @@ pid_t last_sound_pid;
 
 char AUTO_MAP_DIR[400];
 char ALERT_MAP_DIR[400];
-char WIN_MAP_DIR[400];
-char WIN_MAP_DATA[400];
+char SELECTED_MAP_DIR[400];
+char SELECTED_MAP_DATA[400];
 char MAP_INDEX_DATA[400];
 char SYMBOLS_DIR[400];
 char HELP_FILE[400];
@@ -8752,7 +8752,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
                XmNitems,&list,
                NULL);
 
-    f=fopen(WIN_MAP_DATA,"w+");
+    f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL) {
         for(x=1; x<=i;x++) {
             if(XmListPosSelected(map_list,x)) {
@@ -8765,7 +8765,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
         (void)fclose(f);
     }
     else
-        printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
 
     map_chooser_destroy_shell(widget,clientData,callData);
     create_image(da);
@@ -8788,7 +8788,7 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
                XmNitems,&list,
                NULL);
 
-    f=fopen(WIN_MAP_DATA,"w+");
+    f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL) {
         for(x=1; x<=i;x++) {
             if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
@@ -8808,7 +8808,7 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
         map_chooser_fill_in();
     }
     else
-        printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
  
 //    map_chooser_destroy_shell(widget,clientData,callData);
 //    create_image(da);
@@ -8831,7 +8831,7 @@ void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer
                XmNitems,&list,
                NULL);
 
-    f=fopen(WIN_MAP_DATA,"w+");
+    f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL) {
         for(x=1; x<=i;x++) {
             if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
@@ -8850,7 +8850,7 @@ void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer
         map_chooser_fill_in();
     }
     else
-        printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
 
 //    map_chooser_destroy_shell(widget,clientData,callData);
 //    create_image(da);
@@ -8873,7 +8873,7 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
                XmNitems,&list,
                NULL);
 
-    f=fopen(WIN_MAP_DATA,"w+");
+    f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL)
     {
         for(x=1; x<=i;x++)
@@ -8894,7 +8894,7 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
         map_chooser_fill_in();
     }
     else
-        printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
 
 //    map_chooser_destroy_shell(widget,clientData,callData);
 //    create_image(da);
@@ -8917,7 +8917,7 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
                XmNitems,&list,
                NULL);
 
-    f=fopen(WIN_MAP_DATA,"w+");
+    f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL) {
         for(x=1; x<=i;x++)
         {
@@ -8938,7 +8938,7 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
         map_chooser_fill_in();
     }
     else
-        printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
 
 //    map_chooser_destroy_shell(widget,clientData,callData);
 //    create_image(da);
@@ -8953,11 +8953,11 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
     FILE *f;
 
     // Empty the file (no maps listed as selected)
-    f=fopen(WIN_MAP_DATA,"w+");
+    f=fopen(SELECTED_MAP_DATA,"w+");
     if(f!=NULL)
         (void)fclose(f);
     else
-        printf("Couldn't zero file: %s\n", WIN_MAP_DATA);
+        printf("Couldn't zero file: %s\n", SELECTED_MAP_DATA);
 
     map_chooser_fill_in();
 
@@ -8979,7 +8979,7 @@ void dir_sort(char *dir) {
     int my_size;
     char *ext;
 
-    my_size=strlen(WIN_MAP_DIR)+1;
+    my_size=strlen(SELECTED_MAP_DIR)+1;
     dm = opendir(dir);
     if(!dm)
         //perror("maps");
@@ -9089,14 +9089,14 @@ void map_chooser_fill_in (void) {
         // Clear out the database file
         clear_sort_file(get_user_base_dir("data/sort_maps_db.dat"));    // defined in db.c
         // populate the database file with filenames from disk
-        dir_sort(WIN_MAP_DIR);  // defined in main.c
+        dir_sort(SELECTED_MAP_DIR);  // defined in main.c
         sort_list(get_user_base_dir("data/sort_maps_db.dat"),1000,map_list,&n); // defined in main.c
 
-        (void)filecreate(WIN_MAP_DATA);   // Create empty file if it doesn't exist
+        (void)filecreate(SELECTED_MAP_DATA);   // Create empty file if it doesn't exist
 
         // Compare the maps in the list to those we've already selected
         // and highlight those that match.
-        f=fopen(WIN_MAP_DATA,"r");
+        f=fopen(SELECTED_MAP_DATA,"r");
         if (f!=NULL) {
             while(!feof(f)) {
                 (void)get_line(f,temp,600);
@@ -9108,7 +9108,7 @@ void map_chooser_fill_in (void) {
             (void)fclose(f);
         }
         else {
-            printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+            printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
         }
     }
 }
