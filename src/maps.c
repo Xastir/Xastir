@@ -2183,8 +2183,6 @@ void draw_shapefile_map (Widget w,
 
 
                     // Change "United States Highway 2" into "US 2"
-                    // and "State Highway 204" into "State 204"
-
                     // Look for substring at start of string
                     if ( strstr(temp2,"United States Highway") == temp2 ) {
                         int index;
@@ -2197,7 +2195,7 @@ void draw_shapefile_map (Widget w,
                         }
                         temp2[index] = '\0';
                     }
-                    else {
+                    else {  // Change "State Highway 204" into "State 204"
                         // Look for substring at start of string
                         if ( strstr(temp2,"State Highway") == temp2 ) {
                             int index;
@@ -2208,6 +2206,19 @@ void draw_shapefile_map (Widget w,
                             index++;
                             }
                             temp2[index] = '\0';
+                        }
+                        else {  // Change "State Route 2" into "State 2"
+                            // Look for substring at start of string
+                            if ( strstr(temp2,"State Route") == temp2 ) {
+                                int index;
+                                // Convert to "State"
+                                index = 5;
+                                while (temp2[index+6] != '\0') {
+                                temp2[index] = temp2[index+6];
+                                index++;
+                                }
+                                temp2[index] = '\0';
+                            }
                         }
                     }
 
@@ -2271,8 +2282,7 @@ void draw_shapefile_map (Widget w,
 // set it up to write only some of the identical strings.  This
 // still doesn't help in the cases where a street only comes in from
 // the top or right and doesn't have an intersection with another
-// street (and therefore another label) within the view.  Still need
-// to rotate labels properly as well.
+// street (and therefore another label) within the view.
 
                             ptr2 = label_ptr;
                             while (ptr2 != NULL) {   // Step through the list
@@ -2288,6 +2298,10 @@ void draw_shapefile_map (Widget w,
 // intersection).  Between rural and urban areas, this method might
 // not work well.  Urban areas have few intersections, so we'll get
 // fewer labels drawn.
+// A better method might be to check the screen location for each
+// one and only write the strings if they are far enough apart, and
+// only count a string as written if the start of it is onscreen and
+// the angle is correct for it to be written on the screen.
 
                                     // Draw a number of labels
                                     // appropriate for the zoom
@@ -2453,6 +2467,8 @@ void draw_shapefile_map (Widget w,
                             }
                             else if (map_color_fill) {  // Land masses?
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
+(void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
+
                                 (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
