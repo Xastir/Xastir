@@ -528,7 +528,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XmTextFieldSetString(SL_pos_time[type][row],stemp);
                         XtManageChild(SL_pos_time[type][row]);
 
-                        xastir_snprintf(stemp, sizeof(stemp), "%s", p_station->node_path);
+                        xastir_snprintf(stemp, sizeof(stemp), "%s", p_station->node_path_ptr);
                         XmTextFieldSetString(SL_node_path[type][row],stemp);
                         XtManageChild(SL_node_path[type][row]);
 

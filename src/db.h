@@ -106,7 +106,6 @@ enum APRS_Types {
 // Define file info, string length are without trailing '\0'
 #define MAX_CALLSIGN         20         /* 9, objects max 9 ??? */
 #define MAX_TIME             20
-#define MAX_PATH            100
 #define MAX_LONG             12
 #define MAX_LAT              11
 #define MAX_ALTITUDE         10         //-32808.4 to 300000.0? feet
@@ -313,7 +312,7 @@ typedef struct _DataRow {
     char packet_time[MAX_TIME];
     char origin[MAX_CALLSIGN+1];        // call sign originating an object
     APRS_Symbol aprs_symbol;
-    char node_path[MAX_PATH+1];
+    char *node_path_ptr;                // Pointer to path string
     char pos_time[MAX_TIME];
     char altitude_time[MAX_TIME];
     char altitude[MAX_ALTITUDE];        // in meters (feet gives better resolution ???)
@@ -328,7 +327,6 @@ typedef struct _DataRow {
     char station_time[MAX_STATION_TIME];
     char station_time_type;
     char sats_visible[MAX_SAT];
-//    char comments[MAX_COMMENTS+1];
     CommentRow *comment_data;           // Ptr to comment records or NULL
     int  df_color;
 } DataRow;
