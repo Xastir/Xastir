@@ -101,7 +101,8 @@ void normal_title(char *incoming_title, char *outgoing_title) {
 //
 // Debug routine.  Currently attached to the Test() function in
 // main.c, but the button in the file menu is normally grey'ed out.
-// This function prints the weather alerts to the xterm.
+// This function prints the current weather alert list out to the
+// xterm.
 //
 void alert_print_list(void) {
     int i;
@@ -115,8 +116,10 @@ void alert_print_list(void) {
             *c_ptr = '\0';
 
         printf("Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n", i,
-                alert_list[i].flags[0], alert_list[i].from, alert_list[i].to, alert_list[i].alert_level,
-                alert_list[i].alert_tag, alert_list[i].activity, (unsigned long)(alert_list[i].expiration), title);
+                alert_list[i].flags[0], alert_list[i].from,
+                alert_list[i].to, alert_list[i].alert_level,
+                alert_list[i].alert_tag, alert_list[i].activity,
+                (unsigned long)(alert_list[i].expiration), title);
     }
 }
 
@@ -126,17 +129,21 @@ void alert_print_list(void) {
 
 //
 // Called from alert_build_list()
-// This function add a new alert to the list.
+// This function add a new alert to our alert list.
 //
 /*@null@*/ static alert_entry *alert_add_entry(alert_entry *entry) {
     alert_entry *ptr;
     int i;
 
+    // Skip NWS_SOLAR and -NoActivationExpected alerts, they don't
+    // interest us.
     if (strcmp(entry->to, "NWS-SOLAR") == 0)
         return (NULL);
     if (strcasecmp(entry->title, "-NoActivationExpected") == 0)
         return (NULL);
 
+    // Allocate more space if we're at our maximum already.
+    // Allocate space for 10 more alerts.
     if (alert_list_count == alert_max_count) {
         ptr = realloc(alert_list, (alert_max_count+10)*sizeof(alert_entry));
         if (ptr) {
@@ -144,21 +151,29 @@ void alert_print_list(void) {
             alert_max_count += 10;
         }
     }
+
+    // Check for non-zero alert title, non-expired alert time
     if (entry->title[0] != '\0' && entry->expiration >= time(NULL)) {
 
         // Schedule a screen update 'cuz we have a new alert
         alert_redraw_on_update = redraw_on_new_data = 1;
 
-        for (i = 0; i < alert_list_count; i++)
-        if (alert_list[i].title[0] == '\0') {
-            memcpy(&alert_list[i], entry, sizeof(alert_entry));
-            return ( &alert_list[i]);
+        // Scan for an empty entry, fill it in if found
+        for (i = 0; i < alert_list_count; i++) {
+            if (alert_list[i].title[0] == '\0') {   // If alert entry is empty
+                memcpy(&alert_list[i], entry, sizeof(alert_entry)); // Use it
+                return ( &alert_list[i]);
+            }
         }
+
+        // Else fill in the entry at the end and bump up the count
         if (alert_list_count < alert_max_count) {
             memcpy(&alert_list[alert_list_count], entry, sizeof(alert_entry));
             return (&alert_list[alert_list_count++]);
         }
     }
+
+    // The title was empty or the alert has already expired
     return (NULL);
 }
 
@@ -174,9 +189,12 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     int i;
     char *ptr, title_e[33], title_m[33], alert_f[33], filename[33];
 
+    // Shorten the title
     normal_title(alert->title, title_e);
+
     strncpy(filename, alert->filename, 32);
     title_e[32] = title_m[32] = alert_f[32] = filename[32] = '\0';
+
     if ((ptr = strpbrk(filename, ".")))
         *ptr = '\0';
 
@@ -184,6 +202,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         ptr++;
         memmove(filename, ptr, strlen(ptr)+1);
     }
+
     while ((ptr = strpbrk(filename, "_ -")))
         memmove(ptr, ptr+1, strlen(ptr)+1);
 
@@ -191,6 +210,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         normal_title(alert_list[i].title, title_m);
         strncpy(alert_f, alert_list[i].filename, 32);
         alert_f[32] = '\0';
+
         if ((ptr = strpbrk(alert_f, ".")))
             *ptr = '\0';
 
@@ -198,17 +218,18 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
             ptr++;
             memmove(alert_f, ptr, strlen(ptr)+1);
         }
+
         while ((ptr = strpbrk(alert_f, "_ -")))
             memmove(ptr, ptr+1, strlen(ptr)+1);
 
         if ((match_level < ALERT_FROM || strcmp(alert_list[i].from, alert->from) == 0) &&
-        (match_level < ALERT_TO   || strcasecmp(alert_list[i].to, alert->to) == 0) &&
-        (match_level < ALERT_TAG  || strcmp(alert_list[i].alert_tag, alert->alert_tag) == 0) &&
-        (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0 ||
+                (match_level < ALERT_TO   || strcasecmp(alert_list[i].to, alert->to) == 0) &&
+                (match_level < ALERT_TAG  || strcmp(alert_list[i].alert_tag, alert->alert_tag) == 0) &&
+                (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0 ||
                 strcasecmp(title_m, filename) == 0 || strcasecmp(alert_f, title_e) == 0 ||
-                (alert_f[0] && filename[0] && strcasecmp(alert_f, filename) == 0))))
-
+                (alert_f[0] && filename[0] && strcasecmp(alert_f, filename) == 0)))) {
             return (&alert_list[i]);
+        }
     }
     return (NULL);
 }
@@ -278,15 +299,17 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
     time_t now;
 
     (void)time(&now);
-    if ((a_ptr = alert_match(alert, match_level))) {
-        if (a_ptr->expiration >= now)
-            for (level = 0; a_ptr->alert_level != l_list[level] && level < (int)sizeof(l_list); level++);
 
+    if ((a_ptr = alert_match(alert, match_level))) {
+        if (a_ptr->expiration >= now) {
+            for (level = 0; a_ptr->alert_level != l_list[level] && level < (int)sizeof(l_list); level++);
+        }
         else if (a_ptr->expiration < (now - 3600)) {    // More than an hour past the expiration,
             a_ptr->title[0] = '\0';                     // so delete it from list.
         }
-        else if (a_ptr->flags[0] == '?')
+        else if (a_ptr->flags[0] == '?') {
             a_ptr->flags[0] = '-';
+        }
     }
     return (level);
 }
@@ -325,12 +348,15 @@ static int alert_compare(const void *a, const void *b) {
     a_active = alert_active(a_entry, ALERT_ALL);
     b_active = alert_active(b_entry, ALERT_ALL);
     if (a_active && b_active) {
-        if (a_active - b_active)
+        if (a_active - b_active) {
             return (a_active - b_active);
-    } else if (a_active)
+        }
+    } else if (a_active) {
         return (-1);
-    else if (b_active)
+    }
+    else if (b_active) {
         return (1);
+    }
 
     return (strcmp(a_entry->title, b_entry->title));
 }
@@ -358,10 +384,12 @@ int alert_display_request(void) {
     int i, alert_count;
     static int last_alert_count;
 
-    for (i = 0, alert_count = 0; i < alert_list_count; i++)
+    for (i = 0, alert_count = 0; i < alert_list_count; i++) {
         if (alert_active(&alert_list[i], ALERT_ALL) && (alert_list[i].flags[0] == 'Y' ||
-                alert_list[i].flags[0] == '?'))
+                alert_list[i].flags[0] == '?')) {
             alert_count++;
+        }
+    }
 
     if (alert_count != last_alert_count) {
         last_alert_count = alert_count;
@@ -382,9 +410,12 @@ int alert_display_request(void) {
 int alert_on_screen(void) {
     int i, alert_count;
 
-    for (i = 0, alert_count = 0; i < alert_list_count; i++)
-        if (alert_active(&alert_list[i], ALERT_ALL) && alert_list[i].flags[0] == 'Y')
+    for (i = 0, alert_count = 0; i < alert_list_count; i++) {
+        if (alert_active(&alert_list[i], ALERT_ALL)
+                && alert_list[i].flags[0] == 'Y') {
             alert_count++;
+        }
+    }
 
     return (alert_count);
 }
@@ -430,77 +461,87 @@ static void alert_build_list(Message *fill) {
     DataRow *p_station;
 
     if (fill->active == RECORD_ACTIVE) {
-    memset(entry, 0, sizeof(entry));
-    (void)sscanf(fill->message_line, "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
+        memset(entry, 0, sizeof(entry));
+        (void)sscanf(fill->message_line, "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
            entry[0].activity, entry[0].alert_tag, entry[0].title, entry[1].title,
            entry[2].title, entry[3].title, entry[4].title, entry[5].title);
 
-    entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
-    if (!isdigit((int)entry[0].activity[0]) && entry[0].activity[0] != '-') {
-        for (j = 5; j >= 0; j--)
-          strcpy(entry[j].title, entry[j-1].title);
-        strcpy(entry[0].title, entry[0].alert_tag);
-        strcpy(entry[0].alert_tag, entry[0].activity);
-    }
-    entry[0].expiration = time_from_aprsstring(entry[0].activity);
-    memset(entry[0].flags, (int)'?', sizeof(entry[0].flags));
-    p_station = NULL;
-    if (search_station_name(&p_station,fill->from_call_sign,1))
-        entry[0].flags[1] = p_station->data_via;
+        entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
 
-    for (i = 0; i < 6 && entry[i].title[0]; i++) {
-        entry[i].title[32] = '\0';
-        while ((ptr = strpbrk(entry[i].title, " ")))
-          memmove(ptr, ptr+1, strlen(ptr)+1);
-
-        if ((ptr = strpbrk(entry[i].title, "}>=!:/*+;"))) {
-            if (debug_level & 2) {
-                fprintf(stderr,
-                    "Warning: Weird Weather Message: %ld:%s>%s:%s!\n",
-                    (long)fill->sec_heard,
-                    fill->from_call_sign,
-                    fill->call_sign,
-                    fill->message_line);
+        if (!isdigit((int)entry[0].activity[0]) && entry[0].activity[0] != '-') {
+            for (j = 5; j >= 0; j--) {
+                strcpy(entry[j].title, entry[j-1].title);
             }
-        *ptr = '\0';
+            strcpy(entry[0].title, entry[0].alert_tag);
+            strcpy(entry[0].alert_tag, entry[0].activity);
         }
-        if (entry[i].title[0] == '\0')
-          continue;
-        strcpy(entry[i].activity, entry[0].activity);
-        strcpy(entry[i].alert_tag, entry[0].alert_tag);
-        strcpy(entry[i].from, fill->from_call_sign);
-        strcpy(entry[i].to, fill->call_sign);
-        entry[i].expiration = entry[0].expiration;
-        memcpy(entry[i].flags, entry[0].flags, sizeof(entry[0].flags));
-        if (strstr(entry[i].alert_tag, "CANCL") || strstr(entry[i].to, "CANCL"))
-          entry[i].alert_level = 'C';
 
-        else if (!strncmp(entry[i].alert_tag, "TEST", 4) || strstr(entry[i].to, "TEST"))
-          entry[i].alert_level = 'T';
+        entry[0].expiration = time_from_aprsstring(entry[0].activity);
+        memset(entry[0].flags, (int)'?', sizeof(entry[0].flags));
+        p_station = NULL;
 
-        else if (strstr(entry[i].alert_tag, "WARN") || strstr(entry[i].to, "WARN"))
-          entry[i].alert_level = 'R';
+        if (search_station_name(&p_station,fill->from_call_sign,1))
+            entry[0].flags[1] = p_station->data_via;
 
-        else if (strstr(entry[i].alert_tag, "WATCH") || strstr(entry[i].to, "WATCH"))
-          entry[i].alert_level = 'Y';
+        for (i = 0; i < 6 && entry[i].title[0]; i++) {
 
-        else if (strstr(entry[i].alert_tag, "ADVIS") || strstr(entry[i].to, "ADVIS"))
-          entry[i].alert_level = 'B';
+            entry[i].title[32] = '\0';
 
-        else
-          entry[i].alert_level = 'G';
+            while ((ptr = strpbrk(entry[i].title, " ")))
+                memmove(ptr, ptr+1, strlen(ptr)+1);
 
-        if ((list_ptr = alert_match(&entry[i], ALERT_ALL))) {
-            list_ptr->expiration = entry[i].expiration;
-            strcpy(list_ptr->activity, entry[i].activity);
-        } else
-            (void)alert_add_entry(&entry[i]);
+            if ((ptr = strpbrk(entry[i].title, "}>=!:/*+;"))) {
+                if (debug_level & 2) {
+                    fprintf(stderr,
+                        "Warning: Weird Weather Message: %ld:%s>%s:%s!\n",
+                        (long)fill->sec_heard,
+                        fill->from_call_sign,
+                        fill->call_sign,
+                        fill->message_line);
+                }
+                *ptr = '\0';
+            }
 
-        if (alert_active(&entry[i], ALERT_ALL)) {
-            // Empty "if" body here?????  LCLINT caught this.
+            if (entry[i].title[0] == '\0')
+                continue;
+
+            strcpy(entry[i].activity, entry[0].activity);
+            strcpy(entry[i].alert_tag, entry[0].alert_tag);
+            strcpy(entry[i].from, fill->from_call_sign);
+            strcpy(entry[i].to, fill->call_sign);
+            entry[i].expiration = entry[0].expiration;
+            memcpy(entry[i].flags, entry[0].flags, sizeof(entry[0].flags));
+
+            if (strstr(entry[i].alert_tag, "CANCL") || strstr(entry[i].to, "CANCL"))
+                entry[i].alert_level = 'C';
+
+            else if (!strncmp(entry[i].alert_tag, "TEST", 4) || strstr(entry[i].to, "TEST"))
+                entry[i].alert_level = 'T';
+
+            else if (strstr(entry[i].alert_tag, "WARN") || strstr(entry[i].to, "WARN"))
+                entry[i].alert_level = 'R';
+
+            else if (strstr(entry[i].alert_tag, "WATCH") || strstr(entry[i].to, "WATCH"))
+                entry[i].alert_level = 'Y';
+
+            else if (strstr(entry[i].alert_tag, "ADVIS") || strstr(entry[i].to, "ADVIS"))
+                entry[i].alert_level = 'B';
+
+            else
+                entry[i].alert_level = 'G';
+
+            if ((list_ptr = alert_match(&entry[i], ALERT_ALL))) {
+                list_ptr->expiration = entry[i].expiration;
+                strcpy(list_ptr->activity, entry[i].activity);
+            } else {
+                (void)alert_add_entry(&entry[i]);
+            }
+
+            if (alert_active(&entry[i], ALERT_ALL)) {
+                // Empty "if" body here?????  LCLINT caught this.
+            }
         }
-    }
-    fill->active = RECORD_CLOSED;
+        fill->active = RECORD_CLOSED;
     }
 }
 
@@ -530,6 +571,7 @@ int alert_message_scan(void) {
 
     mscan_file(MESSAGE_NWS, alert_build_list);
     *alert_tag = '\0';
+
     for (j = 0; j < alert_list_count; j++) {
         if (alert_list[j].flags[0] == '?') {
             for (i = 0; i < (int)strlen(alert_tag); i += 3) {
