@@ -838,7 +838,13 @@ END OF MANDRAKE LINUX NOTES.
    synthesis software installed.  Install Festival and start it in 'server'
    mode prior to starting up XASTIR.  The normal command for this is
    "festival --server &".  More info about the speech features is in the
-   Xastir help file.
+   Xastir help file.  An easy way to get festival installed on some systems
+   is to go to rpmfind.com and search for both festival and
+   festival-dev, then install the RPM's found.  Red Hat RPM's installed onto
+   SuSE 7.3 with no problems.  Note that the default voice doesn't speak
+   numbers very well.  Edit /usr/share/festival/voices.scm and put
+   "ked_diphone" at the first of the "defvar default-voice-priority-list".
+   This will change the default voice to "ked_diphone".
 
 
 You probably want to download some maps and additional data files. The
