@@ -427,7 +427,28 @@ Add this to your ~/.profile file:
 
     export MAGICK_HOME=/usr
 
-Now on-line Tigermaps should work for you.
+Now on-line Tigermaps should work for you.  Unfortunately it looks
+like the ".profile" file doesn't automatically get run if you start
+up the X-server from a windows shortcut.  If you don't set the
+MAGICK_HOME variable in your shell that you start Xastir from, then
+ImageMagick will fail to display images and you'll get messages like
+"No decode delegate for this image format" in the xterm you started
+Xastir from.  If that happens, you can close Xastir, type
+
+    .  ./.profile
+
+and then type "xastir &" again to make it work.  Another option is
+to start X from within a standard Cygwin window.  After starting X
+you can close the original Cygwin window.  Yet another option is to
+create a script for starting Xastir so that you can set the
+MAGICK_HOME variable just before you start it.  It could look
+something like this:
+
+    #!/bin/sh
+    export MAGICK_HOME=/usr
+    xastir &
+
+Perhaps name it "aprs".  Start it by typing "./aprs".
 
 HIGHLY RECOMMENDED:  If you create a file called "terraserver.geo"
 in the /usr/local/xastir/maps directory, containing the single line
