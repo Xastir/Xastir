@@ -335,6 +335,26 @@ Getting Maps and other Data Files for Xastir:
 
           <http://www.swcp.com/~russo/shape_web/>"
 
+      Another good note from Tom Russo, KM5VY on this topic:
+
+      "...I contacted Frank Warmerdam about the datum conversion issue in
+      shpproj and offered shpcs2cs back to him (since he wrote 99% of it
+      anyway).  He said that ogr2ogr is capable of doing datum conversions as
+      well as coordinate system conversions.  I haven't looked into it, as it
+      looks like it'll take a little more work -- you have to know either the
+      EPSG number or the "Well Known Transformation" (WKT) parameters --- these
+      are the sort that are in .prj files other than the junk that shpproj
+      produces, but they have a lot of detail and I can't construct them in my
+      head as quickly as "+proj=utm +datum=NAD27 +zone=13".  Still, it is more
+      powerful as it can convert between just about anything that OGR can read,
+      in any projection (as long as the projection info's in the input layer),
+      and output any other OGR format in any other projection (as long as you
+      can specify that projection somehow).
+
+      That's a long winded way of saying "You can also use ogr2ogr.  See the
+      gdal distribution for more details."  didididit didit."
+
+
       -----
 
       Using "dbfawk" to interpret shapefile DBF data:  Each shapefile
