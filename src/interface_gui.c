@@ -438,6 +438,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
     (void)remove_trailing_spaces(devices[TNC_port].unproto_igate);
 
+    if(check_unproto_path(devices[TNC_port].unproto_igate)) {
+        popup_message_always(langcode("WPUPCFT044"),
+            langcode("WPUPCFT043"));
+    }
+
+
     if ( (type == DEVICE_SERIAL_KISS_TNC)
             || (type == DEVICE_SERIAL_MKISS_TNC) ) {
 
@@ -3923,6 +3929,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
 
     (void)remove_trailing_spaces(devices[AX25_port].unproto_igate);
 
+    if(check_unproto_path(devices[AX25_port].unproto_igate)) {
+        popup_message_always(langcode("WPUPCFT044"),
+            langcode("WPUPCFT043"));
+    }
+
+
     devices[AX25_port].reconnect=1;
 
     /* reopen or open port*/
@@ -5504,6 +5516,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     XtFree(temp_ptr);
 
     (void)remove_trailing_spaces(devices[AGWPE_port].unproto_igate);
+
+    if(check_unproto_path(devices[AGWPE_port].unproto_igate)) {
+        popup_message_always(langcode("WPUPCFT044"),
+            langcode("WPUPCFT043"));
+    }
+
 
     temp_ptr = XmTextFieldGetString(AGWPE_radioport_data);
     xastir_snprintf(devices[AGWPE_port].device_host_filter_string,
