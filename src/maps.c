@@ -5601,7 +5601,13 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
         xastir_snprintf(tempfile, sizeof(tempfile),
 //                "/usr/bin/wget -S -N -t 1 -T 30 -O %s %s 2> /dev/null\n",
+
+#ifdef __CYGWIN__
                 "/usr/bin/wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
+#else
+                "wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
+#endif
+
                 local_filename,
                 fileimg);
 
@@ -6300,7 +6306,15 @@ void draw_tiger_map (Widget w) {
 
     xastir_snprintf(tempfile, sizeof(tempfile),
 //        "/usr/bin/wget -S -N -t 1 -T %d -O %s %s 2> /dev/null\n", tigermap_timeout, local_filename, fileimg);
-        "/usr/bin/wget --server-response --timestamping --tries=1 --timeout=%d --output-document=%s %s 2> /dev/null\n", tigermap_timeout, local_filename, fileimg);
+
+#ifdef __CYGWIN__
+        "/usr/bin/wget --server-response --timestamping --tries=1 --timeout=%d --output-document=%s %s 2> /dev/null\n",
+#else
+        "wget --server-response --timestamping --tries=1 --timeout=%d --output-document=%s %s 2> /dev/null\n",
+#endif
+        tigermap_timeout,
+        local_filename,
+        fileimg);
 
 
     if (debug_level & 512)
