@@ -33,6 +33,7 @@ dbffields="WATER:CFCC:LANAME"}
 BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=1; pattern=0; display_level=8192; label_level=32; label_color=8; font_size=0; symbol=""; fill_style=2; fill_stipple=0 }
 
 # Name -- only features that have landmark records get names
+/^LANAME=None$/ {next}
 /^LANAME=(.*)$/ {name="$1"; next}
 
 #We need this just in case there is no CFCC code to tell us we're a water
