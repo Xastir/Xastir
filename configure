@@ -15,7 +15,7 @@ ac_help="$ac_help
   --enable-maintainer-mode enable make rules and dependencies not useful
                           (and sometimes confusing) to the casual installer"
 ac_help="$ac_help
-  --without-motif		  Do not use Motif, even if detected"
+  --without-motif               Do not use Motif, even if detected"
 ac_help="$ac_help
   --with-x                use the X Window System"
 ac_help="$ac_help
@@ -2242,7 +2242,7 @@ else
         echo "configure: warning: you have no crypt in either libcrypt or libc.
 You should install libcrypt from another source or configure with PAM
 support" 1>&2
-	xastir_have_crypt=no
+        xastir_have_crypt=no
       
 fi
 
@@ -4310,21 +4310,21 @@ if test "$no_x" = ""; then
     # Check whether --with-motif or --without-motif was given.
 if test "${with_motif+set}" = set; then
   withval="$with_motif"
-  		case "${withval}" in
- 		  y | ye | yes )	usemotif=yes ;;
- 		  n | no )		usemotif=no ;;
- 		  * )			usemotif=yes ;;
- 		esac
+                case "${withval}" in
+                  y | ye | yes )        usemotif=yes ;;
+                  n | no )              usemotif=no ;;
+                  * )                   usemotif=yes ;;
+                esac
 else
-  		with_motif=yes
+                with_motif=yes
 fi
 
 
        if test "$with_Xbae" = "no" -a "$with_motif" = "yes" ; then
- 	{ echo "configure: error: Cannot build Motif/LessTif interface without Xbae" 1>&2; exit 1; }
+        { echo "configure: error: Cannot build Motif/LessTif interface without Xbae" 1>&2; exit 1; }
  fi
  if test "$with_Xbae" = "yes" -a "$with_motif" = "no" ; then
- 	{ echo "configure: error: Cannot use Xbae without Motif/LessTif" 1>&2; exit 1; }
+        { echo "configure: error: Cannot use Xbae without Motif/LessTif" 1>&2; exit 1; }
  fi
 
     test "$with_Xbae" = "no" && with_motif="no"
@@ -4520,7 +4520,7 @@ if test "$with_motif" != "no"; then
                 include_motif="-I$motif_includes"
                 MOTIF_CFLAGS="-I$motif_includes"
         fi
-	cat >> confdefs.h <<\EOF
+        cat >> confdefs.h <<\EOF
 #define HAVE_MOTIF 1
 EOF
 
@@ -4593,17 +4593,17 @@ then
     #
     if test "$xpm_includes" = ""
     then
-	if eval "test \"`echo '$''{'ac_cv_xpm_includes'+set}'`\" = set"; then
+        if eval "test \"`echo '$''{'ac_cv_xpm_includes'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   
-	ac_xpm_save_CFLAGS="$CFLAGS"
-	ac_xpm_save_CPPFLAGS="$CPPFLAGS"
-	#
-	CFLAGS="$X_CFLAGS $CFLAGS"
-	CPPFLAGS="$X_CFLAGS $CPPFLAGS"
-	#
-	cat > conftest.$ac_ext <<EOF
+        ac_xpm_save_CFLAGS="$CFLAGS"
+        ac_xpm_save_CPPFLAGS="$CPPFLAGS"
+        #
+        CFLAGS="$X_CFLAGS $CFLAGS"
+        CPPFLAGS="$X_CFLAGS $CPPFLAGS"
+        #
+        cat > conftest.$ac_ext <<EOF
 #line 4608 "configure"
 #include "confdefs.h"
 #include <X11/xpm.h>
@@ -4614,9 +4614,9 @@ EOF
 if { (eval echo configure:4615: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   
-	# X11/xpm.h is in the standard search path.
-	ac_cv_xpm_includes=
-	
+        # X11/xpm.h is in the standard search path.
+        ac_cv_xpm_includes=
+        
 else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
@@ -4645,56 +4645,56 @@ else
   cat conftest.$ac_ext >&5
   rm -rf conftest*
   
-	# X11/xpm.h or Xm/XpmI.h are not in the standard search path.
-	# Locate one of them and put its directory in `xpm_includes'
-	#
-	# Other directories are just guesses.
-	for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
-		   /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
-		   /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
-		   /usr/dt/include /usr/openwin/include /usr/X11R6/include \
-		   /usr/dt/*/include /opt/*/include /usr/include/Xpm* \
-		   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
-		   "${prefix}"/include/* /usr/include/* /usr/local/include/*
-	do
-	    if test -f "$dir/X11/xpm.h"
-	    then
-		  ac_cv_xpm_includes="$dir"
+        # X11/xpm.h or Xm/XpmI.h are not in the standard search path.
+        # Locate one of them and put its directory in `xpm_includes'
+        #
+        # Other directories are just guesses.
+        for dir in "$x_includes" "${prefix}/include" /usr/include /usr/local/include \
+                   /usr/include/Motif2.0 /usr/include/Motif1.2 /usr/include/Motif1.1 \
+                   /usr/include/X11R6 /usr/include/X11R5 /usr/include/X11R4 \
+                   /usr/dt/include /usr/openwin/include /usr/X11R6/include \
+                   /usr/dt/*/include /opt/*/include /usr/include/Xpm* \
+                   "${prefix}"/*/include /usr/*/include /usr/local/*/include \
+                   "${prefix}"/include/* /usr/include/* /usr/local/include/*
+        do
+            if test -f "$dir/X11/xpm.h"
+            then
+                  ac_cv_xpm_includes="$dir"
         else
           if test -f "$dir/Xm/XpmI.h"
           then
             ac_cv_xpm_includes="$dir"
             xpm_libraries="/usr/lib/libXm.so"
           fi
-	    fi
-	done
-	
+            fi
+        done
+        
 fi
 rm -f conftest* 
 fi
 rm -f conftest*
-	#
-	CFLAGS="$ac_xpm_save_CFLAGS"
-	CPPFLAGS="$ac_xpm_save_CPPFLAGS"
-	
+        #
+        CFLAGS="$ac_xpm_save_CFLAGS"
+        CPPFLAGS="$ac_xpm_save_CPPFLAGS"
+        
 fi
 
-	xpm_includes="$ac_cv_xpm_includes"
+        xpm_includes="$ac_cv_xpm_includes"
     fi
 
     if test -z "$xpm_includes"
     then
-	xpm_includes_result="default path"
-	XPM_CFLAGS=""
+        xpm_includes_result="default path"
+        XPM_CFLAGS=""
     else
-	if test "$xpm_includes" = "no"
-	then
-	    xpm_includes_result="told not to use them"
-	    XPM_CFLAGS="-DNO_XPM"
-	else
-	    xpm_includes_result="$xpm_includes"
-	    XPM_CFLAGS="-I$xpm_includes"
-	fi
+        if test "$xpm_includes" = "no"
+        then
+            xpm_includes_result="told not to use them"
+            XPM_CFLAGS="-DNO_XPM"
+        else
+            xpm_includes_result="$xpm_includes"
+            XPM_CFLAGS="-I$xpm_includes"
+        fi
     fi
     #
     #
@@ -4702,19 +4702,19 @@ fi
     #
     if test "$xpm_libraries" = ""
     then
-	if eval "test \"`echo '$''{'ac_cv_xpm_libraries'+set}'`\" = set"; then
+        if eval "test \"`echo '$''{'ac_cv_xpm_libraries'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   
-	ac_xpm_save_LIBS="$LIBS"
-	ac_xpm_save_CFLAGS="$CFLAGS"
-	ac_xpm_save_CPPFLAGS="$CPPFLAGS"
-	#
-	LIBS="-lXpm $X_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
-	CFLAGS="$XPM_CFLAGS $X_CFLAGS $CFLAGS"
-	CPPFLAGS="$XPM_CFLAGS $X_CFLAGS $CPPFLAGS"
-	#
-	cat > conftest.$ac_ext <<EOF
+        ac_xpm_save_LIBS="$LIBS"
+        ac_xpm_save_CFLAGS="$CFLAGS"
+        ac_xpm_save_CPPFLAGS="$CPPFLAGS"
+        #
+        LIBS="-lXpm $X_LIBS -lX11 $X_EXTRA_LIBS $LIBS"
+        CFLAGS="$XPM_CFLAGS $X_CFLAGS $CFLAGS"
+        CPPFLAGS="$XPM_CFLAGS $X_CFLAGS $CPPFLAGS"
+        #
+        cat > conftest.$ac_ext <<EOF
 #line 4719 "configure"
 #include "confdefs.h"
 #include <X11/xpm.h>
@@ -4725,9 +4725,9 @@ EOF
 if { (eval echo configure:4726: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   
-	# libXpm.a is in the standard search path.
-	ac_cv_xpm_libraries=
-	
+        # libXpm.a is in the standard search path.
+        ac_cv_xpm_libraries=
+        
 else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
@@ -4753,65 +4753,65 @@ else
   cat conftest.$ac_ext >&5
   rm -rf conftest*
   
-	# libXpm.a or libXm.a are not in the standard search path.
-	# Locate one of them and put its directory in `xpm_libraries'
-	#
-	# Other directories are just guesses.
-	for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
-		   /usr/lib/Xlt2.0 /usr/lib/Xlt1.2 /usr/lib/Xlt1.1 \
-		   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
-		   /usr/dt/lib /usr/openwin/lib /usr/X11/lib \
-		   /usr/dt/*/lib /opt/*/lib /usr/lib/Xpm* \
-		   /usr/lesstif*/lib /usr/lib/Lesstif* \
-		   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
-		   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
-	    for ext in "sl" "so" "a"; do
-		  if test -d "$dir" && test -f "$dir/libXpm.$ext"
+        # libXpm.a or libXm.a are not in the standard search path.
+        # Locate one of them and put its directory in `xpm_libraries'
+        #
+        # Other directories are just guesses.
+        for dir in "$x_libraries" "${prefix}/lib" /usr/lib /usr/local/lib \
+                   /usr/lib/Xlt2.0 /usr/lib/Xlt1.2 /usr/lib/Xlt1.1 \
+                   /usr/lib/X11R6 /usr/lib/X11R5 /usr/lib/X11R4 /usr/lib/X11 \
+                   /usr/dt/lib /usr/openwin/lib /usr/X11/lib \
+                   /usr/dt/*/lib /opt/*/lib /usr/lib/Xpm* \
+                   /usr/lesstif*/lib /usr/lib/Lesstif* \
+                   "${prefix}"/*/lib /usr/*/lib /usr/local/*/lib \
+                   "${prefix}"/lib/* /usr/lib/* /usr/local/lib/*; do
+            for ext in "sl" "so" "a"; do
+                  if test -d "$dir" && test -f "$dir/libXpm.$ext"
           then
-		    ac_cv_xpm_libraries="$dir"
-		    break 2
+                    ac_cv_xpm_libraries="$dir"
+                    break 2
           fi
           if test -d "$dir" && test -f "$dir/libXm.$ext"
           then
             ac_cv_xpm_libraries="$dir"
             break 2
           fi
-	    done
-	done
-	
+            done
+        done
+        
 fi
 rm -f conftest* 
 fi
 rm -f conftest*
-	#
-	LIBS="$ac_xpm_save_LIBS"
-	CFLAGS="$ac_xpm_save_CFLAGS"
-	CPPFLAGS="$ac_xpm_save_CPPFLAGS"
-	
+        #
+        LIBS="$ac_xpm_save_LIBS"
+        CFLAGS="$ac_xpm_save_CFLAGS"
+        CPPFLAGS="$ac_xpm_save_CPPFLAGS"
+        
 fi
 
-	#
-	xpm_libraries="$ac_cv_xpm_libraries"
+        #
+        xpm_libraries="$ac_cv_xpm_libraries"
     fi
     if test -z "$xpm_libraries"
     then
-	xpm_libraries_result="default path"
-	XPM_LIBS="-lXpm"
+        xpm_libraries_result="default path"
+        XPM_LIBS="-lXpm"
     else
-	if test "$xpm_libraries" = "no"
-	then
-	    xpm_libraries_result="told not to use it"
-	    XPM_LIBS=""
-	else
+        if test "$xpm_libraries" = "no"
+        then
+            xpm_libraries_result="told not to use it"
+            XPM_LIBS=""
+        else
         if test "$xpm_skip_linking" = "1"
         then
             xpm_libraries_result="default path"
             XPM_LIBS=""
         else
             xpm_libraries_result="$xpm_libraries"
-	        XPM_LIBS="-L$xpm_libraries -lXpm"
+                XPM_LIBS="-L$xpm_libraries -lXpm"
         fi
-	fi
+        fi
     fi
 
     if test "$xpm_skip_linking" = "1"
@@ -4843,28 +4843,28 @@ EOF
 if { (eval echo configure:4844: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   
-	#
-	# link passed
-	#
-	cat >> confdefs.h <<\EOF
+        #
+        # link passed
+        #
+        cat >> confdefs.h <<\EOF
 #define HAVE_XPM 1
 EOF
 
-	
+        
 else
   echo "configure: failed program was:" >&5
   cat conftest.$ac_ext >&5
   rm -rf conftest*
   
-	#
-	# link failed
-	#
-	xpm_libraries_result="test link failed"
-	xpm_includes_result="test link failed"
-	with_xpm="no"
-	XPM_CFLAGS="-DNO_XPM"
-	XPM_LIBS=""
-	
+        #
+        # link failed
+        #
+        xpm_libraries_result="test link failed"
+        xpm_includes_result="test link failed"
+        with_xpm="no"
+        XPM_CFLAGS="-DNO_XPM"
+        XPM_LIBS=""
+        
 fi
 rm -f conftest* 
     LIBS="$ac_xpm_save_LIBS"
@@ -6031,13 +6031,12 @@ EOF
 
 fi
 
-
 if test -z "$no_pipe"
 then
   if test -n "$GCC"
   then
     echo $ac_n "checking whether the compiler understands -pipe""... $ac_c" 1>&6
-echo "configure:6027: checking whether the compiler understands -pipe" >&5
+echo "configure:6040: checking whether the compiler understands -pipe" >&5
 if eval "test \"`echo '$''{'xastir_cv_var_ccpipe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6045,14 +6044,14 @@ else
       ac_old_CC="$CC"
       CFLAGS="$CFLAGS -pipe"
       cat > conftest.$ac_ext <<EOF
-#line 6035 "configure"
+#line 6048 "configure"
 #include "confdefs.h"
 
 int main() {
 
 ; return 0; }
 EOF
-if { (eval echo configure:6042: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:6055: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   xastir_cv_var_ccpipe="yes"
 else
@@ -6076,7 +6075,7 @@ fi
 # Extract the first word of "xastir", so it can be a program name with args.
 set dummy xastir; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:6066: checking for $ac_word" >&5
+echo "configure:6079: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_path_xastirpath'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -6555,7 +6554,7 @@ echo
 echo
 echo Xastir will be installed in $prefix/bin.
 if test "x$xastirpath" != "x" ; then
-	echo Warning: You have an old copy of Xastir at $xastirpath.
+        echo Warning: You have an old copy of Xastir at $xastirpath.
 fi
 
 echo "$ac_t""" 1>&6

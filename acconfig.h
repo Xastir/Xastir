@@ -32,3 +32,5 @@
 
 #undef USING_MAC_OS_X
 
+#undef XASTIR_DATA_BASE
+

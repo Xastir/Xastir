@@ -155,9 +155,6 @@
 
 #undef XASTIR_TOCALL
 
-/* Base data dir. */
-#undef XASTIR_DATA_BASE
-
 #undef XASTIR_SYSTEM
 
 #undef DLOPEN_1
@@ -183,4 +180,6 @@
 #undef USING_SOLARIS
 
 #undef USING_MAC_OS_X
+
+#undef XASTIR_DATA_BASE
 
