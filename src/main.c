@@ -12478,6 +12478,7 @@ void Test(Widget w, XtPointer clientData, XtPointer callData) {
     //mem_display();
     alert_print_list();
 
+/*
     draw_wind_barb(50000000l,   // long x_long,
         32000000l,              // long y_lat,
         "169",                  // char *speed,
@@ -12505,6 +12506,10 @@ void Test(Widget w, XtPointer clientData, XtPointer callData) {
         "275",                  // char *course,
         sec_now(),              // time_t sec_heard,
         pixmap_final);          // Pixmap where);
+*/
+
+    printf("view_zero_distance_bulletins = %d\n",
+        view_zero_distance_bulletins);
 
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
