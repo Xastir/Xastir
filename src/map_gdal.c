@@ -620,12 +620,12 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
             double *vectorZ;
 
 
-            // Get some memory to hold the vector
+            // Get some memory to hold the vectors
             vectorX = (double *)malloc(sizeof(double) * points);
             vectorY = (double *)malloc(sizeof(double) * points);
             vectorZ = (double *)malloc(sizeof(double) * points);
 
-            // Get the points, fill in the vector
+            // Get the points, fill in the vectors
             for ( ii = 0; ii < points; ii++ ) {
 
                 OGR_G_GetPoint(geometryH,
@@ -636,10 +636,10 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
             }
 
             if (transformH) {
-                // Convert entire vector to WGS84 coordinates.
+                // Convert all vectors to WGS84 coordinates.
                 if (!OCTTransform(transformH, points, vectorX, vectorY, vectorZ)) {
                     fprintf(stderr,
-                        "Couldn't convert to WGS84\n");
+                        "Couldn't convert vectors to WGS84\n");
                 }
             }
 
@@ -762,63 +762,54 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                     // needs to.
             }
 
-            polygon_points = OGR_G_GetPointCount(child_geometryH);
+            polygon_points = OGR_G_GetPointCount(geometryH);
 
-// Here we know how many points we have, so we can allocate a
-// storage area to hold them, convert them to WGS84, then draw the
-// entire polygon at once with one X11 call.  We'll also perform the
-// transform exactly once on the entire vector that way.
-
-            if (polygon_points > 2) {
-                double X1, Y1, Z1;
-                double X2, Y2, Z2;
+            if (polygon_points > 3) {
                 int mm;
+                double *vectorX;
+                double *vectorY;
+                double *vectorZ;
 
 
-                // Get the first point
-                OGR_G_GetPoint(child_geometryH,
-                    0,
-                    &X2,
-                    &Y2,
-                    &Z2);
+                // Get some memory to hold the polygon vectors
+                vectorX = (double *)malloc(sizeof(double) * polygon_points);
+                vectorY = (double *)malloc(sizeof(double) * polygon_points);
+                vectorZ = (double *)malloc(sizeof(double) * polygon_points);
+
+                // Get the points, fill in the vectors
+                for ( mm = 0; mm < polygon_points; mm++ ) {
+
+                    OGR_G_GetPoint(geometryH,
+                        mm,
+                        &vectorX[mm],
+                        &vectorY[mm],
+                        &vectorZ[mm]);
+                }
 
                 if (transformH) {
-                    // Convert to WGS84 coordinates.
-                    if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
-                        fprintf(stderr,
-                            "Couldn't convert point to WGS84\n");
+                    // Convert entire polygon to WGS84 coordinates.
+                    if (!OCTTransform(transformH, polygon_points, vectorX, vectorY, vectorZ)) {
+//                        fprintf(stderr,
+//                            "Couldn't convert polygon to WGS84\n");
+//return;
                     }
                 }
 
                 for ( mm = 1; mm < polygon_points; mm++ ) {
 
-                    X1 = X2;
-                    Y1 = Y2;
-                    Z1 = Z2;
-
-                    // Get the next point
-                    OGR_G_GetPoint(child_geometryH,
-                        mm,
-                        &X2,
-                        &Y2,
-                        &Z2);
-
-                    if (transformH) {
-                        // Convert to WGS84 coordinates.
-                        if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
-                            fprintf(stderr,
-                                "Couldn't convert point to WGS84\n");
-                        }
-                    }
-
                     draw_vector_ll(da,
-                        (float)Y1,
-                        (float)X1,
-                        (float)Y2,
-                        (float)X2,
+                        (float)vectorY[mm-1],
+                        (float)vectorX[mm-1],
+                        (float)vectorY[mm],
+                        (float)vectorX[mm],
                         gc,
                         pixmap);
                 }
+
+                // Free the allocated vector memory
+                free(vectorX);
+                free(vectorY);
+                free(vectorZ);
             }
         }
     }
