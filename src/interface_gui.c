@@ -4474,7 +4474,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                 /*set args for color */
                 ac=0;
                 XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-                XtSetArg(al[ac], XmNvisibleItemCount, 10); ac++;
+                XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
                 XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
                 XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
                 XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -4766,7 +4766,7 @@ void Configure_interface( /*@unused@*/ Widget w,  /*@unused@*/ XtPointer clientD
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNvisibleItemCount, 10); ac++;
+        XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
         XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -4970,7 +4970,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces
     modify_device_list(4,0);
 end_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
 
-    for (port=0; port<10; port++) {
+    for (port=0; port<MAX_IFACE_DEVICES; port++) {
         do_w = atoi(which);
         if (do_w) {     // We wish to shut down all ports
             shutdown_all_active_or_defined_port(port);
@@ -5042,7 +5042,7 @@ begin_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNvisibleItemCount, 10); ac++;
+        XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
         XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;

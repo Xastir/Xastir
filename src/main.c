@@ -5226,7 +5226,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     iface_da = XtVaCreateWidget("create_appshell iface", 
             xmDrawingAreaWidgetClass,
             form,
-            XmNwidth,               20*(MAX_IFACE_DEVICES/2),
+            XmNwidth,               22*(MAX_IFACE_DEVICES/2),
             XmNheight,              20,
             XmNunitType,            XmPIXELS,
             XmNtopAttachment,       XmATTACH_NONE,
