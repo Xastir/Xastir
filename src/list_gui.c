@@ -751,7 +751,12 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         break;
 
                     case LST_WX:                        // weather stations list
+
                         weather = p_station->weather_data;
+
+                        if ((int)(((sec_old + weather->wx_sec_time)) < sec_now()))
+                            break;  // Weather data is too old
+
                         if (strlen(weather->wx_course) > 0)
                             XmTextFieldSetString(SL_wx_wind_course[type][row],weather->wx_course);
                         else

@@ -1417,109 +1417,154 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 fprintf(stderr,"Peet Bros U-2k Packet (Complete Record Mode) %s:<%s>\n",fill->call_sign,data);
 
             if (!from) {    // From local station
+                int done_with_wx_speed = 0;
+
+
                 /* decode only for local station */
                 weather->wx_type=WX_TYPE;
                 strcpy(weather->wx_station,"U2k");
+
 
                 if (data[12]!='-') {
                     substr(temp_data1,(char *)(data+12),4);
                     xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
                             (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
-                } else
+                }
+                else
                     weather->wx_gust[0]=0;
 
-                    // KG9AE
-                    // Peet Bros CR mode wind values should be selected based on which are highest.
-                    /* Wind Speed fields 1, 34, and 71.  Wind direction fields 2, 35, 72. */
-                    if (data[4] !='-') {
-                        substr(temp_data1, data+4, 4);
-                        temp1 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
-                    }
-                    else {
-                        temp1=0;
-                    }
-                    if (data[136] !='-') {
-                        substr(temp_data1, data+136, 4);
-                        temp2 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
-                    }
-                    else {
-                        temp2=0;
-                    }
-                    if (data[284] !='-') {
-                        substr(temp_data1, data+284, 4);
-                        temp3 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
-                    }
-                    else {
-                        temp3=0;
-                    }
-                    // fprintf(stderr,"WIND: wind1 %d, wind2 %d, wind3 %d\n", temp1, temp2, temp3);
+
+                // Check whether field 115 is available at bytes 452
+                // & 453.  If so, that's the one-minute wind speed
+                // average in 0.1kph, which matches the APRS spec
+                // except for the units (which should be MPH).
+                if ((len >= 454) && (data[452]!='-')) {
+                    substr(temp_data1,(char *)(data+452),2);
+                    xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                        (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                    done_with_wx_speed++;
+                }
+
+
+                // Some Peet units don't have that particular wind
+                // speed field, so snag what wind speed we can from
+                // the other wind speed fields, which don't quite
+                // match the APRS spec as they're instantaneous
+                // values, not one-minute sustained speeds.
+
+
+                // KG9AE
+                // Peet Bros CR mode wind values should be selected based on which are highest.
+                /* Wind Speed fields 1, 34, and 71.  Wind direction fields 2, 35, 72. */
+                if (data[4] !='-') {
+                    substr(temp_data1, data+4, 4);
+                    temp1 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                }
+                else {
+                    temp1=0;
+                }
+                if (data[136] !='-') {
+                    substr(temp_data1, data+136, 4);
+                    temp2 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                }
+                else {
+                    temp2=0;
+                }
+                if (data[284] !='-') {
+                    substr(temp_data1, data+284, 4);
+                    temp3 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                }
+                else {
+                    temp3=0;
+                }
+
+                // fprintf(stderr,"WIND: wind1 %d, wind2 %d, wind3 %d\n", temp1, temp2, temp3);
                     
-                    /* Select wind speed and direction based on which wind speed is the highest. */
-                    /* Ugh, surely there's a way to make this pretty. A function might be better. */
-                    if( temp1 >= temp2 && temp1 >= temp3 ){
-                        // fprintf(stderr,"WIND:      ***\n");
-                        /* wind speed */
+                // Select wind speed and direction based on which
+                // wind speed is the highest.  Ugh, surely there's a
+                // way to make this pretty. A function might be
+                // better.
+                if( temp1 >= temp2 && temp1 >= temp3 ){
+                    // fprintf(stderr,"WIND:      ***\n");
+
+                    /* wind speed */
+                    if (!done_with_wx_speed) {
                         substr(temp_data1,(char *)(data+4),4);
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
-                                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
-                        /* wind direction */
-                        if (data[8]!='-') {
-                            substr(temp_data1,(char *)(data+8),4);
-                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
-                                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
-                        } else {
-                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
-                            weather->wx_course[0]=0;
-                        }
+                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
                     }
-                    else if( temp2 >= temp1 && temp2 >= temp3 ){
-                        // fprintf(stderr,"WIND:               ***\n");
+
+                    /* wind direction */
+                    if (data[8]!='-') {
+                        substr(temp_data1,(char *)(data+8),4);
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                    } else {
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
+                        weather->wx_course[0]=0;
+                    }
+                }
+                else if( temp2 >= temp1 && temp2 >= temp3 ){
+                    // fprintf(stderr,"WIND:               ***\n");
+
+                    if (!done_with_wx_speed) {
                         /* wind speed */
                         substr(temp_data1,(char *)(data+136),4);
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
-                                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
-                        /* wind direction */
-                        if (data[140]!='-') {
-                            substr(temp_data1,(char *)(data+140),4);
-                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
-                                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
-                        } else {
-                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
-                            weather->wx_course[0]=0;
-                        }
+                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
                     }
-                    else if( temp3 >= temp2 && temp3 >= temp1 ){
-                        // fprintf(stderr,"WIND:                        ***\n");
+
+                    /* wind direction */
+                    if (data[140]!='-') {
+                        substr(temp_data1,(char *)(data+140),4);
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                    } else {
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
+                        weather->wx_course[0]=0;
+                    }
+                }
+                else if( temp3 >= temp2 && temp3 >= temp1 ){
+                    // fprintf(stderr,"WIND:                        ***\n");
+
+                    if (!done_with_wx_speed) {
                         /* wind speed */
                         substr(temp_data1,(char *)(data+284),4);
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
-                                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
-                        /* wind direction */
-                        if (data[288]!='-') {
-                            substr(temp_data1,(char *)(data+288),4);
-                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
-                                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
-                        } else {
-                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
-                            weather->wx_course[0]=0;
-                        }
+                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
                     }
-                    else{   /* Or default to the first value */
-                        // fprintf(stderr,"WIND: DEFAULTING!\n");
+
+                    /* wind direction */
+                    if (data[288]!='-') {
+                        substr(temp_data1,(char *)(data+288),4);
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                    } else {
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
+                        weather->wx_course[0]=0;
+                    }
+                }
+                else{   /* Or default to the first value */
+                    // fprintf(stderr,"WIND: DEFAULTING!\n");
+
+                    if (!done_with_wx_speed) {
                         /* wind speed */
                         substr(temp_data1,(char *)(data+4),4);
                         xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
-                                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
-                        /* wind direction */
-                        if (data[8]!='-') {
-                            substr(temp_data1,(char *)(data+8),4);
-                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
-                                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
-                        } else {
-                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
-                            weather->wx_course[0]=0;
-                        }
+                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
                     }
+
+                    /* wind direction */
+                    if (data[8]!='-') {
+                        substr(temp_data1,(char *)(data+8),4);
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                    } else {
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
+                        weather->wx_course[0]=0;
+                    }
+                }
+
 
                 /* outdoor temp */
                 if (data[24]!='-') {
@@ -1639,9 +1684,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             if (data[36]!='-') {
                 substr(temp_data1,(char *)(data+36),4);
                 xastir_snprintf(wx_three_hour_baro, sizeof(wx_three_hour_baro), "%0.2f",
-//                        (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/100.0/3.38639);
-// Fix by Matt Werner, kb0kqa.  Testing it.
-                          (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0);
+// Old code
+//                  (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/100.0/3.38639);
+// New code, fix by Matt Werner, kb0kqa:
+                    (float)((strtol(temp_data1,&temp_conv,16)<<16)/65536)/10.0);
  
                 wx_three_hour_baro_on = 1;
             }

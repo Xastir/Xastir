@@ -259,7 +259,7 @@ typedef struct {                //                      strlen
     char    wx_temp[5];         // in °F                    3
     char    wx_rain[10];        // in hundredths inch/h     3
     char    wx_rain_total[10];  // in hundredths inch
-    char    wx_snow[6];         // in hundredths inch/h     3
+    char    wx_snow[6];         // in inches/24h            3
     char    wx_prec_24[10];     // in hundredths inch/day   3
     char    wx_prec_00[10];     // in hundredths inch       3
     char    wx_hum[5];          // in %                     3

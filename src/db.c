@@ -2064,6 +2064,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char tmp[7+1];
     int speed_ok = 0;
     int course_ok = 0;
+    int wx_ghost = 0;
     Pixmap drawing_target;
     WeatherRow *weather = p_station->weather_data;
 
@@ -2219,7 +2220,16 @@ void display_station(Widget w, DataRow *p_station, int single) {
     strcpy(temp_wx_temp,"");
     strcpy(temp_wx_wind,"");
 
-    if (Display_.weather && Display_.weather_text && weather != NULL) {
+    if (weather != NULL) {
+        // wx_ghost = 1 if the weather data is too old to display
+        wx_ghost = (int)(((sec_old + weather->wx_sec_time)) < sec_now());
+    }
+
+    if (Display_.weather
+            && Display_.weather_text
+            && weather != NULL      // We have weather data
+            && !wx_ghost) {         // Weather is current, display it
+
         if (strlen(weather->wx_temp) > 0) {
             strcpy(tmp,"T:");
             if (Display_.temperature_only)
@@ -2370,12 +2380,14 @@ _do_the_drawing:
                 p_station->coord_lat,
                 temp_call,
                 temp_altitude,
-                temp_course,
-                temp_speed,
+                temp_course,    // ??
+                temp_speed,     // ??
                 temp_my_distance,
                 temp_my_course,
-                temp_wx_temp,
-                temp_wx_wind,
+// Display only if wx temp is current
+                (wx_ghost) ? "" : temp_wx_temp,
+// Display only if if wind speed is current
+                (wx_ghost) ? "" : temp_wx_wind,
                 temp_sec_heard,
                 temp_show_last_heard,
                 drawing_target,
@@ -2405,10 +2417,10 @@ _do_the_drawing:
                         drawing_target);
     }
 
-    // Draw additional stuff if this is a storm
-    if ( (weather != NULL) && (weather->wx_storm) ) {
+    // Draw additional stuff if this is a storm and the weather data
+    // is not too old to display.
+    if ( (weather != NULL) && weather->wx_storm && !wx_ghost ) {
         char temp[4];
-        int ghost = (int)(((sec_old + weather->wx_sec_time)) < sec_now());
 
 
         //fprintf(stderr,"Plotting a storm symbol:%s:%s:%s:\n",
@@ -2420,8 +2432,7 @@ _do_the_drawing:
 // different ranges.  Might be nice to tint it as well.
 
         strcpy(temp,weather->wx_hurricane_radius);
-        if ( !ghost && (temp[0] != '\0')
-                && (strncmp(temp,"000",3) != 0) ) {
+        if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
 
             draw_pod_circle(p_station->coord_lon,
                             p_station->coord_lat,
@@ -2431,8 +2442,7 @@ _do_the_drawing:
         }
 
         strcpy(temp,weather->wx_trop_storm_radius);
-        if ( !ghost && (temp[0] != '\0')
-             && (strncmp(temp,"000",3) != 0) ) {
+        if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
             draw_pod_circle(p_station->coord_lon,
                             p_station->coord_lat,
                             atof(temp) * 1.15078, // nautical miles to miles
@@ -2441,8 +2451,7 @@ _do_the_drawing:
         }
 
         strcpy(temp,weather->wx_whole_gale_radius);
-        if ( !ghost && (temp[0] != '\0')
-             && (strncmp(temp,"000",3) != 0) ) {
+        if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
             draw_pod_circle(p_station->coord_lon,
                             p_station->coord_lat,
                             atof(temp) * 1.15078, // nautical miles to miles
@@ -2456,7 +2465,8 @@ _do_the_drawing:
     // storm (wind barbs just confuse the matter).
     if (Display_.weather && Display_.wind_barb
             && weather != NULL && atoi(weather->wx_speed) >= 5
-            && !weather->wx_storm ) {
+            && !weather->wx_storm
+            && !wx_ghost ) {
         draw_wind_barb(p_station->coord_lon,
                        p_station->coord_lat,
                        weather->wx_speed,
@@ -4124,8 +4134,12 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
 
     // Weather Data ...
-    if (p_station->weather_data != NULL) {
+    if (p_station->weather_data != NULL
+            // Make sure the timestamp on the weather is current
+            && (int)(((sec_old + p_station->weather_data->wx_sec_time)) >= sec_now()) ) {
+
         weather = p_station->weather_data;
+
         xastir_snprintf(temp, sizeof(temp), "\n");
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
@@ -4217,7 +4231,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
         if (strlen(weather->wx_snow) > 0) {
             if(units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI035"),atof(weather->wx_snow)/100.0);
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI035"),atof(weather->wx_snow));
             else
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI034"),atof(weather->wx_snow)*2.54);
             XmTextInsert(si_text,pos,temp);
@@ -5523,6 +5537,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
     if (ok) {
         ok = get_weather_record(p_station);     // get existing or create new weather record
     }
+
     if (ok) {
         weather = p_station->weather_data;
 
@@ -5566,8 +5581,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 "%0.1f",
                 (float)(atoi(weather->wx_baro)/10.0));
 
-        (void)extract_weather_item(data,'s',3,weather->wx_snow);      // snowfall (in inches) in the last 24 hours
-                                                                      // was 1/100 inch, APRS reference says inch! ??
+        (void)extract_weather_item(data,'s',3,weather->wx_snow);      // snowfall, inches in the last 24 hours
 
         (void)extract_weather_item(data,'L',3,temp);                  // luminosity (in watts per square meter) 999 and below
 
@@ -5589,6 +5603,9 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
         // Create a timestamp from the current time
         strcpy(weather->wx_time,get_time(time_data));
+
+        // Set the timestamp in the weather record so that we can
+        // decide whether or not to "ghost" the weather data later.
         weather->wx_sec_time=sec_now();
 //        weather->wx_data=1;  // we don't need this
 
@@ -5767,6 +5784,9 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 
         // Create a timestamp from the current time
         strcpy(weather->wx_time,get_time(time_data));
+
+        // Set the timestamp in the weather record so that we can
+        // decide whether or not to "ghost" the weather data later.
         weather->wx_sec_time=sec_now();
     }
     return(ok);
@@ -6006,7 +6026,7 @@ static void extract_multipoints(DataRow *p_station,
 
 void init_weather(WeatherRow *weather) {    // clear weather data
 
-    weather->wx_sec_time             = 0; // ?? is 0 ok ??
+    weather->wx_sec_time             = (time_t)0;
     weather->wx_storm                = 0;
     weather->wx_time[0]              = '\0';
     weather->wx_course[0]            = '\0';
@@ -13683,7 +13703,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
 
 /*
- *  Read a line from file
+ *  Read a line from file.  We use this to read in log files and to
+ *  read in findu track files.  For findu track files we need to get
+ *  rid of the <br> at the end of the lines, else it shows up in our
+ *  comment lines in Station_info.
  */
 void  read_file_line(FILE *f) {
     char line[MAX_LINE_SIZE+1];
@@ -13702,6 +13725,14 @@ void  read_file_line(FILE *f) {
                 if (cin == (char)10) {                  // Found LF as EOL char
                     line[pos] = '\0';                   // Always add a terminating zero after last char
                     pos = 0;                            // start next line
+                    char *ptr;
+
+                    // Get rid of <br> HTML tag at end of line here.
+                    // Findu track files have them.
+                    ptr = strstr(line, "<br>");
+                    if (ptr) {  // Found one of them
+                        *ptr = '\0';  // Terminate the line at that point
+                    }
 
                     // Save a backup copy of the incoming string.
                     // Used for debugging purposes.  If we get a

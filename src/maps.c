@@ -1071,6 +1071,8 @@ void draw_grid(Widget w) {
 
 
         while (done < 2) { // 1=done with a zone, 2=completely done
+            XPoint *temp_point;
+
 
             // Here's our escape in case we get stuck in this loop.
             if (iterations++ > 10000) {
@@ -1165,8 +1167,17 @@ void draw_grid(Widget w) {
 // NOTE:  The below is bad practice.  If the realloc fails, we lose
 // the pointer to what was alloc'ed before and it becomes a memory
 // leak.
-                utm_grid.zone[zone].col[col].point = realloc(utm_grid.zone[zone].col[col].point,
-                                                             i * sizeof(XPoint));
+//                utm_grid.zone[zone].col[col].point =
+//                    realloc(utm_grid.zone[zone].col[col].point,
+//                        i * sizeof(XPoint));
+
+                temp_point = realloc(utm_grid.zone[zone].col[col].point,
+                        i * sizeof(XPoint));
+
+                if (temp_point)
+                    utm_grid.zone[zone].col[col].point = temp_point;
+
+
                 utm_grid.zone[zone].col[col].nalloced = i;
                 if (!utm_grid.zone[zone].col[col].point) {
                     puts("realloc FAILED!");
@@ -1192,8 +1203,17 @@ void draw_grid(Widget w) {
 // NOTE:  The below is bad practice.  If the realloc fails, we lose
 // the pointer to what was alloc'ed before and it becomes a memory
 // leak.
-                utm_grid.zone[zone].row[row].point = realloc(utm_grid.zone[zone].row[row].point,
-                                                             i * sizeof(XPoint));
+//                utm_grid.zone[zone].row[row].point =
+//                    realloc(utm_grid.zone[zone].row[row].point,
+//                        i * sizeof(XPoint));
+
+                temp_point = realloc(utm_grid.zone[zone].row[row].point,
+                        i * sizeof(XPoint));
+
+                if (temp_point)
+                    utm_grid.zone[zone].row[row].point = temp_point;
+
+
                 utm_grid.zone[zone].row[row].nalloced = i;
                 if (!utm_grid.zone[zone].row[row].point) {
                     puts("realloc FAILED!");

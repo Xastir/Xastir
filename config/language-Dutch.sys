@@ -700,8 +700,8 @@ WPUPSTI030|Temperatuur: %søF   ||
 WPUPSTI031|Vochigheid: %s%%   ||
 WPUPSTI032|Gevoels temperatuur: %02.1føC  ||
 WPUPSTI033|Baro: %s hPa||
-WPUPSTI034|Sneeuw: %0.2f (cm/h)||
-WPUPSTI035|Sneeuw: %0.2f (inch/h)||
+WPUPSTI034|Sneeuw: %0.2f (cm/24h)||
+WPUPSTI035|Sneeuw: %0.2f (inch/24h)||
 WPUPSTI036|Regen: ||
 WPUPSTI037|%0.2f (mm/h)   ||
 WPUPSTI038|%0.2f (inch/h)   ||

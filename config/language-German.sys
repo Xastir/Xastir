@@ -695,8 +695,8 @@ WPUPSTI030|Temperatur: %s°F   ||
 WPUPSTI031|Feuchte: %s%%   ||
 WPUPSTI032|rel.Feuchte: %02.1f°C  ||
 WPUPSTI033|Luftdruck: %s hPa||
-WPUPSTI034|Schnee: %0.2f cm/h||
-WPUPSTI035|Schnee: %0.2f Inch/h||
+WPUPSTI034|Schnee: %0.2f cm/24h||
+WPUPSTI035|Schnee: %0.2f Inch/24h||
 WPUPSTI036|Regen: ||
 WPUPSTI037|%0.2f mm/h   ||
 WPUPSTI038|%0.2f Inch/h   ||
