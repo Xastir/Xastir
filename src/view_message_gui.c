@@ -109,6 +109,8 @@ void view_message_print_record(Message *m_fill) {
             m_fill->message_line);
 
         pos = (int)XmTextGetLastPosition(view_messages_text);
+
+
         XmTextInsert(view_messages_text, pos, temp);
         pos += strlen(temp);
         while (pos > view_message_limit) {
@@ -166,7 +168,7 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
             data1[95]='\0';
             xastir_snprintf(data2,
                 sizeof(data2),
-                "%s",
+                "\n\t%s",
                 message+95);
         } else {
             xastir_snprintf(data1,
@@ -182,7 +184,7 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
                 "Broadcast");
             xastir_snprintf(temp,
                 my_size,
-                "%s %s\n%s\n%s\n",
+                "%s %s\t%s%s\n",
                 from_call,
                 call_sign,
                 data1,
@@ -193,7 +195,7 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
                 "Broadcast");
             xastir_snprintf(temp,
                 my_size,
-                "%s %s\n%s\n%s\n",
+                "%s %s\t%s%s\n",
                 from_call,
                 call_sign,
                 data1,
@@ -201,7 +203,7 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
         } else
             xastir_snprintf(temp,
                 my_size,
-                "%s to %s via:%c\n%s\n%s\n",
+                "%s to %s via:%c\t%s%s\n",
                 from_call,
                 call_sign,
                 from,
