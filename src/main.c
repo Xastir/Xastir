@@ -3210,6 +3210,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             menu_x=input_x;
             menu_y=input_y;
             Zoom_out_no_pan( w, client_data, call_data );
+            TrackMouse(w, (XtPointer)text2, event, NULL);
         }
 
         // keycode 105, keysym 65366 is PageDown
@@ -3217,6 +3218,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             menu_x=input_x;
             menu_y=input_y;
             Zoom_in_no_pan( w, client_data, call_data );
+            TrackMouse(w, (XtPointer)text2, event, NULL);
         }
 
         // keycode 100, keysym 65361 is left-arrow
@@ -3228,6 +3230,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 Pan_left_less( w, client_data, call_data);
             else
                 Pan_left( w, client_data, call_data );
+            TrackMouse(w, (XtPointer)text2, event, NULL);
         }
 
         // keycode 102, keysym 65363 is right-arrow
@@ -3239,6 +3242,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 Pan_right_less( w, client_data, call_data);
             else
                 Pan_right( w, client_data, call_data );
+            TrackMouse(w, (XtPointer)text2, event, NULL);
         }
 
         // keycode 98, keysym 65362 is up-arrow
@@ -3250,6 +3254,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 Pan_up_less( w, client_data, call_data);
             else
                 Pan_up( w, client_data, call_data );
+            TrackMouse(w, (XtPointer)text2, event, NULL);
         }
 
         // keycode 105, keysym 65364 is down-arrow
@@ -3261,6 +3266,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 Pan_down_less( w, client_data, call_data);
             else
                 Pan_down( w, client_data, call_data );
+            TrackMouse(w, (XtPointer)text2, event, NULL);
         }
     }
     else {
