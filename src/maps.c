@@ -1735,6 +1735,12 @@ void draw_shapefile_map (Widget w,
         return;     // The file contains no shapes in our viewport
     }
 
+
+    // Set a default line width for all maps.  This will most likely
+    // be modified for particular maps in later code.
+    (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
+
+
     // NOTE: Setting the color here and in the "else" may not stick if we do more
     //       complex drawing further down like a SteelBlue lake with a black boundary,
     //       or if we have labels turned on which resets our color to black.
@@ -2180,10 +2186,12 @@ void draw_shapefile_map (Widget w,
                         }
 
                         if (lanes != (int)NULL) {
-                            if (dashed_line)
+                            if (dashed_line) {
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
-                            else
+                            }
+                            else {
                                 (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
+                            }
                         }
                         else {
                             (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
@@ -2323,16 +2331,20 @@ void draw_shapefile_map (Widget w,
                                     lanes = 1;
                                     break;
                             }
-                            if (dashed_line)
+                            if (dashed_line) {
                                 (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineOnOffDash, CapButt,JoinMiter);
-                            else
+                            }
+                            else {
                                 (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
+                            }
                         }
                         else {  // We don't know how wide to make it, not a mapshots or ESRI Tiger maps
-                            if (dashed_line)
+                            if (dashed_line) {
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
-                            else
+                            }
+                            else {
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                            }
                         }
                         if (glacier_flag)
                             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]); // white
@@ -2802,12 +2814,15 @@ void draw_shapefile_map (Widget w,
 
                                 // Draw a thicker border for city boundaries
                                 if (city_flag) {
-                                    if (scale_y <= 64)
+                                    if (scale_y <= 64) {
                                         (void)XSetLineAttributes(XtDisplay(w), gc, 2, LineSolid, CapButt,JoinMiter);
-                                    else if (scale_y <= 128)
+                                    }
+                                    else if (scale_y <= 128) {
                                         (void)XSetLineAttributes(XtDisplay(w), gc, 1, LineSolid, CapButt,JoinMiter);
-                                    else
+                                    }
+                                    else {
                                         (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
+                                    }
 
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0x14]); // lightgray for border
                                 }
@@ -3001,6 +3016,8 @@ void draw_shapefile_map (Widget w,
             high_water_mark_i);
     }
 }
+// End of draw_shapefile_map()
+
 #endif  // HAVE_SHAPELIB
 
 
