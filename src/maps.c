@@ -28,7 +28,7 @@
  */
 
 //#define MAP_SCALE_CHECK
-
+//#define FUZZYRASTER
 
 #include "config.h"
 #include "snprintf.h"
@@ -6573,7 +6573,10 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     char geo_projection[8+1];   // TM, UTM, GK, LATLON etc.
     int map_proj;
     int map_refresh_interval_temp;
-
+#ifdef FUZZYRASTER
+    int rasterfuzz = 3;    // ratio to skip 
+#endif //FUZZYRASTER
+ 
 //#define TIMING_DEBUG
 #ifdef TIMING_DEBUG
     time_mark(1);
@@ -6977,6 +6980,15 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
         }
         return;            /* Skip this map */
+#ifdef FUZZYRASTER 
+   } else if (((float)(map_c_dx/scale_x) > rasterfuzz) ||
+               ((float)(scale_x/map_c_dx) > rasterfuzz) ||
+               ((float)(map_c_dy/scale_y) > rasterfuzz) ||
+               ((float)(scale_y/map_c_dy) > rasterfuzz)) {
+      printf("Skipping fuzzy map %s with sx=%f,sy=%f.\n", file,
+             (float)(map_c_dx/scale_x),(float)(map_c_dy/scale_y));
+      return;
+#endif //FUZZYRASTER
     } else if (debug_level & 16) {
         fprintf(stderr,"Loading imagemap: %s\n", file);
         fprintf(stderr,"\nImage: %s\n", file);
