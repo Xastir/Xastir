@@ -888,6 +888,8 @@ void draw_geo_image_map (Widget w,
             z,
             geo_image_width,
             geo_image_height);
+//http://terraservice.net/download.ashx?t=1&s=11&x=1384&y=13274&z=10&w=1215&h=560
+//fprintf(stderr,"%s\n",fileimg);
     }
 #endif // HAVE_IMAGEMAGICK
 
