@@ -1248,6 +1248,8 @@ void draw_shapefile_map (Widget w,
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
+    //printf("draw_shapefile_map:start:%s\n",file);
+
     filename = filenm;
     i = strlen(filenm);
     while ( (filenm[i] != '/') && (i >= 0) )
@@ -1879,8 +1881,13 @@ void draw_shapefile_map (Widget w,
         int skip_it = 0;
         int skip_label = 0;
 
+        // Have had segfaults before at the SHPReadObject() call
+        // when the Shapefile was corrupted.
+        //printf("Before SHPReadObject:%d\n",structure);
 
         object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
+
+        //printf("After SHPReadObject\n");
 
         if (object == NULL)
             continue;   // Skip this iteration, go on to the next
@@ -2394,6 +2401,7 @@ void draw_shapefile_map (Widget w,
                     else {  // Set default line width, use whatever color is already defined by this point.
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
+
 
                     if (ok_to_draw && !skip_it) {
                         (void)XDrawLines(XtDisplay(w), pixmap, gc, points, index, CoordModeOrigin);
@@ -3022,7 +3030,8 @@ void draw_shapefile_map (Widget w,
                         // Not implemented.
                         printf("Shapefile format not supported: Subformat unknown (default clause of switch)!\n");
                     break;
-            }
+
+            }   // End of switch
         }
         else {  // Shape not currently visible
             if (alert)
@@ -3030,6 +3039,7 @@ void draw_shapefile_map (Widget w,
         }
         SHPDestroyObject( object ); // Done with this structure
     }
+
 
     // Free our linked list of strings, if any
     ptr2 = label_ptr;
@@ -3039,6 +3049,7 @@ void draw_shapefile_map (Widget w,
         free(ptr2);
         ptr2 = label_ptr;
     }
+
 
     DBFClose( hDBF );
     SHPClose( hSHP );
@@ -9126,6 +9137,9 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
         return;
     }
 
+    // Used for debugging.  If we get a segfault on a map, this is
+    // often the only way of finding out which map file we can't
+    // handle.
     //printf("draw_map: %s\n",file);
 
     ext = get_map_ext (filenm);

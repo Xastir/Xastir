@@ -8749,7 +8749,11 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
             if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
             {
                 ext = get_map_ext (temp);
-                if ( (ext != NULL) && (strcasecmp (ext, "map") == 0)) {
+                if ( (ext != NULL)
+                        && (   (strcasecmp(ext,"map") == 0)
+                            || (strcasecmp(ext,"shp") == 0)
+                            || (strcasecmp(ext,"pdb") == 0)
+                            || (strcasecmp(ext,"gnis") == 0) ) ) {
                     fprintf(f,"%s\n",temp);
                 }
                 XtFree(temp);

@@ -757,7 +757,7 @@ void load_data_or_default(void) {
         strcpy (WIN_MAP_DIR, get_data_base_dir ("maps"));
 
     if (!get_string ("WIN_MAP_DATA", WIN_MAP_DATA))
-        strcpy (WIN_MAP_DATA, get_user_base_dir ("config/winmaps.sys"));
+        strcpy (WIN_MAP_DATA, get_user_base_dir ("config/selected_maps.sys"));
 
     if (!get_string ("MAP_INDEX_DATA", MAP_INDEX_DATA))
         strcpy (MAP_INDEX_DATA, get_user_base_dir ("config/map_index.sys"));
