@@ -428,9 +428,9 @@ void Draw_Polygons(OGRGeometryH geometryH, int level, OGRCoordinateTransformatio
 // INDEX_NO_TIMESTAMPS, then we are indexing the file (finding the
 // extents) instead of drawing it.
 //
-// Indexing currently works properly for either geographic or
+// Indexing/drawing works properly for either geographic or
 // projected coordinates, and does conversions to geographic/WGS84
-// datum before storing the extents in the map index.  It doesn't
+// datum before storing the extents in the map index.  It does not
 // work for local coordinate systems.
 //
 void draw_ogr_map(Widget w,
@@ -469,11 +469,12 @@ void draw_ogr_map(Widget w,
     if (debug_level & 16)
         fprintf(stderr,"Opening datasource\n");
 
+//
+// WE7U:  One of my systems segfaults here if a .prj file is present
+// with a shapefile.  Another system, with newer
+// OS/libtiff/libgeotff, works fine.
+//
     // Open data source
-//
-// Home system segfaults here if a .prj file is present with a
-// shapefile.
-//
     datasourceH = OGROpen(full_filename,
         0 /* bUpdate */,
         &driver);
@@ -489,8 +490,9 @@ void draw_ogr_map(Widget w,
         fprintf(stderr,"Opened datasource\n");
 
 
-    // Set up coordinate translation.  We need it for both indexing
-    // and drawing.
+    // Set up coordinate translation:  We need it for indexing and
+    // drawing so we do it first and keep a pointer to our
+    // transform.
     //
     if (OGR_DS_GetLayerCount(datasourceH) > 0) {
         // We have at least one layer.
@@ -507,6 +509,7 @@ void draw_ogr_map(Widget w,
 
         if (map_spatialH) {
             const char *temp;
+
 
             // We found spatial data
             no_spatial = 0;
@@ -679,7 +682,6 @@ void draw_ogr_map(Widget w,
     }
 
 
-
     // Implement the indexing functions, so that we can use these
     // map formats from within Xastir.  Without an index, it'll
     // never appear in the map chooser.  Use the OGR "envelope"
@@ -691,11 +693,9 @@ void draw_ogr_map(Widget w,
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
-
 /////////////////////////////////////////////////////////////////////
 // We're indexing only.  Save the extents in the index.
 /////////////////////////////////////////////////////////////////////
-
 
         char status_text[MAX_FILENAME];
         double file_MinX = 0;
@@ -837,6 +837,7 @@ void draw_ogr_map(Widget w,
                 double x[2];
                 double y[2];
 
+
                 x[0] = file_MinX;
                 x[1] = file_MaxX;
                 y[0] = file_MinY;
@@ -890,11 +891,9 @@ void draw_ogr_map(Widget w,
         return; // Done indexing the file
     }
 
-
 /////////////////////////////////////////////////////////////////////
 // The code below this point is for drawing, not indexing.
 /////////////////////////////////////////////////////////////////////
-
  
     // Find out what type of file we're dealing with.  This reports
     // one of:
@@ -937,12 +936,9 @@ void draw_ogr_map(Widget w,
     (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 
-
-
 // Optimization:  Get the envelope for each layer if it's not an
 // expensive operation.  Skip the layer if it's completely outside
 // our viewport.
-
  
     // Loop through all layers in the data source.
     //
@@ -1039,6 +1035,10 @@ void draw_ogr_map(Widget w,
         if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
             fprintf(stderr,
                 "Fast Get Extent, ");
+
+// We should save this away and decide whether to compute extents in
+// later code based on this.
+
         }
 
 
@@ -1046,6 +1046,7 @@ void draw_ogr_map(Widget w,
             const char *temp;
             int geographic = 0;
             int projected = 0;
+
 
             if (OSRIsGeographic(map_spatialH)) {
                 fprintf(stderr,"Geographic Coord, ");
@@ -1339,6 +1340,7 @@ void Draw_Points(OGRGeometryH geometryH,
             OGRGeometryH child_geometryH;
             int sub_object_num;
 
+
             // This may be a ring, or another object with rings.
             child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
 
@@ -1354,7 +1356,6 @@ fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
         }
     }
     else {  // Draw
-        double X1, Y1, Z1;
         int points;
 
 
@@ -1362,21 +1363,15 @@ fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
         points = OGR_G_GetPointCount(geometryH);
 //        fprintf(stderr,"  Number of elements: %d\n",points);
 
-        // Print out the point
-//        for ( ii=0; ii < num; ii++ ) {
-//            X1 = OGR_G_GetX(geometryH, ii);
-//            Y1 = OGR_G_GetY(geometryH, ii);
-//            Z1 = OGR_G_GetZ(geometryH, ii);
-//            fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
-//        }
-
-
         // Draw one point
         if (points > 0) {
             int ii;
 
+
             for ( ii = 0; ii < points; ii++ ) {
+                double X1, Y1, Z1;
                 int ok = 1;
+
 
                 // Get the point!
                 OGR_G_GetPoint(geometryH,
@@ -1470,6 +1465,7 @@ void Draw_Lines(OGRGeometryH geometryH,
             OGRGeometryH child_geometryH;
             int sub_object_num;
 
+
             // This may be a ring, or another object with rings.
             child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
 
@@ -1485,7 +1481,6 @@ fprintf(stderr, "DrawLines: Recursing level %d\n", level);
         }
     }
     else {  // Draw
-        double X1, Y1, Z1, X2, Y2, Z2;
         int points;
         OGREnvelope envelopeH;
 
@@ -1523,18 +1518,9 @@ fprintf(stderr, "DrawLines: Recursing level %d\n", level);
         points = OGR_G_GetPointCount(geometryH);
 //        fprintf(stderr,"  Number of elements: %d\n",points);
 
-        // Print out the points the line is comprised of
-//        for ( ii=0; ii < points; ii++ ) {
-//            OGR_G_GetPoint(geometryH,
-//                ii,
-//                &X1,
-//                &Y1,
-//                &Z1);
-//            fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
-//        }
-
         // Draw one polyline
         if (points > 0) {
+            double X1, Y1, Z1, X2, Y2, Z2;
             int ii;
 
 
@@ -1554,7 +1540,7 @@ fprintf(stderr, "DrawLines: Recursing level %d\n", level);
             }
 
             for ( ii = 1; ii < points; ii++ ) {
-
+ 
                 X1 = X2;
                 Y1 = Y2;
                 Z1 = Z2;
@@ -1645,6 +1631,7 @@ void Draw_Polygons(OGRGeometryH geometryH,
         OGRGeometryH child_geometryH;
         int sub_object_num;
 
+
         // This may be a ring, or another object with rings.
         child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
 
@@ -1693,6 +1680,7 @@ void Draw_Polygons(OGRGeometryH geometryH,
                 double X1, Y1, Z1;
                 double X2, Y2, Z2;
                 int mm;
+
 
                 // Get the first point
                 OGR_G_GetPoint(child_geometryH,
