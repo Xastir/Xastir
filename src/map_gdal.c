@@ -748,9 +748,11 @@ void Draw_OGR_Points( Widget w,
  
     int kk;
     int object_num = 0;
+    int num_points;
+    int ii;
 
 
-    //fprintf(stderr, "Draw_OGR_Points\n");
+//fprintf(stderr, "Draw_OGR_Points\n");
 
     if (geometryH == NULL)
         return; // Exit early
@@ -790,11 +792,11 @@ void Draw_OGR_Points( Widget w,
                 }
             }
         }
+        return;
     }
-    else {  // Draw
-        int num_points;
-        int ii;
 
+
+    // Draw
 
 /*
 guess_vector_attributes(w,
@@ -804,61 +806,58 @@ guess_vector_attributes(w,
     geometry_type);
 */
 
-        // Get number of elements (points)
-        num_points = OGR_G_GetPointCount(geometryH);
-        //fprintf(stderr,"  Number of elements: %d\n",num_points);
+    // Get number of elements (points)
+    num_points = OGR_G_GetPointCount(geometryH);
+    //fprintf(stderr,"  Number of elements: %d\n",num_points);
 
-        // Draw the points
-        for ( ii = 0; ii < num_points; ii++ ) {
-            double X1, Y1, Z1;
-            XPoint xpoint;
-
-
+    // Draw the points
+    for ( ii = 0; ii < num_points; ii++ ) {
+        double X1, Y1, Z1;
+        XPoint xpoint;
 
 
-            // Get the point!
-            OGR_G_GetPoint(geometryH,
-                ii,
-                &X1,
-                &Y1,
-                &Z1);
+        // Get the point!
+        OGR_G_GetPoint(geometryH,
+            ii,
+            &X1,
+            &Y1,
+            &Z1);
 
-            if (transformH) {
-                // Convert to WGS84 coordinates.
-                if (!OCTTransform(transformH, 1, &X1, &Y1, &Z1)) {
-                    fprintf(stderr,
-                        "Couldn't convert point to WGS84\n");
-                    // Draw it anyway.  It _might_ be in WGS84 or
-                    // NAD83!
-                }
+        if (transformH) {
+            // Convert to WGS84 coordinates.
+            if (!OCTTransform(transformH, 1, &X1, &Y1, &Z1)) {
+                fprintf(stderr,
+                    "Couldn't convert point to WGS84\n");
+                // Draw it anyway.  It _might_ be in WGS84 or
+                // NAD83!
             }
+        }
 
-            // Skip the map_visible_lat_lon() check:
-            // draw_point_ll() does the check for us.
-            //
-            draw_point_ll(da,
-                (float)Y1,
-                (float)X1,
-                gc,
-                pixmap);
+        // Skip the map_visible_lat_lon() check:
+        // draw_point_ll() does the check for us.
+        //
+        draw_point_ll(da,
+            (float)Y1,
+            (float)X1,
+            gc,
+            pixmap);
 
 // We could use a flag back from draw_point_ll() that tells us
 // whether the point was within the view.  That way we know whether
 // or not to draw the label.
 
-            xpoint.x = (short)X1;
-            xpoint.y = (short)Y1;
+        xpoint.x = (short)X1;
+        xpoint.y = (short)Y1;
 
 /*
-            // Draw the corresponding label
-            Draw_OGR_Labels(w,
-                pixmap,
-                featureH,
-                geometryH,
-                &xpoint,
-                1); // Number of points
+        // Draw the corresponding label
+        Draw_OGR_Labels(w,
+            pixmap,
+            featureH,
+            geometryH,
+            &xpoint,
+            1); // Number of points
 */
-        }
     }
 }
 
@@ -889,9 +888,11 @@ void Draw_OGR_Lines( Widget w,
  
     int kk;
     int object_num = 0;
+    int num_points;
+    OGREnvelope envelopeH;
 
 
-    //fprintf(stderr, "Draw_OGR_Lines\n");
+//fprintf(stderr, "Draw_OGR_Lines\n");
 
     if (geometryH == NULL)
         return; // Exit early
@@ -933,31 +934,33 @@ void Draw_OGR_Lines( Widget w,
                 }
             }
         }
+        return;
     }
-    else {  // Just draw it.  Standard linestring files return 0 for
-            // object_num.  Multilinestring must return more, so we
-            // recurse?  Yet to be tested!
-        int num_points;
-        OGREnvelope envelopeH;
 
 
-        // If we have fast_extents available, take advantage of it
-        // to escape this routine as quickly as possible, should the
-        // object not be within our view.
-        //
-        if (fast_extents) {
+    // Draw it.  Standard linestring files return 0 for object_num.
+    // Multilinestring must return more, so we recurse?
+    // Yet to be tested!
 
-            // Get the extents for this Polyline
-            OGR_G_GetEnvelope(geometryH, &envelopeH);
 
-            // Convert them to WGS84/Geographic coordinate system
-            if (transformH) {
-                // Convert to WGS84 coordinates.
-                if (!OCTTransform(transformH, 2, &envelopeH.MinX, &envelopeH.MinY, NULL)) {
-                    fprintf(stderr,
-                        "Couldn't convert point to WGS84\n");
-                }
+    // If we have fast_extents available, take advantage of it to
+    // escape this routine as quickly as possible, should the object
+    // not be within our view.
+    //
+    if (fast_extents) {
+
+        // Get the extents for this Polyline
+        OGR_G_GetEnvelope(geometryH, &envelopeH);
+
+        // Convert the extents to WGS84/Geographic coordinate system
+        if (transformH) {
+//fprintf(stderr,"Converting to WGS84\n");
+            // Convert to WGS84 coordinates.
+            if (!OCTTransform(transformH, 2, &envelopeH.MinX, &envelopeH.MinY, NULL)) {
+                fprintf(stderr,
+                    "Couldn't convert point to WGS84\n");
             }
+        }
 
 /*
 fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
@@ -967,190 +970,206 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
     envelopeH.MaxX);
 */
 
-            if (map_visible_lat_lon( envelopeH.MinY,    // bottom
-                    envelopeH.MaxY, // top
-                    envelopeH.MinX, // left
-                    envelopeH.MaxX, // right
+        if (map_visible_lat_lon( envelopeH.MinY,    // bottom
+                envelopeH.MaxY, // top
+                envelopeH.MinX, // left
+                envelopeH.MaxX, // right
+                NULL)) {
+//fprintf(stderr, "Fast Extents: Line is visible\n");
+        }
+        else {
+//fprintf(stderr, "Fast Extents: Line is NOT visible\n");
+            return; // Exit early
+        }
+
+        // If we made it this far with an object with
+        // fast_extents , the feature is within our view.
+    }
+
+    else { // Fast extents are not available.  Compute the
+           // extents ourselves once we have all the points,
+           // then check whether this object is within our
+           // view.
+    }
+
+
+    num_points = OGR_G_GetPointCount(geometryH);
+//fprintf(stderr,"  Number of elements: %d\n",num_points);
+
+
+    // Draw the polyline
+    //
+    if (num_points > 0) {
+        int ii;
+        double *vectorX;
+        double *vectorY;
+        double *vectorZ;
+        unsigned long *XL = NULL;
+        unsigned long *YL = NULL;
+        long *XI = NULL;
+        long *YI = NULL;
+        XPoint *xpoints = NULL;
+
+
+        // Get some memory to hold the vectors
+        vectorX = (double *)malloc(sizeof(double) * num_points);
+        vectorY = (double *)malloc(sizeof(double) * num_points);
+        vectorZ = (double *)malloc(sizeof(double) * num_points);
+        CHECKMALLOC(vectorX);
+        CHECKMALLOC(vectorY);
+        CHECKMALLOC(vectorZ);
+
+        // Get the points, fill in the vectors
+        for ( ii = 0; ii < num_points; ii++ ) {
+
+            OGR_G_GetPoint(geometryH,
+                ii,
+                &vectorX[ii],
+                &vectorY[ii],
+                &vectorZ[ii]);
+        }
+
+        if (transformH) {
+//fprintf(stderr,"Converting to WGS84\n");
+            // Convert all vectors to WGS84 coordinates.
+            if (!OCTTransform(transformH, num_points, vectorX, vectorY, vectorZ)) {
+                fprintf(stderr,
+                    "Couldn't convert vectors to WGS84\n");
+            }
+        }
+        else {
+//fprintf(stderr,"No transform available\n");
+        }
+
+        // For the non-fast_extents case, we need to compute the
+        // extents and check whether this object is within our
+        // view.
+        //
+        if (!fast_extents) {
+            double MinX, MaxX, MinY, MaxY;
+
+            MinX = vectorX[0];
+            MaxX = vectorX[0];
+            MinY = vectorY[0];
+            MaxY = vectorY[0];
+
+            for ( ii = 1; ii < num_points; ii++ ) {
+                if (vectorX[ii] < MinX) MinX = vectorX[ii];
+                if (vectorX[ii] > MaxX) MaxX = vectorX[ii];
+                if (vectorY[ii] < MinY) MinY = vectorY[ii];
+                if (vectorY[ii] > MaxY) MaxY = vectorY[ii];
+            }
+
+/*
+fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
+    MinY,
+    MaxY,
+    MinX,
+    MaxX);
+*/
+
+            // We have the extents now in geographic/WGS84
+            // datum.  Check for visibility.
+            //
+            if (map_visible_lat_lon( MinY,    // bottom
+                    MaxY, // top
+                    MinX, // left
+                    MaxX, // right
                     NULL)) {
-                //fprintf(stderr, "Fast Extents: Line is visible\n");
+//fprintf(stderr, "Line is visible\n");
             }
             else {
-                //fprintf(stderr, "Fast Extents: Line is NOT visible\n");
+
+//fprintf(stderr, "Line is NOT visible\n");
+
+                // Free the allocated vector memory
+                if (vectorX)
+                    free(vectorX);
+                if (vectorY)
+                    free(vectorY);
+                if (vectorZ)
+                    free(vectorZ);
+
                 return; // Exit early
             }
-
-            // If we made it this far with an object with
-            // fast_extents , the feature is within our view.
-        }
-        else {  // Fast extents are not available.  Compute the
-                // extents ourselves once we have all the points,
-                // then check whether this object is within our
-                // view.
         }
 
-        num_points = OGR_G_GetPointCount(geometryH);
-        //fprintf(stderr,"  Number of elements: %d\n",num_points);
+        // If we've gotten to this point, part or all of the
+        // object is within our view so at least some drawing
+        // should occur.
 
-        // Draw one polyline
-        if (num_points > 0) {
-            int ii;
-            double *vectorX;
-            double *vectorY;
-            double *vectorZ;
-            unsigned long *XL = NULL;
-            unsigned long *YL = NULL;
-            long *XI = NULL;
-            long *YI = NULL;
-            XPoint *xpoints = NULL;
+        XL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
+        YL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
+        CHECKMALLOC(XL);
+        CHECKMALLOC(YL);
 
+        // Convert arrays to the Xastir coordinate system
+        for (ii = 0; ii < num_points; ii++) {
+            convert_to_xastir_coordinates(&XL[ii],
+                &YL[ii],
+                vectorX[ii],
+                vectorY[ii]);
+        }
 
-            // Get some memory to hold the vectors
-            vectorX = (double *)malloc(sizeof(double) * num_points);
-            vectorY = (double *)malloc(sizeof(double) * num_points);
-            vectorZ = (double *)malloc(sizeof(double) * num_points);
-            CHECKMALLOC(vectorX);
-            CHECKMALLOC(vectorY);
-            CHECKMALLOC(vectorZ);
+        // Free the allocated vector memory
+        if (vectorX)
+            free(vectorX);
+        if (vectorY)
+            free(vectorY);
+        if (vectorZ)
+            free(vectorZ);
 
-            // Get the points, fill in the vectors
-            for ( ii = 0; ii < num_points; ii++ ) {
+        XI = (long *)malloc(sizeof(long) * num_points);
+        YI = (long *)malloc(sizeof(long) * num_points);
+        CHECKMALLOC(XI);
+        CHECKMALLOC(YI);
 
-                OGR_G_GetPoint(geometryH,
-                    ii,
-                    &vectorX[ii],
-                    &vectorY[ii],
-                    &vectorZ[ii]);
-            }
+        // Convert arrays to screen coordinates.  Careful here!
+        // The format conversions you'll need if you try to
+        // compress this into two lines will get you into
+        // trouble.
+        //
+        // We also clip to screen size and compute min/max
+        // values here.
+        for (ii = 0; ii < num_points; ii++) {
+            XI[ii] = XL[ii] - x_long_offset;
+            XI[ii] = XI[ii] / scale_x;
 
-            if (transformH) {
-                // Convert all vectors to WGS84 coordinates.
-                if (!OCTTransform(transformH, num_points, vectorX, vectorY, vectorZ)) {
-                    fprintf(stderr,
-                        "Couldn't convert vectors to WGS84\n");
-                }
-            }
-
-            // For the non-fast_extents case, we need to compute the
-            // extents and check whether this object is within our
-            // view.
-            //
-            if (!fast_extents) {
-                double MinX, MaxX, MinY, MaxY;
-
-                MinX = vectorX[0];
-                MaxX = vectorX[0];
-                MinY = vectorY[0];
-                MaxY = vectorY[0];
-
-                for ( ii = 1; ii < num_points; ii++ ) {
-                    if (vectorX[ii] < MinX) MinX = vectorX[ii];
-                    if (vectorX[ii] > MaxX) MaxX = vectorX[ii];
-                    if (vectorY[ii] < MinY) MinY = vectorY[ii];
-                    if (vectorY[ii] > MaxY) MaxY = vectorY[ii];
-                }
-
-                // We have the extents now in geographic/WGS84
-                // datum.  Check for visibility.
-                //
-                if (map_visible_lat_lon( MinY,    // bottom
-                        MaxY, // top
-                        MinX, // left
-                        MaxX, // right
-                        NULL)) {
-                    //fprintf(stderr, "Line is visible\n");
-                }
-                else {
-
-                    //fprintf(stderr, "Line is NOT visible\n");
-
-                    // Free the allocated vector memory
-                    if (vectorX)
-                        free(vectorX);
-                    if (vectorY)
-                        free(vectorY);
-                    if (vectorZ)
-                        free(vectorZ);
-
-                    return; // Exit early
-                }
-            }
-
-            // If we've gotten to this point, part or all of the
-            // object is within our view so at least some drawing
-            // should occur.
-
-            XL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
-            YL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
-            CHECKMALLOC(XL);
-            CHECKMALLOC(YL);
-
-            // Convert arrays to the Xastir coordinate system
-            for (ii = 0; ii < num_points; ii++) {
-                convert_to_xastir_coordinates(&XL[ii],
-                    &YL[ii],
-                    vectorX[ii],
-                    vectorY[ii]);
-            }
-
-            // Free the allocated vector memory
-            if (vectorX)
-                free(vectorX);
-            if (vectorY)
-                free(vectorY);
-            if (vectorZ)
-                free(vectorZ);
-
-            XI = (long *)malloc(sizeof(long) * num_points);
-            YI = (long *)malloc(sizeof(long) * num_points);
-            CHECKMALLOC(XI);
-            CHECKMALLOC(YI);
-
-            // Convert arrays to screen coordinates.  Careful here!
-            // The format conversions you'll need if you try to
-            // compress this into two lines will get you into
-            // trouble.
-            //
-            // We also clip to screen size and compute min/max
-            // values here.
-            for (ii = 0; ii < num_points; ii++) {
-                XI[ii] = XL[ii] - x_long_offset;
-                XI[ii] = XI[ii] / scale_x;
-
-                YI[ii] = YL[ii] - y_lat_offset;
-                YI[ii] = YI[ii] / scale_y;
+            YI[ii] = YL[ii] - y_lat_offset;
+            YI[ii] = YI[ii] / scale_y;
 
 // Here we truncate:  We should polygon clip instead, so that the
 // slopes of the line segments don't change.  Points beyond +/-
 // 16000 can cause problems in X11 when we draw.
-                if      (XI[ii] > 1700l) XI[ii] = 1700l;
-                else if (XI[ii] <    0l) XI[ii] =    0l;
-                if      (YI[ii] > 1700l) YI[ii] = 1700l;
-                else if (YI[ii] <    0l) YI[ii] =    0l;
-            }
+            if      (XI[ii] > 1700l) XI[ii] = 1700l;
+            else if (XI[ii] <    0l) XI[ii] =    0l;
+            if      (YI[ii] > 1700l) YI[ii] = 1700l;
+            else if (YI[ii] <    0l) YI[ii] =    0l;
+        }
 
-            // We don't need the Xastir coordinate system arrays
-            // anymore.  We've already converted to screen
-            // coordinates.
-            if (XL)
-                free(XL);
-            if (YL)
-                free(YL);
+        // We don't need the Xastir coordinate system arrays
+        // anymore.  We've already converted to screen
+        // coordinates.
+        if (XL)
+            free(XL);
+        if (YL)
+            free(YL);
 
-            // Set up the XPoint array.
-            xpoints = (XPoint *)malloc(sizeof(XPoint) * num_points);
-            CHECKMALLOC(xpoints);
+        // Set up the XPoint array.
+        xpoints = (XPoint *)malloc(sizeof(XPoint) * num_points);
+        CHECKMALLOC(xpoints);
 
-            // Load up our xpoints array
-            for (ii = 0; ii < num_points; ii++) {
-                xpoints[ii].x = (short)XI[ii];
-                xpoints[ii].y = (short)YI[ii];
-            }
+        // Load up our xpoints array
+        for (ii = 0; ii < num_points; ii++) {
+            xpoints[ii].x = (short)XI[ii];
+            xpoints[ii].y = (short)YI[ii];
+        }
 
-            // Free the screen coordinate arrays.
-            if (XI)
-                free(XI);
-            if (YI)
-                free(YI);
+        // Free the screen coordinate arrays.
+        if (XI)
+            free(XI);
+        if (YI)
+            free(YI);
 
 /*
 guess_vector_attributes(w,
@@ -1160,26 +1179,25 @@ guess_vector_attributes(w,
     geometry_type);
 */
 
-            // Actually draw the lines
-            (void)XDrawLines(XtDisplay(da),
-                pixmap,
-                gc,
-                xpoints,
-                num_points,
-                CoordModeOrigin);
+        // Actually draw the lines
+        (void)XDrawLines(XtDisplay(da),
+            pixmap,
+            gc,
+            xpoints,
+            num_points,
+            CoordModeOrigin);
 
-            // Draw the corresponding labels
-            Draw_OGR_Labels(w,
-                pixmap,
-                featureH,
-                geometryH,
-                xpoints,
-                num_points);
+        // Draw the corresponding labels
+        Draw_OGR_Labels(w,
+            pixmap,
+            featureH,
+            geometryH,
+            xpoints,
+            num_points);
 
-            if (xpoints)
-                free(xpoints);
+        if (xpoints)
+            free(xpoints);
 
-        }
     }
 }
 
@@ -1428,7 +1446,7 @@ void Draw_OGR_Polygons( Widget w,
     if (geometryH == NULL)
         return; // Exit early
 
-    //fprintf(stderr,"Draw_OGR_Polygons\n");
+//fprintf(stderr,"Draw_OGR_Polygons\n");
 
     // Check for more objects below this one, recursing into any
     // objects found.  "level" keeps us from recursing too far (we
@@ -1856,11 +1874,10 @@ void clear_dangerous(void) {
 
 
 // Set up coordinate translation:  We need it for indexing and
-// drawing so we do it first and keep a pointer to our transform.
-// This function gets a handle to the first layer, then snags the
-// spatial reference attached to it.
+// drawing so we do it first and keep pointers to our transforms.
 //
 // Inputs:  datasourceH
+//          layerH
 //
 // Outputs: map_spatialH
 //          transformH
@@ -1873,7 +1890,8 @@ void clear_dangerous(void) {
 //          datum
 //          geogcs
 //
-void setup_coord_translation(OGRDataSourceH *datasourceH,
+void setup_coord_translation(OGRDataSourceH datasourceH,
+        OGRLayerH layerH,
         OGRSpatialReferenceH *map_spatialH,
         OGRCoordinateTransformationH *transformH,
         OGRCoordinateTransformationH *reverse_transformH,
@@ -1885,32 +1903,31 @@ void setup_coord_translation(OGRDataSourceH *datasourceH,
         const char *datum,
         const char *geogcs) {
 
-    OGRLayerH layerH;
+
+    *map_spatialH = NULL;
+    *transformH = NULL;
+    *reverse_transformH = NULL;
+    *wgs84_spatialH = NULL;
+    datum = NULL;
+    geogcs = NULL;
 
 
 set_dangerous("map_gdal: OGR_DS_GetLayerCount");
     if (OGR_DS_GetLayerCount(datasourceH) <= 0) {
 clear_dangerous();
+        fprintf(stderr,"No layers detected\n");
         return; // No layers detected!
     }
 clear_dangerous();
 
 
-    // We have at least one layer.  Snag a pointer to the first
-    // layer so that we can get the spatial info from it, if a
-    // spatial reference exists for it.
-    //
-set_dangerous("map_gdal: OGR_DS_GetLayer");
-    layerH = OGR_DS_GetLayer( datasourceH, 0 );
-clear_dangerous();
-
-
     // Query the coordinate system for the dataset.
 set_dangerous("map_gdal: OGR_L_GetSpatialRef");
-    map_spatialH = OGR_L_GetSpatialRef(layerH);
+    *map_spatialH = OGR_L_GetSpatialRef(layerH);
 clear_dangerous();
 
-    if (map_spatialH) {
+
+    if (*map_spatialH) {
         const char *temp;
 
 
@@ -1919,10 +1936,10 @@ clear_dangerous();
 
 
 set_dangerous("map_gdal: OGRIsGeographic");
-        if (OSRIsGeographic(map_spatialH)) {
+        if (OSRIsGeographic(*map_spatialH)) {
             geographic++;
         }
-        else if (OSRIsProjected(map_spatialH)) {
+        else if (OSRIsProjected(*map_spatialH)) {
             projected++;
         }
         else {
@@ -1935,14 +1952,16 @@ clear_dangerous();
         //
 set_dangerous("map_gdal:OSRGetAttrValue");
         if (projected) {
-            temp = OSRGetAttrValue(map_spatialH, "PROJCS", 0);
-            temp = OSRGetAttrValue(map_spatialH, "PROJECTION", 0);
+            temp = OSRGetAttrValue(*map_spatialH, "PROJCS", 0);
+            temp = OSRGetAttrValue(*map_spatialH, "PROJECTION", 0);
         }
-        temp = OSRGetAttrValue(map_spatialH, "SPHEROID", 0);
-        datum = OSRGetAttrValue(map_spatialH, "DATUM", 0);
-        geogcs = OSRGetAttrValue(map_spatialH, "GEOGCS", 0);
+        temp = OSRGetAttrValue(*map_spatialH, "SPHEROID", 0);
+        datum = OSRGetAttrValue(*map_spatialH, "DATUM", 0);
+        geogcs = OSRGetAttrValue(*map_spatialH, "GEOGCS", 0);
 clear_dangerous();
+
     }
+
 
     else {
 
@@ -1961,20 +1980,34 @@ clear_dangerous();
     }
 
 
-    if ( no_spatial         // No spatial info found, or
-            || (geographic  // Geographic and correct datum
-                && ( strcasecmp(geogcs,"WGS84") == 0
-                  || strcasecmp(geogcs,"NAD83") == 0
-                  || strcasecmp(datum,"North_American_Datum_1983") == 0
-                  || strcasecmp(datum,"World_Geodetic_System_1984") == 0
-                  || strcasecmp(datum,"D_North_American_1983") ) ) ) {
+//fprintf(stderr,"Datum: %s\n", datum);
+//fprintf(stderr,"GOGCS: %s\n", geogcs);
+
+ 
+    if (no_spatial) {   // No spatial info found
+
+        *transformH = NULL;  // No transforms needed
+        *reverse_transformH = NULL;
+
+        if (debug_level & 16) {
+            fprintf(stderr,
+                "  No spatial info found, NO CONVERSION DONE!, %s\n",
+                geogcs);
+        }
+    }
+    else if ( geographic  // Geographic and correct datum
+              && ( strcasecmp(geogcs,"WGS84") == 0
+                || strcasecmp(geogcs,"NAD83") == 0
+                || strcasecmp(datum,"North_American_Datum_1983") == 0
+                || strcasecmp(datum,"World_Geodetic_System_1984") == 0
+                || strcasecmp(datum,"D_North_American_1983") == 0 ) ) {
 
 // We also need to check "DATUM", as some datasets have nothing in
 // the "GEOGCS" variable.  Check for "North_American_Datum_1983" or
 // "???".
 
-        transformH = NULL;  // No transforms needed
-        reverse_transformH = NULL;
+        *transformH = NULL;  // No transforms needed
+        *reverse_transformH = NULL;
 
         if (debug_level & 16) {
             fprintf(stderr,
@@ -1995,6 +2028,7 @@ clear_dangerous();
                 fprintf(stderr, "  DATUM: %s\n", datum);
             }
         }
+
         else if (projected) {
             if (debug_level & 16) {
                 fprintf(stderr,
@@ -2002,6 +2036,7 @@ clear_dangerous();
                     geogcs);
             }
         }
+
         else if (local) {
             // Convert to geographic/WGS84?  How?
 
@@ -2017,6 +2052,7 @@ clear_dangerous();
 
             return; // Exit early
         }
+
         else {
             // Abandon all hope, ye who enter here!  We don't
             // have a geographic, projected, or local coordinate
@@ -2029,10 +2065,12 @@ clear_dangerous();
 
             return; // Exit early
         }
- 
-        wgs84_spatialH = OSRNewSpatialReference(NULL);
 
-        if (wgs84_spatialH == NULL) {
+ 
+        *wgs84_spatialH = OSRNewSpatialReference(NULL);
+
+
+        if (*wgs84_spatialH == NULL) {
             if (debug_level & 16) {
                 fprintf(stderr,
                     "Couldn't create empty wgs84_spatialH object\n");
@@ -2046,7 +2084,8 @@ clear_dangerous();
             return; // Exit early
         }
 
-        if (OSRSetWellKnownGeogCS(wgs84_spatialH,"WGS84") == OGRERR_FAILURE) {
+
+        if (OSRSetWellKnownGeogCS(*wgs84_spatialH,"WGS84") == OGRERR_FAILURE) {
  
             // Couldn't fill in WGS84 parameters.
             if (debug_level & 16) {
@@ -2059,8 +2098,8 @@ clear_dangerous();
             // try, at the point where you destroy the
             // datasource.
 
-            if (wgs84_spatialH != NULL) {
-                OSRDestroySpatialReference(wgs84_spatialH);
+            if (*wgs84_spatialH != NULL) {
+                OSRDestroySpatialReference(*wgs84_spatialH);
             }
 
             // Close data source
@@ -2072,13 +2111,13 @@ clear_dangerous();
         }
 
 
-        if (map_spatialH == NULL || wgs84_spatialH == NULL) {
+        if (*map_spatialH == NULL || *wgs84_spatialH == NULL) {
             if (debug_level & 16) {
                 fprintf(stderr,
                     "Couldn't transform because map_spatialH or wgs84_spatialH are NULL\n");
             }
 
-            if (wgs84_spatialH != NULL) {
+            if (*wgs84_spatialH != NULL) {
                 OSRDestroySpatialReference(wgs84_spatialH);
             }
 
@@ -2090,26 +2129,29 @@ clear_dangerous();
             return; // Exit early
         }
 
+
         else {
             // Set up transformation from original datum to wgs84
             // datum.
-            transformH = OCTNewCoordinateTransformation(
-                map_spatialH, wgs84_spatialH);
+//fprintf(stderr,"Creating transform and reverse_transform\n");
+            *transformH = OCTNewCoordinateTransformation(
+                *map_spatialH, *wgs84_spatialH);
 
             // Set up transformation from wgs84 datum to original
             // datum.
-            reverse_transformH = OCTNewCoordinateTransformation(
-                wgs84_spatialH, map_spatialH);
+            *reverse_transformH = OCTNewCoordinateTransformation(
+                *wgs84_spatialH, *map_spatialH);
 
 
-            if (transformH == NULL || reverse_transformH == NULL) {
+            if (*transformH == NULL || *reverse_transformH == NULL) {
                 // Couldn't create transformation objects
 //                if (debug_level & 16) {
                     fprintf(stderr,
                         "Couldn't create transformation objects\n");
 //                }
 
-                if (wgs84_spatialH != NULL) {
+/*
+                if (*wgs84_spatialH != NULL) {
                     OSRDestroySpatialReference(wgs84_spatialH);
                 }
 
@@ -2117,12 +2159,15 @@ clear_dangerous();
                 if (datasourceH != NULL) {
                     OGR_DS_Destroy( datasourceH );
                 }
+*/
 
                 return; // Exit early
             }
         }
     }
+
 clear_dangerous();
+
 }   // End of setup_coord_translation()
 
 
@@ -2242,8 +2287,11 @@ void draw_ogr_map( Widget w,
     OGRSFDriverH driver = NULL;
     OGRSpatialReferenceH map_spatialH = NULL;
     OGRSpatialReferenceH wgs84_spatialH = NULL;
+int temp100[100000];
     OGRCoordinateTransformationH transformH = NULL;
+int temp101[100000];
     OGRCoordinateTransformationH reverse_transformH = NULL;
+int temp102[100000];
     OGRGeometryH spatial_filter_geometryH = NULL;
     int i, numLayers;
     char full_filename[300];
@@ -2259,6 +2307,10 @@ void draw_ogr_map( Widget w,
     long ViewLX[2], ViewLY[2];
     float f_latitude0, f_latitude1, f_longitude0, f_longitude1;
  
+
+    temp100[0] = 1;
+    temp101[0] = 2;
+    temp102[0] = 3;
  
     if (debug_level & 16)
         fprintf(stderr,"Entered draw_ogr_map function\n");
@@ -2334,25 +2386,6 @@ clear_dangerous();
         fprintf(stderr,"%s\n", ptr);
 
 
-    // Set up the coordinate translations we may need for both
-    // indexing and drawing operations.  This function gets a handle
-    // to the first layer in order to snag the spatial reference
-    // from it.  It sets up the transform and the reverse transforms
-    // we need to convert between the spatial coordinate systems.
-    //
-    setup_coord_translation(datasourceH, // Input
-        map_spatialH,                    // Output
-        transformH,                      // Output
-        reverse_transformH,              // Output
-        wgs84_spatialH,                  // Output
-        &no_spatial,                     // Output
-        &geographic,                     // Output
-        &projected,                      // Output
-        &local,                          // Output
-        datum,                           // Output
-        geogcs);                         // Output
-
-
     // Implement the indexing functions, so that we can use these
     // map formats from within Xastir.  Without an index, it'll
     // never appear in the map chooser.  Use the OGR "envelope"
@@ -2405,7 +2438,9 @@ clear_dangerous();
 
 
             layerH = OGR_DS_GetLayer( datasourceH, i );
+
             if (layerH == NULL) {
+
                 if (debug_level & 16) {
                     fprintf(stderr,
                         "Unable to open layer %d of %s\n",
@@ -2417,13 +2452,13 @@ clear_dangerous();
                     OSRDestroySpatialReference(wgs84_spatialH);
                 }
 
-                if (transformH != NULL) {
-                    OCTDestroyCoordinateTransformation(transformH);
-                }
+//                if (transformH != NULL) {
+//                    OCTDestroyCoordinateTransformation(transformH);
+//                }
 
-                if (reverse_transformH != NULL) {
-                    OCTDestroyCoordinateTransformation(reverse_transformH);
-                }
+//                if (reverse_transformH != NULL) {
+//                    OCTDestroyCoordinateTransformation(reverse_transformH);
+//                }
 
                 // Close data source
                 if (datasourceH != NULL) {
@@ -2432,6 +2467,26 @@ clear_dangerous();
 
                 return; // Exit early
             }
+
+
+            // Set up the coordinate translations we may need for
+            // both indexing and drawing operations.  It sets up the
+            // transform and the reverse transforms we need to
+            // convert between the spatial coordinate systems.
+            //
+            setup_coord_translation(datasourceH, // Input
+                layerH,                          // Input
+                &map_spatialH,                    // Output
+                &transformH,                      // Output
+                &reverse_transformH,              // Output
+                &wgs84_spatialH,                  // Output
+                &no_spatial,                     // Output
+                &geographic,                     // Output
+                &projected,                      // Output
+                &local,                          // Output
+                datum,                           // Output
+                geogcs);                         // Output
+
 
             // Get the extents for this layer.  OGRERR_FAILURE means
             // that the layer has no spatial info or that it would be
@@ -2765,35 +2820,6 @@ clear_dangerous();
     ViewZ[0] = 0.0;
     ViewZ[1] = 0.0;
 
-    if (reverse_transformH) {
-        // Convert from WGS84 coordinates to map coordinates.
-        if (!OCTTransform(reverse_transformH, 2, ViewX, ViewY, ViewZ)) {
-            fprintf(stderr,
-                "Couldn't convert points from WGS84 to map's spatial reference\n");
-            // Use the coordinates anyway (don't exit).  We may be
-            // lucky enough to have things work anyway.
-        }
-    }
-
-//fprintf(stderr,"%2.5f %2.5f   %2.5f %2.5f\n",
-//    ViewY[0], ViewX[0], ViewY[1], ViewX[1]);
-
-
-    // Add these converted points to the spatial_filter_geometry so
-    // that we can set our spatial filter in the layer loop below.
-    // Snag the spatial reference from the map dataset 'cuz they
-    // should match now.
-    //
-    spatial_filter_geometryH = OGR_G_CreateGeometry(2); // LineString Type
-
-    // Use the map spatial geometry so that we match the map
-    OGR_G_AssignSpatialReference(spatial_filter_geometryH, map_spatialH);
-
-    // Add the corners of the viewport
-    OGR_G_AddPoint(spatial_filter_geometryH, ViewX[0], ViewY[0], ViewZ[0]);
-    OGR_G_AddPoint(spatial_filter_geometryH, ViewX[0], ViewY[1], ViewZ[1]);
-    OGR_G_AddPoint(spatial_filter_geometryH, ViewX[1], ViewY[1], ViewZ[0]);
-    OGR_G_AddPoint(spatial_filter_geometryH, ViewX[1], ViewY[0], ViewZ[1]);
 
 
     // Loop through all layers in the data source.
@@ -2820,13 +2846,13 @@ int features_processed = 0;
                 OSRDestroySpatialReference(wgs84_spatialH);
             }
 
-            if (transformH != NULL) {
-                OCTDestroyCoordinateTransformation(transformH);
-            }
+//            if (transformH != NULL) {
+//                OCTDestroyCoordinateTransformation(transformH);
+//            }
 
-            if (reverse_transformH != NULL) {
-                OCTDestroyCoordinateTransformation(reverse_transformH);
-            }
+//            if (reverse_transformH != NULL) {
+//                OCTDestroyCoordinateTransformation(reverse_transformH);
+//            }
 
             // Close data source
             if (datasourceH != NULL) {
@@ -2837,6 +2863,7 @@ int features_processed = 0;
         }
 
         layerH = OGR_DS_GetLayer( datasourceH, i );
+
         if (layerH == NULL) {
             if (debug_level & 16) {
                 fprintf(stderr,
@@ -2849,13 +2876,13 @@ int features_processed = 0;
                 OSRDestroySpatialReference(wgs84_spatialH);
             }
 
-            if (transformH != NULL) {
-                OCTDestroyCoordinateTransformation(transformH);
-            }
+//            if (transformH != NULL) {
+//                OCTDestroyCoordinateTransformation(transformH);
+//            }
 
-            if (reverse_transformH != NULL) {
-                OCTDestroyCoordinateTransformation(reverse_transformH);
-            }
+//            if (reverse_transformH != NULL) {
+//                OCTDestroyCoordinateTransformation(reverse_transformH);
+//            }
 
             // Close data source
             if (datasourceH != NULL) {
@@ -2865,6 +2892,83 @@ int features_processed = 0;
             return; // Exit early
         }
 
+
+        // Set up the coordinate translations we may need for both
+        // indexing and drawing operations.  It sets up the
+        // transform and the reverse transforms we need to convert
+        // between the spatial coordinate systems.
+        //
+        setup_coord_translation(datasourceH, // Input
+            layerH,                          // Input
+            &map_spatialH,                   // Output
+            &transformH,                     // Output
+            &reverse_transformH,             // Output
+            &wgs84_spatialH,                 // Output
+            &no_spatial,                     // Output
+            &geographic,                     // Output
+            &projected,                      // Output
+            &local,                          // Output
+            datum,                           // Output
+            geogcs);                         // Output
+
+ 
+        if (reverse_transformH) {
+            // Convert our view coordinates from WGS84 to this map
+            // layer's coordinates.
+//            if (!OCTTransform(reverse_transformH, 2, ViewX, ViewY, ViewZ)) {
+            if (!OCTTransform(reverse_transformH, 2, ViewX, ViewY, NULL)) {
+                fprintf(stderr,
+                    "Couldn't convert points from WGS84 to map's spatial reference\n");
+                // Use the coordinates anyway (don't exit).  We may be
+                // lucky enough to have things work anyway.
+            }
+            // Get rid of our reverse transform.  We shan't need it
+            // again.
+            OCTDestroyCoordinateTransformation(reverse_transformH);
+            reverse_transformH = NULL;
+        }
+
+//fprintf(stderr,"%2.5f %2.5f   %2.5f %2.5f\n",
+//    ViewY[0], ViewX[0], ViewY[1], ViewX[1]);
+
+
+        // Add these converted points to the spatial_filter_geometry so
+        // that we can set our spatial filter in the layer loop below.
+        // Snag the spatial reference from the map dataset 'cuz they
+        // should match now.
+        //
+        spatial_filter_geometryH = OGR_G_CreateGeometry(2); // LineString Type
+
+        // Use the map spatial geometry so that we match the map
+        OGR_G_AssignSpatialReference(spatial_filter_geometryH, map_spatialH);
+
+        // Add the corners of the viewport
+        OGR_G_AddPoint(spatial_filter_geometryH, ViewX[0], ViewY[0], ViewZ[0]);
+        OGR_G_AddPoint(spatial_filter_geometryH, ViewX[0], ViewY[1], ViewZ[1]);
+        OGR_G_AddPoint(spatial_filter_geometryH, ViewX[1], ViewY[1], ViewZ[0]);
+        OGR_G_AddPoint(spatial_filter_geometryH, ViewX[1], ViewY[0], ViewZ[1]);
+
+        // Set spatial filter so that the GetNextFeature() call will
+        // only return features that are within our view.  Note that
+        // the geometry used here should be in the same spacial
+        // reference system as the layer itself, so we need to
+        // convert our coordinates into the map coordinates before
+        // setting the filter.  We do this coordinate conversion and
+        // create the geometry outside the layer loop to save some
+        // time, then just set the spatial filter with the same
+        // geometry for each iteration.
+        //
+        // Note that this spatial filter doesn't strictly filter at
+        // the borders specified, but it does filter out a lot of
+        // the features that are outside our borders.  This speeds
+        // up map drawing tremendously!
+        //
+
+// Establishing this filter causes problems with SDTS contours at
+// present (they disappear).
+//        OGR_L_SetSpatialFilter( layerH, spatial_filter_geometryH);
+
+ 
 
         // Test the capabilities of the layer to know the best way
         // to access it:
@@ -2914,24 +3018,6 @@ int features_processed = 0;
                 fast_extents = 1;
             }
         }
-
-
-        // Set spatial filter so that the GetNextFeature() call will
-        // only return features that are within our view.  Note that
-        // the geometry used here should be in the same spacial
-        // reference system as the layer itself, so we need to
-        // convert our coordinates into the map coordinates before
-        // setting the filter.  We do this coordinate conversion and
-        // create the geometry outside the layer loop to save some
-        // time, then just set the spatial filter with the same
-        // geometry for each iteration.
-        //
-        // Note that this spatial filter doesn't strictly filter at
-        // the borders specified, but it does filter out a lot of
-        // the features that are outside our borders.  This speeds
-        // up map drawing tremendously!
-        //
-        OGR_L_SetSpatialFilter( layerH, spatial_filter_geometryH);
 
 
         if (map_spatialH) {
@@ -3007,6 +3093,7 @@ int features_processed = 0;
         }
 
 
+
         // Get the extents for this layer.  OGRERR_FAILURE means
         // that the layer has no spatial info or that it would be
         // an expensive operation to establish the extent.
@@ -3024,6 +3111,7 @@ int features_processed = 0;
             if (debug_level & 16)
                 fprintf(stderr, "\n");
         }
+
 
 /*
         if (extents_found) {
@@ -3058,6 +3146,11 @@ int features_processed = 0;
 */
 
 
+        // Restart reads of this layer at the first feature.
+        //OGR_L_ResetReading(layerH);
+
+
+
 // Optimization:  Get the envelope for each feature, skip the
 // feature if it's completely outside our viewport.
 
@@ -3069,6 +3162,7 @@ int features_processed = 0;
             OGRGeometryH geometryH;
             int num = 0;
 //            char *buffer;
+
 
 features_processed++;
  
@@ -3085,9 +3179,9 @@ features_processed++;
                     OCTDestroyCoordinateTransformation(transformH);
                 }
 
-                if (reverse_transformH != NULL) {
-                    OCTDestroyCoordinateTransformation(reverse_transformH);
-                }
+//                if (reverse_transformH != NULL) {
+//                    OCTDestroyCoordinateTransformation(reverse_transformH);
+//                }
 
                 // Close data source
                 if (datasourceH != NULL) {
@@ -3121,6 +3215,7 @@ features_processed++;
                 break;
 //                continue;
             }
+
 
 
             // More debug code.  Print the Well Known Text
@@ -3169,6 +3264,7 @@ features_processed++;
 
 // Debug code 
 //OGR_G_DumpReadable(geometryH, stderr, "Shape: ");
+
 
 
 // We could call OGR_G_GetEnvelope() here and calculate for
@@ -3263,19 +3359,19 @@ features_processed++;
             }
             if (featureH)
                 OGR_F_Destroy( featureH );
-        }
+        }   // End of feature loop
         // No need to free layerH handle, it belongs to the datasource
 
 fprintf(stderr,"Features Processed: %d\n", features_processed);
-    }
+    } // End of layer loop
 
     if (transformH != NULL) {
         OCTDestroyCoordinateTransformation(transformH);
     }
 
-    if (reverse_transformH != NULL) {
-        OCTDestroyCoordinateTransformation(reverse_transformH);
-    }
+//    if (reverse_transformH != NULL) {
+//        OCTDestroyCoordinateTransformation(reverse_transformH);
+//    }
 
     if (wgs84_spatialH != NULL) {
         OSRDestroySpatialReference(wgs84_spatialH);
