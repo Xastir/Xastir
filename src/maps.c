@@ -1417,6 +1417,7 @@ int shape_ring_direction ( SHPObject *psObject, int Ring ) {
  * INDEX_NO_TIMESTAMPS, then we are indexing the file (finding the
  * extents) instead of drawing it.
  *
+//WE7U3
  * The current implementation can draw Polygon, PolyLine, and Point
  * Shapefiles, but only from a few sources (NOAA, Mapshots.com, and
  * ESRI/GeographyNetwork.com).  We don't handle some of the more
@@ -2207,7 +2208,9 @@ void draw_shapefile_map (Widget w,
         int _w, _h, _xh, _yh;
         int ret_val;
 
-        // This GC is used only for pixmap_alerts (LIAR)
+        // This GC is used for weather alerts (writing to the
+        // pixmap: pixmap_alerts) and _was_ used for beam_heading
+        // rays, but no longer is.
         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
         // N7TAP: No more tinting as that would change the color of the alert, losing that information.
@@ -2276,14 +2279,7 @@ void draw_shapefile_map (Widget w,
 
 
     // Now that we have the file open, we can read out the structures.
-    // We can handle PolyLine and Polygon shapefiles at the moment.
-    // Polygons:  If you read the spec closely you'll see that some of
-    // the rings (parts) can be holes, depending on which direction the
-    // vertices run.  Polygon holes have vertices running in the
-    // counterclockwise direction.  Filled polygons have vertices running
-    // in the clockwise direction.  I'm ignoring that for now, drawing ALL
-    // polygon shapes found.
-
+    // We can handle Point, PolyLine and Polygon shapefiles at the moment.
 
     if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
         if (found_shape != -1) {    // Found the record
@@ -3263,7 +3259,7 @@ void draw_shapefile_map (Widget w,
 
 
 
-//WE7U
+//WE7U3
 // We don't currently handle the "hole" drawing in polygon
 // shapefiles, where clockwise direction around the ring means a
 // fill, and CCW means a hole in the polygon.  Once we do handle
@@ -3291,6 +3287,10 @@ void draw_shapefile_map (Widget w,
 // the max shape extents.  Filled = 1.  Holes = 0.  Use that pixmap
 // as a clip-mask to draw the polygons again onto the final pixmap.
 // SUMMARY: We end up drawing the shape twice!
+//
+// MODIFICATION:  Draw a filled rectangle onto the map pixmap using
+// the clip-mask to control where it actually gets drawn.
+// SUMMARY: Only end up drawing the shape once.
 //
 // 5) Inverted clip-mask:  Draw just the holes to a separate pixmap:
 // Create a pixmap filled with 1's (XFillRectangle & GXset).  Draw
@@ -3510,6 +3510,7 @@ void draw_shapefile_map (Widget w,
 //                            structure);
                     }
 
+//WE7U3
 // Now that we know which are fill/hole rings, worry about drawing
 // each ring of the Shape.
 
@@ -3721,13 +3722,16 @@ void draw_shapefile_map (Widget w,
                             }
                         }
                     }
+
                     // Free the storage that we allocated to hold
                     // the "hole" flags for the shape.
                     free(polygon_hole_storage);
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Done with drawing shapes, now draw labels
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
                     temp = "";
 
