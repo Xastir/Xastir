@@ -27,6 +27,7 @@
  *
  */
 
+
 //#define MAP_SCALE_CHECK
 //#define FUZZYRASTER
 
