@@ -206,6 +206,10 @@ int awk_set_sym(awk_symbol *s,
     switch(s->type) {
     case STRING:
         if (minlen > 0) {
+            // Change this to an xastir_snprintf() function if we
+            // need to use this awk_set_sym() function later.
+            // strncpy can forget to null-terminate the string if
+            // the destination isn't large enough.
             strncpy(s->val,val,minlen);
             s->len = l - 1;
         }

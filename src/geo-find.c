@@ -19,6 +19,8 @@
 
 #define D(x)
 
+
+
 struct state {
 	struct io_file *index;
 
@@ -36,6 +38,10 @@ struct state {
 	/* Answer */
 	struct geo_location *out;
 };
+
+
+
+
 
 static int is_valid(struct state *s) {
 	int i,pos[sizeof(s->range)/sizeof(*s->range)];
@@ -157,10 +163,13 @@ D(printf("    Success...\n"));
 	}
 }
 
+
+
+
+
 static int find_name(
-	struct io_file *index,int begin,int end,
-	char type,const char *name, unsigned int name_len)
-{
+    	struct io_file *index,int begin,int end,
+    	char type,const char *name, unsigned int name_len) {
 	const int size = 45;
 	const int count = (end - begin) / size;
 	const int mid = begin + size * (count / 2);
@@ -176,12 +185,15 @@ static int find_name(
 		return find_name(index,begin,mid,type,name,name_len);
 }
 
+
+
 static const char *next_word(struct state *,const char *);
 
+
+
 static int get_name_at(
-	struct state *s,char type,
-	int (*f)(struct state *),const char *last)
-{
+    	struct state *s,char type,
+    	int (*f)(struct state *),const char *last) {
 	char n[41];
 	const char *next,*save;
 	unsigned int len = last - s->next;
@@ -255,6 +267,10 @@ D(printf(">>> '%c' \"%.*s\" found\n",type,len - 1,n + 1));
 		}
 
 		if (NULL != out) {
+            // strncpy is dangerous as it can leave a string
+            // unterminated if the destination isn't big enough to
+            // hold the '\0' character.  Must terminate the string
+            // manually in all cases, as we do here.
 			strncpy(out,n + 1,len - 1);
 			out[len - 1] = '\0';
 		}
@@ -268,6 +284,10 @@ D(printf("<<< '%c' \"%.*s\"\n",type,len - 1,n + 1));
 	s->next = save;
 	return 0;
 }
+
+
+
+
 
 static const char *input_word(struct state *s,const char *pos) {
 	assert(pos >= s->buffer && pos <= s->buffer_end);
@@ -301,6 +321,10 @@ static const char *input_word(struct state *s,const char *pos) {
 	return s->buffer_end;
 }
 
+
+
+
+
 static const char *next_word(struct state *s,const char *pos) {
 	const char * const next = input_word(s,pos);
 	const char * const save = s->next;
@@ -320,11 +344,19 @@ static const char *next_word(struct state *s,const char *pos) {
 	return next;
 }
 
+
+
+
+
 static int get_name(struct state *s,char type,int (*f)(struct state *)) {
 	const char * const next = next_word(s,s->next);
 	if (s->next == next) return 0;
 	return get_name_at(s,type,f,next);
 }
+
+
+
+
 
 static int get_zip(struct state *s) {
 	const char * const next = next_word(s,s->next);
@@ -349,17 +381,33 @@ D(printf("<<< %d\n",zip));
 	return 0;
 }
 
+
+
+
+
 static int optional_zip(struct state *s) {
 	return get_zip(s) || is_valid(s);
 }
+
+
+
+
 
 static int get_state(struct state *s) {
 	return get_name(s,'S',optional_zip) || optional_zip(s);
 }
 
+
+
+
+
 static int get_city(struct state *s) {
 	return get_name(s,'C',get_state) || get_zip(s);
 }
+
+
+
+
 
 static int skip_stuff(struct state *s) {
 	const char * const begin = s->next;
@@ -379,9 +427,17 @@ static int skip_stuff(struct state *s) {
 	return 0;
 }
 
+
+
+
+
 static int get_street(struct state *s) {
 	return get_name(s,(s->address % 2) ? 'O' : 'E',skip_stuff);
 }
+
+
+
+
 
 static int get_address(struct state *s) {
 	const char * const begin = s->next;
@@ -412,10 +468,13 @@ static int get_address(struct state *s) {
 	return 0;
 }
 
+
+
+
+
 int geo_find(
-	struct io_file *index,const char *str,int len,
-	struct geo_location *out) 
-{
+    	struct io_file *index,const char *str,int len,
+    	struct geo_location *out) {
 	struct state s;
 
 	if (NULL == index) return 0;
@@ -433,3 +492,5 @@ int geo_find(
 	}
 	return get_address(&s);
 }
+
+
