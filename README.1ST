@@ -205,7 +205,9 @@ First Time Install:
      Usually,
      ./configure
      make
-     make install
+     su (root)
+     make install (as root)
+     exit (from root)
 
      then run ldconfig
 
@@ -282,6 +284,14 @@ First Time Install:
             /usr/local/lib/
             /usr/local/bin/
             /usr/local/share/proj/
+
+       You may need to do this (as root) if the "make install" portion fails
+       because it can't find "ginstall":
+
+       cd /usr/bin
+       ln -s install ginstall
+
+       Then retry the "make install" portion above.
 
 
        3c. Upgrade libtiff (Note: This is an entirely different package from LessTif!):
