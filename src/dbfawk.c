@@ -156,10 +156,12 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
         return NULL;
 
 //WE7U2
-// Allocates new memory!
+// Allocates new memory, free'd before each return.
     symtbl = awk_new_symtab();
+// We should check the return value for NULL
+
 //WE7U
-// Allocates new memory!
+// Allocates new memory, free'd before each return.
     awk_declare_sym(symtbl,"dbfinfo",STRING,dbfinfo,sizeof(dbfinfo));
 
     while ((e = readdir(d)) != NULL) {
@@ -167,6 +169,11 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
         char *path = calloc(1,len+strlen(dir)+2);
  
         if (!path) {
+//WE7U2
+// Frees memory
+            if (symtbl)
+            awk_free_symtab(symtbl);
+ 
             fprintf(stderr,"failed to malloc in dbfawk.c!\n");
             return NULL;
         }
@@ -191,9 +198,6 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
 //WE7U2
 // Calls awk_new_program/awk_new_rule which allocate new memory
             i->prog = awk_load_program_file(path);
-            free(path);
-//WE7U
-//fprintf(stderr,"f2\n");
 
 //WE7U2
 // Calls awk_compile_action which allocates new memory
@@ -210,11 +214,17 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
                 awk_uncompile_program(i->prog);
             }
         }
+        free(path);
+//WE7U
+//fprintf(stderr,"f2\n");
+
     }
 
 //WE7U2
 // Frees memory
-    awk_free_symtab(symtbl);
+    if (symtbl)
+        awk_free_symtab(symtbl);
+
     return head;
 }
 
@@ -286,6 +296,7 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
  
         if (!info) {
             fprintf(stderr,"failed to malloc in dbfawk_find_sig!\n");
+            free(perfile);
             return NULL;
         }
 //WE7U
