@@ -8703,7 +8703,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
      */
     if (!have_fgd)      // Not a USGS map or perhaps a newer spec
     {
-        crop_it = 0;        /* Do NOT crop this map image */
+        crop_it = 1;        /* crop this map image */
 
         /*
          * Snag and parse ImageDescription tag here.
@@ -8800,25 +8800,46 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
         }
         f_SE_x_bounding = (float)xxx;
         f_SE_y_bounding = (float)yyy;
+
+        if (f_NW_y_bounding > 0) {
+          yyy=((f_NW_y_bounding > f_NE_y_bounding) ? f_NE_y_bounding
+               : f_NW_y_bounding);
+          xxx=((f_SW_y_bounding < f_SE_y_bounding) ? f_SE_y_bounding
+               : f_SW_y_bounding);
+        } else {
+          yyy=((f_NW_y_bounding < f_NE_y_bounding) ? f_NE_y_bounding
+               : f_NW_y_bounding);
+          xxx=((f_SW_y_bounding > f_SE_y_bounding) ? f_SE_y_bounding
+               : f_SW_y_bounding);
+        }
+        f_north_bounding = (float)yyy;
+        f_south_bounding = (float)xxx;
+        if (f_NE_x_bounding > 0) {
+          xxx=((f_NE_x_bounding < f_SE_x_bounding) ? f_SE_x_bounding
+               : f_NE_x_bounding);
+          yyy=((f_NW_x_bounding > f_SW_x_bounding) ? f_SW_x_bounding
+               : f_NW_x_bounding);
+        } else {
+          xxx=((f_NE_x_bounding > f_SE_x_bounding) ? f_SE_x_bounding
+               : f_NE_x_bounding);
+          yyy=((f_NW_x_bounding < f_SW_x_bounding) ? f_SW_x_bounding
+               : f_NW_x_bounding);
+        }
+        f_west_bounding = (float)yyy;
+        f_east_bounding = (float)xxx;
     }
 
-    // Handle special USGS geoTIFF case here.  We only have
-    // four boundaries because the edges are aligned with
-    // lat/long.
-    else    // have_fgd
-    {
-        f_NW_x_bounding = f_west_bounding;
-        f_NW_y_bounding = f_north_bounding;
+    f_NW_x_bounding = f_west_bounding;
+    f_NW_y_bounding = f_north_bounding;
 
-        f_SW_x_bounding = f_west_bounding;
-        f_SW_y_bounding = f_south_bounding;
+    f_SW_x_bounding = f_west_bounding;
+    f_SW_y_bounding = f_south_bounding;
 
-        f_NE_x_bounding = f_east_bounding;
-        f_NE_y_bounding = f_north_bounding;
+    f_NE_x_bounding = f_east_bounding;
+    f_NE_y_bounding = f_north_bounding;
 
-        f_SE_x_bounding = f_east_bounding;
-        f_SE_y_bounding = f_south_bounding;
-    }
+    f_SE_x_bounding = f_east_bounding;
+    f_SE_y_bounding = f_south_bounding;
 
 
     // Fill in the wgs84 variables so we can do a datum
