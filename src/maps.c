@@ -1715,7 +1715,11 @@ void draw_shapefile_map (Widget w,
 
         return; // Done indexing this file
     }
-
+    else {
+        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+        statusline(status_text,0);       // Loading ...
+    }
+ 
 
     switch ( nShapeType ) {
         case SHPT_POINT:
@@ -5374,13 +5378,35 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+    }
+    else {
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
+    }
+    statusline(map_it,0);       // Loading/Indexing ...
+
+
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
         // We're indexing only.  Save the extents in the index.
-        index_update_xastir(filenm, // Filename only
-            tp[1].y_lat,    // Bottom
-            tp[0].y_lat,    // Top
-            tp[0].x_long,   // Left
-            tp[1].x_long);  // Right
+        if (terraserver_flag) {
+            // Force the extents to the edges of the earth for the
+            // index file.
+            index_update_xastir(filenm, // Filename only
+                64800000l,      // Bottom
+                0l,             // Top
+                0l,             // Left
+                129600000l);    // Right
+        }
+        else {
+            index_update_xastir(filenm, // Filename only
+                tp[1].y_lat,    // Bottom
+                tp[0].y_lat,    // Top
+                tp[0].x_long,   // Left
+                tp[1].x_long);  // Right
+        }
 
         return; // Done indexing this file
     }
@@ -5402,17 +5428,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         printf ("Image size %d %d\n", geo_image_width, geo_image_height);
         printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
     }
-
-
-    // Check whether we're indexing or drawing the map
-    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
-            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
-    }
-    else {
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
-    }
-    statusline(map_it,0);       // Loading/Indexing ...
 
 
     atb.valuemask = 0;
@@ -5459,6 +5474,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         if (debug_level & 16)
             printf("%s",tempfile);
 
+//printf("Getting file\n");
         if ( system(tempfile) ) {   // Go get the file
             printf("Couldn't download the geo or Terraserver image\n");
             return;
@@ -7359,6 +7375,12 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
  
         return; // Done indexing this file
     }
+    else {
+        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
+        statusline(map_it,0);       // Loading ...
+    }
+
+
 
 
     // bottom top left right
@@ -10511,7 +10533,7 @@ void index_update_xastir(char *filename,
     if (       strstr(filename,"shx")
             || strstr(filename,"dbf")
             || strstr(filename,"SHX")
-            || strstr(filename,"DBF")) {
+            || strstr(filename,"DBF") ) {
         return;
     }
 
@@ -10627,7 +10649,7 @@ void index_update_ll(char *filename,
     if (       strstr(filename,"shx")
             || strstr(filename,"dbf")
             || strstr(filename,"SHX")
-            || strstr(filename,"DBF")) {
+            || strstr(filename,"DBF") ) {
         return;
     }
 
