@@ -836,8 +836,9 @@ void channel_data(int port, unsigned char *string, int length) {
 
         /* wait until data is processed */
         while (data_avail && max < 5400) {
+            sched_yield();  // Yield to other threads
             tmv.tv_sec = 0;
-            tmv.tv_usec = 100;  // 100 usec
+            tmv.tv_usec = 1;  // 1 usec
             (void)select(0,NULL,NULL,NULL,&tmv);
             max++;
         }
