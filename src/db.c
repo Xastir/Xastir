@@ -9422,10 +9422,16 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 //passing a NULL for the path:
             transmit_message_data(call,ack,NULL);
             if (auto_reply == 1) {
+
+                xastir_snprintf(ipacket_message,
+                    sizeof(ipacket_message), "AA:%s", auto_reply_message);
+
                 if (debug_level & 2)
-                    printf("Send autoreply to <%s> from <%s> :%s\n",call,my_callsign,auto_reply_message);
+                    printf("Send autoreply to <%s> from <%s> :%s\n",
+                        call, my_callsign, ipacket_message);
+
                 if (!is_my_call(call,1))
-                    output_message(my_callsign,call,auto_reply_message,"");
+                    output_message(my_callsign, call, ipacket_message, "");
             }
         }
 
@@ -9640,11 +9646,16 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
 //path here:
             transmit_message_data(call,ack,NULL);
             if (auto_reply == 1) {
+                char temp[300];
+
+                xastir_snprintf(temp, sizeof(temp), "AA:%s", auto_reply_message);
+
                 if (debug_level & 2)
-                    printf("Send autoreply to <%s> from <%s> :%s\n",call,my_callsign,auto_reply_message);
+                    printf("Send autoreply to <%s> from <%s> :%s\n",
+                        call, my_callsign, temp);
 
                 if (!is_my_call(call,1))
-                    output_message(my_callsign,call,auto_reply_message,"");
+                    output_message(my_callsign, call, temp, "");
             }
         }
         done = 1;
