@@ -126,6 +126,7 @@ int main(int argc, char *argv[]) {
     /* variables to bind to: */
     int color;
     int lanes;
+    int font_size;
     char dbfinfo[1024];		/* list of DBF field names */
     char dbffields[1024];	/* subset we want to read */
     char name[128];
@@ -177,6 +178,7 @@ int main(int argc, char *argv[]) {
     awk_declare_sym(symtbl,"pattern",INT,&pattern,sizeof(pattern));
     awk_declare_sym(symtbl,"display_level",INT,&display_level,sizeof(display_level));
     awk_declare_sym(symtbl,"label_level",INT,&label_level,sizeof(label_level));
+    awk_declare_sym(symtbl,"font_size",INT,&font_size,sizeof(font_size));
 
     if (dfile) {		/* parse dbf file */
       DBFHandle dbf = DBFOpen(dfile,"rb");
@@ -225,6 +227,7 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr,"pattern=%d, ",pattern);
 	fprintf(stderr,"display_level=%d, ",display_level);
 	fprintf(stderr,"label_level=%d\n",label_level);
+	fprintf(stderr,"font_size=%d, ", font_size);
 	//	print_symtbl(symtbl);
       }
       DBFClose(dbf);
