@@ -1,0 +1,25 @@
+# $Id$
+#
+# Copyright (C) 2004  The Xastir Group
+#
+# This is the TNC Startup file for Kantronics TNC.
+# lines that begin with a pound sign are comments.
+#
+#
+B E 0
+DIGI on
+ECho off
+FLow off
+FUll off
+HEA off
+LFadd off
+AUTOLF off
+MCOM off
+MON ON
+MResp OFF
+MRPt on
+MSTamp off
+MYAlias RELAY
+NEWmode off
+SCR 0
+#

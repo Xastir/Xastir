@@ -13,8 +13,6 @@ EXTRA_DIST = \
     language-Italian.sys \
     language-Portuguese.sys \
     language-Spanish.sys \
-    tnc-startup.sys \
-    tnc-stop.sys \
     xastir.rgb \
     tgr2shp.dbfawk \
     tgrcty.dbfawk \
@@ -30,13 +28,18 @@ EXTRA_DIST = \
     nwsw_ddmmyy.dbfawk \
     nwsz_ddmmyy.dbfawk \
     nwsfz_ddmmyy.dbfawk \
-    tnc-startup.kpc3 \
-    tnc-startup.thd7 \
-    tnc-startup.kam \
-    tnc-startup.pico \
     tnc-startup.aea \
     tnc-startup.d700 \
+    tnc-startup.kam \
+    tnc-startup.kpc2 \
+    tnc-startup.kpc3 \
+    tnc-startup.null \
+    tnc-startup.paccomm \
+    tnc-startup.pico \
+    tnc-startup.sys \
+    tnc-startup.thd7 \
     tnc-stop.d700 \
+    tnc-stop.sys \
     tnc-stop.thd7
 
 config_DATA = ${EXTRA_DIST}
