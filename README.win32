@@ -1,0 +1,531 @@
+
+$Id$
+
+------------------------------------
+Installing Xastir on Windows/Cygwin:
+------------------------------------
+
+Please Note:  It's beneficial to actually log in to your Windows box
+rather than skipping that step of the Windows login process (Don't
+hit escape just to get rid of the dialog!).  If you log into Windows
+properly, Cygwin will be able to figure out where to put your home
+directory.  If you don't do this, you'll be referred to as "unknown"
+and you won't have a home directory in Cygwin.  This means there
+won't be a good place to put your Xastir startup files.  Of course,
+log in as the same user each time in order for Cygwin to use the
+proper home directory for you.
+
+The following steps direct you through installing Cygwin, Xastir,
+and additional map libraries that Xastir can use.  Note that in most
+of the places below where the directions state to type commands,
+this must be done from within a Cygwin bash shell, not a DOS window.
+
+
+Step 1)  Install Cygwin, a free download.
+
+
+Step 1a) Go to http://www.cygwin.com with your web browser.  Look
+for the black and green Cygwin icon, then click on "Install now!".
+This will load the Cygwin network installer program onto your
+computer.  Remember where you install this program.  I put mine in
+"c:\<login>\cygwin\setup.exe", for instance
+"c:\hacker\cygwin\setup.exe".
+
+
+Step 1b)  Find the "setup.exe" program and execute it either by:
+
+  a) Clicking on it with File Explorer, or
+  b) Start->Run->path to executable, or
+  c) Opening a DOS window and typing the name.
+
+This will start installing Cygwin over the network.  Answers to
+provide to the program:
+
+    Install from Internet (*)
+    "C:\cygwin"
+    Install For All Users
+    Default Text File Type Unix (*)
+    Local Package Directory "C:\hacker\cygwin"
+    Select Your Internet Connection (choose one)
+    Choose A Download Site (choose one near you if possible)
+
+Note:  Responses above listed with a "(*)" are required.  Others are
+up to the individual user to answer as they wish.  You'll get to a
+"Progress" page where "setup.bz2" is downloaded from the 'net.  If
+it hangs at this step, you may wish to "Cancel" and try another
+server until you obtain this file and are presented with a list of
+packages to install.
+
+
+Step 1c)  Select Packages: Select the default Cygwin packages _plus_
+the packages listed below.  Note that enabling some of these
+packages causes others to be selected as well, that's ok and
+necessary:
+
+    devel/autoconf
+    devel/automake
+    devel/binutils
+    devel/cvs
+    devel/gcc
+    devel/make
+    devel/rcs
+    editors/vim
+    graphics/tiff (install sources for this one too? TBD)
+    interpreters/m4
+    interpreters/perl
+    text/less
+    utils/diff
+    utils/patch
+    web/wget
+    XFree86/fvwm
+    XFree86/lesstif
+    XFree86/XFree86-prog
+
+
+Step 1d)  Click Next and the packages will get downloaded/installed.
+Repeat the above if you have network difficulties, until the install
+succeeds.
+
+
+Step 1e)  At the end of the install it'll ask you if you wish to
+create desktop links.  Select these items to create an icon
+(Black/Green Cygwin icon) and a menu entry.  Click "Finish".  Cygwin
+is now installed.
+
+
+Step 2)  Create an X-Windows icon on the desktop and the startup
+file to go with it.
+
+Copy "C:\cygwin\usr\X11r6\bin\startxwin.bat" to (same path)
+"C:\cygwin\usr\X11r6\bin\startxwin.fvwm2.bat".  Edit this new file,
+changing all instances of "twm" to "fvwm2".  Make a shortcut on your
+desktop that points to this file, and rename the shortcut
+"X-Windows" or similar.  You may be able to find a large red X in
+the system32\moricons.dll file if you wish to change the icon
+(depending on which Windows version you're running).
+
+
+Step 3)  Test the two icons.
+
+Double-click on the green/black cygwin icon.  You should get a shell
+window that looks very much like a DOS window.  Type "exit" and then
+press <Enter> to make it disappear.
+
+Double-click on the "X-Windows" icon.  You should get a large window
+with a smaller shell window displayed on it.  If you right-click on
+the background, you should get a menu.  Select "Exit FVWM" to make
+the large window go away, or click on the "X" in the corner of the
+window.
+
+
+Step 4)  Create a file at C:\cygwin\home\<user>\ called ".cvsrc",
+where the "<user>" part is your Windows login name.  For instance, I
+created a file:  "C:\cygwin\home\hacker\.cvsrc".  The file should
+contain the following lines:
+
+    cvs -z3
+    update -P -d
+    status -v
+
+
+Step 5)  Download Xastir sources.  Start up a Cygwin shell
+(black/green icon).  Type the commands below into the shell exactly.
+Hit <ENTER> when asked for a password:
+
+    cd ~
+    mkdir src
+    cd src
+    cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
+    cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
+
+If you keep seeing "EOF" at the end of a short error message, it
+means that the anonymous CVS server at SourceForge is overloaded.
+Keep trying!
+
+The end result when it succeeds  will be a new directory
+"C:\cygwin\home\<user>\src\xastir\" which contains the full Xastir
+source code.
+
+Side Note:  Here's the coolest thing about CVS:  Once you've done
+this initial source-code download, you'll never have to do the whole
+Xastir download again.  You'll just go into the "src/xastir"
+directory and type "cvs update", which will snag just the _changes_
+to the files since you last updated, and is very fast.  Compile and
+install at that point and you'll be running the latest developer's
+version in just a few minutes!  It's easy to keep up with the
+developers this way.
+
+
+Step 6)  Configure/compile/install Xastir.  Type these commands into
+the Cygwin shell, waiting until each one completes before typing the
+next command:
+
+    cd ~/src/xastir
+    ./bootstrap.sh
+    ./configure
+    make
+    make install
+
+Ignore the "PACKAGE_* redefined" warnings.  They won't break
+anything and are just an annoyance.
+
+Once you get through the above commands, Xastir is compiled and
+installed on your system, with minimal map support.  Later sections
+of this document detail adding additional map libraries in order to
+give you access to the full mapping capability of Xastir.
+
+
+Step 7)  Create a link to the Xastir executable.  Type the following
+commands in the Cygwin shell:
+
+    cd ~
+    ln -s /usr/local/bin/xastir xastir
+
+That will create a symbolic link from your home directory to the
+Xastir executable, to make it easier to run Xastir without typing a
+long path each time.
+
+
+Step 8)  Run Xastir:  Start X-Windows using the desktop icon you
+created before.  From the "xterm" window displayed, type "xastir &"
+or "/usr/local/bin/xastir &".  Xastir should start.
+
+Note:  Xastir has support for pocketAPRS, dosAPRS, WinAPRS, MacAPRS
+and GNIS maps by default.  For additional types of maps, you'll need
+to install some libraries, then recompile Xastir so that it knows to
+use them.  See the instructions below.
+
+The README.1ST file has instructions for where to get maps and where
+to put them under the Xastir heirarchy. 
+
+What Xastir paths look like from within Windows (in case you're
+moving maps around with Explorer):  Just prefix them all with
+"cygwin/".  For instance, maps go into /cygwin/usr/local/xastir/maps
+instead of /usr/local/xastir/maps.  Xastir will continue to see them
+as "/usr/local/xastir/maps" though from inside Cygwin.  It kind of
+looks like a miniature Unix box from inside Cygwin.
+
+Run Windows in 15-bit color or better (32768 colors or more) or
+you'll get lots of warnings about Xastir not being able to allocate
+colors when it starts up, and the display will be rather stark
+looking.
+
+To set a new language or change the language current choice, use
+this command line instead from inside an Xterm:
+
+     xastir -l <language>
+
+Current choices are: English Dutch French German Italian Portuguese
+Spanish
+
+This option will be stored in the users config file for the next
+time Xastir is run. On new installs Xastir will default to English
+unless you use this command line option.
+
+Another difference with Cygwin as opposed to Unix-like operating
+systems:  You can't do the make install portion if Xastir is up and
+running.  You have to kill Xastir first before you do "make install"
+or "make install-strip".
+
+Note that one user running Cygwin on XP had it crash every time his
+screensaver kicked in.  Disabling the screenserver fixed that
+problem.
+
+Please see the README.1ST file and the Help menu in Xastir itself
+for additional information not mentioned in this document.
+
+
+
+-------------------------------------------
+OPTIONAL:  ADDING ADDITIONAL MAP LIBRARIES:
+-------------------------------------------
+
+These additional Xastir libraries have been tested on Cygwin:
+
+    ImageMagick
+    Shapelib
+    libtiff
+    libproj
+    libgeotiff
+
+Anyone testing additional libraries is encouraged to share their
+findings on the Xastir mailing lists.
+
+
+
+RECOMMENDED:  Adding Shapelib (tested with shapelib-1.2.9):
+-----------------------------------------------------------
+Allows using many sources of online polygon, polyline, and point
+maps, including ones from NOAA.  This is the only format used for
+weather alert maps.
+
+From a Cygwin bash shell, type:
+
+    cd ~/src
+    mkdir shapelib
+    
+Fetch "shapelib-1.2.9.tar.gz" from here:
+
+    http://gdal.velocet.ca/projects/shapelib/index.html
+
+Put it in the C:\cygwin\home\<user>\shapelib directory.  Untar it
+from the Cygwin shell window:
+
+    cd ~/src/shapelib
+    tar xzvf shapelib-1.2.9.tar.gz
+
+1) Edit Shapelib's Makefile to remove the space after the "-h"
+on the line that starts like this:
+
+    /usr/bin/ld -G -h libshp.so.1 ...
+
+
+2) Edit the file /usr/include/sys/reent.h to remove the word
+"extern" from this line:
+
+    extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
+
+then type:
+
+    cd ~/src/shapelib/shapelib-1.2.9
+    make lib
+    make lib_install
+
+Edit or create your .profile file in your home directory.  It
+appears that Cygwin uses the PATH variable to look for both binaries
+and libraries.  Add this line to the file (create the "~/.profile"
+file if the file doesn't exist):
+
+    export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib
+
+Now you should be ready to configure and compile Xastir with
+Shapelib support.  Type these commands:
+
+    cd ~/src/xastir
+    ./configure
+    make
+    make install
+
+The installed copy of Xastir should now have Shapelib support.  You
+can download NOAA weather alert maps and many other sorts of maps,
+and Xastir will recognize and use them.  Note that weather alert
+shapefiles must go into the /usr/local/xastir/Counties directory.
+See the README.1ST file for where to get the maps.
+
+
+
+OPTIONAL:  Adding ImageMagick (tested with ImageMagick 5.5.3):
+--------------------------------------------------------------
+Allows using more than 68 different graphics format files as maps,
+by creating an associated .geo file for each with tiepoints.  This
+support also allows use of online Tiger and Terraserver maps with
+Xastir, and NOAA weather radar images.  Other people are working on
+integrating even more online mapping sources.  This will also allow
+you to use any GIF/JPG/XPM/BMP/... image as an Xastir map.
+
+ImageMagick:
+        http://www.imagemagick.org/
+
+    cd ~/src
+    mkdir imagemagick
+
+Download the ImageMagick cygwin binary from www.imagemagick.org or
+one of it's mirrors.  Put it in the ~/src/imagemagick directory.
+Extract the files:
+
+    cd ~/src/imagemagick
+    tar xzvf filename
+
+Copy the files/directories into the /usr tree (/usr/include and /usr/lib).
+
+    cd ~/src/xastir
+    ./configure
+    make
+    make install
+
+Add this to your ~/.profile file:
+
+    export MAGICK_HOME=/usr
+
+Now on-line Tigermaps should work for you!
+
+Once I start up X-windows, I have to type this in a shell and start
+Xastir from that shell in order to make all of the paths known:
+
+    cd
+    . ./.profile
+
+So it appears that starting up X-windows using the startxwin.bat
+script ends up putting you somewhere other than your home directory,
+and your .profile doesn't end up getting sourced.  There must be a
+better way.
+
+
+
+
+
+The rest of this file still needs more work, but the basic info is
+there, and geotiff's _do_ work with Cygwin/Xastir.
+
+
+
+
+
+OPTIONAL:  Adding libgeotiff (tested with libgeotiff-1.1.5):
+------------------------------------------------------------
+
+You may get the "undefined reference impure_ptr" messages (just like
+with Shapelib above).  If so, edit the file /usr/include/sys/reent.h
+to remove the word "extern" from this line:
+
+
+    extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
+
+
+I've had it compile all the way through, but I've also had it bomb
+out when it gets to the "ld -shared" step.  At that point it writes
+a lot of "undefined reference" messages.  The line at which the
+compile might fail:
+
+
+    ld -shared xtiff.o geo_free.o geo_get.o geo_names.o geo_new.o
+    geo_print.o geo_set.o geo_tiffp.o geo_write.o geo_trans.o
+    geo_normalize.o geotiff_proj4.o geo_extra.o cpl_serv.o cpl_csv.o -lproj
+    -ltiff -ljpeg -lz -lm -L/usr/local/lib -o libgeotiff.so.1.1.5
+
+
+To fix this, edit the Makefile to add "-lc" to the end of the LIBS
+line and run "make" again, then "make install".
+
+Go to the Xastir source directory, run "configure", "make", and
+"make install" again.  It should find libtiff/libproj/libgeotiff at
+the configure stage and compile in support for geotiff maps.
+
+
+
+
+
+-----------------------------------------------
+For geoTIFF support (such as USGS DRG topo maps) you need:
+    libproj:
+        http://www.remotesensing.org/proj/
+     and for datum translations:
+        ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
+    libgeotiff:
+        http://www.remotesensing.org/geotiff/geotiff.html
+        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.1.5.tar.gz
+    Please note that the order of installation for these libraries is
+    critical.  Follow the instructions below carefully.
+
+   3. OPTIONAL:  Install geoTIFF support.  Allows using USGS DRG topo maps or
+     other types of geoTIFF maps/images and has the ability to tile smaller
+     maps into a larger contiguous map of an area:
+
+
+       3a.  Check/Edit your startup files:
+       -----------------------------
+       Check that /usr/local/lib, /usr/lib, and /usr/X11R6/lib are
+       all listed in /etc/ld.so.conf, and run ldconfig to re-create
+       the system's cache file. If you don't have permission to
+       edit this file:
+            Edit ~/.bashrc, ~/.bash_profile, .cshrc, or
+            .login and add:
+
+            export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/usr/X11R6/lib
+
+       This will let the loader find the shared libraries when it tries to
+       load Xastir into memory.  Check that you aren't already defining
+       LD_LIBRARY_PATH somewhere else.  If so, just add the paths above to
+       it.  Make sure this environment variable is defined in the current
+       shell you're using to compile Xastir.  Note that if you're running
+       Xastir SUID root, the LD_LIBRARY_PATH variable is ignored.
+
+
+       3b. Install libproj:
+       --------------------
+Adding libproj to Cygwin (tested with proj-4.4.6):
+
+     NOTE: You must install libproj BEFORE compiling libgeotiff, because
+       libgeotiff uses libproj to do the datum translations. If you install
+       libgeotiff first, datum translations won't work.
+
+       The proj-nad27-1.1.tar.gz must be decompressed in the nad subdirectory
+       of the proj distribution directory before you run configure.
+        
+        tar xzvf proj-4.4.5.tar.gz (or newer)
+        cd proj-4.4.5/nad
+        tar xzvf ../../proj-nad27-1.1.tar.gz (or newer)
+        cd ..
+        ./configure
+        make
+        su (root)
+        make install (as root)
+        exit (from root)
+        libproj should now be installed in:
+
+            /usr/local/include/
+            /usr/local/lib/
+            /usr/local/bin/
+            /usr/local/share/proj/
+
+       You may need to do this (as root) if the "make install" portion fails
+       because it can't find "ginstall":
+
+       cd /usr/bin
+       ln -s install ginstall
+
+       Then retry the "make install" portion above.
+
+
+       3c. Upgrade libtiff if needed:
+       -----------------------------
+       The best way to install libtiff is to get it from the ftp site
+       for your Linux distribution.  You must have libtiff 3.5.5 or
+       newer for libgeotiff to compile and run correctly.
+
+       If you are compling from source, you must use "make install_private",
+       because the private include files are required for libgeotiff to compile
+       and work correctly.
+
+       If you upgrade libtiff, check that programs like XV, ImageMagick, and
+       the Gimp still run (if you have these programs installed).  Graphics
+       programs that read/write TIFF format depend on libtiff.
+
+
+       3d. Install libgeotiff:
+       -----------------------
+
+     NOTE: There's at least one memory leak in this library, versions
+       1.1.3 through 1.1.4, which can be patched in the geo_trans.c
+       file.  A patched version of the geo_trans.c file for
+       libgeotiff-1.1.3 is available here:
+
+       ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/geo_trans.diff
+
+       Apply the patch to geo_trans.c BEFORE compiling libgeotiff.
+       The patch might not apply to anything later than 1.1.3.
+       Contact archer@eskimo.com if you have troubles with this patch.
+       So far libgeotiff-1.1.5 release candidate appears to be
+       better in this regard.  Use it if available.
+
+        tar xzvf libgeotiff-1.1.4.tar.gz (or newer)
+        cd libgeotiff-1.1.4
+        ./configure
+     NOTE: You may need to snag one file from the libtiff source distribution
+       and place it into libgeotiff-1.1.4/libtiff_private directory before
+       libgeotiff will compile:  "tiffconf.h".
+        make
+        su (root)
+        make install (as root)
+        /sbin/ldconfig (tells the loader about the new libraries)
+        exit (from root)
+       libgeotiff should now be installed in:
+
+            /usr/local/include/
+            /usr/local/lib/
+            /usr/local/share/epsg_csv/
+            /usr/local/bin/
+
+       If you must re-run "configure" for any of these libraries, remember to 
+       delete "config.status" and "config.cache" files first.
+
