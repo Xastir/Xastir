@@ -31,6 +31,7 @@
 
 #include <Xm/XmAll.h>
 
+#include "db.h"
 #include "draw_symbols.h"
 #include "xastir.h"
 #include "main.h"
@@ -1630,7 +1631,12 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
         if (symbol_table && symbol_id && debug_level & 128)
             printf("No Symbol Yet! %2x:%2x\n", (unsigned int)symbol_table, (unsigned int)symbol_id);
     } else {                    // maybe we want a rotated symbol
-        if (!(orient == ' ' || orient == 'l' || symbol_data[found].orient == ' ' || ghost)) {
+
+// It looks like we originally did not want to rotate the symbol if
+// it was ghosted?  Why?  For dead-reckoning we do want it to be
+// rotated when ghosted.
+//      if (!(orient == ' ' || orient == 'l' || symbol_data[found].orient == ' ' || ghost)) {
+        if (!(orient == ' ' || orient == 'l' || symbol_data[found].orient == ' ')) {
             for (i=found;(i<symbols_loaded);i++) {
                 if (symbol_data[i].active==SYMBOL_ACTIVE) {
                     if (symbol_data[i].table == symbol_table && symbol_data[i].symbol == symbol_id
@@ -2308,6 +2314,134 @@ end_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol" 
 
     } else
         (void)XRaiseWindow(XtDisplay(select_symbol_dialog), XtWindow(select_symbol_dialog));
+}
+
+
+
+
+
+// Function to draw a line in the direction of travel.  Use speed in knots to determine the
+// flags and barbs to draw along the shaft.  Course is in true
+// degrees, in the direction that the wind is coming from.
+//
+void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
+    int my_course = atoi(p_station->course);   // In ° true
+    int shaft_length = 0;
+    float bearing_radians;
+    long off_x,off_y;
+    long x_long, y_lat;
+    long x,y;
+    double diameter;
+    long max_x, max_y;
+    double a,b;
+    double range;
+    int color = trail_colors[p_station->trail_color];
+    int draw_dr_circle=1, draw_dr_course=1, draw_dr_symbol=1;
+
+
+    x_long = p_station->coord_lon;
+    y_lat = p_station->coord_lat;
+
+    range = (double)((sec_now()-p_station->sec_heard)*(1.1508/3600)*(atof(p_station->speed)));
+
+    // Adjust so that it fits our screen angles.  We're off by
+    // 90 degrees.
+    my_course = (my_course - 90) % 360;
+
+    shaft_length = ( range /
+        (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214) );
+
+    // Draw shaft at proper angle.
+    bearing_radians = (my_course/360.0) * 2.0 * M_PI;
+
+    off_y = (long)( shaft_length * sin(bearing_radians) );
+    off_x = (long)( shaft_length * cos(bearing_radians) );
+
+    x = (x_long - x_long_offset)/scale_x;
+    y = (y_lat - y_lat_offset)/scale_y;
+
+    /* max off screen values */
+    max_x = screen_width+800l;
+    max_y = screen_height+800l;
+
+    if (draw_dr_circle) {
+
+        if ((x_long>=0) && (x_long<=129600000l)) {
+
+            if ((y_lat>=0) && (y_lat<=64800000l)) {
+
+// Prevents it from being drawn when the symbol is off-screen.
+// It'd be better to check for lat/long +/- range to see if it's on the screen.
+
+                if ((x_long>x_long_offset)
+                        && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+                    if ((y_lat>y_lat_offset)
+                            && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+
+                        // Range is in miles.  Bottom term is in
+                        // meters before the 0.0006214
+                        // multiplication factor which converts it
+                        // to miles.  Equation is:  2 * ( range(mi)
+                        // / x-distance across window(mi) )
+                        diameter = 2.0 * ( range/
+                            (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+
+                        a=diameter;
+                        b=diameter/2;
+
+                        //printf("Range:%f\tDiameter:%f\n",range,diameter);
+
+                        if (diameter>4.0) {
+                            (void)XSetLineAttributes(XtDisplay(da), gc, 1, LineSolid, CapButt,JoinMiter);
+                            //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+                            //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+                            (void)XSetForeground(XtDisplay(da),gc,color);
+
+                            (void)XDrawArc(XtDisplay(da),where,gc,
+                                (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
+                                (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
+                                (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (draw_dr_course) {
+		
+        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+        (void)XSetForeground(XtDisplay(da),gc,color); // red3
+        (void)XDrawLine(XtDisplay(da),where,gc,
+            x,
+            y,
+            x + off_x,
+            y + off_y);
+
+    }
+
+    if (draw_dr_symbol) {
+		
+        draw_symbol(w,
+            p_station->aprs_symbol.aprs_type,
+            p_station->aprs_symbol.aprs_symbol,
+            p_station->aprs_symbol.special_overlay,
+            ((x+off_x)*scale_x)+x_long_offset,
+            ((y+off_y)*scale_y)+y_lat_offset,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            p_station->sec_heard-sec_old,
+            0,
+            where,
+            symbol_orient(p_station->course),
+            p_station->aprs_symbol.area_object.type);
+    }
 }
 
 

@@ -345,6 +345,8 @@ int show_DF;              // Switch for displaying older station data
 static void Station_Last_Heard_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 int show_last_heard;    // Switch for displaying time since last-heard
 
+static void Dead_Reckoning_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+
 Widget trails_on, trails_off;
 static void Station_trails_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 int station_trails;             // Switch for Trail display
@@ -517,6 +519,7 @@ int warn_about_mouse_modifiers = 1;
 Widget altnet_active;
 Widget altnet_text;
 Widget debug_level_text;
+int show_DR;
 
 // -------------------------------------------------------------------
 static void UpdateTime( XtPointer clientData, XtIntervalId id );
@@ -3428,7 +3431,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     Widget trackme_frame, measure_frame, move_frame, display_button,
         track_button, download_trail_button,
-        symbols_button, station_trails_button,
+        symbols_button, dead_reckoning_button, station_trails_button,
         station_clear_button, tracks_clear_button, object_history_clear_button, uptime_button,
         save_button,file_button, open_file_button, exit_button, really_exit_button,
         view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
@@ -4843,7 +4846,19 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if (!symbol_display_enable)
         XtSetSensitive(station_last_heard_button,FALSE);
 
-
+    dead_reckoning_button = XtVaCreateManagedWidget(langcode("PULDNDP035"),
+            xmToggleButtonGadgetClass,
+            info_filter_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(dead_reckoning_button,XmNvalueChangedCallback,Dead_Reckoning_toggle,"1");
+    if (show_DR)
+        XmToggleButtonSetState(dead_reckoning_button,TRUE,FALSE);
+    if (!symbol_display_enable)
+        XtSetSensitive(dead_reckoning_button,FALSE);
 
     station_trails_button = XtVaCreateManagedWidget(langcode("PULDNDP007"),
             xmToggleButtonGadgetClass,
@@ -8143,6 +8158,25 @@ void Symbols_rotate_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
     symbol_display = symbol_display_enable;
     if (symbol_display_enable && symbol_display_rotate)
         symbol_display = 2;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+/*
+ *  Toggle Dead-Reckoning Display (button callbacks)
+ */
+void Dead_Reckoning_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        show_DR = atoi(which);
+    else
+        show_DR = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }

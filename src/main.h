@@ -179,6 +179,7 @@ extern int show_phg_mobiles;
 extern int show_phg_default;
 extern int show_amb;
 extern int show_old_data;
+extern int show_DR;
 extern char sound_command[];
 extern pid_t last_sound_pid;
 extern int sound_play_new_station;
