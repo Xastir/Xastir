@@ -2684,7 +2684,7 @@ void draw_shapefile_map (Widget w,
                                 // type of file and the lanes are
                                 // really out of bounds:
                                 if (lanes < 1 || lanes > 10) {
-                                    fprintf(stderr,"lanes = %d\n",lanes);
+                                    //fprintf(stderr,"lanes = %d\n",lanes);
                                     lanes = 1;
                                 }
                             }
