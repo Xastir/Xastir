@@ -4129,6 +4129,8 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"park") == 0) {
+                            symbol_table = '\\';
+                            symbol_id = ';';
                             if (scale_y > 50)
                                 ok = 0;
                         }
