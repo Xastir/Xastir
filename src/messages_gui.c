@@ -292,7 +292,7 @@ void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     Atom delw;
 
     groupon=0;
-    box_len=85;
+    box_len=90;
     i=0;
 
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
