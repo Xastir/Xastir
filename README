@@ -7,7 +7,7 @@ README
      Please at least SKIM this document before asking questions. In fact,
      READ IT if you've never successfully set up Xastir before. PLEASE!
      READ IT! If you haven't read this file, and ask for help
-     expect to be told to READ the README file first! or rtfm :)
+     expect to be told to READ the README file first! or RTFM :)
 
      Contents
 
@@ -30,14 +30,14 @@ README
      (0) NOTICE
 
           Please read this file carefully before trying to set up Xastir.
-          This software was developed to be used by licensced amature radio
+          This software was developed to be used by licensed amateur radio
           operators.  You are responsible for any information transmitted
           or propagated on any network.
 
      (1) WHAT IS XASTIR?
 
           Xastir is an open-source project to create a free X11 graphical
-          APRS(tm) client. APRS use amateur radio and internet services to
+          APRS(tm) client. APRS use amateur radio and Internet services to
           convey GPS mapping, weather, and positional data in a graphical
           application.  It has been developed by and for amateur radio
           enthusiasts to provide real-time data in an easy to use package.
@@ -102,8 +102,8 @@ README
      (5) IDENTIFICATION NOTES
           Packet radio modes, by their very nature, typically identify
           themselves with every transmission. Xastir has a few features
-          targeted to people who used Xastir in demonstrataions and other
-          broadcasts where Xastir iself is used over radio.
+          targeted to people who used Xastir in demonstrations and other
+          broadcasts where Xastir itself is used over radio.
 
           Xastir can auto-ID via voice if Festival is compiled in and/or via a
           message splashed across the screen. It does this identification
@@ -121,9 +121,9 @@ README
 
      No changes necessary now for Mac OS X!
 
-     If you intend to run with gdal installed, you may find that geotiff
+     If you intend to run with GDAL installed, you may find that geotiff
      projection doesn't work. To avoid this, install libtiff, libproj,
-     and libgeotiff first, then configure gdal with 
+     and libgeotiff first, then configure GDAL with 
      --with-libtiff=/path/to/libtiff --with-geotiff=/path/to/geotiff
      It's important to not choose "yes" or "internal". You may also want
      --with-libz=yes
@@ -194,10 +194,10 @@ README
          From: Chris Bell <cbell@junknet.com>
          To: "Curt Mills, WE7U" <hacker@tc.fluke.com>
          Cc: xastir-dev@krypton.hscs.virginia.edu
-         Subject: Re: [Xastir-Dev] Autoconf fixes for various OS'es 
+         Subject: Re: [Xastir-Dev] Autoconf fixes for various OS's 
 
          YAY!!! Xpm is properly detected for solaris7!!!!  On my system, (with
-         geotiff and imagemagick) I still have to tweak the geotiff detection
+         geotiff and ImageMagick) I still have to tweak the geotiff detection
          to avoid the system libtiff: 
 
          ===================================================================
@@ -233,7 +233,7 @@ README
          I also installed the latest patches for the OS... the latest
          Openwindows patch finally fixes the X header warnings, so we don't
          have to fear turning -Wall back on.  (patch # 108376-33) Probably a
-         good tidbit for the readme...
+         good tidbit for the README...
  
          I am trying to get enough parts to build more systems for testing
          solaris 8.   I tried it on my brother's system over the holidays, and
@@ -281,7 +281,7 @@ README
         Direct cua/b - Any direct
 
 
-     Then use 'cu' (solarisese for call unix) to send a '*' to the TNC.
+     Then use 'cu' (solaris-ese for call unix) to send a '*' to the TNC.
      You will receive a response from the TNC with copyright info, etc.
 
      Close the 'cu' session and start Xastir from a terminal window.
@@ -348,7 +348,7 @@ README
 
       HPUX 11.11 doesn't seem to have seteuid and setegid calls so:
 
-      - Intalled and linked against HP's Linux libraries:
+      - Installed and linked against HP's Linux libraries:
 
       http://devrsrc1.external.hp.com/LPK/
 
@@ -363,7 +363,7 @@ README
       - added  #include <sys/modem.h> to interface.h
 
 
-      Current status:  It runs, but it segfaults when connected to an APRS IS
+      Current status:  It runs, but it seg-faults when connected to an APRS IS
       server.
 
         END OF HP/UX NOTES.
@@ -375,7 +375,7 @@ README
 
       Gating NWS Weather Alerts to RF:
        --------------------------------
-      If you wish to gate NWS weather alerts from the internet onto RF, you'll
+      If you wish to gate NWS weather alerts from the Internet onto RF, you'll
       need to create a text file in the users directory as 
       ~/.xastir/data/nws-stations.txt
       List each NWS station that you would like to transmit via RF. Wildcards
@@ -401,7 +401,7 @@ README
       All text should start at the beginning of the line.
 
       Once that file is in place, you'll need to hook up to at least one
-      internet server that is feeding you the weather alerts. You'll also need
+      Internet server that is feeding you the weather alerts. You'll also need
       to have at least one RF interface up and running with transmit enabled on
       that interface. Make sure that "Interfaces->Disable Transmit: All" is not
       selected.  You should now be gating NWS weather messages to RF.
@@ -448,7 +448,7 @@ README
 
           Frank is no longer developing the Xastir code (although
           he does put a word in every now and then) so don't bother
-          emailing him. If you have a serious problem, email the
+          e-mailing him. If you have a serious problem, email the
           Xastir mailing list and it will get to the coders.
 
           Please, before posting to this list, see what things are
@@ -462,7 +462,7 @@ README
           spelling), or even substantive issues either for that
           matter. Please read and follow the mailing list rules.
 
-          The xastir@krypton.hscs.virginia.edu maillist is dedicated to Bug
+          The xastir@krypton.hscs.virginia.edu mail-list is dedicated to Bug
           reports, technical questions, your thoughts or
           suggestions on new features being added to Xastir, things
           that should be removed or fixed, amazing problems that even
@@ -479,7 +479,7 @@ README
 
           Please read the file FAQ, and make sure you've followed any relevant
           instructions in INSTALL. If the problem still exists, feel free to
-          ask on the Xastir mailinglist, as described above.
+          ask on the Xastir mailing-list, as described above.
 
 
   ------------------------------------------------------------------------

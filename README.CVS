@@ -41,7 +41,7 @@ CVS Instructions:
         <http://sourceforge.net/projects/xastir/>, then click on "CVS" to
         find the instructions.
 
-        For those that are internet-challenged, here are the two commands,
+        For those that are Internet-challenged, here are the two commands,
         customized for the Xastir project:
 
           cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login
@@ -116,7 +116,7 @@ CVS Instructions:
        cvs update -A
 
      will make the cvs update command track to the most recently submitted
-     versions again (will make the RELEASE or STABLE options unsticky).  To
+     versions again (will make the RELEASE or STABLE options un-sticky).  To
      review:
 
        cvs update -A            # To get to developers sources.

@@ -11,12 +11,12 @@ Recommended Configurations for:
     --------
       Allows use of all built-in map types plus 2003 Tigermap data,
       shapefile weather alerts, and local ESRI Shapefile format
-      maps, including U.S. satellite/image/topo maps via internet.
+      maps, including U.S. satellite/image/topo maps via Internet.
 
     Medium:  Shapelib, pcre, lcms, ImageMagick, libcurl/wget,
     -------
 
-      Allows use of all the above plus internet maps and local image
+      Allows use of all the above plus Internet maps and local image
       maps.
 
     Maximum:  Shapelib, pcre, lcms, ImageMagick, libcurl/wget,
@@ -35,8 +35,8 @@ Recommended Configurations for:
 
     Minimum:  lcms, ImageMagick, libcurl/wget
     --------
-      Allows use of all built-in map types plus local and internet
-      image maps, including Canadian topo maps via internet.
+      Allows use of all built-in map types plus local and Internet
+      image maps, including Canadian topo maps via Internet.
 
     Medium:  lcms, ImageMagick, libcurl/wget, Shapelib, pcre,
     -------
@@ -119,7 +119,7 @@ Getting Maps and other Data Files for Xastir:
       you can skip this step and use the online Tiger/Terraserver maps
       exclusively. However, having maps on your computer is often faster
       than transferring images over a modem, and is not subject to the
-      failures of your internet connection.  See the section below on map
+      failures of your Internet connection.  See the section below on map
       caching for an exciting feature that works with online Tigermaps to
       really speed things up!
 
@@ -128,11 +128,11 @@ Getting Maps and other Data Files for Xastir:
       use symbolic links to link to files/directories on other disks. Map
       files are loaded in the order that they appear in the chooser unless
       you adjust the layering priorities in the properties dialog (it's
-      recommended that you use these now instead of a directory heirarchy to
+      recommended that you use these now instead of a directory hierarchy to
       choose the layering).
 
       There are many methods for organizing many maps. Create a map
-      heirarchy using something that makes sense to you. The old method of
+      hierarchy using something that makes sense to you. The old method of
       creating transparent/filled or raster/vector directories has been
       superceded by the new map layering features in the Map
       Chooser->Properties dialog. It's now suggested that the map layering
@@ -159,15 +159,15 @@ Getting Maps and other Data Files for Xastir:
 
       Vector Format:
       .shp/.shx/.dbf  Shapefile vector map (need all three files)
-      .pdb            pocketAPRS vector map
+      .pdb            PocketAPRS vector map
       .map            APRSdos/WinAPRS/MacAPRS vector map
       .gnis           GNIS labels file (actually points instead of vectors)
-      .geo            Vector map or internet vector map.  Note that for
+      .geo            Vector map or Internet vector map.  Note that for
                       http/ftp-based maps Xastir requires an IMAGESIZE line.
 
       Raster Format:
       .tif/.fgd       geoTIFF raster image map
-      .geo            Raster image map or internet raster image map.  Note that
+      .geo            Raster image map or Internet raster image map.  Note that
                       for http/ftp-based maps Xastir requires an IMAGESIZE line.
 
       Note:  .geo is listed twice because it can fit in both categories,
@@ -181,7 +181,7 @@ Getting Maps and other Data Files for Xastir:
         http://wetnet.net/~we7u/xastir/maps/
 
       Here's a page that we'll try to keep up-to-date which will have lots of
-      links to downloadable maps on it:
+      links to download-able maps on it:
 
         http://wiki.findewe.com/nwaprs/XastirMaps
 
@@ -205,7 +205,7 @@ Getting Maps and other Data Files for Xastir:
      PocketAPRS vector maps:
 
       The WinAPRS 2.51 distribution included the full collection of 
-      PocketAPRS vector maps for the USA. The download is about 60Mb, from the
+      PocketAPRS vector maps for the USA. The download is about 60MB, from the
       TAPR ftp site.
 
       Also try:  
@@ -234,8 +234,8 @@ Getting Maps and other Data Files for Xastir:
       shapefiles from raw TIGER/line data (see below).  This requires
       GDAL/OGR configured with python support, and requires that you have
       the Python language installed.  Use the script Xastir_tigerpoly.py
-      included in the "scripts" directory of xastir's source tree.  As an
-      example, if you have unzipped the file TGR35001.zip (the TIGER/Line
+      included in the "scripts" directory of Xastir's source tree.  As an
+      example, if you have un-zipped the file TGR35001.zip (the TIGER/Line
       file for Bernalillo County, NM) into a directory called TGR35001, then
 
         Xastir_tigerpoly.py TGR35001 Bernalillo_County_NM_Polys.shp
@@ -290,7 +290,7 @@ Getting Maps and other Data Files for Xastir:
         Landmark Polygons Multi-Landmark    tgr*lpy3.shp
         Water Polygons Multi-Names          tgr*wat2.shp
 
-      Older Tiger97 maps converted to shapefile downloadable from:
+      Older Tiger97 maps converted to shapefile download-able from:
       http://www.mapshots.com
 
       Some other shapefile format maps are available at:
@@ -312,17 +312,17 @@ Getting Maps and other Data Files for Xastir:
 
       A nice world map is available at http://aprsworld.net/gisdata/world/
       thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
-      of the World (for Antartica).  Note that this file is currently
+      of the World (for Antarctica).  Note that this file is currently
       available only in uncompressed or in tar/bzip2 format.  To decompress
       the latter file, you'd type "bunzip2 filename" and then
       "tar xvf filename".
 
       www.bts.gov has the "National Transportation Atlas" that you can download
-      pieces of (at least for the larger layers) or ask for (free) CDs to be
+      pieces of (at least for the larger layers) or ask for (free) CD-ROM's to be
       mailed to you.
 
       -----
-      Reprojecting shapefiles (or: why doesn't my shapefile show up?)
+      Re-projecting shapefiles (or: why doesn't my shapefile show up?)
 
       A shapefile is pretty much just a collection of points and lines
       between points.  Xastir expects that those points are expressed in
@@ -330,15 +330,15 @@ Getting Maps and other Data Files for Xastir:
       and E and negative values indicating S and W.
 
       One often comes across shapefiles with data in some other format, such
-      as UTM or stateplane projections with units in meters or feet.  You
+      as UTM or state-plane projections with units in meters or feet.  You
       must re-project these sorts of shapefiles in order to use them in
       Xastir.  You must either know what the current format is of the
-      shapefile you wish to reproject, or have the .prj file that some
+      shapefile you wish to re-project, or have the .prj file that some
       shapefiles come with.
 
       Fortunately, the shapelib-1.2.10 distribution (which you probably
       compiled and installed to enable shapefile maps in Xastir) includes a
-      tool for performing this reprojection.
+      tool for performing this re-projection.
 
       First make the shpproj utility by:
 
@@ -363,7 +363,7 @@ Getting Maps and other Data Files for Xastir:
 
       Examples:
 
-      Convert shapefile triad from US Stateplane, South Central Texas region
+      Convert shapefile triad from US State-plane, South Central Texas region
       (FIPS code 4204), in feet to geographic:
 
         shpproj stateplane_shapefile geographic_shapefile \
@@ -386,7 +386,7 @@ Getting Maps and other Data Files for Xastir:
 
             http://www.aprs.net/fips/
 
-      An important note about using shpproj to reproject maps 
+      An important note about using shpproj to re-project maps 
 
       The shpproj program cannot be used to convert shapefiles unless they're
       already using the NAD83 or WGS84 datum.  shpproj will do the conversion
@@ -400,7 +400,7 @@ Getting Maps and other Data Files for Xastir:
       command line format similar to the "cs2cs" program that comes with 
       libproj.
 
-      If you already have gdal installed, you should have the "ogr2ogr" 
+      If you already have GDAL installed, you should have the "ogr2ogr" 
       program available to you.  ogr2ogr will not only convert projections
       and geodetic datum correctly, but will also convert format (ArcView
       binary format to shapefile, TIGER/Line files to shapefile, etc.).
@@ -415,7 +415,7 @@ Getting Maps and other Data Files for Xastir:
       each shape in the .shp file has a corresponding set of descriptive
       data about that shape in the .dbf file.  While shapefiles are all
       a standard format and will most always draw (possibly after having
-      been reprojected with shpproj), the corresponding .dbf data varies
+      been re-projected with shpproj), the corresponding .dbf data varies
       widely depending on the data source.  For example, US Census
       Tiger/Line files contain 20 attributes for each shape including such
       values as the name of the shape (i.e. street name), and a "Census
@@ -443,7 +443,7 @@ Getting Maps and other Data Files for Xastir:
             of signature matching.
       The first method allows a single .dbfawk file to be automatically
       used for hundreds of standard shapefile maps.  The later allows you
-      to customize how your particulare shapfile map displays.
+      to customize how your particular shapefile map displays.
 
       What's in a .dbfawk file?  The best documentation of these files
       is found by looking at the commented examples in config/*.dbfawk.  
@@ -498,7 +498,7 @@ Getting Maps and other Data Files for Xastir:
       record to be processed and in what order.  The order is significant
       since it may take several DBF fields to build up a complete name.
       For example, in Tiger/Line, the street name is actually the 
-      concatentation of FEDIRP, FENAME, TYPE, FEDIRS.  Here's an excerpt
+      concatenation of FEDIRP, FENAME, TYPE, FEDIRS.  Here's an excerpt
       from tgrlk.dbfawk to demonstrate:
         BEGIN {dbffields="TLID:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC"}
         ...
@@ -562,7 +562,7 @@ Getting Maps and other Data Files for Xastir:
     Rolling your own shapefile maps:
 
     It is relatively easy to create your own shapefile maps (for example,
-    if you want to highligt a walkathon course).  There are several
+    if you want to highlight a walk-a-thon course).  There are several
     methods available with Xastir:
     1. Use GPSMan to download a GPS track to a shapefile.
     2. Save a station tracklog of an actual station or an object that
@@ -578,7 +578,7 @@ Getting Maps and other Data Files for Xastir:
        This makes the track width 4 and red (12).
     3. You can also use the shapelib tools (shpproj was presented earlier)
        to manually create a shapefile.  For example, the following 
-       marks out the mileposts for a marathon, using tgrlpt.dbfawk
+       marks out the mile-posts for a marathon, using tgrlpt.dbfawk
        (US Census Tiger/Line landmark points with an APRS symbol extension)       for the metadata:
        #!/bin/sh
        # turn mileposts into a Tiger landmark shapefile
@@ -724,7 +724,7 @@ Getting Maps and other Data Files for Xastir:
       in some projection other than UTM, you can convert that file to a  
       lat/lon raster if you have gdal installed.  Simply run the following
       command:
-        gdalwarp -t_srs EPSG:4326 orignal_raster.tif usable_raster.tif
+        gdalwarp -t_srs EPSG:4326 original_raster.tif usable_raster.tif
 
       This will warp the geotiff file "original raster.tif" from
       whatever projection it was in into an unprojected lat/lon raster
@@ -766,7 +766,7 @@ Getting Maps and other Data Files for Xastir:
 
       Tiger maps of the USA are available through the map menu under 
       "Enable/configure Tigermap". These maps are generated by the census
-      bureau webserver.
+      bureau web-server.
 
       A .geo with only the word "TERRASERVER" in it will retrieve a satellite
       photo of the area from terraserver.  You need "wget" or libcurl, plus
@@ -782,11 +782,11 @@ Getting Maps and other Data Files for Xastir:
 
       Other tags you can put in a .geo file: 
       DATUM: (not used, yet...)
-      PROJECTION: Currently only supports "TM" for transverse mercator.
+      PROJECTION: Currently only supports "TM" for transverse Mercator.
       REFRESH: number of seconds to reload the maps.  Multiple maps
           with different values pick the smallest value.
       TRANSPARENT:  Color to remove from the background (make it transparent).
-          Use a number, 0=black.  Colormapped images use the map value, so 
+          Use a number, 0=black.  Color-mapped images use the map value, so 
           white is usually 0xffff.  Value can be decimal or hex if preceeded 
           by "0x".  
       CROP: removes borders.  Values are [left top right bottom] with
@@ -799,7 +799,7 @@ Getting Maps and other Data Files for Xastir:
      
      "Find Address" feature (US only):
 
-      The "Find Address" feature is based on the open source geocoder by
+      The "Find Address" feature is based on the open source geo-coder by
       Dan Egnor and as such uses the same format for the data. You can
       download preprocessed data based on Census Tiger 2003 data at:
       http://www.dementia.org/geocoder/tgr2003/
@@ -836,7 +836,7 @@ Getting Maps and other Data Files for Xastir:
 
    for a in *deci; do sed -e 's/[ ]*$//g' < $a > `basename $a _deci`.gnis; done
 
-      Indivdual files can have whitespace removed as follows:
+      Individual files can have whitespace removed as follows:
         sed -e 's/[ ]*$//g' < inputfile > outputfile
 
 
@@ -913,7 +913,7 @@ Getting Maps and other Data Files for Xastir:
        Grab xastir-sounds.tgz at the ftp site you downloaded Xastir, or at
         ftp://ftp.tapr.org/software_lib/Linux/xastir/xastir-sounds.tgz
 
-       Untar the file.  Put the sounds files into the
+       Un-tar the file.  Put the sounds files into the
        /usr/local/share/xastir/sounds directory where Xastir can find them.
        (FIXME: thunder.wav is missing?).
 
@@ -975,10 +975,10 @@ WHERE TO FIND MORE INFO ON MAP DATUMS, ETC:
 MAP CACHING (WORKS WITH ONLINE TIGERMAPS):
 
     Map caching works in conjunction with the Tiger map download routines,
-    which fetch gif formatted maps from http://tiger.census.gov.  The map
-    caching features use functions found in Berkeley DB 4.0 library, aka
+    which fetch GIF formatted maps from http://tiger.census.gov.  The map
+    caching features use functions found in Berkeley DB 4.0 library, AKA
     libdb (version 4.0 or better), to create and manage a cache directory
-    and a persistant database of information about the files in the cache
+    and a persistent database of information about the files in the cache
     directory.  This directory defaults to ~/.xastir/map_cache.  The files
     under this directory can be cleaned up or removed by hand at any time
     - the caching routines will simply download the maps and put a new

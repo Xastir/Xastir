@@ -11,9 +11,9 @@ $Id$
 
 
     Lintronix:
-      Internet install of Xastir available for free, CDROM available
+      Internet install of Xastir available for free, CD-ROM available
       for a nominal fee.  Everything needed to install Cygwin/Xastir
-      online (internet install) or off-line (CDROM).  Walks you
+      online (Internet install) or off-line (CD-ROM).  Walks you
       through an automated install:
 
         http://www.lintronix.com/winxastir/
@@ -21,7 +21,7 @@ $Id$
 
 
     Inuit Nunaani Wireless Inc:
-      CDROM available for a nominal fee.  Everything needed to
+      CD-ROM available for a nominal fee.  Everything needed to
       install Cygwin/Xastir off-line.  Walks you through an
       automated install.  This install is verified to work on WinXP
       and Win98 (known _not_ to work on Win95/WinME).  Contact:
@@ -91,7 +91,7 @@ mine in "c:\<login>\cygwin\setup.exe", (for instance
 network install of Cygwin.  After you install Cygwin (see the steps
 below for details) you'll have a package directory (in my case
 "c:\hacker\cygwin\") and a Cygwin directory (in my case
-"c:\cygwin").  The uninstalled packages go into the package
+"c:\cygwin").  The un-installed packages go into the package
 directory as they are downloaded from the 'net.
 
 It will be beneficial to re-run the Cygwin network installer from
@@ -127,7 +127,7 @@ packages to install.
 [ ] Step 1c)  Select Packages:  Leave the packages selected that
 were selected by default, plus select the additional packages listed
 below.  Note that enabling some of these packages causes others to
-be selected as well, that's ok and necessary.
+be selected as well, that's OK and necessary.
 
 [ ] Press the "View" button until it says "Full" next to it.  All
 packages are now in alphanumeric sorted order.
@@ -232,7 +232,7 @@ This will create a Black/Green Cygwin icon on the desktop and a menu
 entry so that you can start Cygwin through the menu system as well.
 
 [ ] Step 1f) Click "Finish".  Cygwin is now installed.  One more
-popup informs you Cygwin has been installed.  Sometimes this last
+pop-up informs you Cygwin has been installed.  Sometimes this last
 dialog gets hidden behind other windows, and it does seem to need OK
 clicked to complete the installation.  Click the OK button on that
 last dialog to _really_ complete the installation.
@@ -448,7 +448,7 @@ to install some libraries, then recompile Xastir so that it knows to
 use them.  See the instructions below.
 
 The README.MAPS file has instructions for where to get maps and where
-to put them under the Xastir heirarchy.
+to put them under the Xastir hierarchy.
 
 If you have any WinAPRS, dosAPRS, or pocketAPRS maps, now is a good
 time to place them in the /cygwin/usr/local/share/xastir/maps folder
@@ -489,7 +489,7 @@ or "make install-strip".  Otherwise the newly compiled Xastir won't
 replace the old one.
 
 Note that one user running Cygwin on XP had it crash every time his
-screensaver kicked in.  Disabling the screenserver fixed that
+screen-saver kicked in.  Disabling the screen-server fixed that
 problem.
 
 Another interesting "feature" of Cygwin/Xwindows is that some of the
@@ -503,7 +503,7 @@ happen.  Just inside Xwindows on Cygwin.
 
 Some users have experienced problems with their Windows box running
 the NTFS "convert.exe" program instead of the ImageMagick
-"convert.exe" program, usually when enableing snapshots in Xastir.
+"convert.exe" program, usually when enabling snapshots in Xastir.
 If you experience this, check your path settings and make sure that
 ImageMagick's path is first.
 
@@ -562,11 +562,11 @@ automatically start Xastir when you start Windows..
 Please see the INSTALL file and the Help menu in Xastir itself
 for additional information not mentioned in this document.
 
-Additional info can be found on the cygwin website:
+Additional info can be found on the cygwin web-site:
 
     http://www.cygwin.com
 
-or the Cygwin/XFree86 website:
+or the Cygwin/XFree86 web-site:
 
     http://cygwin.com/xfree/
 
@@ -608,7 +608,7 @@ properly on Cygwin.
 Notes from Henk de Groot:
 
 1) On Windows ME I had to configure the shortcut to start Xwindows,
-it ran out of environment memory. Selecting an "Inital Environment"
+it ran out of environment memory. Selecting an "Initial Environment"
 of 4096 bytes in tab "Memory" (I hope that is correct, I have a
 Dutch language version...) fixed it.
 
@@ -675,7 +675,7 @@ Change it to this (one space missing and 'c' changed to "cygwin"):
 
     /usr/bin/ld -G -hlibshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lcygwin
 
-I've had another report that says having the space is ok now.  The
+I've had another report that says having the space is OK now.  The
 "-lcygwin" is important to bypass the "_reent" bug below.
 
 Here are the commands to bring up an editor on the file:
@@ -735,12 +735,12 @@ OPTIONAL:  Adding ImageMagick (tested with ImageMagick 5.5.3 &
 ImageMagick 5.5.7):
 --------------------------------------------------------------
 Note: Recent Cygwin installations include ImageMagick 5.5.7-2.
-You only need to manually install ImageMagic if you did not have
+You only need to manually install ImageMagick if you did not have
 the 3 Magic choices when installing or if Xastir doesn't find
 ImageMagick.
 
 Allows using more than 68 different graphics format files as maps,
-by creating an associated .geo file for each with tiepoints.  This
+by creating an associated .geo file for each with tie-points.  This
 support also allows use of online Tiger and Terraserver maps with
 Xastir, and NOAA weather radar images.  Other people are working on
 integrating even more online mapping sources.  This will also allow
@@ -860,7 +860,7 @@ HIGHLY RECOMMENDED:  If you create a file called "terraserver.geo"
 in the /usr/local/share/xastir/maps directory, containing the single line
 "TERRASERVER", and select it with the Map Chooser, you should see
 satellite images on the map screen.  This is assuming that you have
-an internet connection up and running of course.  It fetches the
+an Internet connection up and running of course.  It fetches the
 images from the Microsoft Terraserver.
 
 Also create a "toposerver.geo" file in the same area somewhere.
@@ -1167,14 +1167,14 @@ it without that option as well ("nasd -b").
 After NAS is loaded you can load xastir as you normally would.
 
 Once xastir is running, to play sound alerts you need to change the default
-configuation to use "auplay"
+configuration to use "auplay"
 
 From within xastir click on File>Configure>Audio Alarms.
 The "Audio Play Command" box should be changed to "auplay"
 Then ensure the audio files listed to play are located in
 "/usr/local/share/xastir/sounds" directory.
 
-Click ok to accept the changes and be sure to save your config before
+Click OK to accept the changes and be sure to save your config before
 exiting xastir or sound will not work the next time it is loaded.
 
 Turn up the volume on your PC speakers and enjoy the noise xastir makes."
@@ -1185,11 +1185,11 @@ OPTIONAL:  Install GDAL/OGR support:
 One user has been successful in compiling GDAL/OGR support into
 Xastir.  One thing he mentioned:
 
-"Now the word of warning.  If you try to compile Gdal under Cgywin
+"Now the word of warning.  If you try to compile GDAL under Cygwin
 and the compile blows up, you are better rm -rvf'ing the entire
 directory and re-untaring the source again than trying to recompile
 in that blown directory.  Make Clean doesn't do a thing and the old
-settings and mistakes stick arround no matter what you try."
+settings and mistakes stick around no matter what you try."
 
 Make sure you've got Shapelib installed on your system else Xastir
 won't find GDAL.  Both are needed.

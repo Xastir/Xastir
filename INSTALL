@@ -41,7 +41,7 @@ Short summary of libraries Xastir can use:
 -------------------------------------------------------------------------
 Motif or OpenMotif or LessTiff  Required  The GUI widget set
 pthreads                        Required  Threading capability
-Shapelib                        Recommended ESRI Shapefile maps and wx alerts
+Shapelib                        Recommended ESRI Shapefile maps and WX alerts
 pcre                            Recommended used with Shapefile maps
 Xpm                             Optional  XPM images
 ImageMagick                     Optional  MANY graphics images
@@ -61,7 +61,7 @@ Installing only the required libs gives you these capabilities:
     MacAPRS maps
     GNIS labels
     Address searching
-    serial port and internet gateway connectivity.
+    serial port and Internet gateway connectivity.
 
 Adding XPM or ImageMagick libs, ImageMagick's "convert" utility, and
 the "gv" utility gives you printing capability.  Postscript or
@@ -133,8 +133,8 @@ For Linux kernel AX.25 interfaces, you require these packages:
     AX25 tools:http://prdownloads.sourceforge.net/ax25/ax25-tools-0.0.8.tar.gz
     The apps package is not required, but strongly suggested. These versions
      are current as of the writing of this document; feel free to use newer
-     versions.  Make sure the versions you choose are compatable with your
-     kernel version. See the AX.25 howto and the linux-hams mailing list for
+     versions.  Make sure the versions you choose are compatible with your
+     kernel version. See the AX.25 HOWTO and the linux-hams mailing list for
      details.
 
 For speech support via the festival speech synthesis software you need:
@@ -162,7 +162,7 @@ For ImageMagick support for maps in any of 68 major graphics formats,
         http://www.imagemagick.org/
 
 To use online maps or findu.com historical data, you'll need wget or
-   libcurl/libcurl-devel installed.  Many systems have these preinstalled,
+   libcurl/libcurl-devel installed.  Many systems have these pre-installed,
    so check first.  You may need to upgrade your installed version for
    this feature to work correctly from within Xastir:
     Wget:
@@ -223,7 +223,7 @@ First Time Install:
      If you already have Motif or OpenMotif on your system, including
      the development headers, then you won't need to install LessTif. Most
      distributions include one of these; step 2a describes building from
-     source, while 2b describes installing from prebuilt packages on
+     source, while 2b describes installing from pre-built packages on
      your distribution. Now that OpenMotif is available, you may be happier
      running it than LessTif, but either one should work with Xastir.
 
@@ -244,7 +244,7 @@ First Time Install:
        2b. Install LessTif or OpenMotif (from a package)
 
        Download the lestif-devel (if it exists) and lestif, and install it
-       as your distribution instructs you to install pacakges.
+       as your distribution instructs you to install packages.
 
 
    3. OPTIONAL:  Install geoTIFF support.  Allows using USGS DRG topo maps or
@@ -329,7 +329,7 @@ First Time Install:
            their destinations.
 
            The errors you'll get if you don't match up the older libtiff and
-           libgeotiff by way of the include files:  Xastir will segfault when
+           libgeotiff by way of the include files:  Xastir will seg-fault when
            it tries to read a geotiff file.
        ---------
 
@@ -364,7 +364,7 @@ First Time Install:
        Drop all four files into the /usr/include/ directory, creating no 
        subdirectories at all.  This allows the libgeotiff code to "see"
        into the libtiff library so that it can use some functions that
-       aren't normally (publically) available.  Try to make sure that
+       aren't normally (publicly) available.  Try to make sure that
        you're not overwriting any files in /usr/include/ by the same name.
        Some of these files may already be present in /usr/local/.  If so,
        they should be exact duplicates.  "diff filename1 filename2" will
@@ -444,7 +444,7 @@ First Time Install:
 
    5. OPTIONAL:  Install ImageMagick graphics support.  Allows using more than
      68 different graphics format files as maps, by creating an associated .geo
-     file for each with tiepoints.  This support will allow use of online
+     file for each with tie-points.  This support will allow use of online
      Tiger and Terraserver maps with Xastir, and NOAA weather radar images.
      Other people are working on integrating even more online mapping sources. 
      This will also allow you to use any GIF/JPG/XPM/BMP/... image as an Xastir
@@ -471,7 +471,7 @@ First Time Install:
      ImageMagick is installed properly is to install it from sources.
 
      -------------------------------------------------------------------------
-     Note: Red Hat 9.0's install of Image Magick does not work with
+     Note: Red Hat 9.0's install of ImageMagick does not work with
      XASTIR.  It will need to be removed and installed from sources.
      If w3m text based web browser is installed, you will need to remove
      it before removing ImageMagick:
@@ -479,11 +479,11 @@ First Time Install:
         rpm -e w3m
         rpm -e ImageMagick
 
-     Download the ImageMagic sources from:
+     Download the Imagemagick sources from:
 
         ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-5.5.7-10.tar.gz
 
-     Uncompress/untar them...
+     Uncompress/un-tar them...
 
         tar -xzvf im*
 
@@ -563,7 +563,7 @@ First Time Install:
 
      Verify that GPSMan will start up and will download information from a
      Garmin GPS in Garmin-Garmin mode.  This also creates the configuration
-     files needed to use GPSMan with Garmin GPS'es from within Xastir (sets
+     files needed to use GPSMan with Garmin GPS's from within Xastir (sets
      GPS type, serial port, etc within GPSMan's configs).
 
    8. OPTIONAL: Install Festival for speech support
@@ -593,7 +593,7 @@ First Time Install:
       to see what map formats your system will support once GDAL/OGR are fully
       integrated into Xastir, proceed with the following:
 
-        cd ~src (or whereever you keep your sources)
+        cd ~src (or wherever you keep your sources)
         export CVSROOT=:pserver:cvsanon@cvs.maptools.org:/cvs/maptools/cvsroot
         cvs login
         Password: <ENTER>
@@ -692,7 +692,7 @@ First Time Install:
      of shapefiles that cover large areas if you're only viewing a smaller
      area, but at the cost of some additional RAM to store the spatial
      index.  This feature is still in the experimental phase, but some users
-     have observed a noticable speed-up in map redraws, especially
+     have observed a noticeable speed-up in map redraws, especially
      with very large shapefiles.  The spatial indexing library used is based
      on public domain code obtained from Melinda Green,
      http://www.superliminal.com, but this code is included in xastir
@@ -703,7 +703,7 @@ First Time Install:
      to compile the latest Xastir sources.  Beware of packages with the
      same names installed into /usr/openwin/bin, these are probably NOT
      the GNU flavor of the executables and will not work for compiling
-     Xastir.  For SuSE Linux:  Install "development/gettext" using Yast.
+     Xastir.  For SuSE Linux:  Install "development/gettext" using YaST.
 
      If you do see some errors/warnings read the FAQ. If this doesn't help,
      or you think you have a different problem, dump the errors/warnings to
@@ -907,7 +907,7 @@ First Time Install:
      >    ownership of /dev/cuaa0 is uucp:dialer, with a default permission
      >    of 0660.  The command 'chgrp dialer /usr/local/bin/xastir' followed
      >    by the command 'chmod 2555 /usr/local/bin/xastir' will change
-     >    xastir's group to the serial port's group, and then add the setgid
+     >    Xastir's group to the serial port's group, and then add the setgid
      >    privilege to the binary.  Now when xastir starts up, it will have
      >    the minimum privilege necessary to do what it needs to do, without
      >    being yet another root exploit-in-waiting.
@@ -926,7 +926,7 @@ First Time Install:
 
      Here's a blurb from Wes Johnston about the RINO's:
 
-     "Lets say I have three rino radios... two in the hands of the SAR teams on
+     "Lets say I have three RINO radios... two in the hands of the SAR teams on
      the ground, and a third radio in a plane circling above.  It is preferred
      that the radio in the hands of the SAR teams be the nicer rino120 since it
      does mapping.  The radio in the plane can be the lowly rino110 since it
@@ -945,9 +945,9 @@ First Time Install:
      when you send a query, rino only asks about the first 4 chars... so any
      station with the first four that match will answer... ie all of them in
      your group.  The other method is to simply fly the plane overhead and
-     listen (evesdrop) on the channel and passively pickup the locations of the
+     listen (eavesdrop) on the channel and passively pickup the locations of the
      groups as they converse with one another.  The rino will send it's
-     location just as you unkey the PTT if it has been >30 sec since the last
+     location just as you un-key the PTT if it has been >30 sec since the last
      time you sent your position.  It would be practical to simply ask each
      team for an update... they just need to squeeze their PTT for a moment
      (ie kerchunk) to send a position."
@@ -982,7 +982,7 @@ First Time Install:
 
    CONNECTING TO AN INTERNET SERVER:
 
-   Here are some lists of internet servers:
+   Here are some lists of Internet servers:
 
         http://members.aol.com/wa8lmf3/miscinfo/APRServe.txt
         http://www.wa6oft.com/APRServe.txt
@@ -1025,7 +1025,7 @@ First Time Install:
    One thing that I found that I had to do to finally get festival to work was
    to get rid of the 'only localhost can connect to the server' pref in the
    festival configuration. I don't know if that's the default on a source
-   install (I installed festival from RPMs), but it might be.
+   install (I installed festival from RPM's), but it might be.
    
    I don't know why it doesn't let localhost connect, even though it's the
    only one specifically allowed.
@@ -1085,7 +1085,7 @@ CPU to be used by gprof to generate it:
 
     "gprof -l /usr/local/bin/xastir | tee profile.txt"
 
-Also see this link, which talks about how to profile multithreaded
+Also see this link, which talks about how to profile multi-threaded
 applications:
 
     http://sam.zoy.org/writings/programming/gprof.html

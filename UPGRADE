@@ -9,7 +9,7 @@ Previous Install Notes:
   Xastir 0.1.0 users (if there are any of you still around!):
 
      For Xastir version 0.1.0 and below there are new file locations:
-     All map data, tnc config data, and support files now go under the
+     All map data, TNC config data, and support files now go under the
      /usr/local/xastir directory. All personal config data, logs, etc are
      user the (user home dir)/.xastir directory (which will be created after
      xastir starts). You can copy (after your first xastir startup) your
@@ -78,7 +78,7 @@ Previous Install Notes:
         When you start up the new Xastir, it will create a new xastir.cnf file
         with the proper directory paths defined in order to find the maps.
         
-     After you start the new Xastir, you'll need to reindex all maps.  The
+     After you start the new Xastir, you'll need to re-index all maps.  The
      Xastir binary should be in /usr/local/bin/xastir if you installed from
      sources.  Xastir files are now installed in:
 

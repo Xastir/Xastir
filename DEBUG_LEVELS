@@ -61,7 +61,7 @@ xa_config.c &1 &2
 How to Use the Debug Levels
 
 Xastir debugging is turned on at run time by using the "-v" command line
-option and/or the File -> Configure -> Change Debug Level pulldown. 
+option and/or the File -> Configure -> Change Debug Level pull-down. 
  
 As laid out above, in the source code, debugging output is turned on by a
 bitwise "and" (&) of the currently set DEBUG_LEVEL against a number
@@ -81,7 +81,7 @@ and "Map Debugging" you'd use:
 xastir -v 641 
 
 Debug information typically is sent to "standard error" - which is normally
-File Descriptor #2 in Unix parlance.  Using common unix shells, such as
+File Descriptor #2 in Unix parlance.  Using common Unix shells, such as
 Bash, you can "redirect" the output to be intermingled with the "standard
 output" (file descriptor #1).  This allows you to get all of the normal
 output, plus all of the debug output in one stream, which can be "piped" to
@@ -99,8 +99,8 @@ call other programs, or scripts that call other scripts/programs:
 
     (xastir -v 512 2>&1) | grep map_cache
 
-The parenthesis cause that portion to be run in a subshell, and then
-that subshell's STDERR is piped to STDOUT by the "2>&1" portion, so
+The parenthesis cause that portion to be run in a sub-shell, and then
+that sub-shell's STDERR is piped to STDOUT by the "2>&1" portion, so
 you get ANYTHING that went to STDERR or STDOUT from that command or
 anything that it calls.  This is how you can get a "make" command to
 spit everything into one file.

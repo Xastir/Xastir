@@ -12,7 +12,7 @@ Xastir up and running in one of the following configurations:
 1) Minimal install, which will get you up and running quickly.  It's
    recommended that you try this configuration first then add to it.
 
-2) Typical install including maps, weather alerts, geocoding files,
+2) Typical install including maps, weather alerts, geo-coding files,
    etc. so that full regular operation is achieved.
 
 3) Maximum install with all configure options enabled and most of
@@ -94,7 +94,7 @@ Getting the package:
 --------------------
 *) Option 1:  Download one of stable or development snapshots from
 http://www.xastir.org.  There are links from that page or you can go
-to the SourceFourge page and click on Files to see the entire set
+to the SourceForge page and click on Files to see the entire set
 that is available.
 
 Once you have the file, create a subdirectory for it to reside.  I
@@ -106,7 +106,7 @@ usually do this:
     mkdir xastir            # Make an "xastir" subdirectory
     cd xastir               # Change to it
     cp /path/filename .     # Copy the downloaded file here
-    tar xzvf filename       # Unarchive the sources
+    tar xzvf filename       # Un-archive the sources
 
 That last step will create yet another xastir directory underneath
 the first one but will have the version number in it, so your full
@@ -198,7 +198,7 @@ be needed later, install these as well:
     festival development headers
     gawk
     ghostscript-x11
-    ghostscriplt-fonts
+    ghostscript-fonts
     ghostview
     gv
     ImageMagick
@@ -289,7 +289,7 @@ and your operating system.
 
 Make install:
 -------------
-For this stage you need to have root priviledges.  "root" is the
+For this stage you need to have root privileges.  "root" is the
 user on a Unix/Linux box that has the ultimate authority over
 everything.  Follow these steps:
 
@@ -298,11 +298,11 @@ everything.  Follow these steps:
     chmod 4755 /usr/local/bin/xastir
     exit
 
-The first step takes you to root user priviledges.  You'll need to
+The first step takes you to root user privileges.  You'll need to
 type in the root password when it asks for it.  The "make install"
 step installs all of the pieces of Xastir in the appropriate places
 on your system.  The "chmod" step sets up the Xastir executable so
-that it can assume root priviledges at the points where it needs to,
+that it can assume root privileges at the points where it needs to,
 usually when it needs to access serial ports or AX.25 kernel
 networking ports.
 
@@ -434,7 +434,7 @@ you'll see this:
 
 Ignore those for now unless you need to change the Language.
 
-Ok, Xastir should show up on your screen at this point.  We're
+OK, Xastir should show up on your screen at this point.  We're
 assuming that you're already running X-Windows graphical environment
 at this point.  If you're in command-line Linux/Unix only, Xastir
 won't run.
@@ -457,7 +457,7 @@ setting.
 You have the main parameters set now.  Next is to enable some
 interfaces so that you can see some packets come across.  Easiest
 might be the Internet interfaces, assuming the computer you're on
-has internet access and is hooked up to it currently.
+has Internet access and is hooked up to it currently.
 
 *) Run "callpass" in another Xterm window in order to generate your
 Pass-code number.  Save that number as you'll need it for each
@@ -584,7 +584,7 @@ Enabling Synthesized Speech:
     TBD
 
 *) Linux/FreeBSD/Solaris
-Install the Festival Speech Synthesier.  Configure/compile support
+Install the Festival Speech Synthesizer.  Configure/compile support
 for it into Xastir.  Start up the Festival server before starting
 Xastir.  Xastir should start up and connect to the server.  Use the
 options in File->Configure->Speech to decide which things you'd like
@@ -623,11 +623,11 @@ Transmit Enable/Disable Options:
 --------------------------------
 Each interface has a separate transmit enable.  The Interface menu
 also has a few global transmit enables.  All of these must be
-enabled for a particular interface to transmit.  Also, for internet
+enabled for a particular interface to transmit.  Also, for Internet
 servers, you typically need to authenticate with the server using
 your callsign/pass-code before you're allowed to inject packets into
-the internet stream which may get gated out to RF.  If you just want
-to talk to other internet users, you don't need a pass-code to
+the Internet stream which may get gated out to RF.  If you just want
+to talk to other Internet users, you don't need a pass-code to
 authenticate to the servers.
 
 

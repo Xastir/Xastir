@@ -1,4 +1,4 @@
-                  XASTIR Frequently Asked Questions
+                  Xastir Frequently Asked Questions
 
 $Id$
 
@@ -31,7 +31,7 @@ The Questions
 
 3.  Building Xastir
 
-    3.1  Why do I get error messages when running "bootsrap.sh"?
+    3.1  Why do I get error messages when running "bootstrap.sh"?
     3.1a  Why do I get strange warnings when I run bootstrap.sh?
     3.2 Why won't Xastir compile with my system's cc?
     3.3 I'm using gcc and I get some compilation errors, what is wrong?
@@ -68,7 +68,7 @@ The Questions
     4.9 Xastir runs slowly/loads maps slowly.
     4.10 I installed a new version of lesstif, but the help menu shows the old
          version.
-    4.11 Why does Xastir segfault sometimes when indexing or loading
+    4.11 Why does Xastir seg-fault sometimes when indexing or loading
          geoTIFF images?
     4.12 Why doesn't Xastir run on RedHat 9.0 properly?
     4.13 Why do I see "Character '\55' not supported in font"?
@@ -100,7 +100,7 @@ The Answers
     1.1 What is Xastir?
 
 
-    Xastir is an APRS client program that uses amateur radio and internet
+    Xastir is an APRS client program that uses amateur radio and Internet
     services to convey GPS mapping, weather, and positional data in a graphical
     application.  It has been developed by and for amateur radio enthusiasts to
     provide real-time data in an easy to use package.
@@ -110,7 +110,7 @@ The Answers
     There were already several APRS client programs available to the
     Mac/DOS world when Frank Giannandrea, KC2GJS decided to develop
     a Unix client using X Window's and the Motif/LessTiff widget set.
-    From its meager beginings, Xastir is now a very robust client that
+    From its meager beginnings, Xastir is now a very robust client that
     meets the needs of the Ham community.
 
     1.3  Why the name Xastir?
@@ -118,7 +118,7 @@ The Answers
     Xastir is an acronym for X Amateur Station Tracking and Information
     Reporting.  Besides it sounds much cooler that those other names ;)
 
-    1.4 Ok, so how does Xastir compare to other APRS clients?
+    1.4 OK, so how does Xastir compare to other APRS clients?
 
     Being actively developed by and for Hams, Xastir is constantly being
     improved upon to reflect the changing state of APRS.  Xastir has all
@@ -128,7 +128,7 @@ The Answers
     1.5 How thoroughly tested is Xastir?
 
     Xastir is currently in use by hundreds of Hams from around the world.
-    The Xastir Group maintains rigours standards before releasing new
+    The Xastir Group maintains rigorous standards before releasing new
     versions of our client.  When bugs do show up, we release patches and
     new versions as soon as they are available.
 
@@ -137,26 +137,26 @@ The Answers
     This FAQ may answer many of users frequent questions.  However, there
     are two active mailing lists that users could use to help answer any
     other questions.  Both mailing list are by subscription only and can
-    be accessed through the Xastir website.  See the top of this document
+    be accessed through the Xastir web-site.  See the top of this document
     for the addresses.
 
     1.7 Where can I submit Bug reports or feature requests?
 
     The mailing lists are a good place to bring up bugs or feature requests.
-    Another good place to document the request or bug in a more permanant
-    manner is the sourceforge tracker. There are seperate bug and feature
+    Another good place to document the request or bug in a more permanent
+    manner is the sourceforge tracker. There are separate bug and feature
     request trackers, both listed at the Xastir project page,
     http://sourceforge.net/projects/xastir/
 
     1.8 Is there any more information on Xastir?
 
-    See the main Xastir website for more information.  See the top of
+    See the main Xastir web-site for more information.  See the top of
     this document for the addresses.
 
     1.9 Where can I get Xastir?
 
     Source code and binaries for several popular Linux distributions is
-    available through the Xastir website
+    available through the Xastir web-site
 
 
 2. General Technical Questions
@@ -169,10 +169,10 @@ The Answers
         1.  Check the FAQ!
 
             The latest version of the Xastir FAQ can be found on the
-            Xastir website.  See the top of this document for the
+            Xastir web-site.  See the top of this document for the
             addresses.
 
-        2.  Ask in the xastir@krypton.hscs.virginia.edu mailing list.
+        2.  Ask on the "xastir" mailing list.
 
             Many Xastir users and developers can be found roaming its
             virtual halls, so it is suggested that you seek wisdom there.
@@ -187,15 +187,15 @@ The Answers
     follow the instructions below:
 
     In general, the first course of action is to be a member of the
-    xastir-dev@krypton.hscs.virginia.edu mailing list. This indicates to the
-    Group that you are closely following the latest developments. Your patch
-    file should be generated using either 'diff -c' or 'diff -u' against the
-    latest CVS tree. To submit your patch, send email to
-    xastir-dev@krypton.hscs.virginia.edu with a Subject: line that starts with
-    [PATCH] and includes a general description of the patch. In the body of
-    the message, the patch should be clearly described and then included at
-    the end of the message. If the patch-file is long, you can note a URL to
-    file itself. Use of MIME enclosures/attachments should be avoided.
+    "xastir-dev" mailing list. This indicates to the Group that you are
+    closely following the latest developments. Your patch file should be
+    generated using either 'diff -c' or 'diff -u' against the latest CVS
+    tree. To submit your patch, send email to the "xastir-dev" mailing list
+    with a Subject: line that starts with [PATCH] and includes a general
+    description of the patch. In the body of the message, the patch should be
+    clearly described and then included at the end of the message. If the
+    patch-file is long, you can note a URL to file itself. Use of MIME
+    enclosures/attachments should be avoided.
 
     Be prepared to respond to any questions about your patches and possibly
     defend your code. If your patch results in a lot of discussion, you
@@ -211,14 +211,14 @@ The Answers
     The developers make sure that the software builds and works correctly on
     the platforms available to them; this does not necessarily mean that
     your platform is one of them. In addition, the Xastir Project is primarily
-    source oriented, meaning that the distributing valid and buildable source
+    source oriented, meaning that the distributing valid and build-able source
     code is the purpose of a release, not making sure that there is a binary
     package for all of the supported platforms.
 
 
 3. Building Xastir
 
-    3.1  Why do I get error messages when running "bootsrap.sh"?
+    3.1  Why do I get error messages when running "bootstrap.sh"?
 
     The xastir build procedure requires automake 1.6.3 or later and 
     autoconf 2.53 or later.  Using anything older than those will 
@@ -241,7 +241,7 @@ The Answers
     of automake and autoconf from www.gnu.org, use "--prefix=" options when 
     configuring both of them, build them, and install them into
     someplace your system won't care about.  For example, assuming you've 
-    untarred, say automake-1.6.3 and autoconf-2.57 into the current
+    untar'ed, say automake-1.6.3 and autoconf-2.57 into the current
     directory, and that xastir lives in your directory as /home/me/src/xastir:
        cd automake-1.6.3
        ./configure --prefix=/home/me/src/xastir
@@ -260,7 +260,7 @@ The Answers
     3.1a  Why do I get strange warnings when I run bootstrap.sh
 
     The various configure.ac, acinclude.m4, and Makefile.am files that are used
-    by xastir's autoconf'd build process were designed for automake 1.6.3
+    by Xastir's autoconf'd build process were designed for automake 1.6.3
     and autoconf 2.53.  Using a much more recent version than those could 
     result in warning messages because the tools aren't strictly backward 
     compatible.  Most of these warnings are harmless.
@@ -295,13 +295,13 @@ The Answers
 
       Xastir depends on at least the X, and Motif or LessTif include files.
       Be sure these are installed before trying to compile the application.
-      Many linux distributions name these packages <packagename>-dev or
+      Many Linux distributions name these packages <packagename>-dev or
       <packagename>-devel.
       NOTE: If you installed ImageMagick from a binary distribution, it will be
       dependent on the shared libraries for the various graphics formats
       installed on system on which it was compiled. Be sure you have these same
       libraries installed, or you'll get a link error.
-      NOTE: The ImageMagick-devel package included with Redhat 8 is missing
+      NOTE: The ImageMagick-devel package included with RedHat 8 is missing
       some files needed for Xastir. The version in the beta directory on
       RedHat's ftp site works.
 
@@ -350,7 +350,7 @@ The Answers
     3.5 During the linking stage, it's giving me "undefined reference to
         `CompressImageColormap'".  What to do?
 
-    This is, yet again, an ImageMagick problem.  ImageMagic decided to change
+    This is, yet again, an ImageMagick problem.  ImageMagick decided to change
     their API on us again.  Newer releases of Xastir work around this problem
     by checking the version of ImageMagick you have and changing the function
     call to match.
@@ -498,8 +498,8 @@ The Answers
     specific user, the TO address of the packet is simply a summary of the
     software you're running. AP=APRS, X=X Windowing System, 110=Version 1.10.
     RELAY, WIDE, and TRACE are aliases for generic digipeaters. Most base
-    stations have (or should have!) their TNCs configured to digipeat with the
-    call of RELAY. Very large stations should be set up as WIDEs. Newer
+    stations have (or should have!) their TNC's configured to digipeat with the
+    call of RELAY. Very large stations should be set up as WIDE's. Newer
     digipeater software substitutes their own call for the "RELAY" and "WIDE",
     to enable people to see who digipeated them. TRACE was originally for this
     purpose, but is now quite often used to avoid "WIDE, WIDE, WIDE" paths,
@@ -507,13 +507,13 @@ The Answers
     flooding protocols to aid packets to get farther, but reduce congestion
     on the network. Packets of that type will have digipeater paths of WIDEn-N.
     To talk to people, you send them messages from within Xastir, you don't
-    "call" them like on typical packet. Most TNCs are set up to ignore classic
+    "call" them like on typical packet. Most TNC's are set up to ignore classic
     packet "calls" so you won't get any response. When sending messages to
     people in your area, do check in their comments that they are people and
     not stand-alone digipeaters or similar. ;) Thanks to the worldwide APRSserv
-    internet system, you can send messages to any APRS(tm) user anywhere in the
+    Internet system, you can send messages to any APRS(tm) user anywhere in the
     world, provided they're within range of an Igate. Most users are; if your
-    area isn't and you have a 24/7 internet connection, Xastir can be your
+    area isn't and you have a 24/7 Internet connection, Xastir can be your
     area's Igate! (Please check your local laws, as Igating is illegal in some
     countries!) There are also experimental systems for sending messages via
     amateur radio satellites, but that is beyond the scope of this FAQ.
@@ -550,7 +550,7 @@ The Answers
     README.MAPS, you'll need a faster computer to be able to load the maps
     quickly. Also be sure you have a few Megabytes of memory available for
     Xastir, because paging to disk decreases speed rapidly. If you have the
-    Internet interface, as well as TNCs and weather stations all active
+    Internet interface, as well as TNC's and weather stations all active
     at the same time, you'll see a slowdown on a slower computer. Also, if you
     compiled Xastir or libax25/libtiff/libgeotiff/etc with debugging (-g),
     recompile these software without debugging and with optimization ON (-O2).
@@ -565,20 +565,20 @@ The Answers
     be sure you remove any older version from /usr/LessTif/ or
     /usr/X11R6/LessTif/, as some distributions use those locations.
 
-    4.11 Why does Xastir segfault sometimes when indexing or loading
+    4.11 Why does Xastir seg-fault sometimes when indexing or loading
          geoTIFF images?
 
     The geoTIFF code must use an API in the TIFF code that is non-public.
     Unfortunately this means that the geoTIFF code must know more about TIFF
     than the normal application using the TIFF library.  If the private TIFF
     include file included with the geoTIFF code doesn't match your installed
-    version of TIFF, you can run into segfault problems.
+    version of TIFF, you can run into seg-fault problems.
 
     Solutions for this include:  1) Installing TIFF from sources, or
     2) Grabbing the sources for your installed version of TIFF, copying one
     include file from TIFF into the geoTIFF sources and recompiling/installing
     geoTIFF.  Either of these solutions will make the geoTIFF code recognize
-    and use the proper structures in TIFF should prevent the segfaulting.
+    and use the proper structures in TIFF should prevent the seg-faulting.
 
     In the future we hope that either the geoTIFF code will become part of
     the TIFF code, or that the private TIFF API will become public.  Either
@@ -587,7 +587,7 @@ The Answers
     4.12 Why doesn't Xastir run on RedHat 9.0 properly?
 
     The RH kernels have implemented the new(er) New Posix Threading Library
-    (NPTL) as well as backported many of the new bells and whistles set to
+    (NPTL) as well as back-ported many of the new bells and whistles set to
     appear in the 2.6.x kernels.  You might experience a great improvement
     for apps that are heavily threaded.  NPTL is supposed to be backward
     compatible but we have seen apps that have had problems.  You can revert
@@ -696,7 +696,7 @@ The Answers
     For Linux, try a program called "remserial". It works as a
     client/server pair to do exactly what you want.  Google should
     find it for you.  One user was able to use a spare serial port
-    on his windows box using "remserial" on the linux computer and a
+    on his windows box using "remserial" on the Linux computer and a
     program called "serproxy" on the windows machine. Another one I
     have to try for windows is comfoolery.  See links below.
 
@@ -726,7 +726,7 @@ The Answers
     stations, or Meteo daemon for Davis weather stations.
 
     You may also connect to a remote AGWPE instance for using remote
-    TNC's/soundcards.  Note that AGWPE runs only on WIndows.
+    TNC's/soundcards.  Note that AGWPE runs only on Windows.
 
     Comfoolery:     http://www.brianpoe.com/comfoolery/
     Serproxy:       http://freshmeat.net/projects/serproxy/
