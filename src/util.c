@@ -3667,8 +3667,12 @@ int valid_inet_name(char *name, char *info, char *origin, int origin_size) {
     // other acceptable internet names...
     // don't be too generous here, there is a lot of garbage on the internet
 
+    if (len == 6 && strcasecmp(info,"WHO-IS")) {
+        return(1);
+    }
+
+
     return(0);                          // ignore all other
-    
 }
 
 

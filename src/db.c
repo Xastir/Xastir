@@ -748,6 +748,19 @@ void msg_record_ack(char *to_call_sign,
     // Look for a message with the same to_call_sign, my_call,
     // and seq number
     record = msg_find_data(&m_fill);
+
+    if (record == -1L) { // No match yet, try another tactic.
+        if (seq[2] == '}' && strlen(seq) == 3) {
+
+            // Try it again without the trailing '}' character
+            m_fill.from_call_sign[2] = '\0';
+
+            // Look for a message with the same to_call_sign,
+            // my_call, and seq number (minus the trailing '}')
+            record = msg_find_data(&m_fill);
+        }
+    }
+
     if(record != -1L) {     // Found a match!
         if (debug_level & 1) {
             fprintf(stderr,"Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n",
