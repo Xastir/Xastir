@@ -66,7 +66,8 @@ enum APRS_Types {
     STATION_CALL_DATA,
     OTHER_DATA,
     APRS_MICE,
-    APRS_GRID
+    APRS_GRID,
+    DALLAS_ONE_WIRE
 };
 
 

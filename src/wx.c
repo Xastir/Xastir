@@ -33,6 +33,7 @@
 //   Peet Brothers Ultimeter-II
 //   Qualimetrics Q-Net?
 //   Radio Shack WX-200/Huger WM-918/Oregon Scientific WM-918
+//   Dallas One-Wire Weather Station (via OWW network daemon)
 //
 
 
@@ -934,11 +935,15 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     int heat_index;
     char format;
     WeatherRow *weather;
+    float tmp1,tmp2,tmp3,tmp4,tmp5,tmp6,tmp9,tmp10,tmp11,tmp12;
+    int tmp7,tmp8;
+
 
     last_speed=0.0;
     computed_gust=0.0;
     last_speed_time=0;
     format = 0;
+
 
     len=(int)strlen((char*)data);
 
@@ -946,6 +951,27 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
     switch (type) {
 
+//WE7U
+        /////////////////////////////////////
+        // Dallas One-Wire Weather Station //
+        /////////////////////////////////////
+        case (DALLAS_ONE_WIRE):
+
+            if (debug_level & 1)
+                printf("APRS WX Dallas One-Wire %s:<%s>\n",fill->call_sign,data);
+
+            weather->wx_type=WX_TYPE;
+            strcpy(weather->wx_station,"OWW");
+
+            sscanf(data,"%f %f %f %f %f %f %d %d %f %f %f %f",
+                &tmp1,&tmp2,&tmp3,&tmp4,&tmp5,&tmp6,&tmp7,&tmp8,&tmp9,&tmp10,&tmp11,&tmp12);
+            xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
+                (int)((tmp1 + 0.5) * 9.0 / 5.0 + 32.0));
+
+// xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°C ",
+//                        tmp,((atof(weather->wx_temp)-32.0)*5.0)/9.0);
+ 
+            break;
 
         ////////////////////////////////
         // Peet Brothers Ultimeter-II //
@@ -1879,6 +1905,8 @@ void wx_decode(unsigned char *wx_line, int port) {
     unsigned int check_sum;
     int max;
     WeatherRow *weather;
+    float t1,t2,t3,t4,t5,t6,t9,t10,t11,t12;
+    int t7,t8;
 
     find=0;
     len=strlen((char *)wx_line);
@@ -1889,8 +1917,13 @@ void wx_decode(unsigned char *wx_line, int port) {
         
                 decoded=0;
                 /* Ok decode wx data */
-                if (wx_line[0]=='!' && wx_line[1]=='!' && is_xnum_or_dash((char *)(wx_line+2),40) && port_data[port].data_type==0) {
+                if (wx_line[0]=='!'
+                        && wx_line[1]=='!'
+                        && is_xnum_or_dash((char *)(wx_line+2),40)
+                        && port_data[port].data_type==0) {
+
                     /* Found Peet Bros U-2k */
+
                     /*printf("Found Peet Bros U-2k WX:%s\n",wx_line+2);*/
                     strcpy(wx_station_type,langcode("WXPUPSI011"));
 
@@ -1902,120 +1935,148 @@ void wx_decode(unsigned char *wx_line, int port) {
                     //weather->wx_data=1;
                     wx_fill_data(0,APRS_WX3,wx_line,p_station);
                     decoded=1;
-                } else {
-                    if (((wx_line[0]=='#') || (wx_line[0]=='*')) && is_xnum_or_dash((char *)(wx_line+1),13) && port_data[port].data_type==0) {
-                        /* Found Peet Bros raw U2 data */
-                        strcpy(wx_station_type,langcode("WXPUPSI012"));
-                        /*printf("Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);*/
+                }
+                else if (((wx_line[0]=='#') || (wx_line[0]=='*'))
+                        && is_xnum_or_dash((char *)(wx_line+1),13)
+                        && port_data[port].data_type==0) {
 
-                        strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
-                        raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
+                    /* Found Peet Bros raw U2 data */
 
+                    strcpy(wx_station_type,langcode("WXPUPSI012"));
+                    /*printf("Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);*/
+
+                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                    raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
+
+                    strcpy(weather->wx_time,get_time(time_data));
+                    weather->wx_sec_time=sec_now();
+                    //weather->wx_data=1;
+                    wx_fill_data(0,APRS_WX4,wx_line,p_station);
+                    decoded=1;
+                }
+                else if (strncmp("$ULTW",wx_line,5)==0
+                        && is_xnum_or_dash((char *)(wx_line+5),44)
+                        && port_data[port].data_type==0) {
+
+                    /* Found Peet Bros raw U2 data */
+
+                    strcpy(wx_station_type,langcode("WXPUPSI013"));
+                    /*printf("Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
+
+                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                    raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
+
+                    weather->wx_sec_time=sec_now();
+                    //weather->wx_data=1;
+                    wx_fill_data(0,APRS_WX5,wx_line,p_station);
+                    decoded=1;
+                }
+                else if (wx_line[2]==' ' && wx_line[5]==' ' && wx_line[8]=='/' && wx_line[11]=='/'
+                        && wx_line[14]==' ' && wx_line[17]==':' && wx_line[20]==':'
+                        && strncmp(" #0:",wx_line+23,4)==0 && port_data[port].data_type==0) {
+                    find=0;
+                    for (i=len;i>23 && !find;i--) {
+                        if ((int)wx_line[i]==0x03) {
+                            find=1;
+                            wx_line[i] = 0;
+                        }
+                    }
+                    if (find) {
+
+                        /* found Qualimetrics Q-Net station */
+
+                        strcpy(wx_station_type,langcode("WXPUPSI016"));
+                        /*printf("Found Qualimetrics Q-Net station data WX#:%s\n",wx_line+23);*/
                         strcpy(weather->wx_time,get_time(time_data));
                         weather->wx_sec_time=sec_now();
                         //weather->wx_data=1;
-                        wx_fill_data(0,APRS_WX4,wx_line,p_station);
+                        wx_fill_data(0,QM_WX,wx_line+24,p_station);
                         decoded=1;
-                    } else {
-                        if (strncmp("$ULTW",wx_line,5)==0 && is_xnum_or_dash((char *)(wx_line+5),44) && port_data[port].data_type==0) {
-                            /* Found Peet Bros raw U2 data */
-                            strcpy(wx_station_type,langcode("WXPUPSI013"));
-                            /*printf("Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
+                    }
+                }
 
-                            strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
-                            raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
+//WE7U
+                // else look for ten ASCII decimal point chars in the input, or do an
+                // sscanf looking for the correct number and types of fields for the
+                // OWW server in ARNE mode.  6 %f's, 2 %d's, 4 %f's.
+                else if (sscanf(wx_line,"%f %f %f %f %f %f %d %d %f %f %f %f",
+                        &t1,&t2,&t3,&t4,&t5,&t6,&t7,&t8,&t9,&t10,&t11,&t12)) {
 
+                    // Found Dallas One-Wire Weather Station
+
+printf("Found OWW ARNE-mode one-wire weather station data\n");
+                    weather->wx_sec_time=sec_now();
+                    wx_fill_data(0,DALLAS_ONE_WIRE,wx_line,p_station);
+                    decoded=1;
+		}
+
+                else if (strncmp("&CR&",wx_line,4)==0
+                        && is_xnum_or_dash((char *)(wx_line+5),44)
+                        && port_data[port].data_type==0) {
+
+                    strcpy(wx_station_type,langcode("WXPUPSI017"));
+
+                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                    raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
+
+                    weather->wx_sec_time=sec_now();
+                    //weather->wx_data=1;
+                    wx_fill_data(0,PEET_COMPLETE,wx_line,p_station);
+                    decoded=1;
+                }
+
+                else if (port_data[port].data_type==1) {
+
+                    /* binary data type */
+
+                    /* clear raw string */
+                    memset(raw_wx_string,0,sizeof(raw_wx_string));
+                    max=0;
+                    switch (wx_line[0]) {
+                        case 0x8f:
+                            max=34;
+                            break;
+
+                        case 0x9f:
+                            max=33;
+                            break;
+
+                        case 0xaf:
+                            max=30;
+                            break;
+
+                        case 0xbf:
+                            max=13;
+                            break;
+
+                        case 0xcf:
+                            max=26;
+                            break;
+
+                        default:
+                            break;
+                    }
+                    if (max>0) {
+                        check_sum=0;
+                        for (i=0; i<max;i++)
+                            check_sum+=wx_line[i];
+
+                        if (wx_line[max] == (0xff & check_sum)) {
+                            /* good RS WX-200 data */
+                            /*printf("GOOD %0X data\n",wx_line[0]);*/
+                            /* found RS WX-200 */
+                            strcpy(wx_station_type,langcode("WXPUPSI025"));
+                            strcpy(weather->wx_time,get_time(time_data));
                             weather->wx_sec_time=sec_now();
                             //weather->wx_data=1;
-                            wx_fill_data(0,APRS_WX5,wx_line,p_station);
+                            wx_fill_data(0,RSWX200,wx_line,p_station);
                             decoded=1;
-                        } else {
-                            if (wx_line[2]==' ' && wx_line[5]==' ' && wx_line[8]=='/' && wx_line[11]=='/'
-                                    && wx_line[14]==' ' && wx_line[17]==':' && wx_line[20]==':'
-                                    && strncmp(" #0:",wx_line+23,4)==0 && port_data[port].data_type==0) {
-                                find=0;
-                                for (i=len;i>23 && !find;i--) {
-                                    if ((int)wx_line[i]==0x03) {
-                                        find=1;
-                                        wx_line[i] = 0;
-                                    }
-                                }
-                                if (find) {
-                                    /* found Qualimetrics Q-Net station */
-                                    strcpy(wx_station_type,langcode("WXPUPSI016"));
-                                    /*printf("Found Qualimetrics Q-Net station data WX#:%s\n",wx_line+23);*/
-                                    strcpy(weather->wx_time,get_time(time_data));
-                                    weather->wx_sec_time=sec_now();
-                                    //weather->wx_data=1;
-                                    wx_fill_data(0,QM_WX,wx_line+24,p_station);
-                                    decoded=1;
-                                }
-                            } else {
-                                if (strncmp("&CR&",wx_line,4)==0 && is_xnum_or_dash((char *)(wx_line+5),44) && port_data[port].data_type==0) {
-                                    strcpy(wx_station_type,langcode("WXPUPSI017"));
-
-                                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
-                                    raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
-
-                                    weather->wx_sec_time=sec_now();
-                                    //weather->wx_data=1;
-                                    wx_fill_data(0,PEET_COMPLETE,wx_line,p_station);
-                                    decoded=1;
-                                } else {
-                                    if (port_data[port].data_type==1) {
-                                        /* binary data type */
-                                        /* clear raw string */
-                                        memset(raw_wx_string,0,sizeof(raw_wx_string));
-                                        max=0;
-                                        switch (wx_line[0]) {
-                                        case 0x8f:
-                                            max=34;
-                                            break;
-
-                                        case 0x9f:
-                                            max=33;
-                                            break;
-
-                                        case 0xaf:
-                                            max=30;
-                                            break;
-
-                                        case 0xbf:
-                                            max=13;
-                                            break;
-
-                                        case 0xcf:
-                                            max=26;
-                                            break;
-
-                                        default:
-                                            break;
-                                        }
-                                        if (max>0) {
-                                            check_sum=0;
-                                            for (i=0; i<max;i++)
-                                                check_sum+=wx_line[i];
-
-                                            if (wx_line[max] == (0xff & check_sum)) {
-                                                /* good RS WX-200 data */
-                                                /*printf("GOOD %0X data\n",wx_line[0]);*/
-                                                /* found RS WX-200 */
-                                                strcpy(wx_station_type,langcode("WXPUPSI025"));
-                                                strcpy(weather->wx_time,get_time(time_data));
-                                                weather->wx_sec_time=sec_now();
-                                                //weather->wx_data=1;
-                                                wx_fill_data(0,RSWX200,wx_line,p_station);
-                                                decoded=1;
-                                            }
-                                        }
-                                    } else {
-                                        if (debug_level & 1)
-                                            printf("Unknown WX DATA:%s\n",wx_line);
-                                    }
-                                }
-                            }
                         }
                     }
+                }
+                else {
+                    if (debug_level & 1)
+                        printf("Unknown WX DATA:%s\n",wx_line);
                 }
                 if (decoded) {
                     /* save data back */
@@ -2033,7 +2094,8 @@ if (end_critical_section(&port_data_lock, "wx.c:wx_decode(2)" ) > 0)
                     //redraw_on_new_data=2;
                     redraw_on_new_data=1;
                     fill_wx_data();
-                } else {
+                }
+                else {
                     /* Undecoded packet */
                     memset(raw_wx_string,0,sizeof(raw_wx_string));
 
