@@ -11154,7 +11154,6 @@ void shut_down_server(void) {
 
 
 
-
 void quit(int sig) {
     if(debug_level & 15)
         fprintf(stderr,"Caught %d\n",sig);
@@ -11165,6 +11164,12 @@ void quit(int sig) {
     shutdown_all_active_or_defined_port(-1);
 
     shut_down_server();
+
+
+#ifdef USE_PID_FILE_CHECK 
+    /* remove the PID file */ 
+    unlink(get_user_base_dir("xastir.pid")); 
+#endif
 
     if (debug_level & 1)
         fprintf(stderr,"Exiting..\n");
@@ -11182,6 +11187,87 @@ void quit(int sig) {
 
 
 
+
+#ifdef USE_PID_FILE_CHECK
+
+void pid_file_check(){
+
+    int killret=0; 
+    int other_pid=0;
+    char temp[32] ; 
+    FILE * PIDFILE ; 
+
+    /* Save our PID */
+    
+    char pidfile_name[MAX_FILENAME];
+
+    xastir_snprintf(pidfile_name, sizeof(pidfile_name),
+        get_user_base_dir("xastir.pid")); 
+
+    if (filethere(pidfile_name)){
+        fprintf(stderr,"Found pid file: %s\n",pidfile_name);
+        PIDFILE=fopen(pidfile_name,"r");
+        if (PIDFILE!=NULL) {
+            if(!feof(PIDFILE)) {
+                (void)get_line(PIDFILE,temp,32);
+            }
+            (void)fclose(PIDFILE);
+            other_pid=atoi(temp);
+        } else {
+            fprintf(stderr,"Couldn't open file: %s\n", pidfile_name);
+        }
+
+        // send a ping 
+        killret = kill(other_pid,0); 
+
+#ifdef N8YSZ
+            fprintf(stderr, "other_pid = <%d> killret == <%d> errno == <%d>\n",
+                other_pid,killret,errno); 
+#endif
+        if ((killret == -1) && (errno == ESRCH )){
+            fprintf(stderr,
+                "Other Xastir process, pid: %d does not appear be running. \n",
+                other_pid);
+	    // nuke from orbit
+	    if (! unlink(pidfile_name)) {
+	            fprintf(stderr,"Error unlinking pid file: %s, %d\n",
+                        pidfile_name,errno);
+            }
+        } else {
+            fprintf(stderr,
+                "Other Xastir process, pid: %d may be running. Exiting..\n",
+                other_pid);
+        
+#ifdef USING_LIBGC
+            CHECK_LEAKS();
+#endif  // USING LIBGC
+            exit(-1);  // Quick exit from the program
+        }
+
+    }
+
+    // if we're here - ok to truncate & open pidfile. 
+
+
+#ifdef N8YSZ
+     fprintf(stderr, "other_pid = <%d> killret == <%d> errno == <%d>\n",
+            other_pid,killret,errno); 
+#endif
+
+    PIDFILE = fopen(pidfile_name,"w");
+    if(PIDFILE != NULL){
+        fprintf(PIDFILE, "%d",getpid()); 
+    } else {
+        fprintf(stderr, "Error writing pidfile");
+        /** Do something useful here! **/ 
+    } 
+
+    (void) fclose (PIDFILE);
+    
+
+} // end pid_file_check
+
+#endif 
 
 
 /* handle segfault signal */
@@ -28847,6 +28933,12 @@ int main(int argc, char *argv[], char *envp[]) {
 
     /* done checking user dirs */
 
+#ifdef USE_PID_FILE_CHECK
+
+    pid_file_check(); 
+
+#endif 
+
     /* check fhs directories ?*/
 
     /* setup values */
@@ -29252,5 +29344,3 @@ int main(int argc, char *argv[], char *envp[]) {
     quit(0);
     return 0;
 }
-
-
