@@ -147,6 +147,12 @@ long object_label_num;
 float geotiff_map_intensity = 0.65;    // Geotiff map color intensity, set from Maps->Geotiff Map Intensity
 float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma correction, set from Maps->Adjust Gamma
 
+// Storage for the index file timestamp
+const time_t *map_index_timestamp;
+extern int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right);
+static int map_onscreen_index(char *filename);
+ 
+
 
 
 
@@ -1029,6 +1035,10 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
  * NOAA site) and shapefiles used as maps (from a number of
  * sources).
  *
+ * If destination_pixmap equals INDEX_CHECK_TIMESTAMPS or
+ * INDEX_NO_TIMESTAMPS, then we are indexing the file (finding the
+ * extents) instead of drawing it.
+ *
  * The current implementation can draw Polygon, PolyLine, and Point
  * Shapefiles, but only from a few sources (NOAA, Mapshots.com, and
  * ESRI/GeographyNetwork.com).  We don't handle some of the more
@@ -1670,7 +1680,30 @@ void draw_shapefile_map (Widget w,
         return;
     }
 
+    // Get the extents of the map file
     SHPGetInfo( hSHP, &nEntities, &nShapeType, adfBndsMin, adfBndsMax );
+
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+        // We're indexing only.  Save the extents in the index.
+        index_update_ll(file,  // Full filename
+            adfBndsMin[1],  // Bottom
+            adfBndsMax[1],  // Top
+            adfBndsMin[0],  // Left
+            adfBndsMax[0]); // Right
+
+        DBFClose( hDBF );   // Clean up open file descriptors
+        SHPClose( hSHP );
+
+        // Free up any malloc's that we did
+        if (panWidth)
+            free(panWidth);
+
+        return; // Done indexing this file
+    }
+
 
     switch ( nShapeType ) {
         case SHPT_POINT:
@@ -1690,18 +1723,22 @@ void draw_shapefile_map (Widget w,
             strcpy(sType,"MultiPoint");
             DBFClose( hDBF );   // Clean up open file descriptors
             SHPClose( hSHP );
+
             // Free up any malloc's that we did
             if (panWidth)
                 free(panWidth);
+
             return; // Multipoint type.  Not implemented yet.
             break;
 
         default:
             DBFClose( hDBF );   // Clean up open file descriptors
             SHPClose( hSHP );
+
             // Free up any malloc's that we did
             if (panWidth)
                 free(panWidth);
+
             return; // Unknown type.  Don't know how to process it.
             break;
     }
@@ -1729,9 +1766,11 @@ void draw_shapefile_map (Widget w,
 
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );
+
         // Free up any malloc's that we did
         if (panWidth)
             free(panWidth);
+
         return;     // The file contains no shapes in our viewport
     }
 
@@ -3862,6 +3901,10 @@ void Snapshot(void) {
 
 
 
+//NOTE:  This function has a problem if a non-gnis file is labeled
+//with a ".gnis" extension.  It causes a segfault in Xastir.  More
+//error checking needs to be done in order to prevent this.
+
 // draw_gnis_map()
 //
 // Allows drawing a background map of labels for the viewport.
@@ -3874,7 +3917,7 @@ void Snapshot(void) {
 // types of files which are columnar.  The files that we parse are
 // comma-delimited and have quotes around each field.
 //
-void draw_gnis_map (Widget w, char *dir, char *filenm)
+void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
 {
     char file[2000];                // Complete path/name of GNIS file
     FILE *f;                        // Filehandle of GNIS file
@@ -3903,15 +3946,21 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
     int ok;
     long x,y;
     char symbol_table, symbol_id, symbol_over;
+    unsigned long bottom_extent = 0l;
+    unsigned long top_extent = 0l;
+    unsigned long left_extent = 0l;
+    unsigned long right_extent = 0l;
 
+
+    //printf("draw_gnis_map starting: %s/%s\n",dir,filenm);
+
+    xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
     // Screen view
     min_lat = y_lat_offset + (long)(screen_height * scale_y);
     max_lat = y_lat_offset;
     min_lon = x_long_offset;
     max_lon = x_long_offset + (long)(screen_width  * scale_x);
-
-    xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
     // Attempt to open the file
     f = fopen (file, "r");
@@ -4055,9 +4104,30 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                             long_mm, temp1, long_dir);
                     coord_lon = convert_lon_s2l(long_str);
 
+
+                    // Save the min/max extents of the file.  We
+                    // should really initially set the extents to
+                    // the min/max for the Xastir coordinate system,
+                    // but in practice zeroes should work just as
+                    // well.
+                    if ((coord_lat < bottom_extent) || (bottom_extent == 0l))
+                        bottom_extent = coord_lat;
+                    if ((coord_lat > top_extent) || (top_extent == 0l))
+                        top_extent = coord_lat;
+                    if ((coord_lon < left_extent) || (left_extent == 0l))
+                        left_extent = coord_lon;
+                    if ((coord_lat > right_extent) || (right_extent == 0l))
+                        right_extent = coord_lon;
+
+
+                    // Check whether we're indexing the map
+                    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+                        // Do nothing, we're indexing, not drawing
+                    }
                     // Now check whether this lat/lon is within our viewport.  If it
                     // is, draw a text label at that location.
-                    if (coord_lon >= min_lon && coord_lon <= max_lon
+                    else if (coord_lon >= min_lon && coord_lon <= max_lon
                             && coord_lat <= min_lat && coord_lat >= max_lat) {
 
                         if (debug_level & 16) {
@@ -4390,7 +4460,6 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                                 type,state,county,name);
                         }
 
-
                         if (ok == 1) {  // If ok to draw it
                             symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
                             draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)name, 0xf, 0x10, strlen(name));
@@ -4404,13 +4473,27 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                     }
                 }
             }
-        }
+        }   // End of while
         (void)fclose (f);
+
+        // Check whether we're indexing the map
+        if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+            // We're indexing only.  Save the extents in the index.
+            index_update_xastir(file,   // Full filename
+                bottom_extent, // Bottom
+                top_extent,    // Top
+                left_extent,   // Left
+                right_extent); // Right
+        }
     }
     else {
         printf("Couldn't open file: %s\n", file);
         return;
     }
+    if (debug_level & 1)
+        printf("Exiting draw_gnis_map\n");
 }
 
 
@@ -4741,7 +4824,7 @@ int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
  * (not rotated) and rectangular.
  **********************************************************/
 
-void draw_geo_image_map (Widget w, char *dir, char *filenm) {
+void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixmap) {
 
 #ifdef NO_GRAPHICS
     printf("No XPM or ImageMagick support compiled into Xastir!\n");
@@ -5187,6 +5270,22 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         if (debug_level & 512)
             printf("Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
     }
+
+
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+        // We're indexing only.  Save the extents in the index.
+        index_update_xastir(fileimg,    // Full filename
+            tp[1].y_lat,    // Bottom
+            tp[0].y_lat,    // Top
+            tp[0].x_long,   // Left
+            tp[1].x_long);  // Right
+
+        return; // Done indexing this file
+    }
+
 
     // Check whether map is inside our current view
     //                bottom        top    left        right
@@ -6605,8 +6704,7 @@ int datum_shift_to_wgs84 (  float* f_west_bounding,
  * 'k': Good from x??? to x???.
  * 'o': Good from x064 to x004.  Not very readable at x64.
  ***********************************************************/
-void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
-{
+void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_pixmap) {
     char file[1000];            /* Complete path/name of image file */
     TIFF *tif = (TIFF *) 0;     /* Filehandle for tiff image file */
     GTIF *gtif = (GTIF *) 0;    /* GeoKey-level descriptor */
@@ -6746,7 +6844,6 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
-
 
     /* Check whether we have an associated *.fgd file.  This
      * file contains the neat-line corner points for USGS DRG
@@ -7210,6 +7307,29 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         east_bounding_wgs84 = NE_x_bounding_wgs84;
     else
         east_bounding_wgs84 = SE_x_bounding_wgs84;
+
+
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+        // We're indexing only.  Save the extents in the index.
+        index_update_xastir(file,   // Full filename
+            south_bounding_wgs84,   // Bottom
+            north_bounding_wgs84,   // Top
+            west_bounding_wgs84,    // Left
+            east_bounding_wgs84);   // Right
+
+        //Free any memory used and return
+        /* We're finished with the geoTIFF key parser, so get rid of it */
+        GTIFFree (gtif);
+
+        /* Close the TIFF file descriptor */
+        XTIFFClose (tif);
+ 
+        return; // Done indexing this file
+    }
+
 
     // bottom top left right
     if (!map_visible( south_bounding_wgs84,
@@ -8369,6 +8489,12 @@ Samples Per Pixel: 1
 
 
 // Test map visibility (on screen)
+//
+// Input parameters are in Xastir coordinate system (fastest for us)
+//
+// Returns: 0 if map is _not_ visible
+//          1 if map _is_ visible
+//
 static int map_onscreen(long left, long right, long top, long bottom) {
     unsigned long max_x_long_offset;
     unsigned long max_y_lat_offset;
@@ -8439,6 +8565,43 @@ static int map_onscreen(long left, long right, long top, long bottom) {
     return (in_window);
 }
 
+
+
+
+
+// Function which checks whether a map is onscreen, but does so by
+// finding the map boundaries from the map index.  The only input
+// parameter is the complete path/filename.
+//
+// Returns: 0 if map is _not_ visible
+//          1 if map _is_ visible
+//          2 if the map is not in the index
+//
+static int map_onscreen_index(char *filename) {
+    unsigned long top, bottom, left, right;
+    int onscreen = 2;
+
+
+    if (index_retrieve(filename, &bottom, &top, &left, &right) ) {
+
+        // Map was in the index, check for visibility
+        if (map_onscreen(left, right, top, bottom)) {
+            // Map is visible
+            onscreen = 1;
+            //printf("Map found in index and onscreen! %s\n",filename);
+        }
+        else {  // Map is not visible
+            onscreen = 0;
+            //printf("Map found in index but not onscreen: %s\n",filename);
+        }
+    }
+    else {  // Map is not in the index
+        onscreen = 2;
+        //printf("Map not found in index: %s\n",filename);
+    }
+    return(onscreen);
+}
+ 
 
 
 
@@ -8601,6 +8764,23 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         map_right = map_right * 10;
         map_top = map_top * 10;
         map_bottom = map_bottom * 10;
+
+
+        // Check whether we're indexing or drawing the map
+        if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+            // We're indexing only.  Save the extents in the index.
+            index_update_xastir(filename,   // Full filename
+                map_bottom, // Bottom
+                map_top,    // Top
+                map_left,   // Left
+                map_right); // Right
+
+            fclose(fn);
+            return; // Done indexing this file
+        }
+
 
         if (map_onscreen(map_left, map_right, map_top, map_bottom)) {
 
@@ -8865,6 +9045,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
  * it onto the screen.  Calls other functions to deal with
  * .geo/.tif/.shp maps.  This function deals with
  * DOS/Windows vector maps directly itself.
+ *
+ * If destination_pixmap == DRAW_NOT, then we'll not draw
+ * the map anywhere, but we'll determine the map extents
+ * and write them to the map index file.
  **********************************************************/
 void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                 unsigned char alert_color, int destination_pixmap) {
@@ -8935,6 +9119,17 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
     char symbol_color;
     int embedded_object;
 
+    xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
+
+    // Check map index to see if map is visible.  If not, skip it.
+    if (map_onscreen_index(file) == 0) {
+        return;
+    }
+
+    //printf("draw_map: %s\n",file);
+
+    ext = get_map_ext (filenm);
+
     x = 0;
     y = 0;
     color = -1;
@@ -8950,9 +9145,6 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
     map_maxed_text_labels = 0;
     map_maxed_symbol_labels = 0;
     npoints = 0;
-
-    xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
-    ext = get_map_ext (filenm);
 
     // If alert is non-NULL, then we have a weather alert and we need
     // to call draw_shapefile_map() to light up that area.  If alert
@@ -8976,7 +9168,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 
     // .geo image map? (can be one of many formats)
     else if (ext != NULL && strcasecmp (ext, "geo") == 0) {
-        draw_geo_image_map (w, dir, filenm);
+        draw_geo_image_map (w, dir, filenm, destination_pixmap);
     }
 
 
@@ -8989,14 +9181,14 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 
     // GNIS database file?
     else if (ext != NULL && strcasecmp (ext, "gnis") == 0) {
-        draw_gnis_map (w, dir, filenm);
+        draw_gnis_map (w, dir, filenm, destination_pixmap);
     }
 
 
 #ifdef HAVE_GEOTIFF
     // USGS DRG geoTIFF map?
     else if (ext != NULL && strcasecmp (ext, "tif") == 0) {
-        draw_geotiff_image_map (w, dir, filenm);
+        draw_geotiff_image_map (w, dir, filenm, destination_pixmap);
     }
 #endif // HAVE_GEOTIFF
 
@@ -9141,6 +9333,24 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                 printf ("Top Boundary %ld, Bottom Boundary %ld\n", (long)top_boundary,(long)bottom_boundary);
                 printf ("Total vector points %ld, total labels %ld\n",total_vector_points, total_labels);
             }
+
+
+            // Check whether we're indexing or drawing the map
+            if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+                    || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+                // We're indexing only.  Save the extents in the index.
+                index_update_xastir(file,   // Full filename
+                    bottom_boundary,        // Bottom
+                    top_boundary,           // Top
+                    left_boundary,          // Left
+                    right_boundary);        // Right
+
+                (void)fclose (f);
+ 
+                return; // Done indexing this file
+            }
+
 
             in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary);
 
@@ -9615,6 +9825,60 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             printf("Couldn't open file: %s\n", file);
     }
 
+
+    // Look for well-known non-map types:
+    else if (ext == NULL) {
+        // Do nothing, no file extension to work from.
+    }
+ 
+
+    // Look for well-known non-map types:
+    else if ( (ext != NULL)
+            && (   (strlen(ext) == 0)
+                || (strcasecmp (ext, "html" ) == 0)  // html
+                || (strcasecmp (ext, "htm"  ) == 0)   // html
+                || (strcasecmp (ext, "zip"  ) == 0)   // Could be a map type someday?
+                || (strcasecmp (ext, "fgd"  ) == 0)   // geotiff
+                || (strcasecmp (ext, "tfw"  ) == 0)   // geotiff
+                || (strcasecmp (ext, "gif"  ) == 0)   // .geo files
+                || (strcasecmp (ext, "jpg"  ) == 0)   // .geo files
+                || (strcasecmp (ext, "miff" ) == 0)  // .geo files
+                || (strcasecmp (ext, "xpm"  ) == 0)   // .geo files
+                || (strcasecmp (ext, "dbf"  ) == 0)   // Shapefiles
+                || (strcasecmp (ext, "txt"  ) == 0)   // text
+                || (strcasecmp (ext, "prc"  ) == 0)   // Palm executable
+                || (strcasecmp (ext, "exe"  ) == 0)   // DOS/Win executable
+                || (strcasecmp (ext, "inf"  ) == 0)
+                || (strcasecmp (ext, "Z"    ) == 0)     // Could be a map type someday?
+                || (strcasecmp (ext, "gz"   ) == 0)    // Could be a map type someday?
+                || (strcasecmp (ext, "pl"   ) == 0)    // Perl
+                || (strcasecmp (ext, "prj"  ) == 0)   // Project file
+                || (strcasecmp (ext, "tgz"  ) == 0)   // Could be a map type someday?
+                || (strcasecmp (ext, "pos"  ) == 0)
+                || (strcasecmp (ext, "hst"  ) == 0)
+                || (strcasecmp (ext, "bk"   ) == 0)    // Backup file
+                || (strcasecmp (ext, "bak"  ) == 0)   // Backup file
+                || (strcasecmp (ext, "dx"   ) == 0)
+                || (strcasecmp (ext, "geotiff") == 0)
+                || (strcasecmp (ext, "xml"  ) == 0)   // XML file
+                || (strcasecmp (ext, "bmp"  ) == 0)   // .geo files
+                || (strcasecmp (ext, "dat"  ) == 0)
+                || (strcasecmp (ext, "placeholder") == 0)
+                || (strcasecmp (ext, "hi"   ) == 0)
+                || (strcasecmp (ext, "jgw"  ) == 0)   // we7u
+                || (strcasecmp (ext, "bad"  ) == 0)   // we7u
+                || (strcasecmp (ext, "new"  ) == 0)   // we7u
+                || (strcasecmp (ext, "bmp24") == 0) // we7u
+                || (strcasecmp (ext, "works") == 0) // we7u
+                || (strcasecmp (ext, "gif87") == 0) // we7u
+                || (strcasecmp (ext, "sbn"  ) == 0)
+                || (strcasecmp (ext, "sbx"  ) == 0)
+                || (strcasecmp (ext, "cmd"  ) == 0) ) ) { // Windows script
+
+        // Do nothing with these types of files
+    }
+
+
     // Couldn't figure out the map type
     else {
         printf("draw_map: Unknown map type: %s\n", filenm);
@@ -9931,6 +10195,305 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
             (void)closedir (dm);
         }
     }
+}
+
+
+
+
+
+// Struct and list pointers for the map index linked list.
+typedef struct _map_index_record{
+    char filename[400];
+    unsigned long bottom;
+    unsigned long top;
+    unsigned long left;
+    unsigned long right;
+    struct _map_index_record *next;
+} map_index_record;
+map_index_record *map_index_head = NULL;
+
+// Might wish to have another variable in the index which is used to
+// record that a file has been indexed recently.  This could be used
+// to prune old entries out of the index if a full indexing didn't
+// touch a file entry.  Could also delete an entry from the index
+// if/when a file can't be opened?
+
+
+
+
+
+// Function called by the various draw_* functions when in indexing
+// mode.  Causes an update of the index list in memory.  Input
+// parameters are in the Xastir coordinate system due to speed
+// considerations.
+void index_update_xastir(char *filename,
+                  unsigned long bottom,
+                  unsigned long top,
+                  unsigned long left,
+                  unsigned long right) {
+
+    map_index_record *current = map_index_head;
+    int done = 0;
+
+
+    //printf( "File Index: %s: (%15.10g,%15.10g)\n\t(%15.10g,%15.10g)\n",
+    //    filename, bottom, top, left, right );
+
+    //if (map_index_head == NULL)
+    //    printf("Empty list\n");
+
+    // Search for a matching filename in the linked list
+    while ((current != NULL) && !done) {
+
+        //printf("Comparing %s to\n          %s\n",current->filename,filename);
+
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match!
+            //printf("Found: Updating entry for %s\n",filename);
+            done++; // Exit the while loop
+        }
+        else {
+            current = current->next;
+        }
+    }
+
+    if (!done) {  // Matching record not found, add a
+        // record to the head of the list
+        //printf("Not Found: Adding an index record for %s\n",filename);
+        current = (map_index_record *)malloc(sizeof(map_index_record));
+        current->next = map_index_head;
+        map_index_head = current;
+    }
+
+    // Update the values.  By this point we have a struct to fill
+    // in, whether it's a new or old struct doesn't matter.  Convert
+    // the values from lat/long to Xastir coordinate system.
+    strncpy(current->filename,filename,399);
+    current->filename[399] = '\0';
+//    xastir_snprintf(current->filename,strlen(current->filename),"%s",filename);
+
+    current->bottom = bottom;
+    current->top = top;
+    current->left = left;
+    current->right = right;
+}
+
+
+
+
+
+// Function called by the various draw_* functions when in indexing
+// mode.  Causes an update of the index list in memory.  Input
+// parameters are in lat/long, which are converted to Xastir
+// coordinates for storage due to speed considerations.
+void index_update_ll(char *filename,
+                  double bottom,
+                  double top,
+                  double left,
+                  double right) {
+
+    map_index_record *current = map_index_head;
+    int done = 0;
+    unsigned long temp_left, temp_right, temp_top, temp_bottom;
+    int ok;
+
+
+    //printf( "File Index: %s: (%15.10g,%15.10g)\n\t(%15.10g,%15.10g)\n",
+    //    filename, bottom, top, left, right );
+
+    //if (map_index_head == NULL)
+    //    printf("Empty list\n");
+
+    // Search for a matching filename in the linked list
+    while ((current != NULL) && !done) {
+
+        //printf("Comparing %s to\n          %s\n",current->filename,filename);
+
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match!
+            //printf("Found: Updating entry for %s\n",filename);
+            done++; // Exit the while loop
+        }
+        else {
+            current = current->next;
+        }
+    }
+
+    if (!done) {  // Matching record not found, add a
+        // record to the head of the list
+        //printf("Not Found: Adding an index record for %s\n",filename);
+        current = (map_index_record *)malloc(sizeof(map_index_record));
+        current->next = map_index_head;
+        map_index_head = current;
+    }
+
+    // Update the values.  By this point we have a struct to fill
+    // in, whether it's a new or old struct doesn't matter.  Convert
+    // the values from lat/long to Xastir coordinate system.
+    strncpy(current->filename,filename,399);
+    current->filename[399] = '\0';
+//    xastir_snprintf(current->filename,strlen(current->filename),"%s",filename);
+
+    ok = convert_to_xastir_coordinates( &temp_left,
+        &temp_top,
+        (float)left,
+        (float)top);
+    if (!ok)
+        printf("%s\n\n",filename);
+
+    ok = convert_to_xastir_coordinates( &temp_right,
+        &temp_bottom,
+        (float)right,
+        (float)bottom);
+    if (!ok)
+        printf("%s\n\n",filename);
+ 
+    current->bottom = temp_bottom;
+    current->top = temp_top;
+    current->left = temp_left;
+    current->right = temp_right;
+}
+
+
+
+
+
+// Function called by map_onscreen_index()
+//
+// This function returns:
+//      0 if the map isn't in the index
+//      1 if the map is listed in the index
+//      Four parameters listing the extents of the map
+//
+// The updated parameters are in the Xastir coordinate system for
+// speed reasons.
+//
+// Note that the index retrieval could be made much faster by
+// storing the data in a hash instead of a linked list.  This is
+// just an initial implementation to see what speedups are possible.
+// Hashing might be next.  --we7u
+//
+int index_retrieve(char *filename,
+                   unsigned long *bottom,
+                   unsigned long *top,
+                   unsigned long *left,
+                   unsigned long *right) {
+
+    map_index_record *current = map_index_head;
+    int status = 0;
+
+    // Search for a matching filename in the linked list
+    while (current != NULL) {
+        if (strncmp(current->filename,filename,strlen(filename)) == 0) {
+            // Found a match!
+            status = 1;
+            *bottom = current->bottom;
+            *top = current->top;
+            *left = current->left;
+            *right = current->right;
+            break;  // Exit the while loop
+        }
+        else {
+            current = current->next;
+        }
+    }
+    return(status);
+}
+
+
+
+
+
+/*
+// Struct and list pointers for the map index linked list.
+typedef struct _map_index_record{
+    char filename[400];
+    unsigned long bottom;
+    unsigned long top;
+    unsigned long left;
+    unsigned long right;
+    struct _map_index_record *next;
+} map_index_record;
+map_index_record *map_index_head = NULL;
+*/
+
+// Saves the linked list pointed to by map_index_head to a file.
+void index_save_to_file() {
+//    FILE *f;
+
+printf("Saving index to file (someday).\n");
+}
+
+
+
+
+
+// Snags the file and creates the linked list pointed to by the
+// map_index_head pointer.
+//
+void index_restore_from_file() {
+//    FILE *f;
+
+printf("Restoring index from file (someday).\n");
+}
+
+
+
+
+
+//
+// map_indexer()
+//
+// Recurses through the map directories finding map extents
+// and recording them in the map index.  Once the indexing is
+// complete, write the current index out to a file.
+//
+// It'd be nice to call index_restore_from_file() from main.c:main()
+// so that an earlier copy of the index is restored before the map
+// display is created.
+//
+// It'd also be nice to check all the map file timestamps, and if
+// none of them are newer than the map index file, refuse to
+// re-index.  Only update when map file modification times are
+// changed.  check_times below has something to do with this, but
+// still causes the indexer to run through all files in the
+// directory.
+//
+void map_indexer(void) {
+    struct stat nfile;
+    int check_times = 1;
+    FILE *f;
+
+ 
+    // Find the timestamp on the index file first.  Save it away so
+    // that the timestamp for each map file can be compared to it.
+    if (stat (MAP_INDEX_DATA, &nfile) != 0) {
+
+        // File doesn't exist yet.  Create it.
+        f = fopen(MAP_INDEX_DATA,"w+");
+        if (f != NULL)
+            (void)fclose(f);
+        else
+            printf("Couldn't create map index file: %s\n", MAP_INDEX_DATA);
+        
+        check_times = 0; // Don't check the timestamps.  Do them all. 
+    }
+    else {  // File exists
+        map_index_timestamp = (time_t *)&nfile.st_ctime;
+
+        // Read the current map index file into the linked list here
+        index_restore_from_file();
+
+        check_times = 1;
+    }
+
+    if (check_times)
+        map_search (NULL, AUTO_MAP_DIR, NULL, NULL, (int)FALSE, INDEX_CHECK_TIMESTAMPS);
+    else
+        map_search (NULL, AUTO_MAP_DIR, NULL, NULL, (int)FALSE, INDEX_NO_TIMESTAMPS);
+
+    // Save the updated index to the file
+    index_save_to_file();
 }
 
 

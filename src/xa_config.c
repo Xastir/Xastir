@@ -353,6 +353,7 @@ void save_data(void)  {
         store_string (fout, "ALERT_MAP_DIR", ALERT_MAP_DIR);
         store_string (fout, "WIN_MAP_DIR", WIN_MAP_DIR);
         store_string (fout, "WIN_MAP_DATA", WIN_MAP_DATA);
+        store_string (fout, "MAP_INDEX_DATA", MAP_INDEX_DATA);
         store_string (fout, "SYMBOLS_DIR", SYMBOLS_DIR);
         store_string (fout, "SOUND_DIR", SOUND_DIR);
         store_string (fout, "GROUP_DATA_FILE", group_data_file);
@@ -757,6 +758,9 @@ void load_data_or_default(void) {
 
     if (!get_string ("WIN_MAP_DATA", WIN_MAP_DATA))
         strcpy (WIN_MAP_DATA, get_user_base_dir ("config/winmaps.sys"));
+
+    if (!get_string ("MAP_INDEX_DATA", MAP_INDEX_DATA))
+        strcpy (MAP_INDEX_DATA, get_user_base_dir ("config/map_index.sys"));
 
     if (!get_string ("SYMBOLS_DIR", SYMBOLS_DIR))
         strcpy (SYMBOLS_DIR, get_data_base_dir ("symbols"));

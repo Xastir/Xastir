@@ -85,6 +85,7 @@ extern char DATABASE_POINTER_TEMP[];
 extern char ALERT_MAP_DIR[];
 extern char WIN_MAP_DIR[];
 extern char WIN_MAP_DATA[];
+extern char MAP_INDEX_DATA[];
 extern char AUTO_MAP_DIR[];
 extern char SYMBOLS_DIR[];
 extern char LOGFILE_IGATE[];
