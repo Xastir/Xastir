@@ -7010,6 +7010,11 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             if (ftpfile.stream)
                 fclose(ftpfile.stream);
 
+            // Return if we had trouble
+            if (CURLE_OK != res) {
+                return;
+            }
+
         } else { 
             fprintf(stderr,"Couldn't download the geo or Terraserver image\n");
             return;
@@ -7759,7 +7764,12 @@ void draw_tiger_map (Widget w) {
 
         if (ftpfile.stream)
             fclose(ftpfile.stream);
-    
+
+        // Return if we had trouble
+        if (CURLE_OK != res) {
+            return;
+        }
+
     } else { 
         fprintf(stderr,"Couldn't download the Tigermap image\n");
         return;

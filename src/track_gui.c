@@ -413,7 +413,10 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d",
         download_trail_station_call,posit_start,posit_length);
 #ifdef HAVE_LIBCURL
-    curl_getfile(fileimg, log_filename);
+    if (curl_getfile(fileimg, log_filename)) {
+        // Had trouble getting the file.  Abort.
+        return;
+    }
 #else
 #ifdef HAVE_WGET
     xastir_snprintf(tempfile, sizeof(tempfile),

@@ -114,7 +114,7 @@ extern short checkHash(char *theCall, short theHash);
 
 #ifdef HAVE_LIBCURL
 int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream);
-void curl_getfile(char *fileimg, char *local_filename);
+int curl_getfile(char *fileimg, char *local_filename);
 #endif
 
 extern void split_string( char *data, char *cptr[], int max );

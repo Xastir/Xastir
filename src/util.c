@@ -2855,6 +2855,9 @@ short checkHash(char *theCall, short theHash) {
 }
 
 
+
+
+
 /* curl routines */
 #ifdef HAVE_LIBCURL
 
@@ -2867,6 +2870,10 @@ struct FtpFile {
   FILE *stream;
 };
 
+
+
+
+
 int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
   struct FtpFile *out = (struct FtpFile *)stream;
   if (out && !out->stream) {
@@ -2877,7 +2884,11 @@ int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
   return fwrite(buffer, size, nmemb, out->stream);
 }
 
-void curl_getfile(char *fileimg, char *local_filename) {
+
+
+
+
+int curl_getfile(char *fileimg, char *local_filename) {
     CURL *curl;
     CURLcode res;
     char curlerr[CURL_ERROR_SIZE];
@@ -2887,30 +2898,36 @@ void curl_getfile(char *fileimg, char *local_filename) {
 
     if (curl) { 
 
-            curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
-            curl_easy_setopt(curl, CURLOPT_URL, fileimg);
+        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
+        curl_easy_setopt(curl, CURLOPT_URL, fileimg);
 
-            ftpfile.filename = local_filename;
-            ftpfile.stream = NULL;
-            curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
+        ftpfile.filename = local_filename;
+        ftpfile.stream = NULL;
+        curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
 
-            res = curl_easy_perform(curl);
+        res = curl_easy_perform(curl);
 
-            curl_easy_cleanup(curl);
+        curl_easy_cleanup(curl);
 
-            if (CURLE_OK != res) {
-                fprintf(stderr, "curl told us %d\n", res);
-                fprintf(stderr, "curlerr is %s\n", curlerr);
-            }
-
-            if (ftpfile.stream)
-                fclose(ftpfile.stream);
-
-        } else { 
-            fprintf(stderr,"Couldn't download the file %s\n", fileimg);
-            return;
+        if (CURLE_OK != res) {
+            fprintf(stderr, "curl told us %d\n", res);
+            fprintf(stderr, "curlerr is %s\n", curlerr);
         }
+
+        if (ftpfile.stream)
+            fclose(ftpfile.stream);
+
+        // Return error-code if we had trouble
+        if (CURLE_OK != res) {
+            return(1);
+        }
+
+    } else { 
+        fprintf(stderr,"Couldn't download the file %s\n", fileimg);
+        return(1);
+    }
+    return(0);
 }        
 #endif  //HAVE_LIBCURL
 
