@@ -10003,9 +10003,9 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         xastir_snprintf(temp, sizeof(temp), ":%s:Directs=",from_call);
         p_station = n_first;
         while (p_station != NULL) {
-            if ((p_station->flag & ST_ACTIVE) != 0) {        // ignore deleted objects
-                if ((p_station->flag & ST_VIATNC) != 0) {    // test "via TNC" flag
-        // DK7IN: I think the implementation is wrong, we deliver stations heard via a digi too...
+            if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects
+                if ( ((p_station->flag & ST_VIATNC) != 0)   // test "via TNC" flag
+                        && ((p_station->flag & ST_DIRECT) != 0) ) { // And "direct" flag
                     if (strlen(temp)+strlen(p_station->call_sign) < 65) {
                         strcat(temp," ");
                         strcat(temp,p_station->call_sign);
