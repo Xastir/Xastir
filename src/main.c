@@ -9453,6 +9453,7 @@ void Stations_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 /************************* Map Chooser ***********************************/
 /*************************************************************************/
 
+// Destroys the Map Chooser dialog
 void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -9464,6 +9465,13 @@ void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 
 
 
+// Gets the list of selected maps out of the dialog, writes them to
+// the selected maps disk file, destroys the dialog, then calls
+// create_image() with the newly selected map set in place.  This
+// should be the _only_ routine in this set of functions that
+// actually changes the selected maps disk file.  The others should
+// merely manipulate the list in the map chooser dialog.  This
+// function is attached to the "OK" button in the dialog.
 void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer callData) {
     int i,x;
     char *temp;
@@ -9503,42 +9511,32 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 
 
 void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPointer callData) {
-    int i,x;
+    int i, x;
     char *temp;
     char *ext;
     XmString *list;
-    FILE *f;
 
+    // Get the list and the count from the dialog
     XtVaGetValues(map_list,
                XmNitemCount,&i,
                XmNitems,&list,
                NULL);
 
-    f=fopen(SELECTED_MAP_DATA,"w+");
-    if (f!=NULL) {
-        for(x=1; x<=i;x++) {
-            if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
-            {
-                ext = get_map_ext (temp);
-                if ( (ext != NULL)
-                        && (   (strcasecmp(ext,"map") == 0)
-                            || (strcasecmp(ext,"shp") == 0)
-                            || (strcasecmp(ext,"pdb") == 0)
-                            || (strcasecmp(ext,"gnis") == 0) ) ) {
-                    fprintf(f,"%s\n",temp);
-                }
-                XtFree(temp);
+    // Run through the list looking for matching file extensions
+    for(x=1; x<=i;x++) {
+        XmListDeselectPos(map_list,x);
+        if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+            ext = get_map_ext (temp);
+            if ( (ext != NULL)
+                    && (   (strcasecmp(ext,"map") == 0)
+                        || (strcasecmp(ext,"shp") == 0)
+                        || (strcasecmp(ext,"pdb") == 0)
+                        || (strcasecmp(ext,"gnis") == 0) ) ) {
+                XmListSelectPos(map_list,x,TRUE);
             }
+            XtFree(temp);
         }
-        (void)fclose(f);
-        map_chooser_fill_in();
     }
-    else
-        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
- 
-//    map_chooser_destroy_shell(widget,clientData,callData);
-//    create_image(da);
-//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -9546,41 +9544,31 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
 
 
 void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer callData) {
-    int i,x,length;
+    int i, x, length;
     char *temp;
     char *ext;
     XmString *list;
-    FILE *f;
 
+    // Get the list and the count from the dialog
     XtVaGetValues(map_list,
                XmNitemCount,&i,
                XmNitems,&list,
                NULL);
 
-    f=fopen(SELECTED_MAP_DATA,"w+");
-    if (f!=NULL) {
-        for(x=1; x<=i;x++) {
-            if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
-            {
-                ext = get_map_ext (temp);
-                length = (int)strlen(temp);
-                if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
-                        && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
-                        && ( (temp[length - 12] == 'c') || (temp[length - 12] == 'C') ) ) {
-                    fprintf(f,"%s\n",temp);
-                }
-                XtFree(temp);
+    // Run through the list looking for matching file extensions
+    for(x=1; x<=i;x++) {
+        XmListDeselectPos(map_list,x);
+        if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+            ext = get_map_ext (temp);
+            length = (int)strlen(temp);
+            if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
+                    && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
+                    && ( (temp[length - 12] == 'c') || (temp[length - 12] == 'C') ) ) {
+                XmListSelectPos(map_list,x,TRUE);
             }
+            XtFree(temp);
         }
-        (void)fclose(f);
-        map_chooser_fill_in();
     }
-    else
-        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
-
-//    map_chooser_destroy_shell(widget,clientData,callData);
-//    create_image(da);
-//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -9592,39 +9580,27 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
     char *temp;
     char *ext;
     XmString *list;
-    FILE *f;
 
+    // Get the list and the count from the dialog
     XtVaGetValues(map_list,
                XmNitemCount,&i,
                XmNitems,&list,
                NULL);
 
-    f=fopen(SELECTED_MAP_DATA,"w+");
-    if (f!=NULL)
-    {
-        for(x=1; x<=i;x++)
-        {
-            if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
-            {
-                ext = get_map_ext (temp);
-                length = (int)strlen(temp);
-                if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
-                        && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
-                        && ( (temp[length - 12] == 'f') || (temp[length - 12] == 'F') ) ) {
-                    fprintf(f,"%s\n",temp);
-                }
-                XtFree(temp);
+    // Run through the list looking for matching file extensions
+    for(x=1; x<=i;x++) {
+        XmListDeselectPos(map_list,x);
+        if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+            ext = get_map_ext (temp);
+            length = (int)strlen(temp);
+            if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
+                    && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
+                    && ( (temp[length - 12] == 'f') || (temp[length - 12] == 'F') ) ) {
+                XmListSelectPos(map_list,x,TRUE);
             }
+            XtFree(temp);
         }
-        (void)fclose(f);
-        map_chooser_fill_in();
     }
-    else
-        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
-
-//    map_chooser_destroy_shell(widget,clientData,callData);
-//    create_image(da);
-//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -9636,39 +9612,28 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
     char *temp;
     char *ext;
     XmString *list;
-    FILE *f;
 
+    // Get the list and the count from the dialog
     XtVaGetValues(map_list,
                XmNitemCount,&i,
                XmNitems,&list,
                NULL);
 
-    f=fopen(SELECTED_MAP_DATA,"w+");
-    if (f!=NULL) {
-        for(x=1; x<=i;x++)
-        {
-            if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
-            {
-                ext = get_map_ext (temp);
-                length = (int)strlen(temp);
-                if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
+    // Run through the list looking for matching file extensions
+    for(x=1; x<=i;x++) {
+        XmListDeselectPos(map_list,x);
+        if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+            ext = get_map_ext (temp);
+            length = (int)strlen(temp);
+            if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
                         && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
                         && ( (temp[length - 12] == 'o') || (temp[length - 12] == 'O')
                             || (temp[length - 12] == 'k') || (temp[length - 12] == 'K') ) ) {
-                    fprintf(f,"%s\n",temp);
-                }
-                XtFree(temp);
+                XmListSelectPos(map_list,x,TRUE);
             }
+            XtFree(temp);
         }
-        (void)fclose(f);
-        map_chooser_fill_in();
     }
-    else
-        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
-
-//    map_chooser_destroy_shell(widget,clientData,callData);
-//    create_image(da);
-//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -9676,20 +9641,20 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
 
 
 void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer callData) {
-    FILE *f;
+    int i,x;
+    XmString *list;
 
-    // Empty the file (no maps listed as selected)
-    f=fopen(SELECTED_MAP_DATA,"w+");
-    if(f!=NULL)
-        (void)fclose(f);
-    else
-        printf("Couldn't zero file: %s\n", SELECTED_MAP_DATA);
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
 
-    map_chooser_fill_in();
-
-//    map_chooser_destroy_shell(widget,clientData,callData);
-//    create_image(da);
-//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    // Run through the list, deselecting every line
+    for(x=1; x<=i;x++)
+    {
+        XmListDeselectPos(map_list,x);
+    }
 }
 
 
