@@ -401,10 +401,10 @@ void save_data(void)  {
         store_int (fout, "DISPLAY_ALTITUDE",              Display_.altitude);
         store_int (fout, "DISPLAY_COURSE",                Display_.course);
         store_int (fout, "DISPLAY_SPEED",
-                   Display_.speed   ? Display_.speed_short   + 1 : 0);
+                   Display_.speed   ? 2 - Display_.speed_short : 0);
         store_int (fout, "DISPLAY_DIST_COURSE",           Display_.dist_bearing);
         store_int (fout, "DISPLAY_STATION_WX",
-                   Display_.weather ? Display_.weather_short + 1 : 0);
+                   Display_.weather ? 2 - Display_.weather_short : 0);
         store_int (fout, "DISPLAY_STATION_TRAILS",        Display_.trail);
         store_int (fout, "DISPLAY_LAST_HEARD",            Display_.last_heard);
         store_int (fout, "DISPLAY_POSITION_AMB",          Display_.ambiguity);
