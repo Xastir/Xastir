@@ -1566,9 +1566,16 @@ void disown_object_item(char *call_sign, char *new_owner) {
         if (valid_object(name)) {
 
             if ( strcmp(name,call_sign) == 0 ) {
-                // Match.  Comment it out in the file.
-                fprintf(f,"#%s",line);
-                //printf("#%s",line);
+                // Match.  Comment it out in the file unless it's
+                // already commented out.
+                if (line[0] != '#') {
+                    fprintf(f,"#%s",line);
+                    //printf("#%s",line);
+                }
+                else {
+                    fprintf(f,"%s",line);
+                    //printf("%s",line);
+                }
             }
             else {
                 // No match.  Copy the line verbatim unless it's just a
