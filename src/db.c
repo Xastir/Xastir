@@ -7522,7 +7522,12 @@ void check_station_remove(void) {
 
                     // It's one of mine, leave it alone!
                 }
-                else {  // Not one of mine, so start deleting
+                else if (p_station->tactical_call_sign) {
+                    // Station has a tactical callsign assigned,
+                    // don't delete it.
+                }
+                else {  // Not one of mine, doesn't have a tactical
+                        // callsign assigned, so start deleting
  
                     mdelete_messages(p_station->call_sign);     // delete messages
                     station_del_ptr(p_station);

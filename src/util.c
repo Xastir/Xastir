@@ -2339,6 +2339,7 @@ void reload_object_item(void) {
 
 
 
+//
 // Tactical callsign logging
 //
 // Logging function called from the Assign Tactical Call right-click
@@ -2391,22 +2392,25 @@ void log_tactical_call(char *call_sign, char *tactical_call_sign) {
 // is called on startup.  This implements persistent tactical calls
 // across Xastir restarts.
 //
-// Actually, to fully implement persistent tactical calls, we'd need
-// to create dummy station records for each of these which get
-// filled in when the station is actually heard.  We'd also need to
-// assure the records don't get deleted if the station isn't heard
-// for a while.
+// To fully implement persistent tactical calls, we need to create
+// dummy station records for each of these which get filled in when
+// the station is actually heard.  We'd also need to assure the
+// records don't get deleted if the station isn't heard for a while.
+// Changed db.c:check_station_remove() so that it doesn't remove any
+// station records that have a tactical call assigned.
 //
 // We can cheat a little:  Throw a simulated packet for that
 // callsign into the decoding (maybe a status packet?), then assign
-// a tactical callsign to it.  Change the expire code later to skip
-// records that have a tactical callsign.
+// a tactical callsign to it.  Changed the expire code to skip
+// records that have a tactical callsign.  This assures that the
+// tactical calls will stay in the in-memory database even if the
+// call is not heard, so that if/when the call _is_ heard, the
+// tactical call will apply to it.
 //
 // Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
 //
 void reload_tactical_calls(void) {
-/*
     char *file;
     FILE *f;
     char line[300+1];
@@ -2424,15 +2428,62 @@ void reload_tactical_calls(void) {
                 fprintf(stderr,"Loading tactical calls from file: %s",line);
    
             if (line[0] != '#') {   // Skip comment lines
+                char *ptr;
 
-// Create a dummy packet here.  Something without a position,
-// perhaps a status packet.
+                // We're dealing with comma-separated files, so
+                // break the two pieces at the comma.
+                ptr = index(line,',');
 
-                xastir_snprintf(line2,sizeof(line2),"%s>%s:%s",my_callsign,VERSIONFRM,line);
+                if (ptr != NULL) {
+                    DataRow *p_station;
+                    char *ptr2;
 
-                // Decode this packet.  This will put it into our
-                // station database.  Port is set to -1 here.
-                decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
+
+                    ptr[0] = '\0';  // Terminate the callsign
+                    ptr++;  // Point to the tactical callsign
+
+                    // Check for LF
+                    ptr2 = index(ptr,'\n');
+                    if (ptr2 != NULL)
+                        ptr2[0] = '\0';
+
+                    // Check for CR
+                    ptr2 = index(ptr,'\r');
+                    if (ptr2 != NULL)
+                        ptr2[0] = '\0';
+
+                    if (debug_level & 1)
+                        fprintf(stderr, "Call=%s\tTac=%s\n", line, ptr);
+
+                    // Create a dummy packet here.  Something
+                    // without a position, perhaps a status packet
+                    // or an ID packet.  This is just to get it into
+                    // our in-memory station database.
+                    xastir_snprintf(line2,sizeof(line2),"%s>APRS:ID",line);
+
+                    // Decode this packet.  This will put it into
+                    // our station database.  Port is set to -1
+                    // here.
+                    decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
+
+                    // Add the tactical callsign to the recently
+                    // added station.  We must search for it first.
+                    if (search_station_name(&p_station,line,1)) {
+
+                        if (debug_level & 1)
+                            fprintf(stderr,"Found callsign to add tactical call to: %s\n",line);
+
+                        xastir_snprintf(p_station->tactical_call_sign,
+                            MAX_CALLSIGN,
+                            "%s",
+                            ptr);
+                    }
+                    else {
+                        fprintf(stderr,
+                            "Couldn't find callsign to add tactical call to!  %s\n",
+                            line);
+                    }
+                }
             }
         }
         (void)fclose(f);
@@ -2441,7 +2492,6 @@ void reload_tactical_calls(void) {
         if (debug_level & 1)
             fprintf(stderr,"Couldn't open file for reading: %s\n", file);
     }
-*/
 }
 
 
