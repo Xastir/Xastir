@@ -422,9 +422,10 @@ scr_s_x_min = 0;
 // INDEX_NO_TIMESTAMPS, then we are indexing the file (finding the
 // extents) instead of drawing it.
 //
-// Indexing currently works properly only if a geographic coordinate
-// system is found.  It doesn't work yet for projected or local
-// coordinate systems.
+// Indexing currently works properly for either geographic or
+// projected coordinates, and does conversions to geographic/WGS84
+// datum before storing the extents in the map index.  It doesn't
+// work for local coordinate systems.
 //
 void draw_ogr_map(Widget w,
                    char *dir,
@@ -506,8 +507,8 @@ fprintf(stderr,"Indexing %s\n", filenm);
         // Use the OGR "envelope" function to get the extents for
         // the entire file or dataset.  Remember that it could be in
         // state-plane coordinate system or something else equally
-        // strange.  Make sure we convert it to WGS84 or NAD83
-        // geographic coordinates before saving the index.
+        // strange.  Convert it to WGS84 or NAD83 geographic
+        // coordinates before saving the index.
 
         // Loop through all layers in the data source.  We can't get
         // the extents for the entire data source without looping
@@ -606,7 +607,7 @@ fprintf(stderr,"Couldn't get spatial reference\n");
         }
 
         // We know how to handle geographic or projected coordinate
-        // systems.
+        // systems.  Test for these.
         if ( !first_extents && (geographic || projected) ) {
             // Need to also check datum!  Must be NAD83 or WGS84 and
             // geographic for our purposes.
@@ -627,10 +628,9 @@ fprintf(stderr, "Geographic coordinate system, %s, adding to index\n", geogcs);
                     file_MaxX); // Right
 #endif  // WE7U
             }
-            else {  // Geographic/wrong datum, or projected
-                    // coordinates.  Have coordinates, but in the
-                    // wrong datum or coordinate system.  Convert to
-                    // WGS84.
+            else {  // We have coordinates, but they're either in
+                    // the wrong datum or in a projected coordinate
+                    // system.  Convert to WGS84.
                 OGRSpatialReferenceH wgs84_spatial = NULL;
                 OGRCoordinateTransformationH transformH = NULL;
 
@@ -721,7 +721,7 @@ x[1],y[1],result);
             }
         }
         else if (local && !first_extents) {
-            // Convert to geographic/WGS84
+            // Convert to geographic/WGS84?  How?
 
 fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
 
