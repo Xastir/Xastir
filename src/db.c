@@ -5131,15 +5131,15 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
         p2++;   // Skip the description text, "/TS", "/HC", or "/TD"
 
 	// Extract the sustained wind speed in knots
-        (void)extract_weather_item(p2,'/',3,weather->wx_sustained);
-        if ( (weather->wx_sustained[0] == '.')
-                || (weather->wx_sustained[0] == ' ') )
-            weather->wx_sustained[0] = '\0';
+        (void)extract_weather_item(p2,'/',3,weather->wx_speed);
+        if ( (weather->wx_speed[0] == '.')
+                || (weather->wx_speed[0] == ' ') )
+            weather->wx_speed[0] = '\0';
         else    // Convert from knots to MPH
-            xastir_snprintf(weather->wx_sustained,
-                sizeof(weather->wx_sustained),
+            xastir_snprintf(weather->wx_speed,
+                sizeof(weather->wx_speed),
                 "%0.1f",
-                (float)(atoi(weather->wx_sustained)) * 1.1508);
+                (float)(atoi(weather->wx_speed)) * 1.1508);
 
 //fprintf(stderr,"%s\n",data);
 
@@ -5381,7 +5381,6 @@ void init_weather(WeatherRow *weather) {    // clear weather data
     weather->wx_speed[0]             = '\0';
     weather->wx_speed_sec_time       = 0; // ??
     weather->wx_gust[0]              = '\0';
-    weather->wx_sustained[0]         = '\0';
     weather->wx_hurricane_radius[0]  = '\0';
     weather->wx_trop_storm_radius[0] = '\0';
     weather->wx_whole_gale_radius[0] = '\0';

@@ -230,7 +230,6 @@ typedef struct {                //                      strlen
     char    wx_speed[4];        // in mph                   3
     time_t  wx_speed_sec_time;
     char    wx_gust[4];         // in mph                   3
-    char    wx_sustained[4];    // in mph                   3
     char    wx_hurricane_radius[4];  //nautical miles       3
     char    wx_trop_storm_radius[4]; //nautical miles       3
     char    wx_whole_gale_radius[4]; // nautical miles      3
