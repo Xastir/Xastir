@@ -1,0 +1,15 @@
+aclocal.m4
+autom4te-2.53.cache
+config.guess
+config.h.in
+config.sub
+configure
+depcomp
+devel
+install-sh
+Makefile.in
+missing
+mkinstalldirs
+nwr
+stamp-h.in
+SYMBOLS.TXT
