@@ -307,63 +307,81 @@ typedef struct _CommentRow{
 #define MAX_MULTIPOINTS 35
 
 typedef struct _DataRow {
+
     struct _DataRow *n_next;    // pointer to next element in name ordered list
     struct _DataRow *n_prev;    // pointer to previous element in name ordered list
     struct _DataRow *t_next;    // pointer to next element in time ordered list (newer)
     struct _DataRow *t_prev;    // pointer to previous element in time ordered list (older)
+
     char call_sign[MAX_CALLSIGN+1]; // call sign or name index or object/item name
-    char *tactical_call_sign;   // Like, tactical callsign, duh
-    time_t sec_heard;           // time last heard, used also for time index
-    int  time_sn;               // serial number for making time index unique
-    short flag;                 // several flags, see below
-    short object_retransmit;    // Number of times to retransmit object.  -1 = forever
-                                // Used currently to stop sending killed objects.
-
-    time_t last_transmit_time;  // Time we last transmitted an object/item.  Used to
-                                // implement decaying transmit time algorithm
-    short transmit_time_increment; // Seconds to add to transmit next time around.  Used
-                                // to implement decaying transmit time algorithm
-
-    char pos_amb;               // Position ambiguity, 0 = none, 1 = 0.1 minute...
+    char *tactical_call_sign;   // Tactical callsign.  NULL if not assigned
+    APRS_Symbol aprs_symbol;
     long coord_lon;             // Xastir coordinates 1/100 sec, 0 = 180°W
     long coord_lat;             // Xastir coordinates 1/100 sec, 0 =  90°N
 
-    TrackRow *oldest_trackpoint; // Pointer to oldest track point in doubly-linked list
-    TrackRow *newest_trackpoint; // Pointer to newest track point in doubly-linked list
+    int  time_sn;               // serial number for making time index unique
+    time_t sec_heard;           // time last heard, used also for time index
+    time_t heard_via_tnc_last_time;
+    time_t direct_heard;        // KC2ELS - time last heard direct
+
+// Change into time_t structs?  It'd save us a bunch of space.
+    char packet_time[MAX_TIME];
+    char pos_time[MAX_TIME];
+
+//    char altitude_time[MAX_TIME];
+//    char speed_time[MAX_TIME];
+//    char station_time[MAX_STATION_TIME];
+//    char station_time_type;
+
+    short flag;                 // several flags, see below
+    char pos_amb;               // Position ambiguity, 0 = none, 1 = 0.1 minute...
     int trail_color;            // trail color (when assigned)
- 
-    WeatherRow *weather_data;   // Pointer to weather data or NULL if no weather data
     char record_type;
     char data_via;              // L local, T TNC, I internet, F file
+
+// Change to char's to save space?
     int  heard_via_tnc_port;
-    time_t heard_via_tnc_last_time;
     int  last_heard_via_tnc;
     int  last_port_heard;
     unsigned int  num_packets;
-    char packet_time[MAX_TIME];
-    char origin[MAX_CALLSIGN+1]; // call sign originating an object
-    APRS_Symbol aprs_symbol;
     char *node_path_ptr;        // Pointer to path string
-    char pos_time[MAX_TIME];
-    char altitude_time[MAX_TIME];
     char altitude[MAX_ALTITUDE]; // in meters (feet gives better resolution ???)
-    char speed_time[MAX_TIME];
     char speed[MAX_SPEED+1];    // in knots
     char course[MAX_COURSE+1];
     char bearing[MAX_COURSE+1];
     char NRQ[MAX_COURSE+1];
     char power_gain[MAX_POWERGAIN+1];   // Holds the phgd values
     char signal_gain[MAX_POWERGAIN+1];  // Holds the shgd values (for DF'ing)
-    char signpost[5+1];                 // Holds signpost data
-    char probability_min[10+1];         // Holds prob_min (miles)
-    char probability_max[10+1];         // Holds prob_max (miles)
-    char station_time[MAX_STATION_TIME];
-    char station_time_type;
-    char sats_visible[MAX_SAT];
-    CommentRow *status_data;
+
+    WeatherRow *weather_data;   // Pointer to weather data or NULL
+ 
+    CommentRow *status_data;    // Ptr to status records or NULL
     CommentRow *comment_data;   // Ptr to comment records or NULL
+
+    // Below two pointers are NULL if only one position has been received
+    TrackRow *oldest_trackpoint; // Pointer to oldest track point in doubly-linked list
+    TrackRow *newest_trackpoint; // Pointer to newest track point in doubly-linked list
+
+
+///////////////////////////////////////////////////////////////////////
+// Optional stuff for Objects/Items only.  These should be moved
+// into an ObjectRow structure, with only a NULL pointer here if not
+// an object/item.
+///////////////////////////////////////////////////////////////////////
+ 
+    char origin[MAX_CALLSIGN+1]; // call sign originating an object
+    short object_retransmit;     // Number of times to retransmit object.  -1 = forever
+                                 // Used currently to stop sending killed objects.
+    time_t last_transmit_time;   // Time we last transmitted an object/item.  Used to
+                                 // implement decaying transmit time algorithm
+    short transmit_time_increment; // Seconds to add to transmit next time around.  Used
+                                 // to implement decaying transmit time algorithm
+    char signpost[5+1];          // Holds signpost data
     int  df_color;
-    
+    char sats_visible[MAX_SAT];
+    char probability_min[10+1];  // Holds prob_min (miles)
+    char probability_max[10+1];  // Holds prob_max (miles)
+
     // When the station is an object, it can include coordinates
     // of related points. Currently these are being used to draw
     // outlines of NWS severe weather watches and warnings, and
@@ -371,12 +389,11 @@ typedef struct _DataRow {
     // coordinate form. Element [x][0] is the latitude, and 
     // element [x][1] is the longitude.
     // KG4NBB
-    
     int num_multipoints;
     char type;      // from '0' to '9'
     char style;     // from 'a' to 'z'
     long multipoints[MAX_MULTIPOINTS][2];
-    time_t direct_heard;                // KC2ELS - time last heard direct
+
 } DataRow;
 
 

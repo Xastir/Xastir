@@ -5396,7 +5396,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
         if (compr) {        // course/speed was taken from normal data, delete that
             // fix me: we delete a potential real speed/course now
             // we should differentiate between normal and weather data in compressed position decoding...
-            p_station->speed_time[0]     = '\0';
+//            p_station->speed_time[0]     = '\0';
             p_station->speed[0]          = '\0';
             p_station->course[0]         = '\0';
         }
@@ -5552,7 +5552,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
     }
 
     if (ok) {
-        p_station->speed_time[0]     = '\0';
+//        p_station->speed_time[0]     = '\0';
 
         p_station->weather_data->wx_storm = 1;  // We found a storm
 
@@ -6695,14 +6695,14 @@ void init_station(DataRow *p_station) {
     p_station->aprs_symbol.area_object.sqrt_lat_off   = 0;
     p_station->aprs_symbol.area_object.sqrt_lon_off   = 0;
     p_station->aprs_symbol.area_object.corridor_width = 0;
-    p_station->station_time_type  = '\0';
+//    p_station->station_time_type  = '\0';
     p_station->origin[0]          = '\0';        // no object
     p_station->packet_time[0]     = '\0';
     p_station->node_path_ptr      = NULL;
     p_station->pos_time[0]        = '\0';
-    p_station->altitude_time[0]   = '\0';
+//    p_station->altitude_time[0]   = '\0';
     p_station->altitude[0]        = '\0';
-    p_station->speed_time[0]      = '\0';
+//    p_station->speed_time[0]      = '\0';
     p_station->speed[0]           = '\0';
     p_station->course[0]          = '\0';
     p_station->bearing[0]         = '\0';
@@ -6712,7 +6712,7 @@ void init_station(DataRow *p_station) {
     p_station->signpost[0]        = '\0';
     p_station->probability_min[0] = '\0';
     p_station->probability_max[0] = '\0';
-    p_station->station_time[0]    = '\0';
+//    p_station->station_time[0]    = '\0';
     p_station->sats_visible[0]    = '\0';
     p_station->status_data        = NULL;
     p_station->comment_data       = NULL;
@@ -8522,8 +8522,8 @@ int extract_time(DataRow *p_station, char *data, int type) {
                 if (!isdigit((int)data[i]))
                     ok = 0;
             if (ok) {
-                substr(p_station->station_time,data+2,6);
-                p_station->station_time_type = 'z';
+//                substr(p_station->station_time,data+2,6);
+//                p_station->station_time_type = 'z';
                 for (i=0;i<=len-8;i++)         // delete time from data
                     data[i] = data[i+8];
             }
@@ -8538,8 +8538,8 @@ int extract_time(DataRow *p_station, char *data, int type) {
                 if (!isdigit((int)data[i]))
                     ok = 0;
             if (ok) {
-                substr(p_station->station_time,data,6);
-                p_station->station_time_type = data[6];
+//                substr(p_station->station_time,data,6);
+//                p_station->station_time_type = data[6];
                 for (i=0;i<=len-7;i++)         // delete time from data
                     data[i] = data[i+7];
             }
@@ -8654,12 +8654,12 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
 /* extract all available information from info field */
 void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
     char temp_data[6+1];
-    char time_data[MAX_TIME];
+//    char time_data[MAX_TIME];
 
     if (extract_altitude(info,temp_data)) {                         // get altitude
         xastir_snprintf(p_station->altitude, sizeof(p_station->altitude), "%.2f",atof(temp_data)*0.3048);
         // Create a timestamp from the current time
-        strcpy(p_station->altitude_time,get_time(time_data));
+//        strcpy(p_station->altitude_time,get_time(time_data));
         //fprintf(stderr,"%.2f\n",atof(temp_data)*0.3048);
     }
     // do other things...
@@ -8871,7 +8871,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     // Create a timestamp from the current time
     strcpy(p_station->pos_time,get_time(temp_data));        // get_time saves the time in temp_data
     // Create a timestamp from the current time
-    strcpy(p_station->altitude_time,get_time(temp_data));   // get_time saves the time in temp_data
+//    strcpy(p_station->altitude_time,get_time(temp_data));   // get_time saves the time in temp_data
     p_station->flag &= (~ST_MSGCAP);    // clear "message capable" flag
 
     /* check aprs type on call sign */
@@ -10649,10 +10649,10 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     p_station->coord_lon = pos_long_temp;
 
     // Create a timestamp from the current time
-    strcpy(p_station->altitude_time,get_time(temp_data));
+//    strcpy(p_station->altitude_time,get_time(temp_data));
     my_last_altitude_time = sec_now();
     // Create a timestamp from the current time
-    strcpy(p_station->speed_time,get_time(temp_data));
+//    strcpy(p_station->speed_time,get_time(temp_data));
     strcpy(p_station->speed,speed);
     // is speed always in knots, otherwise we need a conversion!
     strcpy(p_station->course,course);
