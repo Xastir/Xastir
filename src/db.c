@@ -2471,7 +2471,7 @@ void compute_decorations( void ) {
     Arg args[20];
  
 
-    // We'll create a dummy dialog at 0,0, then query it's
+    // We'll create a dummy dialog at 0,0, then query its
     // position.  That'll give us back the position of the
     // widget.  Subtract 0,0 from it (easy huh?) and we get
     // the size of the window decorations.  Store these values
@@ -7322,7 +7322,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 // Code to compute SmartBeaconing rates.
 //
 // SmartBeaconing was invented by Steve Bragg (KA9MVA) and Tony Arnerich
-// (KD7TA).  It's main goal is to change the beacon rate based on speed
+// (KD7TA).  Its main goal is to change the beacon rate based on speed
 // and cornering.  It does speed-variant corner pegging and
 // speed-variant posit rate.
 
@@ -7353,7 +7353,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 //                      lower speeds.
 //
 // sb_turn_slope        Fudget factor for making turns less sensitive at
-//                      lower speeds, in units of degrees per 10 mph.
+//                      lower speeds.  No real units on this one.
+//                      It ends up being non-linear over the speed
+//                      range the way the original SmartBeaconing
+//                      algorithm works.
 //
 // sb_turn_time         Dead-time before/after a corner peg beacon.
 //                      Units are in seconds.
@@ -8444,7 +8447,7 @@ void shorten_path( char *path, char *short_path ) {
         // Check for TCPIP or TCPXX as the last digipeater.  If present,
         // remove them.  TCPXX means that the packet came from an unregistered
         // user, and those packets will be rejected in igate.c before they're
-        // sent to RF anyway.  igate.c will check for it's presence in path,
+        // sent to RF anyway.  igate.c will check for its presence in path,
         // not in short_path, so we're ok here to get rid of it in short_path.
         if (strlen(short_path) >= 5) {  // Get rid of "TCPIP" & "TCPXX"
 
