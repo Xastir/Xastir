@@ -484,7 +484,7 @@ char *get_map_dir (char *fullpath) {
  * Right map boundary inside view
  * map_inside_view: 1  view_inside_map: 0  parallel_edges: 0
  * Map not within current view.
- * Skipping map: /usr/local/xastir/maps/tif/uk/425_0525_bng.tif
+ * Skipping map: /usr/local/share/xastir/maps/tif/uk/425_0525_bng.tif
  *
  *
  * I had to check for out-of-bounds numbers for the viewport and
@@ -2462,7 +2462,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                     // Drop off the base part of the
                                     // path for the indexing,
                                     // usually
-                                    // "/usr/local/xastir/maps".
+                                    // "/usr/local/share/xastir/maps".
                                     // Add a '/' to the end.
                                     xastir_snprintf(temp_dir,
                                         sizeof(temp_dir),
@@ -2496,7 +2496,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
 
                                 // Drop off the base part of the
                                 // path for the indexing, usually
-                                // "/usr/local/xastir/maps".
+                                // "/usr/local/share/xastir/maps".
                                 xastir_snprintf(temp_dir,
                                     sizeof(temp_dir),
                                     "%s",
