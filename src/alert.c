@@ -386,11 +386,11 @@ void alert_print_list(void) {
     // Skip NWS_SOLAR and -NoActivationExpected alerts, they don't
     // interest us.
     if (strcmp(entry->to, "NWS-SOLAR") == 0) {
-printf("NWS-SOLAR, skipping\n");
+        //printf("NWS-SOLAR, skipping\n");
         return (NULL);
     }
     if (strcasecmp(entry->title, "-NoActivationExpected") == 0) {
-printf("NoActivationExpected, skipping\n");
+        //printf("NoActivationExpected, skipping\n");
         return (NULL);
     }
 
@@ -404,8 +404,9 @@ printf("NoActivationExpected, skipping\n");
         }
     }
 
-if (entry->expiration < time(NULL))
-printf("Expired, current: %lu, alert: %lu\n", time(NULL), entry->expiration );
+    if (entry->expiration < time(NULL)) {
+        //printf("Expired, current: %lu, alert: %lu\n", time(NULL), entry->expiration );
+    }
 
     // Check for non-zero alert title, non-expired alert time
     if (entry->title[0] != '\0' && entry->expiration >= time(NULL)) {
@@ -417,21 +418,21 @@ printf("Expired, current: %lu, alert: %lu\n", time(NULL), entry->expiration );
         for (i = 0; i < alert_list_count; i++) {
             if (alert_list[i].title[0] == '\0') {   // If alert entry is empty
                 memcpy(&alert_list[i], entry, sizeof(alert_entry)); // Use it
-printf("Found empty entry, filling it\n");
+                //printf("Found empty entry, filling it\n");
                 return ( &alert_list[i]);
             }
         }
 
         // Else fill in the entry at the end and bump up the count
         if (alert_list_count < alert_max_count) {
-printf("Adding new entry\n");
+            //printf("Adding new entry\n");
             memcpy(&alert_list[alert_list_count], entry, sizeof(alert_entry));
             return (&alert_list[alert_list_count++]);
         }
     }
 
     // The title was empty or the alert has already expired
-printf("Title empty or alert expired, skipping\n");
+    //printf("Title empty or alert expired, skipping\n");
     return (NULL);
 }
 
@@ -847,7 +848,7 @@ static void alert_build_list(Message *fill) {
 
             // Terminate title string for each of six structs
             entry[i].title[32] = '\0';
-printf("Title: %s\n",entry[i].title);
+            //printf("Title: %s\n",entry[i].title);
  
             while ((ptr = strpbrk(entry[i].title, " ")))
                 memmove(ptr, ptr+1, strlen(ptr)+1);

@@ -1147,7 +1147,7 @@ void draw_shapefile_map (Widget w,
     int             end_record;
     int             ok_to_draw = 0;
 
-printf("*** Alert color: %d ***\n",alert_color);
+    //printf("*** Alert color: %d ***\n",alert_color);
 
     // We don't draw the shapes if alert_color == -1
     if (alert_color != -1)
@@ -1162,7 +1162,7 @@ printf("*** Alert color: %d ***\n",alert_color);
     i = strlen(filenm);
     while ( (filenm[i] != '/') && (i >= 0) )
         filename = &filenm[i--];
-printf("draw_shapefile_map:filename:%s\ttitle:%s\n",filename,alert->title);    
+        //printf("draw_shapefile_map:filename:%s\ttitle:%s\n",filename,alert->title);    
 
     if (alert)
         weather_alert_flag++;
@@ -1200,99 +1200,102 @@ printf("draw_shapefile_map:filename:%s\ttitle:%s\n",filename,alert->title);
     }
 
 
-    // For weather alerts:
-    // Need to figure out from the initial characters of the filename which
-    // type of file we're using, then compute the fields we're looking for.
-    // After we know that, need to look in the DBF file for a match.  Once
-    // we find a match, we can open up the SHX/SHP files, go straight to
-    // the shape we want, and draw it.
-    switch (filenm[0]) {
+    if (weather_alert_flag) {
 
-        case 'c':   // County File
-            // County, c_ files:  WI_C037
-            // STATE  CWA  COUNTYNAME
-            // AL     BMX  Morgan
-            // Need fields 0/1:
-            search_field1 = 0;  // STATE
-            search_field2 = 3;  // FIPS
-            snprintf(search_param1,sizeof(search_param1),"%c%c",
-                alert->title[0],
-                alert->title[1]);
+        // For weather alerts:
+        // Need to figure out from the initial characters of the filename which
+        // type of file we're using, then compute the fields we're looking for.
+        // After we know that, need to look in the DBF file for a match.  Once
+        // we find a match, we can open up the SHX/SHP files, go straight to
+        // the shape we want, and draw it.
+        switch (filenm[0]) {
+
+            case 'c':   // County File
+                // County, c_ files:  WI_C037
+                // STATE  CWA  COUNTYNAME
+                // AL     BMX  Morgan
+                // Need fields 0/1:
+                search_field1 = 0;  // STATE
+                search_field2 = 3;  // FIPS
+                snprintf(search_param1,sizeof(search_param1),"%c%c",
+                    alert->title[0],
+                    alert->title[1]);
 // Correct.
-            snprintf(search_param2,sizeof(search_param2),"%c%c%c",
-                alert->title[4],
-                alert->title[5],
-                alert->title[6]);
-            break;
+                snprintf(search_param2,sizeof(search_param2),"%c%c%c",
+                    alert->title[4],
+                    alert->title[5],
+                    alert->title[6]);
+                break;
 
-        case 'w':   // County Warning Area File
-            // County Warning Area, w_ files:  CW_ATAE
-            // WFO  CWA
-            // TAE  TAE
-            // Need field 0
-            search_field1 = 0;  // WFO
-            search_field2 = -1;
+            case 'w':   // County Warning Area File
+                // County Warning Area, w_ files:  CW_ATAE
+                // WFO  CWA
+                // TAE  TAE
+                // Need field 0
+                search_field1 = 0;  // WFO
+                search_field2 = -1;
 // Correct
-            snprintf(search_param1,sizeof(search_param1),"%c%c%c",
-                alert->title[4],
-                alert->title[5],
-                alert->title[6]);
-            break;
+                snprintf(search_param1,sizeof(search_param1),"%c%c%c",
+                    alert->title[4],
+                    alert->title[5],
+                    alert->title[6]);
+                break;
 
-        case 'o':   // High Seas Marine Area File
-            // High Seas Marine Zones, oz_ files:  AN_Z081
-            // ID      WFO  NAME
-            // ANZ081  MPC  Gulf of Maine
-            // Need field 0
-            search_field1 = 0;  // ID
-            search_field2 = -1;
+            case 'o':   // High Seas Marine Area File
+                // High Seas Marine Zones, oz_ files:  AN_Z081
+                // ID      WFO  NAME
+                // ANZ081  MPC  Gulf of Maine
+                // Need field 0
+                search_field1 = 0;  // ID
+                search_field2 = -1;
 // Correct
-            snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
-                alert->title[0],
-                alert->title[1],
-                alert->title[3],
-                alert->title[4],
-                alert->title[5],
-                alert->title[6]);
-            break;
+                snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
+                    alert->title[0],
+                    alert->title[1],
+                    alert->title[3],
+                    alert->title[4],
+                    alert->title[5],
+                    alert->title[6]);
+                break;
 
-        case 'm':   // Marine Area File
-            // Marine Zones, mz_ files:  PK_Z120
-            // ID      WFO  NAME
-            // PKZ120  AJK  Area 1B. Southeast Alaska,
-            // Need field 0
-            search_field1 = 0;  // ID
-            search_field2 = -1;
+            case 'm':   // Marine Area File
+                // Marine Zones, mz_ files:  PK_Z120
+                // ID      WFO  NAME
+                // PKZ120  AJK  Area 1B. Southeast Alaska,
+                // Need field 0
+                search_field1 = 0;  // ID
+                search_field2 = -1;
 // Correct
-            snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
-                alert->title[0],
-                alert->title[1],
-                alert->title[3],
-                alert->title[4],
-                alert->title[5],
-                alert->title[6]);
-            break;
+                snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
+                    alert->title[0],
+                    alert->title[1],
+                    alert->title[3],
+                    alert->title[4],
+                    alert->title[5],
+                    alert->title[6]);
+                break;
 
-        case 'z':   // Zone File
-        default:
-            // Weather alert zones, z_ files:  KS_Z033
-            // STATE_ZONE
-            // AK225
-            // Need field 4
-            search_field1 = 4;  // STATE_ZONE
-            search_field2 = -1;
+            case 'z':   // Zone File
+            default:
+                // Weather alert zones, z_ files:  KS_Z033
+                // STATE_ZONE
+                // AK225
+                // Need field 4
+                search_field1 = 4;  // STATE_ZONE
+                search_field2 = -1;
 // Correct
-            snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c",
-                alert->title[0],
-                alert->title[1],
-                alert->title[4],
-                alert->title[5],
-                alert->title[6]);
-            break;
+                snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c",
+                    alert->title[0],
+                    alert->title[1],
+                    alert->title[4],
+                    alert->title[5],
+                   alert->title[6]);
+                break;
+        }
+
+        //printf("Search_param1: %s,\t",search_param1);
+        //printf("Search_param2: %s\n",search_param2);
     }
-
-printf("Search_param1: %s,\t",search_param1);
-printf("Search_param2: %s\n",search_param2);
 
     for( i = 0; i < fieldcount; i++ ) {
         char            szTitle[12];
@@ -1360,7 +1363,7 @@ printf("Search_param2: %s\n",search_param2);
                         ptr = string2;
                         ptr += 2;   // Skip past first two characters of FIPS code
                         if (!strncasecmp(search_param2,ptr,3)) {
-printf("Found it!  %s\tShape: %d\n",string1,i);
+//printf("Found it!  %s\tShape: %d\n",string1,i);
                             done++;
                             found_shape = i;
                         }
@@ -1369,7 +1372,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                 case 'w':   // County Warning Area File
                     string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
-printf("Found it!  %s\tShape: %d\n",string1,i);
+//printf("Found it!  %s\tShape: %d\n",string1,i);
                         done++;
                         found_shape = i;
                     }
@@ -1377,7 +1380,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                 case 'o':   // High Seas Marine Area File
                     string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
-printf("Found it!  %s\tShape: %d\n",string1,i);
+//printf("Found it!  %s\tShape: %d\n",string1,i);
                         done++;
                         found_shape = i;
                     }
@@ -1385,7 +1388,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                 case 'm':   // Marine Area File
                     string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
-printf("Found it!  %s\tShape: %d\n",string1,i);
+//printf("Found it!  %s\tShape: %d\n",string1,i);
                         done++;
                         found_shape = i;
                     }
@@ -1393,7 +1396,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                 case 'z':   // Zone File
                     string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
-printf("Found it!  %s\tShape: %d\n",string1,i);
+//printf("Found it!  %s\tShape: %d\n",string1,i);
                         done++;
                         found_shape = i;
                     }
@@ -1457,7 +1460,8 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
         return;     // The file contains no shapes in our viewport
     }
 
-
+    (void)XSetForeground (XtDisplay (w), gc, colors[(int)0x00]);
+ 
     if (weather_alert_flag) {
         // This GC is used only for pixmap_alerts
         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
@@ -1490,11 +1494,11 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
 //        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
     } else {
         if (water_flag)
-            (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)0x09]);
+            (void)XSetForeground (XtDisplay (w), gc, colors[(int)0x09]);
 
 //        if (road_flag)
         else
-            (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)0x08]);
+            (void)XSetForeground (XtDisplay (w), gc, colors[(int)0x08]);
     }
 
 
@@ -1539,8 +1543,8 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
             const char *temp;
             int jj;
 
-printf("Shape %d is visible, drawing it\t", structure);
-printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
+            //printf("Shape %d is visible, drawing it\t", structure);
+            //printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
 
             if (alert)
                 alert->flags[0] = 'Y';
@@ -1632,20 +1636,20 @@ printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this 
 
                         lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
                         if (lanes != (int)NULL) {
-                            (void)XSetLineAttributes (XtDisplay (w), gc_tint, lanes, LineSolid, CapButt,JoinMiter);
+                            (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
                         }
                     }
 
                     if (water_flag) {
-                        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
+                        (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
 
                     if (ok_to_draw) {
                         int temp;
 
                         //printf("Index = %d\n", index);
-                        //(void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)0x4e]);
-                        temp = XDrawLines (XtDisplay(w), pixmap, gc_tint, points, index, CoordModeOrigin);
+                        //(void)XSetForeground (XtDisplay (w), gc, colors[(int)0x4e]);
+                        temp = XDrawLines (XtDisplay(w), pixmap, gc, points, index, CoordModeOrigin);
                         if (temp != 0) {
                             //printf("*** BAD XDrawLines return value: %d ***\n", temp);
                         }
@@ -1722,16 +1726,16 @@ printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this 
                             i++;    // Number of points to draw
                         }
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
-                            //(void)XSetForeground(XtDisplay (w), gc_tint, colors[(int)0x64]);
+                            //(void)XSetForeground(XtDisplay (w), gc, colors[(int)0x64]);
                             if (map_color_fill || water_flag || weather_alert_flag) {
                                 if (weather_alert_flag)
                                     (void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, i, Complex, CoordModeOrigin);
                                 else
-                                    (void)XFillPolygon (XtDisplay (w), pixmap, gc_tint, points, i, Complex, CoordModeOrigin);
+                                    (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                             } else {
                                 int temp;
 
-                                temp = XDrawLines(XtDisplay(w), pixmap, gc_tint, points, i, CoordModeOrigin);
+                                temp = XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                                 if (temp != 0) {
                                     //printf("*** BAD XDrawLines return value: %d ***\n", temp);
                                 }
@@ -6957,9 +6961,10 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                  || (strcasecmp(ext,"shx") == 0)
                                  || (strcasecmp(ext,"dbf") == 0) ) ) ) { // Or non-alert shapefile map
 #ifdef HAVE_SHAPELIB
-printf("Drawing shapefile map\n");
-if (alert != NULL)
-printf("Alert!\n");
+        //printf("Drawing shapefile map\n");
+        if (alert != NULL) {
+            //printf("Alert!\n");
+        }
         draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
 #endif // HAVE_SHAPELIB
     }
@@ -7673,12 +7678,12 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
             switch (alert->title[3]) {
                 case 'C':   // 'C' in 4th char means county
                     // Use County file c_??????
-                    printf("%c:County file\n",alert->title[3]);
+                    //printf("%c:County file\n",alert->title[3]);
                     strncpy (alert->filename, "c_", sizeof (alert->filename));
                     break;
                 case 'A':   // 'A' in 4th char means county warning area
                     // Use County warning area w_?????
-                    printf("%c:County warning area file\n",alert->title[3]);
+                    //printf("%c:County warning area file\n",alert->title[3]);
                     strncpy (alert->filename, "w_", sizeof (alert->filename));
                     break;
                 case 'Z':
@@ -7687,7 +7692,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                     // mz_: AM,AN,GM,LC,LE,LH,LM,LO,LS,PH,PK,PM,PS,PZ,SL
                     // z_: All others
                     if (strncasecmp(alert->title,"AM",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"AN",2) == 0) {
@@ -7699,56 +7704,56 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 || (strncasecmp(&alert->title[3],"Z085",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z086",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z088",4) == 0) ) {
-                            printf("%c:High seas marine zone file\n",alert->title[3]);
+                            //printf("%c:High seas marine zone file\n",alert->title[3]);
                             strncpy (alert->filename, "oz_", sizeof (alert->filename));
                         }
                         else {
-                            printf("%c:Marine zone file\n",alert->title[3]);
+                            //printf("%c:Marine zone file\n",alert->title[3]);
                             strncpy (alert->filename, "mz_", sizeof (alert->filename));
                         }
                     }
                     else if (strncasecmp(alert->title,"GM",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LC",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LE",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LH",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LM",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LO",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LS",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PH",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PK",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PM",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PS",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PZ",2) == 0) {
@@ -7758,33 +7763,32 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 || (strncasecmp(&alert->title[3],"Z083",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z084",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z085",4) == 0) ) {
-                            printf("%c:High seas marine zone file\n",alert->title[3]);
+                            //printf("%c:High seas marine zone file\n",alert->title[3]);
                             strncpy (alert->filename, "oz_", sizeof (alert->filename));
                         }
                         else {
-                            printf("%c:Marine zone file\n",alert->title[3]);
+                            //printf("%c:Marine zone file\n",alert->title[3]);
                             strncpy (alert->filename, "mz_", sizeof (alert->filename));
                         }
                     }
                     else if (strncasecmp(alert->title,"SL",2) == 0) {
-                        printf("%c:Marine zone file\n",alert->title[3]);
+                        //printf("%c:Marine zone file\n",alert->title[3]);
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else {
                         // Must be regular zone file instead of marine
                         // zone or high seas marine zone.
-                        printf("%c:Zone file\n",alert->title[3]);
+                        //printf("%c:Zone file\n",alert->title[3]);
                         strncpy (alert->filename, "z_", sizeof (alert->filename));
                     }
                     break;
                 default:
                     // Unknown type
-                    printf("%c:Unknown weather warning file\n",alert->title[3]);
+                    printf("%c:Can't match weather warning to a Shapefile:%s\n",alert->title[3],alert->title);
                     break;
             }
-//            strncpy (alert->filename, "we7u", sizeof (alert->filename));
 //            printf("%s\t%s\t%s\n",alert->activity,alert->alert_tag,alert->title);
-            printf("File: %s\n",alert->filename);
+            //printf("File: %s\n",alert->filename);
         }
 
 // NOTE:  Need to skip this part if we have a full filename.
@@ -7818,7 +7822,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 // 
                                 if (strncasecmp(alert->filename,dl->d_name,2) == 0) {
                                     // We have a match
-printf("%s\n",fullpath);
+                                    //printf("%s\n",fullpath);
                                     // Force last three characters to
                                     // "shp"
                                     dl->d_name[strlen(dl->d_name)-3] = 's';
@@ -7828,7 +7832,7 @@ printf("%s\n",fullpath);
                                     // Save the filename in the alert
                                     strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
                                     done++;
-printf("%s\n",dl->d_name);
+                                    //printf("%s\n",dl->d_name);
                                 }
                                 break;
 
@@ -8002,7 +8006,7 @@ void load_alert_maps (Widget w, char *dir) {
         strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
         dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
-printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_tag);
+        //printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_tag);
 
         // Iterate through the weather alerts we currently have.
         for (i = 0; i < alert_list_count; i++) {
@@ -8010,7 +8014,7 @@ printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_ta
             // of pixmap or pixmap_final.  Note that just calling map_search
             // gets the alert areas drawn on the screen via the draw_map()
             // function.
-printf("load_alert_maps() Title: %s\n",alert_list[i].title);
+            //printf("load_alert_maps() Title: %s\n",alert_list[i].title);
 
 // It looks like we want to do this section just to fill in the
 // alert struct and to determine whether the alert is within our
@@ -8062,12 +8066,12 @@ printf("load_alert_maps() Title: %s\n",alert_list[i].title);
         }
     }
 
-printf("Calling alert_sort_active()\n");
+    //printf("Calling alert_sort_active()\n");
 
     // Mark all of the active alerts in the list
     alert_sort_active ();
 
-printf("Drawing all active alerts\n");
+    //printf("Drawing all active alerts\n");
 
     // Run through all the alerts, drawing any that are active
 
@@ -8085,8 +8089,8 @@ printf("Drawing all active alerts\n");
 // Why do we need to draw alerts again here?  Looks like it's to get
 // the right tint color.
 
-printf("Drawing %s\n",alert_list[i].filename);
-//printf("Title4:%s\n",alert_list[i].title);
+            //printf("Drawing %s\n",alert_list[i].filename);
+            //printf("Title4:%s\n",alert_list[i].title);
 
 
             draw_map (w,
@@ -8103,7 +8107,7 @@ printf("Drawing %s\n",alert_list[i].filename);
 //    printf("Title5:%s\n",alert_list[i].title);
 
 
-printf("Done drawing all active alerts\n");
+    //printf("Done drawing all active alerts\n");
 
     (void)alert_display_request ();
 }

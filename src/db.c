@@ -7721,7 +7721,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         printf("5\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"NWS-",4) == 0) {             // NWS weather alert
-printf("found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
+        //printf("found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
         msg_data_add(addr,call,message,"",MESSAGE_NWS,from);
         (void)alert_message_scan();
         done = 1;
