@@ -1130,11 +1130,11 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
     double utmNorthing;
     double utmEasting;
     char utmZone[10];
-    char E_W[25] = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-    char N_S[21] = "ABCDEFGHJKLMNPQRSTUV";
     int start;
     int my_east, my_north;
     unsigned int int_utmEasting, int_utmNorthing;
+    int UPS = 0;
+    int North_UPS = 0;
 
 
     ll_to_utm_ups(E_WGS_84,
@@ -1182,37 +1182,6 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
     // by 100,000.  If even, add 5 (starts at 'F' if even).  Compute
     // modulus 20, then use that index into our N_S array.
 
-    start = atoi(utmZone);
-    start--;
-    start = start % 3;
-    start = start * 8;
-    start = start % 24;
-    // "start" is now an index into the starting letter for the
-    // zone.
-
-
-    my_east = (int)(utmEasting / 100000.0) - 1;
-    my_east = my_east + start;
-    my_east = my_east % 24;
-//    fprintf(stderr, "Start: %c   East (guess): %c   ",
-//        E_W[start],
-//        E_W[my_east]);
-
-
-    start = atoi(utmZone);
-    start = start % 2;
-    if (start) {    // Odd-numbered zone
-        start = 0;
-    }
-    else {  // Even-numbered zone
-        start = 5;
-    }
-    my_north = (int)(utmNorthing / 100000.0);
-    my_north = my_north + start;
-    my_north = my_north % 20;
-//    fprintf(stderr, "Start: %c   North (guess): %c\n",
-//        N_S[start],
-//        N_S[my_north]);
 
     int_utmEasting = utmEasting;
     int_utmNorthing = utmNorthing;
@@ -1220,17 +1189,119 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
     int_utmNorthing = int_utmNorthing % 100000;
 
 
-// Need special processing for UPS area (A/B/Y/Z bands)?
+    // Check for South Polar UPS area, set flags if found.
+    if (   utmZone[1] == 'A'
+        || utmZone[1] == 'B'
+        || utmZone[2] == 'A'
+        || utmZone[2] == 'B' ) {
+        // We're in the South Polar UPS area
+        UPS++;
+    }
+    // Check for North Polar UPS area, set flags if found.
+    else if (   utmZone[1] == 'Y'
+        || utmZone[1] == 'Z'
+        || utmZone[2] == 'Y'
+        || utmZone[2] == 'Z') {
+        // We're in the North Polar UPS area
+        UPS++;
+        North_UPS++;
+    }
+    else {
+        // We're in the UTM area.  Set no flags.
+    }
 
 
-    xastir_snprintf(str,
-        str_len,
-        "%s %c%c %05d %05d",
-        utmZone,
-        E_W[my_east],
-        N_S[my_north],
-        int_utmEasting,
-        int_utmNorthing );
+    if (UPS) {  // Special processing for UPS area (A/B/Y/Z bands)
+
+        // Blank out the zone number (not used for UPS)
+        utmZone[0] = ' ';
+        utmZone[1] = ' ';
+
+        if (North_UPS) {    // North polar UPS zone
+            char UPS_N_Easting[15]  = "RSTUXYZABCFGHJ";
+            char UPS_N_Northing[15] = "ABCDEFGHJKLMNP";
+
+            // Calculate the index into the 2-letter digraph arrays.
+            my_east = (int)(utmEasting / 100000.0);
+            my_east = my_east - 13;
+            my_north = (int)(utmNorthing / 100000.0);
+            my_north = my_north - 13;
+
+            xastir_snprintf(str,
+                str_len,
+                "%s %c%c %05d %05d",
+                utmZone,
+                UPS_N_Easting[my_east],
+                UPS_N_Northing[my_north],
+                int_utmEasting,
+                int_utmNorthing );
+        }
+        else {  // South polar UPS zone
+            char UPS_S_Easting[25]  = "JKLPQRSTUXYZABCFGHJKLPQR";
+            char UPS_S_Northing[25] = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+
+            // Calculate the index into the 2-letter digraph arrays.
+            my_east = (int)(utmEasting / 100000.0);
+            my_east = my_east - 8;
+            my_north = (int)(utmNorthing / 100000.0);
+            my_north = my_north - 8;
+
+            xastir_snprintf(str,
+                str_len,
+                "%s %c%c %05d %05d",
+                utmZone,
+                UPS_S_Easting[my_east],
+                UPS_S_Northing[my_north],
+                int_utmEasting,
+                int_utmNorthing );
+        }
+    }
+    else {  // UTM Area
+        char E_W[25] = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        char N_S[21] = "ABCDEFGHJKLMNPQRSTUV";
+ 
+        // Calculate the indexes into the 2-letter digraph arrays.
+        start = atoi(utmZone);
+        start--;
+        start = start % 3;
+        start = start * 8;
+        start = start % 24;
+        // "start" is now an index into the starting letter for the
+        // zone.
+
+
+        my_east = (int)(utmEasting / 100000.0) - 1;
+        my_east = my_east + start;
+        my_east = my_east % 24;
+//        fprintf(stderr, "Start: %c   East (guess): %c   ",
+//            E_W[start],
+//            E_W[my_east]);
+
+
+        start = atoi(utmZone);
+        start = start % 2;
+        if (start) {    // Odd-numbered zone
+            start = 0;
+        }
+        else {  // Even-numbered zone
+            start = 5;
+        }
+        my_north = (int)(utmNorthing / 100000.0);
+        my_north = my_north + start;
+        my_north = my_north % 20;
+//        fprintf(stderr, "Start: %c   North (guess): %c\n",
+//            N_S[start],
+//            N_S[my_north]);
+
+        xastir_snprintf(str,
+            str_len,
+            "%s %c%c %05d %05d",
+            utmZone,
+            E_W[my_east],
+            N_S[my_north],
+            int_utmEasting,
+            int_utmNorthing );
+    }
 }
 
 
