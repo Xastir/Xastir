@@ -504,6 +504,12 @@ First Time Install:
 
      Make sure you have Shapelib installed first (see above instructions).
 
+     Note that you may have to change the gpsmanshp Makefile to call out
+     "TCLVERSION = 8.4" instead of 8.3, depending upon which version of tcl is
+     installed on your system.  Use your package manager to determine this
+     ("rpm -q -a | grep tcl"), or you may be able to find out in /usr/lib by
+     typing "ls -ld tcl*".
+
      Install gpsmanshp:
 
      tar xzvf gpsmanshp_1.0.2.tgz
