@@ -106,6 +106,7 @@ extern struct Node * RTreeNewNode();
 extern void RTreeInitNode(struct Node*);
 extern void RTreeFreeNode(struct Node *);
 extern void RTreePrintNode(struct Node *, int);
+extern void RTreeDestroyNode(struct Node*);
 extern void RTreeTabIn(int);
 extern struct Rect RTreeNodeCover(struct Node *);
 extern void RTreeInitRect(struct Rect*);

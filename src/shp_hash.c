@@ -19,7 +19,6 @@
 #include "shp_hash.h"
 
 static struct hashtable *shp_hash=NULL;
-static crap=0;
 
 #define SHP_HASH_SIZE 65535
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }

@@ -122,7 +122,9 @@ void RTreePrintNode(struct Node *n, int depth)
 		printf(" NONLEAF");
 	else
 		printf(" TYPE=?");
-	printf("  level=%d  count=%d  address=%o\n", n->level, n->count, n);
+        // Original superliminal.com implementation had no cast before 
+        // n, gcc gripes about "int format, pointer arg"
+        printf("  level=%d  count=%d  address=%lx\n", n->level, n->count, (unsigned long) n);
 
 	for (i=0; i<n->count; i++)
 	{
@@ -179,8 +181,12 @@ int RTreePickBranch(struct Rect *R, struct Node *N)
 	register struct Node *n = N;
 	register struct Rect *rr;
 	register int i, first_time=1;
-	RectReal increase, bestIncr=(RectReal)-1, area, bestArea;
-	int best;
+        // Although it is impossible for bestArea and best to be used
+        // unininitialized the way the code is structured, gcc complains 
+        // about possible uninitialized usage.  Let's keep it happy.
+        // Original superliminal.com had no initializers here.
+	RectReal increase, bestIncr=(RectReal)-1, area, bestArea=0.0;
+	int best=0;
 	struct Rect tmp_rect;
 	assert(r && n);
 

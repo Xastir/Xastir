@@ -307,7 +307,11 @@ int RTreeDeleteRect(struct Rect *R, int Tid, struct Node**Nn)
 	register int tid = Tid;
 	register struct Node **nn = Nn;
 	register int i;
-	register struct Node *tmp_nptr;
+	register struct Node *tmp_nptr=NULL; // Original superliminal.com
+                                             // source did not initialize.
+                                             // Code analysis says shouldn't
+                                             // matter, but let's initialize
+                                             // to shut up GCC
 	struct ListNode *reInsertList = NULL;
 	register struct ListNode *e;
 

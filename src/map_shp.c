@@ -696,8 +696,10 @@ void draw_shapefile_map (Widget w,
 #endif /* !WITH_DBFAWK */
     char            search_param2[10];
     int             found_shape = -1;
+#ifndef USE_RTREE
     int             start_record;
     int             end_record;
+#endif // !USE_RTREE
     int             ok_to_draw = 0;
     int             high_water_mark_i = 0;
     int             high_water_mark_index = 0;
