@@ -57,8 +57,8 @@
 #endif  // WITH_DMALLOC
 
 
-#define STATION_REMOVE_CYCLE 60         /* check station remove in seconds (every minute) */
-#define MESSAGE_REMOVE_CYCLE 60         /* check message remove in seconds (every minute) */
+#define STATION_REMOVE_CYCLE 300        /* check station remove in seconds (every 5 minutes) */
+#define MESSAGE_REMOVE_CYCLE 600        /* check message remove in seconds (every 10 minutes) */
 #define MAX_TRAIL_SEG_LEN    60l        /* max length of displayed trail segments in minutes (1 deg) */
 #define IN_VIEW_MIN         600l        /* margin for off-screen stations, with possible trails on screen, in minutes */
 #define TRAIL_POINT_MARGIN   30l        /* margin for off-screen trails points, for segment to be drawn, in minutes */
