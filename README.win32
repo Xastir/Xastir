@@ -477,10 +477,12 @@ the line that looks like this:
 
     /usr/bin/ld -G -h libshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lc
 
-Change it to this (one space missing):
+Change it to this (one space missing and 'c' changed to "cygwin"):
 
-    /usr/bin/ld -G -hlibshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lc
+    /usr/bin/ld -G -hlibshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lcygwin
 
+I've had another report that says having the space is ok now.  The
+"-lcygwin" is important to bypass the "_reent" bug below.
 
 Here are the commands to bring up an editor on the file:
 
@@ -822,19 +824,6 @@ compile might fail:
 
 To fix this, edit the Makefile to add "-lc" to the end of the LIBS
 line and run "make" again, then "make install".
-
-I have another report from a user that says this:
-
-    "I just installed in Cygwin earlier this morning and I hit this
-    'bug'.  You can update the README.win32 with this info:
-
-        edit the Makefile and change the -lc to -lcygwin
-
-    That fixes the 'bug'."
-
-I don't know whether the last note refers to the Shapelib Makefile
-or the Xastir Makefile, but should find out shortly and I'll change
-this README to comply.  --we7u
 
 
 [ ] TEMPORARY:  It looks like we need to switch to a newer version
