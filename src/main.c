@@ -9055,9 +9055,12 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     input_y = event->xbutton.y;
 
 
+/////////////////
+// CAD OBJECTS //
+/////////////////
 
-// Start of CAD Objects code.  We have both ButtonPress and
-// ButtonRelease code handlers here, for this mode only.
+    // Start of CAD Objects code.  We have both ButtonPress and
+    // ButtonRelease code handlers here, for this mode only.
     // Check whether we're in CAD Object draw mode first
     if (draw_CAD_objects_flag
             && event->xbutton.button == Button2) {
@@ -9071,15 +9074,17 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
         }
         else {  // ButtonPress for Button2
 
-// We need to check to see whether we're dragging the pointer, and
-// then need to save the points away (in Xastir lat/long format),
-// drawing lines between the points whenever we do a pixmap_final
-// refresh to the screen.
+            // We need to check to see whether we're dragging the
+            // pointer, and then need to save the points away (in
+            // Xastir lat/long format), drawing lines between the
+            // points whenever we do a pixmap_final refresh to the
+            // screen.
 
-// Check whether we just did the first mouse button down while in
-// CAD draw mode.  If so, save away the mouse pointer and get out.
-// We'll use that mouse pointer the next time a mouse button gets
-// pressed in order to draw a line.
+            // Check whether we just did the first mouse button down
+            // while in CAD draw mode.  If so, save away the mouse
+            // pointer and get out.  We'll use that mouse pointer
+            // the next time a mouse button gets pressed in order to
+            // draw a line.
 
             // We're going to use gc_tint with an XOR bitblit here
             // to make sure that any lines we draw will be easily
@@ -9122,22 +9127,29 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 // End of CAD Objects code.
 
 
+/////////////////////////////////
+// Start of ButtonRelease code //
+/////////////////////////////////
 
-// Start of ButtonRelease code
     if (!done && event->type == ButtonRelease) {
         //fprintf(stderr,"ButtonRelease %d %d\n",event->xbutton.button,Button3);
 
 #ifdef SWAP_MOUSE_BUTTONS
         if (event->xbutton.button == Button3) {
-// Right mouse button release
+            // Right mouse button release
 #else   // SWAP_MOUSE_BUTTONS
         if (event->xbutton.button == Button1) {
-// Left mouse button release
+            // Left mouse button release
 #endif  // SWAP_MOUSE_BUTTONS
 
             // If no drag, Center the map on the mouse pointer
             // If drag, compute new zoom factor/center and redraw
             // -OR- measure distances.
+
+
+/////////////////////////
+// CENTER MAP FUNCTION //
+/////////////////////////
 
             // Check for "Center Map" function.  Must be within 15
             // pixels of where the button press occurred to qualify.
@@ -9164,6 +9176,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             else {
                 // At this stage we have menu_x/menu_y where the button press occurred,
                 // and input_x/input_y where the button release occurred.
+
+
+//////////////////////
+// MEASURE DISTANCE //
+//////////////////////
 
                 if (measuring_distance) {   // Measure distance function
 
@@ -9277,6 +9294,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     popup_message(langcode("POPUPMA020"),temp);
                 }
 
+
+///////////////////
+// MOVING OBJECT //
+///////////////////
+
                 else if (moving_object) {   // Move function
                     // For this function we need to:
                     //      Determine which icon is closest to the mouse pointer press position.
@@ -9323,6 +9345,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                       // position.
                     Station_info(w, "2", NULL);
                 }
+
+
+/////////////////////////////
+// COMPUTE NEW CENTER/ZOOM //
+/////////////////////////////
 
                 else {  // Must be "Compute new center/zoom" function
                     float ratio;
@@ -9394,8 +9421,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             mouse_zoom = 0;
         }   // End of Button1 release code
 
+
+//////////////
+// ZOOM OUT //
+//////////////
+
         else if (event->xbutton.button == Button2) {
-// Middle mouse button release
+            // Middle mouse button release
 
             // Zoom out 2x with panning
             menu_x=input_x;
@@ -9407,12 +9439,17 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             mouse_zoom = 0;
         }   // End of Button2 release code
 
+
+////////////////////////////////
+// THIRD MOUSE BUTTON RELEASE // 
+////////////////////////////////
+
 #ifdef SWAP_MOUSE_BUTTONS
         else if (event->xbutton.button == Button1) {
-// Left mouse button release
+            // Left mouse button release
 #else   // SWAP_MOUSE_BUTTONS
         else if (event->xbutton.button == Button3) {
-// Right mouse button release
+            // Right mouse button release
 #endif  // SWAP_MOUSE_BUTTONS
 
             // Do nothing.  We have a popup tied into the button press anyway.
@@ -9421,6 +9458,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             mouse_zoom = 0;
         }   // End of Button3 release code
 
+
+///////////////
+// SCROLL UP //
+///////////////
+
         else if (event->xbutton.button == Button4) {
 // Scroll up
             menu_x=input_x;
@@ -9428,12 +9470,22 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             Pan_up(w, client_data, call_data);
         }   // End of Button4 release code
 
+
+/////////////////
+// SCROLL DOWN //
+/////////////////
+
         else if (event->xbutton.button == Button5) {
 // Scroll down
             menu_x=input_x;
             menu_y=input_y;
             Pan_down(w, client_data, call_data);
         }   // End of Button5 release code
+
+
+////////////////////////////////////
+// YET MORE MOUSE BUTTON RELEASES //
+////////////////////////////////////
 
         else if (event->xbutton.button == 6) {
 // Mouse button 6 release
@@ -9455,7 +9507,10 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
 
 
-// Start of ButtonPress code
+///////////////////////////////
+// Start of ButtonPress code //
+///////////////////////////////
+
     else if (!done && event->type == ButtonPress) {
         //fprintf(stderr,"ButtonPress %d %d\n",event->xbutton.button,Button3);
 
@@ -9501,8 +9556,10 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 // End of ButtonPress code
 
 
+////////////////////////////
+// Start of KeyPress code //
+////////////////////////////
 
-// Start of KeyPress code
     else if (!done && event->type == KeyPress) {
 
         // We want to branch from the keysym instead of the keycode
@@ -9591,7 +9648,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 // End of KeyPress code
 
 
-
+//////////////////////////////////
+// START OF SOMETHING ELSE CODE //
+//////////////////////////////////
     else if (!done) {  // Something else
         if (event->type == MotionNotify) {
             input_x = event->xmotion.x;
