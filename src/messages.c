@@ -304,7 +304,6 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_outgoing_mes
         /* find station  */
         if (mw[i].send_message_dialog!=NULL) /* clear submit */
             XtSetSensitive(mw[i].button_ok,TRUE);
-
     }
 
 end_critical_section(&send_message_dialog_lock, "messages.c:clear_outgoing_messages" );
@@ -381,8 +380,10 @@ void output_message(char *from, char *to, char *message) {
                 strcpy(message_pool[i].message_line,message_out);
                 xastir_snprintf(message_pool[i].seq, sizeof(message_pool[i].seq),
                         "%d", message_counter);
+
                 message_pool[i].active_time=0;
-                message_pool[i].next_time= (time_t)30l; /* was 120 -FG */
+                message_pool[i].next_time = (time_t)15l;
+
                 if (strcmp(from,"***")!= 0)
                     message_pool[i].tries = 0;
                 else
@@ -466,7 +467,7 @@ void check_and_transmit_messages(time_t time) {
     for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
             if (message_pool[i].wait_on_first_ack!=1) {
-                if (message_pool[i].active_time<time) {
+                if (message_pool[i].active_time < time) {
                     /* sending message let the tnc and net transmits check to see if we should */
                     if (debug_level & 2)
                         printf("Time %ld Active time %ld next time %ld\n",(long)time,(long)message_pool[i].active_time,(long)message_pool[i].next_time);
@@ -484,14 +485,66 @@ void check_and_transmit_messages(time_t time) {
                         printf("MESSAGE OUT>%s<\n",temp);
 
                     transmit_message_data(message_pool[i].to_call_sign,temp);
-                    message_pool[i].active_time=time+message_pool[i].next_time;
-                    message_pool[i].next_time+=30; /*was (message_pool[i].next_time*2) -FG */
+
+
+//WE7U
+                    message_pool[i].active_time = time + message_pool[i].next_time;
+
+                    //printf("%d\n",(int)message_pool[i].next_time);
+
+                    // Start at 15 seconds for the interval.  Add 5 seconds to the
+                    // interval each retry until we hit 90 seconds.  90 second
+                    // intervals until retry 30, then start adding 30 seconds to
+                    // the interval each time until we get to a 10 minute interval
+                    // rate.  Keep transmitting at 10 minute intervals until we
+                    // hit MAX_RETRIES.
+
+                    // Increase interval by 5 seconds each time
+                    // until we hit 90 seconds
+                    if ( message_pool[i].next_time < (time_t)90l )
+                         message_pool[i].next_time += 5;
+
+                    // Increase the interval by 30 seconds each time
+                    // after we hit 30 retries
+                    if ( message_pool[i].tries >= 30 )
+                        message_pool[i].next_time += 30;
+
+                    // Limit the max interval to 10 minutes
                     if (message_pool[i].next_time > (time_t)600l)
                         message_pool[i].next_time = (time_t)600l;
 
                     message_pool[i].tries++;
-                    if (message_pool[i].tries > MAX_TRIES)
-                        clear_outgoing_message(i);
+
+                    // Expire it if we hit the limit
+                    if (message_pool[i].tries > MAX_TRIES) {
+                        char temp[150];
+                        char temp_to[20];
+
+                        xastir_snprintf(temp,sizeof(temp),"To: %s, Msg: %s",
+                            message_pool[i].to_call_sign,
+                            message_pool[i].message_line);
+                        //popup_message(langcode("POPEM00004"),langcode("POPEM00017"));
+                        popup_message( "Retries Exceeded!", temp );
+
+                        // Fake the system out: We're pretending
+                        // that we got an ACK back from it so that
+                        // we can either release the next message to
+                        // go out, or at least make the send button
+                        // sensitive again.
+                        // We need to copy the to_call_sign into
+                        // another variable because the
+                        // clear_acked_message() function clears out
+                        // the message then needs this parameter to
+                        // do another compare (to enable the Send Msg
+                        // button again).
+                        strcpy(temp_to,message_pool[i].to_call_sign);
+                        clear_acked_message(temp_to,
+                            message_pool[i].from_call_sign,
+                            message_pool[i].seq);
+
+                        if (mw[i].send_message_dialog!=NULL) /* clear submit */
+                            XtSetSensitive(mw[i].button_ok,TRUE);
+                    }
                 }
             } else {
                 if (debug_level & 2)
@@ -544,7 +597,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
                                 }
                             }
                         }
-                        /* now release that message */
+                        // Release the next message in the queue for transmission
                         if (found!=-1)
                             message_pool[found].wait_on_first_ack=0;
                         else {
@@ -557,6 +610,7 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_acked_messag
                                 if (mw[ii].send_message_dialog!=NULL) {
                                     strcpy(temp1,XmTextFieldGetString(mw[ii].send_message_call_data));
                                     (void)to_upper(temp1);
+                                    //printf("%s\t%s\n",temp1,from);
                                     if (strcmp(temp1,from)==0) {
                                         /*clear submit*/
                                         XtSetSensitive(mw[ii].button_ok,TRUE);
