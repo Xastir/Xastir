@@ -10435,6 +10435,7 @@ void index_save_to_file() {
 
     current = map_index_head;
 
+/*
     while (current != NULL) {
 
         // Write each object out to the file
@@ -10449,6 +10450,7 @@ void index_save_to_file() {
             current = current->next;
         }
     }
+*/
     (void)fclose(f);
 }
 
@@ -10537,10 +10539,6 @@ void map_indexer(void) {
     }
     else {  // File exists
         map_index_timestamp = (time_t *)&nfile.st_ctime;
-
-        // Read the current map index file into the linked list here
-        index_restore_from_file();
-
         check_times = 1;
     }
 
