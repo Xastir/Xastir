@@ -14,6 +14,7 @@ EXTRA_DIST = \
     language-Portuguese.sys \
     language-Spanish.sys \
     xastir.rgb \
+    gps_wpt.dbfawk \
     tgr2shp.dbfawk \
     tgrcty.dbfawk \
     tgrkgl.dbfawk \

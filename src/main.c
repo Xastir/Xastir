@@ -578,7 +578,9 @@ char gps_map_filename[MAX_FILENAME];// Chosen name of gps map (including color)
 char gps_map_filename_base[MAX_FILENAME];   // Same minus ".shp"
 char gps_temp_map_filename[MAX_FILENAME];
 char gps_temp_map_filename_base[MAX_FILENAME];  // Same minus ".shp"
+char gps_dbfawk_format[]="BEGIN_RECORD {key=\"\"; lanes=1; color=%d; name=\"\"; filled=0; pattern=0; display_level=256; label_level=128; label_color=8; symbol=\"\"}\n";
 int gps_map_color = 0;              // Chosen color of gps map
+int gps_map_color_offset;           // offset into colors array of that color.
 char gps_map_type[30];              // Type of GPS download
 void check_for_new_gps_map(void);
 Widget GPS_operations_dialog = (Widget)NULL;
@@ -11116,11 +11118,11 @@ void segfault(/*@unused@*/ int sig) {
 */
 #ifndef OLD_PTHREADS
 void usr1sig(int sig) {
-	if (debug_level & 512)
-		fprintf(stderr, "Caught Signal USR1, Doing a snapshot! Signal No %d\n", sig);
+    if (debug_level & 512)
+        fprintf(stderr, "Caught Signal USR1, Doing a snapshot! Signal No %d\n", sig);
 
-	last_snapshot = 0;
-	(void)Snapshot();
+    last_snapshot = 0;
+    (void)Snapshot();
 }
 #endif  // OLD_PTHREADS
 
@@ -12867,33 +12869,51 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
     (void)remove_trailing_spaces(short_filename);
 
     switch (gps_map_color) {
-        case 0:
+        case 0: {
             xastir_snprintf(color_text,sizeof(color_text),"Red");
+            gps_map_color_offset=0x0c;
             break;
-        case 1:
+        }
+        case 1: {
             xastir_snprintf(color_text,sizeof(color_text),"Green");
+            gps_map_color_offset=0x23;
             break;
-        case 2:
+        }
+        case 2: {
             xastir_snprintf(color_text,sizeof(color_text),"Black");
+            gps_map_color_offset=0x08;
             break;
-        case 3:
+        }
+        case 3: {
             xastir_snprintf(color_text,sizeof(color_text),"White");
+            gps_map_color_offset=0x0f;
             break;
-        case 4:
+        }
+        case 4: {
             xastir_snprintf(color_text,sizeof(color_text),"Orange");
+            gps_map_color_offset=0x62;
             break;
-        case 5:
+        }
+        case 5: {
             xastir_snprintf(color_text,sizeof(color_text),"Blue");
+            gps_map_color_offset=0x03;
             break;
-        case 6:
+        }
+        case 6: {
             xastir_snprintf(color_text,sizeof(color_text),"Yellow");
+            gps_map_color_offset=0x0e;
             break;
-        case 7:
+        }
+        case 7: {
             xastir_snprintf(color_text,sizeof(color_text),"Purple");
+            gps_map_color_offset=0x0b;
             break;
-        default:
+        }
+        default: {
             xastir_snprintf(color_text,sizeof(color_text),"Red");
+            gps_map_color_offset=0x0c;
             break;
+        }
     }
 
     // If doing waypoints, don't add the color onto the end
@@ -13357,7 +13377,27 @@ void check_for_new_gps_map(void) {
                 return;
             }
  
-
+            if (strcmp(gps_map_type,"Waypoints") != 0) {
+                // KM5VY: Create a really, really simple dbfawk file to
+                // go with the shapefile.  This is a dbfawk file of the
+                // "per file" type, with the color hardcoded into it.
+                // This will enable downloaded gps shapefiles to have
+                // the right color even when they're not placed in the
+                // GPS directory.
+                // We don't do this for waypoint files, because all we need to
+                // do for those is associate the name with the waypoint, and 
+                // that can be done by a generic signature-based file.
+                xastir_snprintf(temp,
+                                sizeof(temp),
+                                "%s/%s.dbfawk",
+                                get_user_base_dir("gps"),
+                                gps_map_filename_base);
+                f=fopen(temp,"w"); // open for write
+                if (f != NULL) {
+                    fprintf(f,gps_dbfawk_format,gps_map_color_offset);
+                    fclose(f);
+                }
+            }
             // Add the new gps map to the list of selected maps
             f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
             if (f!=NULL) {
@@ -16492,7 +16532,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         button_filled_yes, button_filled_no, button_layer_change,
         button_auto_maps_yes, button_auto_maps_no,
         button_max_zoom_change, button_min_zoom_change,
-	button_select_all;
+        button_select_all;
     Atom delw;
     Arg al[10];                     // Arg List
     register unsigned int ac = 0;   // Arg Count
@@ -28290,7 +28330,7 @@ int main(int argc, char *argv[], char *envp[]) {
     (void) signal(SIGTERM,quit);
 
 #ifndef OLD_PTHREADS
-    (void) signal(SIGUSR1,usr1sig);			// take a snapshot on demand 
+    (void) signal(SIGUSR1,usr1sig);                     // take a snapshot on demand 
 #endif  // OLD_PTHREADS
 
     (void) signal(SIGPIPE,SIG_IGN);                     // set sigpipe signal to ignore

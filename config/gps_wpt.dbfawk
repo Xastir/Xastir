@@ -1,0 +1,20 @@
+# $Id$
+#
+# Copyright (C) 2003-2004  The Xastir Group
+#
+# This dbfawk file is used to map dbf data that accompanies a shapefile created
+# by the "Fetch GPS Waypoints" option of Xastir.
+#
+# It simply attaches the name of the waypoint to the displayed waypoint.
+#
+BEGIN{
+# identifies the signature we want to recognize
+  dbfinfo="name:commt:date";
+# and the fields we actually care about
+  dbffields="name";
+}
+# Executed at beginning of each record, reset defaults
+BEGIN_RECORD {key=""; lanes=1; color=3; name=""; filled=0; pattern=0; display_level=256; label_level=128; label_color=8; symbol="/. "}
+# Find the name, make sure it gets displayed along with the data.
+/^name=(.*)$/ {name="$1";}
+
