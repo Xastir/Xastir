@@ -119,7 +119,9 @@ Getting Maps and other Data Files for Xastir:
       you can skip this step and use the online Tiger/Terraserver maps
       exclusively. However, having maps on your computer is often faster
       than transferring images over a modem, and is not subject to the
-      failures of your internet connection.
+      failures of your internet connection.  See the section below on map
+      caching for an exciting feature that works with online Tigermaps to
+      really speed things up!
 
       You can have any number of maps in the /usr/local/share/xastir/maps
       directory.  You can organize the maps however you like. You can also
@@ -948,6 +950,27 @@ WHERE TO FIND MORE INFO ON MAP DATUMS, ETC:
     "Geodesy for the Layman"
     http://www.ngs.noaa.gov/PUBS_LIB/Geodesy4Layman/toc.htm
     
+
+
+MAP CACHING (WORKS WITH ONLINE TIGERMAPS):
+
+    Map caching works in conjunction with the Tiger map download routines,
+    which fetch gif formatted maps from http://tiger.census.gov.  The map
+    caching features use functions found in Berkeley DB 4.0 library, aka
+    libdb (version 4.0 or better), to create and manage a cache directory
+    and a persistant database of information about the files in the cache
+    directory.  This directory defaults to ~/.xastir/map_cache.  The files
+    under this directory can be cleaned up or removed by hand at any time
+    - the caching routines will simply download the maps and put a new
+    entry into the .db file.
+
+    Map files are saved with filenames that include the number of seconds
+    since the Unix epoch.  This allows the caching routines to easily
+    determine the age of maps so that older cached maps can be deleted.
+    This is currently (Dec 2004) controlled with a compile time maximum
+    age setting.  See map_cache.h for specifics and for brief
+    documentation about all of the map_cache functions. 
+ 
 
 
   ------------------------------------------------------------------------
