@@ -14196,6 +14196,7 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
 void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_cancel;
     Atom delw;
+    int length;
 
     if (!configure_timing_dialog) {
         configure_timing_dialog = XtVaCreatePopupShell(langcode("WPUPCFTM01"),
@@ -14222,6 +14223,8 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        length = strlen(langcode("WPUPCFTM02")) + 1;
+
         // Posit Time
         posit_interval = XtVaCreateManagedWidget("Posit Interval",
                 xmScaleWidgetClass,
@@ -14243,10 +14246,12 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNdecimalPoints, 1,    // Move decimal point over one
                 XmNshowValue, TRUE,
                 XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
-                XtVaTypedArg, XmNtitleString, XmRString, "Posit TX Interval (min)", 24,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM02"), length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+        length = strlen(langcode("WPUPCFTM03")) + 1;
 
         // Interval for stations being considered old (symbol ghosting)
         ghosting_time = XtVaCreateManagedWidget("Station Ghosting Time",
@@ -14268,10 +14273,12 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 3*60,   // Three hours
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_old/60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Station Ghosting Time (min)", 28,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM03"), length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+        length = strlen(langcode("WPUPCFTM04")) + 1;
 
         // Object Item Transmit Interval
         object_item_interval = XtVaCreateManagedWidget("Object/Item Transmit Interval (min)",
@@ -14294,11 +14301,13 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 120,    // 120 minutes
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(OBJECT_rate / 60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Object/Item TX Interval (min)", 30,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM04"), length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
  
+        length = strlen(langcode("WPUPCFTM05")) + 1;
+
         // Interval for station not being displayed
         clearing_time = XtVaCreateManagedWidget("Station Clear Time",
                 xmScaleWidgetClass,
@@ -14320,10 +14329,12 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 24*7,   // One week
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_clear/(60*60)),
-                XtVaTypedArg, XmNtitleString, XmRString, "Station Clear Time (hours)", 27,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM05"), length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+        length = strlen(langcode("WPUPCFTM06")) + 1;
 
         // GPS Time
         gps_interval = XtVaCreateManagedWidget("GPS Interval",
@@ -14346,11 +14357,13 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 60,     // Sixty seconds
                 XmNshowValue, TRUE,
                 XmNvalue, (int)gps_time,
-                XtVaTypedArg, XmNtitleString, XmRString, "GPS Check Interval (sec)", 25,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM06"), length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
  
+        length = strlen(langcode("WPUPCFTM07")) + 1;
+
         // Interval for station being removed from database
         removal_time = XtVaCreateManagedWidget("Station Delete Time",
                 xmScaleWidgetClass,
@@ -14372,10 +14385,12 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 14,     // Two weeks
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_remove/(60*60*24)),
-                XtVaTypedArg, XmNtitleString, XmRString, "Station Delete Time (days)", 27,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM07"), length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+
+        length = strlen(langcode("WPUPCFTM08")) + 1;
 
         // Dead Reckoning Timeout
         dead_reckoning_time = XtVaCreateManagedWidget("DR Time (min)",
@@ -14398,7 +14413,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 60,     // Sixty minutes
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(dead_reckoning_timeout / 60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Dead-Reckoning Timeout (min)", 29,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM08"), length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);

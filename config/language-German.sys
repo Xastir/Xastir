@@ -342,7 +342,14 @@ WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige von Nachrichten mi Entfernung Null||
 #
 # PopUp "Zeitverhalten"
-WPUPCFTM01|Zeitverhalten Einstellungen||
+WPUPCFTM01|Zeitverhalten Einstellungen|||
+WPUPCFTM02|Posit TX Interval (min)||
+WPUPCFTM03|Station Ghosting Time (min)||
+WPUPCFTM04|Object/Item TX Interval (min)||
+WPUPCFTM05|Station Clear Time (hours)||
+WPUPCFTM06|GPS Check Interval (sec)||
+WPUPCFTM07|Station Delete Time (days)||
+WPUPCFTM08|Dead-Reckoning Timeout (min)||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem Einstellungen||

@@ -346,7 +346,14 @@ WPUPCFD028|Waarschuw als Speciale Functie Toetsen Aanstaan||
 WPUPCFD029|Geef zero-distance Bulletins Weer||
 #
 # PopUp "Configure - Timing"
-WPUPCFTM01|Configureer Tijdsinstelling||
+WPUPCFTM01|Configureer Tijdsinstelling|||
+WPUPCFTM02|Posit TX Interval (min)||
+WPUPCFTM03|Station Ghosting Time (min)||
+WPUPCFTM04|Object/Item TX Interval (min)||
+WPUPCFTM05|Station Clear Time (hours)||
+WPUPCFTM06|GPS Check Interval (sec)||
+WPUPCFTM07|Station Delete Time (days)||
+WPUPCFTM08|Dead-Reckoning Timeout (min)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer Coordinaten Stelsel||
