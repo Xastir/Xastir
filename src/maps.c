@@ -4408,6 +4408,9 @@ void load_maps (Widget w) {
     if (debug_level & 16)
         fprintf(stderr,"Load maps start\n");
 
+    if (interrupt_drawing_now)
+        return;
+
     // Skip the sorting of the maps if we don't need to do it
     if (re_sort_maps) {
 
@@ -4428,6 +4431,7 @@ void load_maps (Widget w) {
                 fprintf(stderr,"Load maps Open map file\n");
 
             while (!feof (f)) {
+
                 // Grab one line from the file
                 if ( fgets( mapname, MAX_FILENAME-1, f ) != NULL ) {
 
@@ -4547,6 +4551,12 @@ void load_maps (Widget w) {
     current = map_sorted_list_head;
     while  (current != NULL) {
 
+        if (interrupt_drawing_now) {
+            statusline(" ",1);      // delete status line
+            return;
+        }
+
+ 
         // Debug
 //        fprintf(stderr,"Drawing level:%05d, file:%s\n",
 //            current->map_layer,
@@ -4568,3 +4578,5 @@ void load_maps (Widget w) {
     if (debug_level & 16)
         fprintf(stderr,"Load maps stop\n");
 }
+
+

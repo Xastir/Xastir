@@ -740,6 +740,9 @@ Pixmap  pixmap_25pct_stipple; // 25% pixels used for large position ambiguity
 Pixmap  pixmap_13pct_stipple; // 12.5% pixels used for larger position ambiguity
 Pixmap  pixmap_wx_stipple;  // Used for weather alerts
 
+int interrupt_drawing_now = 0;  // Flag used to interrupt map drawing
+int request_resize = 0;         // Flag used to request a resize operation
+
 XastirGlobal Global;
 
 char *database_ptr;             /* database pointers */
@@ -2710,6 +2713,10 @@ void busy_cursor(Widget w) {
 // copying the image from pixmap_final() to the screen's drawing
 // area.
 //
+// We check for interrupt_drawing_now flag being set, and exit
+// nicely if so.  That flag means that some other drawing operation
+// needs to happen.
+//
 void create_image(Widget w) {
     Dimension width, height, margin_width, margin_height;
     long lat_offset_temp;
@@ -2726,10 +2733,16 @@ void create_image(Widget w) {
     if (debug_level & 4)
         fprintf(stderr,"Create image start\n");
 
+    if (interrupt_drawing_now)
+        return;
+
     // If we're in the middle of ID'ing, wait a bit.
     if (ATV_screen_ID && pending_ID_message)
         usleep(2000000);    // 2 seconds
 
+    if (interrupt_drawing_now)
+        return;
+ 
     /* First get the various dimensions */
     XtVaGetValues(w,
               XmNwidth,         &width,
@@ -2802,11 +2815,17 @@ void create_image(Widget w) {
             break;
     }
 
+    if (interrupt_drawing_now)
+        return;
+ 
     (void)XSetForeground(XtDisplay(w),gc,colors[0xfd]);
     (void)XSetBackground(XtDisplay(w),gc,colors[0xfd]);
 
     (void)XFillRectangle(XtDisplay(w), pixmap,gc,0,0,screen_width,screen_height);
 
+    if (interrupt_drawing_now)
+        return;
+ 
     statusline(langcode("BBARSTA003"),1);       // Loading Maps
 
 #ifdef HAVE_IMAGEMAGICK
@@ -2817,6 +2836,9 @@ void create_image(Widget w) {
         draw_tiger_map(w);
 #endif // HAVE_IMAGEMAGICK
 
+    if (interrupt_drawing_now)
+        return;
+ 
     if (display_up_first != 0) {
         if (map_auto_maps && !disable_all_maps)
             load_auto_maps(w,AUTO_MAP_DIR);
@@ -2830,18 +2852,30 @@ void create_image(Widget w) {
     // Update to screen
 //    (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
+    if (interrupt_drawing_now)
+        return;
+ 
     /* copy map data to alert pixmap */
     (void)XCopyArea(XtDisplay(w),pixmap,pixmap_alerts,gc,0,0,screen_width,screen_height,0,0);
 
+    if (interrupt_drawing_now)
+        return;
+ 
     if (!wx_alert_style && !disable_all_maps)
         load_alert_maps(w, ALERT_MAP_DIR);  // These write onto pixmap_alerts
 
     // Update to screen
 //    (void)XCopyArea(XtDisplay(da),pixmap_alerts,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
+    if (interrupt_drawing_now)
+        return;
+ 
     /* copy map and alert data to final pixmap */
     (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,screen_width,screen_height,0,0);
 
+    if (interrupt_drawing_now)
+        return;
+ 
     wx_alert_update_list();
 
     /* Compute distance */
@@ -2884,8 +2918,14 @@ void create_image(Widget w) {
         temp_course,
         sizeof(temp_course) );
 
+    if (interrupt_drawing_now)
+        return;
+ 
     draw_grid(w);                       // Draw grid if enabled
 
+    if (interrupt_drawing_now)
+        return;
+ 
     display_file(w);                    // display stations (symbols, info, trails)
 
     last_alert_redraw=sec_now();        // set last time of screen redraw
@@ -7004,15 +7044,23 @@ void create_gc(Widget w) {
 
 
 
+// This routine just copies an area from pixmap_final to the
+// display, so we won't go through all the trouble of making this
+// interruptable.  Just get on with it, perform the operation, and
+// return to X.  If it did any map drawing, we'd make it
+// interruptable.
+//
 void da_expose(Widget w, /*@unused@*/ XtPointer client_data, XtPointer call_data) {
     Dimension width, height, margin_width, margin_height;
     XmDrawingAreaCallbackStruct *db = (XmDrawingAreaCallbackStruct *)call_data;
     XExposeEvent *event = (XExposeEvent *) db->event;
     unsigned char   unit_type;
 
+    //fprintf(stderr,"Expose event\n");*/
+
     /* Call a routine to create a Graphics Context */
     create_gc(w);
-    /*fprintf(stderr,"Expose event\n");*/
+
     /* First get the various dimensions */
     XtVaGetValues(w,
                 XmNwidth, &width,
@@ -7029,8 +7077,19 @@ void da_expose(Widget w, /*@unused@*/ XtPointer client_data, XtPointer call_data
 
 
 
-void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPointer call_data) {
+// The work function for resizing.  This one will be called by
+// UpdateTime() if certain flags have been set my da_resize.  This
+// function and the functions it calls that are CPU intensive should
+// be made interruptable:  They should check interrupt_drawing_now
+// flag periodically and exit nicely if it is set.
+//
+void da_resize_execute(Widget w) {
     Dimension width, height;
+
+
+    // Reset the flags that may have brought us here.
+    interrupt_drawing_now = 0;
+    request_resize = 0;
 
     if (XtIsRealized(w)){
         /* First get the various dimensions */
@@ -7071,10 +7130,40 @@ void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPoin
                 width,height,
                 DefaultDepthOfScreen(XtScreen(w)));
 
+        if (interrupt_drawing_now)
+            return;
+
         setup_in_view();    // flag stations that are in screen view
+
+        if (interrupt_drawing_now)
+            return;
+
         create_image(w);
+
+        if (interrupt_drawing_now)
+            return;
+
         (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
     }
+}
+
+
+
+
+
+// We got a resize callback.  Set flags.  UpdateTime() will come
+// along in a bit and perform the resize.  With this method, the
+// resize can be made interruptable.  We merely need to check for
+// the interrupt_drawing_now flag periodically while doing the
+// resize drawing.
+//
+void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPointer call_data) {
+
+    // Set the interrupt_drawing_now flag
+    interrupt_drawing_now++;
+
+    // Set the request_resize flag
+    request_resize++;
 }
 
 
@@ -7566,6 +7655,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // can cause a complete redraw of the maps.
             check_for_new_gps_map();
 #endif  // HAVE_GPSMAN
+
+            // Check on resize requests
+            if (request_resize) {
+                da_resize_execute(w);
+            }
 
             /* check on Redraw requests */
             if (         ( (redraw_on_new_data > 1)

@@ -47,7 +47,9 @@ extern char altnet_call[];
 extern int altnet;
 extern Widget iface_da;
 extern FILE *read_file_ptr;
+extern int interrupt_drawing_now;
 
+ 
 #define VERSIONFRM  (!altnet?XASTIR_TOCALL:altnet_call) /* Packet version info */
 
 
