@@ -10093,7 +10093,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     (void)sound_done();
 
     if(display_up) {
+
         if(display_up_first == 0) {             // very first call, do initialization
+
             display_up_first = 1;
             statusline("Loading symbols...",1);
             load_pixmap_symbol_file("symbols.dat", 0);
@@ -10103,7 +10105,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             set_last_position();                // init last map position
             statusline("Start interfaces...",1);
             startup_all_or_defined_port(-1);    // start interfaces
-        } else {
+        }
+
+        else {  // Not the first time UpdateTime was called.
+                // Perform the regular updates.
+
             popup_time_out_check();             // clear popup windows after timeout
             check_statusline_timeout();         // clear statusline after timeout
             check_station_remove();             // remove old stations
