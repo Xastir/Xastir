@@ -2783,3 +2783,61 @@ short checkHash(char *theCall, short theHash) {
 }
 
 
+/* curl routines */
+#ifdef HAVE_LIBCURL
+
+#include <curl/curl.h>
+#include <curl/types.h>
+#include <curl/easy.h>
+
+struct FtpFile {
+  char *filename;
+  FILE *stream;
+};
+
+int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream) {
+  struct FtpFile *out = (struct FtpFile *)stream;
+  if (out && !out->stream) {
+    out->stream=fopen(out->filename, "wb");
+    if (!out->stream)
+      return -1;
+  }
+  return fwrite(buffer, size, nmemb, out->stream);
+}
+
+void curl_getfile(char *fileimg, char *local_filename) {
+    CURL *curl;
+    CURLcode res;
+    char curlerr[CURL_ERROR_SIZE];
+    struct FtpFile ftpfile;
+
+    curl = curl_easy_init();
+
+    if (curl) { 
+
+            curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
+            curl_easy_setopt(curl, CURLOPT_URL, fileimg);
+
+            ftpfile.filename = local_filename;
+            ftpfile.stream = NULL;
+            curl_easy_setopt(curl, CURLOPT_FILE, &ftpfile);    
+
+            res = curl_easy_perform(curl);
+
+            curl_easy_cleanup(curl);
+
+            if (CURLE_OK != res) {
+                fprintf(stderr, "curl told us %d\n", res);
+                fprintf(stderr, "curlerr is %s\n", curlerr);
+            }
+
+            if (ftpfile.stream)
+                fclose(ftpfile.stream);
+
+        } else { 
+            fprintf(stderr,"Couldn't download the file %s\n", fileimg);
+            return;
+        }
+}        
+#endif
