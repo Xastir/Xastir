@@ -7791,7 +7791,9 @@ void CAD_object_allocate(long latitude, long longitude) {
 
 
 // Delete all vertices associated with a CAD object and free the
-// memory.
+// memory.  We really should pass a pointer to the object here
+// instead of a vertice, and set the start pointer to NULL when
+// done.
 //
 void CAD_vertice_delete_all(VerticeRow *v) {
     VerticeRow *tmp;
@@ -7984,25 +7986,6 @@ void Draw_CAD_Objects_start_mode( /*@unused@*/ Widget w,
 
 
 
-void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
-
-//    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
-
-    draw_CAD_objects_flag = 0;
-    polygon_last_x = -1;    // Invalid position
-    polygon_last_y = -1;    // Invalid position
-
-    // Remove the special "pencil" cursor.
-    (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
-    (void)XFlush(XtDisplay(da));
-}
-
-
-
-
-
 // Called when we complete a new CAD object.  Save the object to
 // disk so that we can recover in the case of a crash or power
 // failure.  Save any old file to a backup file.  Perhaps write them
@@ -8156,6 +8139,27 @@ void Restore_CAD_Objects_from_file(void) {
         }
     }
     (void)fclose(f);
+}
+
+
+
+
+
+void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+//    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
+
+    draw_CAD_objects_flag = 0;
+    polygon_last_x = -1;    // Invalid position
+    polygon_last_y = -1;    // Invalid position
+
+    Save_CAD_Objects_to_file();
+ 
+    // Remove the special "pencil" cursor.
+    (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
+    (void)XFlush(XtDisplay(da));
 }
 
 
