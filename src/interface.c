@@ -6810,11 +6810,6 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case DEVICE_NET_AGWPE:
 
                 output_net[0] = '\0';   // We don't need this header for AGWPE
-
-                // Set unproto path:  Get next unproto path in
-                // sequence.
-                unproto_path = select_unproto_path(port);
-
                 break;
 
             case DEVICE_NET_STREAM:
@@ -7185,18 +7180,18 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 // This one currently tries to do local logging even if
 // transmit is disabled.
 //*****************************************************************************
-void output_my_data(char *message, int port, int type, int loopback_only, int use_igate_path, char *path) {
+void output_my_data(char *message, int incoming_port, int type, int loopback_only, int use_igate_path, char *path) {
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
     char path_txt[MAX_LINE_SIZE+5];
     char *unproto_path;
     char output_net[100];
-    int ok, start, finish, i;
+    int ok, start, finish, port;
     int done;
 
 
     if (debug_level & 1)
-        fprintf(stderr,"Sending out port: %d, type: %d\n", port, type);
+        fprintf(stderr,"Sending out port: %d, type: %d\n", incoming_port, type);
 
     if (message == NULL)
         return;
@@ -7206,21 +7201,21 @@ void output_my_data(char *message, int port, int type, int loopback_only, int us
  
     data_txt_save[0] = '\0';
 
-    if (port == -1) {   // Send out all of the interfaces
+    if (incoming_port == -1) {   // Send out all of the interfaces
         start = 0;
         finish = MAX_IFACE_DEVICES;
     }
     else {  // Only send out the chosen interface
-        start  = port;
-        finish = port + 1;
+        start  = incoming_port;
+        finish = incoming_port + 1;
     }
 
 begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
-    for (i = start; i < finish; i++) {
+    for (port = start; port < finish; port++) {
         ok = 1;
         if (type == 0) {                        // my data
-            switch (port_data[i].device_type) {
+            switch (port_data[port].device_type) {
 
 //                case DEVICE_NET_DATABASE:
 
@@ -7231,7 +7226,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                 case DEVICE_NET_STREAM:
                     if (debug_level & 1)
-                        fprintf(stderr,"%d Net\n",i);
+                        fprintf(stderr,"%d Net\n",port);
                     xastir_snprintf(output_net,
                         sizeof(output_net),
                         "%s>%s,TCPIP*:",
@@ -7240,8 +7235,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     break;
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-                    if (port_data[i].status == DEVICE_UP && !loopback_only) {
-                        port_dtr(i,0);           // make DTR normal (talk to TNC)
+                    if (port_data[port].status == DEVICE_UP && !loopback_only) {
+                        port_dtr(port,0);           // make DTR normal (talk to TNC)
                     }
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
@@ -7251,7 +7246,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 case DEVICE_AX25_TNC:
 
                     if (debug_level & 1)
-                        fprintf(stderr,"%d AX25 TNC\n",i);
+                        fprintf(stderr,"%d AX25 TNC\n",port);
                     strcpy(output_net,"");      // clear this for a TNC
 
                     /* Set my call sign */
@@ -7262,13 +7257,13 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         "MYCALL",
                         my_callsign);
 
-                    if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
-                            && (port_data[i].device_type != DEVICE_SERIAL_MKISS_TNC)
-                            && (port_data[i].status == DEVICE_UP)
-                            && (devices[i].transmit_data == 1)
+                    if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                            && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                            && (port_data[port].status == DEVICE_UP)
+                            && (devices[port].transmit_data == 1)
                             && !transmit_disable
                             && !loopback_only) {
-                        port_write_string(i,data_txt);
+                        port_write_string(port,data_txt);
                         usleep(10000);  // 10ms
                     }
  
@@ -7278,7 +7273,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     // to use the igate path.  If so and the path
                     // isn't empty, skip the rest of the path selection:
                     if ( (use_igate_path)
-                            && (strlen(devices[i].unproto_igate) > 0) ) {
+                            && (strlen(devices[port].unproto_igate) > 0) ) {
 
 // WE7U:  Should we check here and in the following path
 // selection code to make sure that there are printable characters
@@ -7291,19 +7286,19 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             '\3',
                             "UNPROTO",
                             VERSIONFRM,
-                            devices[i].unproto_igate);
+                            devices[port].unproto_igate);
 
                         xastir_snprintf(data_txt_save,
                             sizeof(data_txt_save),
                             "%s>%s,%s:",
                             my_callsign,
                             VERSIONFRM,
-                            devices[i].unproto_igate);
+                            devices[port].unproto_igate);
 
                         xastir_snprintf(path_txt,
                             sizeof(path_txt),
                             "%s",
-                            devices[i].unproto_igate);
+                            devices[port].unproto_igate);
 
                         done++;
                     }
@@ -7339,7 +7334,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                         // Set unproto path:  Get next unproto path
                         // in sequence.
-                        unproto_path = select_unproto_path(i);
+                        unproto_path = select_unproto_path(port);
 
                         xastir_snprintf(data_txt,
                             sizeof(data_txt),
@@ -7365,26 +7360,26 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     }
 
 
-                    if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
-                            && (port_data[i].device_type != DEVICE_SERIAL_MKISS_TNC)
-                            && (port_data[i].status == DEVICE_UP)
-                            && (devices[i].transmit_data == 1)
+                    if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                            && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                            && (port_data[port].status == DEVICE_UP)
+                            && (devices[port].transmit_data == 1)
                             && !transmit_disable
                             && !loopback_only) {
-                        port_write_string(i,data_txt);
+                        port_write_string(port,data_txt);
                         usleep(10000);  // 10ms
                     }
  
                     // Set converse mode
                     xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
 
-                    if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
-                            && (port_data[i].device_type != DEVICE_SERIAL_MKISS_TNC)
-                            && (port_data[i].status == DEVICE_UP)
-                            && (devices[i].transmit_data == 1)
+                    if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                            && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
+                            && (port_data[port].status == DEVICE_UP)
+                            && (devices[port].transmit_data == 1)
                             && !transmit_disable
                             && !loopback_only) {
-                        port_write_string(i,data_txt);
+                        port_write_string(port,data_txt);
                         usleep(20000); // 20ms
                     }
                     break;
@@ -7404,8 +7399,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
 //fprintf(stderr,"%s\n",data_txt);
 
-            if ( (port_data[i].status == DEVICE_UP)
-                    && (devices[i].transmit_data == 1)
+            if ( (port_data[port].status == DEVICE_UP)
+                    && (devices[port].transmit_data == 1)
                     && !transmit_disable
                     && !loopback_only) {
 
@@ -7413,11 +7408,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 // interfaces:  data_txt_save would probably be the one to pass,
 // or create a new string just for KISS TNC's.
 
-                if ( (port_data[i].device_type == DEVICE_SERIAL_KISS_TNC)
-                        || (port_data[i].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
+                if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
+                        || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
 
                     // Transmit
-                    send_ax25_frame(i,
+                    send_ax25_frame(port,
                                     my_callsign,    // source
                                     VERSIONFRM,     // destination
                                     path_txt,       // path
@@ -7425,18 +7420,18 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 }
 
 //WE7U:AGWPE
-                else if (port_data[i].device_type == DEVICE_NET_AGWPE) {
+                else if (port_data[port].device_type == DEVICE_NET_AGWPE) {
 
                     // Set unproto path.  First check whether we're
                     // to use the igate path.  If so and the path
                     // isn't empty, skip the rest of the path selection:
                     if ( (use_igate_path)
-                            && (strlen(devices[i].unproto_igate) > 0) ) {
+                            && (strlen(devices[port].unproto_igate) > 0) ) {
 
                         xastir_snprintf(path_txt,
                             sizeof(path_txt),
                             "%s",
-                            devices[i].unproto_igate);
+                            devices[port].unproto_igate);
                     }
                     // Check whether a path was passed to us as a
                     // parameter:
@@ -7452,19 +7447,23 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         // sequence.
 
                         unproto_path = select_unproto_path(port);
+
+//fprintf(stderr,"unproto_path: %s\n", unproto_path);
                         xastir_snprintf(path_txt,
                             sizeof(path_txt),
                             "%s",
                             unproto_path);
                     }
+//fprintf(stderr,"path_txt: %s\n", path_txt);
+ 
 
 // We need to remove the complete AX.25 header from data_txt before
 // we call this routine!  Instead put the digipeaters into the
 // ViaCall fields.
 //fprintf(stderr,"send_agwpe_packet\n");
 
-                    send_agwpe_packet(i,            // Xastir interface port
-                        atoi(devices[i].device_host_filter_string), // AGWPE RadioPort
+                    send_agwpe_packet(port,            // Xastir interface port
+                        atoi(devices[port].device_host_filter_string), // AGWPE RadioPort
                         '\0',         // Type of frame
                         my_callsign,  // source
                         VERSIONFRM,   // destination
@@ -7474,31 +7473,33 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 }
 
                 else {  // Not a Serial KISS TNC interface
-                    port_write_string(i, data_txt);  // Transmit
+                    port_write_string(port, data_txt);  // Transmit
                 }
 
                 if (debug_level & 1)
-                    fprintf(stderr,"Sending to interface:%d, %s\n",i,data_txt);
+                    fprintf(stderr,"Sending to interface:%d, %s\n",
+                        port,
+                        data_txt);
             }
 
             if (debug_level & 2)
-                fprintf(stderr,"TX:%d<%s>\n",i,data_txt);
+                fprintf(stderr,"TX:%d<%s>\n",port,data_txt);
 
             /* add newline on network data */
-            if (port_data[i].device_type == DEVICE_NET_STREAM) {
+            if (port_data[port].device_type == DEVICE_NET_STREAM) {
                 xastir_snprintf(data_txt, sizeof(data_txt), "\n");
 
-                if ( (port_data[i].status == DEVICE_UP)
-                        && (devices[i].transmit_data == 1)
+                if ( (port_data[port].status == DEVICE_UP)
+                        && (devices[port].transmit_data == 1)
                         && !transmit_disable
                         && !loopback_only) {
-                    port_write_string(i,data_txt);
+                    port_write_string(port,data_txt);
                 }
             } else {
             }
         }
-//        if (port != -1)
-//            i = MAX_IFACE_DEVICES+1;    // process only one port
+//        if (incoming_port != -1)
+//            port = MAX_IFACE_DEVICES+1;    // process only one port
     }
 
 end_critical_section(&devices_lock, "interface.c:output_my_data" );
@@ -7533,7 +7534,13 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     // dialog.  We don't see a "T" packet (for TNC) and we only see
     // "I" packets if we re-receive our own packet from the internet
     // feeds.
-    decode_ax25_line( data_txt, DATA_VIA_LOCAL, port, 1);
+    if (incoming_port == -1) {   // We were sending to all ports
+        // Pretend we received it from port 1
+        decode_ax25_line( data_txt, DATA_VIA_LOCAL, 1, 1);
+    }
+    else {  // We were sending to a specific port
+        decode_ax25_line( data_txt, DATA_VIA_LOCAL, incoming_port, 1);
+    }
 
 //fprintf(stderr,"Data_txt:%s\n", data_txt);
 }
