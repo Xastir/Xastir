@@ -614,65 +614,50 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 
         // Draw one polyline
         if (points > 0) {
-            double X1, Y1, Z1, X2, Y2, Z2;
             int ii;
+            double *vectorX;
+            double *vectorY;
+            double *vectorZ;
 
 
-            // Get the first point
-            OGR_G_GetPoint(geometryH,
-                0,
-                &X2,
-                &Y2,
-                &Z2);
+            // Get some memory to hold the vector
+            vectorX = (double *)malloc(sizeof(double) * points);
+            vectorY = (double *)malloc(sizeof(double) * points);
+            vectorZ = (double *)malloc(sizeof(double) * points);
+
+            // Get the points, fill in the vector
+            for ( ii = 0; ii < points; ii++ ) {
+
+                OGR_G_GetPoint(geometryH,
+                    ii,
+                    &vectorX[ii],
+                    &vectorY[ii],
+                    &vectorZ[ii]);
+            }
 
             if (transformH) {
-                // Convert to WGS84 coordinates.
-                if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
+                // Convert entire vector to WGS84 coordinates.
+                if (!OCTTransform(transformH, points, vectorX, vectorY, vectorZ)) {
                     fprintf(stderr,
                         "Couldn't convert to WGS84\n");
                 }
             }
 
-            // Loop through the rest of the points, drawing vectors
-            // as we go.
             for ( ii = 1; ii < points; ii++ ) {
- 
-                X1 = X2;
-                Y1 = Y2;
-                Z1 = Z2;
-
-                // Get the next point
-                OGR_G_GetPoint(geometryH,
-                    ii,
-                    &X2,
-                    &Y2,
-                    &Z2);
-
-                if (transformH) {
-                    // Convert to WGS84 coordinates.
-                    if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
-                        fprintf(stderr,
-                            "Couldn't convert point to WGS84\n");
-                    }
-                }
-
-// Optimization:
-// It should be faster here to draw the entire Polyline with one X11
-// call, instead of drawing each line segment in turn.  Change to
-// that method at some point.
-//
-// We should be able to store them in an array, call the Translate()
-// function on all of them at once, and then call an X11 function to
-// draw the entire line at once.
 
                 draw_vector_ll(da,
-                    (float)Y1,
-                    (float)X1,
-                    (float)Y2,
-                    (float)X2,
+                    (float)vectorY[ii-1],
+                    (float)vectorX[ii-1],
+                    (float)vectorY[ii],
+                    (float)vectorX[ii],
                     gc,
                     pixmap);
-            } 
+            }
+
+            // Free the allocated vector memory
+            free(vectorX);
+            free(vectorY);
+            free(vectorZ);
         }
     }
 }
@@ -779,6 +764,11 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 
             polygon_points = OGR_G_GetPointCount(child_geometryH);
 
+// Here we know how many points we have, so we can allocate a
+// storage area to hold them, convert them to WGS84, then draw the
+// entire polygon at once with one X11 call.  We'll also perform the
+// transform exactly once on the entire vector that way.
+
             if (polygon_points > 2) {
                 double X1, Y1, Z1;
                 double X2, Y2, Z2;
@@ -820,15 +810,6 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                                 "Couldn't convert point to WGS84\n");
                         }
                     }
-
-// Optimization:
-// It should be faster here to draw the entire Polyline with one X11
-// call, instead of drawing each line segment in turn.  Change to
-// that method at some point.
-//
-// We should be able to store them in an array, call the Translate()
-// function on all of them at once, and then call an X11 function to
-// draw the entire line at once.
 
                     draw_vector_ll(da,
                         (float)Y1,
@@ -1022,8 +1003,11 @@ void draw_ogr_map(Widget w,
 
         if ( no_spatial         // No spatial info found, or
                 || (geographic  // Geographic and correct datum
-                    && ( strcasecmp(geogcs,"WGS84") == 0
-                        || strcasecmp(geogcs,"NAD83") == 0) ) ) {
+                  && ( strcasecmp(geogcs,"WGS84") == 0
+                    || strcasecmp(geogcs,"NAD83") == 0
+                    || strcasecmp(datum,"North_American_Datum_1983") == 0
+                    || strcasecmp(datum,"World_Geodetic_System_1984") == 0
+                    || strcasecmp(datum,"D_North_American_1983") ) ) ) {
 
 // We also need to check "DATUM", as some datasets have nothing in
 // the "GEOGCS" variable.  Check for "North_American_Datum_1983" or
@@ -1031,7 +1015,7 @@ void draw_ogr_map(Widget w,
 
             transformH = NULL;  // No transform needed
             fprintf(stderr,
-                "  Geographic coordinate system, %s\n",
+                "  Geographic coordinate system, NO CONVERSION NEEDED!, %s\n",
                 geogcs);
         }
         else {  // We have coordinates but they're in the wrong
@@ -1042,6 +1026,7 @@ void draw_ogr_map(Widget w,
                 fprintf(stderr,
                     "  Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
                     geogcs);
+fprintf(stderr, "  DATUM: %s\n", datum);
             }
             else if (projected) {
                 fprintf(stderr,
