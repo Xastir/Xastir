@@ -489,10 +489,14 @@ void output_igate_net(char *line, int port, int third_party) {
     // seen in the path, do _not_ gate those packets into the
     // internet.
     //
+    // Don't gate OpenTrac expanded packets to the 'net.
+    //
     if ( (strstr(path,"TCPXX") != NULL)
             || (strstr(path,"TCPIP") != NULL)
             || (strstr(path,"NOGATE") != NULL)
-            || (strstr(path,"RFONLY") != NULL) ) {
+            || (strstr(path,"RFONLY") != NULL)
+            || (strstr(path,"OPNTRK") != NULL)      // OpenTrac Packet
+            || (strstr(path,"OPNTRC") != NULL) ) {  // OpenTrac Packet
  
             if (log_igate && (debug_level & 1024) ) {
 
@@ -738,7 +742,10 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
     }
 
     // Don't gate anything with NOGATE in it, in either direction.
-    if ( strstr(path,"NOGATE") != NULL) {
+    // Same for OpenTrac packets.
+    if ( (strstr(path,"NOGATE") != NULL)
+         || (strstr(path,"OPNTRK") != NULL)     // OpenTrac Packet
+         || (strstr(path,"OPNTRC") != NULL) ) { // OpenTrac Packet
         // "NOGATE" was found in the header.  Don't gate it.
         if (log_igate && (debug_level & 1024) ) {
             xastir_snprintf(temp,
@@ -750,7 +757,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
 
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: NOGATE found in path!\n");
+                "REJECT: NOGATE found in path or shouldn't be gated!\n");
             log_data(LOGFILE_IGATE,temp);
             fprintf(stderr,temp);
         }
