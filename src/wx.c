@@ -26,9 +26,11 @@
 /*
  * The code currently supports these types of weather stations:
  *
- *   Peet Brothers Ultimeter 2000 (logging mode)
+ *   Peet Brothers Ultimeter 2000 (Data logging mode)
  *   Peet Brothers Ultimeter 2000 (Packet mode)
- *   Peet Brothers U-II
+ *   Peet Brothers Ultimeter 2000 (Complete Record Mode)
+ *   Peet Brothers Ultimeter-II
+ *   Qualimetrics Q-Net?
  *   Radio Shack WX-200/Huger WM-918/Oregon Scientific WM-918
  */
 
@@ -466,6 +468,10 @@ void wx_last_data_check(void) {
 
 
 
+
+
+// New:
+// WX_rain_gauge_type:  0 = tenth inch, 1 = hundredth inch
 
 
 /************************************************************************/
@@ -1649,6 +1655,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 /***********************************************************/
 /* Decode WX data line                                     */
 /* wx_line: raw wx data to decode                          */
+/* This is called from main.c:UpdateTime() only.  It       */
+/* decodes data for networked WX interfaces only.   It     */
+/* wx_fill_data() to do the real work.                     */
 /***********************************************************/
 void wx_decode(unsigned char *wx_line, int port) {
     DataRow *p_station;
@@ -1695,7 +1704,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                         if (strncmp("$ULTW",wx_line,5)==0 && is_xnum_or_dash((char *)(wx_line+5),44) && port_data[port].data_type==0) {
                             /* Found Peet Bros raw U2 data */
                             strcpy(wx_station_type,langcode("WXPUPSI013"));
-                            /*printf("Found Peet Bros Ultmeter Packet data WX#:%s\n",wx_line+5);*/
+                            /*printf("Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
                             strcpy(raw_wx_string,wx_line);
                             weather->wx_sec_time=sec_now();
                             //weather->wx_data=1;
@@ -2089,4 +2098,5 @@ void tx_raw_wx_data(void) {
             printf("Sending Raw WX data <%s>\n",raw_wx_string);
     }
 }
+
 
