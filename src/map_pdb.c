@@ -173,6 +173,7 @@ void draw_palm_image_map(Widget w,
 
     FILE *fn;
     char filename[MAX_FILENAME];
+    char short_filenm[MAX_FILENAME];
     int records, record_count, count;
     int scale;
     long map_left, map_right, map_top, map_bottom, max_x, max_y;
@@ -183,6 +184,25 @@ void draw_palm_image_map(Widget w,
 
 
     xastir_snprintf(filename, sizeof(filename), "%s/%s", dir, filenm);
+
+    // Create a shorter filename for display (one that fits the
+    // status line more closely).  Subtract the length of the
+    // "Indexing " and/or "Loading " strings as well.
+    if (strlen(filenm) > (41 - 9)) {
+        int avail = 41 - 11;
+        int new_len = strlen(filenm) - avail;
+
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "..%s",
+            &filenm[new_len]);
+    }
+    else {
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "%s",
+            filenm);
+    }
 
     if ((fn = fopen(filename, "r")) != NULL) {
 
@@ -260,7 +280,10 @@ void draw_palm_image_map(Widget w,
             fclose(fn);
 
             // Update the statusline for this map name.
-            xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+            xastir_snprintf(status_text,
+                sizeof(status_text),
+                langcode ("BBARSTA039"),
+                short_filenm);
             statusline(status_text,0);       // Loading/Indexing ...
 
             return; // Done indexing this file
@@ -271,7 +294,10 @@ void draw_palm_image_map(Widget w,
 
 
             // Update the statusline for this map name
-            xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+            xastir_snprintf(status_text,
+                sizeof(status_text),
+                langcode ("BBARSTA028"),
+                short_filenm);
             statusline(status_text,0);       // Loading/Indexing ...
 
 

@@ -138,6 +138,7 @@ void draw_tiger_map (Widget w,
         char *filenm,
         int destination_pixmap) {
     char file[MAX_FILENAME];        // Complete path/name of image file
+    char short_filenm[MAX_FILENAME];
     FILE *f;                        // Filehandle of image file
     char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
     char tigertmp[MAX_FILENAME*2];  // Used for putting together the tigermap query
@@ -205,9 +206,30 @@ void draw_tiger_map (Widget w,
     int geo_image_height;       // Image height from GEO file
 
 
-    xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), "tigermap");
+    xastir_snprintf(map_it,
+        sizeof(map_it),
+        langcode ("BBARSTA028"),
+        short_filenm);
     statusline(map_it,0);       // Loading ...
 
+    // Create a shorter filename for display (one that fits the
+    // status line more closely).  Subtract the length of the
+    // "Indexing " and/or "Loading " strings as well.
+    if (strlen(filenm) > (41 - 9)) {
+        int avail = 41 - 11;
+        int new_len = strlen(filenm) - avail;
+
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "..%s",
+            &filenm[new_len]);
+    }
+    else {
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "%s",
+            filenm);
+    }
 
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -223,7 +245,10 @@ void draw_tiger_map (Widget w,
             129600000l);    // Right
 
         // Update statusline
-        xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+        xastir_snprintf(map_it,
+            sizeof(map_it),
+            langcode ("BBARSTA039"),
+            short_filenm);
         statusline(map_it,0);       // Loading/Indexing ...
 
         return; // Done indexing this file

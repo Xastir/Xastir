@@ -98,6 +98,7 @@ void draw_gnis_map (Widget w,
 		    int draw_filled)
 {
     char file[MAX_FILENAME];        // Complete path/name of GNIS file
+    char short_filenm[MAX_FILENAME];
     FILE *f;                        // Filehandle of GNIS file
     char line[MAX_FILENAME];        // One line of text from file
     char *i, *j;
@@ -135,6 +136,25 @@ void draw_gnis_map (Widget w,
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
+    // Create a shorter filename for display (one that fits the
+    // status line more closely).  Subtract the length of the
+    // "Indexing " and/or "Loading " strings as well.
+    if (strlen(filenm) > (41 - 9)) {
+        int avail = 41 - 11;
+        int new_len = strlen(filenm) - avail;
+
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "..%s",
+            &filenm[new_len]);
+    }
+    else {
+        xastir_snprintf(short_filenm,
+            sizeof(short_filenm),
+            "%s",
+            filenm);
+    }
+
     // Screen view
     min_lat = y_lat_offset + (long)(screen_height * scale_y);
     max_lat = y_lat_offset;
@@ -150,10 +170,16 @@ void draw_gnis_map (Widget w,
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
-        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+        xastir_snprintf(status_text,
+            sizeof(status_text),
+            langcode ("BBARSTA039"),
+            short_filenm);
     }
     else {
-        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA028"), filenm);
+        xastir_snprintf(status_text,
+            sizeof(status_text),
+            langcode ("BBARSTA028"),
+            short_filenm);
     }
     statusline(status_text,0);       // Loading/Indexing ...
 

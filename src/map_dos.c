@@ -313,6 +313,7 @@ void draw_dos_map(Widget w,
              int draw_filled) {  
   FILE *f;
   char file[MAX_FILENAME];
+  char short_filenm[MAX_FILENAME];
   char map_it[MAX_FILENAME];
   
   /* map header info */
@@ -394,6 +395,26 @@ void draw_dos_map(Widget w,
   npoints = 0;
   
   xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
+
+  // Create a shorter filename for display (one that fits the
+  // status line more closely).  Subtract the length of the
+  // "Indexing " and/or "Loading " strings as well.
+  if (strlen(filenm) > (41 - 9)) {
+      int avail = 41 - 11;
+      int new_len = strlen(filenm) - avail;
+
+      xastir_snprintf(short_filenm,
+          sizeof(short_filenm),
+          "..%s",
+          &filenm[new_len]);
+  }
+  else {
+      xastir_snprintf(short_filenm,
+          sizeof(short_filenm),
+          "%s",
+          filenm);
+  }
+
   f = fopen (file, "r");
   if (f != NULL) {
     (void)fread (map_type, 4, 1, f);
@@ -561,7 +582,10 @@ void draw_dos_map(Widget w,
       (void)fclose (f);
 
       // Update the statusline 
-      xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA039"), filenm);
+      xastir_snprintf(map_it,
+          sizeof(map_it),
+          langcode ("BBARSTA039"),
+          short_filenm);
       statusline(map_it,0);       // Loading/Indexing ...
      
       return; // Done indexing this file
@@ -583,7 +607,10 @@ void draw_dos_map(Widget w,
 
 
       // Update the statusline
-      xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
+      xastir_snprintf(map_it,
+          sizeof(map_it),
+          langcode ("BBARSTA028"),
+          short_filenm);
       statusline(map_it,0);       // Loading/Indexing ...
 
       object_behavior = '\0';
