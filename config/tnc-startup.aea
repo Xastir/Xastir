@@ -7,21 +7,21 @@
 # Thanks.
 #
 
+EXP on
 ECHO off
 MYAlias RELAY
 B E 0
 DIGI on
-EXP on
 FLow off
 FUll off
 HEA off
-LFadd off
-LFSup ON
-AUTOLF off
-MCOM off
+#LFadd off
+#LFSup ON
+#AUTOLF off
+#MCOM off
 MFILTER 0
 MON ON
-MResp OFF
+#MResp OFF
 MRPt on
 MSTamp off
 MXMit off
@@ -29,7 +29,7 @@ NEWmode off
 #PACLen 128
 PASSALL off
 #PID off
-SCR 0
+#SCR 0
 # B E 0 must be set to 0 or both APRS and your TNC will send BCNS
 # Which will alternate in everyones L and A lists and fill up
 # their logs.  Do NOT set B E to anything other than 0 while APRS
