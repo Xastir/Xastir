@@ -8907,7 +8907,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     popup_message(langcode("POPUPMA020"),temp);
                 }
 
-                else if (moving_object) {   // Move Distance function
+                else if (moving_object) {   // Move function
                     // For this function we need to:
                     //      Determine which icon is closest to the mouse pointer press position.
                     //          We'll use Station_info to select the icon for us.
@@ -19602,7 +19602,9 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 
         sched_yield();                  // Wait for transmitted data to get processed
         Object_destroy_shell(widget,clientData,NULL);
-        redraw_symbols(da);
+        // Getting a segfault here on a Move operation, so just
+        // comment it out.  A redraw will occur shortly anyway.
+        //redraw_symbols(da);
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     } else {
         // error message
@@ -23361,7 +23363,6 @@ if (Area_object_enabled) {
         XmProcessTraversal(ob_button_cancel, XmTRAVERSE_CURRENT);
     }
 
-/*
     // This will cause the move to happen quickly without any button presses.
     if (calldata != NULL) { // If we're doing a "move" operation
         if (strcmp(calldata,"2") == 0) {
@@ -23375,7 +23376,6 @@ if (Area_object_enabled) {
             }
         }
     }
-*/
 
 }   // End of Set_Del_Object
 
