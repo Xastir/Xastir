@@ -2543,6 +2543,11 @@ void disown_object_item(char *call_sign, char *new_owner) {
     char name[15];
 
 
+//fprintf(stderr,"disown_object_item, object: %s, new_owner: %s\n",
+//    call_sign,
+//    new_owner);
+
+
     // If it's my call in the new_owner field, then I must have just
     // deleted the object and am transmitting a killed object for
     // it.  If it's not my call, someone else has assumed control of
