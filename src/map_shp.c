@@ -802,16 +802,6 @@ void draw_shapefile_map (Widget w,
         }
         if (sig_info) {         /* we've got a .dbfawk, so set up symtbl */
 
-//WE7U
-// Get rid of anything we allocated on previous runs before reusing
-// this symbol table memory area in the next section below.  This
-// doesn't work.  It locks up Xastir when the first alert is
-// received.
-//            if (Symtbl) {
-//                awk_free_symtab(Symtbl);
-//                Symtbl = NULL;
-//            }
-
             if (!Symtbl) {
 //WE7U
 // Allocates new memory!
@@ -842,16 +832,12 @@ void draw_shapefile_map (Widget w,
 //WE7U
 // Frees memory
                 if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-                    if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-                        awk_free_program(sig_info->prog);
-                    free(sig_info);
+                    dbfawk_free_sigs(sig_info);
                 }
                 return;
             }
-//WE7U
-// Calls awk_eval_expr (eventually), which can allocate new memory!
             awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
 
             /* find out which dbf fields we care to read */
@@ -866,11 +852,9 @@ void draw_shapefile_map (Widget w,
 //WE7U
 // Frees memory
                 if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-                    if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-                        awk_free_program(sig_info->prog);
-                    free(sig_info);
+                    dbfawk_free_sigs(sig_info);
                 }
                 return;
             }
@@ -1323,11 +1307,9 @@ void draw_shapefile_map (Widget w,
 // Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-            if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-                awk_free_program(sig_info->prog);
-            free(sig_info);
+            dbfawk_free_sigs(sig_info);
         }
 #endif
 
@@ -1360,11 +1342,9 @@ void draw_shapefile_map (Widget w,
 // Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-            if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-                awk_free_program(sig_info->prog);
-            free(sig_info);
+            dbfawk_free_sigs(sig_info);
         }
 #endif
 
@@ -1400,11 +1380,9 @@ void draw_shapefile_map (Widget w,
 // Frees memory
             dbfawk_free_info(fld_info);
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-                if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-                    awk_free_program(sig_info->prog);
-                free(sig_info);
+                dbfawk_free_sigs(sig_info);
             }
 #endif
 
@@ -1420,11 +1398,9 @@ void draw_shapefile_map (Widget w,
 // Frees memory
             dbfawk_free_info(fld_info);
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-                if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-                    awk_free_program(sig_info->prog);
-                free(sig_info);
+                dbfawk_free_sigs(sig_info);
             }
 #endif
 
@@ -1461,11 +1437,9 @@ void draw_shapefile_map (Widget w,
 // Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-            if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-                awk_free_program(sig_info->prog);
-            free(sig_info);
+            dbfawk_free_sigs(sig_info);
         }
 #endif
 
@@ -1601,11 +1575,9 @@ void draw_shapefile_map (Widget w,
 // Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-            if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-                awk_free_program(sig_info->prog);
-            free(sig_info);
+            dbfawk_free_sigs(sig_info);
         }
 #endif
 
@@ -3710,11 +3682,9 @@ if (on_screen) {
 // Frees memory
     dbfawk_free_info(fld_info);
     if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
-        if (sig_info->prog != NULL)
 //WE7U
 // Frees memory
-            awk_free_program(sig_info->prog);
-        free(sig_info);
+        dbfawk_free_sigs(sig_info);
 //WE7U
 // Frees memory.
 //fprintf(stderr,"f15\n");

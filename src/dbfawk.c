@@ -98,6 +98,7 @@ void dbfawk_free_info ( dbfawk_field_info *list) {
     dbfawk_field_info *x, *p;
 
 //fprintf(stderr,"dbfawk_free_info start\n");
+//fprintf(stderr,"dbfawk_free_info: free\n");
  
     for ( p = list; p != NULL; ) {
         x = p;
@@ -126,6 +127,7 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields) {
   char *sp;
 
 //fprintf(stderr,"dbfawk_field_info start\n");
+//fprintf(stderr,"dbfawk_field_list: calloc\n");
  
   /* now build up the list of fields to read */
   for (nf = 0, sp = dbffields, prev = NULL; *sp; nf++) {
@@ -196,6 +198,8 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
     char dbfinfo[1024];         /* local copy of signature */
 
 //fprintf(stderr,"dbfawk_load_sigs start\n");
+//fprintf(stderr,"dbfawk_load_sigs: calloc/strdup\n");
+ 
  
     if (!dir || !ftype) {
 //fprintf(stderr,"dbfawk_load_sigs stop\n");
@@ -271,8 +275,6 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
                 fprintf(stderr,"%s: failed to parse\n",e->d_name);
             } else {
                 /* dbfinfo must be defined in BEGIN rule */
-//WE7U2
-// Calls awk_eval_expr (eventually), which can allocate new memory
                 awk_exec_begin(i->prog); 
 
 //WE7U2
@@ -308,12 +310,14 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
 void dbfawk_free_sig(dbfawk_sig_info *ptr) {
 
 //fprintf(stderr,"dbfawk_free_sig start\n");
+//fprintf(stderr,"dbfawk_free_sig: free\n");
  
     if (ptr) {
         if (ptr->prog)
 //WE7U2
 // Free's memory
             awk_free_program(ptr->prog);
+
         if (ptr->sig) {
             free(ptr->sig);
 //WE7U
@@ -356,13 +360,14 @@ void dbfawk_free_sigs(dbfawk_sig_info *list) {
  * and load it.
  */
 
-dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info, 
+dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *Dbf_sigs,
                                  const char *sig,
                                  const char *file) {
     dbfawk_sig_info *result = NULL;
 
 //fprintf(stderr,"dbfawk_find_sig start\n");
- 
+//fprintf(stderr,"dbfawk_find_sig: calloc\n");
+
     if (file) {
         char *dot, *perfile = calloc(1,strlen(file)+7);
         dbfawk_sig_info *info;
@@ -413,14 +418,15 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
             return info;
         }
         else {
-            free(info);
+            dbfawk_free_sigs(info);
 //WE7U
 // Free's memory
 //fprintf(stderr,"f5\n");
         }
         /* fall through and do normal signature search */
     }
-    for (result = info; result; result = result->next) {
+
+    for (result = Dbf_sigs; result; result = result->next) {
         if (strcmp(result->sig,sig) == 0) {
 //fprintf(stderr,"dbfawk_find_sig stop\n");
  
@@ -448,8 +454,6 @@ void dbfawk_parse_record(awk_program *rs,
 
 //fprintf(stderr,"dbfawk_parse_record start\n");
  
-//WE7U2
-// Can allocate new memory via malloc in awk_eval_expr
     awk_exec_begin_record(rs); /* execute a BEGIN_RECORD rule if any */
 
     for (finfo = fi; finfo ; finfo = finfo->next) {
@@ -470,11 +474,9 @@ void dbfawk_parse_record(awk_program *rs,
 	    sprintf(qbuf,"%s=??",finfo->name);
 	    break;
         }
-//WE7U2
         if (awk_exec_program(rs,qbuf,strlen(qbuf)) == 2)
             break;
     }
-//WE7U2
     awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 
 //fprintf(stderr,"dbfawk_parse_record stop\n");
