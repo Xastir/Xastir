@@ -1264,15 +1264,6 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     // the compressed posit has a fixed 13-character length
     // according to the spec!
     //
-    //if ( (c == ' ') && (s == ' ') && (t == ' ') )
-    //    xastir_snprintf(pos,
-    //    sizeof(pos),
-    //    "%c%s%s%c ",
-    //    group,
-    //    lat,
-    //    lon,
-    //    symbol);
-    //else
     xastir_snprintf(pos,
         sizeof(pos),
         "%c%s%s%c%c%c%c",
