@@ -33,5 +33,5 @@ extern int list_size_w[];
 extern void list_gui_init(void);
 extern void update_station_scroll_list(void);
 extern int stations_types(int type);
-
+extern void Station_List_fill(int type, int new_offset);
 #endif
