@@ -427,7 +427,7 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
 // Might be better to record it down here, and if the pipes ever
 // closed, we shut down x_spider and all the child processes.
 //
-int pipe_check(void) {
+int pipe_check(char *client_address) {
     pipe_object *p = pipe_head;
     int n;  
     char line[MAXLINE];
@@ -462,12 +462,14 @@ int pipe_check(void) {
 
             if (p->authenticated) { 
                 fprintf(stderr,
-                    "X_spider session terminated, callsign: %s\n",
-                    p->callsign);
+                    "X_spider session terminated, callsign: %s, address: %s\n",
+                    p->callsign,
+                    client_address);
             }
             else {
                 fprintf(stderr,
-                    "X_spider session terminated, unauthenticated user\n");
+                    "X_spider session terminated, unauthenticated user, address %s\n",
+                    client_address);
             }
 
             // Close the pipe
@@ -667,24 +669,24 @@ int pipe_check(void) {
 
 
 
+
 // The below two functions init_set_proc_title() and
 // set_proc_title() are from:
 // http://lightconsulting.com/~thalakan/process-title-notes.html
 // They seems to work fine on Linux, but they only change the "ps"
 // listings, not the top listings.  I don't know why yet.
 
+// Here's another good web page for Linux:
+// http://www.uwsg.iu.edu/hypermail/linux/kernel/0006.1/0610.html 
+
 /* Globals */
 static char **Argv = ((void *)0);
 extern char *__progname, *__progname_full;
 static char *LastArgv = ((void *)0);
 
-/* Prototypes */
-static void set_proc_title(char *fmt,...);
-static void init_set_proc_title(int argc, char *argv[], char *envp[]);
 
 
-
-static void init_set_proc_title(int argc, char *argv[], char *envp[]) {
+void init_set_proc_title(int argc, char *argv[], char *envp[]) {
     int i, envpsize;
     extern char **environ;
     char **p;
@@ -719,7 +721,7 @@ static void init_set_proc_title(int argc, char *argv[], char *envp[]) {
 
 
 
-static void set_proc_title(char *fmt,...) {
+void set_proc_title(char *fmt,...) {
     va_list msg;
     static char statbuf[8192];
     char *p;
@@ -856,7 +858,7 @@ void Server(int argc, char *argv[], char *envp[]) {
                 // no incoming socket connection.  Check the pipe
                 // queues for incoming data.
                 //
-                if (pipe_check() == -1) {
+                if (pipe_check(inet_ntoa(cli_addr.sin_addr)) == -1) {
 
                     // We received a shutdown command from the
                     // master socket connection.
@@ -890,8 +892,9 @@ void Server(int argc, char *argv[], char *envp[]) {
         p->authenticated = 0;
         p->callsign[0] = '\0';
 
-        fprintf(stderr,"X_spider client connected!\n");
-
+        fprintf(stderr,"X_spider client connected from address %s\n",
+            inet_ntoa(cli_addr.sin_addr));
+ 
         // Link it into the head of the chain.
         //
         p->next = pipe_head;
@@ -932,6 +935,11 @@ void Server(int argc, char *argv[], char *envp[]) {
             // child process
             //
 
+/*
+            fprintf(stderr,
+                "Client address: %s\n",
+                inet_ntoa(cli_addr.sin_addr));
+*/
 
             // Change the name of the new child process.  So far
             // this only works for "ps" listings, not for "top".
@@ -939,7 +947,10 @@ void Server(int argc, char *argv[], char *envp[]) {
             // setproctitle(3), NetBSD can use setprogname(2).
 #ifdef __linux__
             init_set_proc_title(argc, argv, envp);
-            set_proc_title("%s", "x-spider client (xastir)");
+            set_proc_title("%s%s %s",
+                "x-spider client @",
+                inet_ntoa(cli_addr.sin_addr),
+                "(xastir)");
             //printf("DEBUG: %s\n", Argv[0]);
 #endif  // __linux__
 

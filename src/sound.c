@@ -49,6 +49,20 @@ pid_t play_sound(char *sound_cmd, char *soundfile) {
             if (sound_pid!=-1) {
                 if(sound_pid==0) {
 // This is the child process
+
+
+                    // Change the name of the new child process.  So
+                    // far this only works for "ps" listings, not
+                    // for "top".  This code only works on Linux.
+                    // For BSD use setproctitle(3), NetBSD can use
+                    // setprogname(2).
+#ifdef __linux__
+                    init_set_proc_title(my_argc, my_argv, my_envp);
+                    set_proc_title("%s", "festival process (xastir)");
+                    //printf("DEBUG: %s\n", Argv[0]);
+#endif  // __linux__
+
+
                     xastir_snprintf(command,
                         sizeof(command),
                         "%s %s/%s",

@@ -89,6 +89,31 @@ extern int interrupt_drawing_now;
 #define MAX_GPS_CHARS 128
 #define MAX_WX_CHARS 4
 
+
+
+//////////////////////////////////////////////////////////////////////
+// These globals and prototypes are from:
+// http://lightconsulting.com/~thalakan/process-title-notes.html
+// They seems to work fine on Linux, but they only change the "ps"
+// listings, not the top listings.  I don't know why yet.
+
+/* Globals */
+//extern char **Argv = ((void *)0);
+//extern char *__progname, *__progname_full;
+//extern char *LastArgv = ((void *)0);
+
+/* Prototypes */
+extern void set_proc_title(char *fmt,...);
+extern void init_set_proc_title(int argc, char *argv[], char *envp[]);
+
+// New stuff defined by Xastir project:
+extern int my_argc;
+extern void *my_argv;
+extern void *my_envp;
+//////////////////////////////////////////////////////////////////////
+
+
+
 extern int skip_dupe_checking;
 extern int serial_char_pacing;  // Inter-character delay in ms.
 extern int disable_all_maps;

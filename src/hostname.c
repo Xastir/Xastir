@@ -137,6 +137,18 @@ char *host_lookup(char *host, char *ip, int time) {
 //---------------------------------------------------------------------------------------
             if (host_pid==0) {  // We're in the child process
 
+
+                // Change the name of the new child process.  So far
+                // this only works for "ps" listings, not for "top".
+                // This code only works on Linux.  For BSD use
+                // setproctitle(3), NetBSD can use setprogname(2).
+#ifdef __linux__
+                init_set_proc_title(my_argc, my_argv, my_envp);
+                set_proc_title("%s", "hostname lookup (xastir)");
+                //printf("DEBUG: %s\n", Argv[0]);
+#endif  // __linux__
+
+
                 // Close the end of the pipe we don't need here
 
                 if (debug_level & 1024)
