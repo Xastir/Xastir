@@ -1500,7 +1500,7 @@ void draw_grid2(Widget w) {
 
 /*
             // Convert the new point to lat/long coordinates
-            utm_to_ll(E_WGS_84,
+            utm_ups_to_ll(E_WGS_84,
                 double_northing,
                 double_easting,
                 full_zone,
@@ -1558,7 +1558,7 @@ void draw_grid2(Widget w) {
             // Convert the new point to lat/long coordinates.  We
             // probably need to mess with full_zone as well, since
             // it contains a northern zone right now.
-            utm_to_ll(E_WGS_84,
+            utm_ups_to_ll(E_WGS_84,
                 double_northing,
                 double_easting,
 //                full_zone,

@@ -435,9 +435,6 @@ void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, sho
 
 
 
-//WE7U
-// Does not currently handle UPS coordinates (N/S pole regions).
-//
 /*
   Source
   Defense Mapping Agency. 1987b. DMA Technical Report: Supplement to Department of Defense World Geodetic System
@@ -505,7 +502,7 @@ void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
         // We're dealing with UPS coordinates (near the poles)
         //
         // The following piece of code which implements UPS
-        // conversion is basically from code that John Waers
+        // conversion is derived from code that John Waers
         // <jfwaers@csn.net> placed in the public domain.  It's from
         // his program "MacGPS45".
 
@@ -569,7 +566,7 @@ char utm_letter_designator(double lat, double lon)
     // This routine determines the correct UTM/UPS letter designator
     // for the given latitude.  Originally written by Chuck Gantz-
     // chuck.gantz@globalstar.com
-    // Modified to handle UPS zones as well.  --we7u
+    // Modified to handle UPS zones.  --we7u
     char LetterDesignator;
 
     if ((84 >= lat) && (lat >=  72)) LetterDesignator = 'X';
@@ -616,9 +613,28 @@ char utm_letter_designator(double lat, double lon)
 
 
 
-// Does not currently handle UPS coordinates (N/S pole regions).
+// The following piece of code which implements UPS conversion is
+// derived from code that John Waers <jfwaers@csn.net> placed in
+// the public domain.  It's from his program "MacGPS45".
+// 
+static void calcPhi(double *phi, double e, double t)
+{
+        double old = PI/2.0 - 2.0 * atan(t);
+        short maxIterations = 20;
+        
+        while ( (fabs((*phi - old) / *phi) > 1.0e-8) && maxIterations-- ) { 
+                old = *phi;
+                *phi = PI/ 2.0 - 2.0 * atan( t * pow((1.0 - e * sin(*phi)) / ((1.0 + e * sin(*phi))), (e / 2.0)) );
+        }
+}
+
+
+
+
+
+// Converts from UTM/UPS coordinates to Lat/Long coordinates.
 //
-void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
+void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
                const char* utmZone, double *lat,  double *lon)
 {
     //converts UTM coords to lat/long.  Equations from USGS Bulletin 1532 
@@ -641,29 +657,73 @@ void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEast
     char* ZoneLetter;
     int NorthernHemisphere; //1 for northern hemispher, 0 for southern
 
-    x = utmEasting - 500000.0; //remove 500,000 meter offset for longitude
+
+    x = utmEasting;
     y = utmNorthing;
 
     ZoneNumber = strtoul(utmZone, &ZoneLetter, 10);
-
 
     if (       *ZoneLetter == 'Y'       // North Pole
             || *ZoneLetter == 'Z'       // North Pole
             || *ZoneLetter == 'A'       // South Pole
             || *ZoneLetter == 'B') {    // South Pole
+
+        // The following piece of code which implements UPS
+        // conversion is derived from code that John Waers
+        // <jfwaers@csn.net> placed in the public domain.  It's from
+        // his program "MacGPS45".
+ 
         //
         // We're dealing with a UPS coordinate (near the poles)
         // instead of a UTM coordinate.  Need to do entirely
         // different sorts of math?  If so, add an "else" before the
         // "if" keyword below.
         //
-//WE7U
-        fprintf(stderr,"datum.c:utm_to_ll(): Found UPS Coordinate: %s %f %f\n",
+        double e, t, rho;
+        const double k0 = 0.994;
+
+        e = sqrt(eccSquared);
+
+        x -= 2.0e6; // Remove false easting and northing
+        y -= 2.0e6;
+
+        rho = sqrt(x*x + y*y);
+        t = rho * sqrt(pow(1.0+e, 1.0+e) * pow(1.0-e, 1.0-e)) / (2.0 * a * k0);
+
+        calcPhi(lat, e, t);
+        *lat /= (PI/180.0);
+
+        if (y != 0.0)
+            t = atan(fabs(x/y));
+        else {
+            t = PI / 2.0;
+            if (x < 0.0) t = -t;
+        }
+
+        if (*ZoneLetter == 'Z' || *ZoneLetter == 'Y')
+            y = -y; // Northern hemisphere
+
+        if (y < 0.0)
+            t = PI - t;
+
+        if (x < 0.0)
+            t = -t;
+
+        *lon = t / (PI/180.0);
+
+/*
+        fprintf(stderr,"datum.c:utm_ups_to_ll(): Found UPS Coordinate: %s %f %f\n",
             utmZone,
             utmEasting,
             utmNorthing);
+*/
+        return; // Done computing UPS coordinates
     }
 
+
+    x = utmEasting - 500000.0; //remove 500,000 meter offset for longitude
+    y = utmNorthing;
+ 
 
     if ((*ZoneLetter - 'N') >= 0)
         NorthernHemisphere = 1;//point is in northern hemisphere

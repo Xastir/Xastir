@@ -1130,7 +1130,7 @@ void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zo
 // Convert UTM to Xastir lat/lon
 void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x, long *y) {
     double lat, lon;
-    utm_to_ll(E_WGS_84,
+    utm_ups_to_ll(E_WGS_84,
         northing,
         easting,
         zone,

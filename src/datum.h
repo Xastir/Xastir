@@ -89,7 +89,7 @@ enum Common_Datum_Names { // Must match the indices of the Datums defined in dat
 
 void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
              double *utmNorthing, double *utmEasting, char* utmZone, int utmZoneLength);
-void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
+void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
                const char* utmZone, double *lat, double *lon);
 char utm_letter_designator(double lat, double lon);
 
