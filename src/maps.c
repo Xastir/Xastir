@@ -1000,12 +1000,14 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
 /**********************************************************
  * draw_shapefile_map()
  *
- * The current implementation can draw only ESRI polygon
- * or PolyLine shapefiles.
+ * The current implementation can draw only ESRI polygon or PolyLine
+ * shapefiles.  We don't handle points yet or some of the other more
+ * esoteric formats.  Neither do we handle the "hole" drawing in
+ * polygon shapefiles, where one direction around the ring means a
+ * fill, and the other direction means a hole in the polygon.
  *
- * Need to modify this routine:  If alert is NULL, draw
- * every shape that fits the screen.  If non-NULL, draw only
- * the shape that matches the zone number.
+ * If alert is NULL, draw every shape that fits the screen.  If
+ * non-NULL, draw only the shape that matches the zone number.
  * 
  * Here's what I get for the County_Warning_Area Shapefile:
  *
@@ -1809,6 +1811,7 @@ void draw_shapefile_map (Widget w,
 
                 case SHPT_POINT:
                         // Not implemented.
+                        printf("Shapefile Point format files aren't supported!\n");
                     break;
 
 
@@ -2080,10 +2083,19 @@ void draw_shapefile_map (Widget w,
                     }
 
 
-// Figure out and draw the labels for PolyLines:
+// Figure out and draw the labels for PolyLines.  Note that we later
+// determine whether we want to draw the label at all.  Move all
+// code possible below that decision point to keep everything fast.
+// Don't do unnecessary calculations if we're not going to draw the
+// label.
 
                     temp = "";
-                    if (road_flag) {
+                    if (       !skip_label
+                            && !skip_it
+                            && map_labels
+                            && road_flag) {
+                            char a[2],b[2],c[2];
+
                         if ( (mapshots_labels_flag) && (fieldcount >= 8) ) {
                             char temp3[3];
                             char temp4[31];
@@ -2098,8 +2110,18 @@ void draw_shapefile_map (Widget w,
                             xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
                             temp = DBFReadStringAttribute( hDBF, structure, 7 );
                             xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
-                            xastir_snprintf(temp2,sizeof(temp2),"%s %s %s %s",
-                                temp3,temp4,temp5,temp6);
+
+                            // Take care to not insert spaces if
+                            // some of the strings are empty.
+                            if (strlen(temp3) != 0) strcpy(a," ");
+                            else                    a[0] = '\0';
+                            if (strlen(temp4) != 0) strcpy(b," ");
+                            else                    b[0] = '\0';
+                            if (strlen(temp5) != 0) strcpy(c," ");
+                            else                    c[0] = '\0';
+
+                            xastir_snprintf(temp2,sizeof(temp2),"%s%s%s%s%s%s%s",
+                                temp3,a,temp4,b,temp5,c,temp6);
                             temp = temp2;
                         }
                         else if (fieldcount >=10) {  // Need at least 10 fields if we're snagging #9, else segfault
@@ -2112,7 +2134,11 @@ void draw_shapefile_map (Widget w,
                             else
                                 temp = NULL;
                         }
-                    } else if (lake_flag || river_flag) {
+                    } else if (!skip_label
+                            && map_labels
+                            && !skip_it
+                            && (lake_flag || river_flag) ) {
+
                         if ( mapshots_labels_flag && river_flag && (fieldcount >= 8) ) {
                             char temp3[3];
                             char temp4[31];
@@ -2139,6 +2165,50 @@ void draw_shapefile_map (Widget w,
                         }
                         else
                             temp = NULL;
+                    }
+
+                    // First we need to convert over to using the
+                    // temp2 variable, which is changeable.  Make
+                    // temp point to it.  temp may already be
+                    // pointing to the temp2 variable.
+
+                    if (temp != temp2) {
+                        // temp points to an unchangeable string
+
+                        strncpy(temp2,temp,sizeof(temp2));  // Copy the string so we can change it
+                        temp = temp2;                       // Point temp to it (for later use)
+                    }
+                    else {  // We're already set to work on temp2!
+                    }
+
+
+                    // Change "United States Highway 2" into "US 2"
+                    // and "State Highway 204" into "State 204"
+
+                    // Look for substring at start of string
+                    if ( strstr(temp2,"United States Highway") == temp2 ) {
+                        int index;
+                        // Convert to "US"
+                        temp2[1] = 'S';  // Add an 'S'
+                        index = 2;
+                        while (temp2[index+19] != '\0') {
+                            temp2[index] = temp2[index+19];
+                            index++;
+                        }
+                        temp2[index] = '\0';
+                    }
+                    else {
+                        // Look for substring at start of string
+                        if ( strstr(temp2,"State Highway") == temp2 ) {
+                            int index;
+                            // Convert to "State"
+                            index = 5;
+                            while (temp2[index+8] != '\0') {
+                            temp2[index] = temp2[index+8];
+                            index++;
+                            }
+                            temp2[index] = '\0';
+                        }
                     }
 
                     if ( (temp != NULL)
@@ -2191,9 +2261,6 @@ void draw_shapefile_map (Widget w,
                             else
                                 mod_number = 20;
 
-// Change "United States Highway 2" into "US 2" and "State Highway 204"
-// into "State 204"?
-
                             // Check whether we've written out this string
                             // already:  Look for a match in our linked list
 
@@ -2214,9 +2281,14 @@ void draw_shapefile_map (Widget w,
                                     new_label = 0;
                                     ptr2->found = ptr2->found + 1;  // Increment the "found" quantity
 
-// Need to change this "mod" number based on zoom level, so that
-// long strings don't overwrite each other, and so that we don't
-// get too many or too few labels drawn.
+// We change this "mod" number based on zoom level, so that long
+// strings don't overwrite each other, and so that we don't get too
+// many or too few labels drawn.  This will cause us to skip
+// intersections (the tiger files appear to have a label at each
+// intersection).  Between rural and urban areas, this method might
+// not work well.  Urban areas have few intersections, so we'll get
+// fewer labels drawn.
+
                                     // Draw a number of labels
                                     // appropriate for the zoom
                                     // level.
@@ -2440,10 +2512,12 @@ void draw_shapefile_map (Widget w,
 
                 case SHPT_MULTIPOINT:
                         // Not implemented.
+                        printf("Shapefile Multi-Point format files aren't supported!\n");
                     break;
 
                 default:
                         // Not implemented.
+                        printf("Shapefile format not supported: Subformat unknown (default clause of switch)!\n");
                     break;
             }
         }
