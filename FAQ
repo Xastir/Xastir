@@ -215,11 +215,16 @@ The Answers
 
       Xastir depends on at least the X, and Motif/LessTif include files.
       Be sure these are installed before trying to compile the application.
+      Many linux distributions name these packages <packagename>-dev or
+      <packagename>-devel.  
       NOTE: If you installed ImageMagick from a binary distribution, it will be
       dependent on the shared libraries for the various graphics formats
       installed on system on which it was compiled. Be sure you have these same
       libraries installed, or you'll get a link error.
-
+      NOTE: The ImageMagick-devel package included with Redhat 8 is missing
+      some files needed for Xastir. The version in the beta directory on
+      RedHat's ftp site works.
+ 
     - Your operating system or compiler may be out of version.
 
       Software vendors issue new releases for a reason; sometimes to add

@@ -175,48 +175,45 @@ First Time Install:
         See the linux-hams mailing list for details.
 
 
-   2a. Install LessTif or OpenMotif (for non-RED HAT/non-SuSE)
+   2. Install LessTif or OpenMotif (for non-RED HAT/non-SuSE)
 
      If you already have Motif or OpenMotif on your system, including
      the development headers, then you won't need to install LessTif.
 
- NOTE:  Do not download or use LessTif version 0.88.9!!!
+        2a. Download LessTif version 0.91.1 or higher or download OpenMotif.
+        Follow the instructions provided, compile it and install it.
 
-     Download LessTif version 0.91.1 or higher or download OpenMotif.
-     Follow the instructions provided, compile it and install it.
+        Usually,
+         ./configure
+         make
+         su (root)
+         make install (as root)
+         ldconfig
+         exit (from root)
 
-     Usually,
-     ./configure
-     make
-     su (root)
-     make install (as root)
-     exit (from root)
-
-     then run ldconfig
-
-     Or you can try any other OSF/Motif(R) version 1.2
+        Or you can try any other OSF/Motif(R) version 1.2
 
 
-   2b. Install LessTif (for RED HAT !!)
+       2b. Install LessTif (for RED HAT !!)
 
-     down load lestif-devel-0.91.1-1.i386.rpm and install it
-     down load lestif-0.91.1-1.i386.rpm and install it
+       download lestif-devel-0.91.1-1.i386.rpm or newer and install it
+       download lestif-0.91.1-1.i386.rpm  or newer and install it
 
-     Follow any install instructions with LessTif,
+       Follow any install instructions with LessTif,
 
-     you may need to
-      edit /etc/ld.so.conf
-      and run:
-      ldconfig
+       you may need to
+        edit /etc/ld.so.conf
+        and run:
+        ldconfig
 
 
-   2c. Install LessTif (for older SuSE systems !!)
+       2c. Install LessTif (for older SuSE systems !!)
 
-     download lesstif.rpm and lesstifd.rpm and install
-     them.  As root:
+       download lesstif.rpm and lesstifd.rpm and install
+       them.  As root:
 
-        rpm -U lesstif.rpm
-        rpm -U lesstifd.rpm
+         rpm -U lesstif.rpm
+         rpm -U lesstifd.rpm
 
 
    3. OPTIONAL:  Install geoTIFF support.  Allows using USGS DRG topo maps or
@@ -358,6 +355,11 @@ First Time Install:
      map. Installation instructions are included in the package. If you choose
      to install from a binary install, be sure that you have all the graphic
      format libraries that ImageMagick was originally built with. 
+
+     The easiest way to install this is with a package from your linux
+     distribution's CD or ftp site. If you install from such a package, make
+     sure the header files are installed. These are often in a seperate package
+     called ImageMagick-devel or similar.
 
 
    6. OPTIONAL:  If your system doesn't have wget installed, and you want to
