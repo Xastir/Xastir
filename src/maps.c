@@ -1001,6 +1001,10 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
 /**********************************************************
  * draw_shapefile_map()
  *
+ * This function handles both weather-alert shapefiles (from the
+ * NOAA site) and shapefiles used as maps (from a number of
+ * sources).
+ *
  * The current implementation can draw only ESRI polygon or PolyLine
  * shapefiles.  We don't handle points yet or some of the other more
  * esoteric formats.  Neither do we handle the "hole" drawing in
@@ -1923,7 +1927,7 @@ void draw_shapefile_map (Widget w,
                                     if (map_color_levels && scale_y > 256)
                                         skip_label++;
                                     lanes = 2;
-                                    // Use the default color (black)
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
                                     switch (temp[2]) {
                                         case '1':
                                         case '2':
@@ -2602,7 +2606,13 @@ void draw_shapefile_map (Widget w,
 
                                 // Draw a thicker border for city boundaries
                                 if (city_flag) {
-                                    (void)XSetLineAttributes(XtDisplay(w), gc, 2, LineSolid, CapButt,JoinMiter);
+                                    if (scale_y <= 64)
+                                        (void)XSetLineAttributes(XtDisplay(w), gc, 2, LineSolid, CapButt,JoinMiter);
+                                    else if (scale_y <= 128)
+                                        (void)XSetLineAttributes(XtDisplay(w), gc, 1, LineSolid, CapButt,JoinMiter);
+                                    else
+                                        (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
+
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0x14]); // lightgray for border
                                 }
                                 else {
