@@ -463,41 +463,7 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,long y_lat_cor
                         break;
 
                     case DRAW_TO_PIXMAP_ALERTS:
-                        // We must be drawing weather alert maps 'cuz this is the pixmap we use for it.
-                        // This GC is used only for pixmap_alerts
-                        (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)fill_color]);
-
-                        // This is how we tint it instead of obscuring the whole map
-// N7TAP
-// I'm not sure what this is actually going to draw, now that we use draw_shapefile_map
-// for weather alerts...  But, I don't want GXor for weather alerts anyway since it
-// would change the colors of the alerts, losing that bit of information.
-//                        (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
-                        (void)XSetFunction(XtDisplay(w), gc_tint, GXcopy);
-                        /*
-                          Options are:
-                          GXclear         0                       (Don't use)
-                          GXand           src AND dst             (Darker colors, black can result from overlap)
-                          GXandReverse    src AND (NOT dst)       (Darker colors)
-                          GXcopy          src                     (Don't use)
-                          GXandInverted   (NOT src) AND dst       (Pretty colors)
-                          GXnoop          dst                     (Don't use)
-                          GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
-                          GXor            src OR dst              (More pastel colors, too bright?)
-                          GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
-                          GXequiv         (NOT src) XOR dst       (Bright, very readable)
-                          GXinvert        (NOT dst)               (Don't use)
-                          GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
-                          GXcopyInverted  (NOT src)               (Don't use)
-                          GXorInverted    (NOT src) OR dst        (Bright, not very readable)
-                          GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
-                          GXset           1                       (Don't use)
-                        */
-
-
-                        // Here we wish to tint the existing map instead of obscuring it.  We'll use
-                        // gc_tint here instead of gc.
-                        (void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints, Complex,CoordModeOrigin);
+                        printf("You're calling the wrong routine to draw weather alerts!\n");
                         break;
 
                     case DRAW_TO_PIXMAP_FINAL:
@@ -530,12 +496,7 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,long y_lat_cor
                     break;
 
                 case DRAW_TO_PIXMAP_ALERTS:
-                    // This GC is used only for pixmap_alerts
-                    (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)last_color]);
-
-                    // Here we wish to tint the existing map instead of obscuring it.  We'll use
-                    // gc_tint here instead of gc.
-                    (void)XDrawLines (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints,CoordModeOrigin);
+                    printf("You're calling the wrong routine to draw weather alerts!\n");
                     break;
                 }
 
@@ -7075,7 +7036,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 #endif // HAVE_GEOTIFF
 
 
-    // DOS/WinAPRS map?
+    // Must be APRSdos or WinAPRS map
     else if (ext != NULL && strcasecmp (ext, "MAP") == 0) {
         f = fopen (file, "r");
         if (f != NULL) {
@@ -7216,21 +7177,9 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                 printf ("Total vector points %ld, total labels %ld\n",total_vector_points, total_labels);
             }
 
-//            if (alert) {
-//                strncpy (alert->filename, filenm, sizeof (alert->filename));
-//                strcpy (alert->title, map_title);
-//                alert->top_boundary    = top_boundary;
-//                alert->bottom_boundary = bottom_boundary;
-//                alert->left_boundary   = left_boundary;
-//                alert->right_boundary  = right_boundary;
-//            }
-
             in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary);
 
-            if (alert)
-                alert->flags[0] = in_window ? 'Y' : 'N';
-
-            if (in_window && !alert) {
+            if (in_window) {
                 unsigned char last_behavior, special_fill = (unsigned char)FALSE;
                 object_behavior = '\0';
                 xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
@@ -8045,34 +7994,10 @@ static int alert_count;
  * designed to use ESRI Shapefile map files.
  * The base directory where the Shapefiles are located is
  * passed to us in the "dir" variable.
+ *
+ * map_search() fills in the filename field of the alert struct.
+ * draw_shapefile_map() fills in the index field.
  **********************************************************/
-// draw_map() fills in these fields in the alert structure:
-//   alert->filename
-//   alert->title
-//   alert->top_boundary
-//   alert->bottom_boundary
-//   alert->left_boundary
-//   alert->right_boundary
-//   alert->flags[0];
-//
-// And here is what the structure looks like (defined in alert.h):
-//typedef struct {
-//    unsigned long top_boundary, left_boundary, bottom_boundary, right_boundary;
-//    time_t expiration;
-//    char activity[21];
-//    char alert_tag[21];
-//    char title[33];
-//    char alert_level;
-//    char from[10];
-//    char to[10];
-//    /* referenced flags
-//       0 - on screen
-//       1 - source
-//    */
-//    char flags[16];
-//    char filename[64];
-//} alert_entry;
-//
 void load_alert_maps (Widget w, char *dir) {
     int i, level;
     char alert_scan[400], *dir_ptr;
