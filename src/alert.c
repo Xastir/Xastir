@@ -1016,7 +1016,7 @@ int alert_on_screen(void) {
 //
 void alert_build_list(Message *fill) {
     alert_entry entry, *list_ptr;
-    char title[5][20];  // Storage place for zone/county titles
+    char title[5][33];  // Storage place for zone/county titles
     int ii, jj;
     char *ptr;
     DataRow *p_station;
@@ -1026,8 +1026,12 @@ void alert_build_list(Message *fill) {
 
     //fprintf(stderr,"Message_line:%s\n",fill->message_line);
 
-    if (debug_level & 2)
-        fprintf(stderr,"alert_build_list\n");
+    if (debug_level & 2) {
+        fprintf(stderr,"alert_build_list:%s>%s:%s\n",
+            fill->from_call_sign,
+            fill->call_sign,
+            fill->message_line);
+    }
 
     // Empty this string first
     uncompressed_wx[0] = '\0';
@@ -1036,7 +1040,8 @@ void alert_build_list(Message *fill) {
     if (strncmp(fill->call_sign,"SKY",3) == 0) {
         // Special handling for SKY messages only.
 
-        //fprintf(stderr,"Sky Message: %s\n",fill->message_line);
+        if (debug_level & 2)
+            fprintf(stderr,"Sky Message: %s\n",fill->message_line);
 
         // Find a matching alert_record, check whether or not it is
         // expired.  If not, add this additional text into the
@@ -1073,23 +1078,27 @@ void alert_build_list(Message *fill) {
 
                 switch (fill->seq[4]) {
                     case 'B':
-                        strcpy(alert_list[ii].desc0,fill->message_line);
+                        strncpy(alert_list[ii].desc0,fill->message_line,68);
+                        alert_list[ii].desc0[67] = '\0';
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc0: %s\n",fill->message_line);
                         break;
                     case 'C':
-                        strcpy(alert_list[ii].desc1,fill->message_line);
+                        strncpy(alert_list[ii].desc1,fill->message_line,68);
+                        alert_list[ii].desc1[67] = '\0';
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc1: %s\n",fill->message_line);
                         break;
                     case 'D':
-                        strcpy(alert_list[ii].desc2,fill->message_line);
+                        strncpy(alert_list[ii].desc2,fill->message_line,68);
+                        alert_list[ii].desc2[67] = '\0';
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc2: %s\n",fill->message_line);
                         break;
                     case 'E':
                     default:
-                        strcpy(alert_list[ii].desc3,fill->message_line);
+                        strncpy(alert_list[ii].desc3,fill->message_line,68);
+                        alert_list[ii].desc3[67] = '\0';
                         if (debug_level & 2)
                             fprintf(stderr,"Wrote into desc3: %s\n",fill->message_line);
                         break;
@@ -1102,15 +1111,17 @@ void alert_build_list(Message *fill) {
         return;
     }
 
-
-
-
+    if (debug_level & 2)
+        fprintf(stderr,"1\n");
 
     if (fill->active == RECORD_ACTIVE) {
         int ignore_title = 0;
 #define MAX_SUB_ALERTS 5000
         char *title_ptr[MAX_SUB_ALERTS];
 
+
+        if (debug_level & 2)
+            fprintf(stderr,"2\n");
 
         memset(&entry, 0, sizeof(entry));
 
@@ -1133,6 +1144,16 @@ void alert_build_list(Message *fill) {
             &title[2][0],        // ...
             &title[3][0],        // ...
             &title[4][0]);       // ...
+
+        // Force a termination for each
+        entry.activity[20]  = '\0';
+        entry.alert_tag[20] = '\0';
+        title[0][32]        = '\0';
+        title[1][32]        = '\0';
+        title[2][32]        = '\0';
+        title[3][32]        = '\0';
+        title[4][32]        = '\0';
+
 
 
         // Check for "NWS_" in the call_sign field.  Underline
@@ -1236,7 +1257,10 @@ void alert_build_list(Message *fill) {
 // We have our first zone (of this loop) extracted!
 //fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
 
-                // Add it to our zone string.
+                // Add it to our zone string.  In this case we know
+                // that the lengths of the strings we're working
+                // with are quite short.  Little danger of
+                // overrunning our destination string.
                 strcat(uncompressed_wx,",");
                 strcat(uncompressed_wx,prefix); 
                 strcat(uncompressed_wx,suffix);
@@ -1295,7 +1319,11 @@ void alert_build_list(Message *fill) {
 
                             // And another zone... Ennumerate
                             // through the sequence, adding each
-                            // new zone to our zone string.
+                            // new zone to our zone string.  In this
+                            // case we know that the lengths of the
+                            // strings we're working with are quite
+                            // short.  Little danger of overrunning
+                            // our destination string.
                             strcat(uncompressed_wx,",");
                             strcat(uncompressed_wx,prefix); 
                             strcat(uncompressed_wx,suffix);
@@ -1347,7 +1375,11 @@ void alert_build_list(Message *fill) {
 //fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
 
                             // And another zone...
-                            // Add it to our zone string.
+                            // Add it to our zone string.  In this
+                            // case we know that the lengths of the
+                            // strings we're working with are quite
+                            // short.  Little danger of overrunning
+                            // our destination string.
                             strcat(uncompressed_wx,",");
                             strcat(uncompressed_wx,prefix); 
                             strcat(uncompressed_wx,suffix);
@@ -1364,12 +1396,16 @@ void alert_build_list(Message *fill) {
                 }
             }
 
-//fprintf(stderr,"Uncompressed: %s\n",uncompressed_wx);
-
+            if (debug_level & 2)
+                fprintf(stderr,"Uncompressed: %s\n",
+                    uncompressed_wx);
         }
 /////////////////////////////////////////////////////////////////////
 // End of compressed weather alert special code
 /////////////////////////////////////////////////////////////////////
+
+        if (debug_level & 2)
+            fprintf(stderr,"3\n");
 
        // Terminate the strings
         entry.activity[20] = entry.alert_tag[20] = '\0';
@@ -1385,13 +1421,20 @@ void alert_build_list(Message *fill) {
                 // No alerts in this message
             }
 
+            // If it's a trashed packet, we may have entries here
+            // that are too long.  Assure that we don't overwrite
+            // the strings.
             for (jj = 4; jj > 0; jj--) {
-                strcpy(&title[jj][0], &title[jj-1][0]);
+                strncpy(&title[jj][0], &title[jj-1][0], 33);
+                title[jj][32] = '\0';   // Force a terminator
             }
-
-            strcpy(&title[0][0], entry.alert_tag);
-            strcpy(entry.alert_tag, entry.activity);
-
+ 
+            strncpy(&title[0][0], entry.alert_tag, 33);
+            title[0][32] = '\0';
+ 
+            strncpy(entry.alert_tag, entry.activity, 21);
+            entry.alert_tag[20] = '\0';
+ 
             // Shouldn't we clear out entry.activity in this
             // case???  We've determined it's not a date/time value.
             xastir_snprintf(entry.activity,sizeof(entry.activity),"------z");
@@ -1402,10 +1445,15 @@ void alert_build_list(Message *fill) {
             entry.expiration = time_from_aprsstring(entry.activity);
         }
 
+        if (debug_level & 2)
+            fprintf(stderr,"4\n");
 
         // Copy the sequence (which contains issue_date_time and
         // message sequence) into the record.
         xastir_snprintf(entry.seq,sizeof(entry.seq),"%s",fill->seq);
+
+        if (debug_level & 2)
+            fprintf(stderr,"5\n");
 
         // Now compute issue_date_time from the first three characters of
         // the sequence number:
@@ -1456,7 +1504,9 @@ void alert_build_list(Message *fill) {
             //entry.issue_date_time = time_from_aprsstring(date_time);
         }
  
- 
+        if (debug_level & 2)
+            fprintf(stderr,"6\n");
+
         // flags[0] specifies whether it's onscreen or not
         memset(entry.flags, (int)'?', sizeof(entry.flags));
         p_station = NULL;
@@ -1512,9 +1562,7 @@ void alert_build_list(Message *fill) {
         for (ii = 0; ii < MAX_SUB_ALERTS && title_ptr[ii]; ii++) {
 
             // Copy into our entry.title variable
-            strncpy(entry.title, title_ptr[ii], 32);
-
-            // Terminate title string
+            strncpy(entry.title, title_ptr[ii], 33);
             entry.title[32] = '\0';
 //fprintf(stderr,"Title: %s\n",entry.title);
 
@@ -1553,9 +1601,12 @@ void alert_build_list(Message *fill) {
             if (entry.title[0] == '\0')
                 continue;
 
-            strcpy(entry.from, fill->from_call_sign);
-            strcpy(entry.to, fill->call_sign);
-            strcpy(entry.seq, fill->seq);
+            strncpy(entry.from, fill->from_call_sign, 10);
+            entry.from[9] = '\0';
+            strncpy(entry.to, fill->call_sign, 10);
+            entry.to[9] = '\0';
+            strncpy(entry.seq, fill->seq, 10);
+            entry.seq[9] = '\0';
 
             // NWS_ADVIS or NWS_CANCL normally appear in the "to"
             // field.  ADVIS can appear in the alert_tag field on a
@@ -1611,13 +1662,19 @@ void alert_build_list(Message *fill) {
                 if ( (list_ptr->alert_level != 'C') // Stored alert is _not_ a CANCEL
                         || (entry.alert_level == 'C') ) { // Or new one _is_ a CANCEL
                     list_ptr->expiration = entry.expiration;
-                    strcpy(list_ptr->activity, entry.activity);
-                    strcpy(list_ptr->alert_tag, entry.alert_tag);
+                    strncpy(list_ptr->activity, entry.activity, 21);
+                    list_ptr->activity[20] = '\0';
+                    strncpy(list_ptr->alert_tag, entry.alert_tag, 21);
+                    list_ptr->alert_tag[20] = '\0';
                     list_ptr->alert_level = entry.alert_level;
-                    strcpy(list_ptr->seq, entry.seq);
-                    strcpy(list_ptr->from, entry.from);
-                    strcpy(list_ptr->to, entry.to);
-                    strcpy(list_ptr->issue_date_time, entry.issue_date_time);
+                    strncpy(list_ptr->seq, entry.seq, 10);
+                    list_ptr->seq[9] = '\0';
+                    strncpy(list_ptr->from, entry.from, 10);
+                    list_ptr->from[9] = '\0';
+                    strncpy(list_ptr->to, entry.to, 10);
+                    list_ptr->to[9] = '\0';
+                    strncpy(list_ptr->issue_date_time, entry.issue_date_time, 10);
+                    list_ptr->issue_date_time[9] = '\0';
                 }
                 else {
                     // Don't copy the info across, as we'd be making a
