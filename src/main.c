@@ -18632,13 +18632,13 @@ int main(int argc, char *argv[], char *envp[]) {
     if (ag_error){
         printf("\nXastir Command line Options\n\n");
         printf("-v level      Set the debug level\n\n");
-        printf("-lEnglish     Set the language to English\n");
         printf("-lDutch       Set the language to Dutch\n");
+        printf("-lEnglish     Set the language to English\n");
         printf("-lFrench      Set the language to French\n");
         printf("-lGerman      Set the language to German\n");
-        printf("-lSpanish     Set the language to Spanish\n");
         printf("-lItalian     Set the language to Italian\n");
         printf("-lPortuguese  Set the language to Portuguese\n");
+        printf("-lSpanish     Set the language to Spanish\n");
         printf("-i            Install private Colormap\n");
         printf("\n");
         exit(0);
