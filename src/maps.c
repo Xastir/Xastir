@@ -1074,51 +1074,81 @@ void create_shapefile_map(char *shapefile_name, int type,
     SHPObject *my_object;
     DBFHandle my_dbf_handle;
     char timedatestring[101];
+    int index;
+    int max_objects = 1;
 
 
-    // Create the .SHP/.SHX pair of files
+    // Create empty .shp/.shx/.dbf files
     //
-    // Create empty files
     my_shp_handle = SHPCreate(shapefile_name, type);
-
-    // Create the object
-    my_object = SHPCreateSimpleObject( type, quantity, padfx, padfy, padfz);
-
-    // Write the object to the files
-    SHPWriteObject( my_shp_handle, -1, my_object);
-
-    // Destroy the object
-    SHPDestroyObject(my_object);
-
-// We can do the above three steps multiple times for point data.
-
-    // Close the files
-    SHPClose(my_shp_handle);
-
-
-    // Create the corresponding .DBF file
-    //
-    // Create empty file
     my_dbf_handle = DBFCreate(shapefile_name);
 
-    // Add a credits field
-    DBFAddField(my_dbf_handle, "Credits", FTString, 100, 0);
+    // Create the different fields we'll use to store the
+    // attributes:
+    //
+    // Add a credits field and set the length.  Field 0.
+    DBFAddField(my_dbf_handle, "Credits", FTString, 50, 0);
+    //
+    // Add a date/time field and set the length.  Field 1.
+    DBFAddField(my_dbf_handle, "DateTime", FTString, 101, 0);
 
-    // Add a date/time field
-    DBFAddField(my_dbf_handle, "DateTime", FTString, 50, 0);
+    // Populate the files with objects and attributes.  Perform this
+    // loop once for each object.
+    //
+    for (index = 0; index < max_objects; index++) {
 
-    // Write out the credits
-    DBFWriteStringAttribute(my_dbf_handle, 0, 0, "Created by Xastir");
+        // Create a temporary object from the vertices
+        my_object = SHPCreateSimpleObject( type,
+            quantity,
+            padfx,
+            padfy,
+            padfz);
 
-    // Write out the date/time
-    get_timestamp(timedatestring);
-    DBFWriteStringAttribute(my_dbf_handle, 0, 1, timedatestring);
+        // Write out the vertices
+        SHPWriteObject( my_shp_handle,
+            -1,
+            my_object);
 
-// We can do the above two steps multiple times for point data,
-// incrementing the shape index each time.
+        // Destroy the temporary object
+        SHPDestroyObject(my_object);
 
-    // Close the file
+        // Write the credits attributes
+        DBFWriteStringAttribute( my_dbf_handle,
+            index,
+            0,
+            "Created by Xastir, http://www.xastir.org");
+
+        // Write the date/time attributes
+        get_timestamp(timedatestring);
+
+        DBFWriteStringAttribute( my_dbf_handle,
+            index,
+            1,
+            timedatestring);
+    }
+
+    // Close the .shp/.shx/.dbf files
+    SHPClose(my_shp_handle);
     DBFClose(my_dbf_handle);
+}
+
+
+
+
+
+void test_create_shapefile_map(void) {
+    double padfx = 1.0;
+    double padfy = 2.0;
+    double padfz = 3.0;
+
+
+    create_shapefile_map(
+        "/usr/tmp/test_shapefile",
+        SHPT_POLYGON,
+        1,
+        &padfx,
+        &padfy,
+        &padfz);
 }
 
 

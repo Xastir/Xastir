@@ -118,6 +118,8 @@ extern int grid_size;
 
 extern void Print_properties(Widget widget, XtPointer clientData, XtPointer callData);
 
+extern void test_create_shapefile_map(void);
+
 #endif /* __XASTIR_MAPS_H */
 
 
