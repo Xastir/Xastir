@@ -4733,7 +4733,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
             lat0 = ptr->trail_lat_pos;
             lon1 = ptr->prev->trail_long_pos;   // Trail segment end
             lat1 = ptr->prev->trail_lat_pos;
-            flag1 = ptr->prev->flag;
+            flag1 = ptr->flag; // Are we at the start of a new trail?
 
             if ( (abs(lon0 - mid_x_long_offset) < marg_lon) &&  // trail points have to
                 (abs(lon1 - mid_x_long_offset) < marg_lon) &&  // be in margin area
