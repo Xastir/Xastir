@@ -27,7 +27,7 @@ PULDNFI001|Configure|C|
 PULDNFI002|Open Log File|O|
 PULDNFI003|Test|T|
 PULDNFI004|Exit|x|
-PULDNFI005|Exit Now!|x|
+PULDNFI005|Yes I'm Sure!|Y|
 PULDNFI007|Change Debug Level|D|
 PULDNFI010|Enable TNC Logging||
 PULDNFI011|Enable Net Logging||

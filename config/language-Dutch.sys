@@ -38,7 +38,7 @@ PULDNFI015|Kaart Afdrukken|K|
 PULDNFI003|Test||
 PULDNFI007|Verander Debug Level|D|
 PULDNFI004|Sluiten|S|
-PULDNFI005|Exit Now!||
+PULDNFI005|Yes I'm Sure!|Y|
 #
 # Menu "View"
 PULDNVI001|Bulletins|B|
