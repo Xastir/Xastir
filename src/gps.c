@@ -504,7 +504,11 @@ int gps_data_find(char *gps_line_data, int port) {
                         (long)t, (int)getuid(), (int)getuid());
                 }
 #ifdef HAVE_SETTIMEOFDAY
+
+ENABLE_SETUID_PRIVILEGE;
                 settimeofday(&tv, &tz);
+DISABLE_SETUID_PRIVILEGE;
+
 #endif  // HAVE_SETTIMEOFDAY
             }
         }
