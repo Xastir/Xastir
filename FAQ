@@ -79,6 +79,7 @@ The Questions
     4.18 Why does my MacOSX machine w/USB->Serial adapters hang?
     4.19 Why do NumLock/ScrollLock/CapsLock interfere with mouse/keyboard operation?
     4.20 How to I redirect serial ports from one computer to another?
+    4.21 I have Festival compiled in, but I can't get any speech, why?
 
 5.  Features
 
@@ -725,6 +726,42 @@ The Answers
     Serproxy:       http://freshmeat.net/projects/serproxy/
     Serproxy:       http://www.lspace.nildram.co.uk/freeware.html
     Remserial:      http://lpccomp.bc.ca/remserial/
+
+    4.21 I have Festival compiled in, but I can't get any speech, why?
+
+    a) You must start the Festival server daemon before starting Xastir.
+    Start it via this command :
+
+        festival_server &
+
+    b) If the server is running, but you get this: "festival_client:
+    connect to server failed", then you may have some tweaks to do
+    to your system files in order to allow Xastir (or anything else)
+    to connect to Festival.  Try this first to see whether anything
+    can connect to Festival:
+
+        telnet localhost 1314
+
+    If the server is running properly it'll let you connect.  If it
+    does, try typing:
+
+        (SayText "Hello, World")
+
+    If that doesn't work, check your audio mixer settings first, then
+    proceed to c) below:
+
+    c) Some people have an "/etc/hosts" file that has an incorrect
+    line for localhost.  You should have a line which has 127.0.0.1
+    at the start, and has "localhost" somewhere on that line as well.
+    Like this:
+
+        127.0.0.1 localhost localhost.localdomain
+
+    d) On one Debian box, it was an issue with "/etc/hosts.allow".  
+    See "man 8 tcpd" or "man 5 hosts_access" for detailed info about
+    how to configure /etc/hosts.allow and /etc/hosts.deny.  It's
+    part of the tcpwrappers stuff that allows you to configure which
+    hosts have access to which services on your system.
 
 
 5.  Features
