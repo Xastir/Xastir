@@ -32,6 +32,30 @@ Previous Install Notes:
      Xastir files are owned by root, on only readable by root, they will cause
      problems. Fix these files by "chmod 644 filename" where filename is the
      problem file.
+
+  Xastir 1.2.1 CVS:
+
+     On or about July 3rd, 2003, the locations of the Xastir system directories
+     were changed.  Existing users must go through this procedure in order to
+     convert to the new directory structure:
+
+        cd src/xastir
+        cvs update
+        ./bootstrap.sh
+        ./configure
+        make
+        Shut down any running Xastir instances
+        cd scripts
+        su
+        ./xastir-migrate.sh (this will move the Xastir system directories)
+        make install-strip
+        chmod 4555 /usr/local/bin/xastir
+        exit (from root)
+        ./xastir-fixcfg.sh (run this for each user that has ever run Xastir)
+        
+        
+     After you start the new Xastir, you'll need to reindex all maps.
+        
  
   ------------------------------------------------------------------------
 Copyright (C) 1999 Frank Giannandrea
