@@ -1518,14 +1518,25 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
                             switch (temp[1]) {
                                 case '1':   // A1? = Primary road or interstate highway
+                                    if (map_color_levels && scale_y > 16384)
+                                        skip_it++;
+                                    if (map_color_levels && scale_y > 16384)
+                                        skip_label++;
                                     lanes = 4;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
                                 case '2':   // A2? = Primary road w/o limited access, US highways
+                                    if (map_color_levels && scale_y > 8192)
+                                        skip_it++;
+                                    if (map_color_levels && scale_y > 8192)
+                                        skip_label++;
                                     lanes = 3;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
                                     break;
                                 case '3':   // A3? = Secondary road & connecting road, state highways
+                                    // Skip the road if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 256)
                                         skip_label++;
                                     lanes = 2;
@@ -1568,6 +1579,11 @@ void draw_shapefile_map (Widget w,
                                     break;
                                 case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
                                             // service drive, ferry crossing
+                                    if (map_color_levels && scale_y > 64)
+                                        skip_it++;
+                                    if (map_color_levels && scale_y > 16)
+                                        skip_label++;
+ 
                                     switch (temp[2]) {
                                         case '5':   // Ferry crossing
                                             lanes = 2;
@@ -1576,11 +1592,6 @@ void draw_shapefile_map (Widget w,
                                            break;
                                         default:
                                             lanes = 1;
-                                            // Skip the road if we're above this zoom level
-                                            if (map_color_levels && scale_y > 64)
-                                                skip_it++;
-                                            if (map_color_levels && scale_y > 16)
-                                                skip_label++;
                                             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                                             break;
                                     }
@@ -1609,6 +1620,10 @@ void draw_shapefile_map (Widget w,
                                     break;
                                 default:
                                     lanes = 1;
+                                    if (map_color_levels && scale_y > 64)
+                                        skip_it++;
+                                    if (map_color_levels && scale_y > 16)
+                                        skip_label++;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                                     break;
                             }
@@ -1653,6 +1668,9 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
                             switch (temp[1]) {
                                 case '0':   // H0? = Water feature/shoreline
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 16384)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 0;
@@ -1795,6 +1813,9 @@ void draw_shapefile_map (Widget w,
 
                                    break;
                                 default:
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
