@@ -564,6 +564,308 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
 
 
 
+#define BARB_LEN 15
+#define BARB_SPACING 15
+void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
+    float barb_radians = bearing_radians + ( (45/360.0) * 2.0 * M_PI);
+    int j;
+    long start_x, start_y, off_x, off_y;
+
+
+//    printf("%d half\n",quantity);
+
+    for (j = 0; j < quantity; j++) {
+        // Starting point for barb is (*i * BARB_SPACING) pixels
+        // along bearing_radians vector
+        *i = *i + BARB_SPACING;
+//printf("i:%d\n",*i);
+        off_x = *i * cos(bearing_radians);
+        off_y = *i * sin(bearing_radians);
+        start_y = y + off_y;
+        start_x = x + off_x;
+
+//(x_long-x_long_offset)/scale_x,
+//(y_lat-y_lat_offset)/scale_y,
+ 
+        // Set off in the barb direction now
+        off_y = (long)( (BARB_LEN / 2) * sin(barb_radians) );
+        off_x = (long)( (BARB_LEN / 2) * cos(barb_radians) );
+
+        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+        (void)XDrawLine(XtDisplay(da),where,gc,
+            start_x,
+            start_y,
+            start_x + off_x,
+            start_y + off_y);
+    }
+}
+
+
+
+
+
+void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
+    float barb_radians = bearing_radians + ( (45/360.0) * 2.0 * M_PI);
+    int j;
+    long start_x, start_y, off_x, off_y;
+
+
+//    printf("%d full\n",quantity);
+
+    for (j = 0; j < quantity; j++) {
+        // Starting point for barb is (*i * BARB_SPACING) pixels
+        // along bearing_radians vector
+        *i = *i + BARB_SPACING;
+//printf("i:%d\n",*i);
+        off_x = *i * cos(bearing_radians);
+        off_y = *i * sin(bearing_radians);
+        start_y = y + off_y;
+        start_x = x + off_x;
+
+        // Set off in the barb direction now
+        off_y = (long)( BARB_LEN * sin(barb_radians) );
+        off_x = (long)( BARB_LEN * cos(barb_radians) );
+
+        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+        (void)XDrawLine(XtDisplay(da),where,gc,
+            start_x,
+            start_y,
+            start_x + off_x,
+            start_y + off_y);
+
+    }
+}
+
+
+
+
+
+void draw_triangle_flags(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
+    float barb_radians = bearing_radians + ( (45/360.0) * 2.0 * M_PI);
+    int j;
+    long start_x, start_y, off_x, off_y, off_x2, off_y2;
+    XPoint points[3];
+
+
+//    printf("%d triangle\n",quantity);
+
+    for (j = 0; j < quantity; j++) {
+        // Starting point for barb is (*i * BARB_SPACING) pixels
+        // along bearing_radians vector
+        *i = *i + BARB_SPACING;
+//printf("i:%d\n",*i);
+        off_x = *i * cos(bearing_radians);
+        off_y = *i * sin(bearing_radians);
+        start_y = y + off_y;
+        start_x = x + off_x;
+
+        // Calculate 2nd point along staff
+        off_x2 = (BARB_SPACING/2) * cos(bearing_radians);
+        off_y2 = (BARB_SPACING/2) * sin(bearing_radians);
+
+        // Set off in the barb direction now
+        off_y = (long)( BARB_LEN * sin(barb_radians) );
+        off_x = (long)( BARB_LEN * cos(barb_radians) );
+
+        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+
+        points[0].x = start_x;           points[0].y = start_y;
+        points[1].x = start_x + off_x;   points[1].y = start_y + off_y;
+        points[2].x = start_x + off_x2;  points[2].y = start_y + off_y2;
+        (void)XFillPolygon(XtDisplay(da), where, gc, points, 3, Convex, CoordModeOrigin);
+    }
+}
+
+
+
+
+
+void draw_square_flags(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
+    float barb_radians = bearing_radians + ( (90/360.0) * 2.0 * M_PI);
+    int j;
+    long start_x, start_y, off_x, off_y, off_x2, off_y2;
+    XPoint points[4];
+
+
+//    printf("%d square\n",quantity);
+
+    for (j = 0; j < quantity; j++) {
+        // Starting point for barb is (*i * BARB_SPACING) pixels
+        // along bearing_radians vector
+        *i = *i + BARB_SPACING;
+//printf("i:%d\n",*i);
+        off_x = *i * cos(bearing_radians);
+        off_y = *i * sin(bearing_radians);
+        start_y = y + off_y;
+        start_x = x + off_x;
+
+        // Calculate 2nd point along staff
+        off_x2 = (BARB_SPACING/2) * cos(bearing_radians);
+        off_y2 = (BARB_SPACING/2) * sin(bearing_radians);
+
+        // Set off in the barb direction now
+        off_y = (long)( BARB_LEN * sin(barb_radians) );
+        off_x = (long)( BARB_LEN * cos(barb_radians) );
+
+        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+
+/*
+        (void)XDrawLine(XtDisplay(da),where,gc,
+            start_x,
+            start_y,
+            start_x + off_x,
+            start_y + off_y);
+*/
+
+        points[0].x = start_x;                   points[0].y = start_y;
+        points[1].x = start_x + off_x;           points[1].y = start_y + off_y;
+        points[2].x = start_x + off_x + off_x2;  points[2].y = start_y + off_y + off_y2;
+        points[3].x = start_x + off_x2;          points[3].y = start_y + off_y2;
+        (void)XFillPolygon(XtDisplay(da), where, gc, points, 4, Convex, CoordModeOrigin);
+    }
+}
+
+
+
+
+
+// Function to draw wind barbs.  Use speed in knots to determine the
+// flags and barbs to draw along the shaft.  Course is in true
+// degrees, in the direction that the wind is coming from.
+//
+//   Square flag = 100 knots
+// Triangle flag = 50 knots
+//     Full barb = 10 knots
+//     Half barb = 5 knots
+//
+void draw_wind_barb(long x_long, long y_lat, char *speed,
+        char *course, time_t sec_heard, Pixmap where) {
+    int square_flags = 0;
+    int triangle_flags = 0;
+    int full_barbs = 0;
+    int half_barbs = 0;
+    int shaft_length = 0;
+    int my_speed = atoi(speed);     // In mph (so far)
+    int my_course = atoi(course);   // In ° true
+    float bearing_radians;
+    long off_x,off_y;
+    long x,y;
+    int i;
+
+
+    // Convert from mph to knots for wind speed.
+    my_speed = my_speed * cvt_mi2len;
+
+    // What to do if my_speed is zero?  Blank out any wind barbs
+    // that were written before?
+
+    // Adjust so that it fits our screen angles.  We're off by
+    // 90 degrees.
+    my_course = (my_course - 90) % 360;
+
+ 
+    // Ghost the wind barb if sec_heard is too long.
+
+
+    square_flags = (int)(my_speed / 100);
+    my_speed = my_speed % 100;
+
+    triangle_flags = (int)(my_speed / 50);
+    my_speed = my_speed % 50;
+
+    full_barbs = (int)(my_speed / 10);
+    my_speed = my_speed % 10;
+
+    half_barbs = (int)(my_speed / 5);
+
+    shaft_length = BARB_SPACING * (square_flags + triangle_flags + full_barbs
+        + half_barbs + 1);
+
+    // Set a minimum length for the shaft?
+    if (shaft_length < 20)
+        shaft_length = 20;
+
+    if (debug_level & 128) {
+        printf("Course:%d,\tL:%d,\tsq:%d,\ttr:%d,\tfull:%d,\thalf:%d\n",
+            atoi(course),
+            shaft_length,
+            square_flags,
+            triangle_flags,
+            full_barbs,
+            half_barbs);
+    }
+
+    // Draw shaft at proper angle.
+    bearing_radians = (my_course/360.0) * 2.0 * M_PI;
+
+    off_y = (long)( shaft_length * sin(bearing_radians) );
+    off_x = (long)( shaft_length * cos(bearing_radians) );
+
+    x = (x_long - x_long_offset)/scale_x;
+    y = (y_lat - y_lat_offset)/scale_y;
+
+    (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+    (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+    (void)XDrawLine(XtDisplay(da),where,gc,
+        x,
+        y,
+        x + off_x,
+        y + off_y);
+
+
+    // Increment along shaft and draw filled polygons at:
+    // "(angle + 45) % 360" degrees to create flags.
+
+    i = BARB_SPACING;
+    // Draw half barbs if any
+    if (half_barbs)
+    	draw_half_barbs(&i,
+            half_barbs,
+            bearing_radians,
+            x,
+            y,
+            course,
+            where);
+ 
+    // Draw full barbs if any
+    if (full_barbs)
+    	draw_full_barbs(&i,
+            full_barbs,
+            bearing_radians,
+            x,
+            y,
+            course,
+            where);
+ 
+    // Draw triangle flags if any
+    if (triangle_flags)
+    	draw_triangle_flags(&i,
+            triangle_flags,
+            bearing_radians,
+            x,
+            y,
+            course,
+            where);
+ 
+    // Draw rectangle flags if any
+    if (square_flags)
+    	draw_square_flags(&i,
+            square_flags,
+            bearing_radians,
+            x,
+            y,
+            course,
+            where);
+}
+
+
+
+
+
 // Function to draw beam headings for DF'ing purposes.  Separates NRQ into its
 // components, which are Number/Range/Quality.
 //

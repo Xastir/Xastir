@@ -10474,6 +10474,36 @@ void Test(Widget w, XtPointer clientData, XtPointer callData) {
     mdisplay_file(0);
     //mem_display();
     alert_print_list();
+
+    draw_wind_barb(50000000l,   // long x_long,
+        32000000l,              // long y_lat,
+        "169",                  // char *speed,
+        "005",                  // char *course,
+        sec_now(),              // time_t sec_heard,
+        pixmap_final);          // Pixmap where);
+
+    draw_wind_barb(60000000l,   // long x_long,
+        32000000l,              // long y_lat,
+        "009",                  // char *speed,
+        "123",                  // char *course,
+        sec_now(),              // time_t sec_heard,
+        pixmap_final);          // Pixmap where);
+
+    draw_wind_barb(70000000l,   // long x_long,
+        32000000l,              // long y_lat,
+        "109",                  // char *speed,
+        "185",                  // char *course,
+        sec_now(),              // time_t sec_heard,
+        pixmap_final);          // Pixmap where);
+
+    draw_wind_barb(80000000l,   // long x_long,
+        32000000l,              // long y_lat,
+        "079",                  // char *speed,
+        "275",                  // char *course,
+        sec_now(),              // time_t sec_heard,
+        pixmap_final);          // Pixmap where);
+
+    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
