@@ -37,6 +37,8 @@ The Questions
         freetype library.  What to do?
     3.4 During the linking stage, it's giving me "undefined reference to
         `CompressImageColormap'".  What to do?
+    3.5 Some of the text looks strange, writes over itself and other
+        user interface weirdness occurs.  Why?
 
 4.  Running Xastir
 
@@ -218,7 +220,7 @@ The Answers
       Xastir depends on at least the X, and Motif/LessTif include files.
       Be sure these are installed before trying to compile the application.
       Many linux distributions name these packages <packagename>-dev or
-      <packagename>-devel.  
+      <packagename>-devel.
       NOTE: If you installed ImageMagick from a binary distribution, it will be
       dependent on the shared libraries for the various graphics formats
       installed on system on which it was compiled. Be sure you have these same
@@ -226,7 +228,7 @@ The Answers
       NOTE: The ImageMagick-devel package included with Redhat 8 is missing
       some files needed for Xastir. The version in the beta directory on
       RedHat's ftp site works.
- 
+
     - Your operating system or compiler may be out of version.
 
       Software vendors issue new releases for a reason; sometimes to add
@@ -266,6 +268,14 @@ The Answers
     by checking the version of ImageMagick you have and changing the function
     call to match.
 
+    3.5 Some of the text looks strange, writes over itself and other
+        user interface weirdness occurs.  Why?
+
+    This has been seen to occur due to bugs in some versions of LessTif.
+    You may want to try OpenMotif instead if it is available for your
+    distribution.  One caveat that was found on Slackware 8.1 is the need
+    to delete all the text in the /usr/X11R6/lib/X11/config/host.def file
+    otherwise it still refers to the LessTif installation.
 
 4. Running Xastir
 
