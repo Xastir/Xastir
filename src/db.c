@@ -4343,7 +4343,10 @@ int is_weather_data(char *data, int len) {
 
 
 
-/* extract single weather data item from information field */
+// Extract single weather data item from information field.  Returns
+// the data found in "temp", modifies "data" to remove the found
+// data from the string.  Returns a 1 if found, 0 if not found.
+//
 int extract_weather_item(char *data, char type, int datalen, char *temp) {
     int i,ofs,found,len;
 
@@ -4361,6 +4364,29 @@ int extract_weather_item(char *data, char type, int datalen, char *temp) {
             data[i] = data[i+datalen+1];
     } else
         temp[0] = '\0';
+    return(found);
+}
+
+
+
+
+
+// test-extract single weather data item from information field, on
+// other words, don't change the input string, but just test whether
+// the data is present.  Returns a 1 if found, 0 if not found.
+//
+int test_extract_weather_item(char *data, char type, int datalen) {
+    int ofs,found,len;
+
+    found=0;
+    len = (int)strlen(data);
+    for(ofs=0; !found && ofs<len-datalen; ofs++)      // search for start sequence
+        if (data[ofs]==type) {
+            found=1;
+            if (!is_weather_data(data+ofs+1, datalen))
+                found=0;
+        }
+    //printf("test_extract: %c %d\n",type,found);
     return(found);
 }
 
@@ -4387,34 +4413,100 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
     char speed[4];
 
 //WE7U
+// Try copying the string to a temporary string, then do some
+// extractions to see if a few weather items are present?  This
+// would allow us to have the weather items in any order, and if
+// enough of them were present, we consider it to be a weather
+// packet?  We'd need to qualify all of the data to make sure we had
+// the proper number of digits for each.  The trick is to make sure
+// we don't decide it's a weather packet if it's not.  We don't know
+// what people might send in packets in the future.
+
     if (compr) {        // compressed position report
+        // Look for weather data in fixed locations first
         if (strlen(data) >= 8
-                     && data[0] =='g' && is_weather_data(&data[1],3)
-                     && data[4] =='t' && is_weather_data(&data[5],3)) {
+                && data[0] =='g' && is_weather_data(&data[1],3)
+                && data[4] =='t' && is_weather_data(&data[5],3)) {
+
             strcpy(speed, p_station->speed);    // we find WX course/speed
             strcpy(course,p_station->course);   // in compressed position data
-        } else {
-            ok = 0;     // no weather data found
+
+            //printf("Found compressed wx\n");
         }
-    } else {
-        if (strlen(data)>=15 && data[3]=='/'
-                     && is_weather_data(data,3) && is_weather_data(&data[4],3)
-                     && data[7] =='g' && is_weather_data(&data[8], 3)
-                     && data[11]=='t' && is_weather_data(&data[12],3)) {    // Complete Weather Report
-            (void)extract_speed_course(data,speed,course);
-            //    printf("found Complete Weather Report\n");
-        } else
-            // need date/timestamp
-            if (strlen(data)>=16
-                    && data[0] =='c' && is_weather_data(&data[1], 3)
-                    && data[4] =='s' && is_weather_data(&data[5], 3)
-                    && data[8] =='g' && is_weather_data(&data[9], 3)
-                    && data[12]=='t' && is_weather_data(&data[13],3)) { // Positionless Weather Data
-                (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
-                (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
-                //        printf("found weather2\n");
-        } else
+        // Look for weather data in non-fixed locations (RAWS WX
+        // Stations?)
+        else if ( strlen(data) >= 8
+                && test_extract_weather_item(data,'g',3)
+                && test_extract_weather_item(data,'t',3) ) {
+
+            strcpy(speed, p_station->speed);    // we find WX course/speed
+            strcpy(course,p_station->course);   // in compressed position data
+
+            //printf("Found compressed WX in non-fixed locations! %s:%s\n",
+            //    p_station->call_sign,data);
+
+        }
+        else {  // No weather data found
             ok = 0;
+
+            //printf("No compressed wx\n");
+        }
+    } else {    // Look for non-compressed weather data
+        // Look for weather data in defined locations first
+        if (strlen(data)>=15 && data[3]=='/'
+                && is_weather_data(data,3) && is_weather_data(&data[4],3)
+                && data[7] =='g' && is_weather_data(&data[8], 3)
+                && data[11]=='t' && is_weather_data(&data[12],3)) {    // Complete Weather Report
+
+            (void)extract_speed_course(data,speed,course);
+
+            // Also try to get speed/course from 's' and 'c' fields
+            // (another wx format)
+            (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
+            (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
+
+            //printf("Found Complete Weather Report\n");
+        }
+        // Look for date/time and weather in fixed locations first
+        else if (strlen(data)>=16
+                && data[0] =='c' && is_weather_data(&data[1], 3)
+                && data[4] =='s' && is_weather_data(&data[5], 3)
+                && data[8] =='g' && is_weather_data(&data[9], 3)
+                && data[12]=='t' && is_weather_data(&data[13],3)) { // Positionless Weather Data
+
+            // Try to snag speed/course out of first 7 bytes
+            (void)extract_speed_course(data,speed,course);
+
+            // Also try to get speed/course from 's' and 'c' fields
+            // (another wx format)
+            (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
+            (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
+
+            //printf("Found weather\n");
+        }
+        // Look for weather data in non-fixed locations (RAWS WX
+        // Stations?)
+        else if (strlen (data) >= 16
+                && test_extract_weather_item(data,'h',2)
+                && test_extract_weather_item(data,'g',3)
+                && test_extract_weather_item(data,'t',3) ) {
+
+            // Try to snag speed/course out of first 7 bytes
+            (void)extract_speed_course(data,speed,course);
+
+            // Also try to get speed/course from 's' and 'c' fields
+            // (another wx format)
+            (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
+            (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
+ 
+            //printf("Found WX in non-fixed locations!  %s:%s\n",
+            //    p_station->call_sign,data);
+        }
+        else {  // No weather data found
+            ok = 0;
+
+            //printf("No wx found\n");
+        }
     }
 
     if (ok) {
