@@ -423,7 +423,8 @@ scr_s_x_min = 0;
 // extents) instead of drawing it.
 //
 // Indexing currently works properly only if a geographic coordinate
-// system and the correct datum (WGS84 or NAD83) are found.
+// system is found.  It doesn't work yet for projected or local
+// coordinate systems.
 //
 void draw_ogr_map(Widget w,
                    char *dir,
@@ -604,46 +605,47 @@ fprintf(stderr,"Couldn't get spatial reference\n");
             // datasource.
         }
 
-        if (geographic && !first_extents) {
-            // Need to also check datum!  Must be NAD83 or WGS84 for
-            // our purposes.
-//            if (       strcasecmp(geogcs,"WGS84") == 0
-//                    || strcasecmp(geogcs,"NAD83") == 0) {
-            if ( strcasecmp(geogcs,"WGS84") == 0) {
+        // We know how to handle geographic or projected coordinate
+        // systems.
+        if ( !first_extents && (geographic || projected) ) {
+            // Need to also check datum!  Must be NAD83 or WGS84 and
+            // geographic for our purposes.
+            if ( geographic
+                    && ( strcasecmp(geogcs,"WGS84") == 0
+                        || strcasecmp(geogcs,"NAD83") == 0) ) {
 
 fprintf(stderr, "Geographic coordinate system, %s, adding to index\n", geogcs);
 
 // Debug:  Don't add them to the index so that we can experiment
 // with datum translation and such.
+//#define WE7U
+#ifndef WE7U
                 index_update_ll(filenm,    // Filename only
                     file_MinY,  // Bottom
                     file_MaxY,  // Top
                     file_MinX,  // Left
                     file_MaxX); // Right
+#endif  // WE7U
             }
-            else {
-                // Have geographic coordinates, but in the wrong
-                // datum.  Convert to WGS84.
+            else {  // Geographic/wrong datum, or projected
+                    // coordinates.  Have coordinates, but in the
+                    // wrong datum or coordinate system.  Convert to
+                    // WGS84.
                 OGRSpatialReferenceH wgs84_spatial = NULL;
                 OGRCoordinateTransformationH transformH = NULL;
 
-//#define WE7U
-#ifdef WE7U
-fprintf(stderr, "Found geographic coordinate system/wrong datum: %s.  Converting to nad27 datum\n", geogcs);
-#else   // WE7U
-fprintf(stderr, "Found geographic coordinate system/wrong datum: %s.  Converting to wgs84 datum\n", geogcs);
-#endif  // WE7U
+                if (geographic)
+fprintf(stderr, "Found geographic/wrong datum: %s.  Converting to wgs84 datum\n", geogcs);
+                else
+fprintf(stderr, "Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n", geogcs);
+ 
 
                 wgs84_spatial = OSRNewSpatialReference(NULL);
                 if (wgs84_spatial == NULL) {
 fprintf(stderr,"Couldn't create empty wgs84_spatial object\n");
                 }
 
-#ifdef WE7U
-                if (OSRSetWellKnownGeogCS(wgs84_spatial,"NAD27") == OGRERR_FAILURE) {
-#else   // WE7U
                 if (OSRSetWellKnownGeogCS(wgs84_spatial,"WGS84") == OGRERR_FAILURE) {
-#endif  // WE7U
  
                     // Couldn't fill in WGS84 parameters.
 fprintf(stderr,"Couldn't fill in wgs84 spatial reference parameters\n");
@@ -717,12 +719,6 @@ x[1],y[1],result);
                         OSRDestroySpatialReference(wgs84_spatial);
                 }
             }
-        }
-        else if (projected && !first_extents) {
-            // Convert to geographic/WGS84
-
-fprintf(stderr, "Found projected coordinate system.  Skipping indexing\n");
-
         }
         else if (local && !first_extents) {
             // Convert to geographic/WGS84
