@@ -871,7 +871,7 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
     double utmEasting;
     char utmZone[10];
  
-    ll_to_utm(gDatum[E_WGS_84].ellipsoid,
+    ll_to_utm(E_WGS_84,
         (double)(-((y - 32400000l )/360000.0)),
         (double)((x - 64800000l )/360000.0),
         &utmNorthing,
@@ -887,7 +887,7 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
 
 // Convert Xastir lat/lon to UTM
 void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zone_len, long x, long y) {
-    ll_to_utm(gDatum[E_WGS_84].ellipsoid,
+    ll_to_utm(E_WGS_84,
         (double)(-((y - 32400000l )/360000.0)),
         (double)((x - 64800000l )/360000.0),
         northing,
@@ -900,7 +900,7 @@ void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zo
 // Convert UTM to Xastir lat/lon
 void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x, long *y) {
     double lat, lon;
-    utm_to_ll(gDatum[E_WGS_84].ellipsoid,
+    utm_to_ll(E_WGS_84,
         northing,
         easting,
         zone,
@@ -2004,8 +2004,8 @@ char *sec_to_loc(long longitude, long latitude)
   *loc++ = (char) (latitude  / 36000 + 'A'); latitude  = latitude % 36000;
   *loc++ = (char) (longitude /  7200 + '0'); longitude = longitude %  7200;
   *loc++ = (char) (latitude  /  3600 + '0'); latitude  = latitude %  3600;
-  *loc++ = (char) (longitude /   300 + 'A');
-  *loc++ = (char) (latitude  /   150 + 'A');
+  *loc++ = (char) (longitude /   300 + 'a');
+  *loc++ = (char) (latitude  /   150 + 'a');
   *loc   = 0;
   return buf;
 }
