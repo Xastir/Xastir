@@ -111,12 +111,12 @@ usually do this:
 That last step will create yet another xastir directory underneath
 the first one but will have the version number in it, so your full
 path might be something like (starting at your home directory):
-~/src/xastir/xastir-1.3.3
+~/src/xastir/xastir-1.4.0
 
 The path just listed is where you'll go in order to run the
 configure and make commands listed below.
 
-    cd  ~/src/xastir/xastir-1.3.3
+    cd  ~/src/xastir/xastir-1.4.0
 
 from an xterm window should take you there.
 
