@@ -696,11 +696,19 @@ The Answers
     Another option is to use a Perl script on each end to do the
     conversion.
 
-    Yet another is to use "netcat".  "man nc" should tell you about
-    it.  It redirects tcpip data seamlessly under Linux.  Try
-    something like this:
+    Yet another is to use "netcat".  "man nc" or "man netcat" should
+    tell you about it.  It redirects tcpip data seamlessly under
+    Linux.  On SuSE the docs for it are in
+    /usr/share/doc/packages/netcat.  Try a command line like this:
 
-        cat /dev/ttyS0 > nc -p 3000
+        cat /dev/ttyS0 | nc -l -p 3000 localhost
+    or
+        cat /dev/ttyS0 | netcat -l -p 3000 localhost
+
+    That should make a listening socket at port 3000 which listens
+    to the /dev/ttyS0 serial port.  "telnet localhost 3000" should
+    show you any data coming in on that serial port.  Connect Xastir
+    across the network to that listening socket to get the data.
 
     If you want to put your GPS on a remote serial port, use the
     gpsd daemon to do it.
