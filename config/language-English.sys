@@ -73,7 +73,23 @@ PULDNMP007|Enable Weather Alert Counties||
 PULDNMP005|Background Color|C|
 PULDNMP006|Station Text Style|T|
 PULDNMP011|Mouse Pointer Menu|P|
-PULDNMP008|Map Intensity|I|                                                    
+PULDNMP008|Map Intensity|I|
+PULDNMP020|Enable/Configure Tigermap||
+#
+#
+# PopUp "Configure Tigermap"
+MPUPTGR001|Grid||
+MPUPTGR002|Counties||
+MPUPTGR003|City Labels||
+MPUPTGR004|Urban Areas||
+MPUPTGR005|Major Roads||
+MPUPTGR006|Streets||
+MPUPTGR007|Railroads||
+MPUPTGR008|State Labels||
+MPUPTGR009|Interstate Labels||
+MPUPTGR010|US Hwy Labels||
+MPUPTGR011|State Hwy Labels||
+MPUPTGR012|Select items to be displayed:||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Map Chooser||
