@@ -80,6 +80,13 @@ typedef struct _map_index_record{
 } map_index_record;
 extern map_index_record *map_index_head;
 
+typedef struct {
+    int img_x;
+    int img_y;
+    unsigned long x_long;
+    unsigned long y_lat;
+} tiepoint;
+
 char *get_map_ext (char *filename);
 void load_auto_maps(Widget w, char *dir);
 void load_maps(Widget w);
@@ -89,14 +96,26 @@ void  index_update_xastir(char *filename, unsigned long bottom, unsigned long to
 void  index_update_ll(char *filename, double bottom, double top, double left, double right);
 void draw_grid (Widget w);
 void Snapshot(void);
-int index_retrieve(char *filename, unsigned long *bottom,
+extern int index_retrieve(char *filename, unsigned long *bottom,
     unsigned long *top, unsigned long *left, unsigned long *right,
     int *map_layer, int *draw_filled, int *automaps);
-void index_restore_from_file(void);
-void index_save_to_file(void);
-void map_indexer(int parameter);
-void index_sort(void);
-
+extern void index_restore_from_file(void);
+extern void index_save_to_file(void);
+extern void map_indexer(int parameter);
+extern int map_visible (unsigned long bottom_map_boundary,
+                        unsigned long top_map_boundary,
+                        unsigned long left_map_boundary,
+                        unsigned long right_map_boundary);
+extern int map_visible_lat_lon (double f_bottom_map_boundary,
+                                double f_top_map_boundary,
+                                double f_left_map_boundary,
+                                double f_right_map_boundary,
+                                char *error_message);
+extern void draw_label_text (Widget w, int x, int y, int label_length, int color, char *label_text);
+extern void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text);
+extern void  Monochrome( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData);
+extern void Snapshot(void);
+extern void clean_string(char *input);
 extern int print_rotated;
 extern int print_auto_rotation;
 extern int print_auto_scale;
@@ -104,6 +123,12 @@ extern int print_in_monochrome;
 extern int print_invert;
 extern int  locate_place(Widget w, char *name, char *state, char *county, char *quad, char* type, char *filename, int follow_case, int get_match);
 extern void maps_init(void);
+extern int convert_to_xastir_coordinates (unsigned long* x,
+					  unsigned long* y,
+					  float f_longitude,
+					  float f_latitude);
+enum map_onscreen_enum {MAP_NOT_VIS=0,MAP_IS_VIS,MAP_NOT_INDEXED};
+extern enum map_onscreen_enum map_onscreen_index(char *filename);
 extern time_t last_snapshot;
 
 extern int grid_size;
@@ -118,8 +143,6 @@ extern int grid_size;
 #endif  // NO_GRAPHICS
 
 extern void Print_properties(Widget widget, XtPointer clientData, XtPointer callData);
-
-extern int convert_to_xastir_coordinates ( unsigned long* x, unsigned long* y, float f_longitude, float f_latitude );
 
 
 #endif /* __XASTIR_MAPS_H */

@@ -22,7 +22,8 @@ xastir_SOURCES = \
     location.c \
     location_gui.c \
     main.c main.h \
-    maps.c maps.h \
+    maps.c maps.h map_shp.c map_dos.c map_pdb.c map_tif.c map_geo.c \
+    map_tiger.c map_gnis.c \
     messages.c messages.h \
     messages_gui.c \
     popup.h \
