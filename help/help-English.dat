@@ -65,6 +65,14 @@ on APRS(tm) can be found in the APRSdos documentation written by
 Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
+HELP-INDEX>What's new in Xastir BETA
+Optional Rtree shapefile extent caching
+Optional berkelydb-based tigermap caching
+Modifier keys fix
+Improvements to the send message GUI
+Tactical call support re-written
+Warnings on crazy paths
+
 HELP-INDEX>What's new in Xastir 1.4
 Comment fields for interfaces
 split_gnis and ozi2geo scripts, need to add to section on scripts
@@ -82,60 +90,6 @@ RINO waypoints downloading
 label trackpoints
 comment/status timestamps
 listener socket/ability to act like a limited internet server
-
-
-HELP-INDEX>What's new in Xastir 1.3
-
-                    What's new in Xastir 1.3
-
-This latest Xastir release greatly improves on the efficiency and usability of
-Xastir, and adds many helpful and often-requested new features.
-
-.geo files can now have REFRESH tags, to specify how often the file is
-reloaded. This is useful for weather radars and other dynamic images. .geo
-files can also have a TRANSPARENT tag to make a certain color transparent, and
-a CROP tag to specify a specific region to display.
-
-Some Opentrac packets are now decoded and displayed. See
-http://opentrac.org/ for more details.
-
-The default main Xastir directory is now /usr/local/share/xastir; please see
-the upgrade notes in README for migration information. This more closely
-mirrors the behavior of other applications.  If you're installing
-from a binary package (rpm/deb/etc), the default install location
-may be /usr/share/xastir.
-
-Xastir efficiency has been greatly improved. Changes in data structures and
-timing values have made this Xastir release the most efficient yet.
-Additionally, map redraw sequences are interruptible, so map panning speed
-has been improved.
-
-dbfawk support - Experimental support for configurable shapefile metadata, in
-an awk-like language. See README.MAPS for more details; this must be turned
-on with a specific switch to the configure command.
-
-GDAL/OGR support - Experimental support for GDAL and loading of native TIGER
-data (.RT1 files). This is automatically enabled if the GDAL library is
-found.
-
-Support for UTM w/special zones and MGRS coordinate systems.
-
-Cad drawing mode allows one to draw regions on your screen using the center
-mouse button. This feature is not yet complete, but is functional.
-
-User interface changes:
-* Several of the menus have been reorganized to have a hierarchical design.
-* Additionally, a few colors have been modified for better visibility.
-* The map label font and style are more configurable
-* The cursor changes to let one know if they're in move object or measure mode.
-* If the coordinate system is set to UTM, and "Map Grid" is selected, an UTM
-  grid is displayed. 
-
-Snapshot mode now generates a .geo file, allowing the image to later be used
-as a map.
-
-Tiger maps have been moved back back the chooser, as was the pre-1.2 behavior.
-This is more consistent.
 
 
 HELP-INDEX>Starting Xastir for the first time
@@ -281,13 +235,13 @@ create a ~/.xastir/data/nws-stations.txt file listing each call or NWS station
 (like "PHISVR") that you would like to transmit via RF.  This feature is
 currently implemented only for NWS messages.
                      
-"Compress object/item data while transmitting?", if selected, will transmit
-objects and items in the newer compressed format. The maximum precision of the
-transmitted position is higher, and the transmission is shorter, but some older
-programs do not decode this format yet.  Currently this only compresses
-"standard" objects/items with an optional speed/course.  It won't compress
-area, signpost, or DF objects/items, and won't currently represent
-altitude in "standard" objects/items.
+"Transmit Compressed objects/items?", if selected, will transmit objects and
+items in the newer compressed format. The maximum precision of the transmitted
+position is higher, and the transmission is shorter, but some older programs do
+not decode this format yet.  Currently this only compresses "standard"
+objects/items with an optional speed/course.  It won't compress area, signpost,
+or DF objects/items, and won't currently represent altitude in "standard"
+objects/items.
 
 "Pop up new Bulletins", if selected, will cause Xastir to bring up the bulletin
 dialog when bulletins within the configured range are received. "View 
@@ -299,8 +253,8 @@ use Xastir while num-lock, scroll-lock, or caps-lock is engaged. Some users
 report the screen blanking on them and similar problems when they attempt to
 use Xastir with one of these modifier keys on.
 
-You can also select "Activate alternate net?" choose an altnet call from this
-dialog. Altnet allows you to have a private APRS(tm) network among the
+You can also select "Activate alternate net?" and choose an altnet call from
+this dialog. Altnet allows you to have a private APRS(tm) network among the
 stations that also have altnet configured, and have the same altnet call
 entered.
 
@@ -490,7 +444,8 @@ square position of the mouse over the map. If file|configure|Dist/Bearing
 Status is selected, this box will also contain the course and bearing of
 this position relative to your station.
 
-A third box is used to display how many stations are in the database.
+A third box is used to display how many stations are on screen, and how many
+are in the database.
 
 The fourth box will display the current zoom level and will display "Tr" if
 the station tracking is on.  At some zoom levels the Tr is not
@@ -572,7 +527,7 @@ view its info in this manner. Use the "Display Expired Data" option
 to display some data that disappears for ghosted stations, like
 speed/altitude, etc.
 
-With "Last Map View" you can restore the previous map view by restoring the
+With "Last Poz/Zoom" you can restore the previous map view by restoring the
 previous values of the map zoom and centering values.
 
 For Object and Item information, please see the help topic "Objects and Items"
@@ -1450,7 +1405,7 @@ typing if you don't want to wait for the acknowledgments.
 Messages in reply to previous ones will attempt to use the path of the
 received message to avoid flooding the system with broadcast messages. You
 may adjust the path in the send message dialog, or the default path(s) set
-in the interface properties will be used if you leave this blank.  The path
+in the interface control will be used if you leave this blank.  The path
 can be set for each message sent, but once a message is sent the path
 remains fixed for that particular message.
 
@@ -1493,19 +1448,16 @@ HELP-INDEX>Interfaces Menu
 
 This menu contains interface related options.
 
-Start/Stop
+Interface Control
 This option displays a window where you can turn on and off your configured
-interfaces.
-
-Properties
-This choice brings up a list of installed interfaces, and allows you to adjust
-their settings. See the "Configure Interfaces" help topic.
+interfaces, as well as add, delete, or configure interfaces. See the "Configure
+Interfaces" help topic.
 
 Disable Transmit options
 These options disable the transmission of everything, one's position, or one's
 objects. These are global options and affect all interfaces. Most interfaces
 have an option to disable transmission on that specific interface in their
-configuration menus also.
+configuration menus as well.
 
 Enable Server Port
 This enables/disables a listening socket at port 2023.  You may connect other
@@ -1835,13 +1787,13 @@ HELP-INDEX>Configuring Interfaces
 
                            Configuring Interfaces
 
-Click on Interfaces, then Properties.
+Click on Interfaces, then Interface Control.
 
 An "Installed Interfaces" box should appear. This box will allow you to add,
 delete, and modify the properties of various devices you may want to use with
 Xastir.
 
-Current options are:
+Supported interface types are:
 Serial TNC
 Serial TNC w/GPS on HSP cable
 Serial GPS
@@ -2561,3 +2513,56 @@ Additionally, several more buffer overruns and other errors were corrected in
 Xastir's data parser, and numerous other bugs have been fixed.
 
 Enjoy the new Xastir!
+
+HELP-INDEX>What's new in Xastir 1.3
+
+                    What's new in Xastir 1.3
+
+This latest Xastir release greatly improves on the efficiency and usability of
+Xastir, and adds many helpful and often-requested new features.
+
+.geo files can now have REFRESH tags, to specify how often the file is
+reloaded. This is useful for weather radars and other dynamic images. .geo
+files can also have a TRANSPARENT tag to make a certain color transparent, and
+a CROP tag to specify a specific region to display.
+
+Some Opentrac packets are now decoded and displayed. See
+http://opentrac.org/ for more details.
+
+The default main Xastir directory is now /usr/local/share/xastir; please see
+the upgrade notes in README for migration information. This more closely
+mirrors the behavior of other applications.  If you're installing
+from a binary package (rpm/deb/etc), the default install location
+may be /usr/share/xastir.
+
+Xastir efficiency has been greatly improved. Changes in data structures and
+timing values have made this Xastir release the most efficient yet.
+Additionally, map redraw sequences are interruptible, so map panning speed
+has been improved.
+
+dbfawk support - Experimental support for configurable shapefile metadata, in
+an awk-like language. See README.MAPS for more details; this must be turned
+on with a specific switch to the configure command.
+
+GDAL/OGR support - Experimental support for GDAL and loading of native TIGER
+data (.RT1 files). This is automatically enabled if the GDAL library is
+found.
+
+Support for UTM w/special zones and MGRS coordinate systems.
+
+Cad drawing mode allows one to draw regions on your screen using the center
+mouse button. This feature is not yet complete, but is functional.
+
+User interface changes:
+* Several of the menus have been reorganized to have a hierarchical design.
+* Additionally, a few colors have been modified for better visibility.
+* The map label font and style are more configurable
+* The cursor changes to let one know if they're in move object or measure mode.
+* If the coordinate system is set to UTM, and "Map Grid" is selected, an UTM
+  grid is displayed. 
+
+Snapshot mode now generates a .geo file, allowing the image to later be used
+as a map.
+
+Tiger maps have been moved back back the chooser, as was the pre-1.2 behavior.
+This is more consistent.
