@@ -3759,8 +3759,12 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
 
                     // Find population
                     j = index(i+1, ',');
-                    j[0] = '\0';
-                    strncpy(population,i+2,14);
+                    if ( j != NULL ) {
+                        j[0] = '\0';
+                        strncpy(population,i+2,14);
+                    } else {
+                        strncpy(population,"0",14);
+                    } 
                     population[strlen(population)-1] = '\0';
  
                     lat_dd[0] = latitude[0];
@@ -3899,6 +3903,10 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                         }
                         else if (strcasecmp(type,"cemetery") == 0) {
                             if (scale_y > 50)
+                                ok = 0;
+                        }
+                        else if (strcasecmp(type,"census") == 0) {
+                          /* if (scale_y > 50)*/  /* Census divisions */
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"channel") == 0) {
