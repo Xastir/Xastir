@@ -222,18 +222,19 @@ if test "${use_dbfawk}" = "yes"; then
 fi
 
 
-# Check for ImageMagick 
-XASTIR_CHECK_IMAGEMAGICK
- 
-
-# Check for GDAL.  Make sure that GDAL is the last library, as it
-# can mess up shapelib and libgeotiff currently.
+# Check for GDAL.  Make sure that the GDAL check is towards the
+# last, as it can mess up shapelib and libgeotiff currently.
 use_gdal=no
 AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister, use_gdal=yes
 LIBS="$LIBS -lgdal"
 AC_DEFINE(HAVE_LIBGDAL, , Define to 1 if you have the `gdal' library (-lgdal). )
 break)])
  
+ 
+# Check for ImageMagick.  This check is VERY important to have as
+# the last check, as it messes up the previous checks if it fails.
+XASTIR_CHECK_IMAGEMAGICK
+
  
 # Set XASTIR_DATA_BASE in CPPFLAGS due to Gnu coding standard that requires
 # datadir expansion to be deferred until make time.
