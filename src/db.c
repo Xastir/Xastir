@@ -7756,14 +7756,14 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
             // can contain unprintable characters.  In fact, we
             // should check the chars we do print out to make sure
             // they're printable, else print a space char.
-            printf("decode_Mic_E: Symbol table (%c), symbol (%c) swapped or corrupted packet?  Call=%s, Path=%s\n",
-                ((info[7] > 0x1f) && (info[7] < 0x7f)) ? info[7] : ' ',
-                ((info[6] > 0x1f) && (info[6] < 0x7f)) ? info[6] : ' ',
-                call_sign,
-                path);
-        }
-        if (debug_level & 1) {
-            printf("Returned from data_add, invalid symbol table character: %c\n",info[7]);
+            if (debug_level & 1) {
+                printf("decode_Mic_E: Symbol table (%c), symbol (%c) swapped or corrupted packet?  Call=%s, Path=%s\n",
+                    ((info[7] > 0x1f) && (info[7] < 0x7f)) ? info[7] : ' ',
+                    ((info[6] > 0x1f) && (info[6] < 0x7f)) ? info[6] : ' ',
+                    call_sign,
+                    path);
+                printf("Returned from data_add, invalid symbol table character: %c\n",info[7]);
+            }
         }
         return(1);  // No good, not MIC-E format or corrupted packet.  Return 1
                     // so that it won't get added to the database at all.
