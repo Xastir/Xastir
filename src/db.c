@@ -11622,8 +11622,9 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     int ok;
     char destination[MAX_CALLSIGN+1];
 
-char small_string[200];
-char big_string[2000];
+    // These strings are debugging tools
+    char small_string[200];
+    char big_string[2000];
 
 
     // Check whether relay_digipeat has been enabled for this interface.
