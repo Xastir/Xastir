@@ -219,6 +219,10 @@ BBARSTA031|A procura o servidor %d||
 BBARSTA032|Infos de WX descodificados||
 BBARSTA033|Eco desde o digipeater||
 BBARSTA034|Carregando mapas de alerta WX||
+BBARSTA035|Waiting for GPS data via AUX..||
+BBARSTA036|Clearing AUX getting TNC data..||
+BBARSTA037|GPS Data Complete||
+BBARSTA038|Position change on my station||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||
@@ -329,6 +333,11 @@ WPUPCFT029|Configure TNC w/INVALID ENUM||
 # Configurar a porta da estação meteorológica
 WPUPCFWX01|Configurar a porta da estação meteorológica||
 WPUPCFWX02|Dispositivo da estação meteorológica||
+WPUPCFWX03|Rain Gauge Type (Global Setting)||
+WPUPCFWX04|1/10 inch||
+WPUPCFWX05|2.54 mm||
+WPUPCFWX06|1/100 inch||
+WPUPCFWX07|0.254 mm||
 #
 # Configurar a estação
 WPUPCFS001|Configurar a estação||
@@ -797,5 +806,3 @@ COORD001|Coordinate Calc||
 COORD002|Calc||
 COORD003|Calculate||
 COORD004|Clear||
-#
-#
