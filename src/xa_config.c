@@ -376,20 +376,20 @@ void save_data(void)  {
 
         // filter values
         // NOT SAVED: Select_.none
-        // NOT SAVED: Select_.mine
-        // NOT SAVED: Select_.tnc
-        // NOT SAVED: Select_.direct
-        // NOT SAVED: Select_.via_digi
-        // NOT SAVED: Select_.net
+        store_int (fout, "DISPLAY_MY_STATION",            Select_.mine);
+        store_int (fout, "DISPLAY_TNC_STATIONS",          Select_.tnc);
+        store_int (fout, "DISPLAY_TNC_DIRECT_STATIONS",   Select_.direct);
+        store_int (fout, "DISPLAY_TNC_VIADIGI_STATIONS",  Select_.via_digi);
+        store_int (fout, "DISPLAY_NET_STATIONS",          Select_.net);
         store_int (fout, "DISPLAY_OLD_STATION_DATA",      Select_.old_data);
-        // NOT SAVED: Select_.stations
-        // NOT SAVED: Select_.fixed_stations
-        // NOT SAVED: Select_.moving_stations
-        // NOT SAVED: Select_.weather_stations
-        // NOT SAVED: Select_.objects
+        store_int (fout, "DISPLAY_STATIONS",              Select_.stations);
+        store_int (fout, "DISPLAY_FIXED_STATIONS",        Select_.fixed_stations);
+        store_int (fout, "DISPLAY_MOVING_STATIONS",       Select_.moving_stations);
+        store_int (fout, "DISPLAY_WEATHER_STATIONS",      Select_.weather_stations);
+        store_int (fout, "DISPLAY_OBJECTS",               Select_.objects);
         store_int (fout, "DISPLAY_STATION_WX_OBJ",        Select_.weather_objects);
         store_int (fout, "DISPLAY_WATER_GAGE_OBJ",        Select_.gauge_objects);
-        // NOT SAVED: Select_.other_objects
+        store_int (fout, "DISPLAY_OTHER_OBJECTS",         Select_.other_objects);
 
         // display values
         store_int (fout, "DISPLAY_CALLSIGN",              Display_.callsign);
@@ -842,25 +842,42 @@ void load_data_or_default(void) {
     if (!get_int ("TIGERMAP_TIMEOUT", &tigermap_timeout, 10, 120, 30))
         tigermap_timeout = 30;
 #endif //HAVE_IMAGEMAGICK
+
     // filter values
     // NOT SAVED: Select_.none
-    // NOT SAVED: Select_.tnc
-    // NOT SAVED: Select_.local
-    // NOT SAVED: Select_.net
-    if (!get_int ("DISPLAY_OLD_STATION_DATA", &Select_.old_data, 0, 1, 0))
-        Select_.old_data = 0;
-    // NOT SAVED: Select_.stationary_stations
-    // NOT SAVED: Select_.moving_stations
-    // NOT SAVED: Select_.weather_stations
-    if (!get_int ("DISPLAY_STATION_WX_OBJ", &Select_.weather_objects, 0, 1, 0))
-        Select_.weather_objects = 0;
-    if (!get_int ("DISPLAY_WATER_GAGE_OBJ", &Select_.gauge_objects, 0, 1, 0))
-        Select_.gauge_objects = 0;
-    // NOT SAVED: Select_.other_objects
+    if (!get_int ("DISPLAY_MY_STATION", &Select_.mine, 0, 1, 1))
+        Select_.mine = 1;
+    if (!get_int ("DISPLAY_TNC_STATIONS", &Select_.tnc, 0, 1, 1))
+        Select_.tnc = 1;
+    if (!get_int ("DISPLAY_TNC_DIRECT_STATIONS", &Select_.direct, 0, 1, 1))
+        Select_.direct = 1;
+    if (!get_int ("DISPLAY_TNC_VIADIGI_STATIONS", &Select_.via_digi, 0, 1, 1))
+        Select_.via_digi = 1;
+    if (!get_int ("DISPLAY_NET_STATIONS", &Select_.net, 0, 1, 1))
+        Select_.net = 1;
+    if (!get_int ("DISPLAY_OLD_STATION_DATA", &Select_.old_data, 0, 1, 1))
+        Select_.old_data = 1;
+    if (!get_int ("DISPLAY_STATIONS", &Select_.stations, 0, 1, 1))
+        Select_.stations = 1;
+    if (!get_int ("DISPLAY_FIXED_STATIONS", &Select_.fixed_stations, 0, 1, 1))
+        Select_.fixed_stations = 1;
+    if (!get_int ("DISPLAY_MOVING_STATIONS", &Select_.moving_stations, 0, 1, 1))
+        Select_.moving_stations = 1;
+    if (!get_int ("DISPLAY_WEATHER_STATIONS", &Select_.weather_stations, 0, 1, 1))
+        Select_.weather_stations = 1;
+    if (!get_int ("DISPLAY_OBJECTS", &Select_.objects, 0, 1, 1))
+        Select_.objects = 1;
+    if (!get_int ("DISPLAY_STATION_WX_OBJ", &Select_.weather_objects, 0, 1, 1))
+        Select_.weather_objects = 1;
+    if (!get_int ("DISPLAY_WATER_GAGE_OBJ", &Select_.gauge_objects, 0, 1, 1))
+        Select_.gauge_objects = 1;
+    if (!get_int ("DISPLAY_OTHER_OBJECTS", &Select_.other_objects, 0, 1, 1))
+        Select_.other_objects = 1;
 
     // display values
     if (!get_int ("DISPLAY_CALLSIGN", &Display_.callsign, 0, 1, 1))
         Display_.callsign = 1;
+
     if (!get_int ("DISPLAY_SYMBOL", &i, 0, 2, 2)) {
         Display_.symbol = 1;
         Display_.symbol_rotate = 1;
