@@ -5111,7 +5111,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtAddCallback(gamma_adjust_button, XmNactivateCallback, Map_font, NULL);
+    XtAddCallback(gamma_adjust_button, XmNactivateCallback, Gamma_adjust, NULL);
 #endif  // HAVE_IMAGEMAGICK
 #endif  // NO_GRAPHICS
 
