@@ -379,19 +379,6 @@ void output_message(char *from, char *to, char *message) {
 
                 message_counter[2] = '\0';  // Terminate at 2 chars
 
-                // Check that chars are within the correct ranges
-                if (         (message_counter[0] < '0')
-                        ||   (message_counter[1] < '0')
-                        || ( (message_counter[0] > '9') && (message_counter[0] < 'A') )
-                        || ( (message_counter[1] > '9') && (message_counter[1] < 'A') )
-                        || ( (message_counter[0] > 'Z') && (message_counter[0] < 'a') )
-                        || ( (message_counter[1] > 'Z') && (message_counter[1] < 'a') )
-                        ||   (message_counter[0] > 'z')
-                        ||   (message_counter[1] > 'z') ) {
-                    message_counter[0] = '0';
-                    message_counter[1] = '0';
-                }
-
                 // Increment the least significant digit
                 message_counter[1]++;
 
