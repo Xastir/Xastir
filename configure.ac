@@ -493,6 +493,9 @@ AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}")
 # 
 use_shapelib=no 
 AC_CHECK_HEADERS(libshp/shapefil.h, XASTIR_SHAPELIB_INC="yes") 
+if test "$XASTIR_SHAPELIB_INC" != "yes"; then
+  AC_CHECK_HEADERS(shapefil.h, XASTIR_SHAPELIB_INC="yes")
+fi
 if test "$XASTIR_SHAPELIB_INC" = "yes" 
 then 
   # This one fails for Cygwin if Shapelib is in /usr/local/lib 
