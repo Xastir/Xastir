@@ -336,8 +336,27 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        XtAddCallback(button_range, XmNactivateCallback, All_messages_change_range, All_messages_dialog);
+
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, button_range,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(button_close, XmNactivateCallback, All_messages_destroy_shell, All_messages_dialog);
+ 
         n=0;
-        XtSetArg(args[n], XmNrows, 25); n++;
+        XtSetArg(args[n], XmNrows, 15); n++;
         XtSetArg(args[n], XmNcolumns, 85); n++;
         XtSetArg(args[n], XmNeditable, FALSE); n++;
         XtSetArg(args[n], XmNtraversalOn, TRUE); n++;
@@ -352,7 +371,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
         XtSetArg(args[n], XmNtopWidget, dist); n++;
         XtSetArg(args[n], XmNtopOffset, 20); n++;
-        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_NONE); n++;
+        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
@@ -370,26 +389,6 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
 // It's hard to get tab groups working with ScrolledText widgets.  Tab'ing in is
 // fine, but then I'm stuck in insert mode and it absorbs the tabs and beeps.
 
-        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
-                xmPushButtonGadgetClass, 
-                my_form,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, XtParent(view_messages_text),
-                XmNtopOffset, 2,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 5,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 2,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 3,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        XtAddCallback(button_close, XmNactivateCallback, All_messages_destroy_shell, All_messages_dialog);
-        XtAddCallback(button_range, XmNactivateCallback, All_messages_change_range, All_messages_dialog);
-
         pos_dialog(All_messages_dialog);
 
         delw = XmInternAtom(XtDisplay(All_messages_dialog),"WM_DELETE_WINDOW", FALSE);
@@ -398,9 +397,9 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         sprintf(temp,"%d",vm_range);
         XmTextFieldSetString(vm_dist_data,temp);
 
-        XtManageChild(my_form);
         XtManageChild(view_messages_text);
         XtVaSetValues(view_messages_text, XmNbackground, colors[0x0f], NULL);
+        XtManageChild(my_form);
         XtManageChild(pane);
 
         redraw_on_new_packet_data=1;
@@ -411,7 +410,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
 end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_messages" );
 
         XtPopup(All_messages_dialog,XtGrabNone);
-        fix_dialog_vsize(All_messages_dialog);
+//        fix_dialog_vsize(All_messages_dialog);
 
         // Move focus to the Close button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
