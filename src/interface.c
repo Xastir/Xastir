@@ -4277,6 +4277,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         NULL,   // Data
                         0);     // Length
 
+/*
                     // Send a dummy UI frame for testing purposes.
                     //
                     send_agwpe_packet(port_avail,
@@ -4298,6 +4299,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         "RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1", // Path
                         "Testing this darned thing!",   // Data
                         26);     // length
+*/
 
                     break;
  
@@ -4702,8 +4704,6 @@ unsigned char *select_unproto_path(int port) {
     bump_up = 0;
 
 
-begin_critical_section(&devices_lock, "interface.c:select_unproto_path" );
-
     while (!done && (count < 3)) {
         temp = (devices[port].unprotonum + count) % 3;
         switch (temp) {
@@ -4770,8 +4770,6 @@ begin_critical_section(&devices_lock, "interface.c:select_unproto_path" );
     // transmissions.  This will round-robin the paths so that all
     // entered paths get used.
     devices[port].unprotonum = (devices[port].unprotonum + 1 + bump_up) % 3;
-
-end_critical_section(&devices_lock, "interface.c:select_unproto_path" );
 
     return(unproto_path_txt);
 }
