@@ -574,3 +574,48 @@ USGS geoTIFF topo maps, and see them tiled together in the map
 window into a continuous map.
 
 
+How to make Sound Alerts work under Cygwin
+------------------------------------------
+(from Kirk Mefford kc2elo@softhome.net)
+"I figured I'd share exactly what I did to make the sound alerts work in
+xastir under Cygwin. Sound support seems to be just one of the many many quirks
+of trying to use *nix native software under Microsoft OS's. Hope this helps
+someone else.
+
+FYI: This was tested under Win2000
+
+Sound alert support under Cygwin using Network Audio Server (NAS)
+
+I downloaded http://nas.intra-links.net/files/nas-1.6-win-binary.zip and
+decompressed the archive with winzip (any zip utility should work fine) into a
+temporary folder.
+
+I deleted the "cygwin1.dll" and "README.txt" files that came in the package
+since they aren't needed and the extra cygwin1.dll can cause problems.
+
+Then copy the remaining files from the package into the /bin directory under
+cygwin.
+
+All that is needed to make nas available to xastir is to load the server before
+running xastir.
+
+To load NAS for xastir to use simply type "nasd -local -b" from cygwin. This
+command will load the NAS server in the background and will only allow local
+users to access it.  For more command options type "nasd -help" from within
+cygwin.
+
+After NAS is loaded you can load xastir as you normally would.
+
+Once xastir is running, to play sound alerts you need to change the default
+configuation to use "auplay"
+
+From within xastir click on File>Configure>Audio Alarms.
+The "Audio Play Command" box should be changed to "auplay"
+Then ensure the audio files listed to play are located in
+"/usr/local/xastir/sounds" directory.
+
+Click ok to accept the changes and be sure to save your config before exiting
+xastir or sound will not work the next time it is loaded.
+
+Turn up the volume on your PC speakers and enjoy the noise xastir makes."
+
