@@ -7709,10 +7709,20 @@ void CAD_object_move(void) {
 
 // Delete an entire CAD object and all it's vertices.
 void CAD_object_delete(void) {
+    // Call CAD_vertice_delete() for each vertice, then unlink this
+    // CAD object from the linked list and free its memory.
+}
+
+// Delete all CAD objects and all associated vertices.
+void CAD_object_delete_all(void) {
+    // Loop through the entire list of CAD objects, calling
+    // CAD_vertice_delete() for each vertice, and then
+    // CAD_object_delete() for each object.  When done, set the
+    // start pointer to NULL.
 }
 
 // Compute the area enclosed by a CAD object.  Check that it is a
-// closed polygon first.
+// closed, non-intersecting polygon first.
 void CAD_object_compute_area(void) {
 }
 
@@ -7749,24 +7759,31 @@ void CAD_object_set_linetype(void) {
 // close to the first vertice, ask the operator if they wish to
 // close the polygon.  If closing, ask for a raw probability?
 void CAD_vertice_allocate_new(void) {
+    // Check whether a line segment will cross another?
 }
 
 // Used to break a line segment into two.  Can then move the vertice
 // if needed.  Recompute the raw probability if need be, or make it
 // an invalid value so that we know we need to recompute it.
 void CAD_vertice_insert_new(void) {
+    // Check whether a line segment will cross another?
 }
 
 // Move an existing vertice.  Recompute the raw probability if need
 // be, or make it an invalid value so that we know we need to
 // recompute it.
 void CAD_vertice_move(void) {
+    // Check whether a line segment will cross another?
 }
 
 // Remove a vertice, thereby joining two segments into one.
 // Recompute the raw probability if need be, or make it an invalid
 // value so that we know we need to recompute it.
 void CAD_vertice_delete(void) {
+    // Unlink the vertice from the linked list and free its memory.
+    // Allow removing a vertice in the middle or end of a chain.  If
+    // removing the vertice turns the polygon into an open polygon,
+    // alert the user of that fact and ask if they wish to close it.
 }
 
 
