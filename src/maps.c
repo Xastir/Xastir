@@ -23,6 +23,7 @@
  */
 
 
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -227,6 +228,18 @@ void convert_to_xastir_coordinates ( unsigned long* x,
                                     float f_longitude,
                                     float f_latitude )
 {
+    if (f_longitude < -180.0)
+        printf("convert_to_xastir_coordinates:Longitude out-of-range (too low):%f\n",f_longitude);
+
+    if (f_longitude >  180.0)
+        printf("convert_to_xastir_coordinates:Longitude out-of-range (too high):%f\n",f_longitude);
+
+    if (f_latitude <  -90.0)
+        printf("convert_to_xastir_coordinates:Latitude out-of-range (too low):%f\n",f_latitude);
+
+    if (f_latitude >   90.0)
+        printf("convert_to_xastir_coordinates:Latitude out-of-range (too high):%f\n",f_latitude);
+
     *y = (unsigned long)(32400000l + (360000.0 * (-f_latitude)));
     *x = (unsigned long)(64800000l + (360000.0 * f_longitude));
 }
@@ -888,14 +901,14 @@ int map_visible_lat_lon (double f_bottom_map_boundary,
                   right_map_boundary;
 
     (void)convert_to_xastir_coordinates ( &left_map_boundary,
-                                    &top_map_boundary,
-                                    (float)f_left_map_boundary,
-                                    (float)f_top_map_boundary );
+                                          &top_map_boundary,
+                                          (float)f_left_map_boundary,
+                                          (float)f_top_map_boundary );
 
     (void)convert_to_xastir_coordinates ( &right_map_boundary,
-                                    &bottom_map_boundary,
-                                    (float)f_right_map_boundary,
-                                    (float)f_bottom_map_boundary );
+                                          &bottom_map_boundary,
+                                          (float)f_right_map_boundary,
+                                          (float)f_bottom_map_boundary );
 
 
     return(map_visible( bottom_map_boundary,
@@ -1802,23 +1815,34 @@ void draw_shapefile_map (Widget w,
 
                     // Read the vertices for each line
                     for (ring = 0; ring < object->nVertices; ring++ ) {
+
                         ok = 1;
 
                         //printf("\t%d:%g %g\t", ring, object->padfX[ring], object->padfY[ring] );
                         // Convert to Xastir coordinates
-                        my_long = (unsigned long)(64800000l + (360000.0 * object->padfX[ring] ) );
-                        my_lat  = (unsigned long)(32400000l + (360000.0 * (-object->padfY[ring]) ) );
+                        convert_to_xastir_coordinates(&my_long,
+                            &my_lat,
+                            (float)object->padfX[ring],
+                            (float)object->padfY[ring]);
                         //printf("%ld %ld\n", my_long, my_lat);
 
-                        // Convert to screen coordinates
-                        x = (long)( (my_long - x_long_offset) / scale_x);
-                        y = (long)( (my_lat - y_lat_offset) / scale_y);
+                        // Convert to screen coordinates.  Careful
+                        // here!  The format conversions you'll need
+                        // if you try to compress this into two
+                        // lines will get you into trouble.
+                        x = my_long - x_long_offset;
+                        y = my_lat - y_lat_offset;
+                        x = x / scale_x;
+                        y = y / scale_y;
 
+                        // XDrawLines uses 16-bit unsigned integers
+                        // (shorts).  Make sure we stay within the
+                        // limits.
                         if (x >  16000) ok = 0;     // Skip this point
                         if (x < -16000) ok = 0;     // Skip this point
                         if (y >  16000) ok = 0;     // Skip this point
                         if (y < -16000) ok = 0;     // Skip this point
-
+ 
                         if (ok == 1) {
                             points[index].x = (short)x;
                             points[index].y = (short)y;
@@ -2094,13 +2118,20 @@ void draw_shapefile_map (Widget w,
                         ok = 1;
 
                         // Convert to Xastir coordinates
-                        my_long = (unsigned long)(64800000l + (360000.0 * object->padfX[0] ) );
-                        my_lat  = (unsigned long)(32400000l + (360000.0 * (-object->padfY[0]) ) );
+                        convert_to_xastir_coordinates(&my_long,
+                            &my_lat,
+                            (float)object->padfX[0],
+                            (float)object->padfY[0]);
                         //printf("%ld %ld\n", my_long, my_lat);
 
-                        // Convert to screen coordinates
-                        x = (long)( (my_long - x_long_offset) / scale_x);
-                        y = (long)( (my_lat - y_lat_offset) / scale_y);
+                        // Convert to screen coordinates.  Careful
+                        // here!  The format conversions you'll need
+                        // if you try to compress this into two
+                        // lines will get you into trouble.
+                        x = my_long - x_long_offset;
+                        y = my_lat - y_lat_offset;
+                        x = x / scale_x;
+                        y = y / scale_y;
 
                         if (x >  16000) ok = 0;     // Skip this point
                         if (x < -16000) ok = 0;     // Skip this point
@@ -2176,15 +2207,21 @@ void draw_shapefile_map (Widget w,
                             //printf("\t%d:%g %g\t", index, object->padfX[index], object->padfY[index] );
 
                             // Get vertice and convert to Xastir coordinates
-                            my_long = (unsigned long)(64800000l + (360000.0 * object->padfX[index] ) );
-                            my_lat  = (unsigned long)(32400000l + (360000.0 * (-object->padfY[index]) ) );
+                            convert_to_xastir_coordinates(&my_long,
+                                &my_lat,
+                                (float)object->padfX[index],
+                                (float)object->padfY[index]);
 
                             //printf("%lu %lu\t", my_long, my_lat);
 
-                            // Convert to screen coordinates
-
-                            x = (long)( ((long)(my_long - x_long_offset)) / scale_x);
-                            y = (long)( ((long)(my_lat - y_lat_offset)) / scale_y);
+                            // Convert to screen coordinates.  Careful
+                            // here!  The format conversions you'll need
+                            // if you try to compress this into two
+                            // lines will get you into trouble.
+                            x = my_long - x_long_offset;
+                            y = my_lat - y_lat_offset;
+                            x = x / scale_x;
+                            y = y / scale_y;
 
                             //printf("%ld %ld\t\t", x, y);
 
@@ -2276,13 +2313,20 @@ void draw_shapefile_map (Widget w,
                         ok = 1;
 
                         // Convert to Xastir coordinates
-                        my_long = (unsigned long)(64800000l + (360000.0 * object->padfX[0] ) );
-                        my_lat  = (unsigned long)(32400000l + (360000.0 * (-object->padfY[0]) ) );
+                        convert_to_xastir_coordinates(&my_long,
+                            &my_lat,
+                            (float)object->padfX[0],
+                            (float)object->padfY[0]);
                         //printf("%ld %ld\n", my_long, my_lat);
 
-                        // Convert to screen coordinates
-                        x = (long)( (my_long - x_long_offset) / scale_x);
-                        y = (long)( (my_lat - y_lat_offset) / scale_y);
+                        // Convert to screen coordinates.  Careful
+                        // here!  The format conversions you'll need
+                        // if you try to compress this into two
+                        // lines will get you into trouble.
+                        x = my_long - x_long_offset;
+                        y = my_lat - y_lat_offset;
+                        x = x / scale_x;
+                        y = y / scale_y;
 
                         if (x >  16000) ok = 0;     // Skip this point
                         if (x < -16000) ok = 0;     // Skip this point
@@ -3356,9 +3400,14 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                             printf("%s\t%s\n", lat_str, long_str);
                         }
 
-                         // Convert to screen coordinates
-                        x = (long)( (coord_lon - x_long_offset) / scale_x);
-                        y = (long)( (coord_lat - y_lat_offset) / scale_y);
+                        // Convert to screen coordinates.  Careful
+                        // here!  The format conversions you'll need
+                        // if you try to compress this into two
+                        // lines will get you into trouble.
+                        x = coord_lon - x_long_offset;
+                        y = coord_lat - y_lat_offset;
+                        x = x / scale_x;
+                        y = y / scale_y;
 
                         ok = 1;
                         if (x >  16000) ok = 0;     // Skip this point
@@ -6913,8 +6962,8 @@ Samples Per Pixel: 1
 
 
                     // Compute the screen position of the pixel and scale it
-                    sxx = (long)( ( (xastir_current_x - x_long_offset) / scale_x) + 0.5);
-                    syy = (long)( ( (xastir_total_y   - y_lat_offset ) / scale_y) + 0.5);
+                    sxx = (xastir_current_x - x_long_offset) / scale_x;
+                    syy = (xastir_total_y   - y_lat_offset ) / scale_y;
 
                     // Set the color for the pixel
                     XSetForeground (XtDisplay (w), gc, my_colors[*(imageMemory + column)].pixel);
