@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# $Id$
+#
 # migrate from old xastir USER FILES to new directory structure.
 # Stuff that was under /usr/local/xastir is now under /usr/local/share/xastir/
 # fixed up the .xastir/config/xastir.cfg as well.
@@ -14,7 +17,7 @@ if [ -d $OLD ]; then
 	echo "Moving xastir user files"
 	echo "From: $OLD"
 	echo "  To: $NEW"
-	for i in Counties fcc GNIS maps sounds
+	for i in Counties GNIS config doc fcc help maps sounds symbols
         do
 	    if [ -d $OLD/$i ]; then
 		if [ -d $NEW/$i ]; then
@@ -50,3 +53,5 @@ else
     echo "No Errors"
 fi
 exit $rr
+
+

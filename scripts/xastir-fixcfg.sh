@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# $Id$
+#
 # fix up a user's .xastir/config/xastir.cnf to rewrite /usr/local/xastir
 # to /usr/local/share/xastir.  NOTE: This only works when -prefix=/usr/local!
 CNF=.xastir/config/xastir.cnf
@@ -20,3 +23,5 @@ else
 fi
 echo "Done.  Old config file is in $CNF.backup"
 exit 0
+
+
