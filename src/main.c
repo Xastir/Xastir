@@ -10634,14 +10634,14 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // Check to reestablish a connection
             if(sec_now() > net_next_time) {
                 net_last_time = sec_now();
-                net_next_time = net_last_time + 60;    // Check every minute
+                net_next_time = net_last_time + 300;    // Check every five minutes
                 //net_next_time = net_last_time + 30;   // This statement is for debug
 
                 //fprintf(stderr,"Checking for reconnects\n");
                 check_ports();
 
 #ifdef USING_LIBGC
-                // Check for memory leaks once per minute as well
+                // Check for memory leaks as well
 //fprintf(stderr,"Checking for leaks\n");
                 CHECK_LEAKS();
 #endif  // USING LIBGC
