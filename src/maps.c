@@ -6363,6 +6363,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 #endif // HAVE_IMAGEMAGICK
 
     int terraserver_flag = 0;
+    int toposerver_flag = 0;
     char map_it[MAX_FILENAME];
     int geo_image_width = 0;    // Image width  from GEO file
     int geo_image_height = 0;   // Image height from GEO file
@@ -6429,6 +6430,10 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             if (strncasecmp (line, "TERRASERVER", 11) == 0)
                 terraserver_flag = 1;
 
+            if (strncasecmp (line, "TOPOSERVER", 10) == 0)
+                toposerver_flag = 1;
+
+
 #ifdef HAVE_IMAGEMAGICK
             if (strncasecmp(line, "GAMMA", 5) == 0)
                 imagemagick_options.gamma_flag = sscanf(line + 6, "%f,%f,%f",
@@ -6490,7 +6495,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
 
 #ifdef HAVE_IMAGEMAGICK
-    if (terraserver_flag) {
+    if (terraserver_flag || toposerver_flag) {
 //http://terraservice.net/download.ashx?t=1&s=10&x=2742&y=26372&z=10&w=820&h=480
         if (scale_y <= 4) {
                 t_zoom  = 10; // 1m
@@ -6553,8 +6558,14 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         url_e = (int)(left_e / t_scale); // N/E of the map corner
 
         xastir_snprintf(fileimg, sizeof(fileimg),
-        "http://terraservice.net/download.ashx?t=1\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
-             t_zoom, url_e, url_n, z, geo_image_width, geo_image_height);
+            "http://terraservice.net/download.ashx?t=%d\046s=%d\046x=%d\046y=%d\046z=%d\046w=%d\046h=%d",
+            (toposerver_flag) ? 2 : 1,
+            t_zoom,
+            url_e,
+            url_n,
+            z,
+            geo_image_width,
+            geo_image_height);
     }
 #endif // HAVE_IMAGEMAGICK
 
@@ -6721,7 +6732,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
 
         // We're indexing only.  Save the extents in the index.
-        if (terraserver_flag) {
+        if (terraserver_flag || toposerver_flag) {
             // Force the extents to the edges of the earth for the
             // index file.
             index_update_xastir(filenm, // Filename only
@@ -6773,14 +6784,15 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     // Check to see if we have to use "wget" to go get an internet map
     if ( (strncasecmp ("http", fileimg, 4) == 0)
             || (strncasecmp ("ftp", fileimg, 3) == 0)
-            || (terraserver_flag) ) {
+            || (terraserver_flag)
+            || (toposerver_flag) ) {
 #ifdef HAVE_IMAGEMAGICK
         char *ext;
 
         if (debug_level & 16)
             fprintf(stderr,"ftp or http file: %s\n", fileimg);
 
-        if (terraserver_flag)
+        if (terraserver_flag || toposerver_flag)
             ext = "jpg";
         else
             ext = get_map_ext(fileimg); // Use extension to determine image type
