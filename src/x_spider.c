@@ -351,6 +351,8 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
         //
         // Read data from socket, write to pipe (parent)
         //
+        if (!sockfd)    // Socket is closed
+            return; // Connection terminated
  
         n = readline(sockfd, line, MAXLINE);
         if (n == 0) {
@@ -377,6 +379,8 @@ void str_echo2(int sockfd, int pipe_from_parent, int pipe_to_parent) {
         //
         // Read data from pipe (parent), write to socket
         //
+        if (!pipe_from_parent)
+            exit(0);
  
         n = readline(pipe_from_parent, line, MAXLINE);
         if (n == 0) {
