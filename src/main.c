@@ -25456,6 +25456,10 @@ int main(int argc, char *argv[]) {
     // create a symlink that points to nowhere.
     if (symlink(get_data_base_dir(temp),get_user_base_dir("config/help.dat")) == -1) {
         fprintf(stderr,"Error creating database link for help.dat\n");
+        fprintf(stderr,
+            "Couldn't create symlink: %s -> %s\n",
+            get_user_base_dir("config/help.dat"),
+            get_data_base_dir(temp));
         exit(0);
     }
 
@@ -25466,6 +25470,10 @@ int main(int argc, char *argv[]) {
     // create a symlink that points to nowhere.
     if (symlink(get_data_base_dir(temp),get_user_base_dir("config/language.sys")) == -1) {
         fprintf(stderr,"Error creating database link for language.sys\n");
+        fprintf(stderr,
+            "Couldn't create symlink: %s -> %s\n",
+            get_user_base_dir("config/language.sys"),
+            get_data_base_dir(temp));
         exit(0);
     }
 
