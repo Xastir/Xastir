@@ -7713,8 +7713,9 @@ void output_my_aprs_data(void) {
     char header_txt_save[MAX_LINE_SIZE+5];
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
+    char temp[MAX_LINE_SIZE+5];
     char path_txt[MAX_LINE_SIZE+5];
-    char *unproto_path;
+    char *unproto_path = NULL;
     char data_txt2[5];
     struct tm *day_time;
     time_t sec;
@@ -8199,7 +8200,30 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     xastir_snprintf(data_txt2, sizeof(data_txt2), "\n");                 // Transmit a newline
                     port_write_string(port, data_txt2);
                 }
-            } else {
+
+
+                // Put our transmitted packet into the Incoming Data
+                // window as well.  This way we can see both sides of a
+                // conversation.  data_port == -1 for x_spider port,
+                // normal interface number otherwise.  -99 to get a "**"
+                // display meaning all ports.
+                //
+                // For packets that we're igating we end up with a CR or
+                // LF on the end of them.  Remove that so the display
+                // looks nice.
+                xastir_snprintf(temp,
+                    sizeof(temp),
+                    "%s>%s,%s:%s",
+                    my_callsign,
+                    VERSIONFRM,
+                    unproto_path,
+                    data_txt);
+                makePrintable(temp);
+                packet_data_add("TX ", temp, port);
+
+
+            }
+            else {
             }
         } // End of posit transmit: "if (ok)"
     } // End of big loop
@@ -8280,7 +8304,7 @@ void output_my_data(char *message, int incoming_port, int type, int loopback_onl
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
     char path_txt[MAX_LINE_SIZE+5];
-    char *unproto_path;
+    char *unproto_path = NULL;
     char output_net[100];
     int ok, start, finish, port;
     int done;
@@ -8609,6 +8633,28 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     fprintf(stderr,"Sending to interface:%d, %s\n",
                         port,
                         data_txt);
+
+
+                // Put our transmitted packet into the Incoming Data
+                // window as well.  This way we can see both sides of a
+                // conversation.  data_port == -1 for x_spider port,
+                // normal interface number otherwise.  -99 to get a "**"
+                // display meaning all ports.
+                //
+                // For packets that we're igating we end up with a CR or
+                // LF on the end of them.  Remove that so the display
+                // looks nice.
+                xastir_snprintf(data_txt,
+                    sizeof(data_txt),
+                    "%s>%s,%s:%s",
+                    my_callsign,
+                    VERSIONFRM,
+                    unproto_path,
+                    message);
+                makePrintable(data_txt);
+                packet_data_add("TX ", data_txt, port);
+
+
             }
 
             if (debug_level & 2)
@@ -8624,7 +8670,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         && !loopback_only) {
                     port_write_string(port,data_txt);
                 }
-            } else {
+            }
+            else {
             }
         }
 //        if (incoming_port != -1)
@@ -8642,17 +8689,6 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
 
     if (log_net_data)
         log_data(LOGFILE_NET,(char *)data_txt);
-
-
-    // Put our transmitted packet into the Incoming Data window as
-    // well.  This way we can see both sides of a conversation.
-    // data_port == -1 for x_spider port, normal interface number
-    // otherwise.  -99 to get a "**" display meaning all ports.
-    //
-    // For packets that we're igating we end up with a CR or LF on
-    // the end of them.  Remove that so the display looks nice.
-    makePrintable(data_txt);
-    packet_data_add("TX ", data_txt, -99);
 
 
     // Note that this will only log one TNC line per transmission now matter
