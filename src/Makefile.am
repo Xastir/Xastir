@@ -6,7 +6,7 @@
 bin_PROGRAMS = xastir
 noinst_PROGRAMS = testawk x_spider
 
-SUBDIRS = Davis
+SUBDIRS =
 
 xastir_SOURCES = \
     alert.c alert.h \
