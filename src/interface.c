@@ -216,7 +216,8 @@ int get_device_status(int port) {
 //
 // port #                                                    
 // string is the string of data
-// length is the length of the string
+// length is the length of the string.  If 0 then use strlen()
+// on the string itself to determine the length.
 //***********************************************************
 void channel_data(int port, unsigned char *string, int length) {
     int max;
@@ -230,15 +231,20 @@ void channel_data(int port, unsigned char *string, int length) {
     if (string[0] == '\0')
         return;
 
+    if (length == 0)
+        length = strlen(string);
+
     // Check for excessively long packets.  These might be TCP/IP
     // packets or concatenated APRS packets.  In any case it's some
     // kind of garbage that we don't want to try to parse.
 
-    // Note that for binary data (WX stations and KISS packets), this
-    // strlen() function won't work correctly.
+    // Note that for binary data (WX stations and KISS packets), the
+    // strlen() function may not work correctly.
     if (length > MAX_LINE_SIZE) {   // Too long!
         if (debug_level & 1) {
-            printf("\nchannel_data: LONG packet.  Dumping it:\n%s\n",string);
+            printf("\nchannel_data: LONG packet:%d,  Dumping it:\n%s\n",
+            length,
+            string);
         }
 
         string[0] = '\0';   // Truncate it to zero length
@@ -2165,7 +2171,7 @@ void port_read(int port) {
             port_data[port].scan = 1;
             while (port_data[port].scan
                     && (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) )
-                    && (port_data[port].status == DEVICE_UP) ){
+                    && (port_data[port].status == DEVICE_UP) ) {
                 int skip = 0;
 
                 if (port_data[port].device_type != DEVICE_AX25_TNC) {
@@ -2292,9 +2298,18 @@ void port_read(int port) {
 
                                 // Compute length of string in
                                 // circular queue
-                                length = port_data[port].read_in_pos - port_data[port].read_out_pos;
-                                if (length < 0)
-                                    length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
+
+printf("%d\t%d\n",port_data[port].read_in_pos,port_data[port].read_out_pos);
+
+                                // KISS TNC sends binary data
+                                if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+                                    length = port_data[port].read_in_pos - port_data[port].read_out_pos;
+                                    if (length < 0)
+                                        length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
+                                }
+                                else {  // ASCII data
+                                    length = 0;
+                                }
 
                                 channel_data(port,
                                     (unsigned char *)port_data[port].device_read_buffer,
@@ -2367,17 +2382,10 @@ void port_read(int port) {
                                 }
                                 if (port_data[port].read_in_pos >= max) {
                                     if (group != 0) {   /* ok try to decode it */
-                                        int length;
-
-                                        // Compute length of string in
-                                        // circular queue
-                                        length = port_data[port].read_in_pos - port_data[port].read_out_pos;
-                                        if (length < 0)
-                                            length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
 
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
-                                            length);   // Length of string
+                                            0);
                                     }
                                     max = MAX_DEVICE_BUFFER - 1;
                                     group = 0;
@@ -2418,19 +2426,11 @@ void port_read(int port) {
                                 if(strcmp(dev, from.sa_data) == 0) {
                                     /* Received data from our interface! - process data */
                                     if (process_ax25_packet(buffer, port_data[port].scan, port_data[port].device_read_buffer) != NULL) {
-                                        int length;
-
-                                        // Compute length of string
-                                        // in circular queue
-                                        length = port_data[port].read_in_pos - port_data[port].read_out_pos;
-                                        if (length < 0)
-                                            length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
-
                                         port_data[port].bytes_input += strlen(port_data[port].device_read_buffer);
 
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
-                                             length);  // Length of string
+                                             0);
                                     }
                                     /*
                                         do this for interface indicator in this case we only do it for,
