@@ -10,7 +10,7 @@ BEACON EVERY 0
 # no digi of own packets, and digi-once
 DIGIPEAT 7
 FLOW off
-FULLDUPLEX off
+FULLDUP off
 GPS off
 GPSTEXT $GPRMC
 HEADERLI off
