@@ -7438,6 +7438,8 @@ void station_del(char *call) {
  */
 void station_del_ptr(DataRow *p_name) {
 
+//fprintf(stderr,"db.c:station_del_ptr(): %s\n",p_name->call_sign);
+
     if (p_name != NULL) {
 
         // A bit of debug code:  Attempting to find out if we're
@@ -7456,6 +7458,9 @@ void station_del_ptr(DataRow *p_name) {
         if (p_name->node_path_ptr != NULL)  // Free malloc'ed path
             free(p_name->node_path_ptr);
         delete_station_memory(p_name);  // free memory
+
+//fprintf(stderr,"db.c:station_del_ptr(): Deleted station\n");
+
     }
 }
 
@@ -7507,10 +7512,21 @@ void check_station_remove(void) {
     time_t t_rem;
     int done = 0;
 
+
+    // Only run through this routine ever STATION_REMOVE_CYCLE
+    // seconds (currently every five minutes)
     if (last_station_remove < (sec_now() - STATION_REMOVE_CYCLE)) {
+//    if (last_station_remove < (sec_now() - 15)) {   // DEBUG
+
+
+//fprintf(stderr,"db.c:check_station_remove() is running\n");
+
+        // Compute the cutoff time.  Any stations older than t_rem
+        // will be removed, unless they have a tactical call or
+        // belong to us.
         t_rem = sec_now() - sec_remove;
 
-        //t_rem = sec_now() - (5 * 60);     // Useful for debug only
+//t_rem = sec_now() - (1 * 15);     // Useful for debug only
 
         p_station = t_first;    // Oldest station in our list
         while (p_station != NULL && !done) {
@@ -7520,16 +7536,20 @@ void check_station_remove(void) {
             p_station_t_next = p_station->t_next;
 
             if (p_station->sec_heard < t_rem) {
+//fprintf(stderr,"found old station: %s\t\t",p_station->call_sign);
+
                 if ( (is_my_call(p_station->call_sign,1))                   // It's my station or
                         || ( (is_my_call(p_station->origin,1))              // Station is owned by me
                           && ( ((p_station->flag & ST_OBJECT) != 0)         // and it's an object
                             || ((p_station->flag & ST_ITEM  ) != 0) ) ) ) { // or an item
 
                     // It's one of mine, leave it alone!
+//fprintf(stderr,"mine\n");
                 }
-                else if (p_station->tactical_call_sign) {
+                else if (p_station->tactical_call_sign[0] != '\0') {
                     // Station has a tactical callsign assigned,
                     // don't delete it.
+//fprintf(stderr,"tactical\n");
                 }
                 else {  // Not one of mine, doesn't have a tactical
                         // callsign assigned, so start deleting
@@ -7539,6 +7559,7 @@ void check_station_remove(void) {
                     //(void)delete_trail(p_station);              // Free track storage if it exists.
                     //(void)delete_weather(p_station);            // free weather memory, if allocated
                     //delete_station_memory(p_station);           // free memory
+//fprintf(stderr,"deleting\n");
                 }
             } else {
                 done++;                                         // all other stations are newer...
