@@ -99,4 +99,7 @@ extern int end_critical_section(xastir_mutex *lock, char *text);
 void time_mark(int start);
 #endif
 
+// dl9sau
+extern char *sec_to_loc(long longitude, long latitude);
+
 #endif // __XASTIR_UTIL_H

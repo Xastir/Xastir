@@ -2978,6 +2978,11 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
+    // dl9sau
+    xastir_snprintf(temp, sizeof(temp), "  %s", sec_to_loc(p_station->coord_lon, p_station->coord_lat) );
+    XmTextInsert(si_text,pos,temp);
+    pos += strlen(temp);
+
     if ((p_station->flag & ST_LOCAL) != 0)
         xastir_snprintf(temp, sizeof(temp), " *\n");
 
@@ -3066,6 +3071,11 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
                 XmTextInsert(si_text,pos,temp);
                 pos += strlen(temp);
+
+              // dl9sau
+              xastir_snprintf(temp, sizeof(temp), "  %s", sec_to_loc(p_station->track_data->trail_long_pos[last], p_station->track_data->trail_lat_pos[last]) );
+              XmTextInsert(si_text,pos,temp); 
+              pos += strlen(temp);
 
                 if ((p_station->track_data->flag[last] & TR_LOCAL) != '\0')
                     xastir_snprintf(temp, sizeof(temp), " *\n");

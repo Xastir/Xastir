@@ -1879,6 +1879,34 @@ void upd_echo(char *path) {
 
 
 
+// dl9sau:
+// I liked to have xastir to compute the locator along with the normal coordinates.
+// The algorithm derives from dk5sg's util/qth.c (wampes)
+//
+char *sec_to_loc(long longitude, long latitude)
+{
+  static char buf[7];
+  char *loc = buf;
+
+  // db.h:    long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
+  // db.h:    long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
+
+  longitude /= 100;
+  latitude  =  2* 90 * 3600L - latitude / 100;
+  *loc++ = (char) (longitude / 72000 + 'A'); longitude = longitude % 72000;
+  *loc++ = (char) (latitude  / 36000 + 'A'); latitude  = latitude % 36000;
+  *loc++ = (char) (longitude /  7200 + '0'); longitude = longitude %  7200;
+  *loc++ = (char) (latitude  /  3600 + '0'); latitude  = latitude %  3600;
+  *loc++ = (char) (longitude /   300 + 'A');
+  *loc++ = (char) (latitude  /   150 + 'A');
+  *loc   = 0;
+  return buf;
+}
+
+
+
+
+
 /*
  *  Substring function WITH a terminating NULL char, needs a string of at least size+1
  */
