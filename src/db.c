@@ -6707,6 +6707,14 @@ void station_del_ptr(DataRow *p_name) {
 
     if (p_name != NULL) {
 
+        // A bit of debug code:  Attempting to find out if we're
+        // deleting our own objects from time to time.  Leave this
+        // in until we're sure the problem has been fixed.
+        if (is_my_call(p_name->origin,1)) {
+            printf("station_del_ptr: Removing my own object: %s\n",
+                p_name->call_sign);
+        }
+
         //fprintf(stderr,"Removing: %s heard %d seconds ago\n",p_name->call_sign, (int)(sec_now() - p_name->sec_heard));
 
         (void)delete_trail(p_name);     // Free track storage if it exists.
@@ -8434,7 +8442,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         p_station->record_type = MOBILE_APRS;
                     else
                         p_station->record_type = DF_APRS;
-                    p_station->flag &= (~ST_MSGCAP);            // clear "message capable" flag
+                    //@ stations have messaging per spec
+                    p_station->flag |= (ST_MSGCAP);            // set "message capable" flag
                 }
                 break;
 
