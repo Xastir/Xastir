@@ -1884,7 +1884,7 @@ int ok_to_draw_station(DataRow *p_station) {
         return 0;
 
     // Check whether we wish to display stations heard direct
-    if (p_station->flag & ST_LOCAL     && !Select_.local)
+    if (p_station->flag & ST_DIRECT     && !Select_.local)
         return 0;
 
     // Check whether we wish to display net stations
@@ -3512,7 +3512,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    if ((p_station->flag & ST_LOCAL) != 0)
+    if ((p_station->flag & ST_DIRECT) != 0)
         xastir_snprintf(temp, sizeof(temp), " *\n");
 
     else
@@ -5471,7 +5471,7 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
 
     flag = '\0';                    // init flags
 
-    if ((stn_flag & ST_LOCAL) != 0)
+    if ((stn_flag & ST_DIRECT) != 0)
             flag |= TR_LOCAL;           // set "local" flag
 
     if (ptr->prev != NULL) {    // we have at least two points...
@@ -8691,9 +8691,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 && ((p_station->flag & ST_VIATNC) != 0)
                 && (p_station->node_path_ptr != NULL)
                 && strchr(p_station->node_path_ptr,'*') == NULL)
-            p_station->flag |= (ST_LOCAL);              // set "local" flag
+            p_station->flag |= (ST_DIRECT);              // set "local" flag
         else
-            p_station->flag &= (~ST_LOCAL);             // clear "local" flag
+            p_station->flag &= (~ST_DIRECT);             // clear "local" flag
 
         p_station->num_packets += 1;
         redo_list = (int)TRUE;          // we may need to update the lists
