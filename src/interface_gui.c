@@ -4532,7 +4532,12 @@ Widget AGWPE_port_data;
 Widget AGWPE_password_data;
 Widget AGWPE_filter_data;
 Widget AGWPE_transmit_data;
+Widget AGWPE_igate_data;
 Widget AGWPE_reconnect_data;
+Widget AGWPE_unproto1_data;
+Widget AGWPE_unproto2_data;
+Widget AGWPE_unproto3_data;
+Widget AGWPE_relay_digipeat;
 int    AGWPE_port;
 
 
@@ -4568,6 +4573,8 @@ void AGWPE_change_data(Widget widget, XtPointer clientData, XtPointer callData) 
 
 begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
 
+    devices[AGWPE_port].igate_options=device_igate_options;
+
     strcpy(devices[AGWPE_port].device_host_name,XmTextFieldGetString(AGWPE_host_data));
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_name);
     strcpy(devices[AGWPE_port].device_host_pswd,XmTextFieldGetString(AGWPE_password_data));
@@ -4576,6 +4583,16 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_filter_string);
 
     devices[AGWPE_port].sp=atoi(XmTextFieldGetString(AGWPE_port_data));
+
+    strcpy(devices[AGWPE_port].unproto1,XmTextFieldGetString(AGWPE_unproto1_data));
+    (void)remove_trailing_spaces(devices[AGWPE_port].unproto1);
+    strcpy(devices[AGWPE_port].unproto2,XmTextFieldGetString(AGWPE_unproto2_data));
+    (void)remove_trailing_spaces(devices[AGWPE_port].unproto2);
+    strcpy(devices[AGWPE_port].unproto3,XmTextFieldGetString(AGWPE_unproto3_data));
+    (void)remove_trailing_spaces(devices[AGWPE_port].unproto3);
+
+    strcpy(devices[AGWPE_port].unproto_igate,XmTextFieldGetString(AGWPE_igate_data));
+    (void)remove_trailing_spaces(devices[AGWPE_port].unproto_igate);
 
     if(XmToggleButtonGetState(AGWPE_active_on_startup))
         devices[AGWPE_port].connect_on_startup=1;
@@ -4586,6 +4603,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
         devices[AGWPE_port].transmit_data=1;
     else
         devices[AGWPE_port].transmit_data=0;
+
+    if(XmToggleButtonGetState(AGWPE_relay_digipeat))
+        devices[AGWPE_port].relay_digipeat=1;
+    else
+        devices[AGWPE_port].relay_digipeat=0;
 
     if(XmToggleButtonGetState(AGWPE_reconnect_data))
         devices[AGWPE_port].reconnect=1;
@@ -4624,10 +4646,13 @@ end_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
 
 void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                ihost, iport, password, password_fl, filter, sep;
-
+                ihost, iport, password, password_fl, filter, sep,
+                igate, igate_box, igate_o_0, igate_o_1, igate_o_2,
+                igate_label, frame, proto, proto1, proto2, proto3;
     Atom delw;
     char temp[40];
+    Arg al[2];                      // Arg list
+    register unsigned int ac = 0;    // Arg Count
 
     if(!config_AGWPE_dialog) {
         AGWPE_port=port;
@@ -4658,15 +4683,29 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, AGWPE_active_on_startup,
+                                      XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset ,10,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, AGWPE_active_on_startup,
+                                      XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
+
+        AGWPE_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, AGWPE_transmit_data,
+                                      XmNleftOffset ,35,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+// Not implemented yet, so make it insensitive.
+XtSetSensitive(AGWPE_relay_digipeat, FALSE);
 
         ihost = XtVaCreateManagedWidget(langcode("WPUPCFIA02"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
@@ -4806,10 +4845,200 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbackground, colors[0xff],
                                       NULL);
 
+        frame = XtVaCreateManagedWidget("Config_AGWPE frame", xmFrameWidgetClass, form,
+                                     XmNtopAttachment, XmATTACH_WIDGET,
+                                     XmNtopWidget, AGWPE_reconnect_data,
+                                     XmNtopOffset, 10,
+                                     XmNbottomAttachment, XmATTACH_NONE,
+                                     XmNleftAttachment, XmATTACH_FORM,
+                                     XmNleftOffset, 10,
+                                     XmNrightAttachment, XmATTACH_FORM,
+                                     XmNrightOffset, 10,
+                                     XmNbackground, colors[0xff],
+                                     NULL);
+
+        igate = XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass, frame,
+                                    XmNchildType, XmFRAME_TITLE_CHILD,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+        // Set args for color
+        ac=0;
+        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+
+        igate_box = XmCreateRadioBox(frame,"Config_AGWPE IGate box",al,ac);
+
+        XtVaSetValues(igate_box,XmNorientation, XmVERTICAL,XmNnumColumns,2,NULL);
+
+        igate_o_0 = XtVaCreateManagedWidget(langcode("IGPUPCF001"),xmToggleButtonGadgetClass,
+                                        igate_box,
+                                        XmNbackground, colors[0xff],
+                                        NULL);
+        XtAddCallback(igate_o_0,XmNvalueChangedCallback,igate_toggle,"0");
+
+        igate_o_1 = XtVaCreateManagedWidget(langcode("IGPUPCF002"),xmToggleButtonGadgetClass,
+                                        igate_box,
+                                        XmNbackground, colors[0xff],
+                                        NULL);
+        XtAddCallback(igate_o_1,XmNvalueChangedCallback,igate_toggle,"1");
+
+        igate_o_2 = XtVaCreateManagedWidget(langcode("IGPUPCF003"),xmToggleButtonGadgetClass,
+                                        igate_box,
+                                        XmNbackground, colors[0xff],
+                                        NULL);
+        XtAddCallback(igate_o_2,XmNvalueChangedCallback,igate_toggle,"2");
+
+        proto = XtVaCreateManagedWidget(langcode("WPUPCFT011"), xmLabelWidgetClass, form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, frame,
+                                      XmNtopOffset, 10,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment,XmATTACH_FORM,
+                                      XmNrightOffset, 5,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT012"), VERSIONFRM);
+
+        proto1 = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, proto,
+                                      XmNtopOffset, 12,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 45,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_unproto1_data = XtVaCreateManagedWidget("Config_AGWPE protopath1", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 40,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, proto,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, proto1,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT013"), VERSIONFRM);
+
+        proto2 = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, proto1,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 45,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_unproto2_data = XtVaCreateManagedWidget("Config_AGWPE protopath2", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 40,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_unproto1_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, proto2,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        xastir_snprintf(temp, sizeof(temp), langcode("WPUPCFT014"), VERSIONFRM);
+
+        proto3 = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, proto2,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 45,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+
+        AGWPE_unproto3_data = XtVaCreateManagedWidget("Config_AGWPE protopath3", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 40,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_unproto2_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, proto3,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+
+        xastir_snprintf(temp, sizeof(temp), langcode("IGPUPCF004"));
+        igate_label = XtVaCreateManagedWidget(temp, xmLabelWidgetClass, form,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, proto3,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 45,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_igate_data = XtVaCreateManagedWidget("Config_AGWPE igate_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 25,
+                                      XmNwidth, ((25*7)+2),
+                                      XmNmaxLength, 40,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, AGWPE_unproto3_data,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, igate_label,
+                                      XmNleftOffset, 5,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+
         sep = XtVaCreateManagedWidget("Config_AGWPE sep", xmSeparatorGadgetClass,form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, AGWPE_reconnect_data,
+                                      XmNtopWidget, AGWPE_igate_data,
                                       XmNtopOffset, 14,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -4858,9 +5087,16 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
             //XmTextFieldSetString(AGWPE_host_data,"first.aprs.net");
             XmTextFieldSetString(AGWPE_host_data,"localhost");
             XmTextFieldSetString(AGWPE_port_data,"8000");
-
             XmToggleButtonSetState(AGWPE_reconnect_data,FALSE,FALSE);
-        } else {
+            XmToggleButtonSetState(AGWPE_relay_digipeat, TRUE, FALSE);
+            device_igate_options=0;
+            XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
+            XmTextFieldSetString(AGWPE_unproto1_data,"RELAY,WIDE");
+            XmTextFieldSetString(AGWPE_unproto2_data,"");
+            XmTextFieldSetString(AGWPE_unproto3_data,"");
+            XmTextFieldSetString(AGWPE_igate_data,"");
+        }
+        else {
             /* reconfig */
 
 begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
@@ -4875,6 +5111,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
             else
                 XmToggleButtonSetState(AGWPE_transmit_data,FALSE,FALSE);
 
+            if (devices[AGWPE_port].relay_digipeat)
+                XmToggleButtonSetState(AGWPE_relay_digipeat, TRUE, FALSE);
+            else
+                XmToggleButtonSetState(AGWPE_relay_digipeat, FALSE, FALSE);
+
+//            if (devices[AGWPE_port].transmit_data) {
+//                XtSetSensitive(AGWPE_relay_digipeat, TRUE);
+//            }
+//            else
+//                XtSetSensitive(AGWPE_relay_digipeat, FALSE);
+
             XmTextFieldSetString(AGWPE_host_data,devices[AGWPE_port].device_host_name);
             xastir_snprintf(temp, sizeof(temp), "%d", devices[AGWPE_port].sp);
             XmTextFieldSetString(AGWPE_port_data,temp);
@@ -4886,9 +5133,37 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
             else
                 XmToggleButtonSetState(AGWPE_reconnect_data,FALSE,FALSE);
 
+            switch (devices[AGWPE_port].igate_options) {
+                case(0):
+                    XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
+                    device_igate_options=0;
+                    break;
+
+                case(1):
+                    XmToggleButtonSetState(igate_o_1,TRUE,FALSE);
+                    device_igate_options=1;
+                    break;
+
+                case(2):
+                    XmToggleButtonSetState(igate_o_2,TRUE,FALSE);
+                    device_igate_options=2;
+                    break;
+
+                default:
+                    XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
+                    device_igate_options=0;
+                    break;
+            }
+
+            XmTextFieldSetString(AGWPE_unproto1_data,devices[AGWPE_port].unproto1);
+            XmTextFieldSetString(AGWPE_unproto2_data,devices[AGWPE_port].unproto2);
+            XmTextFieldSetString(AGWPE_unproto3_data,devices[AGWPE_port].unproto3);
+            XmTextFieldSetString(AGWPE_igate_data,devices[AGWPE_port].unproto_igate);
+
 end_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
 
         }
+        XtManageChild(igate_box);
         XtManageChild(form);
         XtManageChild(pane);
 
