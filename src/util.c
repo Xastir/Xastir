@@ -246,7 +246,8 @@ char *output_long(char *in_long, int comp_pos) {
 
 /*********************************************************************/
 /* PHG range calculation                                             */
-/*                                                                   */
+/* NOTE: Keep these calculations consistent with phg_decode!         */
+/*       Yes, there is a reason why they both exist.                 */
 /*********************************************************************/
 double phg_range(char p, char h, char g) {
     double power, height, gain, range;
@@ -322,7 +323,8 @@ double shg_range(char s, char h, char g) {
 
 /*********************************************************************/
 /* PHG decode                                                        */
-/*                                                                   */
+/* NOTE: Keep these calculations consistent with phg_range!          */
+/*       Yes, there is a reason why they both exist.                 */
 /*********************************************************************/
 void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg_decoded_length) {
     double power, height, gain, range;
@@ -357,6 +359,9 @@ void phg_decode(const char *langstr, const char *phg, char *phg_decoded, int phg
     }
 
     range = sqrt(2.0 * height * sqrt((power / 10.0) * (gain / 2.0)));
+    // Note:  Bob Bruninga, WB4APR, decided to cut PHG circles by
+    // 1/2 in order to show more realistic mobile ranges.
+    range = range / 2.0;
 
     switch (phg[6]) {
         case '0':
