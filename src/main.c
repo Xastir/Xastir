@@ -3481,7 +3481,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     // Allocate a couple of colors that we'll need before we get
     // around to calling create_gc(), which creates the rest.
     //
-    //colors[0x08] = (int)GetPixelByName(Global.top,"black");
+    colors[0x08] = (int)GetPixelByName(Global.top,"black");
     colors[0x0c] = (int)GetPixelByName(Global.top,"red");
     colors[0xff] = (int)GetPixelByName(Global.top,"gray73");
 
