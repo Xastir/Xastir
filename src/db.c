@@ -15014,13 +15014,13 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
 // This is a good one to enable for debugging without getting too
 // many other types of messages to the xterm.  It will enable the
-// block below (if the particular compiler can handle the variable
-// define here outside a block).
+// block below.
 //#define WE7U_DEBUG
 
 #ifndef WE7U_DEBUG
-    if (debug_level & 1) {
+    if (debug_level & 1)
 #endif
+    {
         char filtered_data[MAX_LINE_SIZE+1];
 
         xastir_snprintf(filtered_data,
@@ -15031,9 +15031,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
         makePrintable(filtered_data);
         fprintf(stderr,"decode_ax25_line: start parsing %s\n", filtered_data);
-#ifndef WE7U_DEBUG
     }
-#endif
 
     if (line == NULL) {
         fprintf(stderr,"decode_ax25_line: line == NULL.\n");
