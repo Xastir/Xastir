@@ -132,14 +132,14 @@ window that looks very much like a DOS window.
 Inside the Cygwin window, type these commands:
 
     cd
-    ln -s /usr/X11r6/bin/startxwin.fvwm2.bat go.bat
+    ln -s /usr/X11r6/bin/startxwin.fvwm2.bat go
 
-This creates a shortcut method "go.bat" for starting the graphical
+This creates a shortcut method "go" for starting the graphical
 user environment.  You can name it nearly anything you want as
 long as you don't duplicate any names already used for Cygwin
 programs.
 
-Type "./go.bat &".  You should get a large window with a smaller
+Type "./go &".  You should get a large window with a smaller
 shell window displayed on it.  If you right-click on the background
 (outside the smaller window), you should see a menu.  Select "Exit
 FVWM" to make the large window go away (although that doesn't always
@@ -228,7 +228,7 @@ Cygwin and/or X11 windows you may have.
 
 Click on the Cygwin icon.
 
-From the resulting Cygwin window, type "./go.bat &".
+From the resulting Cygwin window, type "./go &".
 
 Once the large window with the one small window appears, type
 "xastir &" in the small window.  Xastir should start up shortly.
@@ -348,7 +348,7 @@ It appears that Cygwin uses the PATH variable to look for both
 binaries and libraries.  Add this line to the file (create the
 "~/.profile" file if the file doesn't exist):
 
-    export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib
+    export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib:.
 
 Now you should be ready to configure and compile Xastir with
 Shapelib support.  Type these commands:
