@@ -11603,7 +11603,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                 // emergency message for this station within the
                 // last 30 minutes.  If we pop these up constantly
                 // it gets quite annoying.
-                if ( (strncmp(call_sign, last_emergency_callsign, sizeof(call_sign)) != 0)
+                if ( (strncmp(call_sign, last_emergency_callsign, strlen(call_sign)) != 0)
                         || ((last_emergency_time + 60*30) < sec_now()) ) {
 
                     // Callsign is different or enough time has
@@ -14550,6 +14550,15 @@ void check_and_transmit_objects_items(time_t time) {
 //
 ///////////////////////////////////
 
+
+                // Check for the case where the timing slider has
+                // been reduced and the expire time is too long.
+                // Reset it to the current max expire time so that
+                // it'll get transmitted more quickly.
+                if (p_station->transmit_time_increment > OBJECT_rate)
+                    p_station->transmit_time_increment = OBJECT_rate;
+
+ 
                 increment = p_station->transmit_time_increment;
 
                 if ( ( p_station->last_transmit_time + increment) <= sec_now() ) {
