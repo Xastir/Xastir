@@ -4455,7 +4455,7 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
             ptr->speed  = -1;
 
     if (course[0] != '\0')
-            ptr->course = atoi(course);
+            ptr->course = (int)(atof(course) + 0.5);    // Poor man's rounding
     else
             ptr->course = -1;
 
