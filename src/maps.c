@@ -7849,6 +7849,8 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                     }
                 }
             }
+            (void)closedir (dm);
+
             if (done) {    // We found a filename match for the alert
                 // Go draw the weather alert (kind'a)
                 draw_map (w,
