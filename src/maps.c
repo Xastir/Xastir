@@ -1029,11 +1029,17 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
  * NOAA site) and shapefiles used as maps (from a number of
  * sources).
  *
- * The current implementation can draw only ESRI polygon or PolyLine
- * shapefiles.  We don't handle points yet or some of the other more
+ * The current implementation can draw Polygon, PolyLine, and Point
+ * Shapefiles, but only from a few sources (NOAA, Mapshots.com, and
+ * ESRI/GeographyNetwork.com).  We don't handle some of the more
  * esoteric formats.  Neither do we handle the "hole" drawing in
  * polygon shapefiles, where one direction around the ring means a
  * fill, and the other direction means a hole in the polygon.
+ *
+ * Note that we must currently hard-code the file-recognition
+ * portion and the file-drawing portion, because every new source of
+ * Shapefiles has a different format, and the fields and field
+ * definitions can all change between them.
  *
  * If alert is NULL, draw every shape that fits the screen.  If
  * non-NULL, draw only the shape that matches the zone number.
@@ -10137,7 +10143,12 @@ void load_maps (Widget w) {
                     printf("Found mapname: %s\n", mapname);
 
                 if (mapname[0] != '#') {
+
+//printf("%s\n",mapname);
+//start_timer();
                     draw_map (w, WIN_MAP_DIR, mapname, NULL, '\0', DRAW_TO_PIXMAP);
+//stop_timer();
+//print_timer_results();
 
                     if (debug_level & 1)
                         printf ("Load maps -%s\n", mapname);
@@ -10158,6 +10169,7 @@ void load_maps (Widget w) {
 
     if (debug_level & 1)
         printf ("Load maps stop\n");
+
 }
 
 
