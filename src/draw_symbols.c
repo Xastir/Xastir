@@ -947,14 +947,21 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 // 9 <1   deg (best)
 //
 //
-// TODO: Should we draw with XOR for this function?  Would appear on most maps that
-// way, and we wouldn't have to worry much about color.
+// TODO: Should we draw with XOR for this function?  Would appear on
+// most maps that way, and we wouldn't have to worry much about
+// color.
 //
-// TODO: If Q between 1 and 8, shade the entire area to show the beam width?
+// TODO: If Q between 1 and 8, shade the entire area to show the
+// beam width?
 //
 //
 // Latest:  We ignore the color parameter and draw everything using
 // red3.
+//
+// The distance calculations below use nautical miles.  Here we
+// ignore the difference between nautical and statute miles as it
+// really doesn't make much difference how long we draw the vectors:
+// The angle is what is important here.
 //
 void draw_bearing(long x_long, long y_lat, char *course,
         char *bearing, char *NRQ, int color,
@@ -973,6 +980,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
     // and we need to assume some working default values.
     if (NRQ[0] != '0') {
 
+        // "range" as used below is in nautical miles.
         range = (double)( pow(2.0,NRQ[1] - '0') );
 
         switch (NRQ[2]) {
@@ -1010,7 +1018,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
         }
     }
     else {  // Assume some default values.
-        range = 512.0;  // Assume max range of 512 miles
+        range = 512.0;  // Assume max range of 512 nautical miles
         width = 8;      // Assume 8 degrees for beam width
     }
 
