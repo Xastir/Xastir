@@ -8753,7 +8753,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     unsigned char s_b5;
     unsigned char s_b6;
     unsigned char s_b7;
-    int  n,w,l;
+    int  north,west,long_offset;
     int  d,m,h;
     char temp[MAX_TNC_LINE_SIZE+1];     // Note: Must be big in case we get long concatenated packets
     char new_info[MAX_TNC_LINE_SIZE+1]; // Note: Must be big in case we get long concatenated packets
@@ -8908,21 +8908,39 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
  
     //printf("\n");
 
-    n = (int)((path[3] & 0x40) == (char)0x40);  // N/S Lat Indicator
-    l = (int)((path[4] & 0x40) == (char)0x40);  // Longitude Offset
-    w = (int)((path[5] & 0x40) == (char)0x40);  // W/E Long Indicator
+    // Special tests for 'L' due to position ambiguity deviances in
+    // the APRS spec table.  'L' has the 0x40 bit set, but they
+    // chose in the spec to have that represent position ambiguity
+    // _without_ the North/West/Long Offset bit being set.  Yuk!
+    // Please also note that the tapr.org Mic-E document (not the
+    // APRS spec) has the state of the bit wrong in columns 2 and 3
+    // of their table.  Reverse them.
+    if (path[3] == 'L')
+        north = 0;
+    else 
+        north = (int)((path[3] & 0x40) == (char)0x40);  // N/S Lat Indicator
 
-    //printf("n:%d\tl:%d\tw:%d\n",n,l,w);
+    if (path[4] == 'L')
+        long_offset = 0;
+    else
+        long_offset = (int)((path[4] & 0x40) == (char)0x40);  // Longitude Offset
+
+    if (path[5] == 'L')
+        west = 0;
+    else
+        west = (int)((path[5] & 0x40) == (char)0x40);  // W/E Long Indicator
+
+printf("north:%c->%d\tlat:%c->%d\twest:%c->%d\n",path[3],north,path[4],long_offset,path[5],west);
 
     /* Put the latitude string into the temp variable */
     xastir_snprintf(temp, sizeof(temp), "%c%c%c%c.%c%c%c%c",s_b1,s_b2,s_b3,s_b4,s_b5,s_b6,
-            (n ? 'N': 'S'), info[7]);   // info[7] = symbol table
+            (north ? 'N': 'S'), info[7]);   // info[7] = symbol table
 
     /* Compute degrees longitude */
     strcpy(new_info,temp);
     d = (int) info[0]-28;
 
-    if (l)
+    if (long_offset)
         d += 100;
 
     if ((180<=d)&&(d<=189))  // ??
@@ -8939,7 +8957,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     /* Compute hundredths of minutes longitude */
     h = (int) info[2]-28;
     /* Add the longitude string into the temp variable */
-    xastir_snprintf(temp, sizeof(temp), "%03d%02d.%02d%c%c",d,m,h,(w ? 'W': 'E'), info[6]);
+    xastir_snprintf(temp, sizeof(temp), "%03d%02d.%02d%c%c",d,m,h,(west ? 'W': 'E'), info[6]);
     strcat(new_info,temp);
 
     /* Compute speed in knots */
