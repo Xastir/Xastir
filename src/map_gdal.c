@@ -663,9 +663,12 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
             }
 
             // Free the allocated vector memory
-            free(vectorX);
-            free(vectorY);
-            free(vectorZ);
+            if (vectorX)
+                free(vectorX);
+            if (vectorY)
+                free(vectorY);
+            if (vectorZ)
+                free(vectorZ);
         }
     }
 }
@@ -674,16 +677,46 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 
 
 
-// create_mask()
+// create_clip_mask()
 //
 // Create a rectangular X11 Region.  It should be the size of the
 // extents for the outer polygon.
 //
-// Remember the initial polygon vertices so that we can use them in
-// "draw_polygon_with_mask()" below.
-//
-void create_mask(void) {
+Region create_clip_mask(int num, int minX, int minY, int maxX, int maxY) {
+    XRectangle rectangle;
+    Region region;
+
+
     fprintf(stderr,"Create mask:");
+
+    rectangle.x      = (short) minX;
+    rectangle.y      = (short) minY;
+    rectangle.width  = (unsigned short)(maxX - minX + 1);
+    rectangle.height = (unsigned short)(maxY - minY + 1);
+
+    // Create an empty region
+    region = XCreateRegion();
+
+/*
+    fprintf(stderr,"Create: x:%d y:%d x:%d y:%d\n",
+        minX,
+        minY,
+        maxX,
+        maxY);
+
+    fprintf(stderr,"Create: x:%d y:%d w:%d h:%d\n",
+        rectangle.x,
+        rectangle.y,
+        rectangle.width,
+        rectangle.height);
+*/
+
+    // Create a region containing a filled rectangle
+    XUnionRectWithRegion(&rectangle,
+        region,
+        region);
+
+    return(region);
 }
 
 
@@ -693,11 +726,62 @@ void create_mask(void) {
 // create_hole_in_mask()
 //
 // Create a hole in an X11 Region, using a polygon as input.  X11
-// Region must have been created with "create_mask()" before this
-// function is called.
+// Region must have been created with "create_clip_mask()" before
+// this function is called.
 //
-void create_hole_in_mask(void) {
+Region create_hole_in_mask(Region mask,
+        int num,
+        long *X,
+        long *Y) {
+
+    Region region2 = NULL;
+    Region region3 = NULL;
+    XPoint *points;
+    int ii;
+
+
     fprintf(stderr,"Hole:");
+
+    points = NULL;
+ 
+    if (num < 3) {  // Not enough for a polygon
+        fprintf(stderr,
+            "create_hole_in_mask:XPolygonRegion w/too few vertices: %d\n",
+            num);
+        return(mask);    // Net result = no change to Region
+    }
+
+    // Get memory to hold the points
+    points = (XPoint *)malloc(sizeof(XPoint) * num);
+
+    // Load up our points array
+    for (ii = 0; ii < num; ii++) {
+        points[ii].x = (short)X[ii];
+        points[ii].y = (short)Y[ii];
+    }
+
+    // Create empty regions
+    region2 = XCreateRegion();
+    region3 = XCreateRegion();
+
+    // Draw the "hole" polygon
+    region2 = XPolygonRegion(points,
+        num,
+        WindingRule);
+
+    // Free the allocated memory
+    if (points)
+        free(points);
+
+    // Subtract region2 from mask and put the result into region3.
+    XSubtractRegion(mask, region2, region3);
+
+    // Get rid of the two regions we no longer need.
+    XDestroyRegion(mask);
+    XDestroyRegion(region2);
+
+    // Return our new region that has another hole in it.
+    return(region3);
 }
 
 
@@ -707,14 +791,60 @@ void create_hole_in_mask(void) {
 // draw_polygon_with_mask()
 //
 // Draws a polygon onto a pixmap using an X11 Region to mask areas
-// that shouldn't be drawn (holes).  X11 Region is created with the
-// "create_mask()" function, and holes in it are created with the
-// "create_hole_in_mask()" function.  The polygon used to create the
-// initial X11 Region was saved away during the creation.  Now we
-// just draw it to the pixmap using the X11 Region as a mask.
+// that shouldn't be drawn over (holes).  X11 Region is created with
+// the "create_clip_mask()" function, holes in it are created with
+// the "create_hole_in_mask()" function.  The polygon used to create
+// the initial X11 Region was saved away during the creation.  Now
+// we just draw it to the pixmap using the X11 Region as a mask.
 //
-void draw_polygon_with_mask(void) {
-    fprintf(stderr,"Draw w/mask\n");
+void draw_polygon_with_mask(Region mask,
+        XPoint *points,
+        int num_points) {
+
+    GC gc_temp = NULL;
+    XGCValues gc_temp_values;
+
+
+    fprintf(stderr,"Draw w/mask:");
+
+    // There were "hole" polygons, so by now we've created a "holey"
+    // region.  Draw a filled polygon with gc_temp here and then get
+    // rid of gc_temp and the regions.
+
+    gc_temp = XCreateGC(XtDisplay(da),
+        XtWindow(da),
+        0,
+        &gc_temp_values);
+
+//WE7U
+// Hard-coded drawing attributes
+(void)XSetLineAttributes (XtDisplay(da), gc_temp, 0, LineSolid, CapButt,JoinMiter);
+//(void)XSetForeground(XtDisplay(da), gc_temp, colors[(int)0x08]);  // black
+//(void)XSetForeground(XtDisplay(da), gc_temp, colors[(int)0x1a]);  // Steel Blue
+(void)XSetForeground(XtDisplay(da), gc_temp, colors[(int)0x0e]);  // yellow
+
+    // Set the clip-mask into the GC.  This GC is now ruined for
+    // other purposes, so destroy it when we're done drawing this
+    // one shape.
+//    if (mask != NULL)
+        XSetRegion(XtDisplay(da), gc_temp, mask);
+
+    // Actually draw the filled polygon
+    (void)XFillPolygon(XtDisplay(da),
+        pixmap,
+        gc_temp,
+        points,
+        num_points,
+        Nonconvex,
+        CoordModeOrigin);
+
+    if (mask != NULL)
+        XDestroyRegion(mask);
+
+    if (gc_temp != NULL)
+        XFreeGC(XtDisplay(da), gc_temp);
+
+    fprintf(stderr,"Done!\n");
 }
 
 
@@ -767,10 +897,15 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
  
     int kk;
     int object_num = 0;
+    Region mask = NULL;
+    XPoint *points = NULL;
+    int num_outer_points = 0;
 
 
     if (geometryH == NULL)
         return; // Exit early
+
+    //fprintf(stderr,"Draw_OGR_Polygons\n");
 
     // Check for more objects below this one, recursing into any
     // objects found.  "level" keeps us from recursing too far (we
@@ -821,10 +956,16 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 
             // if (kk==0) we're dealing with an outer (fill) ring.
             // If (kk>0) we're dealing with an inner (hole) ring.
-            if (kk == 0) {
-                //fprintf(stderr,"Polygon->Fill\n");
+            if (kk == 0 || object_num == 1) {
+                if (object_num == 1) {
+                    //fprintf(stderr,"Polygon->Fill\n");
+                }
+                else {
+                    //fprintf(stderr,"Polygon->Fill w/holes\n");
+                }
+                
             }
-            else {
+            else if (object_num > 1) {
                 //fprintf(stderr,"Polygon->Hole\n");
                 polygon_hole++;
             }
@@ -898,81 +1039,232 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                     }
                 }
 
-// If draw_filled != 0, draw the polygon using X11 polygon calls
-// instead of just drawing the border.
-
+                // If draw_filled != 0, draw the polygon using X11
+                // polygon calls instead of just drawing the border.
+                //
                 if (draw_filled) { // Draw a filled polygon
 
-// Note that this is problematic, as we have to worry about fill and
-// hole polygons, so we really need to define X11 Regions, work them
-// against each other, then apply the final result to the drawing
-// area.  We can't do this polygon by polygon:  We have to do the
-// X11 Region thing for each set and then apply the Region when
-// we're all done.
-//
-// Also note that we might have a multipolygon file, in which case
-// we'll be doing a set of X11 Regions (and applying each set) for
-// each set of polygons.
-
-
-
-// Initial attempt:  Draw just the filled polygons.  Skip the hole
-// polygons.  Later I'll implement X11 Regions like the Shapefile
-// code has.  It'd be very nice to implement separate functions for
-// creating the initial X11 Region, then calling another routine
-// that will make a hole in it, repeating until we run out of hole
-// polygons, then drawing the initial outer-ring polygon onto the
-// pixmap using the resulting "holey" X11 Region for a mask.
-//
+// TODO:
 // If we have no inner polygons, skip the whole X11 Region thing and
 // just draw a filled polygon to the pixmap for speed.
-//
+
+                    if (object_num > 1) {   // Multiple rings
+                        unsigned long *XL = NULL;
+                        unsigned long *YL = NULL;
+                        long *XI = NULL;
+                        long *YI = NULL;
+                        int nn;
+                        int minX, maxX, minY, maxY;
 
 
-// if object_num > 1, create a X11 Region here.  We'll be poking
-// holes in that X11 Region for following iterations, until we get
-// to the end of this section and kk==object_num, at which point
-// we'll call draw_polygon_with_mask().  Make sure to assign X11
-// Region to a new pointer per object, so that we can call this
-// function recursively.
-//
-if (object_num > 1) {   // Multiple rings
-    if (kk == 0) {   // Outer ring (fill)
-        create_mask();
-    }
-    else {  // Inner ring (hole)
-        create_hole_in_mask();
-    }
-
-    // Draw the original polygon to the pixmap
-    // using the X11 Region as a mask.
-    if (kk == (object_num - 1)) {
-        draw_polygon_with_mask();
-    }
-}
-
-
+                        XL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
+                        YL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
  
-                    //
-                    if (!polygon_hole) {    // It's a fill polygon (outer ring)
+                        // Convert arrays to the Xastir coordinate
+                        // system
+                        for (nn = 0; nn < polygon_points; nn++) {
+                            convert_to_xastir_coordinates(&XL[nn],
+                                &YL[nn],
+                                vectorX[nn],
+                                vectorY[nn]);
+                        }
 
-// Temporary code (drawing only a border currently)
-                        for ( mm = 1; mm < polygon_points; mm++ ) {
+                        XI = (long *)malloc(sizeof(long) * polygon_points);
+                        YI = (long *)malloc(sizeof(long) * polygon_points);
+ 
+// Note:  We're limiting screen size to 1700 in this routine.
+                        minX = 1700;
+                        maxX = 0;
+                        minY = 1700;
+                        maxY = 0;
+ 
+                        // Convert arrays to screen coordinates.
+                        // Careful here!  The format conversions
+                        // you'll need if you try to compress this
+                        // into two lines will get you into trouble.
+                        //
+                        // We also clip to screen size and compute
+                        // min/max values here.
+                        for (nn = 0; nn < polygon_points; nn++) {
+                            XI[nn] = XL[nn] - x_long_offset;
+                            XI[nn] = XI[nn] / scale_x;
 
-                            draw_vector_ll(da,
-                                (float)vectorY[mm-1],
-                                (float)vectorX[mm-1],
-                                (float)vectorY[mm],
-                                (float)vectorX[mm],
-                                gc,
-                                pixmap);
+                            YI[nn] = YL[nn] - y_lat_offset;
+                            YI[nn] = YI[nn] / scale_y;
+ 
+// Here we truncate:  We should polygon clip instead, so that the
+// slopes of the line segments don't change.  Points beyond +/-
+// 16000 can cause problems in X11 when we draw.  Here we are more
+// interested in keeping the rectangles small and fast.  Screen-size
+// or smaller basically.
+                            if      (XI[nn] > 1700l) XI[nn] = 1700l;
+                            else if (XI[nn] <    0l) XI[nn] =    0l;
+                            if      (YI[nn] > 1700l) YI[nn] = 1700l;
+                            else if (YI[nn] <    0l) YI[nn] =    0l;
+
+                            if (!polygon_hole) {
+
+                                // Find the min/max extents for the
+                                // arrays.  We use that to set the
+                                // size of our mask region.
+                                if (XI[nn] < minX) minX = XI[nn];
+                                if (XI[nn] > maxX) maxX = XI[nn];
+                                if (YI[nn] < minY) minY = YI[nn];
+                                if (YI[nn] > maxY) maxY = YI[nn];
+                            }
+                        }
+
+                        // We don't need the Xastir coordinate
+                        // system arrays anymore.  We've already
+                        // converted to screen coordinates.
+                        if (XL)
+                            free(XL);
+                        if (YL)
+                            free(YL);
+
+                        if (!polygon_hole) {   // Outer ring (fill)
+                            int pp;
+
+                            // Pass the extents of the polygon to
+                            // create a mask rectangle out of them.
+                            mask = create_clip_mask(polygon_points,
+                                minX,
+                                minY,
+                                maxX,
+                                maxY);
+
+                            // Set up the XPoint array that we'll
+                            // need for our final draw (once the
+                            // "holey" region is set up).
+                            points = (XPoint *)malloc(sizeof(XPoint) * polygon_points);
+
+                            // Load up our points array
+                            for (pp = 0; pp < polygon_points; pp++) {
+                                points[pp].x = (short)XI[pp];
+                                points[pp].y = (short)YI[pp];
+                            }
+                            num_outer_points = polygon_points;
+                        }
+                        else {  // Inner ring (hole)
+
+                            // Pass the entire "hole" polygon set of
+                            // vertices into the hole region
+                            // creation function.  This knocks a
+                            // hole in our mask so that underlying
+                            // map layers can show through.
+
+                            mask = create_hole_in_mask(mask,
+                                polygon_points,
+                                XI,
+                                YI);
+                        }
+
+                        // Free the screen coordinate arrays.
+                        if (XI)
+                            free(XI);
+                        if (YI)
+                            free(YI);
+
+                        // Draw the original polygon to the pixmap
+                        // using the X11 Region as a mask.
+                        if (kk == (object_num - 1)) {
+                            draw_polygon_with_mask(mask,
+                                points,
+                                num_outer_points);
+
+                            free(points);
                         }
                     }
-                    else {  // It's a hole polygon (inner ring)
-// Don't draw anything... yet.  Do X11 Regions later.
+
+//WE7U
+// Below is partially duplicated code.
+                    else {  // No inner rings, just one outer ring
+/*
+                        unsigned long *XL = NULL;
+                        unsigned long *YL = NULL;
+                        long *XI = NULL;
+                        long *YI = NULL;
+                        int nn, pp;
+
+
+                        XL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
+                        YL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
+ 
+                        // Convert arrays to the Xastir coordinate
+                        // system
+                        for (nn = 0; nn < polygon_points; nn++) {
+                            convert_to_xastir_coordinates(&XL[nn],
+                                &YL[nn],
+                                vectorX[nn],
+                                vectorY[nn]);
+                        }
+
+                        XI = (long *)malloc(sizeof(long) * polygon_points);
+                        YI = (long *)malloc(sizeof(long) * polygon_points);
+ 
+                        // Convert arrays to screen coordinates.
+                        // Careful here!  The format conversions
+                        // you'll need if you try to compress this
+                        // into two lines will get you into trouble.
+                        //
+                        // We also clip to screen size and compute
+                        // min/max values here.
+                        for (nn = 0; nn < polygon_points; nn++) {
+                            XI[nn] = XL[nn] - x_long_offset;
+                            XI[nn] = XI[nn] / scale_x;
+
+                            YI[nn] = YL[nn] - y_lat_offset;
+                            YI[nn] = YI[nn] / scale_y;
+ 
+// Here we truncate:  We should polygon clip instead, so that the
+// slopes of the line segments don't change.  Points beyond +/-
+// 16000 can cause problems in X11 when we draw.  Here we are more
+// interested in keeping the rectangles small and fast.  Screen-size
+// or smaller basically.
+                            if      (XI[nn] > 1700l) XI[nn] = 1700l;
+                            else if (XI[nn] <    0l) XI[nn] =    0l;
+                            if      (YI[nn] > 1700l) YI[nn] = 1700l;
+                            else if (YI[nn] <    0l) YI[nn] =    0l;
+                        }
+
+                        // We don't need the Xastir coordinate
+                        // system arrays anymore.  We've already
+                        // converted to screen coordinates.
+                        if (XL)
+                            free(XL);
+                        if (YL)
+                            free(YL);
+
+                        // Set up the XPoint array.
+                        points = (XPoint *)malloc(sizeof(XPoint) * polygon_points);
+
+                        // Load up our points array
+                        for (pp = 0; pp < polygon_points; pp++) {
+                            points[pp].x = (short)XI[pp];
+                            points[pp].y = (short)YI[pp];
+                        }
+                        num_outer_points = polygon_points;
+ 
+                        // Free the screen coordinate arrays.
+                        if (XI)
+                            free(XI);
+                        if (YI)
+                            free(YI);
+
+                        // Draw the original polygon to the pixmap
+                        // using a blank mask.
+                        draw_polygon_with_mask(NULL,
+                            points,
+                            num_outer_points);
+ 
+                        if (points)
+                            free(points);
+*/
                     }
-                }
-                else {  // Draw just the border
+                }   // end of draw_filled
+
+                else {  // We're drawing non-filled polygons.
+                        // Draw just the border.
 
                     if (polygon_hole) {
                         // Inner ring, draw a dashed line
@@ -1000,9 +1292,13 @@ if (object_num > 1) {   // Multiple rings
 // drawing the border itself for a few pixels, like UI-View does.
 
                 // Free the allocated vector memory
-                free(vectorX);
-                free(vectorY);
-                free(vectorZ);
+                if (vectorX)
+                    free(vectorX);
+                if (vectorY)
+                    free(vectorY);
+                if (vectorZ)
+                    free(vectorZ);
+ 
             }
         }
     }
@@ -1933,6 +2229,7 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 case 0x80000001:    // Point25D
                 case 0x80000004:    // MultiPoint25D
 
+//WE7U
 // Hard-coded drawing attributes
 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
@@ -1948,6 +2245,7 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 case 0x80000002:    // LineString25D
                 case 0x80000005:    // MultiLineString25D
 
+//WE7U
 // Hard-coded drawing attributes
 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
@@ -1964,6 +2262,7 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
 
+//WE7U
 // Hard-coded drawing attributes
 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
