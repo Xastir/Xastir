@@ -1973,8 +1973,11 @@ int valid_path(char *path) {
     for (i=0,j=0; i<len; i++) {
         ch = path[i];
         if (ch == '>' || ch == ',') {   // found digi call separator
-            if (ast > 1 || (ast == 1 && i-j > 10) || (ast == 0 && (i == j || i-j > 9)))
+            if (ast > 1 || (ast == 1 && i-j > 10) || (ast == 0 && (i == j || i-j > 9))) {
+                if (debug_level & 1)
+                    fprintf(stderr, "valid_path: More than one * in call or wrong call size\n");
                 return(0);              // more than one asterisk in call or wrong call size
+            }
             ast = 0;                    // reset local asterisk counter
             
             j = i+1;                    // set to start of next call
@@ -1990,18 +1993,30 @@ int valid_path(char *path) {
             } else
                 if ((ch <'A' || ch > 'Z') && (ch <'0' || ch > '9')
                         && ch != '-'
-                        && ch != 'q')   // New anti-loop stuff from aprsd
+                        && ch != 'q') { // New anti-loop stuff from aprsd
+                    if (debug_level & 1)
+                        fprintf(stderr, "valid_path: Anti-loop stuff from aprsd\n");
                     return(0);          // wrong character in path
+                }
         }
     }
-    if (ast > 1 || (ast == 1 && i-j > 10) || (ast == 0 && (i == j || i-j > 9)))
+    if (ast > 1 || (ast == 1 && i-j > 10) || (ast == 0 && (i == j || i-j > 9))) {
+        if (debug_level & 1)
+            fprintf(stderr, "valid_path: More than one * or wrong call size (2)\n");
         return(0);                      // more than one asterisk or wrong call size
+    }
 
-    if (type == 0x03)
+    if (type == 0x03) {
+        if (debug_level & 1)
+            fprintf(stderr, "valid_path: Wrong format, both > and , in path\n");
         return(0);                      // wrong format, both '>' and ',' in path
+    }
 
-    if (hops > 9)                       // [APRS Reference chapter 3]
+    if (hops > 9) {                     // [APRS Reference chapter 3]
+        if (debug_level & 1)
+            fprintf(stderr, "valid_path: hops > 9\n");
         return(0);                      // too much hops, destination + 0-8 digipeater addresses
+    }
 
     if (type == 0x01) {
         int delimiters[20];
@@ -2098,7 +2113,7 @@ int valid_path(char *path) {
             path[ins] = '*';            // and insert it
         }
     }
-    return(1);
+    return(1);  // Path is good
 }
 
 
