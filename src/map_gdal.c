@@ -60,7 +60,7 @@
 #include "maps.h"
 #include "alert.h"
 //#include "util.h"
-//#include "main.h"
+#include "main.h"
 //#include "datum.h"
 //#include "draw_symbols.h"
 //#include "rotated.h"
@@ -412,11 +412,12 @@ scr_s_x_min = 0;
 //
 // GRASS module that does OGR (for reference):  v.in.ogr
 //
-// This is very nearly verbatim the example C-API code off the OGR
-// web pages.  We are only printing out the attribute field names so
-// far, but at least we are exercising the OGR draw code.  We
-// currently call this function from the draw_shapefile_map()
-// function, just so that it gets called and we can play with it.
+// This function started out as very nearly verbatim the example
+// C-API code off the OGR web pages.
+//
+// If destination_pixmap equals INDEX_CHECK_TIMESTAMPS or
+// INDEX_NO_TIMESTAMPS, then we are indexing the file (finding the
+// extents) instead of drawing it.
 //
 void draw_ogr_map(Widget w,
                    char *dir,
@@ -429,6 +430,12 @@ void draw_ogr_map(Widget w,
     OGRDataSourceH datasource;
     int i, numLayers;
     char full_filename[300];
+
+
+// Need to implement the indexing functions, so that we can use
+// these map formats from within Xastir.  Without an index, it'll
+// never appear in the map chooser.  Use the OGR "envelope"
+// functions to get the extents for the entire file.
 
 
     xastir_snprintf(full_filename,
@@ -445,8 +452,55 @@ void draw_ogr_map(Widget w,
 
     if (datasource == NULL)
     {
-        fprintf(stderr,"Unable to open %s\n", full_filename);
+        fprintf(stderr,
+            "Unable to open %s\n",
+            full_filename);
         return;
+    }
+
+
+    // Implement the indexing functions, so that we can use these
+    // map formats from within Xastir.  Without an index, it'll
+    // never appear in the map chooser.  Use the OGR "envelope"
+    // functions to get the extents for the entire file.
+    //
+    // Check whether we're indexing or drawing the map
+    if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
+            || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+        char status_text[MAX_FILENAME];
+
+        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+        statusline(status_text,0);       // Indexing ...
+
+        // Use the OGR "envelope" function to get the extents for
+        // the entire file.  Remember that it could be in
+        // state-plane coordinate system or something else equally
+        // strange.  Make sure we convert it to WGS84/lat/long
+        // before saving the index.
+
+// It looks like we need to run through all of the layers so that we
+// can get a "super-extents" set of numbers that include all layers.
+//        OGRErr OGR_L_GetExtent(OGRLayerH, OGREnvelope *, int);
+
+        // We're indexing only.  Save the extents in the index.
+//        index_update_ll(filenm,    // Filename only
+//            adfBndsMin[1],  // Bottom
+//            adfBndsMax[1],  // Top
+//            adfBndsMin[0],  // Left
+//            adfBndsMax[0]); // Right
+
+// For now, we'll just set the index to be the entire world to get
+// things up and running.
+        index_update_ll(filenm,    // Filename only
+             -90.0,  // Bottom
+              90.0,  // Top
+            -180.0,  // Left
+             180.0); // Right
+
+        // Close data source
+        OGR_DS_Destroy( datasource );
+
+        return; // Done indexing the file
     }
 
 
@@ -465,28 +519,39 @@ void draw_ogr_map(Widget w,
         OGRFeatureDefnH layerDefn;
 
         layer = OGR_DS_GetLayer( datasource, i );
+        if (layer == NULL)
+        {
+            fprintf(stderr,
+                "Unable to open layer %d of %s\n",
+                i,
+                full_filename);
+            return;
+        }
+
 
         /* Dump info about this layer */
         layerDefn = OGR_L_GetLayerDefn( layer );
-        numFields = OGR_FD_GetFieldCount( layerDefn );
+        if (layerDefn != NULL) {
+            numFields = OGR_FD_GetFieldCount( layerDefn );
 
-//        fprintf(stderr,"\n===================\n");
-//        fprintf(stderr,"Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
+//            fprintf(stderr,"\n===================\n");
+//            fprintf(stderr,"Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
 
-        for(j=0; j<numFields; j++)
-        {
-            OGRFieldDefnH fieldDefn;
+            for(j=0; j<numFields; j++)
+            {
+                OGRFieldDefnH fieldDefn;
 
-            fieldDefn = OGR_FD_GetFieldDefn( layerDefn, j );
-//            fprintf(stderr," Field %d: %s (%s)\n", 
-//                   j, OGR_Fld_GetNameRef(fieldDefn), 
-//                   OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
+                fieldDefn = OGR_FD_GetFieldDefn( layerDefn, j );
+//                fprintf(stderr," Field %d: %s (%s)\n", 
+//                       j, OGR_Fld_GetNameRef(fieldDefn), 
+//                       OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
+            }
+//            fprintf(stderr,"\n");
         }
-//        fprintf(stderr,"\n");
 
 
 
-// Here we need to convert to WGS84 if necessary (using
+// Here we need to convert to WGS84 and lat/long if necessary (using
 // OGRCoordinateTransformation class and PROJ.4), then start
 // plotting the points/lines/whatever.
 // Query the geometry type using OGRFeatureDefn::GetGeomType(),
@@ -526,6 +591,7 @@ fprintf(stderr,"4\n");
 
         // Dump each feature individually
 //        if ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
+//fprintf(stderr,"Starting feature loop\n");
         while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
             OGRSpatialReferenceH spatial;
             OGRGeometryH shape;
@@ -533,20 +599,32 @@ fprintf(stderr,"4\n");
             double X1, Y1, Z1, X2, Y2, Z2;
             int polygon = 0;
 
-//            OGR_F_DumpReadable( feature, stderr );
 
+            if (feature == NULL) {
+                continue;
+            }
+
+            //OGR_F_DumpReadable( feature, stderr );
             // Get a handle to the shape itself
             shape = OGR_F_GetGeometryRef(feature);
-//            OGR_G_DumpReadable(shape, stderr, "Shape: ");
+            if (shape == NULL) {
+                OGR_F_Destroy( feature );
+                continue;
+            }
+
+            //OGR_G_DumpReadable(shape, stderr, "Shape: ");
 
 // We could either call OGR_G_GetEnvelope() here and calculate for
 // ourselves it if is in our viewport, or we could set a filter and
 // let the library pass us only those that fit.
 
+// Causes segfaults on some tiger files
             spatial = OGR_G_GetSpatialReference(shape);
 
             // This works for a point or a linestring only.
+// Causes segfaults on some tiger files
             num = OGR_G_GetPointCount(shape);
+
             if (num == 0) {
                 // Get number of elements (polygons)
                 num = OGR_G_GetGeometryCount(shape);
@@ -626,7 +704,8 @@ fprintf(stderr,"4\n");
             }
             OGR_F_Destroy( feature );
         }
-
+//fprintf(stderr,"Done with feature loop\n");
+ 
         /* No need to free layer handle, it belongs to the datasource */
     }
 
