@@ -595,23 +595,25 @@ dialog.
 
 Enabling GPS Waypoint/Track/Route Download Support:
 ---------------------------------------------------
-Install GPSMan.  Configure/compile support for it in Xastir.  Start
-up GPSMan separately and configure it for your GPS and serial port.
-You'll see download options for each type on the Interface menu.
+Install GPSMan and gpsmanshp.  Configure/compile support for it in
+Xastir.  Start up GPSMan separately and configure it for your GPS
+and serial port.  You'll see download options for each type on the
+Interface menu.
 TBD
 
 
 Enabling Garmin RINO Support:
 -----------------------------
-Install GPSMan.  Configure/compile support for it in Xastir.  Start
-up GPSMan separately and configure it for your GPS and serial port.
-In the "File->Configure->Timing" dialog you'll see an option for
-"RINO -> Objects Interval".  That sets the interval at which Xastir
-will download waypoints from an attached RINO unit.  Any waypoints
-that begin with "APRS" will have the "APRS" chopped off, and the
-remaining name will be used to create APRS Objects.  Those objects
-will be plotted on the map and transmitted as well if transmit for
-objects/items is enabled.
+Install GPSMan (and gpsmanshp if you wish normal GPS download
+support as well).  Configure/compile support for it in Xastir.
+Start up GPSMan separately and configure it for your GPS and serial
+port.  In the "File->Configure->Timing" dialog you'll see an option
+for "RINO -> Objects Interval".  That sets the interval at which
+Xastir will download waypoints from an attached RINO unit.  Any
+waypoints that begin with "APRS" will have the "APRS" chopped off,
+and the remaining name will be used to create APRS Objects.  Those
+objects will be plotted on the map and transmitted as well if
+transmit for objects/items is enabled.
 TBD
 
 
