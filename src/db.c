@@ -279,7 +279,6 @@ static int message_update_delay = 300;
 
 
 
-//WE7U
 // Saves latest ack in a linked list.  We need this value in order
 // to use Reply/Ack protocol when sending out messages.
 void store_most_recent_ack(char *callsign, char *ack) {
@@ -634,7 +633,6 @@ void msg_update_ack_stamp(long record_num) {
 
 
 
-// WE7U
 // Called when we receive an ACK.  Sets the "acked" field in a
 // Message which gets rid of the highlighting in the Send Message
 // dialog for that line.  This lets us know which messages have
@@ -930,7 +928,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
 
 
-// WE7U:  What I'd like to do for the following routine:  Use
+// What I'd like to do for the following routine:  Use
 // XmTextGetInsertionPosition() or XmTextGetCursorPosition() to
 // find the last of the text.  Could also save the position for
 // each SendMessage window.  Compare the timestamps of messages
@@ -996,7 +994,6 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                         index_record *head = NULL;
                         index_record *p_prev = NULL;
                         index_record *p_next = NULL;
-//WE7U
 
                         // Allocate the first record (a dummy record)
                         head = (index_record *)malloc(sizeof(index_record));
@@ -1817,7 +1814,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
             xastir_snprintf(temp_altitude, sizeof(temp_altitude), "%.0f%s",
                 atof(p_station->altitude) * cvt_m2len,un_alt);
         }
-//WE7U1
+
         // Else check whether the previous position had altitude
         else if (p_station->newest_trackpoint != NULL) {
             if ( p_station->newest_trackpoint->altitude > -99999l) {
@@ -1970,7 +1967,6 @@ void display_station(Widget w, DataRow *p_station, int single) {
     temp_sec_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? sec_now(): p_station->sec_heard;
 
 
-//WE7U6
     // Check whether it's a locally-owned object/item
     if ( (is_my_call(p_station->origin,1))                  // If station is owned by me
             && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
@@ -1992,7 +1988,6 @@ void display_station(Widget w, DataRow *p_station, int single) {
             draw_ambiguity(p_station->coord_lon, p_station->coord_lat,
                     p_station->pos_amb,temp_sec_heard,XtWindow(da));
 
-//WE7U
         // Check for DF'ing data, draw DF circles if present and enabled
         if (show_DF && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
             //printf("SHGD:%s\n",p_station->signal_gain);
@@ -2003,7 +1998,6 @@ void display_station(Widget w, DataRow *p_station, int single) {
                     XtWindow(da));
         }
 
-//WE7U
         // Check for DF'ing beam heading/NRQ data
         if (show_DF && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3) ) {
             //printf("Bearing: %s\n",p_station->signal_gain,NRQ);
@@ -2059,7 +2053,6 @@ void display_station(Widget w, DataRow *p_station, int single) {
     // will still be there.
 
 
-//WE7U6
     // Check whether it's a locally-owned object/item
     if ( (is_my_call(p_station->origin,1))                  // If station is owned by me
             && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
@@ -2071,14 +2064,12 @@ void display_station(Widget w, DataRow *p_station, int single) {
     if (show_amb && p_station->pos_amb)
             draw_ambiguity(p_station->coord_lon,p_station->coord_lat,p_station->pos_amb,temp_sec_heard,pixmap_final);
 
-//WE7U
     // Check for DF'ing data, draw DF circles if present and enabled
     if (show_DF && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
         //printf("SHGD:%s\n",p_station->signal_gain);
         draw_DF_circle(p_station->coord_lon,p_station->coord_lat,p_station->signal_gain,temp_sec_heard,pixmap_final);
     }
 
-//WE7U
     // Check for DF'ing beam heading/NRQ data
     if (show_DF && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3) ) {
         //printf("Bearing: %s\n",p_station->signal_gain,NRQ);
@@ -2269,7 +2260,6 @@ void display_file(Widget w) {
     if(debug_level & 1)
         printf("Display File Start\n");
 
-//WE7U
 // Draw probability of detection circle, if enabled
 //draw_pod_circle(64000000l, 32400000l, 10, pixmap_final);
 
@@ -2659,7 +2649,6 @@ void station_data_auto_update_toggle ( /*@unused@*/ Widget widget, /*@unused@*/ 
 
 
 
-// WE7U
 // Fill in the station data window with real data
 void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata ) {
     DataRow *p_station;
@@ -3365,7 +3354,6 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
 
 
-//WE7U
 /*
  *  List station info and trail
  *  If calldata is non-NULL, then we drop straight through to the
@@ -3387,7 +3375,6 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
     int restore_position = 0;
 
 
-//WE7U7
     busy_cursor(appshell);
 
     db_station_info_callsign = (char *) clientData; // Used for auto-updating this dialog
@@ -3514,7 +3501,6 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmTextFieldSetString(station_call,p_station->call_sign);
             XtManageChild(station_call);
 
-//WE7U
             station_data_auto_update_w = XtVaCreateManagedWidget(langcode("WPUPSTI056"),
                                 xmToggleButtonGadgetClass, form,
                                 XmNtopAttachment,XmATTACH_FORM,
@@ -3766,7 +3752,6 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XtVaSetValues(si_text, XmNbackground, colors[0x0f], NULL);
         XtManageChild(pane);
 
-//WE7U
         if (station_data_auto_update)
             XmToggleButtonSetState(station_data_auto_update_w,TRUE,FALSE);
 
@@ -3926,7 +3911,6 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
     register unsigned int ac = 0;           /* Arg Count */
 
 
-//WE7U7
     busy_cursor(appshell);
 
     num_found=0;
@@ -4681,7 +4665,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                 (abs(lat1 - mid_y_lat_offset)  < marg_lat) ) {
 
                 if ((flag1 & TR_NEWTRK) == '\0') {
-                    // WE7U: possible drawing problems, if numbers too big ????
+                    // Possible drawing problems, if numbers too big ????
                     lon0 = (lon0 - x_long_offset) / scale_x;    // check arguments for
                     lat0 = (lat0 - y_lat_offset)  / scale_y;    // XDrawLine()
                     lon1 = (lon1 - x_long_offset) / scale_x;
@@ -5522,7 +5506,6 @@ void station_del_ptr(DataRow *p_name) {
 
     if (p_name != NULL) {
 
-//WE7U7
         //printf("Removing: %s heard %d seconds ago\n",p_name->call_sign, (int)(sec_now() - p_name->sec_heard));
 
         (void)delete_trail(p_name);     // Free track storage if it exists.
@@ -5575,7 +5558,6 @@ void check_station_remove(void) {
     if (last_station_remove < (sec_now() - STATION_REMOVE_CYCLE)) {
         t_rem = sec_now() - sec_remove;
 
-//WE7U7
         //t_rem = sec_now() - (5 * 60);     // Useful for debug only
 
         p_station = t_first;    // Oldest station in our list
@@ -5965,7 +5947,6 @@ int extract_speed_course(char *info, char *speed, char *course) {
 
 
 
-//WE7U
 /*
  *  Extract bearing and number/range/quality from beginning of info field
  */
@@ -6078,7 +6059,6 @@ int extract_powergain(char *info, char *phgd) {
 
 
 
-//WE7U
 /*
  *  Extract omnidf from APRS info field          "DFS1234/"    from APRS data extension
  */
@@ -6103,7 +6083,6 @@ int extract_omnidf(char *info, char *phgd) {
 
 
 
-//WE7U
 /*
  *  Extract signpost data from APRS info field: "{123}", an APRS data extension
  *  Format can be {1}, {12}, or {123}.
@@ -6171,7 +6150,6 @@ static void clear_area(DataRow *p_station) {
 
 
 
-//WE7U
 /*
  *  Extract Area Object
  */
@@ -7677,7 +7655,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 play_sound(sound_command,sound_prox_message);
                 /*printf("%s> PROX distance %f\n",p_station->call_sign, distance);*/
 
-//WE7U
             //printf("Station within proximity circle, creating waypoint\n");
             create_garmin_waypoint(p_station->coord_lat,p_station->coord_lon,p_station->call_sign);
 
@@ -9639,7 +9616,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
 
         if ( (from == DATA_VIA_TNC)             // Came in via a TNC port
                 && (strlen(my_data) > 0) ) {    // Not empty
-//WE7U8
+
             // Here's where we inject our own callsign like this: "WE7U-15,I"
             // in order to provide injection ID for our igate.  Should we also
             // add a '*' character after our callsign?
@@ -10214,7 +10191,6 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
 
 
 
-//WE7U6
 // We have a lot of code duplication between Setup_object_data,
 // Setup_item_data, and Create_object_item_tx_string.
 //
@@ -10633,7 +10609,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
 
 
-//WE7U6
 // check_and_transmit_objects_items
 //
 // This function first checks the time.  If it is time to do a retransmit,

@@ -330,7 +330,6 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
 
         view_messages_text = XmCreateScrolledText(my_form,"view_all_messages text",args,n);
 
-// WE7U
 // It's hard to get tab groups working with ScrolledText widgets.  Tab'ing in is
 // fine, but then I'm stuck in insert mode and it absorbs the tabs and beeps.
 

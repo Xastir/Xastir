@@ -151,7 +151,6 @@ Widget coordinate_calc_button_ok = (Widget)NULL;
 Widget change_debug_level_dialog = (Widget)NULL;
 
 
-// WE7U
 Widget coordinate_calc_dialog = (Widget)NULL;
 Widget coordinate_calc_zone = (Widget)NULL;
 Widget coordinate_calc_latitude_easting = (Widget)NULL;
@@ -775,24 +774,6 @@ int moving_object = 0;
 
 
 
-// SmartBeaconing(tm) stuff.  If enabled, POSIT_rate is only used for
-// objects & items, sb_POSIT_rate computed via SmartBeaconing(tm) will
-// be used for posits.
-//int smart_beaconing;            // Master enable/disable for SmartBeaconing(tm) mode
-//int sb_POSIT_rate = 30 * 60;    // Computed SmartBeaconing(tm) posit rate (secs)
-//int sb_last_heading = -1;       // Heading at time of last posit
-//int sb_current_heading = -1;    // Most recent heading parsed from GPS sentence
-//int sb_turn_min = 20;           // Min threshold for corner pegging (degrees)
-//int sb_turn_slope = 25;         // Threshold slope for corner pegging
-//int sb_turn_time = 5;           // Time between other beacon & turn beacon (secs)
-//int sb_posit_fast = 90;         // Fast beacon rate (secs)
-//int sb_posit_slow = 30;         // Slow beacon rate (mins)
-//int sb_low_speed_limit = 2;     // Speed below which SmartBeaconing(tm) is disabled &
-//                                // we'll beacon at the POSIT_slow rate (mph)
-//int sb_high_speed_limit = 60;   // Speed above which we'll beacon at the
-//                                // POSIT_fast rate (mph)
-//
-//WE7U
 void Smart_Beacon_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -2784,7 +2765,6 @@ void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPoint
     char *temp;
     char temp_string[10];
 
-    //WE7U
     // Small memory leak in below statement:
     //strcpy(altnet_call, XmTextGetString(debug_level_text));
     // Change to:
@@ -3400,7 +3380,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(wx_logging,TRUE,FALSE);
 
 
-//WE7U4
     enable_snapshots = XtVaCreateManagedWidget(langcode("PULDNFI014"),xmToggleButtonGadgetClass,
                         filepane,
                         XmNvisibleWhenOff, TRUE,
@@ -3417,7 +3396,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-//WE7U4
     // Print button
     print_button = XtVaCreateManagedWidget(langcode("PULDNFI015"), xmPushButtonWidgetClass, filepane,
                         XmNmnemonic, langcode_hotkey("PULDNFI015"), XmNbackground, colors[0xff], NULL);
@@ -3727,7 +3705,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                               XmNmnemonic,langcode_hotkey("PULDNMSL01"),XmNbackground,colors[0xff],NULL);
     map_station_label1 = XtVaCreateManagedWidget(langcode("PULDNMSL02"),xmPushButtonGadgetClass,Map_station_label_Pane,
                               XmNmnemonic,langcode_hotkey("PULDNMSL02"),XmNbackground,colors[0xff],NULL);
-//WE7U4
     map_station_label2 = XtVaCreateManagedWidget(langcode("PULDNMSL03"),xmPushButtonGadgetClass,Map_station_label_Pane,
                               XmNmnemonic,langcode_hotkey("PULDNMSL03"),XmNbackground,colors[0xff],NULL);
     sel3_switch(letter_style,map_station_label2,map_station_label1,map_station_label0);
@@ -4160,7 +4137,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-//WE7U4
     // Toolbar
     toolbar = XtVaCreateWidget("Toolbar form",xmFormWidgetClass, form,
                      XmNtopAttachment, XmATTACH_FORM,
@@ -4983,7 +4959,6 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     popup_message(langcode("POPUPMA020"),temp);
                 }
 
-//WE7U2
                 else if (moving_object) {   // Move Distance function
                     // For this function we need to:
                     //      Determine which icon is closest to the mouse pointer press position.
@@ -5410,7 +5385,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             if(sec_now() > net_next_time) {
                 net_last_time = sec_now();
                 net_next_time = net_last_time + 450;    // Check every 7.5 minutes
-                //net_next_time = net_last_time + 30;   // WE7U:  For debug
+                //net_next_time = net_last_time + 30;   // This statement is for debug
 
                 /*printf("Checking for reconnects\n");*/
                 check_ports();
@@ -6319,7 +6294,6 @@ void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
 
 
 
-//WE7U4
 void Map_station_label( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     int style;
 
@@ -7123,7 +7097,6 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         Display_data_text=NULL;
         Display_data_text = XmCreateScrolledText(rowcol,"Display_data text",args,n);
    
-// WE7U
 // I haven't figured out how to get the scrollbars to allow keyboard traversal.
 // When the ScrolledText widget is in the tab group, once you get there you can't
 // get out and it beeps at you when you try.  Frustrating.   For this dialog it's
@@ -7555,7 +7528,7 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     XmString *list;
     FILE *f;
 
-    //WE7U.  It'd be nice to turn off auto-maps here, or better perhaps would
+    // It'd be nice to turn off auto-maps here, or better perhaps would
     // be if any button were chosen other than "Cancel".
 
     XtVaGetValues(map_list,
@@ -7807,7 +7780,6 @@ void dir_sort(char *dir) {
                     case(S_IFREG):  // We found a regular file
                         /*printf("FILE %d<%s>\n",*item,fullpath+my_size);*/
 
-//WE7U4
                         // Check whether it's a map file before shoving it into the
                         // database.  This filters out non-maps from the listing.
                         ext = get_map_ext(dl->d_name);  // Get the file extension
@@ -7880,7 +7852,6 @@ void sort_list(char *filename,int size, Widget list, int *item) {
 
 
 
-// WE7U
 void map_chooser_fill_in (void) {
     int n,i;
     FILE *f;
@@ -8454,7 +8425,6 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
 
 
-//WE7U
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_none, button_V, button_ok,
             button_cancel, mess, button_C, button_F, button_O, rowcol;
@@ -8877,7 +8847,6 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     altnet = (int)(XmToggleButtonGetState(altnet_active));
 
-    //WE7U
     // Small memory leak in below statement:
     //strcpy(altnet_call, XmTextGetString(altnet_text));
     // Change to:
@@ -9001,7 +8970,6 @@ void igate_type_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoin
 
 
 
-//WE7U4
 void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_cancel, frame, frame2, frame3, frame4, frame5, frame6,
                 time, time_box,
@@ -10942,7 +10910,6 @@ void Object_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@
 
 
 
-//WE7U6
 // Convert this eventually to populate a DataRow struct, then call
 // data.c:Create_object_item_tx_string().  Right now we have a lot
 // of code duplication between Setup_object_data, Setup_item_data,
@@ -11231,7 +11198,7 @@ int Setup_object_data(char *line, int line_length) {
         }
     } else {  // Else it's a normal object
         if (transmit_compressed_objects_items) {
-//WE7U
+
 // Need to compute "csT" at some point and add it to the object
             xastir_snprintf(line, line_length, ";%-9s*%s%s",
                 last_object,
@@ -11280,7 +11247,6 @@ int Setup_object_data(char *line, int line_length) {
 
 
 
-//WE7U6
 // Convert this eventually to populate a DataRow struct, then call
 // data.c:Create_object_item_tx_string().  Right now we have a lot
 // of code duplication between Setup_object_data, Setup_item_data,
@@ -11558,7 +11524,7 @@ int Setup_item_data(char *line, int line_length) {
         }
     } else {  // Else it's a normal item
         if (transmit_compressed_objects_items) {
-//WE7U
+
 // Need to compute "csT" at some point and add it to the item
             xastir_snprintf(line, line_length, ")%s!%s",
                 last_object,
@@ -11715,7 +11681,6 @@ void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
 
 
 
-//WE7U4
 /*
  *  Select a symbol graphically
  */
@@ -11729,7 +11694,6 @@ void Ob_change_symbol(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientD
 
 
 
-//WE7U2
 /*
  *  Update symbol picture for changed symbol or table
  */
@@ -11759,7 +11723,6 @@ void updateObjectPictureCallback(/*@unused@*/ Widget w, /*@unused@*/ XtPointer c
 
 
 
-//WE7U2
 // Handler for "Signpost" toggle button
 void  Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -11821,7 +11784,6 @@ void  Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
 
 
 
-//WE7U2
 // Handler for "Enable Area Type" toggle button
 void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -11893,7 +11855,6 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 
 
 
-//WE7U2
 // Handler for "DF Bearing Object" toggle button
 void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -12203,7 +12164,6 @@ void Ob_width_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointe
 
 
 
-//WE7U3
 // Fill in fields from an existing object/item or create the proper
 // transmit string for a new object/item from these fields.
 /*
@@ -12509,7 +12469,6 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                             XmNrightAttachment,         XmATTACH_NONE,
                             NULL);
 
-//WE7U4
         ob_button_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS028"),xmPushButtonGadgetClass, ob_form1,
                             XmNtopAttachment,           XmATTACH_FORM,
                             XmNtopOffset,               2,
@@ -13315,7 +13274,6 @@ else if (Area_object_enabled) {
 
 
 
-//WE7U2
 //----- Frame for DF-omni info
 else if (DF_object_enabled) {
 
@@ -13884,7 +13842,7 @@ else if (DF_object_enabled) {
                             XmNbackground,              colors[0xff],
                             NULL);
 }
-//WE7U2 End of DF-specific widgets
+// End of DF-specific widgets
 
 
 
@@ -13951,7 +13909,6 @@ else if (DF_object_enabled) {
                             XmNbackground,              colors[0xff],
                             NULL);
 
-//WE7U3
 //----- Buttons
         if (p_station != NULL) {  // We were called from the Modify_object() or Move function
 
@@ -14080,7 +14037,6 @@ else if (DF_object_enabled) {
             XmToggleButtonSetState(df_bearing_toggle, TRUE, FALSE);
 
 
-//WE7U3
 // Fill in current data if object already exists
         if (p_station != NULL) {  // We were called from the Modify_object() or Move functions
 
@@ -14284,7 +14240,6 @@ if (Area_object_enabled) {
                     XmTextFieldSetString( signpost_data, p_station->signpost);
                 }   // Done with filling in Signpost Objects
 
-//WE7U2
 //                else if ( (p_station->aprs_symbol.aprs_type == '/') // Found a DF object
 //                        && (p_station->aprs_symbol.aprs_symbol == '\\' )) {
                 if (DF_object_enabled) {
@@ -14492,7 +14447,7 @@ if (Area_object_enabled) {
             } else
                 XmTextFieldSetString( ob_altitude_data, "" );
         }
-//WE7U3
+
 // Else we're creating a new object from scratch:  p_station == NULL
         else {
             if (Area_object_enabled) {
@@ -14577,7 +14532,7 @@ if (Area_object_enabled) {
             substr(temp_data,lon_str+9,1);
             XmTextFieldSetString(object_lon_data_ew,temp_data);
         }
-//WE7U2
+
         else  { // We're in the middle of moving an object, calldata was "2"
             // Fill in new lat/long values
             //printf("Here we will fill in the new lat/long values\n");
@@ -14673,7 +14628,6 @@ if (Area_object_enabled) {
 */
 
 }   // End of Set_Del_Object
-//WE7U3
 
 
 
@@ -14973,7 +14927,6 @@ void Posit_compressed_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoi
 
 
 
-//WE7U4
 /*
  *  Select a symbol graphically
  */
@@ -15055,7 +15008,6 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNrightAttachment,         XmATTACH_NONE,
                             NULL);
 
-//WE7U44
         compressed_posit_tx = XtVaCreateManagedWidget(langcode("WPUPCFS029"),xmToggleButtonWidgetClass,cs_form,
                             XmNtopAttachment,           XmATTACH_FORM,
                             XmNtopOffset,               10,
@@ -15392,7 +15344,6 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNrightAttachment,         XmATTACH_NONE,
                             NULL);
 
-//WE7U4
         configure_button_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS028"),xmPushButtonGadgetClass, cs_form1,
                             XmNtopAttachment,           XmATTACH_FORM,
                             XmNtopOffset,               6,
@@ -16185,7 +16136,6 @@ int main(int argc, char *argv[], char *envp[]) {
 #endif
 
 
-//WE7U
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
     String fallback_resources[] = {
@@ -16485,7 +16435,7 @@ int main(int argc, char *argv[], char *envp[]) {
     init_critical_section(&output_data_lock); // Protects interface.c:channel_data() function only
     init_critical_section(&data_lock);        // Protects global data, data_port, data_avail variables
     init_critical_section(&connect_lock);     // Protects port_data[].thread_status and port_data[].connect_status
-//WE7U:2  We should probably protect redraw_on_new_data, alert_redraw_on_update, and
+// We should probably protect redraw_on_new_data, alert_redraw_on_update, and
 // redraw_on_new_packet_data variables as well?
 // Also need to protect dialogs.
 

@@ -2551,7 +2551,7 @@ void draw_shapefile_map (Widget w,
                                 }
                             }
                             if (!skip_label) {  // Draw the string
-//WE7U
+
                                 // Compute the label rotation angle
                                 float diff_X = (int)x1 - x0;
                                 float diff_Y = (int)y1 - y0;
@@ -3062,7 +3062,6 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
         if ( debug_level & 512 )
             printf("Printing postscript file %s\n", ps_filename);
 
-//WE7U4
 // Note: This needs to be changed to "lp" for Solaris.
 // Also need to have a field to configure the printer name.  One
 // fill-in field could do both.
@@ -5037,7 +5036,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
     // By this point, geo_image_width & geo_image_height have to
     // have been initialized to something.
-//WE7U
+
     if ( (geo_image_width == 0) || (geo_image_height == 0) ) {
         printf("*** Skipping '%s', IMAGESIZE tag missing or incorrect. ***\n",file);
         return;
@@ -5082,7 +5081,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     (void)get_map_dir (file);
 
 
-//WE7U
 // Best here would be to add the process ID or user ID to the filename
 // (to keep the filename distinct for different users), and to check
 // the timestamp on the map file.  If it's older than xx minutes, go
@@ -5145,7 +5143,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
     //printf("File = %s\n",file);
 
-//WE7U
+
 // The status line is not updated yet, probably 'cuz we're too busy
 // getting the map in this thread and aren't redrawing?
 
@@ -6322,7 +6320,6 @@ int datum_shift_to_wgs84 (  float* f_west_bounding,
      * number of possible datum translations for world-wide coverage.
      * I'm not currently looking at the "original_datum" or "datum"
      * input parameters.  They're for future expansion.
-     * WE7U
      */
 
     /* Here is the datum definition that we are translating from */
@@ -9175,7 +9172,6 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                     trailer++;
                                     strcpy (label_text, Buffer);
  
-//WE7U6
                                     // Check for '#' or '$' as the first character of the label.
                                     // If found, we have an embedded symbol and colored text to display.
                                     symbol_table = ' ';
@@ -9242,7 +9238,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                         } else {    // Handle Windows-type map labels/embedded objects
                             int rotation = 0;
                             char rotation_factor[5];
-//WE7U6
+
                             // Windows-Type Map Labels
                             char label_type_1[2], label_type_2[2];
 
@@ -9283,7 +9279,6 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                 }
 
 
-//WE7U6
                                 // Special strings like: "#123" are rotation factors for labels
                                 // in degrees.  This is not documented in the windows-type map
                                 // format documents that I could find.
@@ -9302,7 +9297,6 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                     for ( i=4, j=0; i < (int)(strlen(label_text)+1); i++,j++)
                                         label_text[j] = label_text[i];
 
-//WE7U6
                                     //printf("Windows label: %s, rotation factor: %d\n",label_text, rotation);
                                 }
 
@@ -9352,7 +9346,6 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                                     label_text);
                                             }
                                             else {  // Rotated label
-//WE7U6
                                                 draw_rotated_label_text (w,
                                                     rotation,
                                                     x,
@@ -9404,7 +9397,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                 else {
                                     (void)fread (label_text, 29, 1, f);
                                 }
-//WE7U6
+
                                 // NOTE: 0x21 is the first color for the area object or "DOS" colors
                                 draw_label_text (w, x+10, y+5, strlen(label_text),colors[0x21 + label_text_color],label_text);
                                 symbol(w,0,label_symbol_del,label_symbol_char,' ',pixmap,1,x-10,y-10,' ');

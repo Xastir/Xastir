@@ -561,8 +561,6 @@ void check_and_transmit_messages(time_t time) {
 
                     transmit_message_data(message_pool[i].to_call_sign,temp);
 
-
-//WE7U
                     message_pool[i].active_time = time + message_pool[i].next_time;
 
                     //printf("%d\n",(int)message_pool[i].next_time);

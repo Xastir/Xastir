@@ -1171,7 +1171,6 @@ static void alert_build_list(Message *fill) {
 /////////////////////////////////////////////////////////////////////
 // End of compressed weather alert special code
 /////////////////////////////////////////////////////////////////////
-//WE7U
 
         // Terminate the strings
         entry[0].activity[20] = entry[0].alert_tag[20] = '\0';

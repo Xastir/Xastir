@@ -716,9 +716,9 @@ int ax25_init(int port) {
     }
 
     /* COMMENT: tested this AF_INET is CORRECT -FG */
-    // WE7U:  Commented out sections below.  We keep the old socket number
+    // Commented out sections below.  We keep the old socket number
     // around now, so have to start a new socket in all cases to make it work.
-//    if (port_data[port].channel == -1) {  // WE7U
+//    if (port_data[port].channel == -1) {
 
     ENABLE_SETUID_PRIVILEGE;
     port_data[port].channel = socket(AF_INET, SOCK_PACKET, htons(proto));
@@ -732,10 +732,10 @@ int ax25_init(int port) {
         return -1;
     }
 
-//    } // WE7U
-//    else {    // WE7U
+//    }
+//    else {
         // Use socket number that is already defined
-//    } // WE7U
+//    }
 
     /* port active */
     port_data[port].active = DEVICE_IN_USE;
@@ -1214,7 +1214,6 @@ int serial_detach(int port) {
 
 
 //***************************** START NETWORK FUNCTIONS *********************************
-//WE7U99
 
 //**************************************************************
 // net_connect_thread()
@@ -1830,8 +1829,8 @@ void port_read(int port) {
                         port_data[port].bytes_input += port_data[port].scan;      // Add character to read buffer
 
 
-//WE7U: Somewhere between these lock statements the read_lock got unlocked.  How?
-//if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
+// Somewhere between these lock statements the read_lock got unlocked.  How?
+// if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
 //    printf("read_lock, Port = %d\n", port);
 
                     if (port_data[port].device_type != DEVICE_AX25_TNC){
@@ -3666,7 +3665,6 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
 
 
 
-//WE7U
 //*****************************************************************************
 // output_waypoint_data()
 //
