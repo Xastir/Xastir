@@ -756,7 +756,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                 // (fill) rings.  If (level > 0), it's a
                 // multipolygon layer.
 
-                fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
+                //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
 
                 Draw_OGR_Polygons(child_geometryH,
                     level+1,
@@ -769,14 +769,18 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
         else {  // Draw
             int polygon_points;
             OGREnvelope envelopeH;
+            int polygon_hole = 0;
 
-// if (kk==0) we're dealing with an outer (fill) ring.  If (kk>0)
-// we're dealing with an inner (hole) ring.
 
-if (kk == 0)
-    fprintf(stderr,"Polygon->Fill\n");
-else
-    fprintf(stderr,"Polygon->Hole\n");
+            // if (kk==0) we're dealing with an outer (fill) ring.
+            // If (kk>0) we're dealing with an inner (hole) ring.
+            if (kk == 0) {
+                //fprintf(stderr,"Polygon->Fill\n");
+            }
+            else {
+                //fprintf(stderr,"Polygon->Hole\n");
+                polygon_hole++;
+            }
 
             if (fast_extents) {
 
@@ -816,7 +820,7 @@ else
             polygon_points = OGR_G_GetPointCount(child_geometryH);
             //fprintf(stderr, "Vertices: %d\n", polygon_points);
 
-            if (polygon_points > 3) {
+            if (polygon_points > 3) { // Not a polygon if < 3 points
                 int mm;
                 double *vectorX;
                 double *vectorY;
@@ -863,19 +867,41 @@ else
 // we'll be doing a set of regions (and applying each set) for each
 // set of polygons.
 
-                    // Temporary code (drawing only a border)
-                    for ( mm = 1; mm < polygon_points; mm++ ) {
 
-                        draw_vector_ll(da,
-                            (float)vectorY[mm-1],
-                            (float)vectorX[mm-1],
-                            (float)vectorY[mm],
-                            (float)vectorX[mm],
-                            gc,
-                            pixmap);
+
+                    // Initial attempt:  Draw just the filled
+                    // polygons.  Skip the hole polygons.  Later
+                    // I'll implement X11 regions like the Shapefile
+                    // code has.
+                    //
+                    if (!polygon_hole) {    // It's a fill polygon (outer ring)
+
+                        // Temporary code (drawing only a border)
+                        for ( mm = 1; mm < polygon_points; mm++ ) {
+
+                            draw_vector_ll(da,
+                                (float)vectorY[mm-1],
+                                (float)vectorX[mm-1],
+                                (float)vectorY[mm],
+                                (float)vectorX[mm],
+                                gc,
+                                pixmap);
+                        }
+                    }
+                    else {  // It's a hole polygon (inner ring)
+// Don't draw anything... yet
                     }
                 }
                 else {  // Draw just the border
+
+                    if (polygon_hole) {
+                        // Inner ring, draw a dashed line
+                        (void)XSetLineAttributes (XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+                    }
+                    else {
+                        // Outer ring, draw a solid line
+                        (void)XSetLineAttributes (XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+                    }
 
                     for ( mm = 1; mm < polygon_points; mm++ ) {
 
@@ -1828,7 +1854,7 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 case 0x80000004:    // MultiPoint25D
 
 // Hard-coded drawing attributes
-(void)XSetLineAttributes (XtDisplay (w), gc, 4, LineSolid, CapButt,JoinMiter);
+(void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]);  // white
 
