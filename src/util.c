@@ -1567,7 +1567,11 @@ void disown_object_item(char *call_sign, char *new_owner) {
 
     // Copy to a temp file
     xastir_snprintf(command,
-        sizeof(command), "cp -f %s %s", file, file_temp);
+        sizeof(command),
+        "%s -f %s %s",
+        CP_PATH,
+        file,
+        file_temp);
 
     if ( debug_level & 512 )
         fprintf(stderr,"%s\n", command );

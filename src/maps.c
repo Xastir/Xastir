@@ -3278,8 +3278,17 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
         // Bessel (no)
         // Sinc (not too bad)
 
-        xastir_snprintf(command, sizeof(command), "convert -filter Point %s%s%s%s%s %s %s",
-                mono, invert, rotate, scale, density, xpm_filename, ps_filename );
+        xastir_snprintf(command,
+            sizeof(command),
+            "%s -filter Point %s%s%s%s%s %s %s",
+            CONVERT_PATH,
+            mono,
+            invert,
+            rotate,
+            scale,
+            density,
+            xpm_filename,
+            ps_filename );
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command );
 
@@ -3304,7 +3313,11 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 // Since we could be running SUID root, we don't want to be
 // calling "system" anyway.  Several problems with it.
 /*
-        xastir_snprintf(command, sizeof(command), "lpr -Plp %s", ps_filename );
+        xastir_snprintf(command,
+            sizeof(command),
+            "%s -Plp %s",
+            LPR_PATH,
+            ps_filename );
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
 
@@ -3316,9 +3329,13 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 
 
         // Bring up the "gv" postscript viewer
-//        xastir_snprintf(command, sizeof(command), "gv %s-scale -2 -media Letter %s &",
-        xastir_snprintf(command, sizeof(command), "gv %s-scale -2 %s &",
-                format, ps_filename );
+        xastir_snprintf(command,
+            sizeof(command),
+//            "%s %s-scale -2 -media Letter %s &",
+            "%s %s-scale -2 %s &",
+            GV_PATH,
+            format,
+            ps_filename );
 
         if ( debug_level & 512 )
             fprintf(stderr,"%s\n", command);
@@ -3945,8 +3962,12 @@ void Snapshot(void) {
 
         // Convert it to a png file.  This depends on having the
         // ImageMagick command "convert" installed.
-        xastir_snprintf(command, sizeof(command), "convert -quality 100 %s %s",
-                xpm_filename, png_filename );
+        xastir_snprintf(command,
+            sizeof(command),
+            "%s -quality 100 %s %s",
+            CONVERT_PATH,
+            xpm_filename,
+            png_filename );
 
         if ( system( command ) != 0 ) {
             fprintf(stderr,"convert failed to convert snapshot from xpm to png\n");
