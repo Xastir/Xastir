@@ -94,4 +94,9 @@ extern void init_critical_section(xastir_mutex *lock);
 extern int begin_critical_section(xastir_mutex *lock, char *text);
 extern int end_critical_section(xastir_mutex *lock, char *text);
 
+//#define TIMING_DEBUG
+#ifdef TIMING_DEBUG
+void time_mark(int start);
+#endif
+
 #endif // __XASTIR_UTIL_H
