@@ -25,15 +25,6 @@ fcc_DATA=placeholder
 mapdir=${prefix}/xastir/maps
 map_DATA=placeholder
 
-filleddir=${prefix}/xastir/maps/filled
-filled_DATA=placeholder
-
-transdir=${prefix}/xastir/maps/transparent
-trans_DATA=placeholder
-
-zdir=${prefix}/xastir/maps/z_overlay
-z_DATA=placeholder
-
 sounddir=${prefix}/xastir/sounds
 sound_DATA=placeholder
 

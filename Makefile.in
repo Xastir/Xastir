@@ -128,15 +128,6 @@ fcc_DATA = placeholder
 mapdir = ${prefix}/xastir/maps
 map_DATA = placeholder
 
-filleddir = ${prefix}/xastir/maps/filled
-filled_DATA = placeholder
-
-transdir = ${prefix}/xastir/maps/transparent
-trans_DATA = placeholder
-
-zdir = ${prefix}/xastir/maps/z_overlay
-z_DATA = placeholder
-
 sounddir = ${prefix}/xastir/sounds
 sound_DATA = placeholder
 
@@ -153,8 +144,7 @@ man1dir = $(mandir)/man1
 MANS = $(man_MANS)
 
 NROFF = nroff
-DATA =  $(county_DATA) $(doc_DATA) $(fcc_DATA) $(filled_DATA) \
-$(map_DATA) $(sound_DATA) $(trans_DATA) $(z_DATA)
+DATA =  $(county_DATA) $(doc_DATA) $(fcc_DATA) $(map_DATA) $(sound_DATA)
 
 DIST_COMMON =  README ./stamp-h.in ABOUT-NLS AUTHORS COPYING ChangeLog \
 INSTALL Makefile.am Makefile.in NEWS TODO acconfig.h acinclude.m4 \
@@ -310,25 +300,6 @@ uninstall-fccDATA:
 	  rm -f $(DESTDIR)$(fccdir)/$$p; \
 	done
 
-install-filledDATA: $(filled_DATA)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(filleddir)
-	@list='$(filled_DATA)'; for p in $$list; do \
-	  if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(filleddir)/$$p"; \
-	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(filleddir)/$$p; \
-	  else if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(filleddir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(filleddir)/$$p; \
-	  fi; fi; \
-	done
-
-uninstall-filledDATA:
-	@$(NORMAL_UNINSTALL)
-	list='$(filled_DATA)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(filleddir)/$$p; \
-	done
-
 install-mapDATA: $(map_DATA)
 	@$(NORMAL_INSTALL)
 	$(mkinstalldirs) $(DESTDIR)$(mapdir)
@@ -365,44 +336,6 @@ uninstall-soundDATA:
 	@$(NORMAL_UNINSTALL)
 	list='$(sound_DATA)'; for p in $$list; do \
 	  rm -f $(DESTDIR)$(sounddir)/$$p; \
-	done
-
-install-transDATA: $(trans_DATA)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(transdir)
-	@list='$(trans_DATA)'; for p in $$list; do \
-	  if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(transdir)/$$p"; \
-	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(transdir)/$$p; \
-	  else if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(transdir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(transdir)/$$p; \
-	  fi; fi; \
-	done
-
-uninstall-transDATA:
-	@$(NORMAL_UNINSTALL)
-	list='$(trans_DATA)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(transdir)/$$p; \
-	done
-
-install-zDATA: $(z_DATA)
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(zdir)
-	@list='$(z_DATA)'; for p in $$list; do \
-	  if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(zdir)/$$p"; \
-	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(zdir)/$$p; \
-	  else if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(zdir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(zdir)/$$p; \
-	  fi; fi; \
-	done
-
-uninstall-zDATA:
-	@$(NORMAL_UNINSTALL)
-	list='$(z_DATA)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(zdir)/$$p; \
 	done
 
 # This directory's subdirectories are mostly independent; you can cd
@@ -577,17 +510,14 @@ install-exec-am:
 install-exec: install-exec-recursive
 
 install-data-am: install-man install-countyDATA install-docDATA \
-		install-fccDATA install-filledDATA install-mapDATA \
-		install-soundDATA install-transDATA install-zDATA
+		install-fccDATA install-mapDATA	install-soundDATA
 install-data: install-data-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-recursive
 uninstall-am: uninstall-man uninstall-countyDATA uninstall-docDATA \
-		uninstall-fccDATA uninstall-filledDATA \
-		uninstall-mapDATA uninstall-soundDATA \
-		uninstall-transDATA uninstall-zDATA
+		uninstall-fccDATA uninstall-mapDATA uninstall-soundDATA
 uninstall: uninstall-recursive
 all-am: Makefile $(MANS) $(DATA) config.h
 all-redirect: all-recursive-am
@@ -597,9 +527,7 @@ installdirs: installdirs-recursive
 installdirs-am:
 	$(mkinstalldirs)  $(DESTDIR)$(mandir)/man1 $(DESTDIR)$(countydir) \
 		$(DESTDIR)$(docdir) $(DESTDIR)$(fccdir) \
-		$(DESTDIR)$(filleddir) $(DESTDIR)$(mapdir) \
-		$(DESTDIR)$(sounddir) $(DESTDIR)$(transdir) \
-		$(DESTDIR)$(zdir)
+		$(DESTDIR)$(mapdir) $(DESTDIR)$(sounddir)
 
 
 mostlyclean-generic:
@@ -636,11 +564,9 @@ maintainer-clean: maintainer-clean-recursive
 .PHONY: mostlyclean-hdr distclean-hdr clean-hdr maintainer-clean-hdr \
 install-man1 uninstall-man1 install-man uninstall-man \
 uninstall-countyDATA install-countyDATA uninstall-docDATA \
-install-docDATA uninstall-fccDATA install-fccDATA uninstall-filledDATA \
-install-filledDATA uninstall-mapDATA install-mapDATA \
-uninstall-soundDATA install-soundDATA uninstall-transDATA \
-install-transDATA uninstall-zDATA install-zDATA install-data-recursive \
-uninstall-data-recursive install-exec-recursive \
+install-docDATA uninstall-fccDATA install-fccDATA uninstall-mapDATA \
+install-mapDATA uninstall-soundDATA install-soundDATA \
+install-data-recursive uninstall-data-recursive install-exec-recursive \
 uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
 all-recursive check-recursive installcheck-recursive info-recursive \
 dvi-recursive mostlyclean-recursive distclean-recursive clean-recursive \
