@@ -142,6 +142,7 @@ typedef struct {
     char from_call_sign[MAX_CALLSIGN+1];
     char message_line[MAX_MESSAGE_LENGTH+1];
     char seq[MAX_MESSAGE_ORDER+1];
+    char acked;
 } Message;
 
 #ifdef MSG_DEBUG

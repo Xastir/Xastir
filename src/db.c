@@ -217,7 +217,7 @@ char *remove_trailing_asterisk(char *data) {
 static long *msg_index;
 static long msg_index_end;
 static long msg_index_max;
-static Message *msg_data;
+static Message *msg_data;       // All messages, including ones we've transmitted (via loopback in the code)
 time_t last_message_update = 0;
 
 // How often update_messages() will run, in seconds.
@@ -467,6 +467,54 @@ void msg_get_data(Message *m_fill, long record_num) {
 
 
 
+// WE7U
+// Called when we receive an ACK.  Sets the "acked" field in a
+// Message which gets rid of the highlighting in the Send Message
+// dialog for that line.  This lets us know which messages have
+// been acked and which have not.
+void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
+    Message m_fill;
+    long record;
+
+//    if (debug_level & 1)
+        printf("Recording ack for message to: %s, seq: %s\n",
+            to_call_sign,
+            seq);
+
+    // Find the corresponding message in msg_data[i], set the
+    // "acked" field to one.
+
+    substr(m_fill.call_sign, to_call_sign, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.call_sign);
+
+    substr(m_fill.from_call_sign, my_call, MAX_CALLSIGN);
+    substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
+
+    // Look for a message with the same to_call_sign, my_call,
+    // and seq number
+    record = msg_find_data(&m_fill);
+    if(record != -1L) {     // Found a match!
+//        if (debug_level & 1)
+            printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n",
+                msg_data[record].acked,
+                seq,
+                record);
+        msg_data[record].acked = 1;
+        printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
+            msg_data[record].acked,
+            seq,
+            record);
+    }
+    else {
+        printf("Matching message not found\n");
+    }
+    update_messages(1); // Force an update
+}
+
+
+
+
+
 void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char type, char from) {
     Message m_fill;
     long record;
@@ -487,9 +535,10 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
 
     substr(m_fill.from_call_sign, from_call, MAX_CALLSIGN);
     substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
+    m_fill.acked = 0;
 
-// Look for a message with the same call_sign, from_call_sign, and
-// seq number
+    // Look for a message with the same call_sign, from_call_sign,
+    // and seq number
     record = msg_find_data(&m_fill);
     msg_clear_data(&m_fill);
     if(record != -1L) { /* fill old data */
@@ -672,6 +721,8 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
                                 //printf("Looping through, reading messages\n");
  
+printf("acked: %d\n",msg_data[msg_index[j]].acked);
+ 
                                 // Message matches so snag the important pieces into a string
                                 xastir_snprintf(stemp, sizeof(stemp), "%c%c/%c%c %c%c:%c%c",
                                     msg_data[msg_index[j]].packet_time[0],
@@ -700,11 +751,33 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 if (debug_level & 2) printf("update_message: %s|%s\n", temp1, temp2);
                                 // Replace the text from pos to pos+strlen(temp2) by the string "temp2"
                                 if (mw[mw_p].send_message_text != NULL) {
+
+                                    // Set highlighting based on the "acked" field
+printf("acked: %d\t",msg_data[msg_index[j]].acked);
+                                    if ( (msg_data[msg_index[j]].acked == 0)    // Not acked yet
+                                            && ( is_my_call(msg_data[msg_index[j]].from_call_sign, 1)) ) {
+printf("Setting underline\t");
+                                        XmTextSetHighlight(mw[mw_p].send_message_text,
+                                            pos,
+                                            pos+strlen(temp2),
+                                            XmHIGHLIGHT_SECONDARY_SELECTED); // Underlining
+                                            //XmHIGHLIGHT_SELECTED);         // Reverse Video
+                                    }
+                                    else {  // Message was acked, get rid of highlighting
+printf("Setting normal\t");
+                                        XmTextSetHighlight(mw[mw_p].send_message_text,
+                                            pos,
+                                            pos+strlen(temp2),
+                                            XmHIGHLIGHT_NORMAL);
+                                    }
+
+printf("Text: %s\n",temp2); 
                                     XmTextReplace(mw[mw_p].send_message_text,
                                             pos,
                                             pos+strlen(temp2),
                                             temp2);
                                     pos += strlen(temp2);
+
                                 }
 
                                 // Advance to the next record in the list
@@ -717,14 +790,15 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                         else {  // No messages matched, list is empty
                         }
 
-                        if (pos > 0) {
-                            if (mw[mw_p].send_message_text != NULL) {
-                                XmTextReplace(mw[mw_p].send_message_text,
-                                        --pos,
-                                        XmTextGetLastPosition(mw[mw_p].send_message_text),
-                                        "");
-                            }
-                        }
+// What does this do?  Move all of the text?
+//                        if (pos > 0) {
+//                            if (mw[mw_p].send_message_text != NULL) {
+//                                XmTextReplace(mw[mw_p].send_message_text,
+//                                        --pos,
+//                                        XmTextGetLastPosition(mw[mw_p].send_message_text),
+//                                        "");
+//                            }
+//                        }
 
                         //printf("Free'ing list\n");
 
@@ -7798,6 +7872,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // printf("ACK: %s: |%s| |%s|\n",call,addr,msg_id);
         if (is_my_call(addr,1)) {
             clear_acked_message(call,addr,msg_id);      // got an ACK for me
+            msg_record_ack(call,addr,msg_id);      // Record the ack for this message
         }
         else {                                          // ACK for other station
             /* Now if I have Igate on and I allow to retransmit station data           */
@@ -8057,6 +8132,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         substr(msg_id,message,5);
         if (is_my_call(addr,1)) {
             clear_acked_message(call,addr,msg_id);      // got an ACK for me
+            msg_record_ack(call,addr,msg_id);      // Record the ack for this message
         }
 //        else {                                          // ACK for other station
             /* Now if I have Igate on and I allow to retransmit station data           */

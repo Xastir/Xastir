@@ -61,7 +61,7 @@ char auto_reply_message[100];
 
 Message_Window mw[MAX_MESSAGE_WINDOWS+1];
 
-Message_transmit message_pool[MAX_OUTGOING_MESSAGES+1];
+Message_transmit message_pool[MAX_OUTGOING_MESSAGES+1]; // Transmit message queue
 
 
 
