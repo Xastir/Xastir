@@ -12828,7 +12828,102 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 //    }
 }
 
- 
+
+
+
+
+// Same as map_chooser_select_maps, but doesn't destroy the Map
+// Chooser dialog.
+void map_chooser_apply_maps(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x;
+    char *temp;
+    XmString *list;
+    FILE *f;
+    map_index_record *ptr = map_index_head;
+   
+
+// It'd be nice to turn off auto-maps here, or better perhaps would
+// be if any button were chosen other than "Cancel".
+
+
+    // reset map_refresh in case we no longer have a refreshed map selected
+    map_refresh_interval = 0;
+
+    // Cause load_maps() and load_automaps() to re-sort the selected
+    // maps by layer.
+    re_sort_maps = 1;
+
+    // Get the list and the list count from the dialog
+    XtVaGetValues(map_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the list, updating the equivalent entries in the
+    // in-memory map index.  If we're in "directory" mode we'll only
+    // update the directory entries.  In "Expanded dirs" mode, we'll
+    // update both file and directory entries.
+    // The end result is that both directories and files may be
+    // selected, not either/or as the code was written earlier.
+    //
+    // Here we basically walk both lists together, the List widget
+    // and the in-memory linked list, as they're both in the same
+    // sort order.  We do this by passing "ptr" back and forth, and
+    // updating it to point to one after the last one found each
+    // time.  That turns and N*N search into an N search and is a
+    // big speed improvement when you have 1000's of maps.
+    //
+    for(x=1; x<=i;x++) {
+        if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+            // Update this file or directory in the in-memory map
+            // index, setting/resetting the "selected" field as
+            // appropriate.
+            map_index_update_selected(temp,
+                XmListPosSelected(map_list,x),
+                &ptr);
+            XtFree(temp);
+        }
+//fprintf(stderr,"Passed back: %s\n", ptr->filename);
+        ptr = ptr->next;
+    }
+
+    // Now we have all of the updates done to the in-memory map
+    // index.  Write out the selected maps to disk, overwriting
+    // whatever was there before.
+
+    ptr = map_index_head;
+
+    f=fopen(SELECTED_MAP_DATA,"w+");
+    if (f!=NULL) {
+
+        while (ptr != NULL) {
+            // Write only selected files/directories out to the disk
+            // file.
+            if (ptr->selected) {
+                fprintf(f,"%s\n",ptr->filename);
+            }
+            ptr = ptr->next;
+        }
+        (void)fclose(f);
+    }
+    else
+        fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+
+//    map_chooser_destroy_shell(widget,clientData,callData);
+
+    // Set interrupt_drawing_now because conditions have changed.
+    interrupt_drawing_now++;
+
+    // Request that a new image be created.  Calls create_image,
+    // XCopyArea, and display_zoom_status.
+    request_new_image++;
+
+//    if (create_image(da)) {
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    }
+}
+
+
 
 
 
@@ -13885,7 +13980,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
     static Widget  pane, my_form, button_clear, button_V, button_ok,
             button_cancel, button_C, button_F, button_O,
             rowcol, expand_dirs_button, button_properties,
-            maps_selected_label;
+            maps_selected_label, button_apply;
     Atom delw;
     int i;
     Arg al[10];                    /* Arg List */
@@ -14096,6 +14191,15 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+// "Apply"
+        button_apply = XtVaCreateManagedWidget(langcode("UNIOP00032"),
+                xmPushButtonGadgetClass,
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
 // "OK"
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
@@ -14114,6 +14218,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        XtAddCallback(button_apply, XmNactivateCallback, map_chooser_apply_maps, map_chooser_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, map_chooser_destroy_shell, map_chooser_dialog);
         XtAddCallback(button_ok, XmNactivateCallback, map_chooser_select_maps, map_chooser_dialog);
         XtAddCallback(button_clear, XmNactivateCallback, map_chooser_deselect_maps, map_chooser_dialog);

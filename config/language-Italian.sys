@@ -728,6 +728,7 @@ UNIOP00028|mm Hg||
 UNIOP00029|Regolare il tempo del sistema dal GPS||
 UNIOP00030|Ripeti come RELAY?||
 UNIOP00031|m||
+UNIOP00032|Apply||
 #
 # PopUp "Station Chooser"
 STCHO00001|Scelta Stazione||

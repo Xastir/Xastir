@@ -733,6 +733,7 @@ UNIOP00028|mm Hg||
 UNIOP00029|Systemzeit durch GPS einstellen||
 UNIOP00030|RELAY Digipeater?||
 UNIOP00031|m||
+UNIOP00032|Apply||
 #
 # popUp "Stationsauswahl"
 STCHO00001|Stationsauswahl||
