@@ -1128,8 +1128,14 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
 //WE7U
             if (device_type == DEVICE_SERIAL_KISS_TNC) {
-//                XmTextFieldSetString(TNC_up_file_data,"");
-//                XmTextFieldSetString(TNC_down_file_data,"");
+                // We don't allow changing the selection for KISS
+                // TNC's, as they require 8N1
+                XmToggleButtonSetState(style_8n1,TRUE,FALSE);
+                XtSetSensitive(style,FALSE);
+                XtSetSensitive(style_8n1,FALSE);
+                XtSetSensitive(style_7e1,FALSE);
+                XtSetSensitive(style_7o1,FALSE);
+                device_style = 0;
             }
             else {
                 XmTextFieldSetString(TNC_up_file_data,"tnc-startup.sys");
@@ -1227,27 +1233,41 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     device_speed=4;
                     break;
             }
-            switch (devices[TNC_port].style) {
-                case(0):
-                    XmToggleButtonSetState(style_8n1,TRUE,FALSE);
-                    device_style=0;
-                    break;
 
-                case(1):
-                    XmToggleButtonSetState(style_7e1,TRUE,FALSE);
-                    device_style=1;
-                    break;
-
-                case(2):
-                    XmToggleButtonSetState(style_7o1,TRUE,FALSE);
-                    device_style=2;
-                    break;
-
-                default:
-                    XmToggleButtonSetState(style_8n1,TRUE,FALSE);
-                    device_style=0;
-                    break;
+            if (device_type == DEVICE_SERIAL_KISS_TNC) {
+                // We don't allow changing the selection for KISS
+                // TNC's, as they require 8N1
+                XmToggleButtonSetState(style_8n1,TRUE,FALSE);
+                XtSetSensitive(style,FALSE);
+                XtSetSensitive(style_8n1,FALSE);
+                XtSetSensitive(style_7e1,FALSE);
+                XtSetSensitive(style_7o1,FALSE);
+                device_style = 0;
             }
+            else {
+                switch (devices[TNC_port].style) {
+                    case(0):
+                        XmToggleButtonSetState(style_8n1,TRUE,FALSE);
+                        device_style=0;
+                        break;
+    
+                    case(1):
+                        XmToggleButtonSetState(style_7e1,TRUE,FALSE);
+                        device_style=1;
+                        break;
+
+                    case(2):
+                        XmToggleButtonSetState(style_7o1,TRUE,FALSE);
+                        device_style=2;
+                        break;
+
+                    default:
+                        XmToggleButtonSetState(style_8n1,TRUE,FALSE);
+                        device_style=0;
+                        break;
+                }
+            }
+
             switch (devices[TNC_port].igate_options) {
                 case(0):
                     XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
