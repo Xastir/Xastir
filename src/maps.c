@@ -2117,14 +2117,19 @@ void draw_shapefile_map (Widget w,
 //                    if (    mapshots_labels_flag
 //                            && map_labels
 //                            && (fieldcount >= 3) ) {
-                    if (map_labels && fieldcount >= 1) {
 
+                    if (1) {    // Need a bracket so we can define
+                                // some local variables.
                         const char *temp;
                         int ok = 1;
                         int temp_ok;
 
-                        // Snag the label from the .dbf file
-                        temp = DBFReadStringAttribute( hDBF, structure, 0 );
+                        // If labels are enabled and we have enough
+                        // fields in the .dbf file, read the label.
+                        if (map_labels && fieldcount >= 1) {
+                            // Snag the label from the .dbf file
+                            temp = DBFReadStringAttribute( hDBF, structure, 0 );
+                        }
 
                         // Convert point to Xastir coordinates
                         temp_ok = convert_to_xastir_coordinates(&my_long,
@@ -2168,10 +2173,11 @@ void draw_shapefile_map (Widget w,
                             // Fine-tuned this string so that it is
                             // to the right of the 'X' and aligned
                             // nicely.
-                            draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)temp, 0xf, 0x10, strlen(temp));
-
-                            //(void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
-                            //(void)draw_rotated_label_text (w, 90, x+10, y, strlen(temp), colors[0x08], (char *)temp);
+                            if (map_labels) {
+                                draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)temp, 0xf, 0x10, strlen(temp));
+                                //(void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                                //(void)draw_rotated_label_text (w, 90, x+10, y, strlen(temp), colors[0x08], (char *)temp);
+                            }
                         }
                     }
                     break;
