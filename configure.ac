@@ -779,7 +779,8 @@ if test "$use_imagemagick" = "yes"; then
   esac 
 
   if test "$magickold" = "yes"; then 
-    AC_MSG_WARN(*** Old ImageMagick ($magickversion) found.  Please upgrade to 5.4.9 or newer. ***) 
+    AC_MSG_WARN(*** Old ImageMagick version ($magickversion) found. ***)
+    AC_MSG_WARN(*** Please upgrade to 5.4.9 or newer for full functionality. ***) 
   fi 
 fi
 
