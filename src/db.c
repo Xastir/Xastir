@@ -7043,11 +7043,15 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     // Check for valid symbol table character.  Should be '/' or '\' only.
     if (info[7] != '/' && info[7] != '\\') {        // Symbol table char not in correct spot
         if (info[6] == '/' || info[6] == '\\') {    // Found it back one char in string
-            printf("decode_Mic_E: Symbol table (%c) and symbol (%c) reversed or corrupted packet?  Call=%s\n, Info=%s",
-                info[7],
-                info[6],
+            // Don't print out the full info string here because it
+            // can contain unprintable characters.  In fact, we
+            // should check the chars we do print out to make sure
+            // they're printable, else print a space char.
+            printf("decode_Mic_E: Symbol table (%c), symbol (%c) swapped or corrupted packet?  Call=%s, Path=%s\n",
+                ((info[7] > 0x1f) && (info[7] < 0x7f)) ? info[7] : ' ',
+                ((info[6] > 0x1f) && (info[6] < 0x7f)) ? info[6] : ' ',
                 call_sign,
-                info);
+                path);
         }
         if (debug_level & 1) {
             printf("Returned from data_add, invalid symbol table character: %c\n",info[7]);
