@@ -618,8 +618,8 @@ void draw_shapefile_map (Widget w,
     int             railroad_flag = 0;
     int             school_flag = 0;
     int             path_flag = 0;
-#endif /*!WITH_DBFAWK*/
     int             city_flag = 0;
+#endif /*!WITH_DBFAWK*/
     int             quad_overlay_flag = 0;
 #ifndef WITH_DBFAWK
     int             mapshots_labels_flag = 0;
@@ -1494,10 +1494,13 @@ void draw_shapefile_map (Widget w,
                 /* set attributes */
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                 draw_filled = filled; /* XXX this overrides map properties! */
-                /* set all the other XXX's below */
-
+                skip_it = (map_color_levels && scale_y > display_level);
+                skip_label = (map_color_levels && scale_y > label_level);
             }
 #endif /* WITH_DBFAWK */
+
+            /* This case statement is a mess.  Lots of common code could be
+               used before the case but currently isn't */
 
             switch ( nShapeType ) {
 
@@ -1606,10 +1609,7 @@ void draw_shapefile_map (Widget w,
                     (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
 
 
-// Set up width and zoom level for roads
 #ifdef WITH_DBFAWK
-                    skip_it = (map_color_levels && scale_y > display_level);
-                    skip_label = (map_color_levels && scale_y > label_level);
                     if (!skip_it) {
                         (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                         (void)XSetLineAttributes(XtDisplay (w), gc, 
@@ -1618,6 +1618,7 @@ void draw_shapefile_map (Widget w,
                                                  CapButt,JoinMiter);
                     }
 #else /*!WITH_DBFAWK*/
+// Set up width and zoom level for roads
                     if (road_flag) {
                         int lanes = 0;
                         int dashed_line = 0;
@@ -3065,7 +3066,6 @@ if (on_screen) {
                             else if (quad_overlay_flag) {
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
-                            /* XXX - glacier,lake,river not set WITH_DBFAWK */
                             /* old glacier, lake and river code was identical
                                with the exception of what color to use! */
 #ifdef WITH_DBFAWK
@@ -3140,12 +3140,13 @@ if (on_screen) {
                             }
                             else if (map_color_fill && draw_filled) {  // Land masses?
                                 if (polygon_hole_flag) {
-                                    /* XXX city_flag not set WITH_DBFAWK */
+#ifndef WITH_DBFAWK
+                                    /* city_flag not needed WITH_DBFAWK */
                                     if (city_flag)
                                         (void)XSetForeground(XtDisplay(w), gc_temp, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[0xff]); // grey
-
+#endif /* !WITH_DBFAWK */
                                     if (i >= 3) {
                                         (void)XFillPolygon(XtDisplay(w),
                                             pixmap,
@@ -3161,12 +3162,13 @@ if (on_screen) {
                                             npoints);
                                     }
                                 }
-                                else {
+                                else { /* no polygon hole */
+#ifndef WITH_DBFAWK
                                     if (city_flag)
                                         (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
                                         (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
-
+#endif /* !WITH_DFBAWK */
                                     if (i >= 3) {
                                         (void)XFillPolygon(XtDisplay (w),
                                             pixmap,
@@ -3186,7 +3188,7 @@ if (on_screen) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
 
                                 // Draw a thicker border for city boundaries
-                                /* XXX - city_flag not set WITH_DBFAWK (not needed?) */
+#ifndef WITH_DBFAWK
                                 if (city_flag) {
                                     if (scale_y <= 64) {
                                         (void)XSetLineAttributes(XtDisplay(w), gc, 2, LineSolid, CapButt,JoinMiter);
@@ -3203,6 +3205,7 @@ if (on_screen) {
                                 else {
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
                                 }
+#endif /* !WITH_DBFAWK */
 
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
@@ -3212,7 +3215,6 @@ if (on_screen) {
                             }
                         }
                     }
-
                     // Free the storage that we allocated to hold
                     // the "hole" flags for the shape.
                     free(polygon_hole_storage);
@@ -3228,14 +3230,14 @@ if (on_screen) {
 // Done with drawing shapes, now draw labels
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // XXX - todo: center large polygon labels in the center (e.g. county boundary)
+// XXX find out why some labels are displaying that shouldn't w/label_level.
 
 #ifdef WITH_DBFAWK
                     temp = name;
 #else /* !WITH_DBFAWK */
-                    temp = "";
-
-                    /* XXX lake_flag, city_flag, etc. not WITH_DBFAWK */
                     /* labels come from dbfawk, not here... */
+
+                    temp = "";
                     if (lake_flag) {
                         if (map_color_levels && scale_y > 128)
                             skip_label++;
