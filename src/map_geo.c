@@ -278,7 +278,7 @@ void draw_geo_image_map (Widget w,
 #endif //FUZZYRASTER
     int do_check_trans = 0;  // do we bother checking for transparent colors
     long trans_color;    // what color to zap
-    int trans_skip;      // skip transparent pixel
+    int trans_skip = 0;  // skip transparent pixel
     int crop_x1=0, crop_x2=0, crop_y1=0, crop_y2=0; // pixel crop box
     int do_crop = 0;     // do we crop pixels
 //#define TIMING_DEBUG
@@ -1496,7 +1496,14 @@ void draw_geo_image_map (Widget w,
 #else   // HAVE_IMAGEMAGICK
                         (void)XSetForeground (XtDisplay (w), gc, XGetPixel (xi, map_x, map_y));
 #endif  // HAVE_IMAGEMAGICK
+
+
+#ifdef HAVE_IMAGEMAGICK
                         if ( pixel_pack[l].opacity == 0 && !trans_skip  ) // skip transparent
+#else   // HAVE_IMAGEMAGICK
+                        if (!trans_skip)    // skip transparent
+#endif  // HAVE_IMAGEMAGICK
+
                             (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
                     } // check map boundaries in y direction
                 }
