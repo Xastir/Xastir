@@ -305,12 +305,27 @@ First Time Install:
        -----------------------------
        The best way to install libtiff is to get it from the ftp site
        for your Linux distribution.  You must have libtiff 3.5.5 or
-       newer for libgeotiff 1.1.x to compile and run correctly, and libtiff
-       3.6.0 or newer for libgeotiff 1.2.x to work correctly.
+       newer for libgeotiff 1.1.x to compile and run correctly, or libtiff
+       3.6.0 BETA or newer for libgeotiff 1.2.x to work correctly.
 
-       If you are compiling 1.1.x from source, you must use "make
-       install_private", because the private include files are required for
-       libgeotiff to compile and work correctly.
+       If you're using libtiff 3.6.0 BETA or newer, things are simplified.
+       Just use libgeotiff 1.2.x or newer and they should play nicely together.
+
+       ---------
+       Notes for older libtiff (less than 3.6.0 BETA):
+
+           If you are compiling libtiff from source, you must use
+           "make install_private" because the libtiff private include files
+           are required for libgeotiff to compile and work correctly.
+
+           You may also snag just the include files listed below from the
+           source distribution or the source RPM, and copy them manually to
+           their destinations.
+
+           The errors you'll get if you don't match up the older libtiff and
+           libgeotiff by way of the include files:  Xastir will segfault when
+           it tries to read a geotiff file.
+       ---------
 
        If you upgrade libtiff, check that programs like XV, ImageMagick, and
        the Gimp still run (if you have these programs installed).  Graphics
