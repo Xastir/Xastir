@@ -3246,7 +3246,7 @@ extern void draw_ogr_map(Widget w,
 
 struct {
     char *ext;
-    enum {none=0, map, pdb, tif, geo, gnis, shp, tiger, mapinfo, dgn, sdts} type;
+    enum {none=0, map, pdb, tif, geo, gnis, shp, tiger, mapinfo, dgn, sdts, s57} type;
     void (*func)(Widget w,
                char *dir,
                char *filenm,
@@ -3298,6 +3298,7 @@ struct {
   {"mif",mapinfo,draw_ogr_map}, // MapInfo
   {"dgn",dgn,draw_ogr_map},     // DGN
   {"ddf",sdts,draw_ogr_map},    // SDTS
+  {"s57",s57,draw_ogr_map},     // S57
 #endif  // HAVE_LIBGDAL
 
   {NULL,none,NULL}
