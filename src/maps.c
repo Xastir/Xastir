@@ -837,11 +837,9 @@ void draw_grid(Widget w) {
 // the major grid boundaries have been shifted, the meridian used
 // for drawing the subgrids is still based on six-degree boundaries
 // (as if the major grid hadn't been shifted at all).  That means we
-// are drawing the subgrids correctly as it stands now.  The below
-// code handles the irregular zones properly
-// (31V/32V/31X/33X/35X/37X). It assumes regular 6 degree zone
-// medians.  The irregular zones have sizes of 3/9/12 degrees
-// (width) instead of 6 degrees.
+// are drawing the subgrids correctly as it stands now for the
+// irregular grids (31V/32V/31X/33X/35X/37X).  The irregular zones
+// have sizes of 3/9/12 degrees (width) instead of 6 degrees.
 
 
         // Now setup for drawing zone grid(s)
@@ -886,16 +884,12 @@ void draw_grid(Widget w) {
 //WE7U
 // Commenting out the below line makes lines near major zone
 // boundaries worse.  Adding another identical line makes the line
-// drawing problem reverse direction.  It's probably a clue.  The
-// problem appears/disappears at different zoom levels, perhaps
-// having something to do with trying to attach drawing points that
-// are above/below our current view?
-//
-// It appears that the horizontal grid lines get messed up in cases
+// drawing problem reverse direction.  It's probably a clue.  It
+// appears that the horizontal grid lines get messed up in cases
 // where the top horizontal line doesn't make it all the way across
 // the screen before it goes out of view.  That's a major clue!
 // Looks like the left end of it being above the current view is
-// what causes it.
+// concurrent with the problem showing up.
 //
         n[0] += utm_grid_spacing_m;
 
@@ -905,10 +899,12 @@ void draw_grid(Widget w) {
         n[1] = n[0];
 
         while (done < 2) { // 1=done with a zone, 2=completely done
+
+            // Initially, done==0, so we skip this part the first
+            // time through.
+            //
             if (done == 1) {
 
-                // Initially, boundary_x = 0 (after we call
-                // utm_grid_clear).
                 xx = x_long_offset + ((utm_grid.zone[zone].boundary_x + 1) * scale_x);
 
                 yy = y_lat_offset;
@@ -1094,7 +1090,7 @@ void draw_grid(Widget w) {
 
                 // Check last built row to see if it is all off
                 // screen
-                done = 1;
+                done = 1;   // Assume we're done with this zone
                 for (i=0; i < utm_grid.zone[zone].row[row].npoints; i++) {
                     if (utm_grid.zone[zone].row[row].point[i].y <= screen_height)
                         done = 0;
@@ -1102,6 +1098,9 @@ void draw_grid(Widget w) {
 
                 e[1]  = e[0];               // carriage return
                 n[1] -= utm_grid_spacing_m; // line feed
+// Yea, your comments are real funny Olivier!  Gets the point across
+// though.
+
                 row++;
                 if (row >= UTM_GRID_MAX_COLS_ROWS)
                     done = 1;
