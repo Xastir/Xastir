@@ -289,7 +289,9 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
 
 
 void wx_alert_update_list(void) {
-    int n, item_count;
+    int nn;         // index into alert table
+    int ii;         // index into dialog lines
+    int item_count; // max dialog lines
     char temp[600];
     XmString item;
 
@@ -300,59 +302,71 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
         // Get the previous alert count from the alert list window
         XtVaGetValues(wx_alert_list, XmNitemCount, &item_count, NULL);
 
-        // Step through the alert list.  Create a string for each entry.
-        for (n = 0; n < alert_list_count; n++) {
+        ii = 0; // Dialog item number
+
+        // Step through the alert list.  Create a string for each
+        // non-expired/non-blank entry.
+        for (nn = 0; nn < alert_list_count; nn++) {
             char status[10];
 
             // AFGNPW      NWS-WARN    Until: 191500z   AK_Z213   WIND               P7IAA
             // TSATOR      NWS-ADVIS   Until: 190315z   OK_C127   TORNDO             H2VAA
             //xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %-7s   %-7s   %-20s   %s",
 
-            if (sec_now() >= alert_list[n].expiration)
-                xastir_snprintf(status, sizeof(status), "Exp");
-            else
-                xastir_snprintf(status, sizeof(status), "   ");
+            // Expire old alerts (zero the title string)
+            if (sec_now() >= alert_list[nn].expiration) {
+                //xastir_snprintf(status, sizeof(status), "Exp");
+                alert_list[nn].title[0] = '\0'; // Clear this alert
+            }
 
+            if (alert_list[nn].title[0] == '\0') {
+                continue;   // Skip this alert (it's empty!)
+            }
+
+            xastir_snprintf(status, sizeof(status), "   ");
             xastir_snprintf(temp, sizeof(temp),
                     "%-9s%s   %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %s   %s%s%s%s",
-                    alert_list[n].from,
-                    alert_list[n].seq,
-                    alert_list[n].to,
-                    alert_list[n].issue_date_time[0],
-                    alert_list[n].issue_date_time[1],
-                    alert_list[n].issue_date_time[2],
-                    alert_list[n].issue_date_time[3],
-                    alert_list[n].issue_date_time[4],
-                    alert_list[n].issue_date_time[5],
-                    alert_list[n].activity[0],
-                    alert_list[n].activity[1],
-                    alert_list[n].activity[2],
-                    alert_list[n].activity[3],
-                    alert_list[n].activity[4],
-                    alert_list[n].activity[5],
+                    alert_list[nn].from,
+                    alert_list[nn].seq,
+                    alert_list[nn].to,
+                    alert_list[nn].issue_date_time[0],
+                    alert_list[nn].issue_date_time[1],
+                    alert_list[nn].issue_date_time[2],
+                    alert_list[nn].issue_date_time[3],
+                    alert_list[nn].issue_date_time[4],
+                    alert_list[nn].issue_date_time[5],
+                    alert_list[nn].activity[0],
+                    alert_list[nn].activity[1],
+                    alert_list[nn].activity[2],
+                    alert_list[nn].activity[3],
+                    alert_list[nn].activity[4],
+                    alert_list[nn].activity[5],
                     status,
-                    alert_list[n].title,
-                    alert_list[n].alert_tag,
-                    alert_list[n].desc0,
-                    alert_list[n].desc1,
-                    alert_list[n].desc2,
-                    alert_list[n].desc3);
+                    alert_list[nn].title,
+                    alert_list[nn].alert_tag,
+                    alert_list[nn].desc0,
+                    alert_list[nn].desc1,
+                    alert_list[nn].desc2,
+                    alert_list[nn].desc3);
 
 
             item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
 
             // It looks like if we are higher than 'item_count', it must be a new entry
             // that we haven't written to the window yet.  Add it.
-            if (item_count <= n)
+            if (item_count <= ii)
                 XmListAddItemUnselected(wx_alert_list, item, 0);
             else    // Replace it in the window.  Note: This will re-order the list each time.
-                XmListReplaceItemsPosUnselected(wx_alert_list, &item, 1, n+1);
+                XmListReplaceItemsPosUnselected(wx_alert_list, &item, 1, ii+1);
+            ii++;
 
             XmStringFree(item);
         }
         // If we have fewer alerts now, delete the extras from the window
-        if (alert_list_count < item_count)
-            XmListDeleteItemsPos(wx_alert_list, item_count - alert_list_count, alert_list_count+1);
+        //if (alert_list_count < item_count)
+        //    XmListDeleteItemsPos(wx_alert_list, item_count - alert_list_count, alert_list_count+1);
+        if ((ii+1) < item_count)
+            XmListDeleteItemsPos(wx_alert_list, item_count - (ii+1), ii+2);
 
 end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 

@@ -458,8 +458,10 @@ void alert_print_list(void) {
         }
     }
 
+    // Clear out expired alerts (zero the title string)
     if (entry->expiration < time(NULL)) {
         //fprintf(stderr,"Expired, current: %lu, alert: %lu\n", time(NULL), entry->expiration );
+        entry->title[0] = '\0'; // Clear this alert
     }
 
     // Check for non-zero alert title, non-expired alert time
