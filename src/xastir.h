@@ -28,6 +28,24 @@
 #define _XASTIR_H
 
 
+
+// Defines for including the libgc garbage collection library.
+// Remember to add "-lgc" to the LIBS line in src/Makefile as well.
+// This enables automatic garbage collection of unused memory,
+// similar to the garbage collection in Java.
+//
+//#define WITH_LIBGC
+#ifdef WITH_LIBGC
+  #include <malloc.h>
+  #include <gc.h>
+  #define malloc(x) GC_malloc(x)
+  #define calloc(n,x) GC_malloc((n)*(x))
+  #define realloc(p,x) GC_realloc((p),(x))
+  #define free(x) (x) = NULL
+#endif  // WITH_LIBGC
+
+
+
 #define SERIAL_KISS_RELAY_DIGI
 
 
