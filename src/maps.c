@@ -10555,11 +10555,14 @@ map_index_record *map_index_head = NULL;
 // inserted in alphanumerical order.  We mark directories in the
 // index with a '/' on the end of the name, and zero entries for
 // top/bottom/left/right.
+// The input directory to this routine MUST have a '/' character on
+// the end of it.  This is how we differentiate directories from
+// files in the list.
 void index_update_directory(char *directory) {
 
     map_index_record *current = map_index_head;
     map_index_record *previous = map_index_head;
-    map_index_record *temp_record = map_index_head;
+    map_index_record *temp_record = NULL;
     int done = 0;
     int i;
 
@@ -10568,6 +10571,7 @@ void index_update_directory(char *directory) {
 
     // Check for initial bad input
     if ( (directory[0] == '\0')
+            || (directory[strlen(directory) - 1] != '/')
             || ( (directory[1] == '/') && (strlen(directory) == 1)) ) {
         printf("index_update_directory: Bad input: %s\n",directory);
         return;
@@ -10583,6 +10587,7 @@ void index_update_directory(char *directory) {
     }
     // Check if the string is _now_ bogus
     if ( (directory[0] == '\0')
+            || (directory[strlen(directory) - 1] != '/')
             || ( (directory[1] == '/') && (strlen(directory) == 1))) {
         printf("index_update_directory: Bad input: %s\n",directory);
         return;
@@ -10699,13 +10704,14 @@ void index_update_xastir(char *filename,
 
     map_index_record *current = map_index_head;
     map_index_record *previous = map_index_head;
-    map_index_record *temp_record = map_index_head;
+    map_index_record *temp_record = NULL;
     int done = 0;
     int i;
 
 
     // Check for initial bad input
-    if (filename[0] == '\0') {
+    if ( (filename[0] == '\0')
+            || (filename[strlen(filename) - 1] == '/') ) {
         printf("index_update_xastir: Bad input: %s\n",filename);
         return;
     }
@@ -10853,7 +10859,7 @@ void index_update_ll(char *filename,
 
     map_index_record *current = map_index_head;
     map_index_record *previous = map_index_head;
-    map_index_record *temp_record = map_index_head;
+    map_index_record *temp_record = NULL;
     int done = 0;
     unsigned long temp_left, temp_right, temp_top, temp_bottom;
     int ok;
@@ -10861,7 +10867,8 @@ void index_update_ll(char *filename,
 
 
     // Check for initial bad input
-    if (filename[0] == '\0') {
+    if ( (filename[0] == '\0')
+            || (filename[strlen(filename) - 1] == '/') ) {
         printf("index_update_ll: Bad input: %s\n",filename);
         return;
     }
