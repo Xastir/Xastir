@@ -127,10 +127,11 @@ void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t s
     struct tm *tmp;
     time_t timehd;
     char time_str[20];
-    timehd=sec_heard;
-    tmp = localtime(&timehd);
     char *temp_ptr;
 
+
+    timehd=sec_heard;
+    tmp = localtime(&timehd);
 
     if ( (packet_message != NULL) && (strlen(packet_message) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 1)
