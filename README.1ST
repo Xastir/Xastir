@@ -1084,6 +1084,11 @@ Getting Data Files for Xastir:
       and gisdatadepot.com (from their "free data" link).  Lot's of useful
       stuff at these sites, just look around.
 
+      Also get the usgs_24kgrid.zip file from gisdatadepot.com.  This
+      file provides a grid of all of the 7.5' maps and their names
+      for the U.S.  Check for it under the "Index Grids" link on
+      their web pages.
+
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget installed, .geo files for NWS radars are
@@ -1129,7 +1134,7 @@ Getting Data Files for Xastir:
       The map files must end in ".gnis" to be used by Xastir, and must be in
       comma delimited/double quotes format.  These are readily available from
       http://geonames.usgs.gov/ with such filenames as "AZ.deci.gz". Uncompress
-      them and rename them something like "AX.gnis".  You must have an
+      them and rename them something like "AZ.gnis".  You must have an
       xastir/GNIS directory (or link) for the search feature to be able to find
       these files.  See above for where to put the GNIS files and how to create
       the symlink so that both mapping and searching of GNIS files will
