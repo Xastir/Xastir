@@ -960,8 +960,8 @@ void draw_polygon_with_mask(Region mask,
 // Hard-coded drawing attributes
 (void)XSetLineAttributes (XtDisplay(da), gc_temp, 0, LineSolid, CapButt,JoinMiter);
 //(void)XSetForeground(XtDisplay(da), gc_temp, colors[(int)0x08]);  // black
-//(void)XSetForeground(XtDisplay(da), gc_temp, colors[(int)0x1a]);  // Steel Blue
-(void)XSetForeground(XtDisplay(da), gc_temp, colors[(int)0x0e]);  // yellow
+(void)XSetForeground(XtDisplay(da), gc_temp, colors[(int)0x1a]);  // Steel Blue
+//(void)XSetForeground(XtDisplay(da), gc_temp, colors[(int)0x0e]);  // yellow
 
     // Set the clip-mask into the GC.  This GC is now ruined for
     // other purposes, so destroy it when we're done drawing this
@@ -1423,7 +1423,153 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
     }
 }
 
+
+
+
+
+// guess_vector_attributes()
+//
+// Feel free to change the name.  At the moment it's somewhat
+// appropriate, but I would hope that in the future it won't be.
+// This should tie in nicely to the dbfawk stuff, and perhaps other
+// schemes for the user to determine drawing attributes.  Basically,
+// if dbfawk is compiled in, go do that instead of doing what this
+// routine does.
+//
+// Note that draw_polygon_with_mask() still has some hard-coded
+// attributes, because it creates gc_temp in order to do the
+// regions.  We need to incorporate that somehow into this "guess"
+// routine as well, perhaps by having it call this routine directly?
+// By creating gc_temp ahead-of-time and keeping it around
+// throughout the draw, passing the GC to this routine also?
+//
+// Depending on what needs to be done for different file
+// types/layers/geometries, we might want to break this function up
+// into several, so that we can optimize for speed.  If something
+// only needs to be set once per file, or once per layer, do so.
+// Don't set it over and over again, once per object drawn.
+//
+//
+// Set attributes based on what sort of file/layer/shape we're
+// dealing with.  driver_type may be any of:
+//
+// "AVCbin"
+// "DGN"
+// "FMEObjects Gateway"
+// "GML"
+// "Memory"
+// "MapInfo File"
+// "UK .NTF"
+// "OCI"
+// "ODBC"
+// "OGDI"
+// "PostgreSQL"
+// "REC"
+// "S57"
+// "SDTS"
+// "ESRI Shapefile"
+// "TIGER"
+// "VRT"
+//
+// Shapefiles:  If Mapshots or ESRI tiger->Shapefiles, guess the
+// coloring and line widths based on the filename and the associated
+// field contents.
+//
+// SDTS:  Guess the coloring/line widths based on the filename and
+// the layer.
+//
+// TIGER:  Guess coloring/line widths based on filename/layer.
+//
+// MapInfo:  Guess based on layer?
+//
+// DGN: ??
+//
+void guess_vector_attributes( Widget w,
+                              const char *driver_type,
+                              char *full_filename,
+                              OGRLayerH layer,
+                              int geometry_type ) {
+
+
+/*
+    switch (driver_type) {
+        default:
+            break;
+    }
+
  
+    switch (layer) {
+        case 0:
+        case 1:
+        default:
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+            break;
+    }
+*/
+
+
+    switch (geometry_type) {
+
+
+        case 1:             // Point
+        case 4:             // MultiPoint
+        case 0x80000001:    // Point25D
+        case 0x80000004:    // MultiPoint25D
+
+            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+            break;
+
+
+        case 2:             // LineString (polyline)
+        case 5:             // MultiLineString
+        case 0x80000002:    // LineString25D
+        case 0x80000005:    // MultiLineString25D
+
+            if (strcasecmp(driver_type,"SDTS") == 0) {
+// DEBUG:
+// Determine whether it is a hypsography layer we're dealing with.
+                // Set to yellow for SDTS hypsography layer (contours)
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+            }
+            else {
+// DEBUG:
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+            }
+            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+            break;
+
+
+        case 3:             // Polygon
+        case 6:             // MultiPolygon
+        case 0x80000003:    // Polygon25D
+        case 0x80000006:    // MultiPolygon25D
+
+            if (strcasecmp(driver_type,"SDTS") == 0) {
+// DEBUG:
+// Determine whether it is a hypsography layer we're dealing with.
+                // Set to yellow for SDTS hypsography layer (contours)
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+            }
+            else {
+// DEBUG:
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
+            }
+            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+            break;
+
+
+        case 7:             // GeometryCollection
+        case 0x80000007:    // GeometryCollection25D
+        default:            // Unknown/Unimplemented
+
+            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+            break;
+    }
+}
+
+
 
 
 
@@ -1462,7 +1608,8 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 // *) Allow user to select layers to draw/ignore.  Very important
 //    for those sorts of files that provide all layers (i.e. Tiger &
 //    SDTS).
-// *) Weather alert tinted polygons, draw to the correct pixmap.
+// *) Weather alert tinted polygons, draw to the correct pixmap,
+//    draw only those shapes called for, not the entire map.
 // *) Fast Extents:  We now pass a variable to the draw functions
 //    that tells whether we can do fast extents, but we still need
 //    to compute our own extents after we have the points for a
@@ -1518,6 +1665,7 @@ void draw_ogr_map(Widget w,
     int i, numLayers;
     char full_filename[300];
     const char *ptr;
+    const char *driver_type;
     int no_spatial = 1;
     int geographic = 0;
     int projected = 0;
@@ -1562,8 +1710,8 @@ void draw_ogr_map(Widget w,
     if (debug_level & 16)
         fprintf(stderr,"Opened datasource\n");
 
-    ptr = OGR_Dr_GetName(driver);
-    fprintf(stderr,"%s: ", ptr);
+    driver_type = OGR_Dr_GetName(driver);
+    fprintf(stderr,"%s: ", driver_type);
 
     // Get name/path.  Less than useful since we should already know
     // this.
@@ -2352,11 +2500,11 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 case 0x80000001:    // Point25D
                 case 0x80000004:    // MultiPoint25D
 
-//WE7U
-// Hard-coded drawing attributes
-(void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]);  // white
+                    guess_vector_attributes(w,
+                        driver_type,
+                        full_filename,
+                        layer,
+                        geometry_type);
 
                     Draw_OGR_Points(geometryH,
                         1,
@@ -2368,11 +2516,11 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 case 0x80000002:    // LineString25D
                 case 0x80000005:    // MultiLineString25D
 
-//WE7U
-// Hard-coded drawing attributes
-(void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+                    guess_vector_attributes(w,
+                        driver_type,
+                        full_filename,
+                        layer,
+                        geometry_type);
 
                     Draw_OGR_Lines(geometryH,
                         1,
@@ -2385,12 +2533,11 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
 
-//WE7U
-// Hard-coded drawing attributes
-(void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
-(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+                    guess_vector_attributes(w,
+                        driver_type,
+                        full_filename,
+                        layer,
+                        geometry_type);
 
                     Draw_OGR_Polygons(geometryH,
                         1,
