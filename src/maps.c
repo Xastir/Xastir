@@ -3370,6 +3370,14 @@ extern void draw_gdal_map(Widget w,
                    u_char alert_color,
                    int destination_pixmap,
                    int draw_filled);
+
+extern void draw_ogr_map(Widget w,
+                   char *dir,
+                   char *filenm,
+                   alert_entry *alert,
+                   u_char alert_color,
+                   int destination_pixmap,
+                   int draw_filled);
 #endif /* HAVE_LIBGDAL */
 
  struct {
