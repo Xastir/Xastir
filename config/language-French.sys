@@ -356,6 +356,7 @@ WPUPCFTM05|Délai de suppression d'affichage d'une station (heures)||
 WPUPCFTM06|Intervalle de lecture GPS (sec)||
 WPUPCFTM07|Délai de suppression d'une station (jours)||#'
 WPUPCFTM08|Expiration de point estimé (min)||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configurer système des coordonnées||

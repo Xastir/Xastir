@@ -5180,7 +5180,14 @@ void port_write(int port) {
                             }
                         }
 //fprintf(stderr,"Char pacing ");
-                        usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
+//                        usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
+                        if (serial_char_pacing > 0) {
+                            // Character pacing.  Delay in between
+                            // each character in milliseconds.
+                            // Convert to microseconds for this
+                            // usleep() call .
+                          usleep(serial_char_pacing * 1000);
+                        }
                         break;
 
                     // Use this block for all other interfaces where

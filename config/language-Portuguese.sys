@@ -360,6 +360,7 @@ WPUPCFTM05|Tempo para limpar estacao (horas)||
 WPUPCFTM06|Intervalo para verificar GPS (seg)||
 WPUPCFTM07|Tempo para apagar estacao (dias)||
 WPUPCFTM08|Tempo limite para Dead-Reckoning (min)||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
 #
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||

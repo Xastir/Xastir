@@ -367,6 +367,7 @@ WPUPCFTM05|Tijd Tot Verdwijnen Van Kaart (uren)||
 WPUPCFTM06|GPS Status Controle Interval (sec)||
 WPUPCFTM07|Tijd Tot Wissen Station (dagen)||
 WPUPCFTM08|Timeout Berekening Geschatte Waarden (min)||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer Coordinaten Stelsel||

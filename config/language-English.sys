@@ -357,6 +357,7 @@ WPUPCFTM05|Station Clear Time (hours)||
 WPUPCFTM06|GPS Check Interval (sec)||
 WPUPCFTM07|Station Delete Time (days)||
 WPUPCFTM08|Dead-Reckoning Timeout (min)||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||

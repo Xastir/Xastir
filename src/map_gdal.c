@@ -75,7 +75,10 @@
 #ifdef HAVE_LIBGDAL
 
 #warning
-#warning GDAL/OGR library support not implemented yet!
+#warning
+#warning GDAL/OGR library support is not fully implemented yet!
+#warning Only very preliminary TIGER/Line support has been coded to date.
+#warning
 #warning
 
 // WE7U - Getting rid of stupid compiler warnings in GDAL
@@ -419,7 +422,7 @@ scr_s_x_min = 0;
 // INDEX_NO_TIMESTAMPS, then we are indexing the file (finding the
 // extents) instead of drawing it.
 //
-// Currently hacked to force extents to world-size.
+// Currently hacked to force index extents to world-size.
 //
 void draw_ogr_map(Widget w,
                    char *dir,
@@ -440,10 +443,7 @@ void draw_ogr_map(Widget w,
         dir,
         filenm);
 
-    /* Register all OGR drivers */
-    OGRRegisterAll();
-
-    /* Open data source */
+    // Open data source
     datasource = OGROpen(full_filename, 0 /* bUpdate */, NULL);
 
     if (datasource == NULL)
@@ -469,7 +469,7 @@ void draw_ogr_map(Widget w,
         statusline(status_text,0);       // Indexing ...
 
         // Use the OGR "envelope" function to get the extents for
-        // the entire file.  Remember that it could be in
+        // the entire file or dataset.  Remember that it could be in
         // state-plane coordinate system or something else equally
         // strange.  Make sure we convert it to WGS84/lat/long
         // before saving the index.
@@ -504,8 +504,14 @@ void draw_ogr_map(Widget w,
 // it's completely outside our viewport.
 
 
-    /* Loop through layers and dump their contents */
+// Hard-coded line attributes, currently used for the entire drawing
+// process.
+(void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 
+
+    // Loop through layers and dump their contents
+    //
     numLayers = OGR_DS_GetLayerCount(datasource);
     for(i=0; i<numLayers; i++)
     {
@@ -535,25 +541,25 @@ void draw_ogr_map(Widget w,
         }
 
 
-        /* Dump info about this layer */
-        layerDefn = OGR_L_GetLayerDefn( layer );
-        if (layerDefn != NULL) {
-            numFields = OGR_FD_GetFieldCount( layerDefn );
+        // Dump info about this layer
+//        layerDefn = OGR_L_GetLayerDefn( layer );
+//        if (layerDefn != NULL) {
+//            numFields = OGR_FD_GetFieldCount( layerDefn );
 
 //            fprintf(stderr,"\n===================\n");
 //            fprintf(stderr,"Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
 
-            for(j=0; j<numFields; j++)
-            {
-                OGRFieldDefnH fieldDefn;
+//            for(j=0; j<numFields; j++)
+//            {
+//                OGRFieldDefnH fieldDefn;
 
-                fieldDefn = OGR_FD_GetFieldDefn( layerDefn, j );
+//                fieldDefn = OGR_FD_GetFieldDefn( layerDefn, j );
 //                fprintf(stderr," Field %d: %s (%s)\n", 
 //                       j, OGR_Fld_GetNameRef(fieldDefn), 
 //                       OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
-            }
+//            }
 //            fprintf(stderr,"\n");
-        }
+//        }
 
 
 
@@ -599,7 +605,7 @@ fprintf(stderr,"4\n");
 //        if ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
 //fprintf(stderr,"Starting feature loop\n");
         while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
-            OGRSpatialReferenceH spatial;
+//            OGRSpatialReferenceH spatial;
             OGRGeometryH shape;
             int num, ii;
             double X1, Y1, Z1, X2, Y2, Z2;
@@ -625,7 +631,7 @@ fprintf(stderr,"4\n");
 // let the library pass us only those that fit.
 
 // Causes segfaults on some tiger files
-            spatial = OGR_G_GetSpatialReference(shape);
+//            spatial = OGR_G_GetSpatialReference(shape);
 
             // This works for a point or a linestring only.
 // Causes segfaults on some tiger files
@@ -669,9 +675,6 @@ fprintf(stderr,"4\n");
 
             if (num > 0) {
 
-(void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
-(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-
                 if (!polygon) {
                     // Draw lines/points
 
@@ -712,10 +715,10 @@ fprintf(stderr,"4\n");
         }
 //fprintf(stderr,"Done with feature loop\n");
  
-        /* No need to free layer handle, it belongs to the datasource */
+        // No need to free layer handle, it belongs to the datasource
     }
 
-    /* Close data source */
+    // Close data source
     OGR_DS_Destroy( datasource );
 }
 

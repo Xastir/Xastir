@@ -202,6 +202,7 @@ gid_t egid;
 
 FILE *file_wx_test;
 
+int serial_char_pacing;  // Inter-char delay in ms for serial ports.
 int dtr_on = 1;
 time_t sec_last_dtr = (time_t)0;
 
@@ -904,6 +905,7 @@ Widget posit_interval = (Widget)NULL;
 Widget gps_interval = (Widget)NULL;
 Widget dead_reckoning_time = (Widget)NULL;
 Widget object_item_interval = (Widget)NULL;
+Widget serial_pacing_time = (Widget)NULL;
 
 time_t GPS_time;                /* gps time out */
 time_t last_statusline;         // last update of statusline or 0 if inactive
@@ -16988,6 +16990,9 @@ void Configure_timing_change_data(Widget widget, XtPointer clientData, XtPointer
     // Set the new GPS rate into effect immediately
     sec_next_gps = sec_now() + gps_time;
 
+    // Set the serial port inter-character delay
+    XmScaleGetValue(serial_pacing_time, &serial_char_pacing);     // Milliseconds
+
     redraw_on_new_data=2;
     Configure_timing_destroy_shell(widget,clientData,callData);
 }
@@ -17217,6 +17222,32 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(dead_reckoning_timeout / 60),
                 XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM08"), length,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // Serial Pacing Time (delay between each serial character)
+        serial_pacing_time = XtVaCreateManagedWidget("Serial Pacing Time (ms)",
+                xmScaleWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, removal_time,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 5,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 0,      // Zero
+                XmNmaximum, 50,     // Fifty milliseconds
+                XmNshowValue, TRUE,
+                XmNvalue, (int)(serial_char_pacing),
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPCFTM09"), length,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);

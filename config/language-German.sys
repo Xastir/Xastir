@@ -363,6 +363,7 @@ WPUPCFTM05|Alte Station anzeigen für [Std]||
 WPUPCFTM06|GPS Abfrage alle [Sek]||
 WPUPCFTM07|Station löschen nach [Tage]||
 WPUPCFTM08|Timeout Pos-Voraussage [Min]||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||

@@ -360,6 +360,7 @@ WPUPCFTM05|Limpiar Tiempo de la Estación (horas)||
 WPUPCFTM06|Chequeo Intérvalo del GPS (segundos)||
 WPUPCFTM07|Borrar Tiempo de la Estación (días)||
 WPUPCFTM08|Descanso Conteo-Muerto (minutos)||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
 #
 # Configurar Sistema de Coordenada"
 WPUPCFC001|Configurar Sistema de Coordenada||

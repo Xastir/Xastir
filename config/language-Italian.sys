@@ -358,6 +358,7 @@ WPUPCFTM05|Clear Time della stazione (ore)||
 WPUPCFTM06|Intervallo controllo GPS (sec)||
 WPUPCFTM07|Tempo eliminazione stazione (giorni)||
 WPUPCFTM08|Fuori tempo Ricalcolo Assoluto (min)||
+WPUPCFTM09|Serial Inter-Char Delay (ms)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configura Sistema Coordinate||
