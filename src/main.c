@@ -4203,7 +4203,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget sep;
     Widget filepane, configpane, exitpane, mappane, viewpane,
         stationspane, messagepane, ifacepane, helppane,
-        filter_data_pane, filter_display_pane;
+        filter_data_pane, filter_display_pane, map_config_pane;
 
     Widget trackme_frame, measure_frame, move_frame, display_button,
         track_button, download_trail_button, station_clear_button,
@@ -4222,7 +4222,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         map_grid_button, map_levels_button, map_labels_button,
         map_fill_button, coordinate_calculator_button,
         Map_background_color_Pane, map_background_button,
-        map_pointer_menu_button,
+        map_pointer_menu_button, map_config_button,
 #if !defined(NO_GRAPHICS)
         Raster_intensity_Pane, raster_intensity_button,
 #if defined(HAVE_IMAGEMAGICK)
@@ -4781,6 +4781,20 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
+    map_config_pane  = XmCreatePulldownMenu(mappane,
+            "map_config_pane",
+            al,
+            ac);
+
+    map_config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
+            xmCascadeButtonGadgetClass,
+            mappane,
+            XmNsubMenuId,map_config_pane,
+            XmNmnemonic,langcode_hotkey("PULDNFI001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
     (void)XtVaCreateManagedWidget("create_appshell sep2",
             xmSeparatorGadgetClass,
             mappane,
@@ -4926,22 +4940,15 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
           NULL);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep2a",
-            xmSeparatorGadgetClass,
-            mappane,
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
-
-    Map_background_color_Pane = XmCreatePulldownMenu(mappane,
+    // These go into the map config submenu
+    Map_background_color_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell map_background_color",
             al,
             ac);
 
     map_background_button = XtVaCreateManagedWidget(langcode("PULDNMP005"),
             xmCascadeButtonWidgetClass,
-            mappane,
+            map_config_pane,
             XmNsubMenuId, Map_background_color_Pane,
             XmNmnemonic, langcode_hotkey("PULDNMP005"),
             MY_FOREGROUND_COLOR,
@@ -5046,14 +5053,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_bgcolor[9],  XmNactivateCallback,Map_background,"9");
 
 #if !defined(NO_GRAPHICS)
-    Raster_intensity_Pane = XmCreatePulldownMenu(mappane,
+    Raster_intensity_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell raster_intensity",
             al,
             ac);
 
     raster_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),
             xmCascadeButtonWidgetClass,
-            mappane,
+            map_config_pane,
             XmNsubMenuId,
             Raster_intensity_Pane,
             XmNmnemonic, langcode_hotkey("PULDNMP008"),
@@ -5152,7 +5159,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #if defined(HAVE_IMAGEMAGICK)
     // Adjust Gamma Correction
     gamma_adjust_button = XtVaCreateManagedWidget(langcode("GAMMA001"),
-            xmPushButtonWidgetClass, mappane,
+            xmPushButtonWidgetClass, map_config_pane,
             XmNmnemonic,langcode_hotkey("GAMMA001"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
@@ -5163,20 +5170,20 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     // map label font select
     map_font_button = XtVaCreateManagedWidget(langcode("PULDNMP025"),
-            xmPushButtonWidgetClass, mappane,
+            xmPushButtonWidgetClass, map_config_pane,
             XmNmnemonic,langcode_hotkey("PULDNMP025"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(map_font_button, XmNactivateCallback, Map_font, NULL);
 
-    Map_station_label_Pane = XmCreatePulldownMenu(mappane,
+    Map_station_label_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell map_station_label",
             al,
             ac);
     map_station_label_button = XtVaCreateManagedWidget(langcode("PULDNMP006"),
             xmCascadeButtonWidgetClass,
-            mappane,
+            map_config_pane,
             XmNsubMenuId, Map_station_label_Pane,
             XmNmnemonic,langcode_hotkey("PULDNMP006"),
             MY_FOREGROUND_COLOR,
@@ -5208,13 +5215,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_station_label1,   XmNactivateCallback,Map_station_label,"1");
     XtAddCallback(map_station_label2,   XmNactivateCallback,Map_station_label,"2");
 
-    Map_icon_outline_Pane = XmCreatePulldownMenu(mappane,
+    Map_icon_outline_Pane = XmCreatePulldownMenu(map_config_pane,
             "create_appshell map_icon_outline",
             al,
             ac);
     map_icon_outline_button = XtVaCreateManagedWidget(langcode("PULDNMP026"),
             xmCascadeButtonWidgetClass,
-            mappane,
+            map_config_pane,
             XmNsubMenuId, Map_icon_outline_Pane,
             XmNmnemonic,langcode_hotkey("PULDNMP026"),
             MY_FOREGROUND_COLOR,
@@ -5258,7 +5265,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #if defined(HAVE_IMAGEMAGICK)
     tiger_config_button= XtVaCreateManagedWidget(langcode("PULDNMP020"),
             xmPushButtonGadgetClass,
-            mappane,
+            map_config_pane,
             XmNmnemonic,langcode_hotkey("PULDNMP020"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
