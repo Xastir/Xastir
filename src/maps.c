@@ -868,7 +868,7 @@ void draw_vector_ll(Widget w,
 //*****************************************************************
 void draw_grid(Widget w) {
     int coord;
-    unsigned char dash[2];
+    char dash[2];
     int i, j;
     char place_str[10], zone_str[10];
     long xx, yy, xx1, yy1;
@@ -5320,9 +5320,11 @@ void index_restore_from_file(void) {
 
                 // Do some reasonableness checking on the parameters
                 // we just parsed.
-//WE7U: Comparison is always false
-                if ( (temp_record->bottom < 0l)
-                        || (temp_record->bottom > 64800000l) ) {
+//WE7U: First comparison here is always false
+//                if ( (temp_record->bottom < 0l)
+//                        || (temp_record->bottom > 64800000l) ) {
+                if (temp_record->bottom > 64800000l) {
+ 
                     processed = 0;  // Reject this record
                     fprintf(stderr,"\nindex_restore_from_file: bottom extent incorrect %lu in map name:\n%s\n",
                             temp_record->bottom,
@@ -5330,27 +5332,33 @@ void index_restore_from_file(void) {
                 }
 
  
-//WE7U: Comparison is always false
-               if ( (temp_record->top < 0l)
-                        || (temp_record->top > 64800000l) ) {
+//WE7U: First comparison here is always false
+//               if ( (temp_record->top < 0l)
+//                        || (temp_record->top > 64800000l) ) {
+               if (temp_record->top > 64800000l) {
+ 
                     processed = 0;  // Reject this record
                     fprintf(stderr,"\nindex_restore_from_file: top extent incorrect %lu in map name:\n%s\n",
                             temp_record->top,
                             temp_record->filename);
                 }
 
-//WE7U: Comparison is always false
-                if ( (temp_record->left < 0l)
-                        || (temp_record->left > 129600000l) ) {
+//WE7U: First comparison here is always false
+//                if ( (temp_record->left < 0l)
+//                        || (temp_record->left > 129600000l) ) {
+                if (temp_record->left > 129600000l) {
+ 
                     processed = 0;  // Reject this record
                     fprintf(stderr,"\nindex_restore_from_file: left extent incorrect %lu in map name:\n%s\n",
                             temp_record->left,
                             temp_record->filename);
                 }
 
-//WE7U: Comparison is always false
-                if ( (temp_record->right < 0l)
-                        || (temp_record->right > 129600000l) ) {
+//WE7U: First comparison here is always false
+//                if ( (temp_record->right < 0l)
+//                        || (temp_record->right > 129600000l) ) {
+                if (temp_record->right > 129600000l) {
+ 
                     processed = 0;  // Reject this record
                     fprintf(stderr,"\nindex_restore_from_file: right extent incorrect %lu in map name:\n%s\n",
                             temp_record->right,

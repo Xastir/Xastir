@@ -591,7 +591,15 @@ static dbfawk_sig_info *Dbf_sigs = NULL;
 static awk_symtab *Symtbl = NULL;
 /* default dbfawk rule when no better signature match is found */
 static awk_rule dbfawk_default_rules[] = {
-    { 0, BEGIN, NULL, NULL, 0, 0, "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=8192; label_level=0",0 },
+      { 0,
+        BEGIN,
+        NULL,
+        NULL,
+        0,
+        0,
+        "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=8192; label_level=0",
+        0,
+        0 },
 };
 #define dbfawk_default_nrules (sizeof(dbfawk_default_rules)/sizeof(dbfawk_default_rules[0]))
 static dbfawk_sig_info *dbfawk_default_sig = NULL;
@@ -1450,7 +1458,8 @@ void draw_shapefile_map (Widget w,
     //       or if we have labels turned on which resets our color to black.
     if (weather_alert_flag) {   /* XXX */
         char xbm_path[MAX_FILENAME];
-        int _w, _h, _xh, _yh;
+        unsigned int _w, _h;
+        int _xh, _yh;
         int ret_val;
 
         // This GC is used for weather alerts (writing to the
@@ -1500,8 +1509,14 @@ void draw_shapefile_map (Widget w,
 
         (void)XSetLineAttributes(XtDisplay(w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
         XFreePixmap(XtDisplay(w), pixmap_wx_stipple);
-        ret_val = XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
-                        xbm_path, &_w, &_h, &pixmap_wx_stipple, &_xh, &_yh);
+        ret_val = XReadBitmapFile(XtDisplay(w),
+            DefaultRootWindow(XtDisplay(w)),
+            xbm_path,
+            &_w,
+            &_h,
+            &pixmap_wx_stipple,
+            &_xh,
+            &_yh);
 
         if (ret_val != 0) {
             fprintf(stderr,"XReadBitmapFile() failed: Bitmap not found? %s\n",xbm_path);

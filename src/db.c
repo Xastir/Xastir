@@ -8976,6 +8976,7 @@ static void clear_area(DataRow *p_station) {
  */
 void extract_area(DataRow *p_station, char *data) {
     int i, val, len;
+    unsigned int uval;
     AreaObject temp_area;
 
     /* NOTE: If we are here, the symbol was the area symbol.  But if this
@@ -9040,14 +9041,14 @@ void extract_area(DataRow *p_station, char *data) {
 
         if (temp_area.type == AREA_LINE_RIGHT || temp_area.type == AREA_LINE_LEFT) {
             if (data[0] == '{') {
-                if (sscanf(data, "{%u}", &val) == 1) {
-                    temp_area.corridor_width = val & 0xffff;
+                if (sscanf(data, "{%u}", &uval) == 1) {
+                    temp_area.corridor_width = uval & 0xffff;
                     for (i = 0; i <= len; i++)
                         if (data[i] == '}')
                             break;
-                    val = i+1;
-                    for (i = 0; i <= len-val; i++)
-                        data[i] = data[i+val]; // delete corridor width
+                    uval = i+1;
+                    for (i = 0; i <= (int)(len-uval); i++)
+                        data[i] = data[i+uval]; // delete corridor width
                 }
                 else {
                     if (debug_level & 2)
@@ -13784,7 +13785,7 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
     // we can't just use the "length" variable here or we'll
     // truncate our string.
     //
-    xastir_snprintf(incoming_data,
+    xastir_snprintf((char *)incoming_data,
         MAX_LINE_SIZE,
         "%s",
         result);
@@ -14048,11 +14049,11 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
     else if (devices[port].device_type == DEVICE_NET_AGWPE) {
         send_agwpe_packet(port, // Xastir interface port
             atoi(devices[port].device_host_filter_string), // AGWPE RadioPort
-            '\0',               // Type of frame (data)
-            call,               // source
-            destination,        // destination
-            new_path,           // Path,
-            info,
+            '\0',                         // Type of frame (data)
+            (unsigned char *)call,        // source
+            (unsigned char *)destination, // destination
+            (unsigned char *)new_path,    // Path,
+            (unsigned char *)info,
             strlen(info));
     }
 
@@ -14380,7 +14381,7 @@ void  read_file_line(FILE *f) {
                     // Used for debugging purposes.  If we get a
                     // segfault, we can print out the last message
                     // received.
-                    xastir_snprintf(incoming_data_copy,
+                    xastir_snprintf((char *)incoming_data_copy,
                         MAX_LINE_SIZE,
                         "%s",
                         line);

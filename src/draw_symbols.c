@@ -1469,7 +1469,7 @@ void read_symbol_from_file(FILE *f, char *pixels, char table_char) {
     char line[100];
     char pixels_copy[400];
     char *p,*q;
-    char a, b, c;
+    unsigned char a, b, c;
 
     for (y=0;y<20;y++) {
         (void)get_line(f,line,100);
@@ -1584,7 +1584,8 @@ void read_symbol_from_file(FILE *f, char *pixels, char table_char) {
 
                     // if non-transparent color is found change pixel
                     // to outline color
-                    if((b != (char) 0xff) || (c != (char) 0xff)) {
+                    if((b != (unsigned char) 0xff)
+                            || (c != (unsigned char) 0xff)) {
                         // change to icon outline color
                         *q = color;
                     }
@@ -1605,7 +1606,9 @@ void read_symbol_from_file(FILE *f, char *pixels, char table_char) {
 
                         // if non-transparent color is found change pixel
                         // to outline color
-                        if((a != (char) 0xff) || (b != (char) 0xff) || (c != (char) 0xff)) {
+                        if((a != (unsigned char) 0xff)
+                                || (b != (unsigned char) 0xff)
+                                || (c != (unsigned char) 0xff)) {
                             // change to icon outline color
                             *q = color;
                         }
@@ -1627,7 +1630,9 @@ void read_symbol_from_file(FILE *f, char *pixels, char table_char) {
 
                         // if non-transparent color is found change pixel
                         // to outline color
-                        if((a != (char) 0xff) || (b != (char) 0xff) || (c != (char) 0xff)) {
+                        if((a != (unsigned char) 0xff)
+                                || (b != (unsigned char) 0xff)
+                                || (c != (unsigned char) 0xff)) {
                             // change to icon outline color
                             *q = color;
                         }

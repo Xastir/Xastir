@@ -488,7 +488,8 @@ int pipe_check(char *client_address) {
                     q->next = p->next;
             }
             free(p);    // Free the malloc'd memory.
-            wait(0);    // Reap the status of the dead process
+
+            (void)wait((int *)NULL);    // Reap the status of the dead process
         }
         else if (n < 0) {
             //fprintf(stderr,"pipe_check: Readline error: %d\n",errno);
@@ -823,7 +824,8 @@ void set_proc_title(char *fmt,...) {
 //
 //int main(int argc, char *argv[]) {
 void Server(int argc, char *argv[], char *envp[]) {
-    int sockfd, newsockfd, clilen, childpid;
+    int sockfd, newsockfd, childpid;
+    socklen_t clilen;
     struct sockaddr_in cli_addr, serv_addr;
     pipe_object *p;
     int sendbuff;
@@ -886,7 +888,7 @@ void Server(int argc, char *argv[], char *envp[]) {
         // concurrent server (allows multiple concurrent
         // connections).
 
-        clilen = sizeof(cli_addr);
+        clilen = (socklen_t)sizeof(cli_addr);
 
         // "accept" is the call where we wait for a connection.  We
         // made the socket non-blocking above so that we pop out of

@@ -1088,7 +1088,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 sizeof(weather->wx_station),
                 "OWW");
 
-            sscanf(data,"%f %f %f %f %f %f %d %d %f %f %f %f",
+            sscanf((const char *)data,
+                "%f %f %f %f %f %f %d %d %f %f %f %f",
                 &tmp1,
                 &tmp2,
                 &tmp3,
@@ -1421,7 +1422,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             // No, I don't think so.  We can get these packets over
             // RF as well.
             /* todays rain total */
-            if (strlen(data) > 45) {
+            if (strlen((const char *)data) > 45) {
                 if (data[42]!='-') {
                     if (from) { // From remote station
                         substr(temp_data1,(char *)(data+42),4);
@@ -1693,21 +1694,21 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 // Peet Bros CR mode wind values should be selected based on which are highest.
                 /* Wind Speed fields 1, 34, and 71.  Wind direction fields 2, 35, 72. */
                 if (data[4] !='-') {
-                    substr(temp_data1, data+4, 4);
+                    substr(temp_data1, (char *)data+4, 4);
                     temp1 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 }
                 else {
                     temp1=0;
                 }
                 if (data[136] !='-') {
-                    substr(temp_data1, data+136, 4);
+                    substr(temp_data1, (char *)data+136, 4);
                     temp2 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 }
                 else {
                     temp2=0;
                 }
                 if (data[284] !='-') {
-                    substr(temp_data1, data+284, 4);
+                    substr(temp_data1, (char *)data+284, 4);
                     temp3 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
                 }
                 else {
@@ -2607,7 +2608,7 @@ void wx_decode(unsigned char *wx_line, int port) {
                 // else look for ten ASCII decimal point chars in the input, or do an
                 // sscanf looking for the correct number and types of fields for the
                 // OWW server in ARNE mode.  6 %f's, 2 %d's, 4 %f's.
-                else if (sscanf(wx_line,"%f %f %f %f %f %f %d %d %f %f %f %f",
+                else if (sscanf((const char *)wx_line,"%f %f %f %f %f %f %d %d %f %f %f %f",
                         &t1,&t2,&t3,&t4,&t5,&t6,&t7,&t8,&t9,&t10,&t11,&t12)) {
 
                     // Found Dallas One-Wire Weather Station
@@ -2701,7 +2702,7 @@ void wx_decode(unsigned char *wx_line, int port) {
 
                     // Davis Weather via meteo -> db2APRS -> TCP port
 
-                    if (strstr(wx_line, "xDvs")) {  // APRS 'postionless' WX data w/ Davis & X tag
+                    if (strstr((const char *)wx_line, "xDvs")) {  // APRS 'postionless' WX data w/ Davis & X tag
 
                         if (debug_level & 1)
                             fprintf(stdout,"Davis Data found... %s\n",wx_line);

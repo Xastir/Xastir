@@ -192,7 +192,7 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
                 // Turn off the alarm
                 (void)alarm(0);
                 // Reset the SIGALRM handler to its previous value
-                (void)signal(SIGALRM,previous_loc);
+                (void)signal(SIGALRM, previous_loc);
 
                 if (hostinfo) {
                     names = hostinfo -> h_aliases;

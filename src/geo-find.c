@@ -175,9 +175,9 @@ static int find_name(
 	const int mid = begin + size * (count / 2);
 	char test[41];
 	if (count <= 1) return begin;
-	if (io_in(index,mid - size,test,sizeof test) < 0) return -1;
-	if (name_len > sizeof test - 1)
-		name_len = sizeof test - 1;
+	if (io_in(index,mid - size,test,sizeof(test)) < 0) return -1;
+	if (name_len > sizeof(test - 1))
+		name_len = sizeof(test - 1);
 	if (type > test[0]
 	|| (type == test[0] && strncasecmp(name,test + 1,name_len) > 0))
 		return find_name(index,mid,end,type,name,name_len);
@@ -197,19 +197,19 @@ static int get_name_at(
 	char n[41];
 	const char *next,*save;
 	unsigned int len = last - s->next;
-	unsigned int begin,end,pos;
+	int begin,end,pos;
 
 	if (io_in_i4(s->index,
-	    io_in_i4(s->index,
-	    io_in_i4(s->index,0,NULL),&begin),&end) < 0
-	|| (pos = find_name(s->index,begin,end,type,s->next,len)) < 0
-	||  pos == end
-	|| (pos = io_in_i4(s->index,io_in(s->index,pos,n,sizeof n),&begin)) < 0
-	||  pos == end
-	|| (pos = io_in_i4(s->index,io_in(s->index,pos,NULL,sizeof n),&end)) < 0
-	||  n[0] != type
-	||  strncasecmp(n + 1,s->next,len)) {
-D(printf("    '%c' \"%.*s\" not found\n",type,len,s->next));
+                io_in_i4(s->index,
+                io_in_i4(s->index,0,NULL),&begin),&end) < 0
+            || (pos = find_name(s->index,begin,end,type,s->next,len)) < 0
+            ||  pos == end
+            || (pos = io_in_i4(s->index,io_in(s->index,pos,n,sizeof(n)),&begin)) < 0
+            ||  pos == end
+            || (pos = io_in_i4(s->index,io_in(s->index,pos,NULL,sizeof(n)),&end)) < 0
+            ||  n[0] != type
+            ||  strncasecmp(n + 1,s->next,len)) {
+        D(printf("    '%c' \"%.*s\" not found\n",type,len,s->next));
 		return 0;
 	}
 
@@ -218,12 +218,21 @@ D(printf("    '%c' \"%.*s\" not found\n",type,len,s->next));
 		int delta;
 
 		begin = len + 2;
-		while (begin < sizeof n && ' ' == n[begin]) ++begin;
 
-		end = sizeof n;
-		while (end > begin && ' ' == n[end - 1]) --end;
-		if (end < sizeof n) ++end;
-		if (end - begin > len) end = begin + len;
+		while (begin < (int)sizeof(n) && ' ' == n[begin])
+            ++begin;
+
+        end = sizeof(n);
+
+        while (end > begin && ' ' == n[end - 1])
+            --end;
+
+        if (end < (int)sizeof(n))
+            ++end;
+
+        if (end - begin > (int)len)
+            end = begin + len;
+
 D(printf("    Replacing '%.*s' with '%.*s'\n",len,n + 1,end - begin,&n[begin]));
 
 		memcpy(replace,n + begin,end - begin);
@@ -242,7 +251,11 @@ D(printf("    Buffer is now: '%.*s'\n",s->buffer_end - s->buffer,s->buffer));
 	if (next != last && get_name_at(s,type,f,next)) return 1;
 
 	pos = len;
-	while (++pos < sizeof n) if (' ' != n[pos]) return 0;
+
+	while (++pos < (int)sizeof(n)) {
+        if (' ' != n[pos])
+            return 0;
+    }
 
 	s->range[s->range_count].begin = begin;
 	s->range[s->range_count].end = end;
@@ -307,7 +320,7 @@ static const char *input_word(struct state *s,const char *pos) {
 	}
 
 	while (s->input_begin != s->input_end
-	   &&  s->buffer_end != &s->buffer[sizeof s->buffer]
+	   &&  s->buffer_end != &s->buffer[sizeof(s->buffer)]
            &&  isalnum(*s->input_begin)) {
 		if (s->buffer == s->buffer_end
 		|| !isdigit(s->buffer_end[-1]) || !isalpha(*s->input_begin))
@@ -316,7 +329,7 @@ static const char *input_word(struct state *s,const char *pos) {
 	}
 
 	if (pos != s->buffer_end 
-	&&  s->buffer_end != &s->buffer[sizeof s->buffer])
+	&&  s->buffer_end != &s->buffer[sizeof(s->buffer)])
 		*s->buffer_end++ = ' ';
 	return s->buffer_end;
 }
