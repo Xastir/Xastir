@@ -3837,6 +3837,7 @@ int curl_getfile(char *fileimg, char *local_filename) {
 
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_easy_setopt(curl, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
 
 // Only newer libcurl has this?
 // curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
