@@ -538,6 +538,18 @@ Getting Maps and other Data Files for Xastir:
        shpadd posts -73.9763 40.7720
        dbfadd posts 35 'X\m ' Finish
     ---------
+
+    Tiger/Line format maps:
+
+      If you have GDAL/OGR library added to Xastir, you should (very soon)
+      be able to use Tiger/Line maps.  The developers are working to add
+      this capability.
+
+      2002 map data can be found here:
+
+        http://www.census.gov/geo/www/tiger/tiger2002/tgr2002.html
+
+
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget or libcurl installed, .geo files
