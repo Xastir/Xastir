@@ -6108,7 +6108,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-    log_indicator = XtVaCreateWidget("Logging",
+    // Logging
+    log_indicator = XtVaCreateWidget(langcode("BBARSTA043"),
             xmTextFieldWidgetClass,
             form,
             XmNeditable,            FALSE,
@@ -9528,7 +9529,7 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 void Set_Log_Indicator(void) {
 	if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate)) {
-	    XmTextFieldSetString(log_indicator, "Logging");
+	    XmTextFieldSetString(log_indicator, langcode("BBARSTA043")); // Logging
             XtVaSetValues(log_indicator, XmNbackground, (int)GetPixelByName(Global.top,"RosyBrown"), NULL);
 	} else {
 	    XmTextFieldSetString(log_indicator, NULL);
@@ -11343,14 +11344,20 @@ void map_properties_fill_in (void) {
                     strcpy(temp_filled,"      ");
                 }
                 else {
-                    strcpy(temp_filled,"  Yes ");
+                    xastir_snprintf(temp_filled,
+                        sizeof(temp_filled),
+                        "  %s ",
+                        langcode("MAPP006"));
                 }
 
                 if (current->auto_maps == 0) {
                     strcpy(temp_auto,"       ");
                 }
                 else {
-                    strcpy(temp_auto,"  Yes  ");
+                    xastir_snprintf(temp_auto,
+                        sizeof(temp_auto),
+                        "  %s  ",
+                        langcode("MAPP006"));
                 }
 
                 xastir_snprintf(temp,
@@ -11788,9 +11795,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
     i=0;
     if (!map_properties_dialog) {
-//WE7U
-//        map_properties_dialog = XtVaCreatePopupShell(langcode("WPUPMCP001"),
-        map_properties_dialog = XtVaCreatePopupShell("Map Properties",
+
+        map_properties_dialog = XtVaCreatePopupShell(langcode("MAPP001"),
                 xmDialogShellWidgetClass,
                 Global.top,
                 XmNdeleteResponse,XmDESTROY,
@@ -11847,9 +11853,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-//WE7U
-//        label1  = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        label1  = XtVaCreateManagedWidget(" Map     Draw",
+        label1  = XtVaCreateManagedWidget(langcode("MAPP002"),
                 xmLabelWidgetClass,
                 my_form,
                 XmNtopAttachment, XmATTACH_FORM,
@@ -11863,9 +11867,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-//WE7U
-//        label2  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),
-        label2  = XtVaCreateManagedWidget("Layer   Filled   AutoMap   Path/Filename",
+        label2  = XtVaCreateManagedWidget(langcode("MAPP003"),
  
                 xmLabelWidgetClass,
                 my_form,
@@ -11895,8 +11897,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 NULL);
 
 // "Change Layer"
-//        button_layer_change = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        button_layer_change = XtVaCreateManagedWidget("Change Layer->",
+        button_layer_change = XtVaCreateManagedWidget(langcode("MAPP004"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
@@ -11919,9 +11920,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 
-//WE7U
-//        label3  = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        label3  = XtVaCreateManagedWidget("Filled->",
+        label3  = XtVaCreateManagedWidget(langcode("MAPP005"),
                 xmLabelWidgetClass,
                 rowcol,
                 MY_FOREGROUND_COLOR,
@@ -11929,8 +11928,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 NULL);
 
 // "Filled-Yes"
-//        button_filled_yes = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        button_filled_yes = XtVaCreateManagedWidget("Yes",
+        button_filled_yes = XtVaCreateManagedWidget(langcode("MAPP006"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
@@ -11938,10 +11936,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-//WE7U
 // "Filled-No"
-//        button_filled_no = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        button_filled_no = XtVaCreateManagedWidget("No",
+        button_filled_no = XtVaCreateManagedWidget(langcode("MAPP007"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
@@ -11949,9 +11945,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-//WE7U
-//        label4  = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        label4  = XtVaCreateManagedWidget("Automaps->",
+// Automaps
+        label4  = XtVaCreateManagedWidget(langcode("MAPP008"),
                 xmLabelWidgetClass,
                 rowcol,
                 MY_FOREGROUND_COLOR,
@@ -11959,8 +11954,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 NULL);
 
 // "Automaps-Yes"
-//        button_filled_yes = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        button_auto_maps_yes = XtVaCreateManagedWidget("Yes",
+        button_auto_maps_yes = XtVaCreateManagedWidget(langcode("MAPP006"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
@@ -11968,10 +11962,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-//WE7U
 // "Automaps-No"
-//        button_filled_no = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-        button_auto_maps_no = XtVaCreateManagedWidget("No",
+        button_auto_maps_no = XtVaCreateManagedWidget(langcode("MAPP007"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,

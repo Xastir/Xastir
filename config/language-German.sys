@@ -295,6 +295,7 @@ BBARSTA039|Indizieren %s||
 BBARSTA040|APRS Station %s||
 BBARSTA041|Warten auf GPS Daten..||
 BBARSTA042|Senden von Objekten||
+BBARSTA043|Logging||
 #
 # PopUp "Zeige - Packet Radio"
 WPUPDPD001|Packet Radio Daten||
@@ -995,3 +996,16 @@ GPS008|Orange||
 GPS009|Blau||
 GPS010|Gelb||
 GPS011|Violett||
+#
+#
+# Map Properties Dialog
+MAPP001|Map Properties||
+MAPP002| Map     Draw||
+MAPP003|Layer   Filled   AutoMap   Path/Filename||
+MAPP004|Change Layer->||
+MAPP005|Filled->||
+MAPP006|Yes||
+MAPP007|No||
+MAPP008|Automaps->||
+#
+#

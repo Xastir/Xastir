@@ -292,6 +292,7 @@ BBARSTA039|Indezando %s||
 BBARSTA040|Estación de Aficionado APRS %s||
 BBARSTA041|Esperando por GPS data..||
 BBARSTA042|Transmitiendo objetos/articulos||
+BBARSTA043|Logging||
 #
 # Despliegue Paquete de Datos
 WPUPDPD001|Despligue de Datos||
@@ -986,4 +987,16 @@ GPS008|Naranja||
 GPS009|Azul||
 GPS010|Amarillo||
 GPS011|Violeta||
+#
+#
+# Map Properties Dialog
+MAPP001|Map Properties||
+MAPP002| Map     Draw||
+MAPP003|Layer   Filled   AutoMap   Path/Filename||
+MAPP004|Change Layer->||
+MAPP005|Filled->||
+MAPP006|Yes||
+MAPP007|No||
+MAPP008|Automaps->||
+#
 #

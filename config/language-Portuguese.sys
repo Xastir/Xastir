@@ -293,6 +293,7 @@ BBARSTA039|Indexando %s||
 BBARSTA040|Estação de radioamador de APRS %s||
 BBARSTA041|Esperando pela data do GPS..||
 BBARSTA042|Transmitindo objectos/items||
+BBARSTA043|Logging||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||
@@ -995,5 +996,14 @@ GPS010|Amarelo||
 GPS011|Violeta||
 #
 #
-
-
+# Map Properties Dialog
+MAPP001|Map Properties||
+MAPP002| Map     Draw||
+MAPP003|Layer   Filled   AutoMap   Path/Filename||
+MAPP004|Change Layer->||
+MAPP005|Filled->||
+MAPP006|Yes||
+MAPP007|No||
+MAPP008|Automaps->||
+#
+#

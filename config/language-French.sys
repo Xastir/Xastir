@@ -288,6 +288,7 @@ BBARSTA039|Indexant %s||
 BBARSTA040|Station d'amateur APRS %s||
 BBARSTA041|Attendant données GPS..||
 BBARSTA042|Transmission objets/articles||
+BBARSTA043|Logging||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Affichage de données paquet||
@@ -988,5 +989,16 @@ GPS008|Orange||
 GPS009|Bleu||
 GPS010|Jaune||
 GPS011|Violet||
+#
+#
+# Map Properties Dialog
+MAPP001|Map Properties||
+MAPP002| Map     Draw||
+MAPP003|Layer   Filled   AutoMap   Path/Filename||
+MAPP004|Change Layer->||
+MAPP005|Filled->||
+MAPP006|Yes||
+MAPP007|No||
+MAPP008|Automaps->||
 #
 #

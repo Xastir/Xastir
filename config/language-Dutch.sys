@@ -298,6 +298,7 @@ BBARSTA039|Bezig Met Indexeren Van: %s||
 BBARSTA040|Amateur APRS Station %s||
 BBARSTA041|Wacht op GPS gegevens..||
 BBARSTA042|Uitzenden van objecten/items||
+BBARSTA043|Logging||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Ontvangen Packets Bekijken||
@@ -998,5 +999,16 @@ GPS008|Oranje||
 GPS009|Blauw||
 GPS010|Geel||
 GPS011|Violet||
+#
+#
+# Map Properties Dialog
+MAPP001|Map Properties||
+MAPP002| Map     Draw||
+MAPP003|Layer   Filled   AutoMap   Path/Filename||
+MAPP004|Change Layer->||
+MAPP005|Filled->||
+MAPP006|Yes||
+MAPP007|No||
+MAPP008|Automaps->||
 #
 #
