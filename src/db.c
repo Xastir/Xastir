@@ -2308,11 +2308,6 @@ void display_station(Widget w, DataRow *p_station, int single) {
     if (!ok_to_draw_station(p_station))
         return;
 
-    // Update the count if we're displaying all selected stations
-    // (not just one)
-    if (!single)
-        currently_selected_stations++;
-
     // Set up call string for display
     if (Display_.callsign) {
         if (p_station->tactical_call_sign

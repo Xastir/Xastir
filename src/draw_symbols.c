@@ -2019,6 +2019,8 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                     y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
                     ghost = (int)(((sec_old+sec_heard)) < sec_now());
 
+                    currently_selected_stations++;
+
                     if (Display_.symbol)
                          symbol(w,ghost,symbol_table,symbol_id,symbol_overlay,where,1,x_offset,y_offset,orient);
 
