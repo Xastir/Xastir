@@ -7,7 +7,7 @@
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 02. Feb 2004, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 27. Aug 2004, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -205,9 +205,9 @@ PULDNDP015|Stationen löschen|l|
 PULDNDP016|Spuren löschen|S|
 PULDNDP025|ObjektHistorie löschen||
 PULDNDP048|ObjektHistorie erneut laden||
-PULDNDP049|Clear All Tactical Calls||
-PULDNDP050|Clear Tactical Call History||
-PULDNDP051|Select Tactical Calls Only||
+PULDNDP049|Löschen aller taktischen Calls||
+PULDNDP050|Löschen Verlauf taktische Calls||
+PULDNDP051|Nur taktische Calls wählen||
 PULDNDP052|- Label Trailpoints||
 #
 # Maßeinheiten
@@ -236,7 +236,7 @@ PULDNTNT01|Sende jetzt!|S|
 PULDNTNT07|Lade GPS Track|T|
 PULDNTNT08|Lade GPS Route|R|
 PULDNTNT09|Lade GPS Wegpunkte|W|
-PULDNTNT10|Fetch Garmin RINO Waypoints|G|
+PULDNTNT10|Garmin RINO Wegpunkte holen|G|
 #
 # Menu "Hilfe"
 PULDNHEL01|Version|V|
@@ -272,11 +272,11 @@ POPUPMA024|Bitte Umschalt/Num/Rollen/andere Modifikationstasten ausschalten||
 POPUPMA026|Zentrieren & Zoom||
 POPUPMA027|    Breite||
 POPUPMA028|     Länge||
-POPUPMA029|Draw CAD Objects||
-POPUPMA030|Start Draw Mode||
-POPUPMA031|Close Polygon||
-POPUPMA032|Erase All CAD Polygons||
-POPUPMA033|End Draw Mode||
+POPUPMA029|CAD-Objekte zeichnen||
+POPUPMA030|Start Zeichen-Modus||
+POPUPMA031|Polygon abschließen||
+POPUPMA032|Alle CAD-Polygone löschen||
+POPUPMA033|Ende Zeichen-Modus||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
@@ -387,7 +387,7 @@ WPUPCFTM08|Timeout Pos-Voraussage [Min]||
 WPUPCFTM09|Abstand zw. seriellen Zeichen (ms)||
 WPUPCFTM10|Neue Spur Zeit (Min)||
 WPUPCFTM11|Neue Spur Intervall (Grad)||
-WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
+WPUPCFTM12|RINO -> Objekt Intervall (min), 0 = Aus||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||
@@ -551,8 +551,8 @@ POPUPOB040|Öffnungswinkel - Richtung||
 POPUPOB041|Rundstrahlantenne||
 POPUPOB042|Richtantenne||
 POPUPOB043|unbekannt||
-POPUPOB044|Adopt Object||
-POPUPOB045|Adopt Item||
+POPUPOB044|Objekt übernehmen||
+POPUPOB045|Item übernehmen||
 #
 # PopUp "Internet Einstellungen"
 WPUPCFI001|Internet Einstellungen||
@@ -652,7 +652,7 @@ WPUPMSB007|Clear Msg History||
 WPUPMSB008|Nachricht:||
 WPUPMSB009|Sende jetzt!||
 WPUPMSB010|Pfad:||
-WPUPMSB011|Cancel Pending Msgs||
+WPUPMSB011|Wartende Nachrichten zurücknehmen||
 #
 # PopUp "Automatische Antwort"
 WPUPARM001|Automatische Antwort ändern||
@@ -727,7 +727,7 @@ WPUPSTI061|Brennstofftemp.: %s°F   ||
 WPUPSTI062|Brennstofffeuchte: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|NWS Wetterwarnung holen||
-WPUPSTI065|Tactical Call: %s||
+WPUPSTI065|Taktisches Call: %s||
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Datenbank Abfrage||
