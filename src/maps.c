@@ -2777,10 +2777,6 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
     long x,y;
 
 
-    // Skip the file if map labels are disabled
-    if (!map_labels)
-        return;
-
     // Screen view
     min_lat = y_lat_offset + (long)(screen_height * scale_y);
     max_lat = y_lat_offset;
@@ -8062,7 +8058,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 // Take out the "static" and we get a segfault when we zoom out too
 // far with the lakes or counties shapefile loaded.  No idea why
 // yet.  --we7u
-//static alert_entry alert[MAX_ALERT];
+static alert_entry alert[MAX_ALERT];
 static int alert_count;
 
 
