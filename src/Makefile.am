@@ -17,11 +17,14 @@ xastir_SOURCES = \
     draw_symbols.c draw_symbols.h \
     fcc_data.c fcc_data.h \
     festival.c festival.h \
+    geo-find.c geo.h \
+    geocoder_gui.c \
     gps.c gps.h \
     hostname.c hostname.h \
     igate.c igate.h \
     interface.c interface.h \
     interface_gui.c \
+    io-common.c io-mmap.c io.h \
     lang.c lang.h \
     list_gui.c list_gui.h \
     locate_gui.c \

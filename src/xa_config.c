@@ -46,6 +46,7 @@
 #include "draw_symbols.h"
 #include "maps.h"
 #include "track_gui.h"
+#include "geo.h"
 
 #define CONFIG_FILE      "config/xastir.cnf"
 #define CONFIG_FILE_BAK1 "config/xastir.cnf.1"
@@ -448,6 +449,7 @@ void save_data(void)  {
         store_string (fout, "SOUND_DIR", SOUND_DIR);
         store_string (fout, "GROUP_DATA_FILE", group_data_file);
         store_string (fout, "GNIS_FILE", locate_gnis_filename);
+        store_string (fout, "GEOCODE_FILE", geocoder_map_filename);
 
         /* maps */
         store_int (fout, "MAPS_LONG_LAT_GRID", long_lat_grid);
@@ -970,6 +972,10 @@ void load_data_or_default(void) {
 
     if (!get_string ("GNIS_FILE", locate_gnis_filename))
         strcpy (locate_gnis_filename, get_data_base_dir ("GNIS/WA.gnis"));
+
+    if (!get_string ("GEOCODE_FILE", geocoder_map_filename))
+        strcpy (geocoder_map_filename, get_data_base_dir ("GNIS/geocode"));
+
 
     /* maps */
     if (!get_int ("MAPS_LONG_LAT_GRID", &long_lat_grid, 0, 1, 1))

@@ -291,6 +291,7 @@ extern void Window_Quit(Widget w, XtPointer client, XtPointer call);
 extern void Tracks_All_Clear(Widget w, XtPointer clientData, XtPointer callData);
 extern void Locate_station(Widget w, XtPointer clientData, XtPointer callData);
 extern void Locate_place(Widget w, XtPointer clientData, XtPointer callData);
+extern void Geocoder_place(Widget w, XtPointer clientData, XtPointer callData);
 extern void Display_Wx_Alert(Widget w, XtPointer clientData, XtPointer callData);
 extern void Auto_msg_option(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Auto_msg_set(Widget w, XtPointer clientData, XtPointer calldata);
@@ -303,6 +304,7 @@ extern void draw_tiger_map (Widget w, char *filenm, int destination_pixmap);
 
 
 extern void locate_gui_init(void);
+extern void geocoder_gui_init(void);
 extern void location_gui_init(void);
 extern void view_message_gui_init(void);
 extern void wx_gui_init(void);
