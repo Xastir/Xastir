@@ -454,6 +454,11 @@ void draw_tiger_map (Widget w,
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
         curl_easy_setopt(curl, CURLOPT_NETRC, CURL_NETRC_OPTIONAL);
 
+        // Added in libcurl 7.10.6
+//        curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+        // Added in libcurl 7.10.7
+//        curl_easy_setopt(curl, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
+
 // Only included in newer libcurl?
 //        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 
