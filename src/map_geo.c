@@ -273,7 +273,7 @@ void draw_geo_image_map (Widget w,
     int rasterfuzz = 3;    // ratio to skip 
 #endif //FUZZYRASTER
     int do_check_trans = 0;  // do we bother checking for transparent colors
-    long trans_color;    // what color to zap
+    unsigned long trans_color;    // what color to zap
     int trans_skip = 0;  // skip transparent pixel
     int crop_x1=0, crop_x2=0, crop_y1=0, crop_y2=0; // pixel crop box
     int do_crop = 0;     // do we crop pixels
@@ -366,6 +366,7 @@ void draw_geo_image_map (Widget w,
                 // need to make this read a list of colors to zap out
                 (void)sscanf (line + 12, "%li", &trans_color); 
                 do_check_trans = 1;
+//fprintf(stderr,"Transparent %lx\n",trans_color);
             }
             if (strncasecmp(line, "CROP", 4) == 0) { 
                 (void)sscanf (line + 5, "%d %d %d %d", 
@@ -1588,7 +1589,7 @@ fprintf(stderr,"2 ");
 *
 *********************************************/
 
-int check_trans (XColor c, long c_trans_color) {
+int check_trans (XColor c, unsigned long c_trans_color) {
     //    fprintf (stderr, "pix = %li,%lx, chk = %li,%lx.\n",c.pixel,c.pixel,c_trans_color,c_trans_color);
     // need to load an array from the geo file of colors to zap
     // for now, just a static list to test
@@ -1596,6 +1597,11 @@ int check_trans (XColor c, long c_trans_color) {
     //    if ( c.pixel == (unsigned long) 0x000000 ) {
     //    return 1; // black background
     //}
-    if ( c.pixel == (unsigned long) c_trans_color ) return 1;
+    if ( c.pixel == c_trans_color ) {
+        return 1;
+    }
+
     return 0; // everything else is OK to draw
 }
+
+
