@@ -1740,12 +1740,13 @@ information.
 mapfgd.pl
 This script creates minimal .fgd files for GeoTIFF images lacking them, based
 on information found in the GeoTIFF file. The created files allow Xastir to
-crop the white boarders. Typical usage would be "mapfgd mapdir" where mapdir
-is the directory containing the GeoTIFF images.
+crop the white borders and rotate/scale the map properly. Typical usage would
+be "mapfgd mapdir" where mapdir is the directory containing the GeoTIFF
+images.
 
 track-get.pl
 This script downloads the tracklog of a specified object from a Garmin GPS.
-It requires the GPS::Garmin module, prompts for an object name, and writes
+It requires the GPS::Garmin module. It prompts for an object name, and writes
 the tracklog to the ~/.xastir/logs directory.
 
 waypoint-get.pl
