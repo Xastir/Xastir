@@ -322,10 +322,28 @@ First Time Install:
        directory.
 
 
-     NOTE: You may need to snag one file from the libtiff source distribution
-       and place it into libgeotiff-1.1.5/libtiff_private directory before
-       libgeotiff will compile:  "tiffconf.h".  With libgeotiff-1.2.0 you
-       shouldn't need to do this.
+     NOTE: You may need to snag some files from your exact libtiff source
+       distribution and place them into your /usr/include directory before
+       libgeotiff will compile.  Note:  I said use files from the EXACT same
+       distribution of libtiff that you already have installed!
+
+            libtiff/tiffconf.h
+            libtiff/tiffiop.h
+            libtiff/tif_dir.h
+            contrib/dosdjgpp/port.h
+
+       Drop all four files into the /usr/include/ directory, creating no 
+       subdirectories at all.  This allows the libgeotiff code to "see"
+       into the libtiff library so that it can use some functions that
+       aren't normally (publically) available.  Try to make sure that
+       you're not overwriting any files in /usr/include/ by the same name.
+       Some of these files may already be present in /usr/local/.  If so,
+       they should be exact duplicates.  "diff filename1 filename2" will
+       tell you if there are any differences between two files.
+
+       With libgeotiff-1.2.0/libtiff-3.6.0-beta or newer you shouldn't
+       need to copy these files across.  The newer libtiff and libgeotiff
+       can work together using public interfaces.
 
         tar xzvf libgeotiff-1.1.5.tar.gz (or newer)
         cd libgeotiff-1.1.5
