@@ -204,7 +204,6 @@ extern void location_gui_init(void);
 extern void view_message_gui_init(void);
 extern void wx_gui_init(void);
 extern long get_x_scale(long x, long y, long ysc);
-extern long get_y_scale(long x, long y, long xsc);
 
 extern Widget Display_data_dialog;
 extern Widget Display_data_text;

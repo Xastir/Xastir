@@ -4156,6 +4156,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 }
 
                 else {  // Must be "Compute new center/zoom" function
+                    float ratio;
+
                     // We need to compute a new center and a new scale, then
                     // cause the new image to be created.
                     // Compute new center.  It'll be the average of the two points
@@ -4165,6 +4167,18 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
                     new_mid_x = mid_x_long_offset - ((width *scale_x)/2) + (x_center*scale_x);
                     new_mid_y = mid_y_lat_offset  - ((height*scale_y)/2) + (y_center*scale_y);
+
+                    //
+                    // What Rolf had to say:
+                    //
+                    // Calculate center of mouse-marked area and get the scaling relation
+                    // between x and y for that position. This position will be the new
+                    // center, so that lattitude-dependant relation does not change with
+                    // a zoom-in. For both x and y calculate a new zoom factor neccessary
+                    // to fit that screen direction. Select the one that allows both x
+                    // and y part to fall into the screen area. Draw the new screen with
+                    // new center and new zoom factor.
+                    //
 
                     // Compute the new scale, or as close to it as we can get
                     //new_scale_y = scale_y / 2;    // Zoom in by a factor of 2
@@ -4176,6 +4190,26 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
                     if (new_scale_x < 1)
                         new_scale_x = 1;            // Don't go further in than zoom 1
+
+                    // We now know approximately the scales we need
+                    // in order to view all of the pixels just
+                    // selected in the drag operation.  Now set
+                    // new_scale_y to the highest number of the two,
+                    // which will make sure the entire drag
+                    // selection will be seen at the new zoom level.
+                    // Use the new ratio between scales to compute
+                    // this, computed from the new midpoint.
+                    //
+                    //printf("scale_x:%ld\tscale_y:%ld\n", get_x_scale(new_mid_x, new_mid_y, scale_y), scale_y );
+                    ratio = ((float)get_x_scale(new_mid_x,new_mid_y,scale_y) / (float)scale_y);
+
+                    //printf("Ratio: %f\n", ratio);
+                    //printf("x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
+                    if ( new_scale_y < (long)((new_scale_x / ratio) + 0.5) ) {
+                        new_scale_y =  (long)((new_scale_x / ratio) + 0.5);
+                        //printf("Changed y\n");
+                    }
+                    //printf("x:%ld\ty:%ld\n", new_scale_x, new_scale_y);
 
                     display_zoom_image(1);          // Check range and do display, recenter
 
@@ -4841,12 +4875,9 @@ void check_range(void) {
             if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
                 new_mid_y = 64800000l-((height*new_scale_y)/2);  // lower border max 90°S
 
-    // Adjust scaling of new window based on whether we had more x
-    // or more y mouse movement:
-    if (abs(input_x - menu_x) > abs(input_y - menu_y))
-        new_scale_y = get_y_scale(new_mid_x,new_mid_y,new_scale_x); // recalc y scaling depending on position
-    else
-        new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
+    // Adjust scaling based on latitude of new center
+    new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
+    //printf("x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
 
     // scale_x will always be bigger than scale_y, so no problem here...
     if ((width*new_scale_x) > 129600000l)
