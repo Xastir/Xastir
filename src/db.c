@@ -1773,6 +1773,9 @@ int is_altnet(DataRow *p_station) {
 // single station.  If updating multiple stations in a row, then
 // "single" will be passed to us as a zero.
 //
+// If current course/speed/altitude are absent, we check the last
+// track point to try to snag those numbers.
+//
 void display_station(Widget w, DataRow *p_station, int single) {
     char temp_altitude[20];
     char temp_course[20];
@@ -1791,6 +1794,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char orient;
     float value;
     char tmp[7+1];
+    int speed_course_ok = -1;
 
 
     if (debug_level & 128)
@@ -1799,42 +1803,107 @@ void display_station(Widget w, DataRow *p_station, int single) {
     if (!symbol_display)
         return;
 
-    // setup call string for display
+    // Set up call string for display
     if (symbol_callsign_display)
         strcpy(temp_call,p_station->call_sign);
     else
         strcpy(temp_call,"");
 
-    // setup altitude string for display
-    if (symbol_alt_display && strlen(p_station->altitude)>0) {
-        xastir_snprintf(temp_altitude, sizeof(temp_altitude), "%.0f%s",
-            atof(p_station->altitude)*cvt_m2len,un_alt);
-    } else
-        strcpy(temp_altitude,"");
+    // Set up altitude string for display
+    strcpy(temp_altitude,"");
+    if (symbol_alt_display) {
+        // Check whether we have altitude in the current data
+        if (strlen(p_station->altitude)>0) {
+            // Found it in the current data
+            xastir_snprintf(temp_altitude, sizeof(temp_altitude), "%.0f%s",
+                atof(p_station->altitude) * cvt_m2len,un_alt);
+        }
+//WE7U1
+        // Else check whether the previous position had altitude
+        else if (p_station->track_data != NULL) {
+            int trail_prev = (p_station->track_data->trail_inp - 1 + MAX_TRACKS) % MAX_TRACKS;
 
-    // setup speed and course strings for display
+            if ( p_station->track_data->altitude[trail_prev] > -99999l) {
+                // Found it in the tracklog
+                xastir_snprintf(temp_altitude, sizeof(temp_altitude), "%.0f%s",
+                    (float)(p_station->track_data->altitude[trail_prev] * cvt_dm2len), un_alt);
+
+                printf("Trail data              with altitude: %s : %s\n",
+                    p_station->call_sign,
+                    temp_altitude);
+            }
+            else {
+                //printf("Trail data w/o altitude                %s\n",
+                //    p_station->call_sign);
+            }
+        }
+    }
+
+    // Set up speed and course strings for display
     strcpy(temp_speed,"");
     strcpy(temp_course,"");
 
-    if (!(strlen(p_station->course)>0 && strlen(p_station->speed)>0 && atof(p_station->course) == 0 && atof(p_station->speed) == 0)) {
-        // don't display 'fixed' stations speed and course
-        if (symbol_speed_display && strlen(p_station->speed)>0) {
+
+    // don't display 'fixed' stations speed and course.  We use the
+    // speed_course_ok flag to determine this.
+
+    if (symbol_speed_display) {
+        // Check whether we have speed in the current data and it's
+        // non-zero
+        if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) > 0) ) {
+            speed_course_ok++;
             strncpy(tmp, un_spd, sizeof(tmp));
             tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
             if (symbol_speed_display == 1)
                 tmp[0] = '\0';          // without unit
  
             xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
-                    atof(p_station->speed)*cvt_kn2len,tmp);
+                atof(p_station->speed)*cvt_kn2len,tmp);
         }
+        // Else check whether the previous position had speed
+        else if (p_station->track_data != NULL) {
+            int trail_prev = (p_station->track_data->trail_inp - 1 + MAX_TRACKS) % MAX_TRACKS;
 
-        if(symbol_course_display && strlen(p_station->course)>0) {
-            xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
-                    atof(p_station->course));
+            strncpy(tmp, un_spd, sizeof(tmp));
+            tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
+            if (symbol_speed_display == 1)
+                tmp[0] = '\0';          // without unit
+ 
+            if ( p_station->track_data->speed[trail_prev] > 0)
+                speed_course_ok++;
+                xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
+                    p_station->track_data->speed[trail_prev] * cvt_hm2len, tmp);
         }
     }
 
-    // setup distance and direction strings for display
+    if (symbol_course_display) {
+        // Check whether we have course in the current data
+        if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
+            speed_course_ok++;
+            xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
+                atof(p_station->course));
+        }
+        // Else check whether the previous position had a course
+        else if (p_station->track_data != NULL) {
+            int trail_prev = (p_station->track_data->trail_inp - 1 + MAX_TRACKS) % MAX_TRACKS;
+
+            if( p_station->track_data->course[trail_prev] > 0 ) {
+                speed_course_ok++;
+                xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
+                    (float)p_station->track_data->course[trail_prev]);
+            }
+        }
+    }
+
+    // If speed and course were both ok, we should have a 1 in our
+    // flag now.  If not, clear them out.
+    if (speed_course_ok != 1) {
+        strcpy(temp_speed,"");
+        strcpy(temp_course,"");
+    }
+
+
+    // Set up distance and direction strings for display
     if (symbol_dist_course_display && strcmp(p_station->call_sign,my_callsign)!=0) {
         l_lat = convert_lat_s2l(my_lat);
         l_lon = convert_lon_s2l(my_long);
@@ -1855,7 +1924,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         strcpy(temp_my_course,"");
     }
 
-    // setup weather strings for display
+    // Set up weather strings for display
     strcpy(temp_wx_temp,"");
     strcpy(temp_wx_wind,"");
     if (symbol_weather_display && p_station->weather_data != NULL) {
@@ -2164,7 +2233,7 @@ void draw_ruler(Widget w) {
             ruler_siz = 1.0 * mag;
         }
     }
-    xastir_snprintf(text, sizeof(text), "%.0f %s",ruler_siz,unit);      // setup string
+    xastir_snprintf(text, sizeof(text), "%.0f %s",ruler_siz,unit);      // Set up string
     //printf("Ruler: %s, %d\n",text,ruler_pix);
 
     (void)XSetLineAttributes(XtDisplay(w),gc,1,LineSolid,CapRound,JoinRound);
@@ -3018,99 +3087,99 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
     // list rest of trail data
     if (p_station->track_data != NULL) {
-        if ((p_station->track_data->trail_inp - p_station->track_data->trail_out-1+MAX_TRACKS)
-                %MAX_TRACKS +1 > 1) {       // we need at least a second point
-            for (last=(p_station->track_data->trail_inp-2+MAX_TRACKS)%MAX_TRACKS;
-                    (last+1-p_station->track_data->trail_out+MAX_TRACKS)%MAX_TRACKS > 0;
-                    last = (last-1+MAX_TRACKS)%MAX_TRACKS) {
-                sec  = p_station->track_data->sec[last];
-                time = localtime(&sec);
-                if ((p_station->track_data->flag[last] & TR_NEWTRK) != '\0')
-                    xastir_snprintf(temp, sizeof(temp), "            +  %02d/%02d  %02d:%02d   ",
-                        time->tm_mon + 1,time->tm_mday,time->tm_hour,time->tm_min);
-                else
-                    xastir_snprintf(temp, sizeof(temp), "               %02d/%02d  %02d:%02d   ",
-                        time->tm_mon + 1,time->tm_mday,time->tm_hour,time->tm_min);
+        for (last=(p_station->track_data->trail_inp-1+MAX_TRACKS)%MAX_TRACKS;
+                last != p_station->track_data->trail_out;
+                last = (last-1+MAX_TRACKS)%MAX_TRACKS) {
+            sec  = p_station->track_data->sec[last];
+            time = localtime(&sec);
+            if ((p_station->track_data->flag[last] & TR_NEWTRK) != '\0')
+                xastir_snprintf(temp, sizeof(temp), "            +  %02d/%02d  %02d:%02d   ",
+                    time->tm_mon + 1,time->tm_mday,time->tm_hour,time->tm_min);
+            else
+                xastir_snprintf(temp, sizeof(temp), "               %02d/%02d  %02d:%02d   ",
+                    time->tm_mon + 1,time->tm_mday,time->tm_hour,time->tm_min);
 
-                XmTextInsert(si_text,pos,temp);
-                pos += strlen(temp);
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
 
-                if (coordinate_system == USE_UTM) {
-                    convert_xastir_to_UTM_str(temp, sizeof(temp),
-                        p_station->track_data->trail_long_pos[last],
-                        p_station->track_data->trail_lat_pos[last]);
-                    XmTextInsert(si_text,pos,temp);
-                    pos += strlen(temp);
-                }
-                else {
-                    if (coordinate_system == USE_DDDDDD) {
-                        convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_DEC_DEG);
-                    }
-                    else if (coordinate_system == USE_DDMMSS) {
-                        convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_DMS_NORMAL);
-                    }
-                    else {  // Assume coordinate_system == USE_DDMMMM
-                        convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
-                    }
-                    XmTextInsert(si_text,pos,temp);
-                    pos += strlen(temp);
-
-                    xastir_snprintf(temp, sizeof(temp), "  ");
-                    XmTextInsert(si_text,pos,temp);
-                    pos += strlen(temp);
-
-                    if (coordinate_system == USE_DDDDDD) {
-                        convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_DEC_DEG);
-                    }
-                    else if (coordinate_system == USE_DDMMSS) {
-                        convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_DMS_NORMAL);
-                    }
-                    else {  // Assume coordinate_system == USE_DDMMMM
-                        convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
-                    }
-                    XmTextInsert(si_text,pos,temp);
-                    pos += strlen(temp);
-                }
-
-                if (p_station->track_data->altitude[last] > -99999)
-                    xastir_snprintf(temp, sizeof(temp), " %5.0f%s",p_station->track_data->altitude[last]*cvt_dm2len,un_alt);
-                else
-                    substr(temp,"         ",1+5+strlen(un_alt));
-
-                XmTextInsert(si_text,pos,temp);
-                pos += strlen(temp);
-
-                if (p_station->track_data->speed[last] >= 0)
-                    xastir_snprintf(temp, sizeof(temp), " %4.0f%s",p_station->track_data->speed[last]*cvt_hm2len,un_spd);
-                else
-                    substr(temp,"         ",1+4+strlen(un_spd));
-
-                XmTextInsert(si_text,pos,temp);
-                pos += strlen(temp);
-
-                if (p_station->track_data->course[last] >= 0)
-                    xastir_snprintf(temp, sizeof(temp), " %3d°",p_station->track_data->course[last]);
-                else
-                    xastir_snprintf(temp, sizeof(temp), "     ");
-
-                XmTextInsert(si_text,pos,temp);
-                pos += strlen(temp);
-
-              // dl9sau
-              xastir_snprintf(temp, sizeof(temp), "  %s", sec_to_loc(p_station->track_data->trail_long_pos[last], p_station->track_data->trail_lat_pos[last]) );
-              XmTextInsert(si_text,pos,temp); 
-              pos += strlen(temp);
-
-                if ((p_station->track_data->flag[last] & TR_LOCAL) != '\0')
-                    xastir_snprintf(temp, sizeof(temp), " *\n");
-                else
-                    xastir_snprintf(temp, sizeof(temp), "  \n");
-
+            if (coordinate_system == USE_UTM) {
+                convert_xastir_to_UTM_str(temp, sizeof(temp),
+                    p_station->track_data->trail_long_pos[last],
+                    p_station->track_data->trail_lat_pos[last]);
                 XmTextInsert(si_text,pos,temp);
                 pos += strlen(temp);
             }
+            else {
+                if (coordinate_system == USE_DDDDDD) {
+                    convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_DEC_DEG);
+                }
+                else if (coordinate_system == USE_DDMMSS) {
+                    convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_DMS_NORMAL);
+                }
+                else {  // Assume coordinate_system == USE_DDMMMM
+                    convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
+                }
+                XmTextInsert(si_text,pos,temp);
+                pos += strlen(temp);
+
+                xastir_snprintf(temp, sizeof(temp), "  ");
+                XmTextInsert(si_text,pos,temp);
+                pos += strlen(temp);
+
+                if (coordinate_system == USE_DDDDDD) {
+                    convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_DEC_DEG);
+                }
+                else if (coordinate_system == USE_DDMMSS) {
+                    convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_DMS_NORMAL);
+                }
+                else {  // Assume coordinate_system == USE_DDMMMM
+                    convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
+                }
+                XmTextInsert(si_text,pos,temp);
+                pos += strlen(temp);
+            }
+
+            if (p_station->track_data->altitude[last] > -99999l)
+                xastir_snprintf(temp, sizeof(temp), " %5.0f%s",p_station->track_data->altitude[last]*cvt_dm2len,un_alt);
+            else
+                substr(temp,"         ",1+5+strlen(un_alt));
+
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+
+            if (p_station->track_data->speed[last] >= 0)
+                xastir_snprintf(temp, sizeof(temp), " %4.0f%s",p_station->track_data->speed[last]*cvt_hm2len,un_spd);
+            else
+                substr(temp,"         ",1+4+strlen(un_spd));
+
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+
+            if (p_station->track_data->course[last] >= 0)
+                xastir_snprintf(temp, sizeof(temp), " %3d°",p_station->track_data->course[last]);
+            else
+                xastir_snprintf(temp, sizeof(temp), "     ");
+
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+
+            // dl9sau
+            xastir_snprintf(temp, sizeof(temp), "  %s",
+                sec_to_loc(p_station->track_data->trail_long_pos[last],
+                    p_station->track_data->trail_lat_pos[last]) );
+            XmTextInsert(si_text,pos,temp); 
+            pos += strlen(temp);
+
+            if ((p_station->track_data->flag[last] & TR_LOCAL) != '\0')
+                xastir_snprintf(temp, sizeof(temp), " *\n");
+            else
+                xastir_snprintf(temp, sizeof(temp), "  \n");
+
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
         }
     }
+
 
     // Weather Data ...
     if (p_station->weather_data != NULL) {
@@ -3873,7 +3942,7 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
 begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
 
             if (db_station_popup == NULL) {
-                // setup a selection box:
+                // Set up a selection box:
                 db_station_popup = XtVaCreatePopupShell(langcode("STCHO00001"),xmDialogShellWidgetClass,Global.top,
                                     XmNdeleteResponse,XmDESTROY,
                                     XmNdefaultPosition, FALSE,
@@ -4278,6 +4347,9 @@ int new_trail_color(char *call) {
 }
 
 
+
+
+
 // Trail storage in ring buffer (1 is the oldest point)
 // inp         v                   
 //      [.][1][.][.][.][.][.][.][.]   at least 1 point in buffer,
@@ -4299,6 +4371,8 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
     int ok = 1;
     int trail_inp, trail_prev;
     char flag;
+
+    //printf("store_trail_point: %s\n",p_station->call_sign);
 
     if (debug_level & 256) {
         printf("store_trail_point: for %s\n", p_station->call_sign);
@@ -4334,21 +4408,27 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
         p_station->track_data->trail_long_pos[trail_inp] = lon;
         p_station->track_data->trail_lat_pos[trail_inp]  = lat;
         p_station->track_data->sec[trail_inp]            = sec;
+
         if (alt[0] != '\0')
             p_station->track_data->altitude[trail_inp] = atoi(alt)*10;
         else            
-            p_station->track_data->altitude[trail_inp] = -99999;
+            p_station->track_data->altitude[trail_inp] = -99999l;
+
         if (speed[0] != '\0')
             p_station->track_data->speed[trail_inp]  = (long)(atof(speed)*18.52);
         else
             p_station->track_data->speed[trail_inp]  = -1;
+
         if (course[0] != '\0')
             p_station->track_data->course[trail_inp] = atoi(course);
         else
             p_station->track_data->course[trail_inp] = -1;
+
         flag = '\0';                    // init flags
+
         if ((stn_flag & ST_LOCAL) != 0)
             flag |= TR_LOCAL;           // set "local" flag
+
         if ((trail_inp-p_station->track_data->trail_out+MAX_TRACKS)%MAX_TRACKS +1 > 1) {
             // we have at least two points...
             trail_prev = (trail_inp - 1 + MAX_TRACKS) % MAX_TRACKS;
@@ -4394,9 +4474,9 @@ int is_trailpoint_echo(DataRow *p_station) {
                 && (p_station->course == '\0' || p_station->track_data->course[i] <= 0
                         || atoi(p_station->course) == p_station->track_data->course[i])
                         // current: char, trail: int (-1 is undef)
-                && (p_station->altitude == '\0' || p_station->track_data->altitude[i] <= -99999
+                && (p_station->altitude == '\0' || p_station->track_data->altitude[i] <= -99999l
                         || atoi(p_station->altitude)*10 == p_station->track_data->altitude[i])) {
-                        // current: char, trail: int (-99999 is undef)
+                        // current: char, trail: int (-99999l is undef)
             if (debug_level & 1) {
                 if (j > 0) {
                     printf("delayed echo for %s",p_station->call_sign);
@@ -4505,7 +4585,13 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
     char flag1;
 
     if (fill->track_data != NULL) {
+
         // trail should have at least two points:
+
+//WE7U:  This isn't true.  The track_data only needs to have one
+//point, and the current position would be our other point.  Fix
+//this.
+
         if ( (fill->track_data->trail_inp - fill->track_data->trail_out +
                 MAX_TRACKS) % MAX_TRACKS != 1) {
             if (debug_level & 256) {
@@ -4534,7 +4620,7 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
                 (void)XSetDashes(XtDisplay(w), gc, 0, short_dashed , 2);
             }
 
-            marg_lat = screen_height * scale_y;                 // setup area for acceptable trail points
+            marg_lat = screen_height * scale_y;                 // Set up area for acceptable trail points
             if (marg_lat < TRAIL_POINT_MARGIN*60*100)           // on-screen plus 50% margin
                 marg_lat = TRAIL_POINT_MARGIN*60*100;           // but at least a minimum margin
             marg_lon = screen_width  * scale_x;
@@ -4651,7 +4737,7 @@ void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,lon
     month2str(time->tm_mon,month);
     wday2str(time->tm_wday,wday);
     fprintf(f," %s %s %02d %02d:%02d:%02d %04d",wday,month,time->tm_mday,time->tm_hour,time->tm_min,time->tm_sec,time->tm_year+1900);
-    if (alt > -99999)
+    if (alt > -99999l)
         fprintf(f,"  %5.0fm",(float)(alt/10.0));
     else        // undefined
         fprintf(f,"        ");
@@ -4686,6 +4772,10 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
 
     if (p_station->track_data != NULL) {
         // trail should have at least two points
+
+// WE7U:  Not true.  track_data needs to only have one point, and
+// the other point necessary is the current data point.  Fix this.
+
         if ((p_station->track_data->trail_inp - p_station->track_data->trail_out+MAX_TRACKS)%MAX_TRACKS != 1) {
             for (i = p_station->track_data->trail_out;
                    (p_station->track_data->trail_inp -1 - i +MAX_TRACKS)%MAX_TRACKS > 0;
@@ -5066,7 +5156,7 @@ void move_station_name(DataRow *p_curr, DataRow *p_name) {
  */
 int search_station_name(DataRow **p_name, char *call, int exact) {
     // DK7IN: we do a linear search here.
-    // Maybe I setup a tree storage too, to see what is better,
+    // Maybe I set up a tree storage too, to see what is better,
     // tree should be faster in search, list faster at display time.
     // I don't look at case, objects and internet names could have lower case
     int i,j;
@@ -6936,6 +7026,11 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         strcpy(last_speed,p_station->speed);
         strcpy(last_course,p_station->course);
         last_flag = p_station->flag;
+
+        // Wipe out old data so that it doesn't hang around forever
+        p_station->altitude[0] = '\0';
+        p_station->speed[0] = '\0';
+        p_station->course[0] = '\0';
 
         ok = 1;                         // succeed as default
         switch (type) {
@@ -10207,7 +10302,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         if (isdigit((int)p_station->altitude[0])) {
             // Must convert from meters to feet before transmitting
             temp2 = (int)( (atof(p_station->altitude) / 0.3048) + 0.5);
-            if ( (temp2 >= 0) && (temp2 <= 999999) ) {
+            if ( (temp2 >= 0) && (temp2 <= 99999l) ) {
                 xastir_snprintf(altitude, sizeof(altitude), "/A=%06ld",temp2);
             }
         }
