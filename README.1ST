@@ -478,7 +478,8 @@ First Time Install:
 
      Verify that GPSMan will start up and will download information from a
      Garmin GPS in Garmin-Garmin mode.  This also creates the configuration
-     files needed to use GPSMan with Garmin GPS'es from within Xastir.
+     files needed to use GPSMan with Garmin GPS'es from within Xastir (sets
+     GPS type, serial port, etc within GPSMan's configs).
 
    8. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
