@@ -88,6 +88,15 @@
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 
+// Check for XPM and/or ImageMagick.  We use "NO_GRAPHICS"
+// to disable some routines below if the support for them
+// is not compiled in.
+#ifdef NO_XPM
+  #ifndef HAVE_IMAGEMAGICK
+    #define NO_GRAPHICS 1
+  #endif
+#endif
+
 
 //WE7U4
 // Print options
@@ -1537,7 +1546,9 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_des
 //
 void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 
-#ifndef NO_XPM
+#ifdef NO_GRAPHICS
+    printf("XPM or ImageMagick support not compiled into Xastir!\n");
+#else   // NO_GRAPHICS
 
    char xpm_filename[50];
     char ps_filename[50];
@@ -1734,9 +1745,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 
     //popup_message( langcode("PRINT0015"), langcode("PRINT0014") );
 
-#else // NO_XPM
-    printf("XPM support not compiled into Xastir!\n");
-#endif // NO_XPM
+#endif // NO_GRAPHICS
 
 }
 
@@ -2260,8 +2269,16 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 //
 void Snapshot(void) {
 
-#ifndef NO_XPM
+#ifdef NO_GRAPHICS
+    // Time to take another snapshot?
+    if (sec_now() < (last_snapshot + 300) ) // New snapshot every five minutes
+        return;
 
+    last_snapshot = sec_now(); // Set up timer for next time
+    printf("XPM or ImageMagick support not compiled into Xastir!\n");
+    return;
+#else // NO_GRAPHICS
+ 
     char xpm_filename[50];
     char png_filename[50];
     char command[200];
@@ -2316,9 +2333,8 @@ void Snapshot(void) {
         if ( debug_level & 2 )
             printf("  Done creating png.\n");
     }
-#else // NO_XPM
-    printf("XPM support not compiled into Xastir!\n");
-#endif // NO_XPM
+
+#endif // NO_GRAPHICS
 }
 
 
@@ -3183,16 +3199,10 @@ int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
 void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 
-#ifdef NO_XPM
-  #ifndef HAVE_IMAGEMAGICK
-    #define NO_GRAPHICS 1
+#ifdef NO_GRAPHICS
     printf("No XPM or ImageMagick support compiled into Xastir!\n");
     return;
-  #endif    // HAVE_IMAGEMAGICK
-#endif // NO_XPM
-
-
-#ifndef NO_GRAPHICS
+#else   // NO_GRAPHICS
 
     uid_t user_id;
     struct passwd *user_info;
