@@ -10048,15 +10048,13 @@ void extract_TNC_text(char *info) {
 //WE7U2
 // We feed a raw 7-byte string into this routine.  It decodes the
 // callsign-SSID and tells us whether there are more callsigns after
-// this.  If "asterisk" is nonzero it'll add an asterisk to the
-// callsign if it has been digipeated.  This function is called by
-// the decode_ax25_header() function.
+// this.  If the "asterisk" input parameter is nonzero it'll add an asterisk to the callsign if it has been digipeated.  This function is called by the decode_ax25_header() function
 //
 // Inputs:  string          Raw input string
 //          asterisk        1 = add "digipeated" asterisk
 //
 // Outputs: callsign        Processed string
-//          returned int    1 = more callsigns to follow
+//          returned int    1=more callsigns follow, 0=end of address field
 //
 int decode_ax25_address(char *string, char *callsign, int asterisk) {
     int i,j;
@@ -10226,22 +10224,34 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 
 
 
-// RELAY the packet back out onto RF if it was received on a port
-// that has this feature enabled and has a non-digipeated RELAY
-// entry.  This is for AX.25 kernel networking ports or Serial KISS
-// TNC ports only.
+// RELAY the packet back out onto RF if received on a port with
+// digipeat enabled and the packet header has a non-digipeated RELAY
+// or my_callsign entry.  This is for AX.25 kernel networking ports
+// or Serial KISS TNC ports only:  Regular serial TNC's have these
+// features enabled/disabled through the startup/shutdown files.
 //
 // Adding asterisks:
 // Keep whatever digipeated fields have already been set.  If
-// there's a "RELAY" entry that hasn't been digipeated yet, change
-// "RELAY" to our callsign and set the digipeated field.
+// there's a "RELAY" or my_callsign entry that hasn't been
+// digipeated yet, change it to my_callsign*.
 //
 // This might be much easier to code into the routine that first
-// receives the packet.  There we'd have access to every digipeated
-// bit directly instead of parsing asterisks out of a string.
+// receives the packet (for Serial KISS TNC's).  There we'd have
+// access to every digipeated bit directly instead of parsing
+// asterisks out of a string.
 //
-// NOTE:  We don't handle the case properly of multiple RELAY's or
-// multiple my_callsign's in the path.
+// NOTE:  We don't handle this case properly:  Multiple RELAY's or
+// multiple my_callsign's in the path, where one of the earlier
+// matching callsigns has been digipeated, but a later one has not.
+// We'll find the first matching callsign and the last digi, and we
+// won't relay the packet.  This probably won't happen much in the
+// real world.
+//
+// We could also do premptive digipeating here and skip over
+// callsigns that haven't been digipeated yet.  Should we set the
+// digipeated bits on everything before it?  Probably.  Either that
+// or remove the callsigns ahead of it in the list that weren't
+// digipeated.
 //
 void relay_digipeat(char *call, char *path, char *info, int port) {
     char new_path[110+1];
@@ -10273,9 +10283,9 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
 
     if (short_path != NULL) {   // If comma found
 
-        // Save the destination callsign away for later
+        // Save the destination callsign away for later use
         strncpy(destination,path,short_path - path);
-        destination[short_path - path] = '\0';  // Terminate it
+        destination[short_path - path] = '\0';  // Terminate the string
 
         short_path++;   // Increment past the comma
     }
@@ -10315,7 +10325,8 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     }
 
     // At this point we _might_ have a packet worthy of digipeating.  We
-    // need to check that we don't have an asterisk later in the path.
+    // need to check that we don't have an asterisk later in the
+    // path (past the callsigns of interest).
 
     // Find the asterisk characters in the path.  We need to find the
     // last one, then figure out whether c_ptr or r_ptr are after it.
@@ -10327,6 +10338,15 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     }
     // Now a_ptr should be pointing at the very last asterisk or should
     // be NULL
+
+
+// We probably should only look at the string _after_ the last
+// asterisk for RELAY & my_callsign.  This is the portion of the
+// path that might have unused digi's.  This should be as simple as
+// re-doing r_ptr & c_ptr using a_ptr+1 as the start of the string
+// to search.  a_ptr+1 would either be the start of another call or
+// a terminating '\0' character.
+
 
     ok = 0;
     if (a_ptr != NULL) {    // We have an asterisk
@@ -10349,16 +10369,18 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     }
 
 
-    // Ok, we made it!  We have either a RELAY or a my_callsign that has
-    // not been digipeated through, and we wish to change that fact.  We
-    // need to do a callsign substitution if it's RELAY.  Add an
-    // asterisk to the end of the call in any case.  Also need to fix up
-    // the transmit routine so that it'll set the digipeated bit for
-    // each callsign that has an asterisk.
+    // Ok, we made it!  We have either a RELAY or a my_callsign that
+    // has not been digipeated through, and we wish to change that
+    // fact.  We need to do a callsign substitution if it's RELAY.
+    // Add an asterisk to the end of the call in any case.  Also had
+    // to fix up the KISS transmit routine so that it'll set the
+    // digipeated bit for each callsign that has an asterisk.
+
     new_path[0] = '\0';
 
     // Three cases: RELAY found, my_callsign found, or both found
     if (r_ptr != NULL && c_ptr != NULL) {   // Both found
+
         // Figure out which one comes first
         if (c_ptr < r_ptr) {    // my_callsign is first
             strncat(new_path,short_path,c_ptr - short_path);// Prefix
@@ -10373,6 +10395,7 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
             strcat(new_path,r_ptr + strlen("RELAY") );      // Suffix
         }
     }
+    // Only my callsign found
     else if (c_ptr != NULL) {
         strncat(new_path,short_path,c_ptr - short_path);    // Prefix
         strcat(new_path,my_callsign);                       // Callsign substitution
@@ -10380,13 +10403,15 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
         strcat(new_path,c_ptr + strlen(my_callsign) );      // Suffix
  
     }
+    // Only RELAY found
     else if (r_ptr != NULL) {
         strncat(new_path,short_path,r_ptr - short_path);    // Prefix
         strcat(new_path,my_callsign);                       // Callsign substitution
         strcat(new_path,"*");                               // Has been digipeated
         strcat(new_path,r_ptr + strlen("RELAY") );          // Suffix
     }
-    else {  // Something's wrong here.  Exit
+    else {  // Something's wrong here.  Exit.  We should have one or
+            // the other pointer be non-NULL at this point.
         return;
     }
 
@@ -10402,18 +10427,7 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
         printf("AX25 RELAY: Coming soon to an Xastir near you: %s\n", short_path);
     }
 
-
-    // Scan for "RELAY" and "my_callsign" in the string.  Make sure it's
-    // not "RELAY*" or "my_callsign*".  Do we also need to check
-    // callsigns after it for '*' characters?  If "RELAY" or
-    // "my_callsign" is found, substitute "my_callsign*" in the string and
-    // retransmit it out the same interface.
-    //
-    // We could also do premptive digipeating here and skip over
-    // callsigns that haven't been digipeated yet.  Should we set
-    // the digipeated bits on everything before it?  Probably.
-
-// Example:
+// Example packet:
 //K7FZO>APW251,SEATAC*,WIDE4-1:=4728.00N/12140.83W;PHG3030/Middle Fork Snoqualmie River -251-<630>
 
 }
@@ -10581,10 +10595,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
     return(ok);
 }
-    
 
 
-            
+
+
 
 /*
  *  Read a line from file

@@ -117,7 +117,7 @@ int ax25_ports_loaded = 0;
 
 // decode data
 unsigned char *incoming_data;
-int incoming_data_length;               // Used for binary strings
+int incoming_data_length;               // Used for binary strings such as KISS
 int data_avail = 0;
 int data_port;
 
@@ -216,6 +216,7 @@ int get_device_status(int port) {
 //
 // port #                                                    
 // string is the string of data
+// length is the length of the string
 //***********************************************************
 void channel_data(int port, unsigned char *string, int length) {
     int max;
@@ -2264,7 +2265,7 @@ void port_read(int port) {
                             if (port_data[port].status == DEVICE_UP && port_data[port].read_in_pos > 0)
                                 channel_data(port,
                                     (unsigned char *)port_data[port].device_read_buffer,
-                                    port_data[port].read_in_pos+1);   // Length of string
+                                    port_data[port].read_in_pos);   // Length of string
 
                             for (i = 0; i <= port_data[port].read_in_pos; i++)
                                 port_data[port].device_read_buffer[i] = (char)0;
@@ -2335,7 +2336,7 @@ void port_read(int port) {
                                         /* ok try to decode it */
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
-                                            port_data[port].read_in_pos+1); // Length of string
+                                            port_data[port].read_in_pos);   // Length of string
                                     }
                                     max = MAX_DEVICE_BUFFER - 1;
                                     group = 0;
@@ -2379,7 +2380,7 @@ void port_read(int port) {
                                         port_data[port].bytes_input += strlen(port_data[port].device_read_buffer);
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
-                                             port_data[port].read_in_pos+1); // Length of string
+                                             port_data[port].read_in_pos);  // Length of string
                                     }
                                     /*
                                         do this for interface indicator in this case we only do it for,
