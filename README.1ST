@@ -1237,6 +1237,33 @@ WINDOWS/CYGWIN NOTES:
      the src directory, but add "-L/usr/local/lib -lshp" to the end of it.
      Once all that is done, run make install.
 
+     Cygwin ImageMagick:
+     -------------------
+     Download the ImageMagick cygwin binary from www.imagemagick.org or one
+     of it's mirrors.  Extract it somewhere, then copy the files/directories
+     into the /usr tree.  Edit the config.h file, adding "#define
+     HAVE_IMAGEMAGICK 1" to the file.  Run make, then run the link line
+     listed above but add "-L/usr/lib -lmagick" to the end of it (and add
+     the Shapelib line above if you want Shapelib as well).  "make install".
+
+     Add this to your PATH line in your .profile:
+
+         export MAGICK_HOME=/usr
+
+     Now on-line Tigermaps are working for me on Cygwin!
+
+     Once I start up X-windows, I have to type this in a shell and start
+     Xastir from that shell in order to make all of the paths known:
+
+        cd
+        . ./.profile
+
+     So it appears that starting up X-windows using the startx.bat script
+     ends up putting you somewhere other than your home directory, and your
+     .profile doesn't end up getting sourced.  There must be a better way.
+
+     -------------------
+
      Another difference with Cygwin:  You can't do the make install portion
      if Xastir is up and running.  You have to kill it first.
 
