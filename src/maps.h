@@ -154,6 +154,7 @@ extern void Print_properties(Widget widget, XtPointer clientData, XtPointer call
 
 extern void map_plot (Widget w, long max_x, long max_y, long x_long_cord, long y_lat_cord, unsigned char color, long object_behavior, int destination_pixmap, int draw_filled); 
 
+extern int check_trans ( XColor c );
 
 #endif /* __XASTIR_MAPS_H */
 

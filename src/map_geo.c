@@ -26,6 +26,9 @@
  * SHPRingDir_2d() function in this file.
  *
  */
+
+//#define FUZZYRASTER
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -267,13 +270,16 @@ void draw_geo_image_map (Widget w,
     int geo_image_width = 0;    // Image width  from GEO file
     int geo_image_height = 0;   // Image height from GEO file
     char geo_datum[8+1];        // WGS-84 etc.
-    char geo_projection[8+1];   // TM, UTM, GK, LATLON etc.
-    int map_proj;
+    char geo_projection[256+1];   // TM, UTM, GK, LATLON etc.
+    int map_proj=0;
     int map_refresh_interval_temp;
 #ifdef FUZZYRASTER
     int rasterfuzz = 3;    // ratio to skip 
 #endif //FUZZYRASTER
- 
+    int do_check_trans = 0;  // do we bother checking for tranparent colors
+    int trans_skip;      // skip transparent pixel
+    int crop_x1=0, crop_x2=0, crop_y1=0, crop_y2=0; // pixel crop box
+    int do_crop = 0;     // do we crop pixels
 //#define TIMING_DEBUG
 #ifdef TIMING_DEBUG
     time_mark(1);
@@ -323,7 +329,7 @@ void draw_geo_image_map (Widget w,
                 (void)sscanf (line + 6, "%8s",geo_datum);
 
             if (strncasecmp (line, "PROJECTION", 10) == 0)
-                (void)sscanf (line + 11, "%8s",geo_projection); // ignores leading and trailing space (nice!)
+                (void)sscanf (line + 11, "%256s",geo_projection); // ignores leading and trailing space (nice!)
 
             if (strncasecmp (line, "TERRASERVER", 11) == 0)
                 terraserver_flag = 1;
@@ -341,7 +347,22 @@ void draw_geo_image_map (Widget w,
                   fprintf(stderr, "Map Refresh set to %d.\n", (int) map_refresh_interval);
                 }
             }
-
+            if (strncasecmp(line, "TRANSPARENT", 11) == 0) { // for now, just 1
+                (void)sscanf (line + 12, "%d", &do_check_trans); // to check
+            }      // need to make this read a list of colors to zap out
+            if (strncasecmp(line, "CROP", 4) == 0) { 
+                (void)sscanf (line + 5, "%d %d %d %d", 
+                              &crop_x1,&crop_y1,&crop_x2,&crop_y2 ); 
+                if (crop_x1 < 0 ) crop_x1 = 0;
+                if (crop_y1 < 0 ) crop_y1 = 0;
+                if (crop_x2 < 0 ) crop_x2 = 0;
+                if (crop_y2 < 0 ) crop_y2 = 0;
+                if (crop_x2 < crop_x1 ) // swap
+                    {do_crop = crop_x1; crop_x1=crop_x2; crop_x2=do_crop;}
+                if (crop_y2 < crop_y1 ) // swap
+                    {do_crop = crop_y1; crop_y1=crop_y2; crop_y2=do_crop;}
+                do_crop = 1;
+            }   
 #ifdef HAVE_IMAGEMAGICK
             if (strncasecmp(line, "GAMMA", 5) == 0)
                 imagemagick_options.gamma_flag = sscanf(line + 6, "%f,%f,%f",
@@ -395,12 +416,11 @@ void draw_geo_image_map (Widget w,
     if (geo_projection[0] == '\0')
         strcpy(geo_projection,"LatLon");        // default
     //fprintf(stderr,"Map Projection: %s\n",geo_projection);
-    (void)to_upper(geo_projection);
-    if (strcmp(geo_projection,"TM") == 0)
+    //    (void)to_upper(geo_projection);
+    if (strcasecmp(geo_projection,"TM") == 0)
         map_proj = 1;           // Transverse Mercator
     else
         map_proj = 0;           // Lat/Lon, default
-
 
 #ifdef HAVE_IMAGEMAGICK
     if (terraserver_flag || toposerver_flag) {
@@ -822,7 +842,6 @@ void draw_geo_image_map (Widget w,
 // The status line is not updated yet, probably 'cuz we're too busy
 // getting the map in this thread and aren't redrawing?
 
-
 #ifdef HAVE_IMAGEMAGICK
     GetExceptionInfo(&exception);
     image_info=CloneImageInfo((ImageInfo *) NULL);
@@ -1046,6 +1065,32 @@ void draw_geo_image_map (Widget w,
         // Update to screen
         (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
         return;
+    }
+
+    // crop image: if we just use CropImage(), then the tiepoints will be off
+    // make border pixels transparent.  
+    // cbell - this is a first attempt, it will be integrated into the
+    //         lower loops to speed them up... 
+    if ( do_crop) {
+        int x, y;
+        PixelPacket target;
+        register PixelPacket *q;
+        
+        target=GetOnePixel(image,0,0);
+        for (y=0; y < (long) image->rows; y++) {
+            q=GetImagePixels(image,0,y,image->columns,1);
+            if (q == (PixelPacket *) NULL)
+                fprintf(stderr, "GetImagePixels Failed....\n");
+            for (x=0; x < (int) image->columns; x++) {
+                if ( (x < crop_x1) || (x > crop_x2) || 
+                     (y < crop_y1) || (y > crop_y2)) {
+                    q->opacity=(Quantum) 1;
+                }
+                q++;
+            }
+            if (!SyncImagePixels(image))
+                fprintf(stderr, "SyncImagePixels Failed....\n");
+        }
     }
 
     // If were are drawing to a low bpp display (typically < 8bpp)
@@ -1423,20 +1468,33 @@ void draw_geo_image_map (Widget w,
                         // now copy a pixel from the map image to the screen
 #ifdef HAVE_IMAGEMAGICK
                         l = map_x + map_y * image->columns;
+                        trans_skip = 1; // possibly transparent
                         if (image->storage_class == PseudoClass) {
-                            XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
-                        }
-                        else {
+                            if ( do_check_trans && 
+                                 check_trans(my_colors[index_pack[l]]) ) {
+                                trans_skip = 1;
+                            } else {
+                                XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
+                                trans_skip = 0; // draw it
+                            }
+                        } else {
                             pack_pixel_bits(pixel_pack[l].red,
                                             pixel_pack[l].green,
                                             pixel_pack[l].blue,
                                             &my_colors[0].pixel);
-                            XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+                            if ( do_check_trans && 
+                                 check_trans(my_colors[0]) ) {
+                                trans_skip = 1;
+                            } else {
+                                XSetForeground(XtDisplay(w), gc, my_colors[0].pixel);
+                                trans_skip = 0; // draw it
+                            }
                         }
 #else   // HAVE_IMAGEMAGICK
                         (void)XSetForeground (XtDisplay (w), gc, XGetPixel (xi, map_x, map_y));
 #endif  // HAVE_IMAGEMAGICK
-                        (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
+                        if ( pixel_pack[l].opacity == 0 && !trans_skip  ) // skip transparent
+                            (void)XFillRectangle (XtDisplay (w),pixmap,gc,scr_x,scr_y,scr_dx,scr_dy);
                     } // check map boundaries in y direction
                 }
             } // loop over map pixel columns
@@ -1447,9 +1505,9 @@ void draw_geo_image_map (Widget w,
 
 #ifdef HAVE_IMAGEMAGICK
     if (image)
-       DestroyImage(image);
+        DestroyImage(image);
     if (image_info)
-       DestroyImageInfo(image_info);
+        DestroyImageInfo(image_info);
 #else   // HAVE_IMAGEMAGICK
     if (xi)
         XDestroyImage (xi);
@@ -1462,3 +1520,22 @@ void draw_geo_image_map (Widget w,
 }
 
 
+
+
+
+/*********************************************
+* check_trans()
+*
+* See if this pixel's color should be transparent
+*
+*********************************************/
+
+int check_trans (XColor c) {
+    // need to load an array from the geo file of colors to zap
+    // for now, just a static list to test
+
+    if ( c.pixel == (unsigned long) 0x000000 ) {
+        return 1; // black background
+    }
+    return 0; // everything else is OK to draw
+}
