@@ -75,6 +75,7 @@ benchmark for APRS programs on any operating system.
 Xastir's hardware support has been enhanced, with
 * Support for Serial KISS TNCs
 * Support for Serial TNCs with gps on the AUX port
+* Support for using AGWPE as a TNC
 * Support for Dallas One-Wire weather station
   (see http://melhuish.info/simon/projects/oww/)
 * Support for more weather stations via the wx200d daemon (WX-200/WM-918/
@@ -238,8 +239,10 @@ Fill in your station position if you are not using Xastir with a GPS
 unit. You can locate your general position on the map with Xastir and
 use the position given by the cursor placement over the map. This
 position will be viewable in the box at the bottom of the Xastir screen
-2nd from the left, whenever the mouse is over the drawing area. If you
-have a GPS you can skip this and set up the GPS later.
+2nd from the left, whenever the mouse is over the drawing area. You can also
+choose "Move My Station Here" from the right-click menu while your mouse is
+over your location. If you have a GPS you can skip this and set up the GPS
+later.
 
 "Send Compressed posits", if selected, will transmit in the newer compressed
 format. This format will reduce the amount of data on the air, thereby
@@ -295,7 +298,7 @@ Enter a comment, not required but it will add insight on your station.
 A common thing to enter here is your preferred e-mail address.  It will
 be transmitted along with your posits.
 
-Position ambiguity will allow you control how accurate you transmit your
+Position ambiguity will allow you control how accurately you transmit your
 position. A setting of none will allow your station to transmit the exact
 position you have entered or received from a GPS. The other choices will
 place you somewhere in the range of the choice you selected.  Note that
@@ -334,17 +337,17 @@ altitude in "standard" objects/items.
 
 "Pop up new Bulletins", if selected, will cause Xastir to bring up the bulletin
 dialog when bulletins within the configured range are received. "View 
-zero-distance bulletins" will causes bulletins with no know location not to
+zero-distance bulletins" will cause bulletins with no known location not to
 be displayed or cause popups.
-
-You can also select "Activate alternate net?" choose an altnet call from this
-dialog. Altnet  allows you to have a private APRS(tm) network among the
-stations that also have altnet configured, and have the same altnet call
-entered.
 
 Warn if Modifier keys will cause Xastir to print a warning if you attempt to
 use Xastir while num-lock, scroll-lock, or caps-lock is engaged. Some users
 report the screen blanking on them and similar problems when they attempt this.
+
+You can also select "Activate alternate net?" choose an altnet call from this
+dialog. Altnet allows you to have a private APRS(tm) network among the
+stations that also have altnet configured, and have the same altnet call
+entered.
  
 HELP-INDEX>Configure Timing
 
@@ -354,8 +357,8 @@ Click on File, then Configure, then Timing.
 
 The first slider specifies how often your station's position will be
 transmitted.  For fixed stations a good recommendation is every 30 minutes,
-and definitely no less than 10 minutes.  Mobile stations may wish a faster
-rate.
+and definitely no less than 10 minutes.  Mobile stations may wish to use a
+faster rate.
 
 The second slider is the interval used for sending out objects and items. Try
 to keep these intervals reasonable, as transmitting to a long path every 30
@@ -368,7 +371,7 @@ TNC.
 Dead-Reckoning Timeout adjusts how long a position is assumed valid for the
 purpose of estimating its current position.
 
-The next slider specifies the ghosting interval. Stations that hae not been
+The next slider specifies the ghosting interval. Stations that have not been
 heard in the given period will appear ghosted on screen. The next slider
 specifies when a station will be removed from the screen. The last slider
 specifies the number of full days before data from a station will be entirely
@@ -540,15 +543,15 @@ A quicker zoom in function is to push and hold the left mouse button, drag it
 across the area of interest and let go.  The map will zoom to approximately
 the size of the square you just described with the mouse drag operation. The
 "move" and "measure" toolbar checkboxes must be disabled for this feature to
-work.
+work. Clicking the middle button zooms out with a factor
+of 2, centering where you clicked.
 
 The map can also be zoomed with the keyboard PageUp/PageDown keys.  The
 zooming in this case keeps the same map center. 
 
 Panning/Centering:
 The map can be centered at a specific location by choosing center in the
-right-click options menu. Clicking the middle button zooms out with a factor
-of 2, centering where you clicked.
+right-click options menu.
 
 Panning is also accomplished by using the options menu, or by using the arrow
 buttons on the top of the screen. The map position will shift a portion of a
@@ -599,12 +602,10 @@ implemented on all versions of APRS(tm) programs, and some of the details of
 how they are displayed may also be different on other programs.
 For the other two, signpost and DF objects, see below.
 
-Objects are retransmitted at the rate of station position reports, configured
-in File|Configure|Defaults, and will cease retransmitting after double the
-station display time, also configured there. "killed" objects are also
-retransmitted in this manner, until they expire from the queue. Objects are
-persistant across Xastir sessions, and are stored in 
-~/.xastir/config/object.log. This file may be cleared by selecting "Clear
+Objects are retransmitted at the rate specified in File|Configure|Timings.
+"killed" objects are also retransmitted in this manner, until they expire
+from the queue. Objects are persistant across Xastir sessions, and are stored
+in ~/.xastir/config/object.log. This file may be cleared by selecting "Clear
 Object/Item history" from the Stations menu.
 
 The Object/Item creation option in the right click menu will bring up a dialog
@@ -830,6 +831,7 @@ This option opens a simple calculator that can convert between coordinate
 systems. This is useful for converting positions to the various formats used by
 different groups of people.
 
+
 Disable All Maps
 This option disables the loading of any maps. It is most useful when doing
 rapid zooming or panning, because it saves the need to load the maps on each
@@ -875,6 +877,13 @@ These maps can be obtained and installed according to the directions in the
 README.1ST file. They are displayed on screen when special weather alert
 messages are received, and expire after a time or can be remotely cancelled.
 The weather alert text can be seen under View|Weather Alerts.
+
+Index Maps on startup
+This option controls if the map index file is built on startup. Most users
+should leave this enabled.
+
+Re-index maps
+This option adds any new maps to the max index.
 
 Background color
 This option controls the color of the background behind the maps you have
@@ -1257,6 +1266,10 @@ This will wipe all the line tracking data from the station database and
 refreshes the screen.  This option is useful if you're low on memory
 or just want an uncluttered screen.  You may also clear individual
 station's trails from the Station Info dialog.
+
+Reload Object/Item History
+This will reload the ~/.xastir/config/objects.log file used for Object and Item
+persistance. This is needed if you edit the file while Xastir is running.
 
 Clear Object/Item History
 This will clear the ~/.xastir/config/objects.log file used for Object and Item
