@@ -199,7 +199,11 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             // transmissions out RF have that character as well.
             if (debug_level & 1024)
                 fprintf(stderr,"3rd party HeardQ: %s\n",line);
-            strcpy(line2,c0+1);
+
+            xastir_snprintf(line2,
+                sizeof(line2),
+                "%s",
+                c0+1);
 
             break;
 
@@ -211,7 +215,10 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
 
             // No extra changes needed before parsing code, Example:
             // }VE7VFM-11>APW251,TCPIP,WE7U-14*::VE7VFM-9 :OK GOT EMAIL OK{058
-            strcpy(line2,line);
+            xastir_snprintf(line2,
+                sizeof(line2),
+                "%s",
+                line);
 
             if (debug_level & 1024)
                 fprintf(stderr," COMPLETE SENT PACKET: %s\n",line2);
@@ -373,7 +380,12 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             }
 
             temp->time = (time_t)sec_now();
-            strcpy(temp->data,match_line);
+
+            xastir_snprintf(temp->data,
+                MAX_TNC_LINE_SIZE+15,
+                "%s",
+                match_line);
+
             temp->next = NULL;  // Will be the end of the linked list
 
             if (ptr_last == NULL) { // Queue is currently empty
@@ -476,7 +488,10 @@ void output_igate_net(char *line, int port, int third_party) {
     if (operate_as_an_igate <= 0)
         return;
 
-    strcpy(temp,line);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        line);
 
     // Check for null call_sign field
     call_sign = strtok(temp,">");

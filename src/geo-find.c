@@ -426,9 +426,9 @@ int geo_find(
 	s.address = s.range_count = 0;
 	if (NULL != (s.out = out)) {
 		out->zip_code = 0;
-		strcpy(out->street_name,"");
-		strcpy(out->city_name,"");
-		strcpy(out->state_name,"");
+        out->street_name[0] = '\0';
+        out->city_name[0] = '\0';
+        out->state_name[0] = '\0';
 	}
 	return get_address(&s);
 }

@@ -322,7 +322,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
         (void)remove_trailing_spaces(devices[TNC_port].radio_port);
 
         if (strcmp(devices[TNC_port].radio_port,"") == 0) {
-            strcpy(devices[TNC_port].radio_port,"0");
+            strncpy(devices[TNC_port].radio_port,"0",2);
         }
 //fprintf(stderr,"Radio Port: %s\n",devices[TNC_port].radio_port);
     }
@@ -425,8 +425,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
             || (type == DEVICE_SERIAL_MKISS_TNC) ) {
 
         // KISS TNC, no up/down files for this one!
-        strcpy(devices[TNC_port].tnc_up_file,"");
-        strcpy(devices[TNC_port].tnc_down_file,"");
+        devices[TNC_port].tnc_up_file[0] = '\0';
+        devices[TNC_port].tnc_down_file[0] = '\0';
 
         // Instead we have KISS parameters to set
 
@@ -6299,23 +6299,38 @@ void modify_device_list(int option, int port) {
                     if (port_data[i].active==DEVICE_IN_USE) {
                         switch (port_data[i].status) {
                             case DEVICE_DOWN:
-                                strcpy(temp2,langcode("IFDIN00006"));
+                                xastir_snprintf(temp2,
+                                    sizeof(temp2),
+                                    "%s",
+                                    langcode("IFDIN00006"));
                                 break;
 
                             case DEVICE_UP:
-                                strcpy(temp2,langcode("IFDIN00007"));
+                                xastir_snprintf(temp2,
+                                    sizeof(temp2),
+                                    "%s",
+                                    langcode("IFDIN00007"));
                                 break;
 
                             case DEVICE_ERROR:
-                                strcpy(temp2,langcode("IFDIN00008"));
+                                xastir_snprintf(temp2,
+                                    sizeof(temp2),
+                                    "%s",
+                                    langcode("IFDIN00008"));
                                 break;
 
                             default:
-                                strcpy(temp2,langcode("IFDIN00009"));
+                                xastir_snprintf(temp2,
+                                    sizeof(temp2),
+                                    "%s",
+                                    langcode("IFDIN00009"));
                                 break;
                         }
                     } else {
-                        strcpy(temp2,langcode("IFDIN00006"));
+                        xastir_snprintf(temp2,
+                            sizeof(temp2),
+                            "%s",
+                            langcode("IFDIN00006"));
                     }
                     switch (devices[i].device_type) {
                         case DEVICE_SERIAL_TNC:
@@ -6742,16 +6757,16 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                     modify_device_list(1,port);
                     /* Clear device */
                     devices[port].device_type=DEVICE_NONE;
-                    strcpy(devices[port].device_name,"");
-                    strcpy(devices[port].radio_port,"");
-                    strcpy(devices[port].device_host_name,"");
-                    strcpy(devices[port].device_host_pswd,"");
-                    strcpy(devices[port].device_host_filter_string,"");
-                    strcpy(devices[port].comment,"");
-                    strcpy(devices[port].unproto1,"");
-                    strcpy(devices[port].unproto2,"");
-                    strcpy(devices[port].unproto3,"");
-                    strcpy(devices[port].unproto_igate,"");
+                    devices[port].device_name[0] = '\0';
+                    devices[port].radio_port[0] = '\0';
+                    devices[port].device_host_name[0] = '\0';
+                    devices[port].device_host_pswd[0] = '\0';
+                    devices[port].device_host_filter_string[0] = '\0';
+                    devices[port].comment[0] = '\0';
+                    devices[port].unproto1[0] = '\0';
+                    devices[port].unproto2[0] = '\0';
+                    devices[port].unproto3[0] = '\0';
+                    devices[port].unproto_igate[0] = '\0';
                     devices[port].style=0;
                     devices[port].igate_options=0;
                     devices[port].transmit_data=0;

@@ -27,8 +27,9 @@
 
 #define MAX_COLORS 75
 
+#define MAX_COLORNAME 40
 typedef struct {
-    char colorname[40];
+    char colorname[MAX_COLORNAME];
     XColor color;
 } color_load;
 

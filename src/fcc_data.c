@@ -89,9 +89,9 @@ int build_fcc_index(int type){
     int found,i,num;
 
     if (type==1)
-        strcpy(database_name,"fcc/appl.dat");
+        xastir_snprintf(database_name, sizeof(database_name), "fcc/appl.dat");
     else
-        strcpy(database_name,"fcc/EN.dat");
+        xastir_snprintf(database_name, sizeof(database_name), "fcc/EN.dat");
 
     /* ====================================================================    */
     /*    If the index file is there, exit                */
@@ -234,21 +234,24 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
     char char_offset[16];
     char index[32];
 
-    strcpy(data->id_file_num,"");
-    strcpy(data->type_purpose,"");
+    data->id_file_num[0] = '\0';
+    data->type_purpose[0] = '\0';
     data->type_applicant=' ';
-    strcpy(data->name_licensee,"");
-    strcpy(data->text_street,"");
-    strcpy(data->text_pobox,"");
-    strcpy(data->city,"");
-    strcpy(data->state,"");
-    strcpy(data->zipcode,"");
-    strcpy(data->date_issue,"");
-    strcpy(data->date_expire,"");
-    strcpy(data->date_last_change,"");
-    strcpy(data->id_examiner,"");
+    data->name_licensee[0] = '\0';
+    data->text_street[0] = '\0';
+    data->text_pobox[0] = '\0';
+    data->city[0] = '\0';
+    data->state[0] = '\0';
+    data->zipcode[0] = '\0';
+    data->date_issue[0] = '\0';
+    data->date_expire[0] = '\0';
+    data->date_last_change[0] = '\0';
+    data->id_examiner[0] = '\0';
     data->renewal_notice=' ';
-    strcpy(temp,callsign);
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "%s",
+        callsign);
     (void)call_only(temp);
 
     xastir_snprintf(calltemp, sizeof(calltemp), "%-6.6s", temp);

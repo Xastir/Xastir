@@ -65,10 +65,10 @@ int show_destination_mark = 0;
 void geocoder_gui_init(void)
 {
     init_critical_section( &geocoder_place_dialog_lock );
-    strcpy(geocoder_zip_name,"");
-    strcpy(geocoder_state_name,"");
-    strcpy(geocoder_locality_name,"");
-    strcpy(geocoder_address_name,"");
+    geocoder_zip_name[0] = '\0';
+    geocoder_state_name[0] = '\0';
+    geocoder_locality_name[0] = '\0';
+    geocoder_address_name[0] = '\0';
 }
 
 

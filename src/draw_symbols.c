@@ -2393,14 +2393,6 @@ void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer ca
         symbol_change_requested_from = 0;
     }
 
-/*
-    // Small memory leak in below statement:
-    //strcpy(altnet_call, XmTextGetString(altnet_text));
-    // Change to:
-    temp = XmTextGetString(altnet_text);
-    strcpy(altnet_call,temp);
-    XtFree(temp);
-*/
     Select_symbol_destroy_shell(widget,select_symbol_dialog,callData);
 }
 

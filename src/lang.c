@@ -169,13 +169,19 @@ int load_language_file(char *filename) {
                                                 }
                                             }
                                             if(lcok) {
-                                                strcpy(lang_code[lang_code_number],temp_ptr);
+                                                xastir_snprintf(lang_code[lang_code_number],
+                                                    MAX_LANG_CODE+1,
+                                                    "%s",
+                                                    temp_ptr);
                                                 temp_ptr=strtok(NULL,"|");         /* get string */
                                                 if (temp_ptr!=NULL) {
                                                     data_len=(int)strlen(temp_ptr);
                                                     if ((buffer_len+data_len+1)< MAX_LANG_BUFFER) {
                                                         lang_code_ptr[lang_code_number]=lang_buffer+buffer_len;
-                                                        strcpy(lang_buffer+buffer_len,temp_ptr);
+                                                        xastir_snprintf(lang_buffer+buffer_len,
+                                                            MAX_LANG_BUFFER-buffer_len,
+                                                            "%s",
+                                                            temp_ptr);
                                                         lang_buffer[buffer_len+data_len]='\0';
                                                         buffer_len+=data_len+1;
                                                         temp_ptr=strtok(NULL,"|");      /* get hotkey */
