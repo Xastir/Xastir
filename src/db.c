@@ -1850,7 +1850,6 @@ int is_altnet(DataRow *p_station) {
 
 
 
-//WE7U
 // Function which checks various filtering criteria then decides
 // whether to call draw_symbol() for each station.
 //
@@ -1966,7 +1965,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         if (strlen(p_station->altitude)>0) {
             // Found it in the current data
             xastir_snprintf(temp_altitude, sizeof(temp_altitude), "%.0f%s",
-                atof(p_station->altitude) * cvt_m2len,un_alt);
+                atof(p_station->altitude) * cvt_m2len, un_alt);
         }
 
         // Else check whether the previous position had altitude.
@@ -2246,7 +2245,6 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
 
 
-//WE7U
         // Draw additional stuff if this is a storm
         weather = p_station->weather_data;
         if ( (weather != NULL)
@@ -2403,7 +2401,6 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
 
 
-//WE7U
         // Draw additional stuff if this is a storm
         weather = p_station->weather_data;
         if ( (weather != NULL)
@@ -3729,7 +3726,6 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-//WE7U
         // Fuel temp/moisture for RAWS weather stations
         if (strlen(weather->wx_fuel_temp) > 0) {
             if (units_english_metric)
@@ -4631,10 +4627,10 @@ int test_extract_weather_item(char *data, char type, int datalen) {
 // complete weather report       with lat/lon
 //  see APRS Reference page 62ff
 //
-// WE7U:  Added 'F' for Fuel Temp and 'f' for Fuel Moisture in
-// order to decode these two new parameters used for RAWS weather
-// station objects.
-
+// Added 'F' for Fuel Temp and 'f' for Fuel Moisture in order to
+// decode these two new parameters used for RAWS weather station
+// objects.
+//
 int extract_weather(DataRow *p_station, char *data, int compr) {
     char time_data[MAX_TIME];
     char temp[5];
@@ -4642,6 +4638,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
     WeatherRow *weather;
     char course[4];
     char speed[4];
+    int in_knots = 0;
 
 //WE7U
 // Try copying the string to a temporary string, then do some
@@ -4659,8 +4656,14 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 && data[0] =='g' && is_weather_data(&data[1],3)
                 && data[4] =='t' && is_weather_data(&data[5],3)) {
 
-            strcpy(speed, p_station->speed);    // we find WX course/speed
-            strcpy(course,p_station->course);   // in compressed position data
+            // Snag WX course/speed from compressed position data.
+            // This speed is in knots.  This assumes that we've
+            // already extracted speed/course from the compressed
+            // packet.  extract_comp_position() extracts
+            // course/speed as well.
+            strcpy(speed, p_station->speed);
+            strcpy(course,p_station->course);
+            in_knots = 1;
 
             //printf("Found compressed wx\n");
         }
@@ -4670,8 +4673,14 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 && test_extract_weather_item(data,'g',3)
                 && test_extract_weather_item(data,'t',3) ) {
 
-            strcpy(speed, p_station->speed);    // we find WX course/speed
-            strcpy(course,p_station->course);   // in compressed position data
+            // Snag WX course/speed from compressed position data.
+            // This speed is in knots.  This assumes that we've
+            // already extracted speed/course from the compressed
+            // packet.  extract_comp_position() extracts
+            // course/speed as well.
+            strcpy(speed, p_station->speed);
+            strcpy(course,p_station->course);
+            in_knots = 1;
 
             //printf("Found compressed WX in non-fixed locations! %s:%s\n",
             //    p_station->call_sign,data);
@@ -4689,15 +4698,18 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 && data[7] =='g' && is_weather_data(&data[8], 3)
                 && data[11]=='t' && is_weather_data(&data[12],3)) {    // Complete Weather Report
 
+            // Get speed/course.  Speed is in knots.
             (void)extract_speed_course(data,speed,course);
+            in_knots = 1;
 
             // Not found yet?  Try again.
             if ( (speed[0] == '\0') || (course[0] == '\0') ) {
 
                 // Try to get speed/course from 's' and 'c' fields
-                // (another wx format)
+                // (another wx format).  Speed is in mph.
                 (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
                 (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
+                in_knots = 0;
             }
 
             //printf("Found Complete Weather Report\n");
@@ -4709,8 +4721,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 && data[8] =='g' && is_weather_data(&data[9], 3)
                 && data[12]=='t' && is_weather_data(&data[13],3)) { // Positionless Weather Data
 
-            // Try to snag speed/course out of first 7 bytes
+            // Try to snag speed/course out of first 7 bytes.  Speed
+            // is in knots.
             (void)extract_speed_course(data,speed,course);
+            in_knots = 1;
 
             // Not found yet?  Try again.
             if ( (speed[0] == '\0') || (course[0] == '\0') ) {
@@ -4719,6 +4733,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 // (another wx format)
                 (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
                 (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
+                in_knots = 0;
             }
 
             //printf("Found weather\n");
@@ -4730,8 +4745,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 && test_extract_weather_item(data,'g',3)
                 && test_extract_weather_item(data,'t',3) ) {
 
-            // Try to snag speed/course out of first 7 bytes
+            // Try to snag speed/course out of first 7 bytes.  Speed
+            // is in knots.
             (void)extract_speed_course(data,speed,course);
+            in_knots = 1;
 
             // Not found yet?  Try again.
             if ( (speed[0] == '\0') || (course[0] == '\0') ) {
@@ -4740,6 +4757,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 // (another wx format)
                 (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
                 (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
+                in_knots = 0;
             }
  
             //printf("Found WX in non-fixed locations!  %s:%s\n",
@@ -4758,7 +4776,19 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
     if (ok) {
         weather = p_station->weather_data;
 
-        strcpy(weather->wx_speed, speed);
+        // Copy into weather speed variable.  Convert knots to mph
+        // if necessary.
+        if (in_knots) {
+            xastir_snprintf(weather->wx_speed,
+                sizeof(weather->wx_speed),
+                "%03.0f",
+                atoi(speed) * 1.1508);  // Convert knots to mph
+        }
+        else {
+            // Already in mph.  Copy w/no conversion.
+            strcpy(weather->wx_speed, speed);
+        }
+
         strcpy(weather->wx_course,course);
         if (compr) {        // course/speed was taken from normal data, delete that
             // fix me: we delete a potential real speed/course now
@@ -4832,8 +4862,8 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
 
 
-// WE7U:  Initial attempt at decoding tropical storm, tropical
-// depression, and hurricane data.
+// Initial attempt at decoding tropical storm, tropical depression,
+// and hurricane data.
 //
 // This data can be in an Object report, but can also be in an Item
 // or position report.
@@ -4848,7 +4878,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
     int  ok = 1;
     WeatherRow *weather;
     char course[4];
-    char speed[4];
+    char speed[4];  // Speed in knots
     char *p, *p2;
 
 
@@ -4877,6 +4907,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
     // Back up 7 spots to try to extract the next items
     p2 = p - 7;
     if (p2 >= data) {
+        // Attempt to extract course/speed.  Speed in knots.
         if (!extract_speed_course(p2,speed,course)) {
             // No speed/course to extract
 //printf("No speed/course found\n");
@@ -6948,9 +6979,11 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
 
 
 
-/*
- *  Extract speed and course from beginning of info field
- */
+//
+//  Extract speed and course from beginning of info field
+//
+// Returns course in degrees, speed in KNOTS.
+//
 int extract_speed_course(char *info, char *speed, char *course) {
     int i,found,len;
 
@@ -8177,7 +8210,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if (ok) {
                     // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
-(void)extract_storm(p_station,data,compr_pos);
+                    (void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);    // look for weather data first
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);            // altitude
@@ -8289,7 +8322,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 found_pos = 0;
                 break;
 
-//WE7U
             case (APRS_OBJECT):
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
@@ -8307,8 +8339,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     strcpy(p_station->pos_time,get_time(temp_data));
 
                     strcpy(p_station->origin,origin);                   // define it as object
-(void)extract_storm(p_station,data,compr_pos);
-                   (void)extract_weather(p_station,data,compr_pos);    // look for wx info
+                    (void)extract_storm(p_station,data,compr_pos);
+                    (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
 
@@ -8337,8 +8369,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
                     strcpy(p_station->origin,origin);                   // define it as item
-(void)extract_storm(p_station,data,compr_pos);
-                   (void)extract_weather(p_station,data,compr_pos);    // look for wx info
+                    (void)extract_storm(p_station,data,compr_pos);
+                    (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
 
@@ -8366,8 +8398,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     }
                 }
                 if (ok) {
-(void)extract_storm(p_station,data,compr_pos);
-                   (void)extract_weather(p_station,data,compr_pos);
+                    (void)extract_storm(p_station,data,compr_pos);
+                    (void)extract_weather(p_station,data,compr_pos);
                     p_station->record_type = (char)APRS_WX1;
 
                     //substr(p_station->comments,data,MAX_COMMENTS);
@@ -8378,8 +8410,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             case (APRS_WX2):            // '_'
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
-(void)extract_storm(p_station,data,compr_pos);
-                   (void)extract_weather(p_station,data,0);            // look for weather data first
+                    (void)extract_storm(p_station,data,compr_pos);
+                    (void)extract_weather(p_station,data,0);            // look for weather data first
                     p_station->record_type = (char)APRS_WX2;
                     found_pos = 0;
                 }
@@ -8768,6 +8800,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // Get distance in nautical miles.
             value = (float)calc_distance_course(l_lat,l_lon,
                     p_station->coord_lat,p_station->coord_lon,temp_data,sizeof(temp_data));
+
+            // Convert to whatever measurement value we're currently using
             distance = value * cvt_kn2len;
         
             /* check ranges */
@@ -11704,16 +11738,19 @@ void search_tracked_station(DataRow **p_tracked) {
 
     while (next_station_time(&curr)) {
         if (curr != t && curr->flag&ST_ACTIVE) {
-            float distance;
+
+            float distance; // Distance in whatever measurement
+                            // units we're currently using.
             char bearing[10];
             char station_id[600];
 
             distance =  (float)calc_distance_course(t->coord_lat,
-                                                    t->coord_lon, 
-                                                                        curr->coord_lat,
-                                                    curr->coord_lon,
-                                                                        bearing,
-                                                    sizeof(bearing)) * cvt_kn2len;
+                                   t->coord_lon, 
+                                   curr->coord_lat,
+                                   curr->coord_lon,
+                                   bearing,
+                                   sizeof(bearing)) * cvt_kn2len;
+
             if (debug_level & 1) 
                 printf("Looking at %s: distance %.3f bearing %s (%s)\n",
                         curr->call_sign,distance,bearing,convert_bearing_to_name(bearing,1));

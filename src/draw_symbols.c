@@ -740,7 +740,9 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 
 
     // Convert from mph to knots for wind speed.
-    my_speed = my_speed * cvt_mi2len;
+    my_speed = my_speed * 0.8689607;
+
+    //printf("mph:%s, knots:%d\n",speed,my_speed);
 
     // Adjust so that it fits our screen angles.  We're off by
     // 90 degrees.

@@ -6267,11 +6267,15 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     b_x = mid_x_long_offset  - ((width *scale_x)/2) + (input_x*scale_x);
                     b_y = mid_y_lat_offset   - ((height*scale_y)/2) + (input_y*scale_y);
 
-                    // Keep y constant to get x distance
+                    // Keep y constant to get x distance.  Convert
+                    // to the current measurement units for display.
                     x_distance_real = cvt_kn2len * calc_distance_course(a_y,a_x,a_y,b_x,temp_course,sizeof(temp_course));
-                    // Keep x constant to get y distance
+                    // Keep x constant to get y distance.  Convert
+                    // to the current measurement units for display.
                     y_distance_real = cvt_kn2len * calc_distance_course(a_y,a_x,b_y,a_x,temp_course,sizeof(temp_course));
-                    // Compute the total distance and course
+                    // Compute the total distance and course.
+                    // Convert to the current measurement units for
+                    // display.
                     full_distance = cvt_kn2len * calc_distance_course(a_y,a_x,b_y,b_x,temp_course,sizeof(temp_course));
  
                     if (full_distance < 1.0) {
@@ -8376,6 +8380,12 @@ void  Units_choice_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
 
 /*
  *  Update global variables for unit conversion
+ *
+ * Be careful using these, as they change based on the value of
+ * units_english_metric!  These variable should only be used when
+ * DISPLAYING data, not when converting numbers for use in internal
+ * storage or equations.
+ *
  */
 void update_units(void) {
 
