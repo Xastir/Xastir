@@ -65,20 +65,20 @@ XASTIR_SET_SYSTEM
 
 
 # Check for binaries
-use_festival=no
-use_gpsman=no
+use_festival=yes
+use_gpsman=yes
 XASTIR_DETECT_BINARIES
-if test "x${festival}" != "xno"; then
-  use_festival=yes
+AC_ARG_WITH(festival,[  --without-festival       Disable festival features.],use_festival=$withval)
+if test "x${festival}" = "xno"; then
+  use_festival=no
 fi
-AC_ARG_WITH(festival,[  --without-festival       Disable festival features.],use_festival=no)
 
 
 #  echo GPSMAN is ${gpsman}
-if test "x${gpsman}" != "xno"; then
-  use_gpsman=yes
+AC_ARG_WITH(gpsman,[  --without-gpsman       Disable gpsman features.],use_gpsman=$withval)
+if test "x${gpsman}" = "xno"; then
+  use_gpsman=no
 fi
-AC_ARG_WITH(gpsman,[  --without-gpsman       Disable gpsman features.],use_gpsman=no)
 
 
 # JMT - XXX - what is this and why is it relevant?
@@ -176,7 +176,7 @@ AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}")
  
 # Check for Shapelib
 use_shapelib=yes
-AC_ARG_WITH(shapelib,[  --without-shapelib       Disable shapelib features.],use_shapelib=no)
+AC_ARG_WITH(shapelib,[  --without-shapelib       Disable shapelib features.],use_shapelib=$withval)
 if test "${use_shapelib}" = "yes"; then
   use_shapelib=no
   AC_CHECK_HEADERS(shapefil.h libshp/shapefil.h, [AC_CHECK_LIB(shp, DBFOpen, use_shapelib=yes
@@ -190,7 +190,7 @@ fi
 
 # Check for pcre
 use_pcre=yes
-AC_ARG_WITH(pcre,[  --without-pcre       Disable pcre features.],use_pcre=no)
+AC_ARG_WITH(pcre,[  --without-pcre       Disable pcre features.],use_pcre=$withval)
 if test "${use_pcre}" = "yes"; then
   use_pcre=no
   AC_CHECK_HEADERS(pcre.h pcre/pcre.h, [AC_CHECK_LIB(pcre, pcre_compile, use_pcre=yes
@@ -207,7 +207,7 @@ AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEF
  
 # Check for libproj
 use_proj=yes
-AC_ARG_WITH(libproj,[  --without-libproj       Disable libproj features.],use_proj=no)
+AC_ARG_WITH(libproj,[  --without-libproj       Disable libproj features.],use_proj=$withval)
 if test "${use_proj}" = "yes"; then
   use_proj=no
   AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
@@ -220,7 +220,7 @@ fi
 use_geotiff=no
 if test "${use_proj}" = "yes"; then
   use_geotiff=yes
-  AC_ARG_WITH(geotiff,[  --without-geotiff       Disable geotiff features.],use_geotiff=no)
+  AC_ARG_WITH(geotiff,[  --without-geotiff       Disable geotiff features.],use_geotiff=$withval)
   if test "${use_geotiff}" = "yes"; then
     use_geotiff=no
     AC_CHECK_LIB(tiff, TIFFClose, AC_CHECK_LIB(proj, pj_init, AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
@@ -233,7 +233,7 @@ fi
 
 # Check for AX.25 library 
 use_ax25=yes
-AC_ARG_WITH(ax25,[  --without-ax25       Disable ax25 features.],use_ax25=no)
+AC_ARG_WITH(ax25,[  --without-ax25       Disable ax25 features.],use_ax25=$withval)
 if test "${use_ax25}" = "yes"; then
   use_ax25=no
   AC_CHECK_HEADERS(netax25/ax25.h, [AC_CHECK_LIB(ax25, ax25_config_load_ports, use_ax25=yes
@@ -245,7 +245,7 @@ fi
 
 # use dbfawk
 use_dbfawk=yes
-AC_ARG_WITH(dbfawk,[  --without-dbfawk       Disable dbfawk features.],use_dbfawk=no)
+AC_ARG_WITH(dbfawk,[  --without-dbfawk       Disable dbfawk features.],use_dbfawk=$withval)
 # dbfawk requires shapelib and pcre.  Make sure:
 if test "${use_dbfawk}" = "yes"; then
   if test "${use_pcre}" = "yes" -a "${use_shapelib}" = "yes"; then
@@ -260,7 +260,7 @@ fi
 # Check for GDAL.  Make sure that the GDAL check is towards the
 # last, as it can mess up shapelib and libgeotiff currently.
 use_gdal=yes
-AC_ARG_WITH(gdal,[  --without-gdal       Disable gdal features.],use_gdal=no)
+AC_ARG_WITH(gdal,[  --without-gdal       Disable gdal features.],use_gdal=$withval)
 if test "${use_gdal}" = "yes"; then
   use_gdal=no
   AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister, use_gdal=yes
@@ -273,7 +273,7 @@ fi
 # Check for ImageMagick.  This check is VERY important to have as
 # the last check, as it messes up the previous checks if it fails.
 use_imagemagick=yes
-AC_ARG_WITH(imagemagick,[  --without-imagemagick       Disable imagemagick features.],use_imagemagick=no)
+AC_ARG_WITH(imagemagick,[  --without-imagemagick       Disable imagemagick features.],use_imagemagick=$withval)
 if test "${use_imagemagick}" = "yes"; then
   XASTIR_CHECK_IMAGEMAGICK
 fi
