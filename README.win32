@@ -500,6 +500,18 @@ If you experience this, check your path settings and make sure that
 ImageMagick's path is first.
 
 
+[ ] Step 9)  Document & Back Up the Configuration
+
+One user had a problem where after Cygwin/Xastir was installed, he
+installed another program, in this case Java, and it wiped out some
+of the environment variables that Cygwin set.  $HOME was one
+variable that got changed.
+
+To guard against such changes, go to My Computer and right-click on
+properties.  Write down the Advanced System Variables and keep the
+note in a safe place.
+
+
 Optional
 
 To shorten the Xastir sequence or to automate the startup process of
