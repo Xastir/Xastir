@@ -16598,6 +16598,7 @@ int Setup_object_data(char *line, int line_length) {
             temp2 = atoi(line);
             if ( (temp2 >= 0) && (temp2 <= 999999) ) {
                 xastir_snprintf(altitude, sizeof(altitude), "/A=%06ld", temp2);
+                //fprintf(stderr,"Altitude string: %s\n",altitude);
             }
         }
     }
@@ -16727,7 +16728,17 @@ int Setup_object_data(char *line, int line_length) {
         if (transmit_compressed_objects_items) {
             char temp_overlay = last_obj_overlay;
 
-// Need to compute "csT" at some point and add it to the object
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
 
             // Need to handle the conversion of numeric overlay
             // chars to "a-j" here.
@@ -16735,7 +16746,7 @@ int Setup_object_data(char *line, int line_length) {
                 temp_overlay = last_obj_overlay + 'a';
             }
  
-            xastir_snprintf(line, line_length, ";%-9s*%s%s",
+            xastir_snprintf(line, line_length, ";%-9s*%s%s%s",
                 last_object,
                 time,
                 compress_posit(ext_lat_str,
@@ -16744,7 +16755,8 @@ int Setup_object_data(char *line, int line_length) {
                     last_obj_sym,
                     course,
                     speed,  // In knots
-                    ""));    // PHG, must be blank in this case
+                    ""),    // PHG, must be blank in this case
+                    altitude);
         }
         else {
             xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
@@ -17078,7 +17090,17 @@ int Setup_item_data(char *line, int line_length) {
         if (transmit_compressed_objects_items) {
             char temp_overlay = last_obj_overlay;
 
-// Need to compute "csT" at some point and add it to the item
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+
 
             // Need to handle the conversion of numeric overlay
             // chars to "a-j" here.
@@ -17086,7 +17108,7 @@ int Setup_item_data(char *line, int line_length) {
                 temp_overlay = last_obj_overlay + 'a';
             }
  
-            xastir_snprintf(line, line_length, ")%s!%s",
+            xastir_snprintf(line, line_length, ")%s!%s%s",
                 last_object,
                 compress_posit(ext_lat_str,
                     (temp_overlay) ? temp_overlay : last_obj_grp,
@@ -17094,7 +17116,8 @@ int Setup_item_data(char *line, int line_length) {
                     last_obj_sym,
                     course,
                     speed,  // In knots
-                    ""));    // PHG, must be blank in this case
+                    ""),    // PHG, must be blank in this case
+                    altitude);
         }
         else {
             xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",

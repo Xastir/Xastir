@@ -12769,7 +12769,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                 convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
                 convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
 
-                xastir_snprintf(line, line_length, ";%-9s*%s%s",
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%s",
                     p_station->call_sign,
                     time,
                     compress_posit(lat_str,
@@ -12778,7 +12778,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                         object_symbol,
                         course,
                         speed,  // In knots
-                        ""));   // PHG, must be blank
+                        ""),    // PHG, must be blank
+                        altitude);
             }
             else {  // Non-compressed posit object
                 xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
@@ -12807,7 +12808,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                 convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
                 convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
  
-                xastir_snprintf(line, line_length, ")%s!%s",
+                xastir_snprintf(line, line_length, ")%s!%s%s",
                     p_station->call_sign,
                     compress_posit(lat_str,
                         temp_group,
@@ -12815,7 +12816,8 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                         object_symbol,
                         course,
                         speed,  // In knots
-                        ""));   // PHG, must be blank
+                        ""),    // PHG, must be blank
+                        altitude);
             }
             else {  // Non-compressed item
                 xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
