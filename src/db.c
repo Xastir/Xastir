@@ -7181,8 +7181,8 @@ int extract_position(DataRow *p_station, char **info, int type) {
     if (type != APRS_GRID){
         ok = (int)(strlen(my_data) >= 19);
         ok = (int)(ok && my_data[4]=='.' && my_data[14]=='.'
-                    && (my_data[7] =='N' || my_data[7] =='S')
-                    && (my_data[17]=='W' || my_data[17]=='E'));
+            && (toupper(my_data[7]) =='N' || toupper(my_data[7]) =='S')
+            && (toupper(my_data[17])=='E' || toupper(my_data[17])=='W'));
         // errors found:  [4]: X   [7]: n s   [17]: w e
         if (ok) {
             ok =             is_num_chr(my_data[0]);           // 5230.31N/01316.88E>
@@ -7229,11 +7229,11 @@ int extract_position(DataRow *p_station, char **info, int type) {
             }
 
             strncpy(temp_lat,my_data,7);
-            temp_lat[7] = my_data[7];
+            temp_lat[7] = toupper(my_data[7]);
             temp_lat[8] = '\0';
 
             strncpy(temp_lon,my_data+9,8);
-            temp_lon[8] = my_data[17];
+            temp_lon[8] = toupper(my_data[17]);
             temp_lon[9] = '\0';
 
             if (!is_my_call(p_station->call_sign,1)) {      // don't change my position, I know it better...
@@ -8022,7 +8022,7 @@ int extract_time(DataRow *p_station, char *data, int type) {
         if (len > 6) {
             // Status messages only with optional zulu format
             // DK7IN: APRS ref says one of 'z' '/' 'h', but I found 'c' at HB9TJM-8   ???
-            if (data[6]=='z' || data[6]=='/' || data[6]=='h' || data[6]=='c')
+            if (toupper(data[6])=='Z' || data[6]=='/' || data[6]=='h')
                 ok = 1;
             for (i=0;ok && i<6;i++)
                 if (!isdigit((int)data[i]))
