@@ -9059,8 +9059,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     if (!done && event->type == ButtonRelease) {
         //fprintf(stderr,"ButtonRelease %d %d\n",event->xbutton.button,Button3);
 
+#ifdef SWAP_MOUSE_BUTTONS
+        if (event->xbutton.button == Button3) {
+// Right mouse button release
+#else   // SWAP_MOUSE_BUTTONS
         if (event->xbutton.button == Button1) {
 // Left mouse button release
+#endif  // SWAP_MOUSE_BUTTONS
 
             // If no drag, Center the map on the mouse pointer
             // If drag, compute new zoom factor/center and redraw
@@ -9296,8 +9301,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             mouse_zoom = 0;
         }   // End of Button2 release code
 
+#ifdef SWAP_MOUSE_BUTTONS
+        else if (event->xbutton.button == Button1) {
+// Left mouse button release
+#else   // SWAP_MOUSE_BUTTONS
         else if (event->xbutton.button == Button3) {
 // Right mouse button release
+#endif  // SWAP_MOUSE_BUTTONS
 
             // Do nothing.  We have a popup tied into the button press anyway.
             // (Mouse_button_handler & right_menu_popup).
@@ -9343,8 +9353,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     else if (!done && event->type == ButtonPress) {
         //fprintf(stderr,"ButtonPress %d %d\n",event->xbutton.button,Button3);
 
+#ifdef SWAP_MOUSE_BUTTONS
+        if (event->xbutton.button == Button3) {
+// Right mouse button press
+#else   // SWAP_MOUSE_BUTTONS
         if (event->xbutton.button == Button1) {
 // Left mouse button press
+#endif  // SWAP_MOUSE_BUTTONS
 
             // Mark the position for possible drag function
             menu_x=input_x;
@@ -9362,8 +9377,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             mouse_zoom = 0;
         }   // End of Button2 Press code
 
+#ifdef SWAP_MOUSE_BUTTONS
+        else if (event->xbutton.button == Button1) {
+// Left mouse button press
+#else   // SWAP_MOUSE_BUTTONS
         else if (event->xbutton.button == Button3) {
 // Right mouse button press
+#endif  // SWAP_MOUSE_BUTTONS
 
             // Nothing attached here.
             mouse_zoom = 0;
@@ -9632,7 +9652,11 @@ void check_pointer_position(void) {
                     // being pressed down (a drag operation).  If
                     // so, we're doing a zoom-in operation and need
                     // to draw a box.  0x100
-                    if ( (mask_return & 0x100) == 0) {
+#ifdef SWAP_MOUSE_BUTTONS
+                    if ( (mask_return & 0x400) == 0) {  // Button3
+#else   // SWAP_MOUSE_BUTTONS
+                    if ( (mask_return & 0x100) == 0) {  // Button1
+#endif  // SWAP_MOUSE_BUTTONS
                         return;
                     }
 
