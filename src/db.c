@@ -2009,7 +2009,15 @@ int ok_to_draw_station(DataRow *p_station) {
 
         // Check if we wish to see weather stations
         if (p_station->weather_data) {
-            return Select_.weather_stations;
+            // We have weather data
+
+            // Check whether it is a citizen's weather station
+            if (strncasecmp(p_station->call_sign,"CW",2) == 0) {
+                return(Select_.weather_stations && Select_.CWOP_wx_stations);
+            }
+            else {
+                return Select_.weather_stations;
+            }
         }
         // Check if we wish to see other stations
         else {
@@ -5414,8 +5422,8 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             (void)extract_speed_course(data,speed,course);
             in_knots = 1;
 
-            // Not found yet?  Try again.
-            if ( (speed[0] == '\0') || (course[0] == '\0') ) {
+            // Neither one was found?  Try again.
+            if ( (speed[0] == '\0') && (course[0] == '\0') ) {
 
                 // Try to get speed/course from 's' and 'c' fields
                 // (another wx format).  Speed is in mph.
@@ -5438,8 +5446,8 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             (void)extract_speed_course(data,speed,course);
             in_knots = 1;
 
-            // Not found yet?  Try again.
-            if ( (speed[0] == '\0') || (course[0] == '\0') ) {
+            // Neither one was found?  Try again.
+            if ( (speed[0] == '\0') && (course[0] == '\0') ) {
 
                 // Also try to get speed/course from 's' and 'c' fields
                 // (another wx format)
@@ -5462,8 +5470,8 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             (void)extract_speed_course(data,speed,course);
             in_knots = 1;
 
-            // Not found yet?  Try again.
-            if ( (speed[0] == '\0') || (course[0] == '\0') ) {
+            // Neither one was found?  Try again.
+            if ( (speed[0] == '\0') && (course[0] == '\0') ) {
 
                 // Also try to get speed/course from 's' and 'c' fields
                 // (another wx format)
@@ -8199,7 +8207,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
 
 
 //
-//  Extract speed and course from beginning of info field
+//  Extract speed and/or course from beginning of info field
 //
 // Returns course in degrees, speed in KNOTS.
 //
@@ -8229,7 +8237,8 @@ int extract_speed_course(char *info, char *speed, char *course) {
             info[i] = info[i+7];
     }
     if (!found || atoi(course) < 1) {   // course 0 means undefined
-        speed[0] ='\0';
+//        speed[0] ='\0';   // Don't do this!  We can have a valid
+//        speed without a valid course.
         course[0]='\0';
     }
     else {  // recheck data format looking for undefined fields

@@ -166,6 +166,7 @@ PULDNDP044|Select Stations||
 PULDNDP028|- Select Fixed Stations||
 PULDNDP029|- Select Moving Stations||
 PULDNDP030|- Select WX Stations||
+PULDNDP053|  - Select CWOP WX Stations||
 PULDNDP045|Select Objects/Items||
 PULDNDP026|- Select WX Objects/Items||
 PULDNDP039|- Select Water Gauge Objects/Items||

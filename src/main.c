@@ -407,6 +407,7 @@ Selections Select_ = { 0, // none
                        1, // fixed_stations
                        1, // moving_stations
                        1, // weather_stations
+                       1, // CWOP_wx_stations
                        1, // objects
                        1, // weather_objects
                        1, // gauge_objects
@@ -457,6 +458,7 @@ Widget select_stations_button;
 Widget select_fixed_stations_button;
 Widget select_moving_stations_button;
 Widget select_weather_stations_button;
+Widget select_CWOP_wx_stations_button;
 Widget select_objects_button;
 Widget select_weather_objects_button;
 Widget select_gauge_objects_button;
@@ -507,6 +509,7 @@ static void Select_stations_toggle(Widget w, XtPointer clientData, XtPointer cal
 static void Select_fixed_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_moving_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_weather_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+static void Select_CWOP_wx_stations_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_weather_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void Select_other_objects_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -6041,6 +6044,24 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XmToggleButtonSetState(select_weather_stations_button, TRUE, FALSE);
     if (!Select_.stations || no_data_selected())
         XtSetSensitive(select_weather_stations_button, FALSE);
+
+
+    select_CWOP_wx_stations_button = XtVaCreateManagedWidget(langcode("PULDNDP053"),
+            xmToggleButtonGadgetClass,
+            filter_data_pane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(select_CWOP_wx_stations_button, XmNvalueChangedCallback,
+                  Select_CWOP_wx_stations_toggle, "1");
+    if (Select_.CWOP_wx_stations)
+        XmToggleButtonSetState(select_CWOP_wx_stations_button, TRUE, FALSE);
+    if (!Select_.stations || no_data_selected() || !Select_.weather_stations)
+        XtSetSensitive(select_CWOP_wx_stations_button, FALSE);
+    else
+        XtSetSensitive(select_CWOP_wx_stations_button, TRUE);
 
 
     select_objects_button = XtVaCreateManagedWidget(langcode("PULDNDP045"),
@@ -13564,13 +13585,19 @@ void set_sensitive_select_types(int sensitive)
         XtSetSensitive(select_fixed_stations_button, FALSE);
         XtSetSensitive(select_moving_stations_button,     FALSE);
         XtSetSensitive(select_weather_stations_button,    FALSE);
+        XtSetSensitive(select_CWOP_wx_stations_button,       FALSE);
     }
     else {
         XtSetSensitive(select_fixed_stations_button, sensitive);
         XtSetSensitive(select_moving_stations_button,     sensitive);
         XtSetSensitive(select_weather_stations_button,    sensitive);
+        if (Select_.weather_stations) {
+            XtSetSensitive(select_CWOP_wx_stations_button, sensitive);
+        }
     }
+
     XtSetSensitive(select_objects_button, sensitive);
+
     if (!Select_.objects) {
         XtSetSensitive(select_weather_objects_button, FALSE);
         XtSetSensitive(select_gauge_objects_button,   FALSE);
@@ -13881,12 +13908,16 @@ void Select_stations_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPoin
         XtSetSensitive(select_fixed_stations_button,   TRUE);
         XtSetSensitive(select_moving_stations_button,  TRUE);
         XtSetSensitive(select_weather_stations_button, TRUE);
+        if (Select_.weather_stations) {
+            XtSetSensitive(select_CWOP_wx_stations_button, TRUE);
+        }
     }
     else {
         Select_.stations = 0;
         XtSetSensitive(select_fixed_stations_button,   FALSE);
         XtSetSensitive(select_moving_stations_button,  FALSE);
         XtSetSensitive(select_weather_stations_button, FALSE);
+        XtSetSensitive(select_CWOP_wx_stations_button, FALSE);
     }
 
     redraw_on_new_data = 2;     // Immediate screen update
@@ -13932,10 +13963,30 @@ void Select_weather_stations_toggle( /*@unused@*/ Widget w, XtPointer clientData
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    if (state->set)
+    if (state->set) {
         Select_.weather_stations = atoi(which);
-    else
+        XtSetSensitive(select_CWOP_wx_stations_button, atoi(which));
+    }
+    else {
         Select_.weather_stations = 0;
+        XtSetSensitive(select_CWOP_wx_stations_button, FALSE);
+    }
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Select_CWOP_wx_stations_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set)
+        Select_.CWOP_wx_stations = atoi(which);
+    else
+        Select_.CWOP_wx_stations = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }

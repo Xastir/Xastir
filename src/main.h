@@ -157,6 +157,7 @@ typedef struct _selections {
     int fixed_stations;
     int moving_stations;
     int weather_stations;
+    int CWOP_wx_stations;
     int objects;
     int weather_objects;
     int gauge_objects;
