@@ -4363,9 +4363,9 @@ int is_weather_data(char *data, int len) {
 
 
 
-// Extract single weather data item from information field.  Returns
-// the data found in "temp", modifies "data" to remove the found
-// data from the string.  Returns a 1 if found, 0 if not found.
+// Extract single weather data item from "data".  Returns it in
+// "temp".  Modifies "data" to remove the found data from the
+// string.  Returns a 1 if found, 0 if not found.
 //
 int extract_weather_item(char *data, char type, int datalen, char *temp) {
     int i,ofs,found,len;
@@ -4600,6 +4600,111 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 //            if(strlen(data)>wx_strpos+1)
 //                strncpy(weather->wx_station,data+wx_strpos+1,MAX_WXSTATION);
 //            break;
+    }
+    return(ok);
+}
+
+
+
+
+
+// WE7U:  Initial attempt at decoding tropical storm, tropical
+// depression, and hurricane data.
+//
+// This data can be in an Object report, but can also be in an Item
+// or position report.
+// "/TS" = Tropical Storm
+// "/HC" = Hurricane
+// "/TD" = Tropical Depression
+// The symbol will be either "\@" for current position, or "/@" for
+// predicted position.
+//
+int extract_storm(DataRow *p_station, char *data, int compr) {
+    char time_data[MAX_TIME];
+    int  ok = 1;
+    WeatherRow *weather;
+    char course[4];
+    char speed[4];
+    char *p, *p2;
+
+    if ((p = strstr(data, "/TS")) != NULL) {
+        // We have a Tropical Storm
+printf("Tropical Storm! %s\n",data);
+    }
+    else if ((p = strstr(data, "/TD")) != NULL) {
+        // We have a Tropical Depression
+printf("Tropical Depression! %s\n",data);
+    }
+    else if ((p = strstr(data, "/HC")) != NULL) {
+        // We have a Hurricane
+printf("Hurricane! %s\n",data);
+    }
+    else {  // Not one of the three we're trying to decode
+        ok = 0;
+        return(ok);
+    }
+
+    // Back up 7 spots to try to extract the next items
+    p2 = p - 7;
+    if (p2 >= data) {
+        if (!extract_speed_course(p2,speed,course)) {
+            // No speed/course to extract
+printf("No speed/course found\n");
+            ok = 0;
+            return(ok);
+        }
+    }
+    else {  // Not enough characters for speed/course.  Must have
+            // guessed wrong on what type of data it is.
+printf("No speed/course found 2\n");
+        ok = 0;
+        return(ok);
+    }
+
+
+    if (ok) {
+
+        // If we got this far, we have speed/course and know what type
+        // of storm it is.
+printf("Speed: %s, Course: %s\n",speed,course);
+
+        ok = get_weather_record(p_station);     // get existing or create new weather record
+    }
+
+    if (ok) {
+        p_station->speed_time[0]     = '\0';
+        strcpy(p_station->speed, speed);;
+        strcpy(p_station->course, course);;
+ 
+        weather = p_station->weather_data;
+ 
+//        strcpy(weather->wx_speed, speed);
+//        strcpy(weather->wx_course,course);
+
+        p2++;   // Skip the description text, "/TS", "/HC", or "/TD"
+
+        (void)extract_weather_item(p2,'/',3,weather->wx_sustained); // Sustained wind speed in knots
+// Need to change to MPH?
+
+        (void)extract_weather_item(p2,'^',3,weather->wx_gust); // gust (peak wind speed in knots)
+// Need to change to MPH?
+
+        if (extract_weather_item(p2,'/',3,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
+            xastir_snprintf(weather->wx_baro,
+                sizeof(weather->wx_baro),
+                "%0.1f",
+                (float)(atoi(weather->wx_baro)/10.0));
+// Need to convert to millibars or hPa?
+
+        (void)extract_weather_item(p2,'>',3,weather->wx_hurricane_radius); // Nautical miles
+
+        (void)extract_weather_item(p2,'&',3,weather->wx_trop_storm_radius); // Nautical miles
+
+        (void)extract_weather_item(p2,'%',3,weather->wx_whole_gale_radius); // Nautical miles
+
+        // Create a timestamp from the current time
+        strcpy(weather->wx_time,get_time(time_data));
+        weather->wx_sec_time=sec_now();
     }
     return(ok);
 }
@@ -6654,7 +6759,6 @@ int extract_altitude(char *info, char *altitude) {
 
 // TODO:
 // Comment Field
-// Storm Data
 
 
 
@@ -7770,6 +7874,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if (ok) {
                     // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
+(void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);    // look for weather data first
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);            // altitude
@@ -7899,7 +8004,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     strcpy(p_station->pos_time,get_time(temp_data));
 
                     strcpy(p_station->origin,origin);                   // define it as object
-                    (void)extract_weather(p_station,data,compr_pos);    // look for wx info
+(void)extract_storm(p_station,data,compr_pos);
+                   (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
 
@@ -7928,7 +8034,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
                     strcpy(p_station->origin,origin);                   // define it as item
-                    (void)extract_weather(p_station,data,compr_pos);    // look for wx info
+(void)extract_storm(p_station,data,compr_pos);
+                   (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
 
@@ -7956,7 +8063,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     }
                 }
                 if (ok) {
-                    (void)extract_weather(p_station,data,compr_pos);
+(void)extract_storm(p_station,data,compr_pos);
+                   (void)extract_weather(p_station,data,compr_pos);
                     p_station->record_type = (char)APRS_WX1;
 
                     //substr(p_station->comments,data,MAX_COMMENTS);
@@ -7967,7 +8075,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             case (APRS_WX2):            // '_'
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
-                    (void)extract_weather(p_station,data,0);            // look for weather data first
+(void)extract_storm(p_station,data,compr_pos);
+                   (void)extract_weather(p_station,data,0);            // look for weather data first
                     p_station->record_type = (char)APRS_WX2;
                     found_pos = 0;
                 }
