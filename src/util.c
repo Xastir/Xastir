@@ -26,8 +26,17 @@
 #include "config.h"
 #include "snprintf.h"
 
-#include <time.h>
-#include <sys/time.h>
+#if TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else   // TIME_WITH_SYS_TIME
+# if HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else  // HAVE_SYS_TIME_H
+#  include <time.h>
+# endif // HAVE_SYS_TIME_H
+#endif  // TIME_WITH_SYS_TIME
+
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
