@@ -345,8 +345,9 @@ int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
 // port device to work with
 //***********************************************************
 int ui_connect( int port, char *to[]) {
-    int    s = -1, sockopt;
+    int    s = -1;
 #ifdef HAVE_AX25
+    int    sockopt;
     int    addrlen = sizeof(struct full_sockaddr_ax25);
     struct full_sockaddr_ax25 axbind, axconnect;
     /* char  *arg[2]; */
