@@ -1196,6 +1196,8 @@ void draw_shapefile_map (Widget w,
         printf ("%d Columns,  %d Records in file\n", fieldcount, recordcount);
 
     panWidth = (int *) malloc( fieldcount * sizeof(int) );
+    CHECKMALLOC(panWidth);
+// Make sure to free(panWidth) everywhere we return from!!!
 
     // If we're doing weather alerts and index is not filled in yet
     if (weather_alert_flag && (alert->index == -1) ) {
@@ -1466,6 +1468,11 @@ void draw_shapefile_map (Widget w,
     if( hSHP == NULL ) {
         printf("draw_shapefile_map: SHPOpen(%s,\"rb\") failed.\n", file );
         DBFClose( hDBF );   // Clean up open file descriptors
+
+        // Free up any malloc's that we did
+        if (panWidth)
+            free(panWidth);
+
         return;
     }
 
@@ -1491,6 +1498,9 @@ void draw_shapefile_map (Widget w,
         default:
             DBFClose( hDBF );   // Clean up open file descriptors
             SHPClose( hSHP );
+            // Free up any malloc's that we did
+            if (panWidth)
+                free(panWidth);
             return; // Unknown type.  Don't know how to process it.
             break;
     }
@@ -1511,6 +1521,9 @@ void draw_shapefile_map (Widget w,
 
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );
+        // Free up any malloc's that we did
+        if (panWidth)
+            free(panWidth);
         return;     // The file contains no shapes in our viewport
     }
 
@@ -1803,7 +1816,13 @@ void draw_shapefile_map (Widget w,
                                 //printf("\n");
                             }
 
+
+// WE7U:  We have a problem with the index variable going out of
+// range and causing segfaults.  Xastir overruns other variables
+// first.
                             index++;
+
+
                             i++;    // Number of points to draw
                         }
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
@@ -1885,6 +1904,11 @@ void draw_shapefile_map (Widget w,
     }
     DBFClose( hDBF );
     SHPClose( hSHP );
+
+    // Free up any malloc's that we did
+    if (panWidth)
+        free(panWidth);
+ 
 //    XmUpdateDisplay (XtParent (da));
 }
 #endif  // HAVE_SHAPELIB
@@ -5816,7 +5840,6 @@ Samples Per Pixel: 1
 
     // Here's a tiny malloc that'll hold only one scanline worth of pixels
     imageMemory = (u_char *) malloc(bytesPerRow + 2);
-
     CHECKMALLOC(imageMemory);
 
 
@@ -8039,7 +8062,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 // Take out the "static" and we get a segfault when we zoom out too
 // far with the lakes or counties shapefile loaded.  No idea why
 // yet.  --we7u
-static alert_entry alert[MAX_ALERT];
+//static alert_entry alert[MAX_ALERT];
 static int alert_count;
 
 
