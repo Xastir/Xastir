@@ -327,6 +327,7 @@ typedef struct _DataRow {
     char station_time[MAX_STATION_TIME];
     char station_time_type;
     char sats_visible[MAX_SAT];
+    CommentRow *status_data;
     CommentRow *comment_data;           // Ptr to comment records or NULL
     int  df_color;
 } DataRow;

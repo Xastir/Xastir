@@ -567,6 +567,8 @@ WPUPSTI055|Echoed from:||
 WPUPSTI056|Enable Automatic Updates||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF Bearing:||
+WPUPSTI059|Status: %s||
+#
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Database Lookup||

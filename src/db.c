@@ -2743,6 +2743,26 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
+    // Status ...
+    if(p_station->status_data != NULL) {   // Found at least one record
+        CommentRow *ptr;
+
+        ptr = p_station->status_data;
+
+        while (ptr != NULL) {
+            // We don't care if the pointer is NULL.  This will
+            // succeed anyway.  It'll just make an empty string.
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI059"),ptr->text_ptr);
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+            xastir_snprintf(temp, sizeof(temp), "\n");
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+            ptr = ptr->next;    // Advance to next record (if any)
+        }
+    }
+
+
 //    // Comments ...
 //    if(strlen(p_station->comments)>0) {
 //        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI044"),p_station->comments);
@@ -4368,28 +4388,53 @@ int is_trailpoint_echo(DataRow *p_station) {
 /*
  *  Delete comment records and free memory
  */
-int delete_comments(DataRow *fill) {
-    if (fill->comment_data != NULL) {   // We have records
-        CommentRow *ptr;
-        CommentRow *ptr_next;
+int delete_comments_and_status(DataRow *fill) {
 
-        ptr = fill->comment_data;
-        ptr_next = ptr->next;
-        while (ptr != NULL) {
-            // Free the actual text string that we malloc'ed
-            if (ptr->text_ptr != NULL) {
-                free(ptr->text_ptr);
-            }
-            free(ptr);
-            ptr = ptr_next; // Advance to next record
-            if (ptr != NULL)
-                ptr_next = ptr->next;
-            else
-                ptr_next = NULL;
-        }
-        return(1);
+    if ( (fill->comment_data == NULL)
+            && (fill->comment_data != NULL) ) {
+        return(0);
     }
-    return(0);
+    else {
+        if (fill->comment_data != NULL) {   // We have comment records
+            CommentRow *ptr;
+            CommentRow *ptr_next;
+
+            ptr = fill->comment_data;
+            ptr_next = ptr->next;
+            while (ptr != NULL) {
+                // Free the actual text string that we malloc'ed
+                if (ptr->text_ptr != NULL) {
+                    free(ptr->text_ptr);
+                }
+                free(ptr);
+                ptr = ptr_next; // Advance to next record
+                if (ptr != NULL)
+                    ptr_next = ptr->next;
+                else
+                    ptr_next = NULL;
+            }
+        }
+        if (fill->status_data != NULL) {   // We have status records
+            CommentRow *ptr;
+            CommentRow *ptr_next;
+
+            ptr = fill->status_data;
+            ptr_next = ptr->next;
+            while (ptr != NULL) {
+                // Free the actual text string that we malloc'ed
+                if (ptr->text_ptr != NULL) {
+                    free(ptr->text_ptr);
+                }
+                free(ptr);
+                ptr = ptr_next; // Advance to next record
+                if (ptr != NULL)
+                    ptr_next = ptr->next;
+                else
+                    ptr_next = NULL;
+            }
+        }
+    }
+    return(1);
 }
 
 
@@ -4786,6 +4831,7 @@ void init_station(DataRow *p_station) {
     p_station->signpost[0]       = '\0';
     p_station->station_time[0]   = '\0';
     p_station->sats_visible[0]   = '\0';
+    p_station->status_data       = NULL;
 //    p_station->comments[0]       = '\0';
     p_station->comment_data      = NULL;
     p_station->df_color          = -1;
@@ -5281,7 +5327,7 @@ void station_del(char *call) {
     if (search_station_name(&p_name, call, 1)) {
         (void)delete_trail(p_name);     // Free track storage if it exists.
         (void)delete_weather(p_name);   // free weather memory, if allocated
-        (void)delete_comments(p_name);  // Free comment storage if it exists
+        (void)delete_comments_and_status(p_name);  // Free comment storage if it exists
         if (p_name->node_path_ptr != NULL)  // Free malloc'ed path
             free(p_name->node_path_ptr);
         delete_station_memory(p_name);  // free memory
@@ -5305,7 +5351,7 @@ void station_del_ptr(DataRow *p_name) {
 
         (void)delete_trail(p_name);     // Free track storage if it exists.
         (void)delete_weather(p_name);   // free weather memory, if allocated
-        (void)delete_comments(p_name);  // Free comment storage if it exists
+        (void)delete_comments_and_status(p_name);  // Free comment storage if it exists
         if (p_name->node_path_ptr != NULL)  // Free malloc'ed path
             free(p_name->node_path_ptr);
         delete_station_memory(p_name);  // free memory
@@ -6595,6 +6641,92 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
 
 
 
+// Add a status line to the linked-list of status records
+// associated with a station
+void add_status(DataRow *p_station, char *status_string) {
+    CommentRow *ptr;
+    int add_it = 0;
+    int len;
+
+    len = strlen(status_string);
+
+    // Eliminate line-end chars
+    if (len > 1) {
+        if ( (status_string[len-1] == '\n')
+                || (status_string[len-1] == '\r') ) {
+            status_string[len-1] = '\0';
+        }
+    }
+
+    // Shorten it
+    //printf("1Status: (%s)\n",status_string);
+    (void)remove_trailing_spaces(status_string);
+    //printf("2Status: (%s)\n",status_string);
+    (void)remove_leading_spaces(status_string);
+    //printf("3Status: (%s)\n",status_string);
+ 
+    len = strlen(status_string);
+
+    // Check for valid pointer and string
+    if ( (p_station != NULL) && (len > 0) ) {
+
+// We should probably create a new station record for this station
+// if there isn't one.  This allows us to collect as much info about
+// a station as we can until a posit comes in for it.  Right now we
+// don't do this.  If we decide to do this in the future, we also
+// need a method to find out the info about that station without
+// having to click on an icon, 'cuz the symbol won't be on our map
+// until we have a posit.
+
+
+        //printf("Station:%s\tStatus:%s\n",p_station->call_sign,status_string);
+
+        // Check whether we have any data stored for this station
+        if (p_station->status_data == NULL) {
+            // Add it to end
+            add_it++;
+        }
+        else {  // We have status data stored already
+                // Check for an identical string
+            ptr = p_station->status_data;
+            while (ptr != NULL) {
+                if (strcmp(ptr->text_ptr, status_string) == 0) {
+                    // Found a matching string
+                    //printf("Found match:
+                    //%s:%s\n",p_station->call_sign,status_string);
+                    return; // No need to add the new string
+                }
+                ptr = ptr->next;
+            }
+            // No matching string found, so add it
+            add_it++;
+            //printf("No match:
+            //%s:%s\n",p_station->call_sign,status_string);
+        }
+
+        if (add_it) {   // We add to the beginning so we don't have
+                        // to traverse the linked list
+
+            ptr = p_station->status_data;  // Save old pointer to records
+            p_station->status_data = (CommentRow *)malloc(sizeof(CommentRow));
+            p_station->status_data->next = ptr;    // Link in old records or NULL
+
+            // Malloc the string space we'll need, attach it to our
+            // new record
+            p_station->status_data->text_ptr = (char *)malloc(sizeof(char) * (len+1));
+
+            // Fill in the string
+            strncpy(p_station->status_data->text_ptr,status_string,len+1);
+
+            //printf("Station:%s\tStatus:%s\n\n",p_station->call_sign,p_station->status_data->text_ptr);
+        }
+    }
+}
+
+
+
+
+ 
 // Add a comment line to the linked-list of comment records
 // associated with a station
 void add_comment(DataRow *p_station, char *comment_string) {
@@ -6629,7 +6761,7 @@ void add_comment(DataRow *p_station, char *comment_string) {
             // Add it to end
             add_it++;
         }
-        else {  // We have comment/status data stored already
+        else {  // We have comment data stored already
                 // Check for an identical string
             ptr = p_station->comment_data;
             while (ptr != NULL) {
@@ -6877,7 +7009,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 // todo: could contain Maidenhead or beam heading+power
 
                 //substr(p_station->comments,data,MAX_COMMENTS);          // store status text
-                add_comment(p_station,data);
+                add_status(p_station,data);
 
                 p_station->flag |= (ST_STATUS);                         // set "Status" flag
                 p_station->record_type = NORMAL_APRS;                   // ???
@@ -6889,7 +7021,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if ((p_station->flag & (~ST_STATUS)) == 0) {            // only store if no status yet
 
                     //substr(p_station->comments,data,MAX_COMMENTS);
-                    add_comment(p_station,data);
+                    add_status(p_station,data);
 
                     p_station->record_type = NORMAL_APRS;               // ???
                 }
@@ -7036,7 +7168,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         if ((p_station->flag & (~ST_STATUS)) == 0) {         // only store it if no status yet
 
             //substr(p_station->comments,data-1,MAX_COMMENTS);
-            add_comment(p_station,data-1);
+            add_status(p_station,data-1);
 
             p_station->record_type = NORMAL_APRS;               // ???
         }

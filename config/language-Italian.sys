@@ -568,6 +568,8 @@ WPUPSTI055|Ripetuto da:||
 WPUPSTI056|Abilita Aggiornamento Automatico||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|Puntamento DF:||
+WPUPSTI059|Status: %s||
+#
 # FCC-RAC Call Look up
 STIFCC0001|Ricerca nel database FCC||
 STIFCC0002|Ricerca nel database RAC||

@@ -573,6 +573,7 @@ WPUPSTI055|Echo gehört von:||
 WPUPSTI056|Automatische Aktualisierung||
 WPUPSTI057|Omni-DF: %s||
 WPUPSTI058|DF Bearing:||
+WPUPSTI059|Status: %s||
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Datenbank Abfrage||
