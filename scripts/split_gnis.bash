@@ -6,6 +6,10 @@
 # This script is in the public domain.
 # Comments or suggestions to kc9asi@arrl.net
 
+# This script uses the "fromdos" program.  You may need to change
+# that line to use "dos2unix" instead, depending on what utilities
+# are available on your system.
+
 # This will take a GNIS datapoint file (typically for a whole state, 8+Mb),
 # break it down into smaller chunks (typically for a county, 30-200k)
 # it will also throw away the stupid trailing spaces and <CR>'s at EOL.
