@@ -110,6 +110,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
         // Step through the alert list.  Create a string for each entry.
         for (n = 0; n < alert_list_count; n++) {
+            char status[10];
 
             // Y,AFGNPW  >NWS-WARN :191500z  ,WIND         ,WA_Z003
             //xastir_snprintf(temp, sizeof(temp), "%c,%-9s>%-9s:%-9s,%-20s,%s",
@@ -119,10 +120,17 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             // AFGNPW      NWS-WARN    Until: 191500z   AK_Z213   WIND               P7IAA
             // TSATOR      NWS-ADVIS   Until: 190315z   OK_C127   TORNDO             H2VAA
             //xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %-7s   %-7s   %-20s   %s",
-            xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %c%c @ %c%c%c%c%c   %-7s   %-20s   %s",
+
+            if (sec_now() >= alert_list[n].expiration)
+                xastir_snprintf(status, sizeof(status), "Expired: ");
+            else
+                xastir_snprintf(status, sizeof(status), "  Until: ");
+
+            xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   %s%c%c @ %c%c%c%c%c   %-7s   %-20s   %s",
 
                     alert_list[n].from,
                     alert_list[n].to,
+                    status,
                     alert_list[n].activity[0],
                     alert_list[n].activity[1],
                     alert_list[n].activity[2],
