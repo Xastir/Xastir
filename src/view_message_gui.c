@@ -250,7 +250,9 @@ void All_messages_change_range( /*@unused@*/ Widget widget, XtPointer clientData
 void view_all_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget pane, my_form, button_range, button_close, dist, dist_units;
     unsigned int n;
-    Arg args[20];
+#define NCNT 21
+#define IncN(n) if (n< NCNT) n++; else fprintf(stderr, "Oops, too many arguments for array!\a")
+    Arg args[NCNT];
     Atom delw;
     char temp[10];
 
@@ -366,30 +368,28 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtAddCallback(button_close, XmNactivateCallback, All_messages_destroy_shell, All_messages_dialog);
  
         n=0;
-        XtSetArg(args[n], XmNrows, 15); n++;
-        XtSetArg(args[n], XmNcolumns, 85); n++;
-        XtSetArg(args[n], XmNeditable, FALSE); n++;
-        XtSetArg(args[n], XmNtraversalOn, TRUE); n++;
-        XtSetArg(args[n], XmNlistSizePolicy, XmVARIABLE); n++;
-        XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
-        XtSetArg(args[n], XmNwordWrap, TRUE); n++;
-        XtSetArg(args[n], XmNscrollHorizontal, TRUE); n++;
-        XtSetArg(args[n], XmNscrollVertical, TRUE); n++;
-//        XtSetArg(args[n], XmNscrollBarDisplayPolicy, XmSTATIC); n++;
-        XtSetArg(args[n], XmNselectionPolicy, XmMULTIPLE_SELECT); n++;
-        XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
-        XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
-        XtSetArg(args[n], XmNtopWidget, dist); n++;
-        XtSetArg(args[n], XmNtopOffset, 20); n++;
-        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_FORM); n++;
-        XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
-        XtSetArg(args[n], XmNleftOffset, 5); n++;
-        XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
-        XtSetArg(args[n], XmNrightOffset, 5); n++;
-        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
-
-// This one causes segfaults, why?
-//        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
+        XtSetArg(args[n], XmNrows, 15); IncN(n);
+        XtSetArg(args[n], XmNcolumns, 85); IncN(n);
+        XtSetArg(args[n], XmNeditable, FALSE); IncN(n);
+        XtSetArg(args[n], XmNtraversalOn, TRUE); IncN(n);
+        XtSetArg(args[n], XmNlistSizePolicy, XmVARIABLE); IncN(n);
+        XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); IncN(n);
+        XtSetArg(args[n], XmNwordWrap, TRUE); IncN(n);
+        XtSetArg(args[n], XmNscrollHorizontal, TRUE); IncN(n);
+        XtSetArg(args[n], XmNscrollVertical, TRUE); IncN(n);
+//        XtSetArg(args[n], XmNscrollBarDisplayPolicy, XmSTATIC); IncN(n);
+        XtSetArg(args[n], XmNselectionPolicy, XmMULTIPLE_SELECT); IncN(n);
+        XtSetArg(args[n], XmNcursorPositionVisible, FALSE); IncN(n);
+        XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); IncN(n);
+        XtSetArg(args[n], XmNtopWidget, dist); IncN(n);
+        XtSetArg(args[n], XmNtopOffset, 20); IncN(n);
+        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_FORM); IncN(n);
+        XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); IncN(n);
+        XtSetArg(args[n], XmNleftOffset, 5); IncN(n);
+        XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); IncN(n);
+        XtSetArg(args[n], XmNrightOffset, 5); IncN(n);
+        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); IncN(n);
+        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); IncN(n);
  
         view_messages_text = XmCreateScrolledText(my_form,
                 "view_all_messages text",
