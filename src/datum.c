@@ -4,6 +4,8 @@
    $Id$
 */
 
+
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -11,6 +13,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "datum.h"
+
+
+
 
 
 //  ellipsoid: index into the gEllipsoid[] array, in which
@@ -45,7 +50,6 @@
    N7TAP
 */
 
-
 /* Keep the enum in datum.h up to date with the order of this array */
 const Ellipsoid gEllipsoid[] = {
 //      name                         a            1/f
@@ -78,6 +82,9 @@ const Ellipsoid gEllipsoid[] = {
     {  "WGS 72",                     6378135.0,   298.26        },
     {  "WGS 84",                     6378137.0,   298.257223563 }
 };
+
+
+
 
 
 /* Keep correct indices to commonly used datums in the enum in datum.h */
@@ -421,15 +428,20 @@ void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, sho
 
 
 
+#define deg2rad (PI / 180)
+#define rad2deg (180.0 / PI)
+
+
+
+
+
+// Does not currently handle UPS coordinates (N/S pole regions).
+//
 /*
   Source
   Defense Mapping Agency. 1987b. DMA Technical Report: Supplement to Department of Defense World Geodetic System
   1984 Technical Report. Part I and II. Washington, DC: Defense Mapping Agency
 */
-
-#define deg2rad (PI / 180)
-#define rad2deg (180.0 / PI)
-
 void ll_to_utm(short ellipsoidID, const double lat, const double lon,
         double *utmNorthing, double *utmEasting, char* utmZone, int utmZoneLength)
 {
@@ -458,6 +470,7 @@ void ll_to_utm(short ellipsoidID, const double lat, const double lon,
 
     ZoneNumber = (int)((LongTemp + 180)/6) + 1;
 
+    // Special zone for southern Norway
     if ( lat >= 56.0 && lat < 64.0 && LongTemp >= 3.0 && LongTemp < 12.0 )
         ZoneNumber = 32;
 
@@ -514,6 +527,8 @@ void ll_to_utm(short ellipsoidID, const double lat, const double lon,
 
 
 
+// Handles UPS/UTM coordinates equally well!
+//
 char utm_letter_designator(double lat, double lon)
 {
     // This routine determines the correct UTM/UPS letter designator
@@ -552,7 +567,7 @@ char utm_letter_designator(double lat, double lon)
             else
                 LetterDesignator = 'Y';     // W or - longitude
         }
-        else {  // South Pole below 80S, A/B zones
+        else {  // Lat < 80S, South Pole, A/B zones
             if ((0 <= lon) && (lon <= 180))
                 LetterDesignator = 'B';     // E or + longitude
             else
@@ -566,6 +581,8 @@ char utm_letter_designator(double lat, double lon)
 
 
 
+// Does not currently handle UPS coordinates (N/S pole regions).
+//
 void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
                const char* utmZone, double *lat,  double *lon)
 {
@@ -593,6 +610,26 @@ void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEast
     y = utmNorthing;
 
     ZoneNumber = strtoul(utmZone, &ZoneLetter, 10);
+
+
+    if (       *ZoneLetter == 'Y'       // North Pole
+            || *ZoneLetter == 'Z'       // North Pole
+            || *ZoneLetter == 'A'       // South Pole
+            || *ZoneLetter == 'B') {    // South Pole
+        //
+        // We're dealing with a UPS coordinate (near the poles)
+        // instead of a UTM coordinate.  Need to do entirely
+        // different sorts of math?  If so, add an "else" before the
+        // "if" keyword below.
+        //
+//WE7U
+        fprintf(stderr,"datum.c:utm_to_ll(): Found UPS Coordinate: %s %f %f\n",
+            utmZone,
+            utmEasting,
+            utmNorthing);
+    }
+
+
     if ((*ZoneLetter - 'N') >= 0)
         NorthernHemisphere = 1;//point is in northern hemisphere
     else {
