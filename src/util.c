@@ -1495,12 +1495,13 @@ void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x,
 // Input is in Xastir coordinate system
 //
 // CONVERT_LP_NOSP      = DDMM.MMN
-// CONVERT_LP_NORMAL    = DD MM.MMN
 // CONVERT_HP_NOSP      = DDMM.MMMN
+// CONVERT_VHP_NOSP     = DDMM.MMMMN
+// CONVERT_LP_NORMAL    = DD MM.MMN
+// CONVERT_HP_NORMAL    = DD MM.MMMN
 // CONVERT_UP_TRK       = NDD MM.MMMM
 // CONVERT_DEC_DEG      = DD.DDDDDN
 // CONVERT_DMS_NORMAL   = DD MM SS.SN
-// CONVERT_HP_NORMAL    = DD MM.MMMN
 //
 void convert_lat_l2s(long lat, char *str, int str_len, int type) {
     char ns;
@@ -1541,6 +1542,9 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
         case(CONVERT_HP_NOSP): /* do HP w/no space */
             xastir_snprintf(str, str_len, "%02d%06.3f%c", ideg, min, ns);
             break;
+        case(CONVERT_VHP_NOSP): /* do Very HP w/no space */
+            xastir_snprintf(str, str_len, "%02d%07.4f%c", ideg, min, ns);
+            break;
         case(CONVERT_UP_TRK): /* for tracklog files */
             xastir_snprintf(str, str_len, "%c%02d %07.4f", ns, ideg, min);
             break;
@@ -1566,12 +1570,13 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
 // Input is in Xastir coordinate system
 //
 // CONVERT_LP_NOSP      = DDDMM.MME
-// CONVERT_LP_NORMAL    = DDD MM.MME
 // CONVERT_HP_NOSP      = DDDMM.MMME
+// CONVERT_VHP_NOSP     = DDDMM.MMMME
+// CONVERT_LP_NORMAL    = DDD MM.MME
+// CONVERT_HP_NORMAL    = DDD MM.MMME
 // CONVERT_UP_TRK       = EDDD MM.MMMM
 // CONVERT_DEC_DEG      = DDD.DDDDDE
 // CONVERT_DMS_NORMAL   = DDD MM SS.SN
-// CONVERT_HP_NORMAL    = DDD MM.MMME
 //
 void convert_lon_l2s(long lon, char *str, int str_len, int type) {
     char ew;
@@ -1610,6 +1615,9 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
             break;
         case(CONVERT_HP_NOSP): /* do HP w/nospace */
             xastir_snprintf(str, str_len, "%03d%06.3f%c", ideg, min, ew);
+            break;
+        case(CONVERT_VHP_NOSP): /* do Very HP w/nospace */
+            xastir_snprintf(str, str_len, "%03d%07.4f%c", ideg, min, ew);
             break;
         case(CONVERT_UP_TRK): /* for tracklog files */
             xastir_snprintf(str, str_len, "%c%03d %07.4f", ew, ideg, min);

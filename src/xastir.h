@@ -73,6 +73,7 @@
 #define CONVERT_DEC_DEG         4
 #define CONVERT_UP_TRK          5
 #define CONVERT_DMS_NORMAL      6
+#define CONVERT_VHP_NOSP        7
 
 #ifndef M_PI                      /* if not defined in math.h */
 #define M_PI 3.14159265358979323846
