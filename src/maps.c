@@ -6486,6 +6486,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
                                     don't have this tag so we default to 1 */
     uint32 rowsPerStrip;        /* Should be 1 for USGS DRG's */
     uint16 planarConfig;        /* Should be 1 for USGS DRG's */
+    uint16 photometric;         /* DRGs are RGB (2) */
     int    bytesPerRow;            /* Bytes per scanline row of tiff file */
     GTIFDefn defn;              /* Stores geotiff details */
     u_char *imageMemory;        /* Fixed pointer to same memory area */
@@ -7114,6 +7115,10 @@ Samples Per Pixel: 1
 
 
     /* Fetch a few TIFF fields for this image */
+    if ( !TIFFGetField (tif, TIFFTAG_PHOTOMETRIC, &photometric) ) {
+        photometric = PHOTOMETRIC_RGB;
+        printf("No photometric tag found in file, setting it to RGB\n");
+    }
     if ( !TIFFGetField (tif, TIFFTAG_ROWSPERSTRIP, &rowsPerStrip) ) {
         rowsPerStrip = 1;
         printf("No rowsPerStrip tag found in file, setting it to 1\n");
@@ -7138,6 +7143,7 @@ Samples Per Pixel: 1
     if (debug_level & 16) {
         printf ("            Width: %ld\n", width);
         printf ("           Height: %ld\n", height);
+        printf ("      Photometric: %ld\n", photometric);
         printf ("   Rows Per Strip: %ld\n", rowsPerStrip);
         printf ("  Bits Per Sample: %d\n", bitsPerSample);
         printf ("Samples Per Pixel: %d\n", samplesPerPixel);
@@ -7177,14 +7183,15 @@ Samples Per Pixel: 1
      * Snag the original map colors out of the colormap embedded
      * inside the tiff file.
      */
-    if (!TIFFGetField(tif, TIFFTAG_COLORMAP, &red_orig, &green_orig, &blue_orig))
-    {
-        TIFFError(TIFFFileName(tif), "Missing required \"Colormap\" tag");
-        GTIFFree (gtif);
-        XTIFFClose (tif);
-        return;
+    if (photometric == PHOTOMETRIC_PALETTE) {
+        if (!TIFFGetField(tif, TIFFTAG_COLORMAP, &red_orig, &green_orig, &blue_orig))
+        {
+            TIFFError(TIFFFileName(tif), "Missing required \"Colormap\" tag");
+            GTIFFree (gtif);
+            XTIFFClose (tif);
+            return;
+        }
     }
-
 
     /* Here are the number of possible colors.  It turns out to
      * be 256 for a USGS geotiff file, of which only the first
@@ -7454,16 +7461,50 @@ Samples Per Pixel: 1
 
     {
         int l;
-        // float geotiff_map_intensity = 1.00;    // Change this to reduce the
-                                    // intensity of the map colors
 
-        for (l = 0; l < num_colors; l++)
-        {
-            my_colors[l].red   =   (uint16)(red_orig[l] * geotiff_map_intensity);
-            my_colors[l].green = (uint16)(green_orig[l] * geotiff_map_intensity);
-            my_colors[l].blue  =  (uint16)(blue_orig[l] * geotiff_map_intensity);
+        switch (photometric) {
+        case PHOTOMETRIC_PALETTE:
+            for (l = 0; l < num_colors; l++)
+            {
+                my_colors[l].red   =   (uint16)(red_orig[l] * geotiff_map_intensity);
+                my_colors[l].green = (uint16)(green_orig[l] * geotiff_map_intensity);
+                my_colors[l].blue  =  (uint16)(blue_orig[l] * geotiff_map_intensity);
 
-            XAllocColor( XtDisplay (w), cmap, &my_colors[l] );
+                if (visual_type == NOT_TRUE_NOR_DIRECT)
+                    XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+                else
+                    pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
+                                    &my_colors[l].pixel);
+            }
+            break;
+        case PHOTOMETRIC_MINISBLACK:
+            for (l = 0; l < num_colors; l++)
+            {
+                int v = (l * 255) / (num_colors-1);
+                my_colors[l].red = my_colors[l].green = my_colors[l].blue =
+                    (uint16)(v * geotiff_map_intensity) << 8;
+
+                if (visual_type == NOT_TRUE_NOR_DIRECT)
+                    XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+                else
+                    pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
+                                    &my_colors[l].pixel);
+            }
+            break;
+        case PHOTOMETRIC_MINISWHITE:
+            for (l = 0; l < num_colors; l++)
+            {
+                int v = (((num_colors-1)-l) * 255) / (num_colors-1);
+                my_colors[l].red = my_colors[l].green = my_colors[l].blue =
+                  (uint16)(v * geotiff_map_intensity) << 8;
+
+                if (visual_type == NOT_TRUE_NOR_DIRECT)
+                    XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
+                else
+                    pack_pixel_bits(my_colors[l].red, my_colors[l].green, my_colors[l].blue,
+                                    &my_colors[l].pixel);
+            }
+            break;
         }
     }
 
@@ -8160,6 +8201,7 @@ Samples Per Pixel: 1
 
                     // Set the color for the pixel
                     XSetForeground (XtDisplay (w), gc, my_colors[*(imageMemory + column)].pixel);
+
                     // And draw the pixel
                     XFillRectangle (XtDisplay (w), pixmap, gc, sxx, syy, stepwc, stephc);
                 }
