@@ -12762,7 +12762,9 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             addr9);
         (void)remove_trailing_spaces(addr);
         message = message + 10;                 // pointer to message text
-        temp_ptr = strstr(message,"{");         // look for message ID
+
+        temp_ptr = strrchr(message,'{');         // look for message ID after
+                                                 //*last* { in message.
         msg_id[0] = '\0';
         if (temp_ptr != NULL) {
             substr(msg_id,temp_ptr+1,5);        // extract message ID, could be non-digit
