@@ -93,6 +93,7 @@ PULDNMBC08|Oro chiaro||
 PULDNMBC09|Marrone||
 PULDNMBC10|Rosso fuoco||
 PULDNMBC11|Bianco||
+PULDNMBC12|Nero||
 #
 # Stili delle etichette delle stazioni
 PULDNMSL01|Bordo nero||
@@ -218,6 +219,10 @@ BBARSTA031|Ricerca di %d in corso||#KEEP the %d
 BBARSTA032|Dati meteo rilevati||#
 BBARSTA033|Eco da digipeater||
 BBARSTA034|Caricamento Mappe Allerta Meteo||
+BBARSTA035|Sto attendendo dati del GPS via AUX..||
+BBARSTA036|Libero AUX, ricezione dati da TNC..||
+BBARSTA037|Dati GPS rilevati||
+BBARSTA038|Posizionare il cambiamento sulla mia stazione||
 #
 #Visualizzazione dati packet
 WPUPDPD001|Visualizzazione dati packet||
@@ -297,27 +302,29 @@ WPUPCFT007|2400 bps||
 WPUPCFT008|4800 bps|| 
 WPUPCFT009|9600 bps|| 
 WPUPCFT010|19200 bps||
-WPUPCFT019|38400 bps||
-WPUPCFT020|57600 bps||
-WPUPCFT021|115200 bps||
-WPUPCFT022|230400 bps|| 
-WPUPCFT015|Stile porta|| 
-WPUPCFT016|8,N,1|| 
-WPUPCFT017|7,E,1|| 
-WPUPCFT018|7,O,1||
 WPUPCFT011|Percorsi UnProto||
 WPUPCFT012|Percorso 1: %s via ||
 WPUPCFT013|Percorso 2: %s via ||
 WPUPCFT014|Percorso 3: %s via ||
+WPUPCFT015|Stile porta|| 
+WPUPCFT016|8,N,1|| 
+WPUPCFT017|7,E,1|| 
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps|| 
 WPUPCFT023|Configura TNC con cavo HSP per GPS||
-#
-#Configura Porta Meteo
-WPUPCFWX01|Configura Porta Meteo||
-WPUPCFWX02|Periferica della stazione||
 WPUPCFT024|Tipi di dati||
 WPUPCFT025|Riconoscimento automatico||
 WPUPCFT026|Dati binari||
 WPUPCFT027|Dati ASCII||
+WPUPCFT028|Configura TNC con cavo AUX per GPS||
+WPUPCFT029|Configura TNC con INVALID ENUM||
+#
+#Configura Porta Meteo
+WPUPCFWX01|Configura Porta Meteo||
+WPUPCFWX02|Periferica della stazione||
 #
 #Configure Stazione
 WPUPCFS001|Configura Dati Stazione||
@@ -563,8 +570,9 @@ UNIOP00023|pollici da mezzanotte||
 UNIOP00024|gradi||
 UNIOP00025|hPa||
 UNIOP00026|%||
-UNIOP00027|inHg||
+UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
+UNIOP00029|Regolare il tempo del sistema dal GPS||
 #
 # PopUp "Station Chooser"
 STCHO00001|Scelta Stazione||
@@ -591,6 +599,7 @@ IFDNL00005|Server Internet||
 IFDNL00006|TNC AX.25||
 IFDNL00007|GPS in rete (via gpsd)||
 IFDNL00008|Meteo in rete||
+IFDNL00009|TNC Seriale con GPS connesso con cavo AUX||
 #
 #Interface device info 
 IFDIN00000|%s %d %s sulla seriale %s|| 

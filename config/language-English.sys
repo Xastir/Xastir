@@ -94,6 +94,7 @@ PULDNMBC08|Goldenrod Yellow||
 PULDNMBC09|Rosy Brown||
 PULDNMBC10|Fire brick Red||
 PULDNMBC11|White||
+PULDNMBC12|Black||
 #
 # PullDown "Station text Style"
 PULDNMSL01|Black Border|B|
@@ -218,6 +219,10 @@ BBARSTA031|Looking up hostname %d||
 BBARSTA032|Decoded WX Data||
 BBARSTA033|Echo from digipeater||
 BBARSTA034|Loading Weather Alert Maps||
+BBARSTA035|Waiting for GPS data via AUX..||
+BBARSTA036|Clearing AUX getting TNC data..||
+BBARSTA037|GPS Data Complete||
+BBARSTA038|Position change on my station||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Display Packet Data||
@@ -310,14 +315,16 @@ WPUPCFT012|Path 1: %s via ||
 WPUPCFT013|Path 2: %s via ||
 WPUPCFT014|Path 3: %s via ||
 WPUPCFT023|Configure TNC w/HSP GPS||
-#
-# PopUp "Configure WX Port"
-WPUPCFWX01|Configure WX Port||
-WPUPCFWX02|Weather Station device||
 WPUPCFT024|Data Type||
 WPUPCFT025|Auto detect||
 WPUPCFT026|Binary Type||
 WPUPCFT027|ASCII Type||
+WPUPCFT028|Configure TNC w/AUX GPS||
+WPUPCFT029|Configure TNC w/INVALID ENUM||
+#
+# PopUp "Configure WX Port"
+WPUPCFWX01|Configure WX Port||
+WPUPCFWX02|Weather Station device||
 #
 # PopUp "Configure - Station"
 WPUPCFS001|Configure Station||
@@ -565,8 +572,9 @@ UNIOP00023|inch/mid||
 UNIOP00024|deg||
 UNIOP00025|hPa||
 UNIOP00026|%||
-UNIOP00027|inHg||
+UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
+UNIOP00029|Set System Clock from GPS Data?||
 #
 # PopUp "Station Chooser"
 STCHO00001|Station Chooser||
@@ -593,6 +601,7 @@ IFDNL00005|Internet Server||
 IFDNL00006|AX25 TNC||
 IFDNL00007|Networked GPS (via gpsd)||
 IFDNL00008|Networked WX||
+IFDNL00009|Serial TNC w/GPS on AUX port||
 #
 # Interface device info 
 IFDIN00000|%s %d %s on serial %s||

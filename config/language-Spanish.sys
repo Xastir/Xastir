@@ -94,6 +94,7 @@ PULDNMBC08|Dorado Amarillo||
 PULDNMBC09|Marrón Rosado||
 PULDNMBC10|Rojo ladrillo||
 PULDNMBC11|Blanco||
+PULDNMBC12|Negro||
 #
 # Mapas Estaciones estilos de etiquetas
 PULDNMSL01|Fondo Negro||
@@ -218,6 +219,10 @@ BBARSTA031|Buscando el Servidor %d||
 BBARSTA032|Datos de WX Decodificado||
 BBARSTA033|Eco desde digipeater||
 BBARSTA034|Cargando Mapas de alerta WX||
+BBARSTA035|Esperando por datos del GPS via AUX..||
+BBARSTA036|Limpiando el AUX datos obtenido del TNC..||
+BBARSTA037|Datos de GPS Decondificado||
+BBARSTA038|Coloque el cambio en mi estación||
 #
 # Despliegue Paquete de Datos
 WPUPDPD001|Despligue de Datos||
@@ -297,27 +302,29 @@ WPUPCFT007|2400 bps||
 WPUPCFT008|4800 bps||
 WPUPCFT009|9600 bps||
 WPUPCFT010|19200 bps||
-WPUPCFT019|38400 bps||
-WPUPCFT020|57600 bps||
-WPUPCFT021|115200 bps||
-WPUPCFT022|230400 bps||
-WPUPCFT015|Modo del Puerto||
-WPUPCFT016|8,N,1||
-WPUPCFT017|7,E,1||
-WPUPCFT018|7,O,1||
 WPUPCFT011|Rutas del UnProto||
 WPUPCFT012|Ruta 1: %s vía ||
 WPUPCFT013|Ruta 2: %s vía ||
 WPUPCFT014|Ruta 3: %s vía ||
+WPUPCFT015|Modo del Puerto||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
 WPUPCFT023|Configurar el TNC c/HSP GPS||
-#
-# Configurar el Puerto de la Estación Meteorológica
-WPUPCFWX01|Configurar el Puerto de la Estación Meteorológica||
-WPUPCFWX02|Dispositivo de la Estación Meteorológica||
 WPUPCFT024|Tipo de Data||
 WPUPCFT025|Auto detección||
 WPUPCFT026|Tipo Binario||
 WPUPCFT027|Tipo ASCII||
+WPUPCFT028|Configurar el TNC c/AUX GPS||
+WPUPCFT029|Configurar el TNC c/MAL ENUM||
+#
+# Configurar el Puerto de la Estación Meteorológica
+WPUPCFWX01|Configurar el Puerto de la Estación Meteorológica||
+WPUPCFWX02|Dispositivo de la Estación Meteorológica||
 #
 # Configurar la Estación
 WPUPCFS001|Configurar la estación||
@@ -565,8 +572,9 @@ UNIOP00023|plg/med||
 UNIOP00024|grd||
 UNIOP00025|mb||
 UNIOP00026|%||
-UNIOP00027|inHg||
+UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
+UNIOP00029|Fije el tiempo del sistema del GPS||
 #
 # Seleccionar Estación
 STCHO00001|Seleccionar Estación||
@@ -593,6 +601,7 @@ IFDNL00005|Conexión a un Servidor en Internet||
 IFDNL00006|AX.25 TNC||
 IFDNL00007|GPS Enlazado vía el Servidor gpsd||
 IFDNL00008|Est. Meteorológica Enlazada a una RED||
+IFDNL00009|Serial TNC c/GPS más (cable AUX)||
 #
 # Info dispositivo Interfáz
 IFDIN00000|%s %d %s sobre serial %s||

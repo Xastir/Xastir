@@ -93,6 +93,7 @@ PULDNMBC08|Blanc crème||
 PULDNMBC09|Brun rosé||
 PULDNMBC10|Rouge brique||
 PULDNMBC11|Blanc||
+PULDNMBC12|Noir||
 #
 # PullDown "Station text Style"
 PULDNMSL01|Bordure noire|n|
@@ -217,6 +218,10 @@ BBARSTA031|Recherche d'hôte %d||
 BBARSTA032|Données météo décodées||
 BBARSTA033|Echo de digipeater||
 BBARSTA034|Chargement de cartes alertes météo||
+BBARSTA035|Attente de donées du GPS par AUX||
+BBARSTA036|Fermeture port GPS réception donnée TNC..||
+BBARSTA037|GPS météo décodées||
+BBARSTA038|Placez le changement sur ma station||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Affichage de données paquet||
@@ -309,14 +314,16 @@ WPUPCFT012|Voie 1: %s via ||
 WPUPCFT013|Voie 2: %s via ||
 WPUPCFT014|Voie 3: %s via ||
 WPUPCFT023|Configurer TNC +HSP GPS||
-#
-# PopUp "Configure WX Port"
-WPUPCFWX01|Configurer port météo||
-WPUPCFWX02|Port météo||
 WPUPCFT024|Type de données||
 WPUPCFT025|Auto detection||
 WPUPCFT026|Type binaire||
 WPUPCFT027|Type ASCII||
+WPUPCFT028|Configurer TNC +AUX GPS||
+WPUPCFG029|COnfigurer TNC +INVALID ENUM||
+#
+# PopUp "Configure WX Port"
+WPUPCFWX01|Configurer port météo||
+WPUPCFWX02|Port météo||
 #
 # PopUp "Configure - Station"
 WPUPCFS001|Configurer la station||
@@ -566,6 +573,7 @@ UNIOP00025|hPa||
 UNIOP00026|%||
 UNIOP00027|pouces Hg||
 UNIOP00028|mm Hg||
+UNIOP00029|Placez le temps de système du GPS||
 #
 # PopUp "Station Chooser"
 STCHO00001|Choix de station||
@@ -592,6 +600,7 @@ IFDNL00005|Serveur Internet||
 IFDNL00006|TNC AX25||
 IFDNL00007|GPS réseau (par gpsd)||
 IFDNL00008|Météo par réseau||
+IFDNL00009|TNC série + GPS sur câble AUX||
 #
 # Interface device info 
 IFDIN00000|%s %d %s sur port série %s||

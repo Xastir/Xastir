@@ -99,6 +99,7 @@ PULDNMBC08|Zartes Gelb||
 PULDNMBC09|Rötliches Braun||
 PULDNMBC10|Rot||
 PULDNMBC11|Weiß||
+PULDNMBC12|Schwarzes||
 #
 # Karten - Stil der Stationstexte
 PULDNMSL01|Schwarze Umrandung|U|
@@ -223,6 +224,10 @@ BBARSTA031|Prüfe Hostname %d||
 BBARSTA032|Dekodiere WX Daten||
 BBARSTA033|Echo vom Digipeater||
 BBARSTA034|Loading Weather Alert Maps||
+BBARSTA035|Warte auf GPS Daten via AUX..||
+BBARSTA036|Setze AUX auf TNC Daten..||
+BBARSTA037|Dekodiere GPS daten||
+BBARSTA038|Bringen Sie Änderung auf meine Station in Position||
 #
 # PopUp "Zeige - Packet Radio"
 WPUPDPD001|Packet Radio Daten||
@@ -315,14 +320,16 @@ WPUPCFT012|Pfad 1: %s via ||
 WPUPCFT013|Pfad 2: %s via ||
 WPUPCFT014|Pfad 3: %s via ||
 WPUPCFT023|Einstellungen für TNC mit GPS über HSP-Kabel||
-# 
-# PopUp "Einstellungen Wetterstation"
-WPUPCFWX01|Einstellungen Wetterstation||
-WPUPCFWX02|Device für Wetterstation||
 WPUPCFT024|Datenart||
 WPUPCFT025|Automatisch||
 WPUPCFT026|Binär||
 WPUPCFT027|ASCII||
+WPUPCFT028|Einstellungen für TNC mit GPS über AUX-Kabel||
+WPUPCFT029|Einstellungen für TNC mit GPS über INVALID ENUM||
+# 
+# PopUp "Einstellungen Wetterstation"
+WPUPCFWX01|Einstellungen Wetterstation||
+WPUPCFWX02|Device für Wetterstation||
 #
 # PopUp "Einstellungen - Stationsdaten"
 WPUPCFS001|Stationdaten||
@@ -572,6 +579,7 @@ UNIOP00025|hPa||
 UNIOP00026|%||
 UNIOP00027|Inch Hg||
 UNIOP00028|mm Hg||
+UNIOP00029|Stellen Sie Systemzeit von GPS ein||
 #
 # popUp "Stationsauswahl"
 STCHO00001|Stationsauswahl||
@@ -598,6 +606,7 @@ IFDNL00005|Internet Server||
 IFDNL00006|AX.25 TNC||
 IFDNL00007|GPS über Netzwerk (via gpsd)||
 IFDNL00008|Wetter über Netzwerk||
+IFDNL00009|Serieller TNC + GPS mit AUX-Kabel||
 #
 # Interface device info 
 IFDIN00000|%s %d %s on serial %s||

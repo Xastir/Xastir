@@ -98,6 +98,7 @@ PULDNMBC08|Goud Geel||
 PULDNMBC09|Roze Bruin||
 PULDNMBC10|Vuur Rood||
 PULDNMBC11|Wit||
+PULDNMBC12|Schwarzes||
 #
 # PullDown "Station text Style"
 PULDNMSL01|Zwarte Rand||
@@ -222,6 +223,10 @@ BBARSTA031|Zoeken naar hostnaam %d||
 BBARSTA032|WX data gedecodeerd||
 BBARSTA033|Echo van de digipeater||
 BBARSTA034|Weer waarschuwings kaarten laden||
+BBARSTA035|Wachten op GPS gegevens via AUX..||
+BBARSTA036|HSP vrijmaken, TNC data ophalen..||
+BBARSTA037|GPS tekst gedecodeerd||
+BBARSTA038|Position change on my station||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Ontvangen Packets Bekijken||
@@ -314,14 +319,16 @@ WPUPCFT012|Pad 1: %s via ||
 WPUPCFT013|Pad 2: %s via ||
 WPUPCFT014|Pad 3: %s via ||
 WPUPCFT023|TNC Instelling m/HSP GPS||
-#
-# PopUp "Configure WX Port"
-WPUPCFWX01|WX Poort Instelling||
-WPUPCFWX02|Weerstation aparaat||
 WPUPCFT024|Data Type||
 WPUPCFT025|Auto detectie||
 WPUPCFT026|Binair Type||
 WPUPCFT027|ASCII Type||
+WPUPCFT028|TNC Instelling m/HSP GPS||
+WPUPCFT029|TNC Instelling m/AUX GPS||
+#
+# PopUp "Configure WX Port"
+WPUPCFWX01|WX Poort Instelling||
+WPUPCFWX02|Weerstation aparaat||
 #
 # PopUp "Configure - Station"
 WPUPCFS001|Stations Instelling||
@@ -569,8 +576,9 @@ UNIOP00023|inch/mid||
 UNIOP00024|deg||
 UNIOP00025|hPa||
 UNIOP00026|%||
-UNIOP00027|inHg||
+UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
+UNIOP00029|Set System Clock from GPS Data?||
 #
 # PopUp "Station Chooser"
 STCHO00001|Station Kiezer||
@@ -597,6 +605,7 @@ IFDNL00005|Internet Server||
 IFDNL00006|AX25 TNC||
 IFDNL00007|Netwerk GPS (via gpsd)||
 IFDNL00008|Netwerk WX||
+IFDNL00009|Serieele TNC met GPS op een AUX kabel||
 #
 # Interface device info
 IFDIN00000|%s %d %s via serieel device %s||
