@@ -115,12 +115,26 @@ void map_gdal_init() {
 
 #ifdef HAVE_LIBGDAL
 
+    GDALDriverH hDriver;
+    int ii, jj;
+
+
     // Register all known GDAL drivers
     GDALAllRegister();
+
+    // Print out each supported driver.
+    //
+    ii = GDALGetDriverCount();
+
+    for (jj = 0; jj < ii; jj++) {
+        hDriver = GDALGetDriver(jj);
+        printf("GDAL Registered Driver: %s\n", GDALGetDriverLongName(hDriver) );
+    }
 
 #endif  // HAVE_LIBGDAL
 
 }
+
 
 
 
