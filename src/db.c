@@ -2209,7 +2209,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
         // Check whether to draw dead-reckoning data by KJ5O
         if (show_DR
-                && (p_station->newest_trackpoint!=0
+                && ( (p_station->flag & ST_MOVING)
+//                && (p_station->newest_trackpoint!=0
                 && course_ok
                 && atof(dr_speed)>0
                 && speed_ok) ) {
@@ -2387,7 +2388,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
         // Check whether to draw dead-reckoning data by KJ5O
         if (show_DR
-                && (p_station->newest_trackpoint!=0
+                && ( (p_station->flag & ST_MOVING)
+//               && (p_station->newest_trackpoint!=0
                 && course_ok
                 && atof(dr_speed)>0
                 && speed_ok) ) {
@@ -8674,8 +8676,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             if (debug_level & 256) {
                 printf("New Station %s\n", p_station->call_sign);
             }
-            if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0)
+            if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0) {
                 p_station->flag |= (ST_MOVING); // it has a speed, so it's moving
+                moving = 1;
+            }
             if (position_on_screen(p_station->coord_lat,p_station->coord_lon)) {
 
                 if (p_station->coord_lat != 0 && p_station->coord_lon != 0) {   // discard undef positions from screen
