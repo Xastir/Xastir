@@ -5488,6 +5488,7 @@ int extract_position(DataRow *p_station, char **info, int type) {
 
 
 
+
 // DK7IN 99
 /*
  *  Extract Compressed Position Report Data Formats from begin of line
@@ -5499,10 +5500,15 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     int c = 0;
     int s = 0;
     int T = 0;
+    int len;
     char *my_data;
     float lon = 0;
     float lat = 0;
     float range;
+
+
+    if (debug_level & 1)
+        printf("extract_comp_position: Start\n");
 
     // compressed data format  /YYYYXXXX$csT  is a fixed 13-character field
     // used for ! / @ = data IDs
@@ -5517,14 +5523,40 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     //   T     compression type ID
 
     my_data = (*info);
-    ok = (int)(strlen(my_data) >= 13);
+
+    //printf("my_data: %s\n",my_data);
+
+    // If c = space, csT bytes are ignored.  Minimum length:  8
+    // bytes for lat/lon, 2 for symbol, "space" for c for a total of
+    // 11.  Maximum length:  8/2/3 for a total of 13.  We'll assume
+    // here that there may be some previously unparsed stuff at the
+    // end and just ignore it, so won't check against a maximum
+    // length.
+    // Should we append a space if it's only 10 characters, so we
+    // can parse out a possible lat/long?  Seems like it'd be a nice
+    // thing to do.
+    len = strlen(my_data);
+    ok = (int)(len >= 10);
     if (ok) {
         y1 = my_data[1] - '!';  y2 = my_data[2] - '!';  y3 = my_data[3] - '!';  y4 = my_data[4] - '!';
         x1 = my_data[5] - '!';  x2 = my_data[6] - '!';  x3 = my_data[7] - '!';  x4 = my_data[8] - '!';
 
-        c = (int)(my_data[10] - '!');
-        s = (int)(my_data[11] - '!');
-        T = (int)(my_data[12] - '!');
+        // Have a 'c' byte?
+        if (len >= 10) {
+            c = (int)(my_data[10] - '!');
+        }
+        else {
+            c = -1; // Causes us to ignore csT
+        }
+      
+        // Have 's' and 'T' bytes? 
+        if (len >= 13) { 
+            s = (int)(my_data[11] - '!');
+            T = (int)(my_data[12] - '!');
+        }
+        else {  // Not enough chars for csT, so zero them
+            c = -1; // This causes us to ignore csT
+        }
 
         if ((int)x1 == -1) x1 = '\0';   if ((int)x2 == -1) x2 = '\0';   // convert ' ' to '0'
         if ((int)x3 == -1) x3 = '\0';   if ((int)x4 == -1) x4 = '\0';   // not specified in
@@ -5541,22 +5573,27 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
         ok = (int)(ok && (y4 >= '\0' && y4 < (char)91));
         T &= 0x3F;      // DK7IN: force Compression Byte to valid format
                         // mask off upper two unused bits, they should be zero!?
-        ok = (int)(ok && (c == -1 || ((c >=0 && c < 91) && (s >= 0 && s < 91) && (T >= 0 && T < 64))));
 
+        ok = (int)(ok && (c == -1 || ((c >=0 && c < 91) && (s >= 0 && s < 91) && (T >= 0 && T < 64))));
         if (ok) {
             lat = ((((int)y1 * 91 + (int)y2) * 91 + (int)y3) * 91 + (int)y4 ) / 380926.0; // in deg, 0:  90°N
             lon = ((((int)x1 * 91 + (int)x2) * 91 + (int)x3) * 91 + (int)x4 ) / 190463.0; // in deg, 0: 180°W
             lat *= 60 * 60 * 100;                       // in 1/100 sec
             lon *= 60 * 60 * 100;                       // in 1/100 sec
-            if ((((long)(lat+4) % 60) > 8) || (((long)(lon+4) % 60) > 8))
-                ok = 0;                                 // check max resolution 0.01 min
+
+            // The below check should _not_ be done.  Compressed
+            // format can resolve down about 1 foot worldwide (0.3
+            // meters).
+            //if ((((long)(lat+4) % 60) > 8) || (((long)(lon+4) % 60) > 8))
+            //    ok = 0;                                 // check max resolution 0.01 min
         }                                               // to catch even more errors
     }
+
     if (ok) {
         overlay_symbol(my_data[9], my_data[0], p_station);      // Symbol / Table
-        if ( (!is_my_call(p_station->call_sign,1))      // don't change my position, I know it better...
-                && ( (p_station->flag && ST_OBJECT) == 0)       // Not an object
-                && ( (p_station->flag && ST_ITEM  ) == 0) ) {   // Not an item
+        if (!is_my_call(p_station->call_sign,1)) {  // don't change my position, I know it better...
+            // Record the uncompressed lat/long that we just
+            // computed.
             p_station->coord_lat = (long)((lat));               // in 1/100 sec
             p_station->coord_lon = (long)((lon));               // in 1/100 sec
         }
@@ -5598,6 +5635,18 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
         }
         (*info) += 13;                  // delete position from comment
     }
+
+    if (debug_level & 1) {
+        if (ok) {
+            printf("*** extract_comp_position: Succeeded: %ld\t%ld\n",
+                p_station->coord_lat,
+                p_station->coord_lon);
+        }
+        else {
+            printf("*** extract_comp_position: Failed!\n");
+        }
+    }
+
     return(ok);
 }
 

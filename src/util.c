@@ -718,20 +718,34 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     int temp, deg;
     double minutes;
 
+    //printf("lat:%s\tlong:%s\n",input_lat,input_lon);
+
     (void)sscanf(input_lat, "%2d%lf%c", &deg, &minutes, &ext);
-    temp = 380926 * (90 - (deg + minutes / 60.0) * (ext=='N'?1:-1));
+    temp = 380926 * (90 - (deg + minutes / 60.0) * ( ext=='N' ? 1 : -1 ));
+
+    //printf("temp: %d\t",temp);
+
     lat[3] = (char)(temp%91 + 33); temp /= 91;
     lat[2] = (char)(temp%91 + 33); temp /= 91;
     lat[1] = (char)(temp%91 + 33); temp /= 91;
     lat[0] = (char)(temp    + 33);
     lat[4] = '\0';
+
+    //printf("%s\n",lat);
+
     (void)sscanf(input_lon, "%3d%lf%c", &deg, &minutes, &ext);
-    temp = 190463 * (180 + (deg + minutes / 60.0) * (ext=='W'?-1:1));
+    temp = 190463 * (180 + (deg + minutes / 60.0) * ( ext=='W' ? -1 : 1 ));
+
+    //printf("temp: %d\t",temp);
+
     lon[3] = (char)(temp%91 + 33); temp /= 91;
     lon[2] = (char)(temp%91 + 33); temp /= 91;
     lon[1] = (char)(temp%91 + 33); temp /= 91;
     lon[0] = (char)(temp    + 33);
     lon[4] = '\0';
+
+    //printf("%s\n",lon);
+
     c = s = t = ' ';
     if (last_course > 0 || last_speed > 0) {
         c = (char)(last_course/4 + 33);
@@ -774,7 +788,7 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
         t = 'C';
     }
     xastir_snprintf(pos, sizeof(pos), "%c%s%s%c%c%c%c", group, lat, lon, symbol, c, s, t);
-
+    //printf("New compressed pos: %s\n",pos);
     return pos;
 }
 
