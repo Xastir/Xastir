@@ -57,43 +57,54 @@
 #include <stdio.h>
 
 
-Widget station_list_dialog[5];          // store list definitions
+
+
+
+// List Numbers:
+// 0: all stations list
+// 1: mobile stations list
+// 2: WX stations list
+// 3: local stations list
+// 4: last stations
+// 5: Object/Items
+
+Widget station_list_dialog[6];          // store list definitions
 static xastir_mutex station_list_dialog_lock;  // Mutex lock for above
 
-Widget SL_list[5][20];
-Widget SL_da[5][20];
-Widget SL_call[5][20];
-Pixmap SL_icon[5][20];                  // icons for different lists and list rows
+Widget SL_list[6][20];
+Widget SL_da[6][20];
+Widget SL_call[6][20];
+Pixmap SL_icon[6][20];                  // icons for different lists and list rows
 Pixmap blank_icon;                      // holds an empty icon
-Widget SL_scroll[5];
-Widget SL_wx_wind_course[5][20];
-Widget SL_wx_wind_speed[5][20];
-Widget SL_wx_wind_gust[5][20];
-Widget SL_wx_temp[5][20];
-Widget SL_wx_hum[5][20];
-Widget SL_wx_baro[5][20];
-Widget SL_wx_rain_h[5][20];
-Widget SL_wx_rain_00[5][20];
-Widget SL_wx_rain_24[5][20];
-Widget SL_course[5][20];
-Widget SL_speed[5][20];
-Widget SL_alt[5][20];
-Widget SL_lat_long[5][20];
-Widget SL_packets[5][20];
-Widget SL_sats[5][20];
-Widget SL_my_course[5][20];
-Widget SL_my_distance[5][20];
-Widget SL_pos_time[5][20];
-Widget SL_node_path[5][20];
-Widget SL_power_gain[5][20];
-Widget SL_comments[5][20];
+Widget SL_scroll[6];
+Widget SL_wx_wind_course[6][20];
+Widget SL_wx_wind_speed[6][20];
+Widget SL_wx_wind_gust[6][20];
+Widget SL_wx_temp[6][20];
+Widget SL_wx_hum[6][20];
+Widget SL_wx_baro[6][20];
+Widget SL_wx_rain_h[6][20];
+Widget SL_wx_rain_00[6][20];
+Widget SL_wx_rain_24[6][20];
+Widget SL_course[6][20];
+Widget SL_speed[6][20];
+Widget SL_alt[6][20];
+Widget SL_lat_long[6][20];
+Widget SL_packets[6][20];
+Widget SL_sats[6][20];
+Widget SL_my_course[6][20];
+Widget SL_my_distance[6][20];
+Widget SL_pos_time[6][20];
+Widget SL_node_path[6][20];
+Widget SL_power_gain[6][20];
+Widget SL_comments[6][20];
 int station_list_first = 1;
-int list_size_h[5];             // height of entire list widget
-int list_size_w[5];             // width  of entire list widget
-int list_size_i[5];             // size initialized, dirty hack, but works...
+int list_size_h[6];             // height of entire list widget
+int list_size_w[6];             // width  of entire list widget
+int list_size_i[6];             // size initialized, dirty hack, but works...
 
-int last_offset[5];
-char top_call[5][MAX_CALLSIGN+1];  // call of first list entry or empty string for always first call
+int last_offset[6];
+char top_call[6][MAX_CALLSIGN+1];  // call of first list entry or empty string for always first call
 time_t top_time;                // time of first list entry or 0 for always newest station
 int top_sn;                     // serial number for unique time index
 time_t last_list_upd;           // time of last list update
@@ -105,6 +116,7 @@ int units_last;
 #define LST_WX  2
 #define LST_TNC 3
 #define LST_TIM 4
+#define LST_OBJ 5
 
 #define LIST_UPDATE_CYCLE 2     /* Minimum time between list updates in seconds, we want */
                                 /* immediate update, but not in high traffic situations  */
@@ -232,6 +244,26 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
                         (*p_station) = (*p_station)->t_next;
                 }
             break;
+        case LST_OBJ:
+            if (forward == 1)
+                while (!found && (*p_station) != NULL) {
+                    if (((*p_station)->flag & ST_ACTIVE) != 0
+                     && ( (((*p_station)->flag & ST_OBJECT) != 0)
+                            || (((*p_station)->flag & ST_ITEM) != 0) ) )
+                        found = (char)TRUE;
+                    else
+                        (*p_station) = (*p_station)->n_next;
+                }
+            else
+                while (!found && (*p_station) != NULL) {
+                    if (((*p_station)->flag & ST_ACTIVE) != 0
+                     && ( (((*p_station)->flag & ST_VIATNC) != 0)
+                            || (((*p_station)->flag & ST_ITEM) != 0) ) )
+                        found = (char)TRUE;
+                    else
+                        (*p_station) = (*p_station)->n_prev;
+                }
+            break;
         default:
             break;
     }
@@ -250,7 +282,7 @@ void init_station_lists(void) {
 
 begin_critical_section(&station_list_dialog_lock, "list_gui.c:init_station_lists" );
 
-    for (type=0;type<5;type++) {
+    for (type=0;type<6;type++) {
         station_list_dialog[type] = NULL;       // set list to undefined
         for (i=0;i<20;i++) {
             SL_icon[type][i] = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
@@ -289,6 +321,11 @@ int stations_types(int type) {
                     break;
                 case 3:         // local stations list
                     if ((p_station->flag & ST_VIATNC) != 0)
+                        st++;
+                    break;
+                case 5:         // Object/Item list
+                    if ( ((p_station->flag & ST_OBJECT) != 0) ||
+                            ((p_station->flag & ST_ITEM) != 0) )
                         st++;
                     break;
                 default:
@@ -348,7 +385,7 @@ void Station_List_fill(int type, int new_offset) {
     int to_move, rows;
     int strwid;
 
-    // type 0 all, 1: mobile, 2: WX, 3: local, 4: time
+    // type 0 all, 1: mobile, 2: WX, 3: local, 4: time, 5: Objects/Items
     // offset is the entry that should be displayed in the first line
     
     w = h = ww = wh = 0;
@@ -490,7 +527,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 XmTextFieldSetString(SL_list[type][row],temp);
                 XtManageChild(SL_list[type][row]);
 
-                // call
+                // call (or object/item name)
                 /* check to see if string changed and over write */
                 strcpy(temp_call,XmTextFieldGetString(SL_call[type][row]));
                 if (strcmp(temp_call,p_station->call_sign) !=0 ) {
@@ -502,6 +539,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                     case LST_TNC:                       // local stations list
                     case LST_TIM:                       // last stations list
                     case LST_ALL:                       // stations list
+                    case LST_OBJ:                       // objects/items
                         xastir_snprintf(stemp, sizeof(stemp), "%5d",
                                 (int)p_station->num_packets);
                         XmTextFieldSetString(SL_packets[type][row],stemp);
@@ -754,9 +792,10 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 XtManageChild(SL_call[type][row]);
 
                 switch (type) {
-                    case LST_TNC:      /*local stations list */
+                    case LST_TNC:       // local stations list
                     case LST_TIM:
-                    case LST_ALL:      /*stations list */
+                    case LST_ALL:       // stations list
+                    case LST_OBJ:       // Objects/Items list
                         XmTextFieldSetString(SL_packets[type][row],"");
                         XtManageChild(SL_packets[type][row]);
                         XmTextFieldSetString(SL_pos_time[type][row],"");
@@ -769,7 +808,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_comments[type][row]);
                         break;
 
-                    case LST_MOB:   /* mobile stations list */
+                    case LST_MOB:       // mobile stations list
                         XmTextFieldSetString(SL_course[type][row],"");
                         XtManageChild(SL_course[type][row]);
                         XmTextFieldSetString(SL_speed[type][row],"");
@@ -839,7 +878,7 @@ void update_station_scroll_list(void) {         // called from UpdateTime() [mai
 
     last_h = last_w = 0;
     ok = 0;
-    for (i=0;i<5;i++) {                 // update all active lists
+    for (i=0;i<6;i++) {                 // update all active lists
         if (station_list_dialog[i] != NULL) {
             XtVaGetValues(station_list_dialog[i], XmNheight, &last_h, XmNwidth, &last_w, NULL);
             XtVaGetValues(SL_scroll[i], XmNmaximum,&last,XmNvalue, &pos, NULL);
@@ -1008,6 +1047,10 @@ void Station_List(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
             strcpy(temp,langcode("LHPUPNI004"));        // Last Stations
             break;
 
+        case LST_OBJ:
+            strcpy(temp,langcode("LHPUPNI005"));        // Objects/Items
+            break;
+
         default:
             return;
     }
@@ -1085,6 +1128,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
             case LST_ALL:       // All Stations
             case LST_TNC:       // Local Stations [via TNC]
             case LST_TIM:       // Last Stations
+            case LST_OBJ:       // Objects/Item
+
                 // number of packets heard
                 it1 = XtVaCreateManagedWidget(langcode("LHPUPNI012"), xmTextFieldWidgetClass, form,
                                  XmNeditable,                   FALSE,
@@ -1650,9 +1695,10 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
 			      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
             switch (type) {
-                case LST_ALL:   /*station list */
-                case LST_TNC:   /*local station list */
+                case LST_ALL:   // station list
+                case LST_TNC:   // local station list
                 case LST_TIM:
+                case LST_OBJ:   // Objects/Items
                     // number of packets received
                     SL_packets[type][i] = XtVaCreateManagedWidget("Station_List packets", xmTextFieldWidgetClass, win_list,
                                       XmNeditable,              FALSE,
@@ -2110,7 +2156,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                     break;
             }
         }  // each row
-        
+       
         form2 = XtVaCreateWidget("Station_List form2",xmFormWidgetClass, form,
                                     XmNfractionBase,            5,
                                     XmNtopAttachment,           XmATTACH_WIDGET,
@@ -2172,7 +2218,12 @@ end_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
         // <SPACE> key, and that activates the option.
 //        XmUpdateDisplay(station_list_dialog[type]);
         XmProcessTraversal(button_close, XmTRAVERSE_CURRENT);
-        
+     
+ 
+// Note:  If adding new lists, make sure to tweak xa_config.c to
+// increment the number.  If not, you'll get an X-Windows error at
+// this point when trying to resize the window:
+ 
         /* set last size if there was one */    // done in list_fill
         if (list_size_w[type] != -1 && list_size_h[type] != -1)
                     XtVaSetValues(station_list_dialog[type], 
@@ -2192,6 +2243,7 @@ end_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
         redo_list = (int)TRUE;        
 
         Station_List_fill(type,0);      // start with top of list
+
     } else          //  if (!station_list_dialog[type])
         // we already have an initialized widget
         (void)XRaiseWindow(XtDisplay(station_list_dialog[type]), XtWindow(station_list_dialog[type]));

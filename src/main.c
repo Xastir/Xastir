@@ -769,6 +769,8 @@ int moving_object = 0;
 
 
 
+
+
 // SmartBeaconing(tm) stuff.  If enabled, POSIT_rate is only used for
 // objects & items, sb_POSIT_rate computed via SmartBeaconing(tm) will
 // be used for posits.
@@ -3183,7 +3185,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
        station_clear_button, tracks_clear_button, uptime_button,
        save_button,file_button, open_file_button, exit_button, really_exit_button,
        view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
-       localstations_button, laststations_button,
+       localstations_button, laststations_button, objectstations_button,
        weather_button, wx_station_button, locate_button, locate_place_button, jump_button, alert_button,
        config_button, defaults_button, coordinates_button, station_button,
        map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
@@ -3432,6 +3434,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                                 XmNmnemonic,langcode_hotkey("PULDNVI009"),XmNbackground,colors[0xff],NULL);
     laststations_button = XtVaCreateManagedWidget(langcode("PULDNVI012"),xmPushButtonGadgetClass,viewpane,
                                 XmNmnemonic,langcode_hotkey("PULDNVI012"),XmNbackground,colors[0xff],NULL);
+    objectstations_button = XtVaCreateManagedWidget(langcode("LHPUPNI005"),xmPushButtonGadgetClass,viewpane,
+                                XmNmnemonic,langcode_hotkey("LHPUPNI005"),XmNbackground,colors[0xff],NULL);
     weather_button = XtVaCreateManagedWidget(langcode("PULDNVI005"),xmPushButtonGadgetClass,
                             viewpane,XmNmnemonic,langcode_hotkey("PULDNVI005"),XmNbackground,colors[0xff],NULL);
     wx_station_button = XtVaCreateManagedWidget(langcode("PULDNVI008"),xmPushButtonGadgetClass,
@@ -4064,6 +4068,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(weather_button,       XmNactivateCallback,Station_List,"2");
     XtAddCallback(localstations_button, XmNactivateCallback,Station_List,"3");
     XtAddCallback(laststations_button,  XmNactivateCallback,Station_List,"4");
+    XtAddCallback(objectstations_button,XmNactivateCallback,Station_List,"5");
 
     /* button callbacks */
     XtAddCallback(General_q_button,     XmNactivateCallback,General_query,"");
