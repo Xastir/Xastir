@@ -102,8 +102,7 @@ ImageMagick                     Optional  MANY graphics images
 libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
 AX.25                           Optional  Kernel AX.25 networking support
 festival                        Optional  Speaking alerts
-wget                            Optional  Internet images as maps
-libcurl                         Optional  Internet images as maps (faster than wget)
+libcurl or wget                 Optional  Internet images as maps
 GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
 
 Installing only the required libs gives you these capabilities:
@@ -216,7 +215,8 @@ To use online maps or findu.com historical data, you'll need wget or
     Wget:
         ftp://ftp.gnu.org/gnu/wget/
     libcurl:
-	http://curl.haxx.se/
+        http://curl.sourceforge.net/
+
 
 To download GPS tracks/waypoints/routes from a Garmin GPS into Xastir,
 converting to Shapefile format maps as it runs, you'll need gpsmanshp and
@@ -846,13 +846,13 @@ Getting Data Files for Xastir:
       layering priorities in the properties dialog (it's recommended that you
       use these now instead of a directory heirarchy to choose the layering).
 
-      There are many methods for organizing many maps.  Create a map
-      heirarchy using something that makes sense to you.  The old method of
+      There are many methods for organizing many maps. Create a map
+      heirarchy using something that makes sense to you. The old method of
       creating transparent/filled or raster/vector directories has been
       superceded by the new map layering features in the Map
-      Chooser->Properties dialog.  It's now suggested that the map layering
+      Chooser->Properties dialog. It's now suggested that the map layering
       be done there, and the directory layout designed to make it easiest
-      for the user to select maps.  Perhaps a good start would be:
+      for the user to select maps. Perhaps a good start would be:
 
            World/
            Canada/
@@ -865,9 +865,9 @@ Getting Data Files for Xastir:
            Overlay/
 
       Please note that the map directories are entirely up to the user
-      now.  Use the map layering facilities to determine the order in
+      now. Use the map layering facilities to determine the order in
       which they will be drawn, and to determine which will draw filled
-      areas.  Note that raster maps will always draw filled, not matter
+      areas. Note that raster maps will always draw filled, not matter
       what the setting suggests.
 
       Map types available by extension:
@@ -1476,16 +1476,17 @@ Gating NWS Weather Alerts to RF:
     If you wish to gate NWS weather alerts from the internet onto RF, you'll
     need to create a text file in the users directory as 
     ~/.xastir/data/nws-stations.txt
-    List each call or NWS station like "SECIND" that you would like to transmit
-    via RF.  Here's what an example file looks like:
+    List each NWS station that you would like to transmit via RF. Wildcards are
+    implied for lengths of 3 or greater. Here's what an example file looks
+    like:
 
     ------------- Cut Here -------------
     #
     # Seattle, WA
     SEANPW
     #
-    # Portland, OR
-    PDXNPW
+    # Portland, OR (any alert type)
+    PDX
     #
     # Pendleton, OR
     PDTNPW
