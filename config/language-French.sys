@@ -643,6 +643,7 @@ IFDNL00006|TNC AX25||
 IFDNL00007|GPS réseau (par gpsd)||
 IFDNL00008|Météo par réseau||
 IFDNL00009|TNC série + GPS sur câble AUX||
+IFDNL00010|Serial KISS TNC||
 #
 # Interface device info 
 IFDIN00000|%s %d %s sur port série %s||

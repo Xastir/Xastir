@@ -642,6 +642,7 @@ IFDNL00006|AX.25 TNC||
 IFDNL00007|GPS ligado via o servidor gpsd||
 IFDNL00008|Est. meteorológica ligada a uma REDE||
 IFDNL00009|TNC com GPS na porta AUX||
+IFDNL00010|Serial KISS TNC||
 #
 # Info dispositivo interface
 IFDIN00000|%s %d %s sobre serie %s||

@@ -644,6 +644,7 @@ IFDNL00006|AX25 TNC||
 IFDNL00007|Networked GPS (via gpsd)||
 IFDNL00008|Networked WX||
 IFDNL00009|Serial TNC w/GPS on AUX port||
+IFDNL00010|Serial KISS TNC||
 #
 # Interface device info 
 IFDIN00000|%s %d %s on serial %s||

@@ -647,6 +647,7 @@ IFDNL00006|AX25 TNC||
 IFDNL00007|Netwerk GPS (via gpsd)||
 IFDNL00008|Netwerk WX||
 IFDNL00009|Serieele TNC met GPS op een AUX kabel||
+IFDNL00010|Serial KISS TNC||
 #
 # Interface device info
 IFDIN00000|%s %d %s via serieel device %s||
