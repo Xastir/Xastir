@@ -4405,12 +4405,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     b_x = mid_x_long_offset  - ((width *scale_x)/2) + (input_x*scale_x);
                     b_y = mid_y_lat_offset   - ((height*scale_y)/2) + (input_y*scale_y);
 
-                    // Compute the total distance
-                    full_distance = cvt_kn2len * calc_distance_course(a_y,a_x,b_y,b_x,temp_course,sizeof(temp_course));
                     // Keep y constant to get x distance
                     x_distance_real = cvt_kn2len * calc_distance_course(a_y,a_x,a_y,b_x,temp_course,sizeof(temp_course));
                     // Keep x constant to get y distance
                     y_distance_real = cvt_kn2len * calc_distance_course(a_y,a_x,b_y,a_x,temp_course,sizeof(temp_course));
+                    // Compute the total distance and course
+                    full_distance = cvt_kn2len * calc_distance_course(a_y,a_x,b_y,b_x,temp_course,sizeof(temp_course));
+ 
                     if (full_distance < 1.0) {
                         switch (units_english_metric) {
                             case 1:     // English
@@ -4431,20 +4432,26 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         }
                         // Compute the total area
                         area = x_distance_real * y_distance_real;
-                        xastir_snprintf(temp, sizeof(temp), "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s,  %0.2f square %s",
+                            xastir_snprintf(temp,
+                            sizeof(temp),
+                            "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s, %0.2f square %s,  Bearing: %s degrees",
                             full_distance, un_alt,      // feet/meters
                             x_distance_real, un_alt,    // feet/meters
                             y_distance_real, un_alt,    // feet/meters
-                            area, un_alt);
+                            area, un_alt,
+                            temp_course);
                     }
                     else {
                         // Compute the total area
                         area = x_distance_real * y_distance_real;
-                        xastir_snprintf(temp, sizeof(temp), "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s,  %0.2f square %s",
+                        xastir_snprintf(temp,
+                            sizeof(temp),
+                            "%0.2f %s,  x=%0.2f %s,  y=%0.2f %s, %0.2f square %s,  Bearing: %s degrees",
                             full_distance, un_dst,      // miles/kilometers
                             x_distance_real, un_dst,    // miles/kilometers
                             y_distance_real, un_dst,    // miles/kilometers
-                            area, un_dst);
+                            area, un_dst,
+                            temp_course);
                     }
                     popup_message(langcode("POPUPMA020"),temp);
                 }
