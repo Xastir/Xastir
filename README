@@ -264,6 +264,36 @@ README
 
      Chris.
 
+     ---
+     Solaris 9/AEA PK232MBX notes from Alan Shackelford:
+
+     Thanks to the advice of several of you both on the list and in private 
+     email, the NG3B Xastir install is up and running. For future reference, 
+     here are the steps I took, based on your advice combined with my 
+     knowledge of Solaris and the AEA PK232MBX.
+
+     First, use admintool to set up the serial port at 8N1 9600.
+
+     Have a look at the /etc/uucp/Devices file and ensure you have the 
+     following in there someplace (like at the very bottom):
+
+        ACU cua/b - Any hayes
+        Direct cua/b - Any direct
+
+
+     Then use 'cu' (solarisese for call unix) to send a '*' to the TNC.
+     You will receive a response from the TNC with copyright info, etc.
+
+     Close the 'cu' session and start Xastir from a terminal window.
+
+     Set the Interface to 9600 8N1 in the configuration screen. Start the 
+     interface using the Interface Start/Stop window. The data will begin to
+     flow.
+
+     Alan NG3B
+     ---
+
+
         END OF SOLARIS NOTES.
       ----------------------------------------------------------------------- 
 
