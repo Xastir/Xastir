@@ -1115,6 +1115,135 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
         utmZone, utmEasting, utmNorthing );
 }
 
+
+
+
+
+// We'll call the above routine, then convert the result to the
+// 2-letter digraph format used for MGRS.  The ll_to_utm_ups()
+// function switches to the special irregular UTM zones for the
+// areas near Svalbard and SW Norway if the "coordinate_system"
+// variable is set to "USE_MGRS", so we'll be using the correct zone
+// boundaries for MGRS automatically.
+//
+void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
+    double utmNorthing;
+    double utmEasting;
+    char utmZone[10];
+//    char E_W[25] = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+//    char N_S[21] = "ABCDEFGHJKLMNPQRSTUV";
+    int start;
+    int my_east, my_north;
+    unsigned int int_utmEasting, int_utmNorthing;
+
+
+    ll_to_utm_ups(E_WGS_84,
+        (double)(-((y - 32400000l )/360000.0)),
+        (double)((x - 64800000l )/360000.0),
+        &utmNorthing,
+        &utmEasting,
+        utmZone,
+        sizeof(utmZone) );
+    utmZone[9] = '\0';
+
+    //fprintf(stderr,"%s %07.0f %07.0f\n", utmZone, utmEasting,
+    //utmNorthing );
+    //xastir_snprintf(str, str_len, "%s %07.0f %07.0f",
+    //    utmZone, utmEasting, utmNorthing );
+
+
+    // Convert the northing and easting values to the digraph letter
+    // format.  Letters 'I' and 'O' are skipped for both eastings
+    // and northings.  Letters 'W' through 'Z' are skipped for
+    // northings.
+    //
+    // N/S letters alternate in a cycle of two.  Begins at the
+    // equator with A and F in alternate zones.  Odd-numbered zones
+    // use A-V, even-numbered zones use F-V, then A-V.
+    //
+    // E/W letters alternate in a cycle of three.  Each E/W zone
+    // uses an 8-letter block.  Starts at A-H, then J-R, then S-Z,
+    // then repeats every 18 degrees.
+    //
+    // N/S letters have a cycle of two, E/W letters have a cycle of
+    // three.  The same lettering repeats after six zones (2,000,000
+    // meter intervals).
+    //
+    // AA is at equator and 180W.
+
+    // Easting:  Each zone covers 6 degrees.  Zone 1 = A-H, Zone 2 =
+    // J-R, Zone 3 = S-Z, then repeat.  So, take zone number-1,
+    // modulus 3, multiple that number by 8.  Modulus 24.  That's
+    // our starting letter for the zone.  Take the easting number,
+    // divide by 100,000, , add the starting number, compute modulus
+    // 24, then use that index into our E_W array.
+    //
+    // Northing:  Figure out whether even/odd zone number.  Divide
+    // by 100,000.  If even, add 5 (starts at 'F' if even).  Compute
+    // modulus 20, then use that index into our N_S array.
+
+    start = atoi(utmZone);
+    start--;
+    start = start % 3;
+    start = start * 8;
+    start = start % 24;
+    // "start" is now an index into the starting letter for the
+    // zone.
+
+
+    // NOTE:  This works at the equator, but not further N/S.  The
+    // 100,000 meter squares are numbered from the left edge of the
+    // row, so we have to start each row in each zone with the
+    // correct letter, whether that is A, J, or S.  Just dividing
+    // the easting by 100,000 doesn't get us there!
+    my_east = (int)(utmEasting / 100000.0) - 1;
+    my_east = my_east + start;
+    my_east = my_east % 24;
+//    fprintf(stderr, "Start: %c   East (guess): %c   ",
+//        E_W[start],
+//        E_W[my_east]);
+
+
+    start = atoi(utmZone);
+    start = start % 2;
+    if (start) {    // Odd-numbered zone
+        start = 0;
+    }
+    else {  // Even-numbered zone
+        start = 5;
+    }
+    my_north = (int)(utmNorthing / 100000.0);
+    my_north = my_north + start;
+    my_north = my_north % 20;
+//    fprintf(stderr, "Start: %c   North (guess): %c\n",
+//        N_S[start],
+//        N_S[my_north]);
+
+    int_utmEasting = utmEasting;
+    int_utmNorthing = utmNorthing;
+    int_utmEasting = int_utmEasting % 100000;
+    int_utmNorthing = int_utmNorthing % 100000;
+
+
+// Need special processing for UPS area (A/B/Y/Z bands)?
+
+
+    xastir_snprintf(str, str_len, "MGRS: Not Implemented Yet");
+
+//    xastir_snprintf(str,
+//        str_len,
+//        "%s %c%c %d %d",
+//        utmZone,
+//        E_W[my_east],
+//        N_S[my_north],
+//        int_utmEasting,
+//        int_utmNorthing );
+}
+
+
+
+
+ 
 // Convert Xastir lat/lon to UTM
 void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zone_len, long x, long y) {
     ll_to_utm_ups(E_WGS_84,
@@ -1126,6 +1255,10 @@ void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zo
         zone_len);
     zone[zone_len] = '\0';
 }
+
+
+
+
 
 // Convert UTM to Xastir lat/lon
 void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x, long *y) {

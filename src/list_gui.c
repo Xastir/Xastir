@@ -680,6 +680,14 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                             XmTextFieldSetString(SL_lat_long[type][row],stemp);
                             XtManageChild(SL_lat_long[type][row]);
                         }
+                        else if (coordinate_system == USE_MGRS) {
+                            // Create an MGRS string from
+                            // coordinates in Xastir coordinate
+                            // system.
+                            convert_xastir_to_MGRS_str(stemp, sizeof(stemp), p_station->coord_lon, p_station->coord_lat);
+                            XmTextFieldSetString(SL_lat_long[type][row],stemp);
+                            XtManageChild(SL_lat_long[type][row]);
+                        }
                         else {
                             // Create lat/lon strings from coordinates
                             // in Xastir coordinate system.

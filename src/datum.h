@@ -31,8 +31,6 @@
 void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, short datumID);
 void datum_shift(double *latitude, double *longitude, short fromDatumID, short toDatumID);
 
-extern int MGRS_grid;
-
 typedef struct {
     char  *name;    // name of ellipsoid
     double a;       // semi-major axis, meters

@@ -3224,6 +3224,11 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         // system.
         convert_xastir_to_UTM_str(my_text, sizeof(my_text), x, y);
     }
+    else if (coordinate_system == USE_MGRS) {
+        // Create an MGRS string from coordinate in Xastir
+        // coordinate system.
+        convert_xastir_to_MGRS_str(my_text, sizeof(my_text), x, y);
+    }
     else {
         // Create a lat/lon string from coordinate in Xastir
         // coordinate system.
@@ -15904,7 +15909,8 @@ void Configure_coordinates_destroy_shell( /*@unused@*/ Widget widget, XtPointer 
 
 void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_cancel, frame,
-                label, coord_box, coord_0, coord_1, coord_2, coord_3;
+                label, coord_box, coord_0, coord_1, coord_2,
+                coord_3, coord_4;
     Atom delw;
     Arg al[2];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -16010,6 +16016,15 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
         XtAddCallback(coord_3,XmNvalueChangedCallback,coordinates_toggle,"3");
 
 
+        coord_4 = XtVaCreateManagedWidget(langcode("WPUPCFC007"),
+                xmToggleButtonGadgetClass,
+                coord_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(coord_4,XmNvalueChangedCallback,coordinates_toggle,"4");
+
+
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
                 my_form,
@@ -16060,6 +16075,10 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
 
             case(USE_UTM):
                 XmToggleButtonSetState(coord_3,TRUE,FALSE);
+                break;
+
+            case(USE_MGRS):
+                XmToggleButtonSetState(coord_4,TRUE,FALSE);
                 break;
 
             case(USE_DDMMMM):
