@@ -911,11 +911,34 @@ fi
 # Check for libgeotiff/libtiff/libproj libraries 
 # 
 # Make sure to check /usr/local/lib & /usr/local/include as well 
-# 
+#
+use_tiff=no
+use_proj=no
 use_geotiff=no
-AC_CHECK_LIB(tiff, TIFFClose,
-  AC_CHECK_LIB(proj, pj_init,
-    AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff="yes")))
+#
+# Test for libtiff
+#
+AC_CHECK_LIB(tiff, TIFFClose, use_tiff="yes")
+if test "$use_tiff" == "yes"; then
+  #
+  # Found libtiff, test for libproj
+  #
+  AC_CHECK_LIB(proj, pj_init, use_proj="yes")
+  # If no, try one more location for Cygwin specifically.
+  if test "$use_proj" == "no"; then 
+    AC_CHECK_FILE(/usr/local/lib/libproj.a, use_proj="yes") 
+  fi
+  if test "$use_proj" = "yes"; then 
+    #
+    # Found libtiff/libproj, test for libgeotiff
+    #
+    AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff="yes")
+    # If no, try one more location for Cygwin specifically.
+    if test "$use_geotiff" == "no"; then
+      AC_CHECK_FILE(/usr/local/lib/libgeotiff.so, use_geotiff="yes")
+    fi
+  fi
+fi
 if test "$use_geotiff" = "yes"; then
   AC_DEFINE_UNQUOTED(HAVE_GEOTIFF, 1, [Define if you have GeoTiff Package])
   LIBS="-lgeotiff -lproj ${LIBS} -ltiff "
