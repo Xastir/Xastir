@@ -115,6 +115,7 @@ void group_build_list(char *filename) {
     char *ptr;
     FILE *f;
     struct stat group_stat;
+    int i;
 
     if (group_data_count == group_data_max) {
         ptr = realloc(group_data_list, (size_t)(group_data_max+10)*10);
@@ -129,13 +130,17 @@ void group_build_list(char *filename) {
     }
 
 
-// What's this, debug code?  Default groups in case the "group" file
-// doesn't exist?
+// Make sure we always listen for ourself, XASTIR, & our Version groups
     strcpy(&group_data_list[0], my_callsign);
     strcpy(&group_data_list[10], "XASTIR");
-    group_data_count = 2;
+    strcpy(&group_data_list[20], XASTIR_TOCALL);
+    group_data_count = 3;
+// If we are in special group look for messages.
+    if (altnet) {
+	strcpy(&group_data_list[group_data_count*10], altnet_call);
+	group_data_count++;
+    }
 //
-
 
     if (! stat(filename, &group_stat) )
         f = fopen(filename, "r");   // File exists
@@ -163,6 +168,8 @@ void group_build_list(char *filename) {
             (void)fgets(&group_data_list[group_data_count*10], 10, f);
             if ((ptr = strchr(&group_data_list[group_data_count*10], '\n')))
                 *ptr = '\0';
+	    else
+		while ((i = fgetc(f)) != EOF && i != '\n'); // clean-up after long group name
 
             if (group_data_list[group_data_count*10])
                 group_data_count++;
@@ -170,6 +177,7 @@ void group_build_list(char *filename) {
     }
     (void)fclose(f);
     qsort(group_data_list, (size_t)group_data_count, 10, group_comp);
+    if (debug_level & 2) for (i = 0; i < group_data_count; i++) printf("Group %2d: %s\n", i, &group_data_list[i*10]);
 }
 
 
@@ -179,17 +187,16 @@ void group_build_list(char *filename) {
 static int group_active(char *from) {
     static struct stat current_group_stat;
     struct stat group_stat;
-
+    static char altgroup[10];
 
     (void)remove_trailing_spaces(from);
-
-    if (!stat(group_data_file, &group_stat)
-            && (current_group_stat.st_size != group_stat.st_size
-                || current_group_stat.st_mtime != group_stat.st_mtime
-                || current_group_stat.st_ctime != group_stat.st_ctime)) {
-
-        group_build_list(group_data_file);
-        current_group_stat = group_stat;
+// If we cycle to/from special group or file changes, rebuild group list.
+    if ((!stat(group_data_file, &group_stat) && (current_group_stat.st_size != group_stat.st_size ||
+	  current_group_stat.st_mtime != group_stat.st_mtime || current_group_stat.st_ctime != group_stat.st_ctime)) ||
+	(altgroup && strcasecmp(altgroup, VERSIONFRM))) {
+	group_build_list(group_data_file);
+	current_group_stat = group_stat;
+	strcpy(altgroup, VERSIONFRM);
     }
     if (group_data_list != NULL)        // Causes segfault on Solaris 2.5 without this!
         return (int)(bsearch(from, group_data_list, (size_t)group_data_count, (size_t)10, group_comp) != NULL);
