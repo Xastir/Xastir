@@ -9268,7 +9268,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm,
                         }
                     }
                 }
-                else if (record_hdr.type == 0) {  // We have a label
+                else if ( (record_hdr.type == 0)    // We have a label
+                        && map_labels) {  // and we wish to draw it
                     long label_x_cord;
                     long label_y_cord;
                     int  label_length;
