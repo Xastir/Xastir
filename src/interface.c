@@ -3702,6 +3702,8 @@ begin_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
 
             if (port_data[i].status == DEVICE_UP) {
                 port_write_string(i,data_txt);
+                usleep(250000);    // 0.25 secs
+ 
                 if (debug_level & 1)
                     printf("Sending to interface:%d, %s\n",i,data_txt);
             }
