@@ -10762,8 +10762,8 @@ void index_update_directory(char *directory) {
         return;
     }
     // Make sure there aren't any weird characters in the directory
-    // that might cause problems later.  Look for CR's and LF's and
-    // convert them to string-end characters.
+    // that might cause problems later.  Look for control characters
+    // and convert them to string-end characters.
     for ( i = 0; i < strlen(directory); i++ ) {
         // Change any control characters to '\0' chars
         if (directory[i] < 0x20) {
@@ -10901,8 +10901,8 @@ void index_update_xastir(char *filename,
         return;
     }
     // Make sure there aren't any weird characters in the filename
-    // that might cause problems later.  Look for CR's and LF's and
-    // convert them to string-end characters.
+    // that might cause problems later.  Look for control characters
+    // and convert them to string-end characters.
     for ( i = 0; i < strlen(filename); i++ ) {
         // Change any control characters to '\0' chars
         if (filename[i] < 0x20) {
@@ -11058,8 +11058,8 @@ void index_update_ll(char *filename,
         return;
     }
     // Make sure there aren't any weird characters in the filename
-    // that might cause problems later.  Look for CR's and LF's and
-    // convert them to string-end characters.
+    // that might cause problems later.  Look for control characters
+    // and convert them to string-end characters.
     for ( i = 0; i < strlen(filename); i++ ) {
         // Change any control characters to '\0' chars
         if (filename[i] < 0x20) {
@@ -11354,11 +11354,10 @@ void index_insert_sorted(map_index_record *new_record) {
         return;
     }
     // Make sure there aren't any weird characters in the filename
-    // that might cause problems later.  Look for CR's and LF's and
-    // convert them to string-end characters.
+    // that might cause problems later.  Look for any control
+    // characters and convert them to string-end characters.
     for ( i = 0; i < strlen(new_record->filename); i++ ) {
-        if ( (new_record->filename[i] == '\n')
-                || (new_record->filename[i] == '\r') ) {
+        if (new_record->filename[i] < 0x20) {
             new_record->filename[i] = '\0';    // Terminate it here
         }
     }
@@ -11485,6 +11484,10 @@ void index_restore_from_file(void) {
 
 
 //printf("\nRestoring map index from file\n");
+
+    if (map_index_head != NULL) {
+        printf("Warning: index_restore_from_file(): map_index_head was non-null!\n");
+    }
 
     map_index_head = NULL;  // Starting with empty list
 
