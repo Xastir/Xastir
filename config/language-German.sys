@@ -446,7 +446,7 @@ WPUPCFT036|Persistence (0 to 255)||
 WPUPCFT037|SlotTime (in 10 ms Einheiten)||
 WPUPCFT038|TxTail (in 10 ms Einheiten)||
 WPUPCFT039|Voll-Duplex||
-WPUPCFT040|MKISS TNC konfigurieren||
+WPUPCFT040|Multi-Port KISS TNC konfigurieren||
 # 
 # PopUp "Einstellungen Wetterstation"
 WPUPCFWX01|Einstellungen Wetterstation||
@@ -784,7 +784,7 @@ IFDNL00009|Serieller TNC + GPS mit AUX-Kabel||
 IFDNL00010|Serieller KISS TNC||
 IFDNL00011|Datenbank über Netz (Noch nicht implementiert)||
 IFDNL00012|AGWPE über Netz||
-IFDNL00013|Serieller MKISS TNC||
+IFDNL00013|Serieller Multi-Port KISS TNC||
 #
 # Interface device info 
 IFDIN00000|%s %2d %s an ser. Schnittstelle %s||

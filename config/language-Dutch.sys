@@ -450,7 +450,7 @@ WPUPCFT036|Persistence (0 tot 255)||
 WPUPCFT037|SlotTime (10 ms stappen)||
 WPUPCFT038|TxTail (10 ms stappen)||
 WPUPCFT039|Vol Duplex||
-WPUPCFT040|Configureer MKISS TNC||
+WPUPCFT040|Configureer Multi-Port KISS TNC||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|WX Poort Instelling||
@@ -788,7 +788,7 @@ IFDNL00009|Serieele TNC met GPS op een AUX kabel||
 IFDNL00010|Serieele KISS TNC||
 IFDNL00011|Database Via Netwerk (Nog Niet Geimplementeerd)||
 IFDNL00012|AGWPE Via Netwerk||
-IFDNL00013|Serieele MKISS TNC||
+IFDNL00013|Serieele Multi-Port KISS TNC||
 #
 # Interface device info
 IFDIN00000|%s %2d %s via serieel device %s||
