@@ -34,6 +34,12 @@
 #endif  // __linux__
 
 
+// Define this if your pthreads implementation uses SIGUSR1 signal.
+// This will disable our SIGUSR1 handler which allows us to create
+// snapshots on receipt of that signal.
+//#define OLD_PTHREADS
+
+
 // To enable the "Transmit Raw WX data" button in
 // Configure->Defaults dialog.  Warning:  If you enable this, enable
 // the button in Configure->Defaults, and are running a weather
