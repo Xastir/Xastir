@@ -38,6 +38,7 @@
 #include "main.h"
 #include "lang.h"
 #include "popup.h"
+#include "util.h"
 
 Widget track_station_dialog = (Widget)NULL;
 Widget track_station_data = (Widget)NULL;
@@ -378,9 +379,12 @@ end_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_trail_de
 void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char temp[MAX_CALL+1];
     char fileimg[400];
+#ifdef HAVE_LIBCURL
+#else
 #ifdef HAVE_WGET
     char tempfile[500];
 #endif  // HAVE_WGET
+#endif
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
@@ -406,12 +410,14 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     //Download_trail_destroy_shell(w, clientData, callData);
 
     xastir_snprintf(fileimg, sizeof(fileimg),
-        "\'http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d\'",
+        "http://www.findu.com/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d",
         download_trail_station_call,posit_start,posit_length);
-
+#ifdef HAVE_LIBCURL
+    curl_getfile(fileimg, log_filename);
+#else
 #ifdef HAVE_WGET
     xastir_snprintf(tempfile, sizeof(tempfile),
-        "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
+        "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s \'%s\' 2> /dev/null\n",
         WGET_PATH,
         log_filename,
         fileimg);
@@ -424,8 +430,9 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         return;
     }
 #else   // HAVE_WGET
-    fprintf(stderr,"'wget' not installed.  Can't download trail\n");
+    fprintf(stderr,"libcurl and 'wget' not installed.  Can't download trail\n");
 #endif  // HAVE_WGET
+#endif
 
     // Set permissions on the file so that any user can overwrite it.
     chmod(log_filename, 0666);
