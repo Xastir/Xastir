@@ -329,19 +329,22 @@ AC_CHECK_FUNCS([vsnprintf])
  
  
  
-# Check for wget and find out its path if present
+# Check for wget, find out its path
 # 
-# 
-AC_CHECK_PROG(wget, [wget --version], "/usr/bin", no, "/usr/bin" )
-if test "$wget" = "no"; then
-  AC_CHECK_PROG(wget, [wget --version], "/usr/local/bin", no, "/usr/local/bin" )
-  if test "$wget" = "no"; then
-    AC_CHECK_PROG(wget, [wget --version], "/sw/bin", no, "/sw/bin" )
-    if test "$wget" = "no"; then 
-      AC_MSG_WARN(*** Missing wget (or it is not in the path).  Building w/o wget support. ***) 
+#
+AC_CHECK_PROG(wget, [wget --version], "/usr/bin", , "/usr/bin" )
+if test "$wget" != "/usr/bin"; then
+  AC_CHECK_PROG(wget, [wget --version], "/usr/local/bin", , "/usr/local/bin" )
+  if test "$wget" != "/usr/local/bin"; then
+    AC_CHECK_PROG(wget, [wget --version], "/bin", , "/bin" )
+    if test "$wget" != "/bin"; then
+      AC_CHECK_PROG(wget, [wget --version], "/sw/bin", no, "/sw/bin" )
+      if test "$wget" != "/sw/bin"; then 
+        AC_MSG_WARN(*** Missing wget (or it is not in the path).  Building w/o wget support. ***) 
+      fi
     fi
-  fi
-fi 
+  fi 
+fi
 if test "$wget" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_WGET, 1, [Define if you have wget]) 
   AC_DEFINE_UNQUOTED(WGET_PATH, "${wget}/wget", [Path to wget]) 
@@ -351,14 +354,24 @@ fi
  
  
  
-# Check for convert 
+# Check for convert, find out its path
 # 
-# Is there a way to find out the path to the executable here and 
-# then compile that into the Xastir code? 
-# 
-AC_CHECK_PROG(convert, [convert], yes, no) 
-if test "$convert" = "no"; then 
-  AC_MSG_WARN(*** Missing convert (or it is not in the path).  Building w/o convert support. ***) 
+AC_CHECK_PROG(convert, [convert], "/usr/bin", , "/usr/bin" )
+if test "$convert" != "/usr/bin"; then
+  AC_CHECK_PROG(convert, [convert], "/usr/local/bin", , "/usr/local/bin" )
+  if test "$convert" != "/usr/local/bin"; then
+    AC_CHECK_PROG(convert, [convert], "/bin", , "/bin" )
+    if test "$convert" != "/bin"; then
+      AC_CHECK_PROG(convert, [convert], "/sw/bin", no, "/sw/bin" )
+      if test "$convert" != "/sw/bin"; then 
+        AC_MSG_WARN(*** Missing convert (or it is not in the path).  Building w/o convert support. ***) 
+      fi
+    fi
+  fi 
+fi
+if test "$convert" != "no"; then 
+  AC_DEFINE_UNQUOTED(HAVE_CONVERT, 1, [Define if you have convert]) 
+  AC_DEFINE_UNQUOTED(CONVERT_PATH, "${convert}/convert", [Path to convert]) 
 fi 
 # 
 # End of convert checks 
@@ -379,42 +392,81 @@ fi
  
  
  
-# Check for gv 
+# Check for gv, find out its path
 # 
 # Is there a way to find out the path to the executable here and 
 # then compile that into the Xastir code? 
-# 
-AC_CHECK_PROG(gv, [gv -v], yes, no) 
-if test "$gv" = "no"; then 
-  AC_MSG_WARN(*** Missing gv (or it is not in the path).  Building w/o gv support. ***) 
+#
+AC_CHECK_PROG(gv, [gv -v], "/usr/X11R6/bin", , "/usr/X11R6/bin" )
+if test "$gv" != "/usr/X11R6/bin"; then
+  AC_CHECK_PROG(gv, [gv -v], "/usr/X11/bin", , "/usr/X11/bin" )
+  if test "$gv" != "/usr/X11/bin"; then
+    AC_CHECK_PROG(gv, [gv -v], "/bin", , "/bin" )
+    if test "$gv" != "/bin"; then
+      AC_CHECK_PROG(gv, [gv -v], "/usr/bin", , "/usr/bin" )
+      if test "$gv" != "/usr/bin"; then
+        AC_CHECK_PROG(gv, [gv -v], "/usr/local/bin", , "/usr/local/bin" )
+        if test "$gv" != "/usr/local/bin"; then
+          AC_CHECK_PROG(gv, [gv -v], "/sw/bin", no, "/sw/bin" )
+          if test "$gv" != "/sw/bin"; then 
+            AC_MSG_WARN(*** Missing gv (or it is not in the path).  Building w/o gv support. ***) 
+          fi
+        fi
+      fi
+    fi
+  fi 
+fi
+if test "$gv" != "no"; then 
+  AC_DEFINE_UNQUOTED(HAVE_GV, 1, [Define if you have gv]) 
+  AC_DEFINE_UNQUOTED(GV_PATH, "${gv}/gv", [Path to gv]) 
 fi 
 # 
 # End of gv checks 
  
  
  
-# Check for cat 
+# Check for cat, find out its path
 # 
-# Is there a way to find out the path to the executable here and 
-# then compile that into the Xastir code? 
-# 
-AC_CHECK_PROG(cat, [cat --version], yes, no) 
-if test "$cat" = "no"; then 
-  AC_MSG_WARN(*** Missing cat (or it is not in the path).  Building w/o cat support. ***) 
+AC_CHECK_PROG(cat, [cat -version], "/bin", , "/bin" )
+if test "$cat" != "/bin"; then
+  AC_CHECK_PROG(cat, [cat -version], "/usr/bin", , "/usr/bin" )
+  if test "$cat" != "/usr/bin"; then
+    AC_CHECK_PROG(cat, [cat -version], "/usr/local/bin", , "/usr/local/bin" )
+    if test "$cat" != "/usr/local/bin"; then
+      AC_CHECK_PROG(cat, [cat -version], "/sw/bin", no, "/sw/bin" )
+      if test "$cat" != "/sw/bin"; then 
+        AC_MSG_WARN(*** Missing cat (or it is not in the path).  Building w/o cat support. ***) 
+      fi
+    fi
+  fi 
+fi
+if test "$cat" != "no"; then 
+  AC_DEFINE_UNQUOTED(HAVE_CAT, 1, [Define if you have cat]) 
+  AC_DEFINE_UNQUOTED(CAT_PATH, "${cat}/cat", [Path to cat]) 
 fi 
 # 
 # End of cat checks 
  
  
  
-# Check for cp 
+# Check for cp, find out its path
 # 
-# Is there a way to find out the path to the executable here and 
-# then compile that into the Xastir code? 
-# 
-AC_CHECK_PROG(cp, [cp --version], yes, no) 
-if test "$cp" = "no"; then 
-  AC_MSG_WARN(*** Missing cp (or it is not in the path).  Building w/o cp support. ***) 
+AC_CHECK_PROG(cp, [cp -version], "/bin", , "/bin" )
+if test "$cp" != "/bin"; then
+  AC_CHECK_PROG(cp, [cp -version], "/usr/bin", , "/usr/bin" )
+  if test "$cp" != "/usr/bin"; then
+    AC_CHECK_PROG(cp, [cp -version], "/usr/local/bin", , "/usr/local/bin" )
+    if test "$cp" != "/usr/local/bin"; then
+      AC_CHECK_PROG(cp, [cp -version], "/sw/bin", no, "/sw/bin" )
+      if test "$cp" != "/sw/bin"; then 
+        AC_MSG_WARN(*** Missing cp (or it is not in the path).  Building w/o cp support. ***) 
+      fi
+    fi
+  fi 
+fi
+if test "$cp" != "no"; then 
+  AC_DEFINE_UNQUOTED(HAVE_CP, 1, [Define if you have cp]) 
+  AC_DEFINE_UNQUOTED(CP_PATH, "${cp}/cp", [Path to cp]) 
 fi 
 # 
 # End of cp checks 
