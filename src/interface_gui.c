@@ -435,6 +435,12 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
+
+// We can only set the time properly on Linux systems
+#ifndef __linux__
+                XtSetSensitive(TNC_GPS_set_time,FALSE);
+#endif
+
                 break;
             case DEVICE_SERIAL_TNC:
             default:
@@ -1208,6 +1214,11 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
+
+// We can only set the time properly on Linux systems
+#ifndef __linux__
+        XtSetSensitive(GPS_set_time,FALSE);
+#endif
  
         frame = XtVaCreateManagedWidget("Config_GPS frame", xmFrameWidgetClass, form,
                                     XmNtopAttachment,XmATTACH_WIDGET,
@@ -2701,6 +2712,11 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
+
+// We can only set the time properly on Linux systems
+#ifndef __linux__
+        XtSetSensitive(NGPS_set_time,FALSE);
+#endif
  
         sep = XtVaCreateManagedWidget("Config_NGPS sep", xmSeparatorGadgetClass,form,
                                       XmNorientation, XmHORIZONTAL,
