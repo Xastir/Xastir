@@ -81,6 +81,7 @@ extern int interrupt_drawing_now;
 #define MAX_GPS_CHARS 128
 #define MAX_WX_CHARS 4
 
+extern int skip_dupe_checking;
 extern int serial_char_pacing;  // Inter-character delay in ms.
 extern int disable_all_maps;
 extern int re_sort_maps;
