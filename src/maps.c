@@ -910,7 +910,8 @@ int map_visible (unsigned long bottom_map_boundary,
 int map_visible_lat_lon (double f_bottom_map_boundary,
                          double f_top_map_boundary,
                          double f_left_map_boundary,
-                         double f_right_map_boundary)
+                         double f_right_map_boundary,
+                         char *error_message)
 {
     unsigned long bottom_map_boundary,
                   top_map_boundary,
@@ -935,7 +936,8 @@ int map_visible_lat_lon (double f_bottom_map_boundary,
                         right_map_boundary) );
     }
     else {
-        printf("map_visible_lat_lon: problem converting coordinates from lat/lon\n");
+        printf("map_visible_lat_lon: problem converting coordinates from lat/lon: %s\n",
+            error_message);
         return(0);  // Problem converting, assume that the map is not viewable
     }
 }
@@ -1164,6 +1166,7 @@ void draw_shapefile_map (Widget w,
     SHPObject       *object;
     static XPoint   points[MAX_MAP_POINTS];
     char            file[2000];        /* Complete path/name of image file */
+    char            warning_text[2500];
     int             *panWidth, i, fieldcount, recordcount, structure, ring;
     char            ftype[15];
     int             nWidth, nDecimals;
@@ -1691,10 +1694,11 @@ void draw_shapefile_map (Widget w,
     if (debug_level & 16)
         printf("Calling map_visible_lat_lon on the entire shapefile\n");
 
-    if (! map_visible_lat_lon(  adfBndsMin[1],       // Bottom
-                                adfBndsMax[1],       // Top
-                                adfBndsMin[0],       // Left
-                                adfBndsMax[0]) ) {   // Right
+    if (! map_visible_lat_lon(  adfBndsMin[1],  // Bottom
+                                adfBndsMax[1],  // Top
+                                adfBndsMin[0],  // Left
+                                adfBndsMax[0],  // Right
+                                file) ) {       // Error text if failure
         if (debug_level & 16)
             printf("No shapes within viewport.  Skipping file...\n");
 
@@ -1828,10 +1832,22 @@ void draw_shapefile_map (Widget w,
         if (debug_level & 16)
             printf("Calling map_visible_lat_lon on a shape\n");
 
-        if ( map_visible_lat_lon( object->dfYMin,       // Bottom
-                                  object->dfYMax,       // Top
-                                  object->dfXMin,       // Left
-                                  object->dfXMax) ) {   // Right
+        // Set up some warning text just in case the map has a
+        // problem.
+        xastir_snprintf(warning_text,
+            sizeof(warning_text),
+            "File:%s, Structure:%d",
+            file,
+            structure);
+
+        //printf("%s\n",warning_text);
+
+        if ( map_visible_lat_lon( object->dfYMin,   // Bottom
+                                  object->dfYMax,   // Top
+                                  object->dfXMin,   // Left
+                                  object->dfXMax,   // Right
+                                  warning_text) ) { // Error text if failure
+
             const char *temp;
             char temp2[50];
             int jj;
@@ -9890,7 +9906,9 @@ void load_alert_maps (Widget w, char *dir) {
                 if (map_visible_lat_lon(alert_list[i].bottom_boundary, // Shape visible
                         alert_list[i].top_boundary,
                         alert_list[i].left_boundary,
-                        alert_list[i].right_boundary) ) {
+                        alert_list[i].right_boundary,
+                        alert_list[i].title) ) {    // Error text if failure
+
                     draw_map (w,
                         dir,
                         alert_list[i].filename,
