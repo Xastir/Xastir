@@ -14630,7 +14630,7 @@ void check_and_transmit_objects_items(time_t time) {
                     // power_gain, signal_gain, signpost, station_time, station_time_type,
                     // comments, df_color
                     if (Create_object_item_tx_string(p_station, line, sizeof(line)) ) {
-
+//fprintf(stderr,"Transmitting: %s\n",line);
                         // Attempt to transmit the object/item again
                         if (object_tx_disable) {
                             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
@@ -14640,8 +14640,13 @@ void check_and_transmit_objects_items(time_t time) {
                         }
                     }
                     else {
+//fprintf(stderr,"Create_object_item_tx_string returned a 0\n");
                         // Don't transmit it.
                     }
+                }
+                else {  // Not time to transmit it yet
+//fprintf(stderr,"Not time to TX yet: %s\t%s\t",p_station->call_sign,p_station->origin);
+//fprintf(stderr, "%ld secs to go\n", p_station->last_transmit_time + increment - sec_now() );
                 }
             }
         }
