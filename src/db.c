@@ -11115,6 +11115,56 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 substr(p_station->node_path_ptr,path,strlen(path));
             }
         }
+
+        // If a 3rd-party packet heard on TNC, overwrite
+        // node_path_ptr only if heard_via_tnc_last_time is older
+        // than one hour (zero counts as well!), plus clear the
+        // ST_DIRECT and ST_VIATNC bits in this case.  This makes us
+        // keep the RF path around for at least one hour after the
+        // station is heard.
+        //
+        else if ((from == DATA_VIA_TNC)  // Heard via TNC
+                && third_party      // It's a 3RD-Party packet
+                && path != NULL) {  // Path is not NULL
+
+            // 3rd-party packet heard on TNC interface.  Check if
+            // heard_via_tnc_last_time is older than an hour.  If
+            // so, overwrite the path and clear a few bits to show
+            // that it has timed out on RF and we're now receiving
+            // that station from an igate.
+            //
+            if (sec_now() > (p_station->heard_via_tnc_last_time + 60*60)) {
+
+                // Yep, more than one hour old or is a zero,
+                // overwrite the node_path_ptr variable with the new
+                // one.  We're only hearing this station on INET
+                // now.
+
+                // Free any old path we might have
+                if (p_station->node_path_ptr != NULL)
+                    free(p_station->node_path_ptr);
+                // Malloc and store the new path
+                p_station->node_path_ptr = (char *)malloc(strlen(path) + 1);
+                CHECKMALLOC(p_station->node_path_ptr);
+
+                substr(p_station->node_path_ptr,path,strlen(path));
+
+                // Clear the ST_VIATNC bit
+                p_station->flag &= ~ST_VIATNC;
+            }
+
+            // If direct_heard is over an hour old, clear the
+            // ST_DIRECT flag.  We're only hearing this station on
+            // INET now.
+            // 
+            if (sec_now() > (p_station->direct_heard + st_direct_timeout)) {
+
+                // Yep, more than one hour old or is a zero, clear
+                // the ST_DIRECT flag.
+                p_station->flag &= ~ST_DIRECT;
+            }
+        }
+ 
         // If heard on INET then overwrite node_path_ptr only if
         // heard_via_tnc_last_time is older than one hour (zero
         // counts as well!), plus clear the ST_DIRECT and ST_VIATNC
