@@ -841,27 +841,35 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 //
 //
 // TODO:
-// *) Implement labels.
-// *) Allow user to select layers to draw/ignore.
-// *) Implement filled polygons.
-// *) Implement fill/hole polygon detection, and draw them
-//    appropriately (Shapefiles only?).
+// *) Dbfawk support or similar?  Implement proper map preferences
+//    drawing:  Colors, line widths, layering, filled, choose label
+//    field, label fonts/placement/color.
+// *) Allow user to select layers to draw/ignore.  Very important
+//    for those sorts of files that provide all layers (i.e. Tiger).
+// *) Implement filled polygons, fill/hole polygon detection, and
+//    draw appropriately.  First ring is fill, all others are holes
+//    according to the OGR simple features methods.
 // *) Implement weather alert tinted polygons, draw them to the
 //    correct pixmap.
-// *) Implement proper map preferences drawing:  Colors, line widths,
-//    layering, filled, choose label field, label fonts/placement.
-// *) Speed things up in any way possible.
-// *) Check DATUM as well as GEOGCS.  If it's nad83 or wgs84, don't
-//    transform.  We currently only check the GEOGCS field.  Have
-//    seen some .prj files that don't contain a GEOGCS but do have a
-//    DATUM field we could parse.
 // *) Fast Extents:  We now pass a variable to the draw functions
-//    that tells whether we can do fast extents.  We still need to
-//    compute our own extents after we have the points in an array.
+//    that tells whether we can do fast extents, but we still need
+//    to compute our own extents after we have the points for a
+//    shape in an array.  We could either check extents or just call
+//    the draw functions, which skip drawing if outside our view
+//    anyway (we currently do the latter).
 // *) Figure out why SDTS hypsography (contour lines) on top of
 //    terraserver gives strange results when zooming/panning
 //    sometimes.  Restarting Xastir cleans up the image.  Perhaps
-//    colors or GC's are getting messed up?
+//    colors or GC's are getting messed up?  Perhaps lines segments
+//    are too long when drawing?
+// *) Some sort of warning to the operator if large regions are
+//    being filled, and there's a base raster map?  Dbfawk likes to
+//    fill counties in with purple, wiping out rasters underneath.
+// *) Draw portions of a line/polygon correctly, instead of just
+//    dropping or concatenating lines.  This can cause missing line
+//    segments that cross the edge of our view, or incorrect slopes
+//    for lines that cross the edge.
+// *) Speed things up in any way possible.
 //
 // 
 void draw_ogr_map(Widget w,
