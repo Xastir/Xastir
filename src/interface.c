@@ -3351,7 +3351,7 @@ void port_read(int port) {
             FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 20000;   // 20 ms
+            tmv.tv_usec = 50000;   // 50 ms
             (void)select(0,&rd,NULL,NULL,&tmv);
         }
     }
