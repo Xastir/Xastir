@@ -86,6 +86,8 @@ map label font, style changes
 various menu reorginization
 cad drawing mode
 cursor changes based on mode
+gdal/ogr integration
+tiger maps back in the chooser (reverts to pre-1.2 behavior)
 
 
 HELP-INDEX>What's new in Xastir 1.2
@@ -1156,6 +1158,12 @@ Removes borders (makes them transparent).  Values are in pixels with
 images is "CROP 35 20 616 600"
 
 Special/nonstandard .geo files:
+
+TIGERMAP
+A file with just the word "TIGERMAP" will cause Xastir to retrieve an
+online Tiger map of the area on screen. These are not available for every
+place in the world. A tigermap.geo is automatically installed in the maps
+directory.
 
 TERRASERVER
 A file with just the word "TERRASERVER" will cause Xastir to retrieve a
