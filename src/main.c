@@ -4727,11 +4727,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     t = _("X Amateur Station Tracking and Information Reporting");
     title = (char *)malloc(strlen(t) + 42 + strlen(PACKAGE));
-    strcpy(title, "XASTIR ");
-    strcat(title, " - ");
-    strcat(title, t);
-    strcat(title, " @ ");
-    (void)gethostname(&title[strlen(title)], 28);
+    if (!title) {
+        fprintf(stderr,"Couldn't allocate memory for title\n");
+    }
+    else {
+        strcpy(title, "XASTIR ");
+        strcat(title, " - ");
+        strcat(title, t);
+        strcat(title, " @ ");
+        (void)gethostname(&title[strlen(title)], 28);
+    }
 
     // Allocate a couple of colors that we'll need before we get
     // around to calling create_gc(), which creates the rest.
@@ -4742,7 +4747,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     ac = 0;
     XtSetArg(al[ac], XmNallowShellResize, TRUE);            ac++;
-    XtSetArg(al[ac], XmNtitle,            title);           ac++;
+
+    if (title)
+        XtSetArg(al[ac], XmNtitle,        title);           ac++;
+ 
     XtSetArg(al[ac], XmNargv,             app_argv);        ac++;
     XtSetArg(al[ac], XmNminWidth,         100);             ac++;
     XtSetArg(al[ac], XmNminHeight,        100);             ac++;
@@ -8166,6 +8174,11 @@ void CAD_vertice_allocate(long latitude, long longitude) {
         // Allocate area to hold the vertice
         p_new = (VerticeRow *)malloc(sizeof(VerticeRow));
 
+        if (!p_new) {
+            fprintf(stderr,"Couldn't allocate memory in CAD_vertice_allocate()\n");
+            return;
+        }
+ 
         p_new->latitude = latitude;
         p_new->longitude = longitude;
  
@@ -8204,6 +8217,11 @@ void CAD_object_allocate(long latitude, long longitude) {
     // list of CADRow objects.
     p_new = (CADRow *)malloc(sizeof(CADRow));
 
+    if (!p_new) {
+        fprintf(stderr,"Couldn't allocate memory in CAD_object_allocate()\n");
+        return;
+    }
+
     // Fill in default values
     p_new->creation_time = sec_now();
     p_new->start = NULL;
@@ -8224,6 +8242,12 @@ void CAD_object_allocate(long latitude, long longitude) {
 #endif
 
     p_new->start = (VerticeRow *)malloc(sizeof(VerticeRow));
+    if (!p_new->start) {
+        fprintf(stderr,"Couldn't allocate memory in CAD_object_allocate(2)\n");
+        free(p_new);
+        return;
+    }
+
     p_new->start->next = NULL;
     p_new->start->latitude = latitude;
     p_new->start->longitude = longitude;

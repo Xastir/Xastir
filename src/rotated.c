@@ -178,6 +178,8 @@ static char *my_strdup(char *str) {
     s=(char *)malloc((unsigned)(strlen(str)+1));
     if(s!=NULL) 
         strcpy(s, str);
+    else
+        fprintf(stderr,"Couldn't allocate memory in my_strdup()\n");
     
     return s;
 }
@@ -288,8 +290,10 @@ static XImage *MakeXImage(Display *dpy, int w, int h) {
     
     /* reserve memory for image */
     data=(char *)calloc((unsigned)(((w-1)/8+1)*h), 1);
-    if(data==NULL)
+    if(data==NULL) {
+        fprintf(stderr,"Couldn't allocate memory in MakeXImage()\n");
         return NULL;
+    }
     
     /* create the XImage */
     I=XCreateImage(dpy, DefaultVisual(dpy, DefaultScreen(dpy)), 1, XYBitmap,
@@ -446,8 +450,10 @@ static int XRotPaintAlignedString( Display *dpy, XFontStruct *font, float angle,
         
         /* reserve space for XPoints, free'd later */
         xpoints=(XPoint *)malloc((unsigned)(4*item->nl*sizeof(XPoint)));
-        if(!xpoints)
+        if(!xpoints) {
+            fprintf(stderr,"Couldn't allocate memory in XRotPaintAlignedString()\n");
             return 1;
+        }
         
         /* rotate corner positions */
         for(i=0; i<4*item->nl; i++) {
@@ -872,8 +878,10 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
     
     /* allocate memory */
     item=(RotatedTextItem *)malloc((unsigned)sizeof(RotatedTextItem));
-    if(!item)
+    if(!item) {
+        fprintf(stderr,"Couldn't allocate memory in RotatedTextItem()\n");
         return NULL;
+    }
         
     /* count number of sections in string */
     item->nl=1;
@@ -946,13 +954,17 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
     /* text background will be drawn using XFillPolygon */
     item->corners_x=
         (float *)malloc((unsigned)(4*item->nl*sizeof(float)));
-    if(!item->corners_x)
+    if(!item->corners_x) {
+        fprintf(stderr,"Couldn't allocate memory in RotatedTextItem()\n");
         return NULL;
+    }
     
     item->corners_y=
         (float *)malloc((unsigned)(4*item->nl*sizeof(float)));
-    if(!item->corners_y)
+    if(!item->corners_y) {
+        fprintf(stderr,"Couldn't allocate memory in RotatedTextItem()\n");
         return NULL;
+    }
     
     /* draw text horizontally */
     
@@ -1485,12 +1497,16 @@ XPoint *XRotTextExtents( Display *dpy, XFontStruct *font, float angle, int x, in
    
     /* reserve space for XPoints */
     xp_in=(XPoint *)malloc((unsigned)(5*sizeof(XPoint)));
-    if(!xp_in)
+    if(!xp_in) {
+        fprintf(stderr,"Couldn't allocate memory in XRotTextExtents()\n");
         return NULL;
+    }
 
     xp_out=(XPoint *)malloc((unsigned)(5*sizeof(XPoint)));
-    if(!xp_out)
+    if(!xp_out) {
+        fprintf(stderr,"Couldn't allocate memory in XRotTextExtents()\n");
         return NULL;
+    }
 
     /* bounding box when horizontal, relative to bitmap centre */
     xp_in[0].x=-(float)cols_in*style.magnify/2-style.bbx_pad;

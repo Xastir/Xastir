@@ -97,6 +97,12 @@ awk_symtab *awk_new_symtab() {
     static char sym[MAXSUBS][2];
     int i;
 
+
+    if (!n) {
+        fprintf(stderr, "Couldn't allocate memory in awk_new_symtab()\n");
+        return(NULL);
+    }
+
     for (i = 0; i < MAXSUBS; i++) {
         sym[i][0] = i+'0';
         sym[i][1] = '\0';
@@ -135,12 +141,16 @@ int awk_declare_sym(awk_symtab *this,
                 enum awk_symtype type,
                 const void *val,
                 const int size) {
-awk_symbol *s = calloc(1,sizeof(awk_symbol));
+    awk_symbol *s = calloc(1,sizeof(awk_symbol));
     awk_symbol *p;
     u_int i;
 
-    if (!s)
+
+    if (!s) {
+        fprintf(stderr, "Couldn't allocate memory in awk_declare_sym()\n");
         return -1;
+    }
+
     s->name = name;
     s->namelen = strlen(name);
     s->type = type;
@@ -348,9 +358,13 @@ awk_action *awk_compile_action(awk_symtab *this, const char *act) {
     awk_action *p, *first = calloc(1,sizeof(awk_action));
     const char *cs,*ns;         /* current, next stmt */
 
+
     p = first;
-    if (!p)
+
+    if (!p) {
+        fprintf(stderr,"Couldn't allocate memory in awk_compile_action()\n");
         return NULL;
+    }
 
     for (cs = ns = act; ns && *ns; cs = (*ns==';')?ns+1:ns) {
         ns = strchr(cs,';');
@@ -358,6 +372,9 @@ awk_action *awk_compile_action(awk_symtab *this, const char *act) {
             ns = &cs[strlen(cs)];
         if (awk_compile_stmt(this,p,cs,(ns-cs)) >= 0) {
             p->next_act = calloc(1,sizeof(awk_action));
+            if (!p->next_act) {
+                fprintf(stderr,"Couldn't allocate memoryin awk_compile_action (2)\n");
+            }
             p = p->next_act;
         }
     } 
@@ -469,8 +486,10 @@ void awk_eval_expr(awk_symtab *this,
                     } else {    /* tbuf too small */
                         free_it++;
                         sp = malloc(src->size);
-                        if (!sp) /* oh well! */
+                        if (!sp) { /* oh well! */
+                            fprintf(stderr,"Couldn't allocate memory in awk_eval_expr()\n");
                             break; 
+                        }
                     }
                     awk_get_sym(src,sp,src->size,&newlen);
                     bcopy(sp,dp,newlen); /* now copy it in */
@@ -577,6 +596,9 @@ int awk_exec_action(awk_symtab *this, const awk_action *code) {
 awk_rule *awk_new_rule() {
     awk_rule *n = calloc(1,sizeof(awk_rule));
 
+    if (!n)
+        fprintf(stderr,"Couldn't allocate memory in awk_new_rule()\n");
+
     return n;
 }
 
@@ -614,6 +636,9 @@ void awk_free_rule(awk_rule *r) {
  */
 awk_program *awk_new_program() {
     awk_program *n = calloc(1,sizeof(awk_program));
+
+    if (!n)
+        fprintf(stderr,"Couldn't allocate memory in awk_new_program()\n");
 
     return n;
 }

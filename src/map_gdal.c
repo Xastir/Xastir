@@ -398,6 +398,8 @@ scr_s_x_min = 0;
     nXSize = GDALGetRasterBandXSize( hBand );
 
     pafScanline = (float *) malloc(sizeof(float)*nXSize);
+    CHECKMALLOC(pafScanline);
+
     GDALRasterIO( hBand, GF_Read, 0, 0, nXSize, 1, 
                   pafScanline, nXSize, 1, GDT_Float32, 
                   0, 0 );
@@ -665,6 +667,9 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
             vectorX = (double *)malloc(sizeof(double) * num_points);
             vectorY = (double *)malloc(sizeof(double) * num_points);
             vectorZ = (double *)malloc(sizeof(double) * num_points);
+            CHECKMALLOC(vectorX);
+            CHECKMALLOC(vectorY);
+            CHECKMALLOC(vectorZ);
 
             // Get the points, fill in the vectors
             for ( ii = 0; ii < num_points; ii++ ) {
@@ -735,6 +740,8 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
 
             XL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
             YL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
+            CHECKMALLOC(XL);
+            CHECKMALLOC(YL);
 
             // Convert arrays to the Xastir coordinate system
             for (ii = 0; ii < num_points; ii++) {
@@ -754,6 +761,8 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
 
             XI = (long *)malloc(sizeof(long) * num_points);
             YI = (long *)malloc(sizeof(long) * num_points);
+            CHECKMALLOC(XI);
+            CHECKMALLOC(YI);
 
             // Convert arrays to screen coordinates.  Careful here!
             // The format conversions you'll need if you try to
@@ -788,6 +797,7 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
 
             // Set up the XPoint array.
             xpoints = (XPoint *)malloc(sizeof(XPoint) * num_points);
+            CHECKMALLOC(xpoints);
 
             // Load up our xpoints array
             for (ii = 0; ii < num_points; ii++) {
@@ -893,6 +903,7 @@ Region create_hole_in_mask(Region mask,
 
     // Get memory to hold the points
     xpoints = (XPoint *)malloc(sizeof(XPoint) * num);
+    CHECKMALLOC(xpoints);
 
     // Load up our xpoints array
     for (ii = 0; ii < num; ii++) {
@@ -1167,6 +1178,9 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                 vectorX = (double *)malloc(sizeof(double) * polygon_points);
                 vectorY = (double *)malloc(sizeof(double) * polygon_points);
                 vectorZ = (double *)malloc(sizeof(double) * polygon_points);
+                CHECKMALLOC(vectorX);
+                CHECKMALLOC(vectorY);
+                CHECKMALLOC(vectorZ);
 
                 // Get the points, fill in the vectors
                 for ( mm = 0; mm < polygon_points; mm++ ) {
@@ -1247,6 +1261,8 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 
                     XL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
                     YL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
+                    CHECKMALLOC(XL);
+                    CHECKMALLOC(YL);
  
                     // Convert arrays to the Xastir coordinate
                     // system
@@ -1259,6 +1275,8 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 
                     XI = (long *)malloc(sizeof(long) * polygon_points);
                     YI = (long *)malloc(sizeof(long) * polygon_points);
+                    CHECKMALLOC(XI);
+                    CHECKMALLOC(YI);
  
 // Note:  We're limiting screen size to 1700 in this routine.
                     minX = 1700;
@@ -1318,6 +1336,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                         // region is set up if we have multiple
                         // rings).
                         xpoints = (XPoint *)malloc(sizeof(XPoint) * polygon_points);
+                        CHECKMALLOC(xpoints);
 
                         // Load up our xpoints array
                         for (pp = 0; pp < polygon_points; pp++) {

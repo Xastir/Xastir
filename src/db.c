@@ -63,6 +63,8 @@
 #include <dmalloc.h>
 #endif  // WITH_DMALLOC
 
+#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
+
 
 #define STATION_REMOVE_CYCLE 300    /* check station remove in seconds (every 5 minutes) */
 #define MESSAGE_REMOVE_CYCLE 600    /* check message remove in seconds (every 10 minutes) */
@@ -337,6 +339,8 @@ void store_most_recent_ack(char *callsign, char *ack) {
             // list.
         //fprintf(stderr,"New callsign %s, adding to list.  Ack: %s\n",call,new_ack);
         p = (ack_record *)malloc(sizeof(ack_record));
+        CHECKMALLOC(p);
+
         xastir_snprintf(p->callsign,sizeof(p->callsign),"%s",call);
         xastir_snprintf(p->ack,sizeof(p->ack),"%s",new_ack);
         p->next = ack_list_head;
@@ -1086,6 +1090,8 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
                         // Allocate the first record (a dummy record)
                         head = (index_record *)malloc(sizeof(index_record));
+                        CHECKMALLOC(head);
+
                         head->index = -1;
                         head->sec_heard = (time_t)0;
                         head->next = NULL;
@@ -1135,6 +1141,8 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                 // the list (in that case p_next will be
                                 // NULL.
                                 p_prev->next = (index_record *)malloc(sizeof(index_record));
+                                CHECKMALLOC(p_prev->next);
+
                                 p_prev->next->next = p_next; // Link to rest of records or NULL
                                 p_prev->next->index = i;
                                 p_prev->next->sec_heard = msg_data[msg_index[i]].sec_heard;
@@ -5965,10 +5973,13 @@ int get_weather_record(DataRow *fill) {    // get or create weather storage
 
     if (fill->weather_data == NULL) {      // new weather data, allocate storage and init
         fill->weather_data = malloc(sizeof(WeatherRow));
-        if (fill->weather_data == NULL)
+        if (fill->weather_data == NULL) {
+            fprintf(stderr,"Couldn't allocate memory in get_weather_record()\n");
             ok = 0;
-        else
+        }
+        else {
             init_weather(fill->weather_data);
+        }
     }
     return(ok);
 }
@@ -9372,11 +9383,14 @@ void add_status(DataRow *p_station, char *status_string) {
 
             ptr = p_station->status_data;  // Save old pointer to records
             p_station->status_data = (CommentRow *)malloc(sizeof(CommentRow));
+            CHECKMALLOC(p_station->status_data);
+
             p_station->status_data->next = ptr;    // Link in old records or NULL
 
             // Malloc the string space we'll need, attach it to our
             // new record
             p_station->status_data->text_ptr = (char *)malloc(sizeof(char) * (len+1));
+            CHECKMALLOC(p_station->status_data->text_ptr);
 
             // Fill in the string
             strncpy(p_station->status_data->text_ptr,status_string,len+1);
@@ -9471,11 +9485,14 @@ void add_comment(DataRow *p_station, char *comment_string) {
 
             ptr = p_station->comment_data;  // Save old pointer to records
             p_station->comment_data = (CommentRow *)malloc(sizeof(CommentRow));
+            CHECKMALLOC(p_station->comment_data);
+
             p_station->comment_data->next = ptr;    // Link in old records or NULL
 
             // Malloc the string space we'll need, attach it to our
             // new record
             p_station->comment_data->text_ptr = (char *)malloc(sizeof(char) * (len+1));
+            CHECKMALLOC(p_station->comment_data->text_ptr);
 
             // Fill in the string
             strncpy(p_station->comment_data->text_ptr,comment_string,len+1);
@@ -10095,6 +10112,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             free(p_station->node_path_ptr);
         // Malloc and store the new path
         p_station->node_path_ptr = (char *)malloc(strlen(path) + 1);
+        CHECKMALLOC(p_station->node_path_ptr);
+
         substr(p_station->node_path_ptr,path,strlen(path));
  
         p_station->flag |= ST_ACTIVE;
@@ -10804,6 +10823,8 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
         free(p_station->node_path_ptr);
     // Malloc and store the new path
     p_station->node_path_ptr = (char *)malloc(strlen("local") + 1);
+    CHECKMALLOC(p_station->node_path_ptr);
+
     substr(p_station->node_path_ptr,"local",strlen("local"));
  
     // Create a timestamp from the current time
@@ -10950,6 +10971,8 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
         free(p_station->node_path_ptr);
     // Malloc and store the new path
     p_station->node_path_ptr = (char *)malloc(strlen("local") + 1);
+    CHECKMALLOC(p_station->node_path_ptr);
+
     substr(p_station->node_path_ptr,"local",strlen("local"));
 
     // Create a timestamp from the current time

@@ -714,6 +714,7 @@ void draw_shapefile_map (Widget w,
         // once during each runtime and then gets left alone.  We
         // don't need to free it.
         dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
+        CHECKMALLOC(dbfawk_default_sig);
 
         // Calls awk_new_program which allocates memory.  Again, we
         // don't need to free this one, as it gets allocated only
@@ -2613,6 +2614,8 @@ void draw_shapefile_map (Widget w,
                                 // list.
                                 //fprintf(stderr,"Creating a new record: %s\n",temp);
                                 ptr2 = (label_string *)malloc(sizeof(label_string));
+                                CHECKMALLOC(ptr2);
+
                                 xastir_snprintf(ptr2->label,sizeof(ptr2->label),"%s",temp);
                                 ptr2->found = 1;
                                 ptr2->next = label_ptr;
@@ -2723,6 +2726,7 @@ void draw_shapefile_map (Widget w,
                     // this Shape.
                     // !!Remember to free this storage later!!
                     polygon_hole_storage = (int *)malloc(object->nParts*sizeof(int));
+                    CHECKMALLOC(polygon_hole_storage);
 
 // Run through the entire shape (all rings of it) once.  Create an
 // array of flags that specify whether each ring is a fill or a

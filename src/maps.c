@@ -4071,6 +4071,7 @@ static void index_update_directory(char *directory) {
 
             //fprintf(stderr,"Not Found: Inserting an index record for %s\n",directory);
             temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+            CHECKMALLOC(temp_record);
 
             if (current == map_index_head) {  // Start of list!
                 // Insert new record at head of list
@@ -4107,6 +4108,8 @@ static void index_update_directory(char *directory) {
                     // list).
         //fprintf(stderr,"Not Found: Adding an index record for %s\n",directory);
         temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+        CHECKMALLOC(temp_record);
+
         temp_record->next = NULL;
 
         if (previous == NULL) { // Empty list
@@ -4229,6 +4232,7 @@ void index_update_xastir(char *filename,
 
             //fprintf(stderr,"Not Found: Inserting an index record for %s\n",filename);
             temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+            CHECKMALLOC(temp_record);
 
             if (current == map_index_head) {  // Start of list!
                 // Insert new record at head of list
@@ -4278,6 +4282,8 @@ void index_update_xastir(char *filename,
         // record to the end of the list
         //fprintf(stderr,"Not Found: Adding an index record for %s\n",filename);
         temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+        CHECKMALLOC(temp_record);
+
         temp_record->next = NULL;
 
         if (previous == NULL) { // Empty list
@@ -4417,6 +4423,7 @@ void index_update_ll(char *filename,
 
             //fprintf(stderr,"Not Found: Inserting an index record for %s\n",filename);
             temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+            CHECKMALLOC(temp_record);
 
             if (current == map_index_head) {  // Start of list!
                 // Insert new record at head of list
@@ -4468,6 +4475,8 @@ void index_update_ll(char *filename,
 
         //fprintf(stderr,"Not Found: Adding an index record for %s\n",filename);
         temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+        CHECKMALLOC(temp_record);
+
         temp_record->next = NULL;
 
         if (previous == NULL) { // Empty list
@@ -5123,6 +5132,8 @@ void index_restore_from_file(void) {
                 // Malloc an index record.  We'll add it to the list
                 // only if the data looks reasonable.
                 temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+                CHECKMALLOC(temp_record);
+
                 memset(temp_record->filename, 0, sizeof(temp_record->filename));
                 temp_record->next = NULL;
                 temp_record->bottom = 64800001l;// Too high
@@ -5724,6 +5735,7 @@ static void insert_map_sorted(char *filename){
 
         // Allocate a new record
         temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+        CHECKMALLOC(temp_record);
 
         // Fill in the values
         xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",filename);

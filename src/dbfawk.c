@@ -199,8 +199,21 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
         if (len > ftlen && (strcmp(&e->d_name[len-ftlen],ftype) == 0)) {
             if (!head) {
                 i = head = calloc(1,sizeof(dbfawk_sig_info));
+
+                if (!i) {
+                    fprintf(stderr,"failed to malloc in dbfawk.c!\n");
+                    free(path);
+                    return NULL;
+                }
             } else {
                 i->next = calloc(1,sizeof(dbfawk_sig_info));
+
+                if (!i->next) {
+                    fprintf(stderr,"failed to malloc in dbfawk.c!\n");
+                    free(path);
+                    return NULL;
+                }
+
                 i = i->next;
             }
             strcpy(path,dir);
