@@ -292,7 +292,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     if(XmToggleButtonGetState(TNC_transmit_data)) {
         devices[TNC_port].transmit_data=1;
         if (devices[TNC_port].device_type == DEVICE_SERIAL_KISS_TNC)
-            XtSetSensitive(TNC_relay_digipeat, TRUE);
+
+// Use the TRUE option later once we get relay digipeating working
+//            XtSetSensitive(TNC_relay_digipeat, TRUE);
+XtSetSensitive(TNC_relay_digipeat, FALSE);
+
     }
     else {
         devices[TNC_port].transmit_data=0;
@@ -512,8 +516,12 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
-                break;
 
+// Remove this line once relay digipeating is functional
+XtSetSensitive(TNC_relay_digipeat, FALSE);
+
+                break;
+ 
             case DEVICE_SERIAL_TNC:
             default:
                 break;
@@ -1209,8 +1217,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     else
                         XmToggleButtonSetState(TNC_relay_digipeat, FALSE, FALSE);
 
-                    if (devices[TNC_port].transmit_data)
-                        XtSetSensitive(TNC_relay_digipeat, TRUE);
+                    if (devices[TNC_port].transmit_data) {
+// Use the TRUE option later once we have relay digipeating working
+//                        XtSetSensitive(TNC_relay_digipeat, TRUE);
+XtSetSensitive(TNC_relay_digipeat, FALSE);
+
+                    }
                     else
                         XtSetSensitive(TNC_relay_digipeat, FALSE);
                     break;
@@ -3190,10 +3202,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
     else
         devices[AX25_port].connect_on_startup=0;
 
-    if(XmToggleButtonGetState(AX25_transmit_data))
+    if(XmToggleButtonGetState(AX25_transmit_data)) {
         devices[AX25_port].transmit_data=1;
-    else
+
+// Use the TRUE option once we get AX.25 digipeating working
+//        XtSetSensitive(AX25_relay_digipeat, TRUE);
+        XtSetSensitive(AX25_relay_digipeat, FALSE);
+    }
+    else {
         devices[AX25_port].transmit_data=0;
+        XtSetSensitive(AX25_relay_digipeat, FALSE);
+    }
 
     if(XmToggleButtonGetState(AX25_relay_digipeat))
         devices[AX25_port].relay_digipeat=1;
@@ -3300,6 +3319,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
+
+XtSetSensitive(AX25_relay_digipeat, FALSE);
 
         devn = XtVaCreateManagedWidget(langcode("WPUPCAX002"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
