@@ -2505,18 +2505,36 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
 
-            convert_lat_l2s(p_station->coord_lat, temp, sizeof(temp), CONVERT_HP_NORMAL);
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
+            if (coordinate_system == USE_UTM) {
+                convert_xastir_to_UTM_str(temp, sizeof(temp),
+                    p_station->coord_lon, p_station->coord_lat);
+                XmTextInsert(si_text,pos,temp);
+                pos += strlen(temp);
+            }
+            else {
+                if (coordinate_system == USE_DDDDDD) {
+                    convert_lat_l2s(p_station->coord_lat, temp, sizeof(temp), CONVERT_DEC_DEG);
+                }
+                else {  // Assume coordinate_system == USE_DDMMMM
+                    convert_lat_l2s(p_station->coord_lat, temp, sizeof(temp), CONVERT_HP_NORMAL);
+                }
+                XmTextInsert(si_text,pos,temp);
+                pos += strlen(temp);
 
-            //sprintf(temp,"  ");
-            xastir_snprintf(temp, sizeof(temp), "  ");
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
+                //sprintf(temp,"  ");
+                xastir_snprintf(temp, sizeof(temp), "  ");
+                XmTextInsert(si_text,pos,temp);
+                pos += strlen(temp);
 
-            convert_lon_l2s(p_station->coord_lon, temp, sizeof(temp), CONVERT_HP_NORMAL);
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
+                if (coordinate_system == USE_DDDDDD) {
+                    convert_lon_l2s(p_station->coord_lon, temp, sizeof(temp), CONVERT_DEC_DEG);
+                }
+                else {  // Assume coordinate_system == USE_DDMMMM
+                    convert_lon_l2s(p_station->coord_lon, temp, sizeof(temp), CONVERT_HP_NORMAL);
+                }
+                XmTextInsert(si_text,pos,temp);
+                pos += strlen(temp);
+            }
 
             if (p_station->altitude[0] != '\0')
                 //sprintf(temp," %5.0f%s",atof(p_station->altitude)*cvt_m2len,un_alt);
@@ -2578,6 +2596,8 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                         XmTextInsert(si_text,pos,temp);
                         pos += strlen(temp);
 
+///////////////////// OLD
+/*
                         convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
                         XmTextInsert(si_text,pos,temp);
                         pos += strlen(temp);
@@ -2588,6 +2608,40 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                         convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
                         XmTextInsert(si_text,pos,temp);
                         pos += strlen(temp);
+*/
+///////////////////// NEW
+                        if (coordinate_system == USE_UTM) {
+                            convert_xastir_to_UTM_str(temp, sizeof(temp),
+                                p_station->track_data->trail_long_pos[last],
+                                p_station->track_data->trail_lat_pos[last]);
+                            XmTextInsert(si_text,pos,temp);
+                            pos += strlen(temp);
+                        }
+                        else {
+                            if (coordinate_system == USE_DDDDDD) {
+                                convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_DEC_DEG);
+                            }
+                            else {  // Assume coordinate_system == USE_DDMMMM
+                                convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
+                            }
+                            XmTextInsert(si_text,pos,temp);
+                            pos += strlen(temp);
+
+                            //sprintf(temp,"  ");
+                            xastir_snprintf(temp, sizeof(temp), "  ");
+                            XmTextInsert(si_text,pos,temp);
+                            pos += strlen(temp);
+
+                            if (coordinate_system == USE_DDDDDD) {
+                                convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_DEC_DEG);
+                            }
+                            else {  // Assume coordinate_system == USE_DDMMMM
+                                convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
+                            }
+                            XmTextInsert(si_text,pos,temp);
+                            pos += strlen(temp);
+                        }
+/////////////////////
 
                         if (p_station->track_data->altitude[last] > -99999)
                             //sprintf(temp," %5.0f%s",p_station->track_data->altitude[last]*cvt_dm2len,un_alt);
