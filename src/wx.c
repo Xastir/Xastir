@@ -34,6 +34,7 @@
 //   Qualimetrics Q-Net?
 //   Radio Shack WX-200/Huger WM-918/Oregon Scientific WM-918
 //   Dallas One-Wire Weather Station (via OWW network daemon)
+//   Davis Weather Monitor II/Wizard III/Vantage Pro (via meteo/db2APRS link)
 //
 
 
@@ -1909,6 +1910,77 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }   // end of if (!from)
             break;  // End of case for RSWX200 weather station
 
+
+        ///////////////////////////////////////////////////////////
+        //  Davis WMII/WWIII/Vantage Pro via meteo & db2APRS     //
+        ///////////////////////////////////////////////////////////
+
+        // Note: format is really APRS Spec 'positionless' WX string w/tag for X and Davis
+
+        case(DAVISMETEO) :
+
+
+            // todo - need to deal with lack of values, such as c...s...g...t045 string
+
+            memset(weather->wx_course,0,4);    // Keep out fradulent data...
+            memset(weather->wx_speed,0,4);
+            memset(weather->wx_gust,0,4);
+            memset(weather->wx_temp,0,5);
+            memset(weather->wx_rain,0,10);
+            memset(weather->wx_rain_total,0,10);
+            memset(weather->wx_hum,0,5);
+            memset(weather->wx_baro,0,10);
+            memset(weather->wx_station,0,MAX_WXSTATION);
+			
+            if ((temp_conv=strchr(data,'c'))) { // Wind Direction in Degrees 
+                strncpy(weather->wx_course,(temp_conv+1),3);
+            }
+				
+            if ((temp_conv=strchr(data,'s'))) { // Wind Speed in MPH - not snowfall
+                strncpy(weather->wx_speed,(temp_conv+1),3);
+            }
+
+            if ((temp_conv=strchr(data,'g'))) { // Wind Gust in MPH
+                strncpy(weather->wx_gust,(temp_conv+1),3);
+            }
+
+            if ((temp_conv=strchr(data,'t'))) { // Temperature in Degrees F
+                strncpy(weather->wx_temp,(temp_conv+1),3);	
+            }
+
+            if ((temp_conv=strchr(data,'r'))) { // Rain per hour
+                strncpy(weather->wx_rain,(temp_conv+1),3);
+            }
+
+            if ((temp_conv=strchr(data,'p'))) { // Rain per 24 hrs/total
+                strncpy(weather->wx_rain_total,(temp_conv+1),3);
+            }
+
+            if ((temp_conv=strchr(data,'h'))) { // Humidity %
+                strncpy(weather->wx_hum,(temp_conv+1),2);
+            }
+
+            if ((temp_conv=strchr(data,'b'))) { // Air Pressure in hPa
+                strncpy(weather->wx_baro,(temp_conv+1),5);
+            }
+
+            if ((temp_conv=strchr(data,'x'))) { // WX Station Identifier
+                strncpy(weather->wx_station,(temp_conv+1),MAX_WXSTATION);
+            }
+			
+
+            // The rest of the optional WX data is not used by
+            // xastir (Luminosity, etc), except for snow, which
+            // conflicts with wind speed (both are lower case 's')
+
+            if (debug_level & 1)
+                fprintf(stdout,"Davis Decode: wd-%s,ws-%s,wg-%s,t-%s,rh-%s,rt-%s,h-%s,ap-%s,station-%s\n",
+
+            weather->wx_course,weather->wx_speed,weather->wx_gust,weather->wx_temp,
+            weather->wx_rain,weather->wx_rain_total,weather->wx_hum,weather->wx_baro,
+            weather->wx_station);
+            break;
+
     }   // End of big switch
 }   // End of wx_fill_data()
 
@@ -2112,12 +2184,30 @@ void wx_decode(unsigned char *wx_line, int port) {
                         }
                     }
                 }
-                else {
-                    if (debug_level & 1)
+
+                else {	// ASCII data of undetermined type
+
+                    // Davis Weather via meteo -> db2APRS -> TCP port
+
+                    if (strstr(wx_line, "xDvs")) {  // APRS 'postionless' WX data w/ Davis & X tag
+
+                        if (debug_level & 1)
+                            fprintf(stdout,"Davis Data found... %s\n",wx_line);
+			    
+                        strcpy(wx_station_type,langcode("WXPUPSI026"));
+                        strcpy(weather->wx_time,get_time(time_data));
+                        weather->wx_sec_time=sec_now();
+                        wx_fill_data(0,DAVISMETEO,wx_line,p_station);
+                        decoded=1;
+                    }
+
+                    else if (debug_level & 1) {
                         fprintf(stderr,"Unknown WX DATA:%s\n",wx_line);
+                    }
                 }
+
                 if (decoded) {
-                    /* save data back */
+                /* save data back */
 
 if (begin_critical_section(&port_data_lock, "wx.c:wx_decode(1)" ) > 0)
     fprintf(stderr,"port_data_lock, Port = %d\n", port);

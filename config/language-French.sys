@@ -824,6 +824,7 @@ WXPUPSI022|Baro 3 heures||
 WXPUPSI023|Température max.||
 WXPUPSI024|Température min.||
 WXPUPSI025|Radio Shack WX-200/Oregon Scientific WM-918||
+WXPUPSI026|Davis Weather Monitor II/Wizard III/Vantage Pro||
 #
 # Station Lists
 LHPUPNI000|Toutes stations||

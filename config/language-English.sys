@@ -826,6 +826,7 @@ WXPUPSI022|3-Hr Baro||
 WXPUPSI023|High Temp.||
 WXPUPSI024|Low Temp.||
 WXPUPSI025|Radio Shack WX-200/Oregon Scientific WM-918||
+WXPUPSI026|Davis Weather Monitor II/Wizard III/Vantage Pro||
 #
 # Station Lists
 LHPUPNI000|All Stations||
