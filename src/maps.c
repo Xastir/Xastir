@@ -1904,6 +1904,7 @@ void draw_shapefile_map (Widget w,
 // Set up width and zoom level for roads
                     if (road_flag) {
                         int lanes = 0;
+                        int dashed_line = 0;
 
                         if ( mapshots_labels_flag && (fieldcount >= 9) ) {
                             const char *temp;
@@ -1922,8 +1923,7 @@ void draw_shapefile_map (Widget w,
                                     if (map_color_levels && scale_y > 256)
                                         skip_label++;
                                     lanes = 3;
-                                    // Use the default color instead (black)
-                                    //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
+                                    // Use the default color (black)
                                     switch (temp[2]) {
                                         case '1':
                                         case '2':
@@ -1948,7 +1948,7 @@ void draw_shapefile_map (Widget w,
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // darkgray
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                                     break;
                                 case '5':   // A5? = Vehicular trail passable only by 4WD vehicle
                                     // Skip the road if we're above this zoom level
@@ -1957,17 +1957,29 @@ void draw_shapefile_map (Widget w,
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
+                                    dashed_line++;
+//WE7U
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                                     break;
                                 case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
                                             // service drive, ferry crossing
-                                    // Skip the road if we're above this zoom level
-                                    if (map_color_levels && scale_y > 64)
-                                        skip_it++;
-                                    if (map_color_levels && scale_y > 16)
-                                        skip_label++;
-                                    lanes = 1;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x07]); // darkgray
+                                    switch (temp[2]) {
+                                        case '5':   // Ferry crossing
+                                            lanes = 3;
+                                            dashed_line++;
+                                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
+                                           break;
+                                        default:
+                                            lanes = 1;
+                                            // Skip the road if we're above this zoom level
+                                            if (map_color_levels && scale_y > 64)
+                                                skip_it++;
+                                            if (map_color_levels && scale_y > 16)
+                                                skip_label++;
+                                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
+                                            break;
+                                    }
+
                                     break;
                                 case '7':   // A7? = Walkway or pedestrian trail, stairway,
                                             // alley, driveway or service road
@@ -1977,11 +1989,22 @@ void draw_shapefile_map (Widget w,
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
+                                    dashed_line++;
+
+                                    switch (temp[2]) {
+                                        case '1':   // Walkway or trail for pedestrians
+                                        case '2':   // Stairway or stepped road for pedestrians
+                                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
+                                            break;
+                                        default:
+                                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
+                                            break;
+                                    }
+
                                     break;
                                 default:
                                     lanes = 1;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // darkgray
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                                     break;
                             }
                         }
@@ -1990,7 +2013,10 @@ void draw_shapefile_map (Widget w,
                         }
 
                         if (lanes != (int)NULL) {
-                            (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
+                            if (dashed_line)
+                                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+                            else
+                                (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
                         }
                         else {
                             (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
@@ -2000,6 +2026,8 @@ void draw_shapefile_map (Widget w,
 // Set up width and zoom levels for water
                     else if (river_flag || lake_flag) {
                         int lanes = 0;
+                        int dashed_line = 0;
+                        int glacier_flag = 0;
 
                         if ( mapshots_labels_flag && (fieldcount >= 9) ) {
                             const char *temp;
@@ -2010,7 +2038,16 @@ void draw_shapefile_map (Widget w,
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 0;
-                                    break;
+
+                                    switch (temp[2]) {
+                                        case '2':   // Intermittent
+                                            dashed_line++;
+                                           break;
+                                        default:
+                                            break;
+                                    }
+
+                                   break;
                                 case '1':
                                     if (map_color_levels && scale_y > 128)
                                         skip_label++;
@@ -2029,6 +2066,7 @@ void draw_shapefile_map (Widget w,
                                             if (map_color_levels && scale_y > 16)
                                                 skip_label++;
                                             lanes = 1;
+                                            dashed_line++;
                                             break;
                                         case '3':
                                             if (map_color_levels && scale_y > 16)
@@ -2046,17 +2084,44 @@ void draw_shapefile_map (Widget w,
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
-                                    break;
+ 
+                                    switch (temp[2]) {
+                                        case '2':   // Intermittent
+                                            dashed_line++;
+                                           break;
+                                        default:
+                                            break;
+                                    }
+
+                                   break;
                                 case '3':
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
-                                    break;
+ 
+                                    switch (temp[2]) {
+                                        case '2':   // Intermittent
+                                            dashed_line++;
+                                           break;
+                                        default:
+                                            break;
+                                    }
+
+                                   break;
                                 case '4':
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
-                                    break;
+ 
+                                    switch (temp[2]) {
+                                        case '2':   // Intermittent
+                                            dashed_line++;
+                                           break;
+                                        default:
+                                            break;
+                                    }
+
+                                   break;
                                 case '5':
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
@@ -2067,29 +2132,47 @@ void draw_shapefile_map (Widget w,
                                         skip_label++;
                                     lanes = 1;
                                     break;
-                                case '7':
-                                    if (map_color_levels && scale_y > 16)
-                                        skip_label++;
-                                    lanes = 1;
+                                case '7':   // Nonvisible stuff.  Don't draw these
+                                    skip_it++;
+                                    skip_label++;
                                     break;
                                 case '8':
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
-                                    break;
+  
+                                    switch (temp[2]) {
+                                        case '1':   // Glacier
+                                            glacier_flag++;
+                                           break;
+                                        default:
+                                            break;
+                                    }
+
+                                   break;
                                 default:
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                             }
-                            (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
+                            if (dashed_line)
+                                (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineOnOffDash, CapButt,JoinMiter);
+                            else
+                                (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
                         }
-                        else {
-                            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                        else {  // We don't know how wide to make it
+                            if (dashed_line)
+                                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+                            else
+                                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                         }
-                        (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // Steel Blue
-                    }
+                        if (glacier_flag)
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]); // white
+                        else
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // Steel Blue
+                    }   // End of river_flag/lake_flag code
+
                     else {  // Set default line width
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
@@ -2388,7 +2471,28 @@ void draw_shapefile_map (Widget w,
                     // Read the vertices for each ring
                     for (ring = 0; ring < object->nParts; ring++ ) {
                         int endpoint;
+                        int glacier_flag = 0;
+                        const char *temp;
 
+                        if (lake_flag || river_flag) {
+                            if ( mapshots_labels_flag && (fieldcount >= 3) ) {
+                                temp = DBFReadStringAttribute( hDBF, structure, 2 );    // CFCC Field
+                                switch (temp[1]) {
+                                    case '8':   // Special water feature
+                                        switch(temp[2]) {
+                                            case '1':
+                                                glacier_flag++;  // Found a glacier
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+ 
                         //printf("Ring: %d\t\t", ring);
 
                         if ( (ring+1) < object->nParts)
@@ -2460,7 +2564,14 @@ void draw_shapefile_map (Widget w,
                         }
 
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
-                            if (lake_flag) {
+                            if (glacier_flag) {
+                                (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
+                                if (map_color_fill) {
+                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
+                                }
+                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                            }
+                            else if (lake_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
                                 if (map_color_fill) {
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
