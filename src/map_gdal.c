@@ -446,7 +446,9 @@ void draw_ogr_map(Widget w,
         filenm);
 
     // Open data source
-    datasource = OGROpen(full_filename, 0 /* bUpdate */, &driver);
+    datasource = OGROpen(full_filename,
+        0 /* bUpdate */,
+        &driver);
 
     if (datasource == NULL)
     {
@@ -466,7 +468,10 @@ void draw_ogr_map(Widget w,
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
         char status_text[MAX_FILENAME];
 
-        xastir_snprintf(status_text, sizeof(status_text), langcode ("BBARSTA039"), filenm);
+        xastir_snprintf(status_text,
+            sizeof(status_text),
+            langcode ("BBARSTA039"),
+            filenm);
         statusline(status_text,0);       // Indexing ...
 
         // Use the OGR "envelope" function to get the extents for
@@ -504,17 +509,19 @@ void draw_ogr_map(Widget w,
         return; // Done indexing the file
     }
 
-    // This one returns the name/path.  Less than useful since we
-    // should already know this.
-    ptr = OGR_DS_GetName(datasource);
-    fprintf(stderr,"\nName of file: %s\n", ptr);
- 
     // Find out what type of file we're dealing with:
     // This reports "TIGER" for the tiger driver, "ESRI Shapefile"
     // for Shapefiles.
     // 
     ptr = OGR_Dr_GetName(driver);
-    fprintf(stderr,"Type: %s\n", ptr);
+    fprintf(stderr,"\n%s: ", ptr);
+
+    // This one returns the name/path.  Less than useful since we
+    // should already know this.
+    ptr = OGR_DS_GetName(datasource);
+    fprintf(stderr,"%s\n", ptr);
+
+ 
 
     // If we're going to write, we need to test the capability using
     // these functions:
@@ -591,7 +598,7 @@ void draw_ogr_map(Widget w,
         //   spatial filter is installed after which it will return FALSE.
         //   NOTE: Shapefile reports this as TRUE.
         //
-        fprintf(stderr,"  Layer %d Supports: ", i);
+        fprintf(stderr," Layer %02d: ", i);
         if (OGR_L_TestCapability(layer, OLCRandomRead)) {
             fprintf(stderr, "Random Read, ");
         }
@@ -605,57 +612,53 @@ void draw_ogr_map(Widget w,
         }
         if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
             fprintf(stderr,
-                "Fast Get Extent");
+                "Fast Get Extent, ");
         }
-        fprintf(stderr,"\n");
 
         // Query the coordinate system.  Need to have the extents in
         // WGS84 lat/long coordinate system in order to compute the
         // extents properly.
         //
         spatial = OGR_L_GetSpatialRef(layer);
-        fprintf(stderr,"    Layer %d: ", i);
         if (spatial) {
             const char *temp;
             int geographic = 0;
             int projected = 0;
 
             if (OSRIsGeographic(spatial)) {
-                fprintf(stderr,"Geographic, ");
+                fprintf(stderr,"Geographic Coord, ");
                 geographic++;
             }
-            else {
-                fprintf(stderr,"not Geographic, ");
-            }
-            if (OSRIsProjected(spatial)) {
-                fprintf(stderr,"Projected\n");
+            else if (OSRIsProjected(spatial)) {
+                fprintf(stderr,"Projected Coord, ");
                 projected++;
             }
             else {
-                fprintf(stderr,"not Projected\n");
+                fprintf(stderr,"Local Coord, ");
             }
 
             // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
+            //
+            temp = OSRGetAttrValue(spatial, "DATUM", 0);
+            fprintf(stderr,"DATUM: %s, ", temp);
+
             if (projected) {
                 temp = OSRGetAttrValue(spatial, "PROJCS", 0);
-                fprintf(stderr,"    PROJCS: %s\n", temp);
+                fprintf(stderr,"PROJCS: %s, ", temp);
  
                 temp = OSRGetAttrValue(spatial, "PROJECTION", 0);
-                fprintf(stderr,"    PROJECTION: %s\n", temp);
+                fprintf(stderr,"PROJECTION: %s, ", temp);
             }
 
-            temp = OSRGetAttrValue(spatial, "DATUM", 0);
-            fprintf(stderr,"    DATUM: %s\n", temp);
-
             temp = OSRGetAttrValue(spatial, "GEOGCS", 0);
-            fprintf(stderr,"    GEOGCS: %s, ", temp);
+            fprintf(stderr,"GEOGCS: %s, ", temp);
 
             temp = OSRGetAttrValue(spatial, "SPHEROID", 0);
-            fprintf(stderr,"SPHEROID: %s\n", temp);
+            fprintf(stderr,"SPHEROID: %s, ", temp);
 
         }
         else {
-            fprintf(stderr,"No Spatial Info in dataset\n");
+            fprintf(stderr,"No Spatial Info, ");
         }
 
         // Get the extents for this layer.  OGRERR_FAILURE means
@@ -665,15 +668,15 @@ void draw_ogr_map(Widget w,
         if (OGR_L_GetExtent(layer, &psExtent, FALSE) != OGRERR_FAILURE) {
             // We have extents.  Check whether any part of the layer
             // is within our viewport.
-            fprintf(stderr, "    Layer %d extents obtained.\n", i);
+            fprintf(stderr, "Extents obtained.\n");
         }
         else {
 //            fprintf(stderr, "    Extents unavailable for layer %d without a FORCE.\n", i);
             if (OGR_L_GetExtent(layer, &psExtent, TRUE) != OGRERR_FAILURE) {
-                fprintf(stderr, "    Layer %d extents obtained via FORCE\n", i);
+                fprintf(stderr, "Extents obtained via FORCE.\n");
             }
             else {
-                fprintf(stderr, "    Layer %d extents are not available even with FORCE.\n", i);
+                fprintf(stderr, "Extents are not available even with FORCE.\n");
             }
         }
 
@@ -808,9 +811,7 @@ fprintf(stderr,"4\n");
 // latter one for us.  We'd then just draw the darn things.
 
             if (num > 0) {
-
-                if (!polygon) {
-                    // Draw lines/points
+                if (!polygon) { // Draw lines/points
 
                     // Get the first point
                     OGR_G_GetPoint(shape,
@@ -841,8 +842,7 @@ fprintf(stderr,"4\n");
                             pixmap);
                     }
                 }
-                else {
-                    // Draw polygons
+                else {  // Draw polygons
                 }
             }
             OGR_F_Destroy( feature );
