@@ -4943,7 +4943,9 @@ void index_save_to_file() {
             }
             // Set up pointers for next loop iteration
             last = current;
-            current = current->next;
+
+            if (current != NULL)
+                current = current->next;
         }
 
 
