@@ -7855,6 +7855,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             if (Display_.dr_data
                     && ((sec_now() - sec_last_dr_update) > update_DR_rate) ) {
+
+//WE7U:  Possible slow-down here w.r.t. dead-reckoning?  If
+//update_DR_rate is too quick, we end up looking through all of the
+//stations in station list much too often and using a lot of CPU.
+
                 redraw_on_new_data = 1;
                 sec_last_dr_update = sec_now();
             }
