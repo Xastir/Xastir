@@ -5456,6 +5456,9 @@ int is_weather_data(char *data, int len) {
 int extract_weather_item(char *data, char type, int datalen, char *temp) {
     int i,ofs,found,len;
 
+
+//fprintf(stderr,"%s\n",data);
+
     found=0;
     len = (int)strlen(data);
     for(ofs=0; !found && ofs<len-datalen; ofs++)      // search for start sequence
@@ -5623,12 +5626,12 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             (void)extract_speed_course(data,speed,course);
             in_knots = 1;
 
-            // Neither one was found?  Try again.
-            if ( (speed[0] == '\0') && (course[0] == '\0') ) {
+            // Either one not found?  Try again.
+            if ( (speed[0] == '\0') || (course[0] == '\0') ) {
 
                 // Try to get speed/course from 's' and 'c' fields
                 // (another wx format).  Speed is in mph.
-                (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
+                (void)extract_weather_item(data,'c',3,course); // wind direction (in degrees)
                 (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
                 in_knots = 0;
             }
@@ -5641,18 +5644,18 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 && data[4] =='s' && is_weather_data(&data[5], 3)
                 && data[8] =='g' && is_weather_data(&data[9], 3)
                 && data[12]=='t' && is_weather_data(&data[13],3)) { // Positionless Weather Data
-
+//fprintf(stderr,"Found positionless wx data\n");
             // Try to snag speed/course out of first 7 bytes.  Speed
             // is in knots.
             (void)extract_speed_course(data,speed,course);
             in_knots = 1;
 
-            // Neither one was found?  Try again.
-            if ( (speed[0] == '\0') && (course[0] == '\0') ) {
-
+            // Either one not found?  Try again.
+            if ( (speed[0] == '\0') || (course[0] == '\0') ) {
+//fprintf(stderr,"Trying again for course/speed\n");
                 // Also try to get speed/course from 's' and 'c' fields
                 // (another wx format)
-                (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
+                (void)extract_weather_item(data,'c',3,course); // wind direction (in degrees)
                 (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
                 in_knots = 0;
             }
@@ -5671,12 +5674,12 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             (void)extract_speed_course(data,speed,course);
             in_knots = 1;
 
-            // Neither one was found?  Try again.
-            if ( (speed[0] == '\0') && (course[0] == '\0') ) {
+            // Either one not found?  Try again.
+            if ( (speed[0] == '\0') || (course[0] == '\0') ) {
 
                 // Also try to get speed/course from 's' and 'c' fields
                 // (another wx format)
-                (void)extract_weather_item(data,'c',3,course); // wind direction (in degress)
+                (void)extract_weather_item(data,'c',3,course); // wind direction (in degrees)
                 (void)extract_weather_item(data,'s',3,speed);  // sustained one-minute wind speed (in mph)
                 in_knots = 0;
             }
