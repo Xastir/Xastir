@@ -4403,28 +4403,17 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
     char command[MAX_FILENAME*2];
     char temp[100];
     char format[50] = "-portrait ";
-    uid_t user_id;
-    struct passwd *user_info;
-    char username[20];
 
-
-    // Get user info
-    user_id=getuid();
-    user_info=getpwuid(user_id);
-    // Get my login name
-    strcpy(username,user_info->pw_name);
 
     xastir_snprintf(xpm_filename,
         sizeof(xpm_filename),
-        "%s/xastir_%s_print.xpm",
-        get_user_base_dir("tmp"),
-        username);
+        "%s/print.xpm",
+        get_user_base_dir("tmp"));
 
     xastir_snprintf(ps_filename,
         sizeof(ps_filename),
-        "%s/xastir_%s_print.ps",
-        get_user_base_dir("tmp"),
-        username);
+        "%s/print.ps",
+        get_user_base_dir("tmp"));
 
     busy_cursor(appshell);  // Show a busy cursor while we're doing all of this
 
@@ -5176,9 +5165,6 @@ static void* snapshot_thread(void *arg) {
 #ifdef HAVE_CONVERT
     char command[MAX_FILENAME*2];
 #endif  // HAVE_CONVERT
-    uid_t user_id;
-    struct passwd *user_info;
-    char username[20];
 
 
     // The pthread_detach() call means we don't care about the
@@ -5186,23 +5172,15 @@ static void* snapshot_thread(void *arg) {
     // threading more efficient.
     (void)pthread_detach(pthread_self());
 
-    // Get user info 
-    user_id=getuid();
-    user_info=getpwuid(user_id);
-    // Get my login name
-    strcpy(username,user_info->pw_name);
-
     xastir_snprintf(xpm_filename,
         sizeof(xpm_filename),
-        "%s/xastir_%s_snap.xpm",
-        get_user_base_dir("tmp"),
-        username);
+        "%s/snapshot.xpm",
+        get_user_base_dir("tmp"));
 
     xastir_snprintf(png_filename,
         sizeof(png_filename),
-        "%s/xastir_%s_snap.png",
-        get_user_base_dir("tmp"),
-        username);
+        "%s/snapshot.png",
+        get_user_base_dir("tmp"));
 
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
@@ -6482,9 +6460,6 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
  **********************************************************/
 
 void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixmap) {
-    uid_t user_id;
-    struct passwd *user_info;
-    char username[20];
     char file[MAX_FILENAME+1];      // Complete path/name of image file
     FILE *f;                        // Filehandle of image file
     char line[MAX_FILENAME];        // One line from GEO file
@@ -6596,11 +6571,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     time_mark(1);
 #endif  // TIMING_DEBUG
 
-    // Get user info
-    user_id=getuid();
-    user_info=getpwuid(user_id);
-    // Get my login name
-    strcpy(username,user_info->pw_name);
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
@@ -7039,9 +7009,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
         xastir_snprintf(local_filename,
             sizeof(local_filename),
-            "%s/xastir_%s_map.%s",
-            get_user_base_dir("tmp"),
-            username,ext);
+            "%s/map.%s",
+            get_user_base_dir("tmp"),ext);
 
 #ifdef HAVE_LIBCURL
         curl = curl_easy_init();
@@ -7589,9 +7558,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
  **********************************************************/
 #ifdef HAVE_IMAGEMAGICK
 void draw_tiger_map (Widget w) {
-    uid_t user_id;
-    struct passwd *user_info;
-    char username[20];
     char file[MAX_FILENAME];        // Complete path/name of image file
     FILE *f;                        // Filehandle of image file
     char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
@@ -7661,12 +7627,6 @@ void draw_tiger_map (Widget w) {
     xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), "tigermap");
     statusline(map_it,0);       // Loading ...
 
-
-    // Get user info
-    user_id=getuid();
-    user_info=getpwuid(user_id);
-    // Get my login name
-    strcpy(username,user_info->pw_name);
 
     // Tiepoint for upper left screen corner
     //
@@ -7798,9 +7758,8 @@ void draw_tiger_map (Widget w) {
 
     xastir_snprintf(local_filename,
         sizeof(local_filename),
-        "%s/xastir_%s_map.%s",
+        "%s/map.%s",
         get_user_base_dir("tmp"),
-        username,
         "gif");
 
 #ifdef HAVE_LIBCURL

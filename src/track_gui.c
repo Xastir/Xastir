@@ -39,6 +39,7 @@
 #include "lang.h"
 #include "popup.h"
 #include "util.h"
+#include "xa_config.h"
 
 Widget track_station_dialog = (Widget)NULL;
 Widget track_station_data = (Widget)NULL;
@@ -391,25 +392,15 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char tempfile[500];
 #endif  // HAVE_WGET
 #endif
-    uid_t user_id;
-    struct passwd *user_info;
-    char username[20];
     char log_filename[200];
 
 
     busy_cursor(appshell);
 
-    // Fetch my user info
-    user_id=getuid();
-    user_info=getpwuid(user_id);
-    // Fetch the login name
-    strcpy(username,user_info->pw_name);
-
     xastir_snprintf(log_filename,
         sizeof(log_filename),
-        "%s/xastir_%s_map.log",
-        get_user_base_dir("tmp"),
-        username);
+        "%s/map.log",
+        get_user_base_dir("tmp"));
 
     XmScaleGetValue(posit_start_value , &posit_start);
     XmScaleGetValue(posit_length_value , &posit_length);
