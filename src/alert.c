@@ -594,6 +594,11 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
     for (i = 0; i < alert_max_count; i++) {
 
+        if (alert_list[i].title[0] == '\0') {
+            // Found a blank alert list entry, skip it.
+            continue;
+        }
+
         // Shorten the title
         normal_title(alert_list[i].title, title_m);
 
