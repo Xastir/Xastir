@@ -1307,8 +1307,8 @@ WINDOWS/CYGWIN NOTES:
      get lots of warnings about Xastir not being able to allocate colors
      when it starts up, and the display will be rather stark looking.
 
-     Adding Shapelib to Cygwin:
-     --------------------------
+     Adding Shapelib to Cygwin (shapelib-1.2.9):
+     -------------------------------------------
      1) Edit the Makefile for Shapelib to remove the space after the "-h" on
         the line that starts like this:
 
@@ -1344,8 +1344,8 @@ WINDOWS/CYGWIN NOTES:
          make
          make install-strip
 
-     Adding ImageMagick to Cygwin:
-     -----------------------------
+     Adding ImageMagick to Cygwin (ImageMagick 5.5.3):
+     -------------------------------------------------
      Download the ImageMagick cygwin binary from www.imagemagick.org or one
      of it's mirrors.  Extract it somewhere, then copy the files/directories
      into the /usr tree (/usr/include and /usr/lib).
@@ -1370,8 +1370,8 @@ WINDOWS/CYGWIN NOTES:
      ends up putting you somewhere other than your home directory, and your
      .profile doesn't end up getting sourced.  There must be a better way.
 
-     Adding libproj to Cygwin:
-     -------------------------
+     Adding libproj to Cygwin (proj-4.4.5):
+     --------------------------------------
  
      Should be similar to the previous instructions for installing libproj
      all the way through the "make" stage, but then you must type these
@@ -1384,8 +1384,8 @@ WINDOWS/CYGWIN NOTES:
 
      then "make install".
 
-     Adding libgeotiff to Cygwin:
-     ----------------------------
+     Adding libgeotiff to Cygwin (libgeotiff-1.1.5):
+     -----------------------------------------------
 
      So far it appears to compile fine until it gets to the "ld -shared"
      step.  At that point it bombs out with a hundred or so "undefined
