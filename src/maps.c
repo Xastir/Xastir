@@ -5455,10 +5455,10 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
-    char file[MAX_FILENAME];        // Complete path/name of image file
+    char file[MAX_FILENAME+1];      // Complete path/name of image file
     FILE *f;                        // Filehandle of image file
     char line[MAX_FILENAME];        // One line from GEO file
-    char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
+    char fileimg[MAX_FILENAME+1];   // Ascii name of image file, read from GEO file
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read

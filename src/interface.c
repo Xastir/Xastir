@@ -1661,7 +1661,7 @@ int serial_init (int port) {
         lock = fopen(fn,"r");
         if (lock != NULL) { // We could open it so it must have
                             // been created by this userid
-            if (fscanf(lock,"%d %s %s",&myintpid,temp,temp1) == 3) {
+            if (fscanf(lock,"%d %99s %99s",&myintpid,temp,temp1) == 3) {
                 //fprintf(stderr,"Current lock %d %s %s\n",mypid,temp,temp1);
                 mypid = (pid_t)myintpid;
 
@@ -2098,7 +2098,7 @@ int net_init(int port) {
         if (strcmp(ip_addrs,"NOHOST") != 0) {
             if (strcmp(ip_addrs,"TIMEOUT") != 0) {    // We found an IP address
                 /* get the first ip */
-                (void)sscanf(ip_addrs,"%s",ip_addr);
+                (void)sscanf(ip_addrs,"%39s",ip_addr);
                 if (debug_level & 2)
                     fprintf(stderr,"IP Address: %s\n",ip_addr);
                 /* set address for connection */
