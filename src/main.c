@@ -13418,6 +13418,59 @@ void map_properties_fill_in (void) {
         // the map_layer and draw_filled variables on the line.
         n=1;
 
+
+//
+// We wish to only show the files that are currently selected in the
+// map_chooser_dialog's map_list widget.  We'll need to run down
+// that widget's entries, checking whether each line is selected,
+// and only display it in the map_properties_list widget if selected
+// and a match with our string.
+//
+// Another method would be to make the Map Chooser selections set a
+// bit in the in-memory index, so that we can tell which ones are
+// selected without a bunch of string compares.  The bit would need
+// to be tweaked on starting up the map chooser (setting the
+// selected entries that match the selected_maps.sys file), and when
+// the user tweaked a selection.
+//
+// What we don't want to get into is an n*n set of string compares
+// between two lists, which would be very slow.  If they're both
+// ordered lists though, we'll end up with at most a 2n multiplier,
+// which is much better.  If we can pass the info between the lists
+// with a special entry in the record, we don't slow down at all.
+//
+// Reasonably fast method:  Create a new list that contains only the
+// selected items from map_list.  Run through this list as we
+// populate map_properties_list from the big linked list.
+//
+// Actually, it's probably just as fast to run down through
+// map_list, looking up records for every line that's selected.
+// Just keep the pointers incrementing for each list instead of
+// running through the entire in-memory linked list for every
+// selected item in map_list.
+//
+// For selected directories, we need to add each file that has that
+// initial directory name.  We should be able to do this with a
+// match that stops at the end of the directory name.
+
+/*
+if (map_chooser_dialog) {
+
+    // Get the list and the list count from the dialog
+    XtVaGetValues(map_list,
+        XmNitemCount,&i,
+        XmNitems,&list,
+        NULL);
+
+    // Deselect all currently selected maps
+    if (XmListPosSelected(map_list,x)) {
+        XmListDeselectPos(map_list,x);
+    }
+}
+*/
+
+
+
         while (current != NULL) {
 
             //fprintf(stderr,"%s\n",current->filename);
@@ -13575,13 +13628,12 @@ void map_properties_select_all_maps(Widget widget, XtPointer clientData, XtPoint
                XmNitems,&list,
                NULL);
 
-    // Run through the widget's list, deselecting every line
+    // Run through the widget's list, selecting every line
     for(x=1; x<=i;x++)
     {
           XmListSelectPos(map_properties_list,x,TRUE);
     }
 }
-
 
 
 
