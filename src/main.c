@@ -9209,6 +9209,8 @@ void help_view_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, 
 
 
 
+
+
 void help_index_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
 
@@ -9221,6 +9223,8 @@ void help_index_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,
     XtDestroyWidget(shell);
     help_index_dialog = (Widget)NULL;
 }
+
+
 
 
 
@@ -9374,6 +9378,8 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
     }
 
 }
+
+
 
 
 
@@ -10641,167 +10647,6 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
 
 
 
-//WE7U
-// This function isn't used yet.
-//
-// Function written by Chris Bell for a July 2002 version of Xastir.
-// This function allows selecting/deselecting directories of map
-// files at a time.  This needs to be tweaked to fit into the new
-// map_index method of doing things.
-//
-// map_list callback to select/deselect whole dirs at a time - KD6ZWR
-// This only works with real motif... lesstif crashes after the select
-void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, XtPointer callData) {
-    XmListCallbackStruct *wid_data = (XmListCallbackStruct*) callData;
-    int i, is, it, ipos, selected;
-    char *temp;
-    char clicked_dir[MAX_FILENAME];
-    XmString *list;
-
-
-    if ( wid_data->reason == XmCR_MULTIPLE_SELECT ) {
-        XtRemoveCallback(widget, XmNmultipleSelectionCallback, map_list_list_click_motif, NULL); // kd6zwr - callback test
-
-        XtVaGetValues(widget,
-                      XmNitemCount,&i,
-                      XmNitems,&list,
-                      NULL);
-        XtVaGetValues(widget,
-                      XmNselectedItemCount,&is,
-                      NULL);
-        
-        printf("%d items, %d selected.\n",i,is);
-        if(XmStringGetLtoR(wid_data->item,XmFONTLIST_DEFAULT_TAG,&temp)) {
-            printf("I got clicked...on %s.\n",temp);
-            if (temp[strlen(temp)-1] == '/' ) {  // clicked a directory
-                printf("  and it is a dir.\n");
-                strcpy(clicked_dir, temp);
-                XtFree(temp);
-                
-                selected = (int) XmListPosSelected(widget, wid_data->item_position );
-                
-                for (it=wid_data->item_position+1;it<=i;it++) {
-                    // we can start from where we are, the list is sorted
-                    XmStringGetLtoR(list[it-1],XmFONTLIST_DEFAULT_TAG,&temp);
-                    if (temp) {
-                        if (strncmp(temp, clicked_dir, strlen(clicked_dir)) == 0) {
-                            printf("We got a match %s.\n",temp);
-                            ipos = XmListItemPos(widget, list[it-1]);
-                            printf("%sselecting pos %d, was %sselected.\n",
-                                   selected?"":"un-",ipos,
-                                   XmListPosSelected(widget,ipos)?"":"un-");
-                            if (ipos!=0) {
-                                if (selected) { // add the item to the select list
-                                    XmListSelectPos(widget,ipos,FALSE);
-                                } else {
-                                    XmListDeselectPos(widget,ipos);
-                                }
-                            }
-                        } else { 
-                            printf("not matched %s.\n",temp);
-                        }
-                        if (temp) XtFree(temp);
-                    }
-                }
-            }
-        }
-        XtAddCallback(widget, XmNmultipleSelectionCallback, map_list_list_click_motif, NULL); // kd6zwr - callback test
-    }
-}
-
-
-
-
-
-//WE7U
-// This function isn't used yet.
-//
-// Function written by Chris Bell for a July 2002 version of Xastir.
-// This function allows selecting/deselecting directories of map
-// files at a time.  This needs to be tweaked to fit into the new
-// map_index method of doing things.
-//
-// map_list callback to select/deselect whole dirs at a time - KD6ZWR
-void map_list_list_click(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, XtPointer callData) {
-    XmListCallbackStruct *wid_data = (XmListCallbackStruct*) callData;
-    int i, is, it, ipos, selected;
-    char *temp;
-    char clicked_dir[MAX_FILENAME];
-    XmString *list, *slist;
-    FILE *f;
-
-
-    if ( wid_data->reason == XmCR_MULTIPLE_SELECT ) {
-        XtRemoveCallback(widget, XmNmultipleSelectionCallback, map_list_list_click, NULL); // make sure we don't recurse...
-
-        XtVaGetValues(widget,
-                      XmNitemCount,&i,
-                      XmNitems,&list,
-                      NULL);
-        XtVaGetValues(widget,
-                      XmNselectedItemCount,&is,
-                      XmNselectedItems,&slist,
-                      NULL);
-        
-        printf("%d items, %d selected.\n",i,is);
-        if(XmStringGetLtoR(wid_data->item,XmFONTLIST_DEFAULT_TAG,&temp)) {
-            printf("I got clicked...on %s.\n",temp);
-            if (temp[strlen(temp)-1] == '/' ) {  // clicked a directory
-                printf("  and it is a dir.\n");
-                strcpy(clicked_dir, temp);
-                XtFree(temp);
-                
-                selected = (int) XmListPosSelected(widget, wid_data->item_position );
-                
-//                f=fopen(WIN_MAP_DATA,"w+");
-f=NULL;
-                if (f!=NULL) {
-
-                    for (it=1;it<=i;it++) {
-
-                        XmStringGetLtoR(list[it-1],XmFONTLIST_DEFAULT_TAG,&temp);
-                        if (temp) {
-                            if (strncmp(temp, clicked_dir, strlen(clicked_dir)) == 0) {
-                                printf("We got a match %s.\n",temp);
-                                ipos = XmListItemPos(widget, list[it-1]);
-                                printf("%sselecting pos %d, was %sselected.\n",
-                                       selected?"":"un-",ipos, XmListPosSelected(widget,ipos)?"":"un-");
-                                if (ipos!=0) {
-                                    if (selected) { // add the item to the select list
-                                        //
-                                        XmListSelectPos(widget,ipos,FALSE);
-                                        fprintf(f,"%s\n",temp);
-                                        //} else {
-                                        //
-                                        XmListDeselectPos(widget,ipos);
-                                    }
-                                }
-                            } else { 
-                                printf("not matched %s.\n",temp);
-                                ipos = XmListItemPos(widget, list[it-1]);
-                                printf("pos %d, was %sselected.\n", ipos, XmListPosSelected(widget,ipos)?"":"un-");
-                                if (XmListPosSelected(widget,ipos))
-                                    fprintf(f,"%s\n",temp);
-                            }
-                            XtFree(temp);
-                        }
-                    }
-                    (void)fclose(f);
-                    map_chooser_fill_in();
-                }
-                else {
-//                    printf("Couldn't open file: %s\n", WIN_MAP_DATA);
-                }
-            }
-        }
-        XtAddCallback(widget, XmNmultipleSelectionCallback, map_list_list_click, NULL); // kd6zwr - callback test
-    }
-}
- 
- 
- 
- 
-
 // Removes the highlighting for maps in the current view of the map
 // chooser.  In order to de-select all maps, must flip through both
 // map chooser views and hit the "none" button each time, then hit
@@ -10841,68 +10686,6 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
 */
 
     map_chooser_update_quantity();
-}
-
-
-
-
-
-//WE7U
-// This routine isn't used anymore.  We use the map_index stuff now
-// instead.
-void dir_sort(char *dir) {
-    struct dirent *dl;
-    DIR *dm;
-    char fullpath[MAX_FILENAME];
-    struct stat nfile;
-    const time_t *ftime;
-    int my_size;
-    char *ext;
-
-    my_size=strlen(SELECTED_MAP_DIR)+1;
-    dm = opendir(dir);
-    if(!dm)
-        //perror("maps");
-        perror(dir);
-    else {
-        while((dl = readdir(dm))) {
-            xastir_snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, dl->d_name);
-            if (stat(fullpath,&nfile)==0) {
-                ftime=(time_t *)&nfile.st_ctime;
-                switch (nfile.st_mode & S_IFMT) {
-                    case(S_IFDIR):  // We found a directory
-                        /*printf("file %c letter %c\n",dl->d_name[0],letter);*/
-
-                        if ((strcmp(dl->d_name, ".") != 0) && (strcmp(dl->d_name, "..") != 0)) {
-                            dir_sort(fullpath); // Recursively call dir_sort again
-                        }
-                        break;
-
-                    case(S_IFREG):  // We found a regular file
-                        /*printf("FILE %d<%s>\n",*item,fullpath+my_size);*/
-
-                        // Check whether it's a map file before shoving it into the
-                        // database.  This filters out non-maps from the listing.
-                        ext = get_map_ext(dl->d_name);  // Get the file extension
-                        if ( (ext != NULL)
-                                && (   (strcasecmp(ext, "MAP") == 0)
-                                    || (strcasecmp(ext, "GEO") == 0)
-                                    || (strcasecmp(ext, "PDB") == 0)
-                                    || (strcasecmp(ext, "GNIS") == 0)
-                                    || (strcasecmp(ext, "TIF") == 0)
-                                    || (strcasecmp(ext, "SHP") == 0) ) ) {
-                            (void)sort_input_database(get_user_base_dir("data/sort_maps_db.dat"),
-                                    (fullpath+my_size),1000);
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-        }
-    }
-    (void)closedir(dm);
 }
 
 
