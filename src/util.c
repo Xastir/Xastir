@@ -568,7 +568,11 @@ time_t time_from_aprsstring(char *aprs_time) {
 
     (void)time(&timenw);
     time_now = localtime(&timenw);
+#ifdef __FreeBSD__
+    zone = (time_now->tm_gmtoff) - 3600 * (int)(time_now->tm_isdst);
+#else
     zone = timezone - 3600 * (int)(time_now->tm_isdst > 0);
+#endif
     tz[0] = tz[1] = '\0';
     switch (sscanf(aprs_time, "%2d%2d%2d%19s", &day, &hour, &minute, tz)) {
         case 0:
