@@ -1177,6 +1177,34 @@ int position_defined(long lat, long lon, int strict) {
 
 
 
+// Function to convert from screen (pixel) coordinates to the Xastir
+// coordinate system.
+//
+void convert_screen_to_xastir_coordinates(int x,
+        int y,
+        long *lat,
+        long *lon) {
+
+    *lon = (mid_x_long_offset - ((screen_width  * scale_x)/2) + (x * scale_x));
+    *lat = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (y * scale_y));
+
+    if (*lon < 0)
+    *lon = 0l;                 // 180°W
+
+    if (*lon > 129600000l)
+    *lon = 129600000l;         // 180°E
+
+    if (*lat < 0)
+    *lat = 0l;                 //  90°N
+
+    if (*lat > 64800000l)
+    *lat = 64800000l;          //  90°S
+}
+
+
+
+
+
 // Convert Xastir lat/lon to UTM printable string
 void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
     double utmNorthing;

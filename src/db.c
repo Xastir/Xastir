@@ -113,6 +113,8 @@ time_t last_station_remove;     // last time we did a check for station removing
 time_t last_sec,curr_sec;       // for comparing if seconds in time have changed
 int next_time_sn;               // time serial number for unique time index
 
+CADRow *CAD_list_head = NULL;   // pointer to first element in CAD objects list
+
 void draw_trail(Widget w, DataRow *fill, int solid);
 void export_trail(DataRow *p_station);
 
@@ -2762,6 +2764,8 @@ void display_file(Widget w) {
     if (debug_level & 1)
         fprintf(stderr,"Display File Stop\n");
     draw_ruler(w);
+
+    Draw_All_CAD_Objects(w);        // Draw all CAD objects, duh.
 }
 
 

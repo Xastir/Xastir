@@ -323,6 +323,8 @@ extern Widget object_group_data;
 extern Widget object_symbol_data;
 extern void updateObjectPictureCallback(Widget w,XtPointer clientData,XtPointer callData);
 
+extern void Draw_All_CAD_Objects(Widget w);
+
 
 // unit conversion
 extern char un_alt[2+1];

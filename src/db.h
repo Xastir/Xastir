@@ -362,6 +362,37 @@ typedef struct _DataRow {
 } DataRow;
 
 
+
+// Used to store one vertice in CADRow object
+typedef struct _VerticeRow{
+    long    latitude;           // Xastir coordinates 1/100sec, 0 = 180W
+    long    longitude;          // Xastir coordinates 1/100sec, 0 =  90N
+    struct  _VerticeRow *next;  // Pointer to next record in list
+} VerticeRow;
+
+
+
+// CAD Objects
+typedef struct _CADRow {
+    struct _CADRow *next;       // Pointer to next element in list
+    time_t creation_time;       // Time at which object was first created
+    VerticeRow *start;          // Pointer to first VerticeRow
+    int line_color;             // Border color
+    int line_type;              // Border linetype
+    int line_width;             // Border line width
+    int computed_area;          // Area in square kilometers
+    float raw_probability;      // Probability of area (POA) or probability of detection (POD)
+    long label_latitude;        // Latitude for label placement
+    long label_longitude;       // Longitude for label placement
+    char label[40];             // Name of polygon
+    char comment[256];          // Comments associated with polygon
+} CADRow;
+
+
+extern CADRow *CAD_list_head;
+
+
+
 // station flag definitions
 #define ST_OBJECT       0x01    // station is an object
 #define ST_ITEM         0x02    // station is an item

@@ -568,6 +568,8 @@ void Draw_CAD_Objects_end_mode(Widget w, XtPointer clientData, XtPointer calldat
 void Draw_CAD_Objects_erase(Widget w, XtPointer clientData, XtPointer calldata);
 Widget draw_CAD_objects_dialog = (Widget)NULL;
 int draw_CAD_objects_flag = 0;
+void Draw_All_CAD_Objects(Widget w);
+ 
 
 // ------------------------- audio alarms ----------------------------
 Widget configure_audio_alarm_dialog = (Widget)NULL;
@@ -3231,9 +3233,13 @@ void redraw_symbols(Widget w) {
 
     /* copy over map and alert data to final pixmap */
     if(!wait_to_redraw) {
+
         (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,screen_width,screen_height,0,0);
+
         draw_grid(w);           // draw grid if enabled
+
         display_file(w);        // display stations (symbols, info, trails)
+
         (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
     }
     else {
@@ -7686,39 +7692,206 @@ void create_gc(Widget w) {
 //////////////////// Draw CAD Objects Functions ////////////////////
 
 
-//WE7U
+//#define CAD_DEBUG
 
-// Allocate a struct for a new object and add one (two?) vertice(s)
-// to it.
-void CAD_object_allocate_new(void) {
+// Allocate a new vertice along the polygon.  If the vertice is very
+// close to the first vertice, ask the operator if they wish to
+// close the polygon.  If closing, ask for a raw probability?
+//
+void CAD_vertice_allocate(long latitude, long longitude) {
+
+#ifdef CAD_DEBUG
+    fprintf(stderr,"Allocating a new vertice\n");
+#endif
+
+    // Check whether a line segment will cross another?
+
+    // We use the CAD_list_head variable, as it will be pointing to
+    // the top of the list, where the current object we're working
+    // on will be placed.  Check whether that pointer is NULL
+    // though, just in case.
+    if (CAD_list_head) {   // We have at least one object defined
+        VerticeRow *p_new;
+
+        // Allocate area to hold the first vertice
+        p_new = (VerticeRow *)malloc(sizeof(VerticeRow));
+
+        p_new->latitude = latitude;
+        p_new->longitude = longitude;
+ 
+        // Link it in at the top of the vertice chain.
+        p_new->next = CAD_list_head->start;
+        CAD_list_head->start = p_new;
+    }
+
+    // Reload symbols/tracks/CAD objects
+    redraw_symbols(da);
 }
 
-// Split an existing CAD object into two others.  Could do this more
-// simply by drawing a line across it?
+
+
+
+
+// Allocate a struct for a new object and add one vertice to it.
+// When do we name it and place the label?  Assign probability to
+// it?  We should keep a pointer to the current polygon we're
+// working on, so that we can modify it easily as we draw.
+// Actually, it'll be pointed to by CAD_list_head, so we already
+// have it!
+//
+void CAD_object_allocate(long latitude, long longitude) {
+    CADRow *p_new;
+
+#ifdef CAD_DEBUG
+    printf(stderr,"Allocating a new CAD object\n");
+#endif
+
+    // Allocate memory and link it to the top of the singly-linked
+    // list of CADRow objects.
+    p_new = (CADRow *)malloc(sizeof(CADRow));
+
+    // Fill in default values
+    p_new->creation_time = sec_now();
+    p_new->start = NULL;
+    p_new->line_color = colors[0x27];
+    p_new->line_type = 0;
+    p_new->line_width = 4;
+    p_new->computed_area = 0;
+    p_new->raw_probability = 0.0;
+    p_new->label_latitude = 0l;
+    p_new->label_longitude = 0l;
+    p_new->label[0] = '\0';
+    p_new->comment[0] = '\0';
+
+    // Allocate area to hold the first vertice
+
+#ifdef CAD_DEBUG
+    fprintf(stderr,"Allocating a new vertice\n");
+#endif
+
+    p_new->start = (VerticeRow *)malloc(sizeof(VerticeRow));
+    p_new->start->next = NULL;
+    p_new->start->latitude = latitude;
+    p_new->start->longitude = longitude;
+ 
+    // Hook it into the linked list of objects
+    p_new->next = CAD_list_head;
+    CAD_list_head = p_new;
+}
+
+
+
+
+
+// Delete all vertices associated with a CAD object and free the
+// memory.
+//
+void CAD_vertice_delete_all(VerticeRow *v) {
+    VerticeRow *tmp;
+
+    // Call CAD_vertice_delete() for each vertice, then unlink this
+    // CAD object from the linked list and free its memory.
+
+    // Iterate through each vertice, deleting as we go
+    while (v != NULL) {
+        tmp = v;
+        v = v->next;
+        free(tmp);
+
+#ifdef CAD_DEBUG
+        fprintf(stderr,"Free'ing a vertice\n");
+#endif
+
+    }
+}
+
+
+
+
+
+// Delete _all_ CAD objects and all associated vertices.  Loop
+// through the entire list of CAD objects, calling
+// CAD_vertice_delete_all() and then free'ing the CAD object.  When
+// done, set the start pointer to NULL.
+//
+void CAD_object_delete_all(void) {
+    CADRow *p = CAD_list_head;
+    CADRow *tmp;
+ 
+    while (p != NULL) {
+        VerticeRow *v = p->start;
+
+        // Remove all of the vertices
+        if (v != NULL) {
+
+            // Delete/free the vertices
+            CAD_vertice_delete_all(v);
+        }
+
+        // Remove the object and free its memory
+        tmp = p;
+        p = p->next;
+        free(tmp);
+
+#ifdef CAD_DEBUG
+        fprintf(stderr,"Free'ing an object\n");
+#endif
+
+    }
+
+    // Zero the CAD linked list head
+    CAD_list_head = NULL;
+}
+
+
+
+
+
+// Remove a vertice, thereby joining two segments into one?
+//
+// Recompute the raw probability if need be, or make it an invalid
+// value so that we know we need to recompute it.
+//
+//void CAD_vertice_delete(CADrow *object) {
+//    VerticeRow *v = object->start;
+
+    // Unlink the vertice from the linked list and free its memory.
+    // Allow removing a vertice in the middle or end of a chain.  If
+    // removing the vertice turns the polygon into an open polygon,
+    // alert the user of that fact and ask if they wish to close it.
+//}
+
+// Delete one CAD object and all of its vertices.
+//
+// We don't handle objects properly here unless they're at the head
+// of the list.  We could do a compare of every object along the
+// chain until we hit one with the same title.  Would have to save
+// the pointer to the object ahead of it on the chain to be able to
+// do a delete out of the middle of the chain.  Either that or make
+// it a doubly-linked list.
+//
+void CAD_object_delete(CADRow *object) {
+    VerticeRow *v = object->start;
+
+    CAD_vertice_delete_all(v); // Free's the memory also
+
+    // Unlink the object from the chain and free the memory.
+    CAD_list_head = object->next;  // Unlink
+    free(object);   // Free the object memory
+}
+
+// Split an existing CAD object into two objects.  Can we trigger
+// this by drawing a line across a closed polygon?
 void CAD_object_split_existing(void) {
 }
 
-// Join two existing objects into one.
+// Join two existing polygons into one larger polygon.
 void CAD_object_join_two(void) {
 }
 
 // Move an entire CAD object, with all it's vertices, somewhere
 // else.  Move the label along with it as well.
 void CAD_object_move(void) {
-}
-
-// Delete an entire CAD object and all it's vertices.
-void CAD_object_delete(void) {
-    // Call CAD_vertice_delete() for each vertice, then unlink this
-    // CAD object from the linked list and free its memory.
-}
-
-// Delete all CAD objects and all associated vertices.
-void CAD_object_delete_all(void) {
-    // Loop through the entire list of CAD objects, calling
-    // CAD_vertice_delete() for each vertice, and then
-    // CAD_object_delete() for each object.  When done, set the
-    // start pointer to NULL.
 }
 
 // Compute the area enclosed by a CAD object.  Check that it is a
@@ -7755,13 +7928,6 @@ void CAD_object_set_color(void) {
 void CAD_object_set_linetype(void) {
 }
 
-// Allocate a new vertice along the polygon.  If the vertice is very
-// close to the first vertice, ask the operator if they wish to
-// close the polygon.  If closing, ask for a raw probability?
-void CAD_vertice_allocate_new(void) {
-    // Check whether a line segment will cross another?
-}
-
 // Used to break a line segment into two.  Can then move the vertice
 // if needed.  Recompute the raw probability if need be, or make it
 // an invalid value so that we know we need to recompute it.
@@ -7774,16 +7940,6 @@ void CAD_vertice_insert_new(void) {
 // recompute it.
 void CAD_vertice_move(void) {
     // Check whether a line segment will cross another?
-}
-
-// Remove a vertice, thereby joining two segments into one.
-// Recompute the raw probability if need be, or make it an invalid
-// value so that we know we need to recompute it.
-void CAD_vertice_delete(void) {
-    // Unlink the vertice from the linked list and free its memory.
-    // Allow removing a vertice in the middle or end of a chain.  If
-    // removing the vertice turns the polygon into an open polygon,
-    // alert the user of that fact and ask if they wish to close it.
 }
 
 
@@ -7835,16 +7991,20 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
 
 
 
+// Free the object and vertice lists then do a screen update.
+//
+// It would be good to ask the user whether to delete all CAD
+// objects or a single CAD object.  If single, present a list to
+// choose from.
+//
 void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
 
-    // Does nothing so far.  Will need to free the object and
-    // vertice lists then do a screen update.
+    CAD_object_delete_all();
 
-    // It would be good to ask the user whether to delete all CAD
-    // objects or a single CAD object.  If single, present a list to
-    // choose from.
+    // Reload symbols/tracks/CAD objects
+    redraw_symbols(da);
 }
 
 
@@ -7855,78 +8015,81 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
 
+    long lat, lon;
+
+
     // Draw a line from the last position recorded to the first
     // position recorded.
     if (polygon_last_x != -1 && polygon_last_y != -1) {
  
-        (void)XSetLineAttributes (XtDisplay (da),
-            gc_tint,
-            4,
-            LineOnOffDash,
-//            LineSolid,
-            CapButt,
-            JoinMiter);
-
-        (void)XSetForeground (XtDisplay (da),
-            gc_tint,
-            colors[0x27]);
-
-        (void)XSetFunction (XtDisplay (da),
-            gc_tint,
-            GXxor);
-
-        (void)XDrawLine(XtDisplay(da),
-            pixmap_final,
-            gc_tint,
-            polygon_last_x,
-            polygon_last_y,
-            polygon_start_x,
-            polygon_start_y);
-
-        (void)XDrawLine(XtDisplay(da),
-            pixmap_alerts,
-            gc_tint,
-            polygon_last_x,
-            polygon_last_y,
-            polygon_start_x,
-            polygon_start_y);
-
-       (void)XDrawLine(XtDisplay(da),
-            pixmap,
-            gc_tint,
-            polygon_last_x,
-            polygon_last_y,
-            polygon_start_x,
-            polygon_start_y);
-
-//fprintf(stderr,"drew line\n");
-
-// Copy the new drawing to the screen.  This is of course a
-// temporary thing to test out the concepts.  Later we'll implement
-// storage for the points and an automatic refresh:  Every time we
-// refresh symbols we'll refresh the overlays.  We'll also need a
-// way to turn on/off the overlay display, probably from the Map
-// menu.
-
-        (void)XCopyArea(XtDisplay(da),
-            pixmap_final,
-            XtWindow(da),
-            gc,
-            0,
-            0,
-            screen_width,
-            screen_height,
-            0,
-            0);
+        // Convert from screen coordinates to Xastir coordinate
+        // system and save in the object->vertice list.
+        convert_screen_to_xastir_coordinates(polygon_start_x,
+            polygon_start_y,
+            &lat,
+            &lon);
+        CAD_vertice_allocate(lat, lon);
     }
-
-//interrupt_drawing_now++;
-//refresh_image(da);
  
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
     polygon_last_x = -1;    // Invalid position
     polygon_last_y = -1;    // Invalid position
+}
+
+
+
+
+
+// Function called by UpdateTime() when doing screen refresh.  Draws
+// all CAD objects onto the screen again.
+//
+void Draw_All_CAD_Objects(Widget w) {
+    CADRow *object_ptr = CAD_list_head;
+
+    // Start at CAD_list_head, iterate through entire linked list,
+    // drawing as we go.  Respect the line
+    // width/line_color/line_type variables for each object.
+
+//fprintf(stderr,"Drawing CAD objects\n");
+
+    while (object_ptr != NULL) {
+        // Iterate through the vertices and draw the lines
+        VerticeRow *vertice = object_ptr->start;
+ 
+        // Set up line color/width/type here
+        (void)XSetLineAttributes (XtDisplay (da),
+            gc_tint,
+            object_ptr->line_width,
+            LineOnOffDash,
+//            LineSolid,
+// object_ptr->line_type,
+            CapButt,
+            JoinMiter);
+
+        (void)XSetForeground (XtDisplay (da),
+            gc_tint,
+            object_ptr->line_color);
+
+        (void)XSetFunction (XtDisplay (da),
+            gc_tint,
+            GXxor);
+
+        while (vertice != NULL) {
+            if (vertice->next != NULL) {
+                // Use the draw_vector function from maps.c
+                draw_vector(w,
+                    vertice->longitude,
+                    vertice->latitude,
+                    vertice->next->longitude,
+                    vertice->next->latitude, 
+                    gc_tint,
+                    pixmap_final);
+            }
+            vertice = vertice->next;
+        }
+        object_ptr = object_ptr->next;
+    }
 }
 
 
@@ -7952,14 +8115,23 @@ void da_expose(Widget w, /*@unused@*/ XtPointer client_data, XtPointer call_data
 
     /* First get the various dimensions */
     XtVaGetValues(w,
-                XmNwidth, &width,
-                XmNheight, &height,
-                XmNmarginWidth, &margin_width,
-                XmNmarginHeight, &margin_height,
-                XmNunitType, &unit_type,
-                0);
+        XmNwidth, &width,
+        XmNheight, &height,
+        XmNmarginWidth, &margin_width,
+        XmNmarginHeight, &margin_height,
+        XmNunitType, &unit_type,
+        0);
 
-    (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,event->x,event->y,event->width,event->height,event->x,event->y);
+    (void)XCopyArea(XtDisplay(w),
+        pixmap_final,
+        XtWindow(w),
+        gc,
+        event->x,
+        event->y,
+        event->width,
+        event->height,
+        event->x,
+        event->y);
 }
 
 
@@ -8099,6 +8271,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     char str_long[20];
     long x,y;
     int done = 0;
+    long lat, lon;
 
 
     XtVaGetValues(w,
@@ -8146,66 +8319,28 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             // first click, then we must be on the 2nd or later
             // click.  Draw a line.
             if (polygon_last_x != -1 && polygon_last_y != -1) {
- 
-                (void)XSetLineAttributes (XtDisplay (w),
-                    gc_tint,
-                    4,
-                    LineOnOffDash,
-//                    LineSolid,
-                    CapButt,
-                    JoinMiter);
 
-                (void)XSetForeground (XtDisplay (w),
-                    gc_tint,
-                    colors[0x27]);
-
-                (void)XSetFunction (XtDisplay (da),
-                    gc_tint,
-                    GXxor);
-
-                (void)XDrawLine(XtDisplay(w),
-                    pixmap_final,
-                    gc_tint,
-                    polygon_last_x,
-                    polygon_last_y,
-                    input_x,
-                    input_y);
-
-                (void)XDrawLine(XtDisplay(w),
-                    pixmap_alerts,
-                    gc_tint,
-                    polygon_last_x,
-                    polygon_last_y,
-                    input_x,
-                    input_y);
-
-                (void)XDrawLine(XtDisplay(w),
-                    pixmap,
-                    gc_tint,
-                    polygon_last_x,
-                    polygon_last_y,
-                    input_x,
-                    input_y);
-
-// Copy the new drawing to the screen.  This is of course a
-// temporary thing to test out the concepts.  Later we'll implement
-// storage for the points and an automatic refresh:  Every time we
-// refresh symbols we'll refresh the overlays.
-
-                (void)XCopyArea(XtDisplay(w),
-                    pixmap_final,
-                    XtWindow(w),
-                    gc,
-                    0,
-                    0,
-                    screen_width,
-                    screen_height,
-                    0,
-                    0);
+                // Convert from screen coordinates to Xastir
+                // coordinate system and save in the object->vertice
+                // list.
+                convert_screen_to_xastir_coordinates(input_x,
+                    input_y,
+                    &lat,
+                    &lon);
+                CAD_vertice_allocate(lat, lon);
             }
             else {  // First point of a polygon.  Save it.
                 polygon_start_x = input_x;
                 polygon_start_y = input_y;
+
+                // Figure out the real lat/long from the screen
+                // coordinates.  Create a new object to hold the
+                // point.
+                convert_screen_to_xastir_coordinates(polygon_start_x,
+                    polygon_start_y,
+                    &lat,
+                    &lon);
+                CAD_object_allocate(lat, lon);
             }
 
             // Save current point away for the next draw.
@@ -8213,9 +8348,6 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             polygon_last_y = input_y;
 
             done++;
-
-//interrupt_drawing_now++;
-//refresh_image(da);
         }
     }
 
