@@ -11451,6 +11451,7 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 // MKISS
 // FlexKISS             -,
 // FlexCRC              -|-- These are all the same!
+// RMNC-KISS            -|
 // CRC-RMNC             -'
 // 
 // 
