@@ -4022,6 +4022,10 @@ void clean_string(char *input) {
 // and some have an extreme amount of spaces at the end of each
 // line.  Some also have spaces, after a field but before a comma.
 //
+// Another difference just found:  Some files have quotes around all
+// fields, some have quotes around only some.  We need to handle
+// this gracefully.
+//
 void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
 {
     char file[MAX_FILENAME];        // Complete path/name of GNIS file
@@ -4824,7 +4828,8 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     i[0] = '\0';
                     strncpy(state,line+1,49);
-                    state[strlen(state)-1] = '\0';
+//                    state[strlen(state)-1] = '\0';
+                    clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
@@ -4846,7 +4851,8 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     j[0] = '\0';
                     strncpy(name,i+2,199);
-                    name[strlen(name)-1] = '\0';
+//                    name[strlen(name)-1] = '\0';
+                    clean_string(name);
 
                     // Find Type
                     i = index(j+1, ',');
@@ -4857,7 +4863,8 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     i[0] = '\0';
                     strncpy(type,j+2,99);
-                    type[strlen(type)-1] = '\0';
+//                    type[strlen(type)-1] = '\0';
+                    clean_string(type);
 
                     // Find County          // Can there be commas in the county name?
                     j = index(i+1, ',');
@@ -4868,7 +4875,8 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     j[0] = '\0';
                     strncpy(county,i+2,99);
-                    county[strlen(county)-1] = '\0';
+//                    county[strlen(county)-1] = '\0';
+                    clean_string(county);
 
                     // Find ?
                     i = index(j+1, ',');
@@ -4897,7 +4905,8 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     i[0] = '\0';
                     strncpy(latitude,j+2,14);
-                    latitude[strlen(latitude)-1] = '\0';
+//                    latitude[strlen(latitude)-1] = '\0';
+                    clean_string(latitude);
 
                     // Find longitude (DDDMMSSW)
                     j = index(i+1, ',');
@@ -4908,7 +4917,8 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     j[0] = '\0';
                     strncpy(longitude,i+2,14);
-                    longitude[strlen(longitude)-1] = '\0';
+//                    longitude[strlen(longitude)-1] = '\0';
+                    clean_string(longitude);
 
                     // Find another latitude
                     i = index(j+1, ',');
@@ -4982,7 +4992,8 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     j[0] = '\0';
                     strncpy(population,i+2,14);
-                    population[strlen(population)-1] = '\0';
+//                    population[strlen(population)-1] = '\0';
+                    clean_string(population);
  
                     // Find quad name (last field)
                     i = index(j+1, '"');
@@ -4993,7 +5004,8 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
                     i[0] = '\0';
                     strncpy(quad,j+2,14);
-                    quad[strlen(quad)] = '\0';
+//                    quad[strlen(quad)] = '\0';
+                    clean_string(quad);
 
 
                     // If "Match Case" togglebutton is not set, convert
