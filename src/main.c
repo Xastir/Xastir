@@ -27580,22 +27580,6 @@ int main(int argc, char *argv[], char *envp[]) {
     struct passwd *user_info;
     static char lang_to_use_or[30];
     char temp[100];
-
-#ifndef optarg
-    extern char *optarg;
-#endif  // optarg
-
-#ifdef USING_LIBGC
-    GC_find_leak = 1;
-    GC_INIT();
-#endif  // USING_LIBGC
-
-
-    my_argc = argc;
-    my_argv = (void *)&argv[0];
-    my_envp = (void *)&envp[0];
-
-
     // Define some overriding resources for the widgets.
     // Look at files in /usr/X11/lib/X11/app-defaults for ideas.
     String fallback_resources[] = {
@@ -27721,6 +27705,21 @@ int main(int argc, char *argv[], char *envp[]) {
 
         NULL
     };
+
+
+#ifndef optarg
+    extern char *optarg;
+#endif  // optarg
+
+#ifdef USING_LIBGC
+    GC_find_leak = 1;
+    GC_INIT();
+#endif  // USING_LIBGC
+
+
+    my_argc = argc;
+    my_argv = (void *)&argv[0];
+    my_envp = (void *)&envp[0];
 
     euid = geteuid();
     egid = getegid();
