@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "config.h"
-#include "awk.h"
 
 #ifdef HAVE_SHAPEFIL_H
 #include <shapefil.h>
@@ -12,6 +11,10 @@
 #error HAVE_LIBSHP defined but no corresponding include defined
 #endif // HAVE_LIBSHP_SHAPEFIL_H
 #endif // HAVE_SHAPEFIL_H
+
+#include "awk.h"
+#include "dbfawk.h"
+
 /*
  * Sample test program
  */
@@ -114,71 +117,49 @@ int main(int argc, char *argv[])
       DBFHandle dbf = DBFOpen(dfile,"rb");
       int i;
       char sig[sizeof(dbfinfo)]; /* write the signature here */
-      char *sp;
       char fields[100][XBASE_FLDHDR_SZ];
-      int widths[100];
-      int precs[100];
-      int getnum[100];
-      char *getfld[100];
-      DBFFieldType gettypes[100];
       int nf;
+      dbfawk_field_info *fi;
 
       if (!dbf)
 	die("DBFopen");
-      i = DBFGetFieldCount(dbf);
-      printf("%d Columns,  %d Records in file\n",i,DBFGetRecordCount(dbf));
-      for (i = 0, sp=sig; i < DBFGetFieldCount(dbf); i++) {
-	DBFGetFieldInfo(dbf,i,sp,&widths[i],&precs[i]);
-	strcpy(fields[i],sp);	/* put into array too */
-	sp += strlen(sp);
-	*sp++ = ':';		/* field name separator */
-      }
-      *--sp = '\0';		/* clobber the trailing sep */
-      printf("sig: %s\n",sig);
-      if (strcmp(sig,dbfinfo) == 0) {
-	printf("DBF Signatures match!\n");
-      } else {
-	printf("DBF Signatures DON'T match\n");
-      }
-      /* now build up the list of fields to read */
-      for (nf = 0, sp = dbffields; *sp; nf++) {
-	char *p = sp;
-	char junk[XBASE_FLDHDR_SZ];
-	int w,prec;
+      nf = dbfawk_sig(dbf,sig,sizeof(sig));
+      fprintf(stderr,"%d Columns,  %d Records in file\n",nf,
+	      DBFGetRecordCount(dbf));
+      fprintf(stderr,"sig: %s\n",sig);
 
-	while (*p && *p != ':') ++p;
-	if (*p == ':')
-	  *p++ = '\0';
-	getnum[nf] = DBFGetFieldIndex(dbf, (getfld[nf] = strdup(sp)));
-	gettypes[nf] = DBFGetFieldInfo(dbf, getnum[nf], junk, &w, &prec);
-	//	fprintf(stderr,"getnum[%s] = %d (type %d)\n",getfld[nf],getnum[nf],gettypes[nf]);
-	sp = p;
+      if (strcmp(sig,dbfinfo) == 0) {
+	fprintf(stderr,"DBF Signatures match!\n");
+      } else {
+	fprintf(stderr,"DBF Signatures DON'T match\n");
       }
+      fi = dbfawk_field_list(dbf, dbffields);
       /* now actually read the whole file */
       for (i = 0; i < DBFGetRecordCount(dbf); i++ ) {
-	int j;
+	dbfawk_field_info *j;
 
 	awk_exec_begin_record(rs); /* execute a BEGIN_RECORD rule if any */
-	for (j = 0; j < nf; j++ )
+	for (j = fi; j ; j = j->next)
 	{
 	  char qbuf[1024];
 
-	  switch (gettypes[j]) {
+	  switch (j->type) {
 	  case FTString:
-	    sprintf(qbuf,"%s=%s",getfld[j],DBFReadStringAttribute(dbf,i,getnum[j]));
+	    sprintf(qbuf,"%s=%s",j->name,DBFReadStringAttribute(dbf,i,j->num));
 	    break;
 	  case FTInteger:
-	    sprintf(qbuf,"%s=%d",getfld[j],DBFReadIntegerAttribute(dbf,i,getnum[j]));
+	    sprintf(qbuf,"%s=%d",j->name,DBFReadIntegerAttribute(dbf,i,j->num));
 	    break;
 	  case FTDouble:
-	    sprintf(qbuf,"%s=%f",getfld[j],DBFReadDoubleAttribute(dbf,i,getnum[j]));
+	    sprintf(qbuf,"%s=%f",j->name,DBFReadDoubleAttribute(dbf,i,j->num));
 	    break;
 	  case FTInvalid:
 	  default:
-	    sprintf(qbuf,"%s=??",getfld[j]);
+	    sprintf(qbuf,"%s=??",j->name);
 	    break;
 	  }
-	  fprintf(stderr,"%d, %d: qbuf(num %d, type %d): %s\n",i,j,getnum[j],gettypes[j],qbuf);
+	  fprintf(stderr,"%d, %d: qbuf(num %d, type %d): %s\n",i,j,j->num,
+		  j->type,qbuf);
 	  awk_exec_program(rs,qbuf,strlen(qbuf));
 	}
 	awk_exec_end_record(rs); /* execute an END_RECORD rule if any */

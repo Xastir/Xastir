@@ -28,8 +28,6 @@
  * values when rendering shapefile maps, or rewriting labels
  * (e.g. callsigns into tactical calls), etc.
  *
- * #define TEST to build a simple test program.
- *
  * Uses Philip Hazel's Perl-compatible regular expression library (pcre).  
  * See www.pcre.org.
  *

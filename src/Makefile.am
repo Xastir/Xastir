@@ -9,6 +9,7 @@ xastir_SOURCES = \
     color.c color.h \
     datum.c datum.h \
     db.c db.h \
+    dbfawk.c dbfawk.h \
     draw_symbols.c draw_symbols.h \
     fcc_data.c fcc_data.h \
     festival.c festival.h \
