@@ -550,9 +550,12 @@ void guess_vector_attributes( Widget w,
                               const char *driver_type,
                               char *full_filename,
                               OGRLayerH layerH,
+                              OGRFeatureH featureH,
                               int geometry_type ) {
 
     label_color_guess = 0x08;   // Default black
+    int ii;
+    const char *pii = NULL;
 
 
 /*
@@ -611,8 +614,8 @@ void guess_vector_attributes( Widget w,
                 label_color_guess = 0x44;
             }
             else if (misc_transportation_layer) {
-                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x0e]);  // yellow
-                label_color_guess = 0x0e;
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x4d]);  // white
+                label_color_guess = 0x4d;
             }
             else if (strstr(full_filename,"lkH")) {
                 (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
@@ -651,8 +654,8 @@ void guess_vector_attributes( Widget w,
                 label_color_guess = 0x44;
             }
             else if (misc_transportation_layer) {
-                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x0e]);  // yellow
-                label_color_guess = 0x0e;
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x4d]);  // white
+                label_color_guess = 0x4d;
             }
             else if (strstr(full_filename,"wat")) {
                 (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
@@ -673,6 +676,136 @@ void guess_vector_attributes( Widget w,
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
             break;
     }
+
+
+    // For SDTS files, check the ENTITY_LABEL.  That gives us very
+    // detailed info about the type of feature we're dealing with so
+    // that we can decide how to draw it.
+    //
+    ii = OGR_F_GetFieldIndex( featureH, "ENTITY_LABEL");
+    if (ii != -1) {
+        const char *entity_num;
+
+        entity_num = OGR_F_GetFieldAsString( featureH, ii);
+
+//        fprintf(stderr,"ENTITY_LABEL: %s\n", entity_num);
+
+        if (strncmp(entity_num,"020",3) == 0) {
+            // Contour lines
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+            label_color_guess = 0x0e;   // yellow
+        }
+        else if (strncmp(entity_num,"050",3) == 0) {
+            // hydrography
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+            label_color_guess = 0x0e;   // yellow
+        }
+        else if (strncmp(entity_num,"070",3) == 0) {
+            // vegetative surface cover
+        }
+        else if (strncmp(entity_num,"080",3) == 0) {
+            // non-vegetative features
+        }
+        else if (strncmp(entity_num,"090",3) == 0) {
+            // boundaries
+        }
+        else if (strncmp(entity_num,"150",3) == 0) {
+            // survey control and markers
+        }
+        else if (strncmp(entity_num,"170",3) == 0) {
+            // roads and trails
+            (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x08]);  // black
+            label_color_guess = 0x08;
+        }
+        else if (strncmp(entity_num,"180",3) == 0) {
+            // railroads
+            (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x44]);  // red
+            label_color_guess = 0x44;
+        }
+        else if (strncmp(entity_num,"190",3) == 0) {
+            // pipelines, transmissions lines, misc transportation
+            (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x4d]);  // white
+            label_color_guess = 0x4d;
+        }
+        else if (strncmp(entity_num,"200",3) == 0) {
+            // man-made features
+        }
+        else if (strncmp(entity_num,"300",3) == 0) {
+            // public land survey system
+        }
+    }
+
+
+    // Attempt to snag the CFCC field for raw Tiger files.  This
+    // tells us what the feature is and we can get clues from it
+    // as to how to draw the feature.
+    //
+    ii = OGR_F_GetFieldIndex(featureH, "CFCC");
+
+    if (ii != -1) {  // Found one of the fields
+            pii = OGR_F_GetFieldAsString(featureH, ii);
+//fprintf(stderr,"CFCC: %s\n", pii);
+    }
+
+    if (pii) {
+        switch (pii[0]) {
+
+            case 'A':   // Road
+            case 'P':   // Provisional Road
+                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                label_color_guess = 0x08;   // black
+                break;
+
+            case 'B':   // Railroad
+                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x44]);  // red
+                label_color_guess = 0x44;   // red
+                break;
+
+            case 'C':   // Misc Ground Transportation
+                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x4d]);  // white
+                label_color_guess = 0x4d;   // white
+                break;
+
+            case 'D':   // Landmark
+                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                label_color_guess = 0x08;   // black
+                break;
+
+            case 'E':   // Physical Feature
+                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                label_color_guess = 0x08;   // black
+                break;
+
+            case 'F':   // Non-visible Feature
+                return; // Don't display it!
+                break;
+    
+            case 'H':   // Hydrography (water)
+                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
+                label_color_guess = 0x1a;   // Steel Blue
+                break;
+
+            case 'X':   // Feature not yet classified
+                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                label_color_guess = 0x08;   // black
+                break;
+
+            default:
+                (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+                label_color_guess = 0x08;   // black
+                break;
+
+        }   // End of switch
+    } // End of if
+
 }
 
 
@@ -1155,8 +1288,7 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
     // Draw the polyline
     //
     if (num_points > 0) {
-        int ii, jj;
-        const char *pjj = NULL;
+        int ii;
         double *vectorX;
         double *vectorY;
         double *vectorZ;
@@ -1326,76 +1458,6 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
             free(XI);
         if (YI)
             free(YI);
-
-
-        // Attempt to snag the CFCC field for raw Tiger files.  This
-        // tells us what the feature is and we can get clues from it
-        // as to how to draw the feature.
-        //
-        jj = OGR_F_GetFieldIndex(featureH, "CFCC");
-
-        if (jj != -1) {  // Found one of the fields
-            pjj = OGR_F_GetFieldAsString(featureH, jj);
-//fprintf(stderr,"CFCC: %s\n", pjj);
-        }
-
-        if (pjj) {
-            switch (pjj[0]) {
-
-                case 'A':   // Road
-                case 'P':   // Provisional Road
-                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-                    label_color_guess = 0x08;   // black
-                    break;
-
-                case 'B':   // Railroad
-                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x44]);  // red
-                    label_color_guess = 0x44;   // red
-                    break;
-
-                case 'C':   // Misc Ground Transportation
-                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineOnOffDash, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
-                    label_color_guess = 0x0e;   // yellow
-                    break;
-
-                case 'D':   // Landmark
-                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-                    label_color_guess = 0x08;   // black
-                    break;
-
-                case 'E':   // Physical Feature
-                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-                    label_color_guess = 0x08;   // black
-                    break;
-
-                case 'F':   // Non-visible Feature
-                    return; // Don't display it!
-                    break;
-    
-                case 'H':   // Hydrography (water)
-                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
-                    label_color_guess = 0x1a;   // Steel Blue
-                    break;
-
-                case 'X':   // Feature not yet classified
-                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-                    label_color_guess = 0x08;   // black
-                    break;
-
-                default:
-                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-                    label_color_guess = 0x08;   // black
-                    break;
-            }   // End of switch
-        } // End of if
 
 
         // Actually draw the lines
@@ -3628,6 +3690,7 @@ features_processed++;
                         driver_type,
                         full_filename,
                         layerH,
+                        featureH,
                         geometry_type);
 
                     Draw_OGR_Points(w,
@@ -3649,6 +3712,7 @@ features_processed++;
                         driver_type,
                         full_filename,
                         layerH,
+                        featureH,
                         geometry_type);
 
                     Draw_OGR_Lines(w,
@@ -3671,6 +3735,7 @@ features_processed++;
                         driver_type,
                         full_filename,
                         layerH,
+                        featureH,
                         geometry_type);
 
                     Draw_OGR_Polygons(w,
