@@ -91,6 +91,10 @@ The Questions
 
     5.1  Why doesn't Xastir include <insert your feature here>?
 
+    5.2  Why doesn't Xastir digipeat packets sent to the RELAY alias?
+
+    5.3  How do I take a snapshot of my current view? 
+
 
 The Answers
 -----------
@@ -855,6 +859,23 @@ The Answers
     another package to handle digipeating on these interfaces, perhaps
     digi_ned.
 
+
+    5.3  How do I take a snapshot of my current view? 
+
+    You can cause a snapshot to occur by enabling Snapshot in the File menu.
+    It takes a snapshot every five minutes starting immediately when the
+    togglebutton is first enabled.  This means you can change views and
+    disable/enable to take an immediate snapshot each time as well.
+
+    You can also send a "SIGUSR1" signal from another process and Xastir
+    will take a snapshot. The feature was added so that someone could
+    press a button on a web page and cause Xastir to make a new snapshot.
+
+    For Example, from the shell you can do: 
+        kill -SIGUSR1 `cat ~/.xastir/xastir.pid`
+
+    Snapshots will are stored under ~/.xastir/tmp/
+
 ----------------------------------------------------------------
 
 APRS(tm) is a Trademark of Bob Bruninga
@@ -866,4 +887,3 @@ web pages, which are listed at the top of this document.
 
 
 Copyright (C) 2000-2005 The Xastir Group
-
