@@ -962,9 +962,9 @@ Getting Data Files for Xastir:
       http://www.mapshots.com
 
       Newer Tiger/Line 2000 map data is available from:
-      http://www.geographynetwork.com/data/tiger2000/ but requires free
-      registration.  A example of these types of files can be found at
-      "http://wetnet.net/~we7u/xastir/maps/shapefile/USA/WA/".
+      http://www.esri.com/data/download/census2000_tigerline/index.html
+      but requires free registration.  A example of these types of files can
+      be found at "http://wetnet.net/~we7u/xastir/maps/shapefile/USA/WA/".
       You'll need to run "tar xzvf <filename>" on each one of the files
       from that last site after downloading.
 
