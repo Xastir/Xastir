@@ -1387,8 +1387,13 @@ void draw_shapefile_map (Widget w,
             //
             //exit(1);
         }
+        else {
+            // We successfully loaded the bitmap, so set the stipple
+            // properly to use it.  Skip this part if we were
+            // unsuccessful at loading the bitmap.
+            (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
+        }
 
-        (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
     } /* ...end if (weather_alert_flag) */
     else { /* !weather_alert_flag */
 // Are these actually used anymore by the code?  Colors get set later
