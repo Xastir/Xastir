@@ -110,6 +110,9 @@ while (1) {
 
     # Look for lat/long value in the input
 
+    # Add missing decimal points.
+    s/^(\d+)([NSns])\s+(\d+)([EWew])\s*$/$1.$2 $3.$4/;
+
     # Check for N/S/E/W characters in the input.  Set the
     # appropriate flags if found.
     $lat_dir = "N";
@@ -152,7 +155,7 @@ while (1) {
 
         $temp = $lat_min;
         $lat_min = int abs($temp);
-        $lat_sec = (abs($temp) * 60.0) % 60;
+        $lat_sec = (abs($temp) * 600.0) % 600;
         $lat_sec = $lat_sec / 10;
 
         $temp = $long_min;
