@@ -742,6 +742,9 @@ Pixmap  pixmap_wx_stipple;  // Used for weather alerts
 
 int interrupt_drawing_now = 0;  // Flag used to interrupt map drawing
 int request_resize = 0;         // Flag used to request a resize operation
+int request_new_image = 0;      // Flag used to request a create_image operation
+extern void new_image(Widget da);
+
 
 XastirGlobal Global;
 
@@ -7170,6 +7173,12 @@ void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPoin
 
 
 
+// We got a mouse or keyboard callback.  Set flags.  UpdateTime()
+// will come along in a bit and perform the screen redraw.  With
+// this method, the redraw can be made interruptable.  We merely
+// need to check for the interrupt_drawing_now flag periodically
+// while doing the redraw.
+//
 void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     XEvent *event = ((XmDrawingAreaCallbackStruct *) call_data)->event;
     Dimension width, height;
@@ -7208,8 +7217,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
     if (event->type == ButtonRelease) {
         //fprintf(stderr,"ButtonRelease %d %d\n",event->xbutton.button,Button3);
-        if (event->xbutton.button == Button1) {
 
+        if (event->xbutton.button == Button1) {
 // Left mouse button release
 
             // If no drag, Center the map on the mouse pointer
@@ -7415,9 +7424,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 }
             }
             mouse_zoom = 0;
-        }
-        else if (event->xbutton.button == Button2) {
+        }   // End of Button1 release code
 
+        else if (event->xbutton.button == Button2) {
 // Middle mouse button release
 
             // Zoom out 2x with panning
@@ -7428,69 +7437,77 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             // Simple zoom out, keeping map center at current position
             //Zoom_out_no_pan( w, client_data, call_data );
             mouse_zoom = 0;
-        }
-        else if (event->xbutton.button == Button3) {
+        }   // End of Button2 release code
 
+        else if (event->xbutton.button == Button3) {
 // Right mouse button release
 
             // Do nothing.  We have a popup tied into the button press anyway.
             // (Mouse_button_handler & right_menu_popup).
             // Leave the button release alone in this case.
             mouse_zoom = 0;
-        }
+        }   // End of Button3 release code
+
         else if (event->xbutton.button == Button4) {
 // Scroll up
             menu_x=input_x;
             menu_y=input_y;
             Pan_up(w, client_data, call_data);
-        }
+        }   // End of Button4 release code
+
         else if (event->xbutton.button == Button5) {
 // Scroll down
             menu_x=input_x;
             menu_y=input_y;
             Pan_down(w, client_data, call_data);
-        }
+        }   // End of Button5 release code
+
         else if (event->xbutton.button == 6) {
 // Mouse button 6 release
             menu_x=input_x;
             menu_y=input_y;
             Zoom_out_no_pan(w, client_data, call_data);
             mouse_zoom = 0;
-        }
+        }   // End of Button6 code
+
         else if (event->xbutton.button == 7) {
 // Mouse button 7 release
             menu_x=input_x;
             menu_y=input_y;
             Zoom_in_no_pan(w, client_data, call_data);
             mouse_zoom = 0;
-        }
-    }
+        }   // End of Button7 release code
+    }   // End of ButtonRelease code
+
+
     else if (event->type == ButtonPress) {
         //fprintf(stderr,"ButtonPress %d %d\n",event->xbutton.button,Button3);
-        if (event->xbutton.button == Button1) {
 
+        if (event->xbutton.button == Button1) {
 // Left mouse button press
 
             // Mark the position for possible drag function
             menu_x=input_x;
             menu_y=input_y;
             mouse_zoom = 1;
-        }
-        else if (event->xbutton.button == Button2) {
+        }   // End of Button1 Press code
 
+        else if (event->xbutton.button == Button2) {
 // Middle mouse button or both right/left mouse buttons press
 
             // Nothing attached here.
             mouse_zoom = 0;
-        }
-        else if (event->xbutton.button == Button3) {
+        }   // End of Button2 Press code
 
+        else if (event->xbutton.button == Button3) {
 // Right mouse button press
 
             // Nothing attached here.
             mouse_zoom = 0;
-        }
-    }
+        }   // End of Button3 Press code
+    }   // End of ButtonPress code
+
+
     else if (event->type == KeyPress) {
 
         // We want to branch from the keysym instead of the keycode
@@ -7575,19 +7592,29 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             grid_size--;
             redraw = 1;
         }
-    }
-    else {
+    }   // End of KeyPress code
+
+
+    else {  // Something else
         if (event->type == MotionNotify) {
             input_x = event->xmotion.x;
             input_y = event->xmotion.y;
             /*fprintf(stderr,"da_input2 x %d y %d\n",input_x,input_y);*/
         }
-    }
+    }   // End of SomethingElse code
+
 
     if (redraw) {
-        create_image(w);
-        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+//        create_image(w);
+//        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
         /*fprintf(stderr,"Current x %ld y %ld\n",mid_x_long_offset,mid_y_lat_offset);*/
+
+        // Set the interrupt_drawing_now flag
+        interrupt_drawing_now++;
+
+        // Request that a new image be created.  Calls create_image,
+        // XCopyArea, and display_zoom_status.
+        request_new_image++;
     }
 }
 
@@ -7659,6 +7686,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // Check on resize requests
             if (request_resize) {
                 da_resize_execute(w);
+            }
+
+            if (request_new_image) {
+                new_image(w);
             }
 
             /* check on Redraw requests */
@@ -8315,6 +8346,30 @@ void check_range(void) {
 
 
 
+// Called by UpdateTime() when request_new_image flag is set.
+void new_image(Widget da) {
+
+    // Reset flags
+    interrupt_drawing_now = 0;
+    request_new_image = 0;
+
+    create_image(da);
+
+    if (interrupt_drawing_now)
+        return;
+
+    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+    if (interrupt_drawing_now)
+        return;
+
+    display_zoom_status();
+}
+
+
+
+
+
 /*
  *  Display a new map view after checking the view and scaling
  */
@@ -8337,12 +8392,21 @@ void display_zoom_image(int recenter) {
         scale_x = new_scale_x;
         scale_y = new_scale_y;
         setup_in_view();    // update "in view" flag for all stations
-        create_image(da);
+
+//        create_image(da);
+
+        // Set the interrupt_drawing_now flag
+        interrupt_drawing_now++;
+
+        // Request that a new image be created.  Calls create_image,
+        // XCopyArea, and display_zoom_status.
+        request_new_image++;
+        
     } else {    // No change in zoom or center.  Don't update ANYTHING.
         //refresh_image(da);    // No reason to do this.
     }
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
-    display_zoom_status();
+//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    display_zoom_status();
 }
 
 
