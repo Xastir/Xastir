@@ -1134,6 +1134,18 @@ FEATURE     string      (40,0)
 LON         float       (10,5)
 LAT         float       (9,5)
 
+
+USGS Quads Overlay (24kgrid.shp) from
+http://data.geocomm.com/quadindex/
+----------------------------------
+field name  type     width,dec  Example
+NAME        string     (30,0)   Lummi Bay OE W
+STATE       string      (2,0)   WA
+LAT         string      (6,0)   48.750
+LON         string      (8,0)   -122.750
+MRC         string      (8,0)   48122-G7
+
+
 // Need to figure out which type of alert it is, select the corresponding shapefile,
 // then store the shapefile AND the alert_tag in the alert_list[i].filename list?
 // and draw the map.  Add an item to alert_list structure to keep track?
@@ -1183,6 +1195,7 @@ void draw_shapefile_map (Widget w,
     int             railroad_flag = 0;
     int             path_flag = 0;
     int             city_flag = 0;
+    int             quad_overlay_flag = 0;
     int             mapshots_labels_flag = 0;
     int             weather_alert_flag = 0;
     char            *filename;  // filename itself w/o directory
@@ -1374,6 +1387,11 @@ void draw_shapefile_map (Widget w,
         default:
             strcpy(ftype, "unknown");
             break;
+        }
+
+        // Check for quad overlay type of map
+        if (strstr(filename,"24kgrid")) {  // USGS Quad overlay file
+            quad_overlay_flag++;
         }
 
         // Check the filename for mapshots.com filetypes to see what
@@ -2730,7 +2748,10 @@ void draw_shapefile_map (Widget w,
                         }
 
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
-                            if (glacier_flag) {
+                            if (quad_overlay_flag) {
+                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
+                            }
+                            else if (glacier_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
                                 if (map_color_fill) {
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
@@ -2807,6 +2828,13 @@ void draw_shapefile_map (Widget w,
                             skip_label++;
                         if (mapshots_labels_flag && (fieldcount >= 4) )
                             temp = DBFReadStringAttribute( hDBF, structure, 3 );    // NAME (designated places)
+                        else
+                            temp = NULL;
+                    }
+
+                    if (quad_overlay_flag) {
+                        if (fieldcount >= 1)
+                            temp = DBFReadStringAttribute( hDBF, structure, 0 );    // NAME of quad
                         else
                             temp = NULL;
                     }
