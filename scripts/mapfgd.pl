@@ -17,17 +17,19 @@ foreach $mapdir (@dirlist)
     local ($file, $fullfile, $expr, $mlat, $mlon, $mlats, $mlons);
     local ($nlat, $nlon, $nlats, $nlons);
     local ($dlat, $dlon, $inifile);
+    local ($imgwidth, $imglength, $imgres, $imgdepth, $imgphotometric);
+    local ($imgtimestamp);
     foreach $file (sort grep (! /^\./, readdir (DIR)))
     {
         # Only examine .tif files.
         next unless $file =~ /\.tif$/;
-        next unless $file =~ /^[oOcCfFkKlLpPjJgG]/;
+        next unless $file =~ /^[iIoOcCfFkKlLpPjJgG]/;
         $fullfile = $mapdir . '/' . $file;
         $inifile = $mapdir . '/' . $file;
         $inifile =~ s/\.tif$/.fgd/;
         next if (-f $inifile);
         open (INI, ">$inifile");
-        $file =~ /^([oOcCfFkKlLpPjJgG])([0-9][0-9])([0-9][0-9][0-9])([a-hA-H])([1-8])/;
+        $file =~ /^([iIoOcCfFkKlLpPjJgG])([0-9][0-9])([0-9][0-9][0-9])([a-hA-H])([1-8])/;
         $letter = $1;
         $mlat = $2;
         $mlon = $3;
@@ -64,14 +66,25 @@ foreach $mapdir (@dirlist)
                     $dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
                     printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
                 } else {
-                    $dlon = 0-$mlon-(.125*$mlons);
-                    printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
-                    $dlon = 0-$mlon-(.125*$mlons)+.125;
-                    printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
-                    $dlat = $mlat+(.125*(&lettonum ($mlats)));
-                    printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
-                    $dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
-                    printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+		    if ($letter eq 'i') {
+			$dlon = 0-$mlon-(.125*$mlons)-.250;
+			printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
+			$dlon = 0-$mlon-(.125*$mlons)+.125;
+			printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
+			$dlat = $mlat+.125+(.125*(&lettonum ($mlats)));
+			printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+			$dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
+			printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+		    } else {
+			$dlon = 0-$mlon-(.125*$mlons);
+			printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
+			$dlon = 0-$mlon-(.125*$mlons)+.125;
+			printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
+			$dlat = $mlat+(.125*(&lettonum ($mlats)));
+			printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+			$dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
+			printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
+		    }
                 }
             }
         }
