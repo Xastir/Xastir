@@ -577,7 +577,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     (strcmp(temp1, msg_data[msg_index[i]].from_call_sign) == 0 ||
                                       strcmp(temp1,msg_data[msg_index[i]].call_sign) == 0) &&
                                     ( is_my_call(msg_data[msg_index[i]].from_call_sign, 1) ||
-                                      is_my_call(msg_data[msg_index[i]].call_sign, 1) ) ) {
+                                      is_my_call(msg_data[msg_index[i]].call_sign, 1) || mw[mw_p].message_group ) ) {
  
                                 // Message matches so snag the important pieces into a string
                                 xastir_snprintf(stemp, sizeof(stemp), "%c%c/%c%c %c%c:%c%c",
@@ -593,6 +593,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     msg_data[msg_index[i]].message_line);
 
 
+                                if (debug_level & 2) printf("update_message: %s|%s\n", temp1, temp2);
                                 // Replace the text from pos to pos+strlen(temp2) by the string "temp2"
                                 if (mw[mw_p].send_message_text != NULL) {
                                     XmTextReplace(mw[mw_p].send_message_text,
@@ -7737,7 +7738,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         printf("6\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0) {          // other message with linenumber
-        // printf("found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
+        if (debug_level & 2) printf("found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
         msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from);
         new_message_data += look_for_open_group_data(addr);
         if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
