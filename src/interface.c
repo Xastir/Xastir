@@ -797,6 +797,7 @@ int command_file_to_tnc_port(int port, char *filename) {
 
                         port_write_string(port,command);
                         line[0] = (char)0;
+                        usleep(500000); // 500ms to let TNC process each line
                     }
                 }
             }
