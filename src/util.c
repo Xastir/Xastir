@@ -2559,11 +2559,12 @@ void time_mark(int start)
 #endif
 
 
-// Function which adds commas to callsigns (and other abbreviations)
+// Function which adds commas to callsigns (and other abbreviations?)
 // in order to make the text sound better when run through a Text-to-
 // Speech system.  We try to change only normal amateur callsigns.
 // If we find a number in the text before a dash is found, we
-// consider it to be a normal callsign.
+// consider it to be a normal callsign.  We don't add commas to the
+// SSID portion of a call.
 void spell_it_out(char *text) {
     char buffer[2000];
     int i = 0;
@@ -2572,15 +2573,23 @@ void spell_it_out(char *text) {
     int dash_found = 0;
 
     while (text[i] != '\0') {
+
         if (text[i] == '-')
             dash_found++;
+
         if (is_num_chr(text[i]) && !dash_found)
             number_found_before_dash++;
+
         buffer[j++] = text[i];
-        buffer[j++] = ',';
+
+        if (!dash_found) // Don't add commas to SSID
+            buffer[j++] = ',';
+
         i++;
     }
     buffer[j] = '\0';
+
+    // Only use the new string if it kind'a looks like a callsign
     if (number_found_before_dash)
         strcpy(text,buffer);
 }
