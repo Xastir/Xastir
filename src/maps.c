@@ -1097,7 +1097,7 @@ LAT         float       (9,5)
 
 // The last parameter denotes loading into pixmap_alerts instead of pixmap or pixmap_final
 // Here's the old APRS-type map call:
-//map_search (w, alert_scan, alert, &alert_count,(int)(alert_tag[i + 2] == DATA_VIA_TNC || alert_tag[i + 2] == DATA_VIA_LOCAL), DRAW_TO_PIXMAP_ALERTS);
+//map_search (w, alert_scan, alert, &alert_count,(int)(alert_status[i + 2] == DATA_VIA_TNC || alert_status[i + 2] == DATA_VIA_LOCAL), DRAW_TO_PIXMAP_ALERTS);
 
 // Check the zone name(s) to see which Shapefile(s) to use.
 
@@ -7795,7 +7795,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 //printf("%c:Can't match weather warning to a Shapefile:%s\n",alert->title[3],alert->title);
                     break;
             }
-//            printf("%s\t%s\t%s\n",alert->activity,alert->alert_tag,alert->title);
+//            printf("%s\t%s\t%s\n",alert->activity,alert->alert_status,alert->title);
             //printf("File: %s\n",alert->filename);
         }
 
@@ -8025,7 +8025,7 @@ void load_alert_maps (Widget w, char *dir) {
         strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
         dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
-        //printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_tag);
+        //printf("Weather Alerts, alert_scan: %s\t\talert_status: %s\n", alert_scan, alert_status);
 
         // Iterate through the weather alerts we currently have.
         for (i = 0; i < alert_list_count; i++) {
@@ -8043,7 +8043,7 @@ void load_alert_maps (Widget w, char *dir) {
                 alert_scan,
                 &alert_list[i],
                 &alert_count,
-                (int)(alert_tag[i + 2] == DATA_VIA_TNC || alert_tag[i + 2] == DATA_VIA_LOCAL),
+                (int)(alert_status[i + 2] == DATA_VIA_TNC || alert_status[i + 2] == DATA_VIA_LOCAL),
                 DRAW_TO_PIXMAP_ALERTS);
 //printf("Title1:%s\n",alert_list[i].title);
         }

@@ -59,7 +59,7 @@ typedef struct {
 
 extern alert_entry *alert_list;
 extern int alert_list_count;
-extern char *alert_tag;
+extern char *alert_status;
 
 extern void alert_update_list(alert_entry * alert, alert_match_level match_level);
 extern void alert_print_list(void);

@@ -71,25 +71,27 @@
 //
 // SFONPW>APRS::NWS-ADVIS:191700z,WIND,CA_Z007,CA_Z065, ALAMEDA AND CON & NAPA COUNTY {JDIAA
 // |----|       |-------| |-----| |--| |-----| |-----|                                 |-|
-// |            |         |       |    |       |                                       |
-// from         to        |       |    title   title                                   issue_date
-//                        |       alert_tag
+//   |              |        |     |      |       |                                     |
+//  from            to       |     |    title   title                               issue_date
+//                           |  alert_tag
 //                        activity
 //
 // Expiration is then computed from the activity field.  Alert_level
 // is computed from "to" and/or "alert_tag".
 //
 //
-// Global alert_tag string contains three characters for each alert.
+// Global alert_status string contains three characters for each alert.
 // These contain the first two characters of the title, and then 0
 // or 1 for the source of the alert (DATA_VIA_TNC or
-// DATA_VIA_LOCAL).  The first two characters are used to add on to
-// the end of the path ("/usr/local/xastir/Counties/") to come up
-// with the State subdirectory to search for this map file
+// DATA_VIA_LOCAL).  The first two characters were once used to add
+// on to the end of the path ("/usr/local/xastir/Counties/") to come
+// up with the State subdirectory to search for this map file
 // ("/usr/local/xastir/Counties/MS").  See maps.c:load_alert_maps().
+// These two characters are no longer used since we switched to
+// Shapefile maps for weather alerts.
 //
 // When converting to using Shapefile maps, we could either save the
-// shapefile designator in this same global alert_tag string, or we
+// shapefile designator in this same global alert_status string, or we
 // could compute it on the fly from the data.  Perhaps we could
 // compute it on the fly if the variable in the struct was empty,
 // then fill it in after the first search so that we didn't have to
@@ -97,8 +99,8 @@
 //
 // Stuff from Dale, paraphrased by Curt:
 //
-// The clue to which shapefile to use is in the 4th char (which
-// is the first following an '_')
+// The clue to which shapefile to use is in the 4th char in the
+// title (which is the first following an '_')
 //
 // ICTSVS>APRS::NWS-ADVIS:120145z,SEVERE_WEATHER,KS_Z091, {C14AA
 // TSASVR>APRS::NWS-WARN :120230z,SVRTSM,OK_C113,  OSAGE COUNTY {C16AA
@@ -296,8 +298,8 @@
 alert_entry *alert_list = NULL;
 int alert_list_count = 0;
 static int alert_max_count = 0;
-char *alert_tag = NULL;
-static int alert_tag_size = 0;
+char *alert_status = NULL;
+static int alert_status_size = 0;
 int alert_redraw_on_update = 0;
 
 
@@ -801,15 +803,21 @@ int alert_on_screen(void) {
 //
 // Called from alert_message_scan() function.
 //
-// The original form is this:
 //
-//     :NWS-WARN :092010z,THUNDER_STORM,AR_ASHLEY,{S9JbA
-//      activity            alert_tag   title (may be up to 5 more)
+// Here's how Xastir breaks down an alert into an alert struct:
 //
-// The state or NWS area name is the AR above (in "AR_ASHLEY").
-// We file the AR_ASHLEY map under /usr/local/xastir/Counties/AR/
+// SFONPW>APRS::NWS-ADVIS:191700z,WIND,CA_Z007,CA_Z065, ALAMEDA AND CON & NAPA COUNTY {JDIAA
+// |----|       |-------| |-----| |--| |-----| |-----|                                 |-|
+//   |              |        |     |      |       |                                     |
+//  from            to       |     |    title   title                               issue_date
+//                           |  alert_tag
+//                        activity
 //
-// Here are some real examples captured over the 'net:
+// Expiration is then computed from the activity field.  Alert_level
+// is computed from "to" and/or "alert_tag".  There can be up to
+// five titles in this original format.
+//
+// Here are some real examples captured over the 'net (may be quite old):
 //
 // TAEFFS>APRS::NWS-ADVIS:181830z,FLOOD,FL_C013,FL_C037,FL_C045,FL_C077, {HHEAA
 // ICTFFS>APRS::NWS-ADVIS:180200z,FLOOD,KS_C035, {HEtAA
@@ -824,12 +832,15 @@ int alert_on_screen(void) {
 // FWDSWO>APRS::NWS-ADVIS:181100z,SKY,CW_AFWD, -NO Activation Expected {HLqAA
 // BGMWSW>APRS::NWS-ADVIS:180500z,WINTER_WEATHER,NY_Z015,NY_Z016,NY_Z017,NY_Z022,NY_Z023, {HKYAA
 // AMAWSW>APRS::NWS-WARN :180400z,WINTER_STORM,OK_Z001,OK_Z002,TX_Z001,TX_Z002,TX_Z003, {HLGBA
-//              activity          alert_tag     title   title   title   title   title
 //
 //
 // New compressed-mode weather alert packets:
 //
-// LZKNPW>APRS::NWS-ADVIS:221000z,ARZ003>007-012>016-021>025-030>034-037>047-052>057-062>069{LLSAA
+// LZKNPW>APRS::NWS-ADVIS:221000z,WINTER_STORM,ARZ003>007-012>016-021>025-030>034-037>047-052>057-062>069{LLSAA
+//
+// or perhaps (leading zeroes removed):
+//
+// LZKNPW>APRS::NWS-ADVIS:221000z,WINTER_STORM,ARZ3>7-12>16-21>25-30>34-37>47-52>57-62>69{LLSAA
 //
 // The trick is to step thru the data base contained in the
 // shapefiles to determine what areas to light up.  In the above
@@ -854,17 +865,18 @@ static void alert_build_list(Message *fill) {
         memset(entry, 0, sizeof(entry));
         (void)sscanf(fill->message_line,
             "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
-            entry[0].activity,
-            entry[0].alert_tag,
-            entry[0].title,
-            entry[1].title,
-            entry[2].title,
-            entry[3].title,
-            entry[4].title,
-            entry[5].title);
+            entry[0].activity,      // 191700z
+            entry[0].alert_tag,     // WIND
+            entry[0].title,         // CA_Z007
+            entry[1].title,         // ...
+            entry[2].title,         // ...
+            entry[3].title,         // ...
+            entry[4].title,         // ...
+            entry[5].title);        // ...
 
 /////////////////////////////////////////////////////////////////////
-// Compressed weather alert packets
+// Compressed weather alert special code
+/////////////////////////////////////////////////////////////////////
 
         // Check here for the first title being very long.  This
         // signifies that we may be dealing with the new compressed
@@ -985,25 +997,47 @@ printf("Zone:%s%s\n",prefix,suffix);
         }
 
 /////////////////////////////////////////////////////////////////////
+// End of compressed weather alert special code
+/////////////////////////////////////////////////////////////////////
 
+        // Terminate the strings
         entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
 
+        // If the expire time is missing, shift fields to the right
+        // by one field.  Evidently we can have an alert come across
+        // that doesn't have an expire time.  The code shuffles the
+        // titles to the next record before fixing up the title for
+        // entry[0].
+// One way or another we end up with an extra record that probably
+// is a duplicate and therefore gets dropped at the "add" stage.
+// Inefficient, but it should work ok.
         if (!isdigit((int)entry[0].activity[0]) && entry[0].activity[0] != '-') {
+// Should be "j > 0" ???
             for (j = 5; j >= 0; j--) {
                 strcpy(entry[j].title, entry[j-1].title);
             }
-// Swap things here?
             strcpy(entry[0].title, entry[0].alert_tag);
             strcpy(entry[0].alert_tag, entry[0].activity);
+// Shouldn't we clear out entry[0].activity in this case???  It's
+// not a date/time value.
         }
 
+        // It looks like we use entry[0] as the master data from
+        // this point on and the extra five entries hold other
+        // possible zones.
+// Why do we need six total instead of five???
+ 
+        // Compute expiration time_t from zulu time
+// Need to handle missing "activity" field here?
         entry[0].expiration = time_from_aprsstring(entry[0].activity);
 
+        // Copy the sequence (which contains issue_date_time and
+        // message sequence) into the record.
         xastir_snprintf(entry[0].seq,sizeof(entry[0].seq),"%s",fill->seq);
 
         // Now compute issue_date_time from the first three characters of
         // the sequence number:
-        // 0-9    = 0-9
+        // 0-9   = 0-9
         // 10-35 = A-Z
         // 36-61 = a-z
         // The 3 characters are Day/Hour/Minute of the issue date time in
@@ -1061,7 +1095,8 @@ printf("Zone:%s%s\n",prefix,suffix);
             entry[0].flags[1] = p_station->data_via;
 
 
-        // Set up each of up to six structs with data
+        // Set up each of up to six structs with data and try to
+        // create alerts out of each of them.
         for (i = 0; i < 6 && entry[i].title[0]; i++) {
 
             // Terminate title string for each of six structs
@@ -1079,7 +1114,8 @@ printf("Zone:%s%s\n",prefix,suffix);
             if (ignore_title)   // Blank out title if flag is set
                 entry[i].title[0] = '\0';
 
-            // If we found a space in a title
+            // If we found a space in a title, this signifies that
+            // we hit the end of the current list of zones.
             if ( (ptr = strpbrk(entry[i].title, " ")) ) {
                 ignore_title++;     // Set flag for following titles
                 entry[i].title[0] = '\0';  // Blank out title
@@ -1103,6 +1139,7 @@ printf("Zone:%s%s\n",prefix,suffix);
             // Fill in other struct data from first struct, except
             // for title.
             strcpy(entry[i].activity, entry[0].activity);
+// entry[0].alert_tag has a bogus value in it at this point???
             strcpy(entry[i].alert_tag, entry[0].alert_tag);
             strcpy(entry[i].from, fill->from_call_sign);
             strcpy(entry[i].to, fill->call_sign);
@@ -1134,7 +1171,28 @@ printf("Zone:%s%s\n",prefix,suffix);
                 entry[i].alert_level = 'G';
 
             // Look for a similar alert
+
+// We need some improvements here.  We compare these fields:
+//
+// from         SFONPW      SFONPW
+// to           NWS-ADVIS   NWS-CANCL
+// alert_tag    WIND        WIND_ADVIS_CANCEL
+// title        CA_Z007     CA_Z007
+//
+// Of these, "from" and "title" should remain the same between an
+// alert and a cancelled alert.  "to" and "alert_tag" change.  Since
+// we're comparing all four fields, the cancels don't match any
+// existing alerts.
+
             if ((list_ptr = alert_match(&entry[i], ALERT_ALL))) {
+
+// We found a match!  We probably need to copy some more data across
+// between the records:  seq, alert_tag, alert_level, from, to,
+// issue_data_time, expiration?
+// If it's a CANCL or CANCEL, we need to make sure the cancel
+// packet's information is kept and the other's info is tossed, so
+// that the alert doesn't get drawn anymore.
+
                 list_ptr->expiration = entry[i].expiration;
                 strcpy(list_ptr->activity, entry[i].activity);
             } else {    // No similar alert, add a new one to the list
@@ -1158,13 +1216,13 @@ printf("Zone:%s%s\n",prefix,suffix);
 //
 // This function scans the message list to find new alerts.  It adds
 // non-expired alerts to our alert list via the alert_build_list()
-// function.  It also builds the alert_tag string which contains
+// function.  It also builds the alert_status string which contains
 // three characters per alert, and the on-screen status of each.
 //
 // Called from db.c:decode_message() function when a new alert is
 // received, and from maps.c:load_alert_maps() function.
 //
-// It returns the string length of the global alert_tag variable.
+// It returns the string length of the global alert_status variable.
 // Divide this by 3 and we know the number of alerts that we have.
 //
 int alert_message_scan(void) {
@@ -1180,9 +1238,9 @@ int alert_message_scan(void) {
     // from the TNC. If there is an unresolved alert then a message is sent to console.
     // This is a text string with 3 chars per alert.  We allocate 21
     // chars here initially, enough for seven alerts.
-    if (!alert_tag) {
-        alert_tag = malloc(21);
-        alert_tag_size = 21;
+    if (!alert_status) {
+        alert_status = malloc(21);
+        alert_status_size = 21;
     }
 
     // Mark active/inactive alerts as such
@@ -1193,52 +1251,53 @@ int alert_message_scan(void) {
     // This calls alert_build_list() function for each message found.
     mscan_file(MESSAGE_NWS, alert_build_list);
 
-    // Blank out the alert tag
-    *alert_tag = '\0';
+    // Blank out the alert status
+    *alert_status = '\0';
 
-    // Rebuild the alert tag string for the current alerts
+    // Rebuild the global alert_status string for the current alerts
     for (j = 0; j < alert_list_count; j++) {
 
         if (alert_list[j].flags[0] == '?') {    // On-screen status not known yet
 
-            // Look through global alert_tag string looking for a
+            // Look through global alert_status string looking for a
             // match.
-            for (i = 0; i < (int)strlen(alert_tag); i += 3) {
+            for (i = 0; i < (int)strlen(alert_status); i += 3) {
                 // If first 2 chars of title match
-                if (strncmp(&alert_tag[i], alert_list[j].title, 2) == 0) {
+                if (strncmp(&alert_status[i], alert_list[j].title, 2) == 0) {
                     if (alert_list[j].flags[1]==DATA_VIA_TNC || alert_list[j].flags[1]==DATA_VIA_LOCAL) {
                         // Set the 3rd char to DATA_VIA_TNC or DATA_VIA_LOCAL
-                        alert_tag[i+2] = alert_list[j].flags[1];
+                        alert_status[i+2] = alert_list[j].flags[1];
                     }
                     break;
                 }
             }
 
-            // If global alert_tag string isn't long enough,
+            // If global alert_status string isn't long enough,
             // allocate some more space.
-            if (i == (int)strlen(alert_tag)) {
-                if (i+4 >= alert_tag_size) {
-                    a_ptr = realloc(alert_tag, (size_t)(alert_tag_size+21) );
+            if (i == (int)strlen(alert_status)) {
+                if (i+4 >= alert_status_size) {
+                    a_ptr = realloc(alert_status, (size_t)(alert_status_size+21) );
                     if (a_ptr) {
-                        alert_tag = a_ptr;
-                        alert_tag_size += 21;
+                        alert_status = a_ptr;
+                        alert_status_size += 21;
                     }
                 }
-                // Add new 3-character string to end of global alert_tag
-                if (i+4 < alert_tag_size) {
-                    a_ptr = &alert_tag[i];
+                // Add new 3-character string to end of global
+                // alert_status
+                if (i+4 < alert_status_size) {
+                    a_ptr = &alert_status[i];
                     if (alert_list[j].title[0] && alert_list[j].title[1]) {
                         *a_ptr++ = alert_list[j].title[0];
                         *a_ptr++ = alert_list[j].title[1];
                         *a_ptr++ = alert_list[j].flags[1];
                     }
-                    // Terminate the alert_tag string
+                    // Terminate the alert_status string
                     *a_ptr = '\0';
                 }
             }
         }
     }
-    return ( (int)strlen(alert_tag) );
+    return ( (int)strlen(alert_status) );
 }
 
 
