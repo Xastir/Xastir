@@ -678,16 +678,18 @@ Getting Maps and other Data Files for Xastir:
       in some projection other than UTM, you can convert that file to a  
       lat/lon raster if you have gdal installed.  Simply run the following
       command:
-        gdalwarp -t_srs EPSG:4326 funky_raster.tif usable_raster.tif
+        gdalwarp -t_srs EPSG:4326 orignal_raster.tif usable_raster.tif
 
-      This will warp the geotiff file from whatever projection it was in
-      into an unprojected lat/lon raster that can be directly read into
-      xastir.  Depending on the source projection, you might get a map that
-      doesn't tile well with other maps due to the inclusion of opaque border
-      material, but it can sometimes be the only way to import a map you need
-      to use.  Furthermore, geotiff files in lat/lon format take longer to
-      load in xastir because the optimized file access that works for USGS 
-      maps doesn't work with the lat/lon files. 
+      This will warp the geotiff file "original raster.tif" from
+      whatever projection it was in into an unprojected lat/lon raster
+      "usable_raster.tif" that can be directly read into xastir.
+      Depending on the source projection, you might get a map that
+      doesn't tile well with other maps due to the inclusion of opaque
+      border material, but it can sometimes be the only way to import
+      a map you need to use.  Furthermore, geotiff files in lat/lon
+      format take longer to load in xastir because the optimized file
+      access that works for USGS maps doesn't work with the lat/lon
+      files.
 
       Maps that require gdalwarp include the FAA sectionals mentioned above,
       and some topo maps in obscure state plane coordinates from various state
