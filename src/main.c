@@ -8666,8 +8666,11 @@ void check_for_new_gps_map(void) {
 static void* gps_transfer_thread(void *arg) {
     int input_param;
     char temp[500];
-// Hard-coded executable path here!
+
+// Hard-coded executable path here!  (change)
     char prefix[100] = "cd /home/src/gpsman/gpsman-pre6.0;./gpsman.tcl -dev /dev/ttyS0";
+
+// Hard-coded map directory path here!  (change)
     char postfix[100] = "Shapefile_2D /usr/local/xastir/maps/Gps/";
 
 
@@ -8687,7 +8690,7 @@ static void* gps_transfer_thread(void *arg) {
 
             xastir_snprintf(gps_map_filename,
                 sizeof(gps_map_filename),
-// Hard-coded filename here!
+// Hard-coded filename here!  (change)
                 "Team1_Track_Red.shp");
  
             xastir_snprintf(temp,
@@ -8713,7 +8716,7 @@ static void* gps_transfer_thread(void *arg) {
 
             xastir_snprintf(gps_map_filename,
                 sizeof(gps_map_filename),
-// Hard-coded filename here!
+// Hard-coded filename here!  (change)
                 "Team2_Routes_Green.shp");
  
             xastir_snprintf(temp,
@@ -8739,7 +8742,7 @@ static void* gps_transfer_thread(void *arg) {
 
             xastir_snprintf(gps_map_filename,
                 sizeof(gps_map_filename),
-// Hard-coded filename here!
+// Hard-coded filename here!  (change)
                 "Team3_Waypoints.shp");
  
             xastir_snprintf(temp,
@@ -8825,6 +8828,9 @@ static void* gps_transfer_thread(void *arg) {
 // download is complete instead of at the start of the download.  In
 // that case, download to a temporary filename and then rename it
 // later and reload maps.
+//
+// Dialog should ask the user to put the unit into Garmin-Garmin
+// mode before proceeding.
 //
 void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     pthread_t gps_operations_thread;
