@@ -944,6 +944,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     (void)remove_trailing_spaces(m_fill.seq);
     (void)remove_leading_spaces(m_fill.seq);
 
+    // Create a timestamp from the current time
     strcpy(m_fill.packet_time,get_time(time_data));
 
     if(record == -1L) {     // No old record found
@@ -4362,6 +4363,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
     char course[4];
     char speed[4];
 
+//WE7U
     if (compr) {        // compressed position report
         if (strlen(data) >= 8
                      && data[0] =='g' && is_weather_data(&data[1],3)
@@ -4435,6 +4437,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
     // now there should be the name of the weather station...
 
+        // Create a timestamp from the current time
         strcpy(weather->wx_time,get_time(time_data));
         weather->wx_sec_time=sec_now();
 //        weather->wx_data=1;  // we don't need this
@@ -6091,6 +6094,8 @@ void delete_object(char *name) {
 
 /*
  *  Extract Uncompressed Position Report from begin of line
+ *
+ * If a position is found, it is deleted from the data.
  */
 int extract_position(DataRow *p_station, char **info, int type) {
     int ok;
@@ -6209,6 +6214,8 @@ int extract_position(DataRow *p_station, char **info, int type) {
 /*
  *  Extract Compressed Position Report Data Formats from begin of line
  *    [APRS Reference, chapter 9]
+ *
+ * If a position is found, it is deleted from the data.
  */
 int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type) {
     int ok;
@@ -6751,6 +6758,9 @@ void extract_area(DataRow *p_station, char *data) {
 
 /*
  *  Extract Time from begin of line      [APRS Reference, chapter 6]
+ *
+ * If a time string is found in "data", it is deleted from the
+ * beginning of the string.
  */
 int extract_time(DataRow *p_station, char *data, int type) {
     int len, i;
@@ -6896,6 +6906,7 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
 
     if (extract_altitude(info,temp_data)) {                         // get altitude
         xastir_snprintf(p_station->altitude, sizeof(p_station->altitude), "%.2f",atof(temp_data)*0.3048);
+        // Create a timestamp from the current time
         strcpy(p_station->altitude_time,get_time(time_data));
         //printf("%.2f\n",atof(temp_data)*0.3048);
     }
@@ -6946,6 +6957,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     }
 
     p_station->record_type = NORMAL_GPS_RMC;
+    // Create a timestamp from the current time
     strcpy(p_station->pos_time,get_time(temp_data));    // get_time saves the time in temp_data
     p_station->flag &= (~ST_MSGCAP);    // clear "message capable" flag
 
@@ -7091,7 +7103,9 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
         return(ok);
 
     p_station->record_type = NORMAL_GPS_GGA;
+    // Create a timestamp from the current time
     strcpy(p_station->pos_time,get_time(temp_data));        // get_time saves the time in temp_data
+    // Create a timestamp from the current time
     strcpy(p_station->altitude_time,get_time(temp_data));   // get_time saves the time in temp_data
     p_station->flag &= (~ST_MSGCAP);    // clear "message capable" flag
 
@@ -7244,6 +7258,7 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
         return(ok);
 
     p_station->record_type = NORMAL_GPS_GLL;
+    // Create a timestamp from the current time
     strcpy(p_station->pos_time,get_time(temp_data));    // get_time saves the time in temp_data
     p_station->flag &= (~ST_MSGCAP);    // clear "message capable" flag
 
@@ -7603,6 +7618,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         p_station->pos_amb = 0; // No ambiguity in compressed posits
                 }
                 if (ok) {
+                    // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
                     (void)extract_weather(p_station,data,compr_pos);    // look for weather data first
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
@@ -7631,6 +7647,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     }
                 }
                 if (ok) {
+                    // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
@@ -7714,6 +7731,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 found_pos = 0;
                 break;
 
+//WE7U
             case (APRS_OBJECT):
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
@@ -7727,7 +7745,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 p_station->flag |= ST_OBJECT;                           // Set "Object" flag
                 if (ok) {
+                    // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
+
                     strcpy(p_station->origin,origin);                   // define it as object
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
@@ -7755,6 +7775,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 p_station->flag |= ST_ITEM;                             // Set "Item" flag
                 if (ok) {
+                    // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
                     strcpy(p_station->origin,origin);                   // define it as item
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
@@ -7815,6 +7836,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     else    // Peet Bros Ultimeter-II
                         decode_Peet_Bros(1,(unsigned char *)data,weather,type);
                     p_station->record_type = (char)type;
+                    // Create a timestamp from the current time
                     strcpy(weather->wx_time, get_time(temp_data));
                     weather->wx_sec_time = sec_now();
                     found_pos = 0;
@@ -7934,6 +7956,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         }
         p_station->last_port_heard = port;
         p_station->data_via = from;
+        // Create a timestamp from the current time
         strcpy(p_station->packet_time,get_time(temp_data)); // get_time returns value in temp_data
 
         // Free any old path we might have
@@ -8527,7 +8550,9 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     p_station->node_path_ptr = (char *)malloc(strlen("local") + 1);
     substr(p_station->node_path_ptr,"local",strlen("local"));
  
+    // Create a timestamp from the current time
     strcpy(p_station->packet_time,get_time(temp_data));
+    // Create a timestamp from the current time
     strcpy(p_station->pos_time,get_time(temp_data));
     p_station->flag |= ST_MSGCAP;               // set "message capable" flag
 
@@ -8578,8 +8603,10 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     p_station->coord_lat = pos_lat_temp;    // DK7IN: we have it already !??
     p_station->coord_lon = pos_long_temp;
 
+    // Create a timestamp from the current time
     strcpy(p_station->altitude_time,get_time(temp_data));
     my_last_altitude_time = sec_now();
+    // Create a timestamp from the current time
     strcpy(p_station->speed_time,get_time(temp_data));
     strcpy(p_station->speed,speed);
     // is speed always in knots, otherwise we need a conversion!
@@ -8658,7 +8685,9 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     p_station->node_path_ptr = (char *)malloc(strlen("local") + 1);
     substr(p_station->node_path_ptr,"local",strlen("local"));
 
+    // Create a timestamp from the current time
     strcpy(p_station->packet_time,get_time(temp_data));
+    // Create a timestamp from the current time
     strcpy(p_station->pos_time,get_time(temp_data));
     p_station->flag |= ST_MSGCAP;               // set "message capable" flag
 
