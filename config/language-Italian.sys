@@ -207,10 +207,10 @@ PULDNTNT02|Proprietà|P|
 PULDNTNT03|Disabilita Trasmissioni: TUTTE||
 PULDNTNT05|Disabilita Trasmissioni: Mia Posizione||
 PULDNTNT06|Disabilita Trasmissioni: Oggetti/Entità||
-PULDNTNT07|Fetch GPS Track|F|
-PULDNTNT08|Fetch GPS Routes|R|
-PULDNTNT09|Fetch GPS Waypoints|W|
-PULDNTNT01|Trasmetti ora!|N|
+PULDNTNT01|Trasmetti Ora!|T|
+PULDNTNT07|Prendi il tracciato GPS|F|
+PULDNTNT08|Prendi le rotte GPS|R|
+PULDNTNT09|Prendi le direzioni GPS|W|
 #
 # Menù Aiuto
 PULDNHEL01|Versione di Xastir|A|
