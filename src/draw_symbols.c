@@ -127,7 +127,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 
 
 
-//draw_pod_circle(64000000l, 32400000l, 10, pixmap_final);
+//draw_pod_circle(64000000l, 32400000l, 10, colors[0x44], pixmap_final);
 //
 // Probability of Detection circle:  A circle around the point last
 // seen drawn at the distance that a person of that description
@@ -142,7 +142,7 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 // range is in miles
 // x_long/y_lat are in Xastir lat/lon units
 //
-void draw_pod_circle(long x_long, long y_lat, double range, Pixmap where) {
+void draw_pod_circle(long x_long, long y_lat, double range, int color, Pixmap where) {
     double diameter;
     long max_x, max_y;
     double a,b;
@@ -174,7 +174,8 @@ void draw_pod_circle(long x_long, long y_lat, double range, Pixmap where) {
                     if (diameter>4.0) {
                         (void)XSetLineAttributes(XtDisplay(da), gc, 2, LineSolid, CapButt,JoinMiter);
                         //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
-                        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+                        //(void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+                        (void)XSetForeground(XtDisplay(da),gc,color);
 
                         (void)XDrawArc(XtDisplay(da),where,gc,
                             (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),

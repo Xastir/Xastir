@@ -2159,6 +2159,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
             draw_pod_circle(p_station->coord_lon,
                 p_station->coord_lat,
                 0.0035 * scale_y,
+                colors[0x44],   // Red
                 pixmap_final);
         }
 
@@ -2187,6 +2188,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
                     atof(temp) * 1.15078, // nautical miles to miles
+                    colors[0x44],   // Red
                     pixmap_final);
             }
 
@@ -2196,6 +2198,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
                     atof(temp) * 1.15078, // nautical miles to miles
+                    colors[0x0e],   // Yellow
                     pixmap_final);
             }
 
@@ -2205,6 +2208,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
                     atof(temp) * 1.15078, // nautical miles to miles
+                    colors[0x0a],   // Green
                     pixmap_final);
             }
         }
@@ -2299,6 +2303,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         draw_pod_circle(p_station->coord_lon,
             p_station->coord_lat,
             0.0035 * scale_y,
+            colors[0x44],   // Red
             pixmap_final);
     }
 
@@ -2327,6 +2332,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
                     atof(temp) * 1.15078, // nautical miles to miles
+                    colors[0x44],   // Red
                     pixmap_final);
             }
 
@@ -2336,6 +2342,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
                     atof(temp) * 1.15078, // nautical miles to miles
+                    colors[0x0e],   // Yellow
                     pixmap_final);
             }
 
@@ -2345,6 +2352,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
                     atof(temp) * 1.15078, // nautical miles to miles
+                    colors[0x0a],   // Green
                     pixmap_final);
             }
         }
@@ -2505,7 +2513,7 @@ void display_file(Widget w) {
         printf("Display File Start\n");
 
 // Draw probability of detection circle, if enabled
-//draw_pod_circle(64000000l, 32400000l, 10, pixmap_final);
+//draw_pod_circle(64000000l, 32400000l, 10, colors[0x44], pixmap_final);
 
     t_old = sec_now() - sec_old;        // precalc compare times
     t_clr = sec_now() - sec_clear;
