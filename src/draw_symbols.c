@@ -1571,9 +1571,14 @@ void load_pixmap_symbol_file(char *filename) {
 
 
 
-/* add a symbol to the end of the symbol table */
+// add a symbol to the end of the symbol table.
+//
+// Here we actually draw the pixels into the SymbolData struct,
+// which contains separate Pixmap's for the icon, the transparent
+// background, and the ghost image.
+//
 void insert_symbol(char table, char symbol, char *pixel, int deg, char orient) {
-    int x,y,idx,old_next,color,last_color;
+    int x,y,idx,old_next,color,last_color,last_gc2;
 
     if (symbols_loaded < MAX_SYMBOLS) {
         symbol_data[symbols_loaded].pix=XCreatePixmap(XtDisplay(appshell),
@@ -1596,10 +1601,9 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient) {
 
         old_next=0;
         last_color = -1;    // Something bogus
+        last_gc2 = -1;      // Also bogus
 
         for (y=0;y<20;y++) {
-
-// Identified as a high CPU-usage area by gprof!!
             for (x=0;x<20;x++) {
                 switch (deg) {
                     case(0):
@@ -1619,28 +1623,49 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient) {
                 if (color<0)
                     color = 0xff;
 
-                // Change to new color only when necessary.
+// Change to new color only when necessary.  We use two different
+// GC's here, one for the main icon pixmap, and one for the symbol
+// mask and ghost layer.
+
+
                 // DK7IN: is (da) correct or should this be (appshell) ?
                 if (color != last_color) {
-(void)XSetForeground(XtDisplay(da),gc,colors[color]);
+                    (void)XSetForeground(XtDisplay(da),gc,colors[color]);
                     last_color = color;
                 }
-(void)XDrawPoint(XtDisplay(da),symbol_data[symbols_loaded].pix,gc,x,y);
+                (void)XDrawPoint(XtDisplay(da),symbol_data[symbols_loaded].pix,gc,x,y);
                 // DK7IN
 
-                if (color != 0xff)     // create symbol mask
-(void)XSetForeground(XtDisplay(appshell),gc2,1);  // active bit
-                else
-(void)XSetForeground(XtDisplay(appshell),gc2,0);  // transparent
 
-(void)XDrawPoint(XtDisplay(appshell),symbol_data[symbols_loaded].pix_mask,gc2,x,y);
-
-                old_next++;        // create ghost symbol mask
-                if (old_next>1) {  // by setting every 2nd bit to transparent
-                    old_next=0;
-(void)XSetForeground(XtDisplay(appshell),gc2,0);
+                // Create symbol mask
+                if (color != last_color) {
+                    if (color != 0xff) {
+                        if (last_gc2 != 1) {
+                            (void)XSetForeground(XtDisplay(appshell),gc2,1);  // active bit
+                            last_gc2 = 1;
+                        }
+                    }
+                    else {
+                        if (last_gc2 != 0) {
+                            (void)XSetForeground(XtDisplay(appshell),gc2,0);  // transparent.
+                            last_gc2 = 0;
+                        }
+                    }
                 }
-(void)XDrawPoint(XtDisplay(appshell),symbol_data[symbols_loaded].pix_mask_old,gc2,x,y);
+                (void)XDrawPoint(XtDisplay(appshell),symbol_data[symbols_loaded].pix_mask,gc2,x,y);
+
+
+                // Create ghost symbol mask by setting every 2nd bit
+                // to transparent
+                old_next++;
+                if (old_next>1) {
+                    old_next=0;
+                    if (last_gc2 != 0) {
+                        (void)XSetForeground(XtDisplay(appshell),gc2,0);
+                        last_gc2 = 0;
+                    }
+                }
+                (void)XDrawPoint(XtDisplay(appshell),symbol_data[symbols_loaded].pix_mask_old,gc2,x,y);
             }
             old_next++;    // shift one bit every scan line for ghost image
             if (old_next>1)
