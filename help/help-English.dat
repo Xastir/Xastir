@@ -92,6 +92,12 @@ the speed speed that they last reported. The estimated location can be shown
 with any combination of a ghosted icon, a dashed line from the last position,
 or an arc of expected possible distance and angle.
 
+Also very notable are the improvements to the map chooser. Maps can now be
+selected a directory at a time, or individually. And the new map properties
+dialog allows individual control of map layering, map color filling, and
+consideration for auto-maps. Additionally, with extent caching under the hood,
+auto-maps regains much of its formal usefullness even with many maps installed!
+
 Bulletins pop up on screen, and emergency beacons cause and alert with the 
 locate station dialog on hand. These changes are helpful in emergencies and
 event coordination.
@@ -105,7 +111,7 @@ can be adjusted to request the maps with the data you want.
 
 Other smaller interface changes include:
 * The Stations menu has been reorganized
-* The density of the grid-lines can be adjusted with the  +, =, and - keys.
+* The density of the grid-lines can be adjusted with the +, =, and - keys.
 * Objects and item lists have been added to the view menu.
 * Station meidenhead grid squares are now shown in station info and the
   coordinate calculator.
@@ -116,10 +122,11 @@ Other smaller interface changes include:
   remotely via fast-scan TV. 
 * Timestamps are written to logfiles every 30 seconds of operation, to keep a
   record of when data was heard.
-...WORK IN PROGRESS...
+
+(FIXME: These are undocumented features that don't really have their own
+tieins to the UI. Should they be listed here? anywhere?)
 Tracked proximity alarms
 export waypoints within proximity boundaries
-
 
 The weather reporting features have been improved, with the addition of wind
 barbs to weather stations and decoding of storm wind radius data. Weather alert
@@ -128,47 +135,49 @@ information on an alert is available over the internet from the WXserver by
 simply double-clicking the alert in the weather alerts list. Weather alerts now
 use the newer shapefile format maps.
 
-...WORK IN PROGRESS...
-*= More Significant
+Xastir's map support has been improved with enhancements to the shapefile code
+to handle point-type shapefiles. Additionally, speed improvements have been
+made in the ImageMagick graphical map loading, and many color-correction
+features have been added. And as mentioned above, the map chooser has greatly
+improved, and weather alerts use shapefile format maps.
 
+Under the hood, Xastir has had several major improvements:
 
-UI:
-stations menu cleanup
-grid density adjustment +=-
-view|objects&items
-Grid square in station info/coordinate calc
-Track me
-voice IDs/Screen IDs-config file only
-findu trail length controls
-Tracked proximity alarms
-Tigermaps menu accessible
-export waypoints within proximity boundaries
-logfile timestamps
+The messaging system has been largely rewritten, and the annoying timed updates
+to windows no longer occur. The new messaging system allows multiple messages
+to be queued, and implements reply-acks for speed. Xastir also attempts to
+specify a reasonable path for the message based on received messages. This
+improves speed and congestion control.
 
-Backend:
-*Messaging cleanup, no more timed updates
-message reverse path
-igated to RF path
-*Memory usage improvements: multiple comments stored, status, tracklog dynamic
-Map extent/index caching
-29 sec Anti-dupe queues
-Object persistance
-Dropping setuid root privs
-Private colormaps->8bit color usable
-*SmartBeaconing(tm)
-more parser fixes for overruns
+Xastir now implements SmartBeaconing(tm), which greatly improves trail quality
+and reduces unneeded channel usage. See the "Configure SmartBeaconing" help
+topic.
 
-Protocol:
-reply-acks
-Compressed objects/items
+Igating support has also improved, with the ability to configure a specific RF
+path for Igated packets, and the addition of a 29 second anti-dupe queue to
+reduce unnecessary redundancy on the RF channel.
 
-Map support:
-*Map chooser redone, map layering
-*Major shapefile improvements, point-type shapefiles
-*ImageMagick speedups and correction features
-quad label shapefiles
-*Shapefile weather alert maps
+Map extents and filenames are now cached, so maps will not be loaded from disk
+unless they are on screen. This is a major improvement for map types that did
+not specify this information. Additionally, auto-maps uses this information,
+making it usable even with many maps installed.
 
+Objects controlled by Xastir are now stored in a file, so a restart of Xastir
+will not cause them to be lost. Additionally, Xastir now supports the
+compressed format for objects and items, which can help reduce RF channel
+congestion. See the help topic "Configure Default Operation".
+
+Xastir now drops root privileges when not needed if run setuid root. Please
+read the information about this in README.1ST; this change provides only
+limited protection.
+
+Xastir now supports being run with a private colormap with the commandline
+argument "-i". This is recommended for systems running in 8-bit color mode. 
+
+Additionally, several more buffer overruns and other errors were corrected in
+Xastir's data parser, and numerious other bugs have been fixed.
+
+Enjoy the new Xastir!
 
 HELP-INDEX>Starting Xastir for the first time
 
@@ -762,23 +771,30 @@ Map Menu:
 Map Chooser
 This will present you with a list of map directories and/or files in your map
 directory. Checking the "Expand Dirs" option toggles the expansion of
-directories into individual map files. Clicking the properties button will
-bring up a dialog where you can specify the layer in which maps appear. Higher
-numbers are displayed on top of lower numbers. You can specify if a map should
-be drawn with color fills. You can also disable or enable a map from being
-considered by the "Auto maps" feature in this dialog. In the main dialog, click
-on map names to highlight them, this will cause them to be displayed when you
-click the OK button.  You may select any number of maps. Clicking "Clear" will
-select no maps, clicking "Vector" will select only vector maps. The three
-topo options will automatically select all GeoTIFF images of the listed size.
-Clicking the OK button will display the selected maps. Cancel will abandon any
-changes.
+directories into individual map files. The properties dialog allows more advanced controls, and is described below. Click on map names to highlight them,
+this will cause them to be displayed when you click the OK button. You may
+select any number of maps. Clicking "Clear" will select no maps, clicking
+"Vector" will select only vector maps. The three topo options will
+automatically select all GeoTIFF images of the listed size. Clicking the OK
+button will display the selected maps. Cancel will abandon any changes.
+
+  Map Chooser properties
+  Clicking the properties button will bring up a dialog where you can specify
+  the layer in which maps appear. Higher numbers are displayed on top of lower
+  numbers. The range may be specified from -99999 to 99999; it is suggested
+  that you space your layering settings widely to allow later insertation of
+  maps. You can specify if a map should be drawn with color fills. This is a
+  per-map setting; the global disable option can override this. You can also
+  disable or enable a map from being considered by the "Auto maps" feature in
+  this dialog.
 
 Enable/Configure Tigermap
 Turning this option on causes Xastir to download the map from the US census
 bureau's online tiger mapping server. The dialog that comes up allows one to
 select which layers are displayed, as well as the brightness of the resulting
 map. This is only available if you have compiled with ImageMagick support.
+Tigermaps are always loaded as the bottom layer; they do not have layering
+settings in the map chooser.
 
 Map Display Bookmarks
 See the help topic "Creating and using Jump Locations"
@@ -1815,7 +1831,12 @@ HELP-INDEX>Included Scripts
 
                         Included Scripts
 
-Xastir includes 7 perl scripts that might be useful:
+Xastir includes 7 perl scripts and a shell script that may be useful:
+
+fcc-get
+This shell script automates retrieving and installing the FCC and the RAC
+callsign databases. Note that these databases are large; the two downloads are
+60Mb total!
 
 icontable.pl
 This script generates an xpm bitmap of all Xastir's primary and secondary

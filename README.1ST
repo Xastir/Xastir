@@ -934,6 +934,9 @@ Getting Data Files for Xastir:
        database is installed, a Search RAC Database button will appear for
        callsigns beginning with "VE" or "VA".
 
+       The download and installation of these is automated in the fcc-get
+       script included with Xastir, but you may install them by hand
+       individually if you wish.
 
        To use the FCC lookup:
        ----------------------
