@@ -12619,54 +12619,6 @@ map_properties_auto_maps_no, map_properties_dialog);
     } else {
         (void)XRaiseWindow(XtDisplay(map_properties_dialog), XtWindow(map_properties_dialog));
     }
-
-
-/*
-
-
-    // We need to run through the map_properties_list widget, getting the map
-    // layer and filled/unfilled (if appropriate) for each selected
-    // map.  Display these in a dialog which allows the user to
-    // change them.
-
-    // Get the list and the list count from the dialog
-    XtVaGetValues(map_properties_list,
-               XmNitemCount,&i,
-               XmNitems,&list,
-               NULL);
-
-    // Run through the list, snagging the map_layer min/max and
-    // draw_filled min/max for all selected maps.
-    for(x=1; x<=i;x++) {
-        if (XmListPosSelected(map_properties_list,x)) {
-            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                unsigned long bottom,top,left,right;
-                int map_layer,draw_filled,auto_maps;
-
-                // We now have the filename for a selected map.
-                // Look it up in the map index to get the
-                // parameters for it.
-                index_retrieve(temp,
-                    &bottom,
-                    &top,
-                    &left,
-                    &right,
-                    &map_layer,
-                    &draw_filled,
-                    &auto_maps);
-
-//fprintf(stderr,"Layer:%05d, Filled:%01d, %s\n",map_layer,draw_filled,temp);
-
-//                map_index_update_selected(temp,
-//                    XmListPosSelected(map_properties_list,x));
-//fprintf(stderr,"%s\n",temp);
-                XtFree(temp);
-            }
-        }
-    }
-*/
-
-
 }
 
 
@@ -12691,12 +12643,17 @@ void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 // Update the "selected" field in the in-memory map_index based on
 // the "selected" input parameter.
 void map_index_update_selected(char *filename, int selected, map_index_record **current) {
-//    map_index_record *current = map_index_head;
 
+    // If we're passed a NULL pointer, start at the head of the
+    // in-memory linked list.
+    //
     if ( (*current) == NULL) {
         (*current) = map_index_head;
     }
 
+    // Start searching through the list at the pointer we were
+    // given.
+    //
     while ( (*current) != NULL) {
         if (strcmp( (*current)->filename,filename) == 0) {
             // Found a match.  Update the field and return.
@@ -12764,6 +12721,14 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     // update both file and directory entries.
     // The end result is that both directories and files may be
     // selected, not either/or as the code was written earlier.
+    //
+    // Here we basically walk both lists together, the List widget
+    // and the in-memory linked list, as they're both in the same
+    // sort order.  We do this by passing "ptr" back and forth, and
+    // updating it to point to one after the last one found each
+    // time.  That turns and N*N search into an N search and is a
+    // big speed improvement when you have 1000's of maps.
+    //
     for(x=1; x<=i;x++) {
         if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
             // Update this file or directory in the in-memory map
