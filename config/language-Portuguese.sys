@@ -119,8 +119,8 @@ PULDNDP002|Mostrar altura|a|
 PULDNDP003|Mostrar curso|c|
 PULDNDP005|Mostrar dist/curso|d|
 PULDNDP009|Mostrar info do tempo|t|
-PULDNDP018|Mostrar só o tempo||
-PULDNDP008|Estação potencia/ganho|p|
+PULDNDP018|Mostrar só a temperatura||
+PULDNDP008|Estação potência/ganho|p|
 PULDNDP021|Activar por defeito pot/ganho||
 PULDNDP020|Activar móvel pot/ganho||
 PULDNDP013|Ambiguidade de posição||
@@ -138,9 +138,9 @@ PULDNUT002|Métrica||
 PULDNMG001|Enviar mensagem a|E|
 PULDNMG002|Abrir mensagens de grupos|g|
 PULDNMG003|Anular todas as mensagens a enviar|A|
-PULDQUS001|Pregunta geral a estações|r|
-PULDQUS002|Pregunta a estações I-Gate|I|
-PULDQUS003|Pregunta a estações WX|W|
+PULDQUS001|Pergunta geral a estações|r|
+PULDQUS002|Pergunta a estações I-Gate|I|
+PULDQUS003|Pergunta a estações WX|W|
 PULDNMG004|Modificar mensagem de resposta automática|f|
 PULDNMG005|Activar mensagem de resposta automática|A|
 #
