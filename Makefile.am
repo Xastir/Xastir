@@ -10,7 +10,7 @@ SUBDIRS = src m4 config help scripts symbols callpass
 # DISTCLEANFILES = intl/libintl.h
 
 EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh \
-        missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README \
+        missing mkinstalldirs placeholder FAQ LICENSE README \
         DEBUG_LEVELS bootstrap.sh xastir.1
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \

@@ -39,7 +39,7 @@ rm -rf %{RPM_BUILD_ROOT}
 
 # Documents:  Go into special doc area
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL
-%doc LICENSE NEWS README README.1ST TODO
+%doc LICENSE NEWS README 
 #%doc UPDATES
 
 # One file with special permissions
