@@ -1857,15 +1857,16 @@ void draw_shapefile_map (Widget w,
                     //object->padfY
                     //object->padfZ
  
-                    if (    mapshots_labels_flag
-                            && map_labels
-                            && (fieldcount >= 3) ) {
+//                    if (    mapshots_labels_flag
+//                            && map_labels
+//                            && (fieldcount >= 3) ) {
+                    if (map_labels && fieldcount >= 1) {
 
                         const char *temp;
                         int ok = 1;
 
                         // Snag the label from the .dbf file
-                        temp = DBFReadStringAttribute( hDBF, structure, 2 );
+                        temp = DBFReadStringAttribute( hDBF, structure, 0 );
 
                         // Convert point to Xastir coordinates
                         convert_to_xastir_coordinates(&my_long,
@@ -1889,8 +1890,8 @@ void draw_shapefile_map (Widget w,
                         if (y < -16000) ok = 0;     // Skip this point
 
                         if (ok == 1) {
-                            (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
-                            //(void)draw_rotated_label_text (w, (int)angle, x, y, strlen(temp), colors[0x08], (char *)temp);
+                            //(void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                            (void)draw_rotated_label_text (w, 90, x, y, strlen(temp), colors[0x08], (char *)temp);
                         }
                     }
                     break;
