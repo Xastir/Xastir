@@ -1146,6 +1146,7 @@ void draw_shapefile_map (Widget w,
     int             start_record;
     int             end_record;
 
+printf("*** Alert color: %d ***\n",alert_color);
 
     search_param1[0] = '\0';
     search_param2[0] = '\0';
@@ -1448,7 +1449,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
 
     if (weather_alert_flag) {
         // This GC is used only for pixmap_alerts
-        (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)0x01]);
+        (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
         // This is how we tint it instead of obscuring the whole map
         (void)XSetFunction (XtDisplay (w), gc_tint, GXand);
@@ -1496,16 +1497,24 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
     // polygon shapes found.
 
 
-    if (weather_alert_flag) {
-        start_record = found_shape;
-        end_record = found_shape;
+    if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
+        if (found_shape != -1) {    // Found the record
+            start_record = found_shape;
+            end_record = found_shape + 1;
+        }
+        else {  // Didn't find the record
+            start_record = 0;
+            end_record = 0;
+        }
     }
-    else {
+    else {  // Draw an entire Shapefile map
         start_record = 0;
         end_record = nEntities;
     }
 
+printf("Before loop\n");
     for (structure = start_record; structure < end_record; structure++) {
+printf("Inside loop: %d\n",structure);
 
         object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
 
@@ -1521,8 +1530,8 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
             const char *temp;
             int jj;
 
-            //printf("Shape %d is visible, drawing it\t", structure);
-            //printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
+printf("Shape %d is visible, drawing it\t", structure);
+printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
 
             if (debug_level & 16) {
                 // Print the field contents
@@ -1700,9 +1709,11 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                         }
                         if (i >= 3) {   // We have a polygon to draw
                             //(void)XSetForeground(XtDisplay (w), gc_tint, colors[(int)0x64]);
-                            if (map_color_fill || water_flag) {
-                                //(void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, i, Complex, CoordModeOrigin);
-                                (void)XFillPolygon (XtDisplay (w), pixmap, gc_tint, points, i, Complex, CoordModeOrigin);
+                            if (map_color_fill || water_flag || weather_alert_flag) {
+                                if (weather_alert_flag)
+                                    (void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, i, Complex, CoordModeOrigin);
+                                else
+                                    (void)XFillPolygon (XtDisplay (w), pixmap, gc_tint, points, i, Complex, CoordModeOrigin);
                             } else {
                                 int temp;
 
@@ -7758,7 +7769,9 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
             printf("File: %s\n",alert->filename);
         }
 
-        if (alert->filename[0]) {   // We have a filename
+// NOTE:  Need to skip this part if we have a full filename.
+
+        if (alert->filename[0]) {   // We have at least a partial filename
             int done = 0;
             // Look through the warning directory to find a match for
             // the first few characters that we already figured out.
@@ -7805,6 +7818,7 @@ printf("%s\n",dl->d_name);
                 }
             }
             if (done) {    // We found a filename match for the alert
+                strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
                 // Go draw the weather alert
                 draw_map (w,
                     dir,            // Alert directory
@@ -8007,12 +8021,12 @@ printf("load_alert_maps() Title: %s\n",alert_list[i].title);
             // The last parameter denotes drawing into pixmap_alerts
             // instead of pixmap or pixmap_final.
 // Why do we need to draw alerts again here?
-//            draw_map (w,
-//                dir,
-//                alert_list[i].filename,
-//                &alert[0],
-//                '\0',
-//                DRAW_TO_PIXMAP_ALERTS);
+            draw_map (w,
+                dir,
+                alert_list[i].filename,
+                &alert[0],
+                '\0',
+                DRAW_TO_PIXMAP_ALERTS);
 
             alert_update_list (&alert[0], ALERT_ALL);
         }
@@ -8030,12 +8044,12 @@ printf("load_alert_maps() Title: %s\n",alert_list[i].title);
             // The last parameter denotes drawing into pixmap_alert
             // instead of pixmap or pixmap_final.
 // Why do we need to draw alerts again here?
-//            draw_map (w,
-//                dir,
-//                alert_list[i].filename,
-//                NULL,
-//                fill_color[level],
-//                DRAW_TO_PIXMAP_ALERTS);
+            draw_map (w,
+                dir,
+                alert_list[i].filename,
+                NULL,
+                fill_color[level],
+                DRAW_TO_PIXMAP_ALERTS);
         }
     }
 
