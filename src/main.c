@@ -7754,7 +7754,7 @@ void create_gc(Widget w) {
 
     if (ret_val != 0) {
         fprintf(stderr,"XReadBitmapFile() failed: Bitmap not found? %s\n",xbm_path);
-        exit(1);
+        exit(1);    // 2x2.xbm couldn't be loaded
     }
 
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "25pct.xbm");
@@ -7763,7 +7763,7 @@ void create_gc(Widget w) {
 
     if (ret_val != 0) {
         fprintf(stderr,"XReadBitmapFile() failed: Bitmap not found? %s\n",xbm_path);
-        exit(1);
+        exit(1);    // 25pct.xbm couldn't be loaded
     }
 
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "13pct.xbm");
@@ -7772,7 +7772,7 @@ void create_gc(Widget w) {
 
     if (ret_val != 0) {
         fprintf(stderr,"XReadBitmapFile() failed: Bitmap not found? %s\n",xbm_path);
-        exit(1);
+        exit(1);    // 13pct.xbm couldn't be loaded
     }
 
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "alert.xbm");
@@ -7781,7 +7781,7 @@ void create_gc(Widget w) {
 
     if (ret_val != 0) {
         fprintf(stderr,"XReadBitmapFile() failed: Bitmap not found? %s\n",xbm_path);
-        exit(1);
+        exit(1);    // alert.xbm couldn't be loaded
     }
 
     display_up=1;
@@ -9880,7 +9880,7 @@ void quit(int sig) {
     curl_global_cleanup();
 #endif
 
-    exit (sig);
+    exit(sig);  // Main exit from the program
 }
 
 
@@ -25885,7 +25885,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr,"-m            Deselect Maps\n");
         fprintf(stderr,"-v level      Set the debug level\n\n");
         fprintf(stderr,"\n");
-        exit(0);
+        exit(0);    // Exiting after dumping out command-line options
     }
 
     // initialize interfaces
@@ -25952,7 +25952,7 @@ int main(int argc, char *argv[]) {
             "Couldn't create symlink: %s -> %s\n",
             get_user_base_dir("config/help.dat"),
             get_data_base_dir(temp));
-        exit(0);
+        exit(0);  // Exiting 'cuz online help won't work.
     }
 
     xastir_snprintf(temp, sizeof(temp), "config/language-%s.sys", lang_to_use);
@@ -25966,7 +25966,7 @@ int main(int argc, char *argv[]) {
             "Couldn't create symlink: %s -> %s\n",
             get_user_base_dir("config/language.sys"),
             get_data_base_dir(temp));
-        exit(0);
+        exit(0);    // We can't set our language, so exit.
     }
 
     /* (NEW) set help file area */
@@ -25977,7 +25977,7 @@ int main(int argc, char *argv[]) {
     if (SayTextInit())
     {
         fprintf(stderr,"Error connecting to Festival speech server.\n");
-        exit(0);
+        //exit(0);  // Not worth exiting just because we can't talk!
     }  
 #endif  // HAVE_FESTIVAL
 
@@ -26026,7 +26026,7 @@ int main(int argc, char *argv[]) {
 
             if (!display) {
                 fprintf(stderr,"%s: can't open display, exiting...\n", argv[0]);
-                exit (-1);
+                exit(-1);   // Must exit here as we can't get our display.
             }
 
             setup_visual_info(display, DefaultScreen(display));
