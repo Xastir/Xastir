@@ -15107,8 +15107,16 @@ int Setup_object_data(char *line, int line_length) {
 
     // Check for overlay character
     if (last_obj_grp != '/' && last_obj_grp != '\\') {
-        last_obj_overlay = last_obj_grp;
-        last_obj_grp = '\\';
+        // Found an overlay character.  Check that it's within the
+        // proper range
+        if ( (last_obj_grp >= '0' && last_obj_grp <= '9')
+                || (last_obj_grp >= 'A' && last_obj_grp <= 'Z') ) {
+            last_obj_overlay = last_obj_grp;
+            last_obj_grp = '\\';
+        }
+        else {
+            last_obj_overlay = '\0';
+        }
     }
     else {
         last_obj_overlay = '\0';
@@ -15303,17 +15311,21 @@ int Setup_object_data(char *line, int line_length) {
         }
     } else {  // Else it's a normal object
         if (transmit_compressed_objects_items) {
+            char temp_overlay = last_obj_overlay;
 
 // Need to compute "csT" at some point and add it to the object
 
-//WE7U
-// Need to handle the conversion of numeric overlay chars to "a-j" here as well.
-
+            // Need to handle the conversion of numeric overlay
+            // chars to "a-j" here.
+            if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                temp_overlay = last_obj_overlay + 'a';
+            }
+ 
             xastir_snprintf(line, line_length, ";%-9s*%s%s",
                 last_object,
                 time,
                 compress_posit(ext_lat_str,
-                    last_obj_grp,
+                    (temp_overlay) ? temp_overlay : last_obj_grp,
                     ext_lon_str,
                     last_obj_sym,
                     course,
@@ -15465,8 +15477,16 @@ int Setup_item_data(char *line, int line_length) {
 
     // Check for overlay character
     if (last_obj_grp != '/' && last_obj_grp != '\\') {
-        last_obj_overlay = last_obj_grp;
-        last_obj_grp = '\\';
+        // Found an overlay character.  Check that it's within the
+        // proper range
+        if ( (last_obj_grp >= '0' && last_obj_grp <= '9')
+                || (last_obj_grp >= 'A' && last_obj_grp <= 'Z') ) {
+            last_obj_overlay = last_obj_grp;
+            last_obj_grp = '\\';
+        }
+        else {
+            last_obj_overlay = '\0';
+        }
     }
     else {
         last_obj_overlay = '\0';
@@ -15642,16 +15662,20 @@ int Setup_item_data(char *line, int line_length) {
         }
     } else {  // Else it's a normal item
         if (transmit_compressed_objects_items) {
+            char temp_overlay = last_obj_overlay;
 
 // Need to compute "csT" at some point and add it to the item
 
-//WE7U
-// Need to handle the conversion of numeric overlay chars to "a-j" here as well.
-
+            // Need to handle the conversion of numeric overlay
+            // chars to "a-j" here.
+            if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                temp_overlay = last_obj_overlay + 'a';
+            }
+ 
             xastir_snprintf(line, line_length, ")%s!%s",
                 last_object,
                 compress_posit(ext_lat_str,
-                    last_obj_grp,
+                    (temp_overlay) ? temp_overlay : last_obj_grp,
                     ext_lon_str,
                     last_obj_sym,
                     course,

@@ -1425,12 +1425,30 @@ void pad_callsign(char *callsignout, char *callsignin) {
 
 
 
+// Check for valid overlay characters:  'A-Z', '0-9', and 'a-j'.  If
+// 'a-j', it's from a compressed posit, and we need to convert it to
+// '0-9'.
 void overlay_symbol(char symbol, char data, DataRow *fill) {
-    if ( data != '/' && data !='\\') {
-        /* Symbol overlay */
-        fill->aprs_symbol.aprs_type = '\\';
-        fill->aprs_symbol.special_overlay = data;
-    } else {
+
+    if ( data != '/' && data !='\\') {  // Symbol overlay
+
+        if (data >= 'a' && data <= 'j') {
+            // Found a compressed posit numerical overlay
+            data = data - 'a';  // Convert to a digit
+        }
+        else if ( (data >= '0' && data <= '9')
+                || (data >= 'A' && data <= 'Z') ) {
+            // Found normal overlay character
+            fill->aprs_symbol.aprs_type = '\\';
+            fill->aprs_symbol.special_overlay = data;
+        }
+        else {
+            // Bad overlay character.  Don't use it.  Insert the
+            // normal alternate table character instead.
+            fill->aprs_symbol.aprs_type = '\\';
+            fill->aprs_symbol.special_overlay='\0';
+        }
+    } else {    // No overlay character
         fill->aprs_symbol.aprs_type = data;
         fill->aprs_symbol.special_overlay='\0';
     }
@@ -1609,8 +1627,25 @@ APRS_Symbol *id_callsign(char *call_sign, char * to_call) {
 
                     break;
             }
-            if (hold[2])
-                symbol.special_overlay = hold[2];
+            if (hold[2]) {
+                if (hold[2] >= 'a' && hold[2] <= 'j') {
+                    // Compressed mode numeric overlay
+                    symbol.special_overlay = hold[2] - 'a';
+                }
+                else if ( (hold[2] >= '0' && hold[2] <= '9')
+                        || (hold[2] >= 'A' && hold[2] <= 'Z') ) {
+                    // Normal overlay character
+                    symbol.special_overlay = hold[2];
+                }
+                else {
+                    // Bad overlay character found
+                    symbol.special_overlay = '\0';
+                }
+            }
+            else {
+                // No overlay character found
+                symbol.special_overlay = '\0';
+            }
         }
     }
     return(&symbol);
@@ -9466,10 +9501,20 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     p_station->flag |= ST_MSGCAP;               // set "message capable" flag
 
     /* Symbol overlay */
-    if(my_group != '/' && my_group != '\\') {   // overlay
-        p_station->aprs_symbol.aprs_type = '\\';
-        p_station->aprs_symbol.special_overlay = my_group;
-    } else {                                    // normal symbol
+    if(my_group != '/' && my_group != '\\') {
+        // Found an overlay character.  Check it.
+        if ( (my_group >= '0' && my_group <= '9')
+                || (my_group >= 'A' && my_group <= 'Z') ) {
+            // Overlay character is good
+            p_station->aprs_symbol.aprs_type = '\\';
+            p_station->aprs_symbol.special_overlay = my_group;
+        }
+        else {
+            // Found a bad overlay character
+            p_station->aprs_symbol.aprs_type = my_group;
+            p_station->aprs_symbol.special_overlay = '\0';
+        }
+    } else {    // Normal symbol, no overlay
         p_station->aprs_symbol.aprs_type = my_group;
         p_station->aprs_symbol.special_overlay = '\0';
     }
@@ -12100,10 +12145,21 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
     // Check for an overlay character.  Replace the group character
     // (table char) with the overlay if present.
-    if (p_station->aprs_symbol.special_overlay != '\0') // Overlay character
+    if (p_station->aprs_symbol.special_overlay != '\0') {
+        // Overlay character found
         object_group = p_station->aprs_symbol.special_overlay;
-    else    // No overlay character
+        if ( (object_group >= '0' && object_group <= '9')
+                || (object_group >= 'A' && object_group <= 'Z') ) {
+            // Valid overlay character, use what we have
+        }
+        else {
+            // Bad overlay character, throw it away
+            object_group = '\\';
+        }
+    }
+    else {    // No overlay character
         object_group = p_station->aprs_symbol.aprs_type;
+    }
 
     object_symbol = p_station->aprs_symbol.aprs_symbol;
 
@@ -12341,6 +12397,13 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     else {  // Else it's a normal object/item
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
             if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
 
                 // We need higher precision lat/lon strings than
                 // those created above.
@@ -12351,14 +12414,14 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                     p_station->call_sign,
                     time,
                     compress_posit(lat_str,
-                        object_group,
+                        temp_group,
                         lon_str,
                         object_symbol,
                         course,
                         speed,  // In knots
                         ""));   // PHG, must be blank
             }
-            else {
+            else {  // Non-compressed posit object
                 xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
                     p_station->call_sign,
                     time,
@@ -12372,6 +12435,13 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         }
         else {  // It's an item
             if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
 
                 // We need higher precision lat/lon strings than
                 // those created above.
@@ -12381,14 +12451,14 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                 xastir_snprintf(line, line_length, ")%s!%s",
                     p_station->call_sign,
                     compress_posit(lat_str,
-                        object_group,
+                        temp_group,
                         lon_str,
                         object_symbol,
                         course,
                         speed,  // In knots
                         ""));   // PHG, must be blank
             }
-            else {
+            else {  // Non-compressed item
                 xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
                     p_station->call_sign,
                     lat_str,
