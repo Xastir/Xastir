@@ -10,12 +10,14 @@
 # Script to create Xastir "Overlay" files from "CSV" files of the
 # proper format (comma-delimited files).
 #
-# 1) You can create files in Xastir "log" format if you enter a
-# callsign below.  These files can then be put in your
-# ~/.xastir/logs/ directory and brought in via the File->Open Log
-# File menu option.
+# 1) Creates files in Xastir "log" format if you enter a callsign
+# below.  These files can then be put in your ~/.xastir/logs/
+# directory and brought in via the File->Open Log File menu option.
+# If you start with the CSV files in the ~/.xastir/logs/ directory
+# and process them there with this script, the output files will be
+# placed into the proper place for Xastir to find them.
 #
-# 2) If a callsign is not entered, this script will create files in
+# 2) If no callsign is entered, this script will create files in
 # Xastir's "~/.xastir/config/object.log" format.  You can then
 # replace or append the file to the object.log file, restart Xastir
 # or "Reload Object/Item History".
