@@ -518,6 +518,15 @@ compile might fail:
 To fix this, edit the Makefile to add "-lc" to the end of the LIBS
 line and run "make" again, then "make install".
 
+
+TEMPORARY:  It looks like we need to switch to a newer version of
+the libtiff DLL in order to work with libgeotiff:
+
+    cd /bin
+    mv cygtiff3.dll cygtiff3.dll.old
+    cp cygtiff3.dll.new cygtiff3.dll
+
+
 Set up Xastir to use the new geotiff libraries:
 
     cd ~/src/xastir
