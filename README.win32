@@ -128,6 +128,7 @@ required:
 [ ] gcc
 [ ] gzip
 [ ] ImageMagick
+[ ] lcms
 [ ] less
 [ ] lesstif
 [ ] libMagick-devel
@@ -507,13 +508,6 @@ Dutch language version...) fixed it.
 "setxkbmap us" to c:\cygwin\usr\X11R6\bin\startxwin.bat (just below
 "run XWin....").
 
-3) I had to run ./configure on "lcms" twice. The first time
-./configure stopped half way, the second time it runs to the end.
-First I thought it was a glitch, but today it happend again with a
-brand new installation.  (From editor:  lcms may be required for the
-ImageMagick library install, see below)
------
-
 
 -------------------------------------------
 OPTIONAL:  ADDING ADDITIONAL MAP LIBRARIES:
@@ -648,48 +642,6 @@ Note:  The Cygwin binary for ImageMagick-5.5.5 has a problem in it's
 Magick-config script which makes it impossible to use for our
 purposes.  Don't try to use that version.  Some people reported a
 similar problem with 5.5.7.
-
-Later versions of ImageMagick depend on "liblcms", which isn't part
-of Cygwin.  Install liblcms _before_ installing ImageMagick.
-
-[ ] cd ~/src
-    mkdir lcms
-
-[ ] Download lcms.  Get the "linux/other" version.  Put the
-downloaded file into the ~/src/lcms directory you just created:
-
-    http://www.littlecms.com/downloads.htm"
-
-[ ] Extract the lcms files:
-
-    cd ~/src/lcms
-    tar xzvf lcms-1.10.tar.gz
-
-[ ] Configure/build/install the lcms library:
-
-    cd lcms-1.10
-    make all
-    make install
-
-Another note about the lcms library:
-
-"LittleCMS has reached release 1.12 (and only 1.11 and 1.12 are
-available on their website).  Apparently, after 1.10, the "all"
-target is gone, so you need to go through the ./configure routine.
-However, in my cygwin install, the configure routine fails on the C
-preprocessor sanity check.  Google provided the 1.10 release, so the
-instructions still work...  but follow them "literally.""
--- Steve Peters, N1TYE
-
-Yet another note from Henk, not verified yet:
-
-"I got the same error and looked a bit into it. It turns out that
-for this to work, the package "gcc-c++: GCC C++ compiler" needs to
-be installed. At least then the configuration part of LittleCMS
-release 1.12 works and "make" + "make install" does not report
-problems. I have not checked if it is functional though, but I guess
-so."
--- Henk, PE1DNN
 
 Note that Xastir's "./configure" stage may fail trying to compile in
 ImageMagick support.  If this happens, make sure you have the
