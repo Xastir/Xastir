@@ -33,7 +33,7 @@ More information on the program can be found at:
 
  http://www.xastir.org
  http://sourceforge.net/projects/xastir/
- http://xastir.sourceforge.net (soon)
+ http://xastir.sourceforge.net
 
 There are some mailing lists available that are Xastir-specific.
 Please subscribe to one or both of them for the latest Xastir
@@ -89,12 +89,13 @@ Messaging cleanup, no more timed updates; reply-acks
 ImageMagick speedups and correction features
 Compressed objects/items
 SmartBeaconing(tm)
-Memory usage improvements, multiple comments stored
+Memory usage improvements: multiple comments stored, status, tracklog dynamic
 bulletins bring up dialog
-export waypoints within proximity boundries
+export waypoints within proximity boundaries
 findu train length contols
 view|objects&items
 bulletin popups
+more parser fixes for overruns
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -311,11 +312,9 @@ programs do not decode this format yet.  Currently this only compresses
 area, signpost, or DF objects/items, and won't currently represent
 altitude in "standard" objects/items.
 
-"Enable SmartBeaconing(tm)" This will cause Xastir to transmit positions at
-various rates and locations based on the movement of the station. It creates
-more realistic trails and makes dead-reckoning much more accurate. This option
-is only useful in a mobile station with a GPS attached.
-  
+"Pop up new Bulletins", if selected, will cause Xastir to bring up the bulletin
+dialog when bulletins within the configured range are received.
+ 
 You can also select Altnet and choose an altnet call from this dialog. Altnet 
 allows you to have a private APRS(tm) network among the stations that also
 have altnet configured, and have the same altnet call entered.
@@ -379,6 +378,46 @@ HELP-INDEX>Configure Units of Measure
 The default selection is for the Metric System: mm, cm, km/h, etc. To select
 English units, inches, feet, MPH, etc. Click on File, then Configure, then
 toggle the "Enable English Units" checkbox.
+
+HELP-INDEX>Configure Smart Beaconing
+
+Click File, then Configure, then Smart Beaconing.
+
+The main "Enable SmartBeaconing(tm)" Will cause Xastir to transmit positions at
+various rates and locations based on the movement of the station. It creates
+more realistic trails and makes dead-reckoning much more accurate. This option
+is only useful in a mobile station with a GPS attached.
+
+There are several options available to customize the operation of
+SmartBeaconing:
+
+High rate
+The interval (in seconds) at which beacons are sent when the speed is above the
+High speed setting.
+
+High speed
+The speed threshold that will cause beacons at the rate specified above.
+
+Low rate
+The interval (in minutes) at which beacons are sent when the speed is below the
+Low speed setting.
+
+Low speed
+The speed threshold that will cause beacons at the rate specified above.
+
+Minimum Turn
+The minimum degrees that corner pegging can occur. This will be at the
+highest speed, lower speeds will require more degrees of turn to trigger a
+posit.
+
+Turn Slope
+Fudget factor for making turns less sensitive at lower speeds.  No real units
+on this one. It ends up being non-linear over the speed range the way the
+original SmartBeaconing(tm) algorithm works.
+
+Wait Time
+The time in seconds between corner-pegging beacons, prevents multiple
+beacons in short succession.
 
 HELP-INDEX>Save Config Now!
 
