@@ -4238,7 +4238,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     break;
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-                    port_dtr(i,0);           // make DTR normal
+                    if (!transmit_disable
+                            && port_data[i].status == DEVICE_UP
+                            && devices[i].transmit_data == 1
+                            && !loopback_only) {
+                        port_dtr(i,0);           // make DTR normal
+                    }
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
 
@@ -4265,8 +4270,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             && !transmit_disable
                             && !loopback_only) {
                         port_write_string(i,data_txt);
+                        usleep(100000);  // 100ms
                     }
-                    usleep(100000);  // 100ms
  
                     count = 0;
                     done = 0;
@@ -4451,8 +4456,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             && !transmit_disable
                             && !loopback_only) {
                         port_write_string(i,data_txt);
+                        usleep(100000);  // 100ms
                     }
-                    usleep(100000);  // 100ms
  
                     // Set converse mode
                     xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
@@ -4463,10 +4468,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             && !transmit_disable
                             && !loopback_only) {
                         port_write_string(i,data_txt);
+                        usleep(1500000);    // 1.5 secs
                     }
-
-                    //(void)sleep(1);
-                    usleep(1500000);    // 1.5 secs
                     break;
 
                 default: /* unknown */

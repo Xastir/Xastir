@@ -1717,6 +1717,10 @@ void reload_object_item(void) {
 
     file = get_user_base_dir("config/object.log");
 
+    // Prevent transmission of objects until sometime after we're
+    // done with our initial load.
+    last_object_check = sec_now();
+
     f=fopen(file,"r");
     if (f!=NULL) {
         while (fgets(line, 300, f) != NULL) {
@@ -1742,6 +1746,9 @@ void reload_object_item(void) {
         if (debug_level & 1)
             printf("Couldn't open file for reading: %s\n", file);
     }
+
+    // Start transmitting these objects in about 30 seconds.
+    last_object_check = sec_now() + 30 - POSIT_rate;
 }
 
 

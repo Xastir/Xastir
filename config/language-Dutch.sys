@@ -289,6 +289,7 @@ BBARSTA038|Positie verandering bij mijn station||
 BBARSTA039|Indexing %s||
 BBARSTA040|Amateur APRS Station %s||
 BBARSTA041|Waiting for GPS data..||
+BBARSTA042|Transmitting objects/items||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Ontvangen Packets Bekijken||

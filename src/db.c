@@ -8964,7 +8964,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         }
 
         // announce stations in the status line
-        if (!is_my_call(p_station->call_sign,1) && !wait_to_redraw) {
+        if (!is_my_call(p_station->call_sign,1)
+                && !is_my_call(p_station->origin,1)
+                && !wait_to_redraw) {
             if (new_station) {
                 if (p_station->origin[0] == '\0')   // new station
                     xastir_snprintf(station_id, sizeof(station_id), langcode("BBARSTA001"),p_station->call_sign);
@@ -12574,6 +12576,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 void check_and_transmit_objects_items(time_t time) {
     DataRow *p_station;     // pointer to station data
     char line[256];
+    int first = 1;
 
 
     // Time to re-transmit objects/items?
@@ -12596,6 +12599,11 @@ void check_and_transmit_objects_items(time_t time) {
 
                 if (debug_level & 1)
                     printf("Found a locally-owned object or item: %s\n",p_station->call_sign);
+
+                if (first) {    // "Transmitting objects/items"
+                    statusline(langcode("BBARSTA042"),1);
+                    first = 0;
+                }
 
                 // Here we need to re-assemble and re-transmit the object or item
                 // Check whether it is a "live" or "killed" object and vary the

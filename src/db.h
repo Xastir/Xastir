@@ -445,6 +445,7 @@ extern void update_station_info(Widget w);
 // objects/items
 extern void check_and_transmit_objects_items(time_t time);
 extern int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length);
+extern time_t last_object_check;
 
 // trails
 extern int  delete_trail(DataRow *fill);

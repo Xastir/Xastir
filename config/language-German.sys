@@ -290,6 +290,7 @@ BBARSTA038|Bringen Sie Änderung auf meine Station in Position||
 BBARSTA039|Indexing %s||
 BBARSTA040|Amateur APRS Station %s||
 BBARSTA041|Waiting for GPS data..||
+BBARSTA042|Transmitting objects/items||
 #
 # PopUp "Zeige - Packet Radio"
 WPUPDPD001|Packet Radio Daten||

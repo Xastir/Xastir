@@ -285,6 +285,7 @@ BBARSTA038|Posizionare il cambiamento sulla mia stazione||
 BBARSTA039|Indexing %s||
 BBARSTA040|Amateur APRS Station %s||
 BBARSTA041|Waiting for GPS data..||
+BBARSTA042|Transmitting objects/items||
 #
 #Visualizzazione dati packet
 WPUPDPD001|Visualizzazione dati packet||

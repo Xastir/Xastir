@@ -283,6 +283,7 @@ BBARSTA038|Posição alterada na minha estação||
 BBARSTA039|Indexando %s||
 BBARSTA040|Estação de radioamador de APRS %s||
 BBARSTA041|Esperando pela data do GPS..||
+BBARSTA042|Transmitting objects/items||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||
