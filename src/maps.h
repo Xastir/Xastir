@@ -89,6 +89,7 @@ void draw_grid (Widget w);
 void Snapshot(void);
 int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right, int *map_layer, int *draw_filled);
 void index_restore_from_file(void);
+void index_save_to_file(void);
 void map_indexer(void);
 
 extern int print_rotated;

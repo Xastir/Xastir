@@ -186,12 +186,14 @@ static void Help_Index(Widget w, XtPointer clientData, XtPointer callData);
 
 // ----------------------------- map ---------------------------------
 Widget map_list;
+Widget map_properties_list;
 
 void map_chooser_fill_in (void);
 int map_chooser_expand_dirs = 0;
  
  
 Widget map_chooser_dialog = (Widget)NULL;
+Widget map_properties_dialog = (Widget)NULL;
 static void Map_chooser(Widget w, XtPointer clientData, XtPointer callData);
 Widget map_chooser_maps_selected_data = (Widget)NULL;
 int re_sort_maps = 1;
@@ -533,6 +535,7 @@ int view_zero_distance_bulletins = 0;
 int warn_about_mouse_modifiers = 1;
 Widget altnet_active;
 Widget altnet_text;
+Widget new_map_layer_text = (Widget)NULL;
 Widget debug_level_text;
 int show_DR;
 int show_DR_arc;
@@ -9506,22 +9509,329 @@ void Stations_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 
 
-/************************* Map Chooser ***********************************/
+/************************* Map Properties*********************************/
 /*************************************************************************/
 
-// Update the "selected" field in the in-memory map_index based on
-// the "selected" input parameter.
-void map_index_update_selected(char *filename, int selected) {
+// Destroys the Map Properties dialog
+void map_properties_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    map_properties_dialog = (Widget)NULL;
+}
+
+
+
+
+
+// Fills in the map properties file entries.
+//
+void map_properties_fill_in (void) {
+    int n,i;
+    XmString str_ptr;
+    map_index_record *current = map_index_head;
+
+
+    busy_cursor(appshell);
+
+    i=0;
+    if (map_properties_dialog) {
+
+	// Empty the map_properties_list widget first
+	XmListDeleteAllItems(map_properties_list);
+
+        // Put all the map files/dirs in the map_index into the Map
+        // Properties dialog list (map_properties_list).  Include
+        // the map_layer and draw_filled variables on the line.
+        n=1;
+
+        while (current != NULL) {
+
+            //printf("%s\n",current->filename);
+
+            // Make sure it's a file and not a directory
+            if (current->filename[strlen(current->filename)-1] != '/') {
+                char temp[MAX_FILENAME];
+                char temp_layer[10];
+                char temp_filled[10];
+
+                // We have a file.  Construct the line that we wish
+                // to place in the list
+
+                if (current->map_layer == 0) {
+                    strcpy(temp_layer,"  -  ");
+                }
+                else {
+                    xastir_snprintf(temp_layer,
+                    sizeof(temp_layer),
+                    "%5d",
+                    current->map_layer);
+                }
+
+                if (current->draw_filled == 0) {
+                    strcpy(temp_filled,"      ");
+                }
+                else {
+                    strcpy(temp_filled,"  Yes ");
+                }
+
+                xastir_snprintf(temp,
+                    sizeof(temp),
+                    "%s   %s   %s",
+                    temp_layer,
+                    temp_filled,
+                    current->filename);
+
+                XmListAddItem(map_properties_list,
+                    str_ptr = XmStringCreateLtoR(temp,
+                                 XmFONTLIST_DEFAULT_TAG),
+                                 n);
+                n++;
+                XmStringFree(str_ptr);
+            }
+            current = current->next;
+        }
+    }
+}
+
+
+
+
+
+//WE7U
+// Removes the highlighting for maps in the current view of the map
+// properties list.
+//
+void map_properties_deselect_maps(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x;
+    XmString *list;
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, deselecting every line
+    for(x=1; x<=i;x++)
+    {
+        XmListDeselectPos(map_properties_list,x);
+    }
+}
+
+
+
+
+
+// Change the "draw_filled" field in the in-memory map_index to a
+// one.
+void map_index_update_filled_yes(char *filename) {
     map_index_record *current = map_index_head;
 
     while (current != NULL) {
         if (strcmp(current->filename,filename) == 0) {
             // Found a match.  Update the field and return.
-            current->selected = selected;
+            current->draw_filled = 1;
             return;
         }
         current = current->next;
     }
+}
+
+
+
+
+
+// Change the "draw_filled" field in the in-memory map_index to a
+// zero.
+void map_index_update_filled_no(char *filename) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->draw_filled = 0;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+
+
+
+
+//WE7U
+void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x;
+    XmString *list;
+    char *temp;
+
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the filled field on
+    // every one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+                temp2 = temp + 17;
+
+//printf("New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting the "draw_field" field to 1.
+                map_index_update_filled_yes(temp2);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
+}
+
+
+
+
+
+//WE7U
+void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x;
+    XmString *list;
+    char *temp;
+
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the filled field on
+    // every one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+                temp2 = temp + 17;
+
+//printf("New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting the "draw_field" field to 0.
+                map_index_update_filled_no(temp2);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
+}
+
+
+
+
+
+// Update the "map_layer" field in the in-memory map_index based on
+// the "map_layer" input parameter.
+void map_index_update_layer(char *filename, int map_layer) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->map_layer = map_layer;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+
+
+
+
+//WE7U
+void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x, new_layer;
+    XmString *list;
+    char *temp;
+
+
+    // Get new layer selection in the form of an int
+    temp = XmTextGetString(new_map_layer_text);
+    new_layer = atoi(temp);
+    XtFree(temp);
+
+//printf("New layer selected is: %d\n", new_layer);
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the layer on every
+    // one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+                temp2 = temp + 17;
+
+//printf("New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting/resetting the "selected" field
+                // as appropriate.
+                map_index_update_layer(temp2, new_layer);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
 }
 
 
@@ -9535,21 +9845,298 @@ void map_index_update_selected(char *filename, int selected) {
 // function is entered.  This is the callback function for the
 // Properties button in the Map Chooser.
 //
+// If the map_layer is a range of values, inform the user here
+// via a popup, so that they don't make a mistake and change too
+// many different types of maps to the same map layer.
+//
+// We could either show all maps here and allow changing each
+// one, or just show min/max map_layer draw_filled properties
+// for the maps selected in the Map Chooser.
+//
+// Create the properties dialog.  Show the map_layer and
+// draw_filled properties for the maps.
+//
+// Could still create Cancel and OK buttons.  Cancel would wipe the
+// in-memory list and fetch it from file again.  OK would write the
+// in-memory list to disk.
+//
 void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int i, x;
     char *temp;
     XmString *list;
+    static Widget pane, my_form, button_clear, button_close, rowcol,
+           label1, label2, label3, button_filled_yes,
+           button_filled_no, button_layer_change;
+    Atom delw;
+    Arg al[10];                     // Arg List
+    register unsigned int ac = 0;   // Arg Count
 
 
-    popup_message("Not Implemented Yet!","User-selectable map_layer/draw_filled");
+    busy_cursor(appshell);
 
-    // We need to run through the map_list widget, getting the map
+    i=0;
+    if (!map_properties_dialog) {
+//WE7U
+//        map_properties_dialog = XtVaCreatePopupShell(langcode("WPUPMCP001"),
+        map_properties_dialog = XtVaCreatePopupShell("Map Properties",
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
+
+        pane = XtVaCreateWidget("Map_properties pane",
+                xmPanedWindowWidgetClass, 
+                map_properties_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        my_form =  XtVaCreateWidget("Map_properties my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 7,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        /*set args for color */
+        ac=0;
+        XtSetArg(al[ac], XmNvisibleItemCount, 13); ac++;
+        XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
+        XtSetArg(al[ac], XmNselectionPolicy, XmMULTIPLE_SELECT); ac++;
+        XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+
+
+        map_properties_list = XmCreateScrolledList(my_form,
+                "Map_properties list",
+                al,
+                ac);
+
+        // Find the names of all the map files on disk and put them
+        // into map_properties_list
+        map_properties_fill_in();
+
+        // Attach a rowcolumn manager widget to my_form to handle all of the buttons
+        rowcol = XtVaCreateManagedWidget("Map properties rowcol", 
+                xmRowColumnWidgetClass, 
+                my_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNkeyboardFocusPolicy, XmEXPLICIT,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+//WE7U
+//        label1  = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        label1  = XtVaCreateManagedWidget(" Map     Draw",
+                xmLabelWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+//WE7U
+// "Filled-Yes"
+//        button_filled_no = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        button_filled_no = XtVaCreateManagedWidget("No",
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_NONE,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// "Filled-No"
+//        button_filled_yes = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        button_filled_yes = XtVaCreateManagedWidget("Yes",
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_NONE,
+                XmNrightAttachment, XmATTACH_WIDGET,
+                XmNrightWidget, button_filled_no,
+                XmNrightOffset, 5,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+//WE7U
+//        label2  = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        label2  = XtVaCreateManagedWidget("Draw Filled?",
+                xmLabelWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_NONE,
+                XmNrightAttachment, XmATTACH_WIDGET,
+                XmNrightWidget, button_filled_yes,
+                XmNrightOffset, 2,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+// "Change Layer"
+//        button_layer_change = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+        button_layer_change = XtVaCreateManagedWidget("Change Layer",
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_NONE,
+                XmNrightAttachment, XmATTACH_WIDGET,
+                XmNrightWidget, label2,
+                XmNrightOffset, 30,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        new_map_layer_text = XtVaCreateManagedWidget("Map Properties new layer number",
+                xmTextWidgetClass,
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 7,
+                XmNwidth, ((8*7)+2),
+                XmNmaxLength, 5,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset, 3,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_NONE,
+                XmNrightAttachment,XmATTACH_WIDGET,
+                XmNrightWidget, button_layer_change,
+                XmNrightOffset, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+//WE7U
+//        label3  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),
+        label3  = XtVaCreateManagedWidget("Layer   Filled   Path/Filename",
+ 
+                xmLabelWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label1,
+                XmNtopOffset, 0,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtVaSetValues(XtParent(map_properties_list),
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label3,
+                XmNtopOffset, 2,
+                XmNbottomAttachment, XmATTACH_WIDGET,
+        		XmNbottomWidget, rowcol,
+        		XmNbottomOffset, 2,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                NULL);
+
+// "None"
+        button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+
+// "Close"
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(button_close, XmNactivateCallback, map_properties_destroy_shell, map_properties_dialog);
+        XtAddCallback(button_clear, XmNactivateCallback, map_properties_deselect_maps, map_properties_dialog);
+        XtAddCallback(button_filled_yes, XmNactivateCallback, map_properties_filled_yes, map_properties_dialog);
+        XtAddCallback(button_filled_no, XmNactivateCallback, map_properties_filled_no, map_properties_dialog);
+        XtAddCallback(button_layer_change, XmNactivateCallback, map_properties_layer_change, map_properties_dialog);
+
+
+        pos_dialog(map_properties_dialog);
+
+        delw = XmInternAtom(XtDisplay(map_properties_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(map_properties_dialog, delw, map_properties_destroy_shell, (XtPointer)map_properties_dialog);
+
+        XtManageChild(rowcol);
+        XtManageChild(my_form);
+        XtManageChild(map_properties_list);
+        XtVaSetValues(map_properties_list, XmNbackground, colors[0x0f], NULL);
+        XtManageChild(pane);
+
+        XmTextSetString(new_map_layer_text, "0");
+
+        XtPopup(map_properties_dialog,XtGrabNone);
+
+        // Fix the dialog height only, allow the width to vary.
+//        fix_dialog_vsize(map_properties_dialog);
+
+        // Move focus to the OK button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(map_properties_dialog);
+        XmProcessTraversal(button_close, XmTRAVERSE_CURRENT);
+
+   } else {
+        (void)XRaiseWindow(XtDisplay(map_properties_dialog), XtWindow(map_properties_dialog));
+    }
+
+
+
+
+
+    // We need to run through the map_properties_list widget, getting the map
     // layer and filled/unfilled (if appropriate) for each selected
     // map.  Display these in a dialog which allows the user to
     // change them.
 
     // Get the list and the list count from the dialog
-    XtVaGetValues(map_list,
+    XtVaGetValues(map_properties_list,
                XmNitemCount,&i,
                XmNitems,&list,
                NULL);
@@ -9557,7 +10144,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
     // Run through the list, snagging the map_layer min/max and
     // draw_filled min/max for all selected maps.
     for(x=1; x<=i;x++) {
-        if (XmListPosSelected(map_list,x)) {
+        if (XmListPosSelected(map_properties_list,x)) {
             if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
                 unsigned long bottom,top,left,right;
                 int map_layer,draw_filled;
@@ -9573,32 +10160,23 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                     &map_layer,
                     &draw_filled);
 
-printf("Layer:%05d, Filled:%01d, %s\n",map_layer,draw_filled,temp);
+//printf("Layer:%05d, Filled:%01d, %s\n",map_layer,draw_filled,temp);
 
 //                map_index_update_selected(temp,
-//                    XmListPosSelected(map_list,x));
+//                    XmListPosSelected(map_properties_list,x));
 //printf("%s\n",temp);
                 XtFree(temp);
             }
         }
     }
-
-    // If the map_layer is a range of values, inform the user here
-    // via a popup, so that they don't make a mistake and change too
-    // many different types of maps to the same map layer.
-
-    // We could either show all maps here and allow changing each
-    // one, or just show min/max map_layer draw_filled properties
-    // for the maps selected in the Map Chooser.
-
-    // Create the properties dialog.  Show the map_layer and
-    // draw_filled properties for the maps.
-
 }
 
 
 
 
+
+/************************* Map Chooser ***********************************/
+/*************************************************************************/
 
 // Destroys the Map Chooser dialog
 void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
@@ -9606,6 +10184,25 @@ void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
     XtPopdown(shell);
     XtDestroyWidget(shell);
     map_chooser_dialog = (Widget)NULL;
+}
+
+
+
+
+
+// Update the "selected" field in the in-memory map_index based on
+// the "selected" input parameter.
+void map_index_update_selected(char *filename, int selected) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->selected = selected;
+            return;
+        }
+        current = current->next;
+    }
 }
 
 
