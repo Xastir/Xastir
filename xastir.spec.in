@@ -28,63 +28,14 @@ make
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/usr/local/bin
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/config
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/Counties
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/doc
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/fcc
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/help
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/maps
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/maps/filled
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/maps/transparent
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/maps/z_overlay
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/sounds
-mkdir -p $RPM_BUILD_ROOT/usr/local/xastir/symbols
-install -s -m 4555 src/xastir $RPM_BUILD_ROOT/usr/local/bin/xastir
-install -s -m 555 callpass/callpass $RPM_BUILD_ROOT/usr/local/bin/callpass
-install -m 444 config/language-Dutch.sys $RPM_BUILD_ROOT/usr/local/xastir/config/language-Dutch.sys
-install -m 444 config/language-English.sys $RPM_BUILD_ROOT/usr/local/xastir/config/language-English.sys
-install -m 444 config/language-French.sys $RPM_BUILD_ROOT/usr/local/xastir/config/language-French.sys
-install -m 444 config/language-German.sys $RPM_BUILD_ROOT/usr/local/xastir/config/language-German.sys
-install -m 444 config/language-Italian.sys $RPM_BUILD_ROOT/usr/local/xastir/config/language-Italian.sys
-install -m 444 config/language-Spanish.sys $RPM_BUILD_ROOT/usr/local/xastir/config/language-Spanish.sys
-install -m 444 config/tnc-startup.aea $RPM_BUILD_ROOT/usr/local/xastir/config/tnc-startup.aea
-install -m 444 config/tnc-startup.kam $RPM_BUILD_ROOT/usr/local/xastir/config/tnc-startup.kam
-install -m 444 config/tnc-startup.kpc3 $RPM_BUILD_ROOT/usr/local/xastir/config/tnc-startup.kpc3
-install -m 444 config/tnc-startup.pico $RPM_BUILD_ROOT/usr/local/xastir/config/tnc-startup.pico
-install -m 444 config/tnc-startup.sys $RPM_BUILD_ROOT/usr/local/xastir/config/tnc-startup.sys
-install -m 444 config/tnc-startup.thd7 $RPM_BUILD_ROOT/usr/local/xastir/config/tnc-startup.thd7
-install -m 444 config/tnc-stop.sys $RPM_BUILD_ROOT/usr/local/xastir/config/tnc-stop.sys
-install -m 444 config/xastir.rgb $RPM_BUILD_ROOT/usr/local/xastir/config/xastir.rgb
-install -m 444 placeholder $RPM_BUILD_ROOT/usr/local/xastir/Counties/placeholder
-install -m 444 AUTHORS $RPM_BUILD_ROOT/usr/local/xastir/doc/AUTHORS
-install -m 444 ChangeLog $RPM_BUILD_ROOT/usr/local/xastir/doc/ChangeLog
-install -m 444 COPYING $RPM_BUILD_ROOT/usr/local/xastir/doc/COPYING
-install -m 444 FAQ $RPM_BUILD_ROOT/usr/local/xastir/doc/FAQ
-install -m 444 LICENSE $RPM_BUILD_ROOT/usr/local/xastir/doc/LICENSE
-install -m 444 README.1ST $RPM_BUILD_ROOT/usr/local/xastir/doc/README.1ST
-install -m 444 placeholder $RPM_BUILD_ROOT/usr/local/xastir/fcc/placeholder
-install -m 444 help/help-Dutch.dat $RPM_BUILD_ROOT/usr/local/xastir/help/help-Dutch.dat
-install -m 444 help/help-English.dat $RPM_BUILD_ROOT/usr/local/xastir/help/help-English.dat
-install -m 444 help/help-French.dat $RPM_BUILD_ROOT/usr/local/xastir/help/help-French.dat
-install -m 444 help/help-German.dat $RPM_BUILD_ROOT/usr/local/xastir/help/help-German.dat
-install -m 444 help/help-Italian.dat $RPM_BUILD_ROOT/usr/local/xastir/help/help-Italian.dat
-install -m 444 help/help-Spanish.dat $RPM_BUILD_ROOT/usr/local/xastir/help/help-Spanish.dat
-install -m 444 placeholder $RPM_BUILD_ROOT/usr/local/xastir/maps/filled/placeholder
-install -m 444 placeholder $RPM_BUILD_ROOT/usr/local/xastir/maps/transparent/placeholder
-install -m 444 placeholder $RPM_BUILD_ROOT/usr/local/xastir/maps/placeholder
-install -m 444 placeholder $RPM_BUILD_ROOT/usr/local/xastir/maps/z_overlay/placeholder
-install -m 444 placeholder $RPM_BUILD_ROOT/usr/local/xastir/sounds/placeholder
-install -m 444 symbols/symbols.dat $RPM_BUILD_ROOT/usr/local/xastir/symbols/symbols.dat
+make DESTDIR=$RPM_BUILD_ROOT install
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE NEWS README README.1ST TODO UPDATES
-/usr/local/bin/xastir
+%attr(4555,root,root) /usr/local/bin/xastir
 /usr/local/bin/callpass
 /usr/local/xastir/config/language-Dutch.sys
 /usr/local/xastir/config/language-English.sys
@@ -120,4 +71,6 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/xastir/maps/z_overlay/placeholder
 /usr/local/xastir/sounds/placeholder
 /usr/local/xastir/symbols/symbols.dat
+%doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL
+%doc LICENSE NEWS README README.1ST TODO UPDATES
 
