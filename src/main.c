@@ -305,6 +305,8 @@ int letter_style;               /* Station Letter style */
 Widget map_wx_alerts_0,map_wx_alerts_1;
 static void Map_wx_alerts_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 int wx_alert_style;             /* WX alert map style */
+time_t map_refresh_interval = 0; /* how often to refresh maps, seconds */
+time_t map_refresh_time = 0;     /* when to refresh maps next, seconds */
 
 // ------------------------ Filter and Display menus -----------------------------
 Selections Select_ = { 0, // none
@@ -7860,6 +7862,13 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             if (snapshots_enabled)
                 (void)Snapshot();
 
+            // Is it time to refresh maps? 
+            if ( map_refresh_interval && (sec_now() > map_refresh_time) ) {
+                create_image(da);
+                (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+                map_refresh_time = sec_now() + map_refresh_interval;
+            }
+
             /* get data from interfaces */
             max=0;
             // Allow up to 1000 packets to be processed inside this
@@ -12283,6 +12292,9 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 // It'd be nice to turn off auto-maps here, or better perhaps would
 // be if any button were chosen other than "Cancel".
 
+
+    // reset map_refresh in case we no longer have a refreshed map selected
+    map_refresh_interval = 0;
 
     // Cause load_maps() and load_automaps() to re-sort the selected
     // maps by layer.

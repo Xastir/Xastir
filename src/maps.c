@@ -6571,6 +6571,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     char geo_datum[8+1];        // WGS-84 etc.
     char geo_projection[8+1];   // TM, UTM, GK, LATLON etc.
     int map_proj;
+    int map_refresh_interval_temp;
 
 //#define TIMING_DEBUG
 #ifdef TIMING_DEBUG
@@ -6634,6 +6635,16 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             if (strncasecmp (line, "TOPOSERVER", 10) == 0)
                 toposerver_flag = 1;
 
+            if (strncasecmp (line, "REFRESH", 7) == 0) {
+                (void)sscanf (line + 8, "%d", &map_refresh_interval_temp);
+                if ( map_refresh_interval_temp > 0 && 
+                     ( map_refresh_interval == 0 || 
+                       map_refresh_interval_temp < map_refresh_interval) ) {
+                  map_refresh_interval = (time_t) map_refresh_interval_temp;
+                  map_refresh_time = sec_now() + map_refresh_interval;
+                  fprintf(stderr, "Map Refresh set to %d.\n", (int) map_refresh_interval);
+                }
+            }
 
 #ifdef HAVE_IMAGEMAGICK
             if (strncasecmp(line, "GAMMA", 5) == 0)
@@ -7121,7 +7132,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         fprintf(stderr,"Color depth is %i \n", (int)image->depth);
 
     if (image->colorspace != RGBColorspace) {
-        puts("TBD: I don't think we can deal with colorspace != RGB");
+        fprintf(stderr,"TBD: I don't think we can deal with colorspace != RGB");
         if (image)
             DestroyImage(image);
         if (image_info)
