@@ -419,6 +419,8 @@ scr_s_x_min = 0;
 // INDEX_NO_TIMESTAMPS, then we are indexing the file (finding the
 // extents) instead of drawing it.
 //
+// Currently hacked to force extents to world-size.
+//
 void draw_ogr_map(Widget w,
                    char *dir,
                    char *filenm,
@@ -430,12 +432,6 @@ void draw_ogr_map(Widget w,
     OGRDataSourceH datasource;
     int i, numLayers;
     char full_filename[300];
-
-
-// Need to implement the indexing functions, so that we can use
-// these map formats from within Xastir.  Without an index, it'll
-// never appear in the map chooser.  Use the OGR "envelope"
-// functions to get the extents for the entire file.
 
 
     xastir_snprintf(full_filename,
