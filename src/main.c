@@ -550,6 +550,8 @@ Widget dead_reckoning_button;
 Widget dead_reckoning_arc_button;
 Widget dead_reckoning_course_button;
 Widget dead_reckoning_symbol_button;
+static int sec_last_dr_update = 0;
+
 
 
 // -------------------------------------------------------------------
@@ -6929,7 +6931,6 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     int max;
         int i;
     static int last_alert_on_screen;
-    static int sec_last_dr_update = 0;
 
     do_time = 0;
     nexttime = 10;  // Start UpdateTime again 10 milliseconds after we've completed
@@ -7023,7 +7024,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             }
 
-            if (show_DR && sec_now() - sec_last_dr_update > update_DR_rate) {
+            if (show_DR
+                    && ((sec_now() - sec_last_dr_update) > update_DR_rate) ) {
                 if (!pending_ID_message) {
                     redraw_symbols(w);
                     sec_last_dr_update = sec_now();
