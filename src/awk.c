@@ -513,7 +513,7 @@ void awk_eval_expr(awk_symtab *this,
                     --exprlen;
                 }
                 /* make sure src and dest of string copy don't overlap */
-                if (src->type == STRING 
+                if (src && src->type == STRING 
                     && dp >= (char *)src->val 
                     && dp <= &((char *)src->val)[src->size]) {
                     char *sp;
