@@ -508,6 +508,25 @@ int alert_expire(void) {
             // Zero out the new added entries
             for (ii = alert_max_count; ii < alert_max_count+100; ii++) {
                 alert_list[ii].title[0] = '\0';
+                alert_list[ii].top_boundary = 0.0;
+                alert_list[ii].left_boundary = 0.0;
+                alert_list[ii].bottom_boundary = 0.0;
+                alert_list[ii].right_boundary = 0.0;
+                alert_list[ii].expiration = (time_t)0;
+                alert_list[ii].activity[0] = '\0';
+                alert_list[ii].alert_tag[0] = '\0';
+                alert_list[ii].alert_level = '\0';
+                alert_list[ii].from[0] = '\0';
+                alert_list[ii].to[0] = '\0';
+                alert_list[ii].flags[0] = '\0';
+                alert_list[ii].filename[0] = '\0';
+                alert_list[ii].index = 0;
+                alert_list[ii].seq[0] = '\0';
+                alert_list[ii].issue_date_time[0] = '\0';
+                alert_list[ii].desc0[0] = '\0';
+                alert_list[ii].desc1[0] = '\0';
+                alert_list[ii].desc2[0] = '\0';
+                alert_list[ii].desc3[0] = '\0';
             }
             alert_max_count += 100;
         }
