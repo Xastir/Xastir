@@ -3436,6 +3436,8 @@ void port_write(int port) {
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                     case DEVICE_SERIAL_KISS_TNC:
                     case DEVICE_SERIAL_TNC:
+                    case DEVICE_SERIAL_GPS:
+                    case DEVICE_SERIAL_WX:
 //fprintf(stderr,"Char pacing ");
                         usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
                         break;
@@ -3450,13 +3452,30 @@ void port_write(int port) {
 
         }
         if (port_data[port].active == DEVICE_IN_USE) {
-            /*usleep(100);*/
-            FD_ZERO(&wd);
-            FD_SET(port_data[port].channel, &wd);
-            tmv.tv_sec = 0;
-            tmv.tv_usec = 100000;  // Delay 100ms
-//tmv.tv_usec = 10;
-            (void)select(0,NULL,&wd,NULL,&tmv);
+
+            // Take care of possible line pacing needs here
+
+            switch (port_data[port].device_type) {
+
+                case DEVICE_NET_STREAM:
+                case DEVICE_AX25_TNC:
+                case DEVICE_NET_GPSD:
+                case DEVICE_NET_WX:
+                case DEVICE_NET_DATABASE:
+                case DEVICE_NET_AGWPE: 
+                                    // Don't delay after each line
+                    break;
+
+                default:            // Delay after each line (line pacing)
+                    /*usleep(100);*/
+                    FD_ZERO(&wd);
+                    FD_SET(port_data[port].channel, &wd);
+                    tmv.tv_sec = 0;
+                    tmv.tv_usec = 100000;  // Delay 100ms
+                    (void)select(0,NULL,&wd,NULL,&tmv);
+                    break;
+
+            }   // End of switch
         }
     }
     if (debug_level & 2)
