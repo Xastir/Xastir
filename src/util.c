@@ -4212,17 +4212,17 @@ int check_unproto_path ( char *data ) {
                         break;
                     }
                     else {
+                        if (ViaCalls[ii][4] < ViaCalls[ii][6]) {
+                            // Whoa, N < n
+                            bad_path = 1;
+                            break;
+                        }
                         if (atoi(ViaCalls[ii]+=6) > MAX_WIDES) {
                             // Greater than WIDEn-3
                             bad_path = 1;
                             break;
                         }
 
-                        if (atoi(ViaCalls[ii][4]) < atoi(ViaCalls[ii][6])) {
-                            // Whoa, N < n
-                            bad_path = 1;
-                            break;
-                        }
 
                     }
                 }
@@ -4240,14 +4240,13 @@ int check_unproto_path ( char *data ) {
                         break;
                     }
                     else {
-                        // Valid TRACEn-n, check for > 3
-                        if (atoi(ViaCalls[ii]+=7) > MAX_WIDES) {
+                        if (ViaCalls[ii][5] < ViaCalls[ii][7]) {
+                            // Whoa, N < n
                             bad_path = 1;
                             break;
                         }
-
-                        if (atoi(ViaCalls[ii][5]) < atoi(ViaCalls[ii][7])) {
-                            // Whoa, N < n
+                        // Valid TRACEn-n, check for > 3
+                        if (atoi(ViaCalls[ii]+=7) > MAX_WIDES) {
                             bad_path = 1;
                             break;
                         }
