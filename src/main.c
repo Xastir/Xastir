@@ -3494,7 +3494,11 @@ void clear_all_tactical(void) {
 
     // Run through the name-ordered list of records
     while (p_station != 0) {
-        p_station->tactical_call_sign[0] = '\0';
+        if (p_station->tactical_call_sign) {
+            // One found.  Free it.
+            free(p_station->tactical_call_sign);
+            p_station->tactical_call_sign = NULL;
+        }
         p_station = p_station->n_next;
     }
     fprintf(stderr,"Cleared all tactical calls\n");
@@ -7582,7 +7586,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             right_menu_popup,
             al,
             ac);
-    XtAddCallback(TAC1,XmNactivateCallback,Station_info,"2");
+    XtAddCallback(TAC1,XmNactivateCallback,Station_info,"3");
 
 
     XtCreateManagedWidget("create_appshell sep7c",
@@ -9236,6 +9240,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         //fprintf(stderr,"%s  %s\n", str_lat, str_long);
                     }
 
+                      // Effect the change in the object/item's
+                      // position.
                     Station_info(w, "2", NULL);
                 }
 
@@ -9387,8 +9393,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             menu_y=input_y;
             mouse_zoom = 1;
 
-            // Allow the zoom-in box to display
-            possible_zoom_function++;
+            if (!moving_object) {
+                // Not moving an object/item, so allow the zoom-in
+                // box to display.
+                possible_zoom_function++;
+            }
         }   // End of Button1 Press code
 
         else if (event->xbutton.button == Button2) {

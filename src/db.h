@@ -312,7 +312,7 @@ typedef struct _DataRow {
     struct _DataRow *t_next;    // pointer to next element in time ordered list (newer)
     struct _DataRow *t_prev;    // pointer to previous element in time ordered list (older)
     char call_sign[MAX_CALLSIGN+1]; // call sign or name index or object/item name
-    char tactical_call_sign[MAX_CALLSIGN+1]; // Like, tactical callsign, duh
+    char *tactical_call_sign;   // Like, tactical callsign, duh
     time_t sec_heard;           // time last heard, used also for time index
     int  time_sn;               // serial number for making time index unique
     short flag;                 // several flags, see below

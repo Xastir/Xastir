@@ -2368,7 +2368,12 @@ void log_tactical_call(char *call_sign, char *tactical_call_sign) {
 
     f=fopen(file,"a");
     if (f!=NULL) {
-        fprintf(f,"%s,%s\n",call_sign,tactical_call_sign);
+
+        if (tactical_call_sign == NULL)
+            fprintf(f,"%s,\n",call_sign);
+        else
+            fprintf(f,"%s,%s\n",call_sign,tactical_call_sign);
+
         (void)fclose(f);
 
         if (debug_level & 1) {
@@ -2473,10 +2478,29 @@ void reload_tactical_calls(void) {
                         if (debug_level & 1)
                             fprintf(stderr,"Found callsign to add tactical call to: %s\n",line);
 
-                        xastir_snprintf(p_station->tactical_call_sign,
-                            MAX_CALLSIGN,
-                            "%s",
-                            ptr);
+                        if (p_station->tactical_call_sign == NULL) {
+                            // Malloc some memory to hold it.
+                            p_station->tactical_call_sign = (char *)malloc(MAX_CALLSIGN+1);
+                        }
+
+                        if (p_station->tactical_call_sign != NULL) {
+
+                            // Check for blank tactical call.  If so, free the space.
+                            if (ptr[0] == '\0') {
+                                free(p_station->tactical_call_sign);
+                                p_station->tactical_call_sign = NULL;
+                            }
+                            else {
+                                xastir_snprintf(p_station->tactical_call_sign,
+                                    MAX_CALLSIGN,
+                                    "%s",
+                                    ptr);
+                            }
+                        }
+                        else {
+                            fprintf(stderr,
+                                "Couldn't malloc space for tactical callsign\n");
+                        }
                     }
                     else {
                         fprintf(stderr,

@@ -1859,7 +1859,7 @@ int ok_to_draw_station(DataRow *p_station) {
 
     // Check tactical flag
     if (Select_.tactical
-            && p_station->tactical_call_sign[0] == '\0')
+            && p_station->tactical_call_sign == NULL)
         return 0;
 
     // Check for my station and my objects/items
@@ -1989,7 +1989,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // Set up call string for display
     if (Display_.callsign)
-        if (p_station->tactical_call_sign[0]) {
+        if (p_station->tactical_call_sign) {
             // Display tactical callsign instead if it has one
             // defined.
             strcpy(temp_call,p_station->tactical_call_sign);
@@ -3070,7 +3070,7 @@ void WX_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 
 /*
  *  Change data for current object
- *  If calldata = 2, we're doing a move object operation.  Pass the
+ *  If calldata = 3, we're doing a move object operation.  Pass the
  *  value on through to Set_Del_Object.
  */
 void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
@@ -3112,19 +3112,38 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
     // Change to:
     temp = XmTextGetString(tactical_text);
 
-    xastir_snprintf(tactical_pointer->tactical_call_sign,
-        MAX_CALLSIGN,
-        "%s",
-        temp);
+    if (tactical_pointer->tactical_call_sign == NULL) {
+        // Malloc some memory to hold it.
+        tactical_pointer->tactical_call_sign = (char *)malloc(MAX_CALLSIGN+1);
+    }
 
-    fprintf(stderr,
-        "Assigned tactical call \"%s\" to %s\n",
-        temp,
-        tactical_pointer->call_sign);
+    if (tactical_pointer->tactical_call_sign != NULL) {
 
-    // Log the change in the tactical_calls.log file
-    log_tactical_call(tactical_pointer->call_sign,
-        tactical_pointer->tactical_call_sign);
+        // Check for blank tactical call.  If so, free the space.
+        if (temp[0] == '\0') {
+            free(tactical_pointer->tactical_call_sign);
+            tactical_pointer->tactical_call_sign = NULL;
+        }
+        else {
+            xastir_snprintf(tactical_pointer->tactical_call_sign,
+                MAX_CALLSIGN,
+                "%s",
+                temp);
+        }
+
+        fprintf(stderr,
+            "Assigned tactical call \"%s\" to %s\n",
+            temp,
+            tactical_pointer->call_sign);
+
+        // Log the change in the tactical_calls.log file
+        log_tactical_call(tactical_pointer->call_sign,
+            tactical_pointer->tactical_call_sign);
+    }
+    else {
+        fprintf(stderr,
+            "Couldn't malloc space for tactical callsign\n");
+    }
 
     XtFree(temp);
 
@@ -3485,7 +3504,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     }
 
     // Print the tactical call, if any
-    if (p_station->tactical_call_sign[0]) {
+    if (p_station->tactical_call_sign) {
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI065"), p_station->tactical_call_sign);
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
@@ -4728,6 +4747,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             Modify_object(w, (XtPointer)p_station, calldata);
         }
         else if (strncmp(calldata,"2",1) == 0) {
+            Modify_object(w, (XtPointer)p_station, calldata);
+        }
+        else if (strncmp(calldata,"3",1) == 0) {
             Assign_Tactical_Call(w, (XtPointer)p_station, calldata);
         }
         // We just drew all of the above, but now we wish to destroy it and
@@ -6646,7 +6668,7 @@ void init_station(DataRow *p_station) {
     p_station->coord_lon          = 0l;           // 180°W  / position
     p_station->pos_amb            = 0;            // No ambiguity
     p_station->call_sign[0]       = '\0';         // ?????
-    p_station->tactical_call_sign[0] = '\0';
+    p_station->tactical_call_sign = NULL;
     p_station->sec_heard          = 0;
     p_station->time_sn            = 0;
     p_station->flag               = 0;            // set all flags to inactive
@@ -7443,6 +7465,8 @@ void station_del(char *call) {
         (void)delete_comments_and_status(p_name);  // Free comment storage if it exists
         if (p_name->node_path_ptr != NULL)  // Free malloc'ed path
             free(p_name->node_path_ptr);
+        if (p_name->tactical_call_sign != NULL)
+            free(p_name->tactical_call_sign);
         delete_station_memory(p_name);  // free memory
     }
 }
@@ -7476,6 +7500,8 @@ void station_del_ptr(DataRow *p_name) {
         (void)delete_comments_and_status(p_name);  // Free comment storage if it exists
         if (p_name->node_path_ptr != NULL)  // Free malloc'ed path
             free(p_name->node_path_ptr);
+        if (p_name->tactical_call_sign != NULL)
+            free(p_name->tactical_call_sign);
         delete_station_memory(p_name);  // free memory
 
 //fprintf(stderr,"db.c:station_del_ptr(): Deleted station\n");
@@ -7566,7 +7592,7 @@ void check_station_remove(void) {
 //fprintf(stderr,"mine\n");
                 }
 
-                else if (p_station->tactical_call_sign[0] != '\0') {
+                else if (p_station->tactical_call_sign) {
                     // Station has a tactical callsign assigned,
                     // don't delete it.
 //fprintf(stderr,"found old station: %s\t\t",p_station->call_sign);
