@@ -599,8 +599,8 @@ WPUPTSP005|Volg Nu!||
 WPUPTSP006|Stop met Volgen||
 WPUPTSP007|Download Spoor||
 WPUPTSP008|Roepnaam||
-WPUPTSP009|Start Trail (hrs ago)||
-WPUPTSP010|Trail Length (hrs)||
+WPUPTSP009|Begin Volgen (uren geleden)||
+WPUPTSP010|Volgduur (uren)||
 #
 # PopUp "Messages"
 WPUPMSB001|Stuur Bericht, Venster %d||
