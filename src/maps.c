@@ -4727,6 +4727,7 @@ int index_retrieve(char *filename,
         current = last_index_lookup;
     }
     else {
+        first_iteration = 0; // Don't look through the list twice!
         current = map_index_head;
     }
 
@@ -4735,31 +4736,87 @@ int index_retrieve(char *filename,
         return(status);
     }
 
-    // Search for a matching filename in the linked list
-    while (current != NULL) {
+    // Check the first letter to see if we're already past the
+    // correct area.  If so, start at the beginning of the index.
+    //
+    // if needle > haystack
+    if (filename[0] > current->filename[0]) {
 
-        if (strcmp(current->filename,filename) == 0) {
-            // Found a match!
-            status = 1;
-            *bottom = current->bottom;
-            *top = current->top;
-            *left = current->left;
-            *right = current->right;
-            *max_zoom = current->max_zoom;
-            *min_zoom = current->min_zoom;
-            *map_layer = current->map_layer;
-            *draw_filled = current->draw_filled;
-            *auto_maps = current->auto_maps;
-            break;  // Exit the while loop
-        }
-        else {
+        // Yes, we're past it.  Start at the beginning instead.
+        //
+        first_iteration = 0; // Don't look through the list twice!
+        current = map_index_head;
+    }
+
+    // Search for a matching filename in the linked list.  We check
+    // the first character of each here in order to speed up the
+    // function, as this function is called rather a lot.
+    while (current != NULL) {
+        char needle = filename[0];
+        char haystack = current->filename[0];
+
+
+        if (needle > haystack) {
+
+            // We're not there yet.  Try the next map in the index.
+            //
             current = current->next;
         }
 
+        else if (needle < haystack) {
+
+            // We're past it in the index.  Check whether we should
+            // start over at the beginning.
+            //
+            if (first_iteration) {
+                first_iteration = 0; // Don't look through the list again.
+                current = map_index_head;
+            }
+
+            else {
+
+                // We're done.  We didn't find it in the index.
+                // Save the pointer away for next time.
+                last_index_lookup = current;
+
+                return(status);
+            }
+        }
+
+        else if (needle == haystack) {
+
+            // We're in the right neighborhood.  The first letter of
+            // each is a match.  Test the entire string now for a
+            // match.
+            //
+            if (strcmp(current->filename,filename) == 0) {
+                // Found a match!
+                status = 1;
+                *bottom = current->bottom;
+                *top = current->top;
+                *left = current->left;
+                *right = current->right;
+                *max_zoom = current->max_zoom;
+                *min_zoom = current->min_zoom;
+                *map_layer = current->map_layer;
+                *draw_filled = current->draw_filled;
+                *auto_maps = current->auto_maps;
+                break;  // Exit the while loop
+            }
+        }
+
+        else {
+            // We should never get here, as we've already hit all
+            // conditions possible.
+            current = current->next;
+        }
+
+        // If we hit the end of the list and need to start at the
+        // beginning again...
         if (current == NULL && first_iteration) {
             // We hit the end.  Start over at the beginning of the
             // list.
-            first_iteration = 0;
+            first_iteration = 0; // Don't look through the list again.
             current = map_index_head;
         }
     }
