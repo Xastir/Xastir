@@ -36,8 +36,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=1; pattern=1; display_le
 /^COUNTY=(.*)$/ {name="$1"; next}
 # key: set the search key to be the FIPS code.  Not currently used.
 # also append County to the name except for Louisiana, use Parish:
-# XXX - find out what the FIPS code is for Louisiana and replace 99 with it:
-/^FIPSSTCO=(99.*)$/ {name="$name Parish"; key=$1; next}
+/^FIPSSTCO=(22.*)$/ {name="$name Parish"; key=$1; next}
 /^FIPSSTCO=(.*)$/ {name="$name County"; key=$1; next}
 # don't need special end case handling...
 #END_RECORD {name="$name ($key)";}

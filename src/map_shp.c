@@ -634,7 +634,7 @@ void draw_shapefile_map (Widget w,
     char            status_text[MAX_FILENAME];
 #ifdef DBFAWK
     char            dbfsig[1024],dbffields[1024],name[64],key[64],sym[2];
-    int             color,lanes,filled,pattern,display_level,label_level;
+    int             color,lanes,layer,filled,pattern,display_level,label_level;
     dbfawk_sig_info *sig_info = NULL;
     dbfawk_field_info *fld_info = NULL;
 #endif
@@ -728,6 +728,7 @@ void draw_shapefile_map (Widget w,
                 awk_declare_sym(Symtbl,"dbffields",STRING,dbffields,sizeof(dbffields));
                 awk_declare_sym(Symtbl,"color",INT,&color,sizeof(color));
                 awk_declare_sym(Symtbl,"lanes",INT,&lanes,sizeof(lanes));
+                awk_declare_sym(Symtbl,"layer",INT,&layer,sizeof(layer));
                 awk_declare_sym(Symtbl,"name",STRING,name,sizeof(name));
                 awk_declare_sym(Symtbl,"key",STRING,key,sizeof(key));
                 awk_declare_sym(Symtbl,"symbol",STRING,sym,sizeof(sym));
@@ -748,7 +749,9 @@ void draw_shapefile_map (Widget w,
         }
     }
 #endif /* DBFAWK */
-
+#ifdef DBFAWK
+    /* XXX - need to figure out weather alerts to use dbfawk */
+#endif /* DBFAWK */
     // If we're doing weather alerts and index is not filled in yet
     if (weather_alert_flag && (alert->index == -1) ) {
 
