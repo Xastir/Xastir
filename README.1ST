@@ -1374,7 +1374,9 @@ file is always on my website at:
 ; and semi-colons with the "TAB" character.
 ;
 ; Standard APRSd port definitions at 
-; http://www.ntstrans.com/~ntstate/ports.html
+; http://aprsdcsp.antelope.net/ports.html
+; and at
+; http://www.wa4dsy.net/aprs/ports.html
 ;
 ; Direct IP addresses subject to change -- 
 ; recommended to use only when DNS (named) access fails.
