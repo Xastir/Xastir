@@ -413,8 +413,10 @@ void draw_grid(Widget w) {
  * then it draws filled polygons in the color of
  * "object_behavior"?  Weird.
  **********************************************************/
-void map_plot (Widget w, long max_x, long max_y, long x_long_cord,long y_lat_cord,
-    unsigned char color, long object_behavior, int destination_pixmap) {
+void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
+        long y_lat_cord, unsigned char color, long object_behavior,
+        int destination_pixmap, int draw_filled) {
+
     static int redraw_check;
     static XPoint points[MAX_MAP_POINTS];
     static unsigned char last_color = (unsigned char)0;
@@ -496,7 +498,7 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,long y_lat_cor
 
                     case DRAW_TO_PIXMAP:
                         // We must be drawing maps 'cuz this is the pixmap we use for it.
-                        if (map_color_fill)
+                        if (map_color_fill && draw_filled)
                             (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, npoints, Complex,CoordModeOrigin);
                         break;
 
@@ -1198,7 +1200,8 @@ void draw_shapefile_map (Widget w,
                         char *filenm,
                         alert_entry * alert,
                         char alert_color,
-                        int destination_pixmap) {
+                        int destination_pixmap,
+                        int draw_filled) {
 
     DBFHandle       hDBF;
     SHPObject       *object;
@@ -2861,14 +2864,14 @@ void draw_shapefile_map (Widget w,
                             }
                             else if (glacier_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
-                                if (map_color_fill) {
+                                if (map_color_fill && draw_filled) {
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                 }
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (lake_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
-                                if (map_color_fill) {
+                                if (map_color_fill && draw_filled) {
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
 //                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
                                 }
@@ -2876,7 +2879,7 @@ void draw_shapefile_map (Widget w,
                             }
                             else if (river_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
-                                if (map_color_fill)
+                                if (map_color_fill && draw_filled)
                                     (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                 else
                                     (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
@@ -2887,7 +2890,7 @@ void draw_shapefile_map (Widget w,
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
                                 (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
                             }
-                            else if (map_color_fill) {  // Land masses?
+                            else if (map_color_fill && draw_filled) {  // Land masses?
                                 if (city_flag)
                                     (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                 else
@@ -8852,7 +8855,8 @@ static int map_onscreen_index(char *filename) {
 // Also Note: It looks like all the values in the data structures are 
 // unsigned, we may have to explicitly define the long's as well.  -KD6ZWR
 //
-void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixmap) {
+void draw_palm_image_map(Widget w, char *dir, char *filenm,
+        int destination_pixmap, int draw_filled) {
 
 // Do NOT change any of these structs.  They have to match the
 // structs  that the palm maps were made with.
@@ -9099,7 +9103,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                 map_top + (line_y * scale),
                                 record_hdr.type,    // becomes the color choice
                                 0,
-                                destination_pixmap);
+                                destination_pixmap,
+                                draw_filled);
 
                             for (count -= sizeof(vector_hdr); count > 0; count -= sizeof(vector_point)) {
 
@@ -9123,7 +9128,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                     map_top + (line_y * scale),
                                     record_hdr.type,
                                     0,
-                                    destination_pixmap);
+                                    destination_pixmap,
+                                    draw_filled);
                             }
 
                             // DNN: Only line_x and line_y are scaled,
@@ -9135,7 +9141,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                 map_top + (line_y * scale),
                                 0,  // Color 0
                                 0,
-                                destination_pixmap);
+                                destination_pixmap,
+                                draw_filled);
                         }
                         else {
                             vector = False;
@@ -9304,7 +9311,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
  * and write them to the map index file.
  **********************************************************/
 void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
-                unsigned char alert_color, int destination_pixmap) {
+                unsigned char alert_color, int destination_pixmap,
+                int draw_filled) {
     FILE *f;
     char file[MAX_FILENAME];
     char map_it[MAX_FILENAME];
@@ -9454,34 +9462,53 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
         if (alert != NULL) {
             //printf("Alert!\n");
         }
-        draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
+        draw_shapefile_map(w,
+            dir,
+            filenm,
+            alert,
+            alert_color,
+            destination_pixmap,
+            draw_filled);
 #endif // HAVE_SHAPELIB
     }
 
 
     // .geo image map? (can be one of many formats)
     else if (ext != NULL && strcasecmp (ext, "geo") == 0) {
-        draw_geo_image_map (w, dir, filenm, destination_pixmap);
+        draw_geo_image_map(w,
+            dir,
+            filenm,
+            destination_pixmap);
     }
 
 
     // Palm map?
     else if (ext != NULL && strcasecmp (ext, "pdb") == 0) {
         //printf("calling draw_palmimage_map: %s/%s\n", dir, filenm);
-        draw_palm_image_map (w, dir, filenm, destination_pixmap);
+        draw_palm_image_map(w,
+            dir,
+            filenm,
+            destination_pixmap,
+            draw_filled);
     }
 
 
     // GNIS database file?
     else if (ext != NULL && strcasecmp (ext, "gnis") == 0) {
-        draw_gnis_map (w, dir, filenm, destination_pixmap);
+        draw_gnis_map(w,
+            dir,
+            filenm,
+            destination_pixmap);
     }
 
 
 #ifdef HAVE_GEOTIFF
     // USGS DRG geoTIFF map?
     else if (ext != NULL && strcasecmp (ext, "tif") == 0) {
-        draw_geotiff_image_map (w, dir, filenm, destination_pixmap);
+        draw_geotiff_image_map(w,
+            dir,
+            filenm,
+            destination_pixmap);
     }
 #endif // HAVE_GEOTIFF
 
@@ -9712,9 +9739,25 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                         LongHld = ((double)LongHld * 360000.0) / points_per_degree;
                                         x_long_cord = LongHld + left_boundary;
                                         y_lat_cord = LatHld + top_boundary;
-                                        map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, (unsigned char)color, 0, destination_pixmap);
+                                        map_plot (w,
+                                            max_x,
+                                            max_y,
+                                            (long)x_long_cord,
+                                            (long)y_lat_cord,
+                                            (unsigned char)color,
+                                            0,
+                                            destination_pixmap,
+                                            draw_filled);
                                     }
-                                    map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, '\0', 0, destination_pixmap);
+                                    map_plot (w,
+                                        max_x,
+                                        max_y,
+                                        (long)x_long_cord,
+                                        (long)y_lat_cord,
+                                        '\0',
+                                        0,
+                                        destination_pixmap,
+                                        draw_filled);
                                 }
                             } else if (strncasecmp ("ASCII", map_version, 4) == 0) {
                                 if (color == 0) {
@@ -9736,16 +9779,40 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                     }
                                     if (LongHld == 0 && LatHld == 0) {
                                         color = 0;
-                                        map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, (unsigned char)color,0, destination_pixmap);
+                                        map_plot (w,
+                                            max_x,
+                                            max_y,
+                                            (long)x_long_cord,
+                                            (long)y_lat_cord,
+                                            (unsigned char)color,
+                                            0,
+                                            destination_pixmap,
+                                            draw_filled);
                                     } else if (LongHld == 0 && LatHld == -1) {
                                         dos_labels = (int)TRUE;
-                                        map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, '\0', 0, destination_pixmap);
+                                        map_plot (w,
+                                            max_x,
+                                            max_y,
+                                            (long)x_long_cord,
+                                            (long)y_lat_cord,
+                                            '\0',
+                                            0,
+                                            destination_pixmap,
+                                            draw_filled);
                                     } else {
                                         LatHld = ((double)LatHld * 360000.0) / points_per_degree;
                                         LongHld = ((double)LongHld * 360000.0) / points_per_degree;
                                         x_long_cord = LongHld + left_boundary;
                                         y_lat_cord = LatHld + top_boundary;
-                                        map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, (unsigned char)color,0, destination_pixmap);
+                                        map_plot (w,
+                                            max_x,
+                                            max_y,
+                                            (long)x_long_cord,
+                                            (long)y_lat_cord,
+                                            (unsigned char)color,
+                                            0,
+                                            destination_pixmap,
+                                            draw_filled);
                                     }
                                 }
                             } else if (strncasecmp ("Comp", map_version, 4) == 0) {
@@ -9770,10 +9837,26 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 
                                     if (LongHld == 0 && LatHld == 0) {
                                         color = 0;
-                                        map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, (unsigned char)color,0, destination_pixmap);
+                                        map_plot (w,
+                                            max_x,
+                                            max_y,
+                                            (long)x_long_cord,
+                                            (long)y_lat_cord,
+                                            (unsigned char)color,
+                                            0,
+                                            destination_pixmap,
+                                            draw_filled);
                                     } else if (LongHld == 0 && LatHld == -1) {
                                         dos_labels = (int)TRUE;
-                                        map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, (unsigned char)color,0, destination_pixmap);
+                                        map_plot (w,
+                                            max_x,
+                                            max_y,
+                                            (long)x_long_cord,
+                                            (long)y_lat_cord,
+                                            (unsigned char)color,
+                                            0,
+                                            destination_pixmap,
+                                            draw_filled);
                                     }
 
                                     if (color && !dos_labels) {
@@ -9793,7 +9876,15 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                             LongHld = ((double)LongHld * 360000.0) / points_per_degree;
                                             x_long_cord = LongHld + left_boundary;
                                             y_lat_cord = LatHld + top_boundary;
-                                            map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, (unsigned char)color, 0, destination_pixmap);
+                                            map_plot (w,
+                                                max_x,
+                                                max_y,
+                                                (long)x_long_cord,
+                                                (long)y_lat_cord,
+                                                (unsigned char)color,
+                                                0,
+                                                destination_pixmap,
+                                                draw_filled);
                                         }
                                     }
                                 }
@@ -9845,16 +9936,48 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                                 y_lat_cord *= 10;
                         }
                         if (alert_color && last_behavior & 0x80 && (int)vector_start == 0xff) {
-                            map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, '\0',(long)alert_color, destination_pixmap);
+                            map_plot (w,
+                                max_x,
+                                max_y,
+                                (long)x_long_cord,
+                                (long)y_lat_cord,
+                                '\0',
+                                (long)alert_color,
+                                destination_pixmap,
+                                draw_filled);
                             //special_fill = TRUE;
                         }
-                        map_plot (w, max_x, max_y, (long)x_long_cord, (long)y_lat_cord, vector_start,(long)object_behavior, destination_pixmap);
+                        map_plot (w,
+                            max_x,
+                            max_y,
+                            (long)x_long_cord,
+                            (long)y_lat_cord,
+                            vector_start,
+                            (long)object_behavior,
+                            destination_pixmap,
+                            draw_filled);
                     }
                 }
                 if (alert_color)
-                    map_plot (w, max_x, max_y, 0, 0, '\0',special_fill ? (long)0xfd : (long)alert_color, destination_pixmap);
+                    map_plot (w,
+                        max_x,
+                        max_y,
+                        0,
+                        0,
+                        '\0',
+                        special_fill ? (long)0xfd : (long)alert_color,
+                        destination_pixmap,
+                        draw_filled);
                 else
-                    map_plot (w, max_x, max_y, 0, 0, (unsigned char)0xff, 0, destination_pixmap);
+                    map_plot (w,
+                    max_x,
+                    max_y,
+                    0,
+                    0,
+                    (unsigned char)0xff,
+                    0,
+                    destination_pixmap,
+                    draw_filled);
 
                 (void)XSetForeground (XtDisplay (w), gc, colors[20]);
                 line_width = 2;
@@ -10417,12 +10540,14 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
             if (done) {    // We found a filename match for the alert
                 // Go draw the weather alert (kind'a)
+//WE7U
                 draw_map (w,
                     dir,                // Alert directory
                     alert->filename,    // Shapefile filename
                     alert,
                     -1,                 // Signifies "DON'T DRAW THE SHAPE"
-                    destination_pixmap);
+                    destination_pixmap,
+                    1 /* draw_filled */ );
             }
             else {      // No filename found that matches the first two
                         // characters that we already computed.
@@ -10494,12 +10619,14 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
                             // Check whether the file is in a subdirectory
                             if (strncmp (fullpath, map_dir, (size_t)map_dir_length) != 0) {
+//WE7U
                                 draw_map (w,
                                     dir,
                                     dl->d_name,
                                     alert ? &alert[*alert_count] : NULL,
                                     '\0',
-                                    destination_pixmap);
+                                    destination_pixmap,
+                                    1 /* draw_filled */ );
                                 if (alert_count && *alert_count)
                                     (*alert_count)--;
                             }
@@ -10507,12 +10634,14 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 // File is in the main map directory
                                 // Find the '/' character
                                 for (ptr = &fullpath[map_dir_length]; *ptr == '/'; ptr++) ;
+//WE7U
                                 draw_map (w,
                                     map_dir,
                                     ptr,
                                     alert ? &alert[*alert_count] : NULL,
                                     '\0',
-                                    destination_pixmap);
+                                    destination_pixmap,
+                                    1 /* draw_filled */ );
                                 if (alert_count && *alert_count)
                                     (*alert_count)--;
                             }
@@ -11195,7 +11324,7 @@ void index_insert_sorted(map_index_record *new_record) {
         if (test == 0) {    // Found a match!
             int selected;
 
-printf("Found a match: Updating entry for %s\n",new_record->filename);
+//printf("Found a match: Updating entry for %s\n",new_record->filename);
 
             // Save this away temporarily.
             selected = current->selected;
@@ -11224,8 +11353,8 @@ printf("Found a match: Updating entry for %s\n",new_record->filename);
                                 // alphabet.  Insert ahead of this
                                 // last record.
 
-printf("Not Found, inserting: %s\n", new_record->filename);
-printf(  "       Before record: %s\n", current->filename);
+//printf("Not Found, inserting: %s\n", new_record->filename);
+//printf(  "       Before record: %s\n", current->filename);
 
             if (current == map_index_head) {  // Start of list!
                 // Insert new record at head of list
@@ -11260,7 +11389,7 @@ printf(  "       Before record: %s\n", current->filename);
         // the end of the list.  "previous" points to the last
         // record in the list or NULL (empty list).
 
-printf("Not Found: Adding to end: %s\n",new_record->filename);
+//printf("Not Found: Adding to end: %s\n",new_record->filename);
 
         new_record->next = NULL;
 
@@ -11614,7 +11743,8 @@ void load_alert_maps (Widget w, char *dir) {
                         alert_list[i].filename,
                         &alert_list[i],
                         fill_color[level],
-                        DRAW_TO_PIXMAP_ALERTS);
+                        DRAW_TO_PIXMAP_ALERTS,
+                        1 /* draw_filled */ );
                 }
                 else {
                     //printf("Alert not visible\n");
@@ -11841,7 +11971,8 @@ printf("*** DONE sorting the selected maps.\n");
                 current->filename,
                 NULL,
                 '\0',
-                DRAW_TO_PIXMAP);
+                DRAW_TO_PIXMAP,
+                current->draw_filled);
         }
 
         current = current->next;
@@ -12026,7 +12157,9 @@ printf("*** DONE sorting the selected maps.\n");
             current->filename,
             NULL,
             '\0',
-            DRAW_TO_PIXMAP);
+            DRAW_TO_PIXMAP,
+            current->draw_filled);
+ 
 
         current = current->next;
     }
