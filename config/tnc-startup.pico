@@ -2,37 +2,42 @@
 # This is the TNC Startup file for a dual-port Paccomm PicoPacket TNC.
 # lines that begin with a pound sign are comments.
 
-AUtolf off
-B E 0
-DIGipeat on
-Flow off
-FUll off
+ECHO off
+AUTOLF off
+BEACON EVERY 0
+#
+# Digipeat,callsign substitution,
+# no digi of own packets, and digi-once
+DIGIPEAT 7
+FLOW off
+FULL off
 GPS off
-GPSTExt $GPGGA
-HEaderli off
-LFadd off
-LGEtchar $05
-LG1text $GPRMC
-#LG2text $GPVTG
-#LG3text $PGRME
+GPSTEXT $GPGGA
+HEADERLI off
+LFADD off
+LGETCHAR $05
+LG1TEXT $GPRMC
+#LG2TEXT $GPVTG
+#LG3TEXT $PGRME
 MCOM off
 MFILTER 0
-Monitor 3
-MRpt on
-MStamp off
-MYAlias RELAY
-#MY1alias WIDE
-#MY2alias SAR
-#MY3alias ESAR
-NEwmode off
-#Paclen 128
-PErsist 128
-#PIdcheck off
-Screenln 0
-SLotttime 15
+MONITOR 3
+MRPT on
+MSTAMP off
+MYALIAS RELAY
+#MY1ALIAS WIDE
+#MY2ALIAS SAR
+#MY3ALIAS ESAR
+NEWMODE off
+#PACLEN 128
+PERSIST 128
+#PIDCHECK off
+SCREENLN 0
+SLOTTIME 15
 #
 #
-# B E 0 must be set to 0 or both APRS and your TNC will send BCNS
-# Which will alternate in everyones L and A lists and fill up
-# their logs.  Do NOT set B E to anything other than 0 while APRS
+# BEACON EVERY 0 must be set to 0 or both Xastir and your TNC will send
+# beacons which will alternate in everyones lists and fill up their
+# logs.  Do NOT set BEACON EVERY to anything other than 0 while Xastir
 # is running.
+
