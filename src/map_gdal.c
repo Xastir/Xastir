@@ -407,7 +407,7 @@ scr_s_x_min = 0;
 
 
 // Prototype
-void Draw_Polygons(OGRGeometryH geometry, int level, OGRCoordinateTransformationH *transformH);
+void Draw_Polygons(OGRGeometryH geometryH, int level, OGRCoordinateTransformationH transformH);
  
 
 
@@ -443,7 +443,7 @@ void draw_ogr_map(Widget w,
     OGRSFDriverH driver = NULL;
     OGRSpatialReferenceH map_spatialH = NULL;
     OGRSpatialReferenceH wgs84_spatialH = NULL;
-    OGRCoordinateTransformationH *transformH = NULL;
+    OGRCoordinateTransformationH transformH = NULL;
     int i, numLayers;
     char full_filename[300];
     const char *ptr;
@@ -949,7 +949,7 @@ void draw_ogr_map(Widget w,
         OGRLayerH layer;
 //        int jj;
 //        int numFields;
-        OGRFeatureH feature;
+        OGRFeatureH featureH;
 //        OGRFeatureDefnH layerDefn;
         OGREnvelope psExtent;  
         int extents_found = 0;
@@ -1134,9 +1134,12 @@ void draw_ogr_map(Widget w,
         // Loop through all of the features in the layer.
         //
 
-//        if ( (feature = OGR_L_GetNextFeature( layer ) ) != NULL ) {
-        while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
-            OGRGeometryH geometry;
+//        if ( (featureH = OGR_L_GetNextFeature( layer ) ) != NULL ) {
+//if (0) {
+        while ( (featureH = OGR_L_GetNextFeature( layer )) != NULL ) {
+//#define TESTWE7U
+#ifndef TESTWE7U
+            OGRGeometryH geometryH;
             int num = 0;
             int ii;
             double X1, Y1, Z1, X2, Y2, Z2;
@@ -1144,8 +1147,8 @@ void draw_ogr_map(Widget w,
  
 
             if (interrupt_drawing_now) {
-               if (feature != NULL)
-                   OGR_F_Destroy( feature );
+                if (featureH != NULL)
+                    OGR_F_Destroy( featureH );
 
                 if (wgs84_spatialH != NULL) {
                     OSRDestroySpatialReference(wgs84_spatialH);
@@ -1163,26 +1166,26 @@ void draw_ogr_map(Widget w,
                 return;
             }
 
-            if (feature == NULL) {
+            if (featureH == NULL) {
                 continue;
             }
 
 
             // Debug code
-            //OGR_F_DumpReadable( feature, stderr );
+            //OGR_F_DumpReadable( featureH, stderr );
 
 
             // Get a handle to the geometry itself
-            geometry = OGR_F_GetGeometryRef(feature);
-            if (geometry == NULL) {
-                OGR_F_Destroy( feature );
+            geometryH = OGR_F_GetGeometryRef(featureH);
+            if (geometryH == NULL) {
+                OGR_F_Destroy( featureH );
                 continue;
             }
 
 
             // More debug code.  Print the Well Known Text
             // representation of the geometry.
-//            if (OGR_G_ExportToWkt(geometry, &buffer) == 0) {
+//            if (OGR_G_ExportToWkt(geometryH, &buffer) == 0) {
 //                fprintf(stderr, "%s\n", buffer);
 //            }
 
@@ -1216,15 +1219,15 @@ void draw_ogr_map(Widget w,
                 xastir_snprintf(geometry_type_name,
                     sizeof(geometry_type_name),
                     "%s",
-                    OGR_G_GetGeometryName(geometry));
-                geometry_type = OGR_G_GetGeometryType(geometry);
+                    OGR_G_GetGeometryName(geometryH));
+                geometry_type = OGR_G_GetGeometryType(geometryH);
                 fprintf(stderr,"  Type: %d, %s\n",  
                     geometry_type,
                     geometry_type_name);
             }
 
             // Debug code 
-            //OGR_G_DumpReadable(geometry, stderr, "Shape: ");
+            //OGR_G_DumpReadable(geometryH, stderr, "Shape: ");
 
 
 // We could call OGR_G_GetEnvelope() here and calculate for
@@ -1248,14 +1251,14 @@ void draw_ogr_map(Widget w,
                 case 0x80000004:    // MultiPoint25D
 
                     // Get number of elements (points)
-                    num = OGR_G_GetPointCount(geometry);
+                    num = OGR_G_GetPointCount(geometryH);
 //                    fprintf(stderr,"  Number of elements: %d\n",num);
 
                     // Print out the point
 //                    for ( ii=0; ii < num; ii++ ) {
-//                        X1 = OGR_G_GetX(geometry, ii);
-//                        Y1 = OGR_G_GetY(geometry, ii);
-//                        Z1 = OGR_G_GetZ(geometry, ii);
+//                        X1 = OGR_G_GetX(geometryH, ii);
+//                        Y1 = OGR_G_GetY(geometryH, ii);
+//                        Z1 = OGR_G_GetZ(geometryH, ii);
 //                        fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
 //                    }
 
@@ -1264,7 +1267,7 @@ void draw_ogr_map(Widget w,
                         for ( ii = 0;  ii < num; ii++ ) {
                             int ok = 1;
 
-                            OGR_G_GetPoint(geometry,
+                            OGR_G_GetPoint(geometryH,
                                 ii,
                                 &X1,
                                 &Y1,
@@ -1296,12 +1299,12 @@ void draw_ogr_map(Widget w,
                 case 0x80000005:    // MultiLineString25D
 
                     // Get number of elements (lines)
-                    num = OGR_G_GetPointCount(geometry);
+                    num = OGR_G_GetPointCount(geometryH);
 //                    fprintf(stderr,"  Number of elements: %d\n",num);
 
                     // Print out the points the line is comprised of
 //                    for ( ii=0; ii < num; ii++ ) {
-//                        OGR_G_GetPoint(geometry,
+//                        OGR_G_GetPoint(geometryH,
 //                            ii,
 //                            &X1,
 //                            &Y1,
@@ -1312,7 +1315,7 @@ void draw_ogr_map(Widget w,
                     // Draw one polyline
                     if (num > 0) {
                         // Get the first point
-                        OGR_G_GetPoint(geometry,
+                        OGR_G_GetPoint(geometryH,
                             0,
                             &X2,
                             &Y2,
@@ -1333,7 +1336,7 @@ void draw_ogr_map(Widget w,
                             Z1 = Z2;
 
                             // Get the next point
-                            OGR_G_GetPoint(geometry,
+                            OGR_G_GetPoint(geometryH,
                                 ii,
                                 &X2,
                                 &Y2,
@@ -1372,7 +1375,7 @@ void draw_ogr_map(Widget w,
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
 
-                    Draw_Polygons(geometry, 1, transformH);
+                    Draw_Polygons(geometryH, 1, transformH);
                     break;
 
                 case 7:             // GeometryCollection
@@ -1383,7 +1386,11 @@ void draw_ogr_map(Widget w,
                     fprintf(stderr,"  Unknown or unimplemented geometry\n");
                     break;
             }
-            OGR_F_Destroy( feature );
+//            if (geometryH)
+//                OGR_G_DestroyGeometry( geometryH );
+#endif  // TESTWE7U
+            if (featureH)
+                OGR_F_Destroy( featureH );
         }
         // No need to free layer handle, it belongs to the datasource
     }
@@ -1426,15 +1433,15 @@ void draw_ogr_map(Widget w,
 // function on all of them at once, and then call an X11 function to
 // draw the entire line at once.
 //
-void Draw_Polygons(OGRGeometryH geometry,
+void Draw_Polygons(OGRGeometryH geometryH,
         int level,
-        OGRCoordinateTransformationH *transformH) {
+        OGRCoordinateTransformationH transformH) {
  
     int kk;
     int object_num = 0;
 
 
-    if (geometry == NULL)
+    if (geometryH == NULL)
         return;
 
     // Check for more objects below this one, recursing into any
@@ -1442,32 +1449,32 @@ void Draw_Polygons(OGRGeometryH geometry,
     // don't want infinite recursion here).  These objects may be
     // rings or they may be other polygons in a collection.
     // 
-    object_num = OGR_G_GetGeometryCount(geometry);
+    object_num = OGR_G_GetGeometryCount(geometryH);
 
     // Iterate through the objects found.  If another geometry is
     // detected, call this function again recursively.  That will
     // cause all of the lower objects to get drawn.
     //
     for ( kk = 0; kk < object_num; kk++ ) {
-        OGRGeometryH child;
+        OGRGeometryH child_geometryH;
         int sub_object_num;
 
         // This may be a ring, or another object with rings.
-        child = OGR_G_GetGeometryRef(geometry, kk);
+        child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
 
-        sub_object_num = OGR_G_GetGeometryCount(child);
+        sub_object_num = OGR_G_GetGeometryCount(child_geometryH);
 
         if (sub_object_num) {
             // We found geometries below this.  Recurse.
             if (level < 5) {
 //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
-                Draw_Polygons(child, level+1, transformH);
+                Draw_Polygons(child_geometryH, level+1, transformH);
             }
         }
         else {  // Draw
             int polygon_points;
 
-            polygon_points = OGR_G_GetPointCount(child);
+            polygon_points = OGR_G_GetPointCount(child_geometryH);
 
             if (polygon_points > 2) {
                 double X1, Y1, Z1;
@@ -1475,7 +1482,7 @@ void Draw_Polygons(OGRGeometryH geometry,
                 int mm;
 
                 // Get the first point
-                OGR_G_GetPoint(child,
+                OGR_G_GetPoint(child_geometryH,
                     0,
                     &X2,
                     &Y2,
@@ -1496,7 +1503,7 @@ void Draw_Polygons(OGRGeometryH geometry,
                     Z1 = Z2;
 
                     // Get the next point
-                    OGR_G_GetPoint(child,
+                    OGR_G_GetPoint(child_geometryH,
                         mm,
                         &X2,
                         &Y2,
