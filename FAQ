@@ -41,6 +41,7 @@ The Questions
         user interface weirdness occurs.  Why?
     3.6 Why isn't ImageMagick recognized and used during Xastir's
         "configure" stage?
+    3.7 Why do I get an error now when trying to do a "cvs update"?
 
 4.  Running Xastir
 
@@ -306,6 +307,20 @@ The Answers
     the dependent libraries before you could have even installed the
     ImageMagick RPM's.  Encourage your vendor to fix the "spec" files for those
     RPM's to include all dependencies.
+
+    3.7 Why do I get an error now when trying to do a "cvs update"?
+
+    SourceForge changed things around a bit on Apr 29th, 2004.  The changes
+    they made broke CVS for everyone.  The error message you get may look like
+    the following:
+
+        "Unknown host: cvs.xastir.sf.org"
+
+    Luckily the fix is simple.  Run these commands from the top directory where
+    you have the Xastir sources:
+
+    find -name Root -path \*CVS\* -exec perl -pi.bak -e's/cvs.xastir.sf.net/cvs.sf.net/' \{\} \;
+    find -name Root -path \*CVS\* -exec perl -pi.bak -e's/cvs.xastir.sourceforge.net/cvs.sf.net/' \{\} \;
 
 
 4. Running Xastir
