@@ -149,6 +149,7 @@ PULDNDP020|Potenza/Guadagno - stazioni mobili||
 PULDNDP013|Ambiguità di posizione|
 PULDNDP019|Visualizza dati scaduti||
 PULDNDP023|Visualizza i cerchi DF||
+PULDNDP024|Display Last Report Time||
 PULDNDP007|Percorsi delle stazioni|i|
 PULDNDP015|Elimina tutte le stazioni|C|
 PULDNDP016|Elimina tutti i percorsi|T|

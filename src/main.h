@@ -143,6 +143,7 @@ extern int letter_style;
 extern int wx_alert_style;
 extern int show_phg;
 extern int show_DF;
+extern int show_last_heard;
 extern int show_phg_mobiles;
 extern int show_phg_default;
 extern int show_amb;

@@ -1290,8 +1290,8 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
 
 void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay, long x_long,long y_lat,
                  char *callsign_text, char *alt_text, char *course_text, char *speed_text, char *my_distance,
-                 char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, Pixmap where, char orient,
-                 char area_type) {
+                 char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, int temp_show_last_heard,
+                 Pixmap where, char orient, char area_type) {
     long x_offset,y_offset;
     int length;
     int ghost;
@@ -1353,10 +1353,13 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                             posyr += 12;
                         }
 
-                        posyl = 10;       // distance and direction goes to the left
+                        posyl = 10; // distance and direction goes to the left.
+                                    // Also minutes last heard.
                         if ( (!ghost || show_old_data) && strlen(my_distance)>0)
                             posyl -= 6;
                         if ( (!ghost || show_old_data) && strlen(my_course)>0)
+                            posyl -= 6;
+                        if ( (!ghost || show_old_data) && temp_show_last_heard)
                             posyl -= 6;
 
                         length=(int)strlen(my_distance);
@@ -1371,6 +1374,16 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                             x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
                             y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
                             draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
+                            posyl += 12;
+                        }
+                        if ( (!ghost || show_old_data) && temp_show_last_heard) {
+                            char age[20];
+
+                            xastir_snprintf(age,sizeof(age),"%ld min",(sec_now() - sec_heard)/60);
+                            length = strlen(age);
+                            x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
+                            y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+                            draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,0x0f,length);
                             posyl += 12;
                         }
                                                                                                                     

@@ -1707,6 +1707,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char temp_my_course[20];
     char temp1_my_course[20];
     time_t temp_sec_heard;
+    int temp_show_last_heard;
     long l_lon, l_lat;
     WeatherRow *weather;
     char orient;
@@ -1837,6 +1838,10 @@ void display_station(Widget w, DataRow *p_station, int single) {
         temp_sec_heard = sec_now(); // We don't want our own objects/items to "ghost"
     }
 
+    // Show last heard times only for others stations and their
+    // objects/items.
+    temp_show_last_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? 0 : show_last_heard;
+
 
 //------------------------------------------------------------------------------------------
 
@@ -1899,6 +1904,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
             temp_wx_temp,
             temp_wx_wind,
             temp_sec_heard,
+            temp_show_last_heard,
             XtWindow(da),
             orient,
             p_station->aprs_symbol.area_object.type);
@@ -1974,6 +1980,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         temp_wx_temp,
         temp_wx_wind,
         temp_sec_heard,
+        temp_show_last_heard,
         pixmap_final,
         orient,
         p_station->aprs_symbol.area_object.type);

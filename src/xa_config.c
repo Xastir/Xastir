@@ -196,7 +196,7 @@ int get_int(char *option, int *value, int low, int high, int def) {
     if (ret && (atoi(value_o) >= low) && (atoi(value_o) <= high) )
         *value = atoi (value_o);
     else {
-        printf("Found out-of-range value (%d) for %s in config file, changing to %d\n",
+        printf("Found out-of-range or non-existent value (%d) for %s in config file, changing to %d\n",
             *value,
             option,
             def);
@@ -219,7 +219,7 @@ int get_long(char *option, long *value, long low, long high, long def) {
     if (ret && (atol(value_o) >= low) && (atol(value_o) <= high) )
         *value = atol (value_o);
     else {
-        printf("Found out-of-range value (%ld) for %s in config file, changing to %ld\n",
+        printf("Found out-of-range or non-existent value (%ld) for %s in config file, changing to %ld\n",
             *value,
             option,
             def);
@@ -383,6 +383,7 @@ void save_data(void)  {
         store_int (fout, "DISPLAY_POSITION_AMB",  show_amb);
         store_int (fout, "DISPLAY_OLD_STATION_DATA", show_old_data);
         store_int (fout, "DISPLAY_DF_INFO",       show_DF);
+        store_int (fout, "DISPLAY_LAST_HEARD",    show_last_heard);
         store_int (fout, "DISPLAY_STATION_TRAILS",station_trails);
         store_int (fout, "DISPLAY_UNITS_ENGLISH", units_english_metric);
 
@@ -808,6 +809,9 @@ void load_data_or_default(void) {
         show_old_data = 0;
     if (!get_int ("DISPLAY_DF_INFO", &show_DF, 0, 1, 0))
         show_DF = 0;
+    if (!get_int ("DISPLAY_LAST_HEARD", &show_last_heard, 0, 1, 0))
+        show_last_heard = 0;
+ 
     if (!get_int ("DISPLAY_STATION_TRAILS", &station_trails, 0, 1, 1))
         station_trails = 1;
 

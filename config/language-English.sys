@@ -148,6 +148,7 @@ PULDNDP020|Display Mobile Power/Gain||
 PULDNDP013|Display Position Ambiguity||
 PULDNDP019|Display Expired Data||
 PULDNDP023|Display DF Circles||
+PULDNDP024|Display Last Report Time||
 PULDNDP007|Display Station Trails||
 PULDNDP015|Clear All Stations!!!|A|
 PULDNDP016|Clear All Trails!!!|C|

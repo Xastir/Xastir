@@ -148,6 +148,7 @@ PULDNDP020|Activer puissance/gain mobile||
 PULDNDP013|Activer ambiguïté de position|b|
 PULDNDP019|Afficher données périmées||
 PULDNDP023|Afficher cercles DF||
+PULDNDP024|Display Last Report Time||
 PULDNDP007|Activer pistes de station|p|
 PULDNDP015|Effacer toutes stations!!!|E|
 PULDNDP016|Effacer toutes pistes!!!|f|

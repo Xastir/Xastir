@@ -262,6 +262,7 @@ Widget station_phg_default_button;
 Widget station_amb_button;
 Widget station_old_data_button;
 Widget station_DF_button;
+Widget station_last_heard_button;
  
 Widget call_on, call_off;
 static void Call_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -312,6 +313,9 @@ int show_old_data;              // Switch for displaying older station data
 
 static void Station_DF_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 int show_DF;              // Switch for displaying older station data
+
+static void Station_Last_Heard_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+int show_last_heard;    // Switch for displaying time since last-heard
 
 Widget trails_on, trails_off;
 static void Station_trails_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -3399,7 +3403,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if (!symbol_display_enable)
         XtSetSensitive(station_DF_button,FALSE);
 
-
+    station_last_heard_button = XtVaCreateManagedWidget(langcode("PULDNDP024"),xmToggleButtonGadgetClass,stationspane,
+                        XmNvisibleWhenOff, TRUE,                        
+                        XmNindicatorSize, 12,
+                        XmNbackground, colors[0xff],
+                        NULL);
+    XtAddCallback(station_last_heard_button,XmNvalueChangedCallback,Station_Last_Heard_toggle,"1");
+    if (show_last_heard)
+        XmToggleButtonSetState(station_last_heard_button,TRUE,FALSE);
+    if (!symbol_display_enable)
+        XtSetSensitive(station_last_heard_button,FALSE);
 
 
 
@@ -6190,6 +6203,22 @@ void Station_DF_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer c
         show_DF = atoi(which);
     else
         show_DF = 0;
+
+    redraw_on_new_data = 2;     // Immediate screen update
+}
+
+
+
+
+
+void Station_Last_Heard_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        show_last_heard = atoi(which);
+    else
+        show_last_heard = 0;
 
     redraw_on_new_data = 2;     // Immediate screen update
 }
