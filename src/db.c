@@ -5391,7 +5391,7 @@ void extract_area(DataRow *p_station, char *data) {
         }
 
         val = 0;
-        if (isdigit(data[1]) && isdigit(data[2])) {
+        if (isdigit((int)data[1]) && isdigit((int)data[2])) {
             val = (10 * (data[1] - '0')) + (data[2] - '0');
         }
         else {
@@ -5402,7 +5402,7 @@ void extract_area(DataRow *p_station, char *data) {
         temp_area.sqrt_lat_off = val;
 
         val = 0;
-        if (isdigit(data[5]) && isdigit(data[6])) {
+        if (isdigit((int)data[5]) && isdigit((int)data[6])) {
             val = (10 * (data[5] - '0')) + (data[6] - '0');
         }
         else {
@@ -8889,7 +8889,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     altitude[0] = '\0'; // Start with empty string
     if (strlen(p_station->altitude) != 0) {   // Altitude was entered (we only handle feet currently)
         // Need to check for all digits, and 1 to 6 digits
-        if (isdigit(p_station->altitude[0])) {
+        if (isdigit((int)p_station->altitude[0])) {
             // Must convert from meters to feet before transmitting
             temp2 = (int)( (atof(p_station->altitude) / 0.3048) + 0.5);
             if ( (temp2 >= 0) && (temp2 <= 999999) ) {

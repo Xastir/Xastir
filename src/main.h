@@ -258,12 +258,12 @@ extern gid_t egid;
 #define DISABLE_SETUID_PRIVILEGE do { \
 seteuid(getuid()); \
 setegid(getgid()); \
-if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", getuid(), getgid()); } \
+if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (int)getuid(), (int)getgid()); } \
 } while(0)
 #define ENABLE_SETUID_PRIVILEGE do { \
 seteuid(euid); \
 setegid(egid); \
-if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", euid, egid); } \
+if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (int)euid, (int)egid); } \
 } while(0)
 
 #endif /* XASTIR_MAIN_H */
