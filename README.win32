@@ -125,8 +125,8 @@ required:
 [ ] curl-devel
 [ ] cvs
 [ ] diffutils
-[ ] fvwm (used currently?)
 [ ] gcc
+[ ] gzip
 [ ] ImageMagick
 [ ] less
 [ ] lesstif
@@ -145,6 +145,9 @@ required:
 [ ] unzip
 [ ] vim (a text editor, optional)
 [ ] wget (Optional: Can use libcurl instead)
+[ ] X-start-menu-icons
+[ ] X-startup-scripts
+[ ] xfree86-lib-compat
 [ ] xorg-x11-base
 [ ] xorg-x11-bin
 [ ] xorg-x11-bin-dlls
@@ -152,10 +155,10 @@ required:
 [ ] xorg-x11-devel: Headers
 [ ] xorg-x11-etc
 [ ] xorg-x11-f100:  100 dpi fonts
+[ ] xorg-x11-fenc
 [ ] xorg-x11-fnts
 [ ] xorg-x11-libs-data
 [ ] xorg-x11-xwin
-[ ] xwinwm
 [ ] zip
 
 Clicking on the small circle with the two arrows will run you
