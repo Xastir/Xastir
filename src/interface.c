@@ -2844,17 +2844,13 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (debug_level & 2)
                         printf("Close a Serial TNC w/AUX GPS\n");
-                    begin_critical_section(&devices_lock,
-                        "interface.c:del_device");
 
-begin_critical_section(&devices_lock, "interface.c:del_device" );
+begin_critical_section(&devices_lock, "interface.c:del_device");
 
                     sprintf(temp, "config/%s", devices[port].tnc_down_file);
 
-end_critical_section(&devices_lock, "interface.c:del_device" );
+end_critical_section(&devices_lock, "interface.c:del_device");
 
-                       end_critical_section(&devices_lock,
-                        "interface.c:del_device");
                     (void)command_file_to_tnc_port(port,
                         get_data_base_dir(temp));
                     usleep(3000000);
