@@ -1996,16 +1996,36 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         piece = 0;
         for (j = 0; j < substring; j++) {
             if (strlen(&temp_string[temp[j]]) > 0) {
+                double kk;
+
                 piece++;    // Found the next piece
+                kk = atof(&temp_string[temp[j]]);
+
                 switch (piece) {
                     case (1) :  // Degrees
-                        latitude = atof(&temp_string[temp[j]]);
+                        latitude = kk;
                         break;
                     case (2) :  // Minutes
-                        latitude = latitude + ( atof(&temp_string[temp[j]]) / 60.0 );
+                        if ( (kk < 0.0) || (kk >= 60.0) ) {
+                            fprintf(stderr,"Warning:  Bad latitude minutes value\n");
+                            // Set variables so that we'll get error output.
+                            have_lat_lon = 0;
+                            have_utm = 0;
+                        }
+                        else {
+                            latitude = latitude + ( kk / 60.0 );
+                        }
                         break;
                     case (3) :  // Seconds
-                        latitude = latitude + ( atof(&temp_string[temp[j]]) / 3600.0 );
+                        if ( (kk < 0.0) || (kk >= 60.0)) {
+                            fprintf(stderr,"Warning:  Bad latitude seconds value\n");
+                            // Set variables so that we'll get error output.
+                            have_lat_lon = 0;
+                            have_utm = 0;
+                        }
+                        else {
+                            latitude = latitude + ( kk / 3600.0 );
+                        }
                         break;
                     default :
                         break;
@@ -2127,16 +2147,36 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         piece = 0;
         for (j = 0; j < substring; j++) {
             if (strlen(&temp_string[temp[j]]) > 0) {
+                double kk;
+
                 piece++;    // Found the next piece
+                kk = atof(&temp_string[temp[j]]);
+
                 switch (piece) {
                     case (1) :  // Degrees
-                        longitude = atof(&temp_string[temp[j]]);
+                        longitude = kk;
                         break;
                     case (2) :  // Minutes
-                        longitude = longitude + ( atof(&temp_string[temp[j]]) / 60.0 );
+                        if ( (kk < 0.0) || (kk >= 60.0) ) {
+                            fprintf(stderr,"Warning:  Bad longitude minutes value\n");
+                            // Set variables so that we'll get error output.
+                            have_lat_lon = 0;
+                            have_utm = 0;
+                        }
+                        else {
+                            longitude = longitude + ( kk / 60.0 );
+                        }
                         break;
                     case (3) :  // Seconds
-                        longitude = longitude + ( atof(&temp_string[temp[j]]) / 3600.0 );
+                        if ( (kk < 0.0) || (kk >= 60.0) ) {
+                            fprintf(stderr,"Warning:  Bad longitude seconds value\n");
+                            // Set variables so that we'll get error output.
+                            have_lat_lon = 0;
+                            have_utm = 0;
+                        }
+                        else {
+                            longitude = longitude + ( kk / 3600.0 );
+                        }
                         break;
                     default :
                         break;
