@@ -600,6 +600,12 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         if (strcmp(m_fill.message_line,data) != 0) {
             do_update++;
         }
+
+        // Check for zero time
+        if (m_fill.sec_heard == 0) {
+            m_fill.sec_heard = sec_now();
+            printf("Zero time on a previous message.\n");
+        }
     }
     else {
         // Only do this if it's a new message.  This keeps things
