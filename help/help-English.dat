@@ -76,6 +76,7 @@ MAP_SCALE_CHECK/FUZZYRASTER to avoid useless map loading
 usr/local/xastir->/usr/local/share/xastir, migration scripts
 break up maps.c
 Interrupting a sequence of map redraws
+TRANSPAERENT and CROP tags in .geos
 
 HELP-INDEX>What's new in Xastir 1.2
 
@@ -1106,8 +1107,17 @@ This tag is used for dynamic URL's such as weather radar, where you
 wish Xastir to auto-redraw the map at a specified interval.  By
 adding this tag to weather radar .geo's, you can watch the weather
 move across your screen.  Xastir contains only one interval counter,
-so the last REFRESH interval loaded takes effect for all selected
+so the smallest REFRESH interval loaded takes effect for all selected
 maps.
+
+TRANSPARENT 
+Set to "1" to remove black background (make it transparent).  Will be
+expanded to allow user defined color(s) to be zapped.
+
+CROP <left top right bottom>
+Removes borders (makes them transparent).  Values are in pixels with
+(0,0) at the upper left.  A good value for the 620x620 NWS radar
+images is "CROP 35 20 616 600"
 
 Special/nonstandard .geo files:
 

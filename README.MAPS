@@ -323,6 +323,19 @@ Getting Maps and other Data Files for Xastir:
       additional map downloads are needed if these are the only maps that you
       want to use.
 
+      Other tags you can put in a .geo file: 
+      DATUM: (not used, yet...)
+      PROJECTION: Currently only supports "TM" for transverse mercator.
+      REFRESH: number of seconds to reload the maps.  Multiple maps
+          with different values pick the smallest value.
+      TRANSPARENT: Set to "1" to remove black background (make it transparent)
+      CROP: removes borders.  Values are [left top right bottom] with
+          (0,0) at the upper left.  A good value for the NWS radar
+          images above is "CROP 35 20 616 600"
+      GAMMA, CONTRAST, NEGATE, EQUALIZE, NORMALIZE, LEVEL, MODULATE:  These 
+          are all ImageMagick options, and are documented there, and
+          briefly in the xastir help file.
+
      PocketAPRS maps:
 
       The latest WinAPRS distribution includes the full collection of 
