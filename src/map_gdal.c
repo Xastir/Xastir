@@ -71,7 +71,7 @@
 //#include "util.h"
 #include "main.h"
 //#include "datum.h"
-//#include "draw_symbols.h"
+#include "draw_symbols.h"
 //#include "rotated.h"
 //#include "color.h"
 //#include "xa_config.h"
@@ -465,8 +465,216 @@ scr_s_x_min = 0;
 
 
 /////////////////////////////////////////////////////////////////////
-// Above this point is GDAL code, below is OGR code.
+// Above this point is GDAL code (raster), below is OGR code
+// (vector).
 /////////////////////////////////////////////////////////////////////
+
+
+
+// guess_vector_attributes()
+//
+// Feel free to change the name.  At the moment it's somewhat
+// appropriate, but I would hope that in the future it won't be.
+// This should tie in nicely to the dbfawk stuff, and perhaps other
+// schemes for the user to determine drawing attributes.  Basically,
+// if dbfawk is compiled in, go do that instead of doing what this
+// routine does.
+//
+// What we need to do:  Come up with a signature match for the
+// driver type, filename, layer, and sometimes object_type and
+// file_attributes.  Use that to determine drawing width, label
+// size/placement, color, etc.  If the signature could also specify
+// how often the signature needs to be re-examined, that would be a
+// plus.  If it only needs to be set once per file, we could save a
+// lot of time.
+//
+// Note that draw_polygon_with_mask() still has some hard-coded
+// attributes, because it creates gc_temp in order to do the
+// regions.  We need to incorporate that somehow into this "guess"
+// routine as well, perhaps by having it call this routine directly?
+// By creating gc_temp ahead-of-time and keeping it around
+// throughout the draw, passing the GC to this routine also?
+//
+// Depending on what needs to be done for different file
+// types/layers/geometries, we might want to break this function up
+// into several, so that we can optimize for speed.  If something
+// only needs to be set once per file, or once per layer, do so.
+// Don't set it over and over again (Don't set it once per object
+// drawn).
+//
+// Set attributes based on what sort of file/layer/shape we're
+// dealing with.  driver_type may be any of:
+//
+// "AVCbin"
+// "DGN"
+// "FMEObjects Gateway"
+// "GML"
+// "Memory"
+// "MapInfo File"
+// "UK .NTF"
+// "OCI"
+// "ODBC"
+// "OGDI"
+// "PostgreSQL"
+// "REC"
+// "S57"
+// "SDTS"
+// "ESRI Shapefile"
+// "TIGER"
+// "VRT"
+//
+// Shapefiles:  If Mapshots or ESRI tiger->Shapefiles, guess the
+// coloring and line widths based on the filename and the associated
+// field contents.
+//
+// SDTS:  Guess the coloring/line widths based on the filename and
+// the layer.
+//
+// TIGER:  Guess coloring/line widths based on filename/layer.
+//
+// MapInfo:  Guess based on layer?
+//
+// DGN: ??
+//
+void guess_vector_attributes( Widget w,
+                              const char *driver_type,
+                              char *full_filename,
+                              OGRLayerH layer,
+                              int geometry_type ) {
+
+
+/*
+    switch (driver_type) {
+        default:
+            break;
+    }
+
+ 
+    switch (layer) {
+        case 0:
+        case 1:
+        default:
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+            break;
+    }
+*/
+
+
+    switch (geometry_type) {
+
+
+        case 1:             // Point
+        case 4:             // MultiPoint
+        case 0x80000001:    // Point25D
+        case 0x80000004:    // MultiPoint25D
+
+            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+            break;
+
+
+        case 2:             // LineString (polyline)
+        case 5:             // MultiLineString
+        case 0x80000002:    // LineString25D
+        case 0x80000005:    // MultiLineString25D
+
+            if (strcasecmp(driver_type,"SDTS") == 0) {
+// DEBUG:
+// Determine whether it is a hypsography layer we're dealing with.
+                // Set to yellow for SDTS hypsography layer (contours)
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+            }
+            else {
+// DEBUG:
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+            }
+            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+            break;
+
+
+        case 3:             // Polygon
+        case 6:             // MultiPolygon
+        case 0x80000003:    // Polygon25D
+        case 0x80000006:    // MultiPolygon25D
+
+            if (strcasecmp(driver_type,"SDTS") == 0) {
+// DEBUG:
+// Determine whether it is a hypsography layer we're dealing with.
+                // Set to yellow for SDTS hypsography layer (contours)
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+            }
+            else {
+// DEBUG:
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
+            }
+            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+            break;
+
+
+        case 7:             // GeometryCollection
+        case 0x80000007:    // GeometryCollection25D
+        default:            // Unknown/Unimplemented
+
+            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+            break;
+    }
+}
+
+
+
+
+
+void Draw_OGR_Labels(Widget w, Pixmap pixmap, OGRFeatureH featureH, OGRGeometryH geometryH, XPoint *xpoints, int num_points) {
+    int i,j;
+    const char *pi = NULL;
+    const char *pj = NULL;
+    char label[200] = "";
+
+
+    // Debug code
+    //OGR_F_DumpReadable( featureH, stderr );
+    //OGR_G_DumpReadable(geometryH, stderr, "Shape: ");
+
+    // Snag any feature called "NAME" or "FENAME", use this for the
+    // label.
+    i = OGR_F_GetFieldIndex(featureH, "NAME");
+    j = OGR_F_GetFieldIndex(featureH, "FENAME");
+    if (i) {
+        pi = OGR_F_GetFieldAsString(featureH, i);
+    }
+    if (j) {
+        pj = OGR_F_GetFieldAsString(featureH, j);
+    }
+
+    // Debug code
+    if (pi[0] != '\0') {
+        xastir_snprintf(label,sizeof(label),"%s",pi);
+//        fprintf(stderr,"  NAME:%s\n", label);
+    }
+    if (pj[0] != '\0') {
+        xastir_snprintf(label,sizeof(label),"%s",pj);
+//        fprintf(stderr,"FENAME:%s\n", label);
+    }
+
+
+    // Draw at least one label.  We can pick and choose among the
+    // points passed to us, and draw the quantity of labels that are
+    // appropriate for the zoom level.
+    if (label && map_labels /* && !skip_label */ ) {
+        draw_nice_string(w,
+            pixmap,
+            0,
+            xpoints[0].x+10,
+            xpoints[0].y+5,
+            (char*)label,
+            0xf,
+            0x10,
+            strlen(label));
+    }
+}
+
+
 
 
 
@@ -483,7 +691,9 @@ scr_s_x_min = 0;
 // determine which field in the file to use as a label and the
 // font/color/placement/size/etc.
 // 
-void Draw_OGR_Points(OGRGeometryH geometryH,
+void Draw_OGR_Points(Widget w,
+        OGRFeatureH featureH,
+        OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH) {
  
@@ -523,7 +733,9 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
                 // We found geometries below this.  Recurse.
                 if (level < 5) {
                     //fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
-                    Draw_OGR_Points(child_geometryH,
+                    Draw_OGR_Points(w,
+                        featureH,
+                        child_geometryH,
                         level+1,
                         transformH);
                 }
@@ -534,6 +746,14 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
         int num_points;
         int ii;
 
+
+/*
+guess_vector_attributes(w,
+    driver_type,
+    full_filename,
+    layer,
+    geometry_type);
+*/
 
         // Get number of elements (points)
         num_points = OGR_G_GetPointCount(geometryH);
@@ -591,7 +811,9 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
 // snagging the extents instead of the entire object, so we might
 // just leave it as-is.
 //
-void Draw_OGR_Lines(OGRGeometryH geometryH,
+void Draw_OGR_Lines(Widget w,
+        OGRFeatureH featureH,
+        OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
         int fast_extents) {
@@ -633,7 +855,9 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
                 // We found geometries below this.  Recurse.
                 if (level < 5) {
                     //fprintf(stderr, "DrawLines: Recursing level %d\n", level);
-                    Draw_OGR_Lines(child_geometryH,
+                    Draw_OGR_Lines(w,
+                        featureH,
+                        child_geometryH,
                         level+1,
                         transformH,
                         fast_extents);
@@ -859,6 +1083,14 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
             if (YI)
                 free(YI);
 
+/*
+guess_vector_attributes(w,
+    driver_type,
+    full_filename,
+    layer,
+    geometry_type);
+*/
+
             // Actually draw the lines
             (void)XDrawLines(XtDisplay(da),
                 pixmap,
@@ -867,8 +1099,17 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
                 num_points,
                 CoordModeOrigin);
 
+            // Draw the corresponding labels
+            Draw_OGR_Labels(w,
+                pixmap,
+                featureH,
+                geometryH,
+                xpoints,
+                num_points);
+
             if (xpoints)
                 free(xpoints);
+
         }
     }
 }
@@ -1095,7 +1336,9 @@ void draw_polygon_with_mask(Region mask,
 // snagging the extents instead of the entire object, so we might
 // just leave it as-is.
 //
-void Draw_OGR_Polygons(OGRGeometryH geometryH,
+void Draw_OGR_Polygons(Widget w,
+        OGRFeatureH featureH,
+        OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
         int draw_filled,
@@ -1146,7 +1389,9 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 
                 //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
 
-                Draw_OGR_Polygons(child_geometryH,
+                Draw_OGR_Polygons(w,
+                    featureH,
+                    child_geometryH,
                     level+1,
                     transformH,
                     draw_filled,
@@ -1294,6 +1539,16 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                         continue;   // Next ieration of the loop
                     }
                 }
+
+
+/*
+guess_vector_attributes(w,
+    driver_type,
+    full_filename,
+    layer,
+    geometry_type);
+*/
+
 
                 // If draw_filled != 0, draw the polygon using X11
                 // polygon calls instead of just drawing the border.
@@ -1494,160 +1749,6 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 
 
 
-// guess_vector_attributes()
-//
-// Feel free to change the name.  At the moment it's somewhat
-// appropriate, but I would hope that in the future it won't be.
-// This should tie in nicely to the dbfawk stuff, and perhaps other
-// schemes for the user to determine drawing attributes.  Basically,
-// if dbfawk is compiled in, go do that instead of doing what this
-// routine does.
-//
-// What we need to do:  Come up with a signature match for the
-// driver type, filename, layer, and sometimes object_type and
-// file_attributes.  Use that to determine drawing width, label
-// size/placement, color, etc.  If the signature could also specify
-// how often the signature needs to be re-examined, that would be a
-// plus.  If it only needs to be set once per file, we could save a
-// lot of time.
-//
-// Note that draw_polygon_with_mask() still has some hard-coded
-// attributes, because it creates gc_temp in order to do the
-// regions.  We need to incorporate that somehow into this "guess"
-// routine as well, perhaps by having it call this routine directly?
-// By creating gc_temp ahead-of-time and keeping it around
-// throughout the draw, passing the GC to this routine also?
-//
-// Depending on what needs to be done for different file
-// types/layers/geometries, we might want to break this function up
-// into several, so that we can optimize for speed.  If something
-// only needs to be set once per file, or once per layer, do so.
-// Don't set it over and over again (Don't set it once per object
-// drawn).
-//
-// Set attributes based on what sort of file/layer/shape we're
-// dealing with.  driver_type may be any of:
-//
-// "AVCbin"
-// "DGN"
-// "FMEObjects Gateway"
-// "GML"
-// "Memory"
-// "MapInfo File"
-// "UK .NTF"
-// "OCI"
-// "ODBC"
-// "OGDI"
-// "PostgreSQL"
-// "REC"
-// "S57"
-// "SDTS"
-// "ESRI Shapefile"
-// "TIGER"
-// "VRT"
-//
-// Shapefiles:  If Mapshots or ESRI tiger->Shapefiles, guess the
-// coloring and line widths based on the filename and the associated
-// field contents.
-//
-// SDTS:  Guess the coloring/line widths based on the filename and
-// the layer.
-//
-// TIGER:  Guess coloring/line widths based on filename/layer.
-//
-// MapInfo:  Guess based on layer?
-//
-// DGN: ??
-//
-void guess_vector_attributes( Widget w,
-                              const char *driver_type,
-                              char *full_filename,
-                              OGRLayerH layer,
-                              int geometry_type ) {
-
-
-/*
-    switch (driver_type) {
-        default:
-            break;
-    }
-
- 
-    switch (layer) {
-        case 0:
-        case 1:
-        default:
-            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-            break;
-    }
-*/
-
-
-    switch (geometry_type) {
-
-
-        case 1:             // Point
-        case 4:             // MultiPoint
-        case 0x80000001:    // Point25D
-        case 0x80000004:    // MultiPoint25D
-
-            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-            break;
-
-
-        case 2:             // LineString (polyline)
-        case 5:             // MultiLineString
-        case 0x80000002:    // LineString25D
-        case 0x80000005:    // MultiLineString25D
-
-            if (strcasecmp(driver_type,"SDTS") == 0) {
-// DEBUG:
-// Determine whether it is a hypsography layer we're dealing with.
-                // Set to yellow for SDTS hypsography layer (contours)
-                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
-            }
-            else {
-// DEBUG:
-                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-            }
-            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-            break;
-
-
-        case 3:             // Polygon
-        case 6:             // MultiPolygon
-        case 0x80000003:    // Polygon25D
-        case 0x80000006:    // MultiPolygon25D
-
-            if (strcasecmp(driver_type,"SDTS") == 0) {
-// DEBUG:
-// Determine whether it is a hypsography layer we're dealing with.
-                // Set to yellow for SDTS hypsography layer (contours)
-                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
-            }
-            else {
-// DEBUG:
-                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
-            }
-            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-            break;
-
-
-        case 7:             // GeometryCollection
-        case 0x80000007:    // GeometryCollection25D
-        default:            // Unknown/Unimplemented
-
-            (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
-            break;
-    }
-}
-
-
-
-
-
 // Set string printed out by segfault handler
 void set_dangerous( char *ptr ) {
     xastir_snprintf(dangerous_operation,
@@ -1809,12 +1910,12 @@ clear_dangerous();
         fprintf(stderr,"Opened datasource\n");
 
     driver_type = OGR_Dr_GetName(driver);
-    fprintf(stderr,"%s: ", driver_type);
+//    fprintf(stderr,"%s: ", driver_type);
 
     // Get name/path.  Less than useful since we should already know
     // this.
     ptr = OGR_DS_GetName(datasourceH);
-    fprintf(stderr,"%s\n", ptr);
+//    fprintf(stderr,"%s\n", ptr);
 
     // Set up coordinate translation:  We need it for indexing and
     // drawing so we do it first and keep a pointer to our
@@ -1901,24 +2002,24 @@ clear_dangerous();
 // "???".
 
             transformH = NULL;  // No transform needed
-            fprintf(stderr,
-                "  Geographic coordinate system, NO CONVERSION NEEDED!, %s\n",
-                geogcs);
+//            fprintf(stderr,
+//                "  Geographic coordinate system, NO CONVERSION NEEDED!, %s\n",
+//                geogcs);
         }
         else {  // We have coordinates but they're in the wrong
                 // datum or in a projected/local coordinate system.
                 // Set up a transform to WGS84.
 
             if (geographic) {
-                fprintf(stderr,
-                    "  Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
-                    geogcs);
+//                fprintf(stderr,
+//                    "  Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
+//                    geogcs);
 fprintf(stderr, "  DATUM: %s\n", datum);
             }
             else if (projected) {
-                fprintf(stderr,
-                    "  Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
-                    geogcs);
+//                fprintf(stderr,
+//                    "  Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
+//                    geogcs);
             }
             else if (local) {
                 // Convert to geographic/WGS84?  How?
@@ -2056,7 +2157,7 @@ clear_dangerous();
             filenm);
         statusline(status_text,0);       // Indexing ...
 
-        fprintf(stderr,"Indexing %s\n", filenm);
+//        fprintf(stderr,"Indexing %s\n", filenm);
 
         // Use the OGR "envelope" function to get the extents for
         // the entire file or dataset.  Remember that it could be in
@@ -2151,9 +2252,9 @@ clear_dangerous();
                         || strcasecmp(geogcs,"NAD83") == 0) ) ) {
 // Also check "datum" here
 
-                fprintf(stderr,
-                    "Geographic coordinate system, %s, adding to index\n",
-                    geogcs);
+//                fprintf(stderr,
+//                    "Geographic coordinate system, %s, adding to index\n",
+//                    geogcs);
 
                 if (   file_MinY >=  -90.0 && file_MinY <=  90.0
                     && file_MaxY >=  -90.0 && file_MaxY <=  90.0
@@ -2209,9 +2310,9 @@ clear_dangerous();
                 y[0] = file_MinY;
                 y[1] = file_MaxY;
 
-                fprintf(stderr,"Before: %f,%f\t%f,%f\n",
-                    x[0],y[0],
-                    x[1],y[1]);
+//                fprintf(stderr,"Before: %f,%f\t%f,%f\n",
+//                    x[0],y[0],
+//                    x[1],y[1]);
 
                 // We can get files that have a weird coordinate
                 // system in them that doesn't have a transform
@@ -2223,16 +2324,16 @@ clear_dangerous();
                 }
                 else {
 
-                    fprintf(stderr,"Before: %f,%f\t%f,%f\n",
-                        x[0],y[0],
-                        x[1],y[1]);
+//                    fprintf(stderr,"Before: %f,%f\t%f,%f\n",
+//                        x[0],y[0],
+//                        x[1],y[1]);
 
 
                     if (OCTTransform(transformH, 2, x, y, NULL)) {
                             
-                        fprintf(stderr," After: %f,%f\t%f,%f\n",
-                            x[0],y[0],
-                            x[1],y[1]);
+//                        fprintf(stderr," After: %f,%f\t%f,%f\n",
+//                            x[0],y[0],
+//                            x[1],y[1]);
                     }
                 }
 
@@ -2430,21 +2531,21 @@ clear_dangerous();
         //   NOTE: Shapefile reports this as TRUE.
         //
         if (i == 0) {   // First layer
-            fprintf(stderr, "  ");
+//            fprintf(stderr, "  ");
             if (OGR_L_TestCapability(layer, OLCRandomRead)) {
-                fprintf(stderr, "Random Read, ");
+//                fprintf(stderr, "Random Read, ");
             }
             if (OGR_L_TestCapability(layer, OLCFastSpatialFilter)) {
-                fprintf(stderr,
-                    "Fast Spatial Filter, ");
+//                fprintf(stderr,
+//                    "Fast Spatial Filter, ");
             }
             if (OGR_L_TestCapability(layer, OLCFastFeatureCount)) {
-                fprintf(stderr,
-                    "Fast Feature Count, ");
+//                fprintf(stderr,
+//                    "Fast Feature Count, ");
             }
             if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
-                fprintf(stderr,
-                    "Fast Get Extent, ");
+//                fprintf(stderr,
+//                    "Fast Get Extent, ");
                 // Save this away and decide whether to
                 // request/compute extents based on this.
                 fast_extents = 1;
@@ -2459,50 +2560,60 @@ clear_dangerous();
 
 
             if (OSRIsGeographic(map_spatialH)) {
-                if (i == 0)
-                    fprintf(stderr,"  Geographic Coord, ");
+                if (i == 0) {
+//                    fprintf(stderr,"  Geographic Coord, ");
+                }
                 geographic++;
             }
             else if (OSRIsProjected(map_spatialH)) {
-                if (i == 0)
-                    fprintf(stderr,"  Projected Coord, ");
+                if (i == 0) {
+//                    fprintf(stderr,"  Projected Coord, ");
+                }
                 projected++;
             }
             else {
-                if (i == 0)
-                    fprintf(stderr,"  Local Coord, ");
+                if (i == 0) {
+//                    fprintf(stderr,"  Local Coord, ");
+                }
             }
 
             // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
             //
             temp = OSRGetAttrValue(map_spatialH, "DATUM", 0);
-            if (i == 0)
-                    fprintf(stderr,"DATUM: %s, ", temp);
+            if (i == 0) {
+//                    fprintf(stderr,"DATUM: %s, ", temp);
+            }
 
             if (projected) {
                 temp = OSRGetAttrValue(map_spatialH, "PROJCS", 0);
-                if (i == 0)
-                    fprintf(stderr,"PROJCS: %s, ", temp);
+                if (i == 0) {
+//                    fprintf(stderr,"PROJCS: %s, ", temp);
+                }
  
                 temp = OSRGetAttrValue(map_spatialH, "PROJECTION", 0);
-                if (i == 0)
-                    fprintf(stderr,"PROJECTION: %s, ", temp);
+                if (i == 0) {
+//                    fprintf(stderr,"PROJECTION: %s, ", temp);
+                }
             }
 
             temp = OSRGetAttrValue(map_spatialH, "GEOGCS", 0);
-            if (i == 0)
-                    fprintf(stderr,"GEOGCS: %s, ", temp);
+            if (i == 0) {
+//                    fprintf(stderr,"GEOGCS: %s, ", temp);
+            }
 
             temp = OSRGetAttrValue(map_spatialH, "SPHEROID", 0);
-            if (i == 0)
-                    fprintf(stderr,"SPHEROID: %s, ", temp);
+            if (i == 0) {
+//                    fprintf(stderr,"SPHEROID: %s, ", temp);
+            }
 
         }
         else {
-            if (i == 0)
+            if (i == 0) {
                     fprintf(stderr,"  No Spatial Info, ");
-            // Assume geographic/WGS84 unless the coordinates go
-            // outside the range of lat/long, in which case, exit.
+                // Assume geographic/WGS84 unless the coordinates go
+                // outside the range of lat/long, in which case,
+                // exit.
+            }
         }
 
 
@@ -2513,12 +2624,14 @@ clear_dangerous();
         if (OGR_L_GetExtent(layer, &psExtent, FALSE) != OGRERR_FAILURE) {
             // We have extents.  Check whether any part of the layer
             // is within our viewport.
-            if (i == 0)
-                    fprintf(stderr, "Extents obtained.");
+            if (i == 0) {
+//                fprintf(stderr, "Extents obtained.");
+            }
             extents_found++;
         }
-        if (i == 0)
-            fprintf(stderr, "\n");
+        if (i == 0) {
+//            fprintf(stderr, "\n");
+        }
 
 /*
         if (extents_found) {
@@ -2593,7 +2706,7 @@ clear_dangerous();
             }
 
 
-            // Debug code
+// Debug code
 //OGR_F_DumpReadable( featureH, stderr );
 
 
@@ -2651,14 +2764,14 @@ clear_dangerous();
                     "%s",
                     OGR_G_GetGeometryName(geometryH));
                 geometry_type = OGR_G_GetGeometryType(geometryH);
-                fprintf(stderr,"  Layer %02d: ", i); 
-                fprintf(stderr,"  Type: %d, %s\n",  
-                    geometry_type,
-                    geometry_type_name);
+//                fprintf(stderr,"  Layer %02d: ", i); 
+//                fprintf(stderr,"  Type: %d, %s\n",  
+//                    geometry_type,
+//                    geometry_type_name);
             }
 
-            // Debug code 
-            //OGR_G_DumpReadable(geometryH, stderr, "Shape: ");
+// Debug code 
+//OGR_G_DumpReadable(geometryH, stderr, "Shape: ");
 
 
 // We could call OGR_G_GetEnvelope() here and calculate for
@@ -2681,15 +2794,20 @@ clear_dangerous();
                 case 0x80000001:    // Point25D
                 case 0x80000004:    // MultiPoint25D
 
+                    // Do this one time for the file itself to get
+                    // some usable defaults.
                     guess_vector_attributes(w,
                         driver_type,
                         full_filename,
                         layer,
                         geometry_type);
 
-                    Draw_OGR_Points(geometryH,
+                    Draw_OGR_Points(w,
+                        featureH,
+                        geometryH,
                         1,
                         transformH);
+
                     break;
 
                 case 2:             // LineString (polyline)
@@ -2697,16 +2815,21 @@ clear_dangerous();
                 case 0x80000002:    // LineString25D
                 case 0x80000005:    // MultiLineString25D
 
+                    // Do this one time for the file itself to get
+                    // some usable defaults.
                     guess_vector_attributes(w,
                         driver_type,
                         full_filename,
                         layer,
                         geometry_type);
 
-                    Draw_OGR_Lines(geometryH,
+                    Draw_OGR_Lines(w,
+                        featureH,
+                        geometryH,
                         1,
                         transformH,
                         fast_extents);
+
                     break;
 
                 case 3:             // Polygon
@@ -2714,17 +2837,22 @@ clear_dangerous();
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
 
+                    // Do this one time for the file itself to get
+                    // some usable defaults.
                     guess_vector_attributes(w,
                         driver_type,
                         full_filename,
                         layer,
                         geometry_type);
 
-                    Draw_OGR_Polygons(geometryH,
+                    Draw_OGR_Polygons(w,
+                        featureH,
+                        geometryH,
                         1,
                         transformH,
                         draw_filled,
                         fast_extents);
+
                     break;
 
                 case 7:             // GeometryCollection
