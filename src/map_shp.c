@@ -675,9 +675,8 @@ void draw_shapefile_map (Widget w,
     dbfawk_sig_info *sig_info = NULL;
     dbfawk_field_info *fld_info = NULL;
 #endif
-    static int font_size = FONT_MEDIUM; // set by dbfawk, else this default
     static int label_color = 8; /* set by dbfawk.  Otherwise it's black. */
-    static int font_size = FONT_DEFAULT;
+    static int font_size = FONT_DEFAULT; // set by dbfawk, else this default
 
     typedef struct _label_string {
         char   label[50];
