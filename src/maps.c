@@ -4627,8 +4627,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     //    //N0VH
     int terraserver_flag = 0;
     char map_it[300];
-    int geo_image_width;        // Image width  from GEO file
-    int geo_image_height;       // Image height from GEO file
+    int geo_image_width = 0;    // Image width  from GEO file
+    int geo_image_height = 0;   // Image height from GEO file
     char geo_datum[8+1];        // WGS-84 etc.
     char geo_projection[8+1];   // TM, UTM, GK, LATLON etc.
     int map_proj;
@@ -4952,6 +4952,13 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
             printf("Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
     }
 
+    // By this point, geo_image_width & geo_image_height have to
+    // have been initialized to something.
+//WE7U
+    if ( (geo_image_width == 0) || (geo_image_height == 0) ) {
+        printf("*** Skipping '%s', IMAGESIZE tag missing or incorrect. ***\n",file);
+        return;
+    }
     // calculate bottom right map corner from tiepoints
     // map size is geo_image_width / geo_image_height
     if (tp[1].img_x != (geo_image_width - 1) ) {
