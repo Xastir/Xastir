@@ -76,33 +76,38 @@ void view_message_print_record(Message *m_fill) {
     char *temp;
     int i;
     int my_size = 200;
+    char temp_my_course[10];
     XmTextPosition drop_ptr;
 
+    // Make sure it's within our distance range we have set
+    if ((vm_range == 0)
+            || ((int)distance_from_my_station(m_fill->from_call_sign,temp_my_course) <= vm_range)) {
+ 
+        if ((temp = malloc((size_t)my_size)) == NULL)
+            return;
 
-    if ((temp = malloc((size_t)my_size)) == NULL)
-        return;
+        sprintf(temp,"%-9s>%-9s seq:%5s type:%c :%s\n",
+            m_fill->from_call_sign,
+            m_fill->call_sign,
+            m_fill->seq,
+            m_fill->type,
+            m_fill->message_line);
 
-    sprintf(temp,"%-9s>%-9s seq:%5s type:%c :%s\n",
-        m_fill->from_call_sign,
-        m_fill->call_sign,
-        m_fill->seq,
-        m_fill->type,
-        m_fill->message_line);
-
-    pos = (int)XmTextGetLastPosition(view_messages_text);
-    XmTextInsert(view_messages_text, pos, temp);
-    pos += strlen(temp);
-    while (pos > view_message_limit) {
-        for (drop_ptr = i = 0; i < 3; i++) {
-            (void)XmTextFindString(view_messages_text, drop_ptr, "\n", XmTEXT_FORWARD, &drop_ptr);
-            drop_ptr++;
-        }
-        XmTextReplace(view_messages_text, 0, drop_ptr, "");
         pos = (int)XmTextGetLastPosition(view_messages_text);
-    }
-    XtVaSetValues(view_messages_text, XmNcursorPosition, pos, NULL);
+        XmTextInsert(view_messages_text, pos, temp);
+        pos += strlen(temp);
+        while (pos > view_message_limit) {
+            for (drop_ptr = i = 0; i < 3; i++) {
+                (void)XmTextFindString(view_messages_text, drop_ptr, "\n", XmTEXT_FORWARD, &drop_ptr);
+                drop_ptr++;
+            }
+            XmTextReplace(view_messages_text, 0, drop_ptr, "");
+            pos = (int)XmTextGetLastPosition(view_messages_text);
+        }
+        XtVaSetValues(view_messages_text, XmNcursorPosition, pos, NULL);
 
-    free(temp);
+        free(temp);
+    }
 }
 
 
