@@ -3,7 +3,7 @@
 #
 # Creador        : por Jose R. Marte A. <hi8gn@amsat.org>
 # Mantenido por  : El Xastir Grupo <xastir@xastir.org>
-# Ult. Revisión  : 05/14/2003, Por Jose R. Marte A. <hi8gn@amsat.org>
+# Ult. Revisión  : 05/20/2003, Por Jose R. Marte A. <hi8gn@amsat.org>
 #
 # Líneas de comentarios con un signo de libra en frente son ignorado
 # El formato del archivo es como sigue:
@@ -27,7 +27,7 @@ PULDNFI001|Configurar|C|
 PULDNFI002|Abrir Bitácora|B|
 PULDNFI003|Prueba|P|
 PULDNFI004|Salir|S|
-PULDNFI007|Cambia nivel Debug|D|
+PULDNFI007|Cambia nivel Depuración|D|
 PULDNFI010|Bitácora del TNC|T|
 PULDNFI011|Bitácora de Internet|I|
 PULDNFI012|Bitácora del I-Gate|G|
@@ -73,7 +73,7 @@ PULDNMP005|Color de fondo|C|
 PULDNMP006|Etiquetas de estiones|E|
 PULDNMP011|Menú Indicador del Ratón|R|
 PULDNMP008|Intensidad del Mapa|I|
-PULDNMP020|Activar/Configurar Tigermap||
+PULDNMP020|Activar/Configurar Tigermapa||
 PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
 PULDNMP022|Indezar Mapas en Inicio||
 PULDNMP023|Indice: Agregar Nuevos Mapas|A|
@@ -89,8 +89,8 @@ MPUPTGR006|Calles||
 MPUPTGR007|Ferrocarriles||
 MPUPTGR008|Etiquetas de Estados||
 MPUPTGR009|Etiquetas de Inter-estatar||
-MPUPTGR010|Etiquetas de Highway en USA||
-MPUPTGR011|Etiquetas de Highway en Estados||
+MPUPTGR010|Etiquetas de Carretera||
+MPUPTGR011|Etiquetas de Carretera en Estados||
 MPUPTGR012|Seleccionar artículos a ser desplegado:||
 MPUPTGR013|Rios||
 MPUPTGR014|Lagos||
@@ -939,7 +939,7 @@ PRINT0015|Estado de Impresora||
 FEATURE001|Nombre:||
 FEATURE002|Estado/Provincia:||
 FEATURE003|Pais:||
-FEATURE004|Mapa Quad:||
+FEATURE004|Cuadratura del Mapa:||
 FEATURE005|Tipo:||
 FEATURE006|GNIS Archivo:||
 #
@@ -973,7 +973,7 @@ GAMMA001|Ajuste Corrección de Gamma||
 GAMMA002|Corrección Gamma||
 #
 # Distancia/Orientación en línea de estado
-PULDNDB001|Estado de Dist/Orientación||
+PULDNDB001|Estado de Distancia/Orientación||
 #
 # Transferir Operaciones de GPS
 GPS001|Transferir GPS||
@@ -988,26 +988,23 @@ GPS009|Azul||
 GPS010|Amarillo||
 GPS011|Violeta||
 #
-#
-# Map Properties Dialog
-MAPP001|Map Properties||
-MAPP002| Map     Draw||
-MAPP003|Layer   Filled   AutoMap   Path/Filename||
-MAPP004|Change Layer->||
-MAPP005|Filled->||
-MAPP006|Yes||
+# Diálogo de Propiedades de Mapa
+MAPP001|Propiedades de Mapa||
+MAPP002|Dibuja   Mapa||
+MAPP003|Capa   Llenado   AutoMapa   Sendero/NombreArchivo||
+MAPP004|Cambie Capa->||
+MAPP005|Llenado->||
+MAPP006|Sí||
 MAPP007|No||
-MAPP008|Automaps->||
+MAPP008|Automapas->||
 #
-#
-# Time Strings
-TIME001|Day||
-TIME002|Days||
-TIME003|Hour||
-TIME004|Hours||
-TIME005|Minute||
-TIME006|Minutes||
-TIME007|Second||
-TIME008|Seconds||
-#
+# Cadenas del Tiempo
+TIME001|Día||
+TIME002|Días||
+TIME003|Hora||
+TIME004|Horas||
+TIME005|Minuto||
+TIME006|Minutos||
+TIME007|Segundo||
+TIME008|Segundos||
 #
