@@ -57,15 +57,27 @@
 //          DATA_VIA_TNC
 //          DATA_VIA_LOCAL
 //
-// alert_entry.alert_tag    alert_entry.alert_level
-//         CANCL                C
-//         TEST                 T
-//         WARN                 R
-//         WATCH                Y
-//         ADVIS                B
-//         Other                G
-//         Unset                ?
+// alert_entry.to   alert_entry.alert_level
+//     CANCL            C   // Colors of alerts?????
+//     TEST             T   // Colors of alerts?????
+//     WARN             R   // Colors of alerts?????
+//     WATCH            Y   // Colors of alerts?????
+//     ADVIS            B   // Colors of alerts?????
+//     Other            G   // Colors of alerts?????
+//     Unset            ?
 //
+//
+// Here's how Xastir breaks down an alert into an alert struct:
+//
+// SFONPW>APRS::NWS-ADVIS:191700z,WIND,CA_Z007,CA_Z065, ALAMEDA AND CON & NAPA COUNTY {JDIAA
+// |----|       |-------| |-----| |--| |-----| |-----|                                 |-|
+// |            |         |       |    |       |                                       |
+// from         to        |       |    title   title                                   issue_date
+//                        |       alert_tag
+//                        activity
+//
+// Expiration is then computed from the activity field.  Alert_level
+// is computed from "to" and/or "alert_tag".
 //
 //
 // Global alert_tag string contains three characters for each alert.
@@ -129,8 +141,7 @@
 // example read ">" as "thru" and "-" as "and".
 //
 // More from Dale:
-// It occurs to me you might need some insight into what shapefile to
-// look
+// It occurs to me you might need some insight into what shapefile to look
 // through for a zone/county. The current shape files are c_22mr02, 
 // z_16mr02, and mz21fe02.
 //
@@ -357,11 +368,21 @@ void alert_print_list(void) {
         for (c_ptr = &title[strlen(title)-1]; *c_ptr == ' '; c_ptr--)
             *c_ptr = '\0';
 
-        printf("Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n", i,
-                alert_list[i].flags[0], alert_list[i].from,
-                alert_list[i].to, alert_list[i].alert_level,
-                alert_list[i].alert_tag, alert_list[i].activity,
-                (unsigned long)(alert_list[i].expiration), title);
+// Alert: 10Y, MSPTOR> NWS-TEST, TAG: T  TORNDO, ACTIVITY: 191915z, Expiration: 1019234700, Title: WI_Z003
+        printf("Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n",
+                i,                                          // 10
+                alert_list[i].flags[0],                     // Y
+                alert_list[i].from,                         // MSPTOR
+                alert_list[i].to,                           // NWS-TEST
+
+                alert_list[i].alert_level,                  // T
+                alert_list[i].alert_tag,                    // TORNDO
+
+                alert_list[i].activity,                     // 191915z
+
+                (unsigned long)(alert_list[i].expiration),  // 1019234700
+
+                title);                                     // WI_Z003
     }
 }
 
@@ -971,6 +992,7 @@ printf("Zone:%s%s\n",prefix,suffix);
             for (j = 5; j >= 0; j--) {
                 strcpy(entry[j].title, entry[j-1].title);
             }
+// Swap things here?
             strcpy(entry[0].title, entry[0].alert_tag);
             strcpy(entry[0].alert_tag, entry[0].activity);
         }
@@ -1089,6 +1111,10 @@ printf("Zone:%s%s\n",prefix,suffix);
             strcpy(entry[i].issue_date_time, entry[0].issue_date_time);
             memcpy(entry[i].flags, entry[0].flags, sizeof(entry[0].flags));
 
+            // NWS_ADVIS or NWS_CANCL normally appear in the "to"
+            // field.  ADVIS can appear in the alert_tag field on a
+            // CANCL message though, and we want CANCL to have
+            // priority.
             if (strstr(entry[i].alert_tag, "CANCL") || strstr(entry[i].to, "CANCL"))
                 entry[i].alert_level = 'C';
 
