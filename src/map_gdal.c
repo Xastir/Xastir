@@ -66,7 +66,6 @@
 
 //#include <math.h>
 
-#include "xastir.h"
 #include "maps.h"
 #include "alert.h"
 //#include "util.h"
@@ -128,6 +127,9 @@
 #endif  // HAVE_LIBGDAL
 
 
+// Needs to be down here so that the LIB_GC stuff will compile in
+// ok.
+#include "xastir.h"
 
 
 

@@ -300,6 +300,23 @@ else
   davis=no
 fi
 
+
+
+
+
+# Check for LIBGC, a Garbage Collection library.  If found, allow
+# linking it with Xastir, but require the "--with-libgc" flag to
+# enable it.
+use_libgc=no
+AC_ARG_WITH(libgc,[  --with-libgc       Enable libgc features.],use_libgc=$withval)
+if test "${use_libgc}" = "yes"; then
+    AC_CHECK_HEADERS([gc.h], LIBGC_INC="yes", use_libgc=no)
+    AC_CHECK_LIB([gc], [GC_init], , use_libgc=no)
+fi
+
+
+
+
  
 # Check for ImageMagick.  This check is VERY important to have as
 # the last check, as it messes up the previous checks if it fails.
@@ -392,6 +409,9 @@ fi
 if test "${use_dbfawk}" = "yes"; then
   ILIBS="$ILIBS Dbfawk"
 fi
+if test "${use_libgc}" = "yes"; then
+  ILIBS="$ILIBS libgc"
+fi
 AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
 
 
@@ -466,6 +486,7 @@ echo Building with GDAL/OGR...... : $use_gdal
 echo Building with ShapeLib...... : $use_shapelib 
 echo Building with pcre.......... : $use_pcre
 echo Building with dbfawk........ : $use_dbfawk
+echo "Building with libgc (Debug). : $use_libgc"
 #echo Building with Davis/MySQL... : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
