@@ -124,6 +124,10 @@ extern int print_in_monochrome;
 extern int print_invert;
 extern int  locate_place(Widget w, char *name, char *state, char *county, char *quad, char* type, char *filename, int follow_case, int get_match);
 extern void maps_init(void);
+extern int convert_from_xastir_coordinates ( float *f_longitude,
+                                      float *f_latitude,
+                                      long x,
+                                      long y );
 extern int convert_to_xastir_coordinates (unsigned long* x,
 					  unsigned long* y,
 					  float f_longitude,

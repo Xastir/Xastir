@@ -765,6 +765,8 @@ long screen_width;              // Screen width,  map area without border (in pi
 long screen_height;             // Screen height, map area without border (in pixel)
 float d_screen_distance;        /* Diag screen distance */
 float x_screen_distance;        /* x screen distance */
+float f_center_longitude;       // Floating point map center longitude
+float f_center_latitude;        // Floating point map center latitude
 
 char user_dir[1000];            /* user directory file */
 int delay_time;                 /* used to delay display data */
@@ -8530,6 +8532,15 @@ void new_image(Widget da) {
     interrupt_drawing_now = 0;
     request_new_image = 0;
 
+
+    // Set up floating point lat/long values to match Xastir
+    // coordinates (speeds things up when dealing with lat/long
+    // values later).
+    convert_from_xastir_coordinates(&f_center_longitude,
+        &f_center_latitude,
+        mid_x_long_offset,
+        mid_y_lat_offset);
+
     if (create_image(da)) {
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now)
@@ -8569,6 +8580,7 @@ void display_zoom_image(int recenter) {
         }
         scale_x = new_scale_x;
         scale_y = new_scale_y;
+
         setup_in_view();    // update "in view" flag for all stations
 
         // Set the interrupt_drawing_now flag

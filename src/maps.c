@@ -240,53 +240,123 @@ long get_x_scale(long x, long y, long ysc) {
 
 
 
-/***********************************************************
- * convert_to_xastir_coordinates()
- *
- * Converts from lat/lon to Xastir coordinate system.
- * First two parameters are the output Xastir X/Y values, 
- * 2nd two are the input floating point lat/lon values.
- *
- *              0 (90 deg. or 90N)
- *
- * 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
- *
- *          64,800,000 (-90 deg. or 90S)
- ***********************************************************/
+/////////////////////////////////////////////////////////////////////
+// convert_from_xastir_coordinates()
+//
+// Converts from Xastir coordinate system to lat/lon.  First two
+// parameters are the output floating point lat/lon values.  2nd two
+// are the input Xastir X/Y values.
+//
+//              0 (90 deg. or 90N)
+//
+// 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
+//
+//          64,800,000 (-90 deg. or 90S)
+//
+// Returns 0 if error, 1 if good values were converted.
+/////////////////////////////////////////////////////////////////////
+int convert_from_xastir_coordinates ( float *f_longitude,
+                                      float *f_latitude,
+                                      long x,
+                                      long y ) {
+
+    if (x < 0l ) {
+        fprintf(stderr,
+            "convert_from_xastir_coordinates:X out-of-range (too low):%lu\n",
+            x);
+        return(0);
+    }
+
+    if (x > 129600000l) {
+        fprintf(stderr,
+            "convert_from_xastir_coordinates:X out-of-range (too high):%lu\n",
+            x);
+        return(0);
+    }
+
+    if (y < 0l) {
+        fprintf(stderr,
+            "convert_from_xastir_coordinates:Y out-of-range (too low):%lu\n",
+            y);
+        return(0);
+    }
+
+    if (y > 64800000l) {
+        fprintf(stderr,
+            "convert_from_xastir_coordinates:Y out-of-range (too high):%lu\n",
+            y);
+        return(0);
+    }
+
+    *f_latitude  = (float)( -((y - 32400000l) / 360000.0) );
+    *f_longitude = (float)(   (x - 64800000l) / 360000.0  );
+
+//fprintf(stderr,"input x: %lu\tinput y: %lu\n",
+//    x,
+//    y);
+//fprintf(stderr,"latitude: %f\tlongitude: %f\n",
+//    *f_latitude,
+//    *f_longitude);
+
+    return(1);
+}
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+// convert_to_xastir_coordinates()
+//
+// Converts from lat/lon to Xastir coordinate system.
+// First two parameters are the output Xastir X/Y values, 
+// 2nd two are the input floating point lat/lon values.
+//
+//              0 (90 deg. or 90N)
+//
+// 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
+//
+//          64,800,000 (-90 deg. or 90S)
+//
+// Returns 0 if error, 1 if good values were converted.
+/////////////////////////////////////////////////////////////////////
 int convert_to_xastir_coordinates ( unsigned long* x,
                                     unsigned long* y,
                                     float f_longitude,
-                                    float f_latitude )
-{
-    int ok = 1;
-
+                                    float f_latitude ) {
 
     if (f_longitude < -180.0) {
-        fprintf(stderr,"convert_to_xastir_coordinates:Longitude out-of-range (too low):%f\n",f_longitude);
-        ok = 0;
+        fprintf(stderr,
+            "convert_to_xastir_coordinates:Longitude out-of-range (too low):%f\n",
+            f_longitude);
+        return(0);
     }
 
     if (f_longitude >  180.0) {
-        fprintf(stderr,"convert_to_xastir_coordinates:Longitude out-of-range (too high):%f\n",f_longitude);
-        ok = 0;
+        fprintf(stderr,
+            "convert_to_xastir_coordinates:Longitude out-of-range (too high):%f\n",
+            f_longitude);
+        return(0);
     }
 
     if (f_latitude <  -90.0) {
-        fprintf(stderr,"convert_to_xastir_coordinates:Latitude out-of-range (too low):%f\n",f_latitude);
-        ok = 0;
+        fprintf(stderr,
+            "convert_to_xastir_coordinates:Latitude out-of-range (too low):%f\n",
+            f_latitude);
+        return(0);
     }
 
     if (f_latitude >   90.0) {
-        fprintf(stderr,"convert_to_xastir_coordinates:Latitude out-of-range (too high):%f\n",f_latitude);
-        ok = 0;
+        fprintf(stderr,
+            "convert_to_xastir_coordinates:Latitude out-of-range (too high):%f\n",
+            f_latitude);
+        return(0);
     }
 
-    if (ok) {
-        *y = (unsigned long)(32400000l + (360000.0 * (-f_latitude)));
-        *x = (unsigned long)(64800000l + (360000.0 * f_longitude));
-    }
+    *y = (unsigned long)(32400000l + (360000.0 * (-f_latitude)));
+    *x = (unsigned long)(64800000l + (360000.0 * f_longitude));
 
-    return(ok);
+    return(1);
 }
 
 
@@ -507,8 +577,7 @@ char *get_map_dir (char *fullpath) {
 int map_visible (unsigned long bottom_map_boundary,
                     unsigned long top_map_boundary,
                     unsigned long left_map_boundary,
-                    unsigned long right_map_boundary)
-{
+                    unsigned long right_map_boundary) {
 
     unsigned long view_min_x, view_max_x;
     unsigned long view_min_y, view_max_y;
@@ -639,58 +708,208 @@ int map_visible (unsigned long bottom_map_boundary,
     }
 
 
-    if (debug_level & 16)
+    if (debug_level & 16) {
         fprintf(stderr,"map_inside_view: %d  view_inside_map: %d  parallel_edges: %d\n",
                 map_inside_view,
                 view_inside_map,
                 parallel_edges);
+    }
 
-    if ((map_inside_view >= 2) || (view_inside_map >= 2) || (parallel_edges) )
+    if ((map_inside_view >= 2) || (view_inside_map >= 2) || (parallel_edges) ) {
         return (1); /* Draw this pixmap onto the screen */
-    else
+    }
+    else {
         return (0); /* Skip this pixmap */
+    }
 }
 
 
 
 
 
-/***********************************************************
- * map_visible_lat_lon()
- *
- ***********************************************************/
+/////////////////////////////////////////////////////////////////////
+// map_visible_lat_lon()
+//
+// We have the center of the view in floating point format:
+//
+//   float f_center_longitude; // Floating point map center longitude
+//   float f_center_latitude;  // Floating point map center latitude
+//
+// So we just need to compute the top/bottom/left/right using those
+// values and the scale_x/scale_y values before doing the compare.
+//
+// y scaling in 1/100 sec per pixel
+// x scaling in 1/100 sec per pixel, calculated from scale_y
+//
+// 
+//              0 (90 deg. or 90N)
+//
+// 0 (-180 deg. or 180W)      129,600,000 (180 deg. or 180E)
+//
+//          64,800,000 (-90 deg. or 90S)
+//
+/////////////////////////////////////////////////////////////////////
 int map_visible_lat_lon (double f_bottom_map_boundary,
                          double f_top_map_boundary,
                          double f_left_map_boundary,
                          double f_right_map_boundary,
-                         char *error_message)
-{
-    unsigned long bottom_map_boundary,
-                  top_map_boundary,
-                  left_map_boundary,
-                  right_map_boundary;
-    int ok, ok2;
+                         char *error_message) {
+    double view_min_x, view_max_x;
+    double view_min_y, view_max_y;
+    int map_inside_view = 0;
+    int view_inside_map = 0;
+    int parallel_edges = 0;
+    double half_screen_vert = screen_height/2.0 * scale_y / 100.0 / 60.0 / 60.0;
+    double half_screen_horiz = screen_width/2.0 * scale_x / 100.0 / 60.0 / 60.0;
 
-    ok = convert_to_xastir_coordinates ( &left_map_boundary,
-                                          &top_map_boundary,
-                                          (float)f_left_map_boundary,
-                                          (float)f_top_map_boundary );
 
-    ok2 = convert_to_xastir_coordinates ( &right_map_boundary,
-                                          &bottom_map_boundary,
-                                          (float)f_right_map_boundary,
-                                          (float)f_bottom_map_boundary );
+//fprintf(stderr,"scale_x: %ld\thalf_screen_h: %f\n",scale_x,half_screen_horiz);
+//fprintf(stderr,"scale_y: %ld\thalf_screen_v: %f\n",scale_y,half_screen_vert);
 
-    if (ok && ok2) {
-        return(map_visible( bottom_map_boundary,
-                        top_map_boundary,
-                        left_map_boundary,
-                        right_map_boundary) );
+    view_min_x = f_center_longitude - half_screen_horiz; // left edge of view
+    view_max_x = f_center_longitude + half_screen_horiz; // right edge of view
+    view_min_y = f_center_latitude - half_screen_vert; // bottom edge of view
+    view_max_y = f_center_latitude + half_screen_vert; // top edge of view
+
+    if (view_min_x >  180.0 || view_min_x < -180.0)
+        view_min_x = -180.0;
+
+    if (view_max_x >  180.0 || view_max_x < -180.0)
+        view_max_x =  180.0;
+
+    if (view_min_y >  90.0 || view_min_y < -90.0)
+        view_min_y = -90.0;
+
+    if (view_max_y >  90.0 || view_max_y < -90.0)
+        view_max_y =  90.0;
+
+
+    if (debug_level & 16) {
+        fprintf(stderr,"              Bottom     Top       Left     Right\n");
+
+        fprintf(stderr,"View Edges:  %f  %f  %f  %f\n",
+            view_min_y,
+            view_max_y,
+            view_min_x,
+            view_max_x);
+
+        fprintf(stderr," Map Edges:  %f  %f  %f  %f\n",
+            f_bottom_map_boundary,
+            f_top_map_boundary,
+            f_left_map_boundary,
+            f_right_map_boundary);
+
+        if ((f_left_map_boundary <= view_max_x) && (f_left_map_boundary >= view_min_x))
+            fprintf(stderr,"Left map boundary inside view\n");
+
+        if ((f_right_map_boundary <= view_max_x) && (f_right_map_boundary >= view_min_x))
+            fprintf(stderr,"Right map boundary inside view\n");
+
+        if ((f_top_map_boundary <= view_max_y) && (f_top_map_boundary >= view_min_y))
+            fprintf(stderr,"Top map boundary inside view\n");
+
+        if ((f_bottom_map_boundary <= view_max_y) && (f_bottom_map_boundary >= view_min_y))
+            fprintf(stderr,"Bottom map boundary inside view\n");
+
+        if ((view_max_x <= f_right_map_boundary) && (view_max_x >= f_left_map_boundary))
+            fprintf(stderr,"Right view boundary inside map\n");
+
+        if ((view_min_x <= f_right_map_boundary) && (view_min_x >= f_left_map_boundary))
+            fprintf(stderr,"Left view boundary inside map\n");
+
+        if ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary))
+            fprintf(stderr,"Bottom view boundary inside map\n");
+
+        if ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary))
+            fprintf(stderr,"Top view boundary inside map\n");
+    }
+
+    /* In order to determine whether the two rectangles intersect,
+    * we need to figure out if any TWO edges of one rectangle are
+    * contained inside the edges of the other.
+    */
+
+    /* Look for left or right map boundaries inside view */
+    if (   (( f_left_map_boundary <= view_max_x) && ( f_left_map_boundary >= view_min_x)) ||
+            ((f_right_map_boundary <= view_max_x) && (f_right_map_boundary >= view_min_x)))
+    {
+        map_inside_view++;
+//fprintf(stderr,"map inside view\n");
+    }
+
+
+    /* Look for top or bottom map boundaries inside view */
+    if (   ((   f_top_map_boundary <= view_max_y) && (   f_top_map_boundary >= view_min_y)) ||
+            ((f_bottom_map_boundary <= view_max_y) && (f_bottom_map_boundary >= view_min_y)))
+    {
+
+        map_inside_view++;
+//fprintf(stderr,"map inside view\n");
+    }
+
+
+    /* Look for right or left view boundaries inside map */
+    if (   ((view_max_x <= f_right_map_boundary) && (view_max_x >= f_left_map_boundary)) ||
+            ((view_min_x <= f_right_map_boundary) && (view_min_x >= f_left_map_boundary)))
+    {
+        view_inside_map++;
+//fprintf(stderr,"view inside map\n");
+    }
+
+
+    /* Look for top or bottom view boundaries inside map */
+    if (   ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary)) ||
+        ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary)))
+    {
+        view_inside_map++;
+//fprintf(stderr,"view inside map\n");
+    }
+
+
+    /*
+    * Look for left/right map boundaries both inside view, but top/bottom
+    * of map surround the viewport.  We have a column of the map going
+    * through from top to bottom.
+    */
+    if (   (( f_left_map_boundary <= view_max_x) && ( f_left_map_boundary >= view_min_x)) &&
+            ((f_right_map_boundary <= view_max_x) && (f_right_map_boundary >= view_min_x)) &&
+            ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary)) &&
+            ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary)))
+    {
+        parallel_edges++;
+//fprintf(stderr,"parallel edges\n");
+    }
+
+
+    /*
+    * Look for top/bottom map boundaries both inside view, but left/right
+    * of map surround the viewport.  We have a row of the map going through
+    * from left to right.
+    */
+    if (   ((   f_top_map_boundary >= view_max_y) && (   f_top_map_boundary <= view_min_y)) &&
+        ((f_bottom_map_boundary >= view_max_y) && (f_bottom_map_boundary <= view_min_y)) &&
+        ((view_max_x <= f_right_map_boundary) && (view_max_x >= f_left_map_boundary)) &&
+        ((view_min_x <= f_right_map_boundary) && (view_min_x >= f_left_map_boundary)))
+    {
+        parallel_edges++;
+//fprintf(stderr,"parallel edges\n");
+    }
+
+
+    if (debug_level & 16) {
+        fprintf(stderr,"map_inside_view: %d  view_inside_map: %d  parallel_edges: %d\n",
+                map_inside_view,
+                view_inside_map,
+                parallel_edges);
+    }
+
+    if ((map_inside_view >= 2) || (view_inside_map >= 2) || (parallel_edges) ) {
+//fprintf(stderr,"Success!\n");
+        return (1); /* Draw this pixmap onto the screen */
     }
     else {
-        fprintf(stderr,"map_visible_lat_lon: problem converting coordinates from lat/lon: %s\n",
-            error_message);
-        return(0);  // Problem converting, assume that the map is not viewable
+//fprintf(stderr,"Failure!\n");
+        return (0); /* Skip this pixmap */
     }
 }
 
