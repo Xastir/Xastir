@@ -990,6 +990,11 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
  *
  * The current implementation can draw only ESRI polygon
  * or PolyLine shapefiles.
+ *
+ * Need to modify this routine:  If alert is NULL, draw
+ * every shape that fits the screen.  If non-NULL, draw only
+ * the shape that matches the zone number.
+ * 
  * Here's what I get for the County_Warning_Area Shapefile:
  *
  *
@@ -1085,6 +1090,26 @@ NAME        string      (40,0)
 FEATURE     string      (40,0)
 LON         float       (10,5)
 LAT         float       (9,5)
+
+// Need to figure out which type of alert it is, select the corresponding shapefile,
+// then store the shapefile AND the alert_tag in the alert_list[i].filename list?
+// and draw the map.  Add an item to alert_list structure to keep track?
+
+// The last parameter denotes loading into pixmap_alerts instead of pixmap or pixmap_final
+// Here's the old APRS-type map call:
+//map_search (w, alert_scan, alert, &alert_count,(int)(alert_tag[i + 2] == DATA_VIA_TNC || alert_tag[i + 2] == DATA_VIA_LOCAL), DRAW_TO_PIXMAP_ALERTS);
+
+// Check the zone name(s) to see which Shapefile(s) to use.
+
+            switch (zone[4]) {
+                case ('C'): // County File (c_16my01.shp)
+                    break;
+                case ('A'): // County Warning File (w_24ja01.shp)
+                    break;
+                case ('Z'): // Zone File (z_16mr01.shp, z_16my01.shp, mz24ja01.shp, oz09de99.shp)
+                    break;
+            }
+
 
  **********************************************************/
 void draw_shapefile_map (Widget w,
@@ -6624,9 +6649,9 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
  * image file we're dealing with, and takes care of getting
  * it onto the screen.  Calls other functions to deal with
  * .geo/.tif/.shp maps.  This function deals with
- * DOS/Windows vector maps itself.
+ * DOS/Windows vector maps directly itself.
  **********************************************************/
-void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
+void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                 unsigned char alert_color, int destination_pixmap) {
     FILE *f;
     char file[2000];
@@ -6712,9 +6737,53 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
     npoints = 0;
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
-
     ext = get_map_ext (filenm);
-    if (ext != NULL && strcasecmp (ext, "MAP") == 0) {
+
+
+    // If alert is non-NULL, then we have a weather alert and we need
+    // to call draw_shapefile_map() to light up that area.  If alert
+    // is NULL, then we decide here what method to use to draw the
+    // map.
+
+
+    // Check for WX alert/ESRI Shapefile maps first
+    if ( (alert != NULL)    // We have an alert!
+            || ( (ext != NULL) && strcasecmp(ext,"shp") == 0) ) { // Or non-alert shapefile map
+#ifdef HAVE_SHAPELIB
+        draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
+#endif // HAVE_SHAPELIB
+    }
+
+
+    // .geo image map? (can be one of many formats)
+    else if (ext != NULL && strcasecmp (ext, "geo") == 0) {
+        draw_geo_image_map (w, dir, filenm);
+    }
+
+
+    // Palm map?
+    else if (ext != NULL && strcasecmp (ext, "pdb") == 0) {
+        //printf("calling draw_palm_image_map: %s/%s\n", dir, filenm);
+        draw_palm_image_map (w, dir, filenm, destination_pixmap);
+    }
+
+
+    // GNIS database file?
+    else if (ext != NULL && strcasecmp (ext, "gnis") == 0) {
+        draw_gnis_map (w, dir, filenm);
+    }
+
+
+#ifdef HAVE_GEOTIFF
+    // USGS DRG geoTIFF map?
+    else if (ext != NULL && strcasecmp (ext, "tif") == 0) {
+        draw_geotiff_image_map (w, dir, filenm);
+    }
+#endif // HAVE_GEOTIFF
+
+
+    // DOS/WinAPRS map?
+    else if (ext != NULL && strcasecmp (ext, "MAP") == 0) {
         f = fopen (file, "r");
         if (f != NULL) {
             (void)fread (map_type, 4, 1, f);
@@ -6863,17 +6932,7 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
                 alert->right_boundary  = right_boundary;
             }
 
-            /*
-             * Got rid of the autocheck stuff here.  Better to check whether
-             * maps fit our viewport and load the ones that do, irregardless
-             * of the automaps setting.  Much faster.
-
-            if (!tn) // check if auto map
-                in_window = 1;
-            else {  // check edges and corners - quick check
-            */
-
-                in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary);
+            in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary);
 
             if (alert)
                 alert->flags[0] = in_window ? 'Y' : 'N';
@@ -7351,57 +7410,34 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
         }
         else
             printf("Couldn't open file: %s\n", file);
-    } else {
-        // this is another type, imagemap files (can be one of many formats)
-        if (ext != NULL && strcasecmp (ext, "geo") == 0) {
-            // this is a geo image map
-            draw_geo_image_map (w, dir, filenm);
-        }
-
-        else if (ext != NULL && strcasecmp (ext, "pdb") == 0) {
-            // this is a Palm image map
-            //printf("calling draw_palm_image_map: %s/%s\n", dir, filenm);
-            draw_palm_image_map (w, dir, filenm, destination_pixmap);
-        }
-
-        else if (ext != NULL && strcasecmp (ext, "gnis") == 0) {
-            // this is a GNIS database file
-            draw_gnis_map (w, dir, filenm);
-        }
-
-#ifdef HAVE_GEOTIFF
-        // and yet another type, USGS DRG geoTIFF files
-        else if (ext != NULL && strcasecmp (ext, "tif") == 0)
-        {
-            // This should be a geoTIFF map
-            draw_geotiff_image_map (w, dir, filenm);
-        }
-#endif // HAVE_GEOTIFF
-
-#ifdef HAVE_SHAPELIB
-        // and yet another type, ArcView Shapefiles, for normal maps & wx alert maps
-        else if (ext != NULL && strcasecmp (ext, "shp") == 0)
-        {
-            // This should be a shapefile map
-            draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
-        }
-#endif // HAVE_SHAPELIB
-
     }
+
+    // Couldn't figure out the map type
+    else {
+        printf("draw_map: Unknown map type: %s\n", filenm);
+    }
+
     XmUpdateDisplay (XtParent (da));
-}
+}  // End of draw_map()
 
 
 
 
 
-/**********************************************************
- * map_search()
- *
- * Function which recurses through map directories, finding
- * map files.  It's called from load_auto_maps and
- * load_alert_maps.  If a map file is found, it is drawn.
- **********************************************************/
+/////////////////////////////////////////////////////////////////////
+// map_search()
+//
+// Function which recurses through map directories, finding
+// map files.  It's called from load_auto_maps and
+// load_alert_maps.  If a map file is found, it is drawn.
+// If alert == NULL, we looking for a regular map file to draw.
+// If alert != NULL, we have a weather alert to draw.
+//
+// For alert maps, we need to do things a bit differently, as there
+// should be only a few maps that contain all of the alert maps, and we
+// can compute which map some of them might be in.  We need to fill in
+// the alert structure with the filename that alert is found in.
+/////////////////////////////////////////////////////////////////////
 void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int warn, int destination_pixmap) {
     struct dirent *dl;
     DIR *dm;
@@ -7418,51 +7454,99 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
     map_dir_length = (int)strlen (map_dir);
 
-    dm = opendir (dir);
-    if (!dm) {
-        xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
-        if (warn)
-            perror (fullpath);
+    if (alert) {    // We're doing weather alerts
+        // First check whether the alert->filename variable is filled
+        // in.  If so, we've already found the file and can just display
+        // that shape in the file
+        if (alert->filename[0]) {   // We have a filename
+            // Display the shape
+        }
+        else {  // No filename in struct, so will have to search for the
+                // shape in the files.
+            switch (alert->title[3]) {
+                case 'C':   // Check for a 'C' in the 4th character of the title
+                    // County file c_??????
+printf("%c:County file\n",alert->title[3]);
+                    break;
+                case 'A':
+                    // County warning area w_?????
+printf("%c:County warning area file\n",alert->title[3]);
+                    break;
+                case 'Z':
+                    // Zone or marine zone file z_????? or mz_????? or
+                    // oz_?????
+printf("%c:Zone or marine zone file\n",alert->title[3]);
+                    break;
+                default:
+                    // Unknown type
+printf("%c:Unknown weather warning file\n",alert->title[3]);
+                    break;
+            }
+            strncpy (alert->filename, "we7u", sizeof (alert->filename));
+//            printf("%s\t%s\t%s\n",alert->activity,alert->alert_tag,alert->title);
+            printf("File: %s\n",alert->filename);
+        }
+    }
+    else {          // We're doing regular maps
+        dm = opendir (dir);
+        if (!dm) {  // Couldn't open directory
+            xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
+            if (warn)
+                perror (fullpath);
+        } else {
+            int count = 0;
+            while ((dl = readdir (dm))) {
+                xastir_snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, dl->d_name);
+                /*printf("FULL PATH %s\n",fullpath); */
+                if (stat (fullpath, &nfile) == 0) {
+                    ftime = (time_t *)&nfile.st_ctime;
+                    switch (nfile.st_mode & S_IFMT) {
+                        case (S_IFDIR):     // It's a directory, recurse
+                            /*printf("file %c letter %c\n",dl->d_name[0],letter); */
+                            if ((strcmp (dl->d_name, ".") != 0) && (strcmp (dl->d_name, "..") != 0)) {
+                                strcpy (this_time, ctime (ftime));
+                                map_search(w, fullpath, alert, alert_count, warn, destination_pixmap);
+                            }
+                            break;
+                        case (S_IFREG):     // It's a file, draw the map
+                            /*printf("FILE %s\n",dl->d_name); */
 
-    } else {
-        int count = 0;
-        while ((dl = readdir (dm))) {
-            xastir_snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, dl->d_name);
-            /*printf("FULL PATH %s\n",fullpath); */
-            if (stat (fullpath, &nfile) == 0) {
-                ftime = (time_t *)&nfile.st_ctime;
-                switch (nfile.st_mode & S_IFMT) {
-                    case (S_IFDIR):     // It's a directory, recurse
-                        /*printf("file %c letter %c\n",dl->d_name[0],letter); */
-                        if ((strcmp (dl->d_name, ".") != 0) && (strcmp (dl->d_name, "..") != 0)) {
-                            strcpy (this_time, ctime (ftime));
-                            map_search(w, fullpath, alert, alert_count, warn, destination_pixmap);
-                        }
-                        break;
-                    case (S_IFREG):     // It's a file, draw the map
-                        /*printf("FILE %s\n",dl->d_name); */
-                        if (strncmp (fullpath, map_dir, (size_t)map_dir_length) != 0) {
-                            draw_map (w, dir, dl->d_name, 1,alert ? &alert[*alert_count] : NULL, '\0', destination_pixmap);
-                            if (alert_count && *alert_count)
-                                (*alert_count)--;
-                        } else {
-                            for (ptr = &fullpath[map_dir_length]; *ptr == '/'; ptr++) ;
-                            draw_map (w, map_dir, ptr, 1,alert ? &alert[*alert_count] : NULL, '\0', destination_pixmap);
-                            if (alert_count && *alert_count)
-                                (*alert_count)--;
-                        }
-                        count++;
-                        break;
+                            // Check whether the file is in a subdirectory
+                            if (strncmp (fullpath, map_dir, (size_t)map_dir_length) != 0) {
+                                draw_map (w,
+                                    dir,
+                                    dl->d_name,
+                                    alert ? &alert[*alert_count] : NULL,
+                                    '\0',
+                                    destination_pixmap);
+                                if (alert_count && *alert_count)
+                                    (*alert_count)--;
+                            } else {
+                                // File is in the main map directory
+                                // Find the '/' character
+                                for (ptr = &fullpath[map_dir_length]; *ptr == '/'; ptr++) ;
+                                draw_map (w,
+                                    map_dir,
+                                    ptr,
+                                    alert ? &alert[*alert_count] : NULL,
+                                    '\0',
+                                    destination_pixmap);
+                                if (alert_count && *alert_count)
+                                    (*alert_count)--;
+                            }
+                            count++;
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
             }
-        }
-        if (debug_level & 16)
-            printf ("Number of maps queried: %d\n", count);
+            if (debug_level & 16)
+                printf ("Number of maps queried: %d\n", count);
 
-        (void)closedir (dm);
+            (void)closedir (dm);
+        }
     }
 }
 
@@ -7479,8 +7563,6 @@ static int alert_count;
 
 
 
-//#define USE_SHAPELIB_WX 1
-#ifdef USE_SHAPELIB_WX
 /**********************************************************
  * load_alert_maps()
  *
@@ -7500,7 +7582,7 @@ static int alert_count;
 //   alert->right_boundary
 //   alert->flags[0];
 //
-// And here is what the structure looks like:
+// And here is what the structure looks like (defined in alert.h):
 //typedef struct {
 //    unsigned long top_boundary, left_boundary, bottom_boundary, right_boundary;
 //    time_t expiration;
@@ -7517,171 +7599,103 @@ static int alert_count;
 //    char flags[16];
 //    char filename[64];
 //} alert_entry;
-
-
+//
 void load_alert_maps (Widget w, char *dir) {
     int i, level;
     char alert_scan[400], *dir_ptr;
 
     /* gray86, red2, yellow2, cyan2, RoyalBlue, ForestGreen, orange3 */
-    unsigned char fill_color[] = { (unsigned char)0x69, (unsigned char)0x4a, (unsigned char)0x63, (unsigned char)0x66, (unsigned char)0x61, (unsigned char)0x64, (unsigned char)0x62 };
+    unsigned char fill_color[] = {  (unsigned char)0x69,
+                                    (unsigned char)0x4a,
+                                    (unsigned char)0x63,
+                                    (unsigned char)0x66,
+                                    (unsigned char)0x61,
+                                    (unsigned char)0x64,
+                                    (unsigned char)0x62 };
 
     alert_count = MAX_ALERT - 1;
 
-    // Check for message alerts, draw the map if it hasn't expired yet
-    // and it's in our view.
-    if (alert_message_scan ()) {    // If we have _any_ weather alerts right now...
+    // Check for message alerts, draw alerts if they haven't expired yet
+    // and they're in our view.
+    if (alert_message_scan ()) {    // Returns number of wx alerts * 3
         memset (alert_scan, 0, sizeof (alert_scan));    // Zero our string
         strncpy (alert_scan, dir, 390); // Fetch the base directory
         strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
-        dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of dir string
-
-        // Now run through the global alert_tag variable (3 chars per
-        // alert) and add the 2-character state abbreviation to the
-        // directory one by one to get the directory the alerts are in.
-        for (i = 0; i < (int)strlen (alert_tag); i += 3) {  // Add pieces of alert_tag to the end
-            *dir_ptr = alert_tag[i];
-            *(dir_ptr + 1) = alert_tag[i + 1];
+        dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
 printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_tag);
-//      Weather Alerts, alert_scan: /usr/local/xastir/Counties/MS    alert_tag: CO?MS?
-// From this it appears that alert_tag is a short-hand way of figuring out which
-// state directories to look in, and the '?' is telling whether or not the map might
-// be viewable currently.
 
-            // Need to figure out which type of alert it is, select the corresponding shapefile,
-            // then store the shapefile AND the alert_tag in the alert_list[i].filename list?
-            // and draw the map.  Add an item to alert_list structure to keep track?
-
-            // The last parameter denotes loading into pixmap_alerts instead of pixmap or pixmap_final
-            // Here's the old APRS-type map call:
-            //map_search (w, alert_scan, alert, &alert_count,(int)(alert_tag[i + 2] == DATA_VIA_TNC || alert_tag[i + 2] == DATA_VIA_LOCAL), DRAW_TO_PIXMAP_ALERTS);
-
-            // Check the zone name(s) to see which Shapefile(s) to use.
-/*
-            switch (zone[4]) {
-                case ('C'): // County File (c_16my01.shp)
-                    break;
-                case ('A'): // County Warning File (w_24ja01.shp)
-                    break;
-                case ('Z'): // Zone File (z_16mr01.shp, z_16my01.shp, mz24ja01.shp, oz09de99.shp)
-                    break;
-            }
-
-            // Shapefile map drawing goes here.  Will need to modify draw_shapefile_map()
-            // such that it fills in the alert structure entries and only draws the shapes
-            // of interest for alert-maps.
-            draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
-*/
+        // Iterate through the weather alerts we currently have.
+        for (i = 0; i < alert_list_count; i++) {
+            // The last parameter denotes loading into pixmap_alerts instead
+            // of pixmap or pixmap_final.  Note that just calling map_search
+            // gets the alert areas drawn on the screen via the draw_map()
+            // function.
+printf("load_alert_maps() Title: %s\n",alert_list[i].title);
+            map_search (w,
+                alert_scan,
+                &alert_list[i],
+                &alert_count,
+                (int)(alert_tag[i + 2] == DATA_VIA_TNC || alert_tag[i + 2] == DATA_VIA_LOCAL),
+                DRAW_TO_PIXMAP_ALERTS);
         }
     }
 
 // Just for a test
 //draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
-draw_shapefile_map (w, dir, "c_16my01.shp", NULL, '\0', DRAW_TO_PIXMAP_ALERTS);
+//draw_shapefile_map (w, dir, "c_16my01.shp", NULL, '\0', DRAW_TO_PIXMAP_ALERTS);
 
- 
     if (!alert_count)
         XtAppWarning (app_context, "Alert Map count overflow: load_alert_maps\b\n");
 
-    for (i = MAX_ALERT - 1; i > alert_count; i--)
+    for (i = MAX_ALERT - 1; i > alert_count; i--) {
         if (alert[i].flags[0] == 'Y' || alert[i].flags[0] == 'N')
             alert_update_list (&alert[i], ALERT_TITLE);
+    }
 
-    for (i = 0; i < alert_list_count; i++)
-        if (alert_list[i].filename[0]) {
-            alert[0] = alert_list[i];
+    // Draw each alert map in the alert_list for which we have a
+    // filename.
+    for (i = 0; i < alert_list_count; i++) {
+        if (alert_list[i].filename[0]) {    // If filename is non-zero
+            alert[0] = alert_list[i];       // Reordering the alert_list???
 
-            // Shapefile map drawing goes here.  Will need to modify draw_shapefile_map()
-            // such that it fills in the alert structure entries and only draws the shapes
-            // of interest for alert-maps.
-//            draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
+            // The last parameter denotes drawing into pixmap_alerts
+            // instead of pixmap or pixmap_final.
+// Why do we need to draw alerts again here?
+//            draw_map (w,
+//                dir,
+//                alert_list[i].filename,
+//                &alert[0],
+//                '\0',
+//                DRAW_TO_PIXMAP_ALERTS);
 
             alert_update_list (&alert[0], ALERT_ALL);
-        }
-
-    alert_sort_active ();
-    for (i = alert_list_count - 1; i >= 0; i--)
-        if (alert_list[i].flags[0] == 'Y' && (level = alert_active (&alert_list[i], ALERT_ALL))) {
-            if (level >= (int)sizeof (fill_color))
-                level = 0;
-
-            // Shapefile map drawing goes here.  Will need to modify draw_shapefile_map()
-            // such that it fills in the alert structure entries and only draws the shapes
-            // of interest for alert-maps.
-//            draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
-
-        }
-    (void)alert_display_request ();
-}
-
-
-
-
-
-#else //USE_SHAPELIB_WX is not defined, so we use APRS maps for weather alerts
-/**********************************************************
- * load_alert_maps()
- *
- * Used to load weather alert maps, based on NWS weather
- * alerts that are received.  Called from create_image()
- * and refresh_image().  This version of the function is
- * designed to use APRS-type map files.
- **********************************************************/
-void load_alert_maps (Widget w, char *dir) {
-    int i, level;
-    char alert_scan[400], *dir_ptr;
-
-    /* gray86, red2, yellow2, cyan2, RoyalBlue, ForestGreen, orange3 */
-    unsigned char fill_color[] = { (unsigned char)0x69, (unsigned char)0x4a, (unsigned char)0x63, (unsigned char)0x66, (unsigned char)0x61, (unsigned char)0x64, (unsigned char)0x62 };
-
-    alert_count = MAX_ALERT - 1;
-
-    // Look for new message alerts, draw the map if a new alert has shown up.
-    if (alert_message_scan ()) {    // If we've found another wx alert in recent messages...
-        memset (alert_scan, 0, sizeof (alert_scan));
-        strncpy (alert_scan, dir, 390);
-        strcat (alert_scan, "/");   // Alert directory is now set up in the string
-        dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of dir string
-        for (i = 0; i < (int)strlen (alert_tag); i += 3) {  // Add pieces of alert_tag to the end
-            *dir_ptr = alert_tag[i];
-            *(dir_ptr + 1) = alert_tag[i + 1];
-
-            // The last parameter denotes loading into pixmap_alerts instead of pixmap or pixmap_final
-            map_search (w, alert_scan, alert, &alert_count,(int)(alert_tag[i + 2] == DATA_VIA_TNC || alert_tag[i + 2] == DATA_VIA_LOCAL), DRAW_TO_PIXMAP_ALERTS);
         }
     }
 
-    if (!alert_count)
-        XtAppWarning (app_context, "Alert Map count overflow: load_alert_maps\b\n");
-
-    for (i = MAX_ALERT - 1; i > alert_count; i--)
-        if (alert[i].flags[0] == 'Y' || alert[i].flags[0] == 'N')
-            alert_update_list (&alert[i], ALERT_TITLE);
-
-    for (i = 0; i < alert_list_count; i++)
-        if (alert_list[i].filename[0]) {
-            alert[0] = alert_list[i];
-
-            // The last parameter denotes drawing into pixmap_alerts instead of pixmap or pixmap_final
-            draw_map (w, dir, alert_list[i].filename, 1, &alert[0], '\0', DRAW_TO_PIXMAP_ALERTS);
-
-            alert_update_list (&alert[0], ALERT_ALL);
-        }
-
+    // Mark all of the active alerts in the list
     alert_sort_active ();
-    for (i = alert_list_count - 1; i >= 0; i--)
+
+    // Run through all the alerts, drawing any that are active
+    for (i = alert_list_count - 1; i >= 0; i--) {
         if (alert_list[i].flags[0] == 'Y' && (level = alert_active (&alert_list[i], ALERT_ALL))) {
             if (level >= (int)sizeof (fill_color))
                 level = 0;
 
-            // The last parameter denotes drawing into pixmap_alert instead of pixmap or pixmap_final
-            draw_map (w, dir, alert_list[i].filename, 0, NULL, fill_color[level], DRAW_TO_PIXMAP_ALERTS);
+            // The last parameter denotes drawing into pixmap_alert
+            // instead of pixmap or pixmap_final.
+// Why do we need to draw alerts again here?
+//            draw_map (w,
+//                dir,
+//                alert_list[i].filename,
+//                NULL,
+//                fill_color[level],
+//                DRAW_TO_PIXMAP_ALERTS);
         }
+    }
 
     (void)alert_display_request ();
 }
-#endif  // USE_SHAPELIB_WX
 
 
 
@@ -7735,7 +7749,7 @@ void load_maps (Widget w) {
                     printf("Found mapname: %s\n", mapname);
 
                 if (mapname[0] != '#') {
-                    draw_map (w, WIN_MAP_DIR, mapname, 0, NULL, '\0', DRAW_TO_PIXMAP);
+                    draw_map (w, WIN_MAP_DIR, mapname, NULL, '\0', DRAW_TO_PIXMAP);
 
                     if (debug_level & 1)
                         printf ("Load maps -%s\n", mapname);

@@ -23,6 +23,14 @@
  */
 
 
+
+// We may want to call or schedule somehow that refresh_image gets
+// called, so that new alerts will show up in a timely manner.  Same for
+// expiring alerts:  Need to refresh the map.
+// alert_redraw_on_update will cause refresh_image to get called.
+// alert_add_entry sets it.  Expiring an alert should set it as well.
+
+
 //
 // Changes Dale Huguely would like to see:
 // Shapefile weather alerts.
@@ -39,22 +47,24 @@
 // In the alert structure, flags[] is size 16.  Only the first two
 // positions in the array are currently used.
 //
-// alert_entry.flags[0] ?  Initial state or ready-to-recompute state
+// alert_entry.flags[0]
+//          ?  Initial state or ready-to-recompute state
 //          -   Expired between 1 sec and 1 hour
 //          Y   Active alert within viewport
 //          N   Active alert outside viewport
 //
-// alert_entry.flags[1] DATA_VIA_TNC
+// alert_entry.flags[1]
+//          DATA_VIA_TNC
 //          DATA_VIA_LOCAL
 //
-// alert_entry.alert_tag    .alert_level
-//              CANCL       C
-//              TEST        T
-//              WARN        R
-//              WATCH       Y
-//              ADVIS       B
-//              Other       G
-//              Unset       ?
+// alert_entry.alert_tag    alert_entry.alert_level
+//         CANCL                C
+//         TEST                 T
+//         WARN                 R
+//         WATCH                Y
+//         ADVIS                B
+//         Other                G
+//         Unset                ?
 //
 //
 //
@@ -68,12 +78,18 @@
 //
 // When converting to using Shapefile maps, we could either save the
 // shapefile designator in this same global alert_tag string, or we
-// could compute it on the fly from the data.
+// could compute it on the fly from the data.  Perhaps we could
+// compute it on the fly if the variable in the struct was empty,
+// then fill it in after the first search so that we didn't have to
+// look it up again for later display.
 //
 // Stuff from Dale, paraphrased by Curt:
 //
 // The clue to which shapefile to use is in the 4th char (which
 // is the first following an '_')
+//
+// ICTSVS>APRS::NWS-ADVIS:120145z,SEVERE_WEATHER,KS_Z091, {C14AA
+// TSASVR>APRS::NWS-WARN :120230z,SVRTSM,OK_C113,  OSAGE COUNTY {C16AA
 //
 // C = county file (c_??????)
 // A = County Warning File (w_?????)
@@ -111,6 +127,129 @@
 // The trick is to step thru the data base contained in the
 // shapefiles to determine what areas to light up.  In the above
 // example read ">" as "thru" and "-" as "and".
+//
+// More from Dale:
+// It occurs to me you might need some insight into what shapefile to
+// look
+// through for a zone/county. The current shape files are c_22mr02, 
+// z_16mr02, and mz21fe02.
+//
+// ICTSVS>APRS::NWS-ADVIS:120145z,SEVERE_WEATHER,KS_Z091, {C14AA
+// would be in z_ file
+//
+// TSASVR>APRS::NWS-WARN :120230z,SVRTSM,OK_C113,  OSAGE COUNTY {C16AA
+// would be in c_ file
+//
+// problem comes with marine warnings-
+//
+// AM,AN,GM,PZ,PK,PM,LS,LM,LH,LO,LE,SL will look like states, but will all 
+// come from the mz file.
+//
+// so AM_Z686 looks like a state zone, but is a marine zone.
+// Aprs Plus requires the exact file name to be specified - winaprs just 
+// looks for a file in the nwsshape folder starting c_ z_ and mz.  Someone 
+// in the middle of Kansas might not need the marine at all- but here I am 
+// closer to marine zones than land. The fact there is an index file for 
+// the shapes should help the speed in a lookup.
+//
+// More from Dale:
+// The CWA areas themselves were included for just one product- generally
+// called the "Hazardous Weather Outlook".  The idea was to be able to
+// click on your region and get a synopsis as a Skywarn Heads-up.  In
+// winaprs it turned out that you would get (unwanted) the CWA outline
+// instead of some other data about a specific station.  It makes more
+// sense to have three or 4 "home CWA'S" that are defined in the config
+// file - and have a dialog box to view the Hazardous WX Outlook and
+// watches and warnings just for that CWA.  One step futher- I assume there
+// is something that trips alarms when a warning is received for a county
+// or zone right around you - the cwa or cwa's of interest could be derived
+// from that if it already exists.  A long way to say don't worry about CWA
+// maps as far as watches/warnings.
+// 
+// I think the easy coding for determining which shapefile to use would
+// look like;
+// 
+// char sevenCharStr[8];  // seven character string in warning or derived
+// //                        from compressed string i. e. AL_Z001
+// 
+// if the 4th char == 'C' then use "c_shapefile"
+// if the 4th char == 'Z';
+//       if the first two char == 'AN' ||
+//       if the first two char == 'AM' ||
+//       if the first two char == 'GM' ||
+//       If the first two char == 'PZ' ||
+//       if the first two char == 'LH' ||
+//       if the first two char == 'LO' ||
+//       if the first two char == 'LS' ||          
+//       if the first two char == 'SL' ||
+//       if the first two char == 'LM' ||
+//            then use the "mzshapefile"
+//       else use the "z_shapefile"
+// I am running out of time - Need to meet Gerry at the EOC in 30 min- but 
+// that should be all there is to it- I will send you a complete list of 
+// marine zones later today- I think there are no more than 13 or 14 to 
+// search through - better that the 54 "states"- could be hard coded. 
+
+
+// Found on the AWIPS web pages so far:
+// AWIPS Counties          C
+// County Warning Areas    A
+// Zone Forecast Areas     Z
+// Coastal Marine Zones    Z
+// Offshore Marine Zones   Z
+// High Seas Marine Zones  Z    (Says "Not for operational use")
+//
+//
+// AWIPS Counties:
+// -----------------------------
+// STATE        character   2
+// CWA          character   9
+// COUNTYNAME   character   24
+// FIPS         character   5
+// TIME_ZONE    character   2
+// FE_AREA      character   2
+// LON          numeric     10,5
+// LAT          numeric     9,5
+//
+//
+// County Warning Areas:
+// -----------------------------
+// WFO          character   3
+// CWA          character   3
+// LON          numeric     10,5
+// LAT          numeric     9,5
+//
+//
+// Zone Forecast Areas:
+// -----------------------------
+// STATE        character   2
+// ZONE         character   3
+// CWA          character   3
+// NAME         character   254
+// STATE_ZONE   character   5
+// TIME_ZONE    character   2
+// FE_AREA      character   2
+// LON          numeric     10,5
+// LAT          numeric     9,5
+//
+//
+// Coastal and Offshore Marine Zones:
+// ----------------------------------
+// ID           character   6
+// WFO          character   3
+// NAME         character   250
+// LON          numeric     10,5
+// LAT          numeric     9,5
+// WFO_AREA     character   200
+//
+//
+// High Seas Marine Zones:
+// -----------------------------
+// WFO          character   3
+// LON          numeric     10,5
+// LAT          numeric     9,5
+// HEADING      character   250
+
 
 
 #include "config.h"
@@ -162,6 +301,10 @@ int alert_redraw_on_update = 0;
 void normal_title(char *incoming_title, char *outgoing_title) {
     char *c_ptr;
 
+
+    if (debug_level & 1)
+        printf("normal_title: Incoming: %s\n",incoming_title);
+
     strncpy(outgoing_title, incoming_title, 32);
     outgoing_title[32] = '\0';
     if ((c_ptr = strstr(outgoing_title, "County Warning Area ")) && c_ptr == outgoing_title) {
@@ -185,6 +328,9 @@ void normal_title(char *incoming_title, char *outgoing_title) {
 
     // Truncate the string to eight characters always
     outgoing_title[8] = '\0';
+
+    if (debug_level & 1)
+        printf("normal_title: Outgoing: %s\n",outgoing_title);
 }
 
 
@@ -233,12 +379,20 @@ void alert_print_list(void) {
     alert_entry *ptr;
     int i;
 
+
+    if (debug_level & 1)
+        printf("alert_add_entry\n");
+
     // Skip NWS_SOLAR and -NoActivationExpected alerts, they don't
     // interest us.
-    if (strcmp(entry->to, "NWS-SOLAR") == 0)
+    if (strcmp(entry->to, "NWS-SOLAR") == 0) {
+printf("NWS-SOLAR, skipping\n");
         return (NULL);
-    if (strcasecmp(entry->title, "-NoActivationExpected") == 0)
+    }
+    if (strcasecmp(entry->title, "-NoActivationExpected") == 0) {
+printf("NoActivationExpected, skipping\n");
         return (NULL);
+    }
 
     // Allocate more space if we're at our maximum already.
     // Allocate space for 10 more alerts.
@@ -250,6 +404,9 @@ void alert_print_list(void) {
         }
     }
 
+if (entry->expiration < time(NULL))
+printf("Expired, current: %lu, alert: %lu\n", time(NULL), entry->expiration );
+
     // Check for non-zero alert title, non-expired alert time
     if (entry->title[0] != '\0' && entry->expiration >= time(NULL)) {
 
@@ -260,18 +417,21 @@ void alert_print_list(void) {
         for (i = 0; i < alert_list_count; i++) {
             if (alert_list[i].title[0] == '\0') {   // If alert entry is empty
                 memcpy(&alert_list[i], entry, sizeof(alert_entry)); // Use it
+printf("Found empty entry, filling it\n");
                 return ( &alert_list[i]);
             }
         }
 
         // Else fill in the entry at the end and bump up the count
         if (alert_list_count < alert_max_count) {
+printf("Adding new entry\n");
             memcpy(&alert_list[alert_list_count], entry, sizeof(alert_entry));
             return (&alert_list[alert_list_count++]);
         }
     }
 
     // The title was empty or the alert has already expired
+printf("Title empty or alert expired, skipping\n");
     return (NULL);
 }
 
@@ -291,6 +451,10 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     int i;
     char *ptr, title_e[33], title_m[33], alert_f[33], filename[33];
 
+
+    if (debug_level & 1)
+        printf("alert_match\n");
+ 
     // Shorten the title
     normal_title(alert->title, title_e);
 
@@ -354,13 +518,16 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 //
 // Updates entry in alert_list from new matching alert.  Checks for
 // matching entry first, else fills in blank entry.
-// Called from maps.c:load_alert_maps() functions (both copies of it,
-// compiled in with different map support).
+// Called from maps.c:load_alert_maps() function.
 //
 void alert_update_list(alert_entry *alert, alert_match_level match_level) {
     alert_entry *ptr;
     int i;
     char title_e[33], title_m[33];
+
+
+    if (debug_level & 1)
+        printf("alert_update_list\n");
 
     // Find the matching alert in alert_list, copy updated
     // parameters from new alert into existing alert_list entry.
@@ -422,8 +589,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 // Here's where we get rid of expired alerts in the list.
 // Called from alert_compare(), alert_display_request(),
 // alert_on_screen(), alert_build_list(), and alert_message_scan()
-// functions.  Also called from maps.c:load_alert_maps() functions
-// (both of them).
+// functions.  Also called from maps.c:load_alert_maps() function.
 //
 // Alert Match Levels:
 // 0 = ?
@@ -440,6 +606,10 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
     int level = 0;
     time_t now;
 
+
+    if (debug_level & 1)
+        printf("alert_active\n");
+
     (void)time(&now);
 
     if ((a_ptr = alert_match(alert, match_level))) {
@@ -452,6 +622,9 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
         }
         else if (a_ptr->flags[0] == '?') {  // Expired between 1sec and 1hr and found '?'
             a_ptr->flags[0] = '-';
+ 
+            // Schedule a screen update 'cuz we have an expired alert
+            alert_redraw_on_update = redraw_on_new_data = 1;
         }
     }
     return (level);
@@ -515,9 +688,14 @@ static int alert_compare(const void *a, const void *b) {
 //
 // This sorts the alert_list so that the active items are at the
 // beginning.
-// Called from maps.c:load_alert_maps() functions (both of them).
+// Called from maps.c:load_alert_maps() function.
 //
 void alert_sort_active(void) {
+
+
+    if (debug_level & 1)
+        printf("alert_sort_active\n");
+
     qsort(alert_list, (size_t)alert_list_count, sizeof(alert_entry), alert_compare);
     for (; alert_list_count && alert_list[alert_list_count-1].title[0] == '\0'; alert_list_count--);
 }
@@ -530,11 +708,15 @@ void alert_sort_active(void) {
 // alert_display_request()
 //
 // Function which checks whether an alert should be displayed.
-// Called from maps.c:load_alert_maps() functions (both of them).
+// Called from maps.c:load_alert_maps() function.
 //
 int alert_display_request(void) {
     int i, alert_count;
     static int last_alert_count;
+
+
+    if (debug_level & 1)
+        printf("alert_display_request\n");
 
     // Iterate through entire alert_list
     for (i = 0, alert_count = 0; i < alert_list_count; i++) {
@@ -569,6 +751,10 @@ int alert_display_request(void) {
 //
 int alert_on_screen(void) {
     int i, alert_count;
+
+
+    if (debug_level & 1)
+        printf("alert_on_screen\n");
 
     for (i = 0, alert_count = 0; i < alert_list_count; i++) {
         if (alert_active(&alert_list[i], ALERT_ALL)
@@ -624,6 +810,10 @@ static void alert_build_list(Message *fill) {
     char *ptr;
     DataRow *p_station;
 
+
+    if (debug_level & 1)
+        printf("alert_build_list\n");
+
     if (fill->active == RECORD_ACTIVE) {
         memset(entry, 0, sizeof(entry));
         (void)sscanf(fill->message_line, "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
@@ -640,8 +830,9 @@ static void alert_build_list(Message *fill) {
             strcpy(entry[0].alert_tag, entry[0].activity);
         }
 
-        // flags[0] specifies whether it's onscreen or not
         entry[0].expiration = time_from_aprsstring(entry[0].activity);
+ 
+        // flags[0] specifies whether it's onscreen or not
         memset(entry[0].flags, (int)'?', sizeof(entry[0].flags));
         p_station = NULL;
 
@@ -650,10 +841,14 @@ static void alert_build_list(Message *fill) {
         if (search_station_name(&p_station,fill->from_call_sign,1))
             entry[0].flags[1] = p_station->data_via;
 
+
+        // Set up each of up to six structs with data
         for (i = 0; i < 6 && entry[i].title[0]; i++) {
 
+            // Terminate title string for each of six structs
             entry[i].title[32] = '\0';
-
+printf("Title: %s\n",entry[i].title);
+ 
             while ((ptr = strpbrk(entry[i].title, " ")))
                 memmove(ptr, ptr+1, strlen(ptr)+1);
 
@@ -672,6 +867,8 @@ static void alert_build_list(Message *fill) {
             if (entry[i].title[0] == '\0')
                 continue;
 
+            // Fill in other struct data from first struct, except
+            // for title.
             strcpy(entry[i].activity, entry[0].activity);
             strcpy(entry[i].alert_tag, entry[0].alert_tag);
             strcpy(entry[i].from, fill->from_call_sign);
@@ -720,19 +917,23 @@ static void alert_build_list(Message *fill) {
 // alert_message_scan()
 //
 // This function scans the message list to find new alerts.  It adds
-// current alerts to our alert list via the alert_build_list()
+// non-expired alerts to our alert list via the alert_build_list()
 // function.  It also builds the alert_tag string which contains
 // three characters per alert, and the on-screen status of each.
 //
 // Called from db.c:decode_message() function when a new alert is
-// received, and from maps.c:load_alert_maps() functions (both of
-// them).
+// received, and from maps.c:load_alert_maps() function.
+//
 // It returns the string length of the global alert_tag variable.
 // Divide this by 3 and we know the number of alerts that we have.
 //
 int alert_message_scan(void) {
     char *a_ptr;
     int i, j;
+
+
+    if (debug_level & 1)
+        printf("alert_message_scan\n");
 
     // This is the shorthand way we keep track of which state's we just got alerts for.
     // Looks like "CO?MO?ID?". The 3rd position is to indicate if the alert came via local or
