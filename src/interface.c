@@ -130,6 +130,47 @@ int NETWORK_WAITTIME;
 
 
 
+// Breaks up a string into substrings using comma as the delimiter.
+// Makes each entry in the array of char ptrs point to one
+// substring.  Modifies incoming string and cptr[] array.  Send a
+// character constant string to it and you'll get an instant
+// segfault (can't modify it).
+//
+void split_string( char *data, char *cptr[], int max ) {
+  int ii;
+  char *temp;
+  char *current = data;
+
+
+  // NULL each char pointer
+  for (ii = 0; ii < max; ii++) {
+    cptr[ii] = NULL;
+  }
+
+  // Save the beginning substring address
+  cptr[0] = current;
+
+  for (ii = 1; ii < max; ii++) {
+    temp = strchr(current,',');  // Find next comma
+
+    if(!temp) { // No commas found 
+      return; // All done with string
+    }
+
+    // Store pointer to next substring in array
+    cptr[ii] = &temp[1];
+    current  = &temp[1];
+
+    // Overwrite comma with end-of-string char and bump pointer by
+    // one.
+    temp[0] = '\0';
+  }
+}
+
+
+
+
+
 // Create a packet and send to AGWPE for transmission.
 // Format is as follows:
 //
@@ -144,36 +185,30 @@ int NETWORK_WAITTIME;
 // Callsigns are null-terminated at end of string, but callsign
 // field width is specified to be 10 bytes in all cases.
 //
-// ViaCalls are null-terminated and may also be NULL pointers.
+// Path is split up into the various ViaCalls.  Path may also be a
+// NULL pointer.
 //
+// If type != '\0', then we'll create the specified type of packet.
 //
-// If type != '\0', then we'll create that type of packet.
-//
-// Else if ViaCalls are not empty, we'll use packet format "V" with
+// Else if Path is not empty, we'll use packet format "V" with
 // Viacalls prepended to the Data portion of the packet, 10 chars
 // per digi, with the number of digis as the first character.  The
 // packet data then follows after the last via callsign.
 //
-// Else if no ViaCalls, then put the Data directly into the Data
-// field and use "M" format packets instead.
+// Else if no Path, then put the Data directly into the Data
+// field and use "M" format packets.
 //
 void send_agwpe_packet(int xastir_interface,// Xastir interface port
                        int RadioPort,       // AGWPE RadioPort
                        unsigned char type,
                        unsigned char *FromCall,
                        unsigned char *ToCall,
-                       unsigned char *ViaCall1,
-                       unsigned char *ViaCall2,
-                       unsigned char *ViaCall3,
-                       unsigned char *ViaCall4,
-                       unsigned char *ViaCall5,
-                       unsigned char *ViaCall6,
-                       unsigned char *ViaCall7,
-                       unsigned char *ViaCall8,
+                       unsigned char *Path,
                        unsigned char *Data,
                        int length) {
     int ii;
     unsigned char output_string[600];
+    unsigned char path_string[200];
     int full_length;
     int data_length;
 
@@ -183,17 +218,10 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
         return;
 
 /*
-fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s\n",
+fprintf(stderr,"%s %s %s\n",
     FromCall,
     ToCall,
-    ViaCall1,
-    ViaCall2,
-    ViaCall3,
-    ViaCall4,
-    ViaCall5,
-    ViaCall6,
-    ViaCall7,
-    ViaCall8);
+    Path);
 */
 
     // Clear the output_string (set to binary zeroes)
@@ -221,7 +249,7 @@ fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s\n",
         port_write_binary(xastir_interface, output_string, 36);
     }
  
-    else if (ViaCall1 == NULL) { // No ViaCalls, Data or login packet
+    else if (Path == NULL) { // No ViaCalls, Data or login packet
 
         if (type == 'P') {
             // Login/Password frame
@@ -230,7 +258,7 @@ fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s\n",
         }
         else {  // Data frame
             // Write the type character into the frame
-            output_string[4] = 'M'; // Unproto, no vias
+            output_string[4] = 'M'; // Unproto, no via calls
 
             // Write the PID type into the frame
             output_string[6] = 0xF0;    // UI Frame
@@ -251,27 +279,32 @@ fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s\n",
     }
 
     else {  // We have ViaCalls.  Data packet.
+        char *ViaCall[10];
+
+        strncpy(path_string, Path, sizeof(path_string));
+
+        split_string(path_string, ViaCall, 10);
 
         // Write the type character into the frame
-        output_string[4] = 'V'; // Unproto, vias
+        output_string[4] = 'V'; // Unproto, via calls present
 
         // Write the PID type into the frame
         output_string[6] = 0xF0;    // UI Frame
 
         // Write the number of ViaCalls into the first byte
-        if (ViaCall8)
+        if (ViaCall[7])
             output_string[36] = 0x08;
-        else if (ViaCall7)
+        else if (ViaCall[6])
             output_string[36] = 0x07;
-        else if (ViaCall6)
+        else if (ViaCall[5])
             output_string[36] = 0x06;
-        else if (ViaCall5)
+        else if (ViaCall[4])
             output_string[36] = 0x05;
-        else if (ViaCall4)
+        else if (ViaCall[3])
             output_string[36] = 0x04;
-        else if (ViaCall3)
+        else if (ViaCall[2])
             output_string[36] = 0x03;
-        else if (ViaCall2)
+        else if (ViaCall[1])
             output_string[36] = 0x02;
         else
             output_string[36] = 0x01;
@@ -279,44 +312,44 @@ fprintf(stderr,"%s %s %s %s %s %s %s %s %s %s\n",
         // Write the ViaCalls into the Data field
         switch (output_string[36]) {
             case 8:
-                if (ViaCall8)
-                    strcpy(&output_string[37+70], ViaCall8);
+                if (ViaCall[7])
+                    strcpy(&output_string[37+70], ViaCall[7]);
                 else
                     return;
             case 7:
-                if (ViaCall7)
-                    strcpy(&output_string[37+60], ViaCall7);
+                if (ViaCall[6])
+                    strcpy(&output_string[37+60], ViaCall[6]);
                 else
                     return;
             case 6:
-                if (ViaCall6)
-                    strcpy(&output_string[37+50], ViaCall6);
+                if (ViaCall[5])
+                    strcpy(&output_string[37+50], ViaCall[5]);
                 else
                     return;
             case 5:
-                if (ViaCall5)
-                    strcpy(&output_string[37+40], ViaCall5);
+                if (ViaCall[4])
+                    strcpy(&output_string[37+40], ViaCall[4]);
                 else
                     return;
             case 4:
-                if (ViaCall4)
-                    strcpy(&output_string[37+30], ViaCall4);
+                if (ViaCall[3])
+                    strcpy(&output_string[37+30], ViaCall[3]);
                 else
                     return;
             case 3:
-                if (ViaCall3)
-                    strcpy(&output_string[37+20], ViaCall3);
+                if (ViaCall[2])
+                    strcpy(&output_string[37+20], ViaCall[2]);
                 else
                     return;
             case 2:
-                if (ViaCall2)
-                    strcpy(&output_string[37+10], ViaCall2);
+                if (ViaCall[1])
+                    strcpy(&output_string[37+10], ViaCall[1]);
                 else
                     return;
             case 1:
             default:
-                if (ViaCall1)
-                    strcpy(&output_string[37],    ViaCall1);
+                if (ViaCall[0])
+                    strcpy(&output_string[37],    ViaCall[0]);
                 else
                     return;
                 break;
@@ -4121,13 +4154,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                             '\0',
                             '\0',
                             NULL,
-                            NULL,
-                            NULL,
-                            NULL,
-                            NULL,
-                            NULL,
-                            NULL,
-                            NULL,
                             logon_txt,
                             510);
                     }
@@ -4185,13 +4211,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         '\0',
                         NULL,
                         NULL,
-                        NULL,
-                        NULL,
-                        NULL,
-                        NULL,
-                        NULL,
-                        NULL,
-                        NULL,
                         0);
 
                     // Ask to receive "Monitor" frames
@@ -4203,33 +4222,18 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         '\0',
                         NULL,
                         NULL,
-                        NULL,
-                        NULL,
-                        NULL,
-                        NULL,
-                        NULL,
-                        NULL,
-                        NULL,
                         0);
 
-/*
                     // Send a dummy UI frame for testing purposes.
                     //
                     send_agwpe_packet(port_avail,
-                        0,      // AGWPE radio port
-                        '\0',   // type
+                        0,          // AGWPE radio port
+                        '\0',       // type
                         "WE7U-3",   // FromCall
-                        "APRS",   // ToCall
-                        NULL,   // ViaCall1
-                        NULL,   // ViaCall2
-                        NULL,   // ViaCall3
-                        NULL,   // ViaCall4
-                        NULL,   // ViaCall5
-                        NULL,   // ViaCall6
-                        NULL,   // ViaCall7
-                        NULL,   // ViaCall8
-                        "Test",   // Data
-                        4);     // length
+                        "APRS",     // ToCall
+                        NULL,       // Path
+                        "Test",     // Data
+                        4);         // length
 
                     // Send another dummy UI frame.
                     //
@@ -4238,17 +4242,9 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         '\0',       // type
                         "WE7U-3",   // FromCall
                         "APRS",     // ToCall
-                        "RELAY",    // ViaCall1
-                        "SAR1-1",  // ViaCall2
-                        "SAR2-1",  // ViaCall3
-                        "SAR3-1",  // ViaCall4
-                        "SAR4-1",  // ViaCall5
-                        "SAR5-1",  // ViaCall6
-                        "SAR6-1",  // ViaCall7
-                        "SAR7-1",  // ViaCall8
+                        "RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1", // Path
                         "Testing this darned thing!",   // Data
                         26);     // length
-*/
 
                     break;
  
@@ -5030,14 +5026,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                                       '\0',         // Type of frame
                                       my_callsign,  // source
                                       VERSIONFRM,   // destination
-                                      "RELAY",      // ViaCall1,
-                                      "WIDE2-2",    // ViaCall2,
-                                      NULL,         // ViaCall3,
-                                      NULL,         // ViaCall4,
-                                      NULL,         // ViaCall5,
-                                      NULL,         // ViaCall6,
-                                      NULL,         // ViaCall7,
-                                      NULL,         // ViaCall8,
+                                      "RELAY,WIDE2-2", // Path,
                                       data_txt,
                                       strlen(data_txt));
                 }
@@ -5459,14 +5448,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                                       '\0',         // Type of frame
                                       my_callsign,  // source
                                       VERSIONFRM,   // destination
-                                      "RELAY",      // ViaCall1,
-                                      "WIDE2-2",    // ViaCall2,
-                                      NULL,         // ViaCall3,
-                                      NULL,         // ViaCall4,
-                                      NULL,         // ViaCall5,
-                                      NULL,         // ViaCall6,
-                                      NULL,         // ViaCall7,
-                                      NULL,         // ViaCall8,
+                                      "RELAY,WIDE2-2",// Path,
                                       data_txt,
                                       strlen(data_txt));
                 }
