@@ -14,7 +14,7 @@ LICENSE:
 
 XASTIR, Amateur Station Tracking and Information Reporting
 Copyright (C) 1999,2000 Frank Giannandrea
-Copyright (C) 2000,2001,2002 The Xastir Group
+Copyright (C) 2000,2001,2002,2003 The Xastir Group
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -134,12 +134,12 @@ tieins to the UI. Should they be listed here? anywhere?)
 Tracked proximity alarms
 export waypoints within proximity boundaries
 
-The weather reporting features have been improved, with the addition of wind
-barbs to weather stations and decoding of storm wind radius data. Weather alert
-shading is now done with pixmap stipples showing the type of alert. And further
-information on an alert is available over the internet from the WXserver by
-simply double-clicking the alert in the weather alerts list. Weather alerts now
-use the newer shapefile format maps.
+The weather reporting features have been improved, with the addition of
+optional wind barbs to weather stations and decoding of storm wind radius data.
+Weather alert shading is now done with pixmap stipples showing the type of
+alert. And further information on an alert is available over the internet from
+the WXserver by simply double-clicking the alert in the weather alerts list.
+Weather alerts now use the newer shapefile format maps.
 
 Xastir's map support has been improved with enhancements to the shapefile code
 to handle point-type shapefiles. Additionally, speed improvements have been
@@ -1088,35 +1088,50 @@ This sub-menu allows filtering of the displayed symbols:
   Select None
     Determines if symbols should be drawn on the map. The other options depend
     on this being enabled.
+
   Select Mine
     Determines if your own station is shown on the map.
+
   Select via TNC
    Global toggle for displaying data recieved via a TNC, but may be narrowed:
+
    Select Direct
      This option only displays stations heard directly (not digipeted).
+
    Select via Digi
      This option displays stations heard indirectly via a digipeter.
+
   Select Net
     This option displays stations with data received via the Internet.
+
   Include Expired Data
     Causes Xastir to continue to display the station data that normally goes
     away when the symbol is ghosted.  The expiration time can be adjusted in
     the File|Configure|Defaults menu.
+
+
   Select Stations
     Global toggle for displaying stations, but may be narrowed:
+
     Select Fixed Stations
       This option displays stationary stations.
+
     Select Moving Stations
       This option displays stations with multiple positions or non-zero speed
+
     Select WX Stations
       This option displays Weather Stations.
+
   Select Objects/Items
     Global toggle for displaying objects/items, but may be narrowed:
+
     Select WX Objects/Items
      This option displays weather Objects and Items. This includes tropical
      storms and remote weather stations.
+
     Select Water Gauge Objects/Items
      This option toggles the display of water gauge (/w) objects.
+
     Select Other Objects/Items
      This option enables or disables the display of objects other than those
      listed above.
@@ -1157,12 +1172,18 @@ This sub-menu allows filtering of the displayed data:
 
 
   Display Weather Info
-  When enabled, the latest weather data (temp,wind speed/course/gust,Humidity)
-  is displayed.
+  Global toggle for displaying weather information, but may be narrowed:
 
-    Display Temperature Only
-    Displays only the temperature data for the station.
+    Display Weather Text
+    When enabled, the latest weather data (temp,wind speed/course/gust,
+    humidity) is displayed. This may be adjusted with the following option:
 
+      Display Temperature Only
+      Displays only the temperature data for the station.
+
+    Display Wind Barb
+    When enabled, a wind barb showing the direction and speed of the wind is
+    drawn for all displayed stations reporting this information. 
 
   Display Position Ambiguity
   When enabled, the area in which station using position ambiguity may be
