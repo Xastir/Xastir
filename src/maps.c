@@ -11447,6 +11447,15 @@ void index_restore_from_file(void) {
 
 //printf("%s\n",in_string);
 
+                for (i = 0; i < strlen(in_string); i++) {
+                    if ( (in_string[i] != '\n')
+                            && (in_string[i] < 0x20) ) {
+                        printf("Found control character 0x%2x in map_index.sys\n",
+                            in_string[i]);
+                        printf("Line was: %s\n",in_string);
+                    }
+                }
+
                 // Malloc an index record.  We'll add it to the list
                 // only if the data looks reasonable.
                 temp_record = (map_index_record *)malloc(sizeof(map_index_record));
