@@ -406,7 +406,8 @@ scr_s_x_min = 0;
 
 
 
-// Prototype
+// Prototypes
+void Draw_Lines(OGRGeometryH geometryH, int level, OGRCoordinateTransformationH transformH);
 void Draw_Polygons(OGRGeometryH geometryH, int level, OGRCoordinateTransformationH transformH);
  
 
@@ -1138,12 +1139,11 @@ void draw_ogr_map(Widget w,
 //        if ( (featureH = OGR_L_GetNextFeature( layer ) ) != NULL ) {
 //if (0) {
         while ( (featureH = OGR_L_GetNextFeature( layer )) != NULL ) {
-//#define TESTWE7U
-#ifndef TESTWE7U
             OGRGeometryH geometryH;
             int num = 0;
             int ii;
-            double X1, Y1, Z1, X2, Y2, Z2;
+            double X1, Y1, Z1;
+//            double X2, Y2, Z2;
 //            char *buffer;
 
  
@@ -1300,76 +1300,7 @@ void draw_ogr_map(Widget w,
                 case 0x80000002:    // LineString25D
                 case 0x80000005:    // MultiLineString25D
 
-                    // Get number of elements (lines)
-                    num = OGR_G_GetPointCount(geometryH);
-//                    fprintf(stderr,"  Number of elements: %d\n",num);
-
-                    // Print out the points the line is comprised of
-//                    for ( ii=0; ii < num; ii++ ) {
-//                        OGR_G_GetPoint(geometryH,
-//                            ii,
-//                            &X1,
-//                            &Y1,
-//                            &Z1);
-//                        fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
-//                    }
-
-                    // Draw one polyline
-                    if (num > 0) {
-                        // Get the first point
-                        OGR_G_GetPoint(geometryH,
-                            0,
-                            &X2,
-                            &Y2,
-                            &Z2);
-
-                        if (transformH) {
-                            // Convert to WGS84 coordinates.
-                            if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
-                                fprintf(stderr,
-                                    "Couldn't convert point to WGS84\n");
-                            }
-                        }
-
-                        for ( ii = 1; ii < num; ii++ ) {
-
-                            X1 = X2;
-                            Y1 = Y2;
-                            Z1 = Z2;
-
-                            // Get the next point
-                            OGR_G_GetPoint(geometryH,
-                                ii,
-                                &X2,
-                                &Y2,
-                                &Z2);
-
-                            if (transformH) {
-                                // Convert to WGS84 coordinates.
-                                if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
-                                    fprintf(stderr,
-                                        "Couldn't convert point to WGS84\n");
-                                }
-                            }
-
-// Optimization:
-// It should be faster here to draw the entire Polyline with one X11
-// call, instead of drawing each line segment in turn.  Change to
-// that method at some point.
-//
-// We should be able to store them in an array, call the Translate()
-// function on all of them at once, and then call an X11 function to
-// draw the entire line at once.
-
-                            draw_vector_ll(da,
-                                (float)Y1,
-                                (float)X1,
-                                (float)Y2,
-                                (float)X2,
-                                gc,
-                                pixmap);
-                        }
-                    } 
+                    Draw_Lines(geometryH, 1, transformH);
                     break;
 
                 case 3:             // Polygon
@@ -1388,9 +1319,6 @@ void draw_ogr_map(Widget w,
                     fprintf(stderr,"  Unknown or unimplemented geometry\n");
                     break;
             }
-//            if (geometryH)
-//                OGR_G_DestroyGeometry( geometryH );
-#endif  // TESTWE7U
             if (featureH)
                 OGR_F_Destroy( featureH );
         }
@@ -1408,6 +1336,182 @@ void draw_ogr_map(Widget w,
     // Close data source
     if (datasourceH != NULL) {
         OGR_DS_Destroy( datasourceH );
+    }
+}
+
+
+
+
+
+// Draw_Lines().
+//
+// A function which can be recursively called.  Tracks the recursion
+// depth so that we can recover if we exceed the maximum.  If we
+// keep finding geometries below us, keep calling the same function.
+// Simple and efficient.
+// 
+// Optimization:
+// It should be faster to draw the entire Polyline with one X11 call
+// instead of drawing each line segment in turn.  Change to that
+// other method at some point.
+//
+// We should be able to store them in an array, call the Translate()
+// function on all of them at once, and then call an X11 function to
+// draw the entire line at once.
+//
+void Draw_Lines(OGRGeometryH geometryH,
+        int level,
+        OGRCoordinateTransformationH transformH) {
+ 
+    int kk;
+    int object_num = 0;
+
+
+//fprintf(stderr, "Draw_Lines\n");
+
+    if (geometryH == NULL)
+        return;
+
+    // Check for more objects below this one, recursing into any
+    // objects found.  "level" keeps us from recursing too far (we
+    // don't want infinite recursion here).  These objects may be
+    // rings or they may be other polygons in a collection.
+    // 
+    object_num = OGR_G_GetGeometryCount(geometryH);
+    // Iterate through the objects found.  If another geometry is
+    // detected, call this function again recursively.  That will
+    // cause all of the lower objects to get drawn.
+    //
+    if (object_num) {
+
+//fprintf(stderr, "DrawLines: Found %d geometries\n", object_num);
+ 
+        for ( kk = 0; kk < object_num; kk++ ) {
+            OGRGeometryH child_geometryH;
+            int sub_object_num;
+
+            // This may be a ring, or another object with rings.
+            child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
+
+            sub_object_num = OGR_G_GetGeometryCount(child_geometryH);
+
+            if (sub_object_num) {
+                // We found geometries below this.  Recurse.
+                if (level < 5) {
+fprintf(stderr, "DrawLines: Recursing level %d\n", level);
+                    Draw_Lines(child_geometryH, level+1, transformH);
+                }
+            }
+        }
+    }
+    else {  // Draw
+        double X1, Y1, Z1, X2, Y2, Z2;
+        int points;
+        OGREnvelope envelopeH;
+
+
+        // Get the extents for this Polyline
+        OGR_G_GetEnvelope(geometryH, &envelopeH);
+
+// Faster here might be to create a geometryH for our view, then
+// convert it to whatever coordinate system the map is using and
+// calling the OGR_G_Intersect() function.  Probably won't work for
+// projected coordinate systems, but should work for geograhic.
+
+        // Convert them to WGS84/Geographic coordinate system
+        if (transformH) {
+            // Convert to WGS84 coordinates.
+            if (!OCTTransform(transformH, 2, &envelopeH.MinX, &envelopeH.MinY, NULL)) {
+                fprintf(stderr,
+                    "Couldn't convert point to WGS84\n");
+            }
+        }
+
+        if (map_visible_lat_lon( envelopeH.MinY,    // bottom
+                envelopeH.MaxY, // top
+                envelopeH.MinX, // left
+                envelopeH.MaxX, // right
+                NULL)) {
+//            fprintf(stderr, "Line is visible\n");
+        }
+        else {
+//            fprintf(stderr, "Line is NOT visible\n");
+            return;
+        }
+
+
+        points = OGR_G_GetPointCount(geometryH);
+//        fprintf(stderr,"  Number of elements: %d\n",points);
+
+        // Print out the points the line is comprised of
+//        for ( ii=0; ii < points; ii++ ) {
+//            OGR_G_GetPoint(geometryH,
+//                ii,
+//                &X1,
+//                &Y1,
+//                &Z1);
+//            fprintf(stderr,"  %f\t%f\t%f\n",X1,Y1,Z1);
+//        }
+
+        // Draw one polyline
+        if (points > 0) {
+            int ii;
+
+
+            // Get the first point
+            OGR_G_GetPoint(geometryH,
+                0,
+                &X2,
+                &Y2,
+                &Z2);
+
+            if (transformH) {
+                // Convert to WGS84 coordinates.
+                if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
+                    fprintf(stderr,
+                        "Couldn't convert to WGS84\n");
+                }
+            }
+
+            for ( ii = 1; ii < points; ii++ ) {
+
+                X1 = X2;
+                Y1 = Y2;
+                Z1 = Z2;
+
+                // Get the next point
+                OGR_G_GetPoint(geometryH,
+                    ii,
+                    &X2,
+                    &Y2,
+                    &Z2);
+
+                if (transformH) {
+                    // Convert to WGS84 coordinates.
+                    if (!OCTTransform(transformH, 1, &X2, &Y2, &Z2)) {
+                        fprintf(stderr,
+                            "Couldn't convert point to WGS84\n");
+                    }
+                }
+
+// Optimization:
+// It should be faster here to draw the entire Polyline with one X11
+// call, instead of drawing each line segment in turn.  Change to
+// that method at some point.
+//
+// We should be able to store them in an array, call the Translate()
+// function on all of them at once, and then call an X11 function to
+// draw the entire line at once.
+
+                draw_vector_ll(da,
+                    (float)Y1,
+                    (float)X1,
+                    (float)Y2,
+                    (float)X2,
+                    gc,
+                    pixmap);
+            } 
+        }
     }
 }
 
@@ -1473,8 +1577,35 @@ void Draw_Polygons(OGRGeometryH geometryH,
                 Draw_Polygons(child_geometryH, level+1, transformH);
             }
         }
+
         else {  // Draw
             int polygon_points;
+            OGREnvelope envelopeH;
+
+
+            // Get the extents for this Polygon
+            OGR_G_GetEnvelope(geometryH, &envelopeH);
+
+            // Convert them to WGS84/Geographic coordinate system
+            if (transformH) {
+                // Convert to WGS84 coordinates.
+                if (!OCTTransform(transformH, 2, &envelopeH.MinX, &envelopeH.MinY, NULL)) {
+                    fprintf(stderr,
+                        "Couldn't convert to WGS84\n");
+                }
+            }
+
+            if (map_visible_lat_lon( envelopeH.MinY,    // bottom
+                    envelopeH.MaxY, // top
+                    envelopeH.MinX, // left
+                    envelopeH.MaxX, // right
+                    NULL)) {
+//                fprintf(stderr, "Polygon is visible\n");
+            }
+            else {
+//                fprintf(stderr, "Polygon is NOT visible\n");
+                return;
+            }
 
             polygon_points = OGR_G_GetPointCount(child_geometryH);
 
