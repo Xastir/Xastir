@@ -6878,7 +6878,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
 
 
     /* convert_to_xastir_coordinates( x,y,longitude,latitude ); */
-    if (have_fgd)   /* Must be a USGS file */
+    if (have_fgd)   /* Could be a USGS file */
     {
         int temp_ok1, temp_ok2;
 
