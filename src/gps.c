@@ -157,10 +157,7 @@ int decode_gps_rmc( char *data,
                                                         xastir_snprintf(unit, unit_length, "%c", speed_unit);
                                                         strcpy(cse,course);
 
-// MacOS X doesn't have the strptime call
-#ifndef MACOSX
-// Same for __CYGWIN__
-#ifndef __CYGWIN__
+#ifdef HAVE_STRPTIME
                                                         /* Translate date/time into time_t */
                                                         /* GPS time is in UTC.
                                                          * First, save existing TZ
@@ -177,8 +174,7 @@ int decode_gps_rmc( char *data,
                                                         *stim=mktime(&stm);
                                                         putenv(tzn);
                                                         tzset();
-#endif  // __CYGWIN__
-#endif  // #ifndef MACOSX
+#endif  // HAVE_STRPTIME
                                                     }
                                                 }
                                             }

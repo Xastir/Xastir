@@ -50,7 +50,7 @@
                             // including this as they should.
 #include <arpa/inet.h>
 
-#ifdef MACOSX
+#ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
 
@@ -1126,7 +1126,7 @@ int serial_init (int port) {
             if (fscanf(lock,"%d %s %s",&myintpid,temp,temp1) == 3) {
                 //fprintf(stderr,"Current lock %d %s %s\n",mypid,temp,temp1);
                 mypid = (pid_t)myintpid;
-#ifdef MACOSX
+#ifdef HAVE_GETPGRP
                 status = getpgrp();
 #else
   #ifdef __solaris__
@@ -2217,7 +2217,7 @@ void port_read(int port) {
 #ifdef __solaris__
     unsigned int    from_len;
 #else
-#ifdef MACOSX
+#ifndef socklen_t
     int             from_len;
 #else
     socklen_t       from_len;
@@ -2264,7 +2264,7 @@ void port_read(int port) {
 #ifdef __solaris__
                     from_len = (unsigned int)sizeof(from);
 #else
-#ifdef MACOSX
+#ifndef socklen_t
                     from_len = (int)sizeof(from);
 #else
                     from_len = (socklen_t)sizeof(from);
