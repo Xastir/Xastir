@@ -8766,43 +8766,59 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         // it's hardcoded to one minute.
 
         if ((p_station->flag & ST_VIATNC) != 0 && 
-            (p_station->flag & ST_3RD_PT) == 0 && 
-            p_station->node_path_ptr != NULL &&
-            strchr(p_station->node_path_ptr,'*') == NULL)
-          if ((((p = strstr(p_station->node_path_ptr,"WIDE")) != NULL) 
-               && (p+=4)) || 
-              (((p = strstr(p_station->node_path_ptr,"TRACE")) != NULL) 
-               && (p+=5)))
-            if ((*p != NULL) && isdigit(*p))
-              if ((*(p+1) != NULL) && (*(p+1) == '-'))
-                if ((*(p+2) != NULL) && isdigit(*(p+2)))
-                  if (*(p) == *(p+2))
+                (p_station->flag & ST_3RD_PT) == 0 && 
+                p_station->node_path_ptr != NULL &&
+                strchr(p_station->node_path_ptr,'*') == NULL) {
+            if ((((p = strstr(p_station->node_path_ptr,"WIDE")) != NULL) 
+                    && (p+=4)) || 
+                    (((p = strstr(p_station->node_path_ptr,"TRACE")) != NULL) 
+                    && (p+=5))) {
+                if ((*p != '\0') && isdigit(*p)) {
+                    if ((*(p+1) != '\0') && (*(p+1) == '-')) {
+                        if ((*(p+2) != '\0') && isdigit(*(p+2))) {
+                            if (*(p) == *(p+2)) {
+                                direct = 1;
+                            }
+                            else {
+                                direct = 0;
+                            }
+                        }
+                        else {
+                            direct = 0;
+                        }
+                    }
+                    else {
+                        direct = 0;
+                    }
+                }
+                else {
                     direct = 1;
-                  else
-                    direct = 0;
-                else
-                  direct = 0;
-              else
-                direct = 0;
-            else
-              direct = 1;
-          else
-            direct = 1;
-        else
-          direct = 0;
+                }
+            }
+            else {
+                direct = 1;
+            }
+        }
+        else {
+            direct = 0;
+        }
 
         if (direct == 1) {
-          if (debug_level & 1)
-            printf("Setting ST_DIRECT for station %s\n", 
-                   p_station->call_sign);
-          p_station->direct_heard = sec_now();
-          p_station->flag |= (ST_DIRECT);
-        } else if ((p_station->flag & ST_DIRECT) != 0 &&
-                   sec_now() > (p_station->direct_heard + 60)) {
-          if (debug_level & 1)
-            printf("Clearing ST_DIRECT for station %s\n", 
-                   p_station->call_sign);
-          p_station->flag &= (~ST_DIRECT);
+            if (debug_level & 1) {
+                printf("Setting ST_DIRECT for station %s\n", 
+                    p_station->call_sign);
+            }
+            p_station->direct_heard = sec_now();
+            p_station->flag |= (ST_DIRECT);
+        }
+        else {
+            if ((p_station->flag & ST_DIRECT) != 0 &&
+                sec_now() > (p_station->direct_heard + 60)) {
+                if (debug_level & 1)
+                    printf("Clearing ST_DIRECT for station %s\n", 
+                        p_station->call_sign);
+                p_station->flag &= (~ST_DIRECT);
+            }
         }
 
         //---------------------------------------------------------------------
