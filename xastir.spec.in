@@ -48,7 +48,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_prefix}/share/xastir/help
 %{_prefix}/share/xastir/config
 %{_prefix}/share/xastir/symbols
-%{_prefix}/share/man
+%{_prefix}/man
 %{_prefix}/lib/xastir
 
 # protect user-installed map and other files from being clobbered
