@@ -109,8 +109,10 @@ other groups using a different system.
 The online Tiger maps can now be enabled from the map menu, and many options
 can be adjusted to request the maps with the data you want.
 
+The stations menu has been reorganized, allowing you to more intuitively filter
+what stations are shown and what accompanying data is displayed.
+
 Other smaller interface changes include:
-* The Stations menu has been reorganized
 * The density of the grid-lines can be adjusted with the +, =, and - keys.
 * Objects and item lists have been added to the view menu.
 * Station meidenhead grid squares are now shown in station info and the
@@ -122,6 +124,10 @@ Other smaller interface changes include:
   remotely via fast-scan TV. 
 * Timestamps are written to logfiles every 30 seconds of operation, to keep a
   record of when data was heard.
+* The status bar can display the course/distence to your station when
+  enabled in the file|configure menu.
+* Range scales are now shown opposite the map scale. This is an attempt to
+  standardize various APRS client approaches to zoom levels.
 
 (FIXME: These are undocumented features that don't really have their own
 tieins to the UI. Should they be listed here? anywhere?)
@@ -1076,124 +1082,136 @@ Fetch Findu Trail
 Downloads historic trail data from findu.com. Slider bars control the starting
 point and duration of data downloaded.
 
-Filter Symbols
+Filter Data
+This sub-menu allows filtering of the displayed symbols:
+
+  Select None
+    Determines if symbols should be drawn on the map. The other options depend
+    on this being enabled.
+  Select Mine
+    Determines if your own station is shown on the map.
+  Select via TNC
+   Global toggle for displaying data recieved via a TNC, but may be narrowed:
+   Select Direct
+     This option only displays stations heard directly (not digipeted).
+   Select via Digi
+     This option displays stations heard indirectly via a digipeter.
+  Select Net
+    This option displays stations with data received via the Internet.
+  Include Expired Data
+    Causes Xastir to continue to display the station data that normally goes
+    away when the symbol is ghosted.  The expiration time can be adjusted in
+    the File|Configure|Defaults menu.
+  Select Stations
+    Global toggle for displaying stations, but may be narrowed:
+    Select Fixed Stations
+      This option displays stationary stations.
+    Select Moving Stations
+      This option displays stations with multiple positions or non-zero speed
+    Select WX Stations
+      This option displays Weather Stations.
+  Select Objects/Items
+    Global toggle for displaying objects/items, but may be narrowed:
+    Select WX Objects/Items
+     This option displays weather Objects and Items. This includes tropical
+     storms and remote weather stations.
+    Select Water Gauge Objects/Items
+     This option toggles the display of water gauge (/w) objects.
+    Select Other Objects/Items
+     This option enables or disables the display of objects other than those
+     listed above.
+
+
+Filter Display
 This sub-menu allows filtering of the displayed data:
-
-  Display Symbols
-  Determines if symbols should be drawn on the map. The other options depend
-  on this being enabled.
-
-   For old stations the symbol is drawn ghosted and in its standard
-   orientation.
-   Corresponding trails are dashed rather than solid and all data except the
-   callsign disappear from the screen.  Exception:  If "Display Expired Data"
-   is enabled, then the data will not disappear when ghosting a symbol.
-
-  Display Local Stations
-  This option displays stations with data received from RF or logfiles.
-
-  Display Non-Local Stations
-  This option displays stations with data received via the Internet.
-
-  Display Non-Moving Stations
-  This option displays stations with multiple positions or non-zero speed.
-
-  Display Moving Stations
-  This option displays stationary stations.
-
-  Display WX Stations
-  This option displays Weather Stations.
-
-  Display Objects/Items
-  This option displays Objects and Items.
-
-  Display WX Objects/Items
-  This option displays Objects and Items. This includes tropical storms and
-  remote weather stations.
-
-Filter Info
-This sub-menu allows filtering of the displayed data:
-
-  Rotate Symbols
-  Some symbols will change their orientation to show the direction in which
-  they are traveling.
 
   Display Callsign
-  Determines if the callsign is displayed on the right side of the symbol.
+  Determines if the callsign is displayed.
 
-  Display Speed
-  When on, red text will appear below the call sign (or course). This will
-  display the last known speed the station is traveling. 
+  Display Symbol
+  Determines if the symbol is shown to the left of the callsign.
 
-  Display Short Speed
-  This option removes display of the measurement units for speed.
+    Rotate Symbol
+    Some symbols will change their orientation to show the direction in which
+    they are traveling.
 
-  Display Altitude
-  When enabled, blue text will appear above the call sign. This will display
-  the last known altitude of the station.
+  Display Trail
+  When enabled, any moving station will trail a colored line with the last 100+
+  locations.
+
 
   Display Course
   When enabled, green text will appear below the call sign. This will display
   the last known course (in degrees) the station is traveling.
 
-  Display Dist/Course
-  When enabled, two lines of text will be displayed on the left side of the
-  stations' icon. The top line will contain the distance from your station to
-  this station. The bottom line will contain the course from your station to
-  this station.
+  Display Speed
+  When on, red text will appear below the call sign (or course). This will
+  display the last known speed the station is traveling. 
+
+    Display Short Speed
+    This option removes display of the measurement units for speed.
+
+  Display Altitude
+  When enabled, blue text will appear above the call sign. This will display
+  the last known altitude of the station.
+
 
   Display Weather Info
   When enabled, the latest weather data (temp,wind speed/course/gust,Humidity)
   is displayed.
 
-  Display Temperature Only
-  Displays only the temperature data for the station.
+    Display Temperature Only
+    Displays only the temperature data for the station.
+
+
+  Display Position Ambiguity
+  When enabled, the area in which station using position ambiguity may be
+  located within is shaded, with the relevant station in the center.
 
   Display Power/Gain
   When on, Power/Gain Circles will be displayed. Overlapping circles indicate
   that the stations are theoretically within simplex range of one another.
   This is only roughly accurate, especially in areas of variable terrain. 
 
-  Display Default Power/Gain
-  Enables a default power/gain setting as specified in the APRS(tm)
-  specification.
+    Use Default Power/Gain
+    Enables a default power/gain setting as specified in the APRS(tm)
+    specification.
 
-  Display Mobile Power/Gain
-  Enables power/gain circles for mobile stations.
+    Display Mobile Power/Gain
+    Enables power/gain circles for mobile stations.
 
-  Display Position Ambiguity
-  When enabled, the area in which station using position ambiguity may be
-  located within is shaded, with the relevant station in the center.
 
-  Display Expired data
-  Causes Xastir to continue to display the station data that normally goes
-  away when the symbol is ghosted.  The expiration time can be adjusted in the
-  File|Configure|Defaults menu.
-
-  Display DF Circles
-  When enabled, any DF circles will be displayed on the screen.
+  Display DF Attributes
+  When enabled, any DF circles/lines will be displayed on the screen.
 
   Enable Dead-Reckoning
   When enabled, the positions of stations are estimated based on past course
   and speed. The recalculation rate should be reasonable, but can be adjusted
   in the configuration file.
 
-  Enable Dead-Reckoning Arcs
-  Displays an expanding arc of expected maximum travel distance, location and
-  course given the past course and speed. The arc slowly becomes a circle as
-  the position report gets older.
+    Display Arc
+    Displays an expanding arc of expected maximum travel distance, location and
+    course given the past course and speed. The arc slowly becomes a circle as
+    the position report gets older.
 
-  Enable Dead-Reckoning Course
-  Displays an expected course and distance traveled by the station, assuming
-  the course hasn't changed.
+    Display Course
+    Displays an expected course and distance traveled by the station, assuming
+    the course hasn't changed.
  
-  Enable Dead-Reckoning Symbols
-  Displays a ghosted version of the stations symbol at the expected position,
-  assuming the station has continued at its current course and speed.
+    Display Symbols
+    Displays a ghosted version of the stations symbol at the expected position,
+    assuming the station has continued at its current course and speed.
 
-  Display Station trails
-  When enabled, any moving station will trail a colored line with the last 100+
-  locations.
+
+  Display Dist/Bearing
+  When enabled, two lines of text will be displayed on the left side of the
+  stations' icon. The top line will contain the distance from your station to
+  this station. The bottom line will contain the course from your station to
+  this station.
+
+  Display Last Report Age
+  Display the time since the station was last heard.
+
 
 Clear All Stations
 This will wipe all the data from the station database except yours.
