@@ -1080,6 +1080,10 @@ Getting Data Files for Xastir:
       http://www.geographynetwork.com/data/tiger2000/ but requires free
       registration.
 
+      Other shapefiles are available from esri.com, geographynetwork.com
+      and gisdatadepot.com (from their "free data" link).  Lot's of useful
+      stuff at these sites, just look around.
+
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget installed, .geo files for NWS radars are
