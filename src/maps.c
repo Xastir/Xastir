@@ -27,7 +27,7 @@
  *
  */
 
-//#define GDAL_SHAPEFILES
+#define GDAL_SHAPEFILES
 //#define MAP_SCALE_CHECK
 
 
@@ -3392,10 +3392,10 @@ extern void draw_ogr_map(Widget w,
                    int draw_filled);
 #endif /* HAVE_LIBGDAL */
 
- struct {
-  char *ext;
-  enum {none=0,map,pdb,shp,tif,geo,gnis} type;
-  void (*func)(Widget w,
+struct {
+    char *ext;
+    enum {none=0, map, pdb, tif, geo, gnis, shp, tiger, mapinfo} type;
+    void (*func)(Widget w,
                char *dir,
                char *filenm,
                alert_entry *alert,
@@ -3406,30 +3406,12 @@ extern void draw_ogr_map(Widget w,
   {"map",map,draw_dos_map},
   {"pdb",pdb,draw_palm_image_map},
 
-#ifdef HAVE_LIBGDAL
+#ifdef HAVE_LIBGEOTIFF
+  {"tif",tif,draw_geotiff_image_map},
+#endif /* HAVE_LIBGEOTIFF */
 
-#ifdef GDAL_SHAPEFILES
-  {"shp",shp,draw_ogr_map},
-#endif  // GDAL_SHAPEFILES
-
-  {"rt1",shp,draw_ogr_map},
-  {"rt2",shp,draw_ogr_map},
-  {"rt4",shp,draw_ogr_map},
-  {"rt5",shp,draw_ogr_map},
-  {"rt6",shp,draw_ogr_map},
-  {"rt7",shp,draw_ogr_map},
-  {"rt8",shp,draw_ogr_map},
-  {"rta",shp,draw_ogr_map},
-  {"rtc",shp,draw_ogr_map},
-  {"rth",shp,draw_ogr_map},
-  {"rti",shp,draw_ogr_map},
-  {"rtp",shp,draw_ogr_map},
-  {"rtr",shp,draw_ogr_map},
-  {"rts",shp,draw_ogr_map},
-  {"rtt",shp,draw_ogr_map},
-  {"rtz",shp,draw_ogr_map},
-  {"tab",shp,draw_ogr_map},
-#endif  // HAVE_LIBGDAL
+  {"geo",geo,draw_geo_image_map},
+  {"gnis",gnis,draw_gnis_map},
 
 #ifdef HAVE_LIBSHP
 #ifndef GDAL_SHAPEFILES
@@ -3437,13 +3419,32 @@ extern void draw_ogr_map(Widget w,
 #endif  // GDAL_SHAPEFILES
 #endif /* HAVE_LIBSHP */
 
-#ifdef HAVE_LIBGEOTIFF
-  {"tif",tif,draw_geotiff_image_map},
-#endif /* HAVE_LIBGEOTIFF */
+#ifdef HAVE_LIBGDAL
 
-  {"geo",geo,draw_geo_image_map},
-  {"gnis",gnis,draw_gnis_map},
-  {NULL,none,NULL},
+#ifdef GDAL_SHAPEFILES
+  {"shp",shp,draw_ogr_map},
+#endif  // GDAL_SHAPEFILES
+
+  {"rt1",tiger,draw_ogr_map},
+//  {"rt2",tiger,draw_ogr_map},
+//  {"rt4",tiger,draw_ogr_map},
+//  {"rt5",tiger,draw_ogr_map},
+//  {"rt6",tiger,draw_ogr_map},
+//  {"rt7",tiger,draw_ogr_map},
+//  {"rt8",tiger,draw_ogr_map},
+//  {"rta",tiger,draw_ogr_map},
+//  {"rtc",tiger,draw_ogr_map},
+//  {"rth",tiger,draw_ogr_map},
+//  {"rti",tiger,draw_ogr_map},
+//  {"rtp",tiger,draw_ogr_map},
+//  {"rtr",tiger,draw_ogr_map},
+//  {"rts",tiger,draw_ogr_map},
+//  {"rtt",tiger,draw_ogr_map},
+//  {"rtz",tiger,draw_ogr_map},
+  {"tab",mapinfo,draw_ogr_map},
+#endif  // HAVE_LIBGDAL
+
+  {NULL,none,NULL}
 }, *map_driver_ptr;
 
 
@@ -3459,24 +3460,37 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
 
     if ((ext = get_map_ext(filenm)) == NULL)
       return;
-    
+
+    if (debug_level & 16)
+        fprintf(stderr,"draw_map: Searching for map driver\n");
+
     for (map_driver_ptr = map_driver; map_driver_ptr->ext; map_driver_ptr++) {
-      if (strcasecmp(ext,map_driver_ptr->ext) == 0) 
-	break;			/* found our map_driver */
+        if (strcasecmp(ext,map_driver_ptr->ext) == 0) {
+            if (debug_level & 16)
+                fprintf(stderr,
+                    "draw_map: Found map driver: %s: %d\n",
+                    ext,
+                    map_driver_ptr->type);
+            break;			/* found our map_driver */
+        }
     }
     if (map_driver_ptr->type == none) {    /* fall thru: unknown map driver */
-      // Check whether we're indexing or drawing the map
-      if ( (destination_pixmap != INDEX_CHECK_TIMESTAMPS)
-	   && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
-	// We're drawing, not indexing.  Output a warning
-	// message.
-	fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
-      }
-      return;
+        // Check whether we're indexing or drawing the map
+        if ( (destination_pixmap != INDEX_CHECK_TIMESTAMPS)
+	            && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
+	        // We're drawing, not indexing.  Output a warning
+	        // message.
+	        fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
+        }
+        else {  // We're indexing
+            if (debug_level & 16)
+                fprintf(stderr,"draw_map: No map driver found\n");
+        }
+        return;
     }
 
     onscreen = map_onscreen_index(filenm); // Check map index
- 
+
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
@@ -3500,24 +3514,34 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
     // Used for debugging.  If we get a segfault on a map, this is
     // often the only way of finding out which map file we can't
     // handle.
-    //fprintf(stderr,"draw_map: %s\n",file);
+    if (debug_level & 16)
+        fprintf(stderr,"draw_map: %s\n",file);
 
     /* XXX - aren't alerts just shp maps?  Why was there special case code? */
     
-    if (map_driver_ptr->func)
-      map_driver_ptr->func(w,
-                           dir,
-                           filenm,
-                           alert,
-                           alert_color,
-                           destination_pixmap,
-                           draw_filled);
+    if (map_driver_ptr->func) {
+        map_driver_ptr->func(w,
+                             dir,
+                             filenm,
+                             alert,
+                             alert_color,
+                             destination_pixmap,
+                             draw_filled);
+    }
         
     XmUpdateDisplay (XtParent (da));
 }  // End of draw_map()
 
+
+
+
+
 static void index_update_directory(char *directory);
 static void index_update_accessed(char *filename);
+
+
+
+
 
 /////////////////////////////////////////////////////////////////////
 // map_search()
@@ -3944,6 +3968,9 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
 
                             // Check whether the file is in a subdirectory
                             if (strncmp (fullpath, map_dir, (size_t)map_dir_length) != 0) {
+                                if (debug_level & 16) {
+                                    fprintf(stderr,"Calling draw_map\n");
+                                }
                                 draw_map (w,
                                     dir,
                                     dl->d_name,
@@ -3951,6 +3978,9 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                     '\0',
                                     destination_pixmap,
                                     1 /* draw_filled */ );
+                                if (debug_level & 16) {
+                                    fprintf(stderr,"Returned from draw_map\n");
+                                }
                                 if (alert_count && *alert_count)
                                     (*alert_count)--;
                             }
