@@ -44,7 +44,12 @@ extern FILE *read_file_ptr;
 
 #ifdef __LCLINT__
 #define PACKAGE "xastir"
+
+#ifdef __LCLINT__
+#undef VERSION
 #define VERSION "lclint"
+#endif
+
 #define VERSIONTXT "xastir lclint debug version"
 #else
 #define VERSIONTXT PACKAGE " " VERSION
