@@ -5910,8 +5910,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback (da, XmNresizeCallback, da_resize,NULL);
     XtAddCallback (da, XmNexposeCallback, da_expose,(XtPointer)text);
 
-    UpdateTime( (XtPointer) da , (XtIntervalId) NULL );
-
     if (track_me)
         XmToggleButtonSetState(trackme_button,TRUE,TRUE);
     else
@@ -19371,11 +19369,18 @@ int main(int argc, char *argv[], char *envp[]) {
             (void)check_fcc_data();
             (void)check_rac_data();
 
+            // Find the extents of every map we have
+            map_indexer();
+
+            // Start UpdateTime().  It schedules itself to be run
+            // again each time.  This is also the process that
+            // starts up the interfaces.
+            UpdateTime( (XtPointer) da , (XtIntervalId) NULL );
+
             // Reload saved objects and items from previous runs.
             // This implements persistent objects.
             reload_object_item();
 
-            map_indexer();
 
             XtAppMainLoop(app_context);
 
