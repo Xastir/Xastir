@@ -473,12 +473,12 @@ void draw_geo_image_map (Widget w,
 
         top  = -((y_lat_offset - 32400000l) / 360000.0);
         left =  (x_long_offset - 64800000l) / 360000.0;
-        ll_to_utm(gDatum[D_NAD_83_CONUS].ellipsoid, top, left, &top_n, &left_e, zstr, sizeof(zstr) );
+        ll_to_utm_ups(gDatum[D_NAD_83_CONUS].ellipsoid, top, left, &top_n, &left_e, zstr, sizeof(zstr) );
         sscanf(zstr, "%d", &z);
 
         bottom = -(((y_lat_offset + (screen_height * scale_y)) - 32400000l) / 360000.0);
         right  =   ((x_long_offset + (screen_width * scale_x)) - 64800000l) / 360000.0;
-        ll_to_utm(gDatum[D_NAD_83_CONUS].ellipsoid, bottom, right, &bottom_n, &right_e, zstr, sizeof(zstr) );
+        ll_to_utm_ups(gDatum[D_NAD_83_CONUS].ellipsoid, bottom, right, &bottom_n, &right_e, zstr, sizeof(zstr) );
 
         map_top_n  = (int)((top_n  / t_scale) + 1) * t_scale;
         map_left_e = (int)((left_e / t_scale) + 0) * t_scale;

@@ -2257,7 +2257,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         // Process lat/lon values
         double_northing = (double)northing;
         double_easting = (double)easting;
-        ll_to_utm(E_WGS_84,
+        ll_to_utm_ups(E_WGS_84,
             (double)latitude,
             (double)longitude,
             &double_northing,

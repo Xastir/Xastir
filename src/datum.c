@@ -443,7 +443,9 @@ void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, sho
   Defense Mapping Agency. 1987b. DMA Technical Report: Supplement to Department of Defense World Geodetic System
   1984 Technical Report. Part I and II. Washington, DC: Defense Mapping Agency
 */
-void ll_to_utm(short ellipsoidID, const double lat, const double lon,
+//
+// Convert lat/long to UTM/UPS coordinates
+void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
         double *utmNorthing, double *utmEasting, char* utmZone, int utmZoneLength)
 {
     //converts lat/long to UTM coords.  Equations from USGS Bulletin 1532
@@ -502,25 +504,27 @@ void ll_to_utm(short ellipsoidID, const double lat, const double lon,
         //
         // We're dealing with UPS coordinates (near the poles)
         //
-        double R;   // Radius of the parallel of latitude from the pole
-        double k0pole = 0.994;  // Scale factor at the poles
-        double z;   // Isometric colatitude = 90 minus isometric latitude
+        // The following piece of code which implements UPS
+        // conversion is basically from code that John Waers
+        // <jfwaers@csn.net> placed in the public domain.  It's from
+        // his program "MacGPS45".
 
-//WE7U
-//        R = k0pole * Co * tan(z/2);
+        double t, e, rho;
+        const double k0 = 0.994;
+        double lambda = lon * (PI/180.0);
+        double phi = fabs(lat * (PI/180.0) );
 
-//fprintf(stderr,"Computing UPS Coordinate\n");
-        if (lat > 84.0) {
-//            *utmNorthing = (double)(2000000 - (R * cos(lon)) );
-        }
-        else {
-//            *utmNorthing = (double)(2000000 + (R * cos(lon)) );
-        }
-//        *utmEasting = (double)(2000000 + (R * sin(lon)) );
+        e = sqrt(eccSquared);
+        t = tan(PI/4.0 - phi/2.0) / pow( (1.0 - e * sin(phi)) / (1.0 + e * sin(phi)), (e/2.0) );
+        rho = 2.0 * a * k0 * t / sqrt(pow(1.0+e, 1.0+e) * pow(1.0-e, 1.0-e));
+        *utmEasting = rho * sin(lambda);
+        *utmNorthing = rho * cos(lambda);
 
-*utmNorthing = (double)(0);
-*utmEasting = (double)(0);
+        if (lat > 0.0)  // Northern hemisphere
+            *utmNorthing = -(*utmNorthing);
 
+        *utmEasting  += 2.0e6;  // Add in false easting and northing
+        *utmNorthing += 2.0e6;
     }
     else {
         //

@@ -1469,7 +1469,7 @@ void draw_grid2(Widget w) {
         // equator based on our current offset.  Convert an equator
         // point to UTM, then add the offset into the UTM northing
         // value to get a point to start drawing from.
-        ll_to_utm(E_WGS_84,
+        ll_to_utm_ups(E_WGS_84,
             (double)0.0,    // lat  (on the equator)
             (double)3.0,    // long (on a meridian of a zone)
             &double_northing,
