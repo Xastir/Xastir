@@ -50,7 +50,7 @@
 // DATA_VIA_LOCAL).  The first two characters are used to add on to
 // the end of the path ("/usr/local/xastir/Counties/") to come up
 // with the State subdirectory to search for this map file
-// ("/usr/local/xastir/Counties/MS").
+// ("/usr/local/xastir/Counties/MS").  See maps.c:load_alert_maps().
 //
 
 
