@@ -173,6 +173,7 @@ int is_my_call(char *call, int exact) {
 
 char *remove_leading_spaces(char *data) {
     int i,j;
+    int count;
 
     if (data == NULL)
         return NULL;
@@ -180,17 +181,29 @@ char *remove_leading_spaces(char *data) {
     if (strlen(data) == 0)
         return NULL;
 
-    j = 0;
-    for( i = 0; i < strlen(data); i++ ) {
-        if(data[i] != ' ') {
-            data[j++] = data[i];
+    count = 0;
+    // Count the leading space characters
+    for (i = 0; i < strlen(data); i++) {
+        if (data[i] == ' ') {
+            count++;
         }
-        else {
+        else {  // Found a non-space
             break;
         }
     }
 
-    data[j] = '\0'; // Terminate the string
+    // Check whether entire string was spaces
+    if (count == strlen(data)) {
+        // Empty the string
+        data[0] = '\0';
+    }
+    else if (count > 0) {  // Found some spaces
+        i = 0;
+        for( j = count; j < strlen(data); j++ ) {
+            data[i++] = data[j];    // Move string left
+        }
+        data[i] = '\0'; // Terminate the new string
+    }
 
     return(data);
 }
@@ -6559,8 +6572,11 @@ void add_comment(DataRow *p_station, char *comment_string) {
     }
 
     // Shorten it
+    //printf("1Comment: (%s)\n",comment_string);
     (void)remove_trailing_spaces(comment_string);
+    //printf("2Comment: (%s)\n",comment_string);
     (void)remove_leading_spaces(comment_string);
+    //printf("3Comment: (%s)\n",comment_string);
  
     len = strlen(comment_string);
 
@@ -7632,8 +7648,8 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     if (p_station->node_path_ptr != NULL)
         free(p_station->node_path_ptr);
     // Malloc and store the new path
-    p_station->node_path_ptr = (char *)malloc(sizeof("local") + 1);
-    substr(p_station->node_path_ptr,"local",sizeof("local"));
+    p_station->node_path_ptr = (char *)malloc(strlen("local") + 1);
+    substr(p_station->node_path_ptr,"local",strlen("local"));
  
     strcpy(p_station->packet_time,get_time(temp_data));
     strcpy(p_station->pos_time,get_time(temp_data));
@@ -7763,8 +7779,8 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     if (p_station->node_path_ptr != NULL)
         free(p_station->node_path_ptr);
     // Malloc and store the new path
-    p_station->node_path_ptr = (char *)malloc(sizeof("local") + 1);
-    substr(p_station->node_path_ptr,"local",sizeof("local"));
+    p_station->node_path_ptr = (char *)malloc(strlen("local") + 1);
+    substr(p_station->node_path_ptr,"local",strlen("local"));
 
     strcpy(p_station->packet_time,get_time(temp_data));
     strcpy(p_station->pos_time,get_time(temp_data));
