@@ -349,7 +349,7 @@ int search_rac_data(char *callsign, rac_record *data) {
     (void)fclose(fdb);
 
     if (!found) {
-        popup_message("Callsign Search", "Callsign Not Found!");
+        popup_message_always("Callsign Search", "Callsign Not Found!");
     }
 
     return(found);

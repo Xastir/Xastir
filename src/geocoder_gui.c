@@ -215,11 +215,11 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
         destination_coord_lon = coord_lon;
         mark_destination = 1;
 
-        popup_message( langcode("POPEM00029"), geocoder_address_name );
+        popup_message_always( langcode("POPEM00029"), geocoder_address_name );
         set_map_position(w, coord_lat, coord_lon);
     }
     else {
-        popup_message(langcode("POPEM00025"),geocoder_address_name);
+        popup_message_always(langcode("POPEM00025"),geocoder_address_name);
     }
     Geocoder_place_destroy_shell(w, clientData, callData);
 }

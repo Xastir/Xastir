@@ -155,13 +155,13 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
                     langcode("STIFCC0007"),
                     my_fcc_data.zipcode);
 
-                popup_message(langcode("WPUPLSP007"),temp);
+                popup_message_always(langcode("WPUPLSP007"),temp);
             }
             else {
                 xastir_snprintf(temp2,
                     sizeof(temp2),
                     "Callsign Not Found!\n");
-                popup_message(langcode("POPEM00001"),temp2);
+                popup_message_always(langcode("POPEM00001"),temp2);
             }
             break;
         case 'V':
@@ -217,7 +217,7 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
                     }
 
 
-                popup_message(langcode("WPUPLSP007"),temp);
+                popup_message_always(langcode("WPUPLSP007"),temp);
             }
             else {
                 // RAC code does its own popup in this case?
@@ -228,7 +228,7 @@ void fcc_rac_lookup(Widget w, XtPointer clientData, XtPointer callData) {
             xastir_snprintf(temp2,
                 sizeof(temp2),
                 "Not an FCC or RAC callsign!\n");
-            popup_message(langcode("POPEM00001"),temp2);
+            popup_message_always(langcode("POPEM00001"),temp2);
             break;
     }
     Locate_station_destroy_shell(w, clientData, callData);
@@ -259,7 +259,7 @@ void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
     if (locate_station(da, locate_station_call, (int)XmToggleButtonGetState(locate_case_data),
                     (int)XmToggleButtonGetState(locate_match_data),1) ==0) {
         xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00002"), locate_station_call);
-        popup_message(langcode("POPEM00001"),temp2);
+        popup_message_always(langcode("POPEM00001"),temp2);
     }
     Locate_station_destroy_shell(w, clientData, callData);
 }
@@ -549,7 +549,7 @@ void Locate_place_now(Widget w, XtPointer clientData, XtPointer callData) {
             locate_gnis_filename,
             (int)XmToggleButtonGetState(locate_place_case_data),
             (int)XmToggleButtonGetState(locate_place_match_data)) ==0) {
-        popup_message(langcode("POPEM00025"),locate_place_name);
+        popup_message_always(langcode("POPEM00025"),locate_place_name);
     }
     Locate_place_destroy_shell(w, clientData, callData);
 }

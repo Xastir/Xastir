@@ -335,7 +335,7 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
             else
                 fprintf(stderr,"Couldn't open file: %s\n", get_user_base_dir("config/locations.sys") );
         } else
-            popup_message(langcode("POPEM00022"),langcode("POPEM00023"));
+            popup_message_always(langcode("POPEM00022"),langcode("POPEM00023"));
 
         /* resort the list and put it back up */
         n=1;
@@ -343,7 +343,7 @@ void location_add(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPo
         jump_sort();
         sort_list(get_user_base_dir("data/locations_db.dat"),200,location_list,&n);
     } else
-        popup_message(langcode("POPEM00022"),langcode("POPEM00024")); /* dupe name */
+        popup_message_always(langcode("POPEM00022"),langcode("POPEM00024")); /* dupe name */
 }
 
 

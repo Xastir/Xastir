@@ -148,13 +148,13 @@ void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
         track_station_on = 1;   // Track it whether we've seen it yet or not
         if (!found) {
             xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00026"), temp);
-            popup_message(langcode("POPEM00025"),temp2);
+            popup_message_always(langcode("POPEM00025"),temp2);
         }
     } else {
         tracking_station_call[0] = '\0';    // Empty it out again
         track_station_on = 0;
         xastir_snprintf(temp2, sizeof(temp2), langcode("POPEM00002"), temp);
-        popup_message(langcode("POPEM00003"),temp2);
+        popup_message_always(langcode("POPEM00003"),temp2);
     }
 
     track_station_destroy_shell(w, clientData, callData);

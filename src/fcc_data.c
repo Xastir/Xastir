@@ -463,7 +463,7 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                             // location for the callsign.  Return if so.
                             if ( (temp[0] < line[pos]) ||
                                     ( (temp[0] == line[pos]) && (temp[1] < line[pos+1]) ) ) {
-                                popup_message("Callsign Search", "Callsign Not Found!");
+                                popup_message_always("Callsign Search", "Callsign Not Found!");
                                 //fprintf(stderr,"%c%c\t%c%c\n",temp[0],temp[1],line[pos],line[pos+1]);
                                 (void)fclose(f);
                                 return(0);
