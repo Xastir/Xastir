@@ -110,4 +110,6 @@ void time_mark(int start);
 // dl9sau
 extern char *sec_to_loc(long longitude, long latitude);
 
+extern short checkHash(char *theCall, short theHash);
+
 #endif // __XASTIR_UTIL_H
