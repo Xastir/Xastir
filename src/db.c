@@ -3766,7 +3766,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
 
-        if (strlen(weather->wx_gust) > 0) {
+        if ( (strlen(weather->wx_gust) > 0)
+             && (weather->wx_gust[0] != ' ')
+             && (weather->wx_gust[0] != '.') ) {
             if (units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI028"),weather->wx_gust);
             else
@@ -3822,7 +3824,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if (strlen(weather->wx_baro) > 0) {
+        if ( (strlen(weather->wx_baro) > 0)
+             && (weather->wx_baro[0] != ' ')
+             && (weather->wx_baro[0] != '.') ) {
             if (!units_english_metric) {  // hPa
                 xastir_snprintf(temp, sizeof(temp),
                     langcode("WPUPSTI033"),
@@ -3846,7 +3850,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             }
         }
 
-        if (strlen(weather->wx_snow) > 0) {
+        if ( (strlen(weather->wx_snow) > 0)
+             && (weather->wx_snow[0] != ' ')
+             && (weather->wx_snow[0] != '.') ) {
             if(units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI035"),atof(weather->wx_snow)/100.0);
             else
@@ -3858,14 +3864,25 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if (strlen(weather->wx_rain) > 0 || strlen(weather->wx_prec_00) > 0
-                || strlen(weather->wx_prec_24) > 0) {
+        if ( ( (strlen(weather->wx_rain) > 0)
+               && (weather->wx_rain[0] != ' ')
+               && (weather->wx_rain[0] != '.') )
+             ||
+             ( (strlen(weather->wx_prec_00) > 0)
+               && (weather->wx_prec_00[0] != ' ')
+               && (weather->wx_prec_00[0] != '.') )
+             ||
+             ( (strlen(weather->wx_prec_24) > 0)
+               && (weather->wx_prec_24[0] != ' ')
+               && (weather->wx_prec_24[0] != '.') ) ) {
             xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI036"));
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
         }
 
-        if (strlen(weather->wx_rain) > 0) {
+        if ( (strlen(weather->wx_rain) > 0)
+             && (weather->wx_rain[0] != ' ')
+             && (weather->wx_rain[0] != '.') ) {
             if (units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI038"),atof(weather->wx_rain)/100.0);
             else
@@ -3875,7 +3892,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if (strlen(weather->wx_prec_24) > 0) {
+        if ( (strlen(weather->wx_prec_24) > 0)
+             && (weather->wx_prec_24[0] != ' ')
+             && (weather->wx_prec_24[0] != '.') ) {
             if(units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI040"),atof(weather->wx_prec_24)/100.0);
             else
@@ -3885,7 +3904,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if (strlen(weather->wx_prec_00) > 0) {
+        if ( (strlen(weather->wx_prec_00) > 0)
+             && (weather->wx_prec_00[0] != ' ')
+             && (weather->wx_prec_00[0] != '.') ) {
             if (units_english_metric)
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI042"),atof(weather->wx_prec_00)/100.0);
             else
@@ -3895,7 +3916,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             pos += strlen(temp);
         }
 
-        if (strlen(weather->wx_rain_total) > 0) {
+        if ( (strlen(weather->wx_rain_total) > 0)
+             && (weather->wx_rain_total[0] != ' ')
+             && (weather->wx_rain_total[0] != '.') ) {
             xastir_snprintf(temp, sizeof(temp), "\n%s",langcode("WPUPSTI046"));
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
@@ -5025,10 +5048,16 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
         }
 
         if (extract_weather_item(data,'b',5,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
-            xastir_snprintf(weather->wx_baro,
-                sizeof(weather->wx_baro),
-                "%0.1f",
-                (float)(atoi(weather->wx_baro)/10.0));
+            if (weather->wx_baro[0] != '.'
+                    && weather->wx_baro[0] != ' ') {
+                xastir_snprintf(weather->wx_baro,
+                    sizeof(weather->wx_baro),
+                    "%0.1f",
+                    (float)(atoi(weather->wx_baro)/10.0));
+            }
+            else {  // Truncate it
+                weather->wx_baro[0] = '\0';
+            }
 
         (void)extract_weather_item(data,'s',3,weather->wx_snow);      // snowfall (in inches) in the last 24 hours
                                                                       // was 1/100 inch, APRS reference says inch! ??
@@ -5216,13 +5245,16 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 	// Pressure is already in millibars/hPa.  No conversion
         // needed.
         if (extract_weather_item(p2,'/',4,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
-            xastir_snprintf(weather->wx_baro,
-                sizeof(weather->wx_baro),
-                "%0.1f",
-                (float)(atoi(weather->wx_baro)));
-        if ( (weather->wx_baro[0] == '.')
-                || (weather->wx_baro[0] == ' ') )
-            weather->wx_baro[0] = '\0';
+            if (weather->wx_baro[0] != '.'
+                    && weather->wx_baro[0] != ' ') {
+                xastir_snprintf(weather->wx_baro,
+                    sizeof(weather->wx_baro),
+                    "%0.1f",
+                    (float)(atoi(weather->wx_baro)));
+            }
+            else {  // Truncate it
+                weather->wx_baro[0] = '\0';
+            }
 
 //fprintf(stderr,"%s\n",data);
 
