@@ -81,7 +81,7 @@
 #warning
 #warning
 
-// WE7U - Getting rid of stupid compiler warnings in GDAL
+// Getting rid of stupid compiler warnings in GDAL
 #define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
 #undef PACKAGE_BUGREPORT
 #define XASTIR_PACKAGE_NAME PACKAGE_NAME
@@ -508,7 +508,7 @@ void draw_ogr_map(Widget w,
             filenm);
         statusline(status_text,0);       // Indexing ...
 
-fprintf(stderr,"Indexing %s\n", filenm);
+        fprintf(stderr,"Indexing %s\n", filenm);
 
         // Use the OGR "envelope" function to get the extents for
         // the entire file or dataset.  Remember that it could be in
@@ -571,19 +571,18 @@ fprintf(stderr,"Indexing %s\n", filenm);
             }
             else {
 
-fprintf(stderr,"Couldn't get spatial reference\n");
+                fprintf(stderr,"Couldn't get spatial reference\n");
 
-                // In this case, we should probably assume that it
-                // is WGS84 and geographic, and just attempt to
-                // index it as-is.  If the numbers don't make sense,
-                // we can skip indexing this dataset.
+                // For this case, assume that it is
+                // WGS84/geographic, and attempt to index as-is.  If
+                // the numbers don't make sense, we can skip
+                // indexing this dataset.
 
                 // Perhaps some layers may have a spatial reference,
-                // and others might not.  That's ok.  Solved this
-                // problem by defined "no_spatial", which will be
-                // '1' if no spatial data was found in any of the
-                // layers.  In that case we just store the extents
-                // we find.
+                // and others might not?  Solved this problem by
+                // defined "no_spatial", which will be '1' if no
+                // spatial data was found in any of the layers.  In
+                // that case we just store the extents we find.
             }
 
             // Get the extents for this layer.  OGRERR_FAILURE means
@@ -594,14 +593,13 @@ fprintf(stderr,"Couldn't get spatial reference\n");
             // an expensive operation.  We're trying to index the
             // file after all!
             if (OGR_L_GetExtent(layer, &psExtent, TRUE) != OGRERR_FAILURE) {
-/*
-                fprintf(stderr,
-                    "  MinX: %f, MaxX: %f, MinY: %f, MaxY: %f\n",
-                    psExtent.MinX,
-                    psExtent.MaxX,
-                    psExtent.MinY,
-                    psExtent.MaxY);
-*/
+
+//                fprintf(stderr,
+//                    "  MinX: %f, MaxX: %f, MinY: %f, MaxY: %f\n",
+//                    psExtent.MinX,
+//                    psExtent.MaxX,
+//                    psExtent.MinY,
+//                    psExtent.MaxY);
 
                 // If first value, store it.
                 if (first_extents) {
@@ -637,55 +635,67 @@ fprintf(stderr,"Couldn't get spatial reference\n");
                     && ( strcasecmp(geogcs,"WGS84") == 0
                         || strcasecmp(geogcs,"NAD83") == 0) ) ) {
 
-fprintf(stderr, "Geographic coordinate system, %s, adding to index\n", geogcs);
+                fprintf(stderr,
+                    "Geographic coordinate system, %s, adding to index\n",
+                    geogcs);
 
-// Debug:  Don't add them to the index so that we can experiment
-// with datum translation and such.
-//#define WE7U
-#ifndef WE7U
                 if (   file_MinY >=  -90.0 && file_MinY <  90.0
                     && file_MaxY >=  -90.0 && file_MaxY <  90.0
                     && file_MinX >= -180.0 && file_MinX < 180.0
                     && file_MaxX >= -180.0 && file_MaxX < 180.0) {
 
+// Debug:  Don't add them to the index so that we can experiment
+// with datum translation and such.
+//#define WE7U
+#ifndef WE7U
                     index_update_ll(filenm,    // Filename only
                         file_MinY,  // Bottom
                         file_MaxY,  // Top
                         file_MinX,  // Left
                         file_MaxX); // Right
+#endif  // WE7U
                 }
                 else {
-fprintf(stderr, "Geographic coordinates out of bounds, skipping indexing\n");
+                    fprintf(stderr,
+                        "Geographic coordinates out of bounds, skipping indexing\n");
                 }
-#endif  // WE7U
             }
-            else {  // We have coordinates, but they're either in
-                    // the wrong datum or in a projected coordinate
-                    // system.  Convert to WGS84.
+            else {  // We have coordinates but they're in the wrong
+                    // datum or in a projected coordinate system.
+                    // Convert to WGS84.
                 OGRSpatialReferenceH wgs84_spatial = NULL;
                 OGRCoordinateTransformationH transformH = NULL;
 
-                if (geographic)
-fprintf(stderr, "Found geographic/wrong datum: %s.  Converting to wgs84 datum\n", geogcs);
-                else
-fprintf(stderr, "Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n", geogcs);
+                if (geographic) {
+                    fprintf(stderr,
+                        "Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
+                        geogcs);
+                }
+                else {
+                    fprintf(stderr,
+                        "Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
+                        geogcs);
+                }
  
 
                 wgs84_spatial = OSRNewSpatialReference(NULL);
                 if (wgs84_spatial == NULL) {
-fprintf(stderr,"Couldn't create empty wgs84_spatial object\n");
+                    fprintf(stderr,
+                        "Couldn't create empty wgs84_spatial object\n");
                 }
 
                 if (OSRSetWellKnownGeogCS(wgs84_spatial,"WGS84") == OGRERR_FAILURE) {
  
                     // Couldn't fill in WGS84 parameters.
-fprintf(stderr,"Couldn't fill in wgs84 spatial reference parameters\n");
+                    fprintf(stderr,
+                        "Couldn't fill in wgs84 spatial reference parameters\n");
                     if (wgs84_spatial != NULL)
                         OSRDestroySpatialReference(wgs84_spatial);
                 }
 
                 if (spatial == NULL || wgs84_spatial == NULL) {
-fprintf(stderr,"Couldn't transform because spatial or wgs84_spatial are NULL\n");
+                    fprintf(stderr,
+                        "Couldn't transform because spatial or wgs84_spatial are NULL\n");
                     if (wgs84_spatial != NULL)
                         OSRDestroySpatialReference(wgs84_spatial);
                 }
@@ -697,7 +707,8 @@ fprintf(stderr,"Couldn't transform because spatial or wgs84_spatial are NULL\n")
 
                     if (transformH == NULL) {
                         // Couldn't create transformation object
-fprintf(stderr,"Couldn't create transformation object\n");
+                        fprintf(stderr,
+                            "Couldn't create transformation object\n");
                     }
                     else {
                         // We're good.  Perform the transform to
@@ -710,40 +721,25 @@ fprintf(stderr,"Couldn't create transformation object\n");
                         y[0] = file_MinY;
                         y[1] = file_MaxY;
 
-fprintf(stderr,"Before: %f,%f\t%f,%f\n",
-x[0],y[0],
-x[1],y[1]);
+                        fprintf(stderr,"Before: %f,%f\t%f,%f\n",
+                            x[0],y[0],
+                            x[1],y[1]);
 
-//                        if (OCTTransform(transformH,
-//                            2,
-//                            x,
-//                            y,
-//                            NULL) == OGRERR_NONE) {
-
-                        {
-                            int result;
-
-                            result = OCTTransform(transformH, 2, x, y, NULL);
+                        if (OCTTransform(transformH, 2, x, y, NULL)) {
                             
-fprintf(stderr," After: %f,%f\t%f,%f\tresult=%d\n",
-x[0],y[0],
-x[1],y[1],result);
+                            fprintf(stderr," After: %f,%f\t%f,%f\n",
+                            x[0],y[0],
+                            x[1],y[1]);
  
-// I get a result of '1'.  Should be '0'?.  Not sure why yet.  The
-// simple C example on the OGR pages shows '1' as the proper success
-// value, 0 as an error.
-
-                            if (result) {
 // Debug:  Don't add them to the index so that we can experiment
 // with datum translation and such.
 #ifndef WE7U
-                                index_update_ll(filenm,    // Filename only
-                                    y[0],  // Bottom
-                                    y[1],  // Top
-                                    x[0],  // Left
-                                    x[1]); // Right
+                            index_update_ll(filenm, // Filename only
+                                y[0],  // Bottom
+                                y[1],  // Top
+                                x[0],  // Left
+                                x[1]); // Right
 #endif  // WE7U
-                            }
                         }
                     }
                     if (transformH != NULL) {
@@ -758,25 +754,24 @@ x[1],y[1],result);
         else if (local && !first_extents) {
             // Convert to geographic/WGS84?  How?
 
-fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
-
+            fprintf(stderr,
+                "Found local coordinate system.  Skipping indexing\n");
         }
         else {
-            // Abandon all hope, ye who enter here!  Either we don't
-            // have any extents, or we don't have a geographic,
+            // Abandon all hope, ye who enter here!  We don't have
+            // any extents, or we don't have a geographic,
             // projected, or local coordinate system.  We don't have
             // a clue how to index this dataset...
         }
 
-/*
+        // Debug code:
         // For now, set the index to be the entire world to get
         // things up and running.
-        index_update_ll(filenm,    // Filename only
-             -90.0,  // Bottom
-              90.0,  // Top
-            -180.0,  // Left
-             180.0); // Right
-*/
+//        index_update_ll(filenm,    // Filename only
+//             -90.0,  // Bottom
+//              90.0,  // Top
+//            -180.0,  // Left
+//             180.0); // Right
 
         // Close data source
         OGR_DS_Destroy( datasource );
@@ -786,24 +781,39 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
 
 
 /////////////////////////////////////////////////////////////////////
-// The code below this point is for actually drawing, not indexing
-// the file.
+// The code below this point is for drawing, not indexing.
 /////////////////////////////////////////////////////////////////////
 
  
-    // Find out what type of file we're dealing with:
-    // This reports "TIGER" for the tiger driver, "ESRI Shapefile"
-    // for Shapefiles.
-    // 
+    // Find out what type of file we're dealing with.  This reports
+    // one of:
+    //
+    // "AVCbin"
+    // "DGN"
+    // "FMEObjects Gateway"
+    // "GML"
+    // "Memory"
+    // "MapInfo File"
+    // "UK .NTF"
+    // "OCI"
+    // "ODBC"
+    // "OGDI"
+    // "PostgreSQL"
+    // "REC"
+    // "S57"
+    // "SDTS"
+    // "ESRI Shapefile"
+    // "TIGER"
+    // "VRT"
+    //
     ptr = OGR_Dr_GetName(driver);
-    fprintf(stderr,"\n%s: ", ptr);
+    fprintf(stderr,"%s: ", ptr);
 
-    // This one returns the name/path.  Less than useful since we
-    // should already know this.
+    // Get name/path.  Less than useful since we should already know
+    // this.
     ptr = OGR_DS_GetName(datasource);
     fprintf(stderr,"%s\n", ptr);
 
- 
 
     // If we're going to write, we need to test the capability using
     // these functions:
@@ -811,11 +821,10 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
     // OGR_DS_TestCapability(); // Can we create new layers?
 
 
-
-// Hard-coded line attributes, currently used for the entire drawing
-// process.
-(void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
-(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+    // Hard-coded line attributes, currently used for the entire
+    // drawing process.
+    (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 
 
 
@@ -829,14 +838,15 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
     numLayers = OGR_DS_GetLayerCount(datasource);
     for ( i=0; i<numLayers; i++ ) {
         OGRLayerH layer;
-        int jj;
-        int numFields;
+//        int jj;
+//        int numFields;
         OGRFeatureH feature;
-        OGRFeatureDefnH layerDefn;
+//        OGRFeatureDefnH layerDefn;
         OGREnvelope psExtent;  
-        OGRSpatialReferenceH spatial;
+        OGRSpatialReferenceH spatial2;
         int extents_found = 0;
-
+        char geometry_type_name[50] = "";
+        int geometry_type = -1;
 
 
         if (interrupt_drawing_now) {
@@ -858,10 +868,9 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
             return;
         }
 
-        // Test the capabilities of the layer so that we know the
-        // best way to access it.
-        //
-        // OGR_L_TestCapability:
+
+        // Test the capabilities of the layer to know the best way
+        // to access it:
         //
         //   OLCRandomRead: TRUE if the OGR_L_GetFeature() function works
         //   for this layer.
@@ -899,21 +908,27 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
                 "Fast Get Extent, ");
         }
 
+
+// Do we need to do the below once per layer, or just once per
+// dataset?  Probably each dataset is done in the same coordinate
+// system, so we could set up the translation once for the dataset
+// and use it for indexing or for drawing the entire dataset.
+        // 
         // Query the coordinate system.  Need to have the extents in
-        // WGS84 lat/long coordinate system in order to compute the
-        // extents properly.
+        // WGS84 lat/long (geographic) coordinate system in order to
+        // compute the extents properly.
         //
-        spatial = OGR_L_GetSpatialRef(layer);
-        if (spatial) {
+        spatial2 = OGR_L_GetSpatialRef(layer);
+        if (spatial2) {
             const char *temp;
             int geographic = 0;
             int projected = 0;
 
-            if (OSRIsGeographic(spatial)) {
+            if (OSRIsGeographic(spatial2)) {
                 fprintf(stderr,"Geographic Coord, ");
                 geographic++;
             }
-            else if (OSRIsProjected(spatial)) {
+            else if (OSRIsProjected(spatial2)) {
                 fprintf(stderr,"Projected Coord, ");
                 projected++;
             }
@@ -923,31 +938,30 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
 
             // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
             //
-            temp = OSRGetAttrValue(spatial, "DATUM", 0);
+            temp = OSRGetAttrValue(spatial2, "DATUM", 0);
             fprintf(stderr,"DATUM: %s, ", temp);
 
             if (projected) {
-                temp = OSRGetAttrValue(spatial, "PROJCS", 0);
+                temp = OSRGetAttrValue(spatial2, "PROJCS", 0);
                 fprintf(stderr,"PROJCS: %s, ", temp);
  
-                temp = OSRGetAttrValue(spatial, "PROJECTION", 0);
+                temp = OSRGetAttrValue(spatial2, "PROJECTION", 0);
                 fprintf(stderr,"PROJECTION: %s, ", temp);
             }
 
-            temp = OSRGetAttrValue(spatial, "GEOGCS", 0);
+            temp = OSRGetAttrValue(spatial2, "GEOGCS", 0);
             fprintf(stderr,"GEOGCS: %s, ", temp);
 
-            temp = OSRGetAttrValue(spatial, "SPHEROID", 0);
+            temp = OSRGetAttrValue(spatial2, "SPHEROID", 0);
             fprintf(stderr,"SPHEROID: %s, ", temp);
 
         }
         else {
             fprintf(stderr,"No Spatial Info, ");
-
-// Assume geographic/WGS84 unless the coordinates go outside the
-// range of lat/long, in which case, exit.
-
+            // Assume geographic/WGS84 unless the coordinates go
+            // outside the range of lat/long, in which case, exit.
         }
+
 
         // Get the extents for this layer.  OGRERR_FAILURE means
         // that the layer has no spatial info or that it would be
@@ -959,16 +973,9 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
             fprintf(stderr, "Extents obtained.");
             extents_found++;
         }
-//        else {
-//            if (OGR_L_GetExtent(layer, &psExtent, TRUE) != OGRERR_FAILURE) {
-//                fprintf(stderr, "Extents obtained via FORCE.");
-//                extents_found++;
-//            }
-//            else {
-//                fprintf(stderr, "Extents are not available even with FORCE.");
-//            }
-//        }
         fprintf(stderr, "\n");
+
+/*
         if (extents_found) {
             fprintf(stderr,
                 "  MinX: %f, MaxX: %f, MinY: %f, MaxY: %f\n",
@@ -977,8 +984,10 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
                 psExtent.MinY,
                 psExtent.MaxY);
         }
+*/
 
 
+/*
         // Dump info about this layer
         layerDefn = OGR_L_GetLayerDefn( layer );
         if (layerDefn != NULL) {
@@ -997,38 +1006,8 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
             }
 //            fprintf(stderr,"\n");
         }
-
-
-// Here we need to convert to WGS84 and lat/long if necessary (using
-// OGRCoordinateTransformation class and PROJ.4), then start
-// plotting the points/lines/whatever.
-// Query the geometry type using OGRFeatureDefn::GetGeomType(),
-// which returns an OGRwkbGeometryType object.
-// OGRLayer::GetNextFeature() will return one feature at a time from
-// a layer.  Can also install a spatial filter first to limit what
-// it returns.  OGRLayer::SetSpatialFilter().
-
-/*
-    {
-        // Report the projection
-        OGRSpatialReferenceH hSRS = OGR_L_GetSpatialRef(layer);
-        char *pszProjection;
-        char *pszPrettyWkt = NULL;
-
-
-fprintf(stderr,"1\n");
-        pszProjection = (char *)GDALGetProjectionRef(hDataset);
-        if (OSRImportFromWkt(hSRS, &pszProjection) == CE_None) {
-
-fprintf(stderr,"2\n");
-            OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, FALSE);
-fprintf(stderr,"3\n");
-            fprintf(stderr,"Coordinate System is: %s\n", pszPrettyWkt);
-            CPLFree(pszPrettyWkt);
-fprintf(stderr,"4\n");
-        }
-    }
 */
+
 
 // Optimization:  Get the envelope for each feature, skip the
 // feature if it's completely outside our viewport.
@@ -1042,8 +1021,6 @@ fprintf(stderr,"4\n");
             int num = 0;
             int ii;
             double X1, Y1, Z1, X2, Y2, Z2;
-            int geometry_type = 0;
-//            OGRSpatialReferenceH spatial;
  
 
             if (interrupt_drawing_now) {
@@ -1058,7 +1035,8 @@ fprintf(stderr,"4\n");
                 continue;
             }
 
-//OGR_F_DumpReadable( feature, stderr );
+            // Debug code
+            //OGR_F_DumpReadable( feature, stderr );
 
             // Get a handle to the shape itself
             shape = OGR_F_GetGeometryRef(feature);
@@ -1068,130 +1046,78 @@ fprintf(stderr,"4\n");
             }
 
 
-// ::getGeometryName()
-// "POINT"              (ogrpoint.cpp)
-// "LINESTRING"         (ogrlinestring.cpp)
-// "POLYGON"            (ogrpolygon.cpp)
-// "GEOMETRYCOLLECTION" (ogrgeometrycollection.cpp)
-// "MULTIPOLYGON"       (ogrmultipolygon.cpp)
-// "MULTIPOINT"         (ogrmultipoint.cpp)
-// "MULTILINESTRING"    (ogrmultilinestring.cpp)
-// "LINEARRING"         (ogrlinearring.cpp)
-
-//fprintf(stderr,"Name: %s\n", OGR_G_GetGeometryName(shape));
-
-// ogrgeometry.cpp:OGRGeometryTypeToName()
-// "3D Geometry Collection"
-// "3D Line String"
-// "3D Multi Line String"
-// "3D Multi Point"
-// "3D Multi Polygon"
-// "3D Point"
-// "3D Polygon"
-// "Geometry Collection"
-// "Line String"
-// "Multi Line String"
-// "Multi Point"
-// "Multi Polygon"
-// "None"
-// "Point"
-// "Polygon"
-// "Unknown (any)"
-
-
-
-            // This function returns 0 for points, 1 for lines, 2
-            // for surfaces.  Use it to decide how to get/draw the
-            // data.
-            geometry_type = OGR_G_GetDimension(shape);
-//            fprintf(stderr, "Dimension: %d, ", geometry_type);
-            switch (geometry_type) {
-                case 0:     // Point
-//                    fprintf(stderr,"Point\n");
-                    // Get number of elements (points)
-                    num = OGR_G_GetPointCount(shape);
-                    break;
-                case 1:     // Polyline
-//                    fprintf(stderr,"Polyline\n");
-                    // Get number of elements (lines)
-                    num = OGR_G_GetPointCount(shape);
-                    break;
-                case 2:     // Polygon
-//                    fprintf(stderr,"Polygon\n");
-                    // Get number of elements (polygons)
-                    num = OGR_G_GetGeometryCount(shape);
-                    break;
-                default:    // Unknown
-                    fprintf(stderr,"Unknown\n");
-                    break;
+            // These are from the OGRwkbGeometryType enumerated set
+            // in ogr_core.h:
+            //
+            //          0 "Unknown"
+            //          1 "POINT"              (ogrpoint.cpp)
+            //          2 "LINESTRING"         (ogrlinestring.cpp)
+            //          3 "POLYGON"            (ogrpolygon.cpp)
+            //          4 "MULTIPOINT"         (ogrmultipoint.cpp)
+            //          5 "MULTILINESTRING"    (ogrmultilinestring.cpp)
+            //          6 "MULTIPOLYGON"       (ogrmultipolygon.cpp)
+            //          7 "GEOMETRYCOLLECTION" (ogrgeometrycollection.cpp)
+            //        100 "None"
+            //        101 "LINEARRING"         (ogrlinearring.cpp)
+            // 0x80000001 "Point25D"
+            // 0x80000002 "LineString25D"
+            // 0x80000003 "Polygon25D"
+            // 0x80000004 "MultiPoint25D"
+            // 0x80000005 "MultiLineString25D"
+            // 0x80000006 "MultiPolygon25D"
+            // 0x80000007 "GeometryCollection25D"
+            //
+            // The geometry type will be the same for any particular
+            // layer.  We take advantage of that here by querying
+            // once per layer and saving the results in variables.
+            //
+            if (strlen(geometry_type_name) == 0) {
+                xastir_snprintf(geometry_type_name,
+                    sizeof(geometry_type_name),
+                    "%s",
+                    OGR_G_GetGeometryName(shape));
+                geometry_type = OGR_G_GetGeometryType(shape);
+                fprintf(stderr," Type: %d, %s\n",  
+                    geometry_type,
+                    geometry_type_name);
             }
 
-//OGR_G_DumpReadable(shape, stderr, "Shape: ");
+            // Debug code 
+            //OGR_G_DumpReadable(shape, stderr, "Shape: ");
 
-// We could either call OGR_G_GetEnvelope() here and calculate for
+
+// We could call OGR_G_GetEnvelope() here and calculate for
 // ourselves it if is in our viewport, or we could set a filter and
 // let the library pass us only those that fit.
+//
+// If point or line feature, draw in normal manner.  If polygon
+// feature, do the "rotation one way = fill, rotation the other way
+// = hole" thing?
+//
+// We need all of the coordinates in WGS84 lat/long.  Use the
+// conversion code that's in the indexing portion of this routine to
+// accomplish this.
 
-// Causes segfaults on some tiger files
-//            spatial = OGR_G_GetSpatialReference(shape);
 
-//            fprintf(stderr,"Number of elements: %d\n",num);
-
-
-/*
             switch (geometry_type) {
 
-                case 0:     // Point
-
-                    // Print out the points
-                    for ( ii=0; ii < num; ii++ ) {
-                        X1 = OGR_G_GetX(shape, ii);
-                        Y1 = OGR_G_GetY(shape, ii);
-                        Z1 = OGR_G_GetZ(shape, ii);
-//                        fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
-                    }
-                    break;
-
-                case 1:     // Polyline
-
-                    // Print out the points
-                    for ( ii=0; ii < num; ii++ ) {
-                        OGR_G_GetPoint(shape,
-                            ii,
-                            &X1,
-                            &Y1,
-                            &Z1);
-//                        fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
-                    }
-                    break;
-
-                case 2:     // Polygon
+                case 1:             // Point
+                case 4:             // MultiPoint
+                case 0x80000001:    // Point25D
+                case 0x80000004:    // MultiPoint25D
+                    // Get number of elements (points)
+                    num = OGR_G_GetPointCount(shape);
+//                    fprintf(stderr,"Number of elements: %d\n",num);
 
                     // Print out the points
 //                    for ( ii=0; ii < num; ii++ ) {
-                        // fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
+//                        X1 = OGR_G_GetX(shape, ii);
+//                        Y1 = OGR_G_GetY(shape, ii);
+//                        Z1 = OGR_G_GetZ(shape, ii);
+//                        fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
 //                    }
-                    break;
-                default:    // Unknown
-                    break;
-            }
-*/
-
-
-// If point or line feature, draw in normal manner.  If polygon
-// feature, do we do the "rotation one way = fill, rotation the
-// other way = hole" thing?
-
-
-// At this point it'd be nice to either have all of the coordinates
-// in WGS84 lat/long, or WGS84 Xastir coordinate system.  It'd be
-// very nice if the coordinate transformation calls could do the
-// latter one for us.  We'd then just draw the darn things.
-
-            if (num > 0) {
-                switch (geometry_type) {
-
-                    case 0:     // Points
+                    // Draw
+                    if (num > 0) {
                         for ( ii = 0;  ii < num; ii++ ) {
                             OGR_G_GetPoint(shape,
                                 ii,
@@ -1205,9 +1131,28 @@ fprintf(stderr,"4\n");
                                 gc,
                                 pixmap);
                         }
-                        break;
+                    } 
+                    break;
 
-                    case 1:     // Polylines
+                case 2:             // LineString (polyline)
+                case 5:             // MultiLineString
+                case 0x80000002:    // LineString25D
+                case 0x80000005:    // MultiLineString25D
+                    // Get number of elements (lines)
+                    num = OGR_G_GetPointCount(shape);
+//                    fprintf(stderr,"Number of elements: %d\n",num);
+
+                    // Print out the points
+//                    for ( ii=0; ii < num; ii++ ) {
+//                        OGR_G_GetPoint(shape,
+//                            ii,
+//                            &X1,
+//                            &Y1,
+//                            &Z1);
+//                        fprintf(stderr,"%f\t%f\t%f\n",X1,Y1,Z1);
+//                    }
+                    // Draw
+                    if (num > 0) {
                         // Get the first point
                         OGR_G_GetPoint(shape,
                             0,
@@ -1241,32 +1186,38 @@ fprintf(stderr,"4\n");
                                 gc,
                                 pixmap);
                         }
-                        break;
+                    } 
+                    break;
 
-                    case 2:     // Polygons
+                case 3:             // Polygon
+                case 6:             // MultiPolygon
+                case 0x80000003:    // Polygon25D
+                case 0x80000006:    // MultiPolygon25D
+                    // Get number of elements (polygons)
+                    num = OGR_G_GetGeometryCount(shape);
+//                    fprintf(stderr,"Number of elements: %d\n",num);
+                    if (num > 0) {
 //                        fprintf(stderr,"Draw %d Polygons here\n", num);
-
-                        {   // Block so that we can do local defines
-//                            int geometry_count = 0;
-//                            int kk;
+//                        int geometry_count = 0;
+//                        int kk;
 
 
-                            // First get the count of geometry's in
-                            // this layer.
-//                            geometry_count = OGR_G_GetGeometryCount(shape);
+                        // First get the count of geometry's in
+                        // this layer.
+//                        geometry_count = OGR_G_GetGeometryCount(shape);
 
 
 
-                            // Get outer ring (there will only be
-                            // one)
-//                            outer_ring = getExteriorRing();
+                        // Get outer ring (there will only be
+                        // one)
+//                        outer_ring = getExteriorRing();
 
-                            // Snag qty of inner rings
-//                            ring_qty = getNumInteriorRings();
-                            // And snag each inner ring in turn
-//                            for ( kk = 0; kk < interior_ring_qty) {
-//                                inner_ring = getInteriorRing(kk);
-//                            }
+                        // Snag qty of inner rings
+//                        ring_qty = getNumInteriorRings();
+                        // And snag each inner ring in turn
+//                        for ( kk = 0; kk < interior_ring_qty) {
+//                            inner_ring = getInteriorRing(kk);
+//                        }
                         
 
 
@@ -1274,28 +1225,19 @@ fprintf(stderr,"4\n");
                         // composed of rings.  If a ring goes in one
                         // direction, it's a fill, if the other
                         // direction, it's a hole in the polygon.
+                    }
+                    break;
 
-// From ogr_geometry.h
-// -------------------
-// class OGRLinearRing
-// int isClockwise();a
+                case 7:             // GeometryCollection
+                case 0x80000007:    // GeometryCollection25D
+                    num = OGR_G_GetGeometryCount(shape);
+//                    fprintf(stderr,"Number of elements: %d\n",num);
+                    break;
 
-// int nRingCount;
-// OGRLinearRing **papoRings;
-// OGRPolygon();
-// OGRErr transform(OGRCoordinateTransformation *poCT);
-// OGRLinearRing *getExteriorRing();
-// int getNumInteriorRings();
-// OGRLinearRing *getInteriorRing(int);
-
-
-                        }
-                        break;
-
-                    default:    // Unknown type
-                        break;
-    
-                }   // End of switch
+                default:            // Unknown/Unimplemented
+                    num = 0;
+                    fprintf(stderr,"Unknown or unimplemented geometry\n");
+                    break;
             }
             OGR_F_Destroy( feature );
         }
