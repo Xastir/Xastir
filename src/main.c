@@ -1138,7 +1138,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
     char temp_string[10];
 
     if (!change_debug_level_dialog) {
-            change_debug_level_dialog = XtVaCreatePopupShell(langcode("PULDNFI007"),xmDialogShellWidgetClass,Global.top,
+        change_debug_level_dialog = XtVaCreatePopupShell(langcode("PULDNFI007"),xmDialogShellWidgetClass,Global.top,
                                     XmNdeleteResponse,XmDESTROY,
                                     XmNdefaultPosition, FALSE,
                                     NULL);
@@ -1166,7 +1166,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
                             XmNshadowThickness,    1,
                             XmNcolumns, 4,
                             XmNwidth, ((5*7)+2),
-                            XmNmaxLength, 3,
+                            XmNmaxLength, 4,
                             XmNbackground, colors[0x0f],
                             XmNtopOffset, 5,
                             XmNtopAttachment,XmATTACH_FORM,
