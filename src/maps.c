@@ -156,7 +156,6 @@ static int map_onscreen_index(char *filename);
 
 
 
-
 void maps_init(void)
 {
     init_critical_section( &print_properties_dialog_lock );
@@ -177,6 +176,9 @@ double calc_dscale_y(long x, long y) {
     // but this scale is fixed at 1852/6000
     return((double)(1852.0/6000.0));
 }
+
+
+
 
 
 /*
@@ -3300,6 +3302,9 @@ void  Auto_rotate( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer c
 }
 
 
+
+
+
 /*
  *  Rotate_90
  *
@@ -3316,6 +3321,9 @@ void  Rotate_90( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer cal
         print_rotated = 0;
     }
 }
+
+
+
 
 
 /*
@@ -3335,6 +3343,8 @@ void  Auto_scale( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer ca
 
 
 
+
+
 /*
  *  Monochrome
  *
@@ -3349,6 +3359,8 @@ void  Monochrome( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer ca
         print_in_monochrome = 0;
     }
 }
+
+
 
 
 
@@ -4804,6 +4816,7 @@ int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
 
 
+
 /**********************************************************
  * draw_geo_image_map()
  *
@@ -5833,6 +5846,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 }
 
 
+
+
+
 /**********************************************************
  * draw_tiger_map()
  * N0VH
@@ -6379,6 +6395,10 @@ void draw_tiger_map (Widget w) {
 }
 #endif //HAVE_IMAGEMAGICK
 ///////////////////////////////////////////// End of Tigermap code ///////////////////////////////////////
+
+
+
+
 
 #ifdef HAVE_GEOTIFF
 /***********************************************************
