@@ -537,7 +537,17 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
         // Only cause an update if this is the first ack.  This
         // reduces dialog "flashing" a great deal
         if ( msg_data[msg_index[record]].acked == 0 ) {
-            do_update++;
+
+            // Check for my callsign.  If found, update any open message
+            // dialogs
+            if (is_my_call(msg_data[msg_index[record]].from_call_sign, 1) ) {
+
+                //printf("From: %s\tTo: %s\n",
+                //    msg_data[msg_index[record]].from_call_sign,
+                //    msg_data[msg_index[record]].call_sign);
+
+                do_update++;
+            }
         }
         msg_data[msg_index[record]].acked = 1;
         if (debug_level & 1) {
@@ -8027,8 +8037,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // printf("found Msg w line to me: |%s| |%s|\n",message,msg_id);
         msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from); // id_fixed
         new_message_data += 1;
-        (void)check_popup_window(call, 2);
-        update_messages(1); // Force an update
+        (void)check_popup_window(call, 2);  // Calls update_messages()
+        //update_messages(1); // Force an update
         if (sound_play_new_message)
             play_sound(sound_command,sound_new_message);
 #ifdef HAVE_FESTIVAL
@@ -8115,8 +8125,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from);
         new_message_data += look_for_open_group_data(addr);
         if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
-                     || check_popup_window(call, 0) != -1 || check_popup_window(addr, 1) != -1)
-            update_messages(1); // Force an update
+                || check_popup_window(call, 0) != -1
+                || check_popup_window(addr, 1) != -1) {
+            //update_messages(1); // Force an update
+        }
 
         /* Now if I have Igate on and I allow to retransmit station data           */
         /* check if this message is to a person I have heard on my TNC within an X */
@@ -8155,8 +8167,9 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
         msg_data_add(addr,call,message,"",MESSAGE_MESSAGE,from);
         new_message_data++;      // ??????
-        if (check_popup_window(addr, 1) != -1)
-            update_messages(1); // Force an update
+        if (check_popup_window(addr, 1) != -1) {
+            //update_messages(1); // Force an update
+        }
 
         // Could be response to a query.  Popup a messsage.
         if ( (message[0] != '?') && is_my_call(addr,1) )
@@ -8220,7 +8233,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from);
         new_message_data += 1;
         (void)check_popup_window(call, 2);
-        update_messages(1); // Force an update
+        //update_messages(1); // Force an update
         if (sound_play_new_message)
             play_sound(sound_command,sound_new_message);
         if (from != 'F') {
