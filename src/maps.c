@@ -278,124 +278,104 @@ int convert_to_xastir_coordinates ( unsigned long* x,
  * Draws a lat/lon grid on top of the view.
  **********************************************************/
 void draw_grid(Widget w) {
-    int place;
-    char place_str[10];
-    int grid_place;
-    long xx, yy, xx1, yy1;
+    int coord;
+    unsigned int stepx,stepy;
+    unsigned char dash[2];
 
     if (!long_lat_grid)
         return;
 
     /* Set the line width in the GC */
-    (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
     (void)XSetForeground (XtDisplay (w), gc, colors[0x08]);
+    (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
 
     if (0 /*coordinate_system == USE_UTM*/) {
         // Not yet, just teasing... ;-)
     }
     else { // Not UTM coordinate system, draw some lat/long lines
-        //printf("scale_x: %lu\n", scale_x);
+        unsigned int x,x1,x2;
+        unsigned int y,y1,y2;
 
-        if (scale_x < GRID_MORE)
-            grid_place = 1;
+        //printf("scale_x: %ld\n",scale_x);
+        stepx = 72000*100;stepy = 36000*100;
+        if (scale_x <= 6000) { stepy = 3600*100; stepx = 7200*100; }
+        if (scale_x <= 300)  { stepx = 300*100 ; stepy = 150*100;  }
+
+        /* draw vertival lines */	
+        if (y_lat_offset >= 0)
+            y1 = 0;
         else
-            grid_place = 10;
+            y1 = -y_lat_offset/scale_y; 
 
-        for (place = 180; place >= 0; place -= grid_place) {
-            xastir_snprintf(place_str, sizeof(place_str), "%03d00.00W", place);
-            /*printf("Place %s\n",place_str); */
-            xx1 = xx = ((convert_lon_s2l (place_str) - x_long_offset) / scale_x);
-            if (xx > 0 && xx < screen_width) {
-                yy  = (convert_lat_s2l ("9000.00N") - y_lat_offset) / scale_y;
-                yy1 = (convert_lat_s2l ("9000.00S") - y_lat_offset) / scale_y;
-                if (yy < 0)
-                    yy = 0;
+        y2 = (180*60*60*100-y_lat_offset)/scale_y;
 
-                if (yy1 > screen_height)
-                    yy1 = screen_height;
+        if (y2 > screen_height)
+            y2 = screen_height-1;
 
-                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, xx, yy, xx1, yy1);
+        coord = x_long_offset+stepx-(x_long_offset%stepx);
+        if (coord < 0)
+            coord = 0;
+
+        for (; coord < x_long_offset+screen_width*scale_x && coord <= 360*60*60*100; coord += stepx) {
+
+            x = (coord-x_long_offset)/scale_x;
+
+            if ((coord%(648000*100)) == 0) {
+                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x, y1, x, y2);
+                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+                continue;
             }
-        }
-        for (place = grid_place; place < 181; place += grid_place) {
-            xastir_snprintf(place_str, sizeof(place_str), "%03d00.00E", place);
-            /*printf("Place %s\n",place_str); */
-            xx1 = xx = ((convert_lon_s2l (place_str) - x_long_offset) / scale_x);
-            if (xx > 0 && xx < screen_width) {
-                yy  = (convert_lat_s2l ("9000.00N") - y_lat_offset) / scale_y;
-                yy1 = (convert_lat_s2l ("9000.00S") - y_lat_offset) / scale_y;
-                if (yy < 0)
-                    yy = 0;
-
-                if (yy1 > screen_height)
-                    yy1 = screen_height;
-
-                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, xx, yy, xx1, yy1);
+	    else if ((coord%(72000*100)) == 0) {
+                dash[0] = dash[1] = 8;
+                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
+            } else if ((coord%(7200*100)) == 0) {
+                dash[0] = dash[1] = 4;
+                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
+            } else if ((coord%(300*100)) == 0) {
+                dash[0] = dash[1] = 2;
+                (void)XSetDashes (XtDisplay (w), gc, 0, dash, 2);
             }
+
+            (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x, y1, x, y2);
         }
-        for (place = 90; place >= 0; place -= grid_place) {
-            xastir_snprintf(place_str, sizeof(place_str), "%02d00.00N", place);
-            /*printf("Place %s\n",place_str); */
-            yy1 = yy = ((convert_lat_s2l (place_str) - y_lat_offset) / scale_y);
-            if (yy > 0 && yy < screen_height) {
-                xx  = (convert_lon_s2l ("18000.00W") - x_long_offset) / scale_x;
-                xx1 = (convert_lon_s2l ("18000.00E") - x_long_offset) / scale_x;
-                if (xx < 0)
-                    xx = 0;
 
-                if (xx1 > screen_width)
-                    xx1 = screen_width;
+        /* draw horizontal lines */	
+        if (x_long_offset >= 0)
+            x1 = 0;
+        else
+            x1 = -x_long_offset/scale_x; 
 
-                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, xx, yy, xx1, yy1);
+        x2 = (360*60*60*100-x_long_offset)/scale_x;
+        if (x2 > screen_width)
+            x2 = screen_width-1;
+
+        coord = y_lat_offset+stepy-(y_lat_offset%stepy);
+        if (coord < 0)
+            coord = 0;
+
+        for (; coord < y_lat_offset+screen_height*scale_y && coord <= 180*60*60*100; coord += stepy) {
+
+            y = (coord-y_lat_offset)/scale_y;
+
+            if ((coord%(324000*100)) == 0) {
+                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x1, y, x2, y);
+                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
+                continue;
+            } else if ((coord%(36000*100)) == 0) {
+                dash[0] = dash[1] = 8;
+                (void)XSetDashes (XtDisplay (w), gc, 4, dash, 2);
+            } else if ((coord%(3600*100)) == 0) {
+                dash[0] = dash[1] = 4;
+                (void)XSetDashes (XtDisplay (w), gc, 2, dash, 2);
+            } else if ((coord%(150*100)) == 0) {
+                dash[0] = dash[1] = 2;
+                (void)XSetDashes (XtDisplay (w), gc, 1, dash, 2);
             }
+
+            (void)XDrawLine (XtDisplay (w), pixmap_final, gc, x1, y, x2, y);
         }
-        for (place = grid_place; place < 91; place += grid_place) {
-            xastir_snprintf(place_str, sizeof(place_str), "%02d00.00S", place);
-            /*printf("Place %s\n",place_str); */
-            yy1 = yy = ((convert_lat_s2l (place_str) - y_lat_offset) / scale_y);
-            if (yy > 0 && yy < screen_height) {
-                xx  = (convert_lon_s2l ("18000.00W") - x_long_offset) / scale_x;
-                xx1 = (convert_lon_s2l ("18000.00E") - x_long_offset) / scale_x;
-                if (xx < 0)
-                    xx = 0;
-
-                if (xx1 > screen_width)
-                    xx1 = screen_width;
-
-                (void)XDrawLine (XtDisplay (w), pixmap_final, gc, xx, yy, xx1, yy1);
-            }
-        }
-    }
-
-    // Draw equator and central meridian with solid black lines
-    (void)XSetLineAttributes(XtDisplay(w), gc, 1, LineSolid, CapButt,JoinMiter);
-    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]);
-
-    xastir_snprintf(place_str, sizeof(place_str), "%03d00.00W", 0);
-    xx1 = xx = ((convert_lon_s2l(place_str) - x_long_offset) / scale_x);
-    if (xx > 0 && xx < screen_width) {
-        yy  = (convert_lat_s2l("9000.00N") - y_lat_offset) / scale_y;
-        yy1 = (convert_lat_s2l("9000.00S") - y_lat_offset) / scale_y;
-        if (yy < 0)
-            yy = 0;
-
-        if (yy1 > screen_height)
-            yy1 = screen_height;
-
-        (void)XDrawLine(XtDisplay(w), pixmap_final, gc, xx, yy, xx1, yy1);
-    }
-    xastir_snprintf(place_str, sizeof(place_str), "%02d00.00N", 0);
-    yy1 = yy = ((convert_lat_s2l(place_str) - y_lat_offset) / scale_y);
-    if (yy > 0 && yy < screen_height) {
-        xx  = (convert_lon_s2l("18000.00W") - x_long_offset) / scale_x;
-        xx1 = (convert_lon_s2l("18000.00E") - x_long_offset) / scale_x;
-        if (xx < 0)
-            xx = 0;
-
-        if (xx1 > screen_width)
-            xx1 = screen_width;
-
-        (void)XDrawLine(XtDisplay(w), pixmap_final, gc, xx, yy, xx1, yy1);
     }
 }
 
