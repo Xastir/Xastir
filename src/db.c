@@ -8719,10 +8719,17 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
         p_station->time_sn = next_time_sn++;            // todo: warning if serial number too high
         if (from == DATA_VIA_TNC) {                     // heard via TNC
-            p_station->flag |= ST_VIATNC;               // set "via TNC" flag
-            p_station->heard_via_tnc_last_time = sec_now();
-            p_station->last_heard_via_tnc = 0l;
-            p_station->heard_via_tnc_port = port;
+            if (!third_party) { // Not a third-party packet
+                p_station->flag |= ST_VIATNC;               // set "via TNC" flag
+                p_station->heard_via_tnc_last_time = sec_now();
+                p_station->last_heard_via_tnc = 0l;
+                p_station->heard_via_tnc_port = port;
+            }
+            else {  // Third-party packet
+                // Leave the previous setting of "flag" alone.
+                // Specifically do NOT set the ST_VIATNC flag if it
+                // was a third-party packet.
+            }
         } else {                                        // heard other than TNC
             if (new_station) {                          // new station
                 p_station->last_heard_via_tnc = 0L;
