@@ -12498,6 +12498,9 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
                 temp2 = temp + 31;
 
 //fprintf(stderr,"New string:%s\n",temp2);
@@ -12547,6 +12550,9 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
                 temp2 = temp + 31;
 
 //fprintf(stderr,"New string:%s\n",temp2);
@@ -12634,6 +12640,9 @@ void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
                 temp2 = temp + 31;
 
 //fprintf(stderr,"New string:%s\n",temp2);
@@ -12683,6 +12692,9 @@ void map_properties_auto_maps_no(Widget widget, XtPointer clientData, XtPointer 
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
                 temp2 = temp + 31;
 
 //fprintf(stderr,"New string:%s\n",temp2);
@@ -12758,6 +12770,9 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
                 temp2 = temp + 31;
 
 //fprintf(stderr,"New string:%s\n",temp2);
@@ -12834,6 +12849,9 @@ void map_properties_max_zoom_change(Widget widget, XtPointer clientData, XtPoint
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
                 temp2 = temp + 31;
 
 //                fprintf(stderr,"New string:%s\n",temp2);
@@ -12910,6 +12928,9 @@ void map_properties_min_zoom_change(Widget widget, XtPointer clientData, XtPoint
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
+//OFFSET IS CRITICAL HERE!!!  If we change how the strings are
+//printed into the map_properties_list, we have to change this
+//offset.
                 temp2 = temp + 31;
 
 //fprintf(stderr,"New string:%s\n",temp2);
