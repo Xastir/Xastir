@@ -2178,12 +2178,15 @@ void display_station(Widget w, DataRow *p_station, int single) {
             //    weather->wx_trop_storm_radius,
             //    weather->wx_whole_gale_radius);
 
+// Still need to draw the circles in different colors for the
+// different ranges.  Might be nice to tint it as well.
+
             strcpy(temp,weather->wx_hurricane_radius);
             if ( (temp[0] != '\0')
                     && (strncmp(temp,"000",3) != 0) ) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
-                    atof(temp), // Convert from nautical mi.
+                    atof(temp) * 1.15078, // nautical miles to miles
                     pixmap_final);
             }
 
@@ -2192,7 +2195,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                     && (strncmp(temp,"000",3) != 0) ) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
-                    atof(temp), // Convert from nautical mi.
+                    atof(temp) * 1.15078, // nautical miles to miles
                     pixmap_final);
             }
 
@@ -2201,7 +2204,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                     && (strncmp(temp,"000",3) != 0) ) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
-                    atof(temp), // Convert from nautical mi.
+                    atof(temp) * 1.15078, // nautical miles to miles
                     pixmap_final);
             }
         }
@@ -2315,12 +2318,15 @@ void display_station(Widget w, DataRow *p_station, int single) {
             //    weather->wx_trop_storm_radius,
             //    weather->wx_whole_gale_radius);
  
+// Still need draw the circles in different colors for the different
+// ranges.  Might be nice to tint it as well.
+ 
             strcpy(temp,weather->wx_hurricane_radius);
             if ( (temp[0] != '\0')
                     && (strncmp(temp,"000",3) != 0) ) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
-                    atof(temp), // Need to convert from nautical miles to miles
+                    atof(temp) * 1.15078, // nautical miles to miles
                     pixmap_final);
             }
 
@@ -2329,7 +2335,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                     && (strncmp(temp,"000",3) != 0) ) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
-                    atof(temp), // Convert from nautical mi
+                    atof(temp) * 1.15078, // nautical miles to miles
                     pixmap_final);
             }
 
@@ -2338,7 +2344,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                     && (strncmp(temp,"000",3) != 0) ) {
                 draw_pod_circle(p_station->coord_lon,
                     p_station->coord_lat,
-                    atof(temp), // Convert from nautical mi
+                    atof(temp) * 1.15078, // nautical miles to miles
                     pixmap_final);
             }
         }
