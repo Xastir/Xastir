@@ -565,73 +565,68 @@ void draw_ogr_map(Widget w,
         }
 
 
-// We should test the capabilities of the layer so that we know the
-// best way to access it.
-//
-// OGR_L_TestCapability:
-//
-//   OLCRandomRead: TRUE if the OGR_L_GetFeature() function works
-//   for this layer.
-//
-//   OLCFastSpatialFilter: TRUE if this layer implements spatial
-//   filtering efficiently.
-//
-//   OLCFastFeatureCount: TRUE if this layer can return a feature
-//   count (via OGR_L_GetFeatureCount()) efficiently.  In some cases
-//   this will return TRUE until a spatial filter is installed after
-//   which it will return FALSE.
-//
-//   OLCFastGetExtent: TRUE if this layer can return its data extent
-//   (via OGR_L_GetExtent()) efficiently ... ie. without scanning
-//   all the features. In some cases this will return TRUE until a
-//   spatial filter is installed after which it will return FALSE.
-
-
-        if (OGR_L_TestCapability(layer, "OLCRandomRead")) {
+        // We should test the capabilities of the layer so that we
+        // know the best way to access it.
+        //
+        // OGR_L_TestCapability:
+        //
+        //   OLCRandomRead: TRUE if the OGR_L_GetFeature() function works
+        //   for this layer.
+        //
+        //   OLCFastSpatialFilter: TRUE if this layer implements spatial
+        //   filtering efficiently.
+        //
+        //   OLCFastFeatureCount: TRUE if this layer can return a feature
+        //   count (via OGR_L_GetFeatureCount()) efficiently.  In some cases
+        //   this will return TRUE until a spatial filter is installed after
+        //   which it will return FALSE.
+        //
+        //   OLCFastGetExtent: TRUE if this layer can return its data extent
+        //   (via OGR_L_GetExtent()) efficiently ... ie. without scanning
+        //   all the features. In some cases this will return TRUE until a
+        //   spatial filter is installed after which it will return FALSE.
+        //
+        if (OGR_L_TestCapability(layer, OLCRandomRead)) {
             fprintf(stderr,
                 "\tLayer %d: Random Read Supported.\n",
                 i);
         }
         else {
-            fprintf(stderr,
-                "\tLayer %d: Random Read NOT Supported.\n",
-                i);
+//            fprintf(stderr,
+//                "\tLayer %d: Random Read NOT Supported.\n",
+//                i);
         }
-        if (OGR_L_TestCapability(layer, "OLCFastSpatialFilter")) {
+        if (OGR_L_TestCapability(layer, OLCFastSpatialFilter)) {
             fprintf(stderr,
                 "\tLayer %d: Fast Spatial Filter supported.\n",
                 i);
         }
         else {
-            fprintf(stderr,
-                "\tLayer %d: Fast Spatial Filter NOT supported.\n",
-                i);
+//            fprintf(stderr,
+//                "\tLayer %d: Fast Spatial Filter NOT supported.\n",
+//                i);
         }
-        if (OGR_L_TestCapability(layer, "OLCFastFeatureCount")) {
+        if (OGR_L_TestCapability(layer, OLCFastFeatureCount)) {
             fprintf(stderr,
                 "\tLayer %d: Fast Feature Count Supported.\n",
                 i);
         }
         else {
-            fprintf(stderr,
-                "\tLayer %d: Fast Feature Count NOT Supported.\n",
-                i);
+//            fprintf(stderr,
+//                "\tLayer %d: Fast Feature Count NOT Supported.\n",
+//                i);
         }
-        if (OGR_L_TestCapability(layer, "OLCFastGetExtent")) {
+        if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
             fprintf(stderr,
                 "\tLayer %d: Fast Get Extent Supported.\n",
                 i);
         }
         else {
-            fprintf(stderr,
-                "\tLayer %d: Fast Get Extent NOT Supported.\n",
-                i);
+//            fprintf(stderr,
+//                "\tLayer %d: Fast Get Extent NOT Supported.\n",
+//                i);
         }
 
-
-
-
-  
 
         // Dump info about this layer
 //        layerDefn = OGR_L_GetLayerDefn( layer );
