@@ -7577,7 +7577,7 @@ unsigned char *select_unproto_path(int port) {
         // but still allow it to be used.
         //
         if(check_unproto_path(unproto_path_txt)) {
-            popup_message_always(langcode("WPUPCFT042"),
+            popup_message_always(langcode("WPUPCFT045"),
                 langcode("WPUPCFT043"));
         }
     }
@@ -8280,7 +8280,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         // acceptable.  Output warning if not, but
                         // still allow the transmit.
                         if(check_unproto_path(devices[port].unproto_igate)) {
-                            popup_message_always(langcode("WPUPCFT044"),
+                            popup_message_always(langcode("WPUPCFT046"),
                                 langcode("WPUPCFT043"));
                         }
 
@@ -8441,7 +8441,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         // acceptable.  Output warning if not, but
                         // still allow the transmit.
                         if(check_unproto_path(devices[port].unproto_igate)) {
-                            popup_message_always(langcode("WPUPCFT044"),
+                            popup_message_always(langcode("WPUPCFT046"),
                                 langcode("WPUPCFT043"));
                         }
 

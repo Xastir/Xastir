@@ -460,9 +460,12 @@ WPUPCFT038|TxTail (10 ms units)||
 WPUPCFT039|Full Duplex||
 WPUPCFT040|Configure Multi-Port KISS TNC||
 WPUPCFT041|Radio Port||
-WPUPCFT042|Dubious UNPROTO Path!||
+WPUPCFT042|Interface Properties: Dubious UNPROTO Path!||
 WPUPCFT043|Please consider a shorter path such as WIDE2-2 or RELAY,WIDE2-2||
-WPUPCFT044|Dubious IGATE Path!||
+WPUPCFT044|Interface Properties: Dubious IGATE Path!||
+WPUPCFT045|Transmitting w/Dubious UNPROTO Path!||
+WPUPCFT046|Transmitting w/Dubious IGATE Path!||
+#
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configure WX Port||
