@@ -1453,7 +1453,7 @@ int OpenTrac_decode_comment(unsigned char *element,
     if (element_len > 126)
         return -1;  // shouldn't be possible
 
-    strcat(comment," ");
+    strncat(comment," ",1);
     strncat(comment, element, element_len);
     comment[element_len + 1] = 0;   // Account for the space char
 
@@ -2310,8 +2310,6 @@ fprintf(stderr,"Origin Call: %s\nOrigin SSID: %d\n",origin_call,origin_ssid);
         //        expect callsign to have ssid already or not
         // KJ5O
 
-        comment[0] = '\0';
-
         strncat(buffer,(char *)origin_call,10);
 
         strncat(buffer,">",1);
@@ -2372,7 +2370,6 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
                 // Convert to very high precision format, DDMM.MMMMN
                 convert_lat_l2s( temp_lat, lat_str, 20, CONVERT_VHP_NOSP);
                 convert_lon_l2s( temp_lon, lon_str, 20, CONVERT_VHP_NOSP);
-
                 if (entity_serial) {
                     // We have an entity that is non-zero.  Create a
                     // compressed APRS "Item" from the data.  NOTE:
@@ -2427,9 +2424,9 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
                         13);
 
                     if (strlen(displayname)) {
-                        // Add displayname to the comment field
-                        strncat(comment," ",1);
-                        strncat(comment,displayname,40);
+                        // Add displayname
+                        strncat(buffer," ",1);
+                        strncat(buffer,displayname,40);
                     }
                 }
 
@@ -2444,19 +2441,19 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
                     sizeof(alt_str),
                     " /A=%06d",
                     (int)(altitude * 3.28084)); // meters to feet
-                strncat(comment,alt_str,10);
+                strncat(buffer,alt_str,10);
 
                 // We must limit the length here.  APRS Item packets
                 // can handle 43 chars in the comment field, Base-91
                 // compressed position packets can handle 40.
-                strncat(buffer,comment,40);
+                strncat(buffer,comment,126);
             }
         }
 
         // Null-terminate the buffer string to make sure.
         buffer[MAX_DEVICE_BUFFER - 1] = '\0';
 
-fprintf(stderr, "%s\n", buffer);
+fprintf(stderr, "\n***** %s\n\n", buffer);
 
         decode_ax25_line( buffer, DATA_VIA_TNC, 0, 1);
 
