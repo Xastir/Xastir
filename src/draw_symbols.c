@@ -1638,18 +1638,16 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient) {
 
 
                 // Create symbol mask
-                if (color != last_color) {
-                    if (color != 0xff) {
-                        if (last_gc2 != 1) {
-                            (void)XSetForeground(XtDisplay(appshell),gc2,1);  // active bit
-                            last_gc2 = 1;
-                        }
+                if (color != 0xff) {
+                    if (last_gc2 != 1) {
+                        (void)XSetForeground(XtDisplay(appshell),gc2,1);  // active bit
+                        last_gc2 = 1;
                     }
-                    else {
-                        if (last_gc2 != 0) {
-                            (void)XSetForeground(XtDisplay(appshell),gc2,0);  // transparent.
-                            last_gc2 = 0;
-                        }
+                }
+                else {
+                    if (last_gc2 != 0) {
+                        (void)XSetForeground(XtDisplay(appshell),gc2,0);  // transparent.
+                        last_gc2 = 0;
                     }
                 }
                 (void)XDrawPoint(XtDisplay(appshell),symbol_data[symbols_loaded].pix_mask,gc2,x,y);
