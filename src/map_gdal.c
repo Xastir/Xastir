@@ -3295,10 +3295,10 @@ clear_dangerous();
 //    lines that match "TLID" fields found above.
 // *) Once we've processed the CompleteChain layer, turn those 
 //    geometries into real polygons using BuildPolygonFromEdges() 
-//    and draw them.  Perhaps only draw them if the "WATER" field
-//    was set to 1 or 2?
-// *) Draw non-polygon vectors:  If "TLID" matches one from a 
-//    polygon, don't draw the vector or its label.
+//    and draw them.  Decide whether to draw any particular polygon
+//    based on the WATER field and/or the CFCC field (if
+//    AreaLandmarks and Landmarks were present for that polygon).
+// *) Draw non-polygon vectors.
 //
     //
     numLayers = OGR_DS_GetLayerCount(datasourceH);
