@@ -161,6 +161,14 @@ README
      -----------------------------------------------------------------------
        FreeBSD NOTES:
 
+     There are both a binary package and a port available as part of the
+     official FreeBSD ports system.  Most FreeBSD users can either type
+     "pkg_add -r xastir" which will fetch the relevant binary for their
+     release, or preferably update their ports tree and use the port to get
+     the latest version.
+
+     Other options:
+
      Like all software that uses autoconf, Xastir requires GNU make, so use
      gmake instead of make.
 
