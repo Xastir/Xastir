@@ -778,6 +778,128 @@ void transmit_message_data(char *to, char *message, char *path) {
 
 
 
+// The below variables and functions implement the capability to
+// schedule ACK's some number of seconds out from the current time.
+// We use it to schedule duplicate ACK's at 30/60/90 seconds out,
+// but only if we see duplicate message lines from remote stations.
+//
+// Create a struct to hold the delayed ack's.
+typedef struct _delayed_ack_record {
+    char to_call_sign[MAX_CALLSIGN+1];
+    char message_line[MAX_MESSAGE_OUTPUT_LENGTH+1];
+    char path[200];
+    time_t active_time;
+    struct _delayed_ack_record *next;
+} delayed_ack_record, *delayed_ack_record_p;
+
+// And a pointer to a list of them.
+    delayed_ack_record_p delayed_ack_list_head = NULL;
+
+
+void transmit_message_data_delayed(char *to, char *message,
+                                   char *path, time_t when) {
+    delayed_ack_record_p ptr;
+
+
+//fprintf(stderr, "Queuing ACK for delayed transmit.\n");
+
+    // Allocate a record to hold it
+    ptr = (delayed_ack_record_p)malloc(sizeof(delayed_ack_record));
+
+    // Fill in the record
+    xastir_snprintf(ptr->to_call_sign,
+        sizeof(ptr->to_call_sign),
+        "%s",
+        to);
+
+    xastir_snprintf(ptr->message_line,
+        sizeof(ptr->message_line),
+        "%s",
+        message);
+
+    if (path == NULL) {
+        ptr->path[0] = '\0';
+    }
+    else {
+        xastir_snprintf(ptr->path,
+            sizeof(ptr->path),
+            "%s",
+            path);
+    }
+
+    ptr->active_time = when;
+
+    // Add the record to the head of the list
+    ptr->next = delayed_ack_list_head;
+    delayed_ack_list_head = ptr;
+}
+
+
+
+
+
+// The below variables and functions
+time_t delayed_transmit_last_check = (time_t)0;
+
+
+void check_delayed_transmit_queue(void) {
+    delayed_ack_record_p ptr = delayed_ack_list_head;
+    int active_records = 0;
+
+
+    // Skip this function if we did it during this second already.
+    if (delayed_transmit_last_check == sec_now()) {
+        return;
+    }
+    delayed_transmit_last_check = sec_now();
+
+//fprintf(stderr, "Checking delayed TX queue for something to transmit.\n");
+//fprintf(stderr, ".");
+
+    // Run down the linked list checking every record.
+    while (ptr != NULL) {
+        if (ptr->active_time != 0) {   // Active record
+            active_records++;
+            if (ptr->active_time <= sec_now()) {
+                // Transmit it
+//fprintf(stderr,"Found something delayed to transmit!  %ld\n",sec_now());
+
+                if (ptr->path[0] == '\0') {
+                    transmit_message_data(ptr->to_call_sign,
+                        ptr->message_line,
+                        NULL);
+                }
+                else {
+                    transmit_message_data(ptr->to_call_sign,
+                        ptr->message_line,
+                        ptr->path);
+                }
+                
+                ptr->active_time = (time_t)0;
+            }
+        }
+        ptr = ptr->next;
+    } 
+
+    // Check if entire list contains inactive records.  If so,
+    // delete the list.
+    //
+    if (!active_records && (delayed_ack_list_head != NULL)) {
+        // No active records, but the list isn't empty.  Reclaim the
+        // records in the list.
+        while (delayed_ack_list_head != NULL) {
+            ptr = delayed_ack_list_head->next;
+            free(delayed_ack_list_head);
+//fprintf(stderr,"Free'ing delayed_ack record\n");
+            delayed_ack_list_head = ptr;
+        }
+    }
+}
+
+
+
+
+
 void check_and_transmit_messages(time_t time) {
     int i;
     char temp[200];

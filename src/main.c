@@ -10734,6 +10734,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // is it time to spit out messages?
             check_and_transmit_messages(sec_now());
 
+            // Is it time to spit out any delayed ack's?
+            check_delayed_transmit_queue();
+
             // Is it time to spit out objects/items?
             check_and_transmit_objects_items(sec_now());
 

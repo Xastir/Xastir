@@ -82,6 +82,10 @@ extern char group_data_file[400];
 
 extern void clear_acked_message(char *from, char *to, char *seq);
 extern void transmit_message_data(char *to, char *message, char *path);
+extern void transmit_message_data_delayed(char *to, char *message, char *path, time_t when);
+extern void check_delayed_transmit_queue(void);
+
+
 //extern void output_message(char *from, char *to, char *message);
 extern int check_popup_window(char *from_call_sign, int group);
 extern int look_for_open_group_data(char *to);

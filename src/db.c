@@ -13111,7 +13111,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         fprintf(stderr,"decode_message: start\n");
 
     if (debug_level & 1) {
-        if ( (message != NULL) && (strlen(message) > (MAX_MESSAGE_LENGTH + 10) ) ) { // Overly long message.  Throw it away.  We're done.
+        if ( (message != NULL) && (strlen(message) > (MAX_MESSAGE_LENGTH + 10) ) ) {
+            //
+            // Overly long message.  Throw it away.  We're done.
+            //
             fprintf(stderr,"decode_message: LONG message.  Dumping it.\n");
             return(0);
         }
@@ -13122,20 +13125,20 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     len = (int)strlen(message);
     ok = (int)(len > 9 && message[9] == ':');
     if (ok) {
-        substr(addr9,message,9);                // extract addressee
+        substr(addr9,message,9); // extract addressee
         xastir_snprintf(addr,
             sizeof(addr),
             "%s",
             addr9);
         (void)remove_trailing_spaces(addr);
-        message = message + 10;                 // pointer to message text
+        message = message + 10; // pointer to message text
 
-        temp_ptr = strrchr(message,'{');         // look for message ID after
-                                                 //*last* { in message.
+        temp_ptr = strrchr(message,'{'); // look for message ID after
+                                         //*last* { in message.
         msg_id[0] = '\0';
         if (temp_ptr != NULL) {
-            substr(msg_id,temp_ptr+1,5);        // extract message ID, could be non-digit
-            temp_ptr[0] = '\0';                 // adjust message end (chops off message ID)
+            substr(msg_id,temp_ptr+1,5); // extract message ID, could be non-digit
+            temp_ptr[0] = '\0';          // adjust message end (chops off message ID)
         }
 
         // Save the original msg_id away.
@@ -13178,7 +13181,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             temp_ptr[0] = '\0'; // adjust msg_id end
 
             if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
-                fprintf(stderr,"New_msg_id:%s\tReply_ack:%s\n\n",msg_id,ack_string);
+                fprintf(stderr,"New_msg_id:%s\tReply_ack:%s\n\n",
+                    msg_id,ack_string);
             }
 
         }
@@ -13237,8 +13241,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                     && port != -1) {    // Not from a log file
                 char short_path[100];
 
-                /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); { */
+//fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",
+//    operate_as_an_igate,
+//    from,
+//    my_callsign,
+//    call,
+//    addr);
                 shorten_path(path,short_path,sizeof(short_path));
+
                 xastir_snprintf(ipacket_message,
                     sizeof(ipacket_message),
                     "}%s>%s,TCPIP,%s*::%s:%s",
@@ -13250,7 +13260,13 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
 //fprintf(stderr,"Attempting to send ACK to RF\n");
 
-                output_igate_rf(call,addr,path,ipacket_message,port,third_party);
+                output_igate_rf(call,
+                    addr,
+                    path,
+                    ipacket_message,
+                    port,
+                    third_party);
+
                 igate_msgs_tx++;
             }
         }
@@ -13296,7 +13312,13 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         store_most_recent_ack(call,msg_id);
  
         // fprintf(stderr,"found Msg w line to me: |%s| |%s|\n",message,msg_id);
-        last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record); // id_fixed
+        last_ack_sent = msg_data_add(addr,
+                            call,
+                            message,
+                            msg_id,
+                            MESSAGE_MESSAGE,
+                            from,
+                            &record); // id_fixed
 
 
         // Here we need to know if it is a new message or an old.
@@ -13306,11 +13328,6 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         //
 //        if (last_ack_sent == (time_t)0) {   // New message
         if (record == -1l) { // Msg we've never received before
-
-//WE7U
-// If it _is_ a message that we've received before, consider sending
-// an extra ACK in about 30 seconds to try to get it to the remote
-// station.
 
             new_message_data += 1;
 
@@ -13348,16 +13365,17 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
         }
 
-
-        // Only send an ack out once per 30 seconds
-
+        // Try to only send an ack out once per 30 seconds at the
+        // fastest.
 //WE7U
 // Does this 30-second check work?
-
+        //
         if ( from != 'F'  // Not from a log file
                 && (last_ack_sent + 30 ) < sec_now()
                 && !satellite_ack_mode // Disable separate ack's for satellite work
                 && port != -1 ) {   // Not from a log file
+
+            
 
             //fprintf(stderr,"Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
 
@@ -13374,11 +13392,40 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 //WE7U
 // Need to figure out the reverse path for this one instead of
 // passing a NULL for the path?  Probably not, as auto-calculation
-// of paths isn't a good idea.  What we need to do here is check
-// whether we have a custom path set for this QSO.  If so, pass that
-// path along as the transmit path.
+// of paths isn't a good idea.
+//
+// What we need to do here is check whether we have a custom path
+// set for this QSO.  If so, pass that path along as the transmit
+// path.  messages.h:Message_Window struct has the send_message_path
+// variable in it.  If a Message_Window still exists for this QSO
+// then we can snag the user-entered path from there.  If the struct
+// has already been destroyed then we have nowhere to snag the
+// custom path from and have to rely on the default paths in each
+// interface properties dialog instead.
 
+
+            // Send out the immediate ACK
             transmit_message_data(call,ack,NULL);
+
+
+            if (record != -1l) { // Msg we've received before
+
+                // It's a message that we've received before,
+                // consider sending an extra ACK in about 30 seconds
+                // to try to get it to the remote station.  Perhaps
+                // another one in 60 seconds as well.
+
+//                fprintf(stderr,
+//                    "We've received this message before.\n");
+//                fprintf(stderr,
+//                    "Sending a couple of delayed ack's.\n");
+
+                transmit_message_data_delayed(call,ack,NULL,sec_now()+30);
+                transmit_message_data_delayed(call,ack,NULL,sec_now()+60);
+                transmit_message_data_delayed(call,ack,NULL,sec_now()+90);
+            }
+
+
             if (auto_reply == 1) {
 
                 xastir_snprintf(ipacket_message,
@@ -13406,9 +13453,15 @@ else {
             && ( (strncmp(addr,"NWS-",4) == 0)          // NWS weather alert
               || (strncmp(addr,"NWS_",4) == 0) ) ) {    // NWS weather alert compressed
 
-        //fprintf(stderr,"found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
+        // could have sort of line number
+        //fprintf(stderr,"found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);
 
-        (void)alert_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
+        (void)alert_data_add(addr,
+            call,
+            message,
+            msg_id,
+            MESSAGE_NWS,
+            from);
 
         done = 1;
         if (operate_as_an_igate>1
@@ -13418,6 +13471,7 @@ else {
             char short_path[100];
 
             shorten_path(path,short_path,sizeof(short_path));
+
             xastir_snprintf(ipacket_message,
                 sizeof(ipacket_message),
                 "}%s>%s,TCPIP,%s*::%s:%s",
@@ -13426,7 +13480,12 @@ else {
                 my_callsign,
                 addr9,
                 message);
-            output_nws_igate_rf(call,path,ipacket_message,port,third_party);
+
+            output_nws_igate_rf(call,
+                path,
+                ipacket_message,
+                port,
+                third_party);
         }
     }
     if (debug_level & 1)
@@ -13434,9 +13493,15 @@ else {
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"SKY",3) == 0) {  // NWS weather alert additional info
 
-        //fprintf(stderr,"found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
+        // could have sort of line number
+        //fprintf(stderr,"found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);
 
-        (void)alert_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
+        (void)alert_data_add(addr,
+            call,
+            message,
+            msg_id,
+            MESSAGE_NWS,
+            from);
 
         done = 1;
         if (operate_as_an_igate>1
@@ -13446,6 +13511,7 @@ else {
             char short_path[100];
 
             shorten_path(path,short_path,sizeof(short_path));
+
             xastir_snprintf(ipacket_message,
                 sizeof(ipacket_message),
                 "}%s>%s,TCPIP,%s*::%s:%s",
@@ -13454,7 +13520,12 @@ else {
                 my_callsign,
                 addr9,
                 message);
-            output_nws_igate_rf(call,path,ipacket_message,port,third_party);
+
+            output_nws_igate_rf(call,
+                path,
+                ipacket_message,
+                port,
+                third_party);
         }
     }
     if (debug_level & 1)
@@ -13463,8 +13534,20 @@ else {
     if (!done && strlen(msg_id) > 0) {          // other message with linenumber
         long record_out;
 
-        if (debug_level & 2) fprintf(stderr,"found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
-        (void)msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record_out);
+        if (debug_level & 2)
+            fprintf(stderr,"found Msg w line: |%s| |%s| |%s|\n",
+                addr,
+                message,
+                msg_id);
+
+        (void)msg_data_add(addr,
+            call,
+            message,
+            msg_id,
+            MESSAGE_MESSAGE,
+            from,
+            &record_out);
+
         new_message_data += look_for_open_group_data(addr);
 
         // Note that the check_popup_window() function will
@@ -13492,8 +13575,13 @@ else {
                 && port != -1) {    // Not from a log file
             char short_path[100];
 
-            /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,
-                        call,addr);*/     // {
+//fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",
+//    operate_as_an_igate,
+//    from,
+//    my_callsign,
+//    call,
+//    addr);
+
             shorten_path(path,short_path,sizeof(short_path));
             xastir_snprintf(ipacket_message,
                 sizeof(ipacket_message),
@@ -13507,7 +13595,13 @@ else {
 
 //fprintf(stderr,"Attempting to send message to RF\n");
 
-            output_igate_rf(call,addr,path,ipacket_message,port,third_party);
+            output_igate_rf(call,
+                addr,
+                path,
+                ipacket_message,
+                port,
+                third_party);
+
             igate_msgs_tx++;
         }
         done = 1;
@@ -13536,7 +13630,14 @@ else {
         if (debug_level & 4)
             fprintf(stderr,"found Msg: |%s| |%s|\n",addr,message);
 
-        (void)msg_data_add(addr,call,message,"",MESSAGE_MESSAGE,from,&record_out);
+        (void)msg_data_add(addr,
+            call,
+            message,
+            "",
+            MESSAGE_MESSAGE,
+            from,
+            &record_out);
+
         new_message_data++;      // ??????
 
         // Note that the check_popup_window() function will
@@ -13573,7 +13674,14 @@ else {
         fprintf(stderr,"9\n");
     //--------------------------------------------------------------------------
     if (ok)
-        (void)data_add(STATION_CALL_DATA,call,path,message,from,port,NULL,third_party);
+        (void)data_add(STATION_CALL_DATA,
+            call,
+            path,
+            message,
+            from,
+            port,
+            NULL,
+            third_party);
 
     if (debug_level & 1)
         fprintf(stderr,"decode_message: finish\n");
