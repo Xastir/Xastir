@@ -2247,6 +2247,11 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 0.0040 * scale_y,
                 colors[0x44],   // Red
                 pixmap_final);
+            draw_pod_circle(p_station->coord_lon,
+                p_station->coord_lat,
+                0.0045 * scale_y,
+                colors[0x61],   // Blue
+                pixmap_final);
         }
 
 
@@ -2407,6 +2412,11 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 p_station->coord_lat,
                 0.0040 * scale_y,
                 colors[0x44],   // Red
+                pixmap_final);
+            draw_pod_circle(p_station->coord_lon,
+                p_station->coord_lat,
+                0.0045 * scale_y,
+                colors[0x61],   // Blue
                 pixmap_final);
         }
 
