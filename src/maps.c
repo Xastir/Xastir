@@ -1275,9 +1275,9 @@ void draw_shapefile_map (Widget w,
     if (alert)
         weather_alert_flag++;
 
-    // Check for maps/Gps directory.  We set up the labels and
+    // Check for maps/GPS directory.  We set up the labels and
     // colors differently for these types of files.
-    if (strstr(filenm,"Gps")) { // We're in the maps/Gps directory
+    if (strstr(filenm,"GPS")) { // We're in the maps/GPS directory
         gps_flag++;
     }
 
@@ -2488,9 +2488,18 @@ void draw_shapefile_map (Widget w,
 
 
                         // Check for a color in the filename: i.e.
-                        // "Team2TrackRed.shp"
+                        // "Team2_Track_Red.shp"
                         if (strstr(filenm,"_Red.shp")) {
                             gps_color = 0x0c; // Red
+                        }
+                        else if (strstr(filenm,"_Green.shp")) {
+                            gps_color = 0x64; // ForestGreen
+                        }
+                        else if (strstr(filenm,"_Black.shp")) {
+                            gps_color = 0x08; // black
+                        }
+                        else if (strstr(filenm,"_White.shp")) {
+                            gps_color = 0x0f; // white
                         }
                         else if (strstr(filenm,"_Orange.shp")) {
 //                            gps_color = 0x06; // orange
@@ -2498,14 +2507,11 @@ void draw_shapefile_map (Widget w,
 //                            gps_color = 0x41; // DarkOrange3 (good medium orange)
                             gps_color = 0x62; // orange3 (brighter)
                         }
-                        else if (strstr(filenm,"_White.shp")) {
-                            gps_color = 0x0f; // white
-                        }
-                        else if (strstr(filenm,"_Green.shp")) {
-                            gps_color = 0x64; // ForestGreen
+                        else if (strstr(filenm,"_Blue.shp")) {
+                            gps_color = 0x09; // blue
                         }
                         else {  // Default color
-                            gps_color = 0x08; // black
+                            gps_color = 0x0c; // Red
                         }
 
                         // Set the color for the arc's
