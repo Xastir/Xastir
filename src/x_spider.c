@@ -120,6 +120,7 @@
 #include <setjmp.h>
 #include <sys/socket.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include <netinet/in.h>     // Moved ahead of inet.h as reports of some *BSD's not
                             // including this as they should.
