@@ -6,6 +6,7 @@
 #   color   - color to draw the road
 #   name    - name of the road for labels
 #   filled  - whether a polygon is drawn filled or not
+#   fill_color - color to fill polygon with
 #   pattern - line pattern for road, river, etc.
 #   display_level - highest zoom level at which to display the feature
 #   label_level - highest zoom level at which to display the label
@@ -28,7 +29,7 @@ dbffields="TLID:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC"}
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
 # use color 11 to highlight stuff that isn't properly mapped.
-BEGIN_RECORD {key=""; lanes=1; color=11; name=""; filled=0; pattern=1; display_level=8192; label_level=32; symbol=""}
+BEGIN_RECORD {key=""; lanes=1; color=11; fill_color=11; name=""; filled=0; pattern=1; display_level=8192; label_level=32; symbol=""}
 
 # per-field rules are applied to the dbffields that are read from each record.
 # key: set the search key to be the Tiger/Line ID.  Not currently used.
@@ -226,13 +227,13 @@ BEGIN_RECORD {key=""; lanes=1; color=11; name=""; filled=0; pattern=1; display_l
 # H70 - nonvisibile....
 # H80 - special water features
 # H81 - glacier
-/^CFCC=H/ {lanes=0; color=26;}
+/^CFCC=H/ {lanes=0; color=26; fill_color=26}
 /^CFCC=H02/ {pattern=2; next}
 /^CFCC=H[1-6]2/ {lanes=1; pattern=2; next}
 /^CFCC=H[1-6][013-9]/ {lanes=1; next}
 /^CFCC=H7/ {display_level=0; label_level=0; next}
 /^CFCC=H8/ {lanes=1}
-/^CFCC=H81/ {color=15; next}
+/^CFCC=H81/ {color=15; fill_color=15; next}
 # X00 - feature not yet classified
 # just a demo of the END_RECORD and END rules:
 #END_RECORD {name="$name ($key)";}

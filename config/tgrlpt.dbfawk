@@ -13,8 +13,8 @@
 # NOTE: This file format is modeled after awk but is nowhere near awk
 #  compatible.
 #
-# This file is used to map US Census Tiger/Line "lk" shapefiles which are
-# named tgrSSCCClk[A-H].dbf, where SSCCC are the FIPS state and county codes.
+# This file is used to map US Census Tiger/Line "lpt" landmark point shapefiles which are
+# named tgrSSCCClpt.dbf, where SSCCC are the FIPS state and county codes.
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {
