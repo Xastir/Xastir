@@ -1214,17 +1214,15 @@ printf("draw_shapefile_map:filename:%s\ttitle:%s\n",filename,alert->title);
             // AL     BMX  Morgan
             // Need fields 0/1:
             search_field1 = 0;  // STATE
-            search_field2 = 1;  // CWA
+            search_field2 = 3;  // FIPS
             snprintf(search_param1,sizeof(search_param1),"%c%c",
                 alert->title[0],
                 alert->title[1]);
 // Correct.
-// Here we need wildcards for the first two numbers, or we can perhaps
-// take the number modulus 1000 and then just compare the three digits?
-            snprintf(search_param2,sizeof(search_param2),"??%c%c%c",
-                alert->title[0],
-                alert->title[1],
-                alert->title[2]);
+            snprintf(search_param2,sizeof(search_param2),"%c%c%c",
+                alert->title[4],
+                alert->title[5],
+                alert->title[6]);
             break;
 
         case 'w':   // County Warning Area File
@@ -1343,21 +1341,29 @@ printf("Search_param2: %s\n",search_param2);
     // Search for specific record if we're doing alerts
     if (weather_alert_flag) {
         int done = 0;
-        int fips;
         char *string1;
+        char *string2;
 
         // Step through all records
         for( i = 0; i < recordcount && !done; i++ ) {
+            char *ptr;
             switch (filenm[0]) {
                 case 'c':   // County File
+                    // Remember that there's only one place for
+                    // internal storage of the DBF string.  This is
+                    // why this code is organized with two "if"
+                    // statements.
                     string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                    fips = DBFReadIntegerAttribute(hDBF,i,search_field2);
-                    fips = fips % 1000; // We care about last 3 digits
-                    if ( (!strncasecmp(search_param1,string1,strlen(string1)))
-                        && ( fips = atoi(search_param2) ) ) {
+                    if (!strncasecmp(search_param1,string1,2)) {
+                        //printf("Found state\n");
+                        string2 = (char *)DBFReadStringAttribute(hDBF,i,search_field2);
+                        ptr = string2;
+                        ptr += 2;   // Skip past first two characters of FIPS code
+                        if (!strncasecmp(search_param2,ptr,3)) {
 printf("Found it!  %s\tShape: %d\n",string1,i);
-                        done++;
-                        found_shape = i;
+                            done++;
+                            found_shape = i;
+                        }
                     }
                     break;
                 case 'w':   // County Warning Area File
@@ -1517,9 +1523,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
         end_record = nEntities;
     }
 
-printf("Before loop\n");
     for (structure = start_record; structure < end_record; structure++) {
-printf("Inside loop: %d\n",structure);
 
         object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
 
@@ -8018,7 +8022,7 @@ printf("load_alert_maps() Title: %s\n",alert_list[i].title);
                 &alert_count,
                 (int)(alert_tag[i + 2] == DATA_VIA_TNC || alert_tag[i + 2] == DATA_VIA_LOCAL),
                 DRAW_TO_PIXMAP_ALERTS);
-printf("Title1:%s\n",alert_list[i].title);
+//printf("Title1:%s\n",alert_list[i].title);
         }
     }
 
@@ -8038,7 +8042,7 @@ printf("Title1:%s\n",alert_list[i].title);
     // filename.
     for (i = 0; i < alert_list_count; i++) {
 
-printf("Title2:%s\n",alert_list[i].title);
+//printf("Title2:%s\n",alert_list[i].title);
 
         if (alert_list[i].filename[0]) {    // If filename is non-zero
             alert[0] = alert_list[i];       // Reordering the alert_list???
@@ -8054,7 +8058,7 @@ printf("Title2:%s\n",alert_list[i].title);
 //                DRAW_TO_PIXMAP_ALERTS);
 
             alert_update_list (&alert[0], ALERT_ALL);
-printf("Title3:%s\n",alert_list[i].title);
+//printf("Title3:%s\n",alert_list[i].title);
         }
     }
 
@@ -8082,7 +8086,7 @@ printf("Drawing all active alerts\n");
 // the right tint color.
 
 printf("Drawing %s\n",alert_list[i].filename);
-printf("Title4:%s\n",alert_list[i].title);
+//printf("Title4:%s\n",alert_list[i].title);
 
 
             draw_map (w,
@@ -8095,8 +8099,8 @@ printf("Title4:%s\n",alert_list[i].title);
     }
 
 
-for (i = 0; i < alert_list_count; i++)
-    printf("Title5:%s\n",alert_list[i].title);
+//for (i = 0; i < alert_list_count; i++)
+//    printf("Title5:%s\n",alert_list[i].title);
 
 
 printf("Done drawing all active alerts\n");
