@@ -1134,6 +1134,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 "%03d",
                 (int)(tmp7 * 22.5 + 0.5));
 
+            // Check for course = 0.  Change to 360.
+            if (strncmp(weather->wx_course,"000",3) == 0) {
+                xastir_snprintf(weather->wx_course,
+                sizeof(weather->wx_course),
+                "360");
+            }
+
             // Wind speed.  We get it in meters per second, store it
             // in mph.
             tmp4 = tmp4 * 3600.0 / 1000.0; // kph
@@ -1171,6 +1178,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 sizeof(weather->wx_course),
                 "%03d",
                 (int)(((float)strtol(temp_data1,&temp_conv,16)/16.0)*360.0));
+
+            // Check for course = 0.  Change to 360.
+            if (strncmp(weather->wx_course,"000",3) == 0) {
+                xastir_snprintf(weather->wx_course,
+                sizeof(weather->wx_course),
+                "360");
+            }
 
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0 && !from) {    // From local station
@@ -1328,6 +1342,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     sizeof(weather->wx_course),
                     "%03d",
                     (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+
+                // Check for course = 0.  Change to 360.
+                if (strncmp(weather->wx_course,"000",3) == 0) {
+                    xastir_snprintf(weather->wx_course,
+                    sizeof(weather->wx_course),
+                    "360");
+                }
+
             } else {
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
@@ -1502,6 +1524,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     sizeof(weather->wx_course),
                     "%03d",
                     (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+
+                // Check for course = 0.  Change to 360.
+                if (strncmp(weather->wx_course,"000",3) == 0) {
+                    xastir_snprintf(weather->wx_course,
+                    sizeof(weather->wx_course),
+                    "360");
+                }
+
             } else {
                 xastir_snprintf(weather->wx_course,
                     sizeof(weather->wx_course),
@@ -1740,6 +1770,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             sizeof(weather->wx_course),
                             "%03d",
                             (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+
+                        // Check for course = 0.  Change to 360.
+                        if (strncmp(weather->wx_course,"000",3) == 0) {
+                            xastir_snprintf(weather->wx_course,
+                            sizeof(weather->wx_course),
+                            "360");
+                        }
+
                     } else {
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
@@ -1766,6 +1804,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             sizeof(weather->wx_course),
                             "%03d",
                             (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+
+                        // Check for course = 0.  Change to 360.
+                        if (strncmp(weather->wx_course,"000",3) == 0) {
+                            xastir_snprintf(weather->wx_course,
+                            sizeof(weather->wx_course),
+                            "360");
+                        }
+
                     } else {
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
@@ -1792,6 +1838,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             sizeof(weather->wx_course),
                             "%03d",
                             (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+
+                        // Check for course = 0.  Change to 360.
+                        if (strncmp(weather->wx_course,"000",3) == 0) {
+                            xastir_snprintf(weather->wx_course,
+                            sizeof(weather->wx_course),
+                            "360");
+                        }
+
                     } else {
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
@@ -1818,6 +1872,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             sizeof(weather->wx_course),
                             "%03d",
                             (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+
+                        // Check for course = 0.  Change to 360.
+                        if (strncmp(weather->wx_course,"000",3) == 0) {
+                            xastir_snprintf(weather->wx_course,
+                            sizeof(weather->wx_course),
+                            "360");
+                        }
+
                     } else {
                         xastir_snprintf(weather->wx_course,
                             sizeof(weather->wx_course),
@@ -2279,6 +2341,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             rswnc(data[3]),
                             (data[2]&0xf0)>>4);
 
+                        // Check for course = 0.  Change to 360.
+                        if (strncmp(weather->wx_course,"000",3) == 0) {
+                            xastir_snprintf(weather->wx_course,
+                            sizeof(weather->wx_course),
+                            "360");
+                        }
+
                         /* wind chill in C */
                         xastir_snprintf(temp_data1,
                             sizeof(temp_data1),
@@ -2356,6 +2425,13 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     "%s",
                     temp_conv+1);
                 weather->wx_course[3] = '\0';
+            }
+
+            // Check for course = 0.  Change to 360.
+            if (strncmp(weather->wx_course,"000",3) == 0) {
+                xastir_snprintf(weather->wx_course,
+                sizeof(weather->wx_course),
+                "360");
             }
 				
             if ((temp_conv=strchr(data,'s'))) { // Wind Speed in MPH - not snowfall
@@ -2836,7 +2912,7 @@ time_t wx_tx_data1(char *st, int st_size) {
                         sizeof(temp),
                         "...");
                 }
-                if ( (atoi(weather->wx_course) > 359) || (atoi(weather->wx_course) < 0) ) {
+                if ( (atoi(weather->wx_course) > 360) || (atoi(weather->wx_course) < 0) ) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_course out-of-range: %s\n", weather->wx_course);
                     xastir_snprintf(temp,
