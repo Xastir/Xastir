@@ -9444,7 +9444,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     else {
         // Store 
         xastir_snprintf(p_station->sats_visible,
-            MAX_SAT,
+            sizeof(p_station->sats_visible),
             "%d",
             temp_num);
     }
@@ -12539,7 +12539,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
                 /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); { */
                 shorten_path(path,short_path,sizeof(short_path));
-                xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
+                xastir_snprintf(ipacket_message,
+                    sizeof(ipacket_message),
+                    "}%s>%s,TCPIP,%s*::%s:%s",
+                    call,
+                    short_path,
+                    my_callsign,
+                    addr9,
+                    message);
 
 //fprintf(stderr,"Attempting to send ACK to RF\n");
 
@@ -12731,7 +12738,15 @@ else {
             /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,
                         call,addr);*/     // {
             shorten_path(path,short_path,sizeof(short_path));
-            xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s{%s",call,short_path,my_callsign,addr9,message,msg_id);
+            xastir_snprintf(ipacket_message,
+                sizeof(ipacket_message),
+                "}%s>%s,TCPIP,%s*::%s:%s{%s",
+                call,
+                short_path,
+                my_callsign,
+                addr9,
+                message,
+                msg_id);
 
 //fprintf(stderr,"Attempting to send message to RF\n");
 
@@ -13152,7 +13167,13 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
             // callsign as we inject, to show it came through us.
             // On the way back out of the internet it can get a '*'
             // added after the 'I' perhaps.
-            xastir_snprintf(line, sizeof(line), "%s>%s,%s*,I:%s",call,path,my_callsign,my_data);
+            xastir_snprintf(line,
+                sizeof(line),
+                "%s>%s,%s*,I:%s",
+                call,
+                path,
+                my_callsign,
+                my_data);
 
 //fprintf(stderr,"decode_info_field: IGATE>NET %s\n",line);
             output_igate_net(line, port,third_party);
@@ -14527,7 +14548,12 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     if ((p_station->flag & ST_OBJECT) != 0) {
         sec = sec_now();
         day_time = gmtime(&sec);
-        xastir_snprintf(time, sizeof(time), "%02d%02d%02dz",day_time->tm_mday,day_time->tm_hour,day_time->tm_min);
+        xastir_snprintf(time,
+            sizeof(time),
+            "%02d%02d%02dz",
+            day_time->tm_mday,
+            day_time->tm_hour,
+            day_time->tm_min);
     }
 
 

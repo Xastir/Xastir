@@ -5567,7 +5567,7 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
     // Set up our path to the wx alert maps
     memset(alert_scan, 0, sizeof (alert_scan));    // Zero our alert_scan string
     xastir_snprintf(alert_scan, // Fetch the base directory
-        MAX_FILENAME-10,
+        sizeof(alert_scan),
         "%s",
         dir);
     strncat(alert_scan, // Complete alert directory is now set up in the string

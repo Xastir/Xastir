@@ -147,7 +147,16 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
     (void)remove_trailing_spaces(geocoder_address_name);
 
     index = io_open(geocoder_map_filename);
-    xastir_snprintf(input, 1024, "%s %s%s%s %s", geocoder_address_name, geocoder_locality_name, (strlen(geocoder_state_name) != 0)?",":"", geocoder_state_name, geocoder_zip_name);
+
+    xastir_snprintf(input,
+        sizeof(input),
+        "%s %s%s%s %s",
+        geocoder_address_name,
+        geocoder_locality_name,
+        (strlen(geocoder_state_name) != 0)?",":"",
+        geocoder_state_name,
+        geocoder_zip_name);
+
     if (geo_find(index,input,strlen(input),&loc)) {
         long coord_lon, coord_lat;
         char lat_str[20];
@@ -183,9 +192,23 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
         lat = (lat * 100) + tmp1;
         lats = (tmp - tmp1) * 100;
 
-        xastir_snprintf(lat_str, sizeof(lat_str), "%d.%02d%c", lat, lats, latd);
+        xastir_snprintf(lat_str,
+            sizeof(lat_str),
+            "%d.%02d%c",
+            lat,
+            lats,
+            latd);
+
         coord_lat = convert_lat_s2l(lat_str);
-        xastir_snprintf(long_str, sizeof(long_str), "%s%d.%02d%c", (lon < 10000)?"0":"", lon, lons, lond);
+
+        xastir_snprintf(long_str,
+            sizeof(long_str),
+            "%s%d.%02d%c",
+            (lon < 10000)?"0":"",
+            lon,
+            lons,
+            lond);
+
         coord_lon = convert_lon_s2l(long_str);
 
         destination_coord_lat = coord_lat;

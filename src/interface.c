@@ -1133,7 +1133,7 @@ void channel_data(int port, unsigned char *string, int length) {
     // debugging purposes.  If we get a segfault, we can print out
     // the last message received.
     xastir_snprintf(incoming_data_copy,
-        MAX_LINE_SIZE,
+        sizeof(incoming_data_copy),
         "Port%d:%s",
         port,
         string);
@@ -1220,11 +1220,17 @@ void channel_data(int port, unsigned char *string, int length) {
                 // Drop other GPS strings on the floor.
                 //
                 if ( (length > 7) && (strncmp(string,"$GPRMC,",7) == 0) ) {
-                    xastir_snprintf(gprmc_save_string,MAX_LINE_SIZE,"%s",string);
+                    xastir_snprintf(gprmc_save_string,
+                        sizeof(gprmc_save_string),
+                        "%s",
+                        string);
                     gps_port_save = port;
                 }
                 else if ( (length > 7) && (strncmp(string,"$GPGGA,",7) == 0) ) {
-                    xastir_snprintf(gpgga_save_string,MAX_LINE_SIZE,"%s",string);
+                    xastir_snprintf(gpgga_save_string,
+                        sizeof(gpgga_save_string),
+                        "%s",
+                        string);
                     gps_port_save = port;
                 }
                 else {
@@ -1771,7 +1777,7 @@ int OpenTrac_decode_entityid(unsigned char *element,
     }
     else {  // Not enough, so use origin_call instead
         xastir_snprintf(entity_call,
-            sizeof(entity_call),
+            10,
             "%s",
             origin_call);
         *entity_ssid = origin_ssid;
@@ -7542,9 +7548,8 @@ unsigned char *select_unproto_path(int port) {
         // interface.
 
         xastir_snprintf(unproto_path_txt,
-                        sizeof(unproto_path_txt),
-                        "WIDE,WIDE2-2");
-
+            sizeof(unproto_path_txt),
+            "WIDE,WIDE2-2");
     }
 
     // Increment the path number for the next round of
@@ -7630,7 +7635,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
             case DEVICE_NET_STREAM:
 
-                xastir_snprintf(output_net, sizeof(output_net), "%s>%s,TCPIP*:", my_callsign, VERSIONFRM);
+                xastir_snprintf(output_net,
+                    sizeof(output_net),
+                    "%s>%s,TCPIP*:",
+                    my_callsign,
+                    VERSIONFRM);
                 break;
 
             case DEVICE_SERIAL_TNC_HSP_GPS:
@@ -7650,7 +7659,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 output_net[0] = '\0';
 
                 /* Set my call sign */
-                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s\r", '\3', "MYCALL", my_callsign);
+                xastir_snprintf(header_txt,
+                    sizeof(header_txt),
+                    "%c%s %s\r",
+                    '\3',
+                    "MYCALL",
+                    my_callsign);
 
                 // Send the callsign out to the TNC only if the interface is up and tx is enabled???
                 // We don't set it this way for KISS TNC interfaces.
@@ -7747,7 +7761,13 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     my_last_speed,  // In knots
                     my_phg));
         else { /* standard non compressed mode */
-            xastir_snprintf(my_pos, sizeof(my_pos), "%s%c%s%c", my_output_lat, my_group, my_output_long, my_symbol);
+            xastir_snprintf(my_pos,
+                sizeof(my_pos),
+                "%s%c%s%c",
+                my_output_lat,
+                my_group,
+                my_output_long,
+                my_symbol);
             /* get PHG, if used for output */
             if (strlen(my_phg) >= 6)
                 xastir_snprintf(output_phg,
@@ -7764,7 +7784,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
             /* get altitude */
             if (my_last_altitude_time > 0)
-                xastir_snprintf(output_alt, sizeof(output_alt), "A=%06ld/", my_last_altitude);
+                xastir_snprintf(output_alt,
+                    sizeof(output_alt),
+                    "A=%06ld/",
+                     my_last_altitude);
         }
 
 
@@ -7779,14 +7802,17 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
                 day_time = localtime(&sec);
 
-                xastir_snprintf(data_txt, sizeof(data_txt), "%s@%02d%02d%02d/%s%s%s%s%s\r",
-                        output_net, day_time->tm_mday, day_time->tm_hour,
-                        day_time->tm_min, my_pos, output_cs, output_brk,
-                        output_alt, my_comment);
-                xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                        "@%02d%02d%02d/%s%s%s%s%s\r", day_time->tm_mday,
-                        day_time->tm_hour, day_time->tm_min,
-                        my_pos,output_cs, output_brk,output_alt, my_comment);
+                xastir_snprintf(data_txt,
+                    sizeof(data_txt),
+                    "%s@%02d%02d%02d/%s%s%s%s%s\r",
+                    output_net, day_time->tm_mday, day_time->tm_hour,
+                    day_time->tm_min, my_pos, output_cs, output_brk,
+                    output_alt, my_comment);
+                xastir_snprintf(data_txt_save,
+                    sizeof(data_txt_save),
+                    "@%02d%02d%02d/%s%s%s%s%s\r", day_time->tm_mday,
+                    day_time->tm_hour, day_time->tm_min,
+                    my_pos,output_cs, output_brk,output_alt, my_comment);
                 break;
 
             case(2):
@@ -7798,15 +7824,17 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
                 day_time = gmtime(&sec);
 
-                xastir_snprintf(data_txt, sizeof(data_txt),
-                        "%s@%02d%02d%02dz%s%s%s%s%s\r", output_net,
-                        day_time->tm_mday, day_time->tm_hour,
-                        day_time->tm_min,my_pos, output_cs,
-                        output_brk, output_alt, my_comment);
-                xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                        "@%02d%02d%02dz%s%s%s%s%s\r", day_time->tm_mday,
-                        day_time->tm_hour, day_time->tm_min,my_pos,
-                        output_cs, output_brk, output_alt, my_comment);
+                xastir_snprintf(data_txt,
+                    sizeof(data_txt),
+                    "%s@%02d%02d%02dz%s%s%s%s%s\r", output_net,
+                    day_time->tm_mday, day_time->tm_hour,
+                    day_time->tm_min,my_pos, output_cs,
+                    output_brk, output_alt, my_comment);
+                xastir_snprintf(data_txt_save,
+                    sizeof(data_txt_save),
+                    "@%02d%02d%02dz%s%s%s%s%s\r", day_time->tm_mday,
+                    day_time->tm_hour, day_time->tm_min,my_pos,
+                    output_cs, output_brk, output_alt, my_comment);
                 break;
 
             case(3):
@@ -7818,24 +7846,36 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
                 day_time = gmtime(&sec);
 
-                xastir_snprintf(data_txt, sizeof(data_txt), "%s@%02d%02d%02dh%s%s%s%s%s\r",
-                        output_net, day_time->tm_hour, day_time->tm_min,
-                        day_time->tm_sec, my_pos,output_cs, output_brk,
-                        output_alt,my_comment);
-                xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                        "@%02d%02d%02dh%s%s%s%s%s\r", day_time->tm_hour,
-                        day_time->tm_min, day_time->tm_sec, my_pos,output_cs,
-                        output_brk,output_alt,my_comment);
+                xastir_snprintf(data_txt,
+                    sizeof(data_txt),
+                    "%s@%02d%02d%02dh%s%s%s%s%s\r",
+                    output_net, day_time->tm_hour, day_time->tm_min,
+                    day_time->tm_sec, my_pos,output_cs, output_brk,
+                    output_alt,my_comment);
+                xastir_snprintf(data_txt_save,
+                    sizeof(data_txt_save),
+                    "@%02d%02d%02dh%s%s%s%s%s\r", day_time->tm_hour,
+                    day_time->tm_min, day_time->tm_sec, my_pos,output_cs,
+                    output_brk,output_alt,my_comment);
                 break;
 
             case(4):
                 /* APRS position with WX data*/
                 sec = wx_tx_data1(wx_data, sizeof(wx_data));
                 if (sec != 0) {
-                    xastir_snprintf(data_txt, sizeof(data_txt), "%s%c%s%s\r",
-                            output_net, aprs_station_message_type, my_pos,wx_data);
-                    xastir_snprintf(data_txt_save, sizeof(data_txt_save), "%c%s%s\r",
-                            aprs_station_message_type, my_pos, wx_data);
+                    xastir_snprintf(data_txt,
+                        sizeof(data_txt),
+                        "%s%c%s%s\r",
+                        output_net,
+                        aprs_station_message_type,
+                        my_pos,
+                        wx_data);
+                    xastir_snprintf(data_txt_save,
+                        sizeof(data_txt_save),
+                        "%c%s%s\r",
+                        aprs_station_message_type,
+                        my_pos,
+                        wx_data);
                 }
                 else {
                     /* default to APRS FIXED if no wx data */
@@ -7844,12 +7884,25 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                             sizeof(output_brk),
                             "/");
 
-                    xastir_snprintf(data_txt, sizeof(data_txt), "%s%c%s%s%s%s%s\r",
-                            output_net, aprs_station_message_type,
-                            my_pos,output_phg, output_brk, output_alt, my_comment);
-                    xastir_snprintf(data_txt_save, sizeof(data_txt_save), "%c%s%s%s%s%s\r",
-                            aprs_station_message_type, my_pos, output_phg,
-                            output_brk, output_alt, my_comment);
+                    xastir_snprintf(data_txt,
+                        sizeof(data_txt),
+                        "%s%c%s%s%s%s%s\r",
+                        output_net,
+                        aprs_station_message_type,
+                        my_pos,
+                        output_phg,
+                        output_brk,
+                        output_alt,
+                        my_comment);
+                    xastir_snprintf(data_txt_save,
+                        sizeof(data_txt_save),
+                        "%c%s%s%s%s%s\r",
+                        aprs_station_message_type,
+                        my_pos,
+                        output_phg,
+                        output_brk,
+                        output_alt,
+                        my_comment);
                 }
                 break;
 
@@ -7859,12 +7912,23 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 if (sec != 0) {
                     day_time = gmtime(&sec);
 
-                    xastir_snprintf(data_txt, sizeof(data_txt), "%s@%02d%02d%02dz%s%s\r",
-                            output_net, day_time->tm_mday, day_time->tm_hour,
-                            day_time->tm_min, my_pos,wx_data);
-                    xastir_snprintf(data_txt_save, sizeof(data_txt_save),
-                            "@%02d%02d%02dz%s%s\r", day_time->tm_mday,
-                            day_time->tm_hour, day_time->tm_min, my_pos,wx_data);
+                    xastir_snprintf(data_txt,
+                        sizeof(data_txt),
+                        "%s@%02d%02d%02dz%s%s\r",
+                        output_net,
+                        day_time->tm_mday,
+                        day_time->tm_hour,
+                        day_time->tm_min,
+                        my_pos,
+                        wx_data);
+                    xastir_snprintf(data_txt_save,
+                        sizeof(data_txt_save),
+                        "@%02d%02d%02dz%s%s\r",
+                        day_time->tm_mday,
+                        day_time->tm_hour,
+                        day_time->tm_min,
+                        my_pos,
+                        wx_data);
                 } else {
                     /* default to APRS FIXED if no wx data */
                     if((strlen(output_phg) < 6) && (my_last_altitude_time > 0))
@@ -7872,12 +7936,25 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                             sizeof(output_brk),
                             "/");
 
-                    xastir_snprintf(data_txt, sizeof(data_txt), "%s%c%s%s%s%s%s\r",
-                            output_net, aprs_station_message_type, my_pos,output_phg,
-                            output_brk, output_alt, my_comment);
-                    xastir_snprintf(data_txt_save, sizeof(data_txt_save), "%c%s%s%s%s%s\r",
-                            aprs_station_message_type, my_pos, output_phg,
-                            output_brk, output_alt, my_comment);
+                    xastir_snprintf(data_txt,
+                        sizeof(data_txt),
+                        "%s%c%s%s%s%s%s\r",
+                        output_net,
+                        aprs_station_message_type,
+                        my_pos,
+                        output_phg,
+                        output_brk,
+                        output_alt,
+                        my_comment);
+                    xastir_snprintf(data_txt_save,
+                        sizeof(data_txt_save),
+                        "%c%s%s%s%s%s\r",
+                        aprs_station_message_type,
+                        my_pos,
+                        output_phg,
+                        output_brk,
+                        output_alt,
+                        my_comment);
                 }
                 break;
 

@@ -390,7 +390,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
             temp->time = (time_t)sec_now();
 
             xastir_snprintf(temp->data,
-                MAX_TNC_LINE_SIZE+15,
+                sizeof(temp->data),
                 "%s",
                 match_line);
 

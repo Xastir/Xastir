@@ -171,7 +171,7 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
                     (void)signal(SIGALRM, previous_loc);
 
                     // Return net connection time out
-                    xastir_snprintf(ip_addr, 8, "TIMEOUT");
+                    xastir_snprintf(ip_addr, sizeof(ip_addr), "TIMEOUT");
                     (void)write(fp[1],ip_addr,strlen(ip_addr));
 
                     if (debug_level & 1024)
@@ -243,7 +243,7 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
                     }
                     if (ip_found==0) {
                         /* Host not found */
-                        xastir_snprintf(ip_addr, 5, "NOIP");
+                        xastir_snprintf(ip_addr, sizeof(ip_addr), "NOIP");
 
                         if (debug_level & 1024)
                             fprintf(stderr,"Host NO IP");
@@ -252,7 +252,7 @@ char *host_lookup(char *host, char *ip, int ip_size, int time) {
                 }
                 else {
                     /* Host not found */
-                    xastir_snprintf(ip_addr, 7, "NOHOST");
+                    xastir_snprintf(ip_addr, sizeof(ip_addr), "NOHOST");
 
                     if (debug_level & 1024)
                         fprintf(stderr,"NO HOST\n");

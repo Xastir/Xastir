@@ -263,10 +263,17 @@ int decode_gps_rmc( char *data,
     if ( tzp == NULL ) {
         tzp = "";
     }
-    xastir_snprintf(tzn, 512, "TZ=%s", tzp);
+    xastir_snprintf(tzn,
+        sizeof(tzn),
+        "TZ=%s",
+        tzp);
     putenv("TZ=UTC");
     tzset();
-    xastir_snprintf(sampledatime, 15, "%s%s", sampledate, sampletime);
+    xastir_snprintf(sampledatime,
+        sizeof(sampledatime),
+        "%s%s",
+        sampledate,
+        sampletime);
     (void)strptime(sampledatime, "%d%m%y%H%M%S", &stm);
     *stim=mktime(&stm);
     putenv(tzn);
