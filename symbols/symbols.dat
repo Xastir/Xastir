@@ -3220,26 +3220,26 @@ APRS w               Flooding
 #APRS x
 #
 APRS y               Skywarn
-........mmmm........
-......mqqqqqqm......
-.....mqqqqqqqqm.....
-....mqqqqqqqqqqm....
-...mmqqqqqqqqqqmm...
-..mmqjjqqqqqqjjqmm..
-..mmqjjjqqqqjjjqmm..
-.mmqjjjjjqqqjjjjqmm.
-.mmqjjjjjqqqjjjjqmm.
-mmmqjjjjqqqjjjjjqmmm
-mmmqjjjjqqqjjjjjqmmm
-.mmqjjjjjqqjjjjjqmm.
-.mmqjjjjjjqqjjjjqmm.
-..mmqjjjjjqqjjjqmm..
-..mmqjjjjjqqjjjqmm..
-...mmqjjjqqjjjqmm...
-....mqjjjqjjjjqm....
-.....mqjjjqjjqm.....
-......mqqqqqqm......
-........mmmm........
+qqqqqqqqqmmqqqqqqqqq
+qqqqqqqmqqqqmqqqqqqq
+qqqqqmqqqqqqqqmqqqqq
+qqqqmqqqqqqqqqqmqqqq
+qqqmmqqqqqqqqqqmmqqq
+qqmmqqjqqqqqqjqqmmqq
+qmmmqqjjqqqqjjqqmmmq
+qmmqqjjjqqqqjjjqqmmq
+mmmqqjjjqqqqjjjqqmmm
+mmmqqjjjqqqjjjjqqmmm
+mmmqqjjjqqqjjjjqqmmm
+mmmqqjjjjqqjjjjqqmmm
+qmmqqjjjjjqqjjjqqmmq
+qmmmqqjjjjqqjjqqmmmq
+qqmmqqjjjjqqjjqqmmqq
+qqqmmqqjjqqjjqqmmqqq
+qqqqmqqjjqjjjqqmqqqq
+qqqqqmqqqqqqqqmqqqqq
+qqqqqqqmqqqqmqqqqqqq
+qqqqqqqqqmmqqqqqqqqq
 #APRS z
 #
 APRS {
