@@ -50,12 +50,12 @@ PULDNVI007|Alertes météo|A|
 PULDNVI011|Trafic des messages|i|
 PULDNVI013|Durée de fonctionnement|f|
 PULDNVI014|Durée de fonctionnement du logiciel||
-PULDNVI015|GPS Status||
+PULDNVI015|Etat du GPS||
 #
 # Menu "Configure"
 PULDNCF004|Station|S|
 PULDNCF001|Défauts|D|
-PULDNCF003|Timing|T|
+PULDNCF003|Temporisation|T|
 PULDNCF002|Système des coordonnées|C|
 PULDNCF006|Alertes sonores|A|
 PULDNCF007|Parole|P|
@@ -75,7 +75,7 @@ PULDNMP009|Activer remplissage de zones|r|
 PULDNMP007|Activer alertes météo|M|
 PULDNMP005|Couleur de fond|f|
 PULDNMP006|Style du texte de station|S|
-PULDNMP026|Icon Outline Style|O|
+PULDNMP026|Style du contour d'icône|O|
 PULDNMP011|Menu souris|e|
 PULDNMP008|Intensité des cartes|I|
 PULDNMP020|Configurer Tigermap||
@@ -165,7 +165,7 @@ PULDNDP044|Choisir stations||
 PULDNDP028|- Choisir stations fixes||
 PULDNDP029|- Choisir stations mobiles||
 PULDNDP030|- Choisir stations météo||
-PULDNDP053|  - Select CWOP WX Stations||
+PULDNDP053|  - Choisir stations météo CWOP||
 PULDNDP045|Choisir objets/articles||
 PULDNDP026|- Choisir objets/articles météo||
 PULDNDP039|- Choisir objets/articles indicateurs d'eau||#'
@@ -198,10 +198,10 @@ PULDNDP015|Effacer toutes stations!!!|E|
 PULDNDP016|Effacer toutes pistes!!!|f|
 PULDNDP025|Effacer histoire des objets/articles||
 PULDNDP048|Recharger histoire des objets/articles||
-PULDNDP049|Clear All Tactical Calls||
-PULDNDP050|Clear Tactical Call History||
-PULDNDP051|Select Tactical Calls Only||
-PULDNDP052|- Label Trailpoints||
+PULDNDP049|Effacer indicatifs tactiques||
+PULDNDP050|Effacer histoire des indicatifs tactiques||
+PULDNDP051|Choisir seulement les indicatifs tactiques||
+PULDNDP052|- Annoter les points de piste||
 #
 # Units
 PULDNUT001|Activer mesures anglaises||
@@ -224,12 +224,12 @@ PULDNTNT02|Propriétés|P|
 PULDNTNT03|Désactiver transmission: Tout||
 PULDNTNT05|Désactiver transmission: Ma position||
 PULDNTNT06|Désactiver transmission: Objets/Articles||
-PULDNTNT11|Enable Server Port||
+PULDNTNT11|Activer port serveur||
 PULDNTNT01|Transmettre maintenant!|T|
 PULDNTNT07|Extraire piste GPS|F|
 PULDNTNT08|Extraire routes GPS|R|
 PULDNTNT09|Extraire points de cheminement GPS|W|
-PULDNTNT10|Fetch Garmin RINO Waypoints|G|
+PULDNTNT10|Extraire points de cheminement Garmin RINO|G|
 #
 # Menu "Help"
 PULDNHEL01|Information|I|
@@ -265,11 +265,11 @@ POPUPMA024|SVP désactiver CapsLock/NumLock/ScrollLock/autres modificateurs||
 POPUPMA026|Centre & zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
-POPUPMA029|Draw CAD Objects||
-POPUPMA030|Start Draw Mode||
-POPUPMA031|Close Polygon||
-POPUPMA032|Erase All CAD Polygons||
-POPUPMA033|End Draw Mode||
+POPUPMA029|Dessiner objets CAD||
+POPUPMA030|Commencer mode de dessin||
+POPUPMA031|Fermer polygone||
+POPUPMA032|Effacer tout les polygones CAD||
+POPUPMA033|Finir mode de dessin||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -335,7 +335,7 @@ WPUPLSP003|Casse exacte|C|
 WPUPLSP004|Correspondance exacte|E|
 WPUPLSP005|Localiser maintenant!|L|
 WPUPLSP006|Localiser détresse!||
-WPUPLSP007|FCC/RAC Lookup||
+WPUPLSP007|Recherche FCC/RAC||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Configurer défauts||
@@ -380,7 +380,7 @@ WPUPCFTM08|Expiration de point estimé (min)||
 WPUPCFTM09|Délai inter-char port série (ms)||
 WPUPCFTM10|Délai nouvelle piste (min)||
 WPUPCFTM11|Espace nouvelle piste (degrés)||
-WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
+WPUPCFTM12|RINO -> Intervalle d'objets (min), 0 = Désactivé||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configurer système des coordonnées||
@@ -544,8 +544,8 @@ POPUPOB040|Largeur de faisceau - Relèvement||
 POPUPOB041|Antenne omni||
 POPUPOB042|Antenne dirigée||
 POPUPOB043|Inutile||
-POPUPOB044|Adopt Object||
-POPUPOB045|Adopt Item||
+POPUPOB044|Adopter objet||
+POPUPOB045|Adopter article||
 #
 # PopUp "Configure Internet"
 WPUPCFI001|Configurer Internet||
@@ -641,11 +641,11 @@ WPUPMSB003|Indicatif de station:||
 WPUPMSB004|Ident. du groupe:||
 WPUPMSB005|Nouvel indicatif||
 WPUPMSB006|Nouveau groupe||
-WPUPMSB007|Clear Msg History||
+WPUPMSB007|Effacer histoire de messages||
 WPUPMSB008|Message:||
 WPUPMSB009|Transmettre maintenant!||
 WPUPMSB010|Voie:||
-WPUPMSB011|Cancel Pending Msgs||
+WPUPMSB011|Annuler messages en suspens||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||
@@ -679,7 +679,7 @@ WPUPSTI020|%0.1f milles||
 WPUPSTI021|%0.1f km||
 WPUPSTI022|Distance de ma station: %s  Relèvement de ma station: %s||
 WPUPSTI023|Dernière position : ||
-WPUPSTI024|Donnés météo %c:%s||
+WPUPSTI024|Données météo %c:%s||
 WPUPSTI025|Cap des vents: %s° Vitesse: %03d km/h||
 WPUPSTI026|Cap des vents: %s° Vitesse: %s milles/h||
 WPUPSTI027|   Rafales: %03d km/h||
@@ -698,7 +698,7 @@ WPUPSTI039|%0.2f (mm/jour)  ||
 WPUPSTI040|%0.2f (pouces/jour)  ||
 WPUPSTI041|%0.2f (mm/depuis minuit)||
 WPUPSTI042|%0.2f (pouces/depuis minuit)||
-WPUPSTI043|Route des donnés: %s||
+WPUPSTI043|Route des données: %s||
 WPUPSTI044|Commentaire %02d/%02d %02d:%02d : %s||
 WPUPSTI045|Effacer la piste||
 WPUPSTI046|Pluie Totale: ||
@@ -720,11 +720,11 @@ WPUPSTI061|Temp combustible: %s°F   ||
 WPUPSTI062|Humidité combustible: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Charger alerte NWS||
-WPUPSTI065|Tactical Call: %s||
+WPUPSTI065|Indicatif tactique: %s||
 #
 # FCC-RAC Call Look up
-STIFCC0001|Chercher le fichier FCC||
-STIFCC0002|Chercher le fichier RAC||
+STIFCC0001|Recherche base de données FCC||
+STIFCC0002|Recherche base de données RAC||
 STIFCC0003|Nom:||
 STIFCC0004|Adresse:||
 STIFCC0005|Ville:||
