@@ -980,7 +980,10 @@ Getting Data Files for Xastir:
 
       One often comes across shapefiles with data in some other format, such
       as UTM or stateplane projections with units in meters or feet.  You
-      must re-project the shapefile in order to use it in Xastir.
+      must re-project these sorts of shapefiles in order to use them in
+      Xastir.  You must either know what the current format is of the
+      shapefile you wish to reproject, or have the .prj file that some
+      shapefiles come with.
 
       Fortunately, the shapelib-1.2.9 distribution (which you probably
       compiled and installed to enable shapefile maps in Xastir) includes a
@@ -1002,7 +1005,7 @@ Getting Data Files for Xastir:
       new_shp is the name of your new shapefile triad (which doesn't exist
       yet).
 
-      -i="in_params" are the  parameters describing the existing shapefile.
+      -i="in_params" are the parameters describing the existing shapefile.
 
       -o="out_params" are the parameters describing the new shapefile.  We
       want this to be "geographic".
@@ -1027,7 +1030,6 @@ Getting Data Files for Xastir:
       For more detailed documentation, see the shpproj.txt file in the
       "<shapelib source directory>/contrib/doc" directory.
       -----
-
 
     .geo files/online maps & graphics:
 
