@@ -305,9 +305,17 @@ void maps_init(void)
 #endif  // NO_GRAPHICS
 
 
-#ifdef HAVE_LIBSHP
+//#define GDAL_SHAPEFILES
+#ifdef GDAL_SHAPEFILES
+  #ifdef HAVE_LIBGDAL
+    fprintf(stderr,"%10s   ESRI Shapefile Maps (GDAL/OGR library)\n","shp");
+  #endif    // HAVE_LIBGDAL
+#else   // GDAL_SHAPEFILES
+  #ifdef HAVE_LIBSHP
     fprintf(stderr,"%10s   ESRI Shapefile Maps (Shapelib library)\n","shp");
-#endif  // HAVE_LIBSHP
+  #endif  // HAVE_LIBSHP
+#endif  // GDAL_SHAPEFILES
+
 
 #ifdef HAVE_LIBGEOTIFF
     fprintf(stderr,"%10s   USGS DRG Geotiff Topographic Maps (libgeotiff/libproj)\n","tif");
