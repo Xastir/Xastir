@@ -365,6 +365,20 @@ void save_data(void)  {
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
         store_int (fout, "TIGERMAP_TIMEOUT", tigermap_timeout);
+        store_int (fout, "TIGERMAP_SHOW_GRID", tiger_show_grid);
+        store_int (fout, "TIGERMAP_SHOW_COUNTIES", tiger_show_counties);
+        store_int (fout, "TIGERMAP_SHOW_CITIES", tiger_show_cities);
+        store_int (fout, "TIGERMAP_SHOW_PLACES", tiger_show_places);
+        store_int (fout, "TIGERMAP_SHOW_MAJROADS", tiger_show_majroads);
+        store_int (fout, "TIGERMAP_SHOW_STREETS", tiger_show_streets);
+        store_int (fout, "TIGERMAP_SHOW_RAILROAD", tiger_show_railroad);
+        store_int (fout, "TIGERMAP_SHOW_STATES", tiger_show_states);
+        store_int (fout, "TIGERMAP_SHOW_INTERSTATE", tiger_show_interstate);
+        store_int (fout, "TIGERMAP_SHOW_USHWY", tiger_show_ushwy);
+        store_int (fout, "TIGERMAP_SHOW_STATEHWY", tiger_show_statehwy);
+        store_int (fout, "TIGERMAP_SHOW_WATER", tiger_show_water);
+        store_int (fout, "TIGERMAP_SHOW_LAKES", tiger_show_lakes);
+        store_int (fout, "TIGERMAP_SHOW_MISC", tiger_show_misc);
 #endif //HAVE_IMAGEMAGICK
 
         // filter values
@@ -857,6 +871,49 @@ void load_data_or_default(void) {
 #if defined(HAVE_IMAGEMAGICK)
     if (!get_int ("TIGERMAP_TIMEOUT", &tigermap_timeout, 10, 120, 30))
         tigermap_timeout = 30;
+
+    if (!get_int ("TIGERMAP_SHOW_GRID", &tiger_show_grid, 0, 1, 0))
+        tiger_show_grid = 0;
+
+    if (!get_int ("TIGERMAP_SHOW_COUNTIES", &tiger_show_counties, 0, 1, 1))
+        tiger_show_counties = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_CITIES", &tiger_show_cities, 0, 1, 1))
+        tiger_show_cities = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_PLACES", &tiger_show_places, 0, 1, 1))
+        tiger_show_places = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_MAJROADS", &tiger_show_majroads, 0, 1, 1))
+        tiger_show_majroads = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_STREETS", &tiger_show_streets, 0, 1, 0))
+        tiger_show_streets = 0;
+
+    if (!get_int ("TIGERMAP_SHOW_RAILROAD", &tiger_show_railroad, 0, 1, 1))
+        tiger_show_railroad = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_STATES", &tiger_show_states, 0, 1, 0))
+        tiger_show_states = 0;
+
+    if (!get_int ("TIGERMAP_SHOW_INTERSTATE", &tiger_show_interstate, 0, 1, 1))
+        tiger_show_interstate = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_USHWY", &tiger_show_ushwy, 0, 1, 1))
+        tiger_show_ushwy = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_STATEHWY", &tiger_show_statehwy, 0, 1, 1))
+        tiger_show_statehwy = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_WATER", &tiger_show_water, 0, 1, 1))
+        tiger_show_water = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_LAKES", &tiger_show_lakes, 0, 1, 1))
+        tiger_show_lakes = 1;
+
+    if (!get_int ("TIGERMAP_SHOW_MISC", &tiger_show_misc, 0, 1, 1))
+        tiger_show_misc = 1;
+
 #endif //HAVE_IMAGEMAGICK
 
     // filter values
