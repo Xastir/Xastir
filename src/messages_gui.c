@@ -249,7 +249,7 @@ void get_path_data(char *callsign, char *path, int max_length) {
 
 
 // Find a custom path set in a Send Message dialog, using the remote
-// callsign as the key.  If no custom path set sets path to '\0'.
+// callsign as the key.  If no custom path, sets path to '\0'.
 //
 void get_send_message_path(char *callsign, char *path, int path_size) {
     int ii;
