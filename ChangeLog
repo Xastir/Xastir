@@ -1,3 +1,7 @@
+2003-02-24 11:25  jtwilley
+
+	* interface.c: changed timeouts to 100ms from 100us
+
 2003-02-13  kg4ijb@sourceforge.net
 
 	* bootstrap.sh - routine to rebuild autostuff environment
