@@ -2177,7 +2177,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // If we're only planning on updating a single station at this time.
     // The section here draws directly onto the screen instead of a pixmap.
-    if ( single && ok_to_draw_symbol(p_station) ) {
+    if ( !pending_ID_message && single && ok_to_draw_symbol(p_station) ) {
         if (show_amb && p_station->pos_amb)
             draw_ambiguity(p_station->coord_lon, p_station->coord_lat,
                     p_station->pos_amb,temp_sec_heard,XtWindow(da));

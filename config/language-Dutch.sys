@@ -271,7 +271,7 @@ BBARSTA036|HSP vrijmaken, TNC data ophalen..||
 BBARSTA037|GPS tekst gedecodeerd||
 BBARSTA038|Positie verandering bij mijn station||
 BBARSTA039|Indexing %s||
-BBARSTA040|This is Amateur Radio Station %s||
+BBARSTA040|Amateur APRS Station %s||
 BBARSTA041|Waiting for GPS data..||
 #
 # PopUp "View - Incoming Packet Data"

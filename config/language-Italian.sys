@@ -267,7 +267,7 @@ BBARSTA036|Libero AUX, ricezione dati da TNC..||
 BBARSTA037|Dati GPS rilevati||
 BBARSTA038|Posizionare il cambiamento sulla mia stazione||
 BBARSTA039|Indexing %s||
-BBARSTA040|This is Amateur Radio Station %s||
+BBARSTA040|Amateur APRS Station %s||
 BBARSTA041|Waiting for GPS data..||
 #
 #Visualizzazione dati packet

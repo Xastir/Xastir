@@ -452,7 +452,9 @@ int festival_speak_band_opening;
 int festival_speak_new_message_alert;
 int festival_speak_new_message_body;
 int festival_speak_new_weather_alert;
+int festival_speak_ID;
 //#endif
+int ATV_screen_ID;
 
 #ifdef HAVE_IMAGEMAGICK //N0VH
 Widget configure_tiger_dialog = (Widget) NULL;
@@ -604,6 +606,7 @@ GC gc=0;                // Used for drawing maps
 GC gc2=0;               // Used for drawing symbols
 GC gc_tint=0;           // Used for tinting maps & symbols
 GC gc_stipple=0;        // Used for drawing symbols
+GC gc_bigfont=0;
 Pixmap  pixmap;
 Pixmap  pixmap_alerts;
 Pixmap  pixmap_final;
@@ -654,6 +657,8 @@ time_t sec_next_gps;            /* next gps check */
 time_t gps_time;                /* gps delay time */
 time_t POSIT_rate;              // Posit & object/item rate timer
 time_t update_DR_rate;          // How often to call draw_symbols if DR enabled
+time_t remove_ID_message_time;  // Time to get rid of large msg on screen.
+int pending_ID_message = 0;     // Variable turning on/off this function
 
 
 // SmartBeaconing(tm) stuff.  If enabled, POSIT_rate is only used for
@@ -2460,11 +2465,16 @@ void create_image(Widget w) {
     char medium_dashed[2] = {(char)5,(char)5};
     long pos1_lat, pos1_lon, pos2_lat, pos2_lon;
 
+
     //busy_cursor(w);
     busy_cursor(appshell);
 
     if (debug_level & 4)
         printf("Create image start\n");
+
+    // If we're in the middle of ID'ing, wait a bit.
+    if (pending_ID_message)
+        usleep(2000000);
 
     /* First get the various dimensions */
     XtVaGetValues(w,
@@ -2653,11 +2663,16 @@ void refresh_image(Widget w) {
     char medium_dashed[2] = {(char)5,(char)5};
     long pos1_lat, pos1_lon, pos2_lat, pos2_lon;
 
+
     //busy_cursor(w);
     busy_cursor(appshell);
 
     if (debug_level & 4)
         printf("Refresh image start\n");
+
+    // If we're in the middle of ID'ing, wait a bit.
+    if (pending_ID_message)
+        usleep(2000000);
 
     /* First get the various dimensions */
     XtVaGetValues(w,
@@ -2757,6 +2772,10 @@ void refresh_image(Widget w) {
 // pixmap_final, then draws symbols and tracks on top of it.  When
 // done it copies the image to the drawing area, making it visible.
 void redraw_symbols(Widget w) {
+
+    // If we're in the middle of ID'ing, wait a bit.
+    if (pending_ID_message)
+        usleep(2000000);
 
     /* copy over map and alert data to final pixmap */
     if(!wait_to_redraw) {
@@ -2912,10 +2931,13 @@ void statusline(char *status_text,int update) {
 //
 void check_statusline_timeout(void) {
     char status_text[100];
+    int id_interval = (int)(9.5 * 60);
+//    int id_interval = (int)(1 * 5);  // Debug
+
 
     if ( (last_statusline != 0
             && (last_statusline < sec_now() - STATUSLINE_ACTIVE))
-        || (last_id_time < sec_now() - (9 * 60)) ) {
+        || (last_id_time < sec_now() - id_interval) ) {
 
 
         // We save last_id_time and identify for a few seconds if
@@ -2927,6 +2949,11 @@ void check_statusline_timeout(void) {
             my_callsign);
 
         XmTextFieldSetString(text, status_text);
+
+        if (last_id_time < sec_now() - id_interval) {
+            popup_ID_message(langcode("BBARSTA040"),status_text);
+        }
+
         last_statusline = 0;	// now inactive
 
         // Guarantee that the ID text will be viewable for a few
@@ -2937,7 +2964,7 @@ void check_statusline_timeout(void) {
 
         if (last_id_time < (sec_now() - (9 * 60))) {
             //printf("Identifying at nine minutes\n");
-            sleep(1);
+            //sleep(1);
         }
 
         last_id_time = sec_now();
@@ -6137,6 +6164,8 @@ void create_gc(Widget w) {
 
     gc_stipple = XCreateGC(my_display, XtWindow(w), mask, &values);
 
+    gc_bigfont = XCreateGC(my_display, XtWindow(w), mask, &values);
+
     pix =  XCreatePixmap(XtDisplay(w), RootWindowOfScreen(XtScreen(w)), 20, 20, 1);
     values.function = GXcopy;
     gc2 = XCreateGC(XtDisplay(w), pix,GCForeground|GCBackground|GCFunction, &values);
@@ -6738,7 +6767,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             /* check on Redraw requests */
             if (         ( (redraw_on_new_data > 1)
                         || (redraw_on_new_data && (sec_now() > last_redraw + REDRAW_WAIT))
-                        || (sec_now() > next_redraw) )
+                        || (sec_now() > next_redraw)
+                        || (pending_ID_message && (sec_now() > remove_ID_message_time)) )
                     && !wait_to_redraw) {
 
                 int temp_alert_count;
@@ -6747,15 +6777,25 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 // check if alert_redraw_on_update is set and it has been at least xx seconds since
                 // last weather alert redraw.
-                if ( alert_redraw_on_update
-                        && ( sec_now() > ( last_alert_redraw + WX_ALERTS_REFRESH_TIME ) ) ) {
+                if ( (alert_redraw_on_update
+                        && !pending_ID_message
+                        && ( sec_now() > ( last_alert_redraw + WX_ALERTS_REFRESH_TIME ) ))
+                      || (pending_ID_message && (sec_now() > remove_ID_message_time)) ) {
+
+
+                    // If we got here because of the ID_message
+                    // stuff, clear the variable.
+                    if (pending_ID_message && (sec_now() > remove_ID_message_time)) {
+                        pending_ID_message = 0;
+                    }
+
                 //if (alert_redraw_on_update) {
                     //printf("Alert redraw on update: %ld\t%ld\t%ld\n",sec_now(),last_alert_redraw,WX_ALERTS_REFRESH_TIME);
 
-
-                    refresh_image(da);  // Much faster than create_image.
-
-                    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+                    if (!pending_ID_message) {
+                        refresh_image(da);  // Much faster than create_image.
+                        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+                    }
 
                     // Here we use temp_alert_count as a temp holding place for the
                     // count of active alerts. Sound alarm if new alerts are displayed.
@@ -6776,7 +6816,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     last_alert_on_screen = alert_redraw_on_update;
                     alert_redraw_on_update = 0;
                 } else {
-                    redraw_symbols(w);
+                    if (!pending_ID_message)
+                        redraw_symbols(w);
                 }
 
                 redraw_on_new_data = 0;
@@ -6791,8 +6832,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             }
 
             if (show_DR && sec_now() - sec_last_dr_update > update_DR_rate) {
-                redraw_symbols(w);
-                sec_last_dr_update = sec_now();
+                if (!pending_ID_message) {
+                    redraw_symbols(w);
+                    sec_last_dr_update = sec_now();
+                }
             }
 
 

@@ -28,6 +28,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include <Xm/XmAll.h>
 
@@ -36,9 +37,12 @@
 #include "popup.h"
 #include "main.h"
 #include "lang.h"
+#include "rotated.h"
+#include "snprintf.h"
 
 
 static Popup_Window pw[MAX_POPUPS];
+static Popup_Window pwb;
 
 static xastir_mutex popup_message_dialog_lock;
 
@@ -69,6 +73,8 @@ begin_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_mess
 
 end_critical_section(&popup_message_dialog_lock, "popup_gui.c:clear_popup_message_windows" );
 
+    pwb.popup_message_dialog=(Widget)NULL;
+    pwb.popup_message_data=(Widget)NULL;
 }
 
 
@@ -205,6 +211,90 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
             pw[i].sec_opened=sec_now();
         }
     }
+}
+
+
+
+
+
+// Routine which pops up a large message for a few seconds in the
+// middle of the screen, then removes it.
+//
+void popup_ID_message(char *banner, char *message) {
+    char *fontname=
+        //"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1";
+        //"-adobe-helvetica-medium-o-normal--12-120-75-75-p-67-iso8859-1";
+        //"-adobe-helvetica-medium-r-*-*-*-130-*-*-*-*-*-*";
+        //"-*-times-bold-r-*-*-13-*-*-*-*-80-*-*";
+        //"-*-helvetica-bold-r-*-*-14-*-*-*-*-80-*-*";
+        //"-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*";
+        "-*-helvetica-*-*-*-*-*-240-100-100-*-*-*-*";
+        //"-*-fixed-*-r-*-*-*-*-*-*-*-200-*-*";
+    static XFontStruct *font=NULL;
+    float my_rotation = 0.0;
+    int x = (int)(screen_width/10);
+    int y = (int)(screen_height/2);
+
+
+    if (ATV_screen_ID) {
+
+        // Fill the pixmap with grey so that the black ID text will
+        // be seen.
+        (void)XSetForeground(XtDisplay(da),gc,MY_BG_COLOR); // Not a mistake!
+        (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
+        (void)XFillRectangle(XtDisplay(appshell),pixmap_alerts,gc,0,0,screen_width,screen_height);
+
+        /* load font */
+        if(!font)
+            font=(XFontStruct *)XLoadQueryFont (XtDisplay(da), fontname);
+
+        (void)XSetForeground (XtDisplay(da), gc, colors[0x08]);
+
+        //printf("%0.1f\t%s\n",my_rotation,label_text);
+
+        if (       ( (my_rotation < -90.0) && (my_rotation > -270.0) )
+                || ( (my_rotation >  90.0) && (my_rotation <  270.0) ) ) {
+            my_rotation = my_rotation + 180.0;
+            (void)XRotDrawAlignedString(XtDisplay(da),
+                font,
+                my_rotation,
+                pixmap_alerts,
+                gc,
+                x,
+                y,
+                message,
+                BRIGHT);
+        }
+        else {
+            (void)XRotDrawAlignedString(XtDisplay(da),
+                font,
+                my_rotation,
+                pixmap_alerts,
+                gc,
+                x,
+                y,
+                message,
+                BLEFT);
+        }
+
+        // Schedule a screen update in roughly 3 seconds
+        remove_ID_message_time = sec_now() + 3;
+        pending_ID_message = 1;
+
+        // Write it to the screen.  Symbols/tracks will disappear during
+        // this short interval time.
+        (void)XCopyArea(XtDisplay(da),pixmap_alerts,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
+    else {  // ATV Screen ID is not enabled
+        pending_ID_message = 0;
+    }
+
+#ifdef HAVE_FESTIVAL
+    if (ATV_speak_ID) {
+        SayText(message);
+    }
+#endif
+
 }
 
 

@@ -197,6 +197,8 @@ extern double calc_dscale_x(long x, long y);
 
 /* from popup_gui.c */
 extern void popup_message(char *banner, char *message);
+extern void popup_ID_message(char *banner, char *message);
+
 
 /* from view_messages.c */
 extern void all_messages(char from, char *call_sign, char *from_call, char *message);
