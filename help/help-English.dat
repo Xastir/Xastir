@@ -93,7 +93,7 @@ the speed speed that they last reported. The estimated location can be shown
 with any combination of a ghosted icon, a dashed line from the last position,
 or an arc of expected possible distance and angle.
 
-Also very notable are the improvements to the map chooser. Maps can now be
+Also very notable are the improvements to the Map Chooser. Maps can now be
 selected a directory at a time, or individually. And the new map properties
 dialog allows individual control of map layering, map color filling, and
 consideration for auto-maps. Additionally, with extent caching under the hood,
@@ -146,7 +146,7 @@ Weather alerts now use the newer shapefile-format maps.
 Xastir's map support has been improved with enhancements to the shapefile code
 to handle point-type shapefiles. Additionally, speed improvements have been
 made in the ImageMagick graphical map loading, and many color-correction
-features have been added. As mentioned above, the map chooser has been greatly
+features have been added. As mentioned above, the Map Chooser has been greatly
 improved, and weather alerts use shapefile-format maps.
 
 Under the hood, Xastir has had several major improvements:
@@ -546,7 +546,9 @@ HELP-INDEX>Moving the Map and the Options Menu
                     Moving the Map and the Options Menu
 
 Map movement is very simple, ease and quickness of movement is dependent on
-your processor speed and the amount of detail you load.
+your processor speed and the amount of detail you load. Hint: You can
+disable all maps in the maps menu in order to move around quickly, then
+enable maps again.
 
 Zooming:
 Zooming can be accomplished by right clicking on the map (and holding the 
@@ -567,6 +569,9 @@ where you clicked as well.
 
 The map can also be zoomed with the keyboard PageUp/PageDown keys.  The
 zooming in this case keeps the same map center (no centering).
+
+Map Display Bookmarks
+See the help topic "Creating and using Jump Locations"
 
 Panning/Centering:
 The map can be centered at a specific location by choosing center in the
@@ -623,9 +628,10 @@ For the other two, signpost and DF objects, see below.
 
 Objects are retransmitted at the rate specified in File|Configure|Timings.
 "killed" objects are also retransmitted in this manner, until they expire
-from the queue. Objects are persistant across Xastir sessions, and are stored
-in ~/.xastir/config/object.log. This file may be cleared by selecting "Clear
-Object/Item history" from the Stations menu.
+from the queue (which they currently never do!). Objects are persistent
+across Xastir sessions, and are stored in ~/.xastir/config/object.log. This
+file may be cleared by selecting "Clear Object/Item history" from the
+Stations menu.
 
 The Object/Item creation option in the right click menu will bring up a dialog
 with the position of your object filled in based on where you clicked the
@@ -669,11 +675,10 @@ selected the type of object it will become.
 
 = Station Symbol =
 You may select a symbol for the object. Press select to choose graphically,
-or see the symbol table help section for descriptions of each symbol. Note
-that not all of the symbols have been implemented in the graphics chooser yet,
-and some are not per the APRS(tm) spec. Note also that area objects, signpost
-objects, and DF objects have special fixed symbols and therefore can't be
-selected here.
+or see the symbol table help section for descriptions of each symbol.  Note
+also that area objects, signpost objects, and DF objects have special fixed
+symbols and therefore can't be selected here.  Those particular symbols get
+automatically assigned when you change to that type of object.
 
 = Location =
 The location of the object is specified here. If you selected "Create 
@@ -688,8 +693,8 @@ types cannot have a speed or direction, in which case the fields are grey'ed
 out.
 
 = Signpost Text =
-If the object is a signpost object, you may specify the 1 to 3 character
-message that appears on the sign here.  Note that Xastir doesn't display
+If the object is a signpost object, you may specify the 1 to 3 digit
+number that appears on the sign here.  Note that Xastir doesn't display
 signpost objects properly yet.
 
 = Area Object =
@@ -745,8 +750,12 @@ world. "0" in the range field means the entire world. Click the "Change range"
 button to make changes to this field effective. Xastir currently does not
 support sending bulletins. Incoming bulletins will open this dialog
 automatically if you select "pop up new bulletins" in the Configure|Defaults
-dialog.
-
+dialog.  The "View zero-distance bulletins" button enables viewing bulletins
+for which you don't have a range yet (they haven't sent a posit yet, but you
+received a bulletin from them).  If this is unchecked, you must get a position
+from a station, and the station must be within the range selected (or range
+must be set to zero), in order for the bulletin to be viewed.
+ 
 Incoming packet data
 This displays the incoming data on your TNC or internet interface. The radio
 buttons below select if you want to see only TNC data, only internet data, or
@@ -821,24 +830,26 @@ HELP-INDEX>Map Menu and the Map Chooser
 Map Menu:
 
 Map Chooser
-This will present you with a list of map directories and/or files in your map
-directory. Checking the "Expand Dirs" option toggles the expansion of
-directories into individual map files. The properties dialog allows more advanced controls, and is described below. Click on map names to highlight them,
-this will cause them to be displayed when you click the OK button. You may
-select any number of maps. Clicking "Clear" will select no maps, clicking
-"Vector" will select only vector maps. The three topo options will
+This will present you with a list of map directories and/or files in your
+map directory. Checking the "Expand Dirs" option toggles the expansion of
+directories into individual map files. The properties dialog allows more
+advanced controls, and is described below. Click on map names to highlight
+them, this will cause them to be displayed when you click the OK button. You
+may select any number of maps. Clicking "Clear" will select no maps,
+clicking "Vector" will select only vector maps. The three topo options will
 automatically select all GeoTIFF images of the listed size. Clicking the OK
 button will display the selected maps. Cancel will abandon any changes.
 
-  Map Chooser properties
-  Clicking the properties button will bring up a dialog where you can specify
+  Map Chooser Properties
+  Clicking the Properties button will bring up a dialog where you can specify
   the layer in which maps appear. Higher numbers are displayed on top of lower
   numbers. The range may be specified from -99999 to 99999; it is suggested
-  that you space your layering settings widely to allow later insertation of
-  maps. You can specify if a map should be drawn with color fills. This is a
-  per-map setting; the global disable option can override this. You can also
-  disable or enable a map from being considered by the "Auto maps" feature in
-  this dialog.
+  that you space your layering numbers widely to allow later insertion of
+  additional map layers. From this dialog you may specify whether a vector map
+  is drawn with color fills.  This is a per-map setting; the global disable
+  option on the Maps menu can override this. The Filled setting is ignored for
+  raster maps (images). You can also select whether a map is considered by the
+  "Auto maps" feature here.
 
 Enable/Configure Tigermap
 Turning this option on causes Xastir to download the map from the US census
@@ -846,7 +857,7 @@ bureau's online tiger mapping server. The dialog that comes up allows one to
 select which layers are displayed, as well as the brightness of the resulting
 map. This is only available if you have compiled with ImageMagick support.
 Tigermaps are always loaded as the bottom layer; they do not have layering
-settings in the map chooser.
+settings in the Map Chooser.
 
 Map Display Bookmarks
 See the help topic "Creating and using Jump Locations"
@@ -855,13 +866,15 @@ Locate Map Feature
 This option brings up a search dialog where you can search through the labels
 in a GNIS file to find a specific location.  It will center the map on the
 new location if it is found. The "GNIS File:" entry is saved between calls
-and between invocations of Xastir.
+and between invocations of Xastir.  You must put GNIS files into the
+xastir/GNIS directory in order to use this feature.
 
 Coordinate Calc
 This option opens a simple calculator that can convert between coordinate
-systems. This is useful for converting positions to the various formats used by
-different groups of people.
-
+systems. This is useful for converting positions to the various formats used
+by different groups of people. This same calculator can be called up by the
+Calc button on some of the other dialogs. It's useful for entering coordinates
+in other formats.
 
 Disable All Maps
 This option disables the loading of any maps. It is most useful when doing
@@ -872,13 +885,16 @@ Enable Auto Maps
 When enabled, any map found in the map directory (or any directory under it)
 will be displayed if it falls within the current display region. You can add
 any number of directory levels under the main map directory for your maps. Auto
-maps will go through them all and find what map (or part) should be displayed.
-All Maps will be merged into the viewing area. If you have a large quantity
-of maps, very detailed maps or a slower computer this can be quite slow. When
-this option is off, maps selected with the Map Chooser will be displayed.
+maps will go through any that have Auto Maps enabled (in the Map Chooser
+Properties dialog) check them all and find what map (or part) should be
+displayed.  All Maps will be merged into the viewing area. If you have a large
+quantity of maps, very detailed maps or a slower computer this can be quite
+slow. When this option is off, maps selected with the Map Chooser and/or Tiger
+Maps dialog will be displayed.
 
 Auto Maps - disable Raster maps
-This option prevents Auto Maps from loading maps which are graphics.
+This option prevents Auto Maps from loading maps which are graphics (images).
+Only vector maps will be displayed in this case.
 
 Enable Map Grid
 When enabled, this option will display a grid line every 10 degrees.  As you
@@ -886,11 +902,11 @@ zoom in it switches to a 1 degree spacing. The spacing may be manually adjusted
 with the "+" and "-" keys.
 
 Enable Map Levels
-When enabled, this option will try to filter out data when the zoom level shows
-large areas. This does not work will all maps but will work with the maps
-generated from Tiger Line maps at the aprs.rutgers.edu site, and with
-shapefile maps. This does not decrease the loading times of the maps, rather
-it simply reduces screen clutter.
+When enabled, this option will try to filter out data when the zoom level
+shows large areas. This does not work will all maps but will work with the
+maps generated from Tiger Line maps at the aprs.rutgers.edu site, and with
+shapefile maps. This does not decrease the loading times of the maps very
+much, rather it simply reduces screen clutter.
 
 Enable Map Labels
 This option toggles the display of map labels embedded in dosAPRS, winAPRS,
@@ -900,21 +916,32 @@ Enable Area Color Fills
 This option controls the filling of vector maps. In certain cases, you
 may want to eliminate the fill to see maps below the top maps. This is a global
 control, maps may individually have color fill toggled in the properties dialog
-of the map chooser.
+of the Map Chooser.
 
 Enable Weather Alert Counties
 This toggles the display of county warning area maps for severe weather.
 These maps can be obtained and installed according to the directions in the
 README.MAPS file. They are displayed on screen when special weather alert
 messages are received, and expire after a time or can be remotely cancelled.
-The weather alert text can be seen under View|Weather Alerts.
+The weather alert text can be seen under View|Weather Alerts. The
+xastir/Counties directory must be populated with the correct files from NOAA
+and Shapelib support must be compiled into Xastir in order to enable this
+functionality.
 
-Index Maps on startup
+Index New Maps on Startup
 This option controls if the map index file is built on startup. Most users
-should leave this enabled.
+should leave this enabled. If the timestamp of the map file is newer than
+the map index file, the map will be indexed.
 
-Re-index maps
-This option adds any new maps to the max index.
+Index: Add New Maps
+This option adds any new maps to the max index.  Same rules as the above
+Index New Maps feature, but a manual method of invoking it.
+
+Index: Reindex ALL Maps
+This option starts over from scratch, indexing every map it recognizes in the
+maps directory. This is useful if the Add New Maps function is skipping some
+maps, perhaps because of old timestamps on the map files.  This function may
+take quite a while to complete if you have a lot of maps.
 
 Background color
 This option controls the color of the background behind the maps you have
@@ -950,25 +977,24 @@ HELP-INDEX>Map files and WX Counties
 
 Map Types
 Xastir will work with various types of map files. All DosAPRS, Windows/Mac
-APRS(TM) map files are supported. Additionally, Xastir natively supports
-PocketAPRS format maps, GNIS (Geographic Names Information System) labels
-and XPixmap format graphics. Xastir also can be compiled to use external
-libraries to support GeoTIFF topographic maps, and ESRI shapefile maps.
-The graphics handling capability of Xastir can be greatly extended by
-compiling with ImageMagick support, enabling support for many graphic
-formats as maps (see "http://www.imagemagick.org/www/formats.html").
-Xastir supports weather alert maps in the classic dos/winaprs format,
-but support for the new ESRI shapefile format for weather alerts should
-be completed soon.
+APRS(TM) map files are supported, as well as PocketAPRS format maps and GNIS
+(Geographic Names Information System) label files.  Xastir also can be
+compiled to use external libraries to support XPixmap (XPM) images, GeoTIFF
+topographic maps, and ESRI shapefile maps.  The graphics handling capability
+of Xastir can be greatly extended by compiling with ImageMagick support,
+enabling support for many graphic formats as maps (see
+"http://www.imagemagick.org/www/formats.html").  Xastir supports weather
+alert maps in ESRI shapefile format, available from NOAA.
 
 Details of locations to obtain many of the above types of maps are found in
 the file README.MAPS
 
 Map Locations
 Any map file should be stored in the /usr/local/xastir/maps directory on your
-computer. You can create any number of directories under this directory to
-help organize and separate your data. The maps will be listed in
-alphabetical order with their relative path, unless the layering is specified.
+computer. This location may be different on some systems, depending on how
+Xastir was compiled/installed. You can create any number of directories under
+this directory to help organize and separate your data. The maps will be
+loaded in alphanumerical order unless layering is specified.
 
 Hints on installing and organizing maps are found in README.MAPS. 
 Maps in a pixel graphics format actually need a combination of two files,
@@ -979,9 +1005,10 @@ want to save storage space you can use gzip to compress those files
 ("gzip map.xpm" will result in "map.xpm.gz"). Xastir detects this
 automatically during map loading. You can use XView/Gimp/ImageMagick and
 other programs to convert gif, jpg, and tif images into this format if
-you didn't compile with ImageMagick. If you get problems with maps in
-xpm format, please try to load and save the graphics with Gimp first, to
-convert all unknown colournames into the binary representation.
+you don't have support for many image types compiled in (ImageMagick). If
+you have problems with maps in xpm format, try to load and save the
+graphics with Gimp first, to convert all unknown colournames into the
+binary representation.
 
 The geo file is a text data file that will tie the image to a location
 in the world. Here is an example of a geo file that will cover the entire
@@ -1012,7 +1039,8 @@ best accuracy.  The latitude/longitude are specified in decimal degrees.
 IMAGESIZE <pixels horizontally> <pixels vertically>
 This specifies the size of the image in pixels. If this is not set, the image
 will be loaded each map redraw, regardless if it is on screen or not.
-IMAGESIZE is a REQUIRED OPTION in the current code!
+IMAGESIZE is a REQUIRED OPTION if a URL is specified.  For local files, it's
+now an optional parameter.
 
 DATUM <datum>
 This feature is not implemented.
@@ -1062,7 +1090,7 @@ Terraserver satellite photo of the area on screen. Those services are not
 available for every place in the world. Note that using the Terraserver
 maps at any zoom above 256 will probably take a long time to load, won't
 show much detail, and probably won't display correctly. This is a limit
-of the Terraserver, not Xastir.
+of Terraserver, not Xastir.
 
 
 
@@ -1075,7 +1103,7 @@ lines like this (but may contain many other lines):
 1.5.1.3   NORTH BOUNDING COORDINATE:  48.000000
 1.5.1.4   SOUTH BOUNDING COORDINATE:  47.000000
 
-Xastir uses those four lines in it's calculations to determine the corner
+Xastir uses only those four lines in it's calculations to determine the corner
 points of a map, to see whether the map fits in the current viewport (so it
 can decide whether to skip it).  If your map data are USGS topo maps, the .fgd
 file should be readily available to you. If it is not, the mapfgd.pl script
@@ -1085,10 +1113,10 @@ tad bit. An added feature in Xastir is the ability to do datum translations
 from NAD 1927 to WGS 84 datum, which makes the USGS topo maps much more
 positionally accurate on the Xastir screen.
 
-Xastir can use USGS geoTIFF topo maps directly from the CD drive.
-Either manually mount the disk or use automounter to do it for you, and
-make sure you have a symlink created in your maps directory that points
-to where you mounted your CDROM drive.  That's it!
+Xastir can use USGS geoTIFF topo maps directly from the CD drive.  Manually
+mount the disk or use automounter to do it for you, and make sure you have a
+symlink created in your maps directory that points to where you mounted your
+CDROM drive.  That's it!
 
 
 Shapefile maps are also a combination of several files, a .shp file, a .dbf
@@ -1100,12 +1128,14 @@ GNIS (Geographic Names Information System) data is a collection of names of
 locations, or geographic features. These labels behave like map labels in
 Dos/WinAPRS maps.  As you zoom in, more labels will appear, assuming you've
 selected the GNIS file as a map and have enabled Map Labels in the Maps menu.
+If you have some of them in the xastir/GNIS directory, you can also search
+for map labels within Xastir.
 
 
 WX County Maps
 All WX County maps should be stored in the /usr/local/xastir/Counties and
-Xastir only supports the new shapefile standard. Installation is explained in
-README.MAPS.
+Xastir only supports the shapefile standard for these. Installation is
+explained in README.MAPS.  You must have Shapelib compiled in.
 
 As NWS messages are received, different areas will get tinted to designate
 areas of concern.  They are color-coded to specify different types of
@@ -1150,10 +1180,10 @@ This sub-menu allows filtering of the displayed symbols:
    Global toggle for displaying data received via a TNC, but may be narrowed:
 
    Select Direct
-     This option only displays stations heard directly (not digipeted).
+     This option only displays stations heard directly (not digipeated).
 
    Select via Digi
-     This option displays stations heard indirectly via a digipeter.
+     This option displays stations heard indirectly via a digipeater.
 
   Select Net
     This option displays stations with data received via the Internet.
@@ -1205,17 +1235,16 @@ This sub-menu allows filtering of the displayed data:
     they are traveling.
 
   Display Trail
-  When enabled, any moving station will trail a colored line with the last 100+
-  locations.
-
+  When enabled, any moving station will trail a colored line.  We now display
+  as many locations as we have in our database (old limit was 100).
 
   Display Course
   When enabled, green text will appear below the call sign. This will display
-  the last known course (in degrees) the station is traveling.
+  the last known course (in degrees) the station was traveling.
 
   Display Speed
   When on, red text will appear below the call sign (or course). This will
-  display the last known speed the station is traveling. 
+  display the last known speed of the station. 
 
     Display Short Speed
     This option removes display of the measurement units for speed.
@@ -1289,24 +1318,25 @@ This sub-menu allows filtering of the displayed data:
 
 
 Clear All Stations
-This will wipe all the data from the station database except yours.
-This option is useful if you're low on memory.
+This will wipe all the data from the station database except yours.  This
+option is perhaps useful if you're low on memory or just want to unclutter
+your screen.
 
 Clear All Trails
 This will wipe all the line tracking data from the station database and
-refreshes the screen.  This option is useful if you're low on memory
-or just want an uncluttered screen.  You may also clear individual
-station's trails from the Station Info dialog.
+refresh the screen.  This option is perhaps useful if you're low on memory
+or just want an uncluttered screen.  You may also clear individual station's
+trails from the Station Info dialog.
 
 Reload Object/Item History
 This will reload the ~/.xastir/config/objects.log file used for Object and Item
-persistance. This is needed if you edit the file while Xastir is running.
+persistence. This is needed if you edit the file while Xastir is running.
 
 Clear Object/Item History
 This will clear the ~/.xastir/config/objects.log file used for Object and Item
-persistance. It is recommended that you delete all Objects and Items that you
-own before doing this, otherwise they may remain on the screens of other APRS
-users.
+persistence. It is recommended that you manually select and delete all Objects
+and Items that you own before doing this, otherwise they may remain on the
+screens of other APRS users.
 
 HELP-INDEX>Messages and the Messages menu
 
@@ -1346,10 +1376,15 @@ displayed. You can also use this button to change the call of the station
 you're talking with. Enter the new call and click the button. The "Clear
 Messages" button will clear any message displayed in the message window.
 
-Messages in reply to previous ones will attempt to use the path of the received
-message to avoid flooding the system with broadcast messages. You may adjust
-the path in the send message dialog, or the default path(s) set in the
-interface properties will be used if you leave this blank.
+Messages in reply to previous ones will attempt to use the path of the
+received message to avoid flooding the system with broadcast messages. You
+may adjust the path in the send message dialog, or the default path(s) set
+in the interface properties will be used if you leave this blank.  The path
+can be set for each message sent, but once a message is sent the path
+remains fixed for that particular message.
+
+Each outgoing message remains highlighted until it is ack'ed by the remote
+station.
 
 Clear all outgoing messages
 This will clear all un-acked messages you have sent.
@@ -1485,7 +1520,9 @@ HELP-INDEX>Creating a log
                               Creating a log
 
 Xastir can log data from the internet or TNC for later playback, or for
-debugging purposes.
+debugging purposes.  WARNING: Logging can fill up your hard drive, so be
+careful using it, or make preparations for rolling over the log files
+automatically via cron.
 
 All these choices are accessible via the File menu:
 
@@ -1592,6 +1629,8 @@ Networked GPS (via gpsd)
 Networked WX
 Serial TNC w/GPS on AUX port
 Serial KISS TNC
+Networked Database (Not Implemented Yet)
+Networked AGWPE
 
 To add a device, click on the add button. A "Choose Interface Type" box will
 appear. Click on the type of device you would like to add. Then click the Add
@@ -1893,9 +1932,23 @@ Now set the Rain Gauge correction factor. Xastir requires that the rain gauge
 report in .01 inch increments. If the unit reports in .1 inch or .1 millimeter
 increments, a correction must be specified to obtain accurate measurements.
 
+                   Configure an AGWPE Connection
+
+Xastir can use an AGWPE network interface running on a Windows box
+as a TNC interface. It cannot currently do the login/password
+security that AGWPE has built-in, so you must set up the AGWPE
+security appropriately to allow Xastir to connect.
+
+The other options are described in the sections for Serial TNC and for
+Network interfaces.
+
+
 HELP-INDEX>Printing
 
                        Printing the Map Screen
+
+Note: Printing has not been set up on Windows/Cygwin.  These instructions
+are for Unix and Unix-like operating systems.
 
 Xastir can print the drawing area in either black & white or color.  It does
 this by first dumping the image to an XPixmap file on disk, then using external
@@ -1919,15 +1972,17 @@ Xastir has the capability to create automatic snapshots of the map screen
 on a recurring basis.  This time period is currently set at once per five
 minutes.  Assuming that you have "convert" from the ImageMagick tools
 installed, Xastir will create an XPM format file in /var/tmp, then convert
-it to the PNG file /var/tmp/xastir_snap.png.  This file is useful for putting
-on web pages to show a live image of what is on your Xastir screen.  Enable
-this feature via the "File->Enable PNG Snapshots" togglebutton.
+it to the PNG file /var/tmp/xastir_snap.png.  This file is useful for
+embedding in web pages to show a "live" image of what is on your Xastir
+screen.  Enable this feature via the "File->Enable PNG Snapshots"
+togglebutton.  The rate is once every five minutes, or every time the
+button is toggled from off to on.
 
 HELP-INDEX>Included Scripts
 
                         Included Scripts
 
-Xastir includes 7 perl scripts and a shell script that may be useful:
+Xastir includes several perl scripts and a shell script that may be useful:
 
 fcc-get
 This shell script automates retrieving and installing the FCC and the RAC
@@ -1941,7 +1996,7 @@ Output is to STDOUT, so a typical call would be "icontable.pl > symbols.xpm".
 
 inf2geo.pl
 This script creates .geo files from UI-View .inf files. To create a map.geo
-from a map.inf, typical usage would be "inf2geo map".
+from a map.inf, typical usage would be "inf2geo.pl map".
 
 mapblast2geo.pl
 This script creates .geo files for Mapblast pixel maps. It includes usage
@@ -1951,7 +2006,7 @@ mapfgd.pl
 This script creates minimal .fgd files for GeoTIFF images lacking them, based
 on information found in the GeoTIFF file. The created files allow Xastir to
 crop the white borders and rotate/scale the map properly. Typical usage would
-be "mapfgd mapdir" where mapdir is the directory containing the GeoTIFF
+be "mapfgd.pl mapdir" where mapdir is the directory containing the GeoTIFF
 images.
 
 track-get.pl
@@ -1970,8 +2025,8 @@ file to contain all the strings of another. It is usually used to regenerate
 the non-English language files when significant changes have been made to the
 English file. When the second language file lacks a string in the main file,
 the untranslated string is inserted. Typical usage would be 
-"update_langfile language-German.sys" . The main language file is hard-coded
-but easily editable.
+"update_langfile.pl language-German.sys" . The main language file is
+hard-coded but easily editable.
 
 HELP-INDEX>Symbol Table
 
