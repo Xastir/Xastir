@@ -200,6 +200,7 @@ features, you can add any of the following flags to configure:
     --without-pcre
     --without-dbfawk
     --with-errorpopups
+    --with-rtree
 
 For example, "./configure --without-ax25" will disable the AX.25
 networking code in Xastir.
@@ -685,6 +686,17 @@ First Time Install:
 
      You'll need the "pcre" package installed in order to compile in
      dbfawk support.
+
+     To enable spatial indexing of shapefiles you can also add "--with-rtree" 
+     to your configure command line.  Using spatial indices can speed up access
+     of shapefiles that cover large areas if you're only viewing a smaller
+     area, but at the cost of some additional RAM to store the spatial
+     index.  This feature is still in the experimental phase, but some users
+     have observed a noticable speed-up in map redraws, especially
+     with very large shapefiles.  The spatial indexing library used is based
+     on public domain code obtained from Melinda Green,
+     http://www.superliminal.com, but this code is included in xastir
+     so you don't need to download anything to use it.
 
      If you see some errors, they might be because you are missing
      GNU msgfmt or GNU gettext/xgettext?  These packages are required
