@@ -139,7 +139,8 @@ void map_gdal_init() {
 
     GDALDriverH  gDriver;   // GDAL driver
     OGRSFDriverH oDriver;   // OGR driver
-    int ii, jj;
+    int ii;
+    int jj;
 
 
     // Register all known GDAL drivers
@@ -152,29 +153,74 @@ void map_gdal_init() {
     //
     ii = GDALGetDriverCount();
 
-    fprintf(stderr,"\nGDAL Registered Drivers: (not implemented yet)\n");
+//    fprintf(stderr,"  GDAL Registered Drivers:\n");
     for (jj = 0; jj < ii; jj++) {
         gDriver = GDALGetDriver(jj);
-        fprintf(stderr,"%10s   %s\n",
-            GDALGetDriverShortName(gDriver),
-            GDALGetDriverLongName(gDriver) );
+//        fprintf(stderr,"%10s   %s\n",
+//            GDALGetDriverShortName(gDriver),
+//            GDALGetDriverLongName(gDriver) );
     }
-    fprintf(stderr,"\n");
+//    fprintf(stderr,"             (none)\n");
 
 
     // Print out each supported OGR driver
     //
     ii = OGRGetDriverCount();
 
-    fprintf(stderr,"OGR Registered Drivers: (not implemented yet)\n");
+//    fprintf(stderr,"  OGR Registered Drivers:\n");
+
     for  (jj = 0; jj < ii; jj++) {
+        char *drv_name;
+
+
         oDriver = OGRGetDriver(jj);
-        fprintf(stderr,"%10s   %s\n",
-            "",
-            OGR_Dr_GetName(oDriver) );
+        drv_name = (char *)OGR_Dr_GetName(oDriver);
+
+        if (strstr(drv_name,"Shapefile")) {
+#ifdef GDAL_SHAPEFILES
+            fprintf(stderr,"       shp   ESRI Shapefile (via GDAL)\n");
+#endif  // GDAL_SHAPEFILES
+        }
+        else if (strstr(drv_name,"NTF")) {
+            // Not enabled in Xastir yet
+        }
+        else if (strstr(drv_name,"SDTS")) {
+            fprintf(stderr,"       ddf   Spatial Data Transfer Standard (SDTS)\n");
+        }
+        else if (strstr(drv_name,"TIGER")) {
+            fprintf(stderr,"       rt1   US Census Bureau TIGER/Line\n");
+        }
+        else if (strstr(drv_name,"S57")) {
+            fprintf(stderr,"       s57   International Hydrographic Organization (IHO) S-57\n");
+        }
+        else if (strstr(drv_name,"MapInfo")) {
+            fprintf(stderr,"       tab   MapInfo TAB\n");
+            fprintf(stderr,"       mid   MapInfo MID\n");
+            fprintf(stderr,"       mif   MapInfo MIF\n");
+        }
+        else if (strstr(drv_name,"DGN")) {
+            fprintf(stderr,"       dgn   MicroStation DGN\n");
+        }
+        else if (strstr(drv_name,"VRT")) {
+            // Not enabled in Xastir yet
+        }
+        else if (strstr(drv_name,"AVCBin")) {
+            // Not enabled in Xastir yet
+        }
+        else if (strstr(drv_name,"REC")) {
+            // Not enabled in Xastir yet
+        }
+        else if (strstr(drv_name,"Memory")) {
+            // Not enabled in Xastir yet
+        }
+        else if (strstr(drv_name,"GML")) {
+            // Not enabled in Xastir yet
+        }
+        else if (strstr(drv_name,"PostgreSQL")) {
+            // Not enabled in Xastir yet
+        }
     }
     fprintf(stderr,"\n");
-
 
 #endif  // HAVE_LIBGDAL
 
