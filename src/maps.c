@@ -98,7 +98,6 @@
 #endif
 
 
-//WE7U4
 // Print options
 Widget print_properties_dialog = (Widget)NULL;
 static xastir_mutex print_properties_dialog_lock;
@@ -930,7 +929,6 @@ void draw_label_text (Widget w, int x, int y, int label_length, int color, char 
 
 
 
-//WE7U6
 /**********************************************************
  * draw_rotated_label_text()
  *
@@ -1618,7 +1616,6 @@ void draw_shapefile_map (Widget w,
         if (object == NULL)
             continue;   // Skip this iteration, go on to the next
 
-//WE7U
         // Fill in the boundary variables in the alert record.  We use
         // this info in load_alert_maps() to determine which alerts are
         // within our view, without having to open up the shapefiles to
@@ -1699,7 +1696,10 @@ void draw_shapefile_map (Widget w,
                         }
                     }
 
-                    index = 0;
+                    index = 0;  // Index into our own points array.
+                                // Tells how many points we've
+                                // collected so far.
+
                     // Read the vertices for each line
                     for (ring = 0; ring < object->nVertices; ring++ ) {
                         ok = 1;
@@ -1725,6 +1725,11 @@ void draw_shapefile_map (Widget w,
                             //printf("%d %d\t", points[index].x, points[index].y);
                             index++;
                         }
+
+                        if (index >= MAX_MAP_POINTS) {
+                            index = MAX_MAP_POINTS - 1;
+                            printf("Trying to overrun the points array: SHPT_ARC\n");
+                        }
                     }
 
                     if (road_flag) {
@@ -1748,7 +1753,11 @@ void draw_shapefile_map (Widget w,
 
                 case SHPT_POLYGON:
 
-                   // Read the vertices for each ring
+                    // Each polygon can be made up of multiple
+                    // rings, and each ring has multiple points that
+                    // define it.
+
+                    // Read the vertices for each ring
                     for (ring = 0; ring < object->nParts; ring++ ) {
                         int endpoint;
 
@@ -1763,7 +1772,8 @@ void draw_shapefile_map (Widget w,
                         //printf("Endpoint %d\n", endpoint);
                         //printf("Vertices: %d\n", endpoint - object->panPartStart[ring]);
 
-                        i = 0;  // Number of points to draw
+                        i = 0;  // i = Number of points to draw for one ring
+                        // index = ptr into the shapefile's array of points
                         for (index = object->panPartStart[ring]; index < endpoint; ) {
                             ok = 1;
 
@@ -1789,38 +1799,25 @@ void draw_shapefile_map (Widget w,
                             if (y >  15000l) y =  15000l;
                             if (y < -15000l) y = -15000l;
 
-                            if ((x > 16000l) || (x < -16000l) || (y > 16000l) || (y < -16000l)) {
-                                ok = 0;
-                                //printf("Out of range for XFillPolygon()... Not drawing ring %d\n", ring);
-                                //printf("x: %ld\t\ty: %ld\n", x, y);
-                                index++;
-                                break;
-                            }
-
                             points[i].x = (short)x;
                             points[i].y = (short)y;
+                            i++;    // Number of points to draw
 
+                            if (i >= MAX_MAP_POINTS) {
+                                i = MAX_MAP_POINTS - 1;
+                                printf("Trying to run past the end of our internal points array: i\n");
+                            }
 
                             //printf("%d %d\t", points[i].x, points[i].y);
 
-                            if (       (x < -16383)
-                                    || (x > 16383)
-                                    || (y < -16383)
-                                    || (y > 16383) ) {
-                                //printf("Out of Range\n");
-                            } else {
-                                //printf("\n");
-                            }
-
-
-// WE7U:  We have a problem with the index variable going out of
-// range and causing segfaults.  Xastir overruns other variables
-// first.
                             index++;
 
-
-                            i++;    // Number of points to draw
+                            if (index > endpoint) {
+                                index = endpoint;
+                                printf("Trying to run past the end of shapefile array: index\n");
+                            }
                         }
+
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
                             if (lake_flag) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // SteelBlue
@@ -1932,7 +1929,6 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties_des
 
 
 
-//WE7U4
 // Print_window:  Prints the drawing area to a Postscript file.
 //
 void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
@@ -2233,7 +2229,6 @@ void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callDa
 
 
 
-//WE7U4
 // Print_properties:  Prints the drawing area to a PostScript file
 //
 // Perhaps later:
@@ -2654,7 +2649,6 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 
 
 
-//WE7U4
 // Create png image (for use in web browsers??).  Requires that "convert"
 // from the ImageMagick package be installed on the system.
 //
@@ -2732,7 +2726,6 @@ void Snapshot(void) {
 
 
 
-//WE7U5
 // draw_gnis_map()
 //
 // Allows drawing a background map of labels for the viewport.
@@ -3258,7 +3251,6 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
 
 
 
-//WE7U5
 // Search for a placename among GNIS files
 //
 // We need to search a file in the map directory that has the filename
@@ -3765,7 +3757,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     else 
         map_proj = 0;           // Lat/Lon, default
     
-//WE7U
 #ifdef HAVE_IMAGEMAGICK
     if (tiger_flag || findu_flag) {  // Must generate our own calibration data for some maps
 
@@ -4165,7 +4156,6 @@ if (findu_flag) {
            printf ("Attempting to open: %s\n", image_info->filename);
     }
 
-//WE7U
     // We do a test read first to see if the file exists, so we
     // don't kill Xastir in the ReadImage routine.
     f = fopen (image_info->filename, "r");
@@ -8056,7 +8046,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 // Take out the "static" and we get a segfault when we zoom out too
 // far with the lakes or counties shapefile loaded.  No idea why
 // yet.  --we7u
-static alert_entry alert[MAX_ALERT];
+//static alert_entry alert[MAX_ALERT];
 static int alert_count;
 
 
