@@ -2846,8 +2846,14 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                         printf("Close a Serial TNC w/AUX GPS\n");
                     begin_critical_section(&devices_lock,
                         "interface.c:del_device");
+
+begin_critical_section(&devices_lock, "interface.c:del_device" );
+
                     sprintf(temp, "config/%s", devices[port].tnc_down_file);
-                        end_critical_section(&devices_lock,
+
+end_critical_section(&devices_lock, "interface.c:del_device" );
+
+                       end_critical_section(&devices_lock,
                         "interface.c:del_device");
                     (void)command_file_to_tnc_port(port,
                         get_data_base_dir(temp));
@@ -3187,12 +3193,25 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (ok == 1) {
+
+begin_critical_section(&devices_lock, "interface.c:add_device" );
+
                         xastir_snprintf(temp, sizeof(temp), "config/%s", devices[port_avail].tnc_up_file);
+
+end_critical_section(&devices_lock, "interface.c:add_device" );
+
                         (void)command_file_to_tnc_port(port_avail,get_data_base_dir(temp));
                     }
                     break;
 
                 case DEVICE_SERIAL_KISS_TNC:
+                    // Send the KISS parameters to the TNC
+                    send_kiss_config(port_avail,0,0x01,atoi(devices[port_avail].txdelay));
+                    send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
+                    send_kiss_config(port_avail,0,0x03,atoi(devices[port_avail].slottime));
+                    send_kiss_config(port_avail,0,0x05,atoi(devices[port_avail].fullduplex));
+                    break;
+
                 default:
                     break;
             }
