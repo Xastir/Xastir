@@ -439,16 +439,18 @@ maps/images and has the ability to tile smaller maps into a larger
 contiguous map of an area:
 
 For geoTIFF support (such as USGS DRG topo maps) you need:
+
     libproj:
         http://www.remotesensing.org/proj/
      and for datum translations:
         ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
+
     libgeotiff:
         http://www.remotesensing.org/geotiff/geotiff.html
         ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.2.0.tar.gz
 
-    Please note that the order of installation for these libraries is
-    critical.  Follow the instructions below carefully.
+Please note that the order of installation for these libraries is
+critical.  Follow the instructions below carefully.
 
 
 
