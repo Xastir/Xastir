@@ -91,7 +91,7 @@ void delete_FT_Info(FT_Info *info);
 /*****************************************************************/
 
 /* If called with NULL will attempt to access using defaults */
-void festivalOpen();
+int festivalOpen();
 void festivalStringToWave(char *text);
 int festivalClose();
 
