@@ -10790,7 +10790,15 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             && (strcasecmp(ext,"tif" ) != 0)
             && (strcasecmp(ext,"geo" ) != 0)
             && (strcasecmp(ext,"gnis") != 0) ) {
-        fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
+
+        // Check whether we're indexing or drawing the map
+        if ( (destination_pixmap != INDEX_CHECK_TIMESTAMPS)
+                && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
+            // We're drawing, not indexing.  Output a warning
+            // message.
+            fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
+        }
+
         return;
     }
 
@@ -11732,8 +11740,12 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
     }
 
 
-    // Couldn't figure out the map type
-    else {
+    // Couldn't figure out the map type.  Check whether we're
+    // indexing or drawing the map.
+    else if ( (destination_pixmap != INDEX_CHECK_TIMESTAMPS)
+            && (destination_pixmap != INDEX_NO_TIMESTAMPS) ) {
+        // We're drawing, not indexing.  Output a warning
+        // message.
         fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
     }
 
