@@ -58,6 +58,7 @@ done
 
 # brutal!
 # check for sed maybe?
+if test "$ac_cv_prog_ac_ct_CC" = "gcc"; then
 gcc --help | sed -e "/^[^ ]/d" -e "/^ [^ ]/d" -e "/^  [^-]/d" -e "s/  //" -e "s/ .*//" > gccflags
 
 # I need a test for -Wno-return-type and -DFUNCPROTO=15
@@ -67,11 +68,21 @@ for f in -no-cpp-precomp -pipe; do
 grep -- $f gccflags > /dev/null && CFLAGS="$CFLAGS $f"
 done
 
+# delete temporary file
+rm -f gccflags
+
+# add any other flags that aren't added earlier
+for f in -Wall; do
+echo $CFLAGS | grep -- $f - > /dev/null || CFLAGS="$CFLAGS $f"
+done
+
+# end gcc-specific checks
+fi
+
 # add any pthread flags now
 CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
 
 AC_MSG_RESULT(using $CFLAGS)
-rm -f gccflags
 ])
 
 # set XASTIR_SYSTEM
