@@ -92,7 +92,6 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
     int w,prec;
 
     fi = calloc(1,sizeof(dbfawk_field_info));
- 
     if (!fi)
         return NULL;
     if (prev) {

@@ -1255,6 +1255,11 @@ void draw_shapefile_map (Widget w,
 
 #ifdef WITH_DBFAWK
         dbfawk_free_info(fld_info);
+        if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+            if (sig_info->prog != NULL)
+                awk_free_program(sig_info->prog);
+            free(sig_info);
+        }
 #endif
 
         return;
@@ -1283,6 +1288,11 @@ void draw_shapefile_map (Widget w,
 
 #ifdef WITH_DBFAWK
         dbfawk_free_info(fld_info);
+        if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+            if (sig_info->prog != NULL)
+                awk_free_program(sig_info->prog);
+            free(sig_info);
+        }
 #endif
 
         return; // Done indexing this file
@@ -1313,7 +1323,12 @@ void draw_shapefile_map (Widget w,
             SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
-        dbfawk_free_info(fld_info);
+            dbfawk_free_info(fld_info);
+            if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+                if (sig_info->prog != NULL)
+                    awk_free_program(sig_info->prog);
+                free(sig_info);
+            }
 #endif
 
             return; // Multipoint type.  Not implemented yet.
@@ -1324,7 +1339,12 @@ void draw_shapefile_map (Widget w,
             SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
-        dbfawk_free_info(fld_info);
+            dbfawk_free_info(fld_info);
+            if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+                if (sig_info->prog != NULL)
+                    awk_free_program(sig_info->prog);
+                free(sig_info);
+            }
 #endif
 
             return; // Unknown type.  Don't know how to process it.
@@ -1357,6 +1377,11 @@ void draw_shapefile_map (Widget w,
 
 #ifdef WITH_DBFAWK
         dbfawk_free_info(fld_info);
+        if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+            if (sig_info->prog != NULL)
+                awk_free_program(sig_info->prog);
+            free(sig_info);
+        }
 #endif
 
         return;     // The file contains no shapes in our viewport
@@ -1488,6 +1513,11 @@ void draw_shapefile_map (Widget w,
 
 #ifdef WITH_DBFAWK
         dbfawk_free_info(fld_info);
+        if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
+            if (sig_info->prog != NULL)
+                awk_free_program(sig_info->prog);
+            free(sig_info);
+        }
 #endif
 
         return;
@@ -3572,8 +3602,7 @@ if (on_screen) {
 
 #ifdef WITH_DBFAWK
     dbfawk_free_info(fld_info);
-    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL))
-    {
+    if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
         if (sig_info->prog != NULL)
             awk_free_program(sig_info->prog);
         free(sig_info);
