@@ -1232,10 +1232,15 @@ WINDOWS/CYGWIN NOTES:
             XFree86/XFree86-prog
 
      So far "wget" from the Cygwin distribution doesn't appear to work.  CVS
-     has been tested on Cygwin and it works!  Extra map libraries such as
-     ImageMagick, Shapelib, libgeotiff, libproj have not been tested yet
-     under Cygwin.  Anyone doing so is encouraged to share their findings
-     with the Xastir mailing lists.
+     has been tested on Cygwin and it appears to work, although strangely
+     enough the "CVS/" directories did not get created, so the bookkeeping
+     info that CVS needs in order to do quick updates is missing.  Other
+     than that little problem, it appears to work.
+
+     Some map libraries (ImageMagick, Shapelib) have been tested (see
+     below), while libgeotiff, libproj have not been tested yet under
+     Cygwin.  Anyone doing so is encouraged to share their findings with the
+     Xastir mailing lists.
 
      As far as what Xastir paths look like from within Windows (in case
      you're moving maps around with Explorer):  Just prefix them all with
