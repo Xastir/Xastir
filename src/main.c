@@ -9427,7 +9427,7 @@ void check_pointer_position(void) {
                         return;
                     }
 
-                    (void)XSetLineAttributes(XtDisplay(da), gc_tint, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetLineAttributes(XtDisplay(da), gc_tint, 1, LineSolid, CapButt,JoinMiter);
                     (void)XSetForeground(XtDisplay(da), gc_tint, colors[(int)0x0e]); // yellow
                     (void)XSetFunction(XtDisplay(da), gc_tint, GXxor);
  
