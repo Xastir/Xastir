@@ -5160,16 +5160,16 @@ void index_save_to_file() {
             // comma-delimited line
             xastir_snprintf(out_string,
                 sizeof(out_string),
-                "%010lu,%010lu,%010lu,%010lu,%05d,%05d,%05d,%01d,%01d,%s\n",
+                "%010lu,%010lu,%010lu,%010lu,%05d,%01d,%01d,%05d,%05d,%s\n",
                 current->bottom,
                 current->top,
                 current->left,
                 current->right,
-                current->max_zoom,
-                current->min_zoom,
                 current->map_layer,
                 current->draw_filled,
                 current->auto_maps,
+                current->max_zoom,
+                current->min_zoom,
                 current->filename);
 
             if (fprintf(f,"%s",out_string) < (int)strlen(out_string)) {
@@ -5464,11 +5464,17 @@ static void index_sort(void) {
 // map_index_head pointer.  The memory linked list keeps the same
 // order as the entries in the file.
 //
+// NOTE:  If we're converting from the old format to the new, we
+// need to call index_save_to_file() in order to write out the new
+// format once we're done.
+//
 void index_restore_from_file(void) {
     FILE *f;
     map_index_record *temp_record;
     map_index_record *last_record;
     char in_string[MAX_FILENAME*2];
+    int doing_migration = 0;
+
 
 //fprintf(stderr,"\nRestoring map index from file\n");
 
@@ -5492,6 +5498,7 @@ void index_restore_from_file(void) {
                                             // Try to process the
                                             // line.
                 char scanf_format[50];
+                char old_scanf_format[50];
                 int processed;
                 int i, jj;
 
@@ -5509,11 +5516,28 @@ void index_restore_from_file(void) {
                     "c");
                 //fprintf(stderr,"%s\n",scanf_format);
 
+                xastir_snprintf(old_scanf_format,
+                    sizeof(old_scanf_format),
+                    "%s%d%s",
+                    "%lu,%lu,%lu,%lu,%d,%d,%d,%",
+                    MAX_FILENAME,
+                    "c");
+ 
                 // Malloc an index record.  We'll add it to the list
                 // only if the data looks reasonable.
                 temp_record = (map_index_record *)malloc(sizeof(map_index_record));
                 memset(temp_record->filename, 0, sizeof(temp_record->filename));
                 temp_record->next = NULL;
+                temp_record->bottom = 64800001l;// Too high
+                temp_record->top = 64800001l;   // Too high
+                temp_record->left = 129600001l; // Too high
+                temp_record->right = 129600001l;// Too high
+                temp_record->map_layer = -1;    // Too low
+                temp_record->draw_filled = -1;  // Too low
+                temp_record->auto_maps = -1;    // Too low
+                temp_record->max_zoom = -1;     // Too low
+                temp_record->min_zoom = -1;     // Too low
+                temp_record->filename[0] = '\0';// Empty
 
                 processed = sscanf(in_string,
                     scanf_format,
@@ -5521,12 +5545,34 @@ void index_restore_from_file(void) {
                     &temp_record->top,
                     &temp_record->left,
                     &temp_record->right,
-                    &temp_record->max_zoom,
-                    &temp_record->min_zoom,
                     &temp_record->map_layer,
                     &temp_record->draw_filled,
                     &temp_record->auto_maps,
+                    &temp_record->max_zoom,
+                    &temp_record->min_zoom,
                     temp_record->filename);
+
+                if (processed < 10) {
+                    // We're upgrading from an old format index file
+                    // that doesn't have min/max zoom.  Try the
+                    // old_scanf_format string instead.
+
+                    doing_migration = 1;
+
+                    temp_record->max_zoom = -1;     // Too low
+                    temp_record->min_zoom = -1;     // Too low
+ 
+                    processed = sscanf(in_string,
+                        old_scanf_format,
+                        &temp_record->bottom,
+                        &temp_record->top,
+                        &temp_record->left,
+                        &temp_record->right,
+                        &temp_record->map_layer,
+                        &temp_record->draw_filled,
+                        &temp_record->auto_maps,
+                        temp_record->filename);
+                }
 
                 temp_record->XmStringPtr = NULL;
 
@@ -5571,18 +5617,24 @@ void index_restore_from_file(void) {
 
                 if ( (temp_record->max_zoom < 0)
                         || (temp_record->max_zoom > 99999) ) {
-                    processed = 0;  // Reject this record
-                    fprintf(stderr,"\nindex_restore_from_file: max_zoom field incorrect %d in map name:\n%s\n",
-                            temp_record->max_zoom,
-                            temp_record->filename);
+//                    processed = 0;  // Reject this record
+//                    fprintf(stderr,"\nindex_restore_from_file: max_zoom field incorrect %d in map name:\n%s\n",
+//                            temp_record->max_zoom,
+//                            temp_record->filename);
+                    // Assign a reasonable value
+                    temp_record->max_zoom = 0;
+                    //fprintf(stderr,"Assigning max_zoom of 0\n");
                 }
 
                 if ( (temp_record->min_zoom < 0)
                         || (temp_record->min_zoom > 99999) ) {
-                    processed = 0;  // Reject this record
-                    fprintf(stderr,"\nindex_restore_from_file: min_zoom field incorrect %d in map name:\n%s\n",
-                            temp_record->min_zoom,
-                            temp_record->filename);
+//                    processed = 0;  // Reject this record
+//                    fprintf(stderr,"\nindex_restore_from_file: min_zoom field incorrect %d in map name:\n%s\n",
+//                            temp_record->min_zoom,
+//                            temp_record->filename);
+                    // Assign a reasonable value
+                    temp_record->min_zoom = 0;
+                    //fprintf(stderr,"Assigning min_zoom of 0\n");
                 }
 
                 if ( (temp_record->map_layer < 0)
@@ -5644,8 +5696,9 @@ void index_restore_from_file(void) {
 
                 temp_record->filename[MAX_FILENAME-1] = '\0';
 
-                // If correct number of parameters
-                if (processed == 10) {
+                // If correct number of parameters for either old or
+                // new format
+                if (processed == 10 || processed == 8) {
 
                     //fprintf(stderr,"Restored: %s\n",temp_record->filename);
  
@@ -5684,6 +5737,13 @@ void index_restore_from_file(void) {
     (void)fclose(f);
     // now that we have read the whole file, make sure it is sorted
     index_sort();  // probably should check for dup records
+
+    if (doing_migration) {
+        // Save in new file format if we just did a migration from
+        // old format to new.
+        fprintf(stderr,"Migrating from old map_index.sys format to new format.\n");
+        index_save_to_file();
+    }
 }
 
 
