@@ -6408,18 +6408,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-    station_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP015"),
-            xmPushButtonGadgetClass,
+    (void)XtVaCreateManagedWidget("create_appshell sep3h",
+            xmSeparatorGadgetClass,
             stationspane,
-            XmNmnemonic,langcode_hotkey("PULDNDP015"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
-    tracks_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP016"),
-            xmPushButtonGadgetClass,
-            stationspane,
-            XmNmnemonic,langcode_hotkey("PULDNDP016"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
@@ -6459,7 +6450,21 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
+    tracks_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP016"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP016"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
+    station_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP015"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP015"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 //--------------------------------------------------------------------
 
