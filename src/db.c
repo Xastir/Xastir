@@ -338,7 +338,11 @@ char *remove_trailing_asterisk(char *data) {
 static long *msg_index;
 static long msg_index_end;
 static long msg_index_max;
-static Message *msg_data;       // All messages, including ones we've transmitted (via loopback in the code)
+
+static Message *msg_data; // Array containing all messages,
+                          // including ones we've transmitted (via
+                          // loopback in the code)
+
 time_t last_message_update = 0;
 ack_record *ack_list_head = NULL;  // Head of linked list storing most recent ack's
 int satellite_ack_mode;
