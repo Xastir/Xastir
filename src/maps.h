@@ -100,6 +100,14 @@ void draw_vector(Widget w,
                  GC gc,
                  Pixmap which_pixmap);
 
+void draw_vector_ll(Widget w,
+                 float y1,
+                 float x1,
+                 float y2,
+                 float x2,
+                 GC gc,
+                 Pixmap which_pixmap);
+
 char *get_map_ext (char *filename);
 char *get_map_dir (char *fullpath);
 void load_auto_maps(Widget w, char *dir);
