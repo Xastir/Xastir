@@ -72,31 +72,31 @@ PULDNMP005|Cor de fundo|C|
 PULDNMP006|Estilo de texto da estação|E|
 PULDNMP011|Menú indicador do rato|r|
 PULDNMP008|Intensidade do mapa|I|
-PULDNMP020|Enable/Configure Tigermap||
+PULDNMP020|Activar/Configurar tigermap||
 #
 #
-# PopUp "Configure Tigermap"
+# PopUp "Configurar tigermap"
 MPUPTGR001|Grid||
-MPUPTGR002|Counties||
-MPUPTGR003|City Labels||
-MPUPTGR004|Urban Areas||
-MPUPTGR005|Major Roads||
-MPUPTGR006|Streets||
-MPUPTGR007|Railroads||
-MPUPTGR008|State Labels||
-MPUPTGR009|Interstate Labels||
-MPUPTGR010|US Hwy Labels||
-MPUPTGR011|State Hwy Labels||
-MPUPTGR012|Select items to be displayed:||
-MPUPTGR013|Rivers||
-MPUPTGR014|Lakes||
-MPUPTGR015|Airports, Parks, etc||
-MPUPTGR016|Map Intensity||
+MPUPTGR002|Freguesias||
+MPUPTGR003|Etiquetas citadinas||
+MPUPTGR004|Àreas urbanas||
+MPUPTGR005|Vias principais||
+MPUPTGR006|Ruas||
+MPUPTGR007|Estradas||
+MPUPTGR008|Etiquetas de provincia||
+MPUPTGR009|Etiquetas inter-provincias||
+MPUPTGR010|Etiquetas Hwy de Portugal||
+MPUPTGR011|Etiquetas Hwy de provincia||
+MPUPTGR012|Seleccionar itens para mostrar:||
+MPUPTGR013|Rios||
+MPUPTGR014|Lagos||
+MPUPTGR015|Aeroportos, parques, etc||
+MPUPTGR016|Intensidade do mapa||
 #
 #
 # Seleção de mapas
 WPUPMCP001|Escolher mapa||
-WPUPMCP002|Seleção de mapas||
+WPUPMCP002|Selecção de mapas||
 PULDNMMC01|Nada|N|
 PULDNMMC02|Vectores dos mapas|V|
 PULDNMMC03|250k Topos|2|
@@ -147,13 +147,13 @@ PULDNDP020|Activar móvel pot/ganho||
 PULDNDP013|Ambiguidade de posição||
 PULDNDP019|Mostrar infos expiradas||
 PULDNDP023|Mostrar circulos DF||
-PULDNDP024|Display Last Report Time||
+PULDNDP024|Mostrar o ùltimo reporte horário||
 PULDNDP007|Rastos de estações|R|
 PULDNDP015|Anular todas as estações|A|
 PULDNDP016|Limpar rastos|L|
 #
 # Inglesa/métrica
-PULDNUT001|Activar Unidades Inglesas||
+PULDNUT001|Activar unidades Inglesas||
 PULDNUT002|Métrica||
 #
 # Menú de mensagens
@@ -165,7 +165,7 @@ PULDQUS002|Pergunta a estações I-Gate|I|
 PULDQUS003|Pergunta a estações WX|W|
 PULDNMG004|Modificar mensagem de resposta automática|f|
 PULDNMG005|Activar mensagem de resposta automática|A|
-PULDNMG006|Satellite Ack Mode|M|
+PULDNMG006|Modo de reconhecimento por satélite|M|
 #
 # Menú de interfaces
 PULDNTNT04|Iniciar/Parar|I|
@@ -285,10 +285,10 @@ WPUPCFD019|Estação móvel c/horas-segundos zulu|u|
 WPUPCFD021|Posição da estação c/tempo|t|
 WPUPCFD022|Posição da estação, data-hora zulu e tempo|d|
 WPUPCFD023|Transmitir infos WX em Raw?||
-WPUPCFD024|Compress object/item data when transmitting?||
+WPUPCFD024|Comprimir objecto/item durante a transmissão?||
 WPUPCFD025|Activar rede alternativa?|A|
 WPUPCFD026|Enviar reportes de posição em que intervalos?||
-WPUPCFD027|Enable SmartBeaconing(tm)||
+WPUPCFD027|Activar SmartBeaconing(tm)||
 #
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||
@@ -392,7 +392,7 @@ WPUPCFS024|.18 quilómetro||
 WPUPCFS025|1.85 quilómetros||
 WPUPCFS026|18.53 quilómetros||
 WPUPCFS027|111.19 quilómetros||
-WPUPCFS029|Send compressed posits|C|
+WPUPCFS029|Enviar posits comprimidas|C|
 #
 # Diálogo de Objeto/Artigo
 POPUPOB001|Objecto/artigo||
@@ -447,7 +447,7 @@ WPUPCFI005|Servidor1||
 WPUPCFI006|Porta1||
 WPUPCFI007|Servidor2||
 WPUPCFI008|Porta2||
-WPUPCFI009|Password||
+WPUPCFI009|Senha||
 WPUPCFI010|(Deixar em branco se não houver nada)||
 WPUPCFI011|Voltar a ligar em caso de falha de rede?||
 WPUPCFI012|Correr como num I-Gate?||
@@ -520,7 +520,7 @@ WPUPSTI008|Última vez via local||
 WPUPSTI009|Última vez via TNC no dispositivo: %d||
 WPUPSTI010|Última vez via internet no dispositivo: %d||
 WPUPSTI011|Última vez via ficheiro||
-WPUPSTI012|Última vez via Desconhecida||
+WPUPSTI012|Última vez via desconhecida||
 WPUPSTI013|, e mudou de posição||
 WPUPSTI014|Actual potência/ganho: %s||
 WPUPSTI016|Altitude: %.1f%s ||
@@ -725,7 +725,7 @@ LHPUPNI205|Baro||
 LHPUPNI206|RN-H||
 LHPUPNI207|RNSM||
 LHPUPNI208|RN24||
-LHPUPNI209|Lat/Lon or UTM||
+LHPUPNI209|Lat/Lon ou UTM||
 #
 # Traçar alertas WX sobre mapas
 PULDNMAT01|Mostra mapa de alarmes sobre outros mapas||
@@ -835,28 +835,28 @@ COORD002|Cálc||
 COORD003|Cálcular||
 COORD004|Limpar||
 COORD005|UTM||
-COORD006|Latitude or||
-COORD007|Longitude or||
-COORD008|Zone||
+COORD006|Latitude ou||
+COORD007|Longitude ou||
+COORD008|Zona||
 COORD009|UTM Easting||
 COORD010|UTM Northing||
 #
 #
 # Smart Beaconing Dialog
 SMARTB001|Smart Beaconing||
-SMARTB002|High Rate (secs):||
-SMARTB003|High Speed (mph):||
-SMARTB004|High Speed (kph):||
-SMARTB005|Low Rate (mins):||
-SMARTB006|Low Speed (mph):||
-SMARTB007|Low Speed (kph):||
-SMARTB008|Minimum Turn (deg):||
+SMARTB002|Rácio alto (secs):||
+SMARTB003|Velocidade alta (mph):||
+SMARTB004|Velocidade alta (kph):||
+SMARTB005|Rácio baixo (mins):||
+SMARTB006|Velocidade baixa (mph):||
+SMARTB007|Velocidade baixa (kph):||
+SMARTB008|Voltar ao minimo (deg):||
 SMARTB009|Turn Slope:||
-SMARTB010|Wait Time (secs):||
+SMARTB010|Tempo de espera (secs):||
 #
 #
 # Gamma Adjust Dialog
-GAMMA001|Adjust Gamma Correction||
-GAMMA002|Gamma Correction||
+GAMMA001|Correcção do ajuste gamma||
+GAMMA002|Correcção gamma||
 #
 #
