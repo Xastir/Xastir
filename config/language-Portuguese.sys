@@ -162,10 +162,10 @@ PULDNDP031|Mostrar Objectos/Items||
 PULDNDP032|Simbolos filtrados||
 PULDNDP033|Info filtrada||
 PULDNDP034|Mostrar estações não locais||
-PULDNDP035|Enable Dead-Reckoning||
-PULDNDP036|Enable Dead-Reckoning Arcs||
-PULDNDP037|Enable Dead-Reckoning Course||
-PULDNDP038|Enable Dead-Reckoning Symbols||
+PULDNDP035|Activar Dead-Reckoning||
+PULDNDP036|Activar arcos Dead-Reckoning||
+PULDNDP037|Activar curso Dead-Reckoning||
+PULDNDP038|Activar símbolos Dead-Reckoning||
 #
 # Inglesa/métrica
 PULDNUT001|Activar unidades Inglesas||
@@ -219,7 +219,7 @@ POPUPMA020|Medida||
 POPUPMA021|Movimento||
 POPUPMA022|Siga-me||
 POPUPMA023|Modificadores encontrados!||
-POPUPMA024|Por favor desligue os modificadores CapsLock/NumLock/ScrollLock/outros||
+POPUPMA024|Por favor desligue as teclas CapsLock/NumLock/ScrollLock/outros||
 #
 # Menú dos estados das linhas de etiquetas
 BBARZM0001|Foco %s||
@@ -265,8 +265,8 @@ BBARSTA036|Limpando AUX para obter dados do TNC..||
 BBARSTA037|Dados do GPS completos||
 BBARSTA038|Posição alterada na minha estação||
 BBARSTA039|Indexando %s||
-BBARSTA040|Amateur APRS Station %s||
-BBARSTA041|Waiting for GPS data..||
+BBARSTA040|Estação de radioamador de APRS %s||
+BBARSTA041|Esperando pela data do GPS..||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||
@@ -310,8 +310,8 @@ WPUPCFD024|Comprimir objecto/item durante a transmissão?||
 WPUPCFD025|Activar rede alternativa?|A|
 WPUPCFD026|Enviar reportes de posição em que intervalos?||
 WPUPCFD027|Pop up de novos boletins||
-WPUPCFD028|Warn if Modifier Keys||
-WPUPCFD029|View zero-distance bulletins||
+WPUPCFD028|Avisar se teclas foram modificadas||
+WPUPCFD029|Ver boletins de distância zero||
 #
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||
@@ -460,7 +460,7 @@ POPUPOB038|DF objecto||
 POPUPOB039|Sinal - Altura(HAAT) - Ganho - Direção||
 POPUPOB040|Dirigindo - Amplitude da direção||
 POPUPOB041|Antena omni-direcional||
-POPUPOB042|Antenna direcional||
+POPUPOB042|Antena direcional||
 #
 # Configurar Internet
 WPUPCFI001|Configurar internet||
@@ -823,9 +823,9 @@ SPCHSTR005|%s, distância é %d %s.||
 SPCHSTR006|%s, distância é %.1f %s.||
 SPCHSTR007|%s, distância é %d %s %s %s.||
 SPCHSTR008|%s, distância é %.1f %s %s %s.||
-SPCHSTR009|New Weather Alert||
-SPCHSTR010|New Call||
-SPCHSTR011|Heard, D X, %s, at distance of %.1f %s||
+SPCHSTR009|Novo alerta de tempo||
+SPCHSTR010|Indicativo novo||
+SPCHSTR011|Ouvido, D X, %s, na distância de %.1f %s||
 #
 SPCHDIRN00|norte of||
 SPCHDIRS00|sul of||
