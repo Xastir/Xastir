@@ -690,7 +690,8 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 // in and pressing "New Call" button.  First message is missing.
 
                                 // Label the message line with who sent it.
-                                xastir_snprintf(temp2, sizeof(temp2), "%s  %-9s>%s\n", stemp,
+                                xastir_snprintf(temp2, sizeof(temp2), "%s  %-9s>%s\n",
+                                    stemp,
                                     msg_data[msg_index[j]].from_call_sign,
                                     msg_data[msg_index[j]].message_line);
 
