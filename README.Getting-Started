@@ -23,6 +23,12 @@ Note that you can start with either of the first two options and add
 only the options you wish in order to come up with your own custom
 configuration of Xastir.
 
+These instructions are written for Linux users.  Windows users
+should refer to the README.win32 document instead.
+MacOSX/Solaris/FreeBSD users should refer to the README document
+first, then the INSTALL document and the below instructions for
+further notes.
+
 One question you might ask is whether you can just find a binary on
 the 'net somewhere and install it instead of compiling Xastir from
 sources.  Yes, this is possible.  Xastir changes so often (bug fixes
