@@ -6,6 +6,7 @@ EXTRA_DIST = \
     language-French.sys \
     language-German.sys \
     language-Italian.sys \
+    language-Portuguese.sys \
     language-Spanish.sys \
     tnc-startup.sys \
     tnc-stop.sys \
@@ -22,6 +23,7 @@ config_DATA = \
     language-French.sys \
     language-German.sys \
     language-Italian.sys \
+    language-Portuguese.sys \
     language-Spanish.sys \
     tnc-startup.sys \
     tnc-stop.sys \

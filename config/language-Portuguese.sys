@@ -23,15 +23,16 @@ MENUTB0009|Ajuda|j|
 # Menú de ficheiro
 PULDNFI001|Configurar|C|
 PULDNFI002|Abrir o log|B|
+PULDNFI003|Testar|P|
+PULDNFI004|Sair|S|
+PULDNFI005|Yes I'm Sure!||
+PULDNFI007|Muda nivel de Debug|D|
 PULDNFI010|Abre o log do TNC|T|
 PULDNFI011|Abre o log da Internet|I|
 PULDNFI012|Abre o log da I-Gate|G|
 PULDNFI013|Abre o log do tempo|W|
 PULDNFI014|Activa PNG instantánea||
 PULDNFI015|Imprimir mapa|P|
-PULDNFI003|Testar|P|
-PULDNFI007|Muda nivel de Debug|D|
-PULDNFI004|Sair|S|
 #
 # Menú visor
 PULDNVI001|Boletins|B|
@@ -50,6 +51,7 @@ PULDNVI014|Programar aviso|r|
 # Menú de configuração
 PULDNCF004|Estação|E|
 PULDNCF001|Pré-definidos|P|
+PULDNCF002|Coordinate System||
 PULDNCF006|Audio dos alarmes|A|
 PULDNCF007|Sintetizador de voz|S|
 PULDNCF008|Guardar configuração!|G|
@@ -92,6 +94,7 @@ PULDNMBC08|Dourado amarelado||
 PULDNMBC09|Castanho rosado||
 PULDNMBC10|Vermelho escuro||
 PULDNMBC11|Branco||
+PULDNMBC12|Negro||
 #
 # Mapas de estações e estilos das etiquetas
 PULDNMSL01|Fundo negro||
@@ -259,6 +262,14 @@ WPUPCFD024|Info de posição comprimido quando transmita?||
 WPUPCFD025|Activar rede alternativa?|A|
 WPUPCFD026|Enviar reportes de posição em que intervalos?||
 #
+# PopUp "Configure Coordinate System"
+WPUPCFC001|Configure Coordinate System||
+WPUPCFC002|Select Coordinate System||
+WPUPCFC003|dd.ddddd|d|
+WPUPCFC004|dd mm.mmm|m|
+WPUPCFC005|dd mm ss.s|s|
+WPUPCFC006|UTM|U|
+#
 # Configurar GPS
 WPUPCFG001|Configurar GPS||
 WPUPCFG003|Porta exclusiva de GPS||
@@ -295,27 +306,29 @@ WPUPCFT007|2400 bps||
 WPUPCFT008|4800 bps||
 WPUPCFT009|9600 bps||
 WPUPCFT010|19200 bps||
-WPUPCFT019|38400 bps||
-WPUPCFT020|57600 bps||
-WPUPCFT021|115200 bps||
-WPUPCFT022|230400 bps||
-WPUPCFT015|Modo da porta||
-WPUPCFT016|8,N,1||
-WPUPCFT017|7,E,1||
-WPUPCFT018|7,O,1||
 WPUPCFT011|Rota do UnProto||
 WPUPCFT012|Rota 1: %s via ||
 WPUPCFT013|Rota 2: %s via ||
 WPUPCFT014|Rota 3: %s via ||
+WPUPCFT015|Modo da porta||
+WPUPCFT016|8,N,1||
+WPUPCFT017|7,E,1||
+WPUPCFT018|7,O,1||
+WPUPCFT019|38400 bps||
+WPUPCFT020|57600 bps||
+WPUPCFT021|115200 bps||
+WPUPCFT022|230400 bps||
 WPUPCFT023|Configurar o TNC c/HSP GPS||
-#
-# Configurar a porta da estação meteorológica
-WPUPCFWX01|Configurar a porta da estação meteorológica||
-WPUPCFWX02|Dispositivo da estação meteorológica||
 WPUPCFT024|Tipo de data||
 WPUPCFT025|Auto deteção||
 WPUPCFT026|Tipo Binário||
 WPUPCFT027|Tipo ASCII||
+WPUPCFT028|Configure TNC w/AUX GPS||
+WPUPCFT029|Configure TNC w/INVALID ENUM||
+#
+# Configurar a porta da estação meteorológica
+WPUPCFWX01|Configurar a porta da estação meteorológica||
+WPUPCFWX02|Dispositivo da estação meteorológica||
 #
 # Configurar a estação
 WPUPCFS001|Configurar a estação||
@@ -429,6 +442,7 @@ WPUPCFSP05|<- Anuncia corpo de nova mensagem||
 WPUPCFSP06|<- Anuncia a proximidade de estações||
 WPUPCFSP07|<- Anuncia DX condição de banda aberta||
 WPUPCFSP08|<- Anuncia alerta sobre condições do tempo||
+WPUPCFSP09|Tracked Station Proximity Alert||
 #
 # Rastreo da estação
 WPUPTSP001|Rastrear estação||
@@ -564,6 +578,7 @@ UNIOP00025|mb||
 UNIOP00026|%||
 UNIOP00027|inHg||
 UNIOP00028|mm Hg||
+UNIOP00029|Set System Clock from GPS Data?||
 #
 # Seleccionar estação
 STCHO00001|Seleccionar estação||
@@ -590,6 +605,7 @@ IFDNL00005|Ligação a um servidor na internet||
 IFDNL00006|AX.25 TNC||
 IFDNL00007|GPS ligado via o servidor gpsd||
 IFDNL00008|Est. meteorológica ligada a uma REDE||
+IFDNL00009|Serial TNC w/GPS on AUX port||
 #
 # Info dispositivo interface
 IFDIN00000|%s %d %s sobre serie %s||
@@ -675,6 +691,7 @@ LHPUPNI205|Baro||
 LHPUPNI206|RN-H||
 LHPUPNI207|RNSM||
 LHPUPNI208|RN24||
+LHPUPNI209|Lat/Lon or UTM||
 #
 # Traçar alertas WX sobre mapas
 PULDNMAT01|Mostra mapa de alarmes sobre outros mapas||
@@ -774,5 +791,11 @@ FEATURE003|Pas:||
 FEATURE004|Mapa quad:||
 FEATURE005|Tipo:||
 FEATURE006|GNIS arquivo:||
+#
+# Coordinate Calculator Dialog
+COORD001|Coordinate Calc||
+COORD002|Calc||
+COORD003|Calculate||
+COORD004|Clear||
 #
 #

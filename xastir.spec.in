@@ -42,6 +42,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/xastir/config/language-French.sys
 /usr/local/xastir/config/language-German.sys
 /usr/local/xastir/config/language-Italian.sys
+/usr/local/xastir/config/language-Portuguese.sys
 /usr/local/xastir/config/language-Spanish.sys
 /usr/local/xastir/config/tnc-startup.aea
 /usr/local/xastir/config/tnc-startup.kam
