@@ -66,7 +66,6 @@
 #define MY_TRAIL_COLOR      0x16        /* trail color index reserved for my station */
 #define MY_TRAIL_DIFF_COLOR   0         /* all my calls (SSIDs) use different colors (0/1) */
 #define TRAIL_ECHO_TIME      30         /* check for delayed echos of last 30 minutes */
-#define TRAIL_ECHO_COUNT    100         /* check max. 100 points for delayed echos, 0 for OFF */
 
 // Station Info
 Widget  db_station_popup = (Widget)NULL;
@@ -1820,13 +1819,11 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
 //WE7U1
         // Else check whether the previous position had altitude
-        else if (p_station->track_data != NULL) {
-            int trail_prev = (p_station->track_data->trail_inp - 1 + MAX_TRACKS) % MAX_TRACKS;
-
-            if ( p_station->track_data->altitude[trail_prev] > -99999l) {
+        else if (p_station->newest_trackpoint != NULL) {
+            if ( p_station->newest_trackpoint->altitude > -99999l) {
                 // Found it in the tracklog
                 xastir_snprintf(temp_altitude, sizeof(temp_altitude), "%.0f%s",
-                    (float)(p_station->track_data->altitude[trail_prev] * cvt_dm2len), un_alt);
+                    (float)(p_station->newest_trackpoint->altitude * cvt_dm2len), un_alt);
 
 //                printf("Trail data              with altitude: %s : %s\n",
 //                    p_station->call_sign,
@@ -1861,18 +1858,16 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 atof(p_station->speed)*cvt_kn2len,tmp);
         }
         // Else check whether the previous position had speed
-        else if (p_station->track_data != NULL) {
-            int trail_prev = (p_station->track_data->trail_inp - 1 + MAX_TRACKS) % MAX_TRACKS;
-
+        else if (p_station->newest_trackpoint != NULL) {
             strncpy(tmp, un_spd, sizeof(tmp));
             tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
             if (symbol_speed_display == 1)
                 tmp[0] = '\0';          // without unit
  
-            if ( p_station->track_data->speed[trail_prev] > 0)
+            if ( p_station->newest_trackpoint->speed > 0)
                 speed_course_ok++;
                 xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
-                    p_station->track_data->speed[trail_prev] * cvt_hm2len, tmp);
+                    p_station->newest_trackpoint->speed * cvt_hm2len, tmp);
         }
     }
 
@@ -1884,13 +1879,11 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 atof(p_station->course));
         }
         // Else check whether the previous position had a course
-        else if (p_station->track_data != NULL) {
-            int trail_prev = (p_station->track_data->trail_inp - 1 + MAX_TRACKS) % MAX_TRACKS;
-
-            if( p_station->track_data->course[trail_prev] > 0 ) {
+        else if (p_station->newest_trackpoint != NULL) {
+            if( p_station->newest_trackpoint->course > 0 ) {
                 speed_course_ok++;
                 xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
-                    (float)p_station->track_data->course[trail_prev]);
+                    (float)p_station->newest_trackpoint->course);
             }
         }
     }
@@ -2298,10 +2291,10 @@ void display_file(Widget w) {
                     if (debug_level & 256) {
                         printf("display_file:  Inview, check for trail\n");
                     }
-                    if (station_trails && p_station->track_data != NULL) {
+                    if (station_trails && p_station->newest_trackpoint != NULL) {
                         // ????????????   what is the difference? :
                         if (debug_level & 256) {
-                            printf( "%s:    Trails on and track_data\n",
+                            printf( "%s:    Trails on and have track data\n",
                                     "display_file");
                         }
                         if (temp_sec_heard > t_clr) {
@@ -2326,8 +2319,8 @@ void display_file(Widget w) {
                         }
                     }
                     else if (debug_level & 256) {
-                        printf("Station trails %d, track_data %x\n",
-                            station_trails, (int)p_station->track_data);
+                        printf("Station trails %d, track data %x\n",
+                            station_trails, (int)p_station->newest_trackpoint);
                     }
                     display_station(w,p_station,0);
                 }
@@ -2673,7 +2666,6 @@ void station_data_fill_in ( /*@unused@*/ Widget w, XtPointer clientData, XtPoint
     char *station = (char *) clientData;
     char temp[300];
     int pos, last_pos;
-    int last;
     char temp_my_distance[20];
     char temp_my_course[20];
     char temp1_my_course[20];
@@ -2797,7 +2789,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    if (p_station->track_data != NULL) {
+    if (p_station->newest_trackpoint != NULL) {
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI013"));
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
@@ -3086,13 +3078,14 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     pos += strlen(temp);
 
     // list rest of trail data
-    if (p_station->track_data != NULL) {
-        for (last=(p_station->track_data->trail_inp-1+MAX_TRACKS)%MAX_TRACKS;
-                last != p_station->track_data->trail_out;   // Stop at last data point
-                last = (last-1+MAX_TRACKS)%MAX_TRACKS) {
-            sec  = p_station->track_data->sec[last];
+    if (p_station->newest_trackpoint != NULL) {
+        TrackRow2 *ptr;
+
+        ptr = p_station->newest_trackpoint;
+        while (ptr != NULL) {
+            sec  = ptr->sec;
             time = localtime(&sec);
-            if ((p_station->track_data->flag[last] & TR_NEWTRK) != '\0')
+            if ((ptr->flag & TR_NEWTRK) != '\0')
                 xastir_snprintf(temp, sizeof(temp), "            +  %02d/%02d  %02d:%02d   ",
                     time->tm_mon + 1,time->tm_mday,time->tm_hour,time->tm_min);
             else
@@ -3104,20 +3097,29 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
             if (coordinate_system == USE_UTM) {
                 convert_xastir_to_UTM_str(temp, sizeof(temp),
-                    p_station->track_data->trail_long_pos[last],
-                    p_station->track_data->trail_lat_pos[last]);
+                    ptr->trail_long_pos,
+                    ptr->trail_lat_pos);
                 XmTextInsert(si_text,pos,temp);
                 pos += strlen(temp);
             }
             else {
                 if (coordinate_system == USE_DDDDDD) {
-                    convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_DEC_DEG);
+                    convert_lat_l2s(ptr->trail_lat_pos,
+                        temp,
+                        sizeof(temp),
+                        CONVERT_DEC_DEG);
                 }
                 else if (coordinate_system == USE_DDMMSS) {
-                    convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_DMS_NORMAL);
+                    convert_lat_l2s(ptr->trail_lat_pos,
+                        temp,
+                        sizeof(temp),
+                        CONVERT_DMS_NORMAL);
                 }
                 else {  // Assume coordinate_system == USE_DDMMMM
-                    convert_lat_l2s(p_station->track_data->trail_lat_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
+                    convert_lat_l2s(ptr->trail_lat_pos,
+                        temp,
+                        sizeof(temp),
+                        CONVERT_HP_NORMAL);
                 }
                 XmTextInsert(si_text,pos,temp);
                 pos += strlen(temp);
@@ -3127,36 +3129,50 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
                 pos += strlen(temp);
 
                 if (coordinate_system == USE_DDDDDD) {
-                    convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_DEC_DEG);
+                    convert_lon_l2s(ptr->trail_long_pos,
+                        temp,
+                        sizeof(temp),
+                        CONVERT_DEC_DEG);
                 }
                 else if (coordinate_system == USE_DDMMSS) {
-                    convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_DMS_NORMAL);
+                    convert_lon_l2s(ptr->trail_long_pos,
+                        temp,
+                        sizeof(temp),
+                        CONVERT_DMS_NORMAL);
                 }
                 else {  // Assume coordinate_system == USE_DDMMMM
-                    convert_lon_l2s(p_station->track_data->trail_long_pos[last], temp, sizeof(temp), CONVERT_HP_NORMAL);
+                    convert_lon_l2s(ptr->trail_long_pos,
+                        temp,
+                        sizeof(temp),
+                        CONVERT_HP_NORMAL);
                 }
                 XmTextInsert(si_text,pos,temp);
                 pos += strlen(temp);
             }
 
-            if (p_station->track_data->altitude[last] > -99999l)
-                xastir_snprintf(temp, sizeof(temp), " %5.0f%s",p_station->track_data->altitude[last]*cvt_dm2len,un_alt);
+            if (ptr->altitude > -99999l)
+                xastir_snprintf(temp, sizeof(temp), " %5.0f%s",
+                    ptr->altitude * cvt_dm2len,
+                    un_alt);
             else
                 substr(temp,"         ",1+5+strlen(un_alt));
 
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
 
-            if (p_station->track_data->speed[last] >= 0)
-                xastir_snprintf(temp, sizeof(temp), " %4.0f%s",p_station->track_data->speed[last]*cvt_hm2len,un_spd);
+            if (ptr->speed >= 0)
+                xastir_snprintf(temp, sizeof(temp), " %4.0f%s",
+                    ptr->speed * cvt_hm2len,
+                    un_spd);
             else
                 substr(temp,"         ",1+4+strlen(un_spd));
 
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
 
-            if (p_station->track_data->course[last] >= 0)
-                xastir_snprintf(temp, sizeof(temp), " %3d°",p_station->track_data->course[last]);
+            if (ptr->course >= 0)
+                xastir_snprintf(temp, sizeof(temp), " %3d°",
+                    ptr->course);
             else
                 xastir_snprintf(temp, sizeof(temp), "     ");
 
@@ -3165,18 +3181,21 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
             // dl9sau
             xastir_snprintf(temp, sizeof(temp), "  %s",
-                sec_to_loc(p_station->track_data->trail_long_pos[last],
-                    p_station->track_data->trail_lat_pos[last]) );
+                sec_to_loc(ptr->trail_long_pos,
+                    ptr->trail_lat_pos) );
             XmTextInsert(si_text,pos,temp); 
             pos += strlen(temp);
 
-            if ((p_station->track_data->flag[last] & TR_LOCAL) != '\0')
+            if ((ptr->flag & TR_LOCAL) != '\0')
                 xastir_snprintf(temp, sizeof(temp), " *\n");
             else
                 xastir_snprintf(temp, sizeof(temp), "  \n");
 
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
+
+            // Go back in time one trackpoint
+            ptr = ptr->prev;
         }
     }
 
@@ -3572,7 +3591,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                             NULL);
         XtAddCallback(button_store_track,   XmNactivateCallback, Station_data_store_track ,(XtPointer)p_station);
 
-        if (p_station->track_data != NULL) {
+        if (p_station->newest_trackpoint != NULL) {
             // [ Clear Track ]
             button_clear_track = XtVaCreateManagedWidget(langcode("WPUPSTI045"),xmPushButtonGadgetClass, form,
                             XmNtopAttachment, XmATTACH_WIDGET,
@@ -4350,107 +4369,106 @@ int new_trail_color(char *call) {
 
 
 
-// Trail storage in ring buffer (1 is the oldest point)
-// inp         v                   
-//      [.][1][.][.][.][.][.][.][.]   at least one previous point in buffer,
-// out      v                         else no allocated trail memory
-
-// inp                  v
-//      [.][1][2][3][4][.][.][.][.]   half full
-// out      v                      
-
-// inp      v  
-//      [9][1][2][3][4][5][6][7][8]   buffer full (wrap around)
-// out      v
 //
-// Note that if we only have one point for a station, we won't have
-// any track_data structs allocated.  If we have two points, we'll
-// have the oldest point saved in the track_data structure and the
-// most current point saved in our station variables.
-
-
-/*
- *  Store one trail point, allocate trail storage if necessary
- */
+//  Store one trail point.  Allocate storage for the new data.
+//
+// We now store track data in a doubly-linked list.  Each record has a
+// pointer to the previous and the next record in the list.  The main
+// station record has a pointer to the oldest and the newest end of the
+// chain, and the chain can be traversed in either order.
+//
 int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *alt, char *speed, char *course, short stn_flag) {
-    int ok = 1;
-    int trail_inp, trail_prev;
     char flag;
+    TrackRow2 *ptr;
 
     //printf("store_trail_point: %s\n",p_station->call_sign);
 
     if (debug_level & 256) {
         printf("store_trail_point: for %s\n", p_station->call_sign);
     }
-    if (p_station->track_data == NULL) {       // new trail, allocate storage and do initialisation
+
+    // Allocate storage for the new track point
+    ptr = malloc(sizeof(TrackRow2));
+    if (ptr == NULL) {
+        if (debug_level & 256) {
+            printf("store_trail_point: MALLOC failed for trail.\n");
+        }
+        return(0); // Failed due to malloc
+    }
+ 
+    // Check whether we have any track data saved
+    if (p_station->newest_trackpoint == NULL) {
+        // new trail, do initialization
+
         if (debug_level & 256) {
             printf("Creating new trail.\n");
         }
-        p_station->track_data = malloc(sizeof(TrackRow));
-        if (p_station->track_data == NULL) {
-            if (debug_level & 256) {
-                printf("store_trail_point: MALLOC failed for trail.\n");
-            }
-            ok = 0;
-        }
-        else {
-            p_station->track_data->trail_out   = p_station->track_data->trail_inp = 0;
-            p_station->track_data->trail_color = new_trail_color(p_station->call_sign);
-            tracked_stations++;
-        }
+        tracked_stations++;
+
+        // Assign a new trail color 'cuz it's a new trail
+        p_station->trail_color = new_trail_color(p_station->call_sign);
     }
-    else if (p_station->track_data->trail_out ==
-                p_station->track_data->trail_inp) {   // ring buffer is full
-        // Lose the oldest point we have saved
-        p_station->track_data->trail_out =   // increment and keep inside buffer
-            (p_station->track_data->trail_out+1) % MAX_TRACKS;
+
+    // Start linking the record to the new end of the chain
+    ptr->prev = p_station->newest_trackpoint;   // Link to record or NULL
+    ptr->next = NULL;   // Newest end of chain
+
+    // Have an older record already?
+    if (p_station->newest_trackpoint != NULL) { // Yes
+        p_station->newest_trackpoint->next = ptr;
     }
-    if (ok) {
-        if (debug_level & 256) {
-            printf("store_trail_point: Storing data for %s[%d]n",
-                p_station->call_sign, p_station->track_data->trail_inp);
-        }
-        trail_inp = p_station->track_data->trail_inp;
-        p_station->track_data->trail_long_pos[trail_inp] = lon;
-        p_station->track_data->trail_lat_pos[trail_inp]  = lat;
-        p_station->track_data->sec[trail_inp]            = sec;
+    else {  // No, this is our first record
+        p_station->oldest_trackpoint = ptr;
+    }
 
-        if (alt[0] != '\0')
-            p_station->track_data->altitude[trail_inp] = atoi(alt)*10;
-        else            
-            p_station->track_data->altitude[trail_inp] = -99999l;
+    // Link it in as our newest record
+    p_station->newest_trackpoint = ptr;
 
-        if (speed[0] != '\0')
-            p_station->track_data->speed[trail_inp]  = (long)(atof(speed)*18.52);
-        else
-            p_station->track_data->speed[trail_inp]  = -1;
+    if (debug_level & 256) {
+        printf("store_trail_point: Storing data for %s\n", p_station->call_sign);
+    }
 
-        if (course[0] != '\0')
-            p_station->track_data->course[trail_inp] = atoi(course);
-        else
-            p_station->track_data->course[trail_inp] = -1;
+    ptr->trail_long_pos = lon;
+    ptr->trail_lat_pos  = lat;
+    ptr->sec            = sec;
 
-        flag = '\0';                    // init flags
+    if (alt[0] != '\0')
+            ptr->altitude = atoi(alt)*10;
+    else            
+            ptr->altitude = -99999l;
 
-        if ((stn_flag & ST_LOCAL) != 0)
+    if (speed[0] != '\0')
+            ptr->speed  = (long)(atof(speed)*18.52);
+    else
+            ptr->speed  = -1;
+
+    if (course[0] != '\0')
+            ptr->course = atoi(course);
+    else
+            ptr->course = -1;
+
+    flag = '\0';                    // init flags
+
+    if ((stn_flag & ST_LOCAL) != 0)
             flag |= TR_LOCAL;           // set "local" flag
 
-        if ((trail_inp-p_station->track_data->trail_out+MAX_TRACKS)%MAX_TRACKS +1 > 1) {
-            // we have at least two points...
-            trail_prev = (trail_inp - 1 + MAX_TRACKS) % MAX_TRACKS;
-            if (abs(lon-p_station->track_data->trail_long_pos[trail_prev]) > MAX_TRAIL_SEG_LEN*60*100 ||
-                    abs(lat-p_station->track_data->trail_lat_pos[trail_prev]) > MAX_TRAIL_SEG_LEN*60*100)
-                flag |= TR_NEWTRK;      // set "new track" flag for long segments
-            else
-                if (abs(sec - p_station->track_data->sec[trail_prev]) > 2700)
-                    flag |= TR_NEWTRK;  // set "new track" flag for long pauses
-        } else {
-            flag |= TR_NEWTRK;          // set "new track" flag for first point
+    if (ptr->prev != NULL) {    // we have at least two points...
+        if (abs(lon - ptr->prev->trail_long_pos) > MAX_TRAIL_SEG_LEN*60*100 ||
+                abs(lat - ptr->prev->trail_lat_pos) > MAX_TRAIL_SEG_LEN*60*100) {
+            flag |= TR_NEWTRK;      // set "new track" flag for long segments
         }
-        p_station->track_data->flag[trail_inp] = flag;
-        p_station->track_data->trail_inp = (trail_inp+1) % MAX_TRACKS;
+        else {
+            if (abs(sec - ptr->prev->sec) > 2700) {
+                flag |= TR_NEWTRK;  // set "new track" flag for long pauses
+            }
+        }
     }
-    return(ok);
+    else {
+        flag |= TR_NEWTRK;          // set "new track" flag for first point
+    }
+    ptr->flag = flag;
+
+    return(1);  // We succeeded
 }
 
 
@@ -4461,44 +4479,50 @@ int store_trail_point(DataRow *p_station, long lon, long lat, time_t sec, char *
  *  Check if current packet is a delayed echo
  */
 int is_trailpoint_echo(DataRow *p_station) {
-    int i, j;
+    int packets = 1;
     time_t checktime;
     char temp[50];
+    TrackRow2 *ptr;
 
-    if (p_station->track_data == NULL)
-        return(0);                      // first point couldn't be an echo
+
+    // Start at newest end of linked list and compare.  Return if we're
+    // beyond the checktime.
+    ptr = p_station->newest_trackpoint;
+
+    if (ptr == NULL)
+        return(0);  // first point couldn't be an echo
+
     checktime = p_station->sec_heard - TRAIL_ECHO_TIME*60;
-    for (i = (p_station->track_data->trail_inp -1 +MAX_TRACKS)%MAX_TRACKS,j=0;
-            j < TRAIL_ECHO_COUNT; i = (--i+MAX_TRACKS)%MAX_TRACKS ,j++) {
-        if (p_station->track_data->sec[i] < checktime)
-            return(0);              // outside time frame
-        if ((p_station->coord_lon == p_station->track_data->trail_long_pos[i])
-                && (p_station->coord_lat == p_station->track_data->trail_lat_pos[i])
-                && (p_station->speed == '\0' || p_station->track_data->speed[i] < 0
-                        || (long)(atof(p_station->speed)*18.52) == p_station->track_data->speed[i])
+
+    while (ptr != NULL) {
+
+        if (ptr->sec < checktime)
+            return(0);  // outside time frame, no echo found
+
+        if ((p_station->coord_lon == ptr->trail_long_pos)
+                && (p_station->coord_lat == ptr->trail_lat_pos)
+                && (p_station->speed == '\0' || ptr->speed < 0
+                        || (long)(atof(p_station->speed)*18.52) == ptr->speed)
                         // current: char knots, trail: long 0.1m (-1 is undef)
-                && (p_station->course == '\0' || p_station->track_data->course[i] <= 0
-                        || atoi(p_station->course) == p_station->track_data->course[i])
+                && (p_station->course == '\0' || ptr->course <= 0
+                        || atoi(p_station->course) == ptr->course)
                         // current: char, trail: int (-1 is undef)
-                && (p_station->altitude == '\0' || p_station->track_data->altitude[i] <= -99999l
-                        || atoi(p_station->altitude)*10 == p_station->track_data->altitude[i])) {
+                && (p_station->altitude == '\0' || ptr->altitude <= -99999l
+                        || atoi(p_station->altitude)*10 == ptr->altitude)) {
                         // current: char, trail: int (-99999l is undef)
             if (debug_level & 1) {
-                if (j > 0) {
-                    printf("delayed echo for %s",p_station->call_sign);
-                    convert_lat_l2s(p_station->coord_lat, temp, sizeof(temp), CONVERT_HP_NORMAL);
-                    printf(" at %s",temp);
-                    convert_lon_l2s(p_station->coord_lon, temp, sizeof(temp), CONVERT_HP_NORMAL);
-                    printf(" %s, already heard %d packets ago\n",temp,j+1);
-                }
+                printf("delayed echo for %s",p_station->call_sign);
+                convert_lat_l2s(p_station->coord_lat, temp, sizeof(temp), CONVERT_HP_NORMAL);
+                printf(" at %s",temp);
+                convert_lon_l2s(p_station->coord_lon, temp, sizeof(temp), CONVERT_HP_NORMAL);
+                printf(" %s, already heard %d packets ago\n",temp,packets);
             }
             return(1);              // we found a delayed echo
         }
-        if (i == p_station->track_data->trail_out) {
-            return(0);                  // that was the last available point!
-        }
+        ptr = ptr->prev;
+        packets++;
     }
-    return(0);                          // no echo found
+    return(0);                      // no echo found
 }
 
 
@@ -4565,9 +4589,21 @@ int delete_comments_and_status(DataRow *fill) {
  *  Delete trail and free memory
  */
 int delete_trail(DataRow *fill) {
-    if (fill->track_data != NULL) {
-        free(fill->track_data);
-        fill->track_data = NULL;
+
+    if (fill->newest_trackpoint != NULL) {
+        TrackRow2 *current;
+        TrackRow2 *next;
+
+        // Free the TrackRow2 records
+        current = fill->oldest_trackpoint;
+        while (current != NULL) {
+            next = current->next;
+            free(current);
+            current = next;
+        }
+
+        fill->oldest_trackpoint = NULL;
+        fill->newest_trackpoint = NULL;
         tracked_stations--;
         return(1);
     }
@@ -4579,7 +4615,6 @@ int delete_trail(DataRow *fill) {
  *  Draw trail on screen
  */
 void draw_trail(Widget w, DataRow *fill, int solid) {
-    int i;
     char short_dashed[2]  = {(char)1,(char)5};
     char medium_dashed[2] = {(char)5,(char)5};
     long lat0, lon0, lat1, lon1;        // trail segment points
@@ -4589,88 +4624,91 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 /*    Colormap cmap;  KD6ZWR - Now set in main() */
     long brightness;
     char flag1;
+    TrackRow2 *ptr;
 
-    if (fill->track_data != NULL) {
+    ptr = fill->newest_trackpoint;
 
-        // trail should have at least two points:
-        if ( (fill->track_data->trail_inp - fill->track_data->trail_out +
-                MAX_TRACKS) % MAX_TRACKS != 1) {
-            if (debug_level & 256) {
-                printf("draw_trail called for %s with %s.\n",
-                    fill->call_sign, (solid? "Solid" : "Non-Solid"));
-            }
-            col_trail = trail_colors[fill->track_data->trail_color];
+    // Trail should have at least two points
+    if ( (ptr != NULL) && (ptr->prev != NULL) ) {
 
-            // define color of position dots in trail
-            rgb.pixel = col_trail;
-/*            cmap = DefaultColormap(XtDisplay(w), DefaultScreen(XtDisplay(w)));  KD6ZWR - Now set in main() */
-            XQueryColor(XtDisplay(w),cmap,&rgb);
-            brightness = (long)(0.3*rgb.red + 0.55*rgb.green + 0.15*rgb.blue);
-            if (brightness > 32000) {
-                col_dot = trail_colors[0x05];   // black dot on light trails
-            } else {
-                col_dot = trail_colors[0x06];   // white dot on dark trail
-            }
+        if (debug_level & 256) {
+            printf("draw_trail called for %s with %s.\n",
+                fill->call_sign, (solid? "Solid" : "Non-Solid"));
+        }
 
-            if (solid)
-                // Used to be "JoinMiter" and "CapButt" below
-                (void)XSetLineAttributes(XtDisplay(w), gc, 3, LineSolid, CapRound, JoinRound);
-            else {
-                // Another choice is LineDoubleDash
-                (void)XSetLineAttributes(XtDisplay(w), gc, 3, LineOnOffDash, CapRound, JoinRound);
-                (void)XSetDashes(XtDisplay(w), gc, 0, short_dashed , 2);
-            }
+        col_trail = trail_colors[fill->trail_color];
 
-            marg_lat = screen_height * scale_y;                 // Set up area for acceptable trail points
-            if (marg_lat < TRAIL_POINT_MARGIN*60*100)           // on-screen plus 50% margin
-                marg_lat = TRAIL_POINT_MARGIN*60*100;           // but at least a minimum margin
-            marg_lon = screen_width  * scale_x;
-            if (marg_lon < TRAIL_POINT_MARGIN*60*100)
-                marg_lon = TRAIL_POINT_MARGIN*60*100;
+        // define color of position dots in trail
+        rgb.pixel = col_trail;
+/*      cmap = DefaultColormap(XtDisplay(w), DefaultScreen(XtDisplay(w)));  KD6ZWR - Now set in main() */
+        XQueryColor(XtDisplay(w),cmap,&rgb);
 
-            for (i = fill->track_data->trail_out;
-                       (fill->track_data->trail_inp -1 - i +MAX_TRACKS)%MAX_TRACKS > 0;
-                       i = ++i%MAX_TRACKS) {                                    // loop over trail points
-                lon0 = fill->track_data->trail_long_pos[(i)];                   // Trail segment start
-                lat0 = fill->track_data->trail_lat_pos[(i)];
-                lon1 = fill->track_data->trail_long_pos[(i+1)%MAX_TRACKS];      // Trail segment end
-                lat1 = fill->track_data->trail_lat_pos[(i+1)%MAX_TRACKS];
-                flag1 = fill->track_data->flag[(i+1)%MAX_TRACKS];
+        brightness = (long)(0.3*rgb.red + 0.55*rgb.green + 0.15*rgb.blue);
+        if (brightness > 32000) {
+            col_dot = trail_colors[0x05];   // black dot on light trails
+        } else {
+            col_dot = trail_colors[0x06];   // white dot on dark trail
+        }
 
-                if ( (abs(lon0-mid_x_long_offset) < marg_lon) &&                // trail points have to
-                     (abs(lon1-mid_x_long_offset) < marg_lon) &&                // be in margin area
-                     (abs(lat0-mid_y_lat_offset)  < marg_lat) &&
-                     (abs(lat1-mid_y_lat_offset)  < marg_lat) ) {
+        if (solid)
+            // Used to be "JoinMiter" and "CapButt" below
+            (void)XSetLineAttributes(XtDisplay(w), gc, 3, LineSolid, CapRound, JoinRound);
+        else {
+            // Another choice is LineDoubleDash
+            (void)XSetLineAttributes(XtDisplay(w), gc, 3, LineOnOffDash, CapRound, JoinRound);
+            (void)XSetDashes(XtDisplay(w), gc, 0, short_dashed , 2);
+        }
 
-                    if ((flag1 & TR_NEWTRK) == '\0') {
-                        // WE7U: possible drawing problems, if numbers too big ????
-                        lon0 = (lon0-x_long_offset)/scale_x;                       // check arguments for
-                        lat0 = (lat0-y_lat_offset)/scale_y;                        // XDrawLine()
-                        lon1 = (lon1-x_long_offset)/scale_x;
-                        lat1 = (lat1-y_lat_offset)/scale_y;
+        marg_lat = screen_height * scale_y;                 // Set up area for acceptable trail points
+        if (marg_lat < TRAIL_POINT_MARGIN*60*100)           // on-screen plus 50% margin
+            marg_lat = TRAIL_POINT_MARGIN*60*100;           // but at least a minimum margin
+        marg_lon = screen_width  * scale_x;
+        if (marg_lon < TRAIL_POINT_MARGIN*60*100)
+            marg_lon = TRAIL_POINT_MARGIN*60*100;
 
-                        if (abs(lon0) < 32700 && abs(lon1) < 32700 &&
+        // Traverse linked list of trail points from newest to
+        // oldest
+        while ( (ptr != NULL) && (ptr->prev != NULL) ) {
+            lon0 = ptr->trail_long_pos;         // Trail segment start
+            lat0 = ptr->trail_lat_pos;
+            lon1 = ptr->prev->trail_long_pos;   // Trail segment end
+            lat1 = ptr->prev->trail_lat_pos;
+            flag1 = ptr->prev->flag;
+
+            if ( (abs(lon0 - mid_x_long_offset) < marg_lon) &&  // trail points have to
+                (abs(lon1 - mid_x_long_offset) < marg_lon) &&  // be in margin area
+                (abs(lat0 - mid_y_lat_offset)  < marg_lat) &&
+                (abs(lat1 - mid_y_lat_offset)  < marg_lat) ) {
+
+                if ((flag1 & TR_NEWTRK) == '\0') {
+                    // WE7U: possible drawing problems, if numbers too big ????
+                    lon0 = (lon0 - x_long_offset) / scale_x;    // check arguments for
+                    lat0 = (lat0 - y_lat_offset)  / scale_y;    // XDrawLine()
+                    lon1 = (lon1 - x_long_offset) / scale_x;
+                    lat1 = (lat1 - y_lat_offset)  / scale_y;
+
+                    if (abs(lon0) < 32700 && abs(lon1) < 32700 &&
                             abs(lat0) < 32700 && abs(lat1) < 32700) {
-                            // draw trail segment
-                            (void)XSetForeground(XtDisplay(w),gc,col_trail);
-                            (void)XDrawLine(XtDisplay(w),pixmap_final,gc,lon0,lat0,lon1,lat1);
-                            // draw position point itself
-                            (void)XSetForeground(XtDisplay(w),gc,col_dot);
-                            (void)XDrawPoint(XtDisplay(w),pixmap_final,gc,lon0,lat0);
-                        }
-/*                      (void)XDrawLine(XtDisplay(w), pixmap_final, gc,         // draw trail segment
-                            (lon0-x_long_offset)/scale_x,(lat0-y_lat_offset)/scale_y,
-                            (lon1-x_long_offset)/scale_x,(lat1-y_lat_offset)/scale_y);
-*/
+                        // draw trail segment
+                        (void)XSetForeground(XtDisplay(w),gc,col_trail);
+                        (void)XDrawLine(XtDisplay(w),pixmap_final,gc,lon0,lat0,lon1,lat1);
+                        // draw position point itself
+                        (void)XSetForeground(XtDisplay(w),gc,col_dot);
+                        (void)XDrawPoint(XtDisplay(w),pixmap_final,gc,lon0,lat0);
                     }
+/*                  (void)XDrawLine(XtDisplay(w), pixmap_final, gc,         // draw trail segment
+                        (lon0-x_long_offset)/scale_x,(lat0-y_lat_offset)/scale_y,
+                        (lon1-x_long_offset)/scale_x,(lat1-y_lat_offset)/scale_y);
+*/
                 }
             }
-            (void)XSetDashes(XtDisplay(w), gc, 0, medium_dashed , 2);
+            ptr = ptr->prev;
         }
-        else if (debug_level & 256) {
-            printf("Trail for %s does not contain 2 or more points.\n",
-                fill->call_sign);
-        }
+        (void)XSetDashes(XtDisplay(w), gc, 0, medium_dashed , 2);
+    }
+    else if (debug_level & 256) {
+        printf("Trail for %s does not contain 2 or more points.\n",
+            fill->call_sign);
     }
 }
 
@@ -4926,22 +4964,25 @@ void init_station_data(void) {
  */        
 void init_station(DataRow *p_station) {
     // the list pointers should already be set
-    p_station->track_data       = NULL;         // no trail
-    p_station->weather_data     = NULL;         // no weather
-    p_station->coord_lat        = 0l;           //  90°N  \ undefined
-    p_station->coord_lon        = 0l;           // 180°W  / position
-    p_station->pos_amb          = 0;            // No ambiguity
-    p_station->call_sign[0]     = '\0';         // ?????
-    p_station->sec_heard        = 0;
-    p_station->time_sn          = 0;
-    p_station->flag             = 0;            // set all flags to inactive
-    p_station->record_type      = '\0';
-    p_station->data_via         = '\0';         // L local, T TNC, I internet, F file
+    p_station->track_data         = NULL;         // no trail
+    p_station->oldest_trackpoint  = NULL;
+    p_station->newest_trackpoint  = NULL;
+    p_station->trail_color        = 0;
+    p_station->weather_data       = NULL;         // no weather
+    p_station->coord_lat          = 0l;           //  90°N  \ undefined
+    p_station->coord_lon          = 0l;           // 180°W  / position
+    p_station->pos_amb            = 0;            // No ambiguity
+    p_station->call_sign[0]       = '\0';         // ?????
+    p_station->sec_heard          = 0;
+    p_station->time_sn            = 0;
+    p_station->flag               = 0;            // set all flags to inactive
+    p_station->record_type        = '\0';
+    p_station->data_via           = '\0';         // L local, T TNC, I internet, F file
     p_station->heard_via_tnc_port = 0;
     p_station->heard_via_tnc_last_time = 0;
     p_station->last_heard_via_tnc = 0;
-    p_station->last_port_heard   = 0;
-    p_station->num_packets       = 0;
+    p_station->last_port_heard    = 0;
+    p_station->num_packets        = 0;
     p_station->aprs_symbol.aprs_type = '\0';
     p_station->aprs_symbol.aprs_symbol = '\0';
     p_station->aprs_symbol.special_overlay = '\0';
@@ -4950,27 +4991,26 @@ void init_station(DataRow *p_station) {
     p_station->aprs_symbol.area_object.sqrt_lat_off   = 0;
     p_station->aprs_symbol.area_object.sqrt_lon_off   = 0;
     p_station->aprs_symbol.area_object.corridor_width = 0;
-    p_station->station_time_type = '\0';
-    p_station->origin[0]         = '\0';        // no object
-    p_station->packet_time[0]    = '\0';
-    p_station->node_path_ptr     = NULL;
-    p_station->pos_time[0]       = '\0';
-    p_station->altitude_time[0]  = '\0';
-    p_station->altitude[0]       = '\0';
-    p_station->speed_time[0]     = '\0';
-    p_station->speed[0]          = '\0';
-    p_station->course[0]         = '\0';
-    p_station->bearing[0]        = '\0';
-    p_station->NRQ[0]            = '\0';
-    p_station->power_gain[0]     = '\0';
-    p_station->signal_gain[0]    = '\0';
-    p_station->signpost[0]       = '\0';
-    p_station->station_time[0]   = '\0';
-    p_station->sats_visible[0]   = '\0';
-    p_station->status_data       = NULL;
-//    p_station->comments[0]       = '\0';
-    p_station->comment_data      = NULL;
-    p_station->df_color          = -1;
+    p_station->station_time_type  = '\0';
+    p_station->origin[0]          = '\0';        // no object
+    p_station->packet_time[0]     = '\0';
+    p_station->node_path_ptr      = NULL;
+    p_station->pos_time[0]        = '\0';
+    p_station->altitude_time[0]   = '\0';
+    p_station->altitude[0]        = '\0';
+    p_station->speed_time[0]      = '\0';
+    p_station->speed[0]           = '\0';
+    p_station->course[0]          = '\0';
+    p_station->bearing[0]         = '\0';
+    p_station->NRQ[0]             = '\0';
+    p_station->power_gain[0]      = '\0';
+    p_station->signal_gain[0]     = '\0';
+    p_station->signpost[0]        = '\0';
+    p_station->station_time[0]    = '\0';
+    p_station->sats_visible[0]    = '\0';
+    p_station->status_data        = NULL;
+    p_station->comment_data       = NULL;
+    p_station->df_color           = -1;
 }
 
 
@@ -7448,7 +7488,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     printf("  Valid position for %s\n",
                         p_station->call_sign);
                 }
-                if (p_station->track_data != NULL) {
+                if (p_station->newest_trackpoint != NULL) {
                     if (debug_level & 256) {
                         printf("Station has a trail: %s\n",
                             p_station->call_sign);
@@ -7504,7 +7544,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                             printf("Station %s valid speed %s\n",
                                 p_station->call_sign, p_station->speed);
                         }
-                        if (p_station->track_data == NULL) {
+                        if (p_station->newest_trackpoint == NULL) {
                             if (debug_level & 256) {
                                 printf("Station %s no trail history.\n",
                                     p_station->call_sign);

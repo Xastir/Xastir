@@ -260,6 +260,25 @@ typedef struct {
     char    flag[MAX_TRACKS];           // several flags, see below
 } TrackRow;
 
+
+// Struct for holding track data.  Keeps a dynamically allocated
+// doubly-linked list of track points.  The first record should have its
+// "prev" pointer set to NULL and the last record should have its "next"
+// pointer set to NULL.  If no track storage exists then the pointers to
+// these structs in the DataRow struct should be NULL.
+typedef struct _TrackRow2{
+    long    trail_long_pos;     // coordinate of trail point
+    long    trail_lat_pos;      // coordinate of trail point
+    time_t  sec;                // date/time of position
+    long    speed;              // in 0.1 km/h   undefined: -1
+    int     course;             // in degrees    undefined: -1
+    long    altitude;           // in 0.1 m      undefined: -99999
+    char    flag;               // several flags, see below
+    struct  _TrackRow2 *prev;   // pointer to previous record in list
+    struct  _TrackRow2 *next;   // pointer to next record in list
+} TrackRow2;
+
+
 // trail flag definitions
 #define TR_LOCAL        0x01    // heard direct (not via digis)
 #define TR_NEWTRK       0x02    // start new track
@@ -300,7 +319,12 @@ typedef struct _DataRow {
     char pos_amb;                       // Position ambiguity, 0 = none, 1 = 0.1 minute...
     long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
     long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
+
     TrackRow *track_data;               // Pointer to trail data or NULL if no trail data
+    TrackRow2 *oldest_trackpoint;       // Pointer to oldest track point in doubly-linked list
+    TrackRow2 *newest_trackpoint;       // Pointer to newest track point in doubly-linked list
+    int trail_color;                    // trail color (when assigned)
+ 
     WeatherRow *weather_data;           // Pointer to weather data or NULL if no weather data
     char record_type;
     char data_via;                      // L local, T TNC, I internet, F file
