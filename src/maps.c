@@ -7470,7 +7470,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                     printf("%c:County warning area file\n",alert->title[3]);
                     break;
                 case 'Z':
-                    // Zone or marine zone file z_????? or mz_????? or // oz_?????
+                    // Zone or marine zone file z_????? or mz_????? or oz_?????
                     // oz_: ANZ081-086,088,PZZ081-085
                     // mz_: AM,AN,GM,LC,LE,LH,LM,LO,LS,PH,PK,PM,PS,PZ,SL
                     // z_: All others
@@ -7573,17 +7573,68 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
             printf("File: %s\n",alert->filename);
         }
 
-        if (alert->filename[0]) {
+        if (alert->filename[0]) {   // We have a filename
+            int done = 0;
+            // Look through the warning directory to find a match for
+            // the first few characters that we already figured out.
+            // This is designed so that we don't need to know the exact
+            // filename, but only the lead three characters in order to
+            // figure out which shapefile to use.
+            dm = opendir (dir);
+            if (!dm) {  // Couldn't open directory
+                xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
+                if (warn)
+                    perror (fullpath);
+            } else {    // We could open the directory just fine
+                while ( (dl = readdir(dm)) && !done ) {
+                    xastir_snprintf(fullpath, sizeof(fullpath), "%s%s", dir, dl->d_name);
+                    /*printf("FULL PATH %s\n",fullpath); */
+                    if (stat (fullpath, &nfile) == 0) {
+                        ftime = (time_t *)&nfile.st_ctime;
+                        switch (nfile.st_mode & S_IFMT) {
+                            case (S_IFDIR):     // It's a directory, skip it
+                                break;
+                            case (S_IFREG):     // It's a file, check it
+                                /*printf("FILE %s\n",dl->d_name); */
+                                // Here we look for a match for the
+                                // first 2 characters of the filename.
+                                // 
+                                if (strncasecmp(alert->filename,dl->d_name,2) == 0) {
+                                    // We have a match
+                                    printf("%s\n",fullpath);
+                                    done++;
+                                }
+                                break;
 
-            //
-            // Need code here to call draw_map()
-            //
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+
+            if (done) {    // We found a filename match for the alert
+
+                //
+                // Need code here to call draw_map()
+                //
+
+            }
+            else {      // No filename found that matches the first two
+                        // characters that we already computed.
+
+                //
+                // Need code here
+                //
+
+            }
         }
         else {  // Still no filename for the weather alert.
                 // Output an error message?
             //
             // Need code here
             //
+
         }
     }
     else {          // We're doing regular maps
