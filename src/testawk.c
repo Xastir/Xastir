@@ -33,12 +33,15 @@ void print_symtbl(awk_symtab *this)
     awk_symbol *s;
     char buf[1024];
     int len;
+    int i;
 
     fprintf(stderr,"symtbl 0%0x dump:\n",(u_int)this);
-    for (s = this->head; s; s = s->next_sym) {
-        bzero(buf,sizeof(buf));
+    for (i = 0; i < AWK_SYMTAB_HASH_SIZE; i++) {
+      for (s = this->hash[i]; s; s = s->next_sym) {
+        *buf = '\0';
         awk_get_sym(s,buf,sizeof(buf),&len);
-        fprintf(stderr,"  %s = '%s'\n",s->name,buf);
+        fprintf(stderr,"%d  %s = '%.*s'\n",i,s->name,len,buf);
+      }
     }
 }
 
@@ -57,10 +60,12 @@ int nrules = sizeof(rules)/sizeof(rules[0]);
 void usage() 
 {
   fprintf(stderr,"Usage: testawk [-f file.awk| -D dir] [-d file.dbf] arg...\n");
-  fprintf(stderr," -D for dir containing dbfawk files.\n");
+  fprintf(stderr," -D for dir containing *.dbfawk files.\n");
   fprintf(stderr," or -f for file containing awk rules.\n");
   fprintf(stderr," -d for dbf file to parse [default dbf args on cmdline]\n");
 }
+
+int debug = 0;
 
 int main(int argc, char *argv[])
 {
@@ -94,9 +99,9 @@ int main(int argc, char *argv[])
       file = argv[2];
       argv++; argv++;
       argc -= 2;
-      rs = awk_load_program_file(symtbl,file); /* load up the program */
+      rs = awk_load_program_file(file); /* load up the program */
     } else 
-      rs = awk_load_program_array(symtbl,rules,nrules); /* load up the program */
+      rs = awk_load_program_array(rules,nrules); /* load up the program */
     if (argc > 2 && strcmp(argv[1],"-d") == 0) {
       dfile = argv[2];
       argv++; argv++;
@@ -138,7 +143,7 @@ int main(int argc, char *argv[])
 	  die("No mathing dbfawk signature found");
 	rs = si->prog;
       }
-      if (awk_compile_program(rs) < 0) {
+      if (awk_compile_program(symtbl,rs) < 0) {
         die("couldn't compile rules");
       }
       
@@ -153,33 +158,7 @@ int main(int argc, char *argv[])
       fi = dbfawk_field_list(dbf, dbffields);
       /* now actually read the whole file */
       for (i = 0; i < DBFGetRecordCount(dbf); i++ ) {
-	dbfawk_field_info *finfo;
-
-	awk_exec_begin_record(rs); /* execute a BEGIN_RECORD rule if any */
-	for (finfo = fi; finfo ; finfo = finfo->next)
-	{
-	  char qbuf[1024];
-
-	  switch (finfo->type) {
-	  case FTString:
-	    sprintf(qbuf,"%s=%s",finfo->name,DBFReadStringAttribute(dbf,i,finfo->num));
-	    break;
-	  case FTInteger:
-	    sprintf(qbuf,"%s=%d",finfo->name,DBFReadIntegerAttribute(dbf,i,finfo->num));
-	    break;
-	  case FTDouble:
-	    sprintf(qbuf,"%s=%f",finfo->name,DBFReadDoubleAttribute(dbf,i,finfo->num));
-	    break;
-	  case FTInvalid:
-	  default:
-	    sprintf(qbuf,"%s=??",finfo->name);
-	    break;
-	  }
-	  fprintf(stderr,"%d: qbuf(num %d, type %d): %s\n",i,finfo->num,
-		  finfo->type,qbuf);
-	  awk_exec_program(rs,qbuf,strlen(qbuf));
-	}
-	awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
+	dbfawk_parse_record(rs,dbf,fi,i);
 	fprintf(stderr,"name=%s, ",name);
 	fprintf(stderr,"key=%s, ",key);
 	fprintf(stderr,"symbol=%s, ",symbol);
@@ -189,7 +168,7 @@ int main(int argc, char *argv[])
 	fprintf(stderr,"pattern=%d, ",pattern);
 	fprintf(stderr,"display_level=%d, ",display_level);
 	fprintf(stderr,"label_level=%d\n",label_level);
-
+	//	print_symtbl(symtbl);
       }
       DBFClose(dbf);
     } else {			/* use cmdline args */
@@ -197,7 +176,7 @@ int main(int argc, char *argv[])
       for (args = 1; args < argc; args++) {
 	fprintf(stderr,"==> %s\n",argv[args]);
         awk_exec_program(rs,argv[args],strlen(argv[args]));
-	//        print_symtbl(symtbl);
+	// print_symtbl(symtbl);
       }
       awk_exec_end_record(rs);
     }

@@ -57,6 +57,7 @@
  *
  * This assumes a very small symbol table, so it is searched linearly.
  * No fancy hash table lookups are needed.
+ * XXX YES THEY ARE!
  */
 
 #define MAXSUBS 10              /* $0 thru $9 should be plenty */
@@ -80,35 +81,16 @@ awk_symtab *awk_new_symtab()
 
 void awk_free_symtab(awk_symtab *s)
 {
-    awk_symbol *p;
+    int i;
 
-    for (p = s->head; p; ) {
-        awk_symbol *x = p;
-        p = p->next_sym;
-        awk_free_sym(x);
+    for (i = 0; i < AWK_SYMTAB_HASH_SIZE; i++) {
+        awk_symbol *p,*x;
+        
+        for (x = s->hash[i]; x ; x = p) {
+            p = x->next_sym;
+            free(x);
+        }
     }
-}
-
-/*
- * awk_new_sym: alloc a symbol (symtab entry) and add to this symtab.
- */
-awk_symbol *awk_new_sym(awk_symtab *this)
-{
-    awk_symbol *n = calloc(1,sizeof(awk_symbol));
-
-    if (this->last)
-        this->last->next_sym = n;
-    else {
-        this->head = n;
-    }
-    this->last = n;
-    return n;
-}
-
-void awk_free_sym(awk_symbol *s)
-{
-    if (s)
-        free(s);
 }
 
 /*
@@ -120,7 +102,9 @@ int awk_declare_sym(awk_symtab *this,
                 const void *val,
                 const int size)
 {
-    awk_symbol *s = awk_new_sym(this);
+    awk_symbol *s = calloc(1,sizeof(awk_symbol));
+    awk_symbol *p;
+    u_int i;
 
     if (!s)
         return -1;
@@ -130,6 +114,12 @@ int awk_declare_sym(awk_symtab *this,
     s->val = (void *)val;
     s->size = size;
     s->len = 0;
+    i = AWK_SYM_HASH(s->name,s->namelen);
+    if ((p = this->hash[i]) != NULL) {
+        s->next_sym = p;        /* insert at top of bucket */
+    }
+    this->hash[i] = s;          /* make (new) top of bucket */
+
     return 0;
 }
 
@@ -142,8 +132,8 @@ awk_symbol *awk_find_sym(awk_symtab *this,
 {
     awk_symbol *s;
 
-    for (s = this->head; s; s = s->next_sym)
-        if ((s->namelen == len) && (strncasecmp(s->name,name,len) == 0))
+    for (s = this->hash[AWK_SYM_HASH(name,len)]; s; s = s->next_sym)
+        if ((s->namelen == len) && (strncmp(s->name,name,len) == 0))
             return s;
     return NULL;
 }
@@ -577,9 +567,8 @@ void awk_add_rule(awk_program *this, awk_rule *r)
  *  to load a program from a statically declared array (see test main
  *  program for an example).
  */
-awk_program *awk_load_program_array(awk_symtab *this, /* symtab that goes w/this program */
-                         awk_rule rules[], /* rules array */
-                         int nrules) /* size of array */
+awk_program *awk_load_program_array(awk_rule rules[], /* rules array */
+                                    int nrules) /* size of array */
 {
     awk_program *n = awk_new_program();
     awk_rule *r; 
@@ -587,7 +576,6 @@ awk_program *awk_load_program_array(awk_symtab *this, /* symtab that goes w/this
     if (!n)
         return NULL;
 
-    n->symtbl = this;
     for (r = rules; r < &rules[nrules]; r++) {
         awk_add_rule(n,r);
     }
@@ -623,8 +611,7 @@ static void garbage(const char *file,
     fputs("^\n\n",stderr);
 }
 
-awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program */
-                        const char *file) /* rules filename */
+awk_program *awk_load_program_file(const char *file) /* rules filename */
 {
     awk_program *n = awk_new_program();
     awk_rule *r; 
@@ -640,7 +627,6 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
     if (!n)
         return NULL;
 
-    n->symtbl = this;
     while (fgets(in,sizeof(in),f)) {
         char *cp = in, *p;
         int l = strlen(in);
@@ -742,7 +728,7 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
 /*
  * awk_compile_program: Once loaded (from array or file), the program is compiled.  Check for already compiled program.
  */
-int awk_compile_program(awk_program *rs)
+int awk_compile_program(awk_symtab *symtab, awk_program *rs)
 {
     const char *error;
     awk_rule *r;
@@ -751,6 +737,7 @@ int awk_compile_program(awk_program *rs)
     if (!rs)
         return -1;
 
+    rs->symtbl = symtab;
     for (r = rs->head; r; r = r->next_rule) {
         if (r->ruletype == REGEXP) {
             r->tables = pcre_maketables(); /* NLS locale parse tables */
@@ -834,11 +821,13 @@ int awk_exec_program(awk_program *this, char *buf, int len)
         if (r->ruletype == REGEXP) {
             rc = pcre_exec(r->re,r->pe,buf,len,0,0,ovector,OVECLEN);
             /* assign values to as many of $0 thru $9 as were set */
+            /* XXX - avoid calling awk_find_sym for these known values */
             for (i = 0; rc > 0 && i < rc && i < MAXSUBS ; i++) {
-                char symname[10];
+                char symname[2];
                 awk_symbol *s;
                 
-                sprintf(symname,"%d",i);
+                symname[0] = i + '0';
+                symname[1] = '\0';
                 s = awk_find_sym(this->symtbl,symname,1);
                 s->val = &buf[ovector[2*i]];
                 s->len = ovector[2*i+1]-ovector[2*i];
@@ -848,7 +837,8 @@ int awk_exec_program(awk_program *this, char *buf, int len)
                 char symname[10];
                 awk_symbol *s;
                 
-                sprintf(symname,"%d",i);
+                symname[0] = i + '0';
+                symname[1] = '\0';
                 s = awk_find_sym(this->symtbl,symname,1);
                 s->len = 0;
             }

@@ -33,7 +33,9 @@
 #if TIME_WITH_SYS_TIME
   // Define needed by some versions of Linux in order to define
   // strptime()
+#ifndef __USE_XOPEN
 # define __USE_XOPEN
+#endif
 # include <sys/time.h>
 # include <time.h>
 #else   // TIME_WITH_SYS_TIME

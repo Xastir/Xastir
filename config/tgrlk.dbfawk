@@ -27,7 +27,8 @@ dbffields="TLID:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC"}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
-BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=0; pattern=1; display_level=8192; label_level=32; symbol=""}
+# use color 11 to highlight stuff that isn't properly mapped.
+BEGIN_RECORD {key=""; lanes=1; color=11; name=""; filled=0; pattern=1; display_level=8192; label_level=32; symbol=""}
 
 # per-field rules are applied to the dbffields that are read from each record.
 # key: set the search key to be the Tiger/Line ID.  Not currently used.
@@ -42,11 +43,11 @@ BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=0; pattern=1; display_le
 /^FENAME=(.*)$/ {name="$(name)$1; next}
 /^FETYPE=(.+)$/ {name="$(name) $1"; next}
 /^FEDIRS=(.+)$/ {name="$(name) $1"; next}
-# Census Feature Class Codes are used to set lanbes, color, display_level, etc.
+# Census Feature Class Codes are used to set lanes, color, display_level, etc.
 # CFCC A..: roads
-/^CFCC=A1/ {lanes=4; color=4}
-/^CFCC=A2/ {lanes=3; color=8}
-/^CFCC=A3/ {lanes=2; color=8}
+/^CFCC=A1/ {lanes=4; color=4; label_level=512; next}
+/^CFCC=A2/ {lanes=3; color=8; label_level=256; next}
+/^CFCC=A3/ {lanes=2; color=8; label_level=128; next}
 /^CFCC=A3[1-6]/ {display_level=256; next}
 /^CFCC=A3[7-8]/ {display_level=128; next}
 /^CFCC=A4/ {display_level=96; label_level=16; color=40; lanes=1; next}
@@ -57,18 +58,19 @@ BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=0; pattern=1; display_le
 /^CFCC=A7[03-9]/ {lanes=1; color=40; pattern=2; display_level=64; next}
 # need to implement these:
 # B: railroads
+/^CFCC=B/ {lanes=1; color=1; pattern=1; display_level=128; next}
 # C: transmission lines
 # D: landmarks
 # E: physical featuers
 # F: legal boundaries
 # (G not used by census;  tig2aprs uses for special maps)
 # H: hydrography
-/^CFCC=H0/ {lanes=0; color=27;}
+/^CFCC=H/ {lanes=0; color=26;}
 /^CFCC=H02/ {pattern=2; next}
 /^CFCC=H[1-6]2/ {lanes=1; pattern=2; next}
 /^CFCC=H[1-6][013-9]/ {lanes=1; next}
 /^CFCC=H7/ {display_level=0; label_level=0; next}
-/^CFCC=H8/ {color=27; lanes=1}
+/^CFCC=H8/ {lanes=1}
 /^CFCC=H81/ {color=15; next}
 # just a demo of the END_RECORD and END rules:
 #END_RECORD {name="$name ($key)";}

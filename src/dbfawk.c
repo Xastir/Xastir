@@ -116,7 +116,7 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
     DIR *d;
     struct dirent *e;
     int ftlen;
-    dbfawk_sig_info *i, *head = NULL;
+    dbfawk_sig_info *i = NULL, *head = NULL;
     awk_symtab *symtbl;
     char dbfinfo[1024];         /* local copy of signature */
 
@@ -132,24 +132,31 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
 
     while ((e = readdir(d)) != NULL) {
         int len = strlen(e->d_name);
+        char *path = calloc(1,len+strlen(dir)+2);
 
+        if (!path) {
+            fprintf(stderr,"failed to malloc in dbfawk.c!\n");
+            return NULL;
+        }
         *dbfinfo = '\0';
         if (len > ftlen && (strcmp(&e->d_name[len-ftlen],ftype) == 0)) {
-            fprintf(stderr,"match: %s\n",e->d_name);
             if (!head) {
                 i = head = calloc(1,sizeof(dbfawk_sig_info));
             } else {
                 i->next = calloc(1,sizeof(dbfawk_sig_info));
                 i = i->next;
             }
-            i->prog = awk_load_program_file(symtbl,e->d_name);
-            if (awk_compile_program(i->prog) < 0) {
+            strcpy(path,dir);
+            strcat(path,"/");
+            strcat(path,e->d_name);
+            i->prog = awk_load_program_file(path);
+            free(path);
+            if (awk_compile_program(symtbl,i->prog) < 0) {
                 fprintf(stderr,"%s: failed to parse\n",e->d_name);
             } else {
                 /* dbfinfo must be defined in BEGIN rule */
                 awk_exec_begin(i->prog); 
                 i->sig = strdup(dbfinfo);
-                fprintf(stderr,"sig: %s\n",i->sig);
                 awk_uncompile_program(i->prog);
             }
         }
@@ -194,6 +201,43 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info, const char *sig)
             return result;
     }
     return NULL;
+}
+
+
+/*
+ * dbfawk_parse_record:  Read a dbf record and parse only the fields
+ *  listed in 'fi' using the program, 'rs'.
+ */
+void dbfawk_parse_record(awk_program *rs,
+                         DBFHandle dbf,
+                         dbfawk_field_info *fi,
+                         int i) 
+{
+    dbfawk_field_info *finfo;
+
+    awk_exec_begin_record(rs); /* execute a BEGIN_RECORD rule if any */
+
+    for (finfo = fi; finfo ; finfo = finfo->next) {
+        char qbuf[1024];
+
+        switch (finfo->type) {
+        case FTString:
+	    sprintf(qbuf,"%s=%s",finfo->name,DBFReadStringAttribute(dbf,i,finfo->num));
+	    break;
+        case FTInteger:
+	    sprintf(qbuf,"%s=%d",finfo->name,DBFReadIntegerAttribute(dbf,i,finfo->num));
+	    break;
+        case FTDouble:
+	    sprintf(qbuf,"%s=%f",finfo->name,DBFReadDoubleAttribute(dbf,i,finfo->num));
+	    break;
+        case FTInvalid:
+        default:
+	    sprintf(qbuf,"%s=??",finfo->name);
+	    break;
+        }
+        awk_exec_program(rs,qbuf,strlen(qbuf));
+    }
+    awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 }
 
 #endif /* HAVE_LIBSHP && HAVE_LIBPCRE */

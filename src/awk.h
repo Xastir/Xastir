@@ -43,10 +43,13 @@ typedef struct awk_symbol_ {	/* symbol table entry */
     int len;                    /* current length of *val */
 } awk_symbol;
 
+#define AWK_SYMTAB_HASH_SIZE 0xff
 typedef struct awk_symtab_ {	/* symbol table anchor */
-    awk_symbol *head;
-    awk_symbol *last;
+    awk_symbol *hash[AWK_SYMTAB_HASH_SIZE];
 } awk_symtab;
+
+#define AWK_SYM_HASH(n,l) ((*n)&AWK_SYMTAB_HASH_SIZE)
+//#define AWK_SYM_HASH(n,l) ((n[0]+((l>1)?n[1]:0))&AWK_SYMTAB_HASH_SIZE)
 
 typedef struct awk_action_ {	/* a program statement */
     struct awk_action_ *next_act;
@@ -80,8 +83,6 @@ typedef struct awk_program_ {	/* anchor for the list of rules */
 } awk_program;
 
 extern awk_symtab *awk_new_symtab(void);
-extern awk_symbol *awk_new_sym(awk_symtab *this);
-extern void awk_free_sym(awk_symbol *s);
 extern void awk_free_symtab(awk_symtab *s);
 extern int awk_declare_sym(awk_symtab *this,
                        const char *name, 
@@ -114,12 +115,9 @@ extern void awk_free_rule(awk_rule *r);
 extern awk_program *awk_new_program(void);
 extern void awk_free_program(awk_program *rs);
 void awk_add_rule(awk_program *this, awk_rule *r);
-extern awk_program *awk_load_program_array(awk_symtab *this,
-				awk_rule rules[],
-				int nrules);
-extern awk_program *awk_load_program_file(awk_symtab *this,
-			       const char *file);
-extern int awk_compile_program(awk_program *rs);
+extern awk_program *awk_load_program_array(awk_rule rules[],int nrules);
+extern awk_program *awk_load_program_file(const char *file);
+extern int awk_compile_program(awk_symtab *symtbl,awk_program *rs);
 extern void awk_uncompile_program(awk_program *rs);
 extern int awk_exec_program(awk_program *this, char *buf, int len);
 extern int awk_exec_begin_record(awk_program *this);

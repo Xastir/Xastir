@@ -74,6 +74,10 @@
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 #ifdef HAVE_LIBSHP
+#ifdef HAVE_LIBPCRE
+#include "awk.h"
+#include "dbfawk.h"
+#endif /* HAVE_LIBPCRE */
 #ifdef HAVE_SHAPEFIL_H
 #include <shapefil.h>
 #else
@@ -565,6 +569,12 @@ MRC         string      (8,0)   48122-G7
 
 
  **********************************************************/
+
+#ifdef DBFAWK
+static dbfawk_sig_info *Dbf_sigs = NULL;
+static awk_symtab *Symtbl = NULL;
+#endif
+
 void draw_shapefile_map (Widget w,
                         char *dir,
                         char *filenm,
@@ -578,7 +588,7 @@ void draw_shapefile_map (Widget w,
     static XPoint   points[MAX_MAP_POINTS];
     char            file[MAX_FILENAME];  /* Complete path/name of image file */
     char            warning_text[MAX_FILENAME*2];
-    int             *panWidth, i, fieldcount, recordcount, structure, ring;
+    int             i, fieldcount, recordcount, structure, ring;
     char            ftype[15];
     int             nWidth, nDecimals;
     SHPHandle       hSHP;
@@ -622,6 +632,12 @@ void draw_shapefile_map (Widget w,
     int             high_water_mark_index = 0;
     char            quad_label[100];
     char            status_text[MAX_FILENAME];
+#ifdef DBFAWK
+    char            dbfsig[1024],dbffields[1024],name[64],key[64],sym[2];
+    int             color,lanes,filled,pattern,display_level,label_level;
+    dbfawk_sig_info *sig_info = NULL;
+    dbfawk_field_info *fld_info = NULL;
+#endif
 
     typedef struct _label_string {
         char   label[50];
@@ -632,6 +648,13 @@ void draw_shapefile_map (Widget w,
     label_string *label_ptr = NULL;
     label_string *ptr2 = NULL;
 
+#ifdef DBFAWK
+    if (Dbf_sigs == NULL)
+        Dbf_sigs = dbfawk_load_sigs(get_data_base_dir("config"),".dbfawk");
+    if (debug_level & 16)
+        fprintf(stderr,"DBFAWK signatures %sfound in %s.\n",
+                (Dbf_sigs)?" ":"NOT ",get_data_base_dir("config"));
+#endif
 
     //fprintf(stderr,"*** Alert color: %d ***\n",alert_color);
 
@@ -671,12 +694,16 @@ void draw_shapefile_map (Widget w,
 
         return;
     }
-
     if (debug_level & 16)
         fprintf(stderr,"\n---------------------------------------------\nInfo for %s\n",filenm);
 
+#ifdef DBFAWK
+    *dbfsig = '\0';
+    fieldcount = dbfawk_sig(hDBF,dbfsig,sizeof(dbfsig));
+#else
     fieldcount = DBFGetFieldCount(hDBF);
-    if (fieldcount == (int)NULL) {
+#endif /* !DBFAWK */
+    if (fieldcount == 0) {
         DBFClose( hDBF );   // Clean up open file descriptors
         return;     // Should have at least one field
         
@@ -686,12 +713,41 @@ void draw_shapefile_map (Widget w,
         DBFClose( hDBF );   // Clean up open file descriptors
         return;     // Should have at least one record
     }
-    if (debug_level & 16)
+    if (debug_level & 16) {
         fprintf(stderr,"%d Columns,  %d Records in file\n", fieldcount, recordcount);
-
-    panWidth = (int *) malloc( fieldcount * sizeof(int) );
-    CHECKMALLOC(panWidth);
-// Make sure to free(panWidth) everywhere we return from!!!
+#ifdef DBFAWK
+        fprintf(stderr,"DBF signature: %s\n",dbfsig);
+#endif
+    }
+#ifdef DBFAWK
+    if (Dbf_sigs) {   /* see if we have a .dbfawk file that matches */
+        sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig);
+        if (sig_info) {         /* we've got a .dbfawk, so set up symtbl */
+            if (!Symtbl) {
+                Symtbl = awk_new_symtab();
+                awk_declare_sym(Symtbl,"dbffields",STRING,dbffields,sizeof(dbffields));
+                awk_declare_sym(Symtbl,"color",INT,&color,sizeof(color));
+                awk_declare_sym(Symtbl,"lanes",INT,&lanes,sizeof(lanes));
+                awk_declare_sym(Symtbl,"name",STRING,name,sizeof(name));
+                awk_declare_sym(Symtbl,"key",STRING,key,sizeof(key));
+                awk_declare_sym(Symtbl,"symbol",STRING,sym,sizeof(sym));
+                awk_declare_sym(Symtbl,"filled",INT,&filled,sizeof(filled));
+                awk_declare_sym(Symtbl,"pattern",INT,&pattern,sizeof(pattern));
+                awk_declare_sym(Symtbl,"display_level",INT,&display_level,sizeof(display_level));
+                awk_declare_sym(Symtbl,"label_level",INT,&label_level,sizeof(label_level));
+            }
+            if (awk_compile_program(Symtbl,sig_info->prog) < 0) {
+                fprintf(stderr,"Unable to compile .dbfawk program\n");
+                return;
+            }
+            awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
+            /* find out which dbf fields we care to read */
+            fld_info = dbfawk_field_list(hDBF, dbffields);
+        } else {
+            fprintf(stderr,"No DBFAWK signature for %s!\n",filenm);
+        }
+    }
+#endif /* DBFAWK */
 
     // If we're doing weather alerts and index is not filled in yet
     if (weather_alert_flag && (alert->index == -1) ) {
@@ -784,7 +840,7 @@ void draw_shapefile_map (Widget w,
 
         //fprintf(stderr,"Search_param1: %s,\t",search_param1);
         //fprintf(stderr,"Search_param2: %s\n",search_param2);
-    }
+    } /* weather_alert */
 
     for (i=0; i < fieldcount; i++) {
         char szTitle[12];
@@ -994,7 +1050,7 @@ void draw_shapefile_map (Widget w,
                     break;
             }
         }
-    }
+    } /* for (i = 0; i < fieldcount; i++)... */
 
 
     // Search for specific record if we're doing alerts
@@ -1077,7 +1133,7 @@ void draw_shapefile_map (Widget w,
             }
         }
         alert->index = found_shape; // Fill it in 'cuz we just found it
-    }
+    } /* if (weather_alert_flag && alert_index == -1)... */
     else if (weather_alert_flag) {
         // We've been here before and we already know the index into the
         // file to fetch this particular shape.
@@ -1095,10 +1151,6 @@ void draw_shapefile_map (Widget w,
     if( hSHP == NULL ) {
         fprintf(stderr,"draw_shapefile_map: SHPOpen(%s,\"rb\") failed.\n", file );
         DBFClose( hDBF );   // Clean up open file descriptors
-
-        // Free up any malloc's that we did
-        if (panWidth)
-            free(panWidth);
 
         return;
     }
@@ -1123,10 +1175,6 @@ void draw_shapefile_map (Widget w,
 
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );
-
-        // Free up any malloc's that we did
-        if (panWidth)
-            free(panWidth);
 
         return; // Done indexing this file
     }
@@ -1155,20 +1203,12 @@ void draw_shapefile_map (Widget w,
             DBFClose( hDBF );   // Clean up open file descriptors
             SHPClose( hSHP );
 
-            // Free up any malloc's that we did
-            if (panWidth)
-                free(panWidth);
-
             return; // Multipoint type.  Not implemented yet.
             break;
 
         default:
             DBFClose( hDBF );   // Clean up open file descriptors
             SHPClose( hSHP );
-
-            // Free up any malloc's that we did
-            if (panWidth)
-                free(panWidth);
 
             return; // Unknown type.  Don't know how to process it.
             break;
@@ -1197,10 +1237,6 @@ void draw_shapefile_map (Widget w,
 
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );
-
-        // Free up any malloc's that we did
-        if (panWidth)
-            free(panWidth);
 
         return;     // The file contains no shapes in our viewport
     }
@@ -1310,8 +1346,6 @@ void draw_shapefile_map (Widget w,
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
-        if (panWidth)
-            free(panWidth);
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );
         // Update to screen
@@ -1372,7 +1406,9 @@ void draw_shapefile_map (Widget w,
                                   warning_text) ) { // Error text if failure
 
             const char *temp;
+#ifndef DBFAWK
             char temp2[100];
+#endif /*!DBFAWK*/
             int jj;
             int x0 = 0; // Used for computing label rotation
             int x1 = 0;
@@ -1402,7 +1438,23 @@ void draw_shapefile_map (Widget w,
                 fprintf(stderr,"\n");
                 fprintf(stderr,"Done with field contents\n");
             }
-
+#ifdef DBFAWK
+            if (sig_info) {
+                dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
+                if (debug_level & 16) {
+                    fprintf(stderr,"dbfawk parse of structure %d: ",structure);
+                    fprintf(stderr,"color=%d ",color);
+                    fprintf(stderr,"lanes=%d ",lanes);
+                    fprintf(stderr,"name=%s ",name);
+                    fprintf(stderr,"key=%s ",key);
+                    fprintf(stderr,"symbol=%s ",sym);
+                    fprintf(stderr,"filled=%d ",filled);
+                    fprintf(stderr,"pattern=%d ",pattern);
+                    fprintf(stderr,"display_level=%d ",display_level);
+                    fprintf(stderr,"label_level=%d\n",label_level);
+                }
+            }
+#endif /* DBFAWK */
 
             switch ( nShapeType ) {
 
@@ -1431,13 +1483,17 @@ void draw_shapefile_map (Widget w,
                         int ok = 1;
                         int temp_ok;
 
+#ifdef DBFAWK
+                        if (map_labels)
+                            temp = name;
+#else
                         // If labels are enabled and we have enough
                         // fields in the .dbf file, read the label.
                         if (map_labels && fieldcount >= 1) {
                             // Snag the label from the .dbf file
                             temp = DBFReadStringAttribute( hDBF, structure, 0 );
                         }
-
+#endif /* !DBFAWK */
                         // Convert point to Xastir coordinates
                         temp_ok = convert_to_xastir_coordinates(&my_long,
                             &my_lat,
@@ -1508,6 +1564,17 @@ void draw_shapefile_map (Widget w,
 
 
 // Set up width and zoom level for roads
+#ifdef DBFAWK
+                    skip_it = (map_color_levels && scale_y > display_level);
+                    skip_label = (map_color_levels && scale_y > label_level);
+                    if (!skip_it) {
+                        (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+                        (void)XSetLineAttributes(XtDisplay (w), gc, 
+                                                 (lanes)?lanes:1,
+                                                 (pattern)?LineSolid:LineOnOffDash,
+                                                 CapButt,JoinMiter);
+                    }
+#else /*!DBFAWK*/
                     if (road_flag) {
                         int lanes = 0;
                         int dashed_line = 0;
@@ -1642,7 +1709,6 @@ void draw_shapefile_map (Widget w,
                             }
                             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                         }
-
                         if (lanes != (int)NULL) {
                             if (dashed_line) {
                                 (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
@@ -1845,7 +1911,7 @@ void draw_shapefile_map (Widget w,
                     else {  // Set default line width, use whatever color is already defined by this point.
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
-
+#endif /* !DBFAWK */
 
 //WE7U
 // I'd like to be able to change the color of each GPS track for
@@ -2010,6 +2076,9 @@ void draw_shapefile_map (Widget w,
 // Don't do unnecessary calculations if we're not going to draw the
 // label.
 
+#ifdef DBFAWK
+                    temp = (gps_flag)?gps_label:name;
+#else /* !DBFAWK */
                     // We're done with drawing the arc's.  Draw the
                     // labels in this next section.
                     //
@@ -2163,7 +2232,7 @@ void draw_shapefile_map (Widget w,
                             }
                         }
                     }
-
+#endif /* !DBFAWK */
                     if ( (temp != NULL)
                             && (strlen(temp) != 0)
                             && map_labels
@@ -3362,10 +3431,6 @@ if (on_screen) {
     DBFClose( hDBF );
     SHPClose( hSHP );
 
-    // Free up any malloc's that we did
-    if (panWidth)
-        free(panWidth);
- 
 //    XmUpdateDisplay (XtParent (da));
 
     if (debug_level & 16) {

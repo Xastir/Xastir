@@ -194,6 +194,11 @@ AC_CHECK_HEADERS(netax25/ax25.h, [AC_CHECK_LIB(ax25, ax25_config_load_ports, has
 LIBS="$LIBS -lax25"
 AC_DEFINE(HAVE_LIBAX25, , Define to 1 if you have the `ax25' library (-lax25). )
 break)])
+
+# use dbfawk
+use_dbfawk=no
+AC_ARG_WITH(dbfawk,[  --with-dbfawk       Enable experimental dbfawk features.],AC_DEFINE(DBFAWK, , Define to 1 to use experimental dbfawk features. )
+use_dbfawk=yes)
  
 # Set XASTIR_DATA_BASE in CPPFLAGS due to Gnu coding standard that requires
 # datadir expansion to be deferred until make time.
@@ -252,7 +257,7 @@ AC_SUBST(X_CFLAGS)
 #AC_SUBST(X_PRE_LIBS) 
 #AC_SUBST(X_LIBS) 
 #AC_SUBST(X_EXTRA_LIBS) 
- 
+
 AC_CONFIG_FILES([Makefile \
     callpass/Makefile \
     config/Makefile \
@@ -291,6 +296,7 @@ echo Building with pcre.......... : $use_pcre
 echo Building with ImageMagick... : $use_imagemagick 
 echo Building with Festival...... : $use_festival 
 echo Building with GPSMan........ : $use_gpsman
+echo Building with dbfawk........ : $use_dbfawk
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
 if test "x$xastirpath" != "x" ; then 
