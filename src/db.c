@@ -8022,7 +8022,7 @@ int extract_time(DataRow *p_station, char *data, int type) {
         if (len > 6) {
             // Status messages only with optional zulu format
             // DK7IN: APRS ref says one of 'z' '/' 'h', but I found 'c' at HB9TJM-8   ???
-            if (toupper(data[6])=='Z' || data[6]=='/' || toupper(data[6])=='h')
+            if (toupper(data[6])=='Z' || data[6]=='/' || toupper(data[6])=='H')
                 ok = 1;
             for (i=0;ok && i<6;i++)
                 if (!isdigit((int)data[i]))
