@@ -972,11 +972,13 @@ Getting Data Files for Xastir:
 
     .geo files/online maps & graphics:
 
-      If you have ImageMagick and wget installed, .geo files for NWS radars are
-      available from: ftp://gcpoolz.com/geos/Srb_geos.zip . You'll probably
-      want to add an IMAGESIZE line to each one to speed up loading when
-      some radars are offscreen: (bash syntax, modify for your shell...)
-      for a in srb_*; do echo "IMAGESIZE 620 620" >> $a; done
+      If you have ImageMagick and wget installed, .geo files for NWS radars
+      are available from "ftp://gcpoolz.com/geos/Srb_geos.zip" or from
+      "ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/radar-geos.tgz". You'll
+      probably want to add an IMAGESIZE line to each one to speed up loading
+      when some radars are offscreen: (bash syntax, modify for your shell...)
+
+          for a in srb_*; do echo "IMAGESIZE 620 620" >> $a; done
 
       Please also note that the coordinates in the .GEO files are expressed
       in decimal degrees, and are listed with longitude first then latitude
