@@ -124,6 +124,7 @@ required:
 [ ] curl
 [ ] curl-devel
 [ ] cvs
+[ ] db4.2 (need libdb4.2 & libdb4.2-devel)
 [ ] diffutils
 [ ] gcc
 [ ] gzip
