@@ -1891,7 +1891,7 @@ void create_image(Widget w) {
     //
     //  If tigermaps are enabled, then load them.
     //
-    if (tiger_flag)
+    if (tiger_flag && !disable_all_maps)
         draw_tiger_map(w);
 #endif // HAVE_IMAGEMAGICK
 
