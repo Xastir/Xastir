@@ -2128,6 +2128,13 @@ void disown_object_item(char *call_sign, char *new_owner) {
         if (line[0] == ';') {       // Object
             substr(name,&line[1],9);
             name[9] = '\0';
+            remove_trailing_spaces(name);
+        }
+        else if (line[1] == ';') {  // Commented out Object
+            substr(name,&line[2],10);
+            name[9] = '\0';
+            remove_trailing_spaces(name);
+ 
         }
         else if (line[0] == ')') {  // Item
             int i;
@@ -2141,9 +2148,27 @@ void disown_object_item(char *call_sign, char *new_owner) {
                 name[i-1] = line[i];
             }
             name[9] = '\0';  // In case we never saw '!' || '_'
-        }
 
-        remove_trailing_spaces(name);
+            // Don't remove trailing spaces for Items, else we won't
+            // get a match.
+        }
+        else if (line[1] == ')') {  // Commented out Item
+            int i;
+
+            // 3-9 char name
+            for (i = 2; i <= 10; i++) {
+                if (line[i] == '!' || line[i] == '_') {
+                    name[i-1] = '\0';
+                    break;
+                }
+                name[i-1] = line[i];
+            }
+            name[9] = '\0';  // In case we never saw '!' || '_'
+
+            // Don't remove trailing spaces for Items, else we won't
+            // get a match.
+        }
+ 
 
         //fprintf(stderr,"'%s'\t'%s'\n", name, call_sign);
 
@@ -2193,7 +2218,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
 //
 // Change this function so that deleted objects/items get disowned
 // instead (commented out in the file so that they're not
-// transmitted again after a restart).
+// transmitted again after a restart).  See disown_object_item().
 //
 void log_object_item(char *line, int disable_object, char *object_name) {
     char *file;
@@ -2233,6 +2258,10 @@ void log_object_item(char *line, int disable_object, char *object_name) {
 //
 // Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
+//
+// This appears to skip the loading of killed objects/items.  We may
+// instead want to begin transmitting them again until they time
+// out, then mark them with a '#' in the log file at that point.
 //
 void reload_object_item(void) {
     char *file;
