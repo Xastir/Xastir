@@ -519,8 +519,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     }
 
 //WE7U:  Modify for MKISS?
-    /* reopen or open port*/
-    if (devices[TNC_port].connect_on_startup==1 || was_up) {
+    /* reopen port*/
+    if (was_up) {
         (void)add_device(TNC_port,
             type,
             devices[TNC_port].device_name,
@@ -1797,8 +1797,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" )
 
     set_port_speed(GPS_port);
     devices[GPS_port].style=device_style;
-    /* reopen or open port*/
-    if (devices[GPS_port].connect_on_startup==1 || was_up) {
+    /* reopen */
+    if ( was_up ) {
         (void)add_device(GPS_port,
             DEVICE_SERIAL_GPS,
             devices[GPS_port].device_name,
@@ -2340,8 +2340,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
     xastir_snprintf(devices[WX_port].device_host_pswd,
             sizeof( devices[WX_port].device_host_pswd), "%d", device_data_type);
 
-    /* reopen or open port*/
-    if (devices[WX_port].connect_on_startup==1 || was_up) {
+    /* reopen */
+    if ( was_up) {
         (void)add_device(WX_port,
             DEVICE_SERIAL_WX,
             devices[WX_port].device_name,
@@ -2992,8 +2992,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" )
     xastir_snprintf(devices[NWX_port].device_host_pswd,
             sizeof(devices[NWX_port].device_host_pswd), "%d", device_data_type);
 
-    /* reopen or open port*/
-    if (devices[NWX_port].connect_on_startup==1 || was_up) {
+    /* reopen if was up*/
+    if ( was_up) {
         (void)add_device(NWX_port,
             DEVICE_NET_WX,
             devices[NWX_port].device_host_name,
@@ -3498,8 +3498,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" 
     else
         devices[NGPS_port].set_time=0;
 
-    /* reopen or open port*/
-    if (devices[NGPS_port].connect_on_startup==1 || was_up) {
+    /* reopen */
+    if ( was_up ) {
         (void)add_device(NGPS_port,
             DEVICE_NET_GPSD,
             devices[NGPS_port].device_host_name,
@@ -3950,8 +3950,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
 
     devices[AX25_port].reconnect=1;
 
-    /* reopen or open port*/
-    if (devices[AX25_port].connect_on_startup==1 || was_up) {
+// reopen if open before - n8ysz 20041213
+//    if (devices[AX25_port].connect_on_startup==1 || was_up) {
+    if ( was_up) {
         (void)add_device(AX25_port,
             DEVICE_AX25_TNC,
             devices[AX25_port].device_name,
@@ -4556,7 +4557,10 @@ begin_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
     else
         devices[Inet_port].reconnect=0;
 
-    if (devices[Inet_port].connect_on_startup==1 || was_up) {
+//    Changed 20041213 per emails with we7u - n8ysz
+//    if (devices[Inet_port].connect_on_startup==1 || was_up) {
+
+    if ( was_up) {
         (void)add_device(Inet_port,
             DEVICE_NET_STREAM,
             devices[Inet_port].device_host_name,
@@ -5026,7 +5030,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
     else
         devices[Database_port].reconnect=0;
 
-    if (devices[Database_port].connect_on_startup==1 || was_up) {
+//    n8ysz 20041213
+//    if (devices[Database_port].connect_on_startup==1 || was_up) {  
+    if ( was_up) {
         (void)add_device(Database_port,
             DEVICE_NET_DATABASE,
             devices[Database_port].device_host_name,
@@ -5566,7 +5572,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     else
         devices[AGWPE_port].reconnect=0;
 
-    if (devices[AGWPE_port].connect_on_startup==1 || was_up) {
+//  n8ysz 20041213
+//    if (devices[AGWPE_port].connect_on_startup==1 || was_up) {
+    if ( was_up) {
         (void)add_device(AGWPE_port,
             DEVICE_NET_AGWPE,
             devices[AGWPE_port].device_host_name,
@@ -7562,5 +7570,3 @@ if (end_critical_section(&port_data_lock, "interface_gui.c:interface_status(4)" 
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
 }
-
-
