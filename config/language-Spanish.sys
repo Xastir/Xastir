@@ -3,7 +3,7 @@
 #
 # Creador        : por Jose R. Marte A. <hi8gn@amsat.org>
 # Mantenido por  : El Xastir Grupo <xastir@xastir.org>
-# Ult. Revisión  : 05/13/2003, Por Jose R. Marte A. <hi8gn@amsat.org>
+# Ult. Revisión  : 05/14/2003, Por Jose R. Marte A. <hi8gn@amsat.org>
 #
 # Líneas de comentarios con un signo de libra en frente son ignorado
 # El formato del archivo es como sigue:
@@ -39,15 +39,15 @@ PULDNFI015|Imprimir Mapa|P|
 PULDNVI001|Boletines|B|
 PULDNVI002|Datos entrantes|D|
 PULDNVI003|Estaciones Móviles|M|
-PULDNVI004|Todas las Estaciones|E|
-PULDNVI009|Estaciones Locales|t|
+PULDNVI004|Todas las Estaciones|T|
+PULDNVI009|Estaciones Locales|L|
 PULDNVI012|Últimas Estaciones|U|
-PULDNVI005|Estaciones Meteorológicas|t|
+PULDNVI005|Estaciones Meteorológicas|E|
 PULDNVI008|Su Estación Meteorológica|S|
 PULDNVI007|Alerta del tiempo|A|
 PULDNVI011|Tráficos de Mensajes|f|
-PULDNVI013|Uptime|U|
-PULDNVI014|Programar el Uptime||
+PULDNVI013|Tiempo de Inicio|I|
+PULDNVI014|Tiempo Transcurrido||
 #
 # Menú de Configuración
 PULDNCF004|Estación|E|
@@ -57,7 +57,6 @@ PULDNCF002|Sistema de Coordenada|C|
 PULDNCF006|Alarmas de Audio|A|
 PULDNCF007|Sintetizador de Voz|S|
 PULDNCF008|Guardar Configuración!|G|
-# (Unidades ver PULDNDP006)
 #
 # Menú de Mapas
 PULDNMP001|Seleccionar Mapas|M|
@@ -77,8 +76,8 @@ PULDNMP008|Intensidad del Mapa|I|
 PULDNMP020|Activar/Configurar Tigermap||
 PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
 PULDNMP022|Indezar Mapas en Inicio||
-PULDNMP023|Indice: Agregar Nuevos Mapas|N|
-PULDNMP024|Indice: Reindezar TODOS los Mapas|R|
+PULDNMP023|Indice: Agregar Nuevos Mapas|A|
+PULDNMP024|Indice: Reindezar TODOS los Mapas|T|
 #
 # Menú "Configurar Tigermapa"
 MPUPTGR001|Rejilla||
@@ -141,18 +140,18 @@ PULDNDP022|Sacar Rastro de Findu|F|
 #
 # SubMenú "Filtrar Datos"
 PULDNDP032|Filtrar Datos||
-PULDNDP040|Seleccionar Nada||
-PULDNDP041|Seleccionar Mío||
-PULDNDP042|Seleccionar TNC||
+PULDNDP040|- Seleccionar Nada||
+PULDNDP041|- Seleccionar Mío||
+PULDNDP042|- Seleccionar TNC||
 PULDNDP027|- Seleccionar Directo||
 PULDNDP043|- Seleccionar Vía Digi||
-PULDNDP034|Seleccionar Red||
+PULDNDP034|- Seleccionar Red||
 PULDNDP019|Incluir Datos Expirados||
-PULDNDP044|Seleccionar Estaciones||
+PULDNDP044|- Seleccionar Estaciones||
 PULDNDP028|- Seleccionar Estaciones Fijas||
 PULDNDP029|- Seleccionar Estaciones Móviles||
 PULDNDP030|- Seleccionar Estaciones de WX||
-PULDNDP045|Seleccionar Objetos/Artículos||
+PULDNDP045|- Seleccionar Objetos/Artículos||
 PULDNDP026|- Seleccionar Objetos/Artículos de WX||
 PULDNDP039|- Seleccionar Objetos/Artículos Medidores de Agua||
 PULDNDP031|- Seleccionar Otros Objetos/Artículos||
