@@ -73,6 +73,23 @@ PULDNMP005|Couleur de fond|f|
 PULDNMP006|Style du texte de station|S|
 PULDNMP011|Menu souris|e|
 PULDNMP008|Intensité des cartes|I|                                             
+PULDNMP020|Enable/Configure Tigermap||
+#
+#
+# PopUp "Configure Tigermap"
+MPUPTGR001|Grid||
+MPUPTGR002|Counties||
+MPUPTGR003|City Labels||
+MPUPTGR004|Urban Areas||
+MPUPTGR005|Major Roads||
+MPUPTGR006|Streets||
+MPUPTGR007|Railroads||
+MPUPTGR008|State Labels||
+MPUPTGR009|Interstate Labels||
+MPUPTGR010|US Hwy Labels||
+MPUPTGR011|State Hwy Labels||
+MPUPTGR012|Select items to be displayed:||
+#
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Choix de cartes||
