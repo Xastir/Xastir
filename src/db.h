@@ -357,6 +357,7 @@ typedef struct _DataRow {
     char type;      // from '0' to '9'
     char style;     // from 'a' to 'z'
     long multipoints[MAX_MULTIPOINTS][2];
+    time_t direct_heard;                // KC2ELS - time last heard direct
 } DataRow;
 
 
