@@ -109,7 +109,8 @@ PULDNMMC02|Vector|V|
 PULDNMMC03|250k Topogr.|2|
 PULDNMMC04|100k Topogr.|1|
 PULDNMMC05|24k Topogr.|4|
-PULDNMMC06|Expand Directories||
+PULDNMMC06|Expand Dirs|||
+PULDNMMC07|Maps Selected:||
 #
 # PullDown "Map Background Color"
 PULDNMBC01|Grijs||

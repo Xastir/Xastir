@@ -193,6 +193,7 @@ int map_chooser_expand_dirs = 0;
  
 Widget map_chooser_dialog = (Widget)NULL;
 static void Map_chooser(Widget w, XtPointer clientData, XtPointer callData);
+Widget map_chooser_maps_selected_data = (Widget)NULL;
 
 #ifdef HAVE_IMAGEMAGICK
 static void Config_tiger(Widget w, XtPointer clientData, XtPointer callData);
@@ -9671,8 +9672,38 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
     create_image(da);
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
+
  
 
+
+
+// Counts the number of "selected" fields with a value of 1 in the
+// in-memory map index.  Updates the Maps Selected count in the map
+// chooser.
+void map_chooser_update_quantity(void) {
+    int quantity = 0;
+    static char str_quantity[100];
+    map_index_record *current = map_index_head;
+    XmString x_str;
+
+    // Count the "selected" fields in the map index with value of 1
+    while (current != NULL) {
+        if (current->selected) {
+            quantity++;
+        }
+        current = current->next;
+    }
+   
+    // Update the Maps Selected label in the Map Chooser
+    xastir_snprintf(str_quantity,sizeof(str_quantity),"%d",quantity);
+    x_str = XmStringCreateLocalized(str_quantity);
+    XtVaSetValues(map_chooser_maps_selected_data,
+        XmNlabelString, x_str,
+        NULL);
+    XmStringFree(x_str);
+}
+ 
+ 
 
 
 
@@ -9703,6 +9734,8 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
             XtFree(temp);
         }
     }
+
+    map_chooser_update_quantity();
 }
 
 
@@ -9735,6 +9768,8 @@ void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer
             XtFree(temp);
         }
     }
+
+    map_chooser_update_quantity();
 }
 
 
@@ -9767,6 +9802,8 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
             XtFree(temp);
         }
     }
+
+    map_chooser_update_quantity();
 }
 
 
@@ -9800,6 +9837,8 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
             XtFree(temp);
         }
     }
+
+    map_chooser_update_quantity();
 }
 
 
@@ -10004,6 +10043,8 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
         current = current->next;
     }
 */
+
+    map_chooser_update_quantity();
 }
 
 
@@ -10836,6 +10877,8 @@ void Expand_Dirs_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
     // effect.
     map_chooser_destroy_shell( w, map_chooser_dialog, (XtPointer) NULL);
     Map_chooser( w, (XtPointer)NULL, (XtPointer) NULL);
+
+    map_chooser_update_quantity();
 }
 
 
@@ -10846,7 +10889,8 @@ void Expand_Dirs_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_clear, button_V, button_ok,
             button_cancel, button_C, button_F, button_O,
-            rowcol, expand_dirs_button, button_properties;
+            rowcol, expand_dirs_button, button_properties,
+            maps_selected_label;
     Atom delw;
     int i;
     Arg al[10];                    /* Arg List */
@@ -10918,6 +10962,34 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
             XmToggleButtonSetState(expand_dirs_button,TRUE,FALSE);
         else
             XmToggleButtonSetState(expand_dirs_button,FALSE,FALSE);
+
+        maps_selected_label = XtVaCreateManagedWidget(langcode("PULDNMMC07"),
+                xmLabelWidgetClass,
+                my_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              expand_dirs_button,
+                XmNleftOffset,              15,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        map_chooser_maps_selected_data = XtVaCreateManagedWidget("0",
+                xmLabelWidgetClass,
+                my_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              maps_selected_label,
+                XmNleftOffset,              2,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // Button for configuring properties
         button_properties = XtVaCreateManagedWidget(langcode("UNIOP00009"),
@@ -11072,6 +11144,8 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
    } else {
         (void)XRaiseWindow(XtDisplay(map_chooser_dialog), XtWindow(map_chooser_dialog));
     }
+
+   map_chooser_update_quantity();
 }
 
 
