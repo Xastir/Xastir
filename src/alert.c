@@ -902,6 +902,8 @@ printf("Line:%s\n",compressed_wx);
 
 printf("Zone:%s%s\n",prefix,suffix);
 
+                // Here we keep looping until we hit another alpha
+                // portion.
                 while ( (ptr < (compressed_wx + strlen(compressed_wx)))
                     && ( is_num_chr(ptr[1]) ) ) {
 
@@ -909,13 +911,14 @@ printf("Zone:%s%s\n",prefix,suffix);
                     // have a numeric sequence to ennumerate.  If the
                     // latter, we either have another zone number or
                     // another prefix coming up.
-                    if (ptr[0] == '>') { // Numeric sequence
+                    if (ptr[0] == '>') { // Numeric zone sequence
                         int start_number;
                         int end_number;
                         int k;
                         char temp[4];
 
                         ptr++;  // Skip past the '>' character
+
                         // Snag the NUMERIC portion
                         strncpy(ending,ptr,3);  
                         ending[3] = '\0';   // Terminate the string
@@ -928,10 +931,9 @@ printf("Zone:%s%s\n",prefix,suffix);
 printf("Zone:%s%s\n",prefix,temp);
                         }
                     }
-                    else if (ptr[0] == '-') {
+                    else if (ptr[0] == '-') {   // New zone number
                         ptr++;  // Skip past the '-' character
-                        if ( is_num_chr(ptr[0]) ) {
-                            // New zone number
+                        if ( is_num_chr(ptr[0]) ) { // Found another number
 
                             // Snag the NUMERIC portion
                             strncpy(suffix,ptr,3);
@@ -941,17 +943,19 @@ printf("Zone:%s%s\n",prefix,temp);
 printf("Zone:%s%s\n",prefix,suffix);
 
                         }
-                        else {  // New prefix
+                        else {  // New prefix (not a number)
                             // Start at the top of the outer loop again
                         }
                     }
                 }
-                // Skip past '-' character, if any
+                // Skip past '-' character, if any, so that we can
+                // get to the next prefix
                 if (ptr[0] == '-') {
                     ptr++;
                 }
             }
         }
+
 
         entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
 
