@@ -1,11 +1,15 @@
 # Process this file with autoconf to produce a configure script.
 
+# $Id$
+
 
 # Set version here.  It should look something like this:
 # ("xastir", "1.1.3", [])
 #
 # Also remember to change it in the AC_DEFINE below.
 AC_INIT(xastir, 1.1.3, xastir@xastir.org)
+
+
 
 AC_PREREQ(2.53)
 
