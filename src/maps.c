@@ -199,9 +199,9 @@ typedef struct {
 } hash_t;
 
 typedef struct {
-    unsigned int firstpoint;
-    unsigned int npoints;
-    unsigned int nalloced;
+    int firstpoint;
+    int npoints;
+    int nalloced;
     XPoint *point;
 } col_or_row_t;
 
@@ -894,18 +894,18 @@ void draw_grid(Widget w) {
         n[0] += utm_grid_spacing_m;
 
 
-
         e[1] = e[0];
         n[1] = n[0];
 
+
         while (done < 2) { // 1=done with a zone, 2=completely done
 
-            // Initially, done==0, so we skip this part the first
+           // Initially, done==0, so we skip this part the first
             // time through.
             //
             if (done == 1) {
 
-                xx = x_long_offset + ((utm_grid.zone[zone].boundary_x + 1) * scale_x);
+               xx = x_long_offset + ((utm_grid.zone[zone].boundary_x + 1) * scale_x);
 
                 yy = y_lat_offset;
                 convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
@@ -1028,6 +1028,7 @@ void draw_grid(Widget w) {
             fprintf(stderr,"utm_grid.zone[%d].row[%d].point[%d] = [ %ld,%ld ]\n",
                    zone, row, row_point, xx, yy);
 #endif
+
             col++;
             row_point++;
             if (col >= UTM_GRID_MAX_COLS_ROWS)
@@ -1036,12 +1037,14 @@ void draw_grid(Widget w) {
             z1 = atoi(place_str);
             z2 = atoi(zone_str);
             if (z1 != z2 || xx > screen_width) { // We hit a boundary
+
 #ifdef UT_DEBUG_VERB
                 if (z1 != z2)
                     fprintf(stderr,"Zone boundary! %s -> %s\n", place_str, zone_str);
                 else
                     puts("Screen boundary!");
 #endif
+
 #warning 'I suspect that I should not use just col for the following'
                 if (col-2 >= 0)
                     slope = (float)(yy - utm_grid.zone[zone].col[col-2].point[col_point].y) /
@@ -1059,14 +1062,17 @@ void draw_grid(Widget w) {
                     xx1 = (xx1 / (6 * 360000)) * 6 * 360000;
                     xx1 = (xx1 - x_long_offset) / scale_x;
                 }
+
                 utm_grid.zone[zone].boundary_x = xx1;
                 yy1 = yy - (xx - xx1) * slope;
+
 #ifdef UT_DEBUG
                 fprintf(stderr,"_tm_grid.zone[%d].col[%d].point[%d] =  [ %ld,%ld ]\n",
                        zone, col-1, col_point, xx1, yy1);
                 fprintf(stderr,"_tm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
                        zone, row, row_point-1, xx1, yy1);
 #endif
+
                 if (col-1 >= 0 && row_point-1 >= 0) {
                     utm_grid.zone[zone].col[col-1].point[col_point].x = xx1;
                     utm_grid.zone[zone].col[col-1].point[col_point].y = yy1;
@@ -1088,18 +1094,21 @@ void draw_grid(Widget w) {
                     }
                 }
 
+
                 // Check last built row to see if it is all off
                 // screen
                 done = 1;   // Assume we're done with this zone
                 for (i=0; i < utm_grid.zone[zone].row[row].npoints; i++) {
                     if (utm_grid.zone[zone].row[row].point[i].y <= screen_height)
-                        done = 0;
+                        done = 0; // Some points were within the zone, keep computing
                 }
+
 
                 e[1]  = e[0];               // carriage return
                 n[1] -= utm_grid_spacing_m; // line feed
 // Yea, your comments are real funny Olivier!  Gets the point across
 // though.
+
 
                 row++;
                 if (row >= UTM_GRID_MAX_COLS_ROWS)
@@ -1121,11 +1130,14 @@ void draw_grid(Widget w) {
 
                 continue; // skip the next statement
             }
+
             e[1] += utm_grid_spacing_m;
+
         }
 
 //#define UT_DEBUG_VERB
         for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
+
 #ifdef UT_DEBUG_VERB
             fprintf(stderr,"\nutm_grid.zone[%d].ncols=%d\nutm_grid.zone[%d].nrows=%d\n",
                    zone, utm_grid.zone[zone].ncols, zone, utm_grid.zone[zone].nrows);
@@ -1136,6 +1148,7 @@ void draw_grid(Widget w) {
                 int np = utm_grid.zone[zone].col[i].npoints;
                 int fp = utm_grid.zone[zone].col[i].firstpoint;
                 int nbp = 0;
+
 #ifdef UT_DEBUG_VERB
                 fprintf(stderr,"utm_grid.zone[%d].col[%d].npoints=%d .firstpoint=%d",
                        zone, i, np, fp);
@@ -1170,11 +1183,25 @@ void draw_grid(Widget w) {
                     }
                 }
 
+// What's this doing?  Can get a segfault without this in the
+// XDrawLines() functions below (fixed by making npoints an int
+// instead of an unsigned int).  Sometimes we get a segfault right
+// here due to the memmove() function.  In one such case, np was -2.
+// Latest code keeps some lines from getting drawn, but at least we
+// don't get a segfault.
+//
                 if (fp > 0) {
-                    memmove(&utm_grid.zone[zone].col[i].point[0],
+                    if (np > 0) {
+                        memmove(&utm_grid.zone[zone].col[i].point[0],
                             &utm_grid.zone[zone].col[i].point[fp], np * sizeof(XPoint));
-                    fp = utm_grid.zone[zone].col[i].firstpoint = 0;
+                        fp = utm_grid.zone[zone].col[i].firstpoint = 0;
+                    }
+                    else {
+fprintf(stderr,"draw_grid: i:%d, np:%d, size:%d\n",i,np,sizeof(XPoint));
+fprintf(stderr,"Problem: in draw_grid() memmove, np was %d.  Skipping memmove.\n",np);
+                    }
                 }
+
 #ifdef UT_DEBUG_VERB
                 fprintf(stderr,"_tm_grid.zone[%d].col[%d].npoints=%d.firstpoint=%d\n",
                        zone, i, np, fp);
@@ -1204,6 +1231,8 @@ void draw_grid(Widget w) {
                 else
                     puts("");
 #endif
+// What's this doing?  This appears to be important, as things get
+// really messed up if it's commented out.
                 if (fp > 0) {
                     memmove(&utm_grid.zone[zone].row[i].point[0],
                             &utm_grid.zone[zone].row[i].point[fp], np * sizeof(XPoint));
@@ -1226,28 +1255,36 @@ void draw_grid(Widget w) {
         utm_grid.hash.lr_y = y_lat_offset  + (screen_height * scale_y);
 
 utm_grid_draw:
+
         // Draw grid in dashed white lines
         (void)XSetForeground(XtDisplay(w), gc_tint, colors[0x27]);
 // A good option may be gc_tint: Tint the lines as they go along,
 // making them appear nicely no matter what color is underneath.
 
 
+        // Note:  npoints can be negative here!  Make sure our code
+        // checks for that.
+        //
         for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
             for (i=0; i < utm_grid.zone[zone].ncols; i++) {
-                if (utm_grid.zone[zone].col[i].npoints > 1)
+                if (utm_grid.zone[zone].col[i].npoints > 1) {
                     (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
                                      utm_grid.zone[zone].col[i].point,
                                      utm_grid.zone[zone].col[i].npoints,
                                      CoordModeOrigin);
+                }
             }
+
             for (i=0; i < utm_grid.zone[zone].nrows; i++) {
-                if (utm_grid.zone[zone].row[i].npoints > 1)
+                if (utm_grid.zone[zone].row[i].npoints > 1) {
                     (void)XDrawLines(XtDisplay(w), pixmap_final, gc_tint,
                                      utm_grid.zone[zone].row[i].point,
                                      utm_grid.zone[zone].row[i].npoints,
                                      CoordModeOrigin);
+                }
             }
         }
+
 utm_grid_dont_draw:
     }   // End of UTM grid section
 
@@ -1972,6 +2009,9 @@ int map_visible (unsigned long bottom_map_boundary,
         if (   ((   top_map_boundary <= view_max_y) && (   top_map_boundary >= view_min_y)) ||
                 ((bottom_map_boundary <= view_max_y) && (bottom_map_boundary >= view_min_y))) {
 
+            if (debug_level & 16)
+                fprintf(stderr,"map_visible(): returning 1\n");
+ 
             return (1); /* Draw this pixmap onto the screen */
         }
     }
@@ -1987,8 +2027,11 @@ int map_visible (unsigned long bottom_map_boundary,
 
         /* Look for top or bottom view boundaries inside map */
         if (   ((view_max_y <= bottom_map_boundary) && (view_max_y >= top_map_boundary)) ||
-            ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary)))
-        {
+            ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary))) {
+
+            if (debug_level & 16)
+                fprintf(stderr,"map_visible(): returning 1\n");
+ 
             return (1); /* Draw this pixmap onto the screen */
         }
     }
@@ -2004,8 +2047,11 @@ int map_visible (unsigned long bottom_map_boundary,
     if (   (( left_map_boundary <= view_max_x) && ( left_map_boundary >= view_min_x)) &&
             ((right_map_boundary <= view_max_x) && (right_map_boundary >= view_min_x)) &&
             ((view_max_y <= bottom_map_boundary) && (view_max_y >= top_map_boundary)) &&
-            ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary)))
-    {
+            ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary))) {
+
+        if (debug_level & 16)
+            fprintf(stderr,"map_visible(): returning 1\n");
+
         return(1);  /* Draw this pixmap onto the screen */
     }
 
@@ -2020,8 +2066,11 @@ int map_visible (unsigned long bottom_map_boundary,
     if (   ((   top_map_boundary <= view_max_y) && (   top_map_boundary >= view_min_y)) &&
         ((bottom_map_boundary <= view_max_y) && (bottom_map_boundary >= view_min_y)) &&
         ((view_max_x <= right_map_boundary) && (view_max_x >= left_map_boundary)) &&
-        ((view_min_x <= right_map_boundary) && (view_min_x >= left_map_boundary)))
-    {
+        ((view_min_x <= right_map_boundary) && (view_min_x >= left_map_boundary))) {
+
+        if (debug_level & 16)
+            fprintf(stderr,"map_visible(): returning 1\n");
+ 
         return(1);  /* Draw this pixmap onto the screen */
     }
 
