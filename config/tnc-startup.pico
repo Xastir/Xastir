@@ -61,7 +61,10 @@ NOMODE on
 PERSIST 128
 #
 PASSALL off
+#
+# Important!  Monitor only PID 0xf0 packets:
 #PIDCHECK off
+#
 PMS off
 SCREENLN 0
 #

@@ -35,5 +35,8 @@ PASSALL off
 SCR 0
 MON 1
 #
+# Important!  Monitor only PID 0xf0 packets:
+#PIDCHECK off
+#
 # End of tnc-startup.pac
 #

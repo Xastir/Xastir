@@ -61,7 +61,10 @@ MXMit off
 NEWmode off
 #PACLen 128
 PASSALL off
+#
+# Important!  Monitor only PID 0xf0 packets:
 PID off
+#
 SCR 0
 # B E 0 must be set to 0 or both APRS and your TNC will send BCNS
 # Which will alternate in everyones L and A lists and fill up

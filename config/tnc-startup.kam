@@ -31,5 +31,7 @@ FLOW OFF
 HID OFF/OFF
 MSTAMP OFF
 PASSALL OFF
+#
+# Important!  Monitor only PID 0xf0 packets:
 PID OFF
 
