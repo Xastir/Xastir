@@ -14979,7 +14979,24 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
                     && (   (strcasecmp(ext,"map") == 0)
                         || (strcasecmp(ext,"shp") == 0)
                         || (strcasecmp(ext,"pdb") == 0)
-                        || (strcasecmp(ext,"gnis") == 0) ) ) {
+                        || (strcasecmp(ext,"gnis") == 0)
+                        || (strcasecmp(ext,"rt1") == 0)
+                        || (strcasecmp(ext,"rt2") == 0)
+                        || (strcasecmp(ext,"rt4") == 0)
+                        || (strcasecmp(ext,"rt5") == 0)
+                        || (strcasecmp(ext,"rt6") == 0)
+                        || (strcasecmp(ext,"rt7") == 0)
+                        || (strcasecmp(ext,"rt8") == 0)
+                        || (strcasecmp(ext,"rta") == 0)
+                        || (strcasecmp(ext,"rtc") == 0)
+                        || (strcasecmp(ext,"rth") == 0)
+                        || (strcasecmp(ext,"rti") == 0)
+                        || (strcasecmp(ext,"rtp") == 0)
+                        || (strcasecmp(ext,"rtr") == 0)
+                        || (strcasecmp(ext,"rts") == 0)
+                        || (strcasecmp(ext,"rtt") == 0)
+                        || (strcasecmp(ext,"rtz") == 0)
+                        || (strcasecmp(ext,"tab") == 0) ) ) {
                 XmListSelectPos(map_list,x,TRUE);
             }
             XtFree(temp);
