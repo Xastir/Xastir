@@ -811,6 +811,8 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     int have_lat_lon;
     long easting = 0;
     long northing = 0;
+    double double_easting;
+    double double_northing;
     double latitude;
     double longitude;
     char temp_string[1024];
@@ -824,29 +826,29 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // These are the formats that I'd like to be able to
     // auto-recognize and support:
 
-    // ddN          dddW
-    // dd N         ddd W
-    // -dd          -ddd
+    // ddN          dddW            IMPLEMENTED
+    // dd N         ddd W           IMPLEMENTED
+    // -dd          -ddd            IMPLEMENTED
 
-    // dd.ddddN     ddd.ddddW
-    // dd.dddd N    ddd.dddd W
-    // -dd.dddd     -ddd.dddd
+    // dd.ddddN     ddd.ddddW       IMPLEMENTED
+    // dd.dddd N    ddd.dddd W      IMPLEMENTED
+    // -dd.dddd     -ddd.dddd       IMPLEMENTED
 
-    // dd mmN       ddd mmW
-    // dd mm N      ddd mm W
-    // -dd mm       -ddd mm
+    // dd mmN       ddd mmW         IMPLEMENTED
+    // dd mm N      ddd mm W        IMPLEMENTED
+    // -dd mm       -ddd mm         IMPLEMENTED
 
-    // dd mm.mmmN   ddd mm.mmmW
-    // dd mm.mmm N  ddd mm.mmm W
-    // -dd mm.mmm   -ddd mm.mmm
+    // dd mm.mmmN   ddd mm.mmmW     IMPLEMENTED
+    // dd mm.mmm N  ddd mm.mmm W    IMPLEMENTED
+    // -dd mm.mmm   -ddd mm.mmm     IMPLEMENTED
 
-    // dd mm ssN    ddd mm ssW
-    // dd mm ss N   ddd mm ss W
-    // -dd mm ss    -ddd mm ss
+    // dd mm ssN    ddd mm ssW      IMPLEMENTED
+    // dd mm ss N   ddd mm ss W     IMPLEMENTED
+    // -dd mm ss    -ddd mm ss      IMPLEMENTED
 
-    // dd mm ss.sN  ddd mm ss.sW
-    // dd mm ss.s N ddd mm ss.s W
-    // -dd mm ss.s  -ddd mm ss.s
+    // dd mm ss.sN  ddd mm ss.sW    IMPLEMENTED
+    // dd mm ss.s N ddd mm ss.s W   IMPLEMENTED
+    // -dd mm ss.s  -ddd mm ss.s    IMPLEMENTED
 
     // 10T  0123456     1234567     IMPLEMENTED
     // 10T   123456     1234567     IMPLEMENTED
@@ -866,7 +868,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // valid zone.
     str_ptr = XmTextGetString(coordinate_calc_zone);
     i = strlen(str_ptr);
-    have_utm = 1;   // Wishful thinking.  We'll zero it if not.
+    have_utm = 1;   // Wishful thinking.  We'll zero it later if not.
     if ( (i == 2) || (i == 3) ) {   // String is the correct length: Has
                                     // to be either 2 or 3 chars total.
         int j;
@@ -890,7 +892,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     if (have_utm) {
         zone_letter = toupper(str_ptr[i-1]);
         zone_number = atoi(str_ptr);
-printf("Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
+        //printf("Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
         // Save it away for later use
         xastir_snprintf(full_zone,
             sizeof(full_zone),
@@ -900,9 +902,9 @@ printf("Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
         have_lat_lon = 0;
     }
     else {
-printf("Bad zone, not a UTM coordinate\n");
+        //printf("Bad zone, not a UTM coordinate\n");
         // Skip zone widget for lat/lon, it's not used.
-        have_lat_lon = 1;   // Wishful thinking.  We'll zero it if not.
+        have_lat_lon = 1;   // Wishful thinking.  We'll zero it later if not.
     }
     // We're done with that variable.  Free the space.
     XtFree(str_ptr);
@@ -914,11 +916,11 @@ printf("Bad zone, not a UTM coordinate\n");
     // be a zero.
     if ( have_utm && (i != 6) && (i != 7) ) {
         have_utm = 0;
-printf("Bad Easting value: Not 6 or 7 chars\n");
+        //printf("Bad Easting value: Not 6 or 7 chars\n");
     }
     if ( have_utm && (i == 7) && (str_ptr[0] != '0') ) {
         have_utm = 0;
-printf("Bad Easting value: 7 chars but first one not 0\n");
+        //printf("Bad Easting value: 7 chars but first one not 0\n");
     }
     if (have_utm) {
         int j;
@@ -927,7 +929,7 @@ printf("Bad Easting value: 7 chars but first one not 0\n");
         // it's a UTM number.  Might have to put it in our own string
         // first though to do that.
 
-        for (j = 0; j< i; j++) {
+        for (j = 0; j < i; j++) {
             if ( (str_ptr[j] < '0') || (str_ptr[j] > '9') ) {
                 // Not UTM, found a non-number
                 have_utm = 0;
@@ -935,16 +937,110 @@ printf("Bad Easting value: 7 chars but first one not 0\n");
         }
         if (have_utm) { // If we still think it's a valid UTM number
             easting = atol(str_ptr);
-printf("Easting: %lu\n",easting);
+            //printf("Easting: %lu\n",easting);
         }
         else {
             have_utm = 0;
-printf("Bad Easting value\n");
+            //printf("Bad Easting value\n");
         }
     }
     else if (have_lat_lon) {
-// Process the string to see if it's a latitude value
-        have_lat_lon = 0;   // Code not implemented yet.
+        // Process the string to see if it's a valid latitude value.
+        // Convert it into a double if so and store it in
+        // "latitude".
+        int j, substring;
+        int south = 0;
+        int temp[10];  // indexes to substrings
+        char *ptr;
+        char temp_string[30];
+        int piece;
+
+        // Copy the string so we can change it.
+        xastir_snprintf(temp_string,sizeof(temp_string),"%s",str_ptr);
+
+        for (j = 0; j < i; j++) {
+           temp_string[j] = toupper(temp_string[j]);
+        }
+
+        // Search for 'N' or 'S'.
+        ptr = rindex(temp_string, 'N');
+        if (ptr != NULL) {  // Found an 'N'
+            *ptr = ' ';     // Convert it to a space
+            //printf("Found an 'N', converted to %s\n", temp_string);
+        }
+        ptr = rindex(temp_string, 'S');
+        if (ptr != NULL) {  // Found an 'S'
+            *ptr = ' ';     // Convert it to a space
+            south++;
+            //printf("Found an 'S', converted to %s\n", temp_string);
+        }
+        ptr = rindex(temp_string, '-');
+        if (ptr != NULL) {  // Found an '-'
+            *ptr = ' ';     // Convert it to a space
+            south++;
+            //printf("Found an '-', converted to %s\n", temp_string);
+        }
+
+        // Tokenize the string 
+
+        // Find the space characters
+        temp[0] = 0;        // First index is to start of entire string
+        substring = 1;
+        for (j = 1; j < i; j++) {
+            if (temp_string[j] == ' ') {        // Found a space
+                temp_string[j] = '\0';          // Terminate the substring
+                if ( (j + 1) < i) {             // If not at the end
+                    temp[substring++] = j + 1;  // Save an index to the new substring
+                    //printf("%s",&temp_string[j+1]);
+                }
+            }
+        }
+
+        // temp[] array now contains indexes into all of the
+        // substrings.  Some may contain empty strings.
+
+        //printf("Substrings: %d\n", substring);
+        //printf("temp_string: %s\n",temp_string);
+
+
+        //for (j = 0; j < substring; j++) {
+        //    if (strlen(&temp_string[temp[j]]) > 0) {
+        //        printf("%s\n", &temp_string[temp[j]]);
+        //    }
+        //}
+
+        piece = 0;
+        for (j = 0; j < substring; j++) {
+            if (strlen(&temp_string[temp[j]]) > 0) {
+                piece++;    // Found the next piece
+                switch (piece) {
+                    case (1) :  // Degrees
+                        latitude = atof(&temp_string[temp[j]]);
+                        break;
+                    case (2) :  // Minutes
+                        latitude = latitude + ( atof(&temp_string[temp[j]]) / 60.0 );
+                        break;
+                    case (3) :  // Seconds
+                        latitude = latitude + ( atof(&temp_string[temp[j]]) / 3600.0 );
+                        break;
+                    default :
+                        break;
+                }
+            }
+        }
+
+        if (south) {
+            latitude = -latitude;
+        }
+        //printf("%f\n", latitude);
+
+        // Test for valid values of latitude
+        if ( (latitude < -90.0) || (latitude > 90.0) ) {
+            have_lat_lon = 0;
+        }
+        if (strlen(str_ptr) == 0) {
+            have_lat_lon = 0;
+        }
     }
     // We're done with that variable.  Free the space.
     XtFree(str_ptr); 
@@ -955,7 +1051,7 @@ printf("Bad Easting value\n");
     // Check for exactly seven chars.
     if (have_utm && (i != 7) ) {
         have_utm = 0;
-printf("Bad Northing value: Not 7 chars\n");
+        //printf("Bad Northing value: Not 7 chars\n");
     }
     if (have_utm) {
         int j;
@@ -972,19 +1068,111 @@ printf("Bad Northing value: Not 7 chars\n");
         }
         if (have_utm) { // If we still think it's a valid UTM number
             northing = atol(str_ptr);
-printf("Northing: %lu\n",northing);
+            //printf("Northing: %lu\n",northing);
         }
         else {
             have_utm = 0;
-printf("Bad Northing value\n");
+            //printf("Bad Northing value\n");
         }
     }
     else if (have_lat_lon) {
-// Process the string to see if it's a longitude value
+        // Process the string to see if it's a valid longitude
+        // value.  Convert it into a double if so and store it in
+        // "longitude".
+        int j, substring;
+        int west = 0;
+        int temp[10];  // indexes to substrings
+        char *ptr;
+        char temp_string[30];
+        int piece;
+
+        // Copy the string so we can change it.
+        xastir_snprintf(temp_string,sizeof(temp_string),"%s",str_ptr);
+
+        for (j = 0; j < i; j++) {
+           temp_string[j] = toupper(temp_string[j]);
+        }
+
+        // Search for 'W' or 'E'.
+        ptr = rindex(temp_string, 'W');
+        if (ptr != NULL) {  // Found an 'W'
+            *ptr = ' ';     // Convert it to a space
+            west++;
+            //printf("Found an 'W', converted to %s\n", temp_string);
+        }
+        ptr = rindex(temp_string, 'E');
+        if (ptr != NULL) {  // Found an 'E'
+            *ptr = ' ';     // Convert it to a space
+            //printf("Found an 'E', converted to %s\n", temp_string);
+        }
+        ptr = index(temp_string, '-');
+        if (ptr != NULL) {  // Found an '-'
+            *ptr = ' ';     // Convert it to a space
+            west++;
+            //printf("Found an '-', converted to %s\n", temp_string);
+        }
+ 
+        // Tokenize the string 
+
+        // Find the space characters
+        temp[0] = 0;        // First index is to start of entire string
+        substring = 1;
+        for (j = 1; j < i; j++) {
+            if (temp_string[j] == ' ') {        // Found a space
+                temp_string[j] = '\0';          // Terminate the substring
+                if ( (j + 1) < i) {             // If not at the end
+                    temp[substring++] = j + 1;  // Save an index to the new substring
+                    //printf("%s",&temp_string[j+1]);
+                }
+            }
+        }
+
+        // temp[] array now contains indexes into all of the
+        // substrings.  Some may contain empty strings.
+
+        //printf("Substrings: %d\n", substring);
+        //printf("temp_string: %s\n",temp_string);
 
 
+        //for (j = 0; j < substring; j++) {
+        //    if (strlen(&temp_string[temp[j]]) > 0) {
+        //        printf("%s\n", &temp_string[temp[j]]);
+        //    }
+        //}
 
-        have_lat_lon = 0;   // Code not implemented yet.
+        piece = 0;
+        for (j = 0; j < substring; j++) {
+            if (strlen(&temp_string[temp[j]]) > 0) {
+                piece++;    // Found the next piece
+                switch (piece) {
+                    case (1) :  // Degrees
+                        longitude = atof(&temp_string[temp[j]]);
+                        break;
+                    case (2) :  // Minutes
+                        longitude = longitude + ( atof(&temp_string[temp[j]]) / 60.0 );
+                        break;
+                    case (3) :  // Seconds
+                        longitude = longitude + ( atof(&temp_string[temp[j]]) / 3600.0 );
+                        break;
+                    default :
+                        break;
+                }
+            }
+        }
+
+        if (west) {
+            longitude = -longitude;
+        }
+        //printf("%f\n", longitude);
+
+
+        // Test for valid values of longitude
+        if ( (longitude < -180.0) || (longitude > 180.0) ) {
+            have_lat_lon = 0;
+        }
+        if (strlen(str_ptr) == 0) {
+            have_lat_lon = 0;
+        }
     }
     // We're done with that variable.  Free the space.
     XtFree(str_ptr);
@@ -993,6 +1181,7 @@ printf("Bad Northing value\n");
     // we have a good value and can convert it to the other formats for
     // display.
     if (have_utm) {
+        // Process UTM values
         utm_to_ll(gDatum[E_WGS_84].ellipsoid,
             (double)northing,
             (double)easting,
@@ -1007,8 +1196,27 @@ printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
             longitude);
     }
     else if (have_lat_lon) {
-// Process lat/lon values
-        // Code not implemented yet.
+        // Process lat/lon values
+        double_northing = (double)northing;
+        double_easting = (double)easting;
+        ll_to_utm(gDatum[E_WGS_84].ellipsoid,
+            (double)latitude,
+            (double)longitude,
+            &double_northing,
+            &double_easting,
+            full_zone,
+            sizeof(full_zone));
+printf("Zone: %s, Easting: %f, Northing: %f\n", full_zone, double_easting, double_northing); 
+        // Round the UTM values as we convert them to longs
+        xastir_snprintf(temp_string,sizeof(temp_string),"%7.0f",double_northing);
+        northing = (long)(atof(temp_string));
+        xastir_snprintf(temp_string,sizeof(temp_string),"%7.0f",double_easting);
+        easting  = (long)(atof(temp_string));
+        Coordinate_calc_output(full_zone,
+            (long)northing,
+            (long)easting,
+            latitude,
+            longitude);
     }
     else {  // Dump out some helpful text
         xastir_snprintf(temp_string,
