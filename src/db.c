@@ -513,6 +513,19 @@ void msg_get_data(Message *m_fill, long record_num) {
 
 
 
+void msg_update_ack_stamp(long record_num) {
+
+    if ( (record_num >= 0)
+            && (record_num < (msg_index_end - 1)) ) {
+        msg_data[msg_index[record_num]].last_ack_sent = sec_now();
+    }
+    //printf("\n\n\n*** Record: %ld ***\n\n\n",record_num);
+}
+
+
+
+
+
 // WE7U
 // Called when we receive an ACK.  Sets the "acked" field in a
 // Message which gets rid of the highlighting in the Send Message
@@ -592,11 +605,16 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
 
 
 
-void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char type, char from) {
+// Returns the time_t for last_ack_sent, or 0.
+// Also returns the record number found if not passed a NULL pointer
+// in record_out.
+time_t msg_data_add(char *call_sign, char *from_call, char *data,
+        char *seq, char type, char from, long *record_out) {
     Message m_fill;
     long record;
     char time_data[MAX_TIME];
     int do_update = 0;
+    time_t last_ack_sent;
 
     if (debug_level & 1)
         printf("msg_data_add start\n");
@@ -605,7 +623,8 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         if (debug_level & 2)
             printf("msg_data_add:  Message length too long\n");
 
-        return;
+        *record_out = -1L;
+        return((time_t)0l);
     }
 
     substr(m_fill.call_sign, call_sign, MAX_CALLSIGN);
@@ -624,6 +643,8 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     msg_clear_data(&m_fill);
     if(record != -1L) { /* fill old data */
         msg_get_data(&m_fill, record);
+        last_ack_sent = m_fill.last_ack_sent;
+
         //printf("Found a duplicate message.  Updating fields, seq %s\n",seq);
 
         // If message is different this time, do an update to the
@@ -632,6 +653,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         // sequence numbers.  What a pain!
         if (strcmp(m_fill.message_line,data) != 0) {
             m_fill.sec_heard = sec_now();
+            last_ack_sent = (time_t)0;
             do_update++;
         }
 
@@ -643,6 +665,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         // connected to a spigot with a _really_ long queue!
         if (m_fill.sec_heard < (sec_now() - (8 * 60 * 60) )) {
             m_fill.sec_heard = sec_now();
+            last_ack_sent = (time_t)0;
             do_update++;
         }
 
@@ -657,6 +680,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         // more in sequence by not updating the time stamps
         // constantly on old messages that don't get ack'ed.
         m_fill.sec_heard = sec_now();
+        last_ack_sent = (time_t)0;
 
         do_update++;    // Always do an update to the message window
                         // for new messages
@@ -686,6 +710,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
 
     if(record == -1L) {     // No old record found
         m_fill.acked = 0;   // We can't have been acked yet
+        m_fill.last_ack_sent = (time_t)0;
         msg_input_database(&m_fill);    // Create a new entry
     }
     else {  // Old record found
@@ -709,6 +734,10 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
  
     if (debug_level & 1)
         printf("msg_data_add end\n");
+
+    // Return the important variables we'll need
+    *record_out = record;
+    return(last_ack_sent);
 }
  
 
@@ -8067,17 +8096,23 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         printf("3\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"BLN",3) == 0) {                       // Bulletin
+        long dummy;
+
         // printf("found BLN: |%s| |%s|\n",addr,message);
         bulletin_message(from,call,addr,message,sec_now());
-        msg_data_add(addr,call,message,"",MESSAGE_BULLETIN,from);
+        (void)msg_data_add(addr,call,message,"",MESSAGE_BULLETIN,from,&dummy);
         done = 1;
     }
     if (debug_level & 1)
         printf("4\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) {   // message for me
+        time_t last_ack_sent;
+        long record;
+
         // printf("found Msg w line to me: |%s| |%s|\n",message,msg_id);
-        msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from); // id_fixed
+        last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record); // id_fixed
+
         new_message_data += 1;
         (void)check_popup_window(call, 2);  // Calls update_messages()
         //update_messages(1); // Force an update
@@ -8097,7 +8132,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
 
 #endif
-        if (from != 'F') {
+        // Only send an ack out once per 30 seconds
+        if ( (from != 'F')
+                && ((last_ack_sent + 30 ) < sec_now()) ) {
+//WE7U
+//printf("Sending ack: %ld %ld\n",last_ack_sent,sec_now());
+            // Update the last_ack_sent field for the message
+            msg_update_ack_stamp(record);
+
             pad_callsign(from_call,call);         /* ack the message */
             //sprintf(ack,":%s:ack%s",from_call,msg_id);
             xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,msg_id);
@@ -8109,14 +8151,21 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                     output_message(my_callsign,call,auto_reply_message);
             }
         }
+
+else {
+//printf("Skipping ack: %ld %ld\n",last_ack_sent,sec_now());
+}
+
         done = 1;
     }
     if (debug_level & 1)
         printf("5\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"NWS-",4) == 0) {             // NWS weather alert
+        long dummy;
+
         //printf("found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
-        msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
+        (void)msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from,&dummy);
         (void)alert_message_scan();
         done = 1;
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
@@ -8139,8 +8188,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         printf("6a\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"SKY",3) == 0) {  // NWS weather alert additional info
+        long dummy;
+
         //printf("found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
-        msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
+        (void)msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from,&dummy);
         (void)alert_message_scan();
         done = 1;
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
@@ -8163,8 +8214,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         printf("6b\n");
     //--------------------------------------------------------------------------
     if (!done && strlen(msg_id) > 0) {          // other message with linenumber (msg from me?)
+        long dummy;
+
         if (debug_level & 2) printf("found Msg w line: |%s| |%s| |%s|\n",addr,message,msg_id);
-        msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from);
+        (void)msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&dummy);
         new_message_data += look_for_open_group_data(addr);
         if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
                 || check_popup_window(call, 0) != -1
@@ -8204,10 +8257,12 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     // special treatment required?: Msg w/o line for me ???
     //--------------------------------------------------------------------------
     if (!done) {                                   // message without line number
+        long dummy;
+
         if (debug_level & 4)
             printf("found Msg: |%s| |%s|\n",addr,message);
 
-        msg_data_add(addr,call,message,"",MESSAGE_MESSAGE,from);
+        (void)msg_data_add(addr,call,message,"",MESSAGE_MESSAGE,from,&dummy);
         new_message_data++;      // ??????
         if (check_popup_window(addr, 1) != -1) {
             //update_messages(1); // Force an update
@@ -8272,13 +8327,23 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
     len = (int)strlen(message);
     //--------------------------------------------------------------------------
     if (!done && msg_id[0] != '\0' && is_my_call(addr,1)) {      // message for me
-        msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from);
+        time_t last_ack_sent;
+        long record;
+
+        last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record);
         new_message_data += 1;
         (void)check_popup_window(call, 2);
         //update_messages(1); // Force an update
         if (sound_play_new_message)
             play_sound(sound_command,sound_new_message);
-        if (from != 'F') {
+
+        // Only send an ack or autoresponse once per 30 seconds
+        if ( (from != 'F')
+                && ( (last_ack_sent + 30) < sec_now()) ) {
+//WE7U
+            // Record the fact that we're sending an ack now
+            msg_update_ack_stamp(record);
+
             pad_callsign(from_call,call);         /* ack the message */
             //sprintf(ack,":%s:ack%s",from_call,msg_id);
             xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,msg_id);
