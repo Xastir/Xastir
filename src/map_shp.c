@@ -1505,78 +1505,7 @@ void draw_shapefile_map (Widget w,
                     // Default in case we forget to set the line
                     // width later:
                     (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
- 
-                    index = 0;  // Index into our own points array.
-                                // Tells how many points we've
-                                // collected so far.
- 
-                    // Read the vertices for each line
-                    for (ring = 0; ring < object->nVertices; ring++ ) {
-                        int temp_ok;
 
-                        ok = 1;
-
-                        //fprintf(stderr,"\t%d:%g %g\t", ring, object->padfX[ring], object->padfY[ring] );
-                        // Convert to Xastir coordinates
-                        temp_ok = convert_to_xastir_coordinates(&my_long,
-                            &my_lat,
-                            (float)object->padfX[ring],
-                            (float)object->padfY[ring]);
-                        //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
-
-                        if (!temp_ok) {
-                            fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
-                            ok = 0;
-                            x = 0;
-                            y = 0;
-                        }
-                        else {
-                            // Convert to screen coordinates.  Careful
-                            // here!  The format conversions you'll need
-                            // if you try to compress this into two
-                            // lines will get you into trouble.
-                            x = my_long - x_long_offset;
-                            y = my_lat - y_lat_offset;
-                            x = x / scale_x;
-                            y = y / scale_y;
-
-
-                            // Save the endpoints of the first line
-                            // segment for later use in label rotation
-                            if (ring == 0) {
-                                // Save the first set of screen coordinates
-                                x0 = (int)x;
-                                y0 = (int)y;
-                            }
-                            else if (ring == 1) {
-                                // Save the second set of screen coordinates
-                                x1 = (int)x;
-                                y1 = (int)y;
-                            }
-    
-                            // XDrawLines uses 16-bit unsigned integers
-                            // (shorts).  Make sure we stay within the
-                            // limits.
-                            if (x >  16000) ok = 0;     // Skip this point
-                            if (x < -16000) ok = 0;     // Skip this point
-                            if (y >  16000) ok = 0;     // Skip this point
-                            if (y < -16000) ok = 0;     // Skip this point
-                        }
- 
-                        if (ok == 1) {
-                            points[index].x = (short)x;
-                            points[index].y = (short)y;
-                            //fprintf(stderr,"%d %d\t", points[index].x, points[index].y);
-                            index++;
-                        }
-                        if (index > high_water_mark_index)
-                            high_water_mark_index = index;
-
-                        if (index >= MAX_MAP_POINTS) {
-                            index = MAX_MAP_POINTS - 1;
-                            fprintf(stderr,"Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
-                        }
-                    }   // End of "for" loop for polyline points
 
 // Set up width and zoom level for roads
                     if (road_flag) {
@@ -1969,6 +1898,84 @@ void draw_shapefile_map (Widget w,
 //                        (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineDoubleDash, CapButt,JoinMiter);
 
                     }   // End of gps flag portion
+
+
+                    index = 0;  // Index into our own points array.
+                                // Tells how many points we've
+                                // collected so far.
+
+ 
+                    if (ok_to_draw && !skip_it) {
+
+                        // Read the vertices for each vector now
+
+                        for (ring = 0; ring < object->nVertices; ring++ ) {
+                            int temp_ok;
+
+                            ok = 1;
+
+                            //fprintf(stderr,"\t%d:%g %g\t", ring, object->padfX[ring], object->padfY[ring] );
+                            // Convert to Xastir coordinates
+                            temp_ok = convert_to_xastir_coordinates(&my_long,
+                                &my_lat,
+                                (float)object->padfX[ring],
+                                (float)object->padfY[ring]);
+                            //fprintf(stderr,"%ld %ld\n", my_long, my_lat);
+
+                            if (!temp_ok) {
+                                fprintf(stderr,"draw_shapefile_map: Problem converting from lat/lon\n");
+                                ok = 0;
+                                x = 0;
+                                y = 0;
+                            }
+                            else {
+                                // Convert to screen coordinates.  Careful
+                                // here!  The format conversions you'll need
+                                // if you try to compress this into two
+                                // lines will get you into trouble.
+                                x = my_long - x_long_offset;
+                                y = my_lat - y_lat_offset;
+                                x = x / scale_x;
+                                y = y / scale_y;
+
+
+                                // Save the endpoints of the first line
+                                // segment for later use in label rotation
+                                if (ring == 0) {
+                                    // Save the first set of screen coordinates
+                                    x0 = (int)x;
+                                    y0 = (int)y;
+                                }
+                                else if (ring == 1) {
+                                    // Save the second set of screen coordinates
+                                    x1 = (int)x;
+                                    y1 = (int)y;
+                                }
+    
+                                // XDrawLines uses 16-bit unsigned integers
+                                // (shorts).  Make sure we stay within the
+                                // limits.
+                                if (x >  16000) ok = 0;     // Skip this point
+                                if (x < -16000) ok = 0;     // Skip this point
+                                if (y >  16000) ok = 0;     // Skip this point
+                                if (y < -16000) ok = 0;     // Skip this point
+                            }
+ 
+                            if (ok == 1) {
+                                points[index].x = (short)x;
+                                points[index].y = (short)y;
+                                //fprintf(stderr,"%d %d\t", points[index].x, points[index].y);
+                                index++;
+                            }
+                            if (index > high_water_mark_index)
+                                high_water_mark_index = index;
+
+                            if (index >= MAX_MAP_POINTS) {
+                                index = MAX_MAP_POINTS - 1;
+                                fprintf(stderr,"Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
+                            }
+                        }   // End of "for" loop for polyline points
+                    }
 
 
                     if (ok_to_draw && !skip_it) {
@@ -2652,6 +2659,7 @@ void draw_shapefile_map (Widget w,
 
                                 i = 0;  // i = Number of points to draw for one ring
                                 on_screen = 0;
+
                                 // index = ptr into the shapefile's array of points
                                 for (index = object->panPartStart[ring]; index < endpoint; ) {
                                     int temp_ok;
