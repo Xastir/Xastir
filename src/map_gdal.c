@@ -89,7 +89,10 @@
 #undef PACKAGE_TARNAME
 #define XASTIR_PACKAGE_VERSION PACKAGE_VERSION
 #undef PACKAGE_VERSION
+
 #include "gdal.h"
+#include "ogr_api.h"
+
 #undef PACKAGE_BUGREPORT
 #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
 #undef XASTIR_PACKAGE_BUGREPORT
@@ -122,14 +125,19 @@ void map_gdal_init() {
     // Register all known GDAL drivers
     GDALAllRegister();
 
-    // Print out each supported driver.
+    // Register all known OGR drivers
+    OGRRegisterAll();
+
+    // Print out each supported GDAL driver.
     //
     ii = GDALGetDriverCount();
 
+    fprintf(stderr,"\nGDAL Registered Drivers:\n");
     for (jj = 0; jj < ii; jj++) {
         hDriver = GDALGetDriver(jj);
-        printf("GDAL Registered Driver: %s\n", GDALGetDriverLongName(hDriver) );
+        printf("\t%s\n", GDALGetDriverLongName(hDriver) );
     }
+    fprintf(stderr,"\n");
 
 #endif  // HAVE_LIBGDAL
 
