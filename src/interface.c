@@ -128,6 +128,147 @@ int NETWORK_WAITTIME;
 
 
 
+/*
+// Create a packet that can be fed to AGWPE for transmission.
+// Format is as follows:
+//
+//  RadioPort     4 bytes (0-3)
+//  DataType      4 bytes (4-7)
+//  FromCall     10 bytes (8-17)
+//  ToCall       10 bytes (18-27)
+//  DataLength    4 bytes (28-31)
+//  UserField     4 bytes (32-35)
+//  Data         DataLength bytes (36-?)
+//
+// Callsigns are null-terminated at end of string, but callsign
+// field width is specified to be 10 bytes in all cases.
+//
+// ViaCalls is a string containing the digi callsigns, placed into
+// 10-byte fields.  num_digis specifies how many digis are in the
+// ViaCalls string.
+//
+// If ViaCalls is not empty, then we'll use packet format "V" with
+// Viacalls prepended to the Data portion of the packet, 10 chars
+// per digi, with the number of digis as the first character.  The
+// packet data then follows after the last via callsign.
+//
+// If no ViaCalls, then put the Data directly into the Data field
+// and use "M" format packets instead.
+//
+// output_string must be minimum 36 chars (enough for one header).
+//
+unsigned char *create_agwpe_packet(int RadioPort,
+                                   char *FromCall,
+                                   char *ToCall,
+                                   unsigned char *ViaCalls,
+                                   int num_digis,
+                                   char *Data,
+                                   int output_length,
+                                   unsigned char *output_string) {
+    int ii;
+
+
+    // Check for short string
+    if (output_length < 200) {
+        fprintf(stderr,"create_agwpe_packet: string too short\n");
+        output_string[0] = '\0';
+        return(output_string);
+    }
+
+    // Clear the output_string (set to binary zeroes)
+    for (ii = 0; ii < output_length; ii++) {
+        output_string[ii] = '\0';
+    }
+
+    // Write the port number
+    output_string[3] = (unsigned char)RadioPort;
+
+    // Write the FromCall string
+    strcpy(&output_string[8], FromCall);
+
+    // Write the ToCall string
+    strcpy(&output_string[18], ToCall);
+
+    if (ViaCalls == NULL) { // No ViaCalls
+
+        // Write the type character
+        output_string[7] = 'M'; // Unproto, no vias
+
+        // We assume the data length is less than 256 bytes (one
+        // byte wide)
+        output_string[31] = (unsigned char)strlen(Data);
+
+        if (output_length < (strlen(Data) + 36) ) {
+            fprintf(stderr,"create_agwpe_packet: string too short\n");
+            output_string[0] = '\0';
+            return(output_string);
+        }
+        else {
+            // Copy Data onto the end of the string
+            strcpy(&output_string[36], Data);
+        }
+    }
+    else {  // We have ViaCalls
+
+        // Write the type character
+        output_string[7] = 'V'; // Unproto, vias
+
+        // Write the number of ViaCalls into the first byte
+        output_string[36] = (unsigned char)num_digis;
+
+        // Write the ViaCalls into the Data field
+        for (ii = 0; ii < (num_digis * 10); ii++) {
+            strcpy(&output_string[ii + 37], ViaCalls[ii]);
+        }
+
+        // Write the Data onto the end
+        strcpy(&output_string[(num_digis * 10) + 37], Data);
+
+        //Fill in the data length field.  We're assuming the total
+        //is less than 256 (one byte wide).
+        output_string[31] = (unsigned char)(strlen(Data) + (num_digis * 10) + 1);
+    }
+
+    return(output_string);
+}
+
+
+
+
+
+// Parse and AGWPE header.  Create a TAPR-2 style header out of the
+// data for feeding into the Xastir parsing code.  Format is as
+// follows:
+//
+//  RadioPort     4 bytes (0-3)
+//  DataType      4 bytes (4-7)
+//  FromCall     10 bytes (8-17)
+//  ToCall       10 bytes (18-27)
+//  DataLength    4 bytes (28-31)
+//  UserField     4 bytes (32-35)
+//
+// Callsigns are null-terminated at end of string, but field width
+// is specified to be 10 bytes in all cases.
+//
+// output_string should be quite long, perhaps 1000 characters.
+//
+unsigned char *parse_agwpe_header(unsigned char *input_string,
+                                  int output_length,
+                                  unsigned char *output_string) {
+    int ii;
+
+
+    // Clear the output_string (set to binary zeroes)
+    for (ii = 0; ii < output_length; ii++) {
+        output_string[ii] = '\0';
+    }
+}
+*/
+
+
+
+
+
 //****************************************************************
 // get device name only (the portion at the end of the full path)
 // device_name current full name of device
@@ -2408,6 +2549,19 @@ void port_read(int port) {
                         }   // End of first special KISS processing
 
 
+                        // Process AGWPE packets here.  Massage them
+                        // so that they look like normal serial
+                        // packets to the rest of the Xastir code?
+                        else if (port_data[port].device_type != DEVICE_NET_AGWPE){
+
+//WE7U
+// Add AGWPE-specific code here
+//WE7U
+
+                        }
+
+
+
                         // We shouldn't see any AX.25 flag
                         // characters on a KISS interface because
                         // they are stripped out by the KISS code.
@@ -3094,13 +3248,14 @@ end_critical_section(&devices_lock, "interface.c:del_device");
         case(DEVICE_AX25_TNC):
         case(DEVICE_NET_GPSD):
         case(DEVICE_NET_WX):
+        case(DEVICE_NET_DATABASE):
+        case(DEVICE_NET_AGWPE):
 
             switch (port_data[port].device_type){
 
                 case DEVICE_NET_STREAM:
                     if (debug_level & 2)
                         fprintf(stderr,"Close a Network stream\n");
-
                     break;
 
                 case DEVICE_AX25_TNC:
@@ -3113,17 +3268,25 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 
                 case DEVICE_NET_GPSD:
                     if (debug_level & 2)
-                        fprintf(stderr,"Close a Network GPSd device\n");
+                        fprintf(stderr,"Close a Network GPSd stream\n");
                         if (using_gps_position) {
                             using_gps_position--;
                         }
-
                     break;
 
                 case DEVICE_NET_WX:
                     if (debug_level & 2)
-                        fprintf(stderr,"Close a Network WX\n");
+                        fprintf(stderr,"Close a Network WX stream\n");
+                    break;
 
+                case DEVICE_NET_DATABASE:
+                    if (debug_level & 2)
+                        fprintf(stderr,"Close a Network Database stream\n");
+                    break;
+
+                case DEVICE_NET_AGWPE:
+                    if (debug_level & 2)
+                        fprintf(stderr,"Close a Network AGWPE stream\n");
                     break;
 
                 default:
@@ -3465,6 +3628,64 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 }
                 break;
 
+            case DEVICE_NET_DATABASE:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a network database stream\n");
+
+                clear_port_data(port_avail,0);
+
+//if (begin_critical_section(&port_data_lock, "interface.c:add_device(11)" ) > 0)
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+                port_data[port_avail].device_type = DEVICE_NET_DATABASE;
+                strcpy(port_data[port_avail].device_host_name,dev_nm);
+                port_data[port_avail].socket_port = dev_sck_p;
+                port_data[port_avail].reconnect = reconnect;
+                if (strcmp("1",passwd) == 0)
+                    port_data[port_avail].data_type = 1;
+
+//if (end_critical_section(&port_data_lock, "interface.c:add_device(12)" ) > 0)
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+                ok = net_init(port_avail);
+                if (ok == 1) {
+                    /* if connected now send call and program version */
+                    xastir_snprintf(logon_txt, sizeof(logon_txt), "%s %s%c%c", my_callsign, VERSIONTXT, '\r', '\n');
+                    port_write_string(port_avail,logon_txt);
+                }
+                break;
+
+            case DEVICE_NET_AGWPE:
+                if (debug_level & 2)
+                    fprintf(stderr,"Opening a network AGWPE stream");
+
+                clear_port_data(port_avail,0);
+
+//if (begin_critical_section(&port_data_lock, "interface.c:add_device(13)" ) > 0)
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+                port_data[port_avail].device_type = DEVICE_NET_AGWPE;
+                strcpy(port_data[port_avail].device_host_name,dev_nm);
+                port_data[port_avail].socket_port = dev_sck_p;
+                port_data[port_avail].reconnect = reconnect;
+                if (strcmp("1",passwd) == 0)
+                    port_data[port_avail].data_type = 1;
+
+//if (end_critical_section(&port_data_lock, "interface.c:add_device(14)" ) > 0)
+//    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
+
+                ok = net_init(port_avail);
+                if (ok == 1) {
+
+//WE7U
+// Send the commands to AGWPE here to allow monitoring all of the
+// radio ports.
+//WE7U
+
+                }
+                break;
+
+
             default:
                 break;
         }
@@ -3584,6 +3805,45 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
 
                         (void)add_device(i,
                             DEVICE_NET_STREAM,
+                            devices[i].device_host_name,
+                            devices[i].device_host_pswd,
+                            devices[i].sp,
+                            0,
+                            0,
+                            devices[i].reconnect,
+                            devices[i].device_host_filter_string);
+                    }
+                    break;
+
+                case DEVICE_NET_DATABASE:
+                    if (devices[i].connect_on_startup == 1 || override) {
+
+//end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //(void)del_device(i);    // Disconnect old port if it exists
+//begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+
+                        (void)add_device(i,
+                            DEVICE_NET_DATABASE,
+                            devices[i].device_host_name,
+                            devices[i].device_host_pswd,
+                            devices[i].sp,
+                            0,
+                            0,
+                            devices[i].reconnect,
+                            devices[i].device_host_filter_string);
+                    }
+                    break;
+
+                case DEVICE_NET_AGWPE:
+//WE7U
+                    if (devices[i].connect_on_startup == 1 || override) {
+
+//end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+                    //(void)del_device(i);    // Disconnect old port if it exists
+//begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
+
+                        (void)add_device(i,
+                            DEVICE_NET_AGWPE,
                             devices[i].device_host_name,
                             devices[i].device_host_pswd,
                             devices[i].sp,
@@ -3896,6 +4156,12 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         switch (port_data[port].device_type) {
 
             case DEVICE_NET_STREAM:
+//            case DEVICE_NET_DATABASE:
+            case DEVICE_NET_AGWPE:
+
+//WE7U
+// Special stuff needed for AGWPE?
+//WE7U
 
                 xastir_snprintf(output_net, sizeof(output_net), "%s>%s,TCPIP*:", my_callsign, VERSIONFRM);
                 break;
@@ -4334,6 +4600,13 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
             switch (port_data[i].device_type) {
 
                 case DEVICE_NET_STREAM:
+//                case DEVICE_NET_DATABASE:
+                case DEVICE_NET_AGWPE:
+
+//WE7U
+// Special stuff needed for AGWPE?
+//WE7U
+
                     if (debug_level & 1)
                         fprintf(stderr,"%d Net\n",i);
                     xastir_snprintf(output_net,
