@@ -32,6 +32,14 @@
 // awk_eval_expr
 // awk_new_rule
 // awk_new_program
+// awk_compile_program
+// awk_exec_action
+// awk_load_program_file
+// awk_load_program_array
+// awk_exec_begin_record
+// awk_exec_begin
+// awk_exec_end_record
+// awk_exec_end
 //
 // These functions free memory:
 // ----------------------------

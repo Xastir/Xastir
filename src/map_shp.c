@@ -702,6 +702,8 @@ void draw_shapefile_map (Widget w,
 
 #ifdef WITH_DBFAWK
     if (Dbf_sigs == NULL)
+//WE7U
+// Allocates memory!  Frees some also.
         Dbf_sigs = dbfawk_load_sigs(get_data_base_dir("config"),".dbfawk");
 
     if (debug_level & 16)
@@ -790,6 +792,8 @@ void draw_shapefile_map (Widget w,
     }
 #ifdef WITH_DBFAWK
     if (Dbf_sigs) {   /* see if we have a .dbfawk file that matches */
+//WE7U
+// Allocates memory!  Also frees memory.
         sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig,file);
         if (!sig_info) {
             fprintf(stderr,"No DBFAWK signature for %s!  Using default.\n",filenm);
@@ -842,7 +846,7 @@ void draw_shapefile_map (Widget w,
             /* find out which dbf fields we care to read */
 //WE7U
 // Here's where a bunch of calloc() calls occur.  Some of which
-// don't get freed!
+// don't get freed!  dbfawk_field_list allocates memory.
             fld_info = dbfawk_field_list(hDBF, dbffields);
 
         } else {                /* should never be reached anymore! */
@@ -1176,6 +1180,8 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
             int keylen;
             if (sig_info) {
+//WE7U
+// Allocates memory!
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
                 keylen = strlen(key);
                 if (debug_level & 16) {
@@ -1287,6 +1293,8 @@ void draw_shapefile_map (Widget w,
         DBFClose( hDBF );   // Clean up open file descriptors
 
 #ifdef WITH_DBFAWK
+//WE7U
+// Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
             if (sig_info->prog != NULL)
@@ -1322,6 +1330,8 @@ void draw_shapefile_map (Widget w,
         SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
+//WE7U
+// Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
             if (sig_info->prog != NULL)
@@ -1360,6 +1370,8 @@ void draw_shapefile_map (Widget w,
             SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
+//WE7U
+// Frees memory
             dbfawk_free_info(fld_info);
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
                 if (sig_info->prog != NULL)
@@ -1378,6 +1390,8 @@ void draw_shapefile_map (Widget w,
             SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
+//WE7U
+// Frees memory
             dbfawk_free_info(fld_info);
             if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
                 if (sig_info->prog != NULL)
@@ -1417,6 +1431,8 @@ void draw_shapefile_map (Widget w,
         SHPClose( hSHP );
 
 #ifdef WITH_DBFAWK
+//WE7U
+// Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
             if (sig_info->prog != NULL)
@@ -1555,6 +1571,8 @@ void draw_shapefile_map (Widget w,
         (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
 #ifdef WITH_DBFAWK
+//WE7U
+// Frees memory
         dbfawk_free_info(fld_info);
         if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
             if (sig_info->prog != NULL)
@@ -1655,6 +1673,8 @@ void draw_shapefile_map (Widget w,
             }
 #ifdef WITH_DBFAWK
             if (sig_info) {
+//WE7U
+// Allocates memory!
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
                 if (debug_level & 16) {
                     fprintf(stderr,"dbfawk parse of structure %d: ",structure);
@@ -3656,6 +3676,8 @@ if (on_screen) {
     }
 
 #ifdef WITH_DBFAWK
+//WE7U
+// Frees memory
     dbfawk_free_info(fld_info);
     if (sig_info != NULL && sig_info != dbfawk_default_sig  && (sig_info->sig == NULL)) {
         if (sig_info->prog != NULL)
