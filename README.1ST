@@ -1293,7 +1293,7 @@ WINDOWS/CYGWIN NOTES:
      listed above but add "-L/usr/lib -lmagick" to the end of it (and add
      the Shapelib line above if you want Shapelib as well).  "make install".
 
-     Add this to your PATH line in your .profile:
+     Add this to your .profile:
 
          export MAGICK_HOME=/usr
 
