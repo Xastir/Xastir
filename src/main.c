@@ -651,8 +651,9 @@ int display_up_first;           /* display up first */
 time_t max_transmit_time;       /* max time between transmits */
 time_t last_alert_redraw;       /* last time alert caused a redraw */
 time_t sec_next_gps;            /* next gps check */
-time_t gps_time;                /* gps delay time */ 
-time_t POSIT_rate;              // Posit & object/item rate timer 
+time_t gps_time;                /* gps delay time */
+time_t POSIT_rate;              // Posit & object/item rate timer
+time_t update_DR_rate;          // How often to call draw_symbols if DR enabled
 
 
 // SmartBeaconing(tm) stuff.  If enabled, POSIT_rate is only used for
@@ -6789,7 +6790,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             }
 
-            if (show_DR && sec_now() - sec_last_dr_update > 30) {
+            if (show_DR && sec_now() - sec_last_dr_update > update_DR_rate) {
                 redraw_symbols(w);
                 sec_last_dr_update = sec_now();
             }

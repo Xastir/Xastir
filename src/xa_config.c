@@ -532,6 +532,9 @@ void save_data(void)  {
         /* POSIT RATE */
         store_long (fout, "POSIT_RATE", (long)POSIT_rate);
 
+        /* UPDATE DR RATE */
+        store_long (fout, "UPDATE_DR_RATE", (long)update_DR_rate);
+
         /* station broadcast type */
         store_int (fout, "BST_TYPE", output_station_type);
 
@@ -1092,6 +1095,10 @@ void load_data_or_default(void) {
     /* POSIT RATE */
     if (!get_long ("POSIT_RATE", (long *)&POSIT_rate, 1l, 86400l, 1800l))
         POSIT_rate = (time_t)30*60l;
+
+    /* UPDATE DR RATE */
+    if (!get_long ("UPDATE_DR_RATE", (long *)&update_DR_rate, 1l, 86400l, 30l))
+        update_DR_rate = (time_t)30l;
 
     /* station broadcast type */
     if (!get_int ("BST_TYPE", &output_station_type,0,5,0))

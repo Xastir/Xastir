@@ -99,6 +99,7 @@ extern char SOUND_DIR[];
 extern time_t WX_ALERTS_REFRESH_TIME;
 extern time_t gps_time;
 extern time_t POSIT_rate;
+extern time_t update_DR_rate;
 
 extern time_t posit_last_time;
 extern time_t posit_next_time;
