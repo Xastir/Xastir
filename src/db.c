@@ -10705,11 +10705,20 @@ else {
         long dummy;
 
         //fprintf(stderr,"found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
+
+
+
+// NOTE:  This sequence is stupid!  We throw the alert into the
+// message database, and then scan the whole message database for
+// alerts so that we can fill in new entries in our alert_list.
+// Instead we need to skip the message database part altogether and
+// just throw the alert onto the alert_list, then set variables so
+// that we'll do a display update soon.
         (void)msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from,&dummy);
         (void)alert_message_scan();
-
-//WE7U
         fill_in_new_alert_entries(da, ALERT_MAP_DIR);
+
+
 
         done = 1;
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
@@ -10734,11 +10743,20 @@ else {
         long dummy;
 
         //fprintf(stderr,"found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
+
+
+
+// NOTE:  This sequence is stupid!  We throw the alert into the
+// message database, and then scan the whole message database for
+// alerts so that we can fill in new entries in our alert_list.
+// Instead we need to skip the message database part altogether and
+// just throw the alert onto the alert_list, then set variables so
+// that we'll do a display update soon.
         (void)msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from,&dummy);
         (void)alert_message_scan();
-
-//WE7U
         fill_in_new_alert_entries(da, ALERT_MAP_DIR);
+
+
 
         done = 1;
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
