@@ -343,7 +343,8 @@ void draw_geo_image_map (Widget w,
                 // Set to max brightness as it looks weird when the
                 // intensity variable comes into play.
 #ifdef HAVE_IMAGEMAGICK
-                xastir_snprintf(imagemagick_options.modulate,32,"100 100 100");
+// This one causes problems now.  Not sure why.
+//                xastir_snprintf(imagemagick_options.modulate,32,"100 100 100");
 #endif  // HAVE_IMAGEMAGICK
                 toposerver_flag = 1;
             }
@@ -1092,6 +1093,7 @@ fprintf(stderr,"2 ");
             fprintf(stderr,"modulate=%s\n", imagemagick_options.modulate);
         ModulateImage(image, imagemagick_options.modulate);
     }
+/*
     // Else check the menu option for raster intensity
     else if (raster_map_intensity < 1.0) {
         char tempstr[30];
@@ -1108,6 +1110,7 @@ fprintf(stderr,"2 ");
 
         ModulateImage(image, tempstr);
     }
+*/
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
@@ -1237,9 +1240,9 @@ fprintf(stderr,"2 ");
             if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
                 if (debug_level & 16)
                     fprintf(stderr,"Color quantum is [0..65535]\n");
-                my_colors[l].red   = temp_pack.red;
-                my_colors[l].green = temp_pack.green;
-                my_colors[l].blue  = temp_pack.blue;
+                my_colors[l].red   = temp_pack.red * raster_map_intensity;
+                my_colors[l].green = temp_pack.green * raster_map_intensity;
+                my_colors[l].blue  = temp_pack.blue * raster_map_intensity;
             }
             else {  // QuantumDepth = 8
                 if (debug_level & 16)
