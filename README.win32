@@ -141,6 +141,9 @@ window and understands Unix commands instead of DOS commands.
 Type "exit" and then press <Enter> to make the BASH window
 disappear.
 
+You should still see an 'X' in your system tray.  That's the
+X-server running.  You can right-click on that and make it exit.
+
 
 Step 4)  Create a file at C:\cygwin\home\<user>\ called ".cvsrc",
 where the "<user>" part is your Windows login name.  Don't forget
