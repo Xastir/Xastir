@@ -5603,17 +5603,29 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
         }
 
         if (c >= 0) {                                   // ignore csT if c = ' '
-            if (c < 90) {
-                if ((T & 0x18) == 0x10) {               // check for GGA (with altitude)
+            if (c < 90) {   // Found course/speed or altitude bytes
+                if ((T & 0x18) == 0x10) {   // check for GGA (with altitude)
                     //sprintf(p_station->altitude,"%06.0f",pow(1.002,(double)(c*91+s))*0.3048);  // in meters
                     xastir_snprintf(p_station->altitude, sizeof(p_station->altitude), "%06.0f",pow(1.002,(double)(c*91+s))*0.3048);
-                } else {                                // compressed course/speed
-                    //sprintf(p_station->course,"%03d",c*4);                           // deg
-                    xastir_snprintf(p_station->course, sizeof(p_station->course), "%03d",c*4);
+                } else { // Found compressed course/speed bytes
+
+                    // Compute course in degrees
+                    xastir_snprintf(p_station->course,
+                        sizeof(p_station->course),
+                        "%03d",
+                        c*4);
                     //sprintf(p_station->speed, "%03.0f",pow(1.08,(double)s)-1);       // knots
-                    xastir_snprintf(p_station->speed, sizeof(p_station->speed), "%03.0f",pow(1.08,(double)s)-1);
+
+                    // Compute speed in knots
+                    xastir_snprintf(p_station->speed,
+                        sizeof(p_station->speed),
+                        "%03.0f",
+                        pow( 1.08,(double)s ) - 1.0 + 0.5); // Poor man's rounding
+
+                    //printf("Decoded speed:%s, course:%s\n",p_station->speed,p_station->course);
+
                 }
-            } else {
+            } else {    // Found pre-calculated radio range bytes
                 if (c == 90) {
                     // pre-calculated radio range
                     range = 2 * pow(1.08,(double)s);    // miles
