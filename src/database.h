@@ -433,9 +433,10 @@ typedef struct _DataRow {
     short transmit_time_increment; // Seconds to add to transmit next time
                                    // around.  Used to implement decaying
                                    // transmit time algorithm
-    time_t last_modified_time;   // Seconds since the object/item
-                                 // was last modified.  We use this
-                                 // for dead-reckoning.
+//    time_t last_modified_time;   // Seconds since the object/item
+                                 // was last modified.  We'll
+                                 // eventually use this for
+                                 // dead-reckoning.
     char signpost[5+1];          // Holds signpost data
     int  df_color;
     char sats_visible[MAX_SAT];

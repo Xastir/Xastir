@@ -7420,7 +7420,7 @@ void init_station(DataRow *p_station) {
     p_station->object_retransmit  = -1;           // transmit forever
     p_station->last_transmit_time = sec_now();    // Used for object/item decaying algorithm
     p_station->transmit_time_increment = 0;       // Used in data_add()
-    p_station->last_modified_time = 0;            // Used for object/item dead-reckoning
+//    p_station->last_modified_time = 0;            // Used for object/item dead-reckoning
     p_station->record_type        = '\0';
     p_station->data_via           = '\0';         // L local, T TNC, I internet, F file
     p_station->heard_via_tnc_port = 0;
@@ -13946,7 +13946,7 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
     }
 
     // special treatment for objects/items.
-    if (!done) {
+    if (!done && origin[0] != '\0') {
 
         if (message[0] == '*') {    // set object
             (void)data_add(APRS_OBJECT,call,path,message+1,from,port,origin,third_party);
@@ -15517,6 +15517,42 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
 // If resulting longitude exceeds +/- 180°, subtract/add 360°.
 //
 //
+// Possible Problems/Changes:
+// --------------------------
+// *) Change to using last_modified_time for DR.  Also tweak the
+//    code so that we don't do incremental DR and use our own
+//    decoded objects to update everything.  If we keep the
+//    last_modified_time and the last_modified_position separate
+//    DR'ed objects/items, we can always use those instead of the
+//    other variables if we have a non-zero speed.
+//
+// *) Make sure not to corrupt our position of the object when we
+//    receive the packet back via loopback/RF/internet.  In
+//    particular the position and the last_modified_time should stay
+//    constant in this case so that dead-reckoning can continue to
+//    move the object consistently, plus we won't compound errors as
+//    we go.
+//
+// *) Looks like direction is slightly off from dead-reckoning local
+//    display.  Due to screen angle vs. lat/lon angle differences?
+//    Update to the new code (this routine) for the screen stuff.
+//
+// *) At 225 degrees, object went at 180 degrees for a bit.  At 315
+//    degrees, object changes direction slightly with each segment.
+//    Need higher accuracy for the angle?  Problem caused by APRS
+//    vs. Compressed position accuracy/rounding plus incremental
+//    errors building up?  Base-91 compression gives more accurate
+//    position but less accurate angle.  Normal APRS gives less
+//    accurate position but more accurate angle.
+//
+// *) A server Xastir sees empty strings on it's server port when
+//    these objects are transmitted to it.  Investigate.  It
+//    sometimes does it when speed is 0, but it's not consistent.
+//
+// *) Get the last_modified_time embedded into the logfile so that
+//    we don't "lose time" if we shut down for a bit.  DR'ed objects
+//    will be at the proper positions when we start back up.
+// 
 void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat) {
     int my_course = atoi(p_station->course); // In ° true
     double range;
@@ -15530,10 +15566,10 @@ void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat) 
     range = (double)( (sec_now() - p_station->sec_heard)
             * ( atof(p_station->speed) / 3600.0 ) );
 
-fprintf(stderr,"Distance:%fnm, Course:%d,  Time:%d\n",
-    range,
-    my_course,
-    (int)(sec_now() - p_station->sec_heard));
+//fprintf(stderr,"Distance:%fnm, Course:%d,  Time:%d\n",
+//    range,
+//    my_course,
+//    (int)(sec_now() - p_station->sec_heard));
 
     // Bearing in radians
     bearing_radians = (double)((my_course/360.0) * 2.0 * M_PI);
@@ -15571,7 +15607,7 @@ fprintf(stderr,"Distance:%fnm, Course:%d,  Time:%d\n",
     if (lon_B >  360.0)
         lon_B = lon_B - 360.0;
 
-fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
+//fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
 
     ret = convert_to_xastir_coordinates(&x_u_long,
         &y_u_lat,
@@ -15589,50 +15625,6 @@ fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
     // Convert from unsigned long to long
     *x_long = (long)x_u_long;
     *y_lat  = (long)y_u_lat;
-
-
-//
-// Possible Problems/Changes:
-//
-// *) Transmit the corner point (the point at which we changed
-//    direction).  That probably comes for free due to the way we
-//    kick up the transmit rate for new/changed objects?  No, we
-//    don't get a new position written to the record until transmit
-//    time.
-//        Modify_object()
-//          Set_Del_Object()
-//
-// *) Change to using last_modified_time for DR.  Also tweak the
-//    code so that we don't do incremental DR and use our own
-//    decoded objects to update everything.  If we keep the
-//    last_modified_time and the last_modified_position separate
-//    DR'ed objects/items, we can always use those instead of the
-//    other variables if we have a non-zero speed.
-//
-// *) Looks like direction is slightly off from dead-reckoning local
-//    display.  Due to screen angle vs. lat/lon angle differences?
-//
-// *) At 225 degrees, object went at 180 degrees for a bit.  At 315
-//    degrees, object changes direction slightly with each segment.
-//    Need higher accuracy for the angle?  Problem caused by APRS
-//    vs. Compressed position accuracy/rounding plus incremental
-//    errors building up?
-//
-// *) A server Xastir sees empty strings on it's server port when
-//    these objects are transmitted to it.  Investigate.  It
-//    sometimes does it when speed is 0, but it's not consistent.
-//
-// *) Make sure not to corrupt our position of the object when we
-//    receive the packet back via loopback/RF/internet.  In
-//    particular the position and the last_modified_time should stay
-//    constant in this case so that dead-reckoning can continue to
-//    move the object consistently, plus we won't compound errors as
-//    we go.
-//
-// *) Get the last_modified_time embedded into the logfile so that
-//    we don't "lose time" if we shut down for a bit.  DR'ed objects
-//    will be at the proper positions when we start back up.
-// 
 }
 
 
@@ -15855,7 +15847,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                 sizeof(lon_str),
                 CONVERT_LP_NOSP);
 
-fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
+//fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
 
         }
         else {
