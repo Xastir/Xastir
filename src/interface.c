@@ -4853,6 +4853,11 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case DEVICE_NET_AGWPE:
 
                 output_net[0] = '\0';   // We don't need this header for AGWPE
+
+                // Set unproto path:  Get next unproto path in
+                // sequence.
+                unproto_path = select_unproto_path(port);
+
                 break;
 
             case DEVICE_NET_STREAM:
@@ -5366,6 +5371,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     }
 
                     if (!done) {
+
                         // Set unproto path:  Get next unproto path
                         // in sequence.
                         unproto_path = select_unproto_path(i);
@@ -5453,9 +5459,36 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 //WE7U:AGWPE
                 else if (port_data[i].device_type == DEVICE_NET_AGWPE) {
 
-                    // Set unproto path:  Get next unproto path in
-                    // sequence.
-                    unproto_path = select_unproto_path(port);
+                    // Set unproto path.  First check whether we're
+                    // to use the igate path.  If so and the path
+                    // isn't empty, skip the rest of the path selection:
+                    if ( (use_igate_path)
+                            && (strlen(devices[i].unproto_igate) > 0) ) {
+
+                        xastir_snprintf(path_txt,
+                            sizeof(path_txt),
+                            "%s",
+                            devices[i].unproto_igate);
+                    }
+                    // Check whether a path was passed to us as a
+                    // parameter:
+                    else if ( (path != NULL) && (strlen(path) != 0) ) {
+
+                        xastir_snprintf(path_txt,
+                            sizeof(path_txt),
+                            "%s",
+                            path);
+                    }
+                    else {
+                        // Set unproto path:  Get next unproto path in
+                        // sequence.
+
+                        unproto_path = select_unproto_path(port);
+                        xastir_snprintf(path_txt,
+                            sizeof(path_txt),
+                            "%s",
+                            unproto_path);
+                    }
 
 // We need to remove the complete AX.25 header from data_txt before
 // we call this routine!  Instead put the digipeaters into the
@@ -5467,7 +5500,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         '\0',         // Type of frame
                         my_callsign,  // source
                         VERSIONFRM,   // destination
-                        unproto_path, // Path,
+                        path_txt, // Path,
                         data_txt,
                         strlen(data_txt));
                 }
