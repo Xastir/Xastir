@@ -1071,7 +1071,7 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
  *
  * padfx/padfy/padfz are the vertices themselves, in double format.
  *******************************************************************/
-void create_shapefile_map(char *shapefile_name, int type,
+void create_shapefile_map(char *dir, char *shapefile_name, int type,
         int quantity, double *padfx, double *padfy, double *padfz,
         int add_timestamp) {
 
@@ -1085,6 +1085,16 @@ void create_shapefile_map(char *shapefile_name, int type,
     char temp_shapefile_name[MAX_FILENAME];
 
 
+/*
+    fprintf(stderr,"create_shapefile_map\n");
+    fprintf(stderr,"%s %s %d %d %d\n",
+        dir,
+        shapefile_name,
+        type,
+        quantity,
+        add_timestamp);
+*/
+
     if (quantity == 0) {
         // No reason to make a map if we don't have any points.
         return;
@@ -1093,14 +1103,15 @@ void create_shapefile_map(char *shapefile_name, int type,
     // Get the time/datestamp
     get_timestamp(timedatestring);
 
-    if (add_timestamp) {    // Add a timestamp to the filename
+    if (add_timestamp) {    // Prepend a timestamp to the filename
         int ii;
 
         xastir_snprintf(temp_shapefile_name,
             sizeof(temp_shapefile_name),
-            "%s_%s",
-            shapefile_name,
-            timedatestring);
+            "%s%s_%s",
+            dir,
+            timedatestring,
+            shapefile_name);
 
         // Change spaces to underlines
         for (ii = 0; ii < strlen(temp_shapefile_name); ii++) {
@@ -1112,7 +1123,8 @@ void create_shapefile_map(char *shapefile_name, int type,
     else {  // Use the filename directly, no timestamp
         xastir_snprintf(temp_shapefile_name,
             sizeof(temp_shapefile_name),
-            "%s",
+            "%s%s",
+            dir,
             shapefile_name);
     }
 
@@ -1199,7 +1211,8 @@ void create_map_from_trail(char *call_sign) {
         int count;
         int ii;
         TrackRow *ptr;
-        char temp[100];
+        char temp[MAX_FILENAME];
+        char temp2[MAX_FILENAME];
         double *x;
         double *y;
         double *z;
@@ -1217,7 +1230,7 @@ void create_map_from_trail(char *call_sign) {
         if (count == 0) {
             // No reason to make a map if we don't have any points
             // in the track list.
-            return;
+           return;
         }
 
         // We know how many points are in the linked list.  Allocate
@@ -1262,22 +1275,28 @@ void create_map_from_trail(char *call_sign) {
         }
 
         // Create a Shapefile from the APRS trail.  Write it into
-        // "/var/tmp" and add a date/timestamp to the end.
+        // "/maps/GPS" and add a date/timestamp to the end.
         //
+        // Create directory name ("maps/GPS/")
         xastir_snprintf(temp, sizeof(temp),
-            "%s%s%s",
-            "/var/tmp/",
+            "%s/GPS/",
+            get_data_base_dir("maps"));
+
+        // Create filename
+        xastir_snprintf(temp2, sizeof(temp2),
+            "%s%s",
             call_sign,
-            "_APRS_Trail");
+            "_APRS_Trail_Red");
 
         create_shapefile_map(
             temp,
-            SHPT_POLYGON,
+            temp2,
+            SHPT_ARC,
             count,
             x,
             y,
             z,
-            1); // Add a timestamp to the end of the filename
+            1); // Add a timestamp to the front of the filename
 
         // Free the storage that we malloc'ed
         free(x);
@@ -1287,6 +1306,8 @@ void create_map_from_trail(char *call_sign) {
     else {  // Couldn't find the station of interest
     }
 }
+
+
 
 
 
@@ -2727,6 +2748,7 @@ void draw_shapefile_map (Widget w,
                     if (gps_flag) {
                         int jj;
                         int done = 0;
+
 
                         // Fill in the label we'll use later
                         xastir_snprintf(gps_label,
