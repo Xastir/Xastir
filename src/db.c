@@ -10131,7 +10131,7 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 //                              1 if it is good
 //          incoming_data       Processed string
 //
-int decode_ax25_header(char *incoming_data) {
+int decode_ax25_header(unsigned char *incoming_data) {
     char temp[20];
     char result[4096+100];
     char dest[15];
