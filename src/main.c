@@ -1445,7 +1445,8 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-// Find the extents of every map we have
+// Find the extents of every map we have.  This is the callback for
+// the "Re-Index Maps" button.
 // 
 void Index_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
 /*
