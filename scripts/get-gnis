@@ -1,0 +1,68 @@
+#!/bin/sh
+#
+# $Id$
+#
+# Script to retrieve GNIS files by state. 
+#
+# Written 20041205 Dan Brown N8YSZ
+#
+# Copyright (C) 2000-2004  The Xastir Group
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#
+# Look at the README for more information on the program.
+#
+
+
+
+if [ $# -lt 1 ]
+then
+    printf "%s: error - Need at least one state to download\n" $0
+    printf "Usage: %s ST [ST]... \n" $0
+    exit 1 
+fi
+
+cd /tmp 
+
+while [ $1 ]
+do 
+
+    MYSTATE=`printf ${1} | tr a-z A-Z `
+
+    printf "Retrieving GNIS file for %s\n" ${MYSTATE}
+
+    rm -f ${MYSTATE}_DECI.zip ${MYSTATE}_DECI.TXT
+    if (wget http://geonames.usgs.gov/stategaz/${MYSTATE}_DECI.zip)
+    then
+        unzip ${MYSTATE}_DECI.zip 
+    else 
+        rm -f ${MYSTATE}_DECI.zip ${MYSTATE}_DECI.TXT
+        wget http://geonames.usgs.gov/stategaz/${MYSTATE}_DECI.TXT
+    fi
+
+    if ( [ -f ${MYSTATE}_DECI.TXT ] )
+    then 
+        printf "File successfully downloaded. Moving to /usr/local/share/xastir/GNIS\n" 
+        sudo mv ${MYSTATE}_DECI.TXT /usr/local/share/xastir/GNIS/${MYSTATE}.gnis
+    else 
+        printf "File for %s not successfully downloaded.\n" ${MYSTATE}
+    fi 
+
+shift
+
+done 
+
+
