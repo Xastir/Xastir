@@ -9554,6 +9554,7 @@ void map_properties_fill_in (void) {
                 char temp[MAX_FILENAME];
                 char temp_layer[10];
                 char temp_filled[10];
+                char temp_auto[10];
 
                 // We have a file.  Construct the line that we wish
                 // to place in the list
@@ -9575,11 +9576,19 @@ void map_properties_fill_in (void) {
                     strcpy(temp_filled,"  Yes ");
                 }
 
+                if (current->auto_maps == 0) {
+                    strcpy(temp_auto,"       ");
+                }
+                else {
+                    strcpy(temp_auto,"  Yes  ");
+                }
+
                 xastir_snprintf(temp,
                     sizeof(temp),
-                    "%s   %s   %s",
+                    "%s   %s   %s   %s",
                     temp_layer,
                     temp_filled,
+                    temp_auto,
                     current->filename);
 
                 XmListAddItem(map_properties_list,
@@ -9688,7 +9697,7 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
-                temp2 = temp + 17;
+                temp2 = temp + 27;
 
 //printf("New string:%s\n",temp2);
 
@@ -9738,7 +9747,7 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
-                temp2 = temp + 17;
+                temp2 = temp + 27;
 
 //printf("New string:%s\n",temp2);
 
@@ -9814,7 +9823,7 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
-                temp2 = temp + 17;
+                temp2 = temp + 27;
 
 //printf("New string:%s\n",temp2);
 
@@ -9861,9 +9870,10 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
 // in-memory list to disk.
 //
 void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    int i, x;
-    char *temp;
-    XmString *list;
+    int i;
+//    int x;
+//    char *temp;
+//    XmString *list;
     static Widget pane, my_form, button_clear, button_close, rowcol,
            label1, label2, label3, button_filled_yes,
            button_filled_no, button_layer_change;
@@ -9953,7 +9963,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
 //WE7U
 //        label2  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),
-        label2  = XtVaCreateManagedWidget("Layer   Filled   Path/Filename",
+        label2  = XtVaCreateManagedWidget("Layer   Filled   AutoMap   Path/Filename",
  
                 xmLabelWidgetClass,
                 my_form,
@@ -9987,13 +9997,6 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         button_layer_change = XtVaCreateManagedWidget("Change Layer->",
                 xmPushButtonGadgetClass, 
                 rowcol,
-//                XmNtopAttachment, XmATTACH_FORM,
-//                XmNtopOffset, 5,
-//                XmNbottomAttachment, XmATTACH_NONE,
-//                XmNleftAttachment, XmATTACH_NONE,
-//                XmNrightAttachment, XmATTACH_WIDGET,
-//                XmNrightWidget, label3,
-//                XmNrightOffset, 30,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -10010,12 +10013,6 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNwidth, ((7*7)+2),
                 XmNmaxLength, 5,
                 XmNbackground, colors[0x0f],
-//                XmNtopAttachment,XmATTACH_FORM,
-//                XmNtopOffset, 3,
-//                XmNbottomAttachment,XmATTACH_NONE,
-//                XmNleftAttachment, XmATTACH_NONE,
-//                XmNrightAttachment,XmATTACH_WIDGET,
-//                XmNrightWidget, button_layer_change,
                 XmNrightOffset, 1,
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
@@ -10025,14 +10022,6 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         label3  = XtVaCreateManagedWidget("Filled->",
                 xmLabelWidgetClass,
                 rowcol,
-//                XmNtopAttachment, XmATTACH_FORM,
-//                XmNtopOffset, 10,
-//                XmNbottomAttachment, XmATTACH_NONE,
-//                XmNleftAttachment, XmATTACH_NONE,
-//                XmNrightAttachment, XmATTACH_WIDGET,
-//                XmNrightWidget, button_filled_yes,
-//                XmNrightOffset, 2,
-//                XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -10042,13 +10031,6 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         button_filled_yes = XtVaCreateManagedWidget("Yes",
                 xmPushButtonGadgetClass, 
                 rowcol,
-//                XmNtopAttachment, XmATTACH_FORM,
-//                XmNtopOffset, 5,
-//                XmNbottomAttachment, XmATTACH_NONE,
-//                XmNleftAttachment, XmATTACH_NONE,
-//                XmNrightAttachment, XmATTACH_WIDGET,
-//                XmNrightWidget, button_filled_no,
-//                XmNrightOffset, 5,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -10060,12 +10042,6 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         button_filled_no = XtVaCreateManagedWidget("No",
                 xmPushButtonGadgetClass, 
                 rowcol,
-//                XmNtopAttachment, XmATTACH_FORM,
-//                XmNtopOffset, 5,
-//                XmNbottomAttachment, XmATTACH_NONE,
-//                XmNleftAttachment, XmATTACH_NONE,
-//                XmNrightAttachment, XmATTACH_FORM,
-//                XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
@@ -10111,9 +10087,6 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 
         XtPopup(map_properties_dialog,XtGrabNone);
 
-        // Fix the dialog height only, allow the width to vary.
-//        fix_dialog_vsize(map_properties_dialog);
-
         // Move focus to the OK button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
         // have that default function happen.  Note:  We _can_ hit the
@@ -10121,12 +10094,12 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
 //        XmUpdateDisplay(map_properties_dialog);
         XmProcessTraversal(button_close, XmTRAVERSE_CURRENT);
 
-   } else {
+    } else {
         (void)XRaiseWindow(XtDisplay(map_properties_dialog), XtWindow(map_properties_dialog));
     }
 
 
-
+/*
 
 
     // We need to run through the map_properties_list widget, getting the map
@@ -10146,7 +10119,7 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         if (XmListPosSelected(map_properties_list,x)) {
             if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
                 unsigned long bottom,top,left,right;
-                int map_layer,draw_filled;
+                int map_layer,draw_filled,auto_maps;
 
                 // We now have the filename for a selected map.
                 // Look it up in the map index to get the
@@ -10157,7 +10130,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                     &left,
                     &right,
                     &map_layer,
-                    &draw_filled);
+                    &draw_filled,
+                    &auto_maps);
 
 //printf("Layer:%05d, Filled:%01d, %s\n",map_layer,draw_filled,temp);
 
@@ -10168,6 +10142,9 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
             }
         }
     }
+*/
+
+
 }
 
 

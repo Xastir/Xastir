@@ -149,7 +149,9 @@ float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma corre
 
 // Storage for the index file timestamp
 const time_t *map_index_timestamp;
-extern int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right, int* map_layer, int *draw_filled);
+extern int index_retrieve(char *filename, unsigned long *bottom,
+    unsigned long *top, unsigned long *left, unsigned long *right,
+    int *map_layer, int *draw_filled, int *auto_maps);
 static int map_onscreen_index(char *filename);
 extern void index_update_directory(char *directory);
 
@@ -8813,10 +8815,11 @@ static int map_onscreen(long left, long right, long top, long bottom) {
 static int map_onscreen_index(char *filename) {
     unsigned long top, bottom, left, right;
     int onscreen = 2;
-    int map_layer, draw_filled;     // Unused in this function
+    int map_layer, draw_filled, auto_maps;     // Unused in this function
 
 
-    if (index_retrieve(filename, &bottom, &top, &left, &right, &map_layer, &draw_filled) ) {
+    if (index_retrieve(filename, &bottom, &top, &left, &right,
+            &map_layer, &draw_filled, &auto_maps) ) {
 
         // Map was in the index, check for visibility
         if (map_onscreen(left, right, top, bottom)) {
@@ -10608,6 +10611,7 @@ void index_update_directory(char *directory) {
  
             // Fill in some default values for the new record.
             temp_record->selected = 0;
+            temp_record->auto_maps = 1;
 
             //current = current->next;
             done++;
@@ -10637,6 +10641,7 @@ void index_update_directory(char *directory) {
  
         // Fill in some default values for the new record.
         temp_record->selected = 0;
+        temp_record->auto_maps = 1;
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -10740,6 +10745,7 @@ void index_update_xastir(char *filename,
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
+            temp_record->auto_maps = 1;
         
             //current = current->next;
             done++;
@@ -10774,6 +10780,7 @@ void index_update_xastir(char *filename,
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
+        temp_record->auto_maps= 1;
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -10880,6 +10887,7 @@ void index_update_ll(char *filename,
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
+            temp_record->auto_maps = 1;
  
             //current = current->next;
             done++;
@@ -10916,6 +10924,7 @@ void index_update_ll(char *filename,
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
+        temp_record->auto_maps = 1;
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -10980,7 +10989,8 @@ int index_retrieve(char *filename,
                    unsigned long *left,
                    unsigned long *right,
                    int *map_layer,
-                   int *draw_filled) {
+                   int *draw_filled,
+                   int *auto_maps) {
 
     map_index_record *current = map_index_head;
     int status = 0;
@@ -10996,6 +11006,7 @@ int index_retrieve(char *filename,
             *right = current->right;
             *map_layer = current->map_layer;
             *draw_filled = current->draw_filled;
+            *auto_maps = current->auto_maps;
 
             // Mark that we've accessed this record
             current->accessed = 1;
@@ -11045,13 +11056,14 @@ void index_save_to_file() {
             // comma-delimited line
             xastir_snprintf(out_string,
                 sizeof(out_string),
-                "%010lu,%010lu,%010lu,%010lu,%05d,%01d,%s\n",
+                "%010lu,%010lu,%010lu,%010lu,%05d,%01d,%01d,%s\n",
                 current->bottom,
                 current->top,
                 current->left,
                 current->right,
                 current->map_layer,
                 current->draw_filled,
+                current->auto_maps,
                 current->filename);
 
             if (fprintf(f,"%s",out_string) < strlen(out_string)) {
@@ -11115,7 +11127,7 @@ printf("%s\n",in_string);
                 xastir_snprintf(scanf_format,
                     sizeof(scanf_format),
                     "%s%d%s",
-                    "%lu,%lu,%lu,%lu,%d,%d,%",
+                    "%lu,%lu,%lu,%lu,%d,%d,%d,%",
                     MAX_FILENAME,
                     "c");
 
@@ -11129,6 +11141,7 @@ printf("%s\n",in_string);
                     &temp_record->right,
                     &temp_record->map_layer,
                     &temp_record->draw_filled,
+                    &temp_record->auto_maps,
                     temp_record->filename);
 
                     // Mark the record as non-accessed at this
@@ -11139,10 +11152,15 @@ printf("%s\n",in_string);
                     // after a couple of Xastir reboots.
                     temp_record->accessed = 0;
 
+                    // Default is not-selected.  Later we read in
+                    // the selected_maps.sys file and tweak some of
+                    // these fields.
+                    temp_record->selected = 0;
+
                 temp_record->filename[MAX_FILENAME-1] = '\0';
 
                 // If correct number of parameters
-                if (processed == 7) {
+                if (processed == 8) {
 
                     // Link the new record to the end of the list
                     if (current == NULL) {  // Empty list
@@ -11442,6 +11460,7 @@ void insert_map_sorted(char *filename){
     unsigned long right;
     int map_layer;
     int draw_filled;
+    int auto_maps;
     int done;
 
 
@@ -11451,7 +11470,8 @@ void insert_map_sorted(char *filename){
             &left,
             &right,
             &map_layer,
-            &draw_filled)) {    // Found a match
+            &draw_filled,
+            &auto_maps)) {    // Found a match
 
         // Allocate a new record
         temp_record = (map_index_record *)malloc(sizeof(map_index_record));
@@ -11464,6 +11484,7 @@ void insert_map_sorted(char *filename){
         temp_record->right = right;
         temp_record->map_layer = map_layer;
         temp_record->draw_filled = draw_filled;
+        temp_record->auto_maps = auto_maps;
         temp_record->selected = 1;  // Always, we already know this!
         temp_record->accessed = 1;  // Always, we already know this!
         temp_record->next = NULL;

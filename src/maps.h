@@ -75,6 +75,7 @@ typedef struct _map_index_record{
     int map_layer;      // For future expansion.  Specify which layer to draw the map on.
     int draw_filled;    // For future expansion.  Specify whether to fill polygons when drawing.
     int selected;       // Specifies if map is currently selected
+    int auto_maps;      // Specifies if map included in automaps function
     struct _map_index_record *next;
 } map_index_record;
 extern map_index_record *map_index_head;
@@ -87,7 +88,9 @@ void  index_update_xastir(char *filename, unsigned long bottom, unsigned long to
 void  index_update_ll(char *filename, double bottom, double top, double left, double right);
 void draw_grid (Widget w);
 void Snapshot(void);
-int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right, int *map_layer, int *draw_filled);
+int index_retrieve(char *filename, unsigned long *bottom,
+    unsigned long *top, unsigned long *left, unsigned long *right,
+    int *map_layer, int *draw_filled, int *automaps);
 void index_restore_from_file(void);
 void index_save_to_file(void);
 void map_indexer(void);
