@@ -648,9 +648,10 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
 
 /*
-// I've been told by Dale Huguely that this might occur could be a new
+// I've been told by Dale Huguely that this might occur:  A new
 // alert that shouldn't match the cancelled alert.  Tabling this
 // ammendment for now.  ;-)
+*/
 
         // Now check whether a new alert passed to us might match a
         // cancelled existing alert.  We use a much looser match for
@@ -675,8 +676,6 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
             return (&alert_list[i]);
         }
-*/
-
     }
     return (NULL);
 }
