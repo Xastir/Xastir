@@ -487,6 +487,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                             NULL);
 
         TNC_active_on_startup = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -497,6 +499,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
         TNC_transmit_data = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -511,6 +515,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             case DEVICE_SERIAL_TNC_HSP_GPS:
             case DEVICE_SERIAL_TNC_AUX_GPS:
                 TNC_GPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -530,6 +536,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             case DEVICE_SERIAL_KISS_TNC:
                 // Add a "RELAY Digipeat?" button for KISS TNC's
                 TNC_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -565,6 +573,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
         TNC_device_name_data = XtVaCreateManagedWidget("Config_TNC device_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -603,6 +613,9 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
         speed_box = XmCreateRadioBox(frame,"Config_TNC Speed_box",al,ac);
         XtVaSetValues(speed_box,XmNnumColumns,5,NULL);
 
@@ -782,6 +795,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
         TNC_unproto1_data = XtVaCreateManagedWidget("Config_TNC protopath1", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -815,6 +830,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
         TNC_unproto2_data = XtVaCreateManagedWidget("Config_TNC protopath2", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -848,6 +865,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
         TNC_unproto3_data = XtVaCreateManagedWidget("Config_TNC protopath3", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -880,6 +899,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
         TNC_igate_data = XtVaCreateManagedWidget("Config_TNC igate_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -937,6 +958,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     NULL);
 
                 TNC_txdelay = XtVaCreateManagedWidget("Config_TNC TNC_txdelay", xmTextFieldWidgetClass, form2,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    XmNtraversalOn, TRUE,
                                     XmNeditable,   TRUE,
                                     XmNcursorPositionVisible, TRUE,
                                     XmNsensitive, TRUE,
@@ -966,6 +989,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     NULL);
 
                 TNC_persistence = XtVaCreateManagedWidget("Config_TNC persistence", xmTextFieldWidgetClass, form2,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    XmNtraversalOn, TRUE,
                                     XmNeditable,   TRUE,
                                     XmNcursorPositionVisible, TRUE,
                                     XmNsensitive, TRUE,
@@ -995,6 +1020,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     NULL);
 
                 TNC_slottime = XtVaCreateManagedWidget("Config_TNC slottime", xmTextFieldWidgetClass, form2,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    XmNtraversalOn, TRUE,
                                     XmNeditable,   TRUE,
                                     XmNcursorPositionVisible, TRUE,
                                     XmNsensitive, TRUE,
@@ -1024,6 +1051,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     NULL);
 
                 TNC_txtail = XtVaCreateManagedWidget("Config_TNC TxTail", xmTextFieldWidgetClass, form2,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    XmNtraversalOn, TRUE,
                                     XmNeditable,   TRUE,
                                     XmNcursorPositionVisible, TRUE,
                                     XmNsensitive, TRUE,
@@ -1043,6 +1072,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
                 // Full Duplex
                 TNC_fullduplex = XtVaCreateManagedWidget(langcode("WPUPCFT039"),xmToggleButtonWidgetClass,form2,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    XmNtraversalOn, TRUE,
                                     XmNtopAttachment, XmATTACH_WIDGET,
                                     XmNtopWidget, setup4,
                                     XmNtopOffset, 5,
@@ -1088,6 +1119,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     NULL);
 
                 TNC_up_file_data = XtVaCreateManagedWidget("Config_TNC up_file", xmTextFieldWidgetClass, form2,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    XmNtraversalOn, TRUE,
                                     XmNeditable,   TRUE,
                                     XmNcursorPositionVisible, TRUE,
                                     XmNsensitive, TRUE,
@@ -1115,6 +1148,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     NULL);
 
                 TNC_down_file_data = XtVaCreateManagedWidget("Config_TNC down_file", xmTextFieldWidgetClass, form2,
+                                    XmNnavigationType, XmTAB_GROUP,
+                                    XmNtraversalOn, TRUE,
                                     XmNeditable,   TRUE,
                                     XmNcursorPositionVisible, TRUE,
                                     XmNsensitive, TRUE,
@@ -1139,6 +1174,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 //------------------------------------------------------------
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, frame3,
                                       XmNtopOffset, 10,
@@ -1152,6 +1189,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, frame3,
                                       XmNtopOffset, 10,
@@ -1567,6 +1606,8 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         GPS_device_name_data = XtVaCreateManagedWidget("Config_GPS device_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -1586,6 +1627,8 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         GPS_active_on_startup = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, device,
                                       XmNtopOffset, 7,
@@ -1597,6 +1640,8 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         GPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, GPS_active_on_startup,
                                       XmNtopOffset, 7,
@@ -1632,6 +1677,9 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
 
         speed_box = XmCreateRadioBox(frame,"Config_GPS Speed_box",al,ac);
 
@@ -1750,6 +1798,8 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -1763,6 +1813,8 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -2042,6 +2094,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         WX_device_name_data = XtVaCreateManagedWidget("Config_WX device_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -2061,6 +2115,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         WX_active_on_startup = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, device,
                                       XmNtopOffset, 7,
@@ -2091,6 +2147,9 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
 
         speed_box = XmCreateRadioBox(frame,"Config_WX Speed_box",al,ac);
 
@@ -2298,6 +2357,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -2311,6 +2372,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -2624,6 +2687,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NWX_host_name_data = XtVaCreateManagedWidget("Config_NWX host_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -2654,6 +2719,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NWX_host_port_data = XtVaCreateManagedWidget("Config_NWX port_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -2674,6 +2741,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NWX_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, portn,
                                       XmNtopOffset, 15,
@@ -2685,6 +2754,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NWX_host_reconnect_data  = XtVaCreateManagedWidget(langcode("WPUPCFG020"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, NWX_active_on_startup,
                                       XmNtopOffset, 5,
@@ -2698,6 +2769,9 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
         /*set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
 
         frame3 = XtVaCreateManagedWidget("Config_NWX frame3", xmFrameWidgetClass, form,
                                      XmNtopAttachment, XmATTACH_WIDGET,
@@ -2799,6 +2873,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -2812,6 +2888,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -3051,6 +3129,8 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NGPS_host_name_data = XtVaCreateManagedWidget("Config_NGPS host_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -3081,6 +3161,8 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NGPS_host_port_data = XtVaCreateManagedWidget("Config_NGPS port_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -3101,6 +3183,8 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NGPS_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, portn,
                                       XmNtopOffset, 15,
@@ -3112,6 +3196,8 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NGPS_host_reconnect_data  = XtVaCreateManagedWidget(langcode("WPUPCFG020"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, NGPS_active_on_startup,
                                       XmNtopOffset, 5,
@@ -3123,6 +3209,8 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         NGPS_set_time  = XtVaCreateManagedWidget(langcode("UNIOP00029"), xmToggleButtonWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, NGPS_host_reconnect_data,
                                       XmNtopOffset, 5,
@@ -3150,6 +3238,8 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -3163,6 +3253,8 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -3380,6 +3472,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                             NULL);
 
         AX25_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -3390,6 +3484,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AX25_transmit_data = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -3401,6 +3497,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AX25_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -3423,6 +3521,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AX25_device_name_data = XtVaCreateManagedWidget("Config_AX25 device_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -3461,6 +3561,9 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
         /* set args for color */
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
 
         igate_box = XmCreateRadioBox(frame,"Config_AX25 IGate box",al,ac);
 
@@ -3518,6 +3621,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AX25_unproto1_data = XtVaCreateManagedWidget("Config_AX25 protopath1", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -3551,6 +3656,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AX25_unproto2_data = XtVaCreateManagedWidget("Config_AX25 protopath2", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -3584,6 +3691,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AX25_unproto3_data = XtVaCreateManagedWidget("Config_AX25 protopath3", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -3616,6 +3725,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AX25_igate_data = XtVaCreateManagedWidget("Config_TNC igate_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -3646,6 +3757,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -3659,6 +3772,8 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -4288,6 +4403,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                             NULL);
 
         Database_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -4298,6 +4415,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         Database_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, Database_active_on_startup,
                                       XmNtopOffset, 5,
@@ -4320,6 +4439,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         Database_host_data = XtVaCreateManagedWidget("Config_Database host_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4349,6 +4470,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         Database_port_data = XtVaCreateManagedWidget("Config_Database port_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4377,6 +4500,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         Database_password_data = XtVaCreateManagedWidget("Config_Database password_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4418,6 +4543,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         Database_filter_data = XtVaCreateManagedWidget("Config_Database filter_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4436,6 +4563,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         Database_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFID11"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, filter,
                                       XmNtopOffset, 20,
@@ -4458,6 +4587,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -4471,6 +4602,8 @@ void Config_Database( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -4699,6 +4832,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                             NULL);
 
         AGWPE_active_on_startup  = XtVaCreateManagedWidget(langcode("UNIOP00011"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -4709,6 +4844,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -4720,6 +4857,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -4742,6 +4881,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_host_data = XtVaCreateManagedWidget("Config_AGWPE host_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4771,6 +4912,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_port_data = XtVaCreateManagedWidget("Config_AGWPE port_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4799,6 +4942,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_password_data = XtVaCreateManagedWidget("Config_AGWPE password_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4829,6 +4974,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFIA11"),xmToggleButtonWidgetClass,form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, password,
                                       XmNtopOffset, 20,
@@ -4852,6 +4999,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_radioport_data = XtVaCreateManagedWidget("Config_AGWPE radioport_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4889,6 +5038,9 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
         // Set args for color
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+
 
         igate_box = XmCreateRadioBox(frame,"Config_AGWPE IGate box",al,ac);
 
@@ -4940,6 +5092,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_unproto1_data = XtVaCreateManagedWidget("Config_AGWPE protopath1", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -4973,6 +5127,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_unproto2_data = XtVaCreateManagedWidget("Config_AGWPE protopath2", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -5007,6 +5163,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
 
 
         AGWPE_unproto3_data = XtVaCreateManagedWidget("Config_AGWPE protopath3", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -5040,6 +5198,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         AGWPE_igate_data = XtVaCreateManagedWidget("Config_AGWPE igate_data", xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNeditable,   TRUE,
                                       XmNcursorPositionVisible, TRUE,
                                       XmNsensitive, TRUE,
@@ -5071,6 +5231,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -5084,6 +5246,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 10,
@@ -5659,6 +5823,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                 ac=0;
                 XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
                 XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICE_TYPES); ac++;
+                XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
                 XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
                 XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
                 XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -5679,6 +5844,8 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                     XmStringFree(str_ptr);
                 }
                 button_add = XtVaCreateManagedWidget(langcode("UNIOP00007"),xmPushButtonGadgetClass, form,
+                                XmNnavigationType, XmTAB_GROUP,
+                                XmNtraversalOn, TRUE,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, XtParent(interface_type_list),
                                 XmNtopOffset,10,
@@ -5689,10 +5856,11 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                                 XmNrightAttachment, XmATTACH_POSITION,
                                 XmNrightPosition, 2,
                                 XmNbackground, colors[0xff],
-                                XmNnavigationType, XmTAB_GROUP,
                                 NULL);
 
                 button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
+                                XmNnavigationType, XmTAB_GROUP,
+                                XmNtraversalOn, TRUE,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, XtParent(interface_type_list),
                                 XmNtopOffset,10,
@@ -5703,7 +5871,6 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                                 XmNrightAttachment, XmATTACH_POSITION,
                                 XmNrightPosition, 4,
                                 XmNbackground, colors[0xff],
-                                XmNnavigationType, XmTAB_GROUP,
                                 NULL);
 
                 XtAddCallback(button_cancel, XmNactivateCallback, Choose_interface_destroy_shell, choose_interface_dialog);
@@ -5972,6 +6139,7 @@ void Configure_interface( /*@unused@*/ Widget w,  /*@unused@*/ XtPointer clientD
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
+        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
         XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -6001,6 +6169,8 @@ end_critical_section(&devices_lock, "interface_gui.c:Configure_interface" );
 
 
         button_add = XtVaCreateManagedWidget(langcode("UNIOP00007"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset,5,
                                       XmNbottomAttachment, XmATTACH_FORM,
@@ -6011,10 +6181,11 @@ end_critical_section(&devices_lock, "interface_gui.c:Configure_interface" );
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 1,
                                       XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
                                       NULL);
 
         button_delete = XtVaCreateManagedWidget(langcode("UNIOP00008"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset,5,
                                       XmNbottomAttachment, XmATTACH_FORM,
@@ -6024,10 +6195,11 @@ end_critical_section(&devices_lock, "interface_gui.c:Configure_interface" );
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 2,
                                       XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
                                       NULL);
 
         button_properties = XtVaCreateManagedWidget(langcode("UNIOP00009"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset,5,
                                       XmNbottomAttachment, XmATTACH_FORM,
@@ -6037,10 +6209,11 @@ end_critical_section(&devices_lock, "interface_gui.c:Configure_interface" );
                                       XmNrightAttachment, XmATTACH_POSITION,
                                       XmNrightPosition, 3,
                                       XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
                                       NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset,5,
                                       XmNbottomAttachment, XmATTACH_FORM,
@@ -6051,7 +6224,6 @@ end_critical_section(&devices_lock, "interface_gui.c:Configure_interface" );
                                       XmNrightPosition, 5,
                                       XmNrightOffset,5,
                                       XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
                                       NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_interface_destroy_shell, configure_interface_dialog);
@@ -6248,6 +6420,7 @@ begin_critical_section(&control_interface_dialog_lock, "interface_gui.c:control_
         ac=0;
         XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
+        XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
         XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -6275,6 +6448,8 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                     NULL);
 
         button_start = XtVaCreateManagedWidget(langcode("IFPUPCT001"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
                             XmNleftAttachment, XmATTACH_FORM,
                             XmNrightAttachment, XmATTACH_POSITION,
                             XmNrightPosition, 1,
@@ -6284,6 +6459,8 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             NULL);
 
         button_stop = XtVaCreateManagedWidget(langcode("IFPUPCT002"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
                             XmNleftAttachment, XmATTACH_POSITION,
                             XmNleftPosition, 1,
                             XmNrightAttachment, XmATTACH_POSITION,
@@ -6294,6 +6471,8 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             NULL);
 
         button_start_all = XtVaCreateManagedWidget(langcode("IFPUPCT003"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
                             XmNleftAttachment, XmATTACH_POSITION,
                             XmNleftPosition, 2,
                             XmNrightAttachment, XmATTACH_POSITION,
@@ -6304,6 +6483,8 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             NULL);
 
         button_stop_all = XtVaCreateManagedWidget(langcode("IFPUPCT004"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
                             XmNleftAttachment, XmATTACH_POSITION,
                             XmNleftPosition, 3,
                             XmNrightAttachment, XmATTACH_POSITION,
@@ -6314,6 +6495,8 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
                             XmNrightAttachment, XmATTACH_FORM,
                             XmNleftAttachment, XmATTACH_POSITION,
                             XmNleftPosition, 4,
