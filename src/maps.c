@@ -5599,25 +5599,23 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
                 username,ext);
 
         xastir_snprintf(tempfile, sizeof(tempfile),
-//                "/usr/bin/wget -S -N -t 1 -T 30 -O %s %s 2> /dev/null\n",
-
-#ifdef __CYGWIN__
-                "/usr/bin/wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
-#else
-                "wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
-#endif
-
+                "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
+                WGET_PATH,
                 local_filename,
                 fileimg);
 
         if (debug_level & 16)
             fprintf(stderr,"%s",tempfile);
 
+#ifdef HAVE_WGET
 //fprintf(stderr,"Getting file\n");
         if ( system(tempfile) ) {   // Go get the file
             fprintf(stderr,"Couldn't download the geo or Terraserver image\n");
             return;
         }
+#else
+        fprintf(stderr,"'wget' not installed.  Can't download image\n");
+#endif
 
         // Set permissions on the file so that any user can overwrite it.
         chmod(local_filename, 0666);
@@ -6304,25 +6302,24 @@ void draw_tiger_map (Widget w) {
     xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s", username,"gif");
 
     xastir_snprintf(tempfile, sizeof(tempfile),
-//        "/usr/bin/wget -S -N -t 1 -T %d -O %s %s 2> /dev/null\n", tigermap_timeout, local_filename, fileimg);
-
-#ifdef __CYGWIN__
-        "/usr/bin/wget --server-response --timestamping --tries=1 --timeout=%d --output-document=%s %s 2> /dev/null\n",
-#else
-        "wget --server-response --timestamping --tries=1 --timeout=%d --output-document=%s %s 2> /dev/null\n",
-#endif
+        "%s --server-response --timestamping --tries=1 --timeout=%d --output-document=%s %s 2> /dev/null\n",
+        WGET_PATH,
         tigermap_timeout,
         local_filename,
         fileimg);
 
-
     if (debug_level & 512)
        fprintf(stderr,"%s",tempfile);
 
+#ifdef HAVE_WGET
     if (system(tempfile)) {   // Go get the file
        fprintf(stderr,"Couldn't download the Tigermap image\n");
        return;
     }
+#else
+    fprintf(stderr,"'wget' not installed.  Can't download image\n");
+#endif
+
 
 
     // For debugging the MagickError/MagickWarning segfaults.

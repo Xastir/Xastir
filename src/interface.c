@@ -960,7 +960,6 @@ void port_dtr(int port, int dtr) {
 // CYGWIN, getting rid of the entire procedure contents, and getting
 // rid of the TIO* code.  One method or the other should work to get
 // it compiled.  We shouldn't need both.
-#ifndef __CYGWIN__
     int sg;
 
     /* check for 1 or 0 */
@@ -1007,8 +1006,6 @@ void port_dtr(int port, int dtr) {
 
     if (end_critical_section(&port_data_lock, "interface.c:port_dtr(2)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
-
-#endif  // __CYGWIN__
 }
 
 

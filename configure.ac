@@ -329,15 +329,23 @@ AC_CHECK_FUNCS([vsnprintf])
  
  
  
-# Check for wget 
+# Check for wget and find out its path if present
 # 
-# Is there a way to find out the path to the executable here and 
-# then compile that into the Xastir code? 
 # 
-AC_CHECK_PROG(wget, [wget --version], yes, no) 
-if test "$wget" = "no"; then 
-  AC_MSG_WARN(*** Missing wget (or it is not in the path).  Building w/o wget support. ***) 
+AC_CHECK_PROG(wget, [wget --version], "/usr/bin", no, "/usr/bin" )
+if test "$wget" = "no"; then
+  AC_CHECK_PROG(wget, [wget --version], "/usr/local/bin", no, "/usr/local/bin" )
+  if test "$wget" = "no"; then
+    AC_CHECK_PROG(wget, [wget --version], "/sw/bin", no, "/sw/bin" )
+    if test "$wget" = "no"; then 
+      AC_MSG_WARN(*** Missing wget (or it is not in the path).  Building w/o wget support. ***) 
+    fi
+  fi
 fi 
+if test "$wget" != "no"; then
+  AC_DEFINE_UNQUOTED(HAVE_WGET, 1, [Define if you have wget]) 
+  AC_DEFINE_UNQUOTED(WGET_PATH, "${wget}/wget", [Path to wget]) 
+fi
 # 
 # End of wget checks 
  

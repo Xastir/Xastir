@@ -408,23 +408,22 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         download_trail_station_call,posit_start,posit_length);
 
     xastir_snprintf(tempfile, sizeof(tempfile),
-
-#ifdef __CYGWIN__
-            "/usr/bin/wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
-#else
-            "wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
-#endif
-
+            "%s --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
+            WGET_PATH,
             log_filename,
             fileimg);
 
     if (debug_level & 2)
         fprintf(stderr,"%s",tempfile);
 
+#ifdef HAVE_WGET
     if ( system(tempfile) ) {   // Go get the file
         fprintf(stderr,"Couldn't download the trail\n");
         return;
     }
+#else
+    fprintf(stderr,"'wget' not installed.  Can't download trail\n");
+#endif
 
     // Set permissions on the file so that any user can overwrite it.
     chmod(log_filename, 0666);
