@@ -493,7 +493,7 @@ void draw_tiger_map (Widget w,
     height = image->rows;
 
     //  Code to mute the image so it's not as bright.
-    if (raster_map_intensity < 1.0) {
+/*    if (raster_map_intensity < 1.0) {
         char tempstr[30];
 
         if (debug_level & 512)
@@ -506,6 +506,7 @@ void draw_tiger_map (Widget w,
 
         ModulateImage(image, tempstr);
     }
+*/
 
 
     // If were are drawing to a low bpp display (typically < 8bpp)
@@ -569,9 +570,9 @@ void draw_tiger_map (Widget w,
             if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
                 if (debug_level & 512)
                     fprintf(stderr,"Color quantum is [0..65535]\n");
-                my_colors[l].red   = temp_pack.red;
-                my_colors[l].green = temp_pack.green;
-                my_colors[l].blue  = temp_pack.blue;
+                my_colors[l].red   = temp_pack.red * raster_map_intensity;
+                my_colors[l].green = temp_pack.green * raster_map_intensity;
+                my_colors[l].blue  = temp_pack.blue * raster_map_intensity;
             }
             else {  // QuantumDepth = 8
                 if (debug_level & 512)
