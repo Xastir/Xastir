@@ -515,9 +515,10 @@ void msg_get_data(Message *m_fill, long record_num) {
 
 void msg_update_ack_stamp(long record_num) {
 
-    if ( (record_num >= 0)
-            && (record_num < (msg_index_end - 1)) ) {
+    //printf("Attempting to update ack stamp: %ld\n",record_num);
+    if ( (record_num >= 0) && (record_num < msg_index_end) ) {
         msg_data[msg_index[record_num]].last_ack_sent = sec_now();
+        //printf("Ack stamp: %ld\n",msg_data[msg_index[record_num]].last_ack_sent);
     }
     //printf("\n\n\n*** Record: %ld ***\n\n\n",record_num);
 }
@@ -644,6 +645,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     if(record != -1L) { /* fill old data */
         msg_get_data(&m_fill, record);
         last_ack_sent = m_fill.last_ack_sent;
+        //printf("Found: last_ack_sent: %ld\n",m_fill.last_ack_sent);
 
         //printf("Found a duplicate message.  Updating fields, seq %s\n",seq);
 
@@ -655,6 +657,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
             m_fill.sec_heard = sec_now();
             last_ack_sent = (time_t)0;
             do_update++;
+            //printf("Message is different this time: Setting last_ack_sent to 0\n");
         }
 
         // If message is the same, but the sec_heard field is quite
@@ -667,6 +670,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
             m_fill.sec_heard = sec_now();
             last_ack_sent = (time_t)0;
             do_update++;
+            //printf("Found >8hrs old: Setting last_ack_sent to 0\n");
         }
 
         // Check for zero time
@@ -684,6 +688,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
         do_update++;    // Always do an update to the message window
                         // for new messages
+        //printf("New msg: Setting last_ack_sent to 0\n");
     }
 
     /* FROM */
@@ -710,8 +715,15 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
     if(record == -1L) {     // No old record found
         m_fill.acked = 0;   // We can't have been acked yet
-        m_fill.last_ack_sent = (time_t)0;
+
+        // We'll be sending an ack right away if this is a new
+        // message, so might as well set the time now so that we
+        // don't care about failing to set it in
+        // msg_update_ack_stamp due to the record number being -1.
+        m_fill.last_ack_sent = sec_now();
+
         msg_input_database(&m_fill);    // Create a new entry
+        //printf("No record found: Setting last_ack_sent to sec_now()00\n");
     }
     else {  // Old record found
         //printf("Replacing the message in the database, seq %s\n",seq);
@@ -8133,10 +8145,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
 #endif
         // Only send an ack out once per 30 seconds
-        if ( (from != 'F')
+        if ( (from != 'F')  // Not from a log file
                 && ((last_ack_sent + 30 ) < sec_now()) ) {
-//WE7U
-//printf("Sending ack: %ld %ld\n",last_ack_sent,sec_now());
+
+            //printf("Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
+
             // Update the last_ack_sent field for the message
             msg_update_ack_stamp(record);
 
@@ -8340,7 +8353,9 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         // Only send an ack or autoresponse once per 30 seconds
         if ( (from != 'F')
                 && ( (last_ack_sent + 30) < sec_now()) ) {
-//WE7U
+
+            //printf("Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
+
             // Record the fact that we're sending an ack now
             msg_update_ack_stamp(record);
 
