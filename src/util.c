@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-indent: 4; indent-tabs-mode: nil -*-
  * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
@@ -835,6 +835,7 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
 // CONVERT_HP_NOSP      = DDMMM.MMN
 // CONVERT_UP_TRK       = NDD MMMM.MM
 // CONVERT_DEC_DEG      = DD.DDDDDN
+// CONVERT_DMS_NORMAL   = DD MM SSN
 // CONVERT_HP_NORMAL    = DD MM.MMMN
 //
 void convert_lat_l2s(long lat, char *str, int str_len, int type) {
@@ -870,6 +871,10 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
         case(CONVERT_DEC_DEG):
             xastir_snprintf(str, str_len, "%08.5f%c", ideg+min/60, ns);
             break;
+        case(CONVERT_DMS_NORMAL):
+            xastir_snprintf(str, str_len, "%02d %02d %02d%c", ideg, (int)min,
+                            (int)((min-(int)min)*60), ns);
+            break;
         case(CONVERT_HP_NORMAL):
 
         default: /* do HP normal */
@@ -889,6 +894,7 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
 // CONVERT_HP_NOSP      = DDDMMM.MME
 // CONVERT_UP_TRK       = EDDD MMMM.MM
 // CONVERT_DEC_DEG      = DDD.DDDDDE
+// CONVERT_DMS_NORMAL   = DDD MM SSN
 // CONVERT_HP_NORMAL    = DDD MM.MMME
 //
 void convert_lon_l2s(long lon, char *str, int str_len, int type) {
@@ -922,6 +928,10 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
             break;
         case(CONVERT_DEC_DEG):
             xastir_snprintf(str, str_len, "%09.5f%c", ideg+min/60, ew);
+            break;
+        case(CONVERT_DMS_NORMAL):
+            xastir_snprintf(str, str_len, "%03d %02d %02d%c", ideg, (int)min,
+                            (int)((min-(int)min)*60), ew);
             break;
         case(CONVERT_HP_NORMAL):
 

@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-indent: 4; indent-tabs-mode: nil -*-
  * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
@@ -1011,6 +1011,9 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         if (coordinate_system == USE_DDDDDD) {
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
+        } else if (coordinate_system == USE_DDMMSS) {
+            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DMS_NORMAL);
+            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DMS_NORMAL);
         } else {    // Assume coordinate_system == USE_DDMMMM
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
@@ -3108,6 +3111,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         if (coordinate_system == USE_DDDDDD) {
                             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
                             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
+                        } else if (coordinate_system == USE_DDMMSS) {
+                            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DMS_NORMAL);
+                            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DMS_NORMAL);
                         } else {    // Assume coordinate_system == USE_DDMMMM
                             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
                             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
@@ -7261,7 +7267,6 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                                             NULL);
         XtAddCallback(coord_2,XmNvalueChangedCallback,coordinates_toggle,"2");
 
-XtSetSensitive(coord_2, FALSE);
 
         coord_3 = XtVaCreateManagedWidget(langcode("WPUPCFC006"),xmToggleButtonGadgetClass,
                                             coord_box,
