@@ -1357,7 +1357,8 @@ void create_map_from_trail(char *call_sign) {
 // Code borrowed from Shapelib which determines whether a ring is CW
 // or CCW.  Thanks to Frank Warmerdam for permitting us to use this
 // under the GPL license!  Per e-mail of 04/29/2003 between Frank
-// and Curt, WE7U.
+// and Curt, WE7U.  Frank gave permission for us to use _any_
+// portion of Shapelib inside the GPL'ed Xastir program.
 //
 // Test Ring for Clockwise/Counter-Clockwise (fill or hole ring)
 //
@@ -3479,12 +3480,6 @@ void draw_shapefile_map (Widget w,
                         // determine how we ultimately draw the
                         // entire shape.
                         //
-                        // Tests Polygon for CW / CCW  ( R+ / R- )
-                        //
-                        // return 1  for R+ (CW or a fill)
-                        // return -1 for R- (CCW or a hole in the polygon)
-                        // return 0  for error
-                        //
                         switch ( shape_ring_direction( object, ring) ) {
                             case  0:    // Error in trying to compute whether fill or hole
                                 fprintf(stderr,"Error in computing fill/hole ring\n");
@@ -3530,7 +3525,17 @@ void draw_shapefile_map (Widget w,
                             // We know that at least one ring for
                             // this Shape is a "hole" ring.  We need
                             // to draw the shape quite differently
-                            // because of this.
+                            // because of this, using X11 Regions to
+                            // create a clip-mask so that the holes
+                            // in the shape don't get overwritten.
+
+// Create a region for each of the fill and hole areas.  Do a union
+// for each fill region and a subtraction for each hole region.
+// Perhaps create an array of Region pointers, run through all of
+// the rings creating the polygon regions, then do the region math
+// and the draw after we're done?  The order that we do the region
+// math could be important.
+
                             if (polygon_hole_storage[ring]) {
 //                                hole_flag++;
                             }
@@ -3566,10 +3571,6 @@ void draw_shapefile_map (Widget w,
                         //fprintf(stderr,"Endpoint %d\n", endpoint);
                         //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
 
-//WE7U
-// Compute whether it's a fill ring or a hole ring.  Fill rings go
-// CW, holes go CCW.
-
                         i = 0;  // i = Number of points to draw for one ring
                         // index = ptr into the shapefile's array of points
                         for (index = object->panPartStart[ring]; index < endpoint; ) {
@@ -3584,20 +3585,6 @@ void draw_shapefile_map (Widget w,
                                 &my_lat,
                                 (float)object->padfX[index],
                                 (float)object->padfY[index]);
-
-//WE7U
-// It looks like I might have to draw each ring into a test area,
-// then figure out whether a pixel to the right of the line between
-// the first and second vertex is filled or not.  Another
-// possibility would be to traverse the ring and compute whether I
-// was turning right or left more by the time I finished.  Keep
-// right/left counters?
-//
-// Use the routine in the contrib directory of Shapelib which can
-// determine whether it's a fill or a hole shape:
-// contrib/shpgeo.c:SHPRingDir_2d()
-//WE7U
-
 
                             //fprintf(stderr,"%lu %lu\t", my_long, my_lat);
 
