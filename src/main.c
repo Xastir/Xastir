@@ -23938,6 +23938,10 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
     /* set station ambiguity*/
     position_amb_chars = Configure_station_pos_amb;
 
+    if (transmit_compressed_posit) {
+        position_amb_chars = 0;
+    }
+
     strcpy(my_comment,XmTextFieldGetString(station_config_comment_data));
     (void)remove_trailing_spaces(my_comment);
 
