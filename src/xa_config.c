@@ -1055,8 +1055,8 @@ void load_data_or_default(void) {
     if(!get_int("VIEW_MESSAGE_RANGE", &vm_range,0,99999,0))
         vm_range=0;
 
-    if(!get_int("VIEW_MESSAGE_LIMIT", &view_message_limit,0,10000,0))
-        view_message_limit = 3000;
+    if(!get_int("VIEW_MESSAGE_LIMIT", &view_message_limit,0,99999,0))
+        view_message_limit = 10000;
 
 
     /* printer variables */

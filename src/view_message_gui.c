@@ -71,6 +71,59 @@ void view_message_gui_init(void)
 
 
 
+void view_message_print_record(Message *m_fill) {
+    int pos;
+    char *temp;
+    int i;
+    int my_size = 200;
+    XmTextPosition drop_ptr;
+
+
+    if ((temp = malloc((size_t)my_size)) == NULL)
+        return;
+
+    sprintf(temp,"%-9s>%-9s seq:%5s type:%c :%s\n",
+        m_fill->from_call_sign,
+        m_fill->call_sign,
+        m_fill->seq,
+        m_fill->type,
+        m_fill->message_line);
+
+    pos = (int)XmTextGetLastPosition(view_messages_text);
+    XmTextInsert(view_messages_text, pos, temp);
+    pos += strlen(temp);
+    while (pos > view_message_limit) {
+        for (drop_ptr = i = 0; i < 3; i++) {
+            (void)XmTextFindString(view_messages_text, drop_ptr, "\n", XmTEXT_FORWARD, &drop_ptr);
+            drop_ptr++;
+        }
+        XmTextReplace(view_messages_text, 0, drop_ptr, "");
+        pos = (int)XmTextGetLastPosition(view_messages_text);
+    }
+    XtVaSetValues(view_messages_text, XmNcursorPosition, pos, NULL);
+
+    free(temp);
+}
+
+
+
+
+
+void view_message_display_file(char msg_type) {
+    int pos;
+
+
+    if ((All_messages_dialog != NULL)) {
+        mscan_file(msg_type, view_message_print_record);
+    }
+    pos = (int)XmTextGetLastPosition(view_messages_text);
+    XmTextShowPosition(view_messages_text, pos);
+}
+
+
+
+
+
 void all_messages(char from, char *call_sign, char *from_call, char *message) {
     char temp_my_course[10];
     char *temp;
@@ -306,6 +359,9 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtManageChild(pane);
 
         redraw_on_new_packet_data=1;
+
+        // Dump all currently active messages to the new window
+        view_message_display_file('M');
 
 end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_messages" );
 
