@@ -10001,8 +10001,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
   
                                 // Device is correct type and is UP
                                 // (or ERROR).  Send character to
-                                // device (prefixed with CTRL-C) so
-                                // that we exit CONV if necessary.
+                                // device (prefixed with CTRL-C so
+                                // that we exit CONV if necessary).
                                 //
                                 if (debug_level & 128) {
                                     fprintf(stderr,"Retrieving GPS AUX port %d\n", i);
@@ -10018,12 +10018,15 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 }
                                 port_write_string(i, tmp);
 
+                                // Process the GPS strings saved by
+                                // the channel_data() function.
                                 if (gprmc_save_string[0] != '\0')
                                     ret1 = gps_data_find(gprmc_save_string, gps_port_save);
                                 if (gpgga_save_string[0] != '\0')
                                     ret2 = gps_data_find(gpgga_save_string, gps_port_save);
 
                                 // Blank out the global variables
+                                // (we just processed them).
                                 gprmc_save_string[0] = '\0';
                                 gpgga_save_string[0] = '\0';
 
@@ -10053,12 +10056,15 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 // the gps_time interval.  At other times they should be overwriting
 // old data with new and not processing the strings.
 
+                                // Process the GPS strings saved by
+                                // the channel_data() function.
                                 if (gprmc_save_string[0] != '\0')
                                     ret1 = gps_data_find(gprmc_save_string, gps_port_save);
                                 if (gpgga_save_string[0] != '\0')
                                     ret2 = gps_data_find(gpgga_save_string, gps_port_save);
 
                                 // Blank out the global variables
+                                // (we just processed them).
                                 gprmc_save_string[0] = '\0';
                                 gpgga_save_string[0] = '\0';
 
