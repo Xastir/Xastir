@@ -5610,7 +5610,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
                     xastir_snprintf(p_station->speed,
                         sizeof(p_station->speed),
                         "%03.0f",
-                        pow( 1.08,(double)s ) - 1.0 + 0.5); // Poor man's rounding
+                        pow( 1.08,(double)s ) - 1.0);
 
                     //printf("Decoded speed:%s, course:%s\n",p_station->speed,p_station->course);
 
@@ -7625,6 +7625,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 
 
 
+// Speed is in knots
 void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, /*@unused@*/ char speedu, char *alt, char *sats) {
     long pos_long_temp, pos_lat_temp;
     char temp_data[40];   // short term string storage
@@ -7637,7 +7638,8 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     // GPRMC string without modification.
 
     // Recompute the SmartBeaconing(tm) parameters based on current/past
-    // course & speed
+    // course & speed.  Sending the speed in knots.
+    //printf("Speed: %s\n",speed);
     compute_smart_beacon(course, speed);
 
     p_station = NULL;
@@ -7727,8 +7729,8 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     /* get my last course in deg */
     my_last_course=atoi(course);
 
-    /* get my last speed knots to mph */
-    my_last_speed=(int)(atof(speed)*1.1508);
+    /* get my last speed in knots */
+    my_last_speed=(int)(atof(speed));
     strcpy(p_station->sats_visible,sats);
 
     //if (   p_station->coord_lon != last_lon
