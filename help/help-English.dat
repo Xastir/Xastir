@@ -311,25 +311,7 @@ HELP-INDEX>Configure Default Operation
 
 Click on File, then Configure, then Defaults.
 
-This page sets up some standard defaults for the program operation. Old
-stations will be displayed with a ghosted icon, and the corresponding trail
-will be fragmented.
-
-The first set of toggle buttons specify the ghosting interval.  The second
-set of buttons specify when a station will be removed from the screen.
-Stations are also removed from the internal database at double this time,
-so if you set it for 6 hours, stations will be deleted from the database
-at 12 hours.
-
-The third set of buttons specify how often your station's posit will be
-transmitted.  For fixed stations a good recommendation is every 30 minutes,
-and definitely no less than 10 minutes.  Mobile stations may wish a faster
-rate.  This interval is also used for sending out objects and items.  Try
-to keep this interval somewhat reasonable, as transmitting to a long path
-every 30 seconds will really take up a lot of the air time.
-
-GPS Time will set the interval of time to look at the GPS for new data. This
-is available for stations using an HSP or shared cable with their TNC.
+This page sets up some standard defaults for the program operation. 
 
 Transmit Station Option sets the type of packet your station will transmit 
 its data as.
@@ -359,6 +341,38 @@ You can also select "Activate alternate net?" choose an altnet call from this
 dialog. Altnet  allows you to have a private APRS(tm) network among the
 stations that also have altnet configured, and have the same altnet call
 entered.
+
+Warn if Modifier keys will cause Xastir to print a warning if you attempt to
+use Xastir while num-lock, scroll-lock, or caps-lock is engaged. Some users
+report the screen blanking on them and similar problems when they attempt this.
+ 
+HELP-INDEX>Configure Timing
+
+                            Configure Timing
+
+Click on File, then Configure, then Timing.
+
+The first slider specifies how often your station's position will be
+transmitted.  For fixed stations a good recommendation is every 30 minutes,
+and definitely no less than 10 minutes.  Mobile stations may wish a faster
+rate.
+
+The second slider is the interval used for sending out objects and items. Try
+to keep these intervals reasonable, as transmitting to a long path every 30
+seconds will really take up a lot of the air time.
+
+GPS Check Interval will set the interval of time to look at the GPS for new
+data. This is available for stations using an HSP or shared cable with their
+TNC.
+
+Dead-Reckoning Timeout adjusts how long a position is assumed valid for the
+purpose of estimating its current position.
+
+The next slider specifies the ghosting interval. Stations that hae not been
+heard in the given period will appear ghosted on screen. The next slider
+specifies when a station will be removed from the screen. The last slider
+specifies the number of full days before data from a station will be entirely
+removed from the Xastir database.
 
 HELP-INDEX>Configure Audio Alarms
 
@@ -1780,6 +1794,10 @@ data to be transmitted via an Igate. If you don't have a pass-code, use the
 included "callpass" program to generate one. Note that passcodes are dependent
 on callsigns.  From the src directory, "make callpass" should create the
 executable if it isn't already compiled.
+
+Enter any filter parimeters. This causes a special message to be sent to the
+server requesting that the data be filtered in a certain way. The exact format
+of this field is fully specified, please consult APRSSIG for more information.
 
 Selecting "Reconnect on failure" will tell Xastir to try to reconnect when the
 data stream has failed.
