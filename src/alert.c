@@ -1000,25 +1000,30 @@ static void alert_build_list(Message *fill) {
             if ( (strcasecmp(alert_list[i].from, fill->from_call_sign) == 0)
                     && ( strncmp(alert_list[i].seq,fill->seq,4) == 0 ) ) {
 
-printf("%d:Found a matching alert to a SKY message:\t",i);
+                if (debug_level & 1)
+                    printf("%d:Found a matching alert to a SKY message:\t",i);
 
                 switch (fill->seq[4]) {
                     case 'B':
                         strcpy(alert_list[i].desc0,fill->message_line);
-printf("Wrote into desc0: %s\n",fill->message_line);
+                        if (debug_level & 1)
+                            printf("Wrote into desc0: %s\n",fill->message_line);
                         break;
                     case 'C':
                         strcpy(alert_list[i].desc1,fill->message_line);
-printf("Wrote into desc1: %s\n",fill->message_line);
+                        if (debug_level & 1)
+                            printf("Wrote into desc1: %s\n",fill->message_line);
                         break;
                     case 'D':
                         strcpy(alert_list[i].desc2,fill->message_line);
-printf("Wrote into desc2: %s\n",fill->message_line);
+                        if (debug_level & 1)
+                            printf("Wrote into desc2: %s\n",fill->message_line);
                         break;
                     case 'E':
                     default:
                         strcpy(alert_list[i].desc3,fill->message_line);
-printf("Wrote into desc3: %s\n",fill->message_line);
+                        if (debug_level & 1)
+                            printf("Wrote into desc3: %s\n",fill->message_line);
                         break;
                 }
 //                return; // All done with this sky message
