@@ -1126,17 +1126,17 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)*10);
                             break;
-                        case 2: // 0.1mm rain gauge
+                        case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/2.54);
                             break;
-                        case 3: // 0.01" rain gauge
+                        case 2: // 0.01" rain gauge
                         case 0: // No conversion
                         default:
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16));
                             break;
                     }
                     /* local station */
@@ -1178,17 +1178,18 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     weather->wx_hum[0]=0;
             }
 
-            /* todays rain total */
-            if (data[42]!='-') {
-                if (from) { // From remote station
-                    substr(temp_data1,(char *)(data+42),4);
-                    xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
-                        "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
-                }
-            } else {
-                if (!from)  // From local station
-                    weather->wx_prec_00[0]=0;
-            }
+// Isn't this replaced by the above switch-case?
+//            /* todays rain total */
+//            if (data[42]!='-') {
+//                if (from) { // From remote station
+//                    substr(temp_data1,(char *)(data+42),4);
+//                    xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
+//                        "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+//                }
+//            } else {
+//                if (!from)  // From local station
+//                    weather->wx_prec_00[0]=0;
+//            }
             break;
 
 
@@ -1277,17 +1278,17 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)*10);
                             break;
                         case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/2.54);
                             break;
                         case 2: // 0.01" rain gauge
                         case 0: // No conversion
                         default:
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16));
                             break;
                     }
                     /* local station */
