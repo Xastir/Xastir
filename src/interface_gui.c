@@ -4333,7 +4333,8 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 
                     case DEVICE_NET_STREAM:
                         /* configure this port */
-                        printf("ADD NET STREAM\n");
+                        if (debug_level & 1)
+                            printf("ADD NET STREAM\n");
                         Config_Inet(w, 0, port);
                         break;
 
