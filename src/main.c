@@ -8013,7 +8013,8 @@ void create_gc(Widget w) {
     Display *my_display = XtDisplay(w);
     int mask = 0;
     Pixmap pix;
-    int _w, _h, _xh, _yh;
+    unsigned int _w, _h;
+    int _xh, _yh;
     char xbm_path[500];
     int ret_val;
 
@@ -8653,49 +8654,61 @@ void Restore_CAD_Objects_from_file(void) {
         }
         else if (strncasecmp(line,"creation_time:",14) == 0) {
             //fprintf(stderr,"Found creation_time:\n");
-            sscanf(line+15, "%lu",&CAD_list_head->creation_time);
+            sscanf(line+15, "%lu",
+                (unsigned long *)&CAD_list_head->creation_time);
         }
         else if (strncasecmp(line,"line_color:",11) == 0) {
             //fprintf(stderr,"Found line_color:\n");
-            sscanf(line+12,"%d",&CAD_list_head->line_color);
+            sscanf(line+12,"%d",
+                &CAD_list_head->line_color);
         }
         else if (strncasecmp(line,"line_type:",10) == 0) {
             //fprintf(stderr,"Found line_type:\n");
-            sscanf(line+11,"%d",&CAD_list_head->line_type);
+            sscanf(line+11,"%d",
+                &CAD_list_head->line_type);
         }
         else if (strncasecmp(line,"line_width:",11) == 0) {
             //fprintf(stderr,"Found line_width:\n");
-            sscanf(line+12,"%d",&CAD_list_head->line_width);
+            sscanf(line+12,"%d",
+                &CAD_list_head->line_width);
         }
         else if (strncasecmp(line,"computed_area:",14) == 0) {
             //fprintf(stderr,"Found computed_area:\n");
-            sscanf(line+15,"%f",&CAD_list_head->computed_area);
+            sscanf(line+15,"%f",
+                &CAD_list_head->computed_area);
         }
         else if (strncasecmp(line,"raw_probability:",16) == 0) {
             //fprintf(stderr,"Found raw_probability:\n");
-            sscanf(line+17,"%f",&CAD_list_head->raw_probability);
+            sscanf(line+17,"%f",
+                &CAD_list_head->raw_probability);
         }
         else if (strncasecmp(line,"label_latitude:",15) == 0) {
             //fprintf(stderr,"Found label_latitude:\n");
-            sscanf(line+16,"%lu",&CAD_list_head->label_latitude);
+            sscanf(line+16,"%lu",
+                (unsigned long *)&CAD_list_head->label_latitude);
         }
         else if (strncasecmp(line,"label_longitude:",16) == 0) {
             //fprintf(stderr,"Found label_longitude:\n");
-            sscanf(line+17,"%lu",&CAD_list_head->label_longitude);
+            sscanf(line+17,"%lu",
+                (unsigned long *)&CAD_list_head->label_longitude);
         }
         else if (strncasecmp(line,"label:",6) == 0) {
             //fprintf(stderr,"Found label:\n");
-            sscanf(line+7,"%s",CAD_list_head->label);
+            sscanf(line+7,"%s",
+                CAD_list_head->label);
         }
         else if (strncasecmp(line,"comment:",8) == 0) {
             //fprintf(stderr,"Found comment:\n");
-            sscanf(line+9,"%s",CAD_list_head->comment);
+            sscanf(line+9,"%s",
+                CAD_list_head->comment);
         }
         else if (strncasecmp(line,"Vertice:",8) == 0) {
             long latitude, longitude;
 
             //fprintf(stderr,"Found Vertice:\n");
-            sscanf(line+9,"%lu %lu",&latitude,&longitude);
+            sscanf(line+9,"%lu %lu",
+                (unsigned long *)&latitude,
+                (unsigned long *)&longitude);
             CAD_vertice_allocate(latitude,longitude);
         }
         else {
@@ -9946,8 +9959,8 @@ void check_pointer_position(void) {
 
             // Check that X/Y are positive and below the max size of
             // the child window.
-            if ( win_x_return >= width_return
-                    || win_y_return >= height_return) {
+            if ( win_x_return >= (int)width_return
+                    || win_y_return >= (int)height_return) {
 
                 /*
                 fprintf(stderr, "Out of bounds: %d:%d  %d:%d\n",
@@ -10779,7 +10792,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             if (enable_server_port) {
                                 // Send data to the x_spider server
                                 if (writen(pipe_xastir_to_server,
-                                        incoming_data,
+                                        (char *)incoming_data,
                                         incoming_data_length) != incoming_data_length) {
                                     fprintf(stderr,
                                         "UpdateTime: Writen error: %d\n",
@@ -10809,7 +10822,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             // ASCII logging & decode routines.
                             // Note that the length of incoming_data
                             // can increase within decode_ax25_header().
-                            if ( !decode_ax25_header( (char *)incoming_data,
+                            if ( !decode_ax25_header( (unsigned char *)incoming_data,
                                     incoming_data_length ) ) {
                                 // Had a problem decoding it.  Drop
                                 // it on the floor.
@@ -10836,7 +10849,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             if (enable_server_port) {
                                 // Send data to the x_spider server
                                 if (writen(pipe_xastir_to_server,
-                                        incoming_data,
+                                        (char *)incoming_data,
                                         incoming_data_length) != incoming_data_length) {
                                     fprintf(stderr,
                                         "UpdateTime: Writen error: %d\n",
@@ -10884,7 +10897,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 if (enable_server_port) {
                                     // Send data to the x_spider server
                                     if (writen(pipe_xastir_to_server,
-                                            incoming_data,
+                                            (char *)incoming_data,
                                             incoming_data_length) != incoming_data_length) {
                                         fprintf(stderr,
                                             "UpdateTime: Writen error: %d\n",
@@ -10935,7 +10948,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 if (enable_server_port) {
                                     // Send data to the x_spider server
                                     if (writen(pipe_xastir_to_server,
-                                            incoming_data,
+                                            (char *)incoming_data,
                                             incoming_data_length) != incoming_data_length) {
                                         fprintf(stderr,
                                             "UpdateTime: Writen error: %d\n",
@@ -11062,7 +11075,7 @@ void shut_down_server(void) {
         // Send a kill to the main server process
         kill(server_pid, 1);
 
-        wait(0);    // Reap the status of the process
+        wait(NULL); // Reap the status of the process
 
         // Send to all processes in our process group.  This will
         // cause the server and all of its children to die.  Also
