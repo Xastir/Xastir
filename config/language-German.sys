@@ -806,3 +806,11 @@ FEATURE003|County:||
 FEATURE004|Map Quad:||
 FEATURE005|Typ:||
 FEATURE006|GNIS Datei:||
+#
+# Coordinate Calculator Dialog
+COORD001|Coordinate Calc||
+COORD002|Calc||
+COORD003|Calculate||
+COORD004|Clear||
+#
+#

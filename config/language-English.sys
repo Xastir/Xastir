@@ -802,3 +802,10 @@ FEATURE004|Map Quad:||
 FEATURE005|Type:||
 FEATURE006|GNIS File:||
 #
+# Coordinate Calculator Dialog
+COORD001|Coordinate Calc||
+COORD002|Calc||
+COORD003|Calculate||
+COORD004|Clear||
+#
+#

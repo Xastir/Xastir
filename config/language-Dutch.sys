@@ -805,3 +805,11 @@ FEATURE003|Land:||
 FEATURE004|Kaart Quad:||
 FEATURE005|Type:||
 FEATURE006|GNIS Bestand:||
+#
+# Coordinate Calculator Dialog
+COORD001|Coordinate Calc||
+COORD002|Calc||
+COORD003|Calculate||
+COORD004|Clear||
+#
+#

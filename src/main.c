@@ -1102,10 +1102,19 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
     register unsigned int n = 0;    // Arg Count
     char temp_string[50];
 
-printf("Called by: %s\n",(char *)clientData);
-
+    // Destroy the dialog if it exists.  This is to make sure the
+    // title is correct based on the last dialog that called us.
+    if (coordinate_calc_dialog) {
+        Coordinate_calc_destroy_shell( w, coordinate_calc_dialog, callData);
+    }
+ 
     if (!coordinate_calc_dialog) {
-        coordinate_calc_dialog = XtVaCreatePopupShell(langcode("Coordinate Calculator"),xmDialogShellWidgetClass,Global.top,
+
+        // We change the title based on who's calling us.
+        // clientData supplies the string we use for the label, and
+        // is sent to us by the calling dialog.
+        xastir_snprintf( temp_string, sizeof(temp_string), "%s %s", (char *)clientData, langcode("COORD001") );
+        coordinate_calc_dialog = XtVaCreatePopupShell(temp_string,xmDialogShellWidgetClass,Global.top,
                                     XmNdeleteResponse,XmDESTROY,
                                     XmNdefaultPosition, FALSE,
                                     NULL);
@@ -1277,7 +1286,7 @@ printf("Called by: %s\n",(char *)clientData);
                             XmNrightOffset, 5,
                             NULL);
 
-        button_clear = XtVaCreateManagedWidget(langcode("Clear"),xmPushButtonGadgetClass, form,
+        button_clear = XtVaCreateManagedWidget(langcode("COORD004"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
                                         XmNtopWidget, coordinate_calc_result_text,
                                         XmNtopOffset, 5,
@@ -1292,7 +1301,7 @@ printf("Called by: %s\n",(char *)clientData);
                                         NULL);
         XtAddCallback(button_clear, XmNactivateCallback, Coordinate_calc_clear_data, coordinate_calc_dialog);
 
-        button_calculate = XtVaCreateManagedWidget(langcode("Calculate"),xmPushButtonGadgetClass, form,
+        button_calculate = XtVaCreateManagedWidget(langcode("COORD003"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
                                         XmNtopWidget, coordinate_calc_result_text,
                                         XmNtopOffset, 5,
@@ -10812,9 +10821,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                             XmNbackground,              colors[0xff],
                             NULL);
 
-//WE7U
-        //compute_button = XtVaCreateManagedWidget(langcode("More"),xmPushButtonGadgetClass, ob_latlon_form,
-        compute_button = XtVaCreateManagedWidget("More",xmPushButtonGadgetClass, ob_latlon_form,
+        compute_button = XtVaCreateManagedWidget(langcode("COORD002"),xmPushButtonGadgetClass, ob_latlon_form,
                             XmNtopAttachment,           XmATTACH_WIDGET,
                             XmNtopWidget,               ob_lat,
                             XmNtopOffset,               20,
@@ -10837,7 +10844,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         coordinate_calc_array.input_lon_min = object_lon_data_min;
         coordinate_calc_array.input_lon_dir = object_lon_data_ew;
 //        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, ob_latlon_form);
-        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, "Set_Del_Object");
+//        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, "Set_Del_Object");
+        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, langcode("POPUPOB001"));
 
 //----- Frame for generic options
         ob_option_frame = XtVaCreateManagedWidget("Set_Del_Object ob_option_frame", xmFrameWidgetClass, ob_form,
@@ -13276,8 +13284,7 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNbackground,              colors[0xff],
                             NULL);
 
-        //compute_button = XtVaCreateManagedWidget(langcode("More"),xmPushButtonGadgetClass, cs_form,
-        compute_button = XtVaCreateManagedWidget("More",xmPushButtonGadgetClass, cs_form,
+        compute_button = XtVaCreateManagedWidget(langcode("COORD002"),xmPushButtonGadgetClass, cs_form,
                             XmNtopAttachment,           XmATTACH_WIDGET,
                             XmNtopWidget,               slat,
                             XmNtopOffset,               20,
@@ -13300,7 +13307,9 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
         coordinate_calc_array.input_lon_min = station_config_slong_data_min;
         coordinate_calc_array.input_lon_dir = station_config_slong_data_ew;
 //        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, configure_station_dialog);
-        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, "Configure_station");
+//        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, "Configure_station");
+        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, langcode("WPUPCFS001"));
+
 
 
 

@@ -801,3 +801,10 @@ FEATURE004|Quadrant de carte:||
 FEATURE005|Type:||
 FEATURE006|Fichier GNIS:||
 #
+# Coordinate Calculator Dialog
+COORD001|Coordinate Calc||
+COORD002|Calc||
+COORD003|Calculate||
+COORD004|Clear||
+#
+#
