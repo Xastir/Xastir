@@ -236,7 +236,10 @@ int search_rac_data(char *callsign, rac_record *data) {
             (void)chomp(callsign,5);
 
         while (!feof(fdb) && strncmp((char *)&racdata,callsign,6) < 0)
-            rc = fgets((char *)&racdata, sizeof(racdata)+8, fdb);
+
+//WE7U
+// Problem here:  We're sticking 8 bytes too many into racdata!
+            rc = fgets((char *)&racdata, sizeof(racdata), fdb);
 
     } else
         fprintf(stderr,"Search:Could not open RAC data base: %s\n", get_data_base_dir("fcc/AMACALL.LST") );

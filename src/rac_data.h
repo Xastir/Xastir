@@ -51,6 +51,7 @@ typedef struct {
     char club_province[3];
     char club_postal_code[10];
     char crlf[2];
+    char filler[8]; // To prevent overruns
 } rac_record;
 
 extern int search_rac_data(char *callsign, rac_record *data);
