@@ -1,0 +1,47 @@
+This file has two parts.  The first part describes the debug_level
+definitions that were in the old code and which files they were in.
+The second part describes the new structure for debug levels.
+The debug level structure was modified in February of 2002 by KB6MER.
+Questions/comments/flames can be sent to kb6mer@arrl.net
+
+Places where debug level is referenced in old code, and the levels
+referenced (if debug_level xx), where xx is >0, &1, etc.
+
+alert.c >0
+bulletin_gui.c &1
+db.c >=2 &1 &128 &32 &256 ()
+gps.c &128
+hostname.c &256
+igate.c &2
+interface.c &128 &2 &1
+interface_gui.c &128
+lang.c &32
+main.c &4 <0/>255(need to change limits) &8 &128 &1 &15
+maps.c &16 &2 >=2 &4 &1 &8
+messages.c >1 &1 >5
+messages_gui.c &2
+track_gui.c >=2
+util.c &1
+wx.c >2 &1
+xa_config.c &1 &2
+
+Here's how things are after KB6MER tweaked it all...
+
+New Scheme
+1	General basic debugging (any system)
+2	Messages, WX, Objects, and Items, Port Data Flow
+4	X Object Debugging
+8	X Window Object Debugging
+16	Map Debugging (maps.c)
+32	Language Debugging (maps.c)
+64	Database Object Debugging
+128	GPS Interface Detailed debugging
+256	station and trail display detailed debugging
+512	Map import/export function debugging
+1024	Internet Transaction debugging
+
+2048	Levels 2048 and above will require modification to the
+	main.c file to change the bounds checking, and are
+	available for future use.
+
+
