@@ -428,7 +428,7 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
 //fprintf(stderr, "Draw_OGR_Points\n");
 
     if (geometryH == NULL)
-        return;
+        return; // Exit early
 
     // Check for more objects below this one, recursing into any
     // objects found.  "level" keeps us from recursing too far (we
@@ -557,7 +557,7 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 //fprintf(stderr, "Draw_OGR_Lines\n");
 
     if (geometryH == NULL)
-        return;
+        return; // Exit early
 
     // Check for more objects below this one, recursing into any
     // objects found.  "level" keeps us from recursing too far (we
@@ -736,7 +736,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 
 
     if (geometryH == NULL)
-        return;
+        return; // Exit early
 
     // Check for more objects below this one, recursing into any
     // objects found.  "level" keeps us from recursing too far (we
@@ -798,7 +798,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                 }
                 else {
     //                fprintf(stderr, "Polygon is NOT visible\n");
-                    return;
+                    return; // Exit early
                 }
 
                 // If we made it this far, the feature is within our
@@ -1083,7 +1083,7 @@ void draw_ogr_map(Widget w,
                     OGR_DS_Destroy( datasourceH );
                 }
 
-                return;
+                return; // Exit early
             }
             else {
                 // Abandon all hope, ye who enter here!  We don't
@@ -1095,7 +1095,7 @@ void draw_ogr_map(Widget w,
                     OGR_DS_Destroy( datasourceH );
                 }
 
-                return;
+                return; // Exit early
             }
  
             wgs84_spatialH = OSRNewSpatialReference(NULL);
@@ -1109,7 +1109,7 @@ void draw_ogr_map(Widget w,
                     OGR_DS_Destroy( datasourceH );
                 }
 
-                return;
+                return; // Exit early
             }
 
             if (OSRSetWellKnownGeogCS(wgs84_spatialH,"WGS84") == OGRERR_FAILURE) {
@@ -1132,7 +1132,7 @@ void draw_ogr_map(Widget w,
                     OGR_DS_Destroy( datasourceH );
                 }
 
-                return;
+                return; // Exit early
             }
 
             if (map_spatialH == NULL || wgs84_spatialH == NULL) {
@@ -1148,7 +1148,7 @@ void draw_ogr_map(Widget w,
                     OGR_DS_Destroy( datasourceH );
                 }
 
-                return;
+                return; // Exit early
             }
             else {
                 // Set up transformation from original datum to
@@ -1170,7 +1170,7 @@ void draw_ogr_map(Widget w,
                         OGR_DS_Destroy( datasourceH );
                     }
 
-                    return;
+                    return; // Exit early
                 }
             }
         }
@@ -1244,7 +1244,7 @@ void draw_ogr_map(Widget w,
                     OGR_DS_Destroy( datasourceH );
                 }
 
-                return;
+                return; // Exit early
             }
 
             // Get the extents for this layer.  OGRERR_FAILURE means
@@ -1455,7 +1455,7 @@ void draw_ogr_map(Widget w,
                 OGR_DS_Destroy( datasourceH );
             }
 
-            return;
+            return; // Exit early
         }
 
         layer = OGR_DS_GetLayer( datasourceH, i );
@@ -1478,7 +1478,7 @@ void draw_ogr_map(Widget w,
                 OGR_DS_Destroy( datasourceH );
             }
 
-            return;
+            return; // Exit early
         }
 
 
@@ -1660,7 +1660,7 @@ void draw_ogr_map(Widget w,
                     OGR_DS_Destroy( datasourceH );
                 }
 
-                return;
+                return; // Exit early
             }
 
             if (featureH == NULL) {
