@@ -366,6 +366,7 @@ WPUPCFC004|gg mm.mmm|m|
 WPUPCFC005|gg mm ss.s|s|
 WPUPCFC006|UTM|U|
 WPUPCFC007|MGRS||
+WPUPCFC008|UTM w/special zones||
 #
 # Configurazione GPS
 WPUPCFG001|Configura GPS||

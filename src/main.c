@@ -3280,7 +3280,8 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
 //        y = 64800000l;          //  90°S
         return;
 
-    if (coordinate_system == USE_UTM) {
+    if (coordinate_system == USE_UTM
+            || coordinate_system == USE_UTM_SPECIAL) {
         // Create a UTM string from coordinate in Xastir coordinate
         // system.
         convert_xastir_to_UTM_str(my_text, sizeof(my_text), x, y);
@@ -16515,7 +16516,7 @@ void Configure_coordinates_destroy_shell( /*@unused@*/ Widget widget, XtPointer 
 void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_ok, button_cancel, frame,
                 label, coord_box, coord_0, coord_1, coord_2,
-                coord_3, coord_4;
+                coord_3, coord_4, coord_5;
     Atom delw;
     Arg al[2];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -16621,13 +16622,22 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
         XtAddCallback(coord_3,XmNvalueChangedCallback,coordinates_toggle,"3");
 
 
-        coord_4 = XtVaCreateManagedWidget(langcode("WPUPCFC007"),
+        coord_4 = XtVaCreateManagedWidget(langcode("WPUPCFC008"),
                 xmToggleButtonGadgetClass,
                 coord_box,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
         XtAddCallback(coord_4,XmNvalueChangedCallback,coordinates_toggle,"4");
+
+
+        coord_5 = XtVaCreateManagedWidget(langcode("WPUPCFC007"),
+                xmToggleButtonGadgetClass,
+                coord_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(coord_5,XmNvalueChangedCallback,coordinates_toggle,"5");
 
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
@@ -16682,8 +16692,12 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
                 XmToggleButtonSetState(coord_3,TRUE,FALSE);
                 break;
 
-            case(USE_MGRS):
+            case(USE_UTM_SPECIAL):
                 XmToggleButtonSetState(coord_4,TRUE,FALSE);
+                break;
+
+            case(USE_MGRS):
+                XmToggleButtonSetState(coord_5,TRUE,FALSE);
                 break;
 
             case(USE_DDMMMM):

@@ -3466,7 +3466,8 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
-    if (coordinate_system == USE_UTM) {
+    if (coordinate_system == USE_UTM
+            || coordinate_system == USE_UTM_SPECIAL) {
         convert_xastir_to_UTM_str(temp, sizeof(temp),
             p_station->coord_lon, p_station->coord_lat);
         XmTextInsert(si_text,pos,temp);
@@ -3576,7 +3577,8 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
 
-            if (coordinate_system == USE_UTM) {
+            if (coordinate_system == USE_UTM
+                    || coordinate_system == USE_UTM_SPECIAL) {
                 convert_xastir_to_UTM_str(temp, sizeof(temp),
                     ptr->trail_long_pos,
                     ptr->trail_lat_pos);

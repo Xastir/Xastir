@@ -272,7 +272,9 @@ extern int coordinate_system;
 #define USE_DDMMMM      1
 #define USE_DDMMSS      2
 #define USE_UTM         3
-#define USE_MGRS        4
+#define USE_UTM_SPECIAL 4
+#define USE_MGRS        5
+
 
 extern void HandlePendingEvents(XtAppContext app);
 extern void create_gc(Widget w);

@@ -741,7 +741,9 @@ void draw_grid(Widget w) {
     (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);
     (void)(void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
 
-    if (coordinate_system == USE_UTM || coordinate_system == USE_MGRS) {
+    if (coordinate_system == USE_UTM
+            || coordinate_system == USE_UTM_SPECIAL
+            || coordinate_system == USE_MGRS) {
 
 // Draw the major UTM zones first.  These are based off 6-degree
 // lat/long lines, with a few irregular zones that have to be
@@ -768,7 +770,8 @@ void draw_grid(Widget w) {
         draw_vector_ll(w,  84.0, -180.0,  90.0, -180.0, gc_tint, pixmap_final);
         draw_vector_ll(w,  84.0,  180.0,  90.0,  180.0, gc_tint, pixmap_final);
  
-        if (coordinate_system == USE_MGRS) {
+        if (coordinate_system == USE_UTM_SPECIAL
+                || coordinate_system == USE_MGRS) {
             // For MGRS, we need to draw irregular zones in certain
             // areas.
 
