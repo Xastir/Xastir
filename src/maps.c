@@ -3661,6 +3661,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
     long min_lat, min_lon, max_lat, max_lon;
     int ok;
     long x,y;
+    char symbol_table, symbol_id, symbol_over;
 
 
     // Screen view
@@ -3841,8 +3842,13 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                         if (y >  16000) ok = 0;     // Skip this point
                         if (y < -16000) ok = 0;     // Skip this point
 
+                        /* set default symbol */
+                        symbol_table = '/';
+                        symbol_id = '.'; /* small x */
+                        symbol_over = ' ';
 
                         if (strcasecmp(type,"airport") == 0) {
+                            symbol_id = '^';
                             if (scale_y > 100)
                                 ok = 0;
                         }
@@ -3903,6 +3909,8 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"cemetery") == 0) {
+                            symbol_table = '\\';
+                            symbol_id = '+';
                             if (scale_y > 50)
                                 ok = 0;
                         }
@@ -3915,6 +3923,8 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"church") == 0) {
+                            symbol_table = '\\';
+                            symbol_id = '+';
                             if (scale_y > 50)
                                 ok = 0;
                         }
@@ -3971,6 +3981,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"hospital") == 0) {
+                            symbol_id = 'h';
                             if (scale_y > 50)
                                 ok = 0;
                         }
@@ -4027,10 +4038,12 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"po") == 0) {
+                            symbol_id = ']';
                             if (scale_y > 50)
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"ppl") == 0) {
+                            symbol_id = '/';
                             if (scale_y > 20000)    // Don't draw cities at zoom higher than 20,000
                                 ok = 0;
                             else if (scale_y > 4000) {  // Don't draw cities of less than 20,000
@@ -4076,6 +4089,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"school") == 0) {
+                            symbol_id = 'K';
                             if (scale_y > 50)
                                 ok = 0;
                         }
@@ -4108,6 +4122,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                                 ok = 0;
                         }
                         else if (strcasecmp(type,"tower") == 0) {
+                            symbol_id = 'r';
                             if (scale_y > 50)
                                 ok = 0;
                         }
@@ -4134,7 +4149,8 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
 
 
                         if (ok == 1) {  // If ok to draw it
-                            draw_nice_string(w, pixmap, 0, x, y, (char*)name, 0xf, 0x10, strlen(name));
+                            symbol(w, 0, symbol_table, symbol_id, symbol_over, pixmap, 1, x-10, y-10, ' ');
+                            draw_nice_string(w, pixmap, 0, x+10, y+5, (char*)name, 0xf, 0x10, strlen(name));
                         }
 
                     }
