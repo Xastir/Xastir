@@ -7801,14 +7801,19 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             /* check gps start up, GPS on GPSPORT */
             if(sec_now() > sec_next_gps) {
 
-                /*fprintf(stderr,"Check GPS\n");*/
-                /* set dtr lines down */
-                                /* works for SERIAL_GPS and SERIAL_TNC_HSP_GPS */
+                //fprintf(stderr,"Check GPS\n");
+
+                // Set dtr lines down
+                // works for SERIAL_GPS and SERIAL_TNC_HSP_GPS?
+
+                // HSP interfaces:  Set DTR line for all.  DTR will
+                // get reset for each line as valid GPS data gets
+                // parsed on that interface.
                 dtr_all_set(1);
+
                 if(gps_stop_now)
                     gps_stop_now = 0;
 
-                /* Tell TNC to send GPS data for SERIAL_TNC_AUX_GPS */
                 for(i=0; i<MAX_IFACE_DEVICES; i++) {
                     if (port_data[i].status) {
                         char tmp[3];
@@ -7817,10 +7822,14 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                         switch (port_data[i].device_type) {
                             case DEVICE_SERIAL_TNC_AUX_GPS:
-                                /* Device is correct type and is UP (or ERROR) */
-                                /* Send character to device (prefixed with CTRL-C
-                                 * so that we exit CONV if necessary
-                                 */
+
+                                // Tell TNC to send GPS data
+  
+                                // Device is correct type and is UP
+                                // (or ERROR).  Send character to
+                                // device (prefixed with CTRL-C) so
+                                // that we exit CONV if necessary.
+                                //
                                 if (debug_level & 128) {
                                     fprintf(stderr,"Retrieving GPS AUX port %d\n", i);
                                 }
