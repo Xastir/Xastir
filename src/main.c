@@ -3893,16 +3893,57 @@ void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /
 
 
 void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
-    char temp[50] = "/usr/X11R6/bin/xfontsel -print";
+    char temp_cmd[80];
+    char temp_file[80];
+    char line[129];
+    FILE *f_temp;
 
-    if ( system(temp) ) {
-        fprintf(stderr,"Couldn't execute %s\n",temp);
+
+    xastir_snprintf(temp_file,
+        sizeof(temp_file),
+        "%s/%s",
+        get_user_base_dir("tmp"),
+        "xfontsel.txt");
+
+    // Set up the command for xfontsel.  Save the output results in
+    // the "~/.xastir/tmp/xfontsel.txt" file.
+    xastir_snprintf(temp_cmd,
+        sizeof(temp_cmd),
+        "/usr/X11R6/bin/xfontsel -print > %s",
+        temp_file);
+
+    // Run "xfontsel"
+    if ( system(temp_cmd) ) {
+        fprintf(stderr,"Couldn't execute %s\n",temp_cmd);
+        return;
     }
-    else {
-        // Finish the line that xfontsel wrote.   xfontsel doesn't
-        // write out a <LF>.
-        fprintf(stderr,"\n");
+
+    // Successful run.  We should have a file in tmp now.  Note that
+    // xfontsel doesn't write out a <LF>.  Open the file, snag the
+    // first line, copy it into the dialog's textfield.
+
+    // Open the new file for reading
+    f_temp = fopen(temp_file,"r");
+    if (f_temp == NULL) {
+        fprintf(stderr,"Couldn't open %s\n",temp_file);
+        return;
     }
+
+    // Get the first line, write it to the dialog
+    if (fgets(line, 128, f_temp) != NULL) {
+        XmTextSetString(map_font_text, line);
+    }
+
+    fclose(f_temp);
+
+// Should we remove the temp file now?
+
+// One current problem:  Xastir stops until you press "Quit" on
+// xfontsel.  We could fix this by putting it in another thread, but
+// then would probably have to have Xastir check periodically to see
+// if the temp file was updated, filling in the dialog when it
+// figured it out.
+
 }
 
 
