@@ -20923,12 +20923,15 @@ if (Area_object_enabled) {
                 XtSetSensitive(ob_frame,FALSE);
 
 
-} else if (Probability_circles_enabled) {
+            } else if (Probability_circles_enabled) {
+                temp_data[0] = '/';
+                temp_data[1] = '\0';
+                XmTextFieldSetString(object_group_data,temp_data);
 
-                // Fetch the min/max fields from the object data and
-                // write that data into the input fields.
+                temp_data[0] = '[';
+                temp_data[1] = '\0';
+                XmTextFieldSetString(object_symbol_data,temp_data);
 
-// Fix this!
                 XmTextFieldSetString( probability_data_min, "" );
                 XmTextFieldSetString( probability_data_max, "" );
 
