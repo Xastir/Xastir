@@ -1180,6 +1180,14 @@ void create_shapefile_map(char *dir, char *shapefile_name, int type,
     my_shp_handle = SHPCreate(temp_shapefile_name, type);
     my_dbf_handle = DBFCreate(temp_shapefile_name);
 
+    // Check whether we were able to open these handles
+    if ((my_shp_handle == NULL) || (my_dbf_handle == NULL)) {
+        // Probably write-protected directory
+        fprintf(stderr, "Could not create shapefile %s\n",
+            temp_shapefile_name);
+        return;
+    }
+
     // Create the different fields we'll use to store the
     // attributes:
     //
