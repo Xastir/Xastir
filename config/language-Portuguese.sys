@@ -183,7 +183,7 @@ POPUPMA021|Movimento||
 # Menú dos estados das linhas de etiquetas
 BBARZM0001|Foco %s||
 BBARZM0002|Foco %s Tr||
-BBARSTH001|%d estação(ões)||
+BBARSTH001|%d estações||
 BBARSTA000|%-9s novo objecto!||
 BBARSTA001|%-9s nova estação!||
 BBARSTA002|%s||
@@ -219,18 +219,18 @@ BBARSTA031|A procura o servidor %d||
 BBARSTA032|Infos de WX descodificados||
 BBARSTA033|Eco desde o digipeater||
 BBARSTA034|Carregando mapas de alerta WX||
-BBARSTA035|Waiting for GPS data via AUX..||
-BBARSTA036|Clearing AUX getting TNC data..||
-BBARSTA037|GPS Data Complete||
-BBARSTA038|Position change on my station||
+BBARSTA035|Esperando por dados do GPS via AUX..||
+BBARSTA036|Limpando AUX para obter dados do TNC..||
+BBARSTA037|Dados do GPS completos||
+BBARSTA038|Posição alterada na minha estação||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||
-WPUPDPD002|só dados do TNC||
-WPUPDPD003|só dados da rede||
+WPUPDPD002|Só dados do TNC||
+WPUPDPD003|Só dados da rede||
 WPUPDPD004|Dados do TNC e da rede||
 WPUPDPD005|TNC||
-WPUPDPD006|RED||
+WPUPDPD006|REDE||
 #
 # Localizar estação
 WPUPLSP001|Localizar estação||
@@ -251,14 +251,14 @@ WPUPCFD008|2 horas|2|
 WPUPCFD009|desde que intervalo de tempo a estação não será mostrada?||
 WPUPCFD010|6 horas|6|
 WPUPCFD011|12 horas|o|
-WPUPCFD012|1 Día|D|
+WPUPCFD012|1 Dia|D|
 WPUPCFD013|2 Dias|s|
 WPUPCFD014|1 semana|n|
 WPUPCFD015|Opção modo de transmissão da estação||
 WPUPCFD016|Estação fixa|F|
 WPUPCFD017|Estação móvel c/hora local|l|
-WPUPCFD018|Estação móvel c/data-hora zúlu|z|
-WPUPCFD019|Estação móvel c/horas-segundos zúlu|u|
+WPUPCFD018|Estação móvel c/data-hora zulu|z|
+WPUPCFD019|Estação móvel c/horas-segundos zulu|u|
 WPUPCFD021|Posição da estação c/tempo|t|
 WPUPCFD022|Posição da estação, data-hora zulu e tempo|d|
 WPUPCFD023|Transmitir infos WX em Raw?||
@@ -327,17 +327,17 @@ WPUPCFT024|Tipo de data||
 WPUPCFT025|Auto deteção||
 WPUPCFT026|Tipo Binário||
 WPUPCFT027|Tipo ASCII||
-WPUPCFT028|Configure TNC w/AUX GPS||
-WPUPCFT029|Configure TNC w/INVALID ENUM||
+WPUPCFT028|Configurar TNC com GPS AUX||
+WPUPCFT029|Configurar TNC com ENUM INVÁLIDO||
 #
 # Configurar a porta da estação meteorológica
 WPUPCFWX01|Configurar a porta da estação meteorológica||
 WPUPCFWX02|Dispositivo da estação meteorológica||
-WPUPCFWX03|Rain Gauge Correction (Global Setting)||
+WPUPCFWX03|Correção da medida de chuva (Definições globais)||
 WPUPCFWX04|.1 inch/2.5mm||
 WPUPCFWX05|.01 inch/.25mm||
 WPUPCFWX06|.1mm||
-WPUPCFWX07|No Correction||
+WPUPCFWX07|Não corrigido||
 #
 # Configurar a estação
 WPUPCFS001|Configurar a estação||
@@ -400,7 +400,7 @@ POPUPOB027|Opções gerais||
 POPUPOB028|Situação||
 POPUPOB029|Activar letreiro||
 POPUPOB030|Data:||
-POPUPOB031|Letreiro Objecto||
+POPUPOB031|Letreiro objecto||
 POPUPOB032|Activar compressão||
 POPUPOB033|Apagar artigo||
 POPUPOB034|Modificar artigo||
@@ -445,13 +445,13 @@ WPUPCFA011|Alerta de tempo||
 # Configurar o Festival o sintetizador de voz
 WPUPCFSP01|Configurar o festival como sintetizador de voz||
 WPUPCFSP02|Fixar em 'ON' as opções do sintetizador de voz||
-WPUPCFSP03|<- Anuncia nova estação||
-WPUPCFSP04|<- Anuncia alerta de nova mensagem||
-WPUPCFSP05|<- Anuncia corpo de nova mensagem||
-WPUPCFSP06|<- Anuncia a proximidade de estações||
-WPUPCFSP07|<- Anuncia DX condição de banda aberta||
-WPUPCFSP08|<- Anuncia alerta sobre condições do tempo||
-WPUPCFSP09|Tracked Station Proximity Alert||
+WPUPCFSP03|&lt;- Anuncia nova estação||
+WPUPCFSP04|&lt;- Anuncia alerta de nova mensagem||
+WPUPCFSP05|&lt;- Anuncia corpo de nova mensagem||
+WPUPCFSP06|&lt;- Anuncia a proximidade de estações||
+WPUPCFSP07|&lt;- Anuncia DX condição de banda aberta||
+WPUPCFSP08|&lt;- Anuncia alerta sobre condições do tempo||
+WPUPCFSP09|Alerta de proximidade da estação rastreada||
 #
 # Rastreo da estação
 WPUPTSP001|Rastrear estação||
@@ -531,11 +531,11 @@ WPUPSTI045|Limpar rastro||
 WPUPSTI046|Total de chuva: ||
 WPUPSTI047|%0.2f (mm)||
 WPUPSTI048|%0.2f (plg)||
-WPUPSTI049|Preguntar rastro||
-WPUPSTI050|Pregunta não-conhecida mensagem||
-WPUPSTI051|Pregunta directa a estação||
-WPUPSTI052|Pregunta versão a estação||
-WPUPSTI053|Modificar Objeto/Artículo||
+WPUPSTI049|Perguntar rastro||
+WPUPSTI050|Perguntar por mensagens não-confirmadas||
+WPUPSTI051|Pergunta directa a estação||
+WPUPSTI052|Pergunta versão a estação||
+WPUPSTI053|Modificar objeto/artigo||
 WPUPSTI054|Armazenar rastro||
 WPUPSTI055|Repetido desde:||
 WPUPSTI056|Activar actualização automática||
@@ -551,12 +551,12 @@ STIFCC0005|Cidade:||
 STIFCC0006|Estado:||
 STIFCC0007|Código postal:||
 STIFCC0008|Básica ||
-STIFCC0009|Avanzada ||
+STIFCC0009|Avançada ||
 STIFCC0010|5 wpm ||
 STIFCC0011|12 wpm ||
 #
 # Mensagem de banda aberta
-UMBNDO0001|na distância de||
+UMBNDO0001|a cerca de||
 #
 # Opções universais
 UNIOP00001|Aceitar||
@@ -576,18 +576,18 @@ UNIOP00014|C||
 UNIOP00015|F||
 UNIOP00016|mm||
 UNIOP00017|plg||
-UNIOP00018|mm/día||
-UNIOP00019|plg/día||
+UNIOP00018|mm/dia||
+UNIOP00019|plg/dia||
 UNIOP00020|mm/hora||
 UNIOP00021|plg/hora||
-UNIOP00022|mm/med||
-UNIOP00023|plg/med||
+UNIOP00022|mm/méd||
+UNIOP00023|plg/méd||
 UNIOP00024|grd||
 UNIOP00025|mb||
 UNIOP00026|%||
 UNIOP00027|inHg||
 UNIOP00028|mm Hg||
-UNIOP00029|Set System Clock from GPS Data?||
+UNIOP00029|Definir o relógio do sistema desde o GPS?||
 #
 # Seleccionar estação
 STCHO00001|Seleccionar estação||
@@ -614,7 +614,7 @@ IFDNL00005|Ligação a um servidor na internet||
 IFDNL00006|AX.25 TNC||
 IFDNL00007|GPS ligado via o servidor gpsd||
 IFDNL00008|Est. meteorológica ligada a uma REDE||
-IFDNL00009|Serial TNC w/GPS on AUX port||
+IFDNL00009|TNC com GPS na porta AUX||
 #
 # Info dispositivo interface
 IFDIN00000|%s %d %s sobre serie %s||
@@ -638,8 +638,8 @@ IFPUPCT004|Parar todos||
 # Control de I-Gate
 IGPUPCF000|I-Gate Opções||
 IGPUPCF001|Desactiva todo o tráfego da IGate||
-IGPUPCF002|Só permite tráfego de RF->Inet||
-IGPUPCF003|Permite ambos tráfegos RF<->Inet||
+IGPUPCF002|Só permite tráfego de RF para Inet||
+IGPUPCF003|Permite tráfego de RF->Inet e Inet->RF||
 #
 # Estação meteorológica
 WXPUPSI000|Estação meteorológica||
@@ -716,7 +716,7 @@ POPEM00006|Nome inválido da porta AX.25 %s||
 POPEM00007|Indicativo inválido %s||
 POPEM00008|Indicativo inválido AX.25 destinado ao digipeater||
 POPEM00009|Não posso abrir o interface AX.25, %s||
-POPEM00010|Não possoo atar o interface AX.25, %s||
+POPEM00010|Não posso ligar o interface AX.25, %s||
 POPEM00011|Não posso ligar ao indicativo AX.25, %s||
 POPEM00012|AX.25 erro na saida de UI||
 POPEM00013|AX.25 problema com o ficheiro /etc/ax25/axports||
@@ -736,9 +736,9 @@ POPEM00026|O rastreamento começará quando ele aparecer||
 POPEM00027|Info imprópia. Alguns campos vazios?||
 POPEM00028|Não se pode abrir o ficheiro||
 POPEM00029|Encontrado!||
-POPEM00030|Weather Station Symbol||
-POPEM00031|Changed to WX symbol '/_', other options:  '\_'  '/W'  and  '\W'||
-POPEM00032|Warning: Using National Weather Service Symbol!||
+POPEM00030|Simbolo da estação meteorológica||
+POPEM00031|Alterado para simbolo de WX '/_', outras opções:  '\_'  '/W'  e  '\W'||
+POPEM00032|Atenção: Usando simbolos do serviço nacional meteorológico!||
 #
 # Salto de localização
 JMLPO00001|Localização de mapa||
