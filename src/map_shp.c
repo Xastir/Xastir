@@ -1163,7 +1163,8 @@ void draw_shapefile_map (Widget w,
                             i,key);
                 }
                 if (strncmp(alert->title,key,keylen) == 0) {
-                    // keylen could be zero, so check again
+                    // keylen was zero, so check again using length
+                    // of title instead
                     int titlelen;
 
                     titlelen = strlen(alert->title);
