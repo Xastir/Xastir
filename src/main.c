@@ -7614,6 +7614,7 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
         XtSetSensitive(station_amb_button,TRUE);
         XtSetSensitive(station_old_data_button,TRUE);
         XtSetSensitive(station_DF_button,TRUE);
+        XtSetSensitive(station_last_heard_button,TRUE);
     }
     else {
         symbol_display_enable = 0;
@@ -7632,6 +7633,7 @@ void Symbols_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer call
         XtSetSensitive(station_amb_button,FALSE);
         XtSetSensitive(station_old_data_button,FALSE);
         XtSetSensitive(station_DF_button,FALSE);
+        XtSetSensitive(station_last_heard_button,FALSE);
    }
 
     symbol_display = symbol_display_enable;
