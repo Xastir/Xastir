@@ -1225,7 +1225,7 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
 
     xastir_snprintf(str,
         str_len,
-        "%s %c%c %d %d",
+        "%s %c%c %05d %05d",
         utmZone,
         E_W[my_east],
         N_S[my_north],
