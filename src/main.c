@@ -2618,7 +2618,7 @@ void create_image(Widget w) {
         fprintf(stderr,"Create image start\n");
 
     // If we're in the middle of ID'ing, wait a bit.
-    if (pending_ID_message)
+    if (ATV_screen_ID && pending_ID_message)
         usleep(2000000);    // 2 seconds
 
     /* First get the various dimensions */
@@ -2816,7 +2816,7 @@ void refresh_image(Widget w) {
         fprintf(stderr,"Refresh image start\n");
 
     // If we're in the middle of ID'ing, wait a bit.
-    if (pending_ID_message)
+    if (ATV_screen_ID && pending_ID_message) 
         usleep(2000000);    // 2 seconds
 
     /* First get the various dimensions */
@@ -2919,7 +2919,7 @@ void refresh_image(Widget w) {
 void redraw_symbols(Widget w) {
 
     // If we're in the middle of ID'ing, wait a bit.
-    if (pending_ID_message)
+    if (ATV_screen_ID && pending_ID_message)
         usleep(2000000);    // 2 seconds
 
     /* copy over map and alert data to final pixmap */
@@ -7392,7 +7392,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
     static int last_alert_on_screen;
 
     do_time = 0;
-    nexttime = 15;  // Start UpdateTime again 15 milliseconds after we've completed
+    nexttime = 50;  // Start UpdateTime again 100 milliseconds after we've completed
 
     (void)sound_done();
 
@@ -7724,9 +7724,13 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             if (snapshots_enabled)
                 (void)Snapshot();
 
-            /* get data from interface */
+            /* get data from interfaces */
             max=0;
-            while (max < 20 && !XtAppPending(app_context)) {
+            // Allow up to 1000 packets to be processed inside this
+            // loop.
+            while (max < 1000 && !XtAppPending(app_context)) {
+                struct timeval tmv;
+
 
 if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
     fprintf(stderr,"data_lock\n");
@@ -7826,12 +7830,20 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             break;
                     }
                     data_avail=0;
-                    max++;
-                } else
-                    max=20;
+                    max++;  // Count the number of packets processed
+                } else {
+                    max=1000;   // Go straight to "max": Exit loop
+                }
 
 if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
     fprintf(stderr,"data_lock\n");
+
+                // Do a usleep() here to give the interface threads
+                // time to set data_avail if they still have data to
+                // process.
+                tmv.tv_sec = 0;
+                tmv.tv_usec = 20000; // Delay 20ms
+                (void)select(0,NULL,NULL,NULL,&tmv);
 
             }
             /* END- get data from interface */
