@@ -998,6 +998,15 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
         str_ptr1 = XmTextGetString(sb_hi_mph_data);
         i = atoi(str_ptr1);
+        switch (units_english_metric) {
+            case 0: // Metric:  Convert from KPH to MPH for storage
+                i = (int)((i * 0.62137) + 0.5);
+                break;
+            case 1: // English
+            case 2: // Nautical
+            default:    // No conversion necessary
+                break;
+        }
         if (i == 0)
             i = 60;
         sb_high_speed_limit = i;
@@ -1014,6 +1023,15 @@ void Smart_Beacon_change_data(Widget widget, XtPointer clientData, XtPointer cal
 
         str_ptr1 = XmTextGetString(sb_lo_mph_data);
         i = atoi(str_ptr1);
+        switch (units_english_metric) {
+            case 0: // Metric:  Convert from KPH to MPH for storage
+                i = (int)((i * 0.62137) + 0.5);
+                break;
+            case 1: // English
+            case 2: // Nautical
+            default:    // No conversion necessary
+                break;
+        }
         if (i == 0)
             i = 2;
         sb_low_speed_limit = i;
@@ -1059,6 +1077,8 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 
     Atom delw;
     char temp_string[10];
+    char temp_label_string[100];
+
 
     // Destroy the dialog if it exists.  This is to make sure the
     // title is correct based on the last dialog that called us.
@@ -1129,10 +1149,9 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNwidth, ((6*7)+2),
                 XmNmaxLength, 5,
                 XmNbackground, colors[0x0f],
-                XmNtopOffset, 5,
                 XmNtopAttachment,XmATTACH_WIDGET,
                 XmNtopWidget, smart_beacon_enable,
-                XmNtopOffset, 10,
+                XmNtopOffset, 5,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, label1,
@@ -1141,7 +1160,23 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 
-        label2 = XtVaCreateManagedWidget(langcode("SMARTB003"),
+        switch (units_english_metric) {
+            case 0: // Metric
+                xastir_snprintf(temp_label_string,
+                    sizeof(temp_label_string),
+                    langcode("SMARTB004") );
+                break;
+            case 1: // English
+            case 2: // Nautical
+            default:
+                xastir_snprintf(temp_label_string,
+                    sizeof(temp_label_string),
+                    langcode("SMARTB003") );
+                break;
+        }
+
+        // High Speed (mph) / (kph)
+        label2 = XtVaCreateManagedWidget(temp_label_string,
                 xmLabelWidgetClass,
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -1213,7 +1248,23 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 
-        label4 = XtVaCreateManagedWidget(langcode("SMARTB006"),
+        switch (units_english_metric) {
+            case 0: // Metric
+                xastir_snprintf(temp_label_string,
+                    sizeof(temp_label_string),
+                    langcode("SMARTB007") );
+                break;
+            case 1: // English
+            case 2: // Nautical
+            default:
+                xastir_snprintf(temp_label_string,
+                    sizeof(temp_label_string),
+                    langcode("SMARTB006") );
+                break;
+        }
+
+        // Low Speed (mph) / (kph)
+        label4 = XtVaCreateManagedWidget(temp_label_string,
                 xmLabelWidgetClass,
                 form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -1425,13 +1476,43 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
         xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_posit_fast);
         XmTextSetString(sb_hi_rate_data, temp_string);
 
-        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_high_speed_limit);
+        switch (units_english_metric) {
+            case 0: // Metric:  Convert from MPH to KPH for display
+                xastir_snprintf(temp_string,
+                    sizeof(temp_string),
+                    "%d",
+                    (int)((sb_high_speed_limit * 1.6094) + 0.5) );
+                break;
+            case 1: // English
+            case 2: // Nautical
+            default:    // No conversion necessary
+                xastir_snprintf(temp_string,
+                    sizeof(temp_string),
+                    "%d",
+                    sb_high_speed_limit);
+                break;
+        }
         XmTextSetString(sb_hi_mph_data, temp_string);
 
         xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_posit_slow);
         XmTextSetString(sb_lo_rate_data, temp_string);
 
-        xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_low_speed_limit);
+        switch (units_english_metric) {
+            case 0: // Metric:  Convert from MPH to KPH for display
+                xastir_snprintf(temp_string,
+                    sizeof(temp_string),
+                    "%d",
+                    (int)((sb_low_speed_limit * 1.6094) + 0.5) );
+                break;
+            case 1: // English
+            case 2: // Nautical
+            default:    // No conversion necessary
+                xastir_snprintf(temp_string,
+                    sizeof(temp_string),
+                    "%d",
+                    sb_low_speed_limit);
+                break;
+        }
         XmTextSetString(sb_lo_mph_data, temp_string);
 
         xastir_snprintf(temp_string, sizeof(temp_string), "%d", sb_turn_min);
@@ -10497,7 +10578,7 @@ void  Dbstatus_choice_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
 void update_units(void) {
 
     switch (units_english_metric) {
-        case 1:
+        case 1:     // English
             strcpy(un_alt,"ft");
             strcpy(un_dst,"mi");
             strcpy(un_spd,"mph");
@@ -10507,7 +10588,7 @@ void update_units(void) {
             cvt_kn2len = 1.1508;    // knots to mph
             cvt_mi2len = 1.0;       // mph to mph
             break;
-        case 2:
+        case 2:     // Nautical
             // add nautical miles and knots for future use
             strcpy(un_alt,"ft");
             strcpy(un_dst,"nm");
@@ -10518,7 +10599,7 @@ void update_units(void) {
             cvt_kn2len = 1.0;       // knots to knots
             cvt_mi2len = 0.8689607; // mph to knots / mi to nm
             break;
-        default:
+        default:    // Metric
             strcpy(un_alt,"m");
             strcpy(un_dst,"km");
             strcpy(un_spd,"km/h");
