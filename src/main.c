@@ -10012,7 +10012,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                     devices[i].gps_retrieve);
 
                                 if (debug_level & 1) {
-                                    fprintf(stderr,"Using %d %d to retrieve GPS\n",
+                                    fprintf(stderr,"Using 0x%02x 0x%02x to retrieve GPS\n",
                                         '\3',
                                         devices[i].gps_retrieve);
                                 }
