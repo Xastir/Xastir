@@ -3420,13 +3420,15 @@ void output_my_data(char *message, int port, int type, int loopback_only) {
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
     char output_net[100];
-    int ok, start, i;
+    int ok, start, finish, i;
     /*char temp[150]; for port message -FG */
     int count;
     int done;
     int temp;
     int bump_up;
 
+    if (debug_level & 1)
+        printf("Sending out port: %d, type: %d\n", port, type);
 
     if (message == NULL)
         return;
@@ -3435,18 +3437,25 @@ void output_my_data(char *message, int port, int type, int loopback_only) {
         return;
  
     data_txt_save[0] = '\0';
-    if (port == -1)
+
+    if (port == -1) {   // Send out all of the interfaces
         start = 0;
-    else
-        start = port;
+        finish = MAX_IFACE_DEVICES;
+    }
+    else {  // Only send out the chosen interface
+        start  = port;
+        finish = port + 1;
+    }
 
 begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
-    for (i = start; i < MAX_IFACE_DEVICES; i++){
+    for (i = start; i < finish; i++) {
         ok = 1;
         if (type == 0) {                        // my data
             switch (port_data[i].device_type) {
                 case DEVICE_NET_STREAM:
+                    if (debug_level & 1)
+                        printf("%d Net\n",i);
                     xastir_snprintf(output_net, sizeof(output_net), "%s>%s,TCPIP*:", my_callsign, VERSIONFRM);
                     break;
 
@@ -3458,6 +3467,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 case DEVICE_SERIAL_TNC:
 
                 case DEVICE_AX25_TNC:
+                    if (debug_level & 1)
+                        printf("%d AX25 TNC\n",i);
                     strcpy(output_net,"");      // clear this for a TNC
                     /* Set my call sign */
                     xastir_snprintf(data_txt, sizeof(data_txt), "%c%s %s\r",
@@ -3578,6 +3589,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     && !transmit_disable
                     && !loopback_only) {
                 port_write_string(i,data_txt);
+                if (debug_level & 1)
+                    printf("Sending to interface:%d, %s\n",i,data_txt);
             }
 
             if (debug_level & 2)
@@ -3599,8 +3612,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 popup_message(langcode("POPEM00004"),temp);*/
             }
         }
-        if (port != -1)
-            i = MAX_IFACE_DEVICES+1;    // process only one port
+//        if (port != -1)
+//            i = MAX_IFACE_DEVICES+1;    // process only one port
     }
 
 end_critical_section(&devices_lock, "interface.c:output_my_data" );
