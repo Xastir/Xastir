@@ -102,9 +102,12 @@
 // ICTSVS>APRS::NWS-ADVIS:120145z,SEVERE_WEATHER,KS_Z091, {C14AA
 // TSASVR>APRS::NWS-WARN :120230z,SVRTSM,OK_C113,  OSAGE COUNTY {C16AA
 //
-// C = county file (c_??????)
-// A = County Warning File (w_?????)
-// Z = Zone File (z_????? or mz_??????)
+// C = county file         (c_mmddyy.dbf)
+// A = County Warning File (w_mmddyy.dbf)
+// Z = Zone File           (z_mmddyy.dbf or mz_mmddyy.dbf)
+// F = Fire zone file      (fz_mmddyy.dbf)
+// A = Canadian Area       (a_mmddyy.dbf)
+// R = Canadian Region     (r_mmddyy.dbf)
 //
 // Alerts are comma-delimited on the air s.t. after the
 // :NWS-?????: the first field is the time in zulu (or local
@@ -201,6 +204,20 @@
 // think there are no more than 13 or 14 to search through - better
 // that the 54 "states"- could be hard coded.
 
+// We now  have fire weather alerts also.  From Dale:
+// "Ok I think we can use this to solve a problem with the Fire
+// Watches and Warnings taking over the map of someone not
+// interested.  Roger,  I had to take Fire warnings off the regular
+// aprs-is feeds and send it to firenet.us server only because of
+// complaints of the maps getting cluttered-- with data most people
+// didn't want. Even though the NWS sends "AZZ148" just as if it
+// were to be found in the z_mmddyy.dbf (warning zone) type file,
+// wxsvr knows it is coming out of a "Fire Weather" type product and
+// can substitute "AZF148" .  Client software (read xastir &
+// Ui-view) would know to look in the fireweather shapefile.  If
+// someone doesn't have the fire shapefile loaded, it would just be
+// ignored (I think)."
+
 
 // Found on the AWIPS web pages so far:
 // AWIPS Counties          C
@@ -209,6 +226,10 @@
 // Coastal Marine Zones    Z
 // Offshore Marine Zones   Z
 // High Seas Marine Zones  Z    (Says "Not for operational use")
+// Fire Weather Zones      FZ
+//
+// Don't forget about the Canadian Areas and Regions, which are
+// created by Dale Huguley from Environment Canada data.
 //
 //
 // AWIPS Counties:
