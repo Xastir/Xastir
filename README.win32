@@ -271,11 +271,12 @@ command:
   cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
   cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
-If you see "EOF" or "connection reset by peer" it means that the
-anonymous CVS server at SourceForge is overloaded (too many users).
-Keep trying the failed commands until they succeed!  Notice that
-up-arrow (on the keyboard) and then <ENTER> will repeat the last
-command, saving you some typing.
+If you see "EOF", "connection reset by peer", "connection refused",
+or "timed out", it means that the anonymous CVS server at
+SourceForge is overloaded (too many users).  Keep trying the failed
+commands until they succeed!  Notice that up-arrow (on the keyboard)
+and then <ENTER> will repeat the last command, saving you some
+typing.
 
 The end result when it succeeds  will be a new directory
 "C:\cygwin\home\<user>\src\xastir\" which contains all of the Xastir
