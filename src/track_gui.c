@@ -465,12 +465,12 @@ void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) 
     XmScaleGetValue(posit_start_value, &posit_start);
     if (temp >= posit_start) {
         XtVaSetValues(posit_length_value,
-		      XmNvalue, posit_start,
-		      NULL);
+            XmNvalue, posit_start,
+            NULL);
     }
     XtVaSetValues(posit_length_value,
-                  XmNmaximum, posit_start,
-		  NULL);
+        XmNmaximum, posit_start,
+        NULL);
 }
 
 
@@ -547,7 +547,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 xmScaleWidgetClass, 
                 my_form,
                 XmNtopAttachment,XmATTACH_WIDGET,
-				XmNtopWidget, call,
+                XmNtopWidget, call,
                 XmNtopOffset, 15,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
@@ -555,26 +555,26 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
-				//XmNwidth, 190,
-				XmNrightAttachment, XmATTACH_FORM,
+                //XmNwidth, 190,
+                XmNrightAttachment, XmATTACH_FORM,
                 XmNrightOffset, 10,
-			    XmNsensitive, TRUE,
-				XmNorientation, XmHORIZONTAL,
-				XmNborderWidth, 1,
-				XmNminimum, 1,
-			    XmNmaximum, 336,
-				XmNshowValue, TRUE,
-				XmNvalue, posit_start,
-				XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP009"), 22,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,
+                XmNmaximum, 336,
+                XmNshowValue, TRUE,
+                XmNvalue, posit_start,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP009"), 22,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
-				NULL);
+                NULL);
 
         posit_length_value = XtVaCreateManagedWidget("Length of trail (hrs)", 
                 xmScaleWidgetClass, 
                 my_form,
                 XmNtopAttachment,XmATTACH_WIDGET,
-				XmNtopWidget, posit_start_value,
+                XmNtopWidget, posit_start_value,
                 XmNtopOffset, 15,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
@@ -582,20 +582,20 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                 XmNrightAttachment,XmATTACH_NONE,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
-				//XmNwidth, 190,
-				XmNrightAttachment, XmATTACH_FORM,
+                //XmNwidth, 190,
+                XmNrightAttachment, XmATTACH_FORM,
                 XmNrightOffset, 10,
-			    XmNsensitive, TRUE,
-				XmNorientation, XmHORIZONTAL,
-				XmNborderWidth, 1,
-				XmNminimum, 1,
-			    XmNmaximum, 336,
-				XmNshowValue, TRUE,
-				XmNvalue, posit_length,
-				XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP010"), 19,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 1,
+                XmNmaximum, 336,
+                XmNshowValue, TRUE,
+                XmNvalue, posit_length,
+                XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP010"), 19,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
-				NULL);
+                NULL);
 
         sep = XtVaCreateManagedWidget("Download_findu_trail sep", 
                 xmSeparatorGadgetClass,
