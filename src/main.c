@@ -4671,6 +4671,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
 
+    free(title);
 
     // Make at least one Motif call so that the next function won't
     // result in this problem:  'Error: atttempt to add non-widget

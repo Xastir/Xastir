@@ -232,6 +232,7 @@ void setup_visual_info(Display* dpy, int scr) {
             }
         }
     }
+    XFree(visual_list);
 }
 
 

@@ -222,6 +222,8 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
         free(path);
     }
 
+    closedir(d);
+
     if (symtbl)
         awk_free_symtab(symtbl);
 
