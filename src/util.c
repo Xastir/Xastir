@@ -1143,12 +1143,14 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
         t = 'C';
     }
     // Note that we can end up with three spaces at the end if no
-    // course/speed/phg were supplied.  Need to knock this down to
-    // one space (One space means: Don't use the csT bytes).
-    if ( (c == ' ') && (s == ' ') && (t == ' ') )
-        xastir_snprintf(pos, sizeof(pos), "%c%s%s%c ", group, lat, lon, symbol);
-    else
-        xastir_snprintf(pos, sizeof(pos), "%c%s%s%c%c%c%c", group, lat, lon, symbol, c, s, t);
+    // course/speed/phg were supplied.  Do not knock this down, as
+    // the compressed posit has a fixed 13-character length
+    // according to the spec!
+    //
+    //if ( (c == ' ') && (s == ' ') && (t == ' ') )
+    //    xastir_snprintf(pos, sizeof(pos), "%c%s%s%c ", group, lat, lon, symbol);
+    //else
+    xastir_snprintf(pos, sizeof(pos), "%c%s%s%c%c%c%c", group, lat, lon, symbol, c, s, t);
 
     //fprintf(stderr,"New compressed pos: (%s)\n",pos);
     return pos;
