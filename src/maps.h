@@ -87,6 +87,7 @@ void  index_update_xastir(char *filename, unsigned long bottom, unsigned long to
 void  index_update_ll(char *filename, double bottom, double top, double left, double right);
 void draw_grid (Widget w);
 void Snapshot(void);
+int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right, int *map_layer, int *draw_filled);
 void index_restore_from_file(void);
 void map_indexer(void);
 
