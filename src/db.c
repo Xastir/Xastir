@@ -3949,6 +3949,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldata) {
     DataRow *p_station;
     char *station = (char *) clientData;
+    static char local_station[25];
     char temp[300];
     unsigned int n;
     Atom delw;
@@ -3967,6 +3968,9 @@ void Station_data(/*@unused@*/ Widget w, XtPointer clientData, XtPointer calldat
 
     db_station_info_callsign = (char *) clientData; // Used for auto-updating this dialog
 
+
+    // Make a copy of the name.
+    xastir_snprintf(local_station,sizeof(local_station),"%s",station);
 
     if (search_station_name(&p_station,station,1)   // find call
         && (p_station->flag & ST_ACTIVE) != 0) {    // ignore deleted objects
@@ -4175,6 +4179,15 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                 (XtPointer)p_station);
         }
 
+
+        // Check whether it is a non-weather alert object/item.  If
+        // so, try to use the origin callsign instead of the object
+        // for FCC/RAC lookups.
+        if ( (p_station->flag & ST_OBJECT) || (p_station->flag & ST_ITEM) ) {
+            xastir_snprintf(local_station,sizeof(local_station),"%s",p_station->origin);
+        }
+
+
         // Add "Fetch NWS Info" button if it is an object or item
         // and has "WXSVR" in its path somewhere.
         //
@@ -4234,9 +4247,10 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                 (XtPointer)temp);
         }
 
+
         // Add FCC button only if probable match
-        else if ((! strncmp(station,"A",1)) || (! strncmp(station,"K",1)) ||
-            (! strncmp(station,"N",1)) || (! strncmp(station,"W",1))  ) {
+        else if ((! strncmp(local_station,"A",1)) || (!  strncmp(local_station,"K",1)) ||
+            (! strncmp(local_station,"N",1)) || (! strncmp(local_station,"W",1))  ) {
             button_fcc = XtVaCreateManagedWidget(langcode("WPUPSTI003"),xmPushButtonGadgetClass, form,
                             XmNtopAttachment, XmATTACH_NONE,
                             XmNbottomAttachment, XmATTACH_WIDGET,
@@ -4252,14 +4266,15 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XtAddCallback(button_fcc,
                 XmNactivateCallback,
                 Station_data_add_fcc,
-                (XtPointer)p_station->call_sign);
+                (XtPointer)local_station);
 
             if ( ! check_fcc_data())
                 XtSetSensitive(button_fcc,FALSE);
         }
 
+
         // Add RAC button only if probable match
-        else if (!strncmp(station,"VE",2) || !strncmp(station,"VA",2)) {
+        else if (!strncmp(local_station,"VE",2) || !strncmp(local_station,"VA",2)) {
             button_rac = XtVaCreateManagedWidget(langcode("WPUPSTI004"),xmPushButtonGadgetClass, form,
                             XmNtopAttachment, XmATTACH_NONE,
                             XmNbottomAttachment, XmATTACH_WIDGET,
@@ -4275,7 +4290,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XtAddCallback(button_rac,
                 XmNactivateCallback,
                 Station_data_add_rac,
-                (XtPointer)p_station->call_sign);
+                (XtPointer)local_station);
 
             if ( ! check_rac_data())
                 XtSetSensitive(button_rac,FALSE);
