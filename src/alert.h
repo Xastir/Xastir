@@ -49,7 +49,7 @@ typedef enum {
 } alert_match_level;
 
 #define ALERT_ALL ALERT_FROM
-
+enum flag_list {on_screen, source, max_flag=16};
 
 typedef struct {
     double top_boundary, left_boundary, bottom_boundary, right_boundary;
@@ -64,7 +64,7 @@ typedef struct {
        0 - on screen
        1 - source
     */
-    char flags[16];
+    char flags[max_flag];
     char filename[64];
     int  index;         // Index into shapefile
     char seq[10];
@@ -80,6 +80,7 @@ extern alert_entry *alert_list;
 extern int alert_max_count;
 
 extern void alert_print_list(void);
+extern void alert_sort_active(void);
 extern int alert_active(alert_entry *alert, alert_match_level match_level);
 extern int alert_display_request(void);
 extern int alert_on_screen(void);

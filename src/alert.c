@@ -31,13 +31,13 @@
 // In the alert structure, flags[] is size 16.  Only the first two
 // positions in the array are currently used.
 //
-// alert_entry.flags[0]
+// alert_entry.flags[0] // on_screen
 //          ?  Initial state or ready-to-recompute state
 //          -   Expired between 1 sec and 1 hour
 //          Y   Active alert within viewport
 //          N   Active alert outside viewport
 //
-// alert_entry.flags[1]
+// alert_entry.flags[1] // source
 //          DATA_VIA_TNC
 //          DATA_VIA_LOCAL
 //
@@ -374,7 +374,7 @@ void alert_print_list(void) {
 // Alert: 10Y, MSPTOR> NWS-TEST, TAG: T  TORNDO, ACTIVITY: 191915z, Expiration: 1019234700, Title: WI_Z003
             fprintf(stderr,"Alert:%4d%c,%9s>%9s, Tag: %c%20s, Activity: %9s, Expiration: %lu, Title: %s\n",
                 i,                                          // 10
-                alert_list[i].flags[0],                     // Y
+                alert_list[i].flags[on_screen],             // Y
                 alert_list[i].from,                         // MSPTOR
                 alert_list[i].to,                           // NWS-TEST
 
@@ -728,27 +728,28 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
     // parameters from new alert into existing alert_list entry.
     if ((ptr = alert_match(alert, match_level))) {
         if (!ptr->filename[0]) {    // We found a match!  Fill it in.
-            strncpy(ptr->filename, alert->filename, 32);
-            strncpy(ptr->title, alert->title, 32);
-            ptr->filename[32] = ptr->title[32] = '\0';
-//            ptr->top_boundary = alert->top_boundary;
-//            ptr->left_boundary = alert->left_boundary;
-//            ptr->bottom_boundary = alert->bottom_boundary;
-//            ptr->right_boundary = alert->right_boundary;
+            strncpy(ptr->filename, alert->filename, sizeof(ptr->filename)-1);
+            strncpy(ptr->title, alert->title, sizeof(ptr->title)-1);
+            ptr->filename[sizeof(ptr->filename)-1] = ptr->title[sizeof(ptr->title)-1] = '\0';
+            // Boundary markers now being used for shape lookup
+            //ptr->top_boundary = alert->top_boundary;
+            //ptr->left_boundary = alert->left_boundary;
+            //ptr->bottom_boundary = alert->bottom_boundary;
+            //ptr->right_boundary = alert->right_boundary;
         }
-        ptr->flags[0] = alert->flags[0];
+        ptr->flags[on_screen] = alert->flags[on_screen];
 
         // Shorten title
         normal_title(alert->title, title_e);
 
         // Force the string to be terminated
-        title_e[32] = title_m[32] = '\0';
+        title_e[sizeof(title_e)-1] = title_m[sizeof(title_m)-1] = '\0';
 
         // Interate through the entire alert_list, checking flags
         for (i = 0; i < alert_max_count; i++) {
 
             // If flag was '?' or has changed, update the alert
-            if ((alert_list[i].flags[0] == '?' || alert_list[i].flags[0] != ptr->flags[0])) {
+            if ((alert_list[i].flags[on_screen] == '?' || alert_list[i].flags[on_screen] != ptr->flags[on_screen])) {
 
                 // Shorten the title.  Title_m will be the shortened
                 // title.
@@ -758,16 +759,16 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
                     // Update parameters
                     if (!alert_list[i].filename[0]) {
-                        strncpy(alert_list[i].filename, alert->filename, 32);
-                        alert_list[i].filename[32] = '\0';
-//                        alert_list[i].top_boundary = alert->top_boundary;
-//                        alert_list[i].left_boundary = alert->left_boundary;
-//                        alert_list[i].bottom_boundary = alert->bottom_boundary;
-//                        alert_list[i].right_boundary = alert->right_boundary;
+                        strncpy(alert_list[i].filename, alert->filename, sizeof(alert_list[0].filename)-1);
+                        alert_list[i].filename[sizeof(alert_list[0].filename)-1] = '\0';
+                        //alert_list[i].top_boundary = alert->top_boundary;
+                        //alert_list[i].left_boundary = alert->left_boundary;
+                        //alert_list[i].bottom_boundary = alert->bottom_boundary;
+                        //alert_list[i].right_boundary = alert->right_boundary;
                         strncpy(alert_list[i].title, alert->title, 32);
                         alert_list[i].title[32] = '\0';
                     }
-                    alert_list[i].flags[0] = alert->flags[0];
+                    alert_list[i].flags[on_screen] = alert->flags[on_screen];
                 }
             }
         }
@@ -825,8 +826,8 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
             // alert from the list.
             alert_redraw_on_update = redraw_on_new_data = 2;
         }
-        else if (a_ptr->flags[0] == '?') {  // Expired between 1sec and 1hr and found '?'
-            a_ptr->flags[0] = '-';
+        else if (a_ptr->flags[on_screen] == '?') {  // Expired between 1sec and 1hr and found '?'
+            a_ptr->flags[on_screen] = '-';
  
             // Schedule a screen update 'cuz we have an expired alert
             alert_redraw_on_update = redraw_on_new_data = 2;
@@ -855,16 +856,16 @@ static int alert_compare(const void *a, const void *b) {
     if (!a_entry->title[0] && b_entry->title[0])
         return (1);
 
-    if (a_entry->flags[0] == 'Y' && b_entry->flags[0] != 'Y')
+    if (a_entry->flags[on_screen] == 'Y' && b_entry->flags[on_screen] != 'Y')
         return (-1);
 
-    if (a_entry->flags[0] != 'Y' && b_entry->flags[0] == 'Y')
+    if (a_entry->flags[on_screen] != 'Y' && b_entry->flags[on_screen] == 'Y')
         return (1);
 
-    if (a_entry->flags[0] == '?' && b_entry->flags[0] == 'N')
+    if (a_entry->flags[on_screen] == '?' && b_entry->flags[on_screen] == 'N')
         return (-1);
 
-    if (a_entry->flags[0] == 'N' && b_entry->flags[0] == '?')
+    if (a_entry->flags[on_screen] == 'N' && b_entry->flags[on_screen] == '?')
         return (1);
 
     a_active = alert_active(a_entry, ALERT_ALL);
@@ -923,9 +924,9 @@ int alert_display_request(void) {
     for (i = 0, alert_count = 0; i < alert_max_count; i++) {
 
         // If it's an active alert (not expired), and flags == 'Y'
-        // (meaning it is within our viewport), set the flag to '?'.
-        if (alert_active(&alert_list[i], ALERT_ALL) && (alert_list[i].flags[0] == 'Y' ||
-                alert_list[i].flags[0] == '?')) {
+        // (meaning it is within our viewport), or flags == '?' (indicating unmatched).
+        if (alert_active(&alert_list[i], ALERT_ALL) && (alert_list[i].flags[on_screen] == 'Y' ||
+                alert_list[i].flags[on_screen] == '?')) {
             alert_count++;
         }
     }
@@ -958,7 +959,7 @@ int alert_on_screen(void) {
 
     for (i = 0, alert_count = 0; i < alert_max_count; i++) {
         if (alert_active(&alert_list[i], ALERT_ALL)
-                && alert_list[i].flags[0] == 'Y') {
+                && alert_list[i].flags[on_screen] == 'Y') {
             alert_count++;
         }
     }
@@ -1531,6 +1532,11 @@ void alert_build_list(Message *fill) {
                 "%s",
                 date_time);
             //entry.issue_date_time = time_from_aprsstring(date_time);
+        } else {
+            xastir_snprintf(entry.issue_date_time,
+                sizeof(entry.issue_date_time),
+                "%s",
+                "312359z");
         }
  
         if (debug_level & 2)
@@ -1540,10 +1546,10 @@ void alert_build_list(Message *fill) {
         memset(entry.flags, (int)'?', sizeof(entry.flags));
         p_station = NULL;
 
-        // flags[1] specifies source of the alert DATA_VIA_TNC or
+        // flags[source] specifies source of the alert DATA_VIA_TNC or
         // DATA_VIA_LOCAL
         if (search_station_name(&p_station,fill->from_call_sign,1))
-            entry.flags[1] = p_station->data_via;
+            entry.flags[source] = p_station->data_via;
 
 
 ///////////////////////////////////////////////////////////////////////
@@ -1591,8 +1597,10 @@ void alert_build_list(Message *fill) {
         for (ii = 0; ii < MAX_SUB_ALERTS && title_ptr[ii]; ii++) {
 
             // Copy into our entry.title variable
-            strncpy(entry.title, title_ptr[ii], 33);
-            entry.title[32] = '\0';
+            strncpy(entry.title, title_ptr[ii], sizeof(entry.title));
+
+            // Terminate title string
+            entry.title[sizeof(entry.title)-1] = '\0';
 //fprintf(stderr,"Title: %s\n",entry.title);
 
             // This one removes spaces from the title.
