@@ -91,6 +91,14 @@ typedef struct {
     unsigned long y_lat;
 } tiepoint;
 
+void draw_vector(Widget w,
+                 unsigned long x1,
+                 unsigned long y1,
+                 unsigned long x2,
+                 unsigned long y2,
+                 GC gc,
+                 Pixmap which_pixmap);
+
 char *get_map_ext (char *filename);
 char *get_map_dir (char *fullpath);
 void load_auto_maps(Widget w, char *dir);
