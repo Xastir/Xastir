@@ -199,40 +199,49 @@ void get_path_data(char *callsign, char *path, int max_length) {
     if (search_station_name(&p_station,callsign,1)) {  // Found callsign
         char new_path[200];
 
-        xastir_snprintf(new_path,sizeof(new_path),p_station->node_path_ptr);
-
-        if(debug_level & 2)
-            fprintf(stderr,"\nPath from %s: %s\n",
-                callsign,
-                new_path);
-
-// We need to chop off the first call, remove asterisks and
-// injection ID's, and reverse the order of the callsigns.  We need
-// to do the same thing in the callback for button_submit_call, so
-// that we get a new path whenever the callsign is changed.  Create
-// a new TextFieldWidget to hold the path info, which gets filled in
-// here (and the callback) but can be changed by the user.  Must
-// find a nice way to use this path from output_my_data() as well.
-
-        reverse_path(new_path);
-
-        if (debug_level & 2)
-            fprintf(stderr,"  Path to %s: %s\n",
-                callsign,
-                new_path);
-
-        xastir_snprintf(path,
-            max_length,
-            "%s",
-            new_path);
+        if (p_station->node_path_ptr) {
+            xastir_snprintf(new_path,sizeof(new_path),p_station->node_path_ptr);
+            
+            if(debug_level & 2)
+                fprintf(stderr,"\nPath from %s: %s\n",
+                        callsign,
+                        new_path);
+            
+            // We need to chop off the first call, remove asterisks
+            // and injection ID's, and reverse the order of the
+            // callsigns.  We need to do the same thing in the
+            // callback for button_submit_call, so that we get a new
+            // path whenever the callsign is changed.  Create a new
+            // TextFieldWidget to hold the path info, which gets
+            // filled in here (and the callback) but can be changed by
+            // the user.  Must find a nice way to use this path from
+            // output_my_data() as well.
+            
+            reverse_path(new_path);
+            
+            if (debug_level & 2)
+                fprintf(stderr,"  Path to %s: %s\n",
+                        callsign,
+                        new_path);
+            
+            xastir_snprintf(path,
+                            max_length,
+                            "%s",
+                            new_path);
+        } else {
+            if (debug_level & 2) 
+                fprintf(stderr," Path from %s is (null)\n",callsign);
+            path[0]='\0';
+        }
     }
     else {  // Couldn't find callsign.  It's
             // not in our station database.
         if(debug_level & 2)
             fprintf(stderr,"Path from %s: No Path Known\n",callsign);
-
+        
         path[0] = '\0';
     }
+
 }
 
  
