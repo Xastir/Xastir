@@ -805,6 +805,15 @@ int alert_on_screen(void) {
 // AMAWSW>APRS::NWS-WARN :180400z,WINTER_STORM,OK_Z001,OK_Z002,TX_Z001,TX_Z002,TX_Z003, {HLGBA
 //              activity          alert_tag     title   title   title   title   title
 //
+//
+// New compressed-mode weather alert packets:
+//
+// LZKNPW>APRS::NWS-ADVIS:221000z,ARZ003>007-012>016-021>025-030>034-037>047-052>057-062>069{LLSAA
+//
+// The trick is to step thru the data base contained in the
+// shapefiles to determine what areas to light up.  In the above
+// example read ">" as "thru" and "-" as "and".
+//
 static void alert_build_list(Message *fill) {
     alert_entry entry[6], *list_ptr;    // We might need up to six structs to split
                                         // up a message into individual map areas.
@@ -812,10 +821,14 @@ static void alert_build_list(Message *fill) {
     char *ptr;
     DataRow *p_station;
 
+    //printf("Message_line:%s\n",fill->message_line);
+
     if (debug_level & 1)
         printf("alert_build_list\n");
 
     if (fill->active == RECORD_ACTIVE) {
+        int ignore_title = 0;
+
         memset(entry, 0, sizeof(entry));
         (void)sscanf(fill->message_line, "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
            entry[0].activity, entry[0].alert_tag, entry[0].title, entry[1].title,
@@ -851,9 +864,23 @@ static void alert_build_list(Message *fill) {
             // Terminate title string for each of six structs
             entry[i].title[32] = '\0';
             //printf("Title: %s\n",entry[i].title);
- 
-            while ((ptr = strpbrk(entry[i].title, " ")))
-                memmove(ptr, ptr+1, strlen(ptr)+1);
+
+            // This one removes spaces from the title.
+            //while ((ptr = strpbrk(entry[i].title, " ")))
+            //    memmove(ptr, ptr+1, strlen(ptr)+1);
+
+            // Instead we should blank out the title and any
+            // following alert titles if a space is encountered, as
+            // we're to disregard anything after a space in the
+            // information field.
+            if (ignore_title)   // Blank out title if flag is set
+                entry[i].title[0] = '\0';
+
+            // If we found a space in a title
+            if ( (ptr = strpbrk(entry[i].title, " ")) ) {
+                ignore_title++;     // Set flag for following titles
+                entry[i].title[0] = '\0';  // Blank out title
+            }
 
             if ((ptr = strpbrk(entry[i].title, "}>=!:/*+;"))) {
                 if (debug_level & 2) {
