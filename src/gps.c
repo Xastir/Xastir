@@ -299,16 +299,21 @@ void gps_data_find(char *gps_line_data, int port) {
         strcpy(gps_gprmc,gps_line_data);
         strcpy(temp_str,gps_line_data);
         got_gps_gprmc=1;
-        decode_gps_rmc( temp_str,
-                        long_pos,
-                        sizeof(long_pos),
-                        lat_pos,
-                        sizeof(lat_pos),
-                        spd,
-                        sunit,
-                        sizeof(sunit),
-                        cse,
-                        &t);    /* mod station data */
+        if (decode_gps_rmc( temp_str,
+                            long_pos,
+                            sizeof(long_pos),
+                            lat_pos,
+                            sizeof(lat_pos),
+                            spd,
+                            sunit,
+                            sizeof(sunit),
+                            cse,
+                            &t ) == 1) {    /* mod station data */
+            /* got GPS data */
+            my_station_gps_change(long_pos,lat_pos,cse,spd,
+                sunit[0],alt,sats);
+        }
+ 
     }
 
     if(strncmp(gps_line_data,"$GPGGA,",7)==0 && !gps_stop_now) {
@@ -322,14 +327,18 @@ void gps_data_find(char *gps_line_data, int port) {
         strcpy(gps_gpgga,gps_line_data);
         strcpy(temp_str,gps_line_data);
         got_gps_gpgga=1;
-        decode_gps_gga( temp_str,
-                        long_pos,
-                        sizeof(long_pos),
-                        lat_pos,
-                        sizeof(lat_pos),
-                        sats,
-                        alt,
-                        aunit); /* mod station data */
+        if ( decode_gps_gga( temp_str,
+                             long_pos,
+                             sizeof(long_pos),
+                             lat_pos,
+                             sizeof(lat_pos),
+                             sats,
+                             alt,
+                             aunit) == 1) { /* mod station data */
+            /* got GPS data */
+            my_station_gps_change(long_pos,lat_pos,cse,spd,
+                sunit[0],alt,sats);
+        }
     }
 
     if (debug_level & 128)
@@ -389,6 +398,7 @@ void gps_data_find(char *gps_line_data, int port) {
                         printf("GGA <%s> <%s> <%s> <%s> %c\n",
                             long_pos,lat_pos,sats,alt,aunit[0]);
                     got_gps_gprmc=0;
+
                     /* got GPS data */
                     my_station_gps_change(long_pos,lat_pos,cse,spd,
                         sunit[0],alt,sats);
