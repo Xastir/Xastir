@@ -5199,13 +5199,19 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
  * station structure.
  * KG4NBB
  */
+// If remove_string == 0, don't remove the string from the comment
+// field.  Useful for objects/items where we need to retransmit the
+// string unchanged.
 
 #define MULTI_DEBUG 2048
 #define LBRACE '{'
 #define RBRACE '}'
 #define START_STR " }"
 
-static void extract_multipoints(DataRow *p_station, char *data, int type) {
+static void extract_multipoints(DataRow *p_station,
+        char *data,
+        int type,
+        int remove_string) {
     // If they're in there, the multipoints start with the
     // sequence <space><rbrace><lower><digit> and end with a <lbrace>.
     // In addition, there must be no spaces in there, and there
@@ -5360,7 +5366,7 @@ static void extract_multipoints(DataRow *p_station, char *data, int type) {
             }   // End of while loop
         }
 
-        if (ok) {
+        if (ok && remove_string) {
             // We've successfully decoded a multipoint object?
             // Remove the multipoint strings (and the sequence
             // number at the end if present) from the data string.
@@ -8870,7 +8876,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     process_info_field(p_station,data,type);            // altitude
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                        extract_multipoints(p_station, data, type);
+                        extract_multipoints(p_station, data, type, 1);
  
                     //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
@@ -8901,7 +8907,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     process_info_field(p_station,data,type);
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                        extract_multipoints(p_station, data, type);
+                        extract_multipoints(p_station, data, type, 1);
  
                     //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
@@ -8928,7 +8934,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     process_info_field(p_station,data,type);
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                        extract_multipoints(p_station, data, type);
+                        extract_multipoints(p_station, data, type, 1);
  
                     //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
@@ -8949,7 +8955,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         fprintf(stderr,"data_add: Got grid data for %s\n", call);
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                        extract_multipoints(p_station, data, type);
+                        extract_multipoints(p_station, data, type, 1);
  
                     //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
@@ -8970,7 +8976,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 // todo: could contain Maidenhead or beam heading+power
 
                 if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                    extract_multipoints(p_station, data, type);
+                    extract_multipoints(p_station, data, type, 1);
  
                 //substr(p_station->comments,data,MAX_COMMENTS);          // store status text
                 add_status(p_station,data);
@@ -8984,7 +8990,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 // non-APRS beacons, treated as status reports until we get a real one
 
                 if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                    extract_multipoints(p_station, data, type);
+                    extract_multipoints(p_station, data, type, 1);
  
                 if ((p_station->flag & (~ST_STATUS)) == 0) {            // only store if no status yet
 
@@ -9029,7 +9035,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     process_info_field(p_station,data,type);
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                        extract_multipoints(p_station, data, type);
+                        extract_multipoints(p_station, data, type, 0);
  
                     //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
@@ -9073,7 +9079,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     process_info_field(p_station,data,type);
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                        extract_multipoints(p_station, data, type);
+                        extract_multipoints(p_station, data, type, 0);
  
                     //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
@@ -9104,7 +9110,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     p_station->record_type = (char)APRS_WX1;
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                        extract_multipoints(p_station, data, type);
+                        extract_multipoints(p_station, data, type, 1);
  
                     //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
@@ -9120,7 +9126,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     found_pos = 0;
 
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
-                        extract_multipoints(p_station, data, type);
+                        extract_multipoints(p_station, data, type, 1);
                 }
                 break;
 
@@ -9171,7 +9177,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         if (ok && (p_station->coord_lat > 0)
                 && (p_station->coord_lon > 0)
                 && (p_station->num_multipoints == 0) )  // No multipoints found yet
-            extract_multipoints(p_station, data, type);
+            extract_multipoints(p_station, data, type, 0);
     }
 
     if (!ok) {  // non-APRS beacon, treat it as Other Packet   [APRS Reference, chapter 19]
