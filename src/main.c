@@ -7408,7 +7408,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // have new maps to draw because of it.  This function
             // can cause a complete redraw of the maps.
             check_for_new_gps_map();
-#endif HAVE_GPSMAN
+#endif  // HAVE_GPSMAN
 
             /* check on Redraw requests */
             if (         ( (redraw_on_new_data > 1)
