@@ -4474,7 +4474,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                 /*set args for color */
                 ac=0;
                 XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-                XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
+                XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICE_TYPES); ac++;
                 XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
                 XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
                 XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
