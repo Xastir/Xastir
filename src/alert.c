@@ -1059,8 +1059,8 @@ static void alert_build_list(Message *fill) {
             char *ptr;
 //            alert_entry temp_entry;
 
-printf("Compressed Weather Alert:%s\n",fill->message_line);
-printf("Compressed alerts are not fully implemented yet.\n");
+//printf("Compressed Weather Alert:%s\n",fill->message_line);
+//printf("Compressed alerts are not fully implemented yet.\n");
 
             // Create a new weather alert for each of these and then
             // call this function on each one?  Seems like it might
@@ -1076,7 +1076,7 @@ printf("Compressed alerts are not fully implemented yet.\n");
                 compressed_wx);     // Stick the long string in here
             compressed_wx[255] = '\0';
             compressed_wx_packet++; // Set the flag
-printf("Line:%s\n",compressed_wx);
+//printf("Line:%s\n",compressed_wx);
 
             // Snag alpha characters (should be three) at the start
             // of the string.  Use those until we hit more alpha
@@ -1110,7 +1110,7 @@ printf("Line:%s\n",compressed_wx);
                 // suffix should now contain something like "039"
 
 // We have our first zone extracted
-printf("Zone:%s%s\n",prefix,suffix);
+//printf("Zone:%s%s\n",prefix,suffix);
 
                 // Here we keep looping until we hit another alpha
                 // portion.
@@ -1139,7 +1139,7 @@ printf("Zone:%s%s\n",prefix,suffix);
                         for ( k=start_number+1; k<=end_number; k++) {
                             xastir_snprintf(temp,4,"%03d",k);
 // And another zone...
-printf("Zone:%s%s\n",prefix,temp);
+//printf("Zone:%s%s\n",prefix,temp);
                         }
                     }
                     else if (ptr[0] == '-') {   // New zone number
@@ -1152,7 +1152,7 @@ printf("Zone:%s%s\n",prefix,temp);
                             ptr += 3;
                             // suffix should now contain something like "046"
 // And another zone...
-printf("Zone:%s%s\n",prefix,suffix);
+//printf("Zone:%s%s\n",prefix,suffix);
 
                         }
                         else {  // New prefix (not a number)
