@@ -4445,7 +4445,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d",(atoi(weather->wx_hum)+99)%100+1);
 
         if (extract_weather_item(data,'b',5,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
-            xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro), "%0.1f",(float)(atoi(weather->wx_baro)/10.0));
+            xastir_snprintf(weather->wx_baro,
+                sizeof(weather->wx_baro),
+                "%0.1f",
+                (float)(atoi(weather->wx_baro)/10.0));
 
         (void)extract_weather_item(data,'s',3,weather->wx_snow);      // snowfall (in inches) in the last 24 hours
                                                                       // was 1/100 inch, APRS reference says inch! ??
@@ -4458,7 +4461,13 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 
         (void)extract_weather_item(data,'F',3,weather->wx_fuel_temp); // Fuel Temperature in °F (RAWS)
 
-        (void)extract_weather_item(data,'f',2,weather->wx_fuel_moisture); // Fuel Moisture in % (RAWS)
+        if (extract_weather_item(data,'f',2,weather->wx_fuel_moisture))// Fuel Moisture (RAWS) (in %, 00 = 100%)
+            xastir_snprintf(weather->wx_fuel_moisture,
+                sizeof(weather->wx_fuel_moisture),
+                "%03d",
+                (atoi(weather->wx_fuel_moisture)+99)%100+1);
+
+
 
 //    extract_weather_item(data,'w',3,temp);                          // ?? text wUII
 
