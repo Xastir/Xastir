@@ -472,7 +472,7 @@ scr_s_x_min = 0;
 
 
 int label_color_guess = 0x08;    // Default black
-
+int sdts_elevation_in_meters = 1;   // Default meters
 
 
 // guess_vector_attributes()
@@ -733,7 +733,18 @@ void Draw_OGR_Labels( Widget w,
         ii = OGR_F_GetFieldIndex(featureH, "ELEVATION");
 //        my_color = 0x0e;  // yellow
 
+
+// We should switch our display between meters and ft here based on
+// the setting of the "Enable English Units" toggle.  Here we're
+// just figuring out what our base numbers mean that we're getting
+// out of the file.  We still should convert based on our
+// togglebutton.
+//
+    if (sdts_elevation_in_meters)
         xastir_snprintf(extra,sizeof(extra), "m");
+    else
+        xastir_snprintf(extra,sizeof(extra), "ft");
+
 
 // We should switch between meters and ft here based on the setting
 // of the "Enable English Units" toggle.
@@ -2992,6 +3003,20 @@ clear_dangerous();
     ViewZ[0] = 0.0;
     ViewZ[1] = 0.0;
 
+
+    // If it is an SDTS file, determine whether we may have
+    // elevation in feet or meters.  AHPT layer present = feet, AHPR
+    // layer present = meters.
+    if (strcasecmp(driver_type,"SDTS") == 0) {
+        if (OGR_DS_GetLayerByName(datasourceH, "AHPT")) {
+//            fprintf(stderr,"Elevation in feet\n");
+            sdts_elevation_in_meters = 0;
+        }
+        else {
+//            fprintf(stderr,"Elevation in meters\n");
+            sdts_elevation_in_meters = 1;
+        }
+    }
 
 
     // Loop through all layers in the data source.
