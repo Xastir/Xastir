@@ -122,12 +122,12 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             //xastir_snprintf(temp, sizeof(temp), "%-9s   %-9s   Until: %-7s   %-7s   %-20s   %s",
 
             if (sec_now() >= alert_list[n].expiration)
-                xastir_snprintf(status, sizeof(status), "Expired: ");
+                xastir_snprintf(status, sizeof(status), "Exp");
             else
-                xastir_snprintf(status, sizeof(status), "  Until: ");
+                xastir_snprintf(status, sizeof(status), "   ");
 
             xastir_snprintf(temp, sizeof(temp),
-                    "%-9s  %-9s  %c%c @ %c%c%c%cz %s%c%c @ %c%c%c%c%c  %-7s  %-20s  %s",
+                    "%-9s %-9s   %c%c@%c%c%c%cz ==> %c%c@%c%c%c%cz %s %-7s   %-20s %s",
                     alert_list[n].from,
                     alert_list[n].to,
                     alert_list[n].issue_date_time[0],
@@ -136,14 +136,13 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                     alert_list[n].issue_date_time[3],
                     alert_list[n].issue_date_time[4],
                     alert_list[n].issue_date_time[5],
-                    status,
                     alert_list[n].activity[0],
                     alert_list[n].activity[1],
                     alert_list[n].activity[2],
                     alert_list[n].activity[3],
                     alert_list[n].activity[4],
                     alert_list[n].activity[5],
-                    alert_list[n].activity[6],
+                    status,
                     alert_list[n].title,
                     alert_list[n].alert_tag,
                     alert_list[n].seq);
