@@ -1912,17 +1912,17 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
                             switch (temp[1]) {
                                 case '1':   // A1? = Primary road or interstate highway
-                                    lanes = 5;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x01]); // Purple
+                                    lanes = 4;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
                                 case '2':   // A2? = Primary road w/o limited access, US highways
-                                    lanes = 5;
-                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
+                                    lanes = 3;
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
                                     break;
                                 case '3':   // A3? = Secondary road & connecting road, state highways
                                     if (map_color_levels && scale_y > 256)
                                         skip_label++;
-                                    lanes = 3;
+                                    lanes = 2;
                                     // Use the default color (black)
                                     switch (temp[2]) {
                                         case '1':
@@ -1958,7 +1958,6 @@ void draw_shapefile_map (Widget w,
                                         skip_label++;
                                     lanes = 1;
                                     dashed_line++;
-//WE7U
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // gray35
                                     break;
                                 case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
