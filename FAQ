@@ -74,6 +74,7 @@ The Questions
     4.15 My config file got munged.  How do I recover?
     4.16 Why can't I set my position in Xastir correctly?
     4.17 Why do I get black map images when I use ImageMagick?
+    4.18 Why does my MacOSX machine w/USB->Serial adapters hang?
 
 5.  Features
 
@@ -609,6 +610,11 @@ The Answers
     X-Server.  If you are using 8-bit, 24-bit, or 32-bit
     color-depth:  Try 16-bit, which is the color-depth best
     supported by the Xastir code.
+
+    4.18 Why does my MacOSX machine w/USB->Serial adapters hang?
+
+    Use ports such as /dev/cu.usbserial0 for USB to serial adapters
+    on MacOSX.
 
 5.  Features
 
