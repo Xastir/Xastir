@@ -3341,8 +3341,8 @@ void statusline(char *status_text,int update) {
 
     XmTextFieldSetString (text, status_text);
     last_statusline = sec_now();
-    if (update != 0)
-        XmUpdateDisplay(text);          // do an immediate update
+//    if (update != 0)
+//        XmUpdateDisplay(text);          // do an immediate update
 }
 
 
