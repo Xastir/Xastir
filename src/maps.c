@@ -1218,6 +1218,7 @@ void draw_shapefile_map (Widget w,
     long            x,y;
     int             ok, index;
     int             gps_flag = 0;
+    char            gps_label[100];
     int             road_flag = 0;
     int             lake_flag = 0;
     int             river_flag = 0;
@@ -1274,7 +1275,7 @@ void draw_shapefile_map (Widget w,
         weather_alert_flag++;
 
     // Check for maps/Gps directory.  We set up the labels and
-    // colors differently for these file.
+    // colors differently for these types of files.
     if (strstr(filenm,"Gps")) { // We're in the maps/Gps directory
         gps_flag++;
     }
@@ -2459,16 +2460,40 @@ void draw_shapefile_map (Widget w,
 
 
 //WE7U
-// I'd eventually would like to be able to change the color of each
-// GPS track for each team in the field.  That will help to keep the
-// tracks separate when they cross.
-                    if (gps_flag) {
-                        //fprintf(stderr,"Setting color to DarkOrange3\n");
-                        (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x41]); // DarkOrange3
+// I'd like to be able to change the color of each GPS track for
+// each team in the field.  It'll help to differentiate the tracks
+// where they happen to cross.
 
+                    if (gps_flag) {
+
+                        // Fill in the label we'll use later
+                        xastir_snprintf(gps_label,
+                            sizeof(gps_label),
+                            filename);
+
+                        // Check for a color in the filename: i.e.
+                        // "Team2TrackRed.shp"
+                        if (strstr(filenm,"Red.shp")) {
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // Red
+                        }
+                        else if (strstr(filenm,"Orange.shp")) {
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x41]); // DarkOrange3
+                        }
+                        else if (strstr(filenm,"White.shp")) {
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]); // white
+                        }
+                        else if (strstr(filenm,"Green.shp")) {
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0xfd]); // PaleGreen
+                        }
+//                        else if (strstr(filenm,".shp")) {
+//                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x41]); //
+//                        }
+                        else {  // Default color
+                            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
+                        }
                         // Make the track nice and wide: Easy to
                         // see.
-                        (void)XSetLineAttributes (XtDisplay (w), gc, 2, LineSolid, CapButt,JoinMiter);
+                        (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineSolid, CapButt,JoinMiter);
                     }
 
 
@@ -2483,6 +2508,9 @@ void draw_shapefile_map (Widget w,
 // Don't do unnecessary calculations if we're not going to draw the
 // label.
 
+                    // We're done with drawing the arc's.  Draw the
+                    // labels in this next section.
+                    //
                     temp = "";
                     if (       !skip_label
                             && !skip_it
@@ -2528,7 +2556,8 @@ void draw_shapefile_map (Widget w,
                             else
                                 temp = NULL;
                         }
-                    } else if (!skip_label
+                    }
+                    else if (!skip_label
                             && map_labels
                             && !skip_it
                             && (lake_flag || river_flag) ) {
@@ -2562,6 +2591,7 @@ void draw_shapefile_map (Widget w,
                             temp = NULL;
                     }
 
+
                     // First we need to convert over to using the
                     // temp2 variable, which is changeable.  Make
                     // temp point to it.  temp may already be
@@ -2579,6 +2609,16 @@ void draw_shapefile_map (Widget w,
                         }
                     }
                     else {  // We're already set to work on temp2!
+                    }
+
+
+                    if ( map_labels && gps_flag ) {
+                        // We're drawing GPS info.  Use gps_label,
+                        // overriding anything set before.
+                        xastir_snprintf(temp2,
+                            sizeof(temp2),
+                            "%s",
+                            gps_label);
                     }
 
 
