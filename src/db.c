@@ -3556,8 +3556,11 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         pos += strlen(temp);
     }
     else if (coordinate_system == USE_MGRS) {
-        convert_xastir_to_MGRS_str(temp, sizeof(temp),
-            p_station->coord_lon, p_station->coord_lat);
+        convert_xastir_to_MGRS_str(temp,
+            sizeof(temp),
+            p_station->coord_lon,
+            p_station->coord_lat,
+            0);
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
     }
@@ -3664,9 +3667,11 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
                 pos += strlen(temp);
             }
             else if (coordinate_system == USE_MGRS) {
-                convert_xastir_to_MGRS_str(temp, sizeof(temp),
+                convert_xastir_to_MGRS_str(temp,
+                    sizeof(temp),
                     ptr->trail_long_pos,
-                    ptr->trail_lat_pos);
+                    ptr->trail_lat_pos,
+                    0);
                 XmTextInsert(si_text,pos,temp);
                 pos += strlen(temp);
             }

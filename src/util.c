@@ -1127,7 +1127,11 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
 // boundaries for MGRS if that variable is set when we make the
 // call.
 //
-void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
+// If "nice_format" == 1, we add leading spaces plus spaces between
+// the easting and northing in order to line up more nicely with the
+// UTM output format.
+//
+void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y, int nice_format) {
     double utmNorthing;
     double utmEasting;
     char utmZone[10];
@@ -1137,6 +1141,7 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
     int UPS = 0;
     int North_UPS = 0;
     int coordinate_system_save = coordinate_system;
+    char space_string[4] = "   ";    // Three spaces
 
 
     // Set for correct zones
@@ -1199,7 +1204,9 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
 
 
     // Check for South Polar UPS area, set flags if found.
-    if (   utmZone[1] == 'A'
+    if (   utmZone[0] == 'A'
+        || utmZone[0] == 'B'
+        || utmZone[1] == 'A'
         || utmZone[1] == 'B'
         || utmZone[2] == 'A'
         || utmZone[2] == 'B' ) {
@@ -1207,7 +1214,9 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
         UPS++;
     }
     // Check for North Polar UPS area, set flags if found.
-    else if (   utmZone[1] == 'Y'
+    else if (   utmZone[0] == 'Y'
+        || utmZone[0] == 'Z'
+        || utmZone[1] == 'Y'
         || utmZone[1] == 'Z'
         || utmZone[2] == 'Y'
         || utmZone[2] == 'Z') {
@@ -1222,9 +1231,16 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
 
     if (UPS) {  // Special processing for UPS area (A/B/Y/Z bands)
 
-        // Blank out the zone number (not used for UPS)
-        utmZone[0] = ' ';
-        utmZone[1] = ' ';
+        // Note: Zone number isn't used for UPS, but zone letter is.
+        if (nice_format) {  // Add two leading spaces
+            utmZone[2] = utmZone[0];
+            utmZone[0] = ' ';
+            utmZone[1] = ' ';
+            utmZone[3] = '\0';
+        }
+        else {
+            space_string[0] = '\0';
+        }
 
         if (North_UPS) {    // North polar UPS zone
             char UPS_N_Easting[15]  = "RSTUXYZABCFGHJ";
@@ -1238,11 +1254,12 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
 
             xastir_snprintf(str,
                 str_len,
-                "%s %c%c %05d %05d",
+                "%s %c%c %05d %s%05d",
                 utmZone,
                 UPS_N_Easting[my_east],
                 UPS_N_Northing[my_north],
                 int_utmEasting,
+                space_string,
                 int_utmNorthing );
         }
         else {  // South polar UPS zone
@@ -1257,11 +1274,12 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
 
             xastir_snprintf(str,
                 str_len,
-                "%s %c%c %05d %05d",
+                "%s %c%c %05d %s%05d",
                 utmZone,
                 UPS_S_Easting[my_east],
                 UPS_S_Northing[my_north],
                 int_utmEasting,
+                space_string,
                 int_utmNorthing );
         }
     }
@@ -1304,11 +1322,12 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
 
         xastir_snprintf(str,
             str_len,
-            "%s %c%c %05d %05d",
+            "%s %c%c %05d %s%05d",
             utmZone,
             E_W[my_east],
             N_S[my_north],
             int_utmEasting,
+            space_string,
             int_utmNorthing );
     }
 }

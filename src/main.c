@@ -1779,7 +1779,10 @@ void Coordinate_calc_output(char *full_zone, long northing,
     convert_xastir_to_MGRS_str(MGRS_str,
         sizeof(MGRS_str),
         xastir_lon,
-        xastir_lat);
+        xastir_lat,
+        1); // Format with leading spaces plus spaces between
+            // easting and northing, so that it lines up with UTM
+            // strings.
 
 
     // Compute Maidenhead Grid Locator.  Note that the sec_to_loc()
@@ -1789,6 +1792,28 @@ void Coordinate_calc_output(char *full_zone, long northing,
         "%s",
         sec_to_loc( xastir_lon, xastir_lat ) );
 
+
+    if (strlen(full_zone) == 1) {
+        xastir_snprintf(temp_string,
+            sizeof(temp_string),
+            "  %s",
+            full_zone);
+        xastir_snprintf(full_zone,
+            4,
+            "%s",
+            temp_string);
+    }
+    else if (strlen(full_zone) == 2) {
+        xastir_snprintf(temp_string,
+            sizeof(temp_string),
+            " %s",
+            full_zone);
+        xastir_snprintf(full_zone,
+            4,
+            "%s",
+            temp_string);
+    }
+        
 
     // Put the four different representations of the coordinate into
     // the "result" textField.
@@ -1906,17 +1931,20 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // active before we try to write to it's widgets.  DONE!
 
 
-    // First check for something in the zone field that looks like a
-    // valid zone.
+    // Check for something in the zone field that looks like a valid
+    // UTM zone.
     str_ptr = XmTextGetString(coordinate_calc_zone);
     i = strlen(str_ptr);
     have_utm = 1;   // Wishful thinking.  We'll zero it later if not.
-    if ( (i == 2) || (i == 3) ) {   // String is the correct length: Has
-                                    // to be either 2 or 3 chars total.
+    if ( (i >= 1) || (i <= 3) ) {
+        // String is the correct length.  Can have just A/B/Y/Z, or
+        // else one or two digits plus one letter.
         int j;
+
         for (j = 0; j < (i-1); j++) {
             if ( (str_ptr[j] < '0') && (str_ptr[j] > '9') ) {
-                // Not UTM, need either one or two digits first
+                // Not UTM, need either one or two digits first if
+                // we have 2 or 3 chars.
                 have_utm = 0;
             }
         }
@@ -1926,9 +1954,10 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
             have_utm = 0;
         }
     }
-    else {  // Not UTM, wrong length for zone
+    else {  // Not a valid UTM zone, wrong length.
         have_utm = 0;
     }
+
     // If we've made it to this point and have_utm == 1, then zone looks
     // like a UTM zone.
     if (have_utm) {
@@ -1936,11 +1965,19 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         zone_number = atoi(str_ptr);
         //fprintf(stderr,"Zone Number: %d,  Zone Letter: %c\n", zone_number, zone_letter);
         // Save it away for later use
-        xastir_snprintf(full_zone,
-            sizeof(full_zone),
-            "%d%c",
-            zone_number,
-            zone_letter);
+        if (zone_number == 0) { // We're in a UPS area
+            xastir_snprintf(full_zone,
+                sizeof(full_zone),
+                "  %c",
+                zone_letter);
+        }
+        else {  // UTM area
+            xastir_snprintf(full_zone,
+                sizeof(full_zone),
+                "%02d%c",
+                zone_number,
+                zone_letter);
+        }
         have_lat_lon = 0;
     }
     else {
@@ -3251,7 +3288,7 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     else if (coordinate_system == USE_MGRS) {
         // Create an MGRS string from coordinate in Xastir
         // coordinate system.
-        convert_xastir_to_MGRS_str(my_text, sizeof(my_text), x, y);
+        convert_xastir_to_MGRS_str(my_text, sizeof(my_text), x, y, 0);
     }
     else {
         // Create a lat/lon string from coordinate in Xastir
