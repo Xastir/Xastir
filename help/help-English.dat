@@ -1348,7 +1348,7 @@ or RELAY,WIDE3-3.
 NOTE: To use AX.25 devices with Xastir you will need to run the program as
 "root". If you want to run Xastir as another user you may want to set the
 suid bit on the Xastir program file. Please see README.1ST for more
-information; current Xastir drops the extra privledges but has not been audited
+information; current Xastir drops the extra privileges but has not been audited
 for exploits. Use in this fashion in a multi-user environment at your own risk!
 
 HELP-INDEX>Configure Serial GPS Devices
@@ -1361,9 +1361,9 @@ Set the serial port device for your GPS unit. Common values of /dev/ttyS0
 Selecting "Activate on start up" will tell Xastir to look for this device and
 set up communications with it when the program first starts.
 
-Selecting "Set system clock from GPS data" will tell Xastir to try set the
+Selecting "Set system clock from GPS data" will tell Xastir to try setting the
 system's clock to the highly accurate time signal from the GPS receiver. This
-requires root privledges on most systems.
+requires root privileges on most systems.
 
 Now set the bps rate under port settings, and the parameters under port
 style. Port Style setting 8N1 is used for 8 data bits, No parity and 1 stop
@@ -1388,9 +1388,9 @@ set up communications with it when the program first starts.
 Selecting "Reconnect on failure" will tell Xastir to try to reconnect when the
 data stream has failed.
 
-Selecting "Set system clock from GPS data" will tell Xastir to try set the
+Selecting "Set system clock from GPS data" will tell Xastir to try setting the
 system's clock to the highly accurate time signal from the GPS receiver. This
-requires root privledges on most systems.
+requires root privileges on most systems.
 
 HELP-INDEX>Configure the Internet Server
 

@@ -622,7 +622,7 @@ END OF MANDRAKE LINUX NOTES.
      use standard serial port TNC interfaces instead.  Any program is safer if
      run as a normal user (not safe, but safer).  It is currently impossible
      to use kernel-mode AX.25 interfaces without the program running with
-     root priviledges.
+     root privileges.
 
      Option 2)
      A more security-conscious option is to use a shim program written by
@@ -915,7 +915,7 @@ Previous Install Notes:
 
   Xastir 0.3.x, 0.9.x, 1.0.x, 1.1.0:
 
-     Versions above 1.1 drop privledges if they are run as root. If any of the
+     Versions above 1.1 drop privileges if they are run as root. If any of the
      Xastir files are owned by root, on only readable by root, they will cause
      problems. Fix these files by "chmod username.groupname filename" where
      username and groupname are your user and group, and filename is the
