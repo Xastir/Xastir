@@ -25564,7 +25564,7 @@ int main(int argc, char *argv[]) {
 // without setting width/height values first:
 // "Error: Shell widget xastir has zero width and/or height"
 // 
-//            XtRealizeWidget(Global.top);
+            XtRealizeWidget(Global.top);
 
 
 //fprintf(stderr,"***index_restore_from_file\n");
