@@ -8,12 +8,12 @@ SUBDIRS = src m4 config help scripts symbols callpass
 # Remove this file here (it is created via configure), not from within intl.
 # DISTCLEANFILES = intl/libintl.h
 
-EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh ltconfig \
-        ltmain.sh missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README \
+EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh \
+        missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README \
         xastir.1
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
-        config.guess config.sub install-sh ltconfig ltmain.sh missing mkinstalldirs \
+        config.guess config.sub install-sh missing mkinstalldirs \
         xastir.spec
 
 countydir=${prefix}/xastir/Counties
