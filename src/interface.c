@@ -1508,104 +1508,107 @@ int OpenTrac_decode_waypoint(unsigned char *element,
 
 
 
-char symbol_translate[9,100] = {
-    "11100000","/S",    // space shuttle
-    "12100000","\\S",   // satellite
-    "10000000","\\S",   // *** other space
-    "21000000","/O",    // balloon
-    "22120000","/g",    // glider
-    "22100000","/'",    // small plane
-    "22200000","/^",    // large aircraft
-    "22300000","/^",    // large aircraft
-    "23000000","/X",    // helicopter
-    "20000000","/'",    // *** other air
-    "31310000","/h",    // hospital
-    "31340000","/A",    // aid station
-    "31350000","\\X",   // pharmacy
-    "31410000","/d",    // fire station
-    "31440000","/o",    // EOC
-    "31460000","/+",    // red cross
-    "31620000","\\h",   // ham store
-    "31700000","/-",    // house
-    "31800000","\\+",   // church
-    "31910000","/H",    // hotel
-    "31920000","\\9",   // gas station
-    "31930000","\\R",   // restaurant
-    "31940000","\\?",   // information
-    "31950000","\\P",   // parking
-    "31960000","/t",    // truck stop
-    "31970000","\\r",   // restrooms
-    "31980000","\\$",   // bank/atm
-    "31a00000","/K",    // school
-    "31c10000","/,",    // boy scouts
-    "31c20000","\\,",   // girl scouts
-    "31d10000","\\;",   // park/picnic area
-    "31d20000","\\;",   // park/picnic area
-    "31d30000","/;",    // campground
-    "31e13000","\\V",   // VORTAC
-    "31f12000","/$",    // phone
-    "32111000","/>",    // car
-    "32112000","/v",    // van
-    "32113000","/k",    // truck
-    "32114000","/j",    // jeep
-    "32115000","/R",    // rv
-    "32116000","/<",    // motorcycle
-    "32117000","/b",    // bicycle
-    "32121000","/u",    // 18-wheeler
-    "32122000","/U",    // bus
-    "32131000","/=",    // railroad engine
-    "32141000","/*",    // snowmobile
-    "32161000","/!",    // police
-    "32162000","/a",    // ambulance
-    "32163000","/f",    // fire truck
-    "33100000","/(",    // sat station
-    "30000000","//",    // *** other ground
-    "41200000","/s",    // ship
-    "41510000","/C",    // canoe
-    "41520000","/C",    // canoe (kayak)
-    "41540000","/Y",    // yacht
-    "41620000","\\C",   // coastguard
-    "43100000","\\N",   // nav bouy
-    "40000000","\\s",   // *** other sea
-    "50000000","//",    // A dot
-    "62110000","/[",    // jogger
-    "64200000","/:",    // fire
-    "65500000","\\'",   // crash site
-    "66100000","\\Q",   // earthquake
-    "66300000","\\w",   // flooding
-    "60000000","/.",    // *** other activities
-    "71610000","\\U",   // sunny
-    "71620000","\\U",   // sunny
-    "71630000","\\(",   // cloudy
-    "71640000","\\(",   // cloudy
-    "71650000","\\(",   // cloudy
-    "71660000","\\(",   // cloudy
-    "71711000","\\I",   // rain shower
-    "71712000","\\F",   // freezing rain
-    "71713000","\\D",   // drizzle
-    "71710000","\\'",   // rain
-    "71721000","\\G",   // snow shower
-    "71720000","\\*",   // snow
-    "71730000","\\:",   // hail
-    "71812000","\\f",   // funnel cloud
-    "71813000","\\J",   // lightning
-    "71810000","\\T",   // thunderstorm
-    "71822000","/@",    // hurricane
-    "71820000","\\@",   // storm
-    "71920000","\\{",   // fog
-    "71950000","\\E",   // smoke
-    "71960000","\\H",   // haze
-    "71970000","\\b",   // blowing dust/sand
-    "70000000","\\o",   // *** other weather
-    "80000000","//",    // A dot
-    "90000000","//",    // A dot
-    "A0000000","//",    // A dot
-    "B0000000","//",    // A dot
-    "C0000000","//",    // A dot
-    "D0000000","//",    // A dot
-    "E0000000","//",    // A dot
-    "F0000000","//",    // A dot
-    "",        ""};
+/*
+// Mapping between OpenTrac symbols and APRS symbols
+char symbol_translate[14,100] = {
+    "3 11100000 /S",  // space shuttle
+    "3 12100000 \\S", // satellite
+    "1 10000000 \\S", // *** other space
+    "2 21000000 /O",  // balloon
+    "4 22120000 /g",  // glider
+    "3 22100000 /'",  // small plane
+    "3 22200000 /^",  // large aircraft
+    "3 22300000 /^",  // large aircraft
+    "2 23000000 /X",  // helicopter
+    "1 20000000 /'",  // *** other air
+    "4 31310000 /h",  // hospital
+    "4 31340000 /A",  // aid station
+    "4 31350000 \\X", // pharmacy
+    "4 31410000 /d",  // fire station
+    "4 31440000 /o",  // EOC
+    "4 31460000 /+",  // red cross
+    "4 31620000 \\h", // ham store
+    "3 31700000 /-",  // house
+    "3 31800000 \\+", // church
+    "4 31910000 /H",  // hotel
+    "4 31920000 \\9", // gas station
+    "4 31930000 \\R", // restaurant
+    "4 31940000 \\?", // information
+    "4 31950000 \\P", // parking
+    "4 31960000 /t",  // truck stop
+    "4 31970000 \\r", // restrooms
+    "4 31980000 \\$", // bank/atm
+    "3 31a00000 /K",  // school
+    "4 31c10000 /,",  // boy scouts
+    "4 31c20000 \\,", // girl scouts
+    "4 31d10000 \\;", // park/picnic area
+    "4 31d20000 \\;", // park/picnic area
+    "4 31d30000 /;",  // campground
+    "5 31e13000 \\V", // VORTAC
+    "5 31f12000 /$",  // phone
+    "5 32111000 />",  // car
+    "5 32112000 /v",  // van
+    "5 32113000 /k",  // truck
+    "5 32114000 /j",  // jeep
+    "5 32115000 /R",  // rv
+    "5 32116000 /<",  // motorcycle
+    "5 32117000 /b",  // bicycle
+    "5 32121000 /u",  // 18-wheeler
+    "5 32122000 /U",  // bus
+    "5 32131000 /=",  // railroad engine
+    "5 32141000 /*",  // snowmobile
+    "5 32161000 /!",  // police
+    "5 32162000 /a",  // ambulance
+    "5 32163000 /f",  // fire truck
+    "3 33100000 /(",  // sat station
+    "1 30000000 //",  // *** other ground
+    "3 41200000 /s",  // ship
+    "4 41510000 /C",  // canoe
+    "4 41520000 /C",  // canoe (kayak)
+    "4 41540000 /Y",  // yacht
+    "4 41620000 \\C", // coastguard
+    "3 43100000 \\N", // nav buoy
+    "1 40000000 \\s", // *** other sea
+    "1 50000000 //",  // *** A dot
+    "4 62110000 /[",  // jogger
+    "3 64200000 /:",  // fire
+    "3 65500000 \\'", // crash site
+    "3 66100000 \\Q", // earthquake
+    "3 66300000 \\w", // flooding
+    "1 60000000 /.",  // *** other activities
+    "4 71610000 \\U", // sunny
+    "4 71620000 \\U", // sunny
+    "4 71630000 \\(", // cloudy
+    "4 71640000 \\(", // cloudy
+    "4 71650000 \\(", // cloudy
+    "4 71660000 \\(", // cloudy
+    "5 71711000 \\I", // rain shower
+    "5 71712000 \\F", // freezing rain
+    "5 71713000 \\D", // drizzle
+    "4 71710000 \\'", // rain
+    "5 71721000 \\G", // snow shower
+    "4 71720000 \\*", // snow
+    "4 71730000 \\:", // hail
+    "5 71812000 \\f", // funnel cloud
+    "5 71813000 \\J", // lightning
+    "4 71810000 \\T", // thunderstorm
+    "5 71822000 /@",  // hurricane
+    "4 71820000 \\@", // storm
+    "4 71920000 \\{", // fog
+    "4 71950000 \\E", // smoke
+    "4 71960000 \\H", // haze
+    "4 71970000 \\b", // blowing dust/sand
+    "1 70000000 \\o", // *** other weather
+    "1 80000000 //",  // *** A dot
+    "1 90000000 //",  // *** A dot
+    "1 A0000000 //",  // *** A dot
+    "1 B0000000 //",  // *** A dot
+    "1 C0000000 //",  // *** A dot
+    "1 D0000000 //",  // *** A dot
+    "1 E0000000 //",  // *** A dot
+    "1 F0000000 //",  // *** A dot
+    ""};
+*/
 
 
 
@@ -1614,14 +1617,16 @@ char symbol_translate[9,100] = {
 // 0x18 Map Symbol - Packed 4-bit integers
 //
 // Modifies: symbol (leaves it in 4-bit packed format)
+//           aprs_symbol_table
+//           aprs_symbol_char
 // 
 int OpenTrac_decode_symbol(unsigned char *element,
                            int           element_len,
                            char          *symbol,
                            char          *aprs_symbol_table,
                            char          *aprs_symbol_char) {
-    int c, ii;
-    unsigned char split[6];
+    int c, ii, done;
+    unsigned char split[9];
 
 
     ii = 0;
@@ -1656,41 +1661,65 @@ int OpenTrac_decode_symbol(unsigned char *element,
     symbol[element_len] = '\0'; // Terminate string
     split[ii] = '\0';   // Terminate split integers
 
+    // Find the symbol from the table above that matches.  Use the
+    // split[] string.
+
+    // Defaults:
+    *aprs_symbol_table = '/';
+    *aprs_symbol_char  = '/';   // A dot
+
+/*
+    ii = 0;
+    done = 0;
+//    while (!done && symbol_translate[0,ii] != '\0') {
+    while (!done) {
+        int len;
+
+        // Find out how many chars to compare
+        len = symbol_translate[0,ii];
+
+        // Do a strncasecmp() for "len" chars in the hex string.
+        // Once we find a match, the last two chars in the string
+        // are our symbol table and symbol.  If we don't find a
+        // match, we use the default "//" symbol (a dot) instead.
+        if ( strncasecmp(&symbol_translate[2,ii],split,len) == 0 ) {
+            // Found a match
+
+fprintf(stderr,"Found a match: %s in %s",
+    split,
+    &symbol_translate[0,ii]);
+
+            done++;
+        }
+        else {
+fprintf(stderr,"A");
+            // No match
+            ii++;
+        }
+    }
+*/
+
     switch (split[0]) {
         case 1:
             fprintf(stderr, " (Space Symbol)");
-            *aprs_symbol_table = '/';
-            *aprs_symbol_char = 'S';    // Space Shuttle
             break;
         case 2:
             fprintf(stderr, " (Air Symbol)");
-            *aprs_symbol_table = '/';
-            *aprs_symbol_char = 'X';    // Helicopter
             break;
         case 3:
             fprintf(stderr, " (Ground Symbol)");
-            *aprs_symbol_table = '/';
-            *aprs_symbol_char = '-';    // House
             break;
         case 4:
             fprintf(stderr, " (Sea Symbol)");
-            *aprs_symbol_table = '/';
-            *aprs_symbol_char = 'Y';    // Sailboat
             break;
         case 5:
             fprintf(stderr, " (Subsurface Symbol)");
-            *aprs_symbol_table = '\\';
-            *aprs_symbol_char = '<';    // Red flag (dive site?)
             break;
         case 6:
             fprintf(stderr, " (Activities Symbol)");
-            *aprs_symbol_table = '/';
-            *aprs_symbol_char = 'E';    // Eyeball
             break;
         case 7:
             fprintf(stderr, " (Weather Symbol)");
-            *aprs_symbol_table = '/';
-            *aprs_symbol_char = '_';    // WX Symbol
             break;
         default:
             fprintf(stderr, " (Unknown Symbol)");
