@@ -332,13 +332,13 @@ AC_CHECK_FUNCS([vsnprintf])
 # Check for wget, find out its path
 # 
 #
-AC_CHECK_PROG(wget, [wget --version], "/usr/bin", , "/usr/bin" )
+AC_CHECK_PROG(wget, [wget --version], /usr/bin, , /usr/bin )
 if test "$wget" != "/usr/bin"; then
-  AC_CHECK_PROG(wget, [wget --version], "/usr/local/bin", , "/usr/local/bin" )
+  AC_CHECK_PROG(wget, [wget --version], /usr/local/bin, , /usr/local/bin )
   if test "$wget" != "/usr/local/bin"; then
-    AC_CHECK_PROG(wget, [wget --version], "/bin", , "/bin" )
+    AC_CHECK_PROG(wget, [wget --version], /bin, , /bin )
     if test "$wget" != "/bin"; then
-      AC_CHECK_PROG(wget, [wget --version], "/sw/bin", no, "/sw/bin" )
+      AC_CHECK_PROG(wget, [wget --version], /sw/bin, no, /sw/bin )
       if test "$wget" != "/sw/bin"; then 
         AC_MSG_WARN(*** Missing wget (or it is not in the path).  Building w/o wget support. ***) 
       fi
@@ -356,13 +356,13 @@ fi
  
 # Check for convert, find out its path
 # 
-AC_CHECK_PROG(convert, [convert], "/usr/bin", , "/usr/bin" )
+AC_CHECK_PROG(convert, [convert], /usr/bin, , /usr/bin )
 if test "$convert" != "/usr/bin"; then
-  AC_CHECK_PROG(convert, [convert], "/usr/local/bin", , "/usr/local/bin" )
+  AC_CHECK_PROG(convert, [convert], /usr/local/bin, , /usr/local/bin )
   if test "$convert" != "/usr/local/bin"; then
-    AC_CHECK_PROG(convert, [convert], "/bin", , "/bin" )
+    AC_CHECK_PROG(convert, [convert], /bin, , /bin )
     if test "$convert" != "/bin"; then
-      AC_CHECK_PROG(convert, [convert], "/sw/bin", no, "/sw/bin" )
+      AC_CHECK_PROG(convert, [convert], /sw/bin, no, /sw/bin )
       if test "$convert" != "/sw/bin"; then 
         AC_MSG_WARN(*** Missing convert (or it is not in the path).  Building w/o convert support. ***) 
       fi
@@ -397,17 +397,17 @@ fi
 # Is there a way to find out the path to the executable here and 
 # then compile that into the Xastir code? 
 #
-AC_CHECK_PROG(gv, [gv -v], "/usr/X11R6/bin", , "/usr/X11R6/bin" )
+AC_CHECK_PROG(gv, [gv -v], /usr/X11R6/bin, , /usr/X11R6/bin )
 if test "$gv" != "/usr/X11R6/bin"; then
-  AC_CHECK_PROG(gv, [gv -v], "/usr/X11/bin", , "/usr/X11/bin" )
+  AC_CHECK_PROG(gv, [gv -v], /usr/X11/bin, , /usr/X11/bin )
   if test "$gv" != "/usr/X11/bin"; then
-    AC_CHECK_PROG(gv, [gv -v], "/bin", , "/bin" )
+    AC_CHECK_PROG(gv, [gv -v], /bin, , /bin )
     if test "$gv" != "/bin"; then
-      AC_CHECK_PROG(gv, [gv -v], "/usr/bin", , "/usr/bin" )
+      AC_CHECK_PROG(gv, [gv -v], /usr/bin, , /usr/bin )
       if test "$gv" != "/usr/bin"; then
-        AC_CHECK_PROG(gv, [gv -v], "/usr/local/bin", , "/usr/local/bin" )
+        AC_CHECK_PROG(gv, [gv -v], /usr/local/bin, , /usr/local/bin )
         if test "$gv" != "/usr/local/bin"; then
-          AC_CHECK_PROG(gv, [gv -v], "/sw/bin", no, "/sw/bin" )
+          AC_CHECK_PROG(gv, [gv -v], /sw/bin, no, /sw/bin )
           if test "$gv" != "/sw/bin"; then 
             AC_MSG_WARN(*** Missing gv (or it is not in the path).  Building w/o gv support. ***) 
           fi
@@ -427,13 +427,13 @@ fi
  
 # Check for cp, find out its path
 # 
-AC_CHECK_PROG(cp, [cp -version], "/bin", , "/bin" )
+AC_CHECK_PROG(cp, [cp -version], /bin, , /bin )
 if test "$cp" != "/bin"; then
-  AC_CHECK_PROG(cp, [cp -version], "/usr/bin", , "/usr/bin" )
+  AC_CHECK_PROG(cp, [cp -version], /usr/bin, , /usr/bin )
   if test "$cp" != "/usr/bin"; then
-    AC_CHECK_PROG(cp, [cp -version], "/usr/local/bin", , "/usr/local/bin" )
+    AC_CHECK_PROG(cp, [cp -version], /usr/local/bin, , /usr/local/bin )
     if test "$cp" != "/usr/local/bin"; then
-      AC_CHECK_PROG(cp, [cp -version], "/sw/bin", no, "/sw/bin" )
+      AC_CHECK_PROG(cp, [cp -version], /sw/bin, no, /sw/bin )
       if test "$cp" != "/sw/bin"; then 
         AC_MSG_WARN(*** Missing cp (or it is not in the path).  Building w/o cp support. ***) 
       fi
