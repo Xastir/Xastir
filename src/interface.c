@@ -3139,23 +3139,83 @@ int command_file_to_tnc_port(int port, char *filename) {
     i = 0;
     f = fopen(filename,"r");
     if (f != NULL) {
+        int send_ctrl_C = 1;
+
         line[0] = (char)0;
         while (!feof(f) && error != -1) {
+
             if (fread(&cin,1,1,f) == 1) {
+
+                // Check for <LF>/<CR>
                 if (cin != (char)10 && cin != (char)13) {
+
+                    // If NOT <LF> or <CR>
                     if (i < MAX_LINE_SIZE) {
+
+                        // Add to buffer
                         line[i++] = cin;
                         line[i] = (char)0;
                     }
-                } else {
+                }
+
+                else {  // Found a <LF> or <CR>, process line
                     i = 0;
+
+                    // Check whether comment or zero-length line
                     if (line[0] != '#' && strlen(line) > 0) {
-                        xastir_snprintf(command, sizeof(command), "%c%s\r", (char)03, line);
+
+                        // Line looks good.  Send it to the TNC.
+
+                        if (send_ctrl_C) {
+                            // Control-C desired
+                            xastir_snprintf(command,
+                                sizeof(command),
+                                "%c%s\r",
+                                (char)03,   // Control-C
+                                line);
+                        }
+                        else {
+                            // No Control-C desired
+                            xastir_snprintf(command,
+                                sizeof(command),
+                                "%s\r",
+                                line);
+                        }
+
                         if (debug_level & 2)
                             fprintf(stderr,"CMD:%s\n",command);
 
                         port_write_string(port,command);
                         line[0] = (char)0;
+
+                        // Set flag to default condition
+                        send_ctrl_C = 1;
+                    }
+                    else {  // Check comment to see if it is a META
+                            // command
+
+                        // Should we make these ignore white-space?
+
+                        if (strncasecmp(line, "##META <", 8) == 0) {
+                            // Found a META command, process it
+                            if (strncasecmp(line+8, "delay", 5) == 0) {
+                                usleep(500000); // Sleep 500ms
+                            }
+                            else if (strncasecmp(line+8, "no-ctrl-c", 9) == 0) {
+                                // Reset the flag
+                                send_ctrl_C = 0;
+                            }
+                            else {
+                                fprintf(stderr,
+                                    "Unrecognized ##META command: %s\n",
+                                    line);
+                            }
+                        }
+                        else if (strstr(line, "META")) {
+                            fprintf(stderr,
+                                "Unrecognized ##META command: %s\n",
+                                line);
+                        }
                     }
                 }
             }
@@ -4652,11 +4712,9 @@ void port_read(int port) {
 
 
                         // Do special KISS packet processing here.
-                        // We save
-                        // the last character in
-                        // port_data[port].channel2,
-                        // as it is otherwise only used for AX.25
-                        // ports.
+                        // We save the last character in
+                        // port_data[port].channel2, as it is
+                        // otherwise only used for AX.25 ports.
 
                         if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
                                 || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
@@ -4696,6 +4754,7 @@ void port_read(int port) {
                                 // Save this char for next time
                                 // around
                                 port_data[port].channel2 = cin;
+//fprintf(stderr,"Byte: %02x\n", cin);
                                 skip++;
                             }
                             else if (cin == KISS_FESC) { // Frame Escape char
