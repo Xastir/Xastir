@@ -523,9 +523,18 @@ void output_message(char *from, char *to, char *message, char *path) {
     if (debug_level & 2)
         fprintf(stderr,"Output Message from <%s>  to <%s>\n",from,to);
 
+    // Repeat until we process the entire message.  We'll process it
+    // a chunk at a time, size of chunk to correspond to max APRS
+    // message line length.
+    //
     while (!error && (message_ptr < (int)strlen(message))) {
         ok=0;
         space_loc=0;
+
+        // Break a long message into smaller chunks that can be
+        // processed into APRS messages.  Break at a space character
+        // if possible.
+        //
         for (j=0;j<MAX_MESSAGE_OUTPUT_LENGTH;j++) {
             if(message[j+message_ptr] != '\0') {
                 if(message[j+message_ptr]==' ') {
@@ -546,10 +555,14 @@ void output_message(char *from, char *to, char *message, char *path) {
                 last_space=strlen(message)+1;
             }
         }
+
+//fprintf(stderr,"message_out: %s\n", message_out);
+
         if (debug_level & 2)
             fprintf(stderr,"MESSAGE <%s> %d %d\n",message_out,message_ptr,last_space);
 
         message_ptr=last_space;
+
         /* check for others in the queue */
         wait_on_first_ack=0;
         for (i=0; i<MAX_OUTGOING_MESSAGES; i++) {
@@ -560,6 +573,7 @@ void output_message(char *from, char *to, char *message, char *path) {
                 i=MAX_OUTGOING_MESSAGES+1;  // Done with loop
             }
         }
+
         for (i=0; i<MAX_OUTGOING_MESSAGES && !ok ;i++) {
             /* Check for clear position*/
             if (message_pool[i].active==MESSAGE_CLEAR) {
@@ -639,11 +653,18 @@ end_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
                 msg_data_add(to,
                     from,
-                    message,
+                    message_out,
                     message_pool[i].seq,
                     MESSAGE_MESSAGE,
                     'L',    // From the Local system
                     &record);
+/*
+                fprintf(stderr,"msg_data_add %s %s %s %s\n",
+                    to,
+                    from,
+                    message_out,
+                    message_pool[i].seq);
+*/
 
 // Regain the lock we had before
 begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
