@@ -3373,6 +3373,9 @@ void port_write(int port) {
     fd_set wd;
     int wait_max;
     unsigned long bytes_input;
+    char write_buffer[MAX_DEVICE_BUFFER];
+    int quantity;
+
 
     if (debug_level & 2)
         fprintf(stderr,"Port %d write start\n",port);
@@ -3388,98 +3391,188 @@ void port_write(int port) {
 
             if ( (port_data[port].write_in_pos != port_data[port].write_out_pos)
                     && port_data[port].status == DEVICE_UP) {
+                // We have something in the buffer to transmit!
 
-                if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03) {
 
-                    if (debug_level & 128) {
-                        fprintf(stderr,"Writing command [%x] on port %d, at pos %d\n",
-                            *(port_data[port].device_write_buffer + 
-                            port_data[port].write_out_pos),
-                            port, port_data[port].write_out_pos);
-                    }
-
-                    wait_max = 0;
-                    bytes_input = port_data[port].bytes_input + 40;
-                    while ( (port_data[port].bytes_input != bytes_input)
-                            && (port_data[port].status == DEVICE_UP)
-                            && (wait_max < 100) ) {
-                        bytes_input = port_data[port].bytes_input;
-                        /*sleep(1);*/
-
-                        /*wait*/
-                        FD_ZERO(&wd);
-                        FD_SET(port_data[port].channel, &wd);
-                        tmv.tv_sec = 0;
-                        tmv.tv_usec = 80000l;   // Delay 80ms
-                        (void)select(0,NULL,&wd,NULL,&tmv);
-                        wait_max++;
-                        /*fprintf(stderr,"Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
-                    }
-                    /*fprintf(stderr,"Wait_max %d\n",wait_max);*/
-                }   // End of command byte wait
-
-                pthread_testcancel();   // Check for thread termination request
-                retval = (int)write(port_data[port].channel,
-                    &port_data[port].device_write_buffer[port_data[port].write_out_pos],
-                    1);
-
-//fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
-
-                pthread_testcancel();   // Check for thread termination request
-                if (retval == 1) {  // We succeeded in writing one byte
-
-                    port_data[port].bytes_output++;
-
-                    port_data[port].write_out_pos++;
-                    if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
-                        port_data[port].write_out_pos = 0;
-
-                }  else {
-                    /* error of some kind */
-                    port_data[port].errors++;
-                    port_data[port].status = DEVICE_ERROR;
-                    if (retval == 0) {
-                        /* Should not get this unless the device is down */
-                        if (debug_level & 2)
-                            fprintf(stderr,"no data written %d, DEVICE_ERROR ***\n",port);
-                    } else {
-                        if (retval == -1) {
-                            /* Should only get this if an real error occurs */
-                            if (debug_level & 2)
-                                fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
-                        }
-                    }
-                }
+// Handle control-C delay
                 switch (port_data[port].device_type) {
 
+                    // Use this block for serial interfaces where we
+                    // need special delays for control-C character
+                    // processing in the TNC.
+                    case DEVICE_SERIAL_TNC_HSP_GPS:
+                    case DEVICE_SERIAL_TNC_AUX_GPS:
+                    case DEVICE_SERIAL_TNC:
+
+                        // Are we trying to send a control-C?  If so, wait a
+                        // special amount of time _before_ we send
+                        // it out the serial port.
+                        if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03) {
+
+                            if (debug_level & 128) {
+                                fprintf(stderr,"Writing command [%x] on port %d, at pos %d\n",
+                                    *(port_data[port].device_write_buffer + 
+                                    port_data[port].write_out_pos),
+                                    port, port_data[port].write_out_pos);
+                            }
+
+                            wait_max = 0;
+                            bytes_input = port_data[port].bytes_input + 40;
+                            while ( (port_data[port].bytes_input != bytes_input)
+                                    && (port_data[port].status == DEVICE_UP)
+                                    && (wait_max < 100) ) {
+                                bytes_input = port_data[port].bytes_input;
+                                /*sleep(1);*/
+
+                                /*wait*/
+                                FD_ZERO(&wd);
+                                FD_SET(port_data[port].channel, &wd);
+                                tmv.tv_sec = 0;
+                                tmv.tv_usec = 80000l;   // Delay 80ms
+                                (void)select(0,NULL,&wd,NULL,&tmv);
+                                wait_max++;
+                                /*fprintf(stderr,"Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
+                            }
+                            /*fprintf(stderr,"Wait_max %d\n",wait_max);*/
+                        }   // End of command byte wait
+                        break;
+
+                    // Use this block for all other interfaces.
+                    default:
+                        // Do nothing (no delays for control-C's)
+                        break;
+
+                }   // End of switch
+// End of control-C delay code
+
+ 
+                pthread_testcancel();   // Check for thread termination request
+
+
+// Handle method of sending data (1 or multiple chars per TX)
+                switch (port_data[port].device_type) {
+
+                    // Use this block for serial interfaces where we
+                    // need character pacing and so must send one
+                    // character per write.
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                     case DEVICE_SERIAL_KISS_TNC:
                     case DEVICE_SERIAL_TNC:
                     case DEVICE_SERIAL_GPS:
                     case DEVICE_SERIAL_WX:
+                        // Do the actual write here, one character
+                        // at a time for these types of interfaces.
+
+                        retval = (int)write(port_data[port].channel,
+                            &port_data[port].device_write_buffer[port_data[port].write_out_pos],
+                            1);
+
+//fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
+
+                        pthread_testcancel();   // Check for thread termination request
+
+                        if (retval == 1) {  // We succeeded in writing one byte
+
+                            port_data[port].bytes_output++;
+
+                            port_data[port].write_out_pos++;
+                            if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
+                                port_data[port].write_out_pos = 0;
+
+                        }  else {
+                            /* error of some kind */
+                            port_data[port].errors++;
+                            port_data[port].status = DEVICE_ERROR;
+                            if (retval == 0) {
+                                /* Should not get this unless the device is down */
+                                if (debug_level & 2)
+                                    fprintf(stderr,"no data written %d, DEVICE_ERROR ***\n",port);
+                            } else {
+                                if (retval == -1) {
+                                    /* Should only get this if an real error occurs */
+                                    if (debug_level & 2)
+                                        fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
+                                }
+                            }
+                        }
 //fprintf(stderr,"Char pacing ");
                         usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
                         break;
 
-                    case DEVICE_NET_AGWPE:
-//fprintf(stderr,"Char pacing ");
-                        usleep(25000);  // character pacing, 25ms per char.
+                    // Use this block for all other interfaces where
+                    // we don't need character pacing and we can
+                    // send blocks of data in one write.
+                    default:
+                        // Do the actual write here, one buffer's
+                        // worth at a time.
+
+                        // Copy the data to a linear write buffer so
+                        // that we can send it all in one shot.
+
+// Need to handle the case where only a portion of the data was
+// written by the write() function.  Perhaps just write out an error
+// message?
+                        quantity = 0;
+                        while (port_data[port].write_in_pos != port_data[port].write_out_pos) {
+
+                            write_buffer[quantity] = port_data[port].device_write_buffer[port_data[port].write_out_pos];
+
+                            port_data[port].write_out_pos++;
+                            if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
+                                port_data[port].write_out_pos = 0;
+
+//fprintf(stderr,"%02x ",(unsigned char)write_buffer[quantity]);
+
+                            quantity++;
+                        }
+
+//fprintf(stderr,"\nWriting %d bytes\n\n", quantity);
+
+                        retval = (int)write(port_data[port].channel,
+                            write_buffer,
+                            quantity);
+
+//fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
+
+                        pthread_testcancel();   // Check for thread termination request
+
+                        if (retval == quantity) {  // We succeeded in writing one byte
+                            port_data[port].bytes_output++;
+                        }  else {
+                            /* error of some kind */
+                            port_data[port].errors++;
+                            port_data[port].status = DEVICE_ERROR;
+                            if (retval == 0) {
+                                /* Should not get this unless the device is down */
+                                if (debug_level & 2)
+                                    fprintf(stderr,"no data written %d, DEVICE_ERROR ***\n",port);
+                            } else {
+                                if (retval == -1) {
+                                    /* Should only get this if an real error occurs */
+                                    if (debug_level & 2)
+                                        fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
+                                }
+                            }
+                        }
                         break;
 
-                    default:
-                        break;
-                }
+                }   // End of switch
+// End of handling method of sending data (1 or multiple char per TX)
+
+
             }
 
             if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write(2)" ) > 0)
                 fprintf(stderr,"write_lock, Port = %d\n", port);
 
         }
+
         if (port_data[port].active == DEVICE_IN_USE) {
 
-            // We need to delay here so that the thread doesn't use
-            // high amounts of CPU doing nothing.
+            // Delay here so that the thread doesn't use high
+            // amounts of CPU doing _nothing_.  Take this delay out
+            // and the thread will take lots of CPU time.
 
             /*usleep(100);*/
             FD_ZERO(&wd);
