@@ -307,47 +307,47 @@ typedef struct _CommentRow{
 #define MAX_MULTIPOINTS 35
 
 typedef struct _DataRow {
-    struct _DataRow *n_next;            // pointer to next element in name ordered list
-    struct _DataRow *n_prev;            // pointer to previous element in name ordered list
-    struct _DataRow *t_next;            // pointer to next element in time ordered list (newer)
-    struct _DataRow *t_prev;            // pointer to previous element in time ordered list (older)
-    char call_sign[MAX_CALLSIGN+1];     // call sign, used also for name index
-    time_t sec_heard;                   // time last heard, used also for time index
-    int  time_sn;                       // serial number for making time index unique
-    short flag;                         // several flags, see below
-    short object_retransmit;            // Number of times to retransmit object.  -1 = forever
-                                        // Used currently to stop sending killed objects.
+    struct _DataRow *n_next;    // pointer to next element in name ordered list
+    struct _DataRow *n_prev;    // pointer to previous element in name ordered list
+    struct _DataRow *t_next;    // pointer to next element in time ordered list (newer)
+    struct _DataRow *t_prev;    // pointer to previous element in time ordered list (older)
+    char call_sign[MAX_CALLSIGN+1]; // call sign or name index or object/item name
+    time_t sec_heard;           // time last heard, used also for time index
+    int  time_sn;               // serial number for making time index unique
+    short flag;                 // several flags, see below
+    short object_retransmit;    // Number of times to retransmit object.  -1 = forever
+                                // Used currently to stop sending killed objects.
 
-    time_t last_transmit_time;          // Time we last transmitted an object/item.  Used to
-                                        // implement decaying transmit time algorithm
-    short transmit_time_increment;      // Seconds to add to transmit next time around.  Used
-                                        // to implement decaying transmit time algorithm
+    time_t last_transmit_time;  // Time we last transmitted an object/item.  Used to
+                                // implement decaying transmit time algorithm
+    short transmit_time_increment; // Seconds to add to transmit next time around.  Used
+                                // to implement decaying transmit time algorithm
 
-    char pos_amb;                       // Position ambiguity, 0 = none, 1 = 0.1 minute...
-    long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
-    long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
+    char pos_amb;               // Position ambiguity, 0 = none, 1 = 0.1 minute...
+    long coord_lon;             // Xastir coordinates 1/100 sec, 0 = 180°W
+    long coord_lat;             // Xastir coordinates 1/100 sec, 0 =  90°N
 
-    TrackRow *oldest_trackpoint;        // Pointer to oldest track point in doubly-linked list
-    TrackRow *newest_trackpoint;        // Pointer to newest track point in doubly-linked list
-    int trail_color;                    // trail color (when assigned)
+    TrackRow *oldest_trackpoint; // Pointer to oldest track point in doubly-linked list
+    TrackRow *newest_trackpoint; // Pointer to newest track point in doubly-linked list
+    int trail_color;            // trail color (when assigned)
  
-    WeatherRow *weather_data;           // Pointer to weather data or NULL if no weather data
+    WeatherRow *weather_data;   // Pointer to weather data or NULL if no weather data
     char record_type;
-    char data_via;                      // L local, T TNC, I internet, F file
+    char data_via;              // L local, T TNC, I internet, F file
     int  heard_via_tnc_port;
     time_t heard_via_tnc_last_time;
     int  last_heard_via_tnc;
     int  last_port_heard;
     unsigned int  num_packets;
     char packet_time[MAX_TIME];
-    char origin[MAX_CALLSIGN+1];        // call sign originating an object
+    char origin[MAX_CALLSIGN+1]; // call sign originating an object
     APRS_Symbol aprs_symbol;
-    char *node_path_ptr;                // Pointer to path string
+    char *node_path_ptr;        // Pointer to path string
     char pos_time[MAX_TIME];
     char altitude_time[MAX_TIME];
-    char altitude[MAX_ALTITUDE];        // in meters (feet gives better resolution ???)
+    char altitude[MAX_ALTITUDE]; // in meters (feet gives better resolution ???)
     char speed_time[MAX_TIME];
-    char speed[MAX_SPEED+1];            // in knots
+    char speed[MAX_SPEED+1];    // in knots
     char course[MAX_COURSE+1];
     char bearing[MAX_COURSE+1];
     char NRQ[MAX_COURSE+1];
@@ -360,7 +360,7 @@ typedef struct _DataRow {
     char station_time_type;
     char sats_visible[MAX_SAT];
     CommentRow *status_data;
-    CommentRow *comment_data;           // Ptr to comment records or NULL
+    CommentRow *comment_data;   // Ptr to comment records or NULL
     int  df_color;
     
     // When the station is an object, it can include coordinates

@@ -13508,6 +13508,10 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 // After 20 minutes only six packets have been transmitted.  From
 // then on the rate remains at 10 minutes times the number of
 // digipeater hops you are using."
+// Actually, talking to Bob, he's used a period of 15 seconds as his
+// base unit.  We now do the same using the OBJECT_CHECK_RATE define
+// to set the initial timing.
+
 //
 // Added these to db.h:DataRow struct:
 // time_t last_transmit_time;          // Time we last transmitted an object/item.  Used to
@@ -13517,7 +13521,15 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 //
 // The earlier code here transmitted objects/items at a specified
 // rate.  This can cause large transmissions every OBJECT_rate
-// seconds, as all objects/items are transmitted at once.
+// seconds, as all objects/items are transmitted at once.  With the
+// new code, the objects/items may be spaced a bit from each other
+// time-wise, plus they are transmitted less and less often with
+// each transmission until they hit the max interval specified by
+// the "Object/Item TX Interval" slider.  When they hit that max
+// interval, they are transmitted at the constant interval until
+// killed.  When they are killed, they are transmitted for
+// MAX_KILLED_OBJECT_RETRANSMIT iterations using the decaying
+// algorithm, then transmissions cease.
 //
 void check_and_transmit_objects_items(time_t time) {
     DataRow *p_station;     // pointer to station data
@@ -13602,7 +13614,9 @@ void check_and_transmit_objects_items(time_t time) {
                         increment = OBJECT_rate;
                     }
                     p_station->transmit_time_increment = increment;
-//fprintf(stderr,"check_and_transmit_objects_items(): Setting transmit_time_increment to %d\n", increment);
+//fprintf(stderr,"check_and_transmit_objects_items():Setting tx_increment to %d:%s\n",
+//    increment,
+//    p_station->call_sign);
  
                     // Here we need to re-assemble and re-transmit the object or item
                     // Check whether it is a "live" or "killed" object and vary the
