@@ -47,7 +47,12 @@
 
 char gps_gprmc[MAX_GPS_STRING];
 char gps_gpgga[MAX_GPS_STRING];
-
+char gps_sats[4] = "";
+char gps_alt[8] = "";
+char gps_spd[10] = "";
+char gps_sunit[2] = "";
+char gps_cse[10] = "";
+ 
 int gps_stop_now;
 
 
@@ -279,15 +284,14 @@ int decode_gps_gga( char *data,
 
 void gps_data_find(char *gps_line_data, int port) {
 
-    char long_pos[20],lat_pos[20],sats[4],alt[8],spd[10],aunit[2],sunit[2],cse[10];
+    char long_pos[20],lat_pos[20],aunit[2];
     time_t t;
     struct timeval tv;
     struct timezone tz;
     char temp_str[MAX_GPS_STRING];
     int have_valid_string = 0;
 
-
-    if (strncmp(gps_line_data,"$GPRMC,",7)==0 && !gps_stop_now) {
+    if (strncmp(gps_line_data,"$GPRMC,",7)==0) {
         if (debug_level & 128) {
             char filtered_data[MAX_LINE_SIZE+1];
             strcpy(filtered_data, gps_line_data);
@@ -303,21 +307,16 @@ void gps_data_find(char *gps_line_data, int port) {
                             sizeof(long_pos),
                             lat_pos,
                             sizeof(lat_pos),
-                            spd,
-                            sunit,
-                            sizeof(sunit),
-                            cse,
+                            gps_spd,
+                            gps_sunit,
+                            sizeof(gps_sunit),
+                            gps_cse,
                             &t ) == 1) {    /* mod station data */
             /* got GPS data */
             have_valid_string++;
             if (debug_level & 128)
                 printf("RMC <%s> <%s><%s> %c <%s>\n",
-                    long_pos,lat_pos,spd,sunit[0],cse);
-
-            alt[0] = '\0';
-            sats[0] = '\0';
-            my_station_gps_change(long_pos,lat_pos,cse,spd,
-                sunit[0],alt,sats);
+                    long_pos,lat_pos,gps_spd,gps_sunit[0],gps_cse);
 
             if (debug_level & 128) {
                 printf("Checking for Time Set on %d (%d)\n",
@@ -340,8 +339,17 @@ void gps_data_find(char *gps_line_data, int port) {
             }
         }
     }
+    else {
+        if (debug_level & 128) {
+            int i;
+            printf("Not $GPRMC: ");
+            for (i = 0; i<7; i++)
+                printf("%c",gps_line_data[i]);
+            printf("\n");
+        }
+    }
 
-    if(strncmp(gps_line_data,"$GPGGA,",7)==0 && !gps_stop_now) {
+    if (strncmp(gps_line_data,"$GPGGA,",7)==0) {
         if (debug_level & 128) {
             char filtered_data[MAX_LINE_SIZE+1];
             strcpy(filtered_data, gps_line_data);
@@ -357,27 +365,37 @@ void gps_data_find(char *gps_line_data, int port) {
                              sizeof(long_pos),
                              lat_pos,
                              sizeof(lat_pos),
-                             sats,
-                             alt,
+                             gps_sats,
+                             gps_alt,
                              aunit) == 1) { /* mod station data */
             /* got GPS data */
             have_valid_string++;
             if (debug_level & 128)
                 printf("GGA <%s> <%s> <%s> <%s> %c\n",
-                    long_pos,lat_pos,sats,alt,aunit[0]);
-
-            cse[0] = '\0';
-            spd[0] = '\0';
-            sunit[0] = '\0';
-            my_station_gps_change(long_pos,lat_pos,cse,spd,
-                sunit[0],alt,sats);
+                    long_pos,lat_pos,gps_sats,gps_alt,aunit[0]);
         }
     }
+    else {
+        if (debug_level & 128) {
+            int i;
+            printf("Not $GPGGA: ");
+            for (i = 0; i<7; i++)
+                printf("%c",gps_line_data[i]);
+            printf("\n");
+        }
+    }
+
 
     if (have_valid_string) {
         if (debug_level & 128)
             statusline(langcode("BBARSTA037"),0);
 
+        // Go update my screen position
+        my_station_gps_change(long_pos,lat_pos,gps_cse,gps_spd,
+            gps_sunit[0],gps_alt,gps_sats);
+
+        // gps_stop_now is how we tell main.c that we've got a valid GPS string.
+        // Only useful for HSP mode?
         if (!gps_stop_now)
             gps_stop_now=1;
 
