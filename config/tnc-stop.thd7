@@ -1,0 +1,39 @@
+# $Id$
+#
+# Copyright (C) 2004  The Xastir Group
+#
+# TNC Stop file for KENWOOD TH-D7
+#
+#--------------------------------------------------
+# Note: Terminal Control commands are send without
+# CONTROL-C before the lines.
+#--------------------------------------------------
+#
+#--------------------------------------------------
+# Turn on Terminal Control
+#
+# This will make the TH-D7 drop out of Packet mode.
+# Once out of Packet mode, the TH-D7 will forget
+# all TNC settings. No need to restore anything.
+#--------------------------------------------------
+#
+##META <no-ctrl-c>
+TC 1
+# Pause one second
+##META <delay>
+##META <delay>
+#
+#--------------------------------------------------
+# Resume standalone APRS use.
+#
+# GPS en Beacon settings are not changed. Once back
+# in APRS mode, the GPS and Beacon are resumed as
+# they were.
+#--------------------------------------------------
+#
+##META <no-ctrl-c>
+TNC 1
+# Pause one second
+##META <delay>
+##META <delay>
+#

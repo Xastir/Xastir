@@ -3,6 +3,47 @@
 # Copyright (C) 2000-2004  The Xastir Group
 #
 # TNC Init file for KENWOOD TH-D7
+#
+#--------------------------------------------------
+# Note: Terminal Control commands are send without
+# CONTROL-C before the lines.
+#--------------------------------------------------
+#
+#--------------------------------------------------
+# Turn on Terminal Control
+#
+# This will make the TH-D7 drop out of Packet mode.
+# Once out of Packet mode, the TH-D7 will forget
+# all old TNC settings and even KISS mode, so we
+# can start from a clean situation.
+#--------------------------------------------------
+#
+##META <no-ctrl-c>
+TC 1
+# Pause one second
+##META <delay>
+##META <delay>
+#
+#--------------------------------------------------
+# Turn off Terminal Control
+#
+# This will make the TH-D7 switch to Packet mode.
+#--------------------------------------------------
+#
+##META <no-ctrl-c>
+TC 0
+# Pause for two seconds just in case
+##META <delay>
+##META <delay>
+##META <delay>
+##META <delay>
+#
+#--------------------------------------------------
+# Initialize the TNC
+#
+# This will setup the TH-D7 TNC for use with APRS.
+#--------------------------------------------------
+#
 AWlen 8
 BBSMsgs ON
 B E 0
@@ -16,8 +57,16 @@ MRPt on
 PACLen 128
 PASSALL off
 HBAUD 1200
-# Delete following lines if without GPS
-GBAUD 4800
-GPSTEXT $GPRMC
-LTMH OFF
-LTM 10
+#
+#--------------------------------------------------
+# Initialize the GPS
+#
+# Enable the commands if running with GPS.
+# If running without GPS, leave them disabled.
+#--------------------------------------------------
+#
+#GBAUD 4800
+#GPSTEXT $GPRMC
+#LTMH OFF
+#LTM 10
+#
