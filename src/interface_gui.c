@@ -4529,7 +4529,6 @@ Widget AGWPE_active_on_startup;
 Widget AGWPE_host_data;
 Widget AGWPE_port_data;
 Widget AGWPE_password_data;
-Widget AGWPE_filter_data;
 Widget AGWPE_transmit_data;
 Widget AGWPE_igate_data;
 Widget AGWPE_reconnect_data;
@@ -4578,8 +4577,6 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_name);
     strcpy(devices[AGWPE_port].device_host_pswd,XmTextFieldGetString(AGWPE_password_data));
     (void)remove_trailing_spaces(devices[AGWPE_port].device_host_pswd);
-    strcpy(devices[AGWPE_port].device_host_filter_string,XmTextFieldGetString(AGWPE_filter_data));
-    (void)remove_trailing_spaces(devices[AGWPE_port].device_host_filter_string);
 
     devices[AGWPE_port].sp=atoi(XmTextFieldGetString(AGWPE_port_data));
 
@@ -4622,7 +4619,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
             0,
             0,
             devices[AGWPE_port].reconnect,
-            devices[AGWPE_port].device_host_filter_string);
+            "");
     }
 
     /* delete list */
@@ -4645,7 +4642,7 @@ end_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
 
 void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                ihost, iport, password, password_fl, filter, sep,
+                ihost, iport, password, password_fl, sep,
                 igate, igate_box, igate_o_0, igate_o_1, igate_o_2,
                 igate_label, frame, proto, proto1, proto2, proto3;
     Atom delw;
@@ -4804,38 +4801,9 @@ XtSetSensitive(AGWPE_relay_digipeat, FALSE);
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-        filter = XtVaCreateManagedWidget(langcode("WPUPCFIA15"),xmLabelWidgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, password,
-                                      XmNtopOffset, 20,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
-
-        AGWPE_filter_data = XtVaCreateManagedWidget("Config_AGWPE filter_data", xmTextFieldWidgetClass, form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, FALSE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 30,
-                                      XmNmaxLength, 190,
-                                      XmNbackground, colors[0x0f],
-                                      XmNleftAttachment,XmATTACH_WIDGET,
-                                      XmNleftWidget, filter,
-                                      XmNleftOffset, 10,
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, password,
-                                      XmNtopOffset, 15,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
-
         AGWPE_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFIA11"),xmToggleButtonWidgetClass,form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, filter,
+                                      XmNtopWidget, password,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -5125,7 +5093,6 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
             xastir_snprintf(temp, sizeof(temp), "%d", devices[AGWPE_port].sp);
             XmTextFieldSetString(AGWPE_port_data,temp);
             XmTextFieldSetString(AGWPE_password_data,devices[AGWPE_port].device_host_pswd);
-            XmTextFieldSetString(AGWPE_filter_data,devices[AGWPE_port].device_host_filter_string);
 
             if (devices[AGWPE_port].reconnect)
                 XmToggleButtonSetState(AGWPE_reconnect_data,TRUE,FALSE);
