@@ -1,127 +1,13 @@
-/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+/* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* Define if the `getpgrp' function takes no argument.  */
+/* Define to 1 if the `getpgrp' function requires zero arguments. */
 #undef GETPGRP_VOID
-
-/* Define if you don't have vprintf but do have _doprnt.  */
-#undef HAVE_DOPRNT
-
-/* Define if you have the strftime function.  */
-#undef HAVE_STRFTIME
-
-/* Define if you have the vprintf function.  */
-#undef HAVE_VPRINTF
-
-/* Define to `int' if <sys/types.h> doesn't define.  */
-#undef pid_t
-
-/* Define as the return type of signal handlers (int or void).  */
-#undef RETSIGTYPE
-
-/* Define to the type of arg1 for select(). */
-#undef SELECT_TYPE_ARG1
-
-/* Define to the type of args 2, 3 and 4 for select(). */
-#undef SELECT_TYPE_ARG234
-
-/* Define to the type of arg5 for select(). */
-#undef SELECT_TYPE_ARG5
-
-/* Define to `unsigned' if <sys/types.h> doesn't define.  */
-#undef size_t
-
-/* Define if you have the ANSI C header files.  */
-#undef STDC_HEADERS
-
-/* Define if you can safely include both <sys/time.h> and <time.h>.  */
-#undef TIME_WITH_SYS_TIME
-
-/* Define if the X Window System is missing or not being used.  */
-#undef X_DISPLAY_MISSING
-
-/* The number of bytes in a char *.  */
-#undef SIZEOF_CHAR_P
-
-/* The number of bytes in a int.  */
-#undef SIZEOF_INT
-
-/* The number of bytes in a long.  */
-#undef SIZEOF_LONG
-
-/* Define if you have the atexit function.  */
-#undef HAVE_ATEXIT
-
-/* Define if you have the getaddrinfo function.  */
-#undef HAVE_GETADDRINFO
-
-/* Define if you have the getopt_long function.  */
-#undef HAVE_GETOPT_LONG
-
-/* Define if you have the snprintf function.  */
-#undef HAVE_SNPRINTF
-
-/* Define if you have the socket function.  */
-#undef HAVE_SOCKET
-
-/* Define if you have the strdup function.  */
-#undef HAVE_STRDUP
-
-/* Define if you have the strstr function.  */
-#undef HAVE_STRSTR
-
-/* Define if you have the vsnprintf function.  */
-#undef HAVE_VSNPRINTF
-
-/* Define if you have the <fcntl.h> header file.  */
-#undef HAVE_FCNTL_H
-
-/* Define if you have the <netax25/axlib.h> header file.  */
-#undef HAVE_NETAX25_AXLIB_H
-
-/* Define if you have the <sys/fcntl.h> header file.  */
-#undef HAVE_SYS_FCNTL_H
-
-/* Define if you have the <sys/select.h> header file.  */
-#undef HAVE_SYS_SELECT_H
-
-/* Define if you have the <sys/socket.h> header file.  */
-#undef HAVE_SYS_SOCKET_H
-
-/* Define if you have the <sys/time.h> header file.  */
-#undef HAVE_SYS_TIME_H
-
-/* Define if you have the <unistd.h> header file.  */
-#undef HAVE_UNISTD_H
-
-/* Define if you have the Xp library (-lXp).  */
-#undef HAVE_LIBXP
-
-/* Define if you have the Xpm library (-lXpm).  */
-#undef HAVE_LIBXPM
-
-/* Define if you have the nsl library (-lnsl).  */
-#undef HAVE_LIBNSL
-
-/* Name of package */
-#undef PACKAGE
-
-/* Version number of package */
-#undef VERSION
-
-/* Define default TNC port. */
-#undef TNC_PORT
 
 /* Define default GPS port. */
 #undef GPS_PORT
 
-/* Define if using pthreads */
-#undef HAVE_PTHREAD
-
-/* Define if using pthreads */
-#undef HAVE_PTHREAD
-
-/* Define if using libax25 */
-#undef HAVE_AX25
+/* Define to 1 if you have the `atexit' function. */
+#undef HAVE_ATEXIT
 
 /* Define if using libax25 */
 #undef HAVE_AX25
@@ -129,25 +15,185 @@
 /* Defines if your system has the crypt function */
 #undef HAVE_CRYPT
 
-/* Define the type of the third argument for getsockname
- */
-#undef ksize_t
+/* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
+#undef HAVE_DOPRNT
 
-/* Define if you have GeoTiff Package */
-#undef HAVE_GEOTIFF
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
 
 /* Define if you have Festival */
 #undef HAVE_FESTIVAL
 
-/* Define if you have ShapeLib */
-#undef HAVE_SHAPELIB
+/* Define if you have GeoTiff Package */
+#undef HAVE_GEOTIFF
+
+/* Define to 1 if you have the `getaddrinfo' function. */
+#undef HAVE_GETADDRINFO
+
+/* Define to 1 if you have the `getopt_long' function. */
+#undef HAVE_GETOPT_LONG
 
 /* Define if you have ImageMagick */
 #undef HAVE_IMAGEMAGICK
 
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `nsl' library (-lnsl). */
+#undef HAVE_LIBNSL
+
+/* Define to 1 if you have the `Xp' library (-lXp). */
+#undef HAVE_LIBXP
+
+/* Define to 1 if you have the `Xpm' library (-lXpm). */
+#undef HAVE_LIBXPM
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define if Motif is present. */
+#undef HAVE_MOTIF
+
+/* Define to 1 if you have the <netax25/axlib.h> header file. */
+#undef HAVE_NETAX25_AXLIB_H
+
+/* Define if using pthreads */
+#undef HAVE_PTHREAD
+
+/* Define if you have ShapeLib */
+#undef HAVE_SHAPELIB
+
+/* Define to 1 if you have the `snprintf' function. */
+#undef HAVE_SNPRINTF
+
+/* Define to 1 if you have the `socket' function. */
+#undef HAVE_SOCKET
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strdup' function. */
+#undef HAVE_STRDUP
+
+/* Define to 1 if you have the `strftime' function. */
+#undef HAVE_STRFTIME
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the `strstr' function. */
+#undef HAVE_STRSTR
+
+/* Define to 1 if you have the <sys/fcntl.h> header file. */
+#undef HAVE_SYS_FCNTL_H
+
+/* Define to 1 if you have the <sys/select.h> header file. */
+#undef HAVE_SYS_SELECT_H
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the `vprintf' function. */
+#undef HAVE_VPRINTF
+
+/* Define to 1 if you have the `vsnprintf' function. */
+#undef HAVE_VSNPRINTF
+
+/* Define if XPM is present. */
+#undef HAVE_XPM
+
+/* Define if Xm/XmpI.h is used. */
+#undef HAVE_XPMI
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define as the return type of signal handlers (`int' or `void'). */
+#undef RETSIGTYPE
+
+/* Define to the type of arg 1 for `select'. */
+#undef SELECT_TYPE_ARG1
+
+/* Define to the type of args 2, 3 and 4 for `select'. */
+#undef SELECT_TYPE_ARG234
+
+/* Define to the type of arg 5 for `select'. */
+#undef SELECT_TYPE_ARG5
+
+/* The size of a `char *', as computed by sizeof. */
+#undef SIZEOF_CHAR_P
+
+/* The size of a `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of a `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Define if STIPPLE is True. */
+#undef STIPPLE
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
+
+/* Define default TNC port. */
+#undef TNC_PORT
+
+/* Version number of package */
+#undef VERSION
+
+/* Define to 1 if the X Window System is missing or not being used. */
+#undef X_DISPLAY_MISSING
+
 /* This is GNU compliant source, use GNU extensions. */
 #undef _GNU_SOURCE
 
+/* Define the type of the third argument for getsockname */
+#undef ksize_t
+
+/* Define to `int' if <sys/types.h> does not define. */
+#undef pid_t
+
+/* Define to `unsigned' if <sys/types.h> does not define. */
+#undef size_t
+
+/* Define to type of socklen_t. */
+#undef socklen_t
 /* Define to 'int' if <sys/socket.h> doesn't define.  */
 /* #undef socklen_t */
 
@@ -180,6 +226,8 @@
 #undef USING_SOLARIS
 
 #undef USING_MAC_OS_X
+
+#undef USING_CYGWIN
 
 #undef XASTIR_DATA_BASE
 

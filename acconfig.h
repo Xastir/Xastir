@@ -32,5 +32,7 @@
 
 #undef USING_MAC_OS_X
 
+#undef USING_CYGWIN
+
 #undef XASTIR_DATA_BASE
 

@@ -46,7 +46,6 @@ case $host in
       AC_DEFINE(XASTIR_SYSTEM, "FreeBSD")
       ac_tnc_port='"/dev/cuaa0"'
       ac_gps_port='"/dev/cuaa1"'
-      AC_MSG_WARN(*** FreeBSD support is not fully implemented yet! ***)
       ;;
   *-*-openbsd* )
       AC_DEFINE(XASTIR_SYSTEM, "OpenBSD")
@@ -66,7 +65,6 @@ case $host in
       LIBS="${LIBS} -lposix4 -lpthread"
       ac_tnc_port='"/dev/cua/a"'
       ac_gps_port='"/dev/cua/b"'
-      AC_MSG_WARN(*** Solaris support is not fully implemented yet! ***)
       ;;
    *-*-*linux* )
       AC_DEFINE(XASTIR_SYSTEM, "Linux")
@@ -78,9 +76,15 @@ case $host in
       AC_DEFINE(XASTIR_SYSTEM, "Darwin")
       ac_tnc_port='"/dev/cua/a"'
       ac_gps_port='"/dev/cua/b"'
-      AC_MSG_WARN(*** Mac OS X support is not fully implemented yet! ***)
       ;;
-   * )
+    *-pc-cygwin* )
+      AC_DEFINE_UNQUOTED(USING_CYGWIN, 1)
+      AC_DEFINE(XASTIR_SYSTEM, "Cygwin")
+      ac_tnc_port='"com1"'
+      ac_gps_port='"com2"'
+      AC_MSG_WARN(*** Cygwin support is not fully implemented yet! ***)
+      ;;
+    * )
       AC_MSG_WARN(Host type is not recognized)
       ac_tnc_port='""'
       ac_gps_port='""'
@@ -114,6 +118,9 @@ if test "$GCC" = "yes";then
       CFLAGS="$CFLAGS -Wall"
       ;;
     *-*apple-darwin* )
+      CFLAGS="$CFLAGS -Wall"
+      ;;
+    *-pc-cygwin* )
       CFLAGS="$CFLAGS -Wall"
       ;;
     * )
