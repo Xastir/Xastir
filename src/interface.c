@@ -2426,18 +2426,15 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
 
                     if (strlen(displayname)) {
                         // Add displayname to the comment field
-                        strncat(comment," ",1);
-                        strncat(comment,displayname,50);
+                        strncpy(comment," ",1);
+                        strncat(comment,displayname,40);
                     }
                 }
 
                 // Append the comment to the end.
 
-// We really should check length here.  APRS packets can't handle
-// much.  Item and position packets probably have different
-// restriction on length of comment field as well.
-
-                strncat(buffer,comment,50);
+                // We must check length here.  APRS packets can't
+                // handle much.
 
                 // Altitude should be in feet "/A=001234", and placed in
                 // the comment field of an APRS packet.
@@ -2445,7 +2442,12 @@ fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
                     sizeof(alt_str),
                     " /A=%06d",
                     (int)(altitude * 3.28084)); // meters to feet
-                strncat(buffer,alt_str,10);
+                strncat(comment,alt_str,10);
+
+                // We must limit the length here.  APRS Item packets
+                // can handle 43 chars in the comment field, Base-91
+                // compressed position packets can handle 40.
+                strncat(buffer,comment,40);
             }
         }
 
