@@ -191,10 +191,11 @@ int is_my_call(char *call, int exact) {
     // We need this next bit of code so that we don't run off the
     // end of the string when we compare the 2nd char position.
     //
-    if (call[0] == '\0' || my_callsign[0] == '\0') {
-        // One or both are empty strings
+    if (!call[0])   // Empty string
         return(0);
-    }
+
+    if (!my_callsign[0])    // Empty string
+        return(0);
 
 
     // Check first letter.  If a match, go on to strcmp() functions,
