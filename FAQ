@@ -81,8 +81,10 @@ The Questions
     4.20 How to I redirect serial ports from one computer to another?
     4.21 I have Festival compiled in, but I can't get any speech, why?
     4.22 ImageMagick gives me: "no decode delegate", why?
-    4.23 How do I get through an http proxy server with Xastir to
-         get maps?
+    4.23 How do I get through an http proxy server with Xastir in
+         order to fetch maps?
+
+
 
 
 5.  Features
@@ -783,14 +785,20 @@ The Answers
     on a non-Windows machine, so change the line above as required for your
     system.
 
-    4.23 How do I get through an http proxy server with Xastir to
-         get maps?
+    4.23 How do I get through an http proxy server with Xastir in
+         order to fetch maps?
 
     *) Install libcurl and/or wget.
-    *) Set the HTTP_PROXY environment variable in your ~/.profile
-       file.
+    *) Set the HTTP_PROXY and FTP_PROXY environment variables in
+       your ~/.profile file.  Libcurl has additional options that
+       can be set:  HTTPS_PROXY, GOPHER_PROXY, and ALL_PROXY.
     *) Create and fill in the ~/.netrc and/or .wgetrc files with
-       proper values.
+       proper values.  Set the permissions on it so that only you
+       can read/write the file:  "chmod 600 .netrc".  Typical
+       contents of the file are shown below:
+
+            http_proxy = http://proxy.yoyodyne.com:18023/
+            ftp_proxy = http://proxy.yoyodyne.com:18023/
 
 
 5.  Features
