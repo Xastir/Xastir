@@ -425,30 +425,6 @@ fi
  
  
  
-# Check for cat, find out its path
-# 
-AC_CHECK_PROG(cat, [cat -version], "/bin", , "/bin" )
-if test "$cat" != "/bin"; then
-  AC_CHECK_PROG(cat, [cat -version], "/usr/bin", , "/usr/bin" )
-  if test "$cat" != "/usr/bin"; then
-    AC_CHECK_PROG(cat, [cat -version], "/usr/local/bin", , "/usr/local/bin" )
-    if test "$cat" != "/usr/local/bin"; then
-      AC_CHECK_PROG(cat, [cat -version], "/sw/bin", no, "/sw/bin" )
-      if test "$cat" != "/sw/bin"; then 
-        AC_MSG_WARN(*** Missing cat (or it is not in the path).  Building w/o cat support. ***) 
-      fi
-    fi
-  fi 
-fi
-if test "$cat" != "no"; then 
-  AC_DEFINE_UNQUOTED(HAVE_CAT, 1, [Define if you have cat]) 
-  AC_DEFINE_UNQUOTED(CAT_PATH, "${cat}/cat", [Path to cat]) 
-fi 
-# 
-# End of cat checks 
- 
- 
- 
 # Check for cp, find out its path
 # 
 AC_CHECK_PROG(cp, [cp -version], "/bin", , "/bin" )
