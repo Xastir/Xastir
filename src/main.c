@@ -6878,7 +6878,7 @@ void create_gc(Widget w) {
     colors[0x60] = (int)GetPixelByName(w,"HotPink");
     colors[0x61] = (int)GetPixelByName(w,"RoyalBlue");
     colors[0x62] = (int)GetPixelByName(w,"orange3");
-    colors[0x63] = (int)GetPixelByName(w,"yellow2");
+    colors[0x63] = (int)GetPixelByName(w,"yellow3");
     colors[0x64] = (int)GetPixelByName(w,"ForestGreen");
     colors[0x65] = (int)GetPixelByName(w,"DodgerBlue");
     colors[0x66] = (int)GetPixelByName(w,"cyan2");
