@@ -12690,20 +12690,20 @@ void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 
 // Update the "selected" field in the in-memory map_index based on
 // the "selected" input parameter.
-void map_index_update_selected(char *filename, int selected, map_index_record *current) {
+void map_index_update_selected(char *filename, int selected, map_index_record **current) {
 //    map_index_record *current = map_index_head;
 
-    if (current == NULL) {
-        current = map_index_head;
+    if ( (*current) == NULL) {
+        (*current) = map_index_head;
     }
 
-    while (current != NULL) {
-        if (strcmp(current->filename,filename) == 0) {
+    while ( (*current) != NULL) {
+        if (strcmp( (*current)->filename,filename) == 0) {
             // Found a match.  Update the field and return.
-            current->selected = selected;
+            (*current)->selected = selected;
             return;
         }
-        current = current->next;
+        (*current) = (*current)->next;
     }
 }
 
@@ -12771,9 +12771,10 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
             // appropriate.
             map_index_update_selected(temp,
                 XmListPosSelected(map_list,x),
-                ptr);
+                &ptr);
             XtFree(temp);
         }
+//fprintf(stderr,"Passed back: %s\n", ptr->filename);
         ptr = ptr->next;
     }
 
