@@ -4918,7 +4918,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                     // speed/turns, etc.
                     posit_next_time = posit_last_time + sb_POSIT_rate;
                     sb_last_heading = sb_current_heading;
-printf("Sending Posit\n");
+                    //printf("Sending Posit\n");
                 }
                 else {
                     // Schedule next fixed posit time, set in
