@@ -41,7 +41,8 @@
 #include <pthread.h>
 #include <locale.h>
 #include <strings.h>
-#include <wait.h>
+#include <sys/wait.h>
+#include <errno.h>
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
