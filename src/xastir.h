@@ -119,6 +119,7 @@ extern XtAppContext app_context;
 extern int redraw_on_new_data;
 //extern Widget hidden_shell;
 extern int tiger_flag;
+extern int index_maps_on_startup;
 
 #ifdef HAVE_IMAGEMAGICK  //N0VH
 extern int tiger_show_grid;

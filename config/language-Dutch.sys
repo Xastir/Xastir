@@ -62,7 +62,6 @@ PULDNCF004|Station|t|
 PULDNCF006|Audio Alarm|A|
 PULDNCF007|Spraak|p|
 PULDNCF008|Instellingen Nu Bewaren!|I|
-PULDNCF003|Re-Index Maps|R|
 # (Units see PULDNDP006)
 #
 # Menu "Maps"
@@ -82,6 +81,8 @@ PULDNMP011|Muis Menu|M|
 PULDNMP008|Kaart Intensiteit|I|
 PULDNMP020|Aanzetten/Configureren Tigermap||
 PULDNMP021|Auto Map - Disable Raster Maps||
+PULDNMP022|Index Maps on Startup||
+PULDNMP023|Re-Index Maps|R|
 #
 #
 # PopUp "Configureren Tigermap"

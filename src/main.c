@@ -226,6 +226,9 @@ Widget map_fill_on, map_fill_off;
 static void Map_fill_toggle( Widget w, XtPointer clientData, XtPointer calldata);
 int map_color_fill;             /* Whether or not to fill in map polygons with solid color */
 
+int index_maps_on_startup;      // Index maps on startup
+static void Index_maps_on_startup_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+
 Widget map_bgcolor[12];
 static void Map_background(Widget w, XtPointer clientData, XtPointer calldata);
 int map_background_color;       /* Background color for maps */
@@ -3645,7 +3648,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #endif
 #endif
         Map_station_label_Pane, map_station_label_button,
-        map_wx_alerts_button,
+        map_wx_alerts_button, index_maps_on_startup_button,
         units_choice_button, dbstatus_choice_button,
         device_config_button,
         iface_button, iface_connect_button, tnc_logging,
@@ -4118,14 +4121,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-    map_indexer_button = XtVaCreateManagedWidget(langcode("PULDNCF003"),
-            xmPushButtonGadgetClass,
-            configpane,
-            XmNmnemonic,langcode_hotkey("PULDNCF003"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
     units_choice_button = XtVaCreateManagedWidget(langcode("PULDNUT001"),
             xmToggleButtonGadgetClass,
             configpane,
@@ -4337,6 +4332,28 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_wx_alerts_button,XmNvalueChangedCallback,Map_wx_alerts_toggle,"1");
     if (!wx_alert_style)
         XmToggleButtonSetState(map_wx_alerts_button,TRUE,FALSE);
+
+    //Index Maps on startup
+    index_maps_on_startup_button = XtVaCreateManagedWidget(langcode("PULDNMP022"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(index_maps_on_startup_button,XmNvalueChangedCallback,Index_maps_on_startup_toggle,"1");
+    if (index_maps_on_startup)
+        XmToggleButtonSetState(index_maps_on_startup_button,TRUE,FALSE);
+
+
+        map_indexer_button = XtVaCreateManagedWidget(langcode("PULDNMP023"),
+          xmPushButtonGadgetClass,
+          mappane,
+          XmNmnemonic,langcode_hotkey("PULDNMP023"),
+          MY_FOREGROUND_COLOR,
+          MY_BACKGROUND_COLOR,
+          NULL);
 
 
     (void)XtVaCreateManagedWidget("create_appshell sep2a",
@@ -8079,6 +8096,15 @@ void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
     Dimension width, height;
     long my_new_latl, my_new_lonl;
 
+    // check for fixed station
+    if ( (output_station_type == 0) || (output_station_type > 3)) {
+      popup_message( "Modify fixed position", "Are you sure you want to modify your position?");
+    }
+    // check for position abiguity
+    if ( position_amb_chars > 0 ) { // popup warning that ambiguity is on
+      popup_message( "Modify ambiguous position", "Position abiguity is on, your new position may appear to jump.");
+    }
+
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
         my_new_lonl = (mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x));
@@ -8343,6 +8369,19 @@ void  Map_wx_alerts_toggle( /*@unused@*/ Widget widget, XtPointer clientData, Xt
         refresh_image(da);
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     }
+}
+
+
+
+
+
+void  Index_maps_on_startup_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        index_maps_on_startup = 1;
+    else
+        index_maps_on_startup = 0;
 }
 
 
@@ -21362,7 +21401,9 @@ int main(int argc, char *argv[], char *envp[]) {
             (void)check_rac_data();
 
             // Find the extents of every map we have
-            map_indexer();
+            if ( index_maps_on_startup ) {
+              map_indexer();
+            }
 
             // Mark the "selected" field in the in-memory map index
             // to correspond to the selected_maps.sys file.

@@ -62,7 +62,6 @@ PULDNCF002|Coordinate System|C|
 PULDNCF006|Audio Alarm|A|
 PULDNCF007|Sprachausgabe|S|
 PULDNCF008|Einstellungen sichern|E|
-PULDNCF003|Re-Index Maps|R|
 # (Einheiten siehe PULDNDP006)
 #
 # Menu "Karten"
@@ -82,6 +81,8 @@ PULDNMP011|Mauszeiger-Menu|M|
 PULDNMP008|Intensität|I|
 PULDNMP020|Enable/Configure Tigermap||
 PULDNMP021|Auto Map - Disable Raster Maps||
+PULDNMP022|Index Maps on Startup||
+PULDNMP023|Re-Index Maps|R|
 #
 #
 # PopUp "Configure Tigermap"
