@@ -1320,7 +1320,6 @@ void check_weather_symbol(void) {
             my_symbol = '_';
 
             // Update my station data with the new symbol
-            station_del(my_callsign);  // move to new sort location...
             my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
             redraw_on_new_data=2;
 
@@ -17362,8 +17361,15 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
 
     /* TO DO: KILL only my station data? */
     if (ok) {   // If entered data was valid
-        station_del(old_callsign);  // move to new sort location...
+
+        // Check whether we changed our callsign
+        if (strcasecmp(old_callsign,my_callsign) != 0) {
+            station_del(old_callsign);  // move to new sort location...
+        }
+
+        // Update our parameters
         my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
+
         redraw_on_new_data=2;
         Configure_station_destroy_shell(widget,clientData,callData);
     }
