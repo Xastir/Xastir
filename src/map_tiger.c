@@ -207,6 +207,12 @@ void draw_tiger_map (Widget w,
     int geo_image_width;        // Image width  from GEO file
     int geo_image_height;       // Image height from GEO file
 
+#ifdef USE_MAP_CACHE 
+	int map_cache_return; 
+#endif  // USE_MAP_CACHE
+
+
+
 
     xastir_snprintf(map_it,
         sizeof(map_it),
@@ -391,22 +397,20 @@ void draw_tiger_map (Widget w,
 
 #ifdef USE_MAP_CACHE 
 
-	int map_cache_return ; 
-
 	map_cache_return = map_cache_get(fileimg,local_filename); 
 	if (debug_level & 512) {
 		fprintf(stderr,"map_cache_return: %d\n", map_cache_return);
 	}
    		   
    
-if (map_cache_return != 0 ){
+    if (map_cache_return != 0 ) {
 
-    xastir_snprintf(local_filename,
-        sizeof(local_filename),
-        "%s/map_%s.%s",
-        get_user_base_dir("map_cache"),
-        map_cache_fileid(),
-        "gif");
+        xastir_snprintf(local_filename,
+            sizeof(local_filename),
+            "%s/map_%s.%s",
+            get_user_base_dir("map_cache"),
+            map_cache_fileid(),
+            "gif");
 
 #else
 
