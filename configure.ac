@@ -722,8 +722,22 @@ save_libs="$LIBS"
 save_ldflags="$LDFLAGS" 
 # 
 AC_CHECK_PROG(use_imagemagick, [Magick-config --version], yes, no) 
-if test "$use_imagemagick" = "yes"; then 
-  magickversion=`Magick-config --version` 
+if test "$use_imagemagick" = "yes"; then
+  MAGIC_BIN="Magick-config"
+else
+  # Test for MacOSX/Fink directories of "/sw/lib", "/sw/include",
+  # and "/sw/bin".
+  #
+  AC_CHECK_FILE(/sw/bin/Magick-config, use_imagemagick="yes") 
+  if test "$use_imagemagick" = "yes"; then
+    MAGIC_BIN=`/sw/bin/Magick-config` 
+  else
+    AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
+  fi
+fi
+
+if test "$use_imagemagick" = "yes"; then
+  magickversion=`${MAGIC_BIN} --version` 
   magickmajor=`echo $magickversion | cut -d '.' -f 1` 
   magickminor=`echo $magickversion | cut -d '.' -f 2` 
   magicktiny=`echo $magickversion | cut -d '.' -f 3` 
@@ -731,34 +745,45 @@ if test "$use_imagemagick" = "yes"; then
     magickold="yes"; 
   elif test "$magickmajor" -eq 5 -a "$magickminor" -lt 4; then 
     magickold="yes"; 
-  elif test "$magickmajor" -eq 5 -a "$magickminor" -eq 4 -a "$magicktiny" -lt 7; then 
+  elif test "$magickmajor" -eq 5 -a "$magickminor" -eq 4 -a "$magicktiny" -lt 9; then 
     magickold="yes"; 
   fi 
-fi 
+
+  CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`" 
+  CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`" 
+  LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`" 
+  LIBS="`${MAGIC_BIN} --libs` $LIBS" 
+
 # 
-if test "$use_imagemagick" = "no"; then 
-  AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
-else 
+# For the case of apple-darwin, we don't want to check the
+# headers/libraries 'cuz the standard macros won't find them anyway.
+# 
+  case "$host" in 
+  *-*apple-darwin* ) 
+      #
+      # Do nothing
+      #
+      ;; 
+  * ) 
+      AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no")
+      if test "$use_imagemagick" = "no"; then
+        AC_MSG_WARN(*** Missing ImageMagick include files.  Building w/o ImageMagick support. ***)
+      else
+        AC_CHECK_LIB([Magick], [WriteImage],
+        AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]) gpslc="\$(GPSL)", use_imagemagick="no")
+        if test "$use_imagemagick" = "no"; then
+          AC_MSG_WARN(*** Missing ImageMagick library.  Building w/o ImageMagick support. ***)
+        fi
+      fi
+      ;; 
+  esac 
+
   if test "$magickold" = "yes"; then 
-    AC_MSG_WARN(*** Old ImageMagick version ($magickversion) found.  Please upgrade to 5.4.7 or newer. ***) 
+    AC_MSG_WARN(*** Old ImageMagick ($magickversion) found.  Please upgrade to 5.4.9 or newer. ***) 
   fi 
-  CPPFLAGS="$CPPFLAGS `Magick-config --cppflags`" 
-  CXXFLAGS="$CXXFLAGS `Magick-config --cflags`" 
-  LDFLAGS="$LDFLAGS `Magick-config --ldflags`" 
-  LIBS="`Magick-config --libs` $LIBS" 
-  AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no") 
-  if test "$use_imagemagick" = "no"; then 
-    AC_MSG_WARN(*** Missing ImageMagick include files.  Building w/o ImageMagick support. ***) 
-  else 
-    AC_CHECK_LIB([Magick], [WriteImage], 
-    AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]) gpslc="\$(GPSL)", use_imagemagick="no") 
-    if test "$use_imagemagick" = "no"; then 
-        AC_MSG_WARN(*** Missing ImageMagick library.  Building w/o ImageMagick support. ***) 
-    fi 
-  fi 
-fi 
-# 
-if test "$use_imagemagick" = "no"; then 
+fi
+
+if test "$use_imagemagick" = "no"; then
   CPPFLAGS=$save_cppflags 
   CXXFLAGS=$save_cxxflags 
   LIBS=$save_libs 
