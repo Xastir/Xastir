@@ -187,8 +187,6 @@ break)])
 AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )))
 AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEFINE(HAVE_LIBXPM_IN_XM, , Define to 1 if the `Xm' library (-lXm) is used for Xpm. )))
  
-# Check for ImageMagick 
-XASTIR_CHECK_IMAGEMAGICK
  
 # Check for libproj
 use_proj=no
@@ -223,6 +221,10 @@ if test "${use_dbfawk}" = "yes"; then
   fi
 fi
 
+
+# Check for ImageMagick 
+XASTIR_CHECK_IMAGEMAGICK
+ 
 
 # Check for GDAL.  Make sure that GDAL is the last library, as it
 # can mess up shapelib and libgeotiff currently.
