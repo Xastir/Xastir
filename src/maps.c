@@ -3196,16 +3196,30 @@ void draw_shapefile_map (Widget w,
 // hole in the polygon.  Once we do handle this correctly, delete
 // this note and the one in the function comment block.
 //
-// Could try to implement the holes in one of two ways:
+//
+// Could try to implement the holes in several ways:
 //
 // 1) Snag an algorithm for a polygon "fill" function from
 // somewhere, but add a piece that will check for being inside a
 // "hole" polygon and just not draw while traversing it (change the
-// pen color to transparent?).
-// 2) Draw to another layer, then copy pixels over where we actually
-// draw pixels, skipping the holes.
-// 3) Try to use bitmasks to prevent drawing over certain areas, or
-// only allow drawing over certain areas.
+// pen color to transparent over the holes?).
+//
+// 2) Draw to another layer, then copy only the filled pixels to
+// their final destination pixmap.  Draw polygons once, then a copy
+// operation.
+//
+// 3) Use bitmasks to prevent drawing over the hole areas:  Draw to
+// another 1-bit pixmap or region.  This area can be the size of the
+// max shape extents.  Filled = 1.  Holes = 0.  Use that pixmap as a
+// clip-mask to draw the polygons again onto the final pixmap.  With
+// this method we end up drawing the shape twice.
+//
+// 4) Draw just the holes to a separate pixmap.  Either use that as
+// a keep-away clip-mask, or reverse the bits and use it as a
+// regular clip-mask for drawing the other parts of the shape to the
+// final destination.  I don't see an easy way to reverse the
+// clip-mask bits.  Might have to do that by hand, bit by bit.
+//
 //
 // Shapefiles also allow identical points to be next to each other
 // in the vertice list.  We should look for that and get rid of
