@@ -35,7 +35,9 @@ gnisdir=${pkgdatadir}/GNIS
 gnis_DATA=placeholder
 
 mapdir=${pkgdatadir}/maps
-map_DATA=placeholder terraserver.geo toposerver.geo tigermap.geo \
+
+onlinedir=${pkgdatadir}/maps/Online
+online_DATA=terraserver.geo toposerver.geo tigermap.geo \
         USRadar.geo CanadaTopo250k.geo CanadaTopo50k.geo
 
 gpsdir=${pkgdatadir}/maps/GPS
