@@ -2427,6 +2427,11 @@ void Snapshots_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
+    // Whether we're setting or unsetting it, set the timer such
+    // that a snapshot will occur immediately once the button is set
+    // again.
+    last_snapshot = 0;
+
     if(state->set)
         snapshots_enabled = atoi(which);
     else

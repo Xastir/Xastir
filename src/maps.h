@@ -75,6 +75,8 @@ extern int print_in_monochrome;
 extern int print_invert;
 extern int  locate_place(Widget w, char *name, char *state, char *county, char *quad, char* type, char *filename, int follow_case, int get_match);
 extern void maps_init(void);
+extern time_t last_snapshot;
+
 
 
 #if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
