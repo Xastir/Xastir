@@ -366,6 +366,10 @@ void draw_toporama_map (Widget w,
         //curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
 
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+
         /* write function */
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
 
@@ -1230,6 +1234,10 @@ fprintf(stderr,"1 ");
             /* verbose debug is keen */
           //            curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
             curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
+
+            curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
+            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+            curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 
             /* write function */
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);

@@ -445,6 +445,10 @@ void draw_tiger_map (Widget w,
       //        curl_easy_setopt(curl, CURLOPT_VERBOSE, TRUE);
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curlerr);
 
+        curl_easy_setopt(curl, CURLOPT_TIMEOUT, tigermap_timeout);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+
         /* write function */
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
 
