@@ -1370,6 +1370,7 @@ void draw_shapefile_map (Widget w,
             }
             else if (strstr(filename,"lkH")) {      // Rivers/Streams
                 river_flag++;
+                mapshots_labels_flag++;
                 if (debug_level & 16) {
                     printf("*** Found some rivers (mapshots rivers/streams) ***\n");
                     break;
@@ -1387,6 +1388,7 @@ void draw_shapefile_map (Widget w,
             }
             else if (strstr(filename,"wat")) {      // Bodies of water
                 lake_flag++;
+                mapshots_labels_flag++;
                 if (debug_level & 16) {
                     printf("*** Found some lakes (mapshots bodies of water) ***\n");
                     break;
@@ -1424,23 +1426,25 @@ void draw_shapefile_map (Widget w,
             char *attr_str;
             int j;
             for (j=0; j < recordcount; j++) {
-                attr_str = (char*)DBFReadStringAttribute(hDBF, j, i);
-                if (strncasecmp(attr_str, "LAKE", 4) == 0) {
-                    // NOAA Lakes and Water Bodies (lk17de98) shapefile
-                    lake_flag++;
-                    if (debug_level & 16)
-                        printf("*** Found some lakes (FEATURE == LAKE*) ***\n");
-                    break;
-                }
-                else if (strstr(attr_str, "Highway") != NULL ||
-                         strstr(attr_str, "highway") != NULL ||
-                         strstr(attr_str, "HIGHWAY") != NULL) {
-                    // NOAA Interstate Highways of the US (in011502) shapefile
-                    // NOAA Major Roads of the US (rd011802) shapefile
-                    road_flag++;
-                    if (debug_level & 16)
-                        printf("*** Found some roads (FEATURE == *HIGHWAY*) ***\n");
-                    break;
+                if (fieldcount >= (i+1)) {
+                    attr_str = (char*)DBFReadStringAttribute(hDBF, j, i);
+                    if (strncasecmp(attr_str, "LAKE", 4) == 0) {
+                        // NOAA Lakes and Water Bodies (lk17de98) shapefile
+                        lake_flag++;
+                        if (debug_level & 16)
+                            printf("*** Found some lakes (FEATURE == LAKE*) ***\n");
+                        break;
+                    }
+                    else if (strstr(attr_str, "Highway") != NULL ||
+                             strstr(attr_str, "highway") != NULL ||
+                             strstr(attr_str, "HIGHWAY") != NULL) {
+                         // NOAA Interstate Highways of the US (in011502) shapefile
+                         // NOAA Major Roads of the US (rd011802) shapefile
+                         road_flag++;
+                         if (debug_level & 16)
+                             printf("*** Found some roads (FEATURE == *HIGHWAY*) ***\n");
+                         break;
+                     }
                 }
             }
             if (!(debug_level & 16) && (lake_flag || road_flag))
@@ -1488,49 +1492,61 @@ void draw_shapefile_map (Widget w,
                     // internal storage of the DBF string.  This is
                     // why this code is organized with two "if"
                     // statements.
-                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                    if (!strncasecmp(search_param1,string1,2)) {
-                        //printf("Found state\n");
-                        string2 = (char *)DBFReadStringAttribute(hDBF,i,search_field2);
-                        ptr = string2;
-                        ptr += 2;   // Skip past first two characters of FIPS code
-                        if (!strncasecmp(search_param2,ptr,3)) {
+                    if (fieldcount >= (search_field1 + 1) ) {
+                        string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
+                        if (!strncasecmp(search_param1,string1,2)) {
+                            //printf("Found state\n");
+                            if (fieldcount >= (search_field2 + 1) ) {
+                                string2 = (char *)DBFReadStringAttribute(hDBF,i,search_field2);
+                                ptr = string2;
+                                ptr += 2;   // Skip past first two characters of FIPS code
+                                if (!strncasecmp(search_param2,ptr,3)) {
+//printf("Found it!  %s\tShape: %d\n",string1,i);
+                                    done++;
+                                    found_shape = i;
+                                }
+                            }
+                        }
+                    }
+                    break;
+                case 'w':   // County Warning Area File
+                    if (fieldcount >= (search_field1 + 1) ) {
+                        string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
+                        if (!strncasecmp(search_param1,string1,strlen(string1))) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
                             done++;
                             found_shape = i;
                         }
                     }
                     break;
-                case 'w':   // County Warning Area File
-                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                    if (!strncasecmp(search_param1,string1,strlen(string1))) {
-//printf("Found it!  %s\tShape: %d\n",string1,i);
-                        done++;
-                        found_shape = i;
-                    }
-                    break;
                 case 'o':   // Offshore Marine Area File
-                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                    if (!strncasecmp(search_param1,string1,strlen(string1))) {
+                    if (fieldcount >= (search_field1 + 1) ) {
+                        string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
+                        if (!strncasecmp(search_param1,string1,strlen(string1))) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
-                        done++;
-                        found_shape = i;
+                            done++;
+                            found_shape = i;
+                        }
                     }
                     break;
                 case 'm':   // Marine Area File
-                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                    if (!strncasecmp(search_param1,string1,strlen(string1))) {
+                    if (fieldcount >= (search_field1 + 1) ) {
+                        string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
+                        if (!strncasecmp(search_param1,string1,strlen(string1))) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
-                        done++;
-                        found_shape = i;
+                            done++;
+                            found_shape = i;
+                        }
                     }
                     break;
                 case 'z':   // Zone File
-                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
-                    if (!strncasecmp(search_param1,string1,strlen(string1))) {
+                    if (fieldcount >= (search_field1 + 1) ) {
+                        string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
+                        if (!strncasecmp(search_param1,string1,strlen(string1))) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
-                        done++;
-                        found_shape = i;
+                            done++;
+                            found_shape = i;
+                        }
                     }
                 default:
                     break;
@@ -1734,9 +1750,11 @@ void draw_shapefile_map (Widget w,
             if (debug_level & 16) {
                 // Print the field contents
                 for (jj = 0; jj < fieldcount; jj++) {
-                    temp = DBFReadStringAttribute( hDBF, structure, jj );
-                    if (temp != NULL) {
-                        printf("%s, ", temp);
+                    if (fieldcount >= (jj + 1) ) {
+                        temp = DBFReadStringAttribute( hDBF, structure, jj );
+                        if (temp != NULL) {
+                            printf("%s, ", temp);
+                        }
                     }
                 }
                 printf("\n");
@@ -1750,7 +1768,7 @@ void draw_shapefile_map (Widget w,
                     temp = "";
 
                     if (road_flag) {
-                        if (mapshots_labels_flag) {
+                        if ( (mapshots_labels_flag) && (fieldcount >= 8) ) {
                             char temp3[3];
                             char temp4[31];
                             char temp5[5];
@@ -1773,14 +1791,38 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
                         }
                         if ( (temp == NULL) || (strlen(temp) == 0) ) {
-                            if (fieldcount >=13) {  // Need at least 13 fields if we're snagging #12, else segfault
+                            if (fieldcount >=13)    // Need at least 13 fields if we're snagging #12, else segfault
                                 temp = DBFReadStringAttribute( hDBF, structure, 12 );    // DESCRIP
-                            }
+                            else
+                                temp = NULL;
                         }
                     } else if (lake_flag || river_flag) {
-                        if (fieldcount >=14) {  // Need at least 14 fields if we're snagging #13, else segfault
+                        if ( mapshots_labels_flag && river_flag && (fieldcount >= 8) ) {
+                            char temp3[3];
+                            char temp4[31];
+                            char temp5[5];
+                            char temp6[3];
+
+                            temp = DBFReadStringAttribute( hDBF, structure, 4 );
+                            xastir_snprintf(temp3,sizeof(temp3),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 5 );
+                            xastir_snprintf(temp4,sizeof(temp4),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 6 );
+                            xastir_snprintf(temp5,sizeof(temp5),"%s",temp);
+                            temp = DBFReadStringAttribute( hDBF, structure, 7 );
+                            xastir_snprintf(temp6,sizeof(temp6),"%s",temp);
+                            xastir_snprintf(temp2,sizeof(temp2),"%s %s %s %s",
+                                temp3,temp4,temp5,temp6);
+                            temp = temp2;
+                        }
+                        else if (mapshots_labels_flag && lake_flag && (fieldcount >= 4) ) {
+                            temp = DBFReadStringAttribute( hDBF, structure, 3 );
+                        }
+                        else if (fieldcount >=14) {  // Need at least 14 fields if we're snagging #13, else segfault
                             temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
                         }
+                        else
+                            temp = NULL;
                     }
 
                     if ( (temp != NULL) && (strlen(temp) != 0) && (map_labels) ) {
@@ -1850,6 +1892,7 @@ void draw_shapefile_map (Widget w,
                         if (fieldcount >= 7) {  // Need at least 7 fields if we're snagging #6, else segfault
                             lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
                         }
+
                         if (lanes != (int)NULL) {
                             (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
                         }
@@ -1980,7 +2023,12 @@ void draw_shapefile_map (Widget w,
                     temp = "";
 
                     if (lake_flag) {
-                        temp = DBFReadStringAttribute( hDBF, structure, 0 );    // NAME (lakes)
+                        if (mapshots_labels_flag && (fieldcount >= 4) )
+                            temp = DBFReadStringAttribute( hDBF, structure, 3 );
+                        else if (fieldcount >= 1)
+                            temp = DBFReadStringAttribute( hDBF, structure, 0 );    // NAME (lakes)
+                        else
+                            temp = NULL;
                     }
 
                     if ( (temp != NULL) && (strlen(temp) != 0) && (map_labels) ) {
