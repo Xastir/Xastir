@@ -6519,7 +6519,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case DEVICE_SERIAL_TNC_HSP_GPS:
 
                 /* make dtr normal */
-                port_dtr(port,0);
+                if (port_data[port].status == DEVICE_UP) {
+                    port_dtr(port,0);
+                }
 
             case DEVICE_SERIAL_TNC_AUX_GPS:
             case DEVICE_SERIAL_KISS_TNC:
@@ -6927,10 +6929,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     break;
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-                    if (!transmit_disable
-                            && port_data[i].status == DEVICE_UP
-                            && devices[i].transmit_data == 1
-                            && !loopback_only) {
+                    if (port_data[i].status == DEVICE_UP && !loopback_only) {
                         port_dtr(i,0);           // make DTR normal
                     }
 
@@ -7287,6 +7286,10 @@ begin_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
 
             if (debug_level & 2)
                 fprintf(stderr,"TX:%d<%s>\n",i,data_txt);
+
+            if (port_data[i].device_type == DEVICE_SERIAL_TNC_HSP_GPS) {
+                port_dtr(i,0);  // make DTR inactive (select TNC data)
+            }
         }
     }
 
