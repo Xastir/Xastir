@@ -3895,9 +3895,26 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     count++;
                 }   // End of while loop
                 if (!done) {   // We found no entries in the unproto fields for the interface.
-                    xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, "RELAY,WIDE");
-                    xastir_snprintf(header_txt_save, sizeof(header_txt_save), "%s>%s,%s:", my_callsign, VERSIONFRM, "RELAY,WIDE");
-                    xastir_snprintf(path_txt,sizeof(path_txt),"RELAY,WIDE");
+
+                    xastir_snprintf(header_txt,
+                        sizeof(header_txt),
+                        "%c%s %s VIA %s\r",
+                        '\3',
+                        "UNPROTO",
+                        VERSIONFRM,
+                        "WIDE,WIDE2-2");
+
+                    xastir_snprintf(header_txt_save,
+                        sizeof(header_txt_save),
+                        "%s>%s,%s:",
+                        my_callsign,
+                        VERSIONFRM,
+                        "WIDE,WIDE2-2");
+
+                    xastir_snprintf(path_txt,
+                        sizeof(path_txt),
+                        "WIDE,WIDE2-2");
+
                 }
                 // Increment the path number for the next round of transmissions.
                 // This will round-robin the paths so that all entered paths get used.
@@ -4438,13 +4455,25 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     }   // End of while loop
                     if (!done) {    // We found no entries in the unproto fields for the interface
 
-                        xastir_snprintf(data_txt, sizeof(data_txt), "%c%s %s VIA %s\r",
-                                '\3', "UNPROTO", VERSIONFRM, "RELAY,WIDE");
+                        xastir_snprintf(data_txt,
+                            sizeof(data_txt),
+                            "%c%s %s VIA %s\r",
+                            '\3',
+                            "UNPROTO",
+                            VERSIONFRM,
+                            "WIDE,WIDE2-2");
 
-                        xastir_snprintf(data_txt_save, sizeof(data_txt_save), "%s>%s,%s:",
-                                my_callsign, VERSIONFRM, "RELAY,WIDE");
+                        xastir_snprintf(data_txt_save,
+                            sizeof(data_txt_save),
+                            "%s>%s,%s:",
+                            my_callsign,
+                            VERSIONFRM,
+                            "WIDE,WIDE2-2");
 
-                        xastir_snprintf(path_txt, sizeof(path_txt), "RELAY,WIDE");
+                        xastir_snprintf(path_txt,
+                            sizeof(path_txt),
+                            "WIDE,WIDE2-2");
+
                     }
                     // Increment the path number for the next round of transmissions.
                     // This will round-robin the paths so that all entered paths get used.
