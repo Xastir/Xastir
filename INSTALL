@@ -41,8 +41,8 @@ Short summary of libraries Xastir can use:
 -------------------------------------------------------------------------
 Motif or OpenMotif or LessTiff  Required  The GUI widget set
 pthreads                        Required  Threading capability
-Shapelib                      Recommended ESRI Shapefile maps and wx alerts
-pcre			      Recommended used with Shapefile maps
+Shapelib                        Recommended ESRI Shapefile maps and wx alerts
+pcre                            Recommended used with Shapefile maps
 Xpm                             Optional  XPM images
 ImageMagick                     Optional  MANY graphics images
 libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
