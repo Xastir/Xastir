@@ -33,6 +33,8 @@ The Questions
 
     3.1 Why won't Xastir compile with my system's cc?
     3.2 I'm using gcc and I get some compilation errors, what is wrong?
+    3.3 The linking stage is failing because it isn't linking in the
+        freetype library.  What to do?
 
 4.  Running Xastir
 
@@ -238,6 +240,16 @@ The Answers
     If you fail to do this, then it is very likely that Xastir will fail to
     build. One of the most common errors is with readv, writev, or uio.h.
     This is not a bug with Xastir. You will need to re-install GCC.
+
+    3.3 The linking stage is failing because it isn't linking in the
+        freetype library.  What to do?
+
+    This is, yet again, an ImageMagick problem.  ImageMagick as
+    installed on some systems needs this library linked in.  The
+    "Magick-config" script is supposed to supply a list of all of the
+    libraries that ImageMagick needs, but evidently they forgot one.
+    To get around this problem, you can add "-lfreetype" to the link
+    line to get the compile to complete.
 
 
 4. Running Xastir
