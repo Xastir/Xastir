@@ -44,6 +44,17 @@ contribution!
 -- The Xastir Group.
 
 
+
+NOTE:  If you're running as the ROOT user regularly, stop to
+consider the problems you might get into if you type the wrong
+command, not to mention the problems if someone manages to get
+control of one of your ROOT programs!  (Kiss your files goodbye now,
+while you still can!).  Create another user account and run under
+that login instead of root.  You'll save yourself many headaches in
+the future.  This is speaking from DIRECT experience.
+
+
+
 Short summary of libraries Xastir can use:
 -------------------------------------------------------------------------
 Motif or OpenMotif or LessTiff  Required  The GUI widget set
@@ -942,20 +953,28 @@ Gating NWS Weather Alerts to RF:
 
 Getting Data Files for Xastir:
 ------------------------------
-    Download some maps:
 
-      NOTE:  Set map FILES to permissions 444 or 644 ("r--r--r--" or
-      "rw-r--r--") using the "chmod" command.  The map DIRECTORIES
-      should be set to 755 ("rwxr-xr-x").  These permissions will
-      allow anyone on the box to read the map files.  If you're
-      running as the ROOT user regularly, stop to consider the
-      problems you might get into if you type the wrong command, not
-      to mention the problems if someone manages to get control of
-      one of your ROOT programs!  (KISS your files goodbye now,
-      while you still can!).  Create another user account and run
-      under that login instead of root.  You'll save yourself many
-      headaches in the future.  This is speaking from DIRECT
-      experience.
+      NOTE:  Set map FILES to permissions 644 ("rw-r--r--"), map
+      DIRECTORIES to 755 ("rwxr-xr-x") using the "chmod" command.
+      These permissions will allow anyone on the box to read the map
+      files.  If you try the simple approach and do a recursive
+      chmod command, you'll often make _everything_ 644, including
+      the directories.  Nobody will be able to "cd" into those
+      directories anymore.  This is a common Unix mistake.  I've done
+      it.  Most everyone has done it at least once.  Type these
+      commands exactly as shown in order to set the map directory's
+      permissions properly.  Do this as the root user:
+
+      cd /usr/local/xastir/maps
+      find . -type d -exec chmod 755 {} \;
+      find . -type f -exec chmod 644 {} \;
+
+      You can repeat these commands at anytime, to fix up errant map
+      permissions that are created by downloading/installing new
+      maps.
+
+
+    Download some maps:
 
       If you compiled with ImageMagick and have wget installed, you can skip
       this step and use the online Tiger/Terraserver maps exclusively. However,
