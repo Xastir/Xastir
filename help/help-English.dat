@@ -1252,6 +1252,10 @@ This sub-menu allows filtering of the displayed symbols:
     Select WX Stations
       This option displays Weather Stations.
 
+     Select CWOP WX Stations
+      This option includes the display of citizen weather (non-ham) weather
+      data.
+
   Select Objects/Items
     Global toggle for displaying objects/items, but may be narrowed:
 
@@ -1272,6 +1276,10 @@ This sub-menu allows filtering of the displayed data:
 
   Display Callsign
   Determines if the callsign is displayed.
+
+    Label Trailpoints
+    This option includes callsigns along trails, to help identify which
+    points belong to which stations.
 
   Display Symbol
   Determines if the symbol is shown to the left of the callsign.
@@ -1318,6 +1326,7 @@ This sub-menu allows filtering of the displayed data:
     Display Wind Barb
     When enabled, a wind barb showing the direction and speed of the wind is
     drawn for all displayed stations reporting this information. 
+
 
   Display Position Ambiguity
   When enabled, the area in which station using position ambiguity may be
@@ -1367,18 +1376,6 @@ This sub-menu allows filtering of the displayed data:
   Display Last Report Age
   Display the time since the station was last heard.
 
-
-Clear All Stations
-This will wipe all the data from the station database except yours.  This
-option is perhaps useful if you're low on memory or just want to unclutter
-your screen.
-
-Clear All Trails
-This will wipe all the line tracking data from the station database and
-refresh the screen.  This option is perhaps useful if you're low on memory
-or just want an uncluttered screen.  You may also clear individual station's
-trails from the Station Info dialog.
-
 Reload Object/Item History
 This will reload the ~/.xastir/config/objects.log file used for Object and Item
 persistence. This is needed if you edit the file while Xastir is running.
@@ -1388,6 +1385,24 @@ This will clear the ~/.xastir/config/objects.log file used for Object and Item
 persistence. It is recommended that you manually select and delete all Objects
 and Items that you own before doing this, otherwise they may remain on the
 screens of other APRS users.
+
+Clear All Tactical Calls
+Clears all assigned tactical calls. This will take effect the next redraw.
+
+Clear Tactical Call History
+This removes the tactical call history file, meaning that tactical calls
+assigned will not remain permanant between Xastir restarts.
+
+Clear All Trails
+This will wipe all the line tracking data from the station database and
+refresh the screen.  This option is perhaps useful if you're low on memory
+or just want an uncluttered screen.  You may also clear individual station's
+trails from the Station Info dialog.
+
+Clear All Stations
+This will wipe all the data from the station database except yours.  This
+option is perhaps useful if you're low on memory or just want to unclutter
+your screen.
 
 HELP-INDEX>Messages and the Messages menu
 
@@ -1530,6 +1545,14 @@ HELP-INDEX>Station info box - FCC and RAC lookup
                   Station info box - FCC and RAC lookup
 
 Station Info will display any data decoded by Xastir.
+
+You can assign tactial calls to stations from here, by clicking the "Assign
+Tactical Call" button. This will cause the station on screen to display as
+the tactical call instead of its callsign. Assiggning blank clears this
+feature, and it can also be cleared for all stations in the Stations menu.
+
+"Enable Automatic Updates" will cause the window to refresh frequently with the
+latest information.
 
 The information available may include: Number of packets heard, the time
 last heard, the device the packet came from, station comments, 
