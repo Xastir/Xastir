@@ -645,10 +645,11 @@ WPUPMSB003|Indicativo de estação:||
 WPUPMSB004|Indicativos de grupos:||
 WPUPMSB005|Novo indicativo||
 WPUPMSB006|Novo grupo||
-WPUPMSB007|Anular mensagens||
+WPUPMSB007|Clear Msg History||
 WPUPMSB008|Mensagem:||
 WPUPMSB009|Enviar agora!||
 WPUPMSB010|Encaminhamento:||
+WPUPMSB011|Cancel Pending Msgs||
 #
 # Auto resposta
 WPUPARM001|Mudar resposta automática||

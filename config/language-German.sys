@@ -648,10 +648,11 @@ WPUPMSB003|Stationsrufzeichen:||
 WPUPMSB004|Gruppenrufzeichen:||
 WPUPMSB005|Neues Rufzeichen||
 WPUPMSB006|Neue Gruppe||
-WPUPMSB007|Lösche Nachrichten||
+WPUPMSB007|Clear Msg History||
 WPUPMSB008|Nachricht:||
 WPUPMSB009|Sende jetzt!||
 WPUPMSB010|Pfad:||
+WPUPMSB011|Cancel Pending Msgs||
 #
 # PopUp "Automatische Antwort"
 WPUPARM001|Automatische Antwort ändern||

@@ -653,10 +653,11 @@ WPUPMSB003|Stations Roepnaam:||
 WPUPMSB004|Groeps Roepnaam:||
 WPUPMSB005|Nieuwe Roepnaam||
 WPUPMSB006|Nieuwe Groep||
-WPUPMSB007|Wis Berichten||
+WPUPMSB007|Clear Msg History||
 WPUPMSB008|Bericht:||
 WPUPMSB009|Stuur Nu!||
 WPUPMSB010|Path:||
+WPUPMSB011|Cancel Pending Msgs||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Automatich Antwoord Bericht||

@@ -64,7 +64,8 @@ typedef struct {
     Widget send_message_text;
     Widget send_message_path;
     Widget pane, form, button_ok, button_cancel;
-    Widget button_clear_msg, button_submit_call;
+    Widget button_clear_old_msgs, button_submit_call;
+    Widget button_clear_pending_msgs;
     Widget call, message, path;
 } Message_Window;
 
@@ -88,6 +89,7 @@ extern xastir_mutex send_message_dialog_lock;
 extern void messages_gui_init(void);
 extern void Send_message(Widget w, XtPointer clientData, XtPointer callData);
 extern void Clear_messages(Widget w, XtPointer clientData, XtPointer callData);
+extern void clear_outgoing_messages_to(char *callsign);
 extern void Send_message_call(Widget w, XtPointer clientData, XtPointer callData);
 
 // view_message_gui.c

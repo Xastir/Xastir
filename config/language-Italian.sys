@@ -642,10 +642,11 @@ WPUPMSB003|Nominativi stazioni:||
 WPUPMSB004|Nominativo gruppo:||
 WPUPMSB005|Nuovo nominativo||
 WPUPMSB006|Nuovo gruppo||
-WPUPMSB007|Elimina messaggi||
+WPUPMSB007|Clear Msg History||
 WPUPMSB008|Messaggio:||
 WPUPMSB009|Invia ora!||
 WPUPMSB010|Percorso:||
+WPUPMSB011|Cancel Pending Msgs||
 #
 #Auto Reply
 WPUPARM001|Cambia risposta automatica||

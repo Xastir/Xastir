@@ -641,10 +641,11 @@ WPUPMSB003|Indicatif de station:||
 WPUPMSB004|Ident. du groupe:||
 WPUPMSB005|Nouvel indicatif||
 WPUPMSB006|Nouveau groupe||
-WPUPMSB007|Effacer tous les messages||
+WPUPMSB007|Clear Msg History||
 WPUPMSB008|Message:||
 WPUPMSB009|Transmettre maintenant!||
 WPUPMSB010|Voie:||
+WPUPMSB011|Cancel Pending Msgs||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||

@@ -510,6 +510,26 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_to
 
 
 
+void Clear_messages_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    char *temp_ptr;
+    char temp1[MAX_CALLSIGN+1];
+
+
+    temp_ptr = XmTextFieldGetString(mw[atoi(clientData)].send_message_call_data);
+        xastir_snprintf(temp1,
+            sizeof(temp1),
+            "%s",
+            temp_ptr);
+    XtFree(temp_ptr);
+
+    clear_outgoing_messages_to(temp1);
+    update_messages(1); // Force an update to the window
+}
+
+
+
+
+
 void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char call[20];
 
@@ -599,7 +619,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         mw[i].form =  XtVaCreateWidget("Send_message form",
                 xmFormWidgetClass,
                 mw[i].pane,
-                XmNfractionBase, 5,
+                XmNfractionBase, 4,
                 XmNautoUnmanage, FALSE,
                 XmNshadowThickness, 1,
                 MY_FOREGROUND_COLOR,
@@ -688,30 +708,13 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        mw[i].button_clear_msg = XtVaCreateManagedWidget(langcode("WPUPMSB007"),
-                xmPushButtonGadgetClass, 
-                mw[i].form,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].button_submit_call,
-                XmNleftOffset, 10,
-                XmNtopAttachment, XmATTACH_NONE,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 80,
-                XmNrightAttachment, XmATTACH_NONE,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, TRUE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-//WE7U
         mw[i].path = XtVaCreateManagedWidget(langcode("WPUPMSB010"),
                 xmLabelWidgetClass, mw[i].form,
                 XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 85,
                 XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, mw[i].button_clear_msg,
+                XmNleftWidget, mw[i].button_submit_call,
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_NONE,
                 MY_FOREGROUND_COLOR,
@@ -775,6 +778,38 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNtraversalOn, TRUE,
                 NULL);
 
+        mw[i].button_clear_old_msgs = XtVaCreateManagedWidget(langcode("WPUPMSB007"),
+                xmPushButtonGadgetClass, 
+                mw[i].form,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        mw[i].button_clear_pending_msgs = XtVaCreateManagedWidget(langcode("WPUPMSB011"),
+                xmPushButtonGadgetClass, 
+                mw[i].form,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNtopAttachment, XmATTACH_NONE,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNnavigationType, XmTAB_GROUP,
+                XmNtraversalOn, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
         mw[i].button_ok = XtVaCreateManagedWidget(langcode("WPUPMSB009"),
                 xmPushButtonGadgetClass, 
                 mw[i].form,
@@ -782,9 +817,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 1,
+                XmNleftPosition, 2,
                 XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 2,
+                XmNrightPosition, 3,
                 XmNnavigationType, XmTAB_GROUP,
                 XmNtraversalOn, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -814,11 +849,13 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
  
 // Note group messages isn't implemented fully yet.  When it is, the following might have
 // to change again:
-//        XtAddCallback(mw[i].button_clear_msg, XmNactivateCallback, groupon == 0 ? Clear_message_from: Clear_message_to,
+//        XtAddCallback(mw[i].button_clear_old_msgs, XmNactivateCallback, groupon == 0 ? Clear_message_from: Clear_message_to,
 //                (XtPointer)mw[i].win);
-        XtAddCallback(mw[i].button_clear_msg, XmNactivateCallback, Clear_message_to_from, (XtPointer)mw[i].win);
+        XtAddCallback(mw[i].button_clear_old_msgs, XmNactivateCallback, Clear_message_to_from, (XtPointer)mw[i].win);
 
-        XtAddCallback(mw[i].button_submit_call, XmNactivateCallback,  Check_new_call_messages, (XtPointer)mw[i].win);
+        XtAddCallback(mw[i].button_clear_pending_msgs, XmNactivateCallback, Clear_messages_to, (XtPointer)mw[i].win);
+
+        XtAddCallback(mw[i].button_submit_call, XmNactivateCallback, Check_new_call_messages, (XtPointer)mw[i].call);
 
         if (clientData != NULL) {
             char path[200];

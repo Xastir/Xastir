@@ -344,6 +344,40 @@ void clear_outgoing_message(int i) {
 
 
 
+// Clear all pending transmit messages that are from us and to the
+// callsign listed.  Perhaps it'd be better to time it out instead
+// so that it still shows up in the message window?  Here we just
+// erase it.
+//
+void clear_outgoing_messages_to(char *callsign) {
+    int ii;
+
+
+//    fprintf(stderr,"Callsign: %s\n", callsign);
+
+    // Run through the entire outgoing message queue
+    for (ii = 0; ii < MAX_OUTGOING_MESSAGES; ii++) {
+
+        // If it matches the callsign we're talking to
+        if (strcasecmp(message_pool[ii].to_call_sign,callsign) == 0) {
+
+            // Clear it out.
+            message_pool[ii].active=MESSAGE_CLEAR;
+            message_pool[ii].to_call_sign[0] = '\0';
+            message_pool[ii].from_call_sign[0] = '\0';
+            message_pool[ii].message_line[0] = '\0';
+            message_pool[ii].seq[0] = '\0';
+            message_pool[ii].active_time=0;;
+            message_pool[ii].next_time=0l;
+            message_pool[ii].tries=0;
+        }
+    }
+}
+
+
+
+
+
 void reset_outgoing_messages(void) {
     int i;
 

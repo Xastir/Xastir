@@ -1406,12 +1406,17 @@ receive will be sorted by the line # and be placed in the message window. If
 you are in a group mode each line will display the call sign from where the
 message was sent followed by the message itself. Currently group messages are
 sorted by call and then line #. When you are done sending messages clicking on
-the exit button will close the window. Two other buttons are also available.
-The "New Call" button will allow you to look at old data a station has sent.
-Type in the call and click on this button, any old information will be 
-displayed. You can also use this button to change the call of the station
-you're talking with. Enter the new call and click the button. The "Clear
-Messages" button will clear any message displayed in the message window.
+the exit button will close the window. Other buttons are also available:  The
+"New Call" button will allow you to look at old data a station has sent.  Type
+in the call and click on this button, any old information will be displayed.
+You can also use this button to change the call of the station you're talking
+with. Enter the new call and click the button. The "Clear Msg History" button
+will clear any message displayed in the message window.  "Cancel Pending Msgs"
+will cancel any messages in the transmit queue that haven't been acknowledged
+by the remote station yet.  After cancelling the pending messages or receiving
+and acknowlegment packet from the remote station, you may send new messages to
+the remote station.  Xastir will allow you to type ahead, so you can just keep
+typing if you don't want to wait for the acknowledgments.
 
 Messages in reply to previous ones will attempt to use the path of the
 received message to avoid flooding the system with broadcast messages. You
@@ -1421,7 +1426,8 @@ can be set for each message sent, but once a message is sent the path
 remains fixed for that particular message.
 
 Each outgoing message remains highlighted until it is ack'ed by the remote
-station.
+station.  If it times out or if you cancel the pending messages, those
+messages will remain highlighted unless you clear the message history.
 
 Clear all outgoing messages
 This will clear all un-ack'ed messages you have sent.
