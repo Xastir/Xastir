@@ -78,6 +78,7 @@ The Questions
     4.17 Why do I get black map images when I use ImageMagick?
     4.18 Why does my MacOSX machine w/USB->Serial adapters hang?
     4.19 Why do NumLock/ScrollLock/CapsLock interfere with mouse/keyboard operation?
+    4.20 How to I redirect serial ports from one computer to another?
 
 5.  Features
 
@@ -682,6 +683,36 @@ The Answers
         xmodmap -e "clear Lock"
         xmodmap -e "clear Mod2"
         xmodmap -e "clear Mod5"
+
+    4.20 How to I redirect serial ports from one computer to another?
+
+    For Linux, try a program called "remserial". It works as a
+    client/server pair to do exactly what you want.  Google should
+    find it for you.  One user was able to use a spare serial port
+    on his windows box using "remserial" on the linux computer and a
+    program called "serproxy" on the windows machine. Another one I
+    have to try for windows is comfoolery.
+
+    Another option is to use a Perl script on each end to do the
+    conversion.
+
+    Yet another is to use "netcat".  "man nc" should tell you about
+    it.  It redirects tcpip data seamlessly under Linux.  Try
+    something like this:
+
+        cat /dev/ttyS0 > nc -p 3000
+
+    If you want to put your GPS on a remote serial port, use the
+    gpsd daemon to do it.
+
+    if you wish to put your weather station on a remote serial port,
+    investigate using OWW (for Dallas weather stations), wx200d
+    daemon for some Radio Shack/Huger/Oregon Scientific weather
+    stations, or Meteo daemon for Davis weather stations.
+
+    You may also connect to a remote AGWPE instance for using remote
+    TNC's/soundcards.  Note that AGWPE runs only on WIndows.
+
 
 5.  Features
 
