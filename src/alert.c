@@ -27,22 +27,9 @@
 // We may want to call or schedule somehow that refresh_image gets
 // called, so that new alerts will show up in a timely manner.
 // alert_redraw_on_update will cause refresh_image to get called.
-// alert_add_entry sets it.  Expiring an alert should set it as well.
+// alert_add_entry sets it.
 
 
-//
-// Changes Dale Huguely would like to see:
-// Shapefile weather alerts.
-// What are the ? and - at the beginning?  Also there seems to be no
-// parsing of the data such as issue time - expiration time or who
-// sent it.  Need to at least be able to see the stuff after the
-// curly brace on the screen.  Need the first 6 chars from the "from
-// Call" and the first 3 chars after the curly brace for a new query
-// operation that Dale has planned.
-//
-
-
-//
 // In the alert structure, flags[] is size 16.  Only the first two
 // positions in the array are currently used.
 //
@@ -78,7 +65,8 @@
 //
 //
 // The code should also handle the case where the packet looks like
-// this (same except no expiration date):
+// this (it's the same as the above packet except for no expiration
+// date):
 //
 // SFONPW>APRS::NWS-ADVIS:WIND,CA_Z007,CA_Z065, ALAMEDA AND CON & NAPA COUNTY {JDIAA
 //

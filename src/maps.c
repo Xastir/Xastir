@@ -11924,33 +11924,31 @@ static int alert_count;
 
 
 
-/**********************************************************
+/*******************************************************************
  * load_alert_maps()
  *
- * Used to load weather alert maps, based on NWS weather
- * alerts that are received.  Called from create_image()
- * and refresh_image().  This version of the function is
- * designed to use ESRI Shapefile map files.
- * The base directory where the Shapefiles are located is
- * passed to us in the "dir" variable.
+ * Used to load weather alert maps, based on NWS weather alerts that
+ * are received.  Called from create_image() and refresh_image().
+ * This function is designed to use ESRI Shapefile map files.  The
+ * base directory where the Shapefiles are located is passed to us
+ * in the "dir" variable.
  *
  * map_search() fills in the filename field of the alert struct.
  * draw_shapefile_map() fills in the index field.
- **********************************************************/
+ *******************************************************************/
 void load_alert_maps (Widget w, char *dir) {
     int ii, level;
     char alert_scan[MAX_FILENAME], *dir_ptr;
-
-    /* gray86, red2, yellow2, cyan2, RoyalBlue, ForestGreen, orange3 */
-    unsigned char fill_color[] = {  (unsigned char)0x69,
-                                    (unsigned char)0x4a,
-                                    (unsigned char)0x63,
-                                    (unsigned char)0x66,
-                                    (unsigned char)0x61,
-                                    (unsigned char)0x64,
-                                    (unsigned char)0x62 };
+    unsigned char fill_color[] = {  (unsigned char)0x69,    // gray86
+                                    (unsigned char)0x4a,    // red2
+                                    (unsigned char)0x63,    // yellow2
+                                    (unsigned char)0x66,    // cyan2
+                                    (unsigned char)0x61,    // RoyalBlue
+                                    (unsigned char)0x64,    // ForestGreen
+                                    (unsigned char)0x62 };  // orange3
 
 
+// TODO:
 // Figure out how to pass a quantity of zones off to the map drawing
 // routines, then we can draw them all with one pass through each
 // map file.  Alphanumerically sort the zones to make it easier for
