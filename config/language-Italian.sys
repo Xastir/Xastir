@@ -24,6 +24,7 @@ MENUTB0009|Guida|G|
 MENUTB0010|Interfacce|I|
 #
 # Menù Dati
+PULDNFI001|Configura|C|
 PULDNFI002|Apri file di registro|A|
 PULDNFI003|Test||
 PULDNFI004|Esci|x|
@@ -34,6 +35,7 @@ PULDNFI011|Registro Rete|e|
 PULDNFI012|Accesso al Gateway Internet|G|
 PULDNFI013|Registro dati meteo|G|
 PULDNFI014|Cattura schermo in PNG||
+PULDNFI015|Stampa|P|
 #
 # Menù Visualizza
 PULDNVI001|Bollettini|B|
