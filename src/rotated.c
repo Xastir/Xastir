@@ -1099,20 +1099,37 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
         xinc=1./tan(angle);
     }
 
+
     /* loop through all relevent bits in rotated image */
     for(j=0; j<item->rows_out; j++) {
+        float dj_sin, dj_cos;
+        float cols_in2, rows_in2;
+
         
         /* no point re-calculating these every pass */
         di=(float)((xl<0)?0:(int)xl)+0.5-(float)item->cols_out/2;
         byte_out=(item->rows_out-j-1)*byte_w_out;
-        
+
+        // New code:  Calculate these outside the inner loop for
+        // major speed gains.
+        dj_sin = dj * sin_angle;
+        dj_cos = dj * cos_angle;
+        cols_in2 = (float)item->cols_in/2;
+        rows_in2 = (float)item->rows_in/2;
+
         /* loop through meaningful columns */
         for(i=((xl<0)?0:(int)xl); 
-            i<((xr>=item->cols_out)?item->cols_out:(int)xr); i++) {
+                i<((xr>=item->cols_out)?item->cols_out:(int)xr); i++) {
             
-            /* rotate coordinates */
-            it=(float)item->cols_in/2 + ( di*cos_angle + dj*sin_angle);
-            jt=(float)item->rows_in/2 - (-di*sin_angle + dj*cos_angle);
+            // rotate coordinates
+
+            // Original code (very slow)
+            //it=(float)item->cols_in/2 + ( di*cos_angle + dj*sin_angle);
+            //jt=(float)item->rows_in/2 - (-di*sin_angle + dj*cos_angle);
+
+            // New code (much faster)
+            it=(float)cols_in2 + ( di*cos_angle + dj_sin);
+            jt=(float)rows_in2 - (-di*sin_angle + dj_cos);
             
             /* set pixel if required */
             if(it>=0 && it<item->cols_in && jt>=0 && jt<item->rows_in)
