@@ -1,3 +1,7 @@
+2003-02-13  kg4ijb@sourceforge.net
+
+	* Removed old configure files and added new ac
+
 2003-02-02 23:16  jtwilley
 
         * COPYING: made example Y2K-compliant
@@ -726,7 +730,7 @@
 2001-12-27 17:04  dk7in
 
         * src/db.c: 
-        Correction of WX data below 0°F, submitted by Timo Pekurinen
+        Correction of WX data below 0F, submitted by Timo Pekurinen
 
 2001-12-22 21:14  we7u
 
@@ -5788,7 +5792,7 @@
         90N/180W point, and so    were declared moving. I have to see where
         this comes from. Some guys    are sending wrong data sometimes... 
         Or stations with missing    position are not blocked anymore, I
-        have to investigate.  - No tracking for 0°N/0°E points -- Rolf
+        have to investigate.  - No tracking for 0N/0E points -- Rolf
         Bleher, DK7IN
 
 2001-02-27 18:56  we7u
