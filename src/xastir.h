@@ -162,7 +162,6 @@ extern int tiger_show_statehwy;
 extern int tiger_show_water;
 extern int tiger_show_lakes;
 extern int tiger_show_misc;
-extern int tigermap_intensity;
 extern int tigermap_timeout;
 #endif  // HAVE_IMAGEMAGICK
 

@@ -619,7 +619,6 @@ Widget tiger_cities,
        tiger_water,
        tiger_lakes,
        tiger_misc,
-       tiger_intensity,
        tiger_timeout;
 
 int tiger_show_grid = TRUE;
@@ -636,7 +635,6 @@ int tiger_show_statehwy = TRUE;
 int tiger_show_water = TRUE;
 int tiger_show_lakes = TRUE;
 int tiger_show_misc = TRUE;
-int tigermap_intensity = 100;
 int tigermap_timeout = 30;
 
 #endif  // HAVE_IMAGEMAGICK
@@ -14012,7 +14010,6 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
     else
         tiger_show_statehwy=FALSE;
 
-    XmScaleGetValue(tiger_intensity, &tigermap_intensity);
     XmScaleGetValue(tiger_timeout, &tigermap_timeout);
 
     Configure_tiger_destroy_shell(widget,clientData,callData);
@@ -14065,7 +14062,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         tiger_form =  XtVaCreateWidget("Configure_tiger tiger_form",
                 xmFormWidgetClass, 
                 tiger_pane,
-                XmNfractionBase, 5,
+                XmNfractionBase, 3,
                 XmNautoUnmanage, FALSE,
                 XmNshadowThickness, 1,
                 MY_FOREGROUND_COLOR,
@@ -14111,7 +14108,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 2,
+                XmNleftPosition, 1,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14126,7 +14123,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 4,
+                XmNleftPosition, 2,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14157,7 +14154,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 2,
+                XmNleftPosition, 1,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14172,7 +14169,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 4,
+                XmNleftPosition, 2,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14203,7 +14200,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 2,
+                XmNleftPosition, 1,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14218,7 +14215,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 4,
+                XmNleftPosition, 2,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14249,7 +14246,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 2,
+                XmNleftPosition, 1,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14264,7 +14261,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 4,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 4,
+                XmNleftPosition, 2,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14295,7 +14292,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 2,
+                XmNleftPosition, 1,
                 XmNrightAttachment, XmATTACH_NONE,
                 XmNsensitive, TRUE,
                 MY_FOREGROUND_COLOR,
@@ -14303,31 +14300,6 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 NULL);
 
        intensity_length = strlen(langcode("MPUPTGR016")) + 1;
-
-       tiger_intensity  = XtVaCreateManagedWidget("Intensity", 
-                xmScaleWidgetClass,
-                tiger_form,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, tiger_lakes,
-                XmNtopOffset, 10,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 0,
-                XmNleftOffset, 20,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 2,
-                XmNrightOffset, 0,
-                XmNsensitive, TRUE,
-                XmNorientation, XmHORIZONTAL,
-                XmNborderWidth, 1,
-                XmNminimum, 30, //Having less than this makes the tigermaps too dark to see (0 will cause a segfault) - N0VH
-                XmNmaximum, 100,
-                XmNshowValue, TRUE,
-                XmNvalue, tigermap_intensity,
-                XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR016"), intensity_length,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
 
        timeout_length = strlen(langcode("MPUPTGR017")) + 1;
 
@@ -14339,10 +14311,10 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNtopOffset, 10,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 3,
-                XmNleftOffset, 0,
+                XmNleftPosition, 0,
+                XmNleftOffset, 20,
                 XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 5,
+                XmNrightPosition, 3,
                 XmNrightOffset, 20,
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
@@ -14382,7 +14354,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNleftPosition, 0,
                 XmNleftOffset, 10,
                 XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 2,
+                XmNrightPosition, 1,
                 XmNrightOffset, 0,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
@@ -14398,10 +14370,10 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 3,
+                XmNleftPosition, 2,
                 XmNleftOffset, 0,
                 XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 5,
+                XmNrightPosition, 3,
                 XmNrightOffset, 10,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,

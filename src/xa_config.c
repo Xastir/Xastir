@@ -364,7 +364,6 @@ void save_data(void)  {
         store_string (fout, "MAPS_LABEL_FONT", rotated_label_fontname);
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
-        store_int (fout, "TIGERMAP_INTENSITY", tigermap_intensity);
         store_int (fout, "TIGERMAP_TIMEOUT", tigermap_timeout);
 #endif //HAVE_IMAGEMAGICK
 
@@ -856,9 +855,6 @@ void load_data_or_default(void) {
         strcpy(rotated_label_fontname,"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1");
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
-    if (!get_int ("TIGERMAP_INTENSITY", &tigermap_intensity, 0, 100, 100))
-        tigermap_intensity = 100;
-
     if (!get_int ("TIGERMAP_TIMEOUT", &tigermap_timeout, 10, 120, 30))
         tigermap_timeout = 30;
 #endif //HAVE_IMAGEMAGICK
