@@ -122,6 +122,7 @@ int   print_resolution = 150;           // 72 dpi is normal for Postscript.
 int   print_invert = 0;                 // Reverses black/white
 
 time_t last_snapshot = 0;               // Used to determine when to take next snapshot
+int doing_snapshot = 0;
 
 
 
@@ -4150,18 +4151,9 @@ end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
 // Create png image (for use in web browsers??).  Requires that "convert"
 // from the ImageMagick package be installed on the system.
 //
-void Snapshot(void) {
+static void* snapshot_thread(void *arg) {
 
-#ifdef NO_GRAPHICS
-    // Time to take another snapshot?
-    if (sec_now() < (last_snapshot + 300) ) // New snapshot every five minutes
-        return;
-
-    last_snapshot = sec_now(); // Set up timer for next time
-    fprintf(stderr,"XPM or ImageMagick support not compiled into Xastir!\n");
-    return;
-#else // NO_GRAPHICS
- 
+#ifndef NO_GRAPHICS
     char xpm_filename[MAX_FILENAME];
     char png_filename[MAX_FILENAME];
 #ifdef HAVE_CONVERT
@@ -4171,6 +4163,11 @@ void Snapshot(void) {
     struct passwd *user_info;
     char username[20];
 
+
+    // The pthread_detach() call means we don't care about the
+    // return code and won't use pthread_join() later.  Makes
+    // threading more efficient.
+    (void)pthread_detach(pthread_self());
 
     // Get user info 
     user_id=getuid();
@@ -4183,12 +4180,6 @@ void Snapshot(void) {
     xastir_snprintf(png_filename, sizeof(png_filename), "/var/tmp/xastir_%s_snap.png",
             username);
 
-    // Time to take another snapshot?
-    if (sec_now() < (last_snapshot + 300) ) // New snapshot every five minutes
-        return;
-
-    last_snapshot = sec_now(); // Set up timer for next time
-
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
 
@@ -4199,6 +4190,7 @@ void Snapshot(void) {
             NULL ) == XpmSuccess ) {                    // XpmAttributes *attributes
         fprintf(stderr,"ERROR writing %s\n", xpm_filename );
     } else {  // We now have the xpm file created on disk
+
         chmod( xpm_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
 
         if ( debug_level & 512 )
@@ -4230,6 +4222,49 @@ void Snapshot(void) {
     }
 
 #endif // NO_GRAPHICS
+
+    // Signify that we're all done and that another snapshot can
+    // occur.
+    doing_snapshot = 0;
+
+    return(NULL);
+}
+
+
+
+
+
+// Starts a separate thread that creates a png image from the
+// current displayed image.
+//
+void Snapshot(void) {
+    pthread_t snapshot_thread_id;
+
+
+    // Check whether we're already doing a snapshot
+    if (doing_snapshot)
+        return;
+
+    // Time to take another snapshot?
+    if (sec_now() < (last_snapshot + 300) ) // New snapshot every five minutes
+        return;
+
+    doing_snapshot++;
+    last_snapshot = sec_now(); // Set up timer for next time
+ 
+//----- Start New Thread -----
+
+    // Here we start a new thread.  We'll communicate with the main
+    // thread via global variables.  Use mutex locks if there might
+    // be a conflict as to when/how we're updating those variables.
+    //
+
+    if (pthread_create(&snapshot_thread_id, NULL, snapshot_thread, NULL)) {
+        fprintf(stderr,"Error creating snapshot thread\n");
+    }
+    else {
+        // We're off and running with the new thread!
+    }
 }
 
 
