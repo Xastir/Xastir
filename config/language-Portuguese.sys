@@ -262,6 +262,7 @@ BBARSTA037|Dados do GPS completos||
 BBARSTA038|Posição alterada na minha estação||
 BBARSTA039|Indexando %s||
 BBARSTA040|É uma estação do radioamador %s||
+BBARSTA041|Waiting for GPS data..||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||

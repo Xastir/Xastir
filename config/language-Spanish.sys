@@ -264,6 +264,7 @@ BBARSTA037|Datos de GPS Decondificado||
 BBARSTA038|Coloque el cambio en mi estación||
 BBARSTA039|Indexing %s||
 BBARSTA040|This is Amateur Radio Station %s||
+BBARSTA041|Waiting for GPS data..||
 #
 # Despliegue Paquete de Datos
 WPUPDPD001|Despligue de Datos||

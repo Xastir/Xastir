@@ -263,6 +263,7 @@ BBARSTA037|GPS Data Complete||
 BBARSTA038|Position change on my station||
 BBARSTA039|Indexing %s||
 BBARSTA040|This is Amateur Radio Station %s||
+BBARSTA041|Waiting for GPS data..||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Display Packet Data||

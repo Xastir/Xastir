@@ -268,6 +268,7 @@ BBARSTA037|GPS tekst gedecodeerd||
 BBARSTA038|Positie verandering bij mijn station||
 BBARSTA039|Indexing %s||
 BBARSTA040|This is Amateur Radio Station %s||
+BBARSTA041|Waiting for GPS data..||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Ontvangen Packets Bekijken||
