@@ -3665,7 +3665,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
         XtAddCallback(button_ok, XmNactivateCallback, Config_AX25_change_data, config_AX25_dialog);
 #endif /* USE_AX25 */
         XtAddCallback(button_cancel, XmNactivateCallback, Config_AX25_destroy_shell, config_AX25_dialog);
@@ -4868,14 +4868,14 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                     case DEVICE_AX25_TNC:
                         /* configure this port */
                         if (debug_level & 1)
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
                             fprintf(stderr,"ADD AX.25 TNC\n");
                         Config_AX25(w, 0, port);
-#else   // HAVE_AX25
+#else   // HAVE_LIBAX25
                         fprintf(stderr,"AX.25 support not compiled into Xastir!\n");
                         popup_message(langcode("POPEM00004"),langcode("POPEM00021"));
 
-#endif  // HAVE_AX25
+#endif  // HAVE_LIBAX25
                         break;
 
                     case DEVICE_NET_STREAM:

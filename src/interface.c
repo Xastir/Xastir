@@ -85,12 +85,12 @@
 #include "wx.h"
 #include "hostname.h"
 
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
 #include <netax25/ax25.h>
 #include <netrose/rose.h>
 #include <netax25/axlib.h>
 #include <netax25/axconfig.h>
-#endif  // HAVE_AX25
+#endif  // HAVE_LIBAX25
 
 #ifndef SIGRET
 #define SIGRET  void
@@ -340,7 +340,7 @@ void channel_data(int port, unsigned char *string, int length) {
 
 //********************************* START AX.25 ********************************
 
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
 // stolen from libax25-0.0.9 and modified to set digipeated bit based on '*'
 int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
 {
@@ -395,7 +395,7 @@ int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
 
     return sizeof(struct full_sockaddr_ax25);
 }
-#endif  // HAVE_AX25
+#endif  // HAVE_LIBAX25
 
 
 //***********************************************************
@@ -404,7 +404,7 @@ int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
 //***********************************************************
 int ui_connect( int port, char *to[]) {
     int    s = -1;
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
     int    sockopt;
     int    addrlen = sizeof(struct full_sockaddr_ax25);
     struct full_sockaddr_ax25 axbind, axconnect;
@@ -498,7 +498,7 @@ int ui_connect( int port, char *to[]) {
     /*
      * We got there.
      */
-#endif /* HAVE_AX25 */
+#endif /* HAVE_LIBAX25 */
     return s;
 }
 
@@ -844,11 +844,11 @@ int ax25_init(int port) {
         but it is not good for older linux kernels and FreeBSD  -FG
     */
 
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
     int proto = PF_AX25;
     char temp[200];
     char *dev = NULL;
-#endif  // HAVE_AX25
+#endif  // HAVE_LIBAX25
 
     if (begin_critical_section(&port_data_lock, "interface.c:ax25_init(1)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
@@ -862,7 +862,7 @@ int ax25_init(int port) {
     /* clear port status */
     port_data[port].status = DEVICE_DOWN;
 
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
     if (ax25_ports_loaded == 0) {
         /* port file has not been loaded before now */
         if (ax25_config_load_ports() == 0) {
@@ -926,10 +926,10 @@ int ax25_init(int port) {
 
     temp[0] = proto = (int)dev;     // Converting pointer to int, then to char?????
     // ^^^^ this doesn't do anything
-#else /* HAVE_AX25 */
+#else /* HAVE_LIBAX25 */
     fprintf(stderr,"AX.25 support not compiled into Xastir!\n");
     popup_message(langcode("POPEM00004"),langcode("POPEM00021"));
-#endif /* HAVE_AX25 */
+#endif /* HAVE_LIBAX25 */
     if (end_critical_section(&port_data_lock, "interface.c:ax25_init(5)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
@@ -2254,7 +2254,7 @@ void port_read(int port) {
 
     socklen_t from_len;
 
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
     char           *dev;
 #endif /* USE_AX25 */
 
@@ -2548,7 +2548,7 @@ void port_read(int port) {
                          * Only accept data from our own interface (recvfrom will get
                          * data from all AX.25 interfaces!) - PE1DNN
                          */
-#ifdef HAVE_AX25
+#ifdef HAVE_LIBAX25
                         if (port_data[port].device_name != NULL) {
                             if ((dev = ax25_config_get_dev(port_data[port].device_name)) != NULL) {
                                 /* if the data is not from our interface, ignore it! PE1DNN */
@@ -2574,7 +2574,7 @@ void port_read(int port) {
                                 }
                             }
                         }
-#endif /* HAVE_AX25 */
+#endif /* HAVE_LIBAX25 */
                     }   // End of AX.25 interface code block
 
 
