@@ -1,5 +1,8 @@
 #!/bin/sh
 #
+# Copyright (C) 2000-2004  The Xastir Group
+#
+#
 # This simple routine will run autostuff in the appropriate
 # order to generate the needed configure/makefiles
 #

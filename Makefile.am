@@ -1,4 +1,9 @@
+
 # $Id$
+#
+# Copyright (C) 2000-2004  The Xastir Group
+#
+
 AUTOMAKE_OPTIONS = gnu dist-bzip2
 ACLOCAL_AMFLAGS = -I m4
 

@@ -1,6 +1,10 @@
 
 $Id$
 
+Copyright (C) 1999  Frank Giannandrea
+Copyright (C) 2000-2004  The Xastir Group
+
+
 Changes.txt
 
 04.01.2001

@@ -41,8 +41,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 # Documents:  Go into special doc area
-%doc AUTHORS    COPYING  INSTALL  README      README.MAPS   UPGRADE
-%doc ChangeLog  FAQ      LICENSE  README.CVS  README.win32
+%doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL LICENSE
+%doc README README.CVS README.MAPS README.win32 UPGRADE
 
 %{_prefix}/bin
 %{_prefix}/share/xastir/help
