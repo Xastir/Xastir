@@ -425,7 +425,7 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
     int object_num = 0;
 
 
-//fprintf(stderr, "Draw_OGR_Points\n");
+    //fprintf(stderr, "Draw_OGR_Points\n");
 
     if (geometryH == NULL)
         return; // Exit early
@@ -442,7 +442,7 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
     //
     if (object_num) {
 
-//fprintf(stderr, "DrawPoints: Found %d geometries\n", object_num);
+        //fprintf(stderr, "DrawPoints: Found %d geometries\n", object_num);
  
         for ( kk = 0; kk < object_num; kk++ ) {
             OGRGeometryH child_geometryH;
@@ -457,7 +457,7 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
             if (sub_object_num) {
                 // We found geometries below this.  Recurse.
                 if (level < 5) {
-//fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
+                    //fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
                     Draw_OGR_Points(child_geometryH,
                         level+1,
                         transformH);
@@ -467,62 +467,43 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
     }
     else {  // Draw
         int points;
+        int ii;
 
 
         // Get number of elements (points)
         points = OGR_G_GetPointCount(geometryH);
-//        fprintf(stderr,"  Number of elements: %d\n",points);
+        //fprintf(stderr,"  Number of elements: %d\n",points);
 
-        // Draw one point
-        if (points > 0) {
-            int ii;
-
-
-            for ( ii = 0; ii < points; ii++ ) {
-                double X1, Y1, Z1;
-                int ok = 1;
+        // Draw the points
+        for ( ii = 0; ii < points; ii++ ) {
+            double X1, Y1, Z1;
 
 
-                // Get the point!
-                OGR_G_GetPoint(geometryH,
-                    ii,
-                    &X1,
-                    &Y1,
-                    &Z1);
+            // Get the point!
+            OGR_G_GetPoint(geometryH,
+                ii,
+                &X1,
+                &Y1,
+                &Z1);
 
-                if (transformH) {
-                    // Convert to WGS84 coordinates.
-                    if (!OCTTransform(transformH, 1, &X1, &Y1, &Z1)) {
-                        fprintf(stderr,
-                            "Couldn't convert point to WGS84\n");
-//                        ok = 0;   // Draw it anyway.  It _might_
-//                        be in WGS84 or NAD83!
-                    }
-                }
-
-// Skip this.  draw_point_ll() does the check for us anyway.
-//
-//                // Check whether point is within our view
-//                if (ok && map_visible_lat_lon( Y1,  // bottom
-//                        Y1, // top
-//                        X1, // left
-//                        X1, // right
-//                        NULL)) {
-////                  fprintf(stderr, "Point is visible\n");
-//                }
-//                else {
-////                  fprintf(stderr, "Point is NOT visible\n");
-//                    ok = 0;
-//                }
-
-                if (ok) {
-                    draw_point_ll(da,
-                        (float)Y1,
-                        (float)X1,
-                        gc,
-                        pixmap);
+            if (transformH) {
+                // Convert to WGS84 coordinates.
+                if (!OCTTransform(transformH, 1, &X1, &Y1, &Z1)) {
+                    fprintf(stderr,
+                        "Couldn't convert point to WGS84\n");
+                    // Draw it anyway.  It _might_ be in WGS84 or
+                    // NAD83!
                 }
             }
+
+            // Skip the map_visible_lat_lon() check.
+            // draw_point_ll() does the check for us anyway.
+            //
+            draw_point_ll(da,
+                (float)Y1,
+                (float)X1,
+                gc,
+                pixmap);
         }
     }
 }
@@ -538,13 +519,6 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
 // keep finding geometries below us, keep calling the same function.
 // Simple and efficient.
 // 
-// Optimization:
-// It should be faster to draw the entire Polyline with one X11 call
-// instead of drawing each line segment in turn.  Change to the
-// other method sometime.  Store them in an array, call the
-// Translate() function on all of them at once, and then call an X11
-// function to draw the entire line at once.
-//
 void Draw_OGR_Lines(OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
@@ -554,7 +528,7 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
     int object_num = 0;
 
 
-//fprintf(stderr, "Draw_OGR_Lines\n");
+    //fprintf(stderr, "Draw_OGR_Lines\n");
 
     if (geometryH == NULL)
         return; // Exit early
@@ -572,7 +546,7 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
     //
     if (object_num) {
 
-//fprintf(stderr, "DrawLines: Found %d geometries\n", object_num);
+        //fprintf(stderr, "DrawLines: Found %d geometries\n", object_num);
  
         for ( kk = 0; kk < object_num; kk++ ) {
             OGRGeometryH child_geometryH;
@@ -587,7 +561,7 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
             if (sub_object_num) {
                 // We found geometries below this.  Recurse.
                 if (level < 5) {
-//fprintf(stderr, "DrawLines: Recursing level %d\n", level);
+                    //fprintf(stderr, "DrawLines: Recursing level %d\n", level);
                     Draw_OGR_Lines(child_geometryH,
                         level+1,
                         transformH,
@@ -636,7 +610,7 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
         }
 
         points = OGR_G_GetPointCount(geometryH);
-//        fprintf(stderr,"  Number of elements: %d\n",points);
+        //fprintf(stderr,"  Number of elements: %d\n",points);
 
         // Draw one polyline
         if (points > 0) {
@@ -718,13 +692,6 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 // of rings.  If a ring goes in one direction, it's a fill, if the
 // other direction, it's a hole in the polygon.
 //
-// Optimization:
-// It should be faster to draw the entire Polyline with one X11 call
-// instead of drawing each line segment in turn.  Change to the
-// other method sometime.  Store them in an array, call the
-// Translate() function on all of them at once, and then call an X11
-// function to draw the entire line at once.
-//
 void Draw_OGR_Polygons(OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
@@ -761,7 +728,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
         if (sub_object_num) {
             // We found geometries below this.  Recurse.
             if (level < 5) {
-//fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
+                //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
                 Draw_OGR_Polygons(child_geometryH,
                     level+1,
                     transformH,
@@ -794,10 +761,10 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                         envelopeH.MinX, // left
                         envelopeH.MaxX, // right
                         NULL)) {
-    //                fprintf(stderr, "Polygon is visible\n");
+                    //fprintf(stderr, "Polygon is visible\n");
                 }
                 else {
-    //                fprintf(stderr, "Polygon is NOT visible\n");
+                    //fprintf(stderr, "Polygon is NOT visible\n");
                     return; // Exit early
                 }
 
@@ -853,6 +820,15 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                                 "Couldn't convert point to WGS84\n");
                         }
                     }
+
+// Optimization:
+// It should be faster here to draw the entire Polyline with one X11
+// call, instead of drawing each line segment in turn.  Change to
+// that method at some point.
+//
+// We should be able to store them in an array, call the Translate()
+// function on all of them at once, and then call an X11 function to
+// draw the entire line at once.
 
                     draw_vector_ll(da,
                         (float)Y1,
