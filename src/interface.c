@@ -7571,7 +7571,17 @@ unsigned char *select_unproto_path(int port) {
         count++;
     }   // End of while loop
 
-    if (!done) {
+    if (done) {
+        // We found an unproto path.  Check it for accepted values.
+        // Output a warning message if it is beyond normal ranges,
+        // but still allow it to be used.
+        //
+        if(check_unproto_path(unproto_path_txt)) {
+            popup_message_always(langcode("WPUPCFT042"),
+                langcode("WPUPCFT043"));
+        }
+    }
+    else {
         // We found no entries in the unproto fields for the
         // interface.
 
