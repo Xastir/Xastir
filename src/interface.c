@@ -1259,7 +1259,7 @@ int OpenTrac_decode_origination(unsigned char *element,
 
     *sequence = fetch16bits(element+6);
     if (element_len == 9) {
-        *network = *(element+9);
+        *network = *(element+8);
 
         fprintf(stderr, "Origin: %s-%d seq %d net %d\n",
             callsign,
