@@ -48,7 +48,7 @@ BEGIN_RECORD {key=""; lanes=1; color=8; fill_color=11; name=""; filled=0; patter
 /^FENAME=United States Highway (.*)$/ {name="$(name)US $1"; next}
 /^FENAME=State Highway (.*)$/ {name="$(name)State $1";next}
 /^FENAME=State Route (.*)$/ {name="$(name)SR $1";next}
-/^FENAME=(.*)$/ {name="$(name)$1; next}
+/^FENAME=(.*)$/ {name="$(name)$1"; next}
 /^FETYPE=(.+)$/ {name="$(name) $1"; next}
 /^FEDIRS=(.+)$/ {name="$(name) $1"; next}
 # Census Feature Class Codes are used to set lanes, color, display_level, etc.
