@@ -89,7 +89,7 @@
 
 #include <X11/Intrinsic.h>
 
-//#include "db.h"
+//#include "database.h"
 #include "util.h"
 #include "messages.h"
 #include "fcc_data.h"

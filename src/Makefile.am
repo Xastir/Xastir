@@ -14,7 +14,7 @@ xastir_SOURCES = \
     bulletin_gui.c bulletin_gui.h \
     color.c color.h \
     datum.c datum.h \
-    db.c db.h \
+    db.c database.h \
     dbfawk.c dbfawk.h \
     draw_symbols.c draw_symbols.h \
     fcc_data.c fcc_data.h \

@@ -3336,8 +3336,8 @@ char *sec_to_loc(long longitude, long latitude)
   static char buf[7];
   char *loc = buf;
 
-  // db.h:    long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
-  // db.h:    long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
+  // database.h:    long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
+  // database.h:    long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
 
   longitude /= 100;
   latitude  =  2* 90 * 3600L - latitude / 100;

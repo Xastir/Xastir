@@ -32,7 +32,7 @@
 #include <Xm/XmAll.h>
 
 #include "xastir.h"
-#include "db.h"
+#include "database.h"
 #include "draw_symbols.h"
 #include "main.h"
 #include "util.h"

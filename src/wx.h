@@ -26,7 +26,7 @@
 #ifndef __XASTIR_WX_H
 #define __XASTIR_WX_H
 
-#include "db.h"
+#include "database.h"
 
 extern void fill_wx_data(void);
 

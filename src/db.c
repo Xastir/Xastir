@@ -15266,7 +15266,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 // to set the initial timing.
 
 //
-// Added these to db.h:DataRow struct:
+// Added these to database.h:DataRow struct:
 // time_t last_transmit_time;          // Time we last transmitted an object/item.  Used to
 //                                     // implement decaying transmit time algorithm
 // short transmit_time_increment;      // Seconds to add to transmit next time around.  Used

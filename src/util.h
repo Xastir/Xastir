@@ -26,7 +26,7 @@
 #ifndef __XASTIR_UTIL_H
 #define __XASTIR_UTIL_H
 
-#include "db.h"
+#include "database.h"
 #include <pthread.h>
 
 extern char *remove_leading_spaces(char *data);
