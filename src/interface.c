@@ -2622,7 +2622,7 @@ void port_read(int port) {
                         // Process AGWPE packets here.  Massage the
                         // frames so that they look like normal
                         // serial packets to the Xastir decoding
-                        // functions.
+                        // functions?
                         //
                         // Check for enough bytes to complete a
                         // header (36 bytes).  If enough, check the
@@ -3818,37 +3818,39 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     // Send the commands to AGWPE here to allow
                     // monitoring all of the radio ports.
 
-                    // Send login information
+                    // If password isn't empty, send login
+                    // information
                     //
-                    xastir_snprintf(logon_txt, sizeof(logon_txt),
-                        "%c%c%c%c%c%c%c%c%s%s%c%c%c%c%c%c%c%c",
-                        '\0','\0','\0','\0',    // RadioPort 0
-                        '\0','\0','\0','P',     // Login Info Header
-                        "          ",           // CallFrom
-                        "          ",           // CallTo
-                        '\0','\0','\2','\0',    // DataLen (512)
-                        '\0','\0','\0','\0');   // User
-                    port_write_binary(port_avail, logon_txt, 36);
+                    if (strlen(passwd) != 0) {
+                        xastir_snprintf(logon_txt, sizeof(logon_txt),
+                            "%c%c%c%c%c%c%c%c%s%s%c%c%c%c%c%c%c%c",
+                            '\0','\0','\0','\0',    // RadioPort 0
+                            '\0','\0','\0','P',     // Login Info Header
+                            "          ",           // CallFrom
+                            "          ",           // CallTo
+                            '\0','\0','\2','\0',    // DataLen (512)
+                            '\0','\0','\0','\0');   // User
+                        port_write_binary(port_avail, logon_txt, 36);
 
-                    // Write login/password out as 256-byte strings
-                    //
-                    for (ii = 0; ii < 256; ii++) {
-                        logon_txt[ii] = '\0';
+                        // Write login/password out as 256-byte strings
+                        //
+                        for (ii = 0; ii < 256; ii++) {
+                            logon_txt[ii] = '\0';
+                        }
+                        xastir_snprintf(logon_txt, sizeof(logon_txt),
+                            "%s",
+                            my_callsign);
+                        port_write_binary(port_avail, logon_txt, 256);
+
+                        for (ii = 0; ii < 256; ii++)
+                            logon_txt[ii] = '\0';
+                        xastir_snprintf(logon_txt, sizeof(logon_txt),
+                            "%s",
+                            passwd);
+                        port_write_binary(port_avail, logon_txt, 256);
                     }
-                    xastir_snprintf(logon_txt, sizeof(logon_txt),
-                        "%s",
-                        my_callsign);
-                    port_write_binary(port_avail, logon_txt, 256);
 
-                    for (ii = 0; ii < 256; ii++)
-                        logon_txt[ii] = '\0';
-                    xastir_snprintf(logon_txt, sizeof(logon_txt),
-                        "%s",
-                        passwd);
-                    port_write_binary(port_avail, logon_txt, 256);
-
-
-                    // Ask to receive monitor frames
+                    // Ask to receive "Monitor" frames
                     //
                     xastir_snprintf(logon_txt, sizeof(logon_txt),
                         "%c%c%c%c%c%c%c%c%s%s%c%c%c%c%c%c%c%c",
