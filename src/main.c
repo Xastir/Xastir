@@ -11232,7 +11232,7 @@ void  Display_packet_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 
 
 void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    Widget pane, rowcol, button_close, option_box, tnc_data, net_data, tnc_net_data;
+    Widget pane, my_form, button_close, option_box, tnc_data, net_data, tnc_net_data;
     unsigned int n;
     Arg args[20];
     Atom delw;
@@ -11252,56 +11252,30 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        rowcol =  XtVaCreateWidget("Display_data rowcol",
-                xmRowColumnWidgetClass, 
+        my_form =  XtVaCreateWidget("Display_data my_form",
+                xmFormWidgetClass,
                 pane,
-                XmNtraversalOn, TRUE,
-                XmNorientation, XmVERTICAL,
-                XmNpacking, XmPACK_TIGHT,
-                XmNisAligned, TRUE,
-                XmNentryAlignment, XmALIGNMENT_CENTER,
-                XmNkeyboardFocusPolicy, XmEXPLICIT,
+                XmNfractionBase, 5,
                 XmNautoUnmanage, FALSE,
                 XmNshadowThickness, 1,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        n=0;
-        XtSetArg(args[n], XmNrows, 15); n++;
-        XtSetArg(args[n], XmNcolumns, 100); n++;
-        XtSetArg(args[n], XmNeditable, FALSE); n++;
-        XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
-        XtSetArg(args[n], XmNwordWrap, TRUE); n++;
-        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
-        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
-        XtSetArg(args[n], XmNscrollHorizontal, TRUE); n++;
-        XtSetArg(args[n], XmNscrollVertical, FALSE); n++;
-        XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
-        XtSetArg(args[n], XmNtraversalOn, FALSE); n++;
-//        XtSetArg(args[n], XmNnavigationType, XmTAB_GROUP); n++;
-        Display_data_text=NULL;
-        Display_data_text = XmCreateScrolledText(rowcol,
-                "Display_data text",
-                args,
-                n);
-   
-// I haven't figured out how to get the scrollbars to allow keyboard traversal.
-// When the ScrolledText widget is in the tab group, once you get there you can't
-// get out and it beeps at you when you try.  Frustrating.   For this dialog it's
-// probably not important enough to worry about.
-// I now have it set to allow TAB'ing into the ScrolledText widget, but to get
-// out you must do a <Shift><TAB>.  This sucks.  Even if you enable the
-// ScrolledText widget in the tab group, the scrollbars don't work with the
-// arrow keys.
-// ScrolledList works.  I need to convert to ScrolledList if
-// possible for output-only windows.
 
         /* set colors */
         n=0;
         XtSetArg(args[n],XmNforeground, MY_FG_COLOR); n++;
         XtSetArg(args[n],XmNbackground, MY_BG_COLOR); n++;
-        option_box = XmCreateRadioBox(rowcol,
+        XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNtopOffset, 5); n++;
+        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_NONE); n++;
+        XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNleftOffset, 5); n++;
+        XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNrightOffset, 5); n++;
+ 
+        option_box = XmCreateRadioBox(my_form,
                 "Display_data option box",
                 args,
                 n);
@@ -11339,11 +11313,40 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         XtAddCallback(tnc_net_data,XmNvalueChangedCallback,Display_packet_toggle,"0");
 
 
+        n=0;
+        XtSetArg(args[n], XmNrows, 15); n++;
+        XtSetArg(args[n], XmNcolumns, 100); n++;
+        XtSetArg(args[n], XmNeditable, FALSE); n++;
+        XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
+        XtSetArg(args[n], XmNwordWrap, TRUE); n++;
+        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
+        XtSetArg(args[n], XmNscrollHorizontal, TRUE); n++;
+        XtSetArg(args[n], XmNscrollVertical, TRUE); n++;
+        XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
+        XtSetArg(args[n], XmNtraversalOn, FALSE); n++;
+        XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+        XtSetArg(args[n], XmNtopWidget, option_box); n++;
+        XtSetArg(args[n], XmNtopOffset, 5); n++;
+        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNbottomOffset, 30); n++;
+        XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNleftOffset, 5); n++;
+        XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNrightOffset, 5); n++;
+ 
+//        XtSetArg(args[n], XmNnavigationType, XmTAB_GROUP); n++;
+        Display_data_text=NULL;
+        Display_data_text = XmCreateScrolledText(my_form,
+                "Display_data text",
+                args,
+                n);
+ 
+
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                 xmPushButtonGadgetClass, 
-                rowcol,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
+                my_form,
+                XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNleftAttachment, XmATTACH_POSITION,
                 XmNleftPosition, 2,
@@ -11354,8 +11357,20 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-
         XtAddCallback(button_close, XmNactivateCallback, Display_data_destroy_shell, Display_data_dialog);
+
+
+// I haven't figured out how to get the scrollbars to allow keyboard traversal.
+// When the ScrolledText widget is in the tab group, once you get there you can't
+// get out and it beeps at you when you try.  Frustrating.   For this dialog it's
+// probably not important enough to worry about.
+// I now have it set to allow TAB'ing into the ScrolledText widget, but to get
+// out you must do a <Shift><TAB>.  This sucks.  Even if you enable the
+// ScrolledText widget in the tab group, the scrollbars don't work with the
+// arrow keys.
+// ScrolledList works.  I need to convert to ScrolledList if
+// possible for output-only windows.
+
 
         pos_dialog(Display_data_dialog);
 
@@ -11386,13 +11401,13 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         XtManageChild(option_box);
         XtManageChild(Display_data_text);
         XtVaSetValues(Display_data_text, XmNbackground, colors[0x0f], NULL);
-        XtManageChild(rowcol);
+        XtManageChild(my_form);
         XtManageChild(pane);
 
         redraw_on_new_packet_data=1;
         XtPopup(Display_data_dialog,XtGrabNone);
 
-        fix_dialog_vsize(Display_data_dialog);
+//        fix_dialog_vsize(Display_data_dialog);
 
         // Move focus to the Close button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to

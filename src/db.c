@@ -96,8 +96,11 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station);
 int  new_message_data;
 time_t last_message_remove;     // last time we did a check for message removing
 
-char packet_data[16][MAX_LINE_SIZE+1];
-int  packet_data_display;
+// Save most recent 100 packets in an array called packet_data[]
+#define MAX_PACKET_DATA_DISPLAY 100
+char packet_data[MAX_PACKET_DATA_DISPLAY][MAX_LINE_SIZE+1];
+char packet_data_string[MAX_PACKET_DATA_DISPLAY * (MAX_LINE_SIZE+1)];
+int  packet_data_display;   // Last line filled in array (high water mark)
 int  redraw_on_new_packet_data;
 
 long stations;                  // number of stored stations
@@ -9851,26 +9854,39 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
 
 
 
+// Write the text from the packet_data_string out to the dialog if
+// the dialog exists.  The user can contract/expand the dialog and
+// always have it filled with the most current data out of the
+// string.
+//
 void display_packet_data(void) {
-    int i;
-    int pos;
 
-    pos=0;
-    if((Display_data_dialog != NULL) && (redraw_on_new_packet_data==1)) {
+    if( (Display_data_dialog != NULL)
+            && (redraw_on_new_packet_data==1)) {
+        int pos;
+        int last_char;
+
+
+        // Find out the last character position in the dialog text
+        // area.
+        last_char = XmTextGetLastPosition(Display_data_text);
+
+        pos=0;
         XtVaSetValues(Display_data_text,XmNcursorPosition,&pos,NULL);
 
+        // Clear the dialog text area.
         // Known with some versions of Motif to have a memory leak:
         //XmTextSetString(Display_data_text,"");
-        XmTextReplace(Display_data_text, (XmTextPosition) 0,
-            XmTextGetLastPosition(Display_data_text), "");
+        XmTextReplace(Display_data_text,
+            (XmTextPosition) 0,
+            last_char,
+            packet_data_string);
 
+        // Find out the last character position in the dialog text
+        // area.
+        last_char = XmTextGetLastPosition(Display_data_text);
 
-        for (i=0; i<packet_data_display; i++) {
-            XmTextInsert(Display_data_text,pos,packet_data[i]);
-            pos += strlen(packet_data[i]);
-            XtVaSetValues(Display_data_text,XmNcursorPosition,pos,NULL);
-        }
-        XmTextShowPosition(Display_data_text,0);
+        XmTextShowPosition(Display_data_text,last_char);
     }
     redraw_on_new_packet_data=0;
 }
@@ -9887,15 +9903,19 @@ void packet_data_add(char *from, char *line) {
     int i;
     int offset;
 
+
     offset=0;
     if (line[0]==(char)3)
         offset=1;
 
     if ( (Display_packet_data_type==1 && strcmp(from,langcode("WPUPDPD005"))==0) ||
-            (Display_packet_data_type==2 && strcmp(from,langcode("WPUPDPD006"))==0) || Display_packet_data_type==0) {
+            (Display_packet_data_type==2 && strcmp(from,langcode("WPUPDPD006"))==0)
+            || Display_packet_data_type==0) {
 
         redraw_on_new_packet_data=1;
-        if (packet_data_display<15) {
+        if (packet_data_display < MAX_PACKET_DATA_DISPLAY) {
+            // Array is not filled yet.  Add the new text at the
+            // next position in the array.
             if (strlen(line)<256) {
                 strcpy(packet_data[packet_data_display],from);
                 strcat(packet_data[packet_data_display],"-> ");
@@ -9908,21 +9928,31 @@ void packet_data_add(char *from, char *line) {
                 strcat(packet_data[packet_data_display++],"\n\0");
             }
         } else {
-            packet_data_display=15;
-            for (i=0; i<14; i++)
+            // Move everything up one and add the new text at the
+            // last position.
+            packet_data_display = MAX_PACKET_DATA_DISPLAY;
+            for ( i = 0; i < (MAX_PACKET_DATA_DISPLAY - 1); i++ )
                 strcpy(packet_data[i],packet_data[i+1]);
 
             if (strlen(line)<256) {
-                strcpy(packet_data[14],from);
-                strcat(packet_data[14],"-> ");
-                strcat(packet_data[14],line+offset);
-                strcat(packet_data[14],"\n\0");
+                strcpy(packet_data[MAX_PACKET_DATA_DISPLAY-1],from);
+                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],"-> ");
+                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],line+offset);
+                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],"\n\0");
             } else {
-                strcpy(packet_data[14],from);
-                strcat(packet_data[14],"-> ");
-                strncat(packet_data[14],line+offset,256);
-                strcat(packet_data[14],"\n\0");
+                strcpy(packet_data[MAX_PACKET_DATA_DISPLAY-1],from);
+                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],"-> ");
+                strncat(packet_data[MAX_PACKET_DATA_DISPLAY-1],line+offset,256);
+                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],"\n\0");
             }
+        }
+
+        // Write the current data in the array out to the
+        // packet_data_string variable for use in the
+        // display_packet_data() function above.
+        packet_data_string[0] = '\0';   // Empty the string
+        for ( i = 0; i <= packet_data_display; i++ ) {
+            strcat(packet_data_string, packet_data[i]);
         }
     }
 }
