@@ -652,7 +652,10 @@ void Draw_OGR_Labels( Widget w,
     char extra[100] = "";
     float angle = 0.0;  // Angle for the beginning of this polyline
     int my_color = color;
+    int scale_factor = 10;
 
+
+//fprintf(stderr,"Draw_OGR_Labels start\n");
 
     // Recursively call this routine if we have a lot of points, so
     // that we draw labels at multiple points along the line.  The
@@ -661,8 +664,8 @@ void Draw_OGR_Labels( Widget w,
     // scale.  The goal should probably be two or three labels max
     // per object.
     //
-    if (num_points > 15) {
-        int skip = 10 * scale_y;
+    if (num_points > ((scale_factor * scale_y)+1)) {
+        int skip = scale_factor * scale_y;
 
         Draw_OGR_Labels(w,
             pixmap,
@@ -689,6 +692,7 @@ void Draw_OGR_Labels( Widget w,
         // Change to fit our rotate label function's idea of angle
         angle = 360.0 - angle;
     }
+
 
     //fprintf(stderr,"Y: %f\tX:
     //%f\tAngle: %f ==>
@@ -725,6 +729,7 @@ void Draw_OGR_Labels( Widget w,
         pii = OGR_F_GetFieldAsString(featureH, ii);
     }
 
+
     if (pii && pii[0] != '\0') {
         xastir_snprintf(label,
             sizeof(label),
@@ -732,6 +737,7 @@ void Draw_OGR_Labels( Widget w,
             pii,
             extra);
     }
+
 
     // Draw at least one label.  In the future we can pick and
     // choose among the points passed to us and draw the quantity of
@@ -742,6 +748,7 @@ void Draw_OGR_Labels( Widget w,
     if (label && map_labels /* && !skip_label */ ) {
 
         if (angle == 0) {   // Non-rotated label
+
             draw_rotated_label_text (w,
                 -90.0,
                 xpoints[0].x+10,
@@ -753,6 +760,7 @@ void Draw_OGR_Labels( Widget w,
         }
 
         else {  // Rotated label
+
             draw_rotated_label_text (w,
                 angle,
                 xpoints[0].x+10,
@@ -763,6 +771,9 @@ void Draw_OGR_Labels( Widget w,
                 FONT_DEFAULT);
         }
     }
+
+//fprintf(stderr,"Draw_OGR_Labels end\n");
+
 }
 
 
