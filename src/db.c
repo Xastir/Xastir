@@ -11502,12 +11502,18 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 
     strcat(result,":");
 
-// WE7U:  We should probably check the Control and PID bytes and toss
-// packets that are AX.25 connect/disconnect or information packets.
-// We only want to process UI packets in Xastir.
+    // Check the Control and PID bytes and toss packets that are
+    // AX.25 connect/disconnect or information packets.  We only
+    // want to process UI packets in Xastir.
 
-    ptr += 2;   // Skip control and PID bytes
- 
+    // Control byte should be 0x03 (UI Frame)
+    if (incoming_data[ptr++] != 0x03)
+        return(0);
+
+    // PID byte should be 0xf0 (normal AX.25 text)
+    if (incoming_data[ptr++] != 0xf0)
+        return(0);
+
 
 // WE7U:  We get multiple concatenated KISS packets sometimes.  Look
 // for that here and flag when it happens (so we know about it and
