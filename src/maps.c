@@ -739,10 +739,12 @@ void draw_grid(Widget w) {
 
         // Set to solid line for the equator.  Make it extra wide as
         // well.
-        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineSolid, CapButt,JoinMiter);
+        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 3, LineSolid, CapButt,JoinMiter);
 
         // Draw the equator as a solid line
         draw_vector_ll(w, 0.0, -180.0, 0.0, 180.0, gc_tint, pixmap_final);
+
+        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineSolid, CapButt,JoinMiter);
 
         // Draw the prime meridian in the same manner
         draw_vector_ll(w, 84.0, 0.0, -80.0, 0.0, gc_tint, pixmap_final);
