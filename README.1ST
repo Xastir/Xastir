@@ -41,14 +41,15 @@ contribution!
 
 
 WINDOWS USERS:  Please refer to the "README.win32" file for specific
-instructions.
+instructions, then refer back to this file for instructions on where
+to get maps.
 
 
 
 General steps to configure/compiling/installing Xastir (most systems):
 ----------------------------------------------------------------------
 You may use either method 1a) or 1b) to get the Xastir sources.  If
-you wish to keep up with what the developers are doing, and make
+you wish to keep up with what the developers are doing and make
 upgrades a snap, choose method 1b).
 
 1a) Get one of the source releases and explode it.  See step 1b) for
@@ -129,6 +130,8 @@ Things you need for this version:
  * Lesstif: www.lesstif.org (look below for RED-HAT instructions)
 -or-
  * OpenMotif: www.openmotif.org
+-or-
+ * Get Lesstif/OpenMotif from your favorite Linux/Unix distribution.
 
  * AX25 package: (if you want support for kernel AX25 interfaces)
     AX25 utilities: at ftp site /ax25/AX25-linux-2.0/ax25-utils-2.1.42a.tar.gz
@@ -144,6 +147,8 @@ Things you need for this version:
  * Lesstif: www.lesstif.org (look below for RED-HAT instructions)
 -or-
  * OpenMotif: www.openmotif.org
+-or-
+ * Get Lesstif/OpenMotif from your favorite Linux/Unix distribution.
 
  * AX25 packages: (if you want support for kernel AX25 interfaces)
     Lib AX25:http://prdownloads.sourceforge.net/ax25/libax25-0.0.7.tar.gz
@@ -163,12 +168,16 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
         http://www.libtiff.org
     libproj:
         http://www.remotesensing.org/proj/
+        ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/
      and for datum translations:
         ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
+        ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/
     libgeotiff:
         http://www.remotesensing.org/geotiff/geotiff.html
         ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.1.4.tar.gz
-    Please note that the order of installation for these libraries is
+        ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/
+
+    Please note that the order of installation for the above libraries is
     critical.  Follow the instructions below carefully.
 
 
@@ -184,6 +193,7 @@ For speech support via the festival speech synthesis software you need:
 For ESRI Shapefile format maps/weather alert maps:
     Shapelib:
         http://gdal.velocet.ca/projects/shapelib/index.html
+        ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/
 
 For ImageMagick support for maps in any of 68 major graphics formats,
    including the capability to use online maps and weather radar images:
@@ -208,8 +218,8 @@ Xastir can control it directly:
         http://sunsite.unc.edu/pub/Linux/science/cartography
 
 See below for instructions on installing all of these libraries. Once the 
-  libraries are installed, ./configure should find the libraries and install
-  support for the feature automatically.
+  libraries are installed, ./configure should find the libraries and allow
+  compiling in support for the new features.
 
 
 Unpack the Xastir source code anywhere..
@@ -233,7 +243,7 @@ First Time Install:
         Xastir.  Install/upgrade these packages from the ham directory:
         ax25apps, ax25doc, ax25tool, and libax25.
 
- NOTE:  For Kernel 2.4, you'll need to apply additional patches.
+ NOTE:  For Kernel 2.4, you may need to apply additional patches.
         See the linux-hams mailing list for details.
 
 
@@ -243,7 +253,8 @@ First Time Install:
      the development headers, then you won't need to install LessTif. Most
      distributions include one of these; step 2a describes building from
      source, while 2b and 2c describe installing from prebuilt packages on
-     RedHat and SuSE. 
+     RedHat and SuSE.  Now that OpenMotif is available, you may be happier
+     running it than LessTif, but either one should work with Xastir.
 
         2a. Download LessTif version 0.91.1 or higher or download OpenMotif.
         Follow the instructions provided, compile it and install it.
@@ -822,30 +833,17 @@ Getting Data Files for Xastir:
       You can have any number of maps in the /usr/local/xastir/maps directory.
       You can organize the maps however you like. You can also use symbolic
       links to link to files/directories on other disks. Map files are loaded
-      in the order that they appear in the chooser, unless you adjust the
-      layering priorities in the properties dialog.
+      in the order that they appear in the chooser unless you adjust the
+      layering priorities in the properties dialog (it's recommended that you
+      use these now instead of a directory heirarchy to choose the layering).
 
-      There are many methods for organizing many maps; the following have
-      proved successful:
-       Create a USA directory and then one for each state under the USA
-       directory, or have a separate directory for each type of map. For
-       example:
-
-                          /usr/local/xastir/maps/
-                                                /usa/
-                                                /usa/CO/
-                                                /usa/NJ/
-                                                /dos/CO/
-                                                /dos/NJ/
-                                                /pixmaps/CO/
-                                                /pixmaps/NJ/
-
-       The old method of creating transparent/filled or raster/vector
-       directories has been superceded by the new map layering features
-       in the Map Chooser->Properties dialog.  It's now suggested that
-       the map layering be done there, and the directory layout designed
-       to make it easiest for the user to select maps.  Perhaps a
-       good start would be:
+      There are many methods for organizing many maps.  Create a map
+      heirarchy using something that makes sense to you.  The old method of
+      creating transparent/filled or raster/vector directories has been
+      superceded by the new map layering features in the Map
+      Chooser->Properties dialog.  It's now suggested that the map layering
+      be done there, and the directory layout designed to make it easiest
+      for the user to select maps.  Perhaps a good start would be:
 
            World/
            Canada/
@@ -857,24 +855,24 @@ Getting Data Files for Xastir:
            GNIS/
            Overlay/
 
-       Please note that the map directories are entirely up to the user
-       now.  Use the map layering facilities to determine the order in
-       which they will be drawn, and to determine which will draw filled
-       areas.  Note that raster maps will always draw filled, not matter
-       what the setting suggests.
+      Please note that the map directories are entirely up to the user
+      now.  Use the map layering facilities to determine the order in
+      which they will be drawn, and to determine which will draw filled
+      areas.  Note that raster maps will always draw filled, not matter
+      what the setting suggests.
 
-       Map types available by extension:
+      Map types available by extension:
 
-       Vector Format:
-       .shp/.shx/.dbf  Shapefile vector map (need all three files)
-       .pdb            pocketAPRS vector map
-       .map            APRSdos/WinAPRS/MacAPRS vector map
-       .gnis           GNIS labels file (actually points instead of vectors)
-       .geo            Vector map or internet vector map
+      Vector Format:
+      .shp/.shx/.dbf  Shapefile vector map (need all three files)
+      .pdb            pocketAPRS vector map
+      .map            APRSdos/WinAPRS/MacAPRS vector map
+      .gnis           GNIS labels file (actually points instead of vectors)
+      .geo            Vector map or internet vector map
 
-       Raster Format:
-       .tif/.fgd       geoTIFF raster image map
-       .geo            Raster image map or internet raster image map
+      Raster Format:
+      .tif/.fgd       geoTIFF raster image map
+      .geo            Raster image map or internet raster image map
 
       Note:  .geo is listed twice because it can fit in both categories,
       depending on the base format of the map file that the .geo file
