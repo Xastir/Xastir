@@ -61,6 +61,7 @@
 //     CANCL            C   // Colors of alerts?????
 //     TEST             T   // Colors of alerts?????
 //     WARN             R   // Colors of alerts?????
+//     CIVIL            R   // Colors of alerts?????
 //     WATCH            Y   // Colors of alerts?????
 //     ADVIS            B   // Colors of alerts?????
 //     Other            G   // Colors of alerts?????
@@ -105,6 +106,27 @@
 // look it up again for later display.
 //
 // Stuff from Dale, paraphrased by Curt:
+//
+// WATCH - weather of some type is possible or probable for a geographic 
+// area- at present I cannot do watches because they can cover huge areas 
+// with hundreds of counties across many states.  I have a prototye of a 
+// polygon generator - but that is a whole other can of worms
+// 
+// WARN - warning - Severe or dangerous weather is occuring or is about to 
+// occur in a geographical area.  This we do a pretty good job on output.
+// 
+// ADVIS - advisory - this can be trivial all the way to a tornado report.
+// If a tornado warning is issued and another tornado sighting happens in 
+// the same county/zone during the valid time of the first- the info is 
+// transmitted as an advisory.  Most of the time is is updates for other 
+// messages.
+// 
+// CANCL - cancelation- discussed in earlier e-mail
+// 
+// I would add CIVIL for terrorist  earthquake  catostrophic type stuff - 
+// the D7 and D&)) have special alarms built in so that a message to 
+// NWS-CIVIL would alert folks no matter what there filters are set for.
+// 
 //
 // The clue to which shapefile to use is in the 4th char in the
 // title (which is the first following an '_')
@@ -1231,6 +1253,9 @@ printf("Zone:%s%s\n",prefix,suffix);
                 entry[i].alert_level = 'T';
 
             else if (strstr(entry[i].alert_tag, "WARN") || strstr(entry[i].to, "WARN"))
+                entry[i].alert_level = 'R';
+
+            else if (strstr(entry[i].alert_tag, "CIVIL") || strstr(entry[i].to, "CIVIL"))
                 entry[i].alert_level = 'R';
 
             else if (strstr(entry[i].alert_tag, "WATCH") || strstr(entry[i].to, "WATCH"))
