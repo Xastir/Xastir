@@ -22,7 +22,7 @@
  * Look at the README for more information on the program.
  */
 
-//#define WE7U 1
+//#define HAVE_GPSMAN 1
 
 #include "config.h"
 #include "snprintf.h"
@@ -408,10 +408,10 @@ int posit_tx_disable;
 int object_tx_disable;
 Widget iface_transmit_now, posit_tx_disable_toggle, object_tx_disable_toggle;
 
-#ifdef WE7U
+#ifdef HAVE_GPSMAN
 Widget Fetch_gps_track, Fetch_gps_route, Fetch_gps_waypoints;
 Widget Send_gps_track, Send_gps_route, Send_gps_waypoints;
-#endif  // WE7U
+#endif  // HAVE_GPSMAN
 
 // ------------------------ unit conversion --------------------------
 static void Units_choice_toggle(Widget w, XtPointer clientData, XtPointer calldata);
@@ -616,9 +616,9 @@ static void Menu_Quit(Widget w, XtPointer clientData, XtPointer calldata);
 static void TNC_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void TNC_Transmit_now(Widget w, XtPointer clientData, XtPointer calldata);
 
-#ifdef WE7U
+#ifdef HAVE_GPSMAN
 static void GPS_operations(Widget w, XtPointer clientData, XtPointer calldata);
-#endif  // WE7U
+#endif  // HAVE_GPSMAN
 
 static void Net_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
@@ -5623,7 +5623,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if (transmit_disable)
         XtSetSensitive(iface_transmit_now,FALSE);
 
-#ifdef WE7U
+#ifdef HAVE_GPSMAN
     Fetch_gps_track = XtVaCreateManagedWidget(langcode("Fetch_Tr"),
             xmPushButtonGadgetClass,
             ifacepane,
@@ -5671,7 +5671,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-#endif  // WE7U 
+#endif  // HAVE_GPSMAN 
 
     /* Help*/
     help_about = XtVaCreateManagedWidget(langcode("PULDNHEL01"),
@@ -5726,14 +5726,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /* TNC */
     XtAddCallback(iface_transmit_now,   XmNactivateCallback,TNC_Transmit_now,NULL);
 
-#ifdef WE7U
+#ifdef HAVE_GPSMAN
     XtAddCallback(Fetch_gps_track,      XmNactivateCallback,GPS_operations,"1");
     XtAddCallback(Fetch_gps_route,      XmNactivateCallback,GPS_operations,"2");
     XtAddCallback(Fetch_gps_waypoints,  XmNactivateCallback,GPS_operations,"3");
     XtAddCallback(Send_gps_track,       XmNactivateCallback,GPS_operations,"4");
     XtAddCallback(Send_gps_route,       XmNactivateCallback,GPS_operations,"5");
     XtAddCallback(Send_gps_waypoints,   XmNactivateCallback,GPS_operations,"6");
-#endif  // WE7U
+#endif  // HAVE_GPSMAN
 
     XtAddCallback(auto_msg_set_button,XmNactivateCallback,Auto_msg_set,NULL);
 
@@ -8588,7 +8588,7 @@ void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
 
 
-#ifdef WE7U
+#ifdef HAVE_GPSMAN
 //WE7U
 // We really need to put the GPS operations into their own thread as
 // they halt the main thread while running.  Another possibility
@@ -8645,7 +8645,7 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
             xastir_snprintf(filename,
                 sizeof(filename),
-                "Team1TrackOrange.shp");
+                "Team1_Track_Red.shp");
  
             xastir_snprintf(temp,
                 sizeof(temp),
@@ -8671,7 +8671,7 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
             xastir_snprintf(filename,
                 sizeof(filename),
-                "Team2RoutesGreen.shp");
+                "Team2_Routes_Green.shp");
  
             xastir_snprintf(temp,
                 sizeof(temp),
@@ -8697,7 +8697,7 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
             xastir_snprintf(filename,
                 sizeof(filename),
-                "Team3Waypoints.shp");
+                "Team3_Waypoints.shp");
  
             xastir_snprintf(temp,
                 sizeof(temp),
@@ -8771,7 +8771,7 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
         }
     }
 }
-#endif  // WE7U
+#endif  // HAVE_GPSMAN
 
 
 

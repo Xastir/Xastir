@@ -2491,13 +2491,16 @@ void draw_shapefile_map (Widget w,
                             gps_color = 0x0c; // Red
                         }
                         else if (strstr(filenm,"Orange.shp")) {
-                            gps_color = 0x19; // orange2
+//                            gps_color = 0x06; // orange
+//                            gps_color = 0x19; // orange2
+//                            gps_color = 0x41; // DarkOrange3 (good medium orange)
+                            gps_color = 0x62; // orange3 (brighter)
                         }
                         else if (strstr(filenm,"White.shp")) {
                             gps_color = 0x0f; // white
                         }
                         else if (strstr(filenm,"Green.shp")) {
-                            gps_color = 0xfd; // PaleGreen
+                            gps_color = 0x64; // ForestGreen
                         }
 //                        else if (strstr(filenm,".shp")) {
 //                            gps_color = 0x41;   // DarkOrange3
