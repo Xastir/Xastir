@@ -172,93 +172,79 @@ fi
 
 ])
 
-# JMT - this is pure evil and will not be edited at the present time
+# JMT - I have tamed the evil
 AC_DEFUN([XASTIR_CHECK_IMAGEMAGICK],
 [
+use_imagemagick="mu"
+old_version="5.4.9"
+AC_CHECK_PROG(magick_config, [Magick-config --version], yes, no)
+if test "$magick_config" == "yes"; then
+  AC_MSG_CHECKING([ImageMagick version])
+  magick_version=`Magick-config --version`
 
-# Check for ImageMagick 
-# 
-save_cppflags="$CPPFLAGS" 
-save_cxxflags="$CXXFLAGS" 
-save_libs="$LIBS" 
-save_ldflags="$LDFLAGS" 
-#
-# First look for the needed Magick-config script, which tells us all
-# of the build options we need.
-#
-AC_CHECK_PROG(use_imagemagick, [Magick-config --version], yes, no) 
-if test "$use_imagemagick" = "yes"; then
-  MAGIC_BIN="Magick-config"
-else
-  #
-  # Test for MacOSX/Fink directories under "/sw".
-  #
-  AC_CHECK_FILE(/sw/bin/Magick-config, use_imagemagick="yes") 
-  if test "$use_imagemagick" = "yes"; then
-    MAGIC_BIN="/sw/bin/Magick-config"
-  else
-    AC_MSG_WARN(*** Cannot find Magick-config:  Building w/o ImageMagick support. ***) 
-  fi
-fi
-#
-if test "$use_imagemagick" = "yes"; then
-  #
-  # Compute the ImageMagick revision number
-  #
-  magickversion=`${MAGIC_BIN} --version` 
-  magickmajor=`echo $magickversion | cut -d '.' -f 1` 
-  magickminor=`echo $magickversion | cut -d '.' -f 2` 
-  magicktiny=`echo $magickversion | cut -d '.' -f 3` 
-  if test "$magickmajor" -lt 5; then 
-    magickold="yes"; 
-  elif test "$magickmajor" -eq 5 -a "$magickminor" -lt 4; then 
-    magickold="yes"; 
-  elif test "$magickmajor" -eq 5 -a "$magickminor" -eq 4 -a "$magicktiny" -lt 9; then 
-    magickold="yes"; 
+  magick_major=`echo $magick_version | cut -d '.' -f 1`
+  magick_minor=`echo $magick_version | cut -d '.' -f 2`
+  magick_patch=`echo $magick_version | cut -d '.' -f 3`
+
+  old_major=`echo $old_version | cut -d '.' -f 1` 
+  old_minor=`echo $old_version | cut -d '.' -f 2` 
+  old_patch=`echo $old_version | cut -d '.' -f 3` 
+
+  if test "$magick_major" -lt "$old_major" || \
+     test "$magick_major" -eq "$old_major" -a "$magick_minor" -lt "$old_minor" || \
+     test "$magick_major" -eq "$old_major" -a "$magick_minor" -eq "$old_minor" -a "$magick_patch" -lt "$old_patch"; then 
+     magick_version="$magick_version, upgrade for full functionality"
   fi 
-  #
-  # Figure out the build options using the Magick-config script
-  #
-  CPPFLAGS="$CPPFLAGS `${MAGIC_BIN} --cppflags`" 
-  CXXFLAGS="$CXXFLAGS `${MAGIC_BIN} --cflags`" 
-  LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`" 
-  LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS" 
-  # 
-  # For the case of apple-darwin, we don't want to check the
-  # headers/libraries 'cuz the standard macros won't find them anyway.
-  #
-  if test "$darwin" = "yes"; then
-    AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
-  else
-    AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no")
-    if test "$use_imagemagick" = "no"; then
-      AC_MSG_WARN(*** Cannot find ImageMagick include files:  Building w/o ImageMagick support. ***)
-    else
-      AC_CHECK_LIB([Magick], [WriteImage], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
-      if test "$use_imagemagick" = "no"; then
-        AC_MSG_WARN(*** Cannot find ImageMagick library files:  Building w/o ImageMagick support. ***)
-      fi
+  AC_MSG_RESULT($magick_version)
+
+  # check for presence of header
+  if test "$use_imagemagick" == "mu"; then
+    save_CFLAGS="$CFLAGS"
+    save_CPPFLAGS="$CPPFLAGS" 
+    save_LDFLAGS="$LDFLAGS" 
+  
+    CFLAGS="$CFLAGS `Magick-config --cflags`"
+    CPPFLAGS="$CPPFLAGS `Magick-config --cppflags`"
+    LDFLAGS="$LDFLAGS `Magick-config --ldflags`"
+  
+    AC_CHECK_HEADER(magick/api.h, [], [use_imagemagick="no"
+CFLAGS=$save_CFLAGS
+CPPFLAGS=$save_CPPFLAGS 
+LDFLAGS=$save_LDFLAGS])
+  fi
+
+  # are all the libraries present
+  for lib in `Magick-config --libs`; do
+    echo $lib | grep -- ^-l >/dev/null && \
+      rev_libs="`echo $lib | sed -e s/^-l//` $rev_libs"
+  done 
+
+  save_LIBS="$LIBS" 
+  for lib in $rev_libs; do
+    if test "$use_imagemagick" == "mu"; then 
+      AC_CHECK_LIB($lib, main, [], [use_imagemagick="no"
+CFLAGS=$save_CFLAGS
+CPPFLAGS=$save_CPPFLAGS 
+LDFLAGS=$save_LDFLAGS
+LIBS=$save_LIBS])
     fi
-  fi
-  #
-  if test "$magickold" = "yes"; then 
-    AC_MSG_WARN(*********************************************************)
-    AC_MSG_WARN(***     Old ImageMagick version ($magickversion) found.        ***)
-    AC_MSG_WARN(*** Upgrade to 5.4.9 or newer for full functionality. ***)
-    AC_MSG_WARN(*********************************************************) 
-  fi 
-else
-  #
-  # No ImageMagick found.  Restore variables.
-  #
-  CPPFLAGS=$save_cppflags 
-  CXXFLAGS=$save_cxxflags 
-  LIBS=$save_libs 
-  LDFLAGS=$save_ldflags 
-fi 
-# 
-# End of ImageMagick checks 
+  done
 
+  # perform final link check
+  if test "$use_imagemagick" == "mu"; then
+    AC_CHECK_LIB([Magick], [WriteImage], [use_imagemagick="yes"
+AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])], [use_imagemagick="no"
+CFLAGS=$save_CFLAGS
+CPPFLAGS=$save_CPPFLAGS 
+LDFLAGS=$save_LDFLAGS 
+LIBS=$save_LIBS])
+  fi
+else
+  use_imagemagick="no"
+fi
+
+AC_MSG_CHECKING([for ImageMagick])
+AC_MSG_RESULT($use_imagemagick)
 ])
 
 # things grabbed elsewhere
