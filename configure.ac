@@ -745,21 +745,24 @@ save_cppflags="$CPPFLAGS"
 save_cxxflags="$CXXFLAGS" 
 save_libs="$LIBS" 
 save_ldflags="$LDFLAGS" 
-# 
+ 
 AC_CHECK_PROG(use_imagemagick, [Magick-config --version], yes, no) 
 if test "$use_imagemagick" = "yes"; then
   MAGIC_BIN="Magick-config"
-else
-  # Test for MacOSX/Fink directories of "/sw/lib", "/sw/include",
-  # and "/sw/bin".
-  #
-  AC_CHECK_FILE(/sw/bin/Magick-config, use_imagemagick="yes") 
-  if test "$use_imagemagick" = "yes"; then
-    MAGIC_BIN="/sw/bin/Magick-config"
-    MAGIC_LIB_DIR="-L/sw/lib"
-  else
-    AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
-  fi
+fi
+
+# Test for MacOSX/Fink directories under "/sw".  If found, we need
+# to add another "-L" path to the LIBS variable.
+#
+AC_CHECK_FILE(/sw/bin/Magick-config, sw_dir="yes") 
+if test "$sw_dir" = "yes"; then
+  use_imagemagick="yes"
+  MAGIC_BIN="/sw/bin/Magick-config"
+  MAGIC_LIB_DIR="-L/sw/lib -lMagick"
+fi
+ 
+if test "$use_imagemagick" != "yes"; then
+  AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
 fi
 
 if test "$use_imagemagick" = "yes"; then
