@@ -5516,8 +5516,7 @@ begin_critical_section(&devices_lock, "interface.c:del_device" );
 end_critical_section(&devices_lock, "interface.c:del_device" );
 
                     (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
-                    //(void)sleep(3);
-                    usleep(3000000);    // 3secs
+                    usleep(2000000);    // 2secs
                     break;
 
                 case DEVICE_SERIAL_KISS_TNC:
@@ -5554,7 +5553,7 @@ begin_critical_section(&devices_lock, "interface.c:del_device" );
 end_critical_section(&devices_lock, "interface.c:del_device" );
 
                     (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
-                    usleep(3000000);    // 3secs
+                    usleep(2000000);    // 2secs
                     break;
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
@@ -5572,7 +5571,7 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 
                     (void)command_file_to_tnc_port(port,
                         get_data_base_dir(temp));
-                    usleep(3000000);    // 3secs
+                    usleep(2000000);    // 2secs
                     break;
 
                 default:
@@ -5601,8 +5600,6 @@ end_critical_section(&devices_lock, "interface.c:del_device");
                 case DEVICE_AX25_TNC:
                     if (debug_level & 2)
                         fprintf(stderr,"Close a AX25 TNC device\n");
-
-                    //usleep(3000000);  // 3secs
                     break;
 
                 case DEVICE_NET_GPSD:
@@ -7109,7 +7106,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             && !transmit_disable
                             && !loopback_only) {
                         port_write_string(i,data_txt);
-                        usleep(100000);  // 100ms
+                        usleep(10000);  // 10ms
                     }
  
                     done = 0;
@@ -7211,7 +7208,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             && !transmit_disable
                             && !loopback_only) {
                         port_write_string(i,data_txt);
-                        usleep(100000);  // 100ms
+                        usleep(10000);  // 10ms
                     }
  
                     // Set converse mode
@@ -7223,7 +7220,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             && !transmit_disable
                             && !loopback_only) {
                         port_write_string(i,data_txt);
-                        usleep(1500000);    // 1.5 secs
+                        usleep(20000); // 20ms
                     }
                     break;
 
