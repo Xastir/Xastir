@@ -6158,7 +6158,7 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     float lon = 0;
     float lat = 0;
     float range;
-    int skip;
+    int skip = 0;
 
 
     if (debug_level & 1)
