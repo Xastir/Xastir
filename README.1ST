@@ -1195,6 +1195,13 @@ WINDOWS/CYGWIN NOTES:
      Anyone doing so is encouraged to share their findings with the Xastir
      mailing lists.
 
+     As far as what Xastir paths look like from within Windows (in case
+     you're moving maps around with Explorer):  Just prefix them all with
+     "cygwin/".  For instance, maps go into /cygwin/usr/local/xastir/maps
+     instead of /usr/local/xastir/maps.  Xastir will continue to see them
+     as "/usr/local/xastir/maps" though from inside Cygwin.  It kind'a
+     looks like a mini Unix box from inside there.
+
 END OF WINDOWS/CYGWIN NOTES.
      -----------------------------------------------------------------------
 
