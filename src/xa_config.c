@@ -523,7 +523,14 @@ void save_data(void)  {
         store_long (fout, "DEFAULT_STATION_CLEAR", (long)sec_clear);
         store_long(fout, "DEFAULT_STATION_REMOVE", (long)sec_remove);
         store_string (fout, "HELP_DATA", HELP_FILE);
-        store_int (fout, "MESSAGE_COUNTER", message_counter);
+
+        // An attempt to keep away from rollover condition for
+        // message_counter
+        if (message_counter < 1000)
+            store_int (fout, "MESSAGE_COUNTER", message_counter);
+        else
+            store_int (fout, "MESSAGE_COUNTER", 0);
+
         store_string (fout, "AUTO_MSG_REPLY", auto_reply_message);
         store_int (fout, "DISPLAY_PACKET_TYPE", Display_packet_data_type);
 

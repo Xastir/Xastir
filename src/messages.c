@@ -374,11 +374,22 @@ void output_message(char *from, char *to, char *message) {
                 // Roll over message_counter if we hit the max.  Now
                 // with Reply/Ack protocol the max is only two
                 // characters worth.  We changed to sending the
-                // sequence number in Base-89 format in order to get
+                // sequence number in Base-90 format in order to get
                 // more range from the 2-character variable.
                 message_counter++;
-                if (message_counter > 7921) // 89*89
+                if (message_counter >= 8100) // 90*90
                     message_counter = 0;
+
+// Note that Xastir's messaging can lock up if we do a rollover and
+// have unacked messages on each side of the rollover.  This is due
+// to the logic in db.c that looks for the lowest numbered unacked
+// message.  We get stuck on both sides of the fence at once.  To
+// avoid this condition we could reduce the compare number (8100) to
+// a smaller value, and only roll over when there are no unacked
+// messages?  Another way to do it would be to write a "0" to the
+// config file if we're more than 1000 when we quit Xastir?  That
+// would probably be easier.  It's still possible to get to 8100
+// messages during one runtime though.  Unlikely, but possible.
 
                 message_pool[i].active = MESSAGE_ACTIVE;
                 message_pool[i].wait_on_first_ack = wait_on_first_ack;
@@ -386,14 +397,13 @@ void output_message(char *from, char *to, char *message) {
                 strcpy(message_pool[i].from_call_sign,from);
                 strcpy(message_pool[i].message_line,message_out);
 
-                // We compute the base-89 sequence number here
-                // This allows it to range from "!!" to "yy" (we
-                // can't get to "zz" ?)
+                // We compute the base-90 sequence number here
+                // This allows it to range from "!!" to "zz"
                 xastir_snprintf(message_pool[i].seq,
                     sizeof(message_pool[i].seq),
                     "%c%c",
-                    (char)(((message_counter / 89) % 89) + 33),
-                    (char)((message_counter % 89) + 33));
+                    (char)(((message_counter / 90) % 90) + 33),
+                    (char)((message_counter % 90) + 33));
 
                 message_pool[i].active_time=0;
                 message_pool[i].next_time = (time_t)15l;
@@ -585,7 +595,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
     (void)remove_trailing_spaces(seq);  // This is IMPORTANT here!!!
 
     //lowest=100000;
-    strncpy(lowest,"zz",2);     // Highest Base-89 2-char string
+    strncpy(lowest,"zz",2);     // Highest Base-90 2-char string
     found=-1;
     for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
@@ -610,7 +620,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
                             if (message_pool[i].active==MESSAGE_ACTIVE) {
                                 if (strcmp(message_pool[i].to_call_sign,from)==0) {
 // Need to change this to a string compare instead of an integer
-// compare.  We are using base-89 encoding now.
+// compare.  We are using base-90 encoding now.
                                     //if (atoi(message_pool[i].seq)<lowest) {
                                     if (strncmp(message_pool[i].seq,lowest,2) < 0) {
                                         //lowest=atoi(message_pool[i].seq);
