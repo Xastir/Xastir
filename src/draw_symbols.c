@@ -40,7 +40,7 @@
 
 #define ANGLE_UPDOWN 30         /* prefer horizontal cars if less than 45 degrees */
 
-int symbols_loaded;
+int symbols_loaded = 0;
 Widget select_symbol_dialog = (Widget)NULL;
 static xastir_mutex select_symbol_dialog_lock;
 Pixmap select_icons[(126-32)*2];    //33 to 126 with both '/' and '\' symbols (94 * 2) or 188
