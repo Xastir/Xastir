@@ -1128,10 +1128,10 @@ Samples Per Pixel: 1
 
 
     if (debug_level & 16) {
-        fprintf(stderr,"            Width: %ld\n", width);
-        fprintf(stderr,"           Height: %ld\n", height);
+        fprintf(stderr,"            Width: %ld\n", (long int)width);
+        fprintf(stderr,"           Height: %ld\n", (long int)height);
         fprintf(stderr,"      Photometric: %d\n", photometric);
-        fprintf(stderr,"   Rows Per Strip: %ld\n", rowsPerStrip);
+        fprintf(stderr,"   Rows Per Strip: %ld\n", (long int)rowsPerStrip);
         fprintf(stderr,"  Bits Per Sample: %d\n", bitsPerSample);
         fprintf(stderr,"Samples Per Pixel: %d\n", samplesPerPixel);
         fprintf(stderr,"    Planar Config: %d\n", planarConfig);
@@ -1253,10 +1253,17 @@ Samples Per Pixel: 1
 
                 if (NW_x < 0 || NW_y < 0 || NW_x >= (int)width || NW_y >= (int)height) {
 
-                    fprintf(stderr,"\nWarning:  NW Neat-line corner calculated at x:%d, y:%d, %s\n",
-                        NW_x, NW_y, filenm);
-                    fprintf(stderr,"Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",width,height);
-                    fprintf(stderr,"Map may appear in the wrong location or scale incorrectly.\n");
+                    fprintf(stderr,
+                        "\nWarning:  NW Neat-line corner calculated at x:%d, y:%d, %s\n",
+                        NW_x,
+                        NW_y,
+                        filenm);
+                    fprintf(stderr,
+                        "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
+                        (long int)width,
+                        (long int)height);
+                    fprintf(stderr,
+                        "Map may appear in the wrong location or scale incorrectly.\n");
 
                     if (NW_x < 0)
                         NW_x = 0;
@@ -1324,10 +1331,17 @@ Samples Per Pixel: 1
 
                 if (NE_x < 0 || NE_y < 0 || NE_x >= (int)width || NE_y >= (int)height) {
 
-                    fprintf(stderr,"\nWarning:  NE Neat-line corner calculated at x:%d, y:%d, %s\n",
-                        NE_x, NE_y, filenm);
-                    fprintf(stderr,"Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",width,height);
-                    fprintf(stderr,"Map may appear in the wrong location or scale incorrectly.\n");
+                    fprintf(stderr,
+                        "\nWarning:  NE Neat-line corner calculated at x:%d, y:%d, %s\n",
+                        NE_x,
+                        NE_y,
+                        filenm);
+                    fprintf(stderr,
+                        "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
+                        (long int)width,
+                        (long int)height);
+                    fprintf(stderr,
+                        "Map may appear in the wrong location or scale incorrectly.\n");
 
                     if (NE_x < 0)
                         NE_x = 0;
@@ -1395,10 +1409,17 @@ Samples Per Pixel: 1
 
                 if (SW_x < 0 || SW_y < 0 || SW_x >= (int)width || SW_y >= (int)height) {
 
-                    fprintf(stderr,"\nWarning:  SW Neat-line corner calculated at x:%d, y:%d, %s\n",
-                        SW_x, SW_y, filenm);
-                    fprintf(stderr,"Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",width,height);
-                    fprintf(stderr,"Map may appear in the wrong location or scale incorrectly.\n");
+                    fprintf(stderr,
+                        "\nWarning:  SW Neat-line corner calculated at x:%d, y:%d, %s\n",
+                        SW_x,
+                        SW_y,
+                        filenm);
+                    fprintf(stderr,
+                        "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
+                        (long int)width,
+                        (long int)height);
+                    fprintf(stderr,
+                        "Map may appear in the wrong location or scale incorrectly.\n");
 
                     if (SW_x < 0)
                         SW_x = 0;
@@ -1466,10 +1487,17 @@ Samples Per Pixel: 1
 
                 if (SE_x < 0 || SE_y < 0 || SE_x >= (int)width || SE_y >= (int)height) {
 
-                    fprintf(stderr,"\nWarning:  SE Neat-line corner calculated at x:%d, y:%d, %s\n",
-                        SE_x, SE_y, filenm);
-                    fprintf(stderr,"Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",width,height);
-                    fprintf(stderr,"Map may appear in the wrong location or scale incorrectly.\n");
+                    fprintf(stderr,
+                        "\nWarning:  SE Neat-line corner calculated at x:%d, y:%d, %s\n",
+                        SE_x,
+                        SE_y,
+                        filenm);
+                    fprintf(stderr,
+                        "Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",
+                        (long int)width,
+                        (long int)height);
+                    fprintf(stderr,
+                        "Map may appear in the wrong location or scale incorrectly.\n");
 
                     if (SE_x < 0)
                         SE_x = 0;
