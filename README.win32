@@ -416,16 +416,7 @@ in the /usr/local/xastir/maps directory, containing the single line
 "TERRASERVER", and select it with the Map Chooser, you should see
 satellite images on the map screen.
 
-Once I start up X-windows, I have to type this in a shell and start
-Xastir from that shell in order to make all of the paths known:
 
-    cd
-    . ./.profile
-
-So it appears that starting up X-windows using the startxwin.bat
-script ends up putting you somewhere other than your home directory,
-and your .profile doesn't end up getting sourced.  There must be a
-better way.
 
 
 
@@ -433,7 +424,7 @@ NOTE:  The below has worked at times with careful selection of the
 various libraries, but appears to have a problem with the latest
 Cygwin releases plus the latest libproj/libgeotiff releases.  We're
 working on the problem, but you may wish to skip these libraries for
-now in order to get a working Xastir installation.
+now in order to keep a working Xastir installation.
 
 OPTIONAL:  Install geoTIFF support:
 -----------------------------------
