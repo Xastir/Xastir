@@ -1,4 +1,5 @@
-AUTOMAKE_OPTIONS = no-dependencies dist-shar dist-zip
+# $Id$
+AUTOMAKE_OPTIONS = gnu
 ACLOCAL_AMFLAGS = -I m4
 
 D=      `date +%G%m%d.%H%M%S`
