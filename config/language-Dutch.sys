@@ -209,6 +209,7 @@ POPUPMA013|Schuif naar links|l|
 POPUPMA014|Schuif naar rechts|r|
 POPUPMA020|Afstand meten||
 POPUPMA021|Verplaatsen||
+POPUPMA022|TrackMe||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

@@ -204,6 +204,7 @@ POPUPMA013|Ouest||
 POPUPMA014|Est||
 POPUPMA020|Mesurer||
 POPUPMA021|Déplacer||
+POPUPMA022|TrackMe||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

@@ -203,6 +203,7 @@ POPUPMA013|Ir para a esquerda|l|
 POPUPMA014|Ir para a direita|r|
 POPUPMA020|Medida||
 POPUPMA021|Movimento||
+POPUPMA022|TrackMe||
 #
 # Menú dos estados das linhas de etiquetas
 BBARZM0001|Foco %s||

@@ -204,6 +204,7 @@ POPUPMA013|Pan left|l|
 POPUPMA014|Pan right|r|
 POPUPMA020|Measure||
 POPUPMA021|Move||
+POPUPMA022|TrackMe||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

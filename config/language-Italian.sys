@@ -205,6 +205,7 @@ POPUPMA013|Sposta a sinistra||
 POPUPMA014|Sposta a destra||
 POPUPMA020|Misurazione distanze|D|
 POPUPMA021|Muovi||
+POPUPMA022|TrackMe||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||

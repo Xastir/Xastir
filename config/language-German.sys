@@ -210,6 +210,7 @@ POPUPMA013|nach links||
 POPUPMA014|nach rechts||
 POPUPMA020|Messen||
 POPUPMA021|Bewegen||
+POPUPMA022|TrackMe||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||
