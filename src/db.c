@@ -7730,7 +7730,14 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
             shorten_path(path,short_path);
             //sprintf(ipacket_message,"}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
-            xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
+            xastir_snprintf(ipacket_message,
+                sizeof(ipacket_message),
+                "}%s>%s,TCPIP,%s*::%s:%s",
+                call,
+                short_path,
+                my_callsign,
+                addr9,
+                message);
             output_nws_igate_rf(call,path,ipacket_message,port,third_party);
         }
     }
