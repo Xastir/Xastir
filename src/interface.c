@@ -6199,17 +6199,32 @@ void port_stats(int port) {
 
 //***********************************************************
 // startup defined ports
+//
+// port = -2: Start all defined interfaces
+// port = -1: Start all interfaces with "Activate on Startup"
+// port = 0 - MAX: Start only the one port specified
 //***********************************************************
 void startup_all_or_defined_port(int port) {
     int i, override;
     int start;
 
     override = 0;
-    if (port == -1) {
-        start = 0;
-    } else {
-        start = port;
-        override = 1;
+
+    switch (port) {
+
+        case -1:    // Start if "Activate on Startup" enabled
+            start = 0;
+            break;
+
+        case -2:    // Start all interfaces, period!
+            start = 0;
+            override = 1;
+            break;
+
+        default:    // Start only the interface specified in "port"
+            start = port;
+            override = 1;
+            break;
     }
 
 begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
@@ -6385,7 +6400,8 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
             fprintf(stderr,"Skipping port %d, it's already running\n",i);
         }
 
-        if (port != -1) {
+        if (port != -1 && port != -2) {
+            // We're doing a specific port #, so stop the loop
             i = MAX_IFACE_DEVICES+1;
         }
     }
@@ -6399,7 +6415,10 @@ end_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
 
 //***********************************************************
-// shutdown all active ports
+// shutdown active ports
+//
+// port = -1:  Shut down all active ports
+// port = 0 to max: Shut down the specified port if active
 //***********************************************************
 void shutdown_all_active_or_defined_port(int port) {
     int i;

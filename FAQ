@@ -68,6 +68,7 @@ The Questions
     4.12 Why doesn't Xastir run on RedHat 9.0 properly?
     4.13 Why do I see "Character '\55' not supported in font"?
     4.14 Why do I see strong blue tinting for the maps?
+    4.15 My config file got munged.  How do I recover?
 
 5.  Features
 
@@ -190,6 +191,7 @@ The Answers
     code is the purpose of a release, not making sure that there is a binary
     package for all of the supported platforms.
 
+
 3. Building Xastir
 
     3.1. Why won't Xastir compile with my system's cc?
@@ -280,8 +282,8 @@ The Answers
     to delete all the text in the /usr/X11R6/lib/X11/config/host.def file
     otherwise it still refers to the LessTif installation.
 
-4. Running Xastir
 
+4. Running Xastir
 
     4.1 Why do I get wrong texts in menus or other places when using a
         non-English language file?
@@ -522,6 +524,18 @@ The Answers
     due to running the display over a Hummingbird eXceed session.
     Try running it locally and you should see the proper colors.
     Try changing the eXceed session to use more bits of color.
+
+    4.15 My config file got munged.  How do I recover?
+
+    Xastir saves previous revisions of the config file as
+    "xastir.cnf.1" through "xastir.cnf.3".  Look for them in the
+    ~/.xastir/config directory.  Kill Xastir, then copy one of the
+    backup files to "xastir.cnf" in order to recover your previous
+    settings.  Xastir will use the "xastir.cnf" file the next time
+    it starts up.
+
+    Older Xastir versions saved only one copy of the config file as
+    "xastir.bak".
 
 
 5.  Features

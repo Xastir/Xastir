@@ -46,9 +46,11 @@
 #include "maps.h"
 #include "track_gui.h"
 
-#define CONFIG_FILE "config/xastir.cnf"
-#define CONFIG_FILE_BAK "config/xastir.bak"
-#define CONFIG_FILE_TMP "config/xastir.tmp"
+#define CONFIG_FILE      "config/xastir.cnf"
+#define CONFIG_FILE_BAK1 "config/xastir.cnf.1"
+#define CONFIG_FILE_BAK2 "config/xastir.cnf.2"
+#define CONFIG_FILE_BAK3 "config/xastir.cnf.3"
+#define CONFIG_FILE_TMP  "config/xastir.tmp"
 
 #define MAX_VALUE 300
 
@@ -137,7 +139,9 @@ int get_string(char *option, char *value) {
 
     if (fin == NULL) {
         strcpy (config_file, get_user_base_dir (CONFIG_FILE));
-        (void)filecreate(config_file);   // Create empty file if it doesn't exist
+        // filecreate() refuses to create a new file if it already
+        // exists.
+        (void)filecreate(config_file);
         fin = fopen (config_file, "r");
     }
 
@@ -265,29 +269,73 @@ char *get_data_base_dir(char *dir) {
 // Also: Config file should be owned by the user, and not by root.
 // If chmod 4755 is done on the executable, then the config file ends
 // up being owned by root from then on.
+//
+// Yea, I could have made this nicer by algorithmically figuring out
+// the backup filenames and rotating among .1 through .9.  Perhaps
+// next go-around!  Just having multiples is a big win, in case some
+// of them get blown away.
+//
+// Another step that needs to be made is to restore config settings
+// for the cases where Xastir comes up with a nonexistent or empty
+// xastir.cnf file.  If the backups exist, we should copy them
+// across.
+//
 void save_data(void)  {
     int i;
     char name_temp[20];
     char name[50];
     FILE * fout;
-    char config_file[MAX_VALUE], config_file_bak[MAX_VALUE];
+    char config_file[MAX_VALUE];
+    char config_file_bak1[MAX_VALUE];
+    char config_file_bak2[MAX_VALUE];
+    char config_file_bak3[MAX_VALUE];
+
 
 //    if (debug_level & 1)
 //        fprintf(stderr,"Store String Start\n");
 
     strcpy (config_file, get_user_base_dir (CONFIG_FILE));
-    strcpy (config_file_bak, get_user_base_dir (CONFIG_FILE_BAK));
-    if ( unlink (config_file_bak) ) {
-        // Problem here.  Couldn't remove the backup config file (might not exist).
-        //fprintf(stderr,"Couldn't delete file: %s, cancelling save_data()\n", config_file_bak);
+    strcpy (config_file_bak1, get_user_base_dir (CONFIG_FILE_BAK1));
+    strcpy (config_file_bak2, get_user_base_dir (CONFIG_FILE_BAK2));
+    strcpy (config_file_bak3, get_user_base_dir (CONFIG_FILE_BAK3));
+
+    // Remove the bak3 file
+    if ( unlink (config_file_bak3) ) {
+        // Problem here.  Couldn't remove the bak3 config file
+        // (might not exist yet).
+
+        //fprintf(stderr,
+        //    "Couldn't delete file: %s, cancelling save_data()\n",
+        //    config_file_bak3);
         //return;
     }
 
-    if ( rename (config_file, config_file_bak) ) {
-        // Problem here.  Couldn't rename config file to config.bak.
-        fprintf(stderr,"Couldn't create backup of config file: %s, cancelling save_data()\n", config_file);
+    // Rename bak2 to bak3
+    // NOTE: bak won't exist until a couple of saves have happened.
+    if ( rename (config_file_bak2, config_file_bak3) ) {
+        //fprintf(stderr,
+        //    "Couldn't create %s file\n",
+        //    config_file_bak3);
+    }
+
+    // Rename bak1 to bak2
+    // NOTE: bak won't exist until a couple of saves have happened.
+    if ( rename (config_file_bak1, config_file_bak2) ) {
+        //fprintf(stderr,
+        //    "Couldn't create %s file\n",
+        //    config_file_bak2);
+    }
+
+    // Rename config to bak1
+    if ( rename (config_file, config_file_bak1) ) {
+        // Problem here.  Couldn't rename config file.
+        fprintf(stderr,
+            "Couldn't create backup of config file: %s, cancelling save_data()\n",
+            config_file);
         return;
     }
+
+    // Now save to a new config file
 
     fout = fopen (config_file, "a");
     if (fout != NULL) {
@@ -697,9 +745,12 @@ void save_data(void)  {
         fprintf(stderr,"Couldn't open config file for appending: %s\n", config_file);
 
         // Continue using original config file.
-        if ( rename (config_file_bak, config_file) ) {
-            // Problem here, couldn't rename xastir.bak to xastir.cnf
-            fprintf(stderr,"Couldn't recover %s from %s file\n", config_file, config_file_bak);
+        if ( rename (config_file_bak1, config_file) ) {
+            // Problem here, couldn't rename bak1 file to xastir.cnf
+            fprintf(stderr,
+                "Couldn't recover %s from %s file\n",
+                config_file,
+                config_file_bak1);
             return;
         }
     }

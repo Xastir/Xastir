@@ -6334,7 +6334,6 @@ end_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
 void start_stop_all_interfaces( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
     char *which = (char *)clientData;   // Whether to start or stop the interfaces
     int do_w;
-    int port;
 
     busy_cursor(appshell);
 
@@ -6342,16 +6341,12 @@ begin_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces
     modify_device_list(4,0);
 end_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
 
-    for (port=0; port<MAX_IFACE_DEVICES; port++) {
-        do_w = atoi(which);
-        if (do_w) {     // We wish to shut down all ports
-            shutdown_all_active_or_defined_port(port);
-        }
-        else {        // We wish to start up all ports
-            /*fprintf(stderr,"DO port up\n");*/
-            /* now start port */
-            startup_all_or_defined_port(port);
-        }
+    do_w = atoi(which);
+    if (do_w) {     // We wish to shut down all ports
+        shutdown_all_active_or_defined_port(-1);
+    }
+    else {        // We wish to start up all ports
+        startup_all_or_defined_port(-2);
     }
     /* rebuild list */
 
