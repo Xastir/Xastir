@@ -99,7 +99,7 @@ void reverse_path(char *input_string) {
 
     // Find each comma 
     j = 0; 
-    for (i = 0; i < strlen(input_string); i++) {
+    for (i = 0; i < (int)strlen(input_string); i++) {
         if (input_string[i] == ',') {
             indexes[j++] = i;
             //fprintf(stderr,"%d\n",i);     // Debug code

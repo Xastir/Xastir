@@ -1495,7 +1495,7 @@ char *convert_bearing_to_name(char *bearing, int opposite) {
         if (deg > 180) deg -= 180.0;
         else if (deg <= 180) deg += 180.0;
     }
-    for (i = 0; i < sizeof(directions)/sizeof(directions[0]); i++) {
+    for (i = 0; i < (int)( sizeof(directions)/sizeof(directions[0]) ); i++) {
         if (deg >= directions[i].low && deg < directions[i].high)
             return langcode(directions[i].lang);
     }

@@ -8975,7 +8975,8 @@ right_crop = width - 1;
                         + ( 1.0 * right_x_increment * row_offset ) + 0.5
                         -   NE_x_offset );
 
-//WE7U:  This is always false:  current_left is unsigned
+//WE7U:  This comparison is always false:  current_left is unsigned
+//therefore always positive!
 if (current_left < 0)
     current_left = 0;
 
@@ -12023,6 +12024,7 @@ void index_restore_from_file(void) {
 
                 // Do some reasonableness checking on the parameters
                 // we just parsed.
+//WE7U: Comparison is always false
                 if ( (temp_record->bottom < 0l)
                         || (temp_record->bottom > 64800000l) ) {
                     processed = 0;  // Reject this record
@@ -12031,7 +12033,9 @@ void index_restore_from_file(void) {
                             temp_record->filename);
                 }
 
-                if ( (temp_record->top < 0l)
+ 
+//WE7U: Comparison is always false
+               if ( (temp_record->top < 0l)
                         || (temp_record->top > 64800000l) ) {
                     processed = 0;  // Reject this record
                     fprintf(stderr,"\nindex_restore_from_file: top extent incorrect %lu in map name:\n%s\n",
@@ -12039,6 +12043,7 @@ void index_restore_from_file(void) {
                             temp_record->filename);
                 }
 
+//WE7U: Comparison is always false
                 if ( (temp_record->left < 0l)
                         || (temp_record->left > 129600000l) ) {
                     processed = 0;  // Reject this record
@@ -12047,6 +12052,7 @@ void index_restore_from_file(void) {
                             temp_record->filename);
                 }
 
+//WE7U: Comparison is always false
                 if ( (temp_record->right < 0l)
                         || (temp_record->right > 129600000l) ) {
                     processed = 0;  // Reject this record
