@@ -133,9 +133,10 @@ int main(int argc, char *argv[]) {
     char key[128];
     char symbol[4];
     int filled = 5;
-    int pattern;
+    int pattern=0;
     int display_level = 1234;
     int label_level = 9;
+    int label_color = 8;
     char *dir = NULL,*file = NULL,*dfile = NULL;
     dbfawk_sig_info *si = NULL, *sigs = NULL;
 
@@ -178,6 +179,7 @@ int main(int argc, char *argv[]) {
     awk_declare_sym(symtbl,"pattern",INT,&pattern,sizeof(pattern));
     awk_declare_sym(symtbl,"display_level",INT,&display_level,sizeof(display_level));
     awk_declare_sym(symtbl,"label_level",INT,&label_level,sizeof(label_level));
+    awk_declare_sym(symtbl,"label_color",INT,&label_color,sizeof(label_color));
     awk_declare_sym(symtbl,"font_size",INT,&font_size,sizeof(font_size));
 
     if (dfile) {		/* parse dbf file */
@@ -228,6 +230,7 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr,"display_level=%d, ",display_level);
 	fprintf(stderr,"font_size=%d, ", font_size);
 	fprintf(stderr,"label_level=%d\n",label_level);
+	fprintf(stderr,"label_color=%d\n",label_color);
 	//	print_symtbl(symtbl);
       }
       DBFClose(dbf);
