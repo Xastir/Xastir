@@ -7470,11 +7470,11 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
         // just completed a turn, check to see if our heading has
         // stabilized yet.  If so, beacon the latest heading.  We'll
         // have to save another variable which says whether the last
-        // beacon was caused by a corner-pegging.  The net effect of
-        // this is that we'll get an extra posit coming out of a
-        // turn that specifies our correct course and probably a
-        // more accurate speed until the next posit.  This should
-        // make dead-reckoning work even better.
+        // beacon was caused by corner-pegging.  The net effect is
+        // that we'll get an extra posit coming out of a turn that
+        // specifies our correct course and probably a more accurate
+        // speed until the next posit.  This should make
+        // dead-reckoning work even better.
         if (0) {
         }
 ////////////////////////////////////////////////////////////////////
