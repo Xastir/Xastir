@@ -22,6 +22,16 @@
  *
  *
  */
+
+
+//
+// NOTE:  GDAL sample data can be found here:
+//
+//          ftp://ftp.remotesensing.org/gdal/data
+// or here: http://gdal.maptools.org/dl/data/
+//
+
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -432,8 +442,7 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
 
     // Check for more objects below this one, recursing into any
     // objects found.  "level" keeps us from recursing too far (we
-    // don't want infinite recursion here).  These objects may be
-    // rings or they may be other polygons in a collection.
+    // don't want infinite recursion here).
     // 
     object_num = OGR_G_GetGeometryCount(geometryH);
     // Iterate through the objects found.  If another geometry is
@@ -449,7 +458,7 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
             int sub_object_num;
 
 
-            // This may be a ring, or another object with rings.
+            // See if we have geometries below this one.
             child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
 
             sub_object_num = OGR_G_GetGeometryCount(child_geometryH);
@@ -535,8 +544,7 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 
     // Check for more objects below this one, recursing into any
     // objects found.  "level" keeps us from recursing too far (we
-    // don't want infinite recursion here).  These objects may be
-    // rings or they may be other polygons in a collection.
+    // don't want infinite recursion here).
     // 
     object_num = OGR_G_GetGeometryCount(geometryH);
 
@@ -553,7 +561,7 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
             int sub_object_num;
 
 
-            // This may be a ring, or another object with rings.
+            // Check for more geometries below this one.
             child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
 
             sub_object_num = OGR_G_GetGeometryCount(child_geometryH);
@@ -678,7 +686,8 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 // other direction, it's a hole in the polygon.  Can test the
 // operation using Shapefiles for Island County, WA, Camano Island,
 // where there's an Island in Puget Sound that has a lake with an
-// island in it (48.15569N/122.48953W).
+// island in it (48.15569N/122.48953W).  Also at 48.43867N/
+// 122.61687W there's another lake with an island in it.
 //
 void Draw_OGR_Polygons(OGRGeometryH geometryH,
         int level,
@@ -912,11 +921,13 @@ void draw_ogr_map(Widget w,
     if (debug_level & 16)
         fprintf(stderr,"Opening datasource %s\n", full_filename);
 
-//
-// WE7U:  One of my computers segfaults here if a .prj file is
-// present with a shapefile.  Another system with newer
-// Linux/libtiff/libgeotiff works fine.
-//
+    //
+    // One computer segfaulted at OGROpen() if a .prj file was
+    // present with a shapefile.  Another system with newer Linux/
+    // libtiff/ libgeotiff works fine.  Getting rid of older header
+    // files/ libraries, then recompiling/installing libproj/
+    // libgeotiff/ libshape/ libgdal/ Xastir seemed to fix it.
+    //
     // Open data source
     datasourceH = OGROpen(full_filename,
         0 /* bUpdate */,
