@@ -562,7 +562,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
 			    XmNmaximum, 336,
 				XmNshowValue, TRUE,
 				XmNvalue, posit_start,
-				XtVaTypedArg, XmNtitleString, XmRString, "Start Trail (hrs ago)", 22,
+				XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP009"), 22,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
 				NULL);
@@ -589,7 +589,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
 			    XmNmaximum, 336,
 				XmNshowValue, TRUE,
 				XmNvalue, posit_length,
-				XtVaTypedArg, XmNtitleString, XmRString, "Trail Length (hrs)", 19,
+				XtVaTypedArg, XmNtitleString, XmRString, langcode("WPUPTSP010"), 19,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
 				NULL);

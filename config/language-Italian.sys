@@ -412,6 +412,15 @@ WPUPCFT027|Dati ASCII||
 WPUPCFT028|Configura TNC con cavo AUX per GPS||
 WPUPCFT029|Configura TNC con INVALID ENUM||
 WPUPCFT030|Configure KISS TNC||
+WPUPCFT031|TNC Configuration Files||
+WPUPCFT032|TNC Setup Filename|| 
+WPUPCFT033|TNC Shutdown Filename||
+WPUPCFT034|KISS Parameters||
+WPUPCFT035|TXDelay (10 ms units)||
+WPUPCFT036|Persistence (0 to 255)||
+WPUPCFT037|SlotTime (10 ms units)||
+WPUPCFT038|TxTail (10 ms units)||
+WPUPCFT039|Full Duplex||
 #
 #Configura Porta Meteo
 WPUPCFWX01|Configura Porta Meteo||
@@ -581,6 +590,8 @@ WPUPTSP005|Segui ora!||
 WPUPTSP006|Annulla operazione||
 WPUPTSP007|Scarica tracciato||
 WPUPTSP008|Nominativo||
+WPUPTSP009|Start Trail (hrs ago)||
+WPUPTSP010|Trail Length (hrs)||
 #
 #Messages
 WPUPMSB001|Casella messaggi %d||

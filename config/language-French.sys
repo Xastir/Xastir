@@ -410,6 +410,15 @@ WPUPCFT027|Type ASCII||
 WPUPCFT028|Configurer TNC +AUX GPS||
 WPUPCFT029|COnfigurer TNC +INVALID ENUM||
 WPUPCFT030|Configure KISS TNC||
+WPUPCFT031|TNC Configuration Files||
+WPUPCFT032|TNC Setup Filename|| 
+WPUPCFT033|TNC Shutdown Filename||
+WPUPCFT034|KISS Parameters||
+WPUPCFT035|TXDelay (10 ms units)||
+WPUPCFT036|Persistence (0 to 255)||
+WPUPCFT037|SlotTime (10 ms units)||
+WPUPCFT038|TxTail (10 ms units)||
+WPUPCFT039|Full Duplex||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configurer port météo||
@@ -579,6 +588,8 @@ WPUPTSP005|Suivre maintenant!||
 WPUPTSP006|Anuler suivi||
 WPUPTSP007|Télécharger piste||
 WPUPTSP008|Indicatif||
+WPUPTSP009|Start Trail (hrs ago)||
+WPUPTSP010|Trail Length (hrs)||
 #
 # PopUp "Messages..."
 WPUPMSB001|Boite d'envoi %d||

@@ -914,7 +914,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-                setup = XtVaCreateManagedWidget("KISS Parameters",xmLabelWidgetClass, frame3,
+                // KISS Parameters
+                setup = XtVaCreateManagedWidget(langcode("WPUPCFT034"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     NULL);
@@ -924,7 +925,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-                setup1 = XtVaCreateManagedWidget("TXDelay (10ms units)", xmLabelWidgetClass, form2,
+                // TXDelay (10 ms units)
+                setup1 = XtVaCreateManagedWidget(langcode("WPUPCFT035"), xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_FORM,
                                     XmNtopOffset, 10,
                                     XmNbottomAttachment,XmATTACH_NONE,
@@ -934,7 +936,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-                TNC_txdelay = XtVaCreateManagedWidget("Config_TNC up_file", xmTextFieldWidgetClass, form2,
+                TNC_txdelay = XtVaCreateManagedWidget("Config_TNC TNC_txdelay", xmTextFieldWidgetClass, form2,
                                     XmNeditable,   TRUE,
                                     XmNcursorPositionVisible, TRUE,
                                     XmNsensitive, TRUE,
@@ -951,7 +953,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup2 = XtVaCreateManagedWidget("Persistence (0 to 255)", xmLabelWidgetClass, form2,
+                // Persistence (0 to 255)
+                setup2 = XtVaCreateManagedWidget(langcode("WPUPCFT036"), xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup1,
                                     XmNtopOffset, 10,
@@ -962,7 +965,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-                TNC_persistence = XtVaCreateManagedWidget("Config_TNC persistenc", xmTextFieldWidgetClass, form2,
+                TNC_persistence = XtVaCreateManagedWidget("Config_TNC persistence", xmTextFieldWidgetClass, form2,
                                     XmNeditable,   TRUE,
                                     XmNcursorPositionVisible, TRUE,
                                     XmNsensitive, TRUE,
@@ -980,7 +983,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup3 = XtVaCreateManagedWidget("SlotTime (10ms units)", xmLabelWidgetClass, form2,
+                // SlotTime (10 ms units)
+                setup3 = XtVaCreateManagedWidget(langcode("WPUPCFT037"), xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_FORM,
                                     XmNtopOffset, 10,
                                     XmNbottomAttachment,XmATTACH_NONE,
@@ -1007,7 +1011,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup4 = XtVaCreateManagedWidget("TxTail (10ms units)", xmLabelWidgetClass, form2,
+                // TxTail (10 ms units)
+                setup4 = XtVaCreateManagedWidget(langcode("WPUPCFT038"), xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup3,
                                     XmNtopOffset, 10,
@@ -1036,7 +1041,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                TNC_fullduplex = XtVaCreateManagedWidget("Full Duplex",xmToggleButtonWidgetClass,form2,
+                // Full Duplex
+                TNC_fullduplex = XtVaCreateManagedWidget(langcode("WPUPCFT039"),xmToggleButtonWidgetClass,form2,
                                     XmNtopAttachment, XmATTACH_WIDGET,
                                     XmNtopWidget, setup4,
                                     XmNtopOffset, 5,
@@ -1062,7 +1068,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-                setup = XtVaCreateManagedWidget("Config_TNC TNC Setup/Shutdown files",xmLabelWidgetClass, frame3,
+                setup = XtVaCreateManagedWidget(langcode("WPUPCFT031"),xmLabelWidgetClass, frame3,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     NULL);
@@ -1072,7 +1078,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-                setup1 = XtVaCreateManagedWidget("Config_TNC Setup File Name", xmLabelWidgetClass, form2,
+                setup1 = XtVaCreateManagedWidget(langcode("WPUPCFT032"), xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_FORM,
                                     XmNtopOffset, 10,
                                     XmNbottomAttachment,XmATTACH_NONE,
@@ -1098,7 +1104,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup2 = XtVaCreateManagedWidget("Config_TNC Shutdown File Name", xmLabelWidgetClass, form2,
+                setup2 = XtVaCreateManagedWidget(langcode("WPUPCFT033"), xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup1,
                                     XmNtopOffset, 10,

@@ -411,6 +411,15 @@ WPUPCFT027|ASCII Type||
 WPUPCFT028|Configure TNC w/AUX GPS||
 WPUPCFT029|Configure TNC w/INVALID ENUM||
 WPUPCFT030|Configure KISS TNC||
+WPUPCFT031|TNC Configuration Files||
+WPUPCFT032|TNC Setup Filename|| 
+WPUPCFT033|TNC Shutdown Filename||
+WPUPCFT034|KISS Parameters||
+WPUPCFT035|TXDelay (10 ms units)||
+WPUPCFT036|Persistence (0 to 255)||
+WPUPCFT037|SlotTime (10 ms units)||
+WPUPCFT038|TxTail (10 ms units)||
+WPUPCFT039|Full Duplex||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configure WX Port||
@@ -580,6 +589,8 @@ WPUPTSP005|Track Now!||
 WPUPTSP006|Clear Tracking|| 
 WPUPTSP007|Download Trail||
 WPUPTSP008|Callsign||
+WPUPTSP009|Start Trail (hrs ago)||
+WPUPTSP010|Trail Length (hrs)||
 #
 # PopUp "Messages..."
 WPUPMSB001|Send Message Box %d||

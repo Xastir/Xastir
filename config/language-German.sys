@@ -417,6 +417,15 @@ WPUPCFT027|ASCII||
 WPUPCFT028|Einstellungen für TNC mit GPS über AUX-Kabel||
 WPUPCFT029|Einstellungen für TNC mit GPS über INVALID ENUM||
 WPUPCFT030|KISS TNC konfigurieren||
+WPUPCFT031|TNC Configuration Files||
+WPUPCFT032|TNC Setup Filename|| 
+WPUPCFT033|TNC Shutdown Filename||
+WPUPCFT034|KISS Parameters||
+WPUPCFT035|TXDelay (10 ms units)||
+WPUPCFT036|Persistence (0 to 255)||
+WPUPCFT037|SlotTime (10 ms units)||
+WPUPCFT038|TxTail (10 ms units)||
+WPUPCFT039|Full Duplex||
 # 
 # PopUp "Einstellungen Wetterstation"
 WPUPCFWX01|Einstellungen Wetterstation||
@@ -586,6 +595,8 @@ WPUPTSP005|Verfolge jetzt!||
 WPUPTSP006|Verfolgung aufheben|| 
 WPUPTSP007|Spur aus dem Internet||
 WPUPTSP008|Rufzeichen||
+WPUPTSP009|Start Trail (hrs ago)||
+WPUPTSP010|Trail Length (hrs)||
 #
 # PopUp "Nachrichten..."
 WPUPMSB001|Nachricht Fenster %d||

@@ -414,6 +414,15 @@ WPUPCFT027|Tipo ASCII||
 WPUPCFT028|Configurar TNC com GPS AUX||
 WPUPCFT029|Configurar TNC com ENUM INVÁLIDO||
 WPUPCFT030|Configurar KISS TNC||
+WPUPCFT031|TNC Configuration Files||
+WPUPCFT032|TNC Setup Filename|| 
+WPUPCFT033|TNC Shutdown Filename||
+WPUPCFT034|KISS Parameters||
+WPUPCFT035|TXDelay (10 ms units)||
+WPUPCFT036|Persistence (0 to 255)||
+WPUPCFT037|SlotTime (10 ms units)||
+WPUPCFT038|TxTail (10 ms units)||
+WPUPCFT039|Full Duplex||
 #
 # Configurar a porta da estação meteorológica
 WPUPCFWX01|Configurar a porta da estação meteorológica||
@@ -583,6 +592,8 @@ WPUPTSP005|Rastrear agora!||
 WPUPTSP006|Limpar rastro||
 WPUPTSP007|Receber caminho||
 WPUPTSP008|Indicativo||
+WPUPTSP009|Start Trail (hrs ago)||
+WPUPTSP010|Trail Length (hrs)||
 #
 # Menú de mensagens
 WPUPMSB001|Enviar mensagem %d||
