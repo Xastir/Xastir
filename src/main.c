@@ -13550,9 +13550,10 @@ else if (DF_object_enabled) {
             // We only check the first possible comment string in
             // the record
             //if (strlen(p_station->comments) > 0)
-            if (p_station->comment_data != NULL) {
+            if ( (p_station->comment_data != NULL)
+                    && (p_station->comment_data->text_ptr != NULL) ) {
                 //XmTextFieldSetString(object_comment_data,p_station->comments);
-                XmTextFieldSetString(object_comment_data,p_station->comment_data->text);
+                XmTextFieldSetString(object_comment_data,p_station->comment_data->text_ptr);
             }
             else {
                 XmTextFieldSetString(object_comment_data,"");

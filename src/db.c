@@ -2716,7 +2716,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         ptr = p_station->comment_data;
 
         while (ptr != NULL) {
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI044"),ptr->text);
+            // We don't care if the pointer is NULL.  This will
+            // succeed anyway.  It'll just make an empty string.
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI044"),ptr->text_ptr);
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
             xastir_snprintf(temp, sizeof(temp), "\n");
@@ -4405,6 +4407,10 @@ int delete_comments(DataRow *fill) {
         ptr = fill->comment_data;
         ptr_next = ptr->next;
         while (ptr != NULL) {
+            // Free the actual text string that we malloc'ed
+            if (ptr->text_ptr != NULL) {
+                free(ptr->text_ptr);
+            }
             free(ptr);
             ptr = ptr_next; // Advance to next record
             if (ptr != NULL)
@@ -6635,7 +6641,6 @@ void add_comment(DataRow *p_station, char *comment_string) {
     CommentRow *ptr;
     int add_it = 0;
     int len;
-    int count = 0;
 
     len = strlen(comment_string);
 
@@ -6649,6 +6654,7 @@ void add_comment(DataRow *p_station, char *comment_string) {
 
     // Shorten it
     (void)remove_trailing_spaces(comment_string);
+    (void)remove_leading_spaces(comment_string);
  
     len = strlen(comment_string);
 
@@ -6663,9 +6669,8 @@ void add_comment(DataRow *p_station, char *comment_string) {
         else {  // We have comment/status data stored already
                 // Check for an identical string
             ptr = p_station->comment_data;
-            while ( (ptr != NULL) && (count < 10) ) {
-                count++;
-                if (strcmp(ptr->text, comment_string) == 0) {
+            while (ptr != NULL) {
+                if (strcmp(ptr->text_ptr, comment_string) == 0) {
                     // Found a matching string
                     //printf("Found match: %s:%s\n",p_station->call_sign,comment_string);
                     return; // No need to add the new string
@@ -6679,11 +6684,17 @@ void add_comment(DataRow *p_station, char *comment_string) {
 
         if (add_it) {   // We add to the beginning so we don't have
                         // to traverse the linked list
+
             ptr = p_station->comment_data;  // Save old pointer to records
             p_station->comment_data = (CommentRow *)malloc(sizeof(CommentRow));
             p_station->comment_data->next = ptr;    // Link in old records or NULL
+
+            // Malloc the string space we'll need, attach it to our
+            // new record
+            p_station->comment_data->text_ptr = (char *)malloc(sizeof(char) * (len+1));
+
             // Fill in the string
-            strncpy(p_station->comment_data->text,comment_string,MAX_COMMENTS+1);
+            strncpy(p_station->comment_data->text_ptr,comment_string,len+1);
         }
     }
 }
@@ -10015,9 +10026,10 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
     // In this case we grab only the first comment field (if it
     // exists) for the object/item
-    if (p_station->comment_data != NULL) {
+    if ( (p_station->comment_data != NULL)
+            && (p_station->comment_data->text_ptr != NULL) ){
         //strcpy(comment,p_station->comments);
-        strncpy(comment,p_station->comment_data->text,sizeof(comment));
+        strncpy(comment,p_station->comment_data->text_ptr,sizeof(comment));
     }
     else {
         comment[0] = '\0';  // Empty string

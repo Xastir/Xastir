@@ -270,7 +270,7 @@ typedef struct {
 // allocated list of text.  Every different comment field will be
 // stored in a separate line.
 typedef struct _CommentRow{
-    char    text[MAX_COMMENTS+1];   // Holds the comment text
+    char   *text_ptr;               // Ptr to the comment text
     struct _CommentRow *next;       // Ptr to next record or NULL
 } CommentRow;
 

@@ -539,8 +539,9 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
 // Should we display only the first comment field we have stored, or
 // concatenate all of them up to the limit of stemp?
                         //xastir_snprintf(stemp, sizeof(stemp), "%s", p_station->comments);
-                        if (p_station->comment_data != NULL)
-                            xastir_snprintf(stemp, sizeof(stemp), "%s", p_station->comment_data->text);
+                        if ( (p_station->comment_data != NULL)
+                                && (p_station->comment_data->text_ptr != NULL) )
+                            xastir_snprintf(stemp, sizeof(stemp), "%s", p_station->comment_data->text_ptr);
                         else
                             stemp[0] = '\0';    // Empty string
 
