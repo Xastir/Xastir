@@ -12,11 +12,12 @@ FLow off
 FUll off
 HEA off
 LFadd off
-LFSup ON
+LFSup on
 AUTOLF off
 MCOM off
-MON ON
-MResp OFF
+MFILT off
+MON on
+MResp off
 MRPt on
 MSTamp off
 MXMit off

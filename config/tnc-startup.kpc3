@@ -16,6 +16,7 @@ LFadd off
 LFSup ON
 AUTOLF off
 MCOM off
+MFILT off
 MON ON
 MResp OFF
 MRPt on
