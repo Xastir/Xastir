@@ -8693,7 +8693,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
     } label_record;     
 
     FILE *fn;
-    char filename[200];
+    char filename[400];
     int records, record_count, count;
     int scale;
     long map_left, map_right, map_top, map_bottom, max_x, max_y;
@@ -10263,6 +10263,7 @@ void index_update_xastir(char *filename,
         current = (map_index_record *)malloc(sizeof(map_index_record));
         current->next = map_index_head;
         map_index_head = current;
+        //printf("Adding:%d:%s\n",strlen(filename),filename);
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -10404,23 +10405,11 @@ int index_retrieve(char *filename,
 
 
 
-/*
-// Struct and list pointers for the map index linked list.
-typedef struct _map_index_record{
-    char filename[400];
-    unsigned long bottom;
-    unsigned long top;
-    unsigned long left;
-    unsigned long right;
-    struct _map_index_record *next;
-} map_index_record;
-map_index_record *map_index_head = NULL;
-*/
-
 // Saves the linked list pointed to by map_index_head to a file.
 void index_save_to_file() {
     FILE *f;
     map_index_record *current;
+    char out_string[500];
 
 
     printf("Saving map index to file\n");
@@ -10435,22 +10424,30 @@ void index_save_to_file() {
 
     current = map_index_head;
 
-/*
     while (current != NULL) {
 
-        // Write each object out to the file
-        if (fwrite(current, sizeof(map_index_record), 1, f) != 1) {
-            // Failed to write
-            printf("Couldn't write objects to map index file: %s\n",
-                MAP_INDEX_DATA);
-            current = NULL; // All done
+        if (current->filename[0] != '\0') {
+
+            // Write each object out to the file as one
+            // comma-delimited line
+            xastir_snprintf(out_string,
+                sizeof(out_string),
+                "%ld,%ld,%ld,%ld,%s\n",
+                current->bottom,
+                current->top,
+                current->left,
+                current->right,
+                current->filename);
+
+            if (fprintf(f,"%s",out_string) < strlen(out_string)) {
+                // Failed to write
+                printf("Couldn't write objects to map index file: %s\n",
+                    MAP_INDEX_DATA);
+                current = NULL; // All done
+            }
         }
-        else {
-            // Good write
-            current = current->next;
-        }
+        current = current->next;
     }
-*/
     (void)fclose(f);
 }
 
@@ -10463,8 +10460,8 @@ void index_save_to_file() {
 //
 void index_restore_from_file(void) {
     FILE *f;
-    map_index_record temp;
     map_index_record *current;
+    char in_string[500];
 
 
     printf("Restoring map index from file\n");
@@ -10476,22 +10473,27 @@ void index_restore_from_file(void) {
     while (!feof (f)) { // Loop through entire file
 
         // Read one object from the file
-        if (fread(&temp, sizeof(map_index_record), 1, f) == 1) {
+        if ( get_line (f, in_string, 500) ) {   // Snag one line of data
+            if (strlen(in_string) >= 8) {
 
-            // Malloc space for the data and add it to the head of
-            // the linked list
-            current = (map_index_record *)malloc(sizeof(map_index_record));
-            current->next = map_index_head;
-            map_index_head = current;
-            
-            strncpy(current->filename,temp.filename,399);
-            current->filename[399] = '\0';
-            current->bottom = temp.bottom;
-            current->top = temp.top;
-            current->left = temp.left;
-            current->right = temp.right;
+                // Malloc space for the data and add it to the head of
+                // the linked list
+                current = (map_index_record *)malloc(sizeof(map_index_record));
+                current->next = map_index_head;
+                map_index_head = current;
+ 
+                sscanf(in_string,
+                    "%ld,%ld,%ld,%ld,%400c",
+                    &current->bottom,
+                    &current->top,
+                    &current->left,
+                    &current->right,
+                    current->filename);
 
-            //printf("Restored: %s\n",current->filename);
+                current->filename[399] = '\0';
+
+                //printf("Restored: %s\n",current->filename);
+            }
         }
     }
     (void)fclose(f);
