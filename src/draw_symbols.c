@@ -1216,7 +1216,21 @@ static __inline__ short l16(long val) {
 
 // According to the spec, the lat/long point is the upper left
 // corner of the object, and the offsets are down and to the right
-// (except for one line type where it's down and to the left).
+// (except for one line type where it's down and to the left).  This
+// doesn't appear to be the case in dos/winAPRS.  Matching what they
+// do:
+//
+// Type 0 Circle:    Tie = center, offsets = vert/horiz. sizes.
+// Type 1 Line:      Tie = bottom right, offsets = left and up.
+// Type 2 Ellipse:   Tie = center, offsets = vert/horiz. sizes.
+// Type 3 Triangle:  Tie = bottom right, offsets = height/width.
+// Type 4 Rectangle: Tie = lower right, offsets = left and up.
+// Type 5 Circle:    Tie = center, offsets = vert/horiz. sizes.
+// Type 6 Line:      Tie = bottom left, offsets = right and up.
+// Type 7 Ellipse:   Tie = center, offsets = vert/horiz. sizes.
+// Type 8 Triangle:  Tie = bottom right, offsets = height/width.
+// Type 9 Rectangle: Tie = lower right, offsets = left and up.
+//
 // Exceptions to this are the triangle, ellipse, and circle.  The
 // ellipse and circle have the lat/long as the center point.  The
 // triangle is an isoscelese triangle with the lat/long point being
@@ -1234,6 +1248,7 @@ void draw_area(long x_long, long y_lat, char type, char color,
 
     xoff = 360000.0 / 1500.0 * (sqrt_lon_off * sqrt_lon_off) / scale_x;
     yoff = 360000.0 / 1500.0 * (sqrt_lat_off * sqrt_lat_off) / scale_y;
+
     right  = (x_long - x_long_offset) / scale_x;
     bottom = (y_lat  - y_lat_offset)  / scale_y;
     left   = right  - xoff;
