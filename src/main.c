@@ -12690,8 +12690,12 @@ void map_chooser_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData
 
 // Update the "selected" field in the in-memory map_index based on
 // the "selected" input parameter.
-void map_index_update_selected(char *filename, int selected) {
-    map_index_record *current = map_index_head;
+void map_index_update_selected(char *filename, int selected, map_index_record *current) {
+//    map_index_record *current = map_index_head;
+
+    if (current == NULL) {
+        current = map_index_head;
+    }
 
     while (current != NULL) {
         if (strcmp(current->filename,filename) == 0) {
@@ -12720,6 +12724,15 @@ void map_index_update_selected(char *filename, int selected) {
 // selected_maps.sys file.  Only set the file entries if in file
 // mode, dir entries if in dir mode.  When writing out to file,
 // write them both out.
+//
+// In order to make this fast, we'll send a start pointer to
+// map_index_update_selected() which is the "next" pointer from the
+// previous hit.  We're relying on the fact that the Map Chooser
+// list and the in-memory linked list are in the same search order,
+// so this way we don't search through the entire linked list for
+// each update.  With 30,000 maps, it ended up being up to 30,000 *
+// 30,000 for the loop iterations, which was unwieldy.
+//
 void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer callData) {
     int i, x;
     char *temp;
@@ -12747,8 +12760,8 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 
     // Run through the list, updating the equivalent entries in the
     // in-memory map index.  If we're in "directory" mode we'll only
-    // update the directory entries.  Same for "file" mode, we'll
-    // only tweak the file entries.
+    // update the directory entries.  In "Expanded dirs" mode, we'll
+    // update both file and directory entries.
     // The end result is that both directories and files may be
     // selected, not either/or as the code was written earlier.
     for(x=1; x<=i;x++) {
@@ -12757,14 +12770,19 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
             // index, setting/resetting the "selected" field as
             // appropriate.
             map_index_update_selected(temp,
-                XmListPosSelected(map_list,x));
+                XmListPosSelected(map_list,x),
+                ptr);
             XtFree(temp);
         }
+        ptr = ptr->next;
     }
 
     // Now we have all of the updates done to the in-memory map
     // index.  Write out the selected maps to disk, overwriting
     // whatever was there before.
+
+    ptr = map_index_head;
+
     f=fopen(SELECTED_MAP_DATA,"w+");
     if (f!=NULL) {
 
