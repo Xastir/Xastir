@@ -136,8 +136,8 @@ required:
 [ ] make
 [ ] nano (a text editor, optional)
 [ ] patch
-[ ] pcre (for future development)
-[ ] pcre-devel (for future development)
+[ ] pcre
+[ ] pcre-devel
 [ ] perl
 [ ] rcs
 [ ] tcltk
