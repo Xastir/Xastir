@@ -532,13 +532,14 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     }
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[TNC_port].device_type=type;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
 
@@ -1810,13 +1811,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" )
     }
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[GPS_port].device_type=DEVICE_SERIAL_GPS;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
+
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" );
 
@@ -2353,13 +2356,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
     }
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[WX_port].device_type=DEVICE_SERIAL_WX;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
+
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
 
@@ -3006,13 +3011,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" )
 
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[NWX_port].device_type=DEVICE_NET_WX;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
+
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" );
 
@@ -3512,13 +3519,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" 
 
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[NGPS_port].device_type=DEVICE_NET_GPSD;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
+
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" );
 
@@ -3965,13 +3974,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
 
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[AX25_port].device_type=DEVICE_AX25_TNC;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
+
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" );
 
@@ -4572,13 +4583,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
     }
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[Inet_port].device_type=DEVICE_NET_STREAM;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
+
 
 end_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
 
@@ -5044,13 +5057,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
     }
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[Database_port].device_type=DEVICE_NET_DATABASE;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
+
 
 end_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
 
@@ -5586,13 +5601,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     }
 
     /* delete list */
-    modify_device_list(0,0);
+    modify_device_list(4,0);
+
 
     /* add device type */
     devices[AGWPE_port].device_type=DEVICE_NET_AGWPE;
 
     /* rebuild list */
-    modify_device_list(2,0);
+    modify_device_list(3,0);
+
 
 end_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
 
