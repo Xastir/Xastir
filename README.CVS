@@ -223,6 +223,11 @@ SUDO Instructions:
     command you can copy the script to /usr/local/bin and then run it as
     "update-xastir" from anywhere.
 
+    A note from Gerry Creager as to another way to set up the sudoers file:
+
+      "I now consider it a good idea to add the "gifted" users to the 'wheel'
+      group and then solely enable wheel in /etc/sudoers; I've seen a recent
+      article also supporting this."
 
 
   ------------------------------------------------------------------------
