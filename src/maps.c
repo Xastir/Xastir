@@ -10529,7 +10529,7 @@ void map_indexer(void) {
     if (stat (MAP_INDEX_DATA, &nfile) != 0) {
 
         // File doesn't exist yet.  Create it.
-        f = fopen(MAP_INDEX_DATA,"w+");
+        f = fopen(MAP_INDEX_DATA,"w");
         if (f != NULL)
             (void)fclose(f);
         else
