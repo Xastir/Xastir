@@ -745,6 +745,7 @@ POPEM00028|Kann Datei nicht öffnen||
 POPEM00029|Gefunden!||
 POPEM00030|Weather Station Symbol||
 POPEM00031|Changed to WX symbol '/_', other option is '\_'||
+POPEM00032|Warning: Using National Weather Service Symbol!||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||

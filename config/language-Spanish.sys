@@ -740,6 +740,7 @@ POPEM00028|No se puede abrir el archivo||
 POPEM00029|Encontrado!||
 POPEM00030|Símbolo de Estación Meteorológica||
 POPEM00031|Símbolo WX Cambiado a '/_', otra opción es '\_'||
+POPEM00032|Warning: Using National Weather Service Symbol!||
 #
 # Salto de Locación
 JMLPO00001|Localización de Mapa||

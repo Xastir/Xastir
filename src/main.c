@@ -678,8 +678,8 @@ int moving_object = 0;
 void check_weather_symbol(void) {
     // Check for weather station, if so, make sure symbol is proper type
     if ( (output_station_type == 4) || (output_station_type == 5) ) {
-        // Need '/_' or '\_' symbols if a weather station
-        if ( (my_symbol != '_')
+        // Need one of these symbols if a weather station: /_   \_   /W   \W
+        if ( ( (my_symbol != '_') && (my_symbol != 'W') )
             || ( (my_group != '\\') && (my_group != '/') ) ) {
 
             // Force it to '/_'
@@ -695,6 +695,20 @@ void check_weather_symbol(void) {
             // "Weather Station", "Changed to WX symbol '/_', other option is '\\_'"
             popup_message( langcode("POPEM00030"), langcode("POPEM00031") );
         }
+    }
+}
+
+
+
+
+
+void check_nws_weather_symbol(void) {
+    if ( (my_symbol == 'W')
+            && ( (my_group == '\\') || (my_group == '/') ) ) {
+
+        // Notify the operator that they're trying to be an NWS
+        // weather station.
+        popup_message( langcode("POPEM00030"), langcode("POPEM00032") );
     }
 }
 
@@ -7408,6 +7422,9 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     // Check for proper symbol in case we're a weather station
     (void)check_weather_symbol();
 
+    // Check for NWS symbol and print warning if so
+    (void)check_nws_weather_symbol();
+
     transmit_raw_wx = (int)XmToggleButtonGetState(raw_wx_tx);
 
     transmit_compressed_posit = (int)XmToggleButtonGetState(compressed_posit_tx);
@@ -13248,6 +13265,12 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
         redraw_on_new_data=2;
         Configure_station_destroy_shell(widget,clientData,callData);
     }
+
+    // Check for proper weather symbols if a weather station
+    (void)check_weather_symbol();
+
+    // Check for use of NWS symbols
+    (void)check_nws_weather_symbol();
 }
 
 

@@ -740,6 +740,7 @@ POPEM00028|Can't open file||
 POPEM00029|Found It!||
 POPEM00030|Weather Station Symbol||
 POPEM00031|Changed to WX symbol '/_', other option is '\_'||
+POPEM00032|Warning: Using National Weather Service Symbol!||
 #
 # Jump Location 
 JMLPO00001|Map Display Bookmarks||
