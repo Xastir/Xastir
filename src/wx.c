@@ -1373,7 +1373,14 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 } else
                     weather->wx_temp[0]=0;
 
-                /* todays rain total (on some units) */
+// We don't want to parse this here because compute_rain()
+// calculates this for us from the accumulating long-term rain
+// total.  If we were to do it here as well, we'll get conflicting
+// results.  Since only some units put out today's rain total, we'll
+// just rely on our own calculations for it instead.  It'll work
+// across more units.
+/*
+                // todays rain total (on some units)
                 if (data[28]!='-') {
                     substr(temp_data1,(char *)(data+28),4);
 //WE7U
@@ -1396,6 +1403,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     }
                 } else
                     weather->wx_prec_00[0]=0;
+*/
 
                 /* rain total long term */
                 if (data[432]!='-') {
