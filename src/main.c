@@ -2330,6 +2330,7 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
+#if !defined(NO_GRAPHICS) && defined(HAVE_IMAGEMAGICK)
 void Gamma_adjust_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -2468,7 +2469,7 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     } else
         (void)XRaiseWindow(XtDisplay(gamma_adjust_dialog), XtWindow(gamma_adjust_dialog));
 }
-
+#endif
 
 
 
