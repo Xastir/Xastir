@@ -2019,7 +2019,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     str_ptr = XmTextGetString(coordinate_calc_zone);
     i = strlen(str_ptr);
     have_utm = 1;   // Wishful thinking.  We'll zero it later if not.
-    if ( (i >= 1) || (i <= 3) ) {
+    if ( (i >= 1) && (i <= 3) ) {
         // String is the correct length.  Can have just A/B/Y/Z, or
         // else one or two digits plus one letter.
         int j;
@@ -2172,6 +2172,8 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         //}
 
         piece = 0;
+        have_lat_lon = 0;
+
         for (j = 0; j < substring; j++) {
             if (strlen(&temp_string[temp[j]]) > 0) {
                 double kk;
@@ -2182,6 +2184,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
                 switch (piece) {
                     case (1) :  // Degrees
                         latitude = kk;
+                        have_lat_lon = 1;
                         break;
                     case (2) :  // Minutes
                         if ( (kk < 0.0) || (kk >= 60.0) ) {
@@ -2217,7 +2220,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         //fprintf(stderr,"%f\n", latitude);
 
         // Test for valid values of latitude
-        if ( (latitude < -90.0) || (latitude > 90.0) ) {
+        if ( have_lat_lon && ((latitude < -90.0) || (latitude > 90.0)) ) {
             have_lat_lon = 0;
         }
         if (strlen(str_ptr) == 0) {
@@ -2320,8 +2323,9 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
         //        fprintf(stderr,"%s\n", &temp_string[temp[j]]);
         //    }
         //}
-
         piece = 0;
+        have_lat_lon = 0;
+
         for (j = 0; j < substring; j++) {
             if (strlen(&temp_string[temp[j]]) > 0) {
                 double kk;
@@ -2332,6 +2336,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
                 switch (piece) {
                     case (1) :  // Degrees
                         longitude = kk;
+                        have_lat_lon = 1;
                         break;
                     case (2) :  // Minutes
                         if ( (kk < 0.0) || (kk >= 60.0) ) {
@@ -2368,7 +2373,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
 
 
         // Test for valid values of longitude
-        if ( (longitude < -180.0) || (longitude > 180.0) ) {
+        if (have_lat_lon && ((longitude < -180.0) || (longitude > 180.0)) ) {
             have_lat_lon = 0;
         }
         if (strlen(str_ptr) == 0) {
