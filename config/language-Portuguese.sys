@@ -50,7 +50,7 @@ PULDNVI014|Programar aviso|r|
 # Menú de configuração
 PULDNCF004|Estação|E|
 PULDNCF001|Pré-definidos|P|
-PULDNCF003|Timing|T|
+PULDNCF003|Momento certo|T|
 PULDNCF002|Sistema de coordenadas|S|
 PULDNCF006|Audio dos alarmes|A|
 PULDNCF007|Sintetizador de voz|S|
@@ -136,12 +136,12 @@ PULDNDP014|Localizar estação|L|
 PULDNDP001|Rastrear estação|R|
 PULDNDP022|Tirar o rasto de Findu|F|
 #
-# SubMenu "Filter Data"
-PULDNDP032|Filtrar datos||
+# SubMenu "Filtrar dados"
+PULDNDP032|Filtrar dados||
 PULDNDP040|Escolher nada||
 PULDNDP041|Escolher meu||
 PULDNDP042|Escolher TNC||
-PULDNDP027|- Mostrar estações Direct||
+PULDNDP027|- Mostrar estações direct||
 PULDNDP043|- Escolher via digi||
 PULDNDP034|Mostrar estações net||
 PULDNDP019|Mostrar infos expiradas||
@@ -149,13 +149,13 @@ PULDNDP044|Mostrar estações||
 PULDNDP028|- Mostrar estações fixas||
 PULDNDP029|- Mostrar estações móveis||
 PULDNDP030|- Mostrar estações de tempo||
-PULDNDP045|Mostrar Objectos/Items||
-PULDNDP026|- Mostrar Objectos/Items metereológicos||
-PULDNDP039|- Mostrar Water Gauge Objectos/Items||
-PULDNDP031|- Mostrar otros Objectos/Items||
+PULDNDP045|Mostrar objectos/items||
+PULDNDP026|- Mostrar objectos/items metereológicos||
+PULDNDP039|- Mostrar objectos de medida de água/Items||
+PULDNDP031|- Mostrar outros objectos/Items||
 #
-# SubMenu "Filter Display"
-PULDNDP033|Filtrar display||
+# SubMenu "Filtrar monitor"
+PULDNDP033|Filtrar monitor||
 PULDNDP010|Mostrar indicativo|i|
 PULDNDP012|Mostrar símbolos|D|
 PULDNDP011|- Símbolos rodados|S|
@@ -182,7 +182,7 @@ PULDNDP024|Mostrar o último reporte horário||
 #
 PULDNDP015|Anular todas as estações|A|
 PULDNDP016|Limpar rastos|L|
-PULDNDP025|Limpar história de Objecto/Item||
+PULDNDP025|Limpar história de objecto/item||
 PULDNDP048|Recarregar objecto/história de item||
 #
 # Inglesa/métrica
@@ -337,8 +337,8 @@ WPUPCFD027|Pop up de novos boletins||
 WPUPCFD028|Avisar se teclas foram modificadas||
 WPUPCFD029|Ver boletins de distância zero||
 #
-# PopUp "Configure - Timing"
-WPUPCFTM01|Configurar Timing||
+# PopUp "Configurar - momento certo"
+WPUPCFTM01|Configurar momento certo||
 #
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||
@@ -409,8 +409,8 @@ WPUPCFT030|Configurar KISS TNC||
 WPUPCFWX01|Configurar a porta da estação meteorológica||
 WPUPCFWX02|Dispositivo da estação meteorológica||
 WPUPCFWX03|Correcção da medida de chuva (Definições globais)||
-WPUPCFWX04|.1 inch/2.5mm||
-WPUPCFWX05|.01 inch/.25mm||
+WPUPCFWX04|.1 polegadas/2.5mm||
+WPUPCFWX05|.01 polegadas/.25mm||
 WPUPCFWX06|.1mm||
 WPUPCFWX07|Não corrigido||
 #
@@ -503,7 +503,7 @@ WPUPCFI010|(Deixar em branco se não houver nada)||
 WPUPCFI011|Voltar a ligar em caso de falha de rede?||
 WPUPCFI012|Correr como num I-Gate?||
 WPUPCFI013|Difundir mensagens via TNC quando houver um I-Gate?||
-WPUPCFI014|Log de transações do I-Gate?|||
+WPUPCFI014|Registo de transações do I-Gate?|||
 WPUPCFI015|Parametros filtrados||
 #
 # Configurar Database
@@ -523,22 +523,22 @@ WPUPCFID13|Difundir mensagens via TNC quando houver um I-Gate?||
 WPUPCFID14|Log de transações do I-Gate?|||
 WPUPCFID15|Parametros filtrados||
 #
-# PopUp "Configure AGWPE"
-WPUPCFIA01|Configure AGWPE||
+# PopUp "Configurar AGWPE"
+WPUPCFIA01|Configurar AGWPE||
 WPUPCFIA02|Host ||
-WPUPCFIA03|Port ||
-WPUPCFIA04|(Secondary hosts)||
+WPUPCFIA03|Porta ||
+WPUPCFIA04|(Hosts secundários)||
 WPUPCFIA05|Host1||
-WPUPCFIA06|Port1||
+WPUPCFIA06|Porta1||
 WPUPCFIA07|Host2||
-WPUPCFIA08|Port2||
+WPUPCFIA08|Porta2||
 WPUPCFIA09|Pass-code||
-WPUPCFIA10|(Leave Blank if None)||
-WPUPCFIA11|Reconnect on NET failure?||
-WPUPCFIA12|Run as an I-Gate?||
-WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
-WPUPCFIA14|Log I-Gate Transactions?||
-WPUPCFIA15|Transmit RadioPort||
+WPUPCFIA10|(Deixar em branco se não há nada)||
+WPUPCFIA11|Voltar a ligar se houver uma falha da NET?||
+WPUPCFIA12|Funcionar como uma I-Gate?||
+WPUPCFIA13|Divulgar mensagens via TNC quando estiver na I-Gate?||
+WPUPCFIA14|Registo das transações I-Gate?||
+WPUPCFIA15|Transmitir RadioPort||
 #
 # Configurar Alarmas de Audio
 WPUPCFA001|Configurar alarme de audio||
@@ -985,3 +985,4 @@ GPS010|Amarelo||
 GPS011|Violeta||
 #
 #
+
