@@ -10201,9 +10201,12 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 /////////////////////////////////////////////////////////////////////
 // map_search()
 //
-// Function which recurses through map directories, finding
-// map files.  It's called from load_auto_maps and
-// load_alert_maps.  If a map file is found, it is drawn.
+// Function which recurses through map directories, finding map
+// files.  It's called from load_auto_maps and load_alert_maps.  If
+// a map file is found, it is drawn.  We can also call this function
+// in indexing mode rather than draw mode, specified by the
+// destination_pixmap parameter.
+//
 // If alert == NULL, we looking for a regular map file to draw.
 // If alert != NULL, we have a weather alert to draw.
 //
@@ -10558,13 +10561,30 @@ void index_update_directory(char *directory) {
     map_index_record *previous = map_index_head;
     map_index_record *temp_record = map_index_head;
     int done = 0;
+    int i;
 
 
     //printf( "index_update_directory: %s\n", directory );
 
-    // Check for bad input
-    if (directory[0] == '\0'
+    // Check for initial bad input
+    if ( (directory[0] == '\0')
             || ( (directory[1] == '/') && (strlen(directory) == 1)) ) {
+        printf("index_update_directory: Bad input: %s\n",directory);
+        return;
+    }
+    // Make sure there aren't any weird characters in the directory
+    // that might cause problems later.  Look for CR's and LF's and
+    // convert them to string-end characters.
+    for ( i = 0; i < strlen(directory); i++ ) {
+        if ( (directory[i] == '\n')
+                || (directory[i] == '\r') ) {
+            directory[i] = '\0';    // Terminate it here
+        }
+    }
+    // Check if the string is _now_ bogus
+    if ( (directory[0] == '\0')
+            || ( (directory[1] == '/') && (strlen(directory) == 1))) {
+        printf("index_update_directory: Bad input: %s\n",directory);
         return;
     }
 
@@ -10679,10 +10699,26 @@ void index_update_xastir(char *filename,
     map_index_record *previous = map_index_head;
     map_index_record *temp_record = map_index_head;
     int done = 0;
+    int i;
 
 
-    // Check for bad input
+    // Check for initial bad input
     if (filename[0] == '\0') {
+        printf("index_update_xastir: Bad input: %s\n",filename);
+        return;
+    }
+    // Make sure there aren't any weird characters in the filename
+    // that might cause problems later.  Look for CR's and LF's and
+    // convert them to string-end characters.
+    for ( i = 0; i < strlen(filename); i++ ) {
+        if ( (filename[i] == '\n')
+                || (filename[i] == '\r') ) {
+            filename[i] = '\0';    // Terminate it here
+        }
+    }
+    // Check if the string is _now_ bogus
+    if (filename[0] == '\0') {
+        printf("index_update_xastir: Bad input: %s\n",filename);
         return;
     }
 
@@ -10819,10 +10855,26 @@ void index_update_ll(char *filename,
     int done = 0;
     unsigned long temp_left, temp_right, temp_top, temp_bottom;
     int ok;
+    int i;
 
 
-    // Check for bad input
+    // Check for initial bad input
     if (filename[0] == '\0') {
+        printf("index_update_ll: Bad input: %s\n",filename);
+        return;
+    }
+    // Make sure there aren't any weird characters in the filename
+    // that might cause problems later.  Look for CR's and LF's and
+    // convert them to string-end characters.
+    for ( i = 0; i < strlen(filename); i++ ) {
+        if ( (filename[i] == '\n')
+                || (filename[i] == '\r') ) {
+            filename[i] = '\0';    // Terminate it here
+        }
+    }
+    // Check if the string is _now_ bogus
+    if (filename[0] == '\0') {
+        printf("index_update_ll: Bad input: %s\n",filename);
         return;
     }
 
@@ -11112,6 +11164,7 @@ printf("Restoring map index from file\n");
                                             // line.
                 char scanf_format[50];
                 int processed;
+                int i;
 
 printf("%s\n",in_string);
 
@@ -11144,18 +11197,33 @@ printf("%s\n",in_string);
                     &temp_record->auto_maps,
                     temp_record->filename);
 
-                    // Mark the record as non-accessed at this
-                    // point.  At the stage where we're writing
-                    // this list off to disk, if the record hasn't
-                    // been accessed by the re-indexing, it doesn't
-                    // get written.  This flushes out deleted files
-                    // after a couple of Xastir reboots.
-                    temp_record->accessed = 0;
+                // Make sure there aren't any weird characters in
+                // the filename that might cause problems later.
+                // Look for CR's and LF's and convert them to
+                // string-end characters.
+                for ( i = 0; i < strlen(temp_record->filename); i++ ) {
+                    if ( (temp_record->filename[i] == '\n')
+                            || (temp_record->filename[i] == '\r') ) {
+                        temp_record->filename[i] = '\0';    // Terminate it here
+                    }
+                }
+                // Check if the string is now bogus
+                if (strlen(temp_record->filename) == 0) {
+                    processed = 0;  // Reject this record
+                }
 
-                    // Default is not-selected.  Later we read in
-                    // the selected_maps.sys file and tweak some of
-                    // these fields.
-                    temp_record->selected = 0;
+                // Mark the record as non-accessed at this point.
+                // At the stage where we're writing this list off to
+                // disk, if the record hasn't been accessed by the
+                // re-indexing, it doesn't get written.  This
+                // flushes out deleted files after a couple of
+                // Xastir reboots.
+                temp_record->accessed = 0;
+
+                // Default is not-selected.  Later we read in the
+                // selected_maps.sys file and tweak some of these
+                // fields.
+                temp_record->selected = 0;
 
                 temp_record->filename[MAX_FILENAME-1] = '\0';
 
