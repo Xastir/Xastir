@@ -3086,6 +3086,9 @@ void refresh_image(Widget w) {
 // done it copies the image to the drawing area, making it visible.
 void redraw_symbols(Widget w) {
 
+    if (interrupt_drawing_now)
+        return;
+
     // If we're in the middle of ID'ing, wait a bit.
     if (ATV_screen_ID && pending_ID_message)
         usleep(2000000);    // 2 seconds
@@ -3097,8 +3100,9 @@ void redraw_symbols(Widget w) {
         display_file(w);        // display stations (symbols, info, trails)
         (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
     }
-else
-    fprintf(stderr,"wait_to_redraw\n");
+    else {
+        fprintf(stderr,"wait_to_redraw\n");
+    }
 }
 
 
