@@ -196,6 +196,7 @@ extern int WX_rain_gauge_type;
 
 /* interface.c */
 extern unsigned char *incoming_data;
+extern int incoming_data_length;
 extern int NETWORK_WAITTIME;
 extern void startup_all_or_defined_port(int port);
 extern void shutdown_all_active_or_defined_port(int port);

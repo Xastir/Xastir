@@ -117,6 +117,7 @@ int ax25_ports_loaded = 0;
 
 // decode data
 unsigned char *incoming_data;
+int incoming_data_length;               // Used for binary strings
 int data_avail = 0;
 int data_port;
 
@@ -216,7 +217,7 @@ int get_device_status(int port) {
 // port #                                                    
 // string is the string of data
 //***********************************************************
-void channel_data(int port, unsigned char *string) {
+void channel_data(int port, unsigned char *string, int length) {
     int max;
     struct timeval tmv;
 
@@ -231,7 +232,10 @@ void channel_data(int port, unsigned char *string) {
     // Check for excessively long packets.  These might be TCP/IP
     // packets or concatenated APRS packets.  In any case it's some
     // kind of garbage that we don't want to try to parse.
-    if (strlen(string) > MAX_LINE_SIZE) {   // Too long!
+
+    // Note that for binary data (WX stations and KISS packets), this
+    // strlen() function won't work correctly.
+    if (length > MAX_LINE_SIZE) {   // Too long!
         if (debug_level & 1) {
             printf("\nchannel_data: LONG packet.  Dumping it:\n%s\n",string);
         }
@@ -245,12 +249,13 @@ void channel_data(int port, unsigned char *string) {
     if (begin_critical_section(&output_data_lock, "interface.c:channel_data(1)" ) > 0)
         printf("output_data_lock, Port = %d\n", port);
 
-    if (strlen((char *)string) > 0) {
+    if (length > 0) {
 
         if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
             printf("data_lock, Port = %d\n", port);
 
         incoming_data = string;
+        incoming_data_length = length;
         data_port = port;
         data_avail = 1;
 
@@ -1856,6 +1861,8 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     // Append the information chars
     strcat(transmit_txt,data);
 
+    //printf("%s\n",transmit_txt);
+
     // Add the KISS framing characters and do the proper escapes.
     j = 0;
     transmit_txt2[j++] = KISS_FEND;
@@ -2240,15 +2247,18 @@ void port_read(int port) {
                         if ( (!skip)
                                 && (cin == (unsigned char)'\r'
                                     || cin == (unsigned char)'\n'
-                                    || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1))
-                                && port_data[port].data_type == 0) {     // If end-of-line
+                                    || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1)
+                                    || ( (cin == KISS_FEND) && (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) ) )
+                               && port_data[port].data_type == 0) {     // If end-of-line
 
                             // End serial/net type data send it to the decoder
                             // Put a terminating zero at the end of the read-in data
                             port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
 
                             if (port_data[port].status == DEVICE_UP && port_data[port].read_in_pos > 0)
-                                channel_data(port, (unsigned char *)port_data[port].device_read_buffer);
+                                channel_data(port,
+                                    (unsigned char *)port_data[port].device_read_buffer,
+                                    port_data[port].read_in_pos+1);   // Length of string
 
                             for (i = 0; i <= port_data[port].read_in_pos; i++)
                                 port_data[port].device_read_buffer[i] = (char)0;
@@ -2317,7 +2327,9 @@ void port_read(int port) {
                                 if (port_data[port].read_in_pos >= max) {
                                     if (group != 0) {
                                         /* ok try to decode it */
-                                        channel_data(port, (unsigned char *)port_data[port].device_read_buffer);
+                                        channel_data(port,
+                                            (unsigned char *)port_data[port].device_read_buffer,
+                                            port_data[port].read_in_pos+1); // Length of string
                                     }
                                     max = MAX_DEVICE_BUFFER - 1;
                                     group = 0;
@@ -2359,7 +2371,9 @@ void port_read(int port) {
                                     /* Received data from our interface! - process data */
                                     if (process_ax25_packet(buffer, port_data[port].scan, port_data[port].device_read_buffer) != NULL) {
                                         port_data[port].bytes_input += strlen(port_data[port].device_read_buffer);
-                                        channel_data(port, (unsigned char *)port_data[port].device_read_buffer);
+                                        channel_data(port,
+                                            (unsigned char *)port_data[port].device_read_buffer,
+                                             port_data[port].read_in_pos+1); // Length of string
                                     }
                                     /*
                                         do this for interface indicator in this case we only do it for,
@@ -2368,7 +2382,7 @@ void port_read(int port) {
                                     if (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) ) {
                                         port_data[port].read_in_pos += port_data[port].scan;
                                     } else {
-                                        /* no buffer over runs writing a line at a time*/
+                                        /* no buffer over runs writing a line at a time */
                                         port_data[port].read_in_pos = 0;
                                     }
                                 }
@@ -3955,7 +3969,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     break;
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
-                    port_dtr(port,0);           // make DTR normal
+                    port_dtr(i,0);           // make DTR normal
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
 
@@ -4208,7 +4222,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 // interfaces:  data_txt_save would probably be the one to pass,
 // or create a new string just for KISS TNC's.
 
-                if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+                if (port_data[i].device_type == DEVICE_SERIAL_KISS_TNC) {
 
                     // Transmit
                     send_ax25_frame(i,

@@ -10131,7 +10131,7 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 //                              1 if it is good
 //          incoming_data       Processed string
 //
-int decode_ax25_header(unsigned char *incoming_data) {
+int decode_ax25_header(unsigned char *incoming_data, int length) {
     char temp[20];
     char result[4096+100];
     char dest[15];
@@ -10145,8 +10145,10 @@ int decode_ax25_header(unsigned char *incoming_data) {
     if (incoming_data == NULL)
         return(0);
 
-    // Drop the packet if it is too long
-    if (strlen(incoming_data) > 1024) {
+    // Drop the packet if it is too long.  Note that for KISS packets
+    // we can't use strlen() as there can be 0x00 bytes in the
+    // data itself.
+    if (length > 1024) {
         incoming_data[0] = '\0';
         return(0);
     }
@@ -10154,9 +10156,7 @@ int decode_ax25_header(unsigned char *incoming_data) {
     // Start with an empty string for the result
     result[0] = '\0';
 
-    // Skip the first character in the string, which is a Frame End
-    // character from the KISS packet
-    ptr = 1;
+    ptr = 0;
 
     // Process the destination address
     for (i = 0; i < 7; i++)
@@ -10202,7 +10202,7 @@ int decode_ax25_header(unsigned char *incoming_data) {
 // can fix it someplace earlier in the process).  Correct the
 // current packet so we don't get the extra garbage tacked onto the
 // end.
-    for (i = ptr; i < strlen(incoming_data); i++) {
+    for (i = ptr; i < length; i++) {
         if (incoming_data[i] == KISS_FEND) {
             printf("***Found concatenated KISS packets:***\n");
             incoming_data[i] = '\0';    // Truncate the string
@@ -10213,7 +10213,7 @@ int decode_ax25_header(unsigned char *incoming_data) {
     // Add the Info field to the decoded header info
     strcat(result,&incoming_data[ptr]);
 
-    printf("%s\n",result);
+//    printf("%s\n",result);
 
     // Copy the result onto the top of the input data
     strcpy(incoming_data,result);

@@ -853,15 +853,16 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     NULL);
 
                 form2 =  XtVaCreateWidget("Config_TNC form2",xmFormWidgetClass, frame3,
-                                    XmNfractionBase, 5,
+                                    XmNfractionBase, 6,
                                     XmNbackground, colors[0xff],
                                     NULL);
 
-                setup1 = XtVaCreateManagedWidget("TXDelay", xmLabelWidgetClass, form2,
+                setup1 = XtVaCreateManagedWidget("TXDelay (10ms units)", xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_FORM,
                                     XmNtopOffset, 10,
                                     XmNbottomAttachment,XmATTACH_NONE,
                                     XmNleftAttachment, XmATTACH_FORM,
+                                    XmNleftOffset, 10,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
                                     NULL);
@@ -883,12 +884,13 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup2 = XtVaCreateManagedWidget("Persistence", xmLabelWidgetClass, form2,
+                setup2 = XtVaCreateManagedWidget("Persistence (0 to 255)", xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup1,
                                     XmNtopOffset, 10,
                                     XmNbottomAttachment,XmATTACH_NONE,
                                     XmNleftAttachment, XmATTACH_FORM,
+                                    XmNleftOffset, 10,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
                                     NULL);
@@ -905,18 +907,19 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup1,
                                     XmNtopOffset, 5,
-                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNbottomAttachment,XmATTACH_FORM,
+                                    XmNbottomOffset, 5,
                                     XmNleftAttachment,XmATTACH_POSITION,
                                     XmNleftPosition, 2,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup3 = XtVaCreateManagedWidget("SlotTime", xmLabelWidgetClass, form2,
-                                    XmNtopAttachment,XmATTACH_WIDGET,
-                                    XmNtopWidget, setup2,
+                setup3 = XtVaCreateManagedWidget("SlotTime (10ms units)", xmLabelWidgetClass, form2,
+                                    XmNtopAttachment,XmATTACH_FORM,
                                     XmNtopOffset, 10,
                                     XmNbottomAttachment,XmATTACH_NONE,
-                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNleftAttachment, XmATTACH_POSITION,
+                                    XmNleftPosition, 3,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
                                     NULL);
@@ -930,21 +933,21 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNwidth, ((6*7)+2),
                                     XmNmaxLength, 3,
                                     XmNbackground, colors[0x0f],
-                                    XmNtopAttachment,XmATTACH_WIDGET,
-                                    XmNtopWidget, setup2,
+                                    XmNtopAttachment,XmATTACH_FORM,
                                     XmNtopOffset, 5,
                                     XmNbottomAttachment,XmATTACH_NONE,
                                     XmNleftAttachment,XmATTACH_POSITION,
-                                    XmNleftPosition, 2,
+                                    XmNleftPosition, 5,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup4 = XtVaCreateManagedWidget("FullDuplex", xmLabelWidgetClass, form2,
+                setup4 = XtVaCreateManagedWidget("FullDuplex (0=Off, 1=On)", xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup3,
                                     XmNtopOffset, 10,
                                     XmNbottomAttachment,XmATTACH_NONE,
-                                    XmNleftAttachment, XmATTACH_FORM,
+                                    XmNleftAttachment, XmATTACH_POSITION,
+                                    XmNleftPosition, 3,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     XmNbackground, colors[0xff],
                                     NULL);
@@ -961,9 +964,10 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup3,
                                     XmNtopOffset, 5,
-                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNbottomAttachment,XmATTACH_FORM,
+                                    XmNbottomOffset, 5,
                                     XmNleftAttachment,XmATTACH_POSITION,
-                                    XmNleftPosition, 2,
+                                    XmNleftPosition, 5,
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 

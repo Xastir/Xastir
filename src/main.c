@@ -5643,7 +5643,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             // Try to decode header and checksum.  If
                             // bad, break, else continue through to
                             // ASCII logging & decode routines.
-                            if ( !decode_ax25_header( (char *)incoming_data) )
+                            if ( !decode_ax25_header( (char *)incoming_data, incoming_data_length ) )
                                 break;
 
                         case DEVICE_SERIAL_TNC:
