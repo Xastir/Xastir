@@ -59,9 +59,11 @@
 
 /************ Weather Alerts ****************/
 Widget wx_alert_shell = (Widget)NULL;
+Widget wx_detailed_alert_shell = (Widget)NULL;
 static Widget wx_alert_list;
 
 static xastir_mutex wx_alert_shell_lock;
+static xastir_mutex wx_detailed_alert_shell_lock;
 static xastir_mutex wx_station_dialog_lock;
 
 
@@ -71,7 +73,197 @@ static xastir_mutex wx_station_dialog_lock;
 void wx_gui_init(void)
 {
     init_critical_section( &wx_alert_shell_lock );
+    init_critical_section( &wx_detailed_alert_shell_lock );
     init_critical_section( &wx_station_dialog_lock );
+}
+
+
+
+
+
+void wx_detailed_alert_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+
+begin_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_detailed_alert_destroy_shell" );
+
+    XtDestroyWidget(shell);
+    wx_detailed_alert_shell = (Widget)NULL;
+
+end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_detailed_alert_destroy_shell" );
+
+}
+
+
+
+
+
+void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointer callData) {
+    char *choice;
+    XmListCallbackStruct *selection = callData;
+    char handle[14];
+    char *ptr;
+    static Widget pane, my_form, mess, button_cancel,wx_detailed_alert_list;
+    Atom delw;
+    Arg al[20];                     // Arg List
+    register unsigned int ac = 0;   // Arg Count
+    char temp[1024];
+    XmString item;
+    register FILE *pp;
+    extern FILE *popen();
+
+
+    XmStringGetLtoR(selection->item, XmFONTLIST_DEFAULT_TAG, &choice);
+    //printf("Selected item %d (%s)\n", selection->item_position, choice);
+
+    // Grab the first 13 characters.  Remove spaces.  This is our handle
+    // into the weather server for the full weather alert text.
+
+    strncpy(handle,choice,sizeof(handle));
+    handle[13] = '\0';  // Terminate the string
+    // Remove spaces
+    ptr = handle;
+    while ( (ptr = strpbrk(handle, " ")) )
+        memmove(ptr, ptr+1, strlen(ptr)+1);
+    handle[9] = '\0';   // Terminate after first 9 chars
+
+    if (debug_level & 1)
+        printf("Handle: %s\n",handle);
+
+    if(!wx_detailed_alert_shell) {
+
+begin_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_click_action" );
+
+        wx_detailed_alert_shell = XtVaCreatePopupShell(langcode("WPUPWXA001"), xmDialogShellWidgetClass, Global.top,
+                        XmNdeleteResponse, XmDESTROY,
+                        XmNdefaultPosition, FALSE,
+                        XmNminWidth, 600,
+                        NULL);
+
+        pane = XtVaCreateWidget("wx_alert_double_click_action pane",xmPanedWindowWidgetClass, wx_detailed_alert_shell,
+                        XmNbackground, colors[0xff],
+                        NULL); 
+
+        my_form =  XtVaCreateWidget("wx_alert_double_click_action my_form", xmFormWidgetClass, pane,
+                        XmNtraversalOn, TRUE,
+                        XmNfractionBase, 5,
+                        XmNbackground, colors[0xff], 
+                        XmNwidth, 600,
+                        XmNautoUnmanage, FALSE,
+                        XmNshadowThickness, 1,  
+                        NULL);
+        
+        mess = XtVaCreateManagedWidget(langcode("WPUPWXA002"), xmLabelWidgetClass, my_form,
+                        XmNtraversalOn, FALSE,
+                        XmNtopAttachment, XmATTACH_FORM,
+                        XmNtopOffset, 5,
+                        XmNbottomAttachment, XmATTACH_NONE,
+                        XmNleftAttachment, XmATTACH_FORM,
+                        XmNleftOffset, 5,
+                        XmNrightAttachment, XmATTACH_FORM,
+                        XmNrightOffset, 5,
+                        XmNbackground, colors[0xff], 
+                        NULL);
+
+
+        /* set args for color */
+        ac=0;
+        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNvisibleItemCount, 13); ac++;
+        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+        XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
+        XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
+
+        XtSetArg(al[ac], XmNvisualPolicy, XmCONSTANT); ac++;
+        XtSetArg(al[ac], XmNscrollingPolicy,XmAUTOMATIC); ac++;
+        XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
+        XtSetArg(al[ac], XmNscrollBarDisplayPolicy,XmAS_NEEDED); ac++;
+        XtSetArg(al[ac], XmNlistSizePolicy, XmCONSTANT); ac++;
+
+        XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ac++;
+        XtSetArg(al[ac], XmNtopWidget, mess); ac++;
+        XtSetArg(al[ac], XmNtopOffset, 5); ac++;
+        XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNbottomOffset, 45); ac++;
+        XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNrightOffset, 5); ac++;
+        XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
+        XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+
+        wx_detailed_alert_list = XmCreateScrolledList(my_form, "wx_alert_double_click_action wx_detailed_alert_list", al, ac);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, my_form,
+                        XmNtopAttachment, XmATTACH_NONE,
+                        XmNbottomAttachment, XmATTACH_FORM,
+                        XmNbottomOffset,10,
+                        XmNleftAttachment, XmATTACH_POSITION,
+                        XmNleftPosition, 2,
+                        XmNrightAttachment, XmATTACH_POSITION,
+                        XmNrightPosition, 3,
+                        XmNbackground, colors[0xff], 
+                        XmNnavigationType, XmTAB_GROUP,
+                        NULL);
+
+        XtAddCallback(button_cancel, XmNactivateCallback, wx_detailed_alert_destroy_shell, wx_detailed_alert_shell);
+
+end_critical_section(&wx_detailed_alert_shell_lock, "wx_gui.c:wx_alert_double_click_action" );
+
+        pos_dialog(wx_detailed_alert_shell);
+
+        delw = XmInternAtom(XtDisplay(wx_detailed_alert_shell), "WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(wx_detailed_alert_shell, delw, wx_detailed_alert_destroy_shell, (XtPointer)wx_detailed_alert_shell);
+
+        XtManageChild(my_form);
+        XtManageChild(wx_detailed_alert_list);
+        XtVaSetValues(wx_detailed_alert_list, XmNbackground, colors[0x0f], NULL);    
+        XtManageChild(pane);
+
+        XtPopup(wx_detailed_alert_shell, XtGrabNone);
+//        fix_dialog_vsize(wx_detailed_alert_shell);
+
+        // Move focus to the Cancel button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(wx_detailed_alert_shell);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+    } else {
+        (void)XRaiseWindow(XtDisplay(wx_detailed_alert_shell), XtWindow(wx_detailed_alert_shell));
+    }
+
+    // Erase the entire list before we start writing to it in
+    // case it was left up from a previous query.
+    XmListDeleteAllItems(wx_detailed_alert_list);
+
+    // Perform a "finger" command in another process
+    xastir_snprintf(temp, sizeof(temp), "/usr/bin/finger %s@wxsvr.net", handle);
+    if (!(pp = popen (temp, "r"))) {    // Go do the finger command
+        perror (temp);  // Print an error message if it failed
+        printf("Weather server didn't answer or 'finger' command couldn't be run\n");
+    }
+    else {
+        while (fgets (temp, sizeof (temp), pp)) {   // While we have data to process
+            char *ptr;
+
+            // Remove any linefeeds or carriage returns from each
+            // string.
+            ptr = temp;
+            while ( (ptr = strpbrk(temp, "\n\r")) )
+                memmove(ptr, ptr+1, strlen(ptr)+1);
+
+            if (debug_level & 1)
+                printf("%s\n",temp);
+
+            // Create an XmString for each line and add it to the
+            // end of the list.
+            item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
+            XmListAddItemUnselected(wx_detailed_alert_list, item, 0);
+            XmStringFree(item);
+        }
+        pclose (pp);
+    }
+    XtFree(choice);
 }
 
 
@@ -90,41 +282,6 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" )
 
 end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
 
-}
-
-
-
-
-
-void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointer callData) {
-    char *choice;
-    XmListCallbackStruct *selection = callData;
-    char handle[14];
-    char *ptr;
-    char temp[100];
-
-    XmStringGetLtoR(selection->item, XmFONTLIST_DEFAULT_TAG, &choice);
-    //printf("Selected item %d (%s)\n", selection->item_position, choice);
-
-    // Grab the first 13 characters.  Remove spaces.  This is our handle
-    // into the weather server for the full weather alert text.
-
-    strncpy(handle,choice,sizeof(handle));
-    handle[13] = '\0';  // Terminate the string
-    // Remove spaces
-    ptr = handle;
-    while ( (ptr = strpbrk(handle, " ")) )
-        memmove(ptr, ptr+1, strlen(ptr)+1);
-    handle[9] = '\0';   // Terminate after first 9 chars
-
-printf("Handle: %s\n",handle);
-
-    xastir_snprintf(temp, sizeof(temp), "finger %s@wxsvr.net", handle);
-    if ( system(temp) ) {   // Go do the finger command
-        printf("Weather server didn't answer\n");
-    }
-
-    XtFree(choice);
 }
 
 
