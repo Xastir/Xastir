@@ -9796,6 +9796,23 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                         devices[i].gps_retrieve);
                                 }
                                 port_write_string(i, tmp);
+
+                                if (gprmc_save_string[0] != '\0')
+                                    ret1 = gps_data_find(gprmc_save_string, gps_port_save);
+                                if (gpgga_save_string[0] != '\0')
+                                    ret2 = gps_data_find(gpgga_save_string, gps_port_save);
+
+                                // Blank out the global variables
+                                gprmc_save_string[0] = '\0';
+                                gpgga_save_string[0] = '\0';
+
+                                if (ret1 && ret2)
+                                    statusline("GPS:  $GPRMC, $GPGGA", 0);
+                                else if (ret1)
+                                    statusline("GPS:  $GPRMC", 0);
+                                else if (ret2)
+                                    statusline("GPS:  $GPGGA", 0);
+
                                 break;
 
                             case DEVICE_SERIAL_TNC_HSP_GPS:
