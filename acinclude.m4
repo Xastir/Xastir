@@ -678,22 +678,44 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK_LIB],
 	fi
 
 	saved_LIBS=$LIBS
-        for dbname in db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
+# Removed db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 
+# from the probe.  The map_cache.c code explicitly bombs if it doesn't have
+# version 4 or above, so why probe for version 3?
+
+# it would be nice if this could be done with AC_SEARCH_LIBS but that doesn't
+# work as it appears that there is some C++-type name mangling going on,
+# and just probing for a library that contains "db_create" fails.  One needs
+# to specify the function call with the full prototype for it to be found.
+        BDB_LIB_FOUND="none"
+        AC_MSG_CHECKING([for a library containing db_create])
+        for dbname in db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db
           do
 	    LIBS="$saved_LIBS -l$dbname"
-	    AC_TRY_LINK([#include <db.h>],
+	    AC_TRY_LINK(
+            [#include <db.h>],
 	    [db_create(NULL, NULL, 0);],
-	    BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; dbname=db,
+	    [BDB_LIBADD="$BDB_LIBADD -l$dbname"; dblib="berkeley"; dbname=db;
+                BDB_LIB_FOUND="-l$dbname"],
             dblib="no")
+#         STOP if we find one.  Otherwise we'll keep stepping through the 
+#         list and resetting dblib to "no" over and over.
+          if test $dblib = "berkeley" ; then
+            break;
+          fi
           done
-        if test "$dblib" = "no"; then
-	    LIBS="$saved_LIBS -ldb"
-	    AC_TRY_LINK([#include <db.h>],
-	    [db_open(NULL, 0, 0, 0, NULL, NULL, NULL);],
-	    BDB_LIBADD="$BDB_LIBADD -ldb"; dblib="berkeley"; dbname=db,
-            dblib="no")
-        fi
-	LIBS=$saved_LIBS
+        AC_MSG_RESULT([$BDB_LIB_FOUND])
+
+# Commented out because the map_cache code is not actually set up to use
+# db_open instead of db_create.  Probing in this way could actually be 
+# dangerous.
+#        if test "$dblib" = "no"; then
+#	    LIBS="$saved_LIBS -ldb"
+#	    AC_TRY_LINK([#include <db.h>],
+#	    [db_open(NULL, 0, 0, 0, NULL, NULL, NULL);],
+#	    BDB_LIBADD="$BDB_LIBADD -ldb"; dblib="berkeley"; dbname=db,
+#            dblib="no")
+#        fi
+#	LIBS=$saved_LIBS
 
 	LDFLAGS=$BDB_SAVE_LDFLAGS
 ])
@@ -723,7 +745,8 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
 	    BDB_INCADD=""
 	fi
 
-	dnl Note that FreeBSD puts it in a wierd place
+	dnl Note that FreeBSD puts it in a weird place 
+        dnl (/usr/local/include/db42)
         dnl (but they should use with-bdb-incdir)
         AC_CHECK_HEADER(db.h,
                         [XASTIR_BERKELEY_DB_CHK_LIB()],
