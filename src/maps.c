@@ -11927,10 +11927,21 @@ static int alert_count;
 
 
 /*******************************************************************
- * load_alert_maps()
+ * fill_in_new_alert_entries()
  *
- * Used to load weather alert maps, based on NWS weather alerts that
- * are received.  Called from create_image() and refresh_image().
+ * Fills in the index and filename portions of any alert entries
+ * that are missing them.  This function should be called at the
+ * point where we've just received a new weather alert.
+ *
+
+//WE7U
+// Later we should change this so that it doesn't scan the entire
+// message list, but is passed the important info directly from the
+// decode routines in db.c, and the message should NOT be added to
+// the message list.
+//WE7U
+
+ *
  * This function is designed to use ESRI Shapefile map files.  The
  * base directory where the Shapefiles are located is passed to us
  * in the "dir" variable.
@@ -11938,40 +11949,15 @@ static int alert_count;
  * map_search() fills in the filename field of the alert struct.
  * draw_shapefile_map() fills in the index field.
  *******************************************************************/
-void load_alert_maps (Widget w, char *dir) {
-    int ii, level;
+void fill_in_new_alert_entries(Widget w, char *dir) {
+    int ii;
     char alert_scan[MAX_FILENAME], *dir_ptr;
-    unsigned char fill_color[] = {  (unsigned char)0x69,    // gray86
-                                    (unsigned char)0x4a,    // red2
-                                    (unsigned char)0x63,    // yellow2
-                                    (unsigned char)0x66,    // cyan2
-                                    (unsigned char)0x61,    // RoyalBlue
-                                    (unsigned char)0x64,    // ForestGreen
-                                    (unsigned char)0x62 };  // orange3
-
-
-// TODO:
-// Figure out how to pass a quantity of zones off to the map drawing
-// routines, then we can draw them all with one pass through each
-// map file.  Alphanumerically sort the zones to make it easier for
-// the map drawing functions?  Note that the indexing routines fill
-// in both the filename and the shapefile index for each record.
-//
-// Alternative:  Call map_draw for each filename listed and have the
-// draw_shapefile function iterate through the array looking for all
-// filename matches, pulling non-negative indexes out of each index
-// field for matches and drawing them.  That should be fast and
-// require no sorting of the array.  Downside:  The alerts won't be
-// layered based on alert level unless we modify the above:  Drawing
-// each file once for each alert-level in the proper layering order.
-// Perhaps we could keep a list of which filenames have been called,
-// and only call each one once per load_alert_maps() call.
 
 
     alert_count = MAX_ALERT - 1;
 
-    // Check for message alerts, draw alerts if they haven't expired yet
-    // and they're in our view.
+    // Check for message alerts.  Creates new entries for any new
+    // alerts that we might need to fill in the details for.
     if (alert_message_scan ()) {
         // Returns number of wx alerts * 3.  Scans through complete
         // message list looking for alerts and adds them to our
@@ -11983,16 +11969,6 @@ void load_alert_maps (Widget w, char *dir) {
         strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
         dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
-        //fprintf(stderr,"Weather Alerts, alert_scan: %s\t\talert_status: %s\n", alert_scan, alert_status);
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-// NOTE:  This first loop would be better served by a separate
-// function that is called only when a new alert arrives,
-// automatically filling in the map filename at that point.  More
-// efficient anyway.  It wouldn't have to process the entire list.
-//
         // Iterate through the weather alerts we currently have on
         // our list.  It looks like we wish to just fill in the
         // alert struct and to determine whether the alert is within
@@ -12030,16 +12006,56 @@ void load_alert_maps (Widget w, char *dir) {
             }
         }
     }
-///////////////////////////////////////////////////////////////////////////////////////////////////////
+}
 
+
+
+
+
+/*******************************************************************
+ * load_alert_maps()
+ *
+ * Used to load weather alert maps, based on NWS weather alerts that
+ * are received.  Called from create_image() and refresh_image().
+ * This function is designed to use ESRI Shapefile map files.  The
+ * base directory where the Shapefiles are located is passed to us
+ * in the "dir" variable.
+ *
+ * map_search() fills in the filename field of the alert struct.
+ * draw_shapefile_map() fills in the index field.
+ *******************************************************************/
+void load_alert_maps (Widget w, char *dir) {
+    int ii, level;
+    unsigned char fill_color[] = {  (unsigned char)0x69,    // gray86
+                                    (unsigned char)0x4a,    // red2
+                                    (unsigned char)0x63,    // yellow2
+                                    (unsigned char)0x66,    // cyan2
+                                    (unsigned char)0x61,    // RoyalBlue
+                                    (unsigned char)0x64,    // ForestGreen
+                                    (unsigned char)0x62 };  // orange3
+
+
+// TODO:
+// Figure out how to pass a quantity of zones off to the map drawing
+// routines, then we can draw them all with one pass through each
+// map file.  Alphanumerically sort the zones to make it easier for
+// the map drawing functions?  Note that the indexing routines fill
+// in both the filename and the shapefile index for each record.
+//
+// Alternative:  Call map_draw for each filename listed and have the
+// draw_shapefile function iterate through the array looking for all
+// filename matches, pulling non-negative indexes out of each index
+// field for matches and drawing them.  That should be fast and
+// require no sorting of the array.  Downside:  The alerts won't be
+// layered based on alert level unless we modify the above:  Drawing
+// each file once for each alert-level in the proper layering order.
+// Perhaps we could keep a list of which filenames have been called,
+// and only call each one once per load_alert_maps() call.
 
 
 // Just for a test
 //draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
 //draw_shapefile_map (w, dir, "c_16my01.shp", NULL, '\0', DRAW_TO_PIXMAP_ALERTS);
-
-    if (!alert_count)
-        XtAppWarning (app_context, "Alert Map count overflow: load_alert_maps\b\n");
 
 
 // Are we drawing them in reverse order so that the important 
