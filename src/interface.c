@@ -1003,7 +1003,7 @@ special_debug++;
         // Print out the resulting string
         fprintf(stderr,"AGWPE RX: %s\n", output_string);
         fprintf(stderr,"new_length: %d\n",*new_length);
-        for (ii = 0; ii < strlen((const char *)output_string); ii++) {
+        for (ii = 0; ii < (int)strlen((const char *)output_string); ii++) {
             fprintf(stderr,"%02x ",output_string[ii]);
         }
         fprintf(stderr,"\n");
@@ -2324,7 +2324,7 @@ int OpenTrac_decode_pathtrace(unsigned char *element,
     fprintf(stderr, "Path: ");
     for (c=0; c<element_len; c+=7) {
         memcpy(callsign, element+c, 6);
-        ssid = OpenTrac_extract_ssid(callsign);
+        ssid = OpenTrac_extract_ssid((unsigned char *)callsign);
         network = (int)*(element+c+6);
         fprintf(stderr, " %s-%d (%d)", callsign, ssid, network);
     }
@@ -3116,7 +3116,7 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     data,
                     elen,
                     &temp_entity_sequence,   // Origin sequence?
-                    origin_call,
+                    (char *)origin_call,
                     &origin_ssid,
                     &network);
 
@@ -5527,8 +5527,13 @@ void port_read(int port) {
  
                                     my_pointer = port_data[port].read_out_pos;
 
-                                    if ( parse_agwpe_packet(input_string, frame_length+36, output_string, &new_length) ) {
-                                        channel_data(port, output_string, new_length);
+                                    if ( parse_agwpe_packet((unsigned char *)input_string,
+                                            frame_length+36,
+                                            (unsigned char *)output_string,
+                                            &new_length) ) {
+                                        channel_data(port,
+                                            (unsigned char *)output_string,
+                                            new_length);
                                     }
 
                                     for (i = 0; i <= port_data[port].read_in_pos; i++)
@@ -6948,13 +6953,13 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                         // Send the login packet 
                         send_agwpe_packet(port_avail,
-                            0,              // AGWPE RadioPort
-                            'P',            // Login/Password Frame
-                            NULL,           // FromCall
-                            NULL,           // ToCall
-                            NULL,           // Path
-                            passwd,         // Data
-                            strlen(passwd));// Length
+                            0,                       // AGWPE RadioPort
+                            'P',                     // Login/Password Frame
+                            NULL,                    // FromCall
+                            NULL,                    // ToCall
+                            NULL,                    // Path
+                            (unsigned char *)passwd, // Data
+                            strlen(passwd));         // Length
                     }
                 }
                 break;
@@ -7580,7 +7585,7 @@ unsigned char *select_unproto_path(int port) {
     // entered paths get used.
     devices[port].unprotonum = (devices[port].unprotonum + 1 + bump_up) % 3;
 
-    return(unproto_path_txt);
+    return((unsigned char *)unproto_path_txt);
 }
 
 
@@ -7702,7 +7707,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
                 // Set unproto path:  Get next unproto path in
                 // sequence.
-                unproto_path = select_unproto_path(port);
+                unproto_path = (char *)select_unproto_path(port);
 
                 xastir_snprintf(header_txt,
                         sizeof(header_txt),
@@ -8049,20 +8054,20 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
                     // Set unproto path:  Get next unproto path in
                     // sequence.
-                    unproto_path = select_unproto_path(port);
+                    unproto_path = (char *)select_unproto_path(port);
 
 // We need to remove the complete AX.25 header from data_txt before
 // we call this routine!  Instead put the digipeaters into the
 // ViaCall fields.  We do this above by setting output_net to '\0'
 // before creating the data_txt string.
-                    send_agwpe_packet(port,         // Xastir interface port
+                    send_agwpe_packet(port,            // Xastir interface port
                         atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
-                        '\0',         // Type of frame
-                        my_callsign,  // source
-                        VERSIONFRM,   // destination
-                        unproto_path, // Path,
-                        data_txt,     // Data
-                        strlen(data_txt) - 1); // Skip \r
+                        '\0',                          // Type of frame
+                        (unsigned char *)my_callsign,  // source
+                        (unsigned char *)VERSIONFRM,   // destination
+                        (unsigned char *)unproto_path, // Path,
+                        (unsigned char *)data_txt,     // Data
+                        strlen(data_txt) - 1);         // Skip \r
 
 //fprintf(stderr,"Sending this string: \n%s\n", data_txt);
 //fprintf(stderr,"Length was %d\n", strlen(data_txt) - 1);
@@ -8108,7 +8113,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
  
         if (writen(pipe_xastir_to_server,
                 data_txt,
-                strlen(data_txt)) != strlen(data_txt)) {
+                strlen(data_txt)) != (int)strlen(data_txt)) {
             fprintf(stderr,
                 "UpdateTime: Writen error: %d\n",
                 errno);
@@ -8315,7 +8320,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                         // Set unproto path:  Get next unproto path
                         // in sequence.
-                        unproto_path = select_unproto_path(port);
+                        unproto_path = (char *)select_unproto_path(port);
 
                         xastir_snprintf(data_txt,
                             sizeof(data_txt),
@@ -8432,7 +8437,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         // Set unproto path:  Get next unproto path in
                         // sequence.
 
-                        unproto_path = select_unproto_path(port);
+                        unproto_path = (char *)select_unproto_path(port);
 
 //fprintf(stderr,"unproto_path: %s\n", unproto_path);
                         xastir_snprintf(path_txt,
@@ -8450,14 +8455,14 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
 //fprintf(stderr,"send_agwpe_packet\n");
 
-                    send_agwpe_packet(port,            // Xastir interface port
+                    send_agwpe_packet(port,           // Xastir interface port
                         atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
-                        '\0',         // Type of frame
-                        my_callsign,  // source
-                        VERSIONFRM,   // destination
-                        path_txt,     // Path,
-                        data_txt,     // Data
-                        strlen(data_txt) - 1);  // Skip \r
+                        '\0',                         // Type of frame
+                        (unsigned char *)my_callsign, // source
+                        (unsigned char *)VERSIONFRM,  // destination
+                        (unsigned char *)path_txt,    // Path,
+                        (unsigned char *)data_txt,    // Data
+                        strlen(data_txt) - 1);        // Skip \r
                 }
 
                 else {  // Not a Serial KISS TNC interface
@@ -8525,7 +8530,7 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
 
         if (writen(pipe_xastir_to_server,
                 data_txt,
-                strlen(data_txt)) != strlen(data_txt)) {
+                strlen(data_txt)) != (int)strlen(data_txt)) {
             fprintf(stderr,
                 "UpdateTime: Writen error: %d\n",
                 errno);
