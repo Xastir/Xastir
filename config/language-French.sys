@@ -349,6 +349,7 @@ WPUPCFD026|Transmettre position à quel intervalle?||
 WPUPCFD027|Afficher bulletins nouveaus||
 WPUPCFD028|Alerter si il y a des clés modificatrices||
 WPUPCFD029|Voir bulletins avec distance zero||
+WPUPCFD030|Disable Posit Dupe-Checks||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configurer temporisation||

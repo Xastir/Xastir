@@ -715,6 +715,7 @@ int view_zero_distance_bulletins = 0;
 int warn_about_mouse_modifiers = 1;
 Widget altnet_active;
 Widget altnet_text;
+Widget disable_dupe_check;
 Widget new_map_layer_text = (Widget)NULL;
 Widget new_max_zoom_text = (Widget)NULL;
 Widget new_min_zoom_text = (Widget)NULL;
@@ -11079,7 +11080,6 @@ void GPS_transfer_select( void ) {
                 XmNmaxLength, 200,
                 XmNbackground, colors[0x0f],
                 XmNtopAttachment,XmATTACH_FORM,
-                XmNtopWidget, altnet_active,
                 XmNbottomAttachment,XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, gpsfilename_label,
@@ -16463,6 +16463,8 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     altnet = (int)(XmToggleButtonGetState(altnet_active));
 
+    skip_dupe_checking = (int)(XmToggleButtonGetState(disable_dupe_check));
+
     // Small memory leak in below statement:
     //strcpy(altnet_call, XmTextGetString(altnet_text));
     // Change to:
@@ -16817,6 +16819,20 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNnavigationType, XmTAB_GROUP,
                 NULL);
 
+        disable_dupe_check = XtVaCreateManagedWidget(langcode("WPUPCFD030"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, frame5,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, altnet_active,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, 
@@ -16929,6 +16945,8 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             XmToggleButtonSetState(warn_about_mouse_modifiers_enable,FALSE,FALSE);
 
         XmToggleButtonSetState(altnet_active, altnet, FALSE);
+
+        XmToggleButtonSetState(disable_dupe_check, skip_dupe_checking, FALSE);
 
         // Known to have memory leaks in some Motif versions:
         //XmTextSetString(altnet_text, altnet_call);

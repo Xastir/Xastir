@@ -360,6 +360,7 @@ WPUPCFD026|Met welk Interval Positie Gegevens Verzenden?||
 WPUPCFD027|Nieuwe Berichten Weergeven||
 WPUPCFD028|Waarschuw als Speciale Functie Toetsen Aanstaan||
 WPUPCFD029|Geef Bulletins Zonder Afstand Weer||
+WPUPCFD030|Disable Posit Dupe-Checks||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configureer Tijdsinstelling|||

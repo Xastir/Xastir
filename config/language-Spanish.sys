@@ -353,6 +353,7 @@ WPUPCFD026|Enviar reportes de posición en qué intérvalos?||
 WPUPCFD027|Mostrar bulletines Nuevo||
 WPUPCFD028|Avisar si hay teclas Modificadora||
 WPUPCFD029|Ver boletines de zero-distancia||
+WPUPCFD030|Disable Posit Dupe-Checks||
 #
 # Menu "Configurar - Cronómetro"
 WPUPCFTM01|Configurar Cronómetro||

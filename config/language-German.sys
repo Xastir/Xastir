@@ -356,6 +356,7 @@ WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen||
 WPUPCFD027|PopUp-Fenster für neue Bekanntmachungen||
 WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige bei Entfernung Null||
+WPUPCFD030|Disable Posit Dupe-Checks||
 #
 # PopUp "Zeitverhalten"
 WPUPCFTM01|Einstellung des Zeitverhaltens|||

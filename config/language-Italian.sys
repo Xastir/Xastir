@@ -350,6 +350,7 @@ WPUPCFD026|Intervallo per invio rapporti posizione||
 WPUPCFD027|Apparizione nuovi bollettini||
 WPUPCFD028|Avvisa per utilizzo tasti inadatti||
 WPUPCFD029|Vedi bollettini a distanza zero||
+WPUPCFD030|Disable Posit Dupe-Checks||
 #
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configura Temporizzazioni||
