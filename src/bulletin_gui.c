@@ -237,7 +237,7 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
     (void)msg_data_add(call_sign,
         from_call,
         data,
-        "",
+        " ",    // Need something here.  Empty string no good.
         MESSAGE_BULLETIN,
         from,
         &temp_bulletin_record);
@@ -246,13 +246,17 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
     if (temp_bulletin_record == -1L) {
         char temp[10];
 
+
+//fprintf(stderr,"We think it's a new bulletin!\n");
+ 
         // We add to the distance in order to come up with 0.0
         // if the distance is not known at all (no position
         // found yet).
         distance = (int)(distance_from_my_station(from_call,temp) + 0.9999);
 
         if ( (bulletin_range == 0)
-                || (distance <= bulletin_range && distance > 0) ) {
+                || (distance <= bulletin_range && distance > 0)
+                || (view_zero_distance_bulletins && distance == 0.0) ) {
             // We have a _new_ bulletin that's within our
             // current range setting.  Note that it's also possible
             // to have a zero distance for the bulletin (we haven't
@@ -273,6 +277,7 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
             }
 
             if (pop_up_new_bulletins) {
+//fprintf(stderr,"bulletin_data_add: popping up bulletins\n");
                 popup_bulletins();
                 if (debug_level & 1)
                     fprintf(stderr,"\n");
@@ -398,7 +403,15 @@ static void zero_bulletin_processing(Message *fill) {
                             fprintf(stderr,"Filled in distance for earlier bulletin:%d miles\n",
                                 distance);
                         }
-                        popup_bulletins();
+
+                        // If view_zero_distance_bulletins was not
+                        // turned on, then we probably haven't seen
+                        // this bulletin until now.  Popup up the
+                        // Bulletin dialog.
+                        if (!view_zero_distance_bulletins) {
+//fprintf(stderr,"zero_bulletin_processing: popping up bulletins\n");
+                            popup_bulletins();
+                        }
                     }
                 }
             }
@@ -474,6 +487,7 @@ void check_for_new_bulletins() {
 //fprintf(stderr,"%d new bulletins found\n",new_bulletin_count);
 
     if (new_bulletin_count) {
+//fprintf(stderr,"check_for_new_bulletins: popping up bulletins\n");
         popup_bulletins();
 
         if (debug_level & 1)

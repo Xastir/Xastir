@@ -935,11 +935,18 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         fprintf(stderr,"msg_data_add start\n");
 //fprintf(stderr,"from:%s, to:%s, seq:%s\n", from_call, call_sign, seq);
 
+    // Set the default output condition.  We'll change this later if
+    // we need to.
+    if (record_out != NULL)
+        *record_out = -1l;
+
     if ( (data != NULL) && (strlen(data) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 2)
             fprintf(stderr,"msg_data_add:  Message length too long\n");
 
-        *record_out = -1L;
+        if (record_out != NULL)
+            *record_out = -1L;
+
         return((time_t)0l);
     }
 
@@ -957,7 +964,8 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 // directed query, or group message.  Assume it is a new message in
 // each case and add it.
 
-    if (seq[0] != '\0') {   // Normal station->station messaging
+    if (seq[0] != '\0') {   // Normal station->station messaging or
+                            // bulletins
         // Look for a message with the same call_sign,
         // from_call_sign, and seq number
         record = msg_find_data(&m_fill);
@@ -1105,7 +1113,9 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         fprintf(stderr,"msg_data_add end\n");
 
     // Return the important variables we'll need
-    *record_out = record;
+    if (record_out != NULL)
+        *record_out = record;
+
 //fprintf(stderr,"\nrecord_out:%ld record %ld\n",*record_out,record);
     return(last_ack_sent);
 
@@ -3406,7 +3416,9 @@ void Station_query_trace(/*@unused@*/ Widget w, XtPointer clientData, /*@unused@
     pad_callsign(call,station);
     xastir_snprintf(temp, sizeof(temp), ":%s:?APRST", call);
 
-// WE7U: It'd be nice to return via the reverse path here
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
     transmit_message_data(station,temp,NULL);
 }
 
@@ -3422,7 +3434,9 @@ void Station_query_messages(/*@unused@*/ Widget w, XtPointer clientData, /*@unus
     pad_callsign(call,station);
     xastir_snprintf(temp, sizeof(temp), ":%s:?APRSM", call);
 
-// WE7U: It'd be nice to return via the reverse path here
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
     transmit_message_data(station,temp,NULL);
 }
 
@@ -3438,7 +3452,9 @@ void Station_query_direct(/*@unused@*/ Widget w, XtPointer clientData, /*@unused
     pad_callsign(call,station);
     xastir_snprintf(temp, sizeof(temp), ":%s:?APRSD", call);
 
-// WE7U:It'd be nice to return via the reverse path here
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
     transmit_message_data(station,temp,NULL);
 }
 
@@ -3454,7 +3470,9 @@ void Station_query_version(/*@unused@*/ Widget w, XtPointer clientData, /*@unuse
     pad_callsign(call,station);
     xastir_snprintf(temp, sizeof(temp), ":%s:?VER", call);
 
-// WE7U:It'd be nice to return via the reverse path here
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
     transmit_message_data(station,temp,NULL);
 }
 
@@ -12622,6 +12640,10 @@ int process_directed_query(char *call,char *path,char *message,char from) {
                             p_station->call_sign,
                             sizeof(temp) - strlen(temp));
                     } else {
+
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
                         transmit_message_data(call,temp,NULL);
                         xastir_snprintf(temp, sizeof(temp), 
                                         ":%s:Directs=",from_call);
@@ -12637,7 +12659,9 @@ int process_directed_query(char *call,char *path,char *message,char from) {
             p_station = p_station->n_next;
         }
 
-// WE7U:It'd be nice to return via the reverse path here
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
         transmit_message_data(call,temp,NULL);
         ok = 1;
     }
@@ -12744,7 +12768,9 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         pad_callsign(from_call,call);
         xastir_snprintf(temp, sizeof(temp), ":%s:PATH= %s>%s",from_call,call,path);    // correct format ?????
 
-// WE7U:It'd be nice to return via the reverse path here
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
         transmit_message_data(call,temp,NULL);
         ok = 1;
     }
@@ -12766,7 +12792,9 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         pad_callsign(from_call,call);
         xastir_snprintf(temp, sizeof(temp), ":%s:%s",from_call,VERSIONLABEL);
 
-// WE7U:It'd be nice to return via the reverse path here
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
         transmit_message_data(call,temp,NULL);
         if (debug_level & 1)
             fprintf(stderr,"Sent to %s:%s\n",call,temp);
@@ -13279,6 +13307,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 //        if (last_ack_sent == (time_t)0) {   // New message
         if (record == -1l) { // Msg we've never received before
 
+//WE7U
+// If it _is_ a message that we've received before, consider sending
+// an extra ACK in about 30 seconds to try to get it to the remote
+// station.
+
             new_message_data += 1;
 
             // Note that the check_popup_window() function will
@@ -13317,6 +13350,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
 
         // Only send an ack out once per 30 seconds
+
+//WE7U
+// Does this 30-second check work?
+
         if ( from != 'F'  // Not from a log file
                 && (last_ack_sent + 30 ) < sec_now()
                 && !satellite_ack_mode // Disable separate ack's for satellite work
@@ -13334,8 +13371,13 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             // Reply/Ack spec, sent to xastir-dev on Nov 14, 2001.
             xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,orig_msg_id);
 
-//WE7U Need to figure out the reverse path for this one instead of
-//passing a NULL for the path:
+//WE7U
+// Need to figure out the reverse path for this one instead of
+// passing a NULL for the path?  Probably not, as auto-calculation
+// of paths isn't a good idea.  What we need to do here is check
+// whether we have a custom path set for this QSO.  If so, pass that
+// path along as the transmit path.
+
             transmit_message_data(call,ack,NULL);
             if (auto_reply == 1) {
 
@@ -13614,8 +13656,9 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
             pad_callsign(from_call,call);         /* ack the message */
             xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,msg_id);
 
-//WE7U:  Need to figure out the reverse path instead of using a null
-//path here:
+// Nice to return via the reverse path here?  No!  Better to use the
+// default paths instead of a calculated reverse path.
+
             transmit_message_data(call,ack,NULL);
             if (auto_reply == 1) {
                 char temp[300];
