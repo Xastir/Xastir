@@ -1112,7 +1112,10 @@ Getting Data Files for Xastir:
       These aren't maps, but are collections of name labels for locations.
       These display at various zoom levels like Dos/WinAPRS map labels, but are
       also searchable from the Maps menu.
+
          http://geonames.usgs.gov/
+         http://geonames.usgs/gov/gnisftp.html
+
       These files should be named in the form "<ST>.gnis", where <ST> is the
       abbreviation for the state that they cover, and should be placed in the
       /usr/local/xastir/GNIS/ directory. To make sure that maps are layered
