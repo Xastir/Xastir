@@ -4519,7 +4519,6 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_Database" );
 
 
 
-//WE7U-AGWPE
 /*****************************************************/
 /* Configure AGWPE Server GUI                        */
 /*****************************************************/
@@ -4780,8 +4779,8 @@ XtSetSensitive(AGWPE_relay_digipeat, FALSE);
                                       XmNcursorPositionVisible, FALSE,
                                       XmNsensitive, TRUE,
                                       XmNshadowThickness,    1,
-                                      XmNcolumns, 5,
-                                      XmNmaxLength, 5,
+                                      XmNcolumns, 20,
+                                      XmNmaxLength, 20 ,
                                       XmNbackground, colors[0x0f],
                                       XmNleftAttachment,XmATTACH_WIDGET,
                                       XmNleftWidget, password,
