@@ -522,6 +522,10 @@ void create_garmin_waypoint(long latitude,long longitude,char *call_sign) {
     }
     short_callsign[6] = '\0';   // Truncate at 6 chars
 
+    // Convert to upper case.  Garmin's don't seem to like lower
+    // case waypoint names
+    to_upper(short_callsign);
+
     //printf("Creating waypoint for %s:%s\n",call_sign,short_callsign);
 
     xastir_snprintf(out_string, sizeof(out_string),
