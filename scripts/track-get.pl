@@ -140,5 +140,6 @@ while ($gps->records)
 
 printf("\n\nThe data has been saved in: ($filename)\n");
 printf("Please open this logfile with Xastir to display the track\n");
+printf("!!!Remember to set your GPS back to NMEA mode for APRS!!!\n");
 
 
