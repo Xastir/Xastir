@@ -1096,7 +1096,9 @@ void draw_grid(Widget w) {
                     puts("Screen boundary!");
 #endif
 
-#warning 'I suspect that I should not use just col for the following'
+//#warning
+//#warning I suspect that I should not use just col for the following.
+//#warning
                 if (col-2 >= 0)
                     slope = (float)(yy - utm_grid.zone[zone].col[col-2].point[col_point].y) /
                         (float)(xx - utm_grid.zone[zone].col[col-2].point[col_point].x + 0.001);
