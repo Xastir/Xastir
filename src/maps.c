@@ -8498,7 +8498,9 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         if (debug_level & 1)
             printf("opened file: %s\n", filename);
 
+// Note:  This may not work across big/little-endian architectures!
         fread(&pdb_hdr, sizeof(pdb_hdr), 1, fn);
+
         if (strncmp(pdb_hdr.database_type, "map1", 4) != 0
                 || strncmp(pdb_hdr.creator_type, "pAPR", 4) != 0) {
             printf("Not Palm OS Map: %s\n", filename);
@@ -8506,7 +8508,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
             return;
         }
         records = ntohs(pdb_hdr.number_of_records);
+
+// Note:  This may not work across big/little-endian architectures!
         fread(&prl, sizeof(prl), 1, fn);
+
         if (debug_level & 512)
             printf("Palm Map: %s, %d records, offset: %8x\n",
                 pdb_hdr.name,
@@ -8515,7 +8520,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
         record_ptr = ftell(fn);
         fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
+
+// Note:  This may not work across big/little-endian architectures!
         fread(&pmf_hdr, sizeof(pmf_hdr), 1, fn);
+
         scale = ntohs(pmf_hdr.granularity);
         map_left = ntohl(pmf_hdr.left_bounds);
         map_right = ntohl(pmf_hdr.right_bounds);
@@ -8545,7 +8553,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
             /* read vectors */
             for (record_count = 2; record_count <= records; record_count++) {
                 fseek(fn, record_ptr, SEEK_SET);
+
+// Note:  This may not work across big/little-endian architectures!
                 fread(&prl, sizeof(prl), 1, fn);
+
                 if (debug_level & 512)
                     printf("\tRecord %d, offset: %8x\n",
                         record_count,
@@ -8553,7 +8564,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
                 record_ptr = ftell(fn);
                 fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
+
+// Note:  This may not work across big/little-endian architectures!
                 fread(&record_hdr, sizeof(record_hdr), 1, fn);
+
                 if (debug_level & 512)
                     printf("\tType %d, Sub %d, Zoom %d\n",
                         record_hdr.type,
@@ -8562,7 +8576,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
                 if (record_hdr.type > 0 && record_hdr.type < 16) {
                     vector = True;
+
+// Note:  This may not work across big/little-endian architectures!
                     while (vector && fread(&vector_hdr, sizeof(vector_hdr), 1, fn)) {
+
                         count = ntohs(vector_hdr.next_vector);
                         if (count && !(count&1)) {
                             line_x = ntohs(vector_hdr.line_start_x);
@@ -8589,7 +8606,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                 destination_pixmap);
 
                             for (count -= sizeof(vector_hdr); count > 0; count -= sizeof(vector_point)) {
+
+// Note:  This may not work across big/little-endian architectures!
                                 fread(&vector_point, sizeof(vector_point), 1, fn);
+
                                 if (debug_level & 512)
                                     printf("\tnext x %d, next y %d\n",
                                         vector_point.next_x,
@@ -8646,8 +8666,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                     label_mag *= 4;
  
                     label = True;
-                    while (label && fread(&label_record,
-sizeof(label_record), 1, fn)) {
+
+// Note:  This may not work across big/little-endian architectures!
+                    while (label && fread(&label_record, sizeof(label_record), 1, fn)) {
+
                         count = ntohs(label_record.next_label);
                         if (count && !(count&1)) {
                             line_x = ntohs(vector_hdr.line_start_x);
