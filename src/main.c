@@ -411,6 +411,10 @@ Widget iface_transmit_now, posit_tx_disable_toggle, object_tx_disable_toggle;
 #ifdef HAVE_GPSMAN
 Widget Fetch_gps_track, Fetch_gps_route, Fetch_gps_waypoints;
 Widget Send_gps_track, Send_gps_route, Send_gps_waypoints;
+int gps_got_data_from = 0;
+int gps_operation_pending = 0;
+char gps_filename[100];
+void check_for_new_gps_map(void);
 #endif  // HAVE_GPSMAN
 
 // ------------------------ unit conversion --------------------------
@@ -7390,6 +7394,13 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // from the list.
             (void)alert_expire();
 
+#ifdef HAVE_GPSMAN
+            // Check whether we've just completed a GPS transfer and
+            // have new maps to draw because of it.  This function
+            // can cause a complete redraw of the maps.
+            check_for_new_gps_map();
+#endif HAVE_GPSMAN
+
             /* check on Redraw requests */
             if (         ( (redraw_on_new_data > 1)
                         || (redraw_on_new_data && (sec_now() > last_redraw + REDRAW_WAIT))
@@ -8589,17 +8600,203 @@ void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
 
 #ifdef HAVE_GPSMAN
-//WE7U
-// We really need to put the GPS operations into their own thread as
-// they halt the main thread while running.  Another possibility
-// would be to start them in a subshell and then somehow notify the
-// main thread (signal?) when the operation is complete so that any
-// new files can be displayed.
+// Function called by UpdateTime() periodically.  Checks whether
+// we've just completed a GPS transfer and need to redraw maps as a
+// result.
 //
-// GPSMan can't handle '.', '-', or '_' in a destination filename.
+void check_for_new_gps_map(void) {
+
+    if (gps_got_data_from && !gps_operation_pending) {
+        FILE *f;
+ 
+        // We have new data from a GPS!  Add the file to the
+        // selected maps file, cause a reload of the maps to occur,
+        // and then re-index maps (so that map may be deselected by
+        // the user).
+
+        // Add the new gps map to the list of selected maps
+        f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
+        if (f!=NULL) {
+            fprintf(f,"Gps/%s\n",gps_filename);
+            (void)fclose(f);
+
+            // Reindex maps
+            map_indexer();      // Have to have the new map in the index first before we can select it
+            map_chooser_init(); // Re-read the selected_maps.sys file
+            re_sort_maps = 1;   // Creates a new sorted list from the selected maps
+
+            // Reload maps
+            create_image(da);
+            (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        }
+        else {
+            fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+        }
+
+        // Set up for the next GPS run
+        gps_got_data_from = 0;
+    }
+}
+
+
+
+
+
+// This is the separate execution thread that transfers the data
+// to/from the GPS.  The thread is started up by the
+// GPS_operations() function below.
+//
+static void* gps_transfer_thread(void *arg) {
+    int input_param;
+    char temp[500];
+    char prefix[100] = "cd /home/src/gpsman/gpsman-pre6.0;./gpsman.tcl -dev /dev/ttyS0";
+    char postfix[100] = "Shapefile_2D /usr/local/xastir/maps/Gps/";
+
+
+    input_param = *((int *) arg);
+
+    // The pthread_detach() call means we don't care about the
+    // return code and won't use pthread_join() later.  Makes
+    // threading more efficient.
+    (void)pthread_detach(pthread_self());
+ 
+    if (input_param == 1) { // Fetch track from GPS
+        // gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile_2D track.date
+
+        fprintf(stderr,"Fetch track from GPS\n");
+
+        xastir_snprintf(gps_filename,
+            sizeof(gps_filename),
+            "Team1_Track_Red.shp");
+ 
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s getwrite TR %s%s",
+            prefix,
+            postfix,
+            gps_filename);
+
+        if ( system(temp) ) {
+            fprintf(stderr,"Couldn't download the gps track\n");
+            gps_operation_pending = 0;  // We're done
+            return(NULL);
+        }
+
+        // Set the got_data flag
+        gps_got_data_from++;
+    }
+
+
+    else if (input_param == 2) { // Fetch route from GPS
+        // gpsman.tcl -dev /dev/ttyS0 getwrite RT Shapefile_2D routes.date
+
+        fprintf(stderr,"Fetch routes from GPS\n");
+
+        xastir_snprintf(gps_filename,
+            sizeof(gps_filename),
+            "Team2_Routes_Green.shp");
+ 
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s getwrite RT %s%s",
+            prefix,
+            postfix,
+            gps_filename);
+
+        if ( system(temp) ) {
+            fprintf(stderr,"Couldn't download the gps routes\n");
+            gps_operation_pending = 0;  // We're done
+            return(NULL);
+        }
+
+        // Set the got_data flag
+        gps_got_data_from++;
+    }
+
+
+    else if (input_param == 3) { // Fetch waypoints from GPS
+        // gpsman.tcl -dev /dev/ttyS0 getwrite WP Shapefile_2D waypoints.date
+ 
+        fprintf(stderr,"Fetch waypoints from GPS\n");
+
+        xastir_snprintf(gps_filename,
+            sizeof(gps_filename),
+            "Team3_Waypoints.shp");
+ 
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s getwrite WP %s%s",
+            prefix,
+            postfix,
+            gps_filename);
+
+        if ( system(temp) ) {
+            fprintf(stderr,"Couldn't download the gps waypoints\n");
+            gps_operation_pending = 0;  // We're done
+            return(NULL);
+        }
+
+        // Set the got_data flag
+        gps_got_data_from++;
+    }
+
+
+    else if (input_param == 4) { // Send track to GPS
+        // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D track.date TR 
+
+        fprintf(stderr,"Send track to GPS\n");
+        fprintf(stderr,"Not implemented yet\n");
+        gps_operation_pending = 0;  // We're done
+        return(NULL);
+    }
+
+
+    else if (input_param == 5 ) { // Send route to GPS
+        // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D routes.date RT 
+
+        fprintf(stderr,"Send route to GPS\n");
+        fprintf(stderr,"Not implemented yet\n");
+        gps_operation_pending = 0;  // We're done
+        return(NULL);
+    }
+
+
+    else if (input_param == 6) { // Send waypoints to GPS
+        // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D waypoints.date WP 
+
+        fprintf(stderr,"Send waypoints to GPS\n");
+        fprintf(stderr,"Not implemented yet\n");
+        gps_operation_pending = 0;  // We're done
+        return(NULL);
+    }
+
+
+    else {
+        fprintf(stderr,"Illegal parameter passed to GPS_operations function!\n");
+        gps_operation_pending = 0;  // We're done
+        return(NULL);
+    }
+
+
+    // Signal to the main thread that we're all done with the
+    // GPS operation.
+    gps_operation_pending = 0;  // We're done
+
+    // End the thread
+    return(NULL);
+}
+
+
+
+
+
+//WE7U
+// GPSMan can't handle multiple '.' in the filename.  It chops at
+// the first one.
+//
 // It'd be nice if the GPSMan splash screen had decorations so that
-// it could be moved out of the way.  This might be a function of my
-// window manager though.
+// it could be moved out of the way.  Need a tweak to GPSman in
+// order to get the decorations.
 //
 // Note that the permissions on the "maps/Gps" directory have to be
 // set so that this user (or the root user?) can create files in
@@ -8609,19 +8806,26 @@ void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 // When creating files, we should warn the user of a conflict if the
 // filename already exists, then if the user wishes to overwrite it,
 // delete the old set of files before downloading the new ones.  We
-// should also make sure we're not entering the filename in
+// should also make sure we're not adding the filename to the
 // selected_maps.sys more than once.
 //
 void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
-    char temp[500];
-    char filename[100];
-    FILE *f;
-    int got_data_from_gps = 0;
-    char prefix[100] = "cd /home/src/gpsman/gpsman-pre6.0;./gpsman.tcl -dev /dev/ttyS0";
-    char postfix[100] = "Shapefile_2D /usr/local/xastir/maps/Gps/";
+    pthread_t gps_operations_thread;
+    int parameter;
 
 
     if (clientData != NULL) {
+
+        // Check whether we're already doing a GPS operation.
+        // Return if so.
+        if (gps_operation_pending) {
+            fprintf(stderr,"GPS Operation is pending.\n");
+            return;
+        }
+        else {  // We're not, set flags appropriately.
+            gps_operation_pending++;
+            gps_got_data_from = 0;
+        }
 
         if (       (strcmp(clientData,"1") == 0)     // Fetch track from GPS
                 || (strcmp(clientData,"2") == 0)     // Fetch route from GPS
@@ -8637,137 +8841,20 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 // filenames that are already in existence in a special directory?
         }
 
- 
-        if (strcmp(clientData,"1") == 0) { // Fetch track from GPS
-            // gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile_2D track.date
+//-------------------- New Thread -----------------------------------
 
-            fprintf(stderr,"Fetch track from GPS\n");
+        // Here we start a new thread.  We'll communicate with the
+        // main thread via global variables.  Use mutex locks if
+        // there might be a conflict as to when/how we're updating
+        // those variables.
 
-            xastir_snprintf(filename,
-                sizeof(filename),
-                "Team1_Track_Red.shp");
- 
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s getwrite TR %s%s",
-                prefix,
-                postfix,
-                filename);
-
-            if ( system(temp) ) {
-                fprintf(stderr,"Couldn't download the track\n");
-                return;
-            }
-
-            // Set the got_data flag
-            got_data_from_gps++;
-        }
-
-
-        else if (strcmp(clientData,"2") == 0) { // Fetch route from GPS
-            // gpsman.tcl -dev /dev/ttyS0 getwrite RT Shapefile_2D routes.date
-
-            fprintf(stderr,"Fetch routes from GPS\n");
-
-            xastir_snprintf(filename,
-                sizeof(filename),
-                "Team2_Routes_Green.shp");
- 
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s getwrite RT %s%s",
-                prefix,
-                postfix,
-                filename);
-
-            if ( system(temp) ) {
-                fprintf(stderr,"Couldn't download the routes\n");
-                return;
-            }
-
-            // Set the got_data flag
-            got_data_from_gps++;
-        }
-
-
-        else if (strcmp(clientData,"3") == 0) { // Fetch waypoints from GPS
-            // gpsman.tcl -dev /dev/ttyS0 getwrite WP Shapefile_2D waypoints.date
- 
-            fprintf(stderr,"Fetch waypoints from GPS\n");
-
-            xastir_snprintf(filename,
-                sizeof(filename),
-                "Team3_Waypoints.shp");
- 
-            xastir_snprintf(temp,
-                sizeof(temp),
-                "%s getwrite WP %s%s",
-                prefix,
-                postfix,
-                filename);
-
-            if ( system(temp) ) {
-                fprintf(stderr,"Couldn't download the wapoints\n");
-                return;
-            }
-
-            // Set the got_data flag
-            got_data_from_gps++;
-        }
-
-
-        else if (strcmp(clientData,"4") == 0) { // Send track to GPS
-            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D track.date TR 
-
-            fprintf(stderr,"Send track to GPS\n");
-            fprintf(stderr,"Not implemented yet\n");
-        }
-
-
-        else if (strcmp(clientData,"5") == 0) { // Send route to GPS
-            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D routes.date RT 
-
-            fprintf(stderr,"Send route to GPS\n");
-            fprintf(stderr,"Not implemented yet\n");
-        }
-
-
-        else if (strcmp(clientData,"6") == 0) { // Send waypoints to GPS
-            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D waypoints.date WP 
-
-            fprintf(stderr,"Send waypoints to GPS\n");
-            fprintf(stderr,"Not implemented yet\n");
-        }
-
-
-        else {
-            fprintf(stderr,"Illegal parameter passed to GPS_operations function!\n");
-            return;
-        }
-
-
-        if (got_data_from_gps) {
-            // We suceeded!
-            // Add the file to the selected maps file, cause a
-            // reload of the maps to occur, and then re-index
-            // maps (so that map may be deselected by the user).
-            f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
-            if (f!=NULL) {
-                fprintf(f,"Gps/%s\n",filename);
-                (void)fclose(f);
-            }
-            else {
-                fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
-                return;
-            }
-            map_indexer();      // Have to have the new map in the index first before we can select it
-            map_chooser_init(); // Re-read the selected_maps.sys file
-            re_sort_maps = 1;   // Creates a new sorted list from the selected maps
-            create_image(da);
-            (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        parameter = atoi(clientData);
+        if (pthread_create(&gps_operations_thread, NULL, gps_transfer_thread, &parameter)) {
+            fprintf(stderr,"Error creating gps_operations thread\n");
+            gps_operation_pending = 0;  // We're done
         }
         else {
-            // We must have _sent_ data to the gps
+            // We're off and running with the new thread!
         }
     }
 }
