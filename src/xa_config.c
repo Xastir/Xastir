@@ -55,13 +55,13 @@
 
 void store_string(FILE * fout, char *option, char *value) {
 
-    if (debug_level & 1)
-        printf ("Store String Start\n");
+//    if (debug_level & 1)
+//        printf ("Store String Start\n");
 
     fprintf (fout, "%s:%s\n", option, value);
 
-    if (debug_level & 1)
-        printf ("Store String Stop\n");
+//    if (debug_level & 1)
+//        printf ("Store String Stop\n");
 
 }
 
@@ -211,8 +211,8 @@ void save_data(void)  {
     FILE * fout;
     char config_file[MAX_VALUE], config_file_bak[MAX_VALUE];
 
-    if (debug_level & 1)
-        printf ("Store String Start\n");
+//    if (debug_level & 1)
+//        printf ("Store String Start\n");
 
     strcpy (config_file, get_user_base_dir (CONFIG_FILE));
     strcpy (config_file_bak, get_user_base_dir (CONFIG_FILE_BAK));
