@@ -99,21 +99,32 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
 void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointer callData) {
     char *choice;
     XmListCallbackStruct *selection = callData;
+    char handle[14];
+    char *ptr;
+    char temp[100];
 
     XmStringGetLtoR(selection->item, XmFONTLIST_DEFAULT_TAG, &choice);
-    printf("Selected item %d (%s)\n", selection->item_position, choice);
+    //printf("Selected item %d (%s)\n", selection->item_position, choice);
+
+    // Grab the first 13 characters.  Remove spaces.  This is our handle
+    // into the weather server for the full weather alert text.
+
+    strncpy(handle,choice,sizeof(handle));
+    handle[13] = '\0';  // Terminate the string
+    // Remove spaces
+    ptr = handle;
+    while ( (ptr = strpbrk(handle, " ")) )
+        memmove(ptr, ptr+1, strlen(ptr)+1);
+    handle[9] = '\0';   // Terminate after first 9 chars
+
+printf("Handle: %s\n",handle);
+
+    xastir_snprintf(temp, sizeof(temp), "finger %s@wxsvr.net", handle);
+    if ( system(temp) ) {   // Go do the finger command
+        printf("Weather server didn't answer\n");
+    }
+
     XtFree(choice);
-
-//    Widget shell = (Widget) clientData;
-//    XtPopdown(shell);
-
-//begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
-
-//    XtDestroyWidget(shell);
-//    wx_alert_shell = (Widget)NULL;
-
-//end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
-
 }
 
 
@@ -151,8 +162,9 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                 xastir_snprintf(status, sizeof(status), "   ");
 
             xastir_snprintf(temp, sizeof(temp),
-"%-9s %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %-20s %s  %s%s%s%s",
+"%-9s %s %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %s  %s%s%s%s",
                     alert_list[n].from,
+                    alert_list[n].seq,
                     alert_list[n].to,
                     alert_list[n].issue_date_time[0],
                     alert_list[n].issue_date_time[1],
@@ -169,7 +181,6 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                     status,
                     alert_list[n].title,
                     alert_list[n].alert_tag,
-                    alert_list[n].seq,
                     alert_list[n].desc0,
                     alert_list[n].desc1,
                     alert_list[n].desc2,
