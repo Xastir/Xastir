@@ -166,7 +166,7 @@ char *host_lookup(char *host, char *ip, int time) {
                         fprintf(stderr,"Child closing write end of pipe\n");
 
                     close(fp[1]);   // All done writing to the pipe
-                    exit(EXIT_FAILURE);
+                    exit(EXIT_FAILURE); // Exit from child process
                 }
                 (void)alarm(time);  // Start the timer
 
@@ -251,7 +251,7 @@ char *host_lookup(char *host, char *ip, int time) {
                     fprintf(stderr,"Child closing write end of pipe\n");
 
                 close(fp[1]);   // All done writing to the pipe
-                exit(EXIT_FAILURE);
+                exit(EXIT_FAILURE); // Exit from child process
 
             }   // End of child process
 //---------------------------------------------------------------------------------------
