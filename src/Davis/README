@@ -25,7 +25,7 @@ weather data to Xastir (or any other APRS-format application).
 
 "db2APRS" watches for new weather data in the database, retrieves
 the new data, formats it in APRS "position less" ASCII format and
-makes it available on a TCP port of your choosing.  Xastir is 
+makes it available on a TCP port of your choosing. Xastir is 
 capable of reading this data (see note under Xastir installation).
 
 
@@ -53,10 +53,10 @@ Steps in order:
    worth the efort. Some SQL/XML skills can help here, but are 
    not absolutely required...
 
-3) Install or update your installation for Xastir to a version later
-   than 2004/01/16.
+3) Install or update your installation for Xastir to the latest
+   version (http://www.sourceforge.net, project Xastir) 
 
-4) Install db2APRS - initial version 0.1.0
+4) Install db2APRS -  version 0.1.1
    See instructions below.
 
 
@@ -85,7 +85,7 @@ SETTINGS & STARTUP
    you will get old weather data, time stamped by Xastir as new 
    data.
 
-4) Xastir - start this last, if you are auto-opening the WX port.
+4) xastir - start this last, if you are auto-opening the WX port.
    Set the weather port as a network weather station on 
    "localhost", port number as chosen in "db2APRS RUN OPTIONS" 
    (default is 1313). Make sure your station is set to one of the
@@ -160,7 +160,7 @@ are checked for.
 
 This daemon could run on any networked Linux machine instead of 
 the machine hosting Xastir, if desired (it's a good way around 
-lack of processing power or serial ports!).
+lack of processing power, disk space or serial ports!).
 
 Note that the db2APRS daemon keeps providing data to Xastir even 
 when no new entries in the database have been made. This could 
@@ -171,25 +171,13 @@ transmitting.
 BUILD db2APRS
 -------------
 
-   **TODO configure, make chain**
+It's the usual:
 
-Tested with gcc only.
-
-For this early stage, simply locate your "mysql.h" and 
-"libmysqlclient.so" or "libmysqlclient.a" files and 
-put the path in the following command:
-
-cc -I. -I<mysql.h path> -L<libmysqlclient path> -lmysqlclient
-    -o db2APRS db2APRS.c
-
-(all on one line)
-
-This compile line works for SuSE 9.0 linux:
-
-cc -I. -I/usr/include/mysql  -lmysqlclient -o db2APRS db2APRS.c
-
-
-Copy the resulting db2APRS to Your Favorite Location.
+$ cd xastir/src/Davis
+$ ./bootstrap.sh
+$ ./configure
+$ make
+$ su -c 'make install'
 
 
 ACKNOWLEGEMENTS & AUTHORS
