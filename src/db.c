@@ -402,13 +402,25 @@ void msg_input_database(Message *m_fill) {
 
 
 
+// Does a binary search through a sorted message database looking
+// for a string match.
+//
+// If two or more messages match, this routine _should_ return the
+// message with the latest timestamp.  This will ensure that earlier
+// messages don't get mistaken for current messages, for the case
+// where the remote station did a restart and is using the same
+// sequence numbers over again.
+//
 long msg_find_data(Message *m_fill) {
     long record_start, record_mid, record_end, return_record, done;
     char tempfile[MAX_CALLSIGN+MAX_CALLSIGN+MAX_MESSAGE_ORDER+1];
     char tempfill[MAX_CALLSIGN+MAX_CALLSIGN+MAX_MESSAGE_ORDER+1];
 
-    xastir_snprintf(tempfill, sizeof(tempfill), "%s%s%s", m_fill->call_sign,
-            m_fill->from_call_sign, m_fill->seq);
+
+    xastir_snprintf(tempfill, sizeof(tempfill), "%s%s%s",
+            m_fill->call_sign,
+            m_fill->from_call_sign,
+            m_fill->seq);
 
     return_record = -1L;
     if (msg_index && msg_index_end >= 1) {
@@ -419,24 +431,29 @@ long msg_find_data(Message *m_fill) {
 
          done=0;
          while (!done) {
+
             /* get data for record start */
             xastir_snprintf(tempfile, sizeof(tempfile), "%s%s%s",
-                        msg_data[msg_index[record_start]].call_sign,
-                        msg_data[msg_index[record_start]].from_call_sign,
-                        msg_data[msg_index[record_start]].seq);
+                    msg_data[msg_index[record_start]].call_sign,
+                    msg_data[msg_index[record_start]].from_call_sign,
+                    msg_data[msg_index[record_start]].seq);
+
             if (strcmp(tempfill, tempfile) < 0) {
                 /* filename comes before */
                 /*printf("Before No data found!!\n");*/
                 done=1;
                 break;
             } else { /* get data for record end */
+
                 xastir_snprintf(tempfile, sizeof(tempfile), "%s%s%s",
-                            msg_data[msg_index[record_end]].call_sign,
-                            msg_data[msg_index[record_end]].from_call_sign,
-                            msg_data[msg_index[record_end]].seq);
+                        msg_data[msg_index[record_end]].call_sign,
+                        msg_data[msg_index[record_end]].from_call_sign,
+                        msg_data[msg_index[record_end]].seq);
+
                 if (strcmp(tempfill,tempfile)>=0) { /* at end or beyond */
-                    if (strcmp(tempfill, tempfile) == 0)
+                    if (strcmp(tempfill, tempfile) == 0) {
                         return_record = record_end;
+                    }
 
                     done=1;
                     break;
@@ -444,18 +461,19 @@ long msg_find_data(Message *m_fill) {
                     /* no mid for compare check to see if in the middle */
                     done=1;
                     xastir_snprintf(tempfile, sizeof(tempfile), "%s%s%s",
-                                msg_data[msg_index[record_mid]].call_sign,
-                                msg_data[msg_index[record_mid]].from_call_sign,
-                                msg_data[msg_index[record_mid]].seq);
-                    if (strcmp(tempfill,tempfile)==0)
+                            msg_data[msg_index[record_mid]].call_sign,
+                            msg_data[msg_index[record_mid]].from_call_sign,
+                            msg_data[msg_index[record_mid]].seq);
+                    if (strcmp(tempfill,tempfile)==0) {
                         return_record = record_mid;
+                    }
                 }
             }
             if (!done) { /* get data for record mid */
                 xastir_snprintf(tempfile, sizeof(tempfile), "%s%s%s",
-                            msg_data[msg_index[record_mid]].call_sign,
-                            msg_data[msg_index[record_mid]].from_call_sign,
-                            msg_data[msg_index[record_mid]].seq);
+                        msg_data[msg_index[record_mid]].call_sign,
+                        msg_data[msg_index[record_mid]].from_call_sign,
+                        msg_data[msg_index[record_mid]].seq);
 
                 if (strcmp(tempfill, tempfile) == 0) {
                     return_record = record_mid;
@@ -549,7 +567,10 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
                 do_update++;
             }
         }
-        msg_data[msg_index[record]].acked = 1;
+        else {  // This message has already been acked.
+        }
+
+        msg_data[msg_index[record]].acked = (char)1;
         if (debug_level & 1) {
             printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
                 msg_data[msg_index[record]].acked,
@@ -606,8 +627,22 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         //printf("Found a duplicate message.  Updating fields, seq %s\n",seq);
 
         // If message is different this time, do an update to the
-        // send message window
+        // send message window and update the sec_heard field.  The
+        // remote station must have restarted and is re-using the
+        // sequence numbers.  What a pain!
         if (strcmp(m_fill.message_line,data) != 0) {
+            m_fill.sec_heard = sec_now();
+            do_update++;
+        }
+
+        // If message is the same, but the sec_heard field is quite
+        // old (more than 8 hours), the remote station must have
+        // restarted, is re-using the sequence numbers, and just
+        // happened to send the same message with the same sequence
+        // number.  Again, what a pain!  Either that, or we
+        // connected to a spigot with a _really_ long queue!
+        if (m_fill.sec_heard < (sec_now() - (8 * 60 * 60) )) {
+            m_fill.sec_heard = sec_now();
             do_update++;
         }
 
@@ -640,6 +675,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     substr(m_fill.from_call_sign,from_call,MAX_CALLSIGN);
     (void)remove_trailing_asterisk(m_fill.from_call_sign);
 
+    // Update the message field
     substr(m_fill.message_line,data,MAX_MESSAGE_LENGTH);
 
     substr(m_fill.seq,seq,MAX_MESSAGE_ORDER);
@@ -654,7 +690,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     }
     else {  // Old record found
         //printf("Replacing the message in the database, seq %s\n",seq);
-        msg_replace_data(&m_fill, record);  // Update fields
+        msg_replace_data(&m_fill, record);  // Copy fields from m_fill to record
     }
 
     /* display messages */
@@ -759,11 +795,12 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                         pos = 0;
                         // Loop through looking for messages to/from that callsign
                         for (i = 0; i < msg_index_end; i++) {
-                            if (msg_data[msg_index[i]].active == RECORD_ACTIVE &&
-                                    (strcmp(temp1, msg_data[msg_index[i]].from_call_sign) == 0 ||
-                                      strcmp(temp1,msg_data[msg_index[i]].call_sign) == 0) &&
-                                    ( is_my_call(msg_data[msg_index[i]].from_call_sign, 1) ||
-                                      is_my_call(msg_data[msg_index[i]].call_sign, 1) || mw[mw_p].message_group ) ) {
+                            if (msg_data[msg_index[i]].active == RECORD_ACTIVE
+                                    && (strcmp(temp1, msg_data[msg_index[i]].from_call_sign) == 0
+                                        || strcmp(temp1,msg_data[msg_index[i]].call_sign) == 0)
+                                    && (is_my_call(msg_data[msg_index[i]].from_call_sign, 1)
+                                        || is_my_call(msg_data[msg_index[i]].call_sign, 1)
+                                        || mw[mw_p].message_group ) ) {
                                 int done = 0;
 
                                 // Message matches our parameters so
@@ -831,7 +868,8 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 //printf("acked: %d\n",msg_data[msg_index[j]].acked);
  
                                 // Message matches so snag the important pieces into a string
-                                xastir_snprintf(stemp, sizeof(stemp), "%c%c/%c%c %c%c:%c%c",
+                                xastir_snprintf(stemp, sizeof(stemp),
+                                    "%c%c/%c%c %c%c:%c%c",
                                     msg_data[msg_index[j]].packet_time[0],
                                     msg_data[msg_index[j]].packet_time[1],
                                     msg_data[msg_index[j]].packet_time[2],
@@ -848,7 +886,11 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 // in and pressing "New Call" button.  First message is missing.
 
                                 // Label the message line with who sent it.
-                                xastir_snprintf(temp2, sizeof(temp2), "%s  %-9s>%s\n",
+                                xastir_snprintf(temp2, sizeof(temp2),
+                                    "%s  %-9s>%s\n",
+                                    // Debug code.  Trying to find sorting error
+                                    //"%ld  %s  %-9s>%s\n",
+                                    //msg_data[msg_index[j]].sec_heard,
                                     stemp,
                                     msg_data[msg_index[j]].from_call_sign,
                                     msg_data[msg_index[j]].message_line);

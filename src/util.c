@@ -1596,7 +1596,7 @@ int valid_path(char *path) {
 /*
  *  Check for a valid AX.25 call
  *      Valid calls consist of up to 6 uppercase alphanumeric characters
- *      plus optinal SSID (four-bit integer)       [APRS Reference, AX.25 Reference]
+ *      plus optional SSID (four-bit integer)       [APRS Reference, AX.25 Reference]
  */
 int valid_call(char *call) {
     int len, ok;
