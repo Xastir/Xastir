@@ -1828,9 +1828,9 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 xastir_snprintf(temp_altitude, sizeof(temp_altitude), "%.0f%s",
                     (float)(p_station->track_data->altitude[trail_prev] * cvt_dm2len), un_alt);
 
-                printf("Trail data              with altitude: %s : %s\n",
-                    p_station->call_sign,
-                    temp_altitude);
+//                printf("Trail data              with altitude: %s : %s\n",
+//                    p_station->call_sign,
+//                    temp_altitude);
             }
             else {
                 //printf("Trail data w/o altitude                %s\n",
