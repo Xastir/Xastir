@@ -2307,17 +2307,26 @@ void display_file(Widget w) {
                                 draw_trail(w,p_station,0);
                             }
                         }
+                        else if (debug_level & 256) {
+                            printf("Station too old\n");
+                        }
                     }
                     else if (debug_level & 256) {
                         printf("Station trails %d, track data %x\n",
                             station_trails, (int)p_station->newest_trackpoint);
                     }
+                    if (debug_level & 256)
+                        printf("calling display_station()\n");
+
                     display_station(w,p_station,0);
                 }
                 else if (debug_level & 64) {
                     printf("display_file: Station %s skipped altnet\n",
                         p_station->call_sign);
                 }
+            }
+            else if (debug_level & 256) {
+                    printf("display_file: Station outside viewport\n");
             }
         }
         else if (debug_level & 64) {
@@ -6521,16 +6530,22 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
  */
 int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     char *temp_ptr;
+    char *temp_ptr2;
     char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
     char lat_s[20];
     char long_s[20];
     int ok;
 
+    if (debug_level & 256)
+        printf("extract_RMC\n");
+
     // should we copy it before processing? it changes data: ',' gets substituted by '\0' !!
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
 
-    if ( (data == NULL) || (strlen(data) < 37) )  // Not enough data to parse position from.
+    if ( (data == NULL) || (strlen(data) < 37) ) {  // Not enough data to parse position from.
+        printf("Invalid RMC string: Too short\n");
         return(ok);
+    }
 
     p_station->record_type = NORMAL_GPS_RMC;
     strcpy(p_station->pos_time,get_time(temp_data));    // get_time saves the time in temp_data
@@ -6538,21 +6553,21 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
     /* check aprs type on call sign */
     p_station->aprs_symbol = *id_callsign(call_sign, path);
-    if (strchr(data,',') != NULL) {                                     // there is a ',' in string
-        (void)strtok(data,",");                                         // extract GPRMC
-        (void)strtok(NULL,",");                                         // extract time ?
-        temp_ptr = strtok(NULL,",");                                    // extract valid char
+    if (strchr(data,',') != NULL) {                         // there is a ',' in string
+        (void)strtok(data,",");                             // extract GPRMC
+        (void)strtok(NULL,",");                             // extract time ?
+        temp_ptr = strtok(NULL,",");                        // extract valid char
         if (temp_ptr != NULL) {
             strncpy(temp_data,temp_ptr,2);
             if (temp_data[0]=='A' || temp_data[0]=='V') {
                 /* V is a warning but we can get good data still ? */   // DK7IN: got no position with 'V' !
-                temp_ptr=strtok(NULL,",");                              // extract latitude
-                if (temp_ptr!=NULL && temp_ptr[4]=='.') {
-                    strncpy(lat_s,temp_ptr,8);
-                    lat_s[8] = '\0';    // Terminate it (just in case)
+
+                temp_ptr = strtok(NULL,",");                  // extract latitude
+                if (temp_ptr != NULL && temp_ptr[4]=='.') {
+                    temp_ptr2 = strtok(NULL,",");             // Find end of latitude
 
 // Need to check lat_s for validity here.  Note that some GPS's put out another digit of precision
-// (4801.1234).  Next character after digits should be a ','
+// (4801.1234) or leave one out (4801.12).  Next character after digits should be a ','
 
 // We really should check for a terminating zero at the end of each substring we collect,
 // and not rely on strtok exclusively.  We could have an extra-long field due to packet
@@ -6560,28 +6575,46 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 // We should also check the length of the string we're collecting from to make sure
 // we don't run off the end for a short packet.
 
-                    temp_ptr=strtok(NULL,",");                /* get N-S */
-                    if (temp_ptr!=NULL) {
+                    if (temp_ptr2 != NULL) {
+                        int length = temp_ptr2 - temp_ptr - 1;
+
+                        strncpy(lat_s,temp_ptr,length);
+                        lat_s[length+1] = '\0';             // Terminate it (just in case)
+                        temp_ptr = temp_ptr2;               // Point to N-S character
+
                         strncpy(temp_data,temp_ptr,1);
-                        lat_s[8]=toupper((int)temp_data[0]);
-                        lat_s[9] = '\0';
-                        if (lat_s[8] =='N' || lat_s[8] =='S') {
+                        lat_s[length]=toupper((int)temp_data[0]);
+                        lat_s[length+1] = '\0';
+                        if (lat_s[length] =='N' || lat_s[length] =='S') {
+
                             temp_ptr=strtok(NULL,",");            /* get long */
                             if(temp_ptr!=NULL && temp_ptr[5] == '.') {
-                                strncpy(long_s,temp_ptr,9);
-                                long_s[9] = '\0';   // Terminate it, just in case
+                                temp_ptr2=strtok(NULL,","); // Find end of longitude
 
 // Need to check long_s for validity here.  Should be all digits.  Note that some GPS's put out another
 // digit of precision.  (12201.1234).  Next character after digits should be a ','
 
-                                temp_ptr=strtok(NULL,",");            /* get E-W */
-                                if (temp_ptr!=NULL) {
+                                if (temp_ptr2!=NULL) {
+                                    length = temp_ptr2 - temp_ptr - 1;
+
+                                    strncpy(long_s,temp_ptr,length);
+                                    long_s[length+1] = '\0';    // Terminate it, just in case
+                                    temp_ptr = temp_ptr2;       // Point to E-W character
+
                                     strncpy(temp_data,temp_ptr,1);
-                                    long_s[9] = toupper((int)temp_data[0]);
-                                    long_s[10] = '\0';
-                                    if (long_s[9] =='E' || long_s[9] =='W') {
+                                    long_s[length] = toupper((int)temp_data[0]);
+                                    long_s[length+1] = '\0';
+                                    if (long_s[length] =='E' || long_s[length] =='W') {
                                         p_station->coord_lat = convert_lat_s2l(lat_s);
                                         p_station->coord_lon = convert_lon_s2l(long_s);
+
+                                        if (debug_level & 256)
+                                            printf("%s, %s, %ld, %ld\n",
+                                                lat_s,
+                                                long_s,
+                                                p_station->coord_lat,
+                                                p_station->coord_lon);
+
                                         ok = 1; // We have enough for a position now
                                         temp_ptr=strtok(NULL,",");        /* Get speed */
                                         if(temp_ptr!=0) {
@@ -6617,6 +6650,14 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
         }
     } else { // Short packet, character ',' not found in string
     }
+
+    if (debug_level & 256) {
+        if (ok)
+            printf("extract_RMC succeeded\n");
+        else
+            printf("extract_RMC failed\n");
+    }
+
     return(ok);
 }
 
@@ -6630,8 +6671,8 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
  * GPGGA,hhmmss,ddmm.mmm[m],{N|S},dddmm.mmm[m],{E|W},{0|1|2},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
  *
  * hhmmss = UTC
- * ddmm.mmm[m] = Degrees(dd) Minutes (mm.mmm[m]) (may be 3 or 4 digits of precision) Lattitude (N|S=North/South)
- * dddmm.mmm[m] = Degrees (ddd) Minutes (mm.mmm[m]) (may be 3 or 4 digits of precision) Longitude (E|W=East/West)
+ * ddmm.mmm[m] = Degrees(dd) Minutes (mm.mmm[m]) (may be 1 to ?? digits of precision) Lattitude (N|S=North/South)
+ * dddmm.mmm[m] = Degrees (ddd) Minutes (mm.mmm[m]) (may be 1 to ?? digits of precision) Longitude (E|W=East/West)
  * 0|1|2 == invalid/GPS/DGPS
  * nsat=Number of Sattelites being tracked
  * mmm.m,M=Meters MSL
@@ -6640,6 +6681,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
  */
 int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     char *temp_ptr;
+    char *temp_ptr2;
     char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
     char lat_s[20];
     char long_s[20];
@@ -6660,10 +6702,10 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     if (strchr(data,',')!=NULL) {
         if (strtok(data,",")!=NULL) { /* get gpgga and throw it away */
             if (strtok(NULL,",")!=NULL)  { /* get time and throw it away */
-                temp_ptr = strtok(NULL,",");                 /* get latitude */
-                if (temp_ptr !=NULL) {
-                    strncpy(lat_s,temp_ptr,8);
-                    lat_s[8] = '\0';    // Terminate it (just in case)
+
+                temp_ptr = strtok(NULL,",");        // get latitude
+                if (temp_ptr != NULL) {
+                    temp_ptr2 = strtok(NULL,",");   // Find end of latitude
 
 // Need to check lat_s for validity here.  Note that some GPS's put out another digit of precision
 // (4801.1234).  Next character after digits should be a ','
@@ -6674,26 +6716,37 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 // We should also check the length of the string we're collecting from to make sure
 // we don't run off the end for a short packet.
 
-                    temp_ptr = strtok(NULL,",");                       /* get N-S */
-                    if (temp_ptr!=NULL) {
+                    if (temp_ptr2 != NULL) {
+                        int length = temp_ptr2 - temp_ptr - 1;
+
+                        strncpy(lat_s,temp_ptr,length);
+                        lat_s[length+1] = '\0';     // Terminate it (just in case)
+                        temp_ptr = temp_ptr2;       // Point to N-S character
+
                         strncpy(temp_data,temp_ptr,1);
-                        lat_s[8]=toupper((int)temp_data[0]);
-                        lat_s[9] = '\0';
-                        if (lat_s[8] =='N' || lat_s[8] =='S') { // Check validity
-                            temp_ptr=strtok(NULL,",");            /* get long */
-                            if(temp_ptr!=NULL /* && temp_ptr[5] == '.' */ ) {  // ??
-                                strncpy(long_s,temp_ptr,9);
-                                long_s[9] = '\0';   // Terminate it, just in case
+                        lat_s[length] = toupper((int)temp_data[0]);
+                        lat_s[length+1] = '\0';
+                        if (lat_s[length] == 'N' || lat_s[length] == 'S') { // Check validity
+
+                            temp_ptr = strtok(NULL,",");            /* get long */
+                            if(temp_ptr != NULL /* && temp_ptr[5] == '.' */ ) {  // ??
+                                temp_ptr2 = strtok(NULL,","); // Find end of longitude
 
 // Need to check long_s for validity here.  Should be all digits.  Note that some GPS's put out another
 // digit of precision.  (12201.1234).  Next character after digits should be a ','
 
-                                temp_ptr=strtok(NULL,",");            /* get E-W */
-                                if (temp_ptr!=NULL) {
+                                if (temp_ptr2 != NULL) {
+                                    length = temp_ptr2 - temp_ptr - 1;
+
+                                    strncpy(long_s,temp_ptr,length);
+                                    long_s[length] = '\0';  // Terminate it, just in case
+                                    temp_ptr = temp_ptr2;   // Point to E-W character
+
+
                                     strncpy(temp_data,temp_ptr,1);
-                                    long_s[9]  = toupper((int)temp_data[0]);
-                                    long_s[10] = '\0';
-                                    if (long_s[9] =='E' || long_s[9] =='W') {   // Check validity
+                                    long_s[length] = toupper((int)temp_data[0]);
+                                    long_s[length+1] = '\0';
+                                    if (long_s[length] == 'E' || long_s[length] == 'W') {   // Check validity
                                         p_station->coord_lat = convert_lat_s2l(lat_s);
                                         p_station->coord_lon = convert_lon_s2l(long_s);
                                         ok = 1;     // We have enough for a position now
@@ -7510,10 +7563,16 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         redo_list = (int)TRUE;          // we may need to update the lists
 
         if (found_pos) {        // if station has a position with the data
-            if (position_on_extd_screen(p_station->coord_lat,p_station->coord_lon))
+            if (position_on_extd_screen(p_station->coord_lat,p_station->coord_lon)) {
                 p_station->flag |= (ST_INVIEW);   // set   "In View" flag
-            else
+                if (debug_level & 256)
+                    printf("Setting ST_INVIEW flag\n");
+            }
+            else {
                 p_station->flag &= (~ST_INVIEW);  // clear "In View" flag
+                if (debug_level & 256)
+                    printf("Clearing ST_INVIEW flag\n");
+            }
         }
 
         scrupd = 0;
