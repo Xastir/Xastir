@@ -1128,15 +1128,15 @@ void create_shapefile_map(char *dir, char *shapefile_name, int type,
     char temp_shapefile_name[MAX_FILENAME];
 
 
-/*
-    fprintf(stderr,"create_shapefile_map\n");
-    fprintf(stderr,"%s %s %d %d %d\n",
-        dir,
-        shapefile_name,
-        type,
-        quantity,
-        add_timestamp);
-*/
+    if (debug_level & 16) {
+        fprintf(stderr,"create_shapefile_map\n");
+        fprintf(stderr,"%s %s %d %d %d\n",
+            dir,
+            shapefile_name,
+            type,
+            quantity,
+            add_timestamp);
+    }
 
     if (quantity == 0) {
         // No reason to make a map if we don't have any points.
@@ -1171,6 +1171,9 @@ void create_shapefile_map(char *dir, char *shapefile_name, int type,
             shapefile_name);
     }
 
+    if (debug_level & 16)
+        fprintf(stderr, "Creating file %s\n", temp_shapefile_name);
+ 
     // Create empty .shp/.shx/.dbf files
     //
     my_shp_handle = SHPCreate(temp_shapefile_name, type);
@@ -1587,6 +1590,12 @@ void draw_shapefile_map (Widget w,
     int             ok, index;
     int             polygon_hole_flag;
     int             *polygon_hole_storage;
+    GC              gc_temp;
+    XGCValues       gc_temp_values;
+    Region          region[3];
+    int             temp_region1;
+    int             temp_region2;
+    int             temp_region3;
     int             gps_flag = 0;
     char            gps_label[100];
     int             gps_color = 0x0c;
@@ -3327,121 +3336,6 @@ void draw_shapefile_map (Widget w,
 // Shapefiles also allow identical points to be next to each other
 // in the vertice list.  We should look for that and get rid of
 // duplicate vertices.
-//
-// Here are some X11 functions that may be of use:
-//
-// XSetRegion:
-// XPolygonRegion: Creates a region from a polygon
-// XCreateRegion
-// XDestroyRegion
-// XUnionRegion:  Creates a new region from two
-// XOffsetRegion
-
-
-
-
-
-/*
-    // Determine first whether we have any CCW rotation of vertices
-    // in the Shape (hole rings).  If so, we need to go through the
-    // below steps.  If not, draw the filled polygon directly.
-
-// Note:  We need to use a temporary GC for drawing these regions as
-// I can't find a way to set the clip-mask to NULL after we're
-// finished!
-
-    holes = create_hole_list();
-
-    if (!holes) {   // No holes in this shape.  Draw it the easy way.
-        (void)XFillPolygon(XtDisplay(w),
-            pixmap,
-            gc,
-            points,
-            i,
-            Nonconvex,
-            CoordModeOrigin);
-    }
-    else {  // Holes found in the shape.  Draw it the hard way.
-
-        // Create three regions and rotate between them due to the
-        // XSubtractRegion() needing three parameters.  If we later
-        // find that two of the parameters can be repeated, we can
-        // simplify our code.  We'll rotate through them mod 3.
-        Region region[3];
-
-        int temp_region1 = 0;
-        int temp_region2;
-        int temp_region3;
-        XRectangle rectangle;   // Used only for method 7
-
-
-// Method 7:
-// Create a rectangle region.  That way we won't have to draw all
-// parts of the polygon twice.  Make the  rectangle the size of the
-// Shape extents.
-
-        // Create empty region
-        region[temp_region1] = XCreateRegion();
-
-        // Draw a rectangular clip-mask inside it
-        rectangle.x      = (short) x;
-        rectangle.y      = (short) y;
-        rectangle.width  = (unsigned short) width;
-        rectangle.height = (unsigned short) height;
-        XUnionRectWithRegion(&rectangle,
-            region[temp_region1],
-            region[temp_region1]);
-
-        // Create a region for each set of hole vertices (CCW
-        // rotation of the vertices) and subtract each from the
-        // polygon region.
-        while (more_holes) {
-
-            temp_region2 = (temp_region1 + 1) % 3;
-            temp_region3 = (temp_region1 + 2) % 3;
-
-            region[temp_region2] = XPolygonRegion(Xpoint points,
-                int n,
-                WindingRule);
-
-            // Subtract 2 from 1 and put the result in 3
-            XSubtractRegion(region[temp_region1],
-                region[temp_region2],
-                region[temp_region3]);
-
-            // Get rid of the two we no longer need
-            XDestroyRegion(region[temp_region1]);
-            XDestroyRegion(region[temp_region2]);
-
-            // Indicate the final result region for the next
-            // iteration or the exit of the loop.
-            temp_region1 = temp_region3;
-        }
-        // region[temp_region1] now contains a clip-mask of the
-        // original polygon but with holes cut out of it.
-
-        // Set up the GC for using the region.  This will be used as
-        // the clip-mask for drawing the polygon.
-        XSetRegion(XtDisplay(w), gc, region[temp_region1]);
-        XDestroyRegion(region[temp_region1]);
-
-        // Draw the original polygon onto the correct pixmap.
-        // We can skip the hole rings for improvements in drawing
-        // speed.
-        (void)XFillPolygon(XtDisplay(w),
-            pixmap,
-            gc,
-            points,
-            i,
-            Nonconvex,
-            CoordModeOrigin);
- 
-        // Remember to get rid of that clipmask for the next drawing
-        // routines to come along.
-        XSetRegion(display, gc, NULL);
-    }
-*/
-
 
 
 
@@ -3503,16 +3397,163 @@ void draw_shapefile_map (Widget w,
                                 break;
                         }
                     }
-                    if (polygon_hole_flag) {
-//                        fprintf(stderr, "%s:Found %d hole rings in shape %d\n",
-//                            file,
-//                            polygon_hole_flag,
-//                            structure);
-                    }
+// We're done with the initial run through the vertices of all rings.
+
+
+// Don't enable this code yet!
+//                    if (polygon_hole_flag) {
+                    if (0) {
+                        XRectangle rectangle;
+                        int width, height;
+
+
+                        fprintf(stderr, "%s:Found %d hole rings in shape %d\n",
+                            file,
+                            polygon_hole_flag,
+                            structure);
 
 //WE7U3
-// Now that we know which are fill/hole rings, worry about drawing
-// each ring of the Shape.
+////////////////////////////////////////////////////////////////////////
+                        // Now that we know which are fill/hole
+                        // rings, worry about drawing each ring of
+                        // the Shape:
+                        //
+                        // 1) Create a filled rectangle region,
+                        // probably the size of the Shape extents.
+                        //
+                        // 2) Create a region for each hole ring and
+                        // subtract from the rectangle region.
+                        //
+                        // 3) When the swiss-cheese rectangle region
+                        // is complete, draw only the filled
+                        // polygons onto the map pixmap using the
+                        // swiss-cheese rectangle region as the
+                        // clip-mask.  Use a temporary GC for this
+                        // operation, as I can't find a way to
+                        // remove a clip-mask from a GC.  We'll
+                        // probably have to use offsets to make this
+                        // work properly.
+
+                        // Create three regions and rotate between
+                        // them due to the XSubtractRegion() needing
+                        // three parameters.  If we later find that
+                        // two of the parameters can be repeated, we
+                        // can simplify our code.  We'll rotate
+                        // through them mod 3.
+
+                        temp_region1 = 0;
+                        // Create empty region
+                        region[temp_region1] = XCreateRegion();
+
+                        // Draw a rectangular clip-mask inside the
+                        // Region.  Use the same extents as the full
+                        // Shape.
+
+// Set up the real sizes from the Shape extents
+width = 10;
+height = 10;
+                        rectangle.x      = 0;
+                        rectangle.y      = 0;
+                        rectangle.width  = (unsigned short) width;
+                        rectangle.height = (unsigned short) height;
+
+                        XUnionRectWithRegion(&rectangle,
+                            region[temp_region1],
+                            region[temp_region1]);
+
+                        // Create a region for each set of hole
+                        // vertices (CCW rotation of the vertices)
+                        // and subtract each from the polygon
+                        // region.
+
+                        for (ring = 0; ring < object->nParts; ring++ ) {
+
+                            if (polygon_hole_storage[ring] == 1) {
+                                // It's a hole polygon.  Cut the
+                                // hole out of our rectangle region.
+                                int num_vertices = 0;
+                                int nVertStart;
+
+ 
+                                nVertStart = object->panPartStart[ring];
+
+                                if( ring == object->nParts-1 )
+                                    num_vertices = object->nVertices
+                                                 - object->panPartStart[ring];
+                                else
+                                    num_vertices = object->panPartStart[ring+1] 
+                                                 - object->panPartStart[ring];
+
+// Snag the vertices and put them into the "points" array,
+// converting to screen coordinates as we go, then subtracting the
+// starting point (so that the regions remain small?).  We could
+// either subtract the starting point of each shape from each point,
+// or take the hit on region size and just use the full screen size
+// (or whatever part of it the shape required plus the area from the
+// starting point to 0,0).
+
+                                temp_region2 = (temp_region1 + 1) % 3;
+                                temp_region3 = (temp_region1 + 2) % 3;
+
+                                // Create empty region.
+// Is this step necessary?
+                                region[temp_region2] = XCreateRegion();
+
+                                // Draw the hole polygon
+                                region[temp_region2] = XPolygonRegion(points,
+                                    num_vertices,
+                                    WindingRule);
+
+                                // Subtract 2 from 1 and put the result
+                                // in 3.
+// Do we need to create an empty region 3 first?
+                                XSubtractRegion(region[temp_region1],
+                                    region[temp_region2],
+                                    region[temp_region3]);
+
+                                // Get rid of the two regions we no
+                                // longer need
+                                XDestroyRegion(region[temp_region1]);
+                                XDestroyRegion(region[temp_region2]);
+
+                                // Indicate the final result region for
+                                // the next iteration or the exit of the
+                                // loop.
+                                temp_region1 = temp_region3;
+                            }
+                        }
+
+                        // region[temp_region1] now contains a
+                        // clip-mask of the original polygon with
+                        // holes cut out of it (swiss-cheese
+                        // rectangle).
+
+                        // Create temporary GC.  It looks like we
+                        // don't need this for any of the regions,
+                        // but we will need it when we draw the
+                        // filled polygons onto the map pixmap using
+                        // the final region as a clip-mask.
+// Offsets?
+// XOffsetRegion
+//                        gc_temp_values.function = GXcopy;
+                        gc_temp = XCreateGC(XtDisplay(w),
+                            XtWindow(w),
+                            0,
+                            &gc_temp_values);
+
+                        // Set the clip-mask into the GC
+                        XSetRegion(XtDisplay(w), gc_temp, region[temp_region1]);
+                        XDestroyRegion(region[temp_region1]);
+
+//Free the temporary GC after we draw the polygon using the
+//clip-mask (move this later in the code):
+//XFreeGC(XtDisplay(w), gc_temp);
+
+
+                    }
+//WE7U3
+////////////////////////////////////////////////////////////////////////
+
 
                     // Read the vertices for each ring in the Shape
                     for (ring = 0; ring < object->nParts; ring++ ) {
