@@ -158,7 +158,7 @@ int decode_gps_rmc( char *data,
                                                         strcpy(cse,course);
 
 // MacOS X doesn't have the strptime call
-#ifndef __MacOSX__
+#ifndef MACOSX
 // Same for __CYGWIN__
 #ifndef __CYGWIN__
                                                         /* Translate date/time into time_t */
@@ -178,7 +178,7 @@ int decode_gps_rmc( char *data,
                                                         putenv(tzn);
                                                         tzset();
 #endif  // __CYGWIN__
-#endif  // #ifndef __MacOSX__
+#endif  // #ifndef MACOSX
                                                     }
                                                 }
                                             }
