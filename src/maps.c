@@ -8416,7 +8416,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
 #pragma pack(1)
     struct {
-            char name[32];
+        char name[32];
         short file_attributes;
         short version;
         long creation_date;
@@ -8482,7 +8482,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         char text[20];
     } label_record;     
 
-    FILE *f;
+    FILE *fn;
     char filename[200];
     int records, record_count, count;
     int scale;
@@ -8493,29 +8493,29 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
 
     xastir_snprintf(filename, sizeof(filename), "%s/%s", dir, filenm);
-    if ((f = fopen(filename, "r")) != NULL) {
+    if ((fn = fopen(filename, "r")) != NULL) {
 
         if (debug_level & 1)
             printf("opened file: %s\n", filename);
 
-        fread(&pdb_hdr, sizeof(pdb_hdr), 1, f);
+        fread(&pdb_hdr, sizeof(pdb_hdr), 1, fn);
         if (strncmp(pdb_hdr.database_type, "map1", 4) != 0
                 || strncmp(pdb_hdr.creator_type, "pAPR", 4) != 0) {
             printf("Not Palm OS Map: %s\n", filename);
-            fclose(f);
+            fclose(fn);
             return;
         }
         records = ntohs(pdb_hdr.number_of_records);
-        fread(&prl, sizeof(prl), 1, f);
+        fread(&prl, sizeof(prl), 1, fn);
         if (debug_level & 512)
             printf("Palm Map: %s, %d records, offset: %8x\n",
                 pdb_hdr.name,
                 records,
                 (unsigned int)ntohl(prl.record_data_offset));
 
-        record_ptr = ftell(f);
-        fseek(f, ntohl(prl.record_data_offset), SEEK_SET);
-        fread(&pmf_hdr, sizeof(pmf_hdr), 1, f);
+        record_ptr = ftell(fn);
+        fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
+        fread(&pmf_hdr, sizeof(pmf_hdr), 1, fn);
         scale = ntohs(pmf_hdr.granularity);
         map_left = ntohl(pmf_hdr.left_bounds);
         map_right = ntohl(pmf_hdr.right_bounds);
@@ -8544,16 +8544,16 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
             max_y = screen_height + MAX_OUTBOUND;
             /* read vectors */
             for (record_count = 2; record_count <= records; record_count++) {
-                fseek(f, record_ptr, SEEK_SET);
-                fread(&prl, sizeof(prl), 1, f);
+                fseek(fn, record_ptr, SEEK_SET);
+                fread(&prl, sizeof(prl), 1, fn);
                 if (debug_level & 512)
                     printf("\tRecord %d, offset: %8x\n",
                         record_count,
                         (unsigned int)ntohl(prl.record_data_offset));
 
-                record_ptr = ftell(f);
-                fseek(f, ntohl(prl.record_data_offset), SEEK_SET);
-                fread(&record_hdr, sizeof(record_hdr), 1, f);
+                record_ptr = ftell(fn);
+                fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
+                fread(&record_hdr, sizeof(record_hdr), 1, fn);
                 if (debug_level & 512)
                     printf("\tType %d, Sub %d, Zoom %d\n",
                         record_hdr.type,
@@ -8562,7 +8562,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
                 if (record_hdr.type > 0 && record_hdr.type < 16) {
                     vector = True;
-                    while (vector && fread(&vector_hdr, sizeof(vector_hdr), 1, f)) {
+                    while (vector && fread(&vector_hdr, sizeof(vector_hdr), 1, fn)) {
                         count = ntohs(vector_hdr.next_vector);
                         if (count && !(count&1)) {
                             line_x = ntohs(vector_hdr.line_start_x);
@@ -8589,7 +8589,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                 destination_pixmap);
 
                             for (count -= sizeof(vector_hdr); count > 0; count -= sizeof(vector_point)) {
-                                fread(&vector_point, sizeof(vector_point), 1, f);
+                                fread(&vector_point, sizeof(vector_point), 1, fn);
                                 if (debug_level & 512)
                                     printf("\tnext x %d, next y %d\n",
                                         vector_point.next_x,
@@ -8646,7 +8646,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                     label_mag *= 4;
  
                     label = True;
-                    while (label && fread(&label_record, sizeof(label_record), 1, f)) {
+                    while (label && fread(&label_record,
+sizeof(label_record), 1, fn)) {
                         count = ntohs(label_record.next_label);
                         if (count && !(count&1)) {
                             line_x = ntohs(vector_hdr.line_start_x);
@@ -8755,7 +8756,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                 }   // End of while
                 }
             }
-            fclose(f);
+            fclose(fn);
         if (debug_level & 1)
             printf("Closed file\n");
     }
