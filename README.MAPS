@@ -230,24 +230,24 @@ Getting Maps and other Data Files for Xastir:
         1.5.1.3  North_Bounding_Coordinate:  48.000000 
         1.5.1.4  South_Bounding_Coordinate:  47.000000 
 
-     Notes about DRG-Enhanced (DRG-E) files:
-     * The DRG-E files will draw over the correct spots if you remove
-     the .fgd file, but will overflow their boundaries and
+      Notes about DRG-Enhanced (DRG-E) files:
+      * The DRG-E files will draw over the correct spots if you remove
+      the .fgd file, but will overflow their boundaries and
 
-     * The DRG-E files will draw over the correct spots with decent
-     boundary trimming (as far as I can tell, which isn't very far:
-     correct me!) if you use a .fgd file taken from 'real' DRG files
-     from USGS.
+      * The DRG-E files will draw over the correct spots with decent
+      boundary trimming (as far as I can tell, which isn't very far:
+      correct me!) if you use a .fgd file taken from 'real' DRG files
+      from USGS.
 
-     Basically: get rid of the .fgd file from the DRG-E!!
+      Basically: get rid of the .fgd file from the DRG-E!!
 
-     Be wary of DRG-E or DOQQ files that are compressed with MrSID
-     compression.  That is a proprietary compression format for
-     which we do not have access to the decoding algorithm.  We
-     cannot use those from within Xastir.  There's possible good news
-     lurking on the horizon though:  LizardTech has mentioned on the
-     gdal-dev mailing list that they might be supporting open-source
-     with a driver for gdal sometime soon.
+      Be wary of DRG-E or DOQQ files that are compressed with MrSID
+      compression.  That is a proprietary compression format for
+      which we do not have access to the decoding algorithm.  We
+      cannot use those from within Xastir.  There's possible good news
+      lurking on the horizon though:  LizardTech has mentioned on the
+      gdal-dev mailing list that they might be supporting open-source
+      with a driver for gdal sometime soon.
 
      SDTS format maps:
 
@@ -328,10 +328,9 @@ Getting Maps and other Data Files for Xastir:
       convert them from State Plane to Lat/Long projection using
       instructions later in this document.
 
-      Also get the usgs_24kgrid.zip file from gisdatadepot.com.  This
-      file provides a grid of all of the 7.5' maps and their names
-      for the U.S.  Check for it under the "Index Grids" link on
-      their web pages.
+      Also, get the usgs_24kgrid.zip file from
+      http://data.geocomm.com/quadindex/.  This file provides a grid of all of
+      the 7.5' maps and their names for the U.S.
 
 ***** A nice world map is available at http://aprsworld.net/gisdata/world/
       thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
