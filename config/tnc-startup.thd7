@@ -57,6 +57,7 @@ MRPt on
 PACLen 128
 PASSALL off
 HBAUD 1200
+TXDELAY 25
 #
 #--------------------------------------------------
 # Initialize the GPS
