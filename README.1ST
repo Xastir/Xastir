@@ -1403,16 +1403,23 @@ WINDOWS/CYGWIN NOTES:
 
      then again run "make install" to complete the install.
 
-     NOTE:  If using proj-4.4.6 or higher, it should install right out of
-     the box with no problems.
+     NOTE:  If using proj-4.4.6 or higher, it may install right out of
+     the box with no problems.  Needs further testing.
 
      Adding libgeotiff to Cygwin (libgeotiff-1.1.5):
      -----------------------------------------------
 
-     So far it appears to compile fine until it gets to the "ld -shared"
-     step.  At that point it bombs out with a hundred or so "undefined
-     reference" messages.  Perhaps a new link line would solve that?  Line
-     at which the compile fails:
+     You may get the "undefined reference impure_ptr" messages (just like
+     with Shapelib above).  If so, edit the file /usr/include/sys/reent.h to
+     remove the word "extern" from this line:
+
+        extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
+
+
+     I've had it compile all the way through, and I've had it bomb out at
+     the fine until it gets to the "ld -shared" step.  At that point it
+     bombs out with a hundred or so "undefined reference" messages.  Line
+     at which the compile might fail:
 
      ld -shared xtiff.o geo_free.o geo_get.o geo_names.o geo_new.o
      geo_print.o geo_set.o geo_tiffp.o geo_write.o geo_trans.o
@@ -1422,15 +1429,14 @@ WINDOWS/CYGWIN NOTES:
      To fix this, edit the Makefile to add "-lc" just before the "-o" on
      that line and try again.
 
-     At the "make install" step, it'll fail to
-     install listgeo and geotifcp because they have a .exe extension on
-     Cygwin, which the install script doesn't know about.  Edit the Makefile
-     to add a ".exe" after those two names and try again.  It should
-     complete ok.
+     At the "make install" step it may fail to install listgeo and geotifcp
+     because they have a .exe extension on Cygwin, which the install script
+     doesn't know about.  Edit the Makefile to add a ".exe" after those two
+     names and try again.  It should complete ok.
 
      Go to the Xastir source directory, run "configure", "make", and
      "make install" again.  It should find libtiff/libproj/libgeotiff at the
-     configure stage and compile in support for them.
+     configure stage and compile in support for geotiff maps.
 
      -------------------------
 
