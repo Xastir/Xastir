@@ -22,6 +22,12 @@
  * Look at the README for more information on the program.
  */
 
+
+// Used only for special debugging of message/station expiration.
+// Leave commented out for normal operation.
+//#define EXPIRE_DEBUG
+
+
 #include "config.h"
 #include "snprintf.h"
 
@@ -1351,12 +1357,20 @@ void check_message_remove(void) {       // called in timing loop
 
     // Time to check for old messages again?  (Currently every ten
     // minutes)
+#ifdef EXPIRE_DEBUG
+    if ( last_message_remove < (sec_now() - 15) ) {
+#else // EXPIRE_DEBUG
     if ( last_message_remove < (sec_now() - MESSAGE_REMOVE_CYCLE) ) {
+#endif
 
         // Yes it is.  Mark all messages that are older than
         // sec_remove with the RECORD_NOTACTIVE flag.  This will
         // mark them for re-use.
+#ifdef EXPIRE_DEBUG
+        mdata_delete_type('\0', sec_now()-15);
+#else   // EXPIRE_DEBUG
         mdata_delete_type('\0', sec_now()-sec_remove);
+#endif
 
         last_message_remove = sec_now();
     }
@@ -7645,7 +7659,9 @@ void station_del_ptr(DataRow *p_name) {
                 p_name->call_sign);
         }
 
-        //fprintf(stderr,"Removing: %s heard %d seconds ago\n",p_name->call_sign, (int)(sec_now() - p_name->sec_heard));
+#ifdef EXPIRE_DEBUG
+        fprintf(stderr,"Removing: %s heard %d seconds ago\n",p_name->call_sign, (int)(sec_now() - p_name->sec_heard));
+#endif
 
         (void)delete_trail(p_name);     // Free track storage if it exists.
         (void)delete_weather(p_name);   // free weather memory, if allocated
@@ -7711,7 +7727,6 @@ void check_station_remove(void) {
     time_t t_rem;
     int done = 0;
 
-//#define EXPIRE_DEBUG
 
     // Only run through this routine ever STATION_REMOVE_CYCLE
     // seconds (currently every five minutes)
