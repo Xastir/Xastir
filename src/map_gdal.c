@@ -74,14 +74,14 @@
 
 #ifdef HAVE_LIBGDAL
 
-#warning
-#warning
-#warning GDAL/OGR library support is not fully implemented yet!
-#warning Preliminary TIGER/Line, Shapefile, mid/mif/tab (MapInfo),
-#warning and SDTS support is functional, including on-the-fly
-#warning coordinate conversion for both indexing and drawing.
-#warning
-#warning
+//#warning
+//#warning
+//#warning GDAL/OGR library support is not fully implemented yet!
+//#warning Preliminary TIGER/Line, Shapefile, mid/mif/tab (MapInfo),
+//#warning and SDTS support is functional, including on-the-fly
+//#warning coordinate conversion for both indexing and drawing.
+//#warning
+//#warning
 
 // Getting rid of stupid compiler warnings in GDAL
 #define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
@@ -453,8 +453,10 @@ void Draw_Points(OGRGeometryH geometryH,
             if (sub_object_num) {
                 // We found geometries below this.  Recurse.
                 if (level < 5) {
-fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
-                    Draw_Points(child_geometryH, level+1, transformH);
+//fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
+                    Draw_Points(child_geometryH,
+                        level+1,
+                        transformH);
                 }
             }
         }
@@ -540,7 +542,8 @@ fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
 //
 void Draw_Lines(OGRGeometryH geometryH,
         int level,
-        OGRCoordinateTransformationH transformH) {
+        OGRCoordinateTransformationH transformH,
+        int fast_extents) {
  
     int kk;
     int object_num = 0;
@@ -578,8 +581,11 @@ void Draw_Lines(OGRGeometryH geometryH,
             if (sub_object_num) {
                 // We found geometries below this.  Recurse.
                 if (level < 5) {
-fprintf(stderr, "DrawLines: Recursing level %d\n", level);
-                    Draw_Lines(child_geometryH, level+1, transformH);
+//fprintf(stderr, "DrawLines: Recursing level %d\n", level);
+                    Draw_Lines(child_geometryH,
+                        level+1,
+                        transformH,
+                        fast_extents);
                 }
             }
         }
@@ -589,35 +595,39 @@ fprintf(stderr, "DrawLines: Recursing level %d\n", level);
         OGREnvelope envelopeH;
 
 
-        // Get the extents for this Polyline
-        OGR_G_GetEnvelope(geometryH, &envelopeH);
+        if (fast_extents) {
 
-// Faster here might be to create a geometryH for our view, then
-// convert it to whatever coordinate system the map is using and
-// calling the OGR_G_Intersect() function.  Probably won't work for
-// projected coordinate systems, but should work for geograhic.
+            // Get the extents for this Polyline
+            OGR_G_GetEnvelope(geometryH, &envelopeH);
 
-        // Convert them to WGS84/Geographic coordinate system
-        if (transformH) {
-            // Convert to WGS84 coordinates.
-            if (!OCTTransform(transformH, 2, &envelopeH.MinX, &envelopeH.MinY, NULL)) {
-                fprintf(stderr,
-                    "Couldn't convert point to WGS84\n");
+            // Convert them to WGS84/Geographic coordinate system
+            if (transformH) {
+                // Convert to WGS84 coordinates.
+                if (!OCTTransform(transformH, 2, &envelopeH.MinX, &envelopeH.MinY, NULL)) {
+                    fprintf(stderr,
+                        "Couldn't convert point to WGS84\n");
+                }
             }
-        }
 
-        if (map_visible_lat_lon( envelopeH.MinY,    // bottom
-                envelopeH.MaxY, // top
-                envelopeH.MinX, // left
-                envelopeH.MaxX, // right
-                NULL)) {
-//            fprintf(stderr, "Line is visible\n");
-        }
-        else {
-//            fprintf(stderr, "Line is NOT visible\n");
-            return;
-        }
+            if (map_visible_lat_lon( envelopeH.MinY,    // bottom
+                    envelopeH.MaxY, // top
+                    envelopeH.MinX, // left
+                    envelopeH.MaxX, // right
+                    NULL)) {
+                //fprintf(stderr, "Line is visible\n");
+            }
+            else {
+                //fprintf(stderr, "Line is NOT visible\n");
+                return; // Exit early
+            }
 
+            // If we made it this far, the feature is within our
+            // view.
+        }
+        else {  // Fast extents not available.  Since draw_vector()
+                // checks before drawing, we'll just throw vectors
+                // at it.  It'll draw what it needs to.
+        }
 
         points = OGR_G_GetPointCount(geometryH);
 //        fprintf(stderr,"  Number of elements: %d\n",points);
@@ -711,7 +721,9 @@ fprintf(stderr, "DrawLines: Recursing level %d\n", level);
 //
 void Draw_Polygons(OGRGeometryH geometryH,
         int level,
-        OGRCoordinateTransformationH transformH) {
+        OGRCoordinateTransformationH transformH,
+        int draw_filled,
+        int fast_extents) {
  
     int kk;
     int object_num = 0;
@@ -735,7 +747,6 @@ void Draw_Polygons(OGRGeometryH geometryH,
         OGRGeometryH child_geometryH;
         int sub_object_num;
 
-
         // This may be a ring, or another object with rings.
         child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
 
@@ -745,7 +756,11 @@ void Draw_Polygons(OGRGeometryH geometryH,
             // We found geometries below this.  Recurse.
             if (level < 5) {
 //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
-                Draw_Polygons(child_geometryH, level+1, transformH);
+                Draw_Polygons(child_geometryH,
+                    level+1,
+                    transformH,
+                    draw_filled,
+                    fast_extents);
             }
         }
 
@@ -754,28 +769,39 @@ void Draw_Polygons(OGRGeometryH geometryH,
             OGREnvelope envelopeH;
 
 
-            // Get the extents for this Polygon
-            OGR_G_GetEnvelope(geometryH, &envelopeH);
+            if (fast_extents) {
 
-            // Convert them to WGS84/Geographic coordinate system
-            if (transformH) {
-                // Convert to WGS84 coordinates.
-                if (!OCTTransform(transformH, 2, &envelopeH.MinX, &envelopeH.MinY, NULL)) {
-                    fprintf(stderr,
-                        "Couldn't convert to WGS84\n");
+                // Get the extents for this Polygon
+                OGR_G_GetEnvelope(geometryH, &envelopeH);
+
+                // Convert them to WGS84/Geographic coordinate system
+                if (transformH) {
+                    // Convert to WGS84 coordinates.
+                    if (!OCTTransform(transformH, 2, &envelopeH.MinX, &envelopeH.MinY, NULL)) {
+                        fprintf(stderr,
+                            "Couldn't convert to WGS84\n");
+                    }
                 }
-            }
 
-            if (map_visible_lat_lon( envelopeH.MinY,    // bottom
-                    envelopeH.MaxY, // top
-                    envelopeH.MinX, // left
-                    envelopeH.MaxX, // right
-                    NULL)) {
-//                fprintf(stderr, "Polygon is visible\n");
+                if (map_visible_lat_lon( envelopeH.MinY,    // bottom
+                        envelopeH.MaxY, // top
+                        envelopeH.MinX, // left
+                        envelopeH.MaxX, // right
+                        NULL)) {
+    //                fprintf(stderr, "Polygon is visible\n");
+                }
+                else {
+    //                fprintf(stderr, "Polygon is NOT visible\n");
+                    return;
+                }
+
+                // If we made it this far, the feature is within our
+                // view.
             }
-            else {
-//                fprintf(stderr, "Polygon is NOT visible\n");
-                return;
+            else {  // Fast extents not available.  Since
+                    // draw_vector() checks before drawing, we'll
+                    // just throw vectors at it.  It'll draw what it
+                    // needs to.
             }
 
             polygon_points = OGR_G_GetPointCount(child_geometryH);
@@ -861,15 +887,27 @@ void Draw_Polygons(OGRGeometryH geometryH,
 //
 //
 // TODO:
-// Implement labels.
-// Allow user to select layers to draw.
-// Implement filled polygons.
-// Implement fill/hole polygon detection, and draw them
-// appropriately (Shapefiles only?).
-// Implement weather alert tinted polygons.
-// Implement proper map preferences drawing:  Colors, line widths,
-// layering, filled, choose label field, label fonts/placement.
-// Speed things up.
+// *) Implement labels.
+// *) Allow user to select layers to draw/ignore.
+// *) Implement filled polygons.
+// *) Implement fill/hole polygon detection, and draw them
+//    appropriately (Shapefiles only?).
+// *) Implement weather alert tinted polygons, draw them to the
+//    correct pixmap.
+// *) Implement proper map preferences drawing:  Colors, line widths,
+//    layering, filled, choose label field, label fonts/placement.
+// *) Speed things up in any way possible.
+// *) Check DATUM as well as GEOGCS.  If it's nad83 or wgs84, don't
+//    transform.  We currently only check the GEOGCS field.  Have
+//    seen some .prj files that don't contain a GEOGCS but do have a
+//    DATUM field we could parse.
+// *) Fast Extents:  Pass a variable to the draw functions that tell
+//    whether we can do fast extents.  If not, don't do them in the
+//    lower-level functions.  Instead, compute our own extents after
+//    we have the points in an array.
+// *) Figure out why SDTS hypsography (contour lines) on top of
+//    terraserver gives strange results when zooming/panning
+//    sometimes.  Restarting Xastir cleans up the image.
 //
 // 
 void draw_ogr_map(Widget w,
@@ -909,9 +947,9 @@ void draw_ogr_map(Widget w,
         fprintf(stderr,"Opening datasource\n");
 
 //
-// WE7U:  One of my systems segfaults here if a .prj file is present
-// with a shapefile.  Another system, with newer
-// OS/libtiff/libgeotff, works fine.
+// WE7U:  One of my computers segfaults here if a .prj file is
+// present with a shapefile.  Another system with newer
+// Linux/libtiff/libgeotiff works fine.
 //
     // Open data source
     datasourceH = OGROpen(full_filename,
@@ -928,6 +966,18 @@ void draw_ogr_map(Widget w,
     if (debug_level & 16)
         fprintf(stderr,"Opened datasource\n");
 
+
+//(void)XSetFunction();
+(void)XSetFillStyle(XtDisplay(w), gc, FillSolid);
+
+
+    ptr = OGR_Dr_GetName(driver);
+    fprintf(stderr,"%s: ", ptr);
+
+    // Get name/path.  Less than useful since we should already know
+    // this.
+    ptr = OGR_DS_GetName(datasourceH);
+    fprintf(stderr,"%s\n", ptr);
 
     // Set up coordinate translation:  We need it for indexing and
     // drawing so we do it first and keep a pointer to our
@@ -975,7 +1025,7 @@ void draw_ogr_map(Widget w,
         }
         else {
 
-            fprintf(stderr,"Couldn't get spatial reference\n");
+            fprintf(stderr,"  Couldn't get spatial reference\n");
 
             // For this case, assume that it is WGS84/geographic,
             // and attempt to index as-is.  If the numbers don't
@@ -999,7 +1049,7 @@ void draw_ogr_map(Widget w,
 
             transformH = NULL;  // No transform needed
             fprintf(stderr,
-                "Geographic coordinate system, %s\n",
+                "  Geographic coordinate system, %s\n",
                 geogcs);
         }
         else {  // We have coordinates but they're in the wrong
@@ -1008,19 +1058,19 @@ void draw_ogr_map(Widget w,
 
             if (geographic) {
                 fprintf(stderr,
-                    "Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
+                    "  Found geographic/wrong datum: %s.  Converting to wgs84 datum\n",
                     geogcs);
             }
             else if (projected) {
                 fprintf(stderr,
-                    "Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
+                    "  Found projected coordinates: %s.  Converting to geographic/wgs84 datum\n",
                     geogcs);
             }
             else if (local) {
                 // Convert to geographic/WGS84?  How?
 
                 fprintf(stderr,
-                    "Found local coordinate system.  Returning\n");
+                    "  Found local coordinate system.  Returning\n");
 
                 // Close data source
                 if (datasourceH != NULL) {
@@ -1355,13 +1405,6 @@ void draw_ogr_map(Widget w,
     // "TIGER"
     // "VRT"
     //
-    ptr = OGR_Dr_GetName(driver);
-    fprintf(stderr,"%s: ", ptr);
-
-    // Get name/path.  Less than useful since we should already know
-    // this.
-    ptr = OGR_DS_GetName(datasourceH);
-    fprintf(stderr,"%s\n", ptr);
 
 
     // If we're going to write, we need to test the capability using
@@ -1369,11 +1412,6 @@ void draw_ogr_map(Widget w,
     // OGR_Dr_TestCapability(); // Does Driver have write capability?
     // OGR_DS_TestCapability(); // Can we create new layers?
 
-
-    // Hard-coded line attributes, currently used for the entire
-    // drawing process.
-    (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
-    (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 
 // Optimization:  Get the envelope for each layer if it's not an
 // expensive operation.  Skip the layer if it's completely outside
@@ -1392,7 +1430,8 @@ void draw_ogr_map(Widget w,
         int extents_found = 0;
         char geometry_type_name[50] = "";
         int geometry_type = -1;
-
+        int fast_extents = 0;
+ 
 
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
@@ -1459,25 +1498,26 @@ void draw_ogr_map(Widget w,
         //   spatial filter is installed after which it will return FALSE.
         //   NOTE: Shapefile reports this as TRUE.
         //
-        fprintf(stderr,"  Layer %02d: ", i);
-        if (OGR_L_TestCapability(layer, OLCRandomRead)) {
-            fprintf(stderr, "Random Read, ");
-        }
-        if (OGR_L_TestCapability(layer, OLCFastSpatialFilter)) {
-            fprintf(stderr,
-                "Fast Spatial Filter, ");
-        }
-        if (OGR_L_TestCapability(layer, OLCFastFeatureCount)) {
-            fprintf(stderr,
-                "Fast Feature Count, ");
-        }
-        if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
-            fprintf(stderr,
-                "Fast Get Extent, ");
-
-// We should save this away and decide whether to compute extents in
-// later code based on this.
-
+        if (i == 0) {   // First layer
+            fprintf(stderr, "  ");
+            if (OGR_L_TestCapability(layer, OLCRandomRead)) {
+                fprintf(stderr, "Random Read, ");
+            }
+            if (OGR_L_TestCapability(layer, OLCFastSpatialFilter)) {
+                fprintf(stderr,
+                    "Fast Spatial Filter, ");
+            }
+            if (OGR_L_TestCapability(layer, OLCFastFeatureCount)) {
+                fprintf(stderr,
+                    "Fast Feature Count, ");
+            }
+            if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
+                fprintf(stderr,
+                    "Fast Get Extent, ");
+                // Save this away and decide whether to
+                // request/compute extents based on this.
+                fast_extents = 1;
+            }
         }
 
 
@@ -1488,39 +1528,48 @@ void draw_ogr_map(Widget w,
 
 
             if (OSRIsGeographic(map_spatialH)) {
-                fprintf(stderr,"Geographic Coord, ");
+                if (i == 0)
+                    fprintf(stderr,"  Geographic Coord, ");
                 geographic++;
             }
             else if (OSRIsProjected(map_spatialH)) {
-                fprintf(stderr,"Projected Coord, ");
+                if (i == 0)
+                    fprintf(stderr,"  Projected Coord, ");
                 projected++;
             }
             else {
-                fprintf(stderr,"Local Coord, ");
+                if (i == 0)
+                    fprintf(stderr,"  Local Coord, ");
             }
 
             // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
             //
             temp = OSRGetAttrValue(map_spatialH, "DATUM", 0);
-            fprintf(stderr,"DATUM: %s, ", temp);
+            if (i == 0)
+                    fprintf(stderr,"DATUM: %s, ", temp);
 
             if (projected) {
                 temp = OSRGetAttrValue(map_spatialH, "PROJCS", 0);
-                fprintf(stderr,"PROJCS: %s, ", temp);
+                if (i == 0)
+                    fprintf(stderr,"PROJCS: %s, ", temp);
  
                 temp = OSRGetAttrValue(map_spatialH, "PROJECTION", 0);
-                fprintf(stderr,"PROJECTION: %s, ", temp);
+                if (i == 0)
+                    fprintf(stderr,"PROJECTION: %s, ", temp);
             }
 
             temp = OSRGetAttrValue(map_spatialH, "GEOGCS", 0);
-            fprintf(stderr,"GEOGCS: %s, ", temp);
+            if (i == 0)
+                    fprintf(stderr,"GEOGCS: %s, ", temp);
 
             temp = OSRGetAttrValue(map_spatialH, "SPHEROID", 0);
-            fprintf(stderr,"SPHEROID: %s, ", temp);
+            if (i == 0)
+                    fprintf(stderr,"SPHEROID: %s, ", temp);
 
         }
         else {
-            fprintf(stderr,"No Spatial Info, ");
+            if (i == 0)
+                    fprintf(stderr,"  No Spatial Info, ");
             // Assume geographic/WGS84 unless the coordinates go
             // outside the range of lat/long, in which case, exit.
         }
@@ -1533,10 +1582,12 @@ void draw_ogr_map(Widget w,
         if (OGR_L_GetExtent(layer, &psExtent, FALSE) != OGRERR_FAILURE) {
             // We have extents.  Check whether any part of the layer
             // is within our viewport.
-            fprintf(stderr, "Extents obtained.");
+            if (i == 0)
+                    fprintf(stderr, "Extents obtained.");
             extents_found++;
         }
-        fprintf(stderr, "\n");
+        if (i == 0)
+            fprintf(stderr, "\n");
 
 /*
         if (extents_found) {
@@ -1619,7 +1670,15 @@ void draw_ogr_map(Widget w,
             geometryH = OGR_F_GetGeometryRef(featureH);
             if (geometryH == NULL) {
                 OGR_F_Destroy( featureH );
-                continue;
+//                if (strlen(geometry_type_name) == 0) {
+                    fprintf(stderr,"  Layer %02d:   - No geometry info -\n", i);
+//                    geometry_type_name[0] = ' ';
+//                    geometry_type_name[1] = '\0';
+//                }
+// Break out of this loop.  We don't know how to draw anything but
+// geometry features yet.  Change this when we start drawing labels.
+                break;
+//                continue;
             }
 
 
@@ -1661,6 +1720,7 @@ void draw_ogr_map(Widget w,
                     "%s",
                     OGR_G_GetGeometryName(geometryH));
                 geometry_type = OGR_G_GetGeometryType(geometryH);
+                fprintf(stderr,"  Layer %02d: ", i); 
                 fprintf(stderr,"  Type: %d, %s\n",  
                     geometry_type,
                     geometry_type_name);
@@ -1690,7 +1750,14 @@ void draw_ogr_map(Widget w,
                 case 0x80000001:    // Point25D
                 case 0x80000004:    // MultiPoint25D
 
-                    Draw_Points(geometryH, 1, transformH);
+// Hard-coded drawing attributes
+(void)XSetLineAttributes (XtDisplay (w), gc, 4, LineSolid, CapButt,JoinMiter);
+//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+
+                    Draw_Points(geometryH,
+                        1,
+                        transformH);
                     break;
 
                 case 2:             // LineString (polyline)
@@ -1698,7 +1765,15 @@ void draw_ogr_map(Widget w,
                 case 0x80000002:    // LineString25D
                 case 0x80000005:    // MultiLineString25D
 
-                    Draw_Lines(geometryH, 1, transformH);
+// Hard-coded drawing attributes
+(void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+
+                    Draw_Lines(geometryH,
+                        1,
+                        transformH,
+                        fast_extents);
                     break;
 
                 case 3:             // Polygon
@@ -1706,7 +1781,17 @@ void draw_ogr_map(Widget w,
                 case 0x80000003:    // Polygon25D
                 case 0x80000006:    // MultiPolygon25D
 
-                    Draw_Polygons(geometryH, 1, transformH);
+// Hard-coded drawing attributes
+(void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
+//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+
+                    Draw_Polygons(geometryH,
+                        1,
+                        transformH,
+                        draw_filled,
+                        fast_extents);
                     break;
 
                 case 7:             // GeometryCollection
