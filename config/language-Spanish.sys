@@ -266,14 +266,14 @@ POPUPMA021|Movimiento||
 POPUPMA022|RastréeMe||
 POPUPMA023|Modificadores Encontrado!||
 POPUPMA024|Por favor apague OFF CapsLock/NumLock/ScrollLock/otro modificadores||
-POPUPMA026|Center & Zoom||
-POPUPMA027|  Latitude||
-POPUPMA028| Longitude||
-POPUPMA029|Draw CAD Objects||
-POPUPMA030|Start Draw Mode||
-POPUPMA031|Close Polygon||
-POPUPMA032|Erase All CAD Polygons||
-POPUPMA033|End Draw Mode||
+POPUPMA026|Centre & Enfoque||
+POPUPMA027|  Latitud||
+POPUPMA028| Longitud||
+POPUPMA029|Dibuje Objetos CAD||
+POPUPMA030|Empiece el Modo Dibujar||
+POPUPMA031|Cierre el Polígono||
+POPUPMA032|Borre Todos los Polígonos CAD||
+POPUPMA033|Termine el Modo Dibujar||
 #
 # Menú de Estados de la líneas de Etiquetas
 BBARZM0001|Foco %s||
@@ -382,8 +382,8 @@ WPUPCFTM06|Chequeo Intérvalo del GPS (segundos)||
 WPUPCFTM07|Borrar Tiempo de la Estación (días)||
 WPUPCFTM08|Descanso Conteo-Muerto (minutos)||
 WPUPCFTM09|Serial Inter-Char Delay (ms)||
-WPUPCFTM10|New Track Time (min)||
-WPUPCFTM11|New Track Interval (degrees)||
+WPUPCFTM10|Nuevo Tiempo Rastro (min)||
+WPUPCFTM11|Nuevo Interval Rastro (grados)||
 WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
 #
 # Configurar Sistema de Coordenada"
@@ -394,7 +394,7 @@ WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
 WPUPCFC006|UTM|U|
 WPUPCFC007|MGRS||
-WPUPCFC008|UTM w/special zones||
+WPUPCFC008|UTM con zonas especiales||
 #
 # Configurar GPS
 WPUPCFG001|Configurar GPS||
@@ -1027,7 +1027,7 @@ SMARTB004|Alta Velocidad (kph):||
 SMARTB005|Baja Proporción (mins):||
 SMARTB006|Baja Velocidad (mph):||
 SMARTB007|Baja Velocidad (kph):||
-SMARTB008|Mínima Vuelta (deg):||
+SMARTB008|Mínima Vuelta (grados):||
 SMARTB009|Vuelta de declive:||
 SMARTB010|Tiempo de Espera (secs):||
 SMARTB011|Activar Baliza Inteligente(tm)||
@@ -1039,11 +1039,11 @@ GAMMA002|Corrección Gamma||
 # Map labels font Dialog
 MAPFONT001|Change Map Labels Font||
 MAPFONT002|Map Labels Font||
-MAPFONT003|Tiny||
-MAPFONT004|Small||
-MAPFONT005|Medium||
-MAPFONT006|Large||
-MAPFONT007|Huge||
+MAPFONT003|Minúsculo||
+MAPFONT004|Pequeño||
+MAPFONT005|Medio||
+MAPFONT006|Grande||
+MAPFONT007|Enorme||
 #
 # Distancia/Orientación en línea de estado
 PULDNDB001|Estado de Distancia/Orientación||
