@@ -347,7 +347,12 @@ Add this to your ~/.profile file:
 
     export MAGICK_HOME=/usr
 
-Now on-line Tigermaps should work for you!
+Now on-line Tigermaps should work for you.
+
+If you create a file called "terraserver.geo" in the
+/usr/local/xastir/maps directory, containing the single line
+"TERRASERVER", and select it with the Map Chooser, you should see
+satellite images on the map screen.
 
 Once I start up X-windows, I have to type this in a shell and start
 Xastir from that shell in order to make all of the paths known:
@@ -362,17 +367,59 @@ better way.
 
 
 
+OPTIONAL:  Install geoTIFF support:
+-----------------------------------
+Allows using USGS DRG topo maps or other types of geoTIFF
+maps/images and has the ability to tile smaller maps into a larger
+contiguous map of an area:
+
+For geoTIFF support (such as USGS DRG topo maps) you need:
+    libproj:
+        http://www.remotesensing.org/proj/
+     and for datum translations:
+        ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
+    libgeotiff:
+        http://www.remotesensing.org/geotiff/geotiff.html
+        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.1.5.tar.gz
+
+    Please note that the order of installation for these libraries is
+    critical.  Follow the instructions below carefully.
 
 
-The rest of this file still needs more work, but the basic info is
-there, and geotiff's _do_ work with Cygwin/Xastir.
+
+Adding libproj to Cygwin (tested with proj-4.4.6):
+--------------------------------------------------
+
+NOTE: You must install libproj BEFORE compiling libgeotiff, because
+libgeotiff uses libproj to do the datum translations. If you install
+libgeotiff first, datum translations won't work.
+
+The proj-nad27-1.1.tar.gz must be decompressed in the nad
+subdirectory of the proj distribution directory before you run
+configure.
+    
+    cd ~/src/libproj    
+    tar xzvf proj-4.4.6.tar.gz
+    cd proj-4.4.6/nad
+    tar xzvf ../../proj-nad27-1.1.tar.gz
+    cd ..
+    ./configure
+    make
+    make install
 
 
 
+Adding libgeotiff (tested with libgeotiff-1.1.5):
+-------------------------------------------------
 
+    tar xzvf libgeotiff-1.1.5.tar.gz
+    cd libgeotiff-1.1.5
+    ./configure
+    make
+    make install
 
-OPTIONAL:  Adding libgeotiff (tested with libgeotiff-1.1.5):
-------------------------------------------------------------
+If you must re-run "configure" for any of these libraries, remember
+to delete "config.status" and "config.cache" files first.
 
 You may get the "undefined reference impure_ptr" messages (just like
 with Shapelib above).  If so, edit the file /usr/include/sys/reent.h
@@ -397,135 +444,16 @@ compile might fail:
 To fix this, edit the Makefile to add "-lc" to the end of the LIBS
 line and run "make" again, then "make install".
 
-Go to the Xastir source directory, run "configure", "make", and
-"make install" again.  It should find libtiff/libproj/libgeotiff at
-the configure stage and compile in support for geotiff maps.
+Set up Xastir to use the new geotiff libraries:
 
+    cd ~/src/xastir
+    ./configure
+    make
+    make install
 
+It should find libtiff/libproj/libgeotiff at the configure stage and
+compile in support for geotiff maps.  You should now be able to use
+USGS geoTIFF topo maps, and see them tiled together in the map
+window into a continuous map.
 
-
-
------------------------------------------------
-For geoTIFF support (such as USGS DRG topo maps) you need:
-    libproj:
-        http://www.remotesensing.org/proj/
-     and for datum translations:
-        ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
-    libgeotiff:
-        http://www.remotesensing.org/geotiff/geotiff.html
-        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.1.5.tar.gz
-    Please note that the order of installation for these libraries is
-    critical.  Follow the instructions below carefully.
-
-   3. OPTIONAL:  Install geoTIFF support.  Allows using USGS DRG topo maps or
-     other types of geoTIFF maps/images and has the ability to tile smaller
-     maps into a larger contiguous map of an area:
-
-
-       3a.  Check/Edit your startup files:
-       -----------------------------
-       Check that /usr/local/lib, /usr/lib, and /usr/X11R6/lib are
-       all listed in /etc/ld.so.conf, and run ldconfig to re-create
-       the system's cache file. If you don't have permission to
-       edit this file:
-            Edit ~/.bashrc, ~/.bash_profile, .cshrc, or
-            .login and add:
-
-            export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/usr/X11R6/lib
-
-       This will let the loader find the shared libraries when it tries to
-       load Xastir into memory.  Check that you aren't already defining
-       LD_LIBRARY_PATH somewhere else.  If so, just add the paths above to
-       it.  Make sure this environment variable is defined in the current
-       shell you're using to compile Xastir.  Note that if you're running
-       Xastir SUID root, the LD_LIBRARY_PATH variable is ignored.
-
-
-       3b. Install libproj:
-       --------------------
-Adding libproj to Cygwin (tested with proj-4.4.6):
-
-     NOTE: You must install libproj BEFORE compiling libgeotiff, because
-       libgeotiff uses libproj to do the datum translations. If you install
-       libgeotiff first, datum translations won't work.
-
-       The proj-nad27-1.1.tar.gz must be decompressed in the nad subdirectory
-       of the proj distribution directory before you run configure.
-        
-        tar xzvf proj-4.4.5.tar.gz (or newer)
-        cd proj-4.4.5/nad
-        tar xzvf ../../proj-nad27-1.1.tar.gz (or newer)
-        cd ..
-        ./configure
-        make
-        su (root)
-        make install (as root)
-        exit (from root)
-        libproj should now be installed in:
-
-            /usr/local/include/
-            /usr/local/lib/
-            /usr/local/bin/
-            /usr/local/share/proj/
-
-       You may need to do this (as root) if the "make install" portion fails
-       because it can't find "ginstall":
-
-       cd /usr/bin
-       ln -s install ginstall
-
-       Then retry the "make install" portion above.
-
-
-       3c. Upgrade libtiff if needed:
-       -----------------------------
-       The best way to install libtiff is to get it from the ftp site
-       for your Linux distribution.  You must have libtiff 3.5.5 or
-       newer for libgeotiff to compile and run correctly.
-
-       If you are compling from source, you must use "make install_private",
-       because the private include files are required for libgeotiff to compile
-       and work correctly.
-
-       If you upgrade libtiff, check that programs like XV, ImageMagick, and
-       the Gimp still run (if you have these programs installed).  Graphics
-       programs that read/write TIFF format depend on libtiff.
-
-
-       3d. Install libgeotiff:
-       -----------------------
-
-     NOTE: There's at least one memory leak in this library, versions
-       1.1.3 through 1.1.4, which can be patched in the geo_trans.c
-       file.  A patched version of the geo_trans.c file for
-       libgeotiff-1.1.3 is available here:
-
-       ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/geo_trans.diff
-
-       Apply the patch to geo_trans.c BEFORE compiling libgeotiff.
-       The patch might not apply to anything later than 1.1.3.
-       Contact archer@eskimo.com if you have troubles with this patch.
-       So far libgeotiff-1.1.5 release candidate appears to be
-       better in this regard.  Use it if available.
-
-        tar xzvf libgeotiff-1.1.4.tar.gz (or newer)
-        cd libgeotiff-1.1.4
-        ./configure
-     NOTE: You may need to snag one file from the libtiff source distribution
-       and place it into libgeotiff-1.1.4/libtiff_private directory before
-       libgeotiff will compile:  "tiffconf.h".
-        make
-        su (root)
-        make install (as root)
-        /sbin/ldconfig (tells the loader about the new libraries)
-        exit (from root)
-       libgeotiff should now be installed in:
-
-            /usr/local/include/
-            /usr/local/lib/
-            /usr/local/share/epsg_csv/
-            /usr/local/bin/
-
-       If you must re-run "configure" for any of these libraries, remember to 
-       delete "config.status" and "config.cache" files first.
 

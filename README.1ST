@@ -418,7 +418,7 @@ First Time Install:
 
      The easiest way to install this is with a package from your linux
      distribution's CD or ftp site. If you install from such a package, make
-     sure the header files are installed. These are often in a seperate package
+     sure the header files are installed. These are often in a separate package
      called ImageMagick-devel or similar.
 
 
