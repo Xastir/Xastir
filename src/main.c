@@ -4168,6 +4168,8 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
 // chose map label font
 void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
+
+    xfontsel_query = 0;
     XtPopdown(shell);
     XtDestroyWidget(shell);
     map_font_dialog = (Widget)NULL;
@@ -4267,6 +4269,10 @@ void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callDat
     char *temp;
     Widget shell = (Widget) clientData;
     int i;
+
+
+    xfontsel_query = 0;
+
     for (i = 0; i < FONT_MAX; i++) {
         temp = XmTextGetString(map_font_text[i]);
 
