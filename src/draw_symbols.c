@@ -2421,9 +2421,7 @@ end_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol_d
 void Select_symbol_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char table[2];
     char symbol[2];
-    long i;
-
-    i = (long)clientData;
+    int i = XTPOINTER_TO_INT(clientData);
 
     //fprintf(stderr,"Selected a symbol: %d\n", clientData);
 
@@ -2599,7 +2597,10 @@ begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol
 
             // Here we send back the ascii number of the symbol.  We need to keep it within
             // the range of short int's.
-            XtAddCallback(b1, XmNactivateCallback, Select_symbol_change_data, (XtPointer)i );
+            XtAddCallback(b1,
+                XmNactivateCallback,
+                Select_symbol_change_data,
+                INT_TO_XTPOINTER(i) );
         }
 
         // Draw the alternate symbol set
@@ -2625,7 +2626,10 @@ begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol
 
             // Here we send back the ascii number of the symbol negated.  We need to keep it
             // within the range of short int's.
-            XtAddCallback(b1, XmNactivateCallback, Select_symbol_change_data, (XtPointer)(-(i-94)) );
+            XtAddCallback(b1,
+                XmNactivateCallback,
+                Select_symbol_change_data,
+                INT_TO_XTPOINTER(-(i-94)) );
         }
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),

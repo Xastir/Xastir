@@ -897,7 +897,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" );
 /************************* Auto msg **************************************/
 /*************************************************************************/
 void Auto_msg_option( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
-    int item_no = (int) clientData;
+    int item_no = XTPOINTER_TO_INT(clientData);
 
     if (item_no)
         auto_reply = 1;

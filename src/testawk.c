@@ -72,7 +72,9 @@ void print_symtbl(awk_symtab *this) {
     int len;
     int i;
 
-    fprintf(stderr,"symtbl 0%0x dump:\n",(u_int)this);
+//    fprintf(stderr,"symtbl 0%0x dump:\n",(u_int)this);
+    fprintf(stderr,"symtbl 0%0x dump:\n",
+        XTPOINTER_TO_INT((XtPointer)this) );
     for (i = 0; i < AWK_SYMTAB_HASH_SIZE; i++) {
       for (s = this->hash[i]; s; s = s->next_sym) {
         *buf = '\0';

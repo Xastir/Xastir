@@ -4235,8 +4235,10 @@ void Query_xfontsel_pipe (void) {
 
  
 void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
-    int fontsize = (int) clientData;
+    int fontsize = XTPOINTER_TO_INT(clientData);
     char xfontsel[50];
+
+
     /* invoke xfontsel -print and stick into map_font_text */
     sprintf(xfontsel,"xfontsel -print -title \"xfontsel %d\"",fontsize);
     if ((f_xfontsel_pipe[fontsize] = popen(xfontsel,"r"))) {
@@ -4295,6 +4297,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
     int i;
     Arg al[20];                 /* Arg List */
     register unsigned int ac = 0; /* Arg Count */
+
 
     if (!map_font_dialog) {
         map_font_dialog = XtVaCreatePopupShell(langcode("MAPFONT002"),
@@ -4399,7 +4402,10 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
                                                          al,ac);
 
             XtAddCallback(button_xfontsel[i],
-                          XmNactivateCallback, Map_font_xfontsel, (void *)i);
+                XmNactivateCallback,
+                Map_font_xfontsel,
+                INT_TO_XTPOINTER(i) );
+
         }
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, my_form,

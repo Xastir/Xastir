@@ -244,7 +244,10 @@ int utm_grid_clear(int do_alloc)
                 utm_grid.zone[i].col[j].point = calloc(UTM_GRID_DEF_NALLOCED, sizeof(XPoint));
                 if (!utm_grid.zone[i].col[j].point) {
                     fprintf(stderr,"calloc(%d, %d) for z=%d col=%d FAILED!\n",
-                           UTM_GRID_DEF_NALLOCED, sizeof(XPoint), i, j);
+                        UTM_GRID_DEF_NALLOCED,
+                        (int)sizeof(XPoint),
+                        i,
+                        j);
 //                    abort();  // Causes a segfault
                     return(1);
                 }
@@ -260,7 +263,10 @@ int utm_grid_clear(int do_alloc)
                 utm_grid.zone[i].row[j].point = calloc(UTM_GRID_DEF_NALLOCED, sizeof(XPoint));
                 if (!utm_grid.zone[i].row[j].point) {
                     fprintf(stderr,"calloc(%d, %d) for z=%d row=%d FAILED!\n",
-                           UTM_GRID_DEF_NALLOCED, sizeof(XPoint), i, j);
+                        UTM_GRID_DEF_NALLOCED,
+                        (int)sizeof(XPoint),
+                        i,
+                        j);
 //                    abort();  // Causes a segfault
                     return(1);
                 }

@@ -78,6 +78,11 @@
  
 
 
+// Macros that help us avoid warnings on 64-bit CPU's.
+// Borrowed from the freeciv project (also a GPL project).
+#define INT_TO_XTPOINTER(m_i)  ((XtPointer)((long)(m_i)))
+#define XTPOINTER_TO_INT(m_p)  ((int)((long)(m_p)))
+
 
 #define SERIAL_KISS_RELAY_DIGI
 
