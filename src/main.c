@@ -565,6 +565,8 @@ static void display_zoom_image(int recenter);
 static void Track_Me( Widget w, XtPointer clientData, XtPointer calldata);
 static void Measure_Distance( Widget w, XtPointer clientData, XtPointer calldata);
 static void Move_Object( Widget w, XtPointer clientData, XtPointer calldata);
+
+static void SetMyPosition( Widget w, XtPointer clientData, XtPointer calldata);
  
 static void Pan_ctr(Widget w, XtPointer clientData, XtPointer calldata);
 static void Pan_up(Widget w, XtPointer clientData, XtPointer calldata);
@@ -3573,7 +3575,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3, zl4, zl5, zl6, zl7, zl8, zl9;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
-    Widget pan_up, pan_down, pan_left, pan_right;
+    Widget setmyposition, pan_up, pan_down, pan_left, pan_right;
     /*menu widgets */
     Widget sep;
     Widget filepane, configpane, exitpane, mappane, viewpane,
@@ -6008,6 +6010,28 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
 
+    // "Move my station here"
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA019")); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode("POPUPMA025")); ac++;
+    //    modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),
+    setmyposition=XtCreateManagedWidget(langcode("POPUPMA025"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    XtAddCallback(setmyposition,XmNactivateCallback,SetMyPosition,"1");
+
+    XtCreateManagedWidget("create_appshell sep",
+            xmSeparatorWidgetClass,
+            right_menu_popup,
+            al,
+            ac);
+
     // "Pan Up"
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
@@ -7817,6 +7841,25 @@ void Pan_right_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
         new_mid_y = mid_y_lat_offset;
         new_scale_y = scale_y;          // keep size
         display_zoom_image(1);          // check range and do display, recenter
+    }
+}
+
+
+
+
+
+void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+    
+    Dimension width, height;
+
+    if(display_up) {
+        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+        convert_lon_l2s( (mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x)), my_long, sizeof(my_long), CONVERT_HP_NOSP);
+        convert_lat_l2s( (mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y)), my_lat, sizeof(my_lat), CONVERT_HP_NOSP);
+
+        // Update my station data with the new lat/lon
+            my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
+            redraw_on_new_data=2;
     }
 }
 

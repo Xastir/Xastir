@@ -215,6 +215,7 @@ POPUPMA017|Entire World|E|
 POPUPMA016|Last Map Pos/Zoom|P|
 POPUPMA018|Object/Item->Create|b|
 POPUPMA019|Object/Item->Modify|M|
+POPUPMA025|Move My Station Here|H|
 POPUPMA011|Pan up|u|
 POPUPMA012|Pan down|d|
 POPUPMA013|Pan left|l|
