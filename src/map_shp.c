@@ -641,8 +641,9 @@ void draw_shapefile_map (Widget w,
     char            quad_label[100];
     char            status_text[MAX_FILENAME];
 #ifdef WITH_DBFAWK
-    char            dbfsig[1024],dbffields[1024],name[64],key[64],sym[2];
-    int             color,lanes,layer,filled,pattern,display_level,label_level;
+    /* these have to be static since I recycle Symtbl between calls */
+    static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[2];
+    static int      color,lanes,layer,filled,pattern,display_level,label_level;
     dbfawk_sig_info *sig_info = NULL;
     dbfawk_field_info *fld_info = NULL;
 #endif
