@@ -17,8 +17,8 @@ The Questions
     1.3 Why the name "Xastir"?
     1.4 OK, so how does Xastir compare to other APRS clients?
     1.5 How thoroughly tested is Xastir?
-    1.6 What are the future plans for Xastir?
-    1.7 Whom do I contact for support?
+    1.6 Whom do I contact for support?
+    1.7 Where can I submit Bug reports or feature requests?
     1.8 Is there any more information on Xastir?
     1.9 Where can I get Xastir?
 
@@ -125,16 +125,23 @@ The Answers
     be accessed through the Xastir website.  See the top of this document
     for the addresses.
 
-    1.7 Is there any more information on Xastir?
+    1.7 Where can I submit Bug reports or feature requests?
+
+    The mailing lists are a good place to bring up bugs or feature requests.
+    Another good place to document the request or bug in a more permanant
+    manner is the sourceforge tracker. There are seperate bug and feature
+    request trackers, both listed at the Xastir project page,
+    http://sourceforge.net/projects/xastir/
+
+    1.8 Is there any more information on Xastir?
 
     See the main Xastir website for more information.  See the top of
     this document for the addresses.
 
-    1.8 Where can I get Xastir?
+    1.9 Where can I get Xastir?
 
     Source code and binaries for several popular Linux distributions is
-    available through the Xastir website or via anonymous FTP at
-    argon.hscs.virginia.edu
+    available through the Xastir website
 
 
 2. General Technical Questions
@@ -351,8 +358,8 @@ The Answers
         screens.
 
     From a software standpoint, check that you have transmitting enabled
-    on your interface, and that the disbale transmission "all" and "my
-    position" options in the Interfaces menu are not enabled.Check that ALTNET
+    on your interface, and that the disable transmission "all" and "my
+    position" options in the Interfaces menu are not enabled. Check that ALTNET
     support in File|Configure|Defaults isn't enabled.
 
     Also check that your digipeater path is set reasonably; other
@@ -382,9 +389,8 @@ The Answers
     see who's running Xastir/who's running the _latest_ Xastir.  Set
     it to "WEIRD" and you'll only see those transmitting to "WEIRD".
 
-    The "Display Symbols" button in the Stations menu must be
-    checked in order to see stations on the map screen.  Check all
-    of your Stations|Filter Data and Stations|Filter Display settings.
+    Check all of your Stations|Filter Data and Stations|Filter Display
+    settings. "Select Stations" and "Display Symbols" must be selected.
 
     If you are using an older version of Xastir, Qxx packets are considered
     invalid. This is a newer addition to APRS, and recent Xastir releases
@@ -588,5 +594,5 @@ list.  The addresses for the mailing lists may be found on the main Xastir
 web pages, which are listed at the top of this document.
 
 
-Copyright (C) 2000-2003 The Xastir Group
+Copyright (C) 2000-2004 The Xastir Group
 
