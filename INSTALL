@@ -411,6 +411,36 @@ First Time Install:
      libraries in their RPM dependency list, the best way to assure that
      ImageMagick is installed properly is to install it from sources.
 
+     -------------------------------------------------------------------------
+     Note: Red Hat 9.0's install of Image Magick does not work with
+     XASTIR.  It will need to be removed and installed from sources.
+     If w3m text based web browser is installed, you will need to remove
+     it before removing ImageMagick:
+
+        rpm -e w3m
+        rpm -e ImageMagick
+
+     Download the ImageMagic sources from:
+
+        ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-5.5.7-10.tar.gz
+
+     Uncompress/untar them...
+
+        tar -xzvf im*
+
+     Change directory to the newly created ImageMagick directory and
+     compile:
+
+        cd im*
+        ./configure
+        make
+        su (become root user)
+        make install
+        exit (from su)
+
+     These instructions are courtesy of Wes Johnston.
+     -------------------------------------------------------------------------
+
 
    6. OPTIONAL:  If your system doesn't have wget or libcurl/libcurl-devel
      installed, and you want to use online maps, install either or both of
