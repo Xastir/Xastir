@@ -3518,7 +3518,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                             0,
                             0,
                             devices[i].reconnect,
-                            NULL);
+                            "");
                     }
                     break;
 
@@ -3532,7 +3532,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                             devices[i].sp,
                             devices[i].style,
                             0,
-                            NULL);
+                            "");
                     }
                     break;
 
@@ -3551,7 +3551,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                             0,
                             0,
                             devices[i].reconnect,
-                            NULL);
+                            "");
                     }
                     break;
 
@@ -3565,7 +3565,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                             devices[i].sp,
                             devices[i].style,
                             0,
-                            NULL);
+                            "");
                     }
                     break;
 
@@ -3585,7 +3585,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                             devices[i].sp,
                             devices[i].style,
                             0,
-                            NULL);
+                            "");
                     }
                     break;
 
@@ -3599,7 +3599,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
                             -1,
                             -1,
                             0,
-                            NULL);
+                            "");
                     }
                     break;
 

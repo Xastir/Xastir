@@ -388,7 +388,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
             devices[TNC_port].sp,
             devices[TNC_port].style,
             0,
-            NULL);
+            "");
     }
 
     /* delete list */
@@ -1487,7 +1487,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" )
             devices[GPS_port].sp,
             devices[GPS_port].style,
             0,
-            NULL);
+            "");
     }
 
     /* delete list */
@@ -1959,7 +1959,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
             devices[WX_port].sp,
             devices[WX_port].style,
             0,
-            NULL);
+            "");
     }
 
     /* delete list */
@@ -2543,7 +2543,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" )
             0,
             0,
             devices[NWX_port].reconnect,
-            NULL);
+            "");
     }
 
 
@@ -2976,7 +2976,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" 
             0,
             0,
             devices[NGPS_port].reconnect,
-            NULL);
+            "");
     }
 
 
@@ -3315,7 +3315,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
             -1,
             -1,
             0,
-            NULL);
+            "");
     }
 
 
