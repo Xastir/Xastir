@@ -4297,7 +4297,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     // Send a dummy UI frame for testing purposes.
                     //
                     send_agwpe_packet(port_avail,
-                        0,          // AGWPE radio port
+                        atoi(devices[port_avail].device_host_filter_string), // AGWPE radio port
                         '\0',       // type
                         "WE7U-3",   // FromCall
                         "APRS",     // ToCall
@@ -4308,7 +4308,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     // Send another dummy UI frame.
                     //
                     send_agwpe_packet(port_avail,
-                        0,          // AGWPE radio port
+                        atoi(devices[port_avail].device_host_filter_string), // AGWPE radio port
                         '\0',       // type
                         "WE7U-3",   // FromCall
                         "APRS",     // ToCall
@@ -5143,13 +5143,13 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 // we call this routine!  Instead put the digipeaters into the
 // ViaCall fields.
                     send_agwpe_packet(port,         // Xastir interface port
-                                      0,            // AGWPE RadioPort
-                                      '\0',         // Type of frame
-                                      my_callsign,  // source
-                                      VERSIONFRM,   // destination
-                                      unproto_path, // Path,
-                                      data_txt,
-                                      strlen(data_txt));
+                        atoi(devices[port].device_host_filter_string), // AGWPE RadioPort
+                        '\0',         // Type of frame
+                        my_callsign,  // source
+                        VERSIONFRM,   // destination
+                        unproto_path, // Path,
+                        data_txt,
+                        strlen(data_txt));
                 }
 
                 else {  // Not a Serial KISS TNC interface
@@ -5465,13 +5465,13 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 //fprintf(stderr,"send_agwpe_packet\n");
 
                     send_agwpe_packet(i,            // Xastir interface port
-                                      0,            // AGWPE RadioPort
-                                      '\0',         // Type of frame
-                                      my_callsign,  // source
-                                      VERSIONFRM,   // destination
-                                      unproto_path, // Path,
-                                      data_txt,
-                                      strlen(data_txt));
+                        atoi(devices[i].device_host_filter_string), // AGWPE RadioPort
+                        '\0',         // Type of frame
+                        my_callsign,  // source
+                        VERSIONFRM,   // destination
+                        unproto_path, // Path,
+                        data_txt,
+                        strlen(data_txt));
                 }
 
                 else {  // Not a Serial KISS TNC interface

@@ -4536,6 +4536,7 @@ Widget AGWPE_unproto1_data;
 Widget AGWPE_unproto2_data;
 Widget AGWPE_unproto3_data;
 Widget AGWPE_relay_digipeat;
+Widget AGWPE_radioport_data;
 int    AGWPE_port;
 
 
@@ -4590,6 +4591,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     strcpy(devices[AGWPE_port].unproto_igate,XmTextFieldGetString(AGWPE_igate_data));
     (void)remove_trailing_spaces(devices[AGWPE_port].unproto_igate);
 
+    strcpy(devices[AGWPE_port].device_host_filter_string,XmTextFieldGetString(AGWPE_radioport_data));
+    (void)remove_trailing_spaces(devices[AGWPE_port].device_host_filter_string);
+ 
     if(XmToggleButtonGetState(AGWPE_active_on_startup))
         devices[AGWPE_port].connect_on_startup=1;
     else
@@ -4644,7 +4648,8 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
                 ihost, iport, password, password_fl, sep,
                 igate, igate_box, igate_o_0, igate_o_1, igate_o_2,
-                igate_label, frame, proto, proto1, proto2, proto3;
+                igate_label, frame, proto, proto1, proto2, proto3,
+                radioport_label;
     Atom delw;
     char temp[40];
     Arg al[2];                      // Arg list
@@ -4810,6 +4815,36 @@ XtSetSensitive(AGWPE_relay_digipeat, FALSE);
                                       XmNleftOffset ,10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
+                                      NULL);
+
+        radioport_label = XtVaCreateManagedWidget(langcode("WPUPCFIA15"),xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, password,
+                                      XmNtopOffset, 25,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, AGWPE_reconnect_data,
+                                      XmNleftOffset, 50,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AGWPE_radioport_data = XtVaCreateManagedWidget("Config_AGWPE radioport_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, FALSE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 3,
+                                      XmNmaxLength, 3 ,
+                                      XmNbackground, colors[0x0f],
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, radioport_label,
+                                      XmNleftOffset, 10,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, password,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
 
         frame = XtVaCreateManagedWidget("Config_AGWPE frame", xmFrameWidgetClass, form,
@@ -5062,6 +5097,7 @@ XtSetSensitive(AGWPE_relay_digipeat, FALSE);
             XmTextFieldSetString(AGWPE_unproto2_data,"");
             XmTextFieldSetString(AGWPE_unproto3_data,"");
             XmTextFieldSetString(AGWPE_igate_data,"");
+            XmTextFieldSetString(AGWPE_radioport_data,"0");
         }
         else {
             /* reconfig */
@@ -5099,6 +5135,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
             else
                 XmToggleButtonSetState(AGWPE_reconnect_data,FALSE,FALSE);
 
+            XmTextFieldSetString(AGWPE_radioport_data,devices[AGWPE_port].device_host_filter_string);
+ 
             switch (devices[AGWPE_port].igate_options) {
                 case(0):
                     XmToggleButtonSetState(igate_o_0,TRUE,FALSE);

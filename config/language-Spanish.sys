@@ -539,6 +539,7 @@ WPUPCFIA11|Reconnect on NET failure?||
 WPUPCFIA12|Run as an I-Gate?||
 WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
 WPUPCFIA14|Log I-Gate Transactions?||
+WPUPCFIA15|Transmit RadioPort||
 #
 # Configurar Alarmas de Audio
 WPUPCFA001|Configurar Alarma de Audio||
