@@ -100,8 +100,15 @@ Selecting a package involves clicking on the little circle symbol
 until the option you want is displayed.  You can choose older
 versions of a package, choose to keep the package you have installed
 already, or choose to remove or install a package in this manner.
+If you're running Cygwin install again and see "Keep" as an option,
+that means you've already installed that package.  We're only
+concerned with the "bin" packages here (stands for "binary") and not
+the "src" packages (source code).
+
 It's suggested that you keep whatever was selected by default, and
-just add the below packages to the selection:
+just add the below packages to the selection.  As you select
+packages, other packages may be selected for you that are also
+required:
 
     Archive
 [ ]     unzip
