@@ -297,6 +297,7 @@ $position->datum("WGS 84");    # Datum
 
 print "\n";
 print "Examples:  48  07228N   122 07228W\n";
+print "           48  08N      122 07W\n";
 print "          10U  0565264  5330343\n";
 
 print "\nAPRS Items will be written to: $filename\n";
@@ -350,6 +351,10 @@ print "\n";
     # DD MM.MMM
     $input2 = $input;
     $input2 =~ s/^(\w+)\s+(\d\d)(\w+)\s+(\w+)\s+(\d\d)(\w+)\s*$/$1 $2.$3 $4 $5.$6\n/;
+    $input2 =~ s/(\.N)/.00N/;
+    $input2 =~ s/(\.S)/.00S/;
+    $input2 =~ s/(\.E)/.00E/;
+    $input2 =~ s/(\.W)/.00W/;
 print $input2;
     &convert($input2, "DD MM.MM");
 
@@ -357,12 +362,15 @@ print "\n";
 
     # DD MM SS.S
     $input2 = $input;
-    $input2 =~
-s/^(\w+)\s+(\d\d)(\d\d)(\w+)\s+(\w+)\s+(\d\d)(\d\d)(\w+)\s*$/$1 $2 $3.$4 $5 $6 $7.$8\n/;
+    $input2 =~ s/^(\w+)\s+(\d\d)(\w)\s+(\w+)\s+(\d\d)(\w)\s*$/$1 $2 00.$3 $4 $5 00.$6\n/;
+    $input2 =~ s/^(\w+)\s+(\d\d)(\d\d)(\w+)\s+(\w+)\s+(\d\d)(\d\d)(\w+)\s*$/$1 $2 $3.$4 $5 $6 $7.$8\n/;
+    $input2 =~ s/(\.N)/.0N/;
+    $input2 =~ s/(\.S)/.0S/;
+    $input2 =~ s/(\.E)/.0E/;
+    $input2 =~ s/(\.W)/.0W/;
 print $input2;
     &convert($input2, "DD MM SS");
 
 }
 
 close(FH);
-
