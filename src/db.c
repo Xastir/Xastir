@@ -6644,6 +6644,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                   || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
             // Do nothing.  We don't want to re-order it in the time-ordered
             // list so that it'll expire from the queue normally.
+
+// Need an exception here or later in this function for the case
+// where we've moved an object/item (by how much?).  We need to
+// update the time in this case so that it'll expire later (in fact
+// it could already be expired when we move it).  We should be able
+// to move expired objects/items to make them active again.  Perhaps
+// some other method as well?
+
         }
         else {
             move_station_time(p_station,p_time);        // update time, change position in time sorted list
@@ -6939,7 +6947,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                   || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
             // Do nothing.  We don't want to update the last-heard time
             // so that it'll expire from the queue normally.
-        }
+
+// Need an exception here or later in this function for the case
+// where we've moved an object/item (by how much?).  We need to
+// update the time in this case so that it'll expire later (in fact
+// it could already be expired when we move it).  We should be able
+// to move expired objects/items to make them active again.  Perhaps
+// some other method as well?
+
+       }
         else {
             p_station->sec_heard = curr_sec;    // Give it a new timestamp
         }
