@@ -1106,8 +1106,8 @@ void draw_grid(Widget w) {
 
                 e[1]  = e[0];               // carriage return
                 n[1] -= utm_grid_spacing_m; // line feed
-// Yea, your comments are real funny Olivier!  Gets the point across
-// though.
+// Yea, your comments are real funny Olivier...  Gets the point
+// across though!
 
 
                 row++;
@@ -1175,10 +1175,14 @@ void draw_grid(Widget w) {
                     else if (nbp > 0) { // We had a boundary point, but not anymore
                         fp = utm_grid.zone[zone].col[i].firstpoint = j - 1;
 //fprintf(stderr,"np:%d, j:%d\n",np,j);
-                        np = utm_grid.zone[zone].col[i].npoints    = np - j + 1;
+                        // This can result in negative numbers!
+                        np = utm_grid.zone[zone].col[i].npoints = np - j + 1;
 //fprintf(stderr,"new np:%d\n",np);
-                        if (np < 0)
-                            np = 0;
+                        if (np < 0) {
+                            np = 0; // Prevents segfaults in
+                                    // XDrawLines() and memmove()
+                                    // below.
+                        }
                         break;
                     }
                     if (nbp == np) { // All points are boundary points
@@ -1187,8 +1191,8 @@ void draw_grid(Widget w) {
                     }
                 }
 
-// What's this doing?  Can get a segfault without this in the
-// XDrawLines() functions below (fixed by making npoints an int
+// What's the below code doing?  Can get a segfault without this in
+// the XDrawLines() functions below (fixed by making npoints an int
 // instead of an unsigned int).  Sometimes we get a segfault right
 // here due to the memmove() function.  In one such case, np was -2.
 // Latest code keeps some lines from getting drawn, but at least we
@@ -1202,7 +1206,7 @@ void draw_grid(Widget w) {
                     }
                     else {
 //fprintf(stderr,"draw_grid: i:%d, np:%d, size:%d\n",i,np,sizeof(XPoint));
-//fprintf(stderr,"Problem: in draw_grid() memmove, np was %d.  Skipping memmove.\n",np);
+//fprintf(stderr,"Problem1: in draw_grid() memmove, np was %d.  Skipping memmove.\n",np);
                     }
                 }
 
@@ -1237,10 +1241,17 @@ void draw_grid(Widget w) {
 #endif
 // What's this doing?  This appears to be important, as things get
 // really messed up if it's commented out.
-                if (fp > 0) {
-                    memmove(&utm_grid.zone[zone].row[i].point[0],
+                if (fp > 0) {   
+                    if (np > 0) {
+                        memmove(&utm_grid.zone[zone].row[i].point[0],
                             &utm_grid.zone[zone].row[i].point[fp], np * sizeof(XPoint));
-                    fp = utm_grid.zone[zone].row[i].firstpoint = 0;
+                        fp = utm_grid.zone[zone].row[i].firstpoint = 0;
+                    }
+                    else {
+//fprintf(stderr,"draw_grid: i:%d, np:%d, size:%d\n",i,np,sizeof(XPoint));
+//fprintf(stderr,"Problem2: in draw_grid() memmove, np was %d.  Skipping memmove.\n",np);
+                    }
+ 
                 }
 #ifdef UT_DEBUG_VERB
                 for (j=fp; j < fp+np; j++) {
@@ -1260,14 +1271,15 @@ void draw_grid(Widget w) {
 
 utm_grid_draw:
 
-        // Draw grid in dashed white lines
+        // OLD: Draw grid in dashed white lines.
+        // NEW: Tint the lines as they go along, making them appear
+        // no matter what color is underneath.
         (void)XSetForeground(XtDisplay(w), gc_tint, colors[0x27]);
-// A good option may be gc_tint: Tint the lines as they go along,
-// making them appear nicely no matter what color is underneath.
-
 
         // Note:  npoints can be negative here!  Make sure our code
-        // checks for that.
+        // checks for that.  Initially npoints was an unsigned int.
+        // Changed it to an int so that we can get and check for
+        // negative values, bypassing segfaults.
         //
         for (zone=0; zone < UTM_GRID_MAX_ZONES; zone++) {
             for (i=0; i < utm_grid.zone[zone].ncols; i++) {
