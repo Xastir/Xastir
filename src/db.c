@@ -223,7 +223,12 @@ time_t last_message_update = 0;
 // How often update_messages() will run, in seconds.
 // This is necessary because routines like UpdateTime()
 // call update_messages() VERY OFTEN.
-static int message_update_delay = 5;
+//
+// Actually, we just changed the code around so that we only call
+// update_messages() with the force option, and only when we receive a
+// message.  message_update_delay is no longer used, and we don't call
+// update_messages() from UpdateTime() anymore.
+static int message_update_delay = 300;
     
 
 
@@ -483,10 +488,14 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     substr(m_fill.from_call_sign, from_call, MAX_CALLSIGN);
     substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
 
+// Look for a message with the same call_sign, from_call_sign, and
+// seq number
     record = msg_find_data(&m_fill);
     msg_clear_data(&m_fill);
-    if(record != -1L) /* fill old data */
+    if(record != -1L) { /* fill old data */
         msg_get_data(&m_fill, record);
+        //printf("Found a duplicate message.  Updating fields, seq %s\n",seq);
+    }
 
     m_fill.sec_heard = sec_now();
 
@@ -503,10 +512,13 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     substr(m_fill.seq,seq,MAX_MESSAGE_ORDER);
     strcpy(m_fill.packet_time,get_time(time_data));
 
-    if(record == -1L)
+    if(record == -1L) {
         msg_input_database(&m_fill);
-    else
+    }
+    else {
+        //printf("Replacing the message in the database, seq %s\n",seq);
         msg_replace_data(&m_fill, record);
+    }
 
     /* display messages */
     if (type == MESSAGE_MESSAGE)
@@ -566,7 +578,25 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                     if (new_message_data<0)
                         new_message_data=0;
 
-                    if(strlen(temp1)>0) {   // We got a callsign from the dialogue
+                    if(strlen(temp1)>0) {   // We got a callsign from the dialogue so
+                        // create a linked list of the message indexes in time-sorted order
+
+                        typedef struct _index_record {
+                            int index;
+                            time_t sec_heard;
+                            struct _index_record *next;
+                        } index_record;
+                        index_record *head = NULL;
+                        index_record *p_prev = NULL;
+                        index_record *p_next = NULL;
+//WE7U
+
+                        // Allocate the first record (a dummy record)
+                        head = (index_record *)malloc(sizeof(index_record));
+                        head->index = -1;
+                        head->sec_heard = (time_t)0;
+                        head->next = NULL;
+
                         (void)remove_trailing_spaces(temp1);
                         (void)to_upper(temp1);
 
@@ -578,21 +608,89 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                       strcmp(temp1,msg_data[msg_index[i]].call_sign) == 0) &&
                                     ( is_my_call(msg_data[msg_index[i]].from_call_sign, 1) ||
                                       is_my_call(msg_data[msg_index[i]].call_sign, 1) || mw[mw_p].message_group ) ) {
+                                int done = 0;
+
+                                // Message matches our parameters so
+                                // save the relevant data about the
+                                // message in our linked list.  Compare
+                                // the sec_heard field to see whether
+                                // we're higher or lower, and insert the
+                                // record at the correct spot in the
+                                // list.  We end up with a time-sorted
+                                // list.
+                                p_prev  = head;
+                                p_next = p_prev->next;
+                                while (!done && (p_next != NULL)) {  // Loop until end of list or record inserted
+
+                                    //printf("Looping, looking for insertion spot\n");
+
+                                    if (p_next->sec_heard <= msg_data[msg_index[i]].sec_heard) {
+                                        // Advance one record
+                                        p_prev = p_next;
+                                        p_next = p_prev->next;
+                                    }
+                                    else {  // We found the correct insertion spot
+                                        done++;
+                                    }
+                                }
+
+                                //printf("Inserting\n");
+
+                                // Add the record in between p_prev and
+                                // p_next, even if we're at the end of
+                                // the list (in that case p_next will be
+                                // NULL.
+                                p_prev->next = (index_record *)malloc(sizeof(index_record));
+                                p_prev->next->next = p_next; // Link to rest of records or NULL
+                                p_prev->next->index = i;
+                                p_prev->next->sec_heard = msg_data[msg_index[i]].sec_heard;
+// Remember to free this entire linked list before exiting the loop for
+// this message window!
+                            }
+                        }
+                        // Done processing the entire list for this
+                        // message window.
+
+                        //printf("Done inserting/looping\n");
+
+                        if (head->next != NULL) {   // We have messages to display
+                            int done = 0;
+
+                            //printf("We have messages to display\n");
+
+                            // Run through the linked list and dump the
+                            // info out.  It's now in time-sorted order.
+
+// Another optimization would be to keep a count of records added, then
+// later when we were dumping it out to the window, only dump the last
+// XX records out.
+
+                            p_prev = head->next;    // Skip the first dummy record
+                            p_next = p_prev->next;
+                            while (!done && (p_prev != NULL)) {  // Loop until end of list
+                                int j = p_prev->index;  // Snag the index out of the record
+
+                                //printf("Looping through, reading messages\n");
  
                                 // Message matches so snag the important pieces into a string
                                 xastir_snprintf(stemp, sizeof(stemp), "%c%c/%c%c %c%c:%c%c",
-                                    msg_data[msg_index[i]].packet_time[0], msg_data[msg_index[i]].packet_time[1],
-                                    msg_data[msg_index[i]].packet_time[2], msg_data[msg_index[i]].packet_time[3],
-                                    msg_data[msg_index[i]].packet_time[8], msg_data[msg_index[i]].packet_time[9],
-                                    msg_data[msg_index[i]].packet_time[10], msg_data[msg_index[i]].packet_time[11]
+                                    msg_data[msg_index[j]].packet_time[0],
+                                    msg_data[msg_index[j]].packet_time[1],
+                                    msg_data[msg_index[j]].packet_time[2],
+                                    msg_data[msg_index[j]].packet_time[3],
+                                    msg_data[msg_index[j]].packet_time[8],
+                                    msg_data[msg_index[j]].packet_time[9],
+                                    msg_data[msg_index[j]].packet_time[10],
+                                    msg_data[msg_index[j]].packet_time[11]
                                 );
 
                                 // Label the message line with who sent it.
                                 xastir_snprintf(temp2, sizeof(temp2), "%s  %-9s>%s\n", stemp,
-                                    msg_data[msg_index[i]].from_call_sign,
-                                    msg_data[msg_index[i]].message_line);
+                                    msg_data[msg_index[j]].from_call_sign,
+                                    msg_data[msg_index[j]].message_line);
 
-
+                                //printf("update_message: %s|%s\n", temp1, temp2);
+ 
                                 if (debug_level & 2) printf("update_message: %s|%s\n", temp1, temp2);
                                 // Replace the text from pos to pos+strlen(temp2) by the string "temp2"
                                 if (mw[mw_p].send_message_text != NULL) {
@@ -602,8 +700,17 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                             temp2);
                                     pos += strlen(temp2);
                                 }
-                            }
+
+                                // Advance to the next record in the list
+                                p_prev = p_next;
+                                if (p_next != NULL)
+                                    p_next = p_prev->next;
+
+                            }   // End of while
+                        }   // End of if
+                        else {  // No messages matched, list is empty
                         }
+
                         if (pos > 0) {
                             if (mw[mw_p].send_message_text != NULL) {
                                 XmTextReplace(mw[mw_p].send_message_text,
@@ -611,6 +718,19 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                         XmTextGetLastPosition(mw[mw_p].send_message_text),
                                         "");
                             }
+                        }
+
+                        //printf("Free'ing list\n");
+
+                        // De-allocate the linked list
+                        p_prev = head;
+                        while (p_prev != NULL) {
+
+                            //printf("You're free!\n");
+
+                            p_next = p_prev->next;
+                            free(p_prev);
+                            p_prev = p_next;
                         }
                     }
                 }
@@ -7717,7 +7837,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from); // id_fixed
         new_message_data += 1;
         (void)check_popup_window(call, 2);
-        update_messages(0); // No force
+        update_messages(1); // Force an update
         if (sound_play_new_message)
             play_sound(sound_command,sound_new_message);
 #ifdef HAVE_FESTIVAL
@@ -7805,7 +7925,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         new_message_data += look_for_open_group_data(addr);
         if ((is_my_call(call,1) && check_popup_window(addr, 2) != -1)
                      || check_popup_window(call, 0) != -1 || check_popup_window(addr, 1) != -1)
-            update_messages(0); // No force
+            update_messages(1); // Force an update
         /* Now if I have Igate on and I allow to retransmit station data           */
         /* check if this message is to a person I have heard on my TNC within an X */
         /* time frame. If if is a station I heard and all the conditions are ok    */
@@ -7844,7 +7964,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         msg_data_add(addr,call,message,"",MESSAGE_MESSAGE,from);
         new_message_data++;      // ??????
         if (check_popup_window(addr, 1) != -1)
-            update_messages(0); // No force
+            update_messages(1); // Force an update
 
         // Could be response to a query.  Popup a messsage.
         if ( (message[0] != '?') && is_my_call(addr,1) )
@@ -7908,7 +8028,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from);
         new_message_data += 1;
         (void)check_popup_window(call, 2);
-        update_messages(0); // No force
+        update_messages(1); // Force an update
         if (sound_play_new_message)
             play_sound(sound_command,sound_new_message);
         if (from != 'F') {

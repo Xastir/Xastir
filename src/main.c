@@ -4655,7 +4655,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             check_message_remove();             // remove old messages
 
             //if ( (new_message_data > 0) && ( (delay_time % 2) == 0) )
-            update_messages(0);                 // Check Messages, no forced update
+            //update_messages(0);                 // Check Messages, no forced update
 
             /* check on Redraw requests */
             if (         ( (redraw_on_new_data > 1)

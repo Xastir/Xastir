@@ -232,7 +232,7 @@ end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window" 
 
 begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2" );
 
-       i=-1;
+        i=-1;
         for (j=0; j<MAX_MESSAGE_WINDOWS; j++) {
             if (!mw[j].send_message_dialog) {
                 i=j;
@@ -248,9 +248,9 @@ end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2"
         temp1[1] = '\0';
         } else
             temp1[0] = '\0';
-
-        strcat(temp1, from_call_sign);
+            strcat(temp1, from_call_sign);
             Send_message(appshell, temp1, NULL);
+            update_messages(1);
             ret=i;
         } else
             printf("No open windows!\n");

@@ -106,7 +106,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call
 
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Check_new_call_messages" );
 
-    update_messages(0); // No force
+    update_messages(1); // Force an immediate update
 }
 
 
@@ -263,8 +263,8 @@ void Send_message_call( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
     char call[20];
 
     if(clientData !=NULL) {
-    strcpy(call,(char *)clientData);
-    Send_message(Global.top,call,NULL);
+        strcpy(call,(char *)clientData);
+        Send_message(Global.top,call,NULL);
     }           
 }
 
@@ -344,7 +344,8 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
         XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNtopOffset, 5); n++;
-        XtSetArg(args[n], XmNbottomAttachment,XmATTACH_NONE); n++;
+        XtSetArg(args[n], XmNbottomAttachment,XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNbottomOffset, 110); n++;
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment,XmATTACH_FORM); n++;
@@ -354,10 +355,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
         mw[i].call = XtVaCreateManagedWidget(langcode(groupon == 0  ? "WPUPMSB003": "WPUPMSB004"),
                             xmLabelWidgetClass, mw[i].form,
-                            XmNtopAttachment, XmATTACH_WIDGET,
-                            XmNtopWidget,XtParent(mw[i].send_message_text),
-                            XmNtopOffset, 10,
-                            XmNbottomAttachment, XmATTACH_NONE,
+                            XmNtopAttachment, XmATTACH_NONE,
+                            XmNbottomAttachment, XmATTACH_FORM,
+                            XmNbottomOffset, 85,
                             XmNleftAttachment, XmATTACH_FORM,
                             XmNleftOffset, 10,
                             XmNrightAttachment, XmATTACH_NONE,
@@ -373,10 +373,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                                     XmNwidth, ((15*7)+2),
                                     XmNmaxLength, 15,
                                     XmNbackground, colors[0x0f],
-                                    XmNtopAttachment, XmATTACH_WIDGET,
-                                    XmNtopWidget,XtParent(mw[i].send_message_text),
-                                    XmNtopOffset, 5,
-                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNtopAttachment, XmATTACH_NONE,
+                                    XmNbottomAttachment, XmATTACH_FORM,
+                                    XmNbottomOffset, 80,
                                     XmNleftAttachment, XmATTACH_WIDGET,
                                     XmNleftWidget, mw[i].call,
                                     XmNleftOffset, 10,
@@ -391,10 +390,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                                         XmNleftAttachment, XmATTACH_WIDGET,
                                         XmNleftWidget, mw[i].send_message_call_data,
                                         XmNleftOffset, 20,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget,XtParent(mw[i].send_message_text),
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_NONE,
+                                        XmNtopAttachment, XmATTACH_NONE,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 80,
                                         XmNrightAttachment, XmATTACH_NONE,
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
@@ -405,10 +403,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                                         XmNleftAttachment, XmATTACH_WIDGET,
                                         XmNleftWidget, mw[i].button_submit_call,
                                         XmNleftOffset, 10,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget,XtParent(mw[i].send_message_text),
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_NONE,
+                                        XmNtopAttachment, XmATTACH_NONE,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 80,
                                         XmNrightAttachment, XmATTACH_NONE,
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
@@ -416,10 +413,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                                         NULL);
 
         mw[i].message = XtVaCreateManagedWidget(langcode("WPUPMSB008"),xmLabelWidgetClass, mw[i].form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, mw[i].call,
-                                        XmNtopOffset, 20,
-                                        XmNbottomAttachment, XmATTACH_NONE,
+                                        XmNtopAttachment, XmATTACH_NONE,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 45,
                                         XmNleftAttachment, XmATTACH_FORM,
                                         XmNleftOffset, 10,
                                         XmNrightAttachment, XmATTACH_NONE,
@@ -435,10 +431,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                                         XmNwidth, ((64*7)+2),
                                         XmNmaxLength, 255,
                                         XmNbackground, colors[0x0f],
-                                        XmNtopAttachment,XmATTACH_WIDGET,
-                                        XmNtopWidget, mw[i].call,
-                                        XmNtopOffset, 15,
-                                        XmNbottomAttachment,XmATTACH_NONE,
+                                        XmNtopAttachment, XmATTACH_NONE,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 40,
                                         XmNleftAttachment, XmATTACH_WIDGET,
                                         XmNleftWidget, mw[i].message,
                                         XmNleftOffset, 10,
@@ -448,9 +443,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                                         NULL);
 
         mw[i].button_ok = XtVaCreateManagedWidget(langcode("WPUPMSB009"),xmPushButtonGadgetClass, mw[i].form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, mw[i].send_message_message_data,
-                                        XmNtopOffset, 10,
+                                        XmNtopAttachment, XmATTACH_NONE,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
                                         XmNleftAttachment, XmATTACH_POSITION,
@@ -463,9 +456,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                                         NULL);
 
         mw[i].button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, mw[i].form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, mw[i].send_message_message_data,
-                                        XmNtopOffset, 10,
+                                        XmNtopAttachment, XmATTACH_NONE,
                                         XmNbottomAttachment, XmATTACH_FORM,
                                         XmNbottomOffset, 5,
                                         XmNleftAttachment, XmATTACH_POSITION,
@@ -503,7 +494,6 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
         XtManageChild(mw[i].pane);
 
         XtPopup(mw[i].send_message_dialog,XtGrabNone);
-        fix_dialog_vsize(mw[i].send_message_dialog);
 
         // Move focus to the Cancel button.  This appears to highlight the
         // button fine, but we're not able to hit the <Enter> key to
