@@ -480,8 +480,13 @@ void draw_ogr_map(Widget w,
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+
 /////////////////////////////////////////////////////////////////////
-        // We're indexing only.  Save the extents in the index.
+// We're indexing only.  Save the extents in the index.
+/////////////////////////////////////////////////////////////////////
+
+
         char status_text[MAX_FILENAME];
         double file_MinX = 0;
         double file_MaxX = 0;
@@ -491,6 +496,7 @@ void draw_ogr_map(Widget w,
         int geographic = 0;
         int projected = 0;
         int local = 0;
+        int no_spatial = 1;
         const char *geogcs = NULL;
         OGRSpatialReferenceH spatial = NULL;
 
@@ -541,6 +547,8 @@ fprintf(stderr,"Indexing %s\n", filenm);
             if (spatial) {
                 const char *temp;
 
+                no_spatial = 0;
+
                 if (OSRIsGeographic(spatial)) {
                     geographic++;
                 }
@@ -562,7 +570,20 @@ fprintf(stderr,"Indexing %s\n", filenm);
                 geogcs = OSRGetAttrValue(spatial, "GEOGCS", 0);
             }
             else {
+
 fprintf(stderr,"Couldn't get spatial reference\n");
+
+                // In this case, we should probably assume that it
+                // is WGS84 and geographic, and just attempt to
+                // index it as-is.  If the numbers don't make sense,
+                // we can skip indexing this dataset.
+
+                // Perhaps some layers may have a spatial reference,
+                // and others might not.  That's ok.  Solved this
+                // problem by defined "no_spatial", which will be
+                // '1' if no spatial data was found in any of the
+                // layers.  In that case we just store the extents
+                // we find.
             }
 
             // Get the extents for this layer.  OGRERR_FAILURE means
@@ -608,12 +629,13 @@ fprintf(stderr,"Couldn't get spatial reference\n");
 
         // We know how to handle geographic or projected coordinate
         // systems.  Test for these.
-        if ( !first_extents && (geographic || projected) ) {
+        if ( !first_extents && (geographic || projected || no_spatial) ) {
             // Need to also check datum!  Must be NAD83 or WGS84 and
             // geographic for our purposes.
-            if ( geographic
+            if ( no_spatial
+                || (geographic
                     && ( strcasecmp(geogcs,"WGS84") == 0
-                        || strcasecmp(geogcs,"NAD83") == 0) ) {
+                        || strcasecmp(geogcs,"NAD83") == 0) ) ) {
 
 fprintf(stderr, "Geographic coordinate system, %s, adding to index\n", geogcs);
 
@@ -621,11 +643,20 @@ fprintf(stderr, "Geographic coordinate system, %s, adding to index\n", geogcs);
 // with datum translation and such.
 //#define WE7U
 #ifndef WE7U
-                index_update_ll(filenm,    // Filename only
-                    file_MinY,  // Bottom
-                    file_MaxY,  // Top
-                    file_MinX,  // Left
-                    file_MaxX); // Right
+                if (   file_MinY >=  -90.0 && file_MinY <  90.0
+                    && file_MaxY >=  -90.0 && file_MaxY <  90.0
+                    && file_MinX >= -180.0 && file_MinX < 180.0
+                    && file_MaxX >= -180.0 && file_MaxX < 180.0) {
+
+                    index_update_ll(filenm,    // Filename only
+                        file_MinY,  // Bottom
+                        file_MaxY,  // Top
+                        file_MinX,  // Left
+                        file_MaxX); // Right
+                }
+                else {
+fprintf(stderr, "Geographic coordinates out of bounds, skipping indexing\n");
+                }
 #endif  // WE7U
             }
             else {  // We have coordinates, but they're either in
@@ -715,8 +746,12 @@ x[1],y[1],result);
                             }
                         }
                     }
-                    if (wgs84_spatial != NULL)
-                        OSRDestroySpatialReference(wgs84_spatial);
+                    if (transformH != NULL) {
+                        OCTDestroyCoordinateTransformation(transformH);
+                    }
+                }
+                if (wgs84_spatial != NULL) {
+                    OSRDestroySpatialReference(wgs84_spatial);
                 }
             }
         }
@@ -747,8 +782,13 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
         OGR_DS_Destroy( datasource );
 
         return; // Done indexing the file
-/////////////////////////////////////////////////////////////////////
     }
+
+
+/////////////////////////////////////////////////////////////////////
+// The code below this point is for actually drawing, not indexing
+// the file.
+/////////////////////////////////////////////////////////////////////
 
  
     // Find out what type of file we're dealing with:
@@ -786,8 +826,7 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
     // Loop through all layers in the data source.
     //
     numLayers = OGR_DS_GetLayerCount(datasource);
-    for(i=0; i<numLayers; i++)
-    {
+    for(i=0; i<numLayers; i++) {
         OGRLayerH layer;
 //        int j;
 //        int numFields;
@@ -943,8 +982,7 @@ fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
 //            fprintf(stderr,"\n===================\n");
 //            fprintf(stderr,"Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
 
-//            for(j=0; j<numFields; j++)
-//            {
+//            for(j=0; j<numFields; j++) {
 //                OGRFieldDefnH fieldDefn;
 
 //                fieldDefn = OGR_FD_GetFieldDefn( layerDefn, j );
