@@ -636,10 +636,10 @@ void draw_vector_ll(Widget w,
 //*****************************************************************
 // draw_grid()
 //
-// Draws a lat/lon or UTM grid on top of the view.
+// Draws a lat/lon or UTM/UPS grid on top of the view.
 //
-// This routine appears to draw most of the UTM grid ok, with the
-// exceptions of:
+// This routine appears to draw most of the UTM/UPS grid ok, with
+// the exceptions of:
 //
 // 1) Doesn't handle the irregular zones near/above Norway for the
 // smaller grid.
@@ -667,9 +667,10 @@ void draw_vector_ll(Widget w,
 // zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33 -
 // 42 E.
 //
-// Draw labels for each UTM zone?
+// Draw labels for each UTM/UPS zone?
 //
-// Horizontal lines corresponding to the lettered NATO UTM subzones:
+// Horizontal lines corresponding to the lettered NATO UTM/UPS
+// subzones:
 // Zones go from A (south pole) to Z (north pole).  South of -80 are
 // zones A/B, north of +84 are zones Y/Z.  "I" and "O" are not used.
 // Zones from C to W are 8 degrees high.  Zone X is 12 degrees high.
@@ -812,7 +813,9 @@ void draw_grid(Widget w) {
 //WE7U
 // The below code does NOT handle the irregular zones properly.  It
 // assumes regular 6 degree zones everywhere.  The irregular zones
-// have sizes of 3/9/12 degrees (width) instead of 6 degrees.
+// have sizes of 3/9/12 degrees (width) instead of 6 degrees.  We
+// need to shift the meridian in these zones so that we draw out
+// from the central meridian properly for each subzone.
 
 
         // Now setup for drawing zone grid(s)
