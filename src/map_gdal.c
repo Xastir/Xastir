@@ -518,6 +518,13 @@ void draw_ogr_map(Widget w,
         OGRFeatureH feature;
         OGRFeatureDefnH layerDefn;
 
+
+        if (interrupt_drawing_now) {
+            // Close data source
+            OGR_DS_Destroy( datasource );
+            return;
+        }
+
         layer = OGR_DS_GetLayer( datasource, i );
         if (layer == NULL)
         {
@@ -525,6 +532,9 @@ void draw_ogr_map(Widget w,
                 "Unable to open layer %d of %s\n",
                 i,
                 full_filename);
+
+            // Close data source
+            OGR_DS_Destroy( datasource );
             return;
         }
 
