@@ -1202,6 +1202,10 @@ WINDOWS/CYGWIN NOTES:
      as "/usr/local/xastir/maps" though from inside Cygwin.  It kind'a
      looks like a mini Unix box from inside there.
 
+     Run Windows in 15-bit color or better (32768 colors or more) or you'll
+     get lots of warnings about Xastir not being able to allocate colors
+     when it starts up, and the display will be rather stark looking.
+
 END OF WINDOWS/CYGWIN NOTES.
      -----------------------------------------------------------------------
 
