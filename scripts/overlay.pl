@@ -187,25 +187,24 @@ sub create_items {
   $lat_deg = sprintf("%02d", $lat_deg);
   $lat_min = $latitude;
   $lat_min =~ s/^\d+\./0./;
-  $l_min = $lat_min * 60;
-
+  $lat_min = $lat_min * 60.0;
   $lon_deg = $longitude;
   $lon_deg =~ s/\.\d+$//;
   $lon_deg = sprintf("%03d", $lon_deg);
   $lon_min = $longitude;
   $lon_min =~ s/^\d+\./0./;
-  $l_min = $lon_min * 60;
+  $lon_min = $lon_min * 60;
 
   # Create an APRS "Item" packet
   $line = sprintf("%s)%s!%s%05.2f%s%s%s%05.2f%s%s",
     $callsign,
     $name,
     $lat_deg,
-    $l_min,
+    $lat_min,
     $n_s,
     $icon1,
     $lon_deg,
-    $l_min,
+    $lon_min,
     $e_w,
     $icon2);
 
