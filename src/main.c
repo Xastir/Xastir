@@ -146,6 +146,7 @@ int Display_packet_data_type;
 
 Widget configure_defaults_dialog = (Widget)NULL;
 Widget configure_coordinates_dialog = (Widget)NULL;
+Widget coordinate_calc_button_ok = (Widget)NULL;
 Widget change_debug_level_dialog = (Widget)NULL;
 
 
@@ -688,6 +689,7 @@ void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer c
     XmTextSetString(coordinate_calc_latitude_easting, "");
     XmTextSetString(coordinate_calc_longitude_northing, "");
     XmTextSetString(coordinate_calc_result_text, "");
+    XtSetSensitive(coordinate_calc_button_ok,FALSE);
 }
 
 
@@ -1201,6 +1203,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
             easting,
             latitude,
             longitude);
+        XtSetSensitive(coordinate_calc_button_ok,TRUE);
     }
     else if (have_lat_lon) {
         // Process lat/lon values
@@ -1225,6 +1228,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
             (long)easting,
             latitude,
             longitude);
+        XtSetSensitive(coordinate_calc_button_ok,TRUE);
     }
     else {  // Dump out some helpful text
         xastir_snprintf(temp_string,
@@ -1235,6 +1239,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
             " ** 47.99999N  121.99999W,   47 59.999N   121 59.999W  **",
             " ** 10T  0574599  5316887,   47 59 59.9N  121 59 59.9W **");
         XmTextSetString(coordinate_calc_result_text, temp_string);
+        XtSetSensitive(coordinate_calc_button_ok,FALSE);
     }
 }
 
@@ -1305,14 +1310,15 @@ void Coordinate_calc_change_data(Widget widget, XtPointer clientData, XtPointer 
 // of Widget pointers to the calling dialog's fields.  DONE.
 //
 // We could grey-out the OK button until we have a successful
-// calculation.  This would make sure that an invalid location didn't
+// calculation, and when the "Clear" button is pressed.  This
+// would make sure that an invalid location doesn't
 // get written to the calling dialog.  Would have to have a
 // successful conversion before we could write the value back.
 //
 void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, form, label1, label2, label3,
         label4, label5, label6,
-        button_clear, button_calculate, button_ok, button_cancel;
+        button_clear, button_calculate, button_cancel;
     Atom delw;
     Arg args[2];                    // Arg List
     register unsigned int n = 0;    // Arg Count
@@ -1532,7 +1538,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                         NULL);
         XtAddCallback(button_calculate, XmNactivateCallback, Coordinate_calc_compute, coordinate_calc_dialog);
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
+        coordinate_calc_button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
                                         XmNtopWidget, coordinate_calc_result_text,
                                         XmNtopOffset, 5,
@@ -1545,7 +1551,8 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                         XmNbackground, colors[0xff],
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
-        XtAddCallback(button_ok, XmNactivateCallback, Coordinate_calc_change_data, coordinate_calc_dialog);
+        XtAddCallback(coordinate_calc_button_ok, XmNactivateCallback, Coordinate_calc_change_data, coordinate_calc_dialog);
+        XtSetSensitive(coordinate_calc_button_ok,FALSE);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
