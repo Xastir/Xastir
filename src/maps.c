@@ -560,7 +560,7 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
 
                     case DRAW_TO_PIXMAP:
                         // We must be drawing maps 'cuz this is the pixmap we use for it.
-                        if (map_color_fill && draw_filled)
+                        if (map_color_fill && draw_filled) {
 
                             if (npoints >= 3) {
                                 (void)XFillPolygon(XtDisplay(w),
@@ -576,6 +576,7 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
                                     "map_plot:Too few points:%d, Skipping XFillPolygon()",
                                     npoints);
                             }
+                        }
                         break;
 
                     case DRAW_TO_PIXMAP_ALERTS:
