@@ -1756,7 +1756,7 @@ void check_weather_symbol(void) {
 
             // Notify the operator that the symbol has been changed
             // "Weather Station", "Changed to WX symbol '/_', other option is '\\_'"
-            popup_message( langcode("POPEM00030"), langcode("POPEM00031") );
+            popup_message_always( langcode("POPEM00030"), langcode("POPEM00031") );
         }
     }
 }
@@ -1771,7 +1771,7 @@ void check_nws_weather_symbol(void) {
 
         // Notify the operator that they're trying to be an NWS
         // weather station.
-        popup_message( langcode("POPEM00030"), langcode("POPEM00032") );
+        popup_message_always( langcode("POPEM00030"), langcode("POPEM00032") );
     }
 }
 
@@ -4653,7 +4653,7 @@ void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
             // Check whether any modifiers are pressed.
             // If so, pop up a warning message.
             if ( (event->state != 0) && warn_about_mouse_modifiers) {
-                popup_message(langcode("POPUPMA023"),langcode("POPUPMA024"));
+                popup_message_always(langcode("POPUPMA023"),langcode("POPUPMA024"));
             }
         }
     }
@@ -10472,7 +10472,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 // TNC data, just GPS data.
                                 if (gps_time < 3) {
                                     gps_time = 3;
-                                    popup_message(langcode("POPEM00036"),
+                                    popup_message_always(langcode("POPEM00036"),
                                         langcode("POPEM00037"));
                                 }
 
@@ -10649,7 +10649,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         // getting GPS data, warn the user that
                         // posits are disabled.
                         if (!transmit_disable && !posit_tx_disable) {
-                            popup_message(langcode("POPEM00033"),
+                            popup_message_always(langcode("POPEM00033"),
                                 langcode("POPEM00034"));
                         }
 //fprintf(stderr,"my_position_valid just went to zero!\n");
@@ -12226,7 +12226,7 @@ void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
     //}
     // check for position abiguity
     if ( position_amb_chars > 0 ) { // popup warning that ambiguity is on
-      popup_message( "Modify ambiguous position", "Position abiguity is on, your new position may appear to jump.");
+      popup_message_always( "Modify ambiguous position", "Position abiguity is on, your new position may appear to jump.");
     }
 
     if(display_up) {
@@ -22474,7 +22474,7 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     } else {
         // error message
-        popup_message(langcode("POPEM00022"),langcode("POPEM00027"));
+        popup_message_always(langcode("POPEM00022"),langcode("POPEM00027"));
     }
 }
 
@@ -22515,7 +22515,89 @@ void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     } else {
         // error message
-        popup_message(langcode("POPEM00022"),langcode("POPEM00027"));
+        popup_message_always(langcode("POPEM00022"),langcode("POPEM00027"));
+    }
+}
+
+
+
+
+
+// Check the name of a new Object.  If it already exists in our
+// database, warn the user.  Confirmation dialog to continue?
+//
+void Object_confirm_data_set(Widget widget, XtPointer clientData, XtPointer callData) {
+    char *temp_ptr;
+    char line[MAX_CALLSIGN+1];
+    DataRow *p_station;
+ 
+
+    temp_ptr = XmTextFieldGetString(object_name_data);
+    xastir_snprintf(line,
+        sizeof(line),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    (void)remove_leading_spaces(line);
+    (void)remove_trailing_spaces(line);
+
+    //fprintf(stderr,"Object name:%s\n", line);
+
+    // We have the name now.  Check it against our database of
+    // stations/objects/items.  Do an exact match.
+    //
+    if (search_station_name(&p_station,line,1)) {
+
+        // Found it.  Don't allow Object creation.  Bring up a
+        // warning message instead.
+        popup_message_always(langcode("POPEM00035"), langcode("POPEM00038"));
+    }
+    else {
+
+        // Not found.  Allow the Object to be created.
+        Object_change_data_set(widget, clientData, callData);
+    }
+}
+
+
+
+
+
+// Check the name of a new Item.  If it already exists in our
+// database, warn the user.  Confirmation dialog to continue?
+//
+void Item_confirm_data_set(Widget widget, XtPointer clientData, XtPointer callData) {
+    char *temp_ptr;
+    char line[MAX_CALLSIGN+1];
+    DataRow *p_station;
+ 
+
+    temp_ptr = XmTextFieldGetString(object_name_data);
+    xastir_snprintf(line,
+        sizeof(line),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    (void)remove_leading_spaces(line);
+    (void)remove_trailing_spaces(line);
+
+    //fprintf(stderr,"Item name:%s\n", line);
+
+    // We have the name now.  Check it against our database of
+    // stations/objects/items.  Do an exact match.
+    //
+    if (search_station_name(&p_station,line,1)) {
+
+        // Found it.  Don't allow Item creation.  Bring up a warning
+        // message instead.
+        popup_message_always(langcode("POPEM00035"), langcode("POPEM00038"));
+    }
+    else {
+
+        // Not found.  Allow the Item to be created.
+        Item_change_data_set(widget, clientData, callData);
     }
 }
 
@@ -23546,7 +23628,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         if ( !(p_station->flag & ST_OBJECT)
                 && !(p_station->flag & ST_ITEM)) {  // Not an object or item
             //fprintf(stderr,"flag: %i\n", (int)p_station->flag);
-            popup_message(langcode("POPEM00022"), "Not an Object/Item!");
+            popup_message_always(langcode("POPEM00022"), "Not an Object/Item!");
             return;
         }
 
@@ -25865,8 +25947,31 @@ else if (DF_object_enabled) {
                     MY_BACKGROUND_COLOR,
                     NULL);
 
-            XtAddCallback(ob_button_set, XmNactivateCallback, Object_change_data_set, object_dialog);
-            XtAddCallback(it_button_set, XmNactivateCallback,   Item_change_data_set, object_dialog);
+
+            // Changed to different callback routines here which
+            // check the new object/item name against our internal
+            // database then call
+            // Object_change_data_set/Item_change_data_set if all
+            // ok.  If a conflict (object/item already exists), do a
+            // popup_message() instead or bring up a confirmation
+            // dialog before creating the object/item.
+            //
+            //XtAddCallback(ob_button_set,
+            //    XmNactivateCallback,
+            //    Object_change_data_set,
+            //    object_dialog);
+            //XtAddCallback(it_button_set,
+            //    XmNactivateCallback,
+            //    Item_change_data_set,
+            //    object_dialog);
+            XtAddCallback(ob_button_set,
+                XmNactivateCallback,
+                Object_confirm_data_set,
+                object_dialog);
+            XtAddCallback(it_button_set,
+                XmNactivateCallback,
+                Item_confirm_data_set,
+                object_dialog);
         }
         
         ob_button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, ob_form,

@@ -944,6 +944,7 @@ POPEM00034|Position wird nicht gesendet bis gültige GPS-Daten!||
 POPEM00035|Warnung||
 POPEM00036|Hinweis||
 POPEM00037|HSP Interface vorhanden: GPS-Abfrageintervalle größer||
+POPEM00038|Name Conflicts With Existing Object/Item/Station||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||

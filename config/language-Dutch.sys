@@ -949,6 +949,7 @@ POPEM00034|Zet Mijn Positie TX uit totdat geldige GPS gegevens beschikbaar zijn!
 POPEM00035|Waarschuwing||
 POPEM00036|Let op||
 POPEM00037|HSP interface aanwezig: GPS timing is verhoogd||
+POPEM00038|Name Conflicts With Existing Object/Item/Station||
 #
 # Jump Location
 JMLPO00001|Kaart lokatie||

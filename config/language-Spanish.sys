@@ -941,6 +941,7 @@ POPEM00034|Disactivando TX de Mi Posición Hasta ver Data de GPS Válido!||
 POPEM00035|Warning||
 POPEM00036|Notice||
 POPEM00037|HSP interface present: GPS timing has been increased||
+POPEM00038|Name Conflicts With Existing Object/Item/Station||
 #
 # Salto de Locación
 JMLPO00001|Localización de Mapa||
