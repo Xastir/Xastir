@@ -6587,14 +6587,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
 void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, /*@unused@*/ char speedu, char *alt, char *sats) {
     long pos_long_temp, pos_lat_temp;
-    char temp_data[40];   // short temrm string storage
+    char temp_data[40];   // short term string storage
     char temp_lat[12];
     char temp_long[12];
     DataRow *p_station;
     DataRow *p_time;
 
     p_station = NULL;
-    if (!search_station_name(&p_station,my_callsign,1)) {  // find call
+    if (!search_station_name(&p_station,my_callsign,1)) {  // find my data in the database
         p_time = NULL;          // add to end of time sorted list
         p_station = add_new_station(p_station,p_time,my_callsign);
     }
@@ -6634,7 +6634,8 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
         if ((pos_long_temp>x_long_offset) && (pos_long_temp<(x_long_offset+(long)(screen_width *scale_x)))) {
             if ((pos_lat_temp>y_lat_offset) && (pos_lat_temp<(y_lat_offset+(long)(screen_height*scale_y)))) {
                 if((labs((p_station->coord_lon+(scale_x/2))-pos_long_temp)/scale_x)>0 || (labs((p_station->coord_lat+(scale_y/2))-pos_lat_temp)/scale_y)>0) {
-                    redraw_on_new_data = 1;  // redraw next chance
+                    //redraw_on_new_data = 1;   // redraw next chance
+                    redraw_on_new_data = 2;     // better response?
                     if (debug_level & 256) {
                         printf("Redraw on new gps data \n");
                     }
@@ -6678,6 +6679,9 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     /* get my last speed knots to mph */
     my_last_speed=(int)(atof(speed)*1.1508);
     strcpy(p_station->sats_visible,sats);
+
+    if (track_station_on == 1)          // maybe we are tracking ourselves?
+        track_station(da,tracking_station_call,p_station);
 }
 
 
@@ -8512,7 +8516,9 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
     } else
         strcpy(call_find,call_tracked);
 
-    /*printf("CALL %s %s %s\n",call_tracked, call_find, call);*/
+    if (debug_level & 256)
+        printf("track_station(): CALL %s %s %s\n",call_tracked, call_find, call);
+
     if (track_match) {
         if (strcmp(call_find,call) == 0)                // we want an exact match
             found=1;
@@ -8545,7 +8551,7 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
                 new_lon += x_ofs/2;
             set_map_position(w, new_lat, new_lon);      // center map to new position
         }
-            search_tracked_station(&p_station);
+        search_tracked_station(&p_station);
     }
 }
 
