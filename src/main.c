@@ -682,6 +682,7 @@ void Coordinate_calc_destroy_shell( /*@unused@*/ Widget widget, XtPointer client
 
 
 
+// Clears out the dialog's input textFields
 void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer callData) {
     XmTextSetString(coordinate_calc_zone, "");
     XmTextSetString(coordinate_calc_latitude_easting, "");
@@ -693,6 +694,20 @@ void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer c
 
 
 
+// Computes all four coordinate representations for displaying in
+// the "result" textField.  Also fills in the global variables for
+// possible later use when passing results back to the calling
+// dialog.  We can't use the util.c:*_l2s routines for the
+// conversions here because the util.c routines use Xastir
+// coordinate system as inputs instead of normal lat/lon.  Had to
+// home-grow our solution here.
+//
+// Inputs:  full_zone, northing, easting, latitude, longitude.  UTM
+// inputs are output directly.  Latitude/longitude are converted to
+// the various different lat/lon representations.
+//
+// Outputs: global variables and "result" textField.
+//
 void Coordinate_calc_output(char *full_zone, long northing,
             long easting, double latitude, double longitude) {
     char temp_string[1024];
@@ -737,7 +752,8 @@ void Coordinate_calc_output(char *full_zone, long northing,
     lon_min_int = (int)(temp / 1000);
     lon_sec = (temp % 1000) * 60.0 / 1000.0;
 
-
+    // Put the four different representations of the coordinate into
+    // the "result" textField.
     xastir_snprintf(temp_string,
         sizeof(temp_string),
         "%s%8.5f%c   %9.5f%c\n%s%02d %06.3f%c  %03d %06.3f%c\n%s%02d %02d %04.1f%c %03d %02d %04.1f%c\n%s%3s  %07lu  %07lu",
@@ -774,16 +790,16 @@ void Coordinate_calc_output(char *full_zone, long northing,
 
 
 
-// WE7U
 // Coordinate_calc_compute
 //
-// This one needs a bit of work yet (needs to actually _do_ something!).
+// Inputs:  coordinate_calc_zone textField
+//          coordinate_calc_latitude_easting textField
+//          coordinate_calc_longitude_northing textField
 //
-// Inputs:  coordinate_calc_zone
-//          coordinate_calc_latitude_easting
-//          coordinate_calc_longitude_northing
-//
-// Output:  coordinate_calc_result_text
+// Output:  coordinate_calc_result_text only if the inputs are not
+// recognized, then it outputs help text to the textField.  If
+// inputs are good it calls Coordinate_calc_output() to format and
+// save/output the results.
 //
 void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer callData) {
     char *str_ptr;
@@ -832,18 +848,18 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // dd mm ss.s N ddd mm ss.s W
     // -dd mm ss.s  -ddd mm ss.s
 
-    // 10T  0123456     1234567     DONE
-    // 10T   123456     1234567     DONE
+    // 10T  0123456     1234567     IMPLEMENTED
+    // 10T   123456     1234567     IMPLEMENTED
     // 10T  012 3456    123 4567
     // 10T   12 3456    123 4567
 
     // Once the four major formats are created and written to the
     // output test widget, the dd mm.mmmN/ddd mm.mmmW formatted
     // output should also be saved for later pasting into the
-    // calling dialog's input fields.
+    // calling dialog's input fields.  DONE!
     //
     // Must also make sure that the calling dialog is still up and
-    // active before we try to write to it's widgets.
+    // active before we try to write to it's widgets.  DONE!
 
 
     // First check for something in the zone field that looks like a
@@ -1010,9 +1026,13 @@ printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
 
 
 
+// Input:  Values from the coordinate_calc_array struct.
+//
+// Output:  Writes data back to the calling dialog's input fields if
+// the calling dialog still exists at this point.
+//
 // Make sure that if an error occurs during computation we don't
-// write a bad value back to the calling widget.  Pop up a message
-// in that case explaining the error.
+// write a bad value back to the calling widget.  DONE.
 //
 void Coordinate_calc_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
 
@@ -1056,17 +1076,22 @@ void Coordinate_calc_change_data(Widget widget, XtPointer clientData, XtPointer 
 
 // Coordinate Calculator
 //
+// Change the title based on what dialog is calling us?
+//
 // We want all four possible coordinate formats displayed
-// simultaneously.  Hitting enter or "Calculate" will cause all of
-// the fields to be updated.
+// simultaneously.  DONE.
+//
+// Hitting enter or "Calculate" will cause all of the fields to be
+// updated.  DONE (for Calculate button).
 //
 // The fields should be filled in when this is first called.
 // When done, this routine will pass back values via a static array
-// of Widget pointers to the calling dialog's fields.
+// of Widget pointers to the calling dialog's fields.  DONE.
 //
 // We could grey-out the OK button until we have a successful
 // calculation.  This would make sure that an invalid location didn't
-// get written to the calling dialog.
+// get written to the calling dialog.  Would have to have a
+// successful conversion before we could write the value back.
 //
 void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
     static Widget  pane, form, label1, label2, label3,
