@@ -1,0 +1,433 @@
+
+Getting Data Files for Xastir:
+------------------------------
+
+      NOTE:  Set map FILES to permissions 644 ("rw-r--r--"), map
+      DIRECTORIES to 755 ("rwxr-xr-x") using the "chmod" command.
+      These permissions will allow anyone on the box to read the map
+      files, and access the map directories. Type these
+      commands exactly as shown in order to set the map directory's
+      permissions properly.  Do this as the root user:
+
+      cd /usr/local/xastir/maps
+      find . -type d -exec chmod 755 {} \;
+      find . -type f -exec chmod 644 {} \;
+
+      You can repeat these commands at anytime, to fix up errant map
+      permissions that are created by downloading/installing new
+      maps.
+
+
+    Download some maps:
+
+      If you compiled with ImageMagick and have wget or libcurl installed,
+      you can skip this step and use the online Tiger/Terraserver maps
+      exclusively. However, having maps on your computer is often faster
+      than transferring images over a modem, and is not subject to the
+      failures of your internet connection.
+
+      You can have any number of maps in the /usr/local/xastir/maps directory.
+      You can organize the maps however you like. You can also use symbolic
+      links to link to files/directories on other disks. Map files are loaded
+      in the order that they appear in the chooser unless you adjust the
+      layering priorities in the properties dialog (it's recommended that you
+      use these now instead of a directory heirarchy to choose the layering).
+
+      There are many methods for organizing many maps. Create a map
+      heirarchy using something that makes sense to you. The old method of
+      creating transparent/filled or raster/vector directories has been
+      superceded by the new map layering features in the Map
+      Chooser->Properties dialog. It's now suggested that the map layering
+      be done there, and the directory layout designed to make it easiest
+      for the user to select maps. Perhaps a good start would be:
+
+           World/
+           Canada/
+           Canada/Province/
+           USA/
+           USA/State/WA/
+           USA/State/WA/County/
+           ...
+           GNIS/
+           Overlay/
+
+      Please note that the map directories are entirely up to the user
+      now. Use the map layering facilities to determine the order in
+      which they will be drawn, and to determine which will draw filled
+      areas. Note that raster maps will always draw filled, not matter
+      what the setting suggests.
+
+      Map types available by extension:
+
+      Vector Format:
+      .shp/.shx/.dbf  Shapefile vector map (need all three files)
+      .pdb            pocketAPRS vector map
+      .map            APRSdos/WinAPRS/MacAPRS vector map
+      .gnis           GNIS labels file (actually points instead of vectors)
+      .geo            Vector map or internet vector map
+
+      Raster Format:
+      .tif/.fgd       geoTIFF raster image map
+      .geo            Raster image map or internet raster image map
+
+      Note:  .geo is listed twice because it can fit in both categories,
+      depending on the base format of the map file that the .geo file
+      points to.  .geo files are handled by the XPM library or by
+      ImageMagick, so most anything that can be handled by those installed
+      libraries can by handled by Xastir.
+
+      A few maps of various types are available from:
+
+        http://wetnet.net/~we7u/xastir/maps/
+
+
+     Dos/Win/MacAPRS style vector/fill maps:
+
+      ftp://aprs.rutgers.edu/pub/hamradio/APRS/maps02/
+       Get at least WORLDHI.MAP
+      ftp://aprs.rutgers.edu/pub/hamradio/APRS/
+
+      You can also use any of the other maps available from this site. They
+      were created from tiger line maps and are very detailed. They also work
+      well with the "Map Levels" function for controlling map detail.
+      
+      Also try:
+       ftp://ftp.tapr.org/aprssig/maps/
+
+     GeoTIFF Map files:
+
+      If you compiled in geoTIFF support, you can find DRG topo maps at
+      GIS Data Depot (http://www.gisdatadepot.com) for the U.S. You can also
+      find links to maps at http://mcmcweb.er.usgs.gov/drg/free_drg.html
+      The 7.5' topo maps work the best so far.  Be sure to install the .tif AND
+      the .fgd files side-by-side into the map directories. Without the .fgd
+      file Xastir won't be able to crop the white border from the map.  Xastir
+      currently knows how to handle NAD27, NAD83, and WGS84 geoTIFF files.
+      GeoTIFF files created in other datums will be displayed at an incorrect
+      location with Xastir. The .tfw files included with most geoTIFF images
+      are not used by Xastir.
+
+      If you must make FGD files by hand, the included script mapfgd.pl can
+      create them for you from the USGS geoTIFF files. The format Xastir is
+      looking for is the following:
+
+        1.5.1.1  WEST BOUNDING COORDINATE:  -122.000000
+        1.5.1.2  EAST BOUNDING COORDINATE:  -120.000000  
+        1.5.1.3  NORTH BOUNDING COORDINATE:  48.000000 
+        1.5.1.4  SOUTH BOUNDING COORDINATE:  47.000000 
+
+     -or-
+
+        1.5.1.1  West_Bounding_Coordinate:  -122.000000
+        1.5.1.2  East_Bounding_Coordinate:  -120.000000  
+        1.5.1.3  North_Bounding_Coordinate:  48.000000 
+        1.5.1.4  South_Bounding_Coordinate:  47.000000 
+
+     Notes about DRG-Enhanced (DRG-E) files:
+     * The DRG-E files will draw over the correct spots if you remove
+     the .fgd file, but will overflow their boundaries and
+
+     * The DRG-E files will draw over the correct spots with decent
+     boundary trimming (as far as I can tell, which isn't very far:
+     correct me!) if you use a .fgd file taken from 'real' DRG files
+     from USGS.
+
+     Basically: get rid of the .fgd file from the DRG-E!!
+
+     Be wary of DRG-E or DOQQ files that are compressed with MrSID
+     compression.  That is a proprietary compression format for
+     which we do not have access to the decoding algorithm.  We
+     cannot use those from within Xastir.
+
+
+     Shapefile format maps:
+
+      Some shapefile format maps are available at: 
+      http://isl715.nws.noaa.gov/mapdata/newcat/ 
+
+      Tiger97 maps converted to shapefile downloadable from:
+      http://www.mapshots.com
+
+      Newer Tiger/Line 2000 map data is available from:
+      http://www.esri.com/data/download/census2000_tigerline/index.html
+      but requires free registration.  A example of these types of files can
+      be found at "http://wetnet.net/~we7u/xastir/maps/shapefile/USA/WA/".
+      You'll need to run "tar xzvf <filename>" on each one of the files
+      from that last site after downloading.  Some layers that may be of
+      interest:
+
+
+        CMSA/MSA Polygons 2000              tgr*msa00.shp
+        PMSA Polygons 2000                  tgr*pms00.shp
+        Consolidated Cities                 tgr*city.shp
+        County - Current                    tgr*cty.shp
+        County 2000                         tgr*cty00.shp
+        Designated Places 2000              tgr*plc00.shp
+        Designated Places Current           tgr*plccu.shp
+        Key Geographic Locations            tgr*kgl.shp
+        Landmark Points                     tgr*lpt.shp
+        Landmark Polygons                   tgr*lpy.shp
+        Line Features - Hydrography         tgr*lkH.shp
+        Line Features - Landmarks           tgr*lkD.shp
+        Line Features - Misc. Transport     tgr*lkC.shp
+        Line Features - Non-visible         tgr*lkF.shp
+        Line Features - Physical            tgr*lkE.shp
+        Line Features - Rails               tgr*lkB.shp
+        Line Features - Roads               tgr*lkA.shp
+        Line Features - Unknown             tgr*lkX.shp
+        School Districts - Elementary       tgr*elm.shp
+        School Districts - Middle           tgr*mid.shp
+        School Districts - Secondary        tgr*sec.shp
+        School Districts - Unified          tgr*uni.shp
+        Traffic Analysis Zones              tgr*taz.shp
+        Urban Areas                         tgr*urb.shp
+        Water Polygons                      tgr*wat.shp
+        Alternate Feature Names             tgr*alt.shp
+        Address Matching Info               tgr*add2.shp
+        ZIP+4 Left and Right Info           tgr*zip.shp
+        Key Geographic Location Addresses   tgr*add.shp
+        Landmark Polygon Names              tgr*lpy2.shp
+        Landmark Polygons Multi-Landmark    tgr*lpy3.shp
+        Water Polygons Multi-Names          tgr*wat2.shp
+
+
+      Other shapefiles are available from esri.com, geographynetwork.com
+      and gisdatadepot.com (from their "free data" link).  Lot's of useful
+      stuff at these sites, just look around.
+
+      Also get the usgs_24kgrid.zip file from gisdatadepot.com.  This
+      file provides a grid of all of the 7.5' maps and their names
+      for the U.S.  Check for it under the "Index Grids" link on
+      their web pages.
+
+***** A nice world map is available at http://aprsworld.net/gisdata/world/
+      thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
+      of the World (for Antartica).  Note that this file is currently
+      available only in uncompressed or in tar/bzip2 format.  To decompress
+      the latter file, you'd type "bunzip2 filename" and then
+      "tar xvf filename".
+
+      -----
+      Reprojecting shapefiles (or: why doesn't my shapefile show up?)
+
+      A shapefile is pretty much just a collection of points and lines
+      between points.  Xastir expects that those points are expressed in
+      degrees of longitude and latitude with positive values indicating N
+      and E and negative values indicating S and W.
+
+      One often comes across shapefiles with data in some other format, such
+      as UTM or stateplane projections with units in meters or feet.  You
+      must re-project these sorts of shapefiles in order to use them in
+      Xastir.  You must either know what the current format is of the
+      shapefile you wish to reproject, or have the .prj file that some
+      shapefiles come with.
+
+      Fortunately, the shapelib-1.2.10 distribution (which you probably
+      compiled and installed to enable shapefile maps in Xastir) includes a
+      tool for performing this reprojection. 
+
+      First make the shpproj utility by:
+
+      1. change to directory: <shapelib source directory>/contrib
+      2. type 'make' to compile the contrib files
+      3. Optionally install shpproj by copying it to /usr/local/bin
+
+      shpproj takes 4 arguments:
+
+          shpproj shp_file new_shp -i="in_params" -o="out_params"
+
+      shp_file is the name of your existing shapefile triad (without the
+      extension).
+
+      new_shp is the name of your new shapefile triad (which doesn't exist
+      yet).
+
+      -i="in_params" are the parameters describing the existing shapefile.
+
+      -o="out_params" are the parameters describing the new shapefile.  We
+      want this to be "geographic".
+
+      Examples:
+
+      Convert shapefile triad from US Stateplane, South Central Texas region
+      (FIPS code 4204), in feet to geographic:
+
+        shpproj stateplane_shapefile geographic_shapefile \
+             -i="init=nad83:4204 units=us-ft" -o=geographic
+
+      Convert UTM zone 15 to geographic:
+
+        shpproj utm_shapefile geographic_shapefile \
+             -i="proj=utm zone=15 units=m" -o=geographic
+
+      To get a listing of the FIPS codes, you need to have proj installed
+      (see elsewhere in this file for more information).  Look in the
+      "<proj source directory>/nad/nad.lst" file.
+
+      For more detailed documentation, see the shpproj.txt file in the
+      "<shapelib source directory>/contrib/doc" directory.
+      -----
+
+    .geo files/online maps & graphics:
+
+      If you have ImageMagick and wget or libcurl installed, .geo files
+      for NWS radars are available from one of these sites:
+
+          ftp://gcpoolz.com/geos/Srb_geos.zip
+          http://wetnet.net/~we7u/xastir/maps/radar-geos.tgz
+
+      You'll probably want to add an IMAGESIZE line to each one to speed up
+      loading when some radars are offscreen: (bash syntax, modify for your
+      shell...)
+
+          for a in srb_*; do echo "IMAGESIZE 620 620" >> $a; done
+
+      Please also note that the coordinates in the .GEO files are expressed
+      in decimal degrees, and are listed with longitude first then latitude
+      on the TIEPOINT lines.
+
+      Tiger maps of the USA are available through the map menu under 
+      "Enable/configure Tigermap". These maps are generated by the census
+      bureau webserver.
+
+      A .geo with only the word "TERRASERVER" in it will retrieve a satellite
+      photo of the area from terraserver.  You need "wget" or libcurl, plus
+      ImageMagick installed, and support for them compiled into Xastir.  No
+      additional map downloads are needed if these are the only maps that you
+      want to use.
+
+     PocketAPRS maps:
+
+      The latest WinAPRS distribution includes the full collection of 
+      PocketAPRS vector maps for the USA. The download is about 60Mb, from the
+      TAPR ftp site.
+
+      Also try:  
+       ftp://ftp.tapr.org/aprssig/palmstuff/palmmaps/
+
+     Geographic Names Information System Labels:
+
+      These aren't maps, but are collections of name labels for locations.
+      These display at various zoom levels like Dos/WinAPRS map labels, but are
+      also searchable from the Maps menu.
+
+         http://geonames.usgs.gov/
+         http://geonames.usgs.gov/gnisftp.html
+
+      These files should be named in the form "<ST>.gnis", where <ST> is the
+      abbreviation for the state that they cover, and should be placed in the
+      /usr/local/xastir/GNIS/ directory. To make sure that maps are layered
+      correctly with GNIS labels on the top, it is suggested that you link
+      /usr/local/xastir/maps/z to this GNIS directory.
+
+      Type this as root to create the link and directories:
+       cd /usr/local/xastir/maps
+       ln -s ../GNIS z
+
+      The map files must end in ".gnis" to be used by Xastir, and must be in
+      comma delimited/double quotes format.  These are readily available from
+      http://geonames.usgs.gov/ with such filenames as "AZ_deci". The files
+      must be renamed to <ST>.gnis, and the trailing whitespace should be
+      removed for speed. This can be accomplished in one step with the
+      following command. (bash style...)
+
+   for a in *deci; do sed -e 's/[ ]*$//g' < $a > `basename $a _deci`.gnis; done
+
+      Indivdual files can have whitespace removed as follows:
+        sed -e 's/[ ]*$//g' < inputfile > outputfile
+
+
+     County Warning maps:
+      All WX County maps should be stored in the /usr/local/xastir/Counties
+
+      WinAPRS style:
+       Xastir no longer suppports WinAPRS style county maps. Please download
+       and install the shapefile format maps as described below.
+
+      Shapefile style:
+       The shapefile format weather maps may be found here:
+         http://www.nws.noaa.gov/geodata/
+
+        The files of interest are:
+
+        NWSI Libraries:
+        ---------------
+        County Warning Areas
+        Zone Forecast Areas
+        Coastal and Offshore Marine Zones
+
+        County Libraries:
+        -----------------
+        AWIPS Counties
+
+      Unzip those files in the /usr/local/xastir/Counties/ directory and
+      Xastir should find them and use them for weather alerts.
+
+      These are what I currently have loaded:
+
+            hz02oc01.shp
+            w_25ap02.shp
+            oz18jn02.shp
+            c_30au02.shp
+            z_30au02.shp
+            mz10se02.shp
+           
+       Note that you can also use the county file as the background polygon
+       filled map for drawing county lands and borders.  Either make a link
+       to these files from your maps directory, or copy the files there so
+       that they show up in the Map Chooser.
+ 
+
+     Download audio files:
+
+       To play the wav files you will need a program such as vplay to play the
+       audio file through your sound card.
+
+       Grab xastir-sounds.tgz at the ftp site you downloaded Xastir, or at
+        ftp://ftp.tapr.org/software_lib/Linux/xastir/xastir-sounds.tgz
+
+       Untar this archive into the /usr/local directory, assuming Xastir
+       is installed in /usr/local/xastir. (FIXME: thunder.wav is missing?) 
+
+     Download FCC and/or RAC Database files:
+
+       If the FCC database is installed, a Search FCC Database button will
+       appear in the station info box. If the RAC (Radio Amateurs of Canada)
+       database is installed, a Search RAC Database button will appear for
+       callsigns beginning with "VE" or "VA".
+
+       The download and installation of these is automated in the fcc-get
+       script included with Xastir, but you may install them by hand
+       individually if you wish.
+
+       To use the FCC lookup:
+       ----------------------
+
+         Download:
+         ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
+
+         (The only file needed from this 60Meg zip is the EN.dat file)
+
+         **** NOTE To use the data base file it must be sorted first!!! ****
+     
+         unzip l_amat.zip
+ 
+         To sort the file: Make sure you have plenty of disk space
+         for this as the file is BIG!
+
+         sort +4 -t \| EN.dat >EN.dat.sorted
+
+         Install it in the xastir/fcc directory:
+
+         su
+         mv EN.dat.sorted /usr/local/xastir/fcc/EN.dat
+
+
+       To use the RAC lookup:
+       ----------------------
+
+         Download:
+         ftp://ftp.rac.ca/pub/cdncaldb.zip
+
+         unzip cdncaldb.zip
+         mv AMATEUR.RPT /usr/local/xastir/fcc/AMACALL.LST

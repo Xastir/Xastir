@@ -1,0 +1,94 @@
+CVS Instructions:
+-----------------
+     For those who think CVS might be a bit too complicated to deal with,
+     here are (I think) the minimal commands:
+
+     Initial CVS Checkout:
+     ---------------------
+     1) Create a ".cvsrc" file in your home directory containing the
+        following lines.  Use whatever Unix-type editor you're
+        comfortable with.  Choices might be pico, vi, emacs, others:
+
+         cvs -z3
+         update -P -d
+         status -v
+
+        These are just some of the CVS options that I prefer, and make some
+        things easier.  They are not required.
+
+     2) Start up a shell window of some type, perhaps an xterm or an rxvt.
+        Type the following commands into this one shell.  You'll be setting
+        an environment variable which will then allow you check out the full
+        sources for the first time.  After that, the environment variable
+        won't be needed anymore and all shells you use will be able to
+        work with the remote CVS repository.  The checked-out sources contain
+        administration info which the CVS commands use to know which remote
+        server to talk to, and which account/encrypted password to use from
+        your ~/.cvspass file.
+
+     3) Follow the instructions listed under "Anonymous CVS Access".  Go to:
+        <http://sourceforge.net/projects/xastir/>, then click on "CVS" to
+        find the instructions.
+
+     It creates a .cvspass file in your home directory with the anonymous
+     login information inside it, then creates a subdirectory called
+     "xastir" that has all the latest sources in it.
+
+     All done!  You know have the latest development sources on your
+     computer.  Now you can forget about all of the previous instructions
+     unless you delete the entire tree and want to start over from scratch.
+
+
+     CVS Commands for Maintaining the Current Development Sources:
+     -------------------------------------------------------------
+     Once all this is in place, just cd into the "xastir" directory at any
+     time, type "cvs update", then type "make install" and you'll have the
+     latest development stuff installed on your system.
+
+     Here are the commands to do if you want a clean build of the latest
+     sources, and want configure to recheck all the libraries and header
+     files that Xastir needs:
+
+         cd xastir
+         cvs update (snag all the latest changes)
+         aclocal;autoconf;autoheader;automake (skip these: for developers only)
+         rm config.cache (causes configure to start from scratch)
+         ./configure
+         (make clean;make -j3 2>&1) | tee make.log
+         su
+         make install (make install-strip can be used after the first time,
+                       it removes debugging info from executable)
+         chmod 4555 /usr/local/bin/xastir (only needed if using kernel AX.25)
+         exit (from root)
+         xastir
+
+     Even more CVS commands (most people won't need these):
+     ------------------------------------------------------
+     I use these aliases the most (defined in my bash shell startup files):
+
+       alias cvsdiff='cvs diff -w -r HEAD'
+       alias cvsstat2='cvs -n -q update'
+       alias cvsstat3='(cvs status 2>&1) | grep -E "Status: | Examining" | grep -v Up-to-date | grep -v Makefile.in'
+
+     to see if anything has changed.  cvsstat3 is the most useful one
+     for me as a developer.  If anything has, I can use this alias to
+     see the details on a particular file:
+
+         alias cvsdiff='cvs diff -w -r HEAD'
+
+     As in:
+
+         cvsdiff main.c
+
+         -or- (not using the alias)
+
+         cvs diff -w -r HEAD main.c
+
+     Then perhaps do an update on that file alone:
+
+         cvs update main.c
+
+     There are many more CVS commands and options.  Many of them are more
+     of use to the developers than the users.  The above should be enough
+     for most people to keep their copies in sync with the latest CVS
+     development sources.

@@ -1,182 +1,728 @@
-Basic Installation
-==================
+General steps to configure/compile/install Xastir:
+(See detailed steps and library installation instructions below)
+----------------------------------------------------------------------
 
-   These are generic installation instructions.
+1) Get one of the source releases and explode it.
 
-   The `configure' shell script attempts to guess correct values for
-various system-dependent variables used during compilation.  It uses
-those values to create a `Makefile' in each directory of the package.
-It may also create one or more `.h' files containing system-dependent
-definitions.  Finally, it creates a shell script `config.status' that
-you can run in the future to recreate the current configuration, a file
-`config.cache' that saves the results of its tests to speed up
-reconfiguring, and a file `config.log' containing compiler output
-(useful mainly for debugging `configure').
+  mkdir xastir
+  cp xastir*.tgz xastir
+  cd xastir
+  tar xzvf xastir*
 
-   If you need to do unusual things to compile the package, please try
-to figure out how `configure' could check whether to do them, and mail
-diffs or instructions to the address given in the `README' so they can
-be considered for the next release.  If at some point `config.cache'
-contains results you don't want to keep, you may remove or edit it.
 
-   The file `configure.in' is used to create `configure' by a program
-called `autoconf'.  You only need `configure.in' if you want to change
-it or regenerate `configure' using a newer version of `autoconf'.
+2) Go into the xastir directory to build the executable:
 
-The simplest way to compile this package is:
+  cd xastir*
+  ./configure
+  make
+  su (become the root user)
+  make install (make install-strip can be used after the first time)
+  chmod 4555 /usr/local/bin/xastir (if you use kernel ax.25, see below) 
+  exit (from root)
 
-  1. `cd' to the directory containing the package's source code and type
-     `./configure' to configure the package for your system.  If you're
-     using `csh' on an old version of System V, you might need to type
-     `sh ./configure' instead to prevent `csh' from trying to execute
-     `configure' itself.
+3) Xastir should now be installed in /usr/local/bin (the default on
+most systems).  You can run it by typing this from a shell:
 
-     Running `configure' takes awhile.  While running, it prints some
-     messages telling which features it is checking for.
+    xastir &
 
-  2. Type `make' to compile the package.
 
-  3. Optionally, type `make check' to run any self-tests that come with
-     the package.
+Short summary of libraries Xastir can use:
+-------------------------------------------------------------------------
+Motif or OpenMotif or LessTiff  Required  The GUI widget set
+pthreads                        Required  Threading capability
+Shapelib                      Recommended ESRI Shapefile maps and wx alerts
+Xpm                             Optional  XPM images
+ImageMagick                     Optional  MANY graphics images
+libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
+AX.25                           Optional  Kernel AX.25 networking support
+festival                        Optional  Speaking alerts
+libcurl or wget                 Optional  Internet images as maps
+GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
 
-  4. Type `make install' to install the programs and any data files and
-     documentation.
+Installing only the required libs gives you these capabilities:
+PocketAPRS/aprsDOS/WinAPRS/MacAPRS maps, GNIS labels, serial port and
+internet gateway connectivity.
 
-  5. You can remove the program binaries and object files from the
-     source code directory by typing `make clean'.  To also remove the
-     files that `configure' created (so you can compile the package for
-     a different kind of computer), type `make distclean'.  There is
-     also a `make maintainer-clean' target, but that is intended mainly
-     for the package's developers.  If you use it, you may have to get
-     all sorts of other programs in order to regenerate files that came
-     with the distribution.
+Adding XPM or ImageMagick libs, ImageMagick's "convert" utility, and
+the "gv" utility gives you printing capability.  Postscript or
+emulated postscript printing capability is required for this as well.
+XPM or ImageMagick libs and "convert" also give the capability to
+create automatic PNG images on disk from the map screen (useful for
+web pages!).
 
-Compilers and Options
-=====================
+Shapelib support also gives you the capability to use Tiger 2000
+maps which were converted to Shapefile format by ESRI.  This allows
+you to use free detailed street maps for any point in the U.S.
 
-   Some systems require unusual options for compilation or linking that
-the `configure' script does not know about.  You can give `configure'
-initial values for variables by setting them in the environment.  Using
-a Bourne-compatible shell, you can do that on the command line like
-this:
-     CC=c89 CFLAGS=-O2 LIBS=-lposix ./configure
+Adding other optional libraries listed gives you the additional
+capabilities listed above.
 
-Or on systems that have the `env' program, you can do it like this:
-     env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
-Compiling For Multiple Architectures
-====================================
+Things you need for this version:
+---------------------------------
+ * Get Lesstif/OpenMotif from your favorite Linux/Unix distribution.
+-or-
+ * Lesstif: www.lesstif.org (look below for RED-HAT instructions)
+-or-
+ * OpenMotif: www.openmotif.org
 
-   You can compile the package for more than one kind of computer at the
-same time, by placing the object files for each architecture in their
-own directory.  To do this, you must use a version of `make' that
-supports the `VPATH' variable, such as GNU `make'.  `cd' to the
-directory where you want the object files and executables to go and run
-the `configure' script.  `configure' automatically checks for the
-source code in the directory that `configure' is in and in `..'.
+ * AX25 packages: (if you want support for kernel AX25 interfaces)
+    Lib AX25:http://prdownloads.sourceforge.net/ax25/libax25-0.0.7.tar.gz
+    AX25 apps:http://prdownloads.sourceforge.net/ax25/ax25-apps-0.0.4.tar.gz
+    AX25 tools:http://prdownloads.sourceforge.net/ax25/ax25-tools-0.0.8.tar.gz
+    The apps package is not required, but strongly suggested. These versions
+     are current as of the writing of this document; feel free to use newer
+     versions.  Make sure the versions you choose match your kernel version.
+    Also note that there are patches required to the 2.4 kernel for AX.25
+    kernel networking.  See the linux-hams mailing list for details.
 
-   If you have to use a `make' that does not supports the `VPATH'
-variable, you have to compile the package for one architecture at a time
-in the source code directory.  After you have installed the package for
-one architecture, use `make distclean' before reconfiguring for another
-architecture.
+ * You should have glibc on your system that supports threads!
 
-Installation Names
-==================
 
-   By default, `make install' will install the package's files in
-`/usr/local/bin', `/usr/local/man', etc.  You can specify an
-installation prefix other than `/usr/local' by giving `configure' the
-option `--prefix=PATH'.
+For geoTIFF support (such as USGS DRG topo maps) you also need:
 
-   You can specify separate installation prefixes for
-architecture-specific files and architecture-independent files.  If you
-give `configure' the option `--exec-prefix=PATH', the package will use
-PATH as the prefix for installing programs and libraries.
-Documentation and other data files will still use the regular prefix.
+    libtiff (should be on your distribution's CD's):
+    ------------------------------------------------
+        http://www.libtiff.org
 
-   In addition, if you use an unusual directory layout you can give
-options like `--bindir=PATH' to specify different values for particular
-kinds of files.  Run `configure --help' for a list of the directories
-you can set and what kinds of files go in them.
+    libproj (proj-4.4.7):
+    ---------------------
+        http://www.remotesensing.org/proj/
+        http://wetnet.net/~we7u/xastir/
 
-   If the package supports it, you can cause programs to be installed
-with an extra prefix or suffix on their names by giving `configure' the
-option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
+    Datum translations (proj-nad27-1.1.):
+    -------------------------------------
+        ftp://ftp.remotesensing.org/pub/proj/
+        http://wetnet.net/~we7u/xastir/
 
-Optional Features
-=================
+    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.0):
+    --------------------------------------------------
+        http://www.remotesensing.org/geotiff/geotiff.html
+        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
+        http://wetnet.net/~we7u/xastir/
 
-   Some packages pay attention to `--enable-FEATURE' options to
-`configure', where FEATURE indicates an optional part of the package.
-They may also pay attention to `--with-PACKAGE' options, where PACKAGE
-is something like `gnu-as' or `x' (for the X Window System).  The
-`README' should mention any `--enable-' and `--with-' options that the
-package recognizes.
+    Please note that the order of installation for the above libraries is
+    critical.  Follow the instructions below carefully.
 
-   For packages that use the X Window System, `configure' can usually
-find the X include and library files automatically, but if it doesn't,
-you can use the `configure' options `--x-includes=DIR' and
-`--x-libraries=DIR' to specify their locations.
+For Linux kernel AX.25 interfaces, you require these packages:
+    Lib AX25:http://prdownloads.sourceforge.net/ax25/libax25-0.0.11.tar.gz
+    AX25 apps:http://prdownloads.sourceforge.net/ax25/ax25-apps-0.0.5.tar.gz
+    AX25 tools:http://prdownloads.sourceforge.net/ax25/ax25-tools-0.0.8.tar.gz
+    The apps package is not required, but strongly suggested. These versions
+     are current as of the writing of this document; feel free to use newer
+     versions.  Make sure the versions you choose are compatable with your
+     kernel version. See the AX.25 howto and the linux-hams mailing list for
+     details.
 
-Specifying the System Type
-==========================
+For speech support via the festival speech synthesis software you need:
+    festival:
+       http://www.speech.cs.cmu.edu/festival/
+       http://at.rpmfind.net/opsys/linux/RPM/redhat/7.0/powertools/i386/festival-1.4.1-5.i386.html
 
-   There may be some features `configure' can not figure out
-automatically, but needs to determine by the type of host the package
-will run on.  Usually `configure' can figure that out, but if it prints
-a message saying it can not guess the host type, give it the
-`--host=TYPE' option.  TYPE can either be a short name for the system
-type, such as `sun4', or a canonical name with three fields:
-     CPU-COMPANY-SYSTEM
+    If you're running a slightly older version of Linux you'll need to install 
+    festival from sources to make it work properly.
 
-See the file `config.sub' for the possible values of each field.  If
-`config.sub' isn't included in this package, then this package doesn't
-need to know the host type.
+For ESRI Shapefile format maps/weather alert maps:
+    Shapelib:
+        http://gdal.velocet.ca/projects/shapelib/index.html
+        http://wetnet.net/~we7u/xastir/
 
-   If you are building compiler tools for cross-compiling, you can also
-use the `--target=TYPE' option to select the type of system they will
-produce code for and the `--build=TYPE' option to select the type of
-system on which you are compiling the package.
+For ImageMagick support for maps in any of 68 major graphics formats,
+   including the capability to use online maps and weather radar images:
+    ImageMagick:
+        http://www.imagemagick.org/
 
-Sharing Defaults
-================
+To use online maps or findu.com historical data, you'll need wget or
+   libcurl/libcurl-devel installed.  Many systems have these preinstalled,
+   so check first.  You may need to upgrade your installed version for
+   this feature to work correctly from within Xastir:
+    Wget:
+        ftp://ftp.gnu.org/gnu/wget/
+    libcurl:
+        http://curl.sourceforge.net/
 
-   If you want to set default values for `configure' scripts to share,
-you can create a site shell script called `config.site' that gives
-default values for variables like `CC', `cache_file', and `prefix'.
-`configure' looks for `PREFIX/share/config.site' if it exists, then
-`PREFIX/etc/config.site' if it exists.  Or, you can set the
-`CONFIG_SITE' environment variable to the location of the site script.
-A warning: not all `configure' scripts look for a site script.
 
-Operation Controls
-==================
+To download GPS tracks/waypoints/routes from a Garmin GPS into Xastir,
+converting to Shapefile format maps as it runs, you'll need gpsmanshp and
+GPSMan.  GPSMan 6.0 and later has command-line support built-in so that
+Xastir can control it directly:
+    gpsmanshp:
+        http://www.ncc.up.pt/gpsmanshp/
+    GPSMan:
+        http://www.ncc.up.pt/gpsman/
+        http://sunsite.unc.edu/pub/Linux/science/cartography
 
-   `configure' recognizes the following options to control how it
-operates.
+See below for instructions on installing all of these libraries. Once the 
+  libraries are installed, ./configure should find the libraries and allow
+  compiling in support for the new features.
 
-`--cache-file=FILE'
-     Use and save the results of the tests in FILE instead of
-     `./config.cache'.  Set FILE to `/dev/null' to disable caching, for
-     debugging `configure'.
 
-`--help'
-     Print a summary of the options to `configure', and exit.
+Unpack the Xastir source code anywhere..
+ usually like this:
+  tar xvzf xastir-x.x.x.tgz (where x.x.x is the version number)
 
-`--quiet'
-`--silent'
-`-q'
-     Do not print messages saying which checks are being made.  To
-     suppress all normal output, redirect it to `/dev/null' (any error
-     messages will still be shown).
+If you have installed before, read the "Previous Install" notes for information
+on changes in file location and permissions.
 
-`--srcdir=DIR'
-     Look for the package's source code in directory DIR.  Usually
-     `configure' can determine that directory automatically.
 
-`--version'
-     Print the version of Autoconf used to generate the `configure'
-     script, and exit.
+First Time Install:
+-------------------
 
-`configure' also accepts some other, not widely useful, options.
+   1. OPTIONAL:  If you wish to use AX.25 interfaces, install the AX.25
+      packages.  Verify that they are configured and working. Use "listen"
+      to watch the packets fly by after getting AX.25 configured and hooked
+      to a TNC.  Use the AX.25 HOWTO document to guide you in this process.
+
+
+   2. Install LessTif or OpenMotif
+
+     If you already have Motif or OpenMotif on your system, including
+     the development headers, then you won't need to install LessTif. Most
+     distributions include one of these; step 2a describes building from
+     source, while 2b and 2c describe installing from prebuilt packages on
+     RedHat and SuSE.  Now that OpenMotif is available, you may be happier
+     running it than LessTif, but either one should work with Xastir.
+
+        2a. Download LessTif version 0.91.1 or higher or download OpenMotif.
+        Follow the instructions provided, compile it and install it.
+
+        Usually,
+         ./configure
+         make
+         su (root)
+         make install (as root)
+         ldconfig
+         exit (from root)
+
+        Or you can try any other OSF/Motif(R) version 1.2
+
+
+       2b. Install LessTif (for RED HAT !!)
+
+       download lestif-devel-0.91.1-1.i386.rpm or newer and install it
+       download lestif-0.91.1-1.i386.rpm  or newer and install it
+
+       Follow any install instructions with LessTif,
+
+       you may need to
+        edit /etc/ld.so.conf
+        and run:
+        ldconfig
+
+
+       2c. Install LessTif (for older SuSE systems !!)
+
+       download lesstif.rpm and lesstifd.rpm and install
+       them.  As root:
+
+         rpm -U lesstif.rpm
+         rpm -U lesstifd.rpm
+
+
+   3. OPTIONAL:  Install geoTIFF support.  Allows using USGS DRG topo maps or
+     other types of geoTIFF maps/images and has the ability to tile smaller
+     maps into a larger contiguous map of an area:
+
+
+       3a.  Check/Edit your startup files:
+       -----------------------------
+       Check that /usr/local/lib, /usr/lib, and /usr/X11R6/lib are
+       all listed in /etc/ld.so.conf, and run ldconfig to re-create
+       the system's cache file. If you don't have permission to
+       edit this file:
+            Edit ~/.bashrc, ~/.bash_profile, .cshrc, or
+            .login and add:
+
+            export LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/usr/X11R6/lib
+
+       This will let the loader find the shared libraries when it tries to
+       load Xastir into memory.  Check that you aren't already defining
+       LD_LIBRARY_PATH somewhere else.  If so, just add the paths above to
+       it.  Make sure this environment variable is defined in the current
+       shell you're using to compile Xastir.  Note that if you're running
+       Xastir SUID root, the LD_LIBRARY_PATH variable is ignored.
+
+
+       3b. Install libproj:
+       --------------------
+     NOTE: You must install libproj BEFORE compiling libgeotiff, because
+       libgeotiff uses libproj to do the datum translations. If you install
+       libgeotiff first, datum translations won't work.
+
+       The proj-nad27-1.1.tar.gz must be decompressed in the nad subdirectory
+       of the proj distribution directory before you run configure.
+        
+        tar xzvf proj-4.4.7.tar.gz (or newer)
+        cd proj-4.4.7/nad
+        tar xzvf ../../proj-nad27-1.1.tar.gz (or newer)
+        cd ..
+        ./configure
+        make
+        su (root)
+        make install (as root)
+        exit (from root)
+        libproj should now be installed in:
+
+            /usr/local/include/
+            /usr/local/lib/
+            /usr/local/bin/
+            /usr/local/share/proj/
+
+       You may need to do this (as root) if the "make install" portion fails
+       because it can't find "ginstall":
+
+       cd /usr/bin
+       ln -s install ginstall
+
+       Then retry the "make install" portion above.
+
+
+       3c. Upgrade libtiff if needed:
+       -----------------------------
+       The best way to install libtiff is to get it from the ftp site
+       for your Linux distribution.  You must have libtiff 3.5.5 or
+       newer for libgeotiff to compile and run correctly.
+
+       If you are compling from source, you must use "make install_private",
+       because the private include files are required for libgeotiff to compile
+       and work correctly.
+
+       If you upgrade libtiff, check that programs like XV, ImageMagick, and
+       the Gimp still run (if you have these programs installed).  Graphics
+       programs that read/write TIFF format depend on libtiff.
+
+
+       3d. Install libgeotiff:
+       -----------------------
+
+     NOTE: Depending on your version of libtiff, either libgeotiff-1.1.5 or
+       libgeotiff-1.2.0 may compile properly.  libgeotiff is so intimately
+       tied with libtiff that you may need to try both versions of
+       libgeotiff to find out which one will work with your libtiff.
+
+     NOTE: You may need to snag one file from the libtiff source distribution
+       and place it into libgeotiff-1.1.5/libtiff_private directory before
+       libgeotiff will compile:  "tiffconf.h".  With libgeotiff-1.2.0 you
+       shouldn't need to do this.
+
+        tar xzvf libgeotiff-1.1.5.tar.gz (or newer)
+        cd libgeotiff-1.1.5
+        ./configure
+        make
+        su (root)
+        make install (as root)
+        /sbin/ldconfig (tells the loader about the new libraries)
+        exit (from root)
+       libgeotiff should now be installed in:
+
+            /usr/local/include/
+            /usr/local/lib/
+            /usr/local/share/epsg_csv/
+            /usr/local/bin/
+
+       If you must re-run "configure" for any of these libraries, remember to 
+       delete "config.status" and "config.cache" files first.
+
+
+   4. RECOMMENDED:  Install ESRI Shapefile support.  Allows using many sources
+     of online polygon, polyline, and point maps, including ones from NOAA.
+     This is now the only format for weather alert maps.
+     The instructions aren't clear in this package, but just installing the
+     library is sufficient:
+
+       make lib
+       su (root)
+       make lib_install
+       ldconfig
+       exit (from root)
+ 
+     You may also need to tweak "/etc/ld.so.conf" to contain the proper path
+     to the libraries and then run ldconfig to update "/etc/ld.so.cache".
+     Once this is done the loader should be able to find the Shapelib library.
+     Must run ldconfig as root for the system to be able to re-create its
+     cache file.
+
+
+   5. OPTIONAL:  Install ImageMagick graphics support.  Allows using more than
+     68 different graphics format files as maps, by creating an associated .geo
+     file for each with tiepoints.  This support will allow use of online
+     Tiger and Terraserver maps with Xastir, and NOAA weather radar images.
+     Other people are working on integrating even more online mapping sources. 
+     This will also allow you to use any GIF/JPG/XPM/BMP/... image as an Xastir
+     map. Installation instructions are included in the package. If you choose
+     to install from a binary install, be sure that you have all the graphic
+     format libraries that ImageMagick was originally built with. 
+
+     The easiest way to install this is with a package from your linux
+     distribution's CD or ftp site. If you install from such a package, make
+     sure the header files are installed. These are often in a separate package
+     called ImageMagick-devel or similar.
+
+
+   6. OPTIONAL:  If your system doesn't have wget or libcurl/libcurl-devel
+     installed, and you want to use online maps, install either or both of
+     those packages now. Installation instructions are included in the
+     package.  Some older versions of wget don't work properly with
+     Xastir, so even if you already have wget you may need to upgrade it.
+
+     Please refer to the wget man pages or the web pages at
+     http://www.gnu.org/software/wget/wget.html for info concerning wget.
+
+     Note that if the remote server is down, Xastir can appear to hang
+     for a bit before wget times out.  Xastir calls wget with no retries
+     and a 30-second timeout, but one user reported that wget takes one
+     minute fifteen seconds to time out.  Also note that the users ~/.wgetrc
+     and the system-wide wgetrc file can change the timeouts and retries as
+     well.  See the man pages for details.  Pay particular attention to
+     which file/command-line-options take priority over others.  It looks
+     like the command-line option "--execute command" will allow overriding
+     the .wgetrc files, which means the user can override the hard-coded
+     timeouts/retries in Xastir by specifying new defaults in their ~/.wgetrc
+     file.
+
+     Libcurl should be a drop-in replacement for the wget functionality that
+     we use, and it's a faster and more secure method.
+
+   7. OPTIONAL:  Installing gpsmanshp/GPSMan allows Xastir to fetch GPS
+     waypoints/routes/tracks from a GPS.  Xastir can fetch the data
+     automatically, create a Shapefile map, then index/select/display the
+     new map.
+
+     Make sure you have Shapelib installed first (see above instructions).
+
+     Install gpsmanshp:
+
+     tar xzvf gpsmanshp_1.0.2.tgz
+     cd gpsmanshp
+     make
+     su (root)
+     make install
+     exit (from root)
+
+     Install GPSMan:
+
+     tar xzvf gpsman-6.0.tgz
+     cd gpsman-6.0
+     vi gpsman.tcl
+       Change SRCDIR line to: "set SRCDIR /usr/lib/gpsman"
+     su (root)
+     mkdir /usr/lib/gpsman
+     cp gpsman.tcl /usr/lib/gpsman
+     ln -s /usr/lib/gpsman/gpsman.tcl /usr/X11R6/bin/gpsman
+     cd gmsrc
+     cp * /usr/lib/gpsman
+     cp -R gmicons /usr/lib/gpsman
+     chmod -R 755 /usr/lib/gpsman
+     chmod 644 /usr/lib/gpsman/gmicons
+     chmod 777 /usr/local/xastir/maps/GPS   (IMPORTANT!)
+     exit (from root
+
+     Verify that GPSMan will start up and will download information from a
+     Garmin GPS in Garmin-Garmin mode.  This also creates the configuration
+     files needed to use GPSMan with Garmin GPS'es from within Xastir (sets
+     GPS type, serial port, etc within GPSMan's configs).
+
+   8. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+      automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
+    
+        "./bootstrap.sh" (This step needed only for those using CVS)
+        "./configure"
+        "make" ("gmake" for Solaris or *BSD)
+
+     This builds XASTIR, You should not get any error or warning messages.
+
+     If you wish to install Xastir in a location other than the default
+     ("/usr/local/bin" and "/usr/local/xastir" directories), you may add the
+     "--prefix=<path>" flag to configure before compiling.  i.e.
+
+     "./configure --prefix=/home/apps/xastir"
+
+     Which will cause executables to be installed in "/home/apps/xastir/bin/"
+     and the rest of Xastir to be installed under the
+     "/home/apps/xastir/xastir/" directory.
+ 
+     This is useful if you don't have root access on a machine, but still
+     wish to install and use Xastir from your home directory.  There are
+     probably many other uses as well.
+
+     If you see some errors, they be because you are missing
+     GNU msgfmt or GNU gettext/xgettext?  These packages are required
+     to compile the latest Xastir sources.  Beware of packages with the
+     same names installed into /usr/openwin/bin, these are probably NOT
+     the GNU flavor of the executables and will not work for compiling
+     Xastir.  For SuSE Linux:  Install "development/gettext" using Yast.
+
+     If you do see some errors/warnings read the FAQ. If this doesn't help,
+     or you think you have a different problem, dump the errors/warnings to
+     a file, and send the file and the following information to the
+     developers:
+
+        System type (cpu), speed, memory,
+        Linux Distribution,
+        Linux Version,
+        X Window manager (KDE, GNOME, FVWM, etc..)
+
+
+     To install, type (as root)
+        "make install" (or make install-strip to remove debugging information)
+
+     If you later install additional libraries and just can't get
+     ./configure to see them, remove the config.cache file via this
+     command:  "rm config.cache", and then re-run configure.  Also
+     see the notes above about ldconfig.
+
+
+   9. Kernel AX.25 Interfaces
+
+     NOTE:  Xastir is designed by amateur radio operators, for amateur
+     radio operators.  It is intended to be used only by them.  If there's
+     a way for unlicensed users to operate the amateur radio equipment
+     (this usually includes sending messages through it which key up the
+     transmitter), it is a violation of the rules and your license (and
+     more) may be at risk.  The same goes for igating:  Be aware of the
+     rules for your country with respect to gating traffic from the 'net
+     onto RF.  If there's any question, don't do it.
+
+     Please read this entire section before typing anything, as there are
+     serious security implications for some of this!
+
+     Option 1)
+     If you compiled support for AX.25 in and wish to use Kernel-mode
+     AX-25 interfaces, you _may_ need to type this as root:
+
+       chmod 4555 /usr/local/bin/xastir
+
+     This command makes Xastir run as user "root", no matter who actually
+     started it.  This allows Xastir to talk to the kernel AX.25 networking.
+
+     GENERAL SECURITY WARNING:
+     Beware that Xastir has not been audited for security, and makes limited
+     effort to drop extra privileges. Use this in a multi-user environment
+     at your own risk!  The developers have worked hard to fix remote buffer
+     overflows in the code to make Xastir safer to use, but there are _MANY_
+     potential security risks remaining in the code.  User beware!  We will
+     attempt to plug known security holes in future releases.
+
+     LINUX-SPECIFIC SECURITY WARNING:  If you're using Linux AX.25 kernel
+     networking, you'll need to either make Xastir SUID-root, or use a shim
+     (which itself is set to SUID-root) between Xastir and the AX.25 ports.
+     See Option #2 below for the (possibly safer) shim method.  If you're the
+     paranoid type (and you should be if you're running a system with multiple
+     users), you may wish to skip SUID-root mode/kernel AX.25 interfaces and
+     use standard serial port TNC interfaces instead.  Any program is safer if
+     run as a normal user (not safe, but safer).  It is currently impossible
+     to use kernel-mode AX.25 interfaces without the program running with
+     root privileges.
+
+     Option 2)
+     A more security-conscious option is to use a shim program written by
+     Henk de Groot, PE1DNN.  This program runs in SUID-root mode but is
+     much smaller and so is easier to audit for security, and provides a
+     new port that Xastir can connect to.  The new port can be read/written
+     without having to be the root user.  The program is called aprs_tty
+     and can be obtained here:
+
+     http://wetnet.net/~we7u/xastir/aprs_tty.0.0.2.tgz
+
+     It actually responds to some TNC commands. The code is straight forward
+     and works well.  Run the program, telling it what port to use, and then
+     in XASTIR set up the TNC to point to the new TTY at 19200. It
+     transmits/receives UI frames, and sets the correct unproto path.  In
+     this case DO NOT perform the chmod 4555 command on the Xastir executable.
+
+     Note again that the same SUID-root warnings that were giving in option
+     #1 above also apply to aprs_tty.  Buyer beware!  As far as we know,
+     aprs_tty has not been audited for security, and makes no effort to drop
+     extra privileges. Use this in a multi-user environment at your own risk!
+
+
+   10. Serially-Connected TNC's
+
+     NOTE:  Xastir is designed by amateur radio operators, for amateur
+     radio operators.  It is intended to be used only by them.  If there's
+     a way for unlicensed users to operate the amateur radio equipment
+     (this usually includes sending messages through it which key up the
+     transmitter), it is a violation of the rules and your license (and
+     more) may be at risk.  The same goes for igating:  Be aware of the
+     rules for your country with respect to gating traffic from the 'net
+     onto RF.  If there's any question, don't do it.
+
+     Please read this entire section before typing anything, as there are
+     serious security implications for some of this!
+
+     If you're using a serial TNC, configure your TNC startup files in the
+     /usr/local/xastir/config directory:
+
+     tnc-startup.sys is used to set up your TNC for Xastir and tnc-stop.sys
+     is to change the TNC back to your normal settings. There are several
+     example TNC startup files in the directory.  Choose the one that best
+     suits your TNC and edit to taste.  See the note below about where to
+     edit the files.  You might be unpleasantly surprised if after you type
+     "make install" next, all your custom changes to the startup files are
+     lost.  As always, keep a backup.
+
+     Some people have had trouble getting Xastir to decode packets.  While
+     packets were scrolling quite nicely in the View->Incoming Packet Data
+     dialog, stations weren't showing up on the Xastir screen at all. The
+     cause was incorrect settings in the tnc-startup files for that specific
+     TNC. If you change these files in the xastir source directories make sure
+     to do a "make install" to install them into the /usr/local/xastir/config/
+     directory. Another option would be to edit the files in
+     /usr/local/xastir/config/ directly. Keep a copy of them in a safe place
+     in any case.  You don't want to lose your custom mods you worked so
+     hard to create.
+
+     Some systems don't allow normal users to access the serial ports.  It's
+     a permissions thing, but is actually the _correct_ way to configure the
+     serial ports.  You can fix this in several ways:
+
+     1) Add the Xastir user to the group owning the serial ports.
+     2) Make Xastir run SGID-uucp (or whatever group owns the port).
+     3) Change the permissions of the device so that any user can access it.
+     4) Make Xastir run SUID-root.
+
+     Solutions 3 and 4 are highly discouraged.  It can be a security nightmare
+     to start opening up files or devices to read/write access by all users,
+     and the same for SUID-root programs.  Don't do either of these.
+
+     Exception:  If you're going to be running AX.25 kernel networking, you
+     may need to be running Xastir SUID-root anyway, or else you need to
+     install a shim program between the port and Xastir.  In the latter case
+     the shim is running SUID-root, not Xastir.  See the section above
+     regarding AX.25 kernel networking.
+
+     Here are what the default permissions usually look like for the
+     two serial ports on a Linux box:
+
+     crw-rw----    1 root     uucp       4,  64 Oct 19 08:15 ttyS0
+     crw-rw----    1 root     uucp       4,  65 Apr 14  2001 ttyS1
+
+     Solution #1:  The root user would run the commands necessary to add
+     the Xastir user to the "uucp" group, which would then give the user
+     the necessary permissions to use the port.  Usually this involves
+     editing the /etc/group file, but SysAdmin tools usually exist for
+     doing this more easily.
+
+     Solution #2:  As root user, type these commands:
+
+        chgrp uucp /usr/local/bin/xastir
+        chmod 2555 /usr/local/bin/xastir
+
+     If you want to restrict Xastir so that only one user can run it,
+     (in this case "user1") type:
+
+        chown user1 /usr/local/bin/xastir
+        chmod 2500 /usr/local/bin/xastir
+        chgrp uucp /usr/local/bin/xastir
+
+     Solution #3:
+     You can change the permissions of the serial port to allow use by all
+     users, but this is highly discouraged.
+     Here's what Jack Twilley had to say with regards to "chmod uog+rw" (same
+     as chmod 555) for serial ports:
+
+     > This is not necessary, and opens up the possibility of abuse.  Not all
+     > Xastir installations are Linux boxes used by a single person with a
+     > single purpose -- I know of several instances that are multi-user
+     > machines with access to the Internet by multiple parties, some of whom
+     > are not licensed amateurs, and another couple of instances where the
+     > serial port is not always used by a TNC but also by other devices such
+     > as Palm HotSync cradles and GPS receivers.
+     > 
+     > Here are two more secure solutions:
+     > 
+     >  * use non-root users
+     >    One way to use the setuid facilities in Unix would be to set
+     >    the xastir binary's user ID to match the user that owns the serial
+     >    port.  Under Solaris, the default ownership of /dev/cua/a is
+     >    uucp:tty, with a default permission of 0600.  The command 'chown
+     >    uucp /usr/local/bin/xastir' followed by the command 'chmod 4555
+     >    /usr/local/bin/xastir' will allow xastir to run properly without
+     >    changing the serial port's permissions or ownership, thus
+     >    minimizing any impact on other applications that use the serial
+     >    port. 
+     > 
+     >  * use groups
+     >    A better way to use the setuid facilities in Unix is to set the
+     >    xastir binary's *group* ID to match a group that already has the
+     >    privilege to mess with the serial port.  Under FreeBSD, the default
+     >    ownership of /dev/cuaa0 is uucp:dialer, with a default permission
+     >    of 0660.  The command 'chgrp dialer /usr/local/bin/xastir' followed
+     >    by the command 'chmod 2555 /usr/local/bin/xastir' will change
+     >    xastir's group to the serial port's group, and then add the setgid
+     >    privilege to the binary.  Now when xastir starts up, it will have
+     >    the minimum privilege necessary to do what it needs to do, without
+     >    being yet another root exploit-in-waiting.
+
+
+   11. Start up XASTIR and read the help files to configure it. If you have 
+     problems, please consult the FAQ file.
+
+     You can now start XASTIR. On most systems that the path is set up in
+     FHS format just type "xastir". On other systems type
+     "/usr/local/bin/xastir" to start the program.
+
+     If you see errors at this point that say something like "Can't load
+     xxx library" this means you forgot to either update /etc/ld.so.conf
+     and run ldconfig, or add the LD_LIBRARY_PATH variable for your shell,
+     and the "ld" loader can't link the libraries with the Xastir executable
+     to get it running in memory.  Note that if you're running Xastir as
+     SUID root, the LD_LIBRARY_PATH variable is ignored.
+
+     To set a new language or change the language current choice, use
+     this command line:
+
+     xastir -l <language>
+
+     Current choices are: English Dutch French German Italian Portuguese
+     Spanish
+
+     This option will be stored in the users config file for the next time
+     Xastir is run. On new installs Xastir will default to English unless
+     you use this command line option.
+
+   12. Automatic Identification:  Xastir can auto-ID via voice if Festival is
+   compiled in and/or via a message splashed across the screen.  It does this
+   identification every 9.5 minutes if enabled.  These identification modes
+   were designed for broadcasting Xastir across fast-scan television (for
+   events perhaps).  Set the "ATV_SCREEN_ID" variable to 1 to enable the
+   screen message, and "SPEAK_ID" variable to 1 to enable festival to speak
+   the message.  These variables are in the ~/.xastir/config/xastir.cnf file.
+
+   To use speech you must have a sound card and the 'festival' speech
+   synthesis software installed.  Install Festival and start it in 'server'
+   mode prior to starting up XASTIR.  The normal command for this is
+   "festival --server &".  More info about the speech features is in the
+   Xastir help file.  An easy way to get festival installed on some systems
+   is to go to rpmfind.com and search for both festival and
+   festival-dev, then install the RPM's found.  Red Hat RPM's installed onto
+   SuSE 7.3 with no problems.  Note that the default voice doesn't speak
+   numbers very well.  Edit /usr/share/festival/voices.scm and put
+   "ked_diphone" at the first of the "defvar default-voice-priority-list".
+   This will change the default voice to "ked_diphone".
+
+
+   FESTIVAL NOTE:  From: J. Lance Cotton:
+   One thing that I found that I had to do to finally get festival to work was
+   to get rid of the 'only localhost can connect to the server' pref in the
+   festival configuration. I don't know if that's the default on a source
+   install (I installed festival from RPMs), but it might be.
+   
+   I don't know why it doesn't let localhost connect, even though it's the
+   only one specifically allowed.
+   
+   Here's what to do:  Open the 'festival.scm' file (I found mine in
+   /usr/share/festival/' and look for the line that starts like:
+   
+       (defvar server_access_list ...
+   
+   Make it look like:
+   
+       (defvar server_access_list nil
+   
+   Then restart the festival server.
+   -Lance KJ5O
+
+
+You probably want to download some maps and additional data files. The
+instructions for this are in the README.MAPS.
