@@ -59,6 +59,10 @@ below for details) you'll have a package directory (in my case
 "c:\cygwin").  The uninstalled packages go into the package
 directory as they are downloaded from the 'net.
 
+It will be beneficial to re-run the Cygwin network installer from
+time to time in order to keep Cygwin up to date.  Each time you run
+it you'll update any packages that have been changed since you last
+ran it.
 
 [ ] Step 1b)  Find the "setup.exe" program and execute it either by:
 
@@ -260,11 +264,11 @@ command:
   cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
   cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
-If you keep seeing "EOF" or "connection reset by peer" it means that
-the anonymous CVS server at SourceForge is overloaded (too many
-users).  Keep trying that the failed commands until they succeed!
-Notice that up-arrow (on the keyboard) and then <ENTER> will repeat
-the last command, saving you some typing.
+If you see "EOF" or "connection reset by peer" it means that the
+anonymous CVS server at SourceForge is overloaded (too many users).
+Keep trying the failed commands until they succeed!  Notice that
+up-arrow (on the keyboard) and then <ENTER> will repeat the last
+command, saving you some typing.
 
 The end result when it succeeds  will be a new directory
 "C:\cygwin\home\<user>\src\xastir\" which contains all of the Xastir
@@ -387,6 +391,23 @@ or the Cygwin/XFree86 website:
 
     http://cygwin.com/xfree/
 
+
+[ ] Step 9)  Keeping up-to-date:
+
+Once a week or once a month, run the Cygwin network installer
+program (step 1b above).  After it finishes, open a Cygwin window
+and type these commands to update the Xastir source code:
+
+    cd ~/src/xastir
+    cvs update
+
+If you see "EOF" or "connection reset by peer" it means that the
+anonymous CVS server at SourceForge is overloaded (too many users).
+Keep trying the failed commands until they succeed!  Notice that
+up-arrow (on the keyboard) and then <ENTER> will repeat the last
+command, saving you some typing.
+
+Repeat step 6) above to recompile/reinstall the latest Xastir.
 
 
 -------------------------------------------
