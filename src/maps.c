@@ -10426,7 +10426,7 @@ void index_save_to_file() {
     char out_string[500];
 
 
-    printf("Saving map index to file\n");
+    //printf("Saving map index to file\n");
 
     f = fopen(MAP_INDEX_DATA,"w");
 
@@ -10478,7 +10478,7 @@ void index_restore_from_file(void) {
     char in_string[500];
 
 
-    printf("Restoring map index from file\n");
+    //printf("Restoring map index from file\n");
 
     f = fopen(MAP_INDEX_DATA,"r");
     if (f == NULL)  // No file yet
