@@ -1899,32 +1899,41 @@ void draw_shapefile_map (Widget w,
                                     }
                                     break;
                                 case '4':   // A4? = Local, neighborhood & rural roads, city streets
-                                    // Skip the road if we're above zoom 100
-                                    if (map_color_levels && scale_y > 16)
+                                    // Skip the road if we're above this zoom level
+                                    if (map_color_levels && scale_y > 64)
                                         skip_it++;
+                                    // Skip labels above this zoom level to keep things uncluttered
+                                    if (map_color_levels && scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // darkgray
                                     break;
                                 case '5':   // A5? = Vehicular trail passable only by 4WD vehicle
-                                    // Skip the road if we're above zoom 100
-                                    if (map_color_levels && scale_y > 16)
+                                    // Skip the road if we're above this zoom level
+                                    if (map_color_levels && scale_y > 64)
                                         skip_it++;
+                                    if (map_color_levels && scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
                                 case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
                                             // service drive, ferry crossing
-                                    // Skip the road if we're above zoom 100
-                                    if (map_color_levels && scale_y > 16)
+                                    // Skip the road if we're above this zoom level
+                                    if (map_color_levels && scale_y > 64)
                                         skip_it++;
+                                    if (map_color_levels && scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x07]); // darkgray
                                     break;
                                 case '7':   // A7? = Walkway or pedestrian trail, stairway,
                                             // alley, driveway or service road
-                                    // Skip the road if we're above zoom 100
-                                    if (map_color_levels && scale_y > 16)
+                                    // Skip the road if we're above this zoom level
+                                    if (map_color_levels && scale_y > 64)
                                         skip_it++;
+                                    if (map_color_levels && scale_y > 16)
+                                        skip_label++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
                                     break;
