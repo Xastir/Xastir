@@ -646,22 +646,17 @@ static void calcPhi(double *phi, double e, double t)
 
 
 
-//WE7U
-// This function appears to have a problem in the south polar
-// region.  85 40 30s/85 40 30w shows the problem.  Latitude ends up
-// _much_ too small in this case, placing us into the north polar
-// region instead.
-
 // Converts from UTM/UPS coordinates to Lat/Long coordinates.
 //
 void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
                const char* utmZone, double *lat,  double *lon)
 {
-    //converts UTM coords to lat/long.  Equations from USGS Bulletin 1532 
-    //East Longitudes are positive, West longitudes are negative. 
-    //North latitudes are positive, South latitudes are negative
-    //Lat and Long are in decimal degrees. 
-    //Written by Chuck Gantz- chuck.gantz@globalstar.com
+    // Converts UTM coords to lat/long.  Equations from USGS
+    // Bulletin 1532.  East Longitudes are positive, West longitudes
+    // are negative.  North latitudes are positive, South latitudes
+    // are negative Lat and Long are in decimal degrees.
+    // Written by Chuck Gantz- chuck.gantz@globalstar.com
+    // Modified by WE7U to add UPS support.
 
     double k0 = 0.9996;
     double a = gEllipsoid[ellipsoidID].a;
@@ -675,7 +670,7 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
     double x, y;
     int ZoneNumber;
     char* ZoneLetter;
-    int NorthernHemisphere; //1 for northern hemispher, 0 for southern
+    int NorthernHemisphere; // 1=northern hemisphere, 0=southern
 
 
     x = utmEasting;
@@ -695,8 +690,8 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
  
         //
         // We're dealing with a UPS coordinate (near the poles)
-        // instead of a UTM coordinate.  Need to do entirely
-        // different sorts of math.
+        // instead of a UTM coordinate.  We need to do entirely
+        // different calculations for UPS.
         //
         double e, t, rho;
         const double k0 = 0.994;
@@ -710,7 +705,14 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
         t = rho * sqrt(pow(1.0+e, 1.0+e) * pow(1.0-e, 1.0-e)) / (2.0 * a * k0);
 
         calcPhi(lat, e, t);
+
         *lat /= (PI/180.0);
+
+        // This appears to be necessary in order to get proper
+        // positions in the south polar region
+        if (*ZoneLetter == 'A' || *ZoneLetter == 'B') {
+            *lat = -*lat;
+        }
 
         if (y != 0.0)
             t = atan(fabs(x/y));
@@ -738,6 +740,10 @@ void utm_ups_to_ll(short ellipsoidID, const double utmNorthing, const double utm
 */
         return; // Done computing UPS coordinates
     }
+
+
+    // If we make it here, we're working on UTM coordinates (not
+    // UPS coordinates).
 
 
     x = utmEasting - 500000.0; //remove 500,000 meter offset for longitude
