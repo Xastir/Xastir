@@ -10177,7 +10177,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                         lon_str,
                         object_symbol,
                         course,
-                        speed,
+                        speed,  // In knots
                         ""));   // PHG, must be blank
             }
             else {
@@ -10207,7 +10207,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                         lon_str,
                         object_symbol,
                         course,
-                        speed,
+                        speed,  // In knots
                         ""));   // PHG, must be blank
             }
             else {
