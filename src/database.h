@@ -382,7 +382,7 @@ typedef struct _DataRow {
     unsigned int  num_packets;
     char *node_path_ptr;        // Pointer to path string
     char altitude[MAX_ALTITUDE]; // in meters (feet gives better resolution ??)
-    char speed[MAX_SPEED+1];    // in knots
+    char speed[MAX_SPEED+1];    // in knots (same as nautical miles/hour)
     char course[MAX_COURSE+1];
     char bearing[MAX_COURSE+1];
     char NRQ[MAX_COURSE+1];
