@@ -2680,7 +2680,7 @@ void draw_ogr_map( Widget w,
     OGRCoordinateTransformationH transformH = NULL;
     OGRCoordinateTransformationH reverse_transformH = NULL;
     OGRGeometryH spatial_filter_geometryH = NULL;
-    int i, numLayers;
+    int ii, numLayers;
     char full_filename[300];
     const char *ptr;
     const char *driver_type;
@@ -2838,19 +2838,19 @@ clear_dangerous();
         // through the layers.
         //
         numLayers = OGR_DS_GetLayerCount(datasourceH);
-        for ( i=0; i<numLayers; i++ ) {
+        for ( ii=0; ii<numLayers; ii++ ) {
             OGRLayerH layerH;
             OGREnvelope psExtent;  
 
 
-            layerH = OGR_DS_GetLayer( datasourceH, i );
+            layerH = OGR_DS_GetLayer( datasourceH, ii );
 
             if (layerH == NULL) {
 
                 if (debug_level & 16) {
                     fprintf(stderr,
                         "Unable to open layer %d of %s\n",
-                        i,
+                        ii,
                         full_filename);
                 }
 
@@ -3271,9 +3271,38 @@ clear_dangerous();
 
 
     // Loop through all layers in the data source.
+//
+// Optimizations:
+//   SDTS, load only those layers that make sense.
+//   TIGER, same thing, based on the type of file.  We probably need
+//     to do some serious changes to how we do TIGER layers anyway,
+//     as we have to pull multiple things together in order to draw
+//     polygons.
+//
+// Tiger Polygons:
+// *) Read "Polygon".  Snag "POLYID" field.
+// *) Read "PolyChainLink".  Match "POLYID" to either "POLYIDL" or 
+//    "POLYIDR".  Snag "TLID" field.
+// *) Read "PIP".  Match "POLYID" field.  Snag "POLYLONG", 
+//    "POLYLAT", and "WATER" fields.  We'll use the lat/long as the 
+//    point to draw labels.  "WATER"=1: Perennial.  "WATER"=2: 
+//    Intermittent.
+// *) Read "AreaLandmarks".  Match on "POLYID" if possible.  Snag 
+//    "LAND" field.
+// *) Read "Landmarks".  Match on "LAND" field.  Snag "CFCC" and 
+//    "LANAME" fields.
+// *) Read the "CompleteChain" layer, caching the geometry of any 
+//    lines that match "TLID" fields found above.
+// *) Once we've processed the CompleteChain layer, turn those 
+//    geometries into real polygons using BuildPolygonFromEdges() 
+//    and draw them.  Perhaps only draw them if the "WATER" field
+//    was set to 1 or 2?
+// *) Draw non-polygon vectors:  If "TLID" matches one from a 
+//    polygon, don't draw the vector or its label.
+//
     //
     numLayers = OGR_DS_GetLayerCount(datasourceH);
-    for ( i=0; i<numLayers; i++ ) {
+    for ( ii=0; ii<numLayers; ii++ ) {
         OGRLayerH layerH;
         OGRFeatureH featureH;
 //        OGRFeatureDefnH layerDefn;
@@ -3286,7 +3315,7 @@ clear_dangerous();
         const char *layer_name;
         
 
-//fprintf(stderr,"Layer %d:\n", i); 
+//fprintf(stderr,"Layer %d:\n", ii); 
 
         HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
@@ -3311,13 +3340,13 @@ clear_dangerous();
             return; // Exit early
         }
 
-        layerH = OGR_DS_GetLayer( datasourceH, i );
+        layerH = OGR_DS_GetLayer( datasourceH, ii );
 
         if (layerH == NULL) {
             if (debug_level & 16) {
                 fprintf(stderr,
                     "Unable to open layer %d of %s\n",
-                    i,
+                    ii,
                    full_filename);
             }
 
@@ -3349,33 +3378,154 @@ clear_dangerous();
 
         if (layer_name != NULL) {
 
-//fprintf(stderr,"Layer Name: %s\n", layer_name);
+//fprintf(stderr,"Layer %i: %s\n", ii, layer_name);
 
-            if (strncasecmp(layer_name,"AHPF",4) == 0) {
-                hypsography_layer++;    // Topo contours
-                fprintf(stderr,"Hypsography Layer (topo contours)\n");
+            if (strcasecmp(driver_type,"SDTS") == 0) {
+                //
+                // Layer  0: ARDF Roads/Trails Layer
+                // Layer  1: ARRF Railroad Layer
+                // Layer  2: AMTF Misc Transportation Layer
+                // Layer  3: ARDM
+                // Layer  4: ACOI
+                // Layer  5: AHDR
+                // Layer  6: NP01
+                // Layer  7: NP02
+                // Layer  8: NP03
+                // Layer  9: NP04
+                // Layer 10: NP05
+                // Layer 11: NP06
+                // Layer 12: NP07
+                // Layer 13: NP08
+                // Layer 14: NP09
+                // Layer 15: NP10
+                // Layer 16: NP11
+                // Layer 17: NP12
+                // Layer 18: NA01
+                // Layer 19: NA02
+                // Layer 20: NA03
+                // Layer 21: NA04
+                // Layer 22: NA05
+                // Layer 23: NA06
+                // Layer 24: NA07
+                // Layer 25: NA08
+                // Layer 26: NA09
+                // Layer 27: NA10
+                // Layer 28: NA11
+                // Layer 29: NA12
+                // Layer 30: NO01
+                // Layer 31: NO02
+                // Layer 32: NO03
+                // Layer 33: NO04
+                // Layer 34: NO05
+                // Layer 35: NO06
+                // Layer 36: NO07
+                // Layer 37: NO08
+                // Layer 38: NO09
+                // Layer 39: NO10
+                // Layer 40: NO11
+                // Layer 41: NO12
+                // Layer 42: LE01
+                // Layer 43: LE02
+                // Layer 44: LE03
+                // Layer 45: LE04
+                // Layer 46: LE05
+                // Layer 47: LE06
+                // Layer 48: LE07
+                // Layer 49: LE08
+                // Layer 50: LE09
+                // Layer 51: LE10
+                // Layer 52: LE11
+                // Layer 53: LE12
+                // Layer 54: PC01
+                // Layer 55: PC02
+                // Layer 56: PC03
+                // Layer 57: PC04
+                // Layer 58: PC05
+                // Layer 59: PC06
+                // Layer 60: PC07
+                // Layer 61: PC08
+                // Layer 62: PC09
+                // Layer 63: PC10
+                // Layer 64: PC11
+                // Layer 65: PC12
+                //
+                if (strncasecmp(layer_name,"AHPF",4) == 0) {
+                    hypsography_layer++;    // Topo contours
+                    fprintf(stderr,"Hypsography Layer (topo contours)\n");
+                }
+                else if (strncasecmp(layer_name,"AHYF",4) == 0) {
+                    hydrography_layer++;    // Underwater contours
+                    fprintf(stderr,"Hydrography Layer (underwater topo contours)\n");
+                }
+                else if (strncasecmp(layer_name,"ARDF",4) == 0) {
+                    roads_trails_layer++;
+                    fprintf(stderr,"Roads/Trails Layer\n");
+                }
+                else if (strncasecmp(layer_name,"ARRF",4) == 0) {
+                    railroad_layer++;
+                    fprintf(stderr,"Railroad Layer\n");
+                }
+                else if (strncasecmp(layer_name,"AMTF",4) == 0) {
+                    misc_transportation_layer++;
+                    fprintf(stderr,"Misc Transportation Layer\n");
+                }
             }
-
-            else if (strncasecmp(layer_name,"AHYF",4) == 0) {
-                hydrography_layer++;    // Underwater contours
-                fprintf(stderr,"Hydrography Layer (underwater topo contours)\n");
-            }
-
-            else if (strncasecmp(layer_name,"ARDF",4) == 0) {
-                roads_trails_layer++;
-                fprintf(stderr,"Roads/Trails Layer\n");
-            }
-
-            else if (strncasecmp(layer_name,"ARRF",4) == 0) {
-                railroad_layer++;
-                fprintf(stderr,"Railroad Layer\n");
-            }
-
-            else if (strncasecmp(layer_name,"AMTF",4) == 0) {
-                misc_transportation_layer++;
-                fprintf(stderr,"Misc Transportation Layer\n");
+            else if (strcasecmp(driver_type,"TIGER") == 0) {
+                //
+                // Layer  0: CompleteChain
+                // Layer  1: AltName
+                // Layer  2: FeatureIds
+                // Layer  3: ZipCodes
+                // Layer  4: Landmarks
+                // Layer  5: AreaLandmarks
+                // Layer  6: Polygon
+                // Layer  7: PolygonCorrections
+                // Layer  8: EntityNames
+                // Layer  9: PolygonEconomic
+                // Layer 10: IDHistory
+                // Layer 11: PolyChainLink
+                // Layer 12: PIP
+                // Layer 13: TLIDRange
+                // Layer 14: ZeroCellID
+                // Layer 15: OverUnder
+                // Layer 16: ZipPlus4
+                //
+                if (strncasecmp(layer_name,"AltName",7) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"ZipCodes",8) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"Landmarks",9) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"PolygonCorrections",18) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"AreaLandmarks",13) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"PolygonEconomic",15) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"IDHistory",9) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"ZeroCellID",10) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"OverUnder",9) == 0) {
+                    continue;   // Skip this layer
+                }
+                else if (strncasecmp(layer_name,"ZipPlus4",8) == 0) {
+                    continue;   // Skip this layer
+                }
             }
         }
+
+
+//fprintf(stderr,"    Processing Layer %i\n", ii);
+
 
 
         // Set up the coordinate translations we may need for both
@@ -3479,7 +3629,7 @@ clear_dangerous();
         //   spatial filter is installed after which it will return FALSE.
         //   NOTE: Shapefile reports this as TRUE.
         //
-        if (i == 0) {   // First layer
+        if (ii == 0) {   // First layer
             if (debug_level & 16)
                 fprintf(stderr, "  ");
             if (OGR_L_TestCapability(layerH, OLCRandomRead)) {
@@ -3515,21 +3665,21 @@ clear_dangerous();
 
 
             if (OSRIsGeographic(map_spatialH)) {
-                if (i == 0) {
+                if (ii == 0) {
                     if (debug_level & 16)
                         fprintf(stderr,"  Geographic Coord, ");
                 }
                 geographic++;
             }
             else if (OSRIsProjected(map_spatialH)) {
-                if (i == 0) {
+                if (ii == 0) {
                     if (debug_level & 16)
                         fprintf(stderr,"  Projected Coord, ");
                 }
                 projected++;
             }
             else {
-                if (i == 0) {
+                if (ii == 0) {
                     if (debug_level & 16)
                         fprintf(stderr,"  Local Coord, ");
                 }
@@ -3538,40 +3688,40 @@ clear_dangerous();
             // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
             //
             temp = OSRGetAttrValue(map_spatialH, "DATUM", 0);
-            if (i == 0) {
+            if (ii == 0) {
                 if (debug_level & 16)
                     fprintf(stderr,"DATUM: %s, ", temp);
             }
 
             if (projected) {
                 temp = OSRGetAttrValue(map_spatialH, "PROJCS", 0);
-                if (i == 0) {
+                if (ii == 0) {
                     if (debug_level & 16)
                         fprintf(stderr,"PROJCS: %s, ", temp);
                 }
  
                 temp = OSRGetAttrValue(map_spatialH, "PROJECTION", 0);
-                if (i == 0) {
+                if (ii == 0) {
                     if (debug_level & 16)
                         fprintf(stderr,"PROJECTION: %s, ", temp);
                 }
             }
 
             temp = OSRGetAttrValue(map_spatialH, "GEOGCS", 0);
-            if (i == 0) {
+            if (ii == 0) {
                 if (debug_level & 16)
                     fprintf(stderr,"GEOGCS: %s, ", temp);
             }
 
             temp = OSRGetAttrValue(map_spatialH, "SPHEROID", 0);
-            if (i == 0) {
+            if (ii == 0) {
                 if (debug_level & 16)
                     fprintf(stderr,"SPHEROID: %s, ", temp);
             }
 
         }
         else {
-            if (i == 0) {
+            if (ii == 0) {
                 if (debug_level & 16)
                     fprintf(stderr,"  No Spatial Info, ");
                 // Assume geographic/WGS84 unless the coordinates go
@@ -3590,13 +3740,13 @@ clear_dangerous();
         if (OGR_L_GetExtent(layerH, &psExtent, FALSE) != OGRERR_FAILURE) {
             // We have extents.  Check whether any part of the layer
             // is within our viewport.
-            if (i == 0) {
+            if (ii == 0) {
                 if (debug_level & 16)
                     fprintf(stderr, "Extents obtained.");
             }
             extents_found++;
         }
-        if (i == 0) {
+        if (ii == 0) {
             if (debug_level & 16)
                 fprintf(stderr, "\n");
         }
@@ -3614,8 +3764,8 @@ clear_dangerous();
 */
 
 
-/*
 // Dump info about this layer
+/*
         layerDefn = OGR_L_GetLayerDefn( layerH );
         if (layerDefn != NULL) {
             int jj;
@@ -3623,7 +3773,7 @@ clear_dangerous();
  
             numFields = OGR_FD_GetFieldCount( layerDefn );
 
-            fprintf(stderr,"  Layer %d: '%s'\n", i, OGR_FD_GetName(layerDefn));
+            fprintf(stderr,"  Layer %d: '%s'\n", ii, OGR_FD_GetName(layerDefn));
 
             for ( jj=0; jj<numFields; jj++ ) {
                 OGRFieldDefnH fieldDefn;
@@ -3635,11 +3785,11 @@ clear_dangerous();
             }
             fprintf(stderr,"\n");
         }
-*/
 
 
         // Restart reads of this layer at the first feature.
         //OGR_L_ResetReading(layerH);
+*/
 
 
 
@@ -3698,7 +3848,7 @@ features_processed++;
                 OGR_F_Destroy( featureH );
 //                if (strlen(geometry_type_name) == 0) {
                 if (debug_level & 16)
-                    fprintf(stderr,"  Layer %02d:   - No geometry info -\n", i);
+                    fprintf(stderr,"  Layer %02d:   - No geometry info -\n", ii);
 //                    geometry_type_name[0] = ' ';
 //                    geometry_type_name[1] = '\0';
 //                }
@@ -3748,7 +3898,7 @@ features_processed++;
                     "%s",
                     OGR_G_GetGeometryName(geometryH));
                 geometry_type = OGR_G_GetGeometryType(geometryH);
-//                fprintf(stderr,"  Layer %02d: ", i); 
+//                fprintf(stderr,"  Layer %02d: ", ii); 
 //                fprintf(stderr,"  Type: %d, %s\n",  
 //                    geometry_type,
 //                    geometry_type_name);
