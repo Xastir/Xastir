@@ -24,7 +24,8 @@ pkglib_SCRIPTS = \
     xastir-migrate.sh \
     kiss-off.pl \
     toporama50k.pl \
-    toporama250k.pl
+    toporama250k.pl\
+    Xastir_tigerpoly.py
 
 
 EXTRA_DIST = $(pkglib_SCRIPTS)
