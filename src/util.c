@@ -2298,6 +2298,15 @@ void reload_object_item(void) {
                 // station database and cause it to be transmitted at
                 // regular intervals.  Port is set to -1 here.
                 decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
+
+// Right about here we could do a lookup for the object/item
+// matching the name and change the timing on it.  This could serve
+// to spread the transmit timing out a bit so that all objects/items
+// are not transmitted together.  Another easier option would be to
+// change the routine which chooses when to transmit, having it
+// randomize the numbers a bit each time.  I chose the second
+// option.
+
             }
         }
         (void)fclose(f);
