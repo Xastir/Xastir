@@ -6247,7 +6247,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     FILE *f;                        // Filehandle of image file
     char line[MAX_FILENAME];        // One line from GEO file
     char fileimg[MAX_FILENAME+1];   // Ascii name of image file, read from GEO file
-    char t_fileimg[MAX_FILENAME+1]; // Temporary Ascii name of image file
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
@@ -6369,9 +6368,14 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
             if (strncasecmp (line, "FILENAME", 8) == 0) {
                 (void)sscanf (line + 9, "%s", fileimg);
                 if (fileimg[0] != '/' ) { // not absolute path
-                    // make it relative
-                    xastir_snprintf(t_fileimg, sizeof(fileimg), "%s/%s", dir, fileimg );
-                    strcpy(fileimg, t_fileimg );
+                    // make it relative to the .geo file
+                    char temp[MAX_FILENAME];
+                    strncpy(temp, file, MAX_FILENAME); // grab .geo file name
+                    temp[MAX_FILENAME-1] = '\0';
+                    (void)get_map_dir(temp);           // leaves just the path and trailing /
+                    if (strlen(temp) < (MAX_FILENAME - 1 - strlen(fileimg)))
+                        strcat(temp, fileimg);
+                    strcpy(fileimg, temp);
                 }
             }
             if (strncasecmp (line, "URL", 3) == 0)
@@ -6730,8 +6734,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
 
     atb.valuemask = 0;
-
-    //    (void)get_map_dir (file);
 
 
 // Best here would be to add the process ID or user ID to the filename
