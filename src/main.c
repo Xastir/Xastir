@@ -7060,28 +7060,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
 
-    // "Move my station here"
-    ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-    //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA019")); ac++;
-    XtSetArg(al[ac], XmNmnemonic, langcode("POPUPMA025")); ac++;
-    //    modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),
-    setmyposition=XtCreateManagedWidget(langcode("POPUPMA025"),
-            xmPushButtonGadgetClass,
-            right_menu_popup,
-            al,
-            ac);
-    XtAddCallback(setmyposition,XmNactivateCallback,SetMyPosition,"1");
-
-    XtCreateManagedWidget("create_appshell sep7c",
-            xmSeparatorWidgetClass,
-            right_menu_popup,
-            al,
-            ac);
-
     // "Pan Up"
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
@@ -7157,6 +7135,28 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     //    XmNarrowDirection,  XmARROW_DOWN,
     //    NULL);
     XtAddCallback(pan_down,XmNactivateCallback,Pan_down,NULL);
+
+    XtCreateManagedWidget("create_appshell sep7c",
+            xmSeparatorWidgetClass,
+            right_menu_popup,
+            al,
+            ac);
+
+    // "Move my station here"
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+    //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA019")); ac++;
+    XtSetArg(al[ac], XmNmnemonic, langcode("POPUPMA025")); ac++;
+    //    modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),
+    setmyposition=XtCreateManagedWidget(langcode("POPUPMA025"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    XtAddCallback(setmyposition,XmNactivateCallback,SetMyPosition,"1");
 
 
 //-------------------------------------------------------------------------
