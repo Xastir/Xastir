@@ -4329,8 +4329,12 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
     min_diff=32000000ul;
     p_found = NULL;
     p_station = n_first;
+
+    // Here we just count them.  We go through the same type of code
+    // again later if we find more than one station.
     while (p_station != NULL) {    // search through database for nearby stations
-        if ((p_station->flag & ST_INVIEW) != 0) {       // only test stations in view
+        if ( ( (p_station->flag & ST_INVIEW) != 0)
+                && ok_to_draw_symbol(p_station) ) { // only test stations in view
             if (!altnet || is_altnet(p_station)) {
                 diff = (unsigned long)( labs((x_long_offset+(menu_x*scale_x)) - p_station->coord_lon)
                     + labs((y_lat_offset+(menu_y*scale_y))  - p_station->coord_lat) );
@@ -4414,7 +4418,8 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                 n = 1;
                 p_station = n_first;
                 while (p_station != NULL) {    // search through database for nearby stations
-                    if ((p_station->flag & ST_INVIEW) != 0) {       // only test stations in view
+                    if ( ( (p_station->flag & ST_INVIEW) != 0)
+                            && ok_to_draw_symbol(p_station) ) { // only test stations in view
                         if (!altnet || is_altnet(p_station)) {
                             diff = (unsigned long)( labs((x_long_offset+(menu_x*scale_x)) - p_station->coord_lon)
                                 + labs((y_lat_offset+(menu_y*scale_y))  - p_station->coord_lat) );
