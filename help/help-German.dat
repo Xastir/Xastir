@@ -98,15 +98,143 @@ Die Hardware-Unterstützung von Xastir wurde erweitert:
   * Unterstützung für serielle TNCs mit GPS an der AUX-Schnittstelle
   * Unterstützung für den Einsatz von AGWPE als TNC
   * Unterstützung für eine Dallas One-Wire Wetterstation
-  ...
-  
-...  
+  (siehe http://melhuish.info/simon/projects/oww/)
+  * Unterstützung für weitere Wetterstationen über den wx200d Daemon
+    (WX-200 / WM-918 / WMR-918 / WMR-968)
+  * Unterstützung für verschieden große Regenmesser der Peet Brothers
+    Wetterstationen.
 
-============
-Hier fehlt die Übersetzung einiger weiteren Neuigkeiten, die vor dem
-Release leider nicht mehr fertig wurde. Falls Sie neugierig sind, schauen
-sie halt mal in die Englische Version hinein.
-============
+Weiterhin wurden einige Fehler Im Kode der Wetterberichte korrigiert,
+auch läßt sich nun die Systemzeit über einen angeschlossenen
+GPS-Empfänger stellen.
+
+Es gab viele Ergänzungen und Verbesserungen in der Xastir Benutzer-
+Schnittstelle:
+Die bemerkenswerteste ist die Positionsvoraussage. Dies bedeutet, daß sich
+alle beweglichen Stationen nach dem letzten Empfang auf dem Bildschirm
+weiterbewegt werden, so als würden sie sich weiterhin mit der letzten
+Geschwindigkeit in die zuletzt berichtete Richtung bewegen. Die so
+vorausgesagte Position kann mit einer Kombination aus einem schemenhaften
+Symbol, einer gestrichelten Linie von der letzten gesicherten Position und
+einem Kreissegment des erwarteten Bereichs von Entfernung und Richtung
+angegeben werden.
+
+Bemerkenswert ist auch die Verbesserung der Kartenauswahl. Neben der
+individuellen Auswahl einzelner Karten können nun auch ganze
+Kartenverzeichnisse auf einmal ausgewählt werden. Unter "Eigenschaften"
+bei der Kartenauswahl, kann den einzelnen Karten nun eine individuelle
+Ebene zugewiesen werden, um die Reihenfolge der Darstellung zu beeinflussen.
+Ebenso wird dort festgelegt, ob Karten mit Farbe gefüllt werden sollen, oder
+ob sie bei "automatischen Karten" berücksichtigt werden sollen.
+Dank erweiterem Caching im Hintergrund erlangen automatische Karten wieder
+ihre Bedeutung, und das auch bei vielen installierten Karten!
+
+Bekanntmachungen erscheinen auf dem Schirm und Notfall-Baken ergeben eine
+Warnung, die gleich die Sucheingabe für diese Station mitbringt. Diese
+Änderungen sind hilfreich bei der Koordination von Notfällen oder Ereignissen.
+
+Xastir kann nun für verschiedene Koordinatensystemen eingerichtet werden,
+darunter UTM, dd.ddddd, dd mm.mmm, und dd mm ss.s. Dies ist hilfreich bei
+der Koordination mit anderen Gruppen, die ein abweichendes System benutzen.
+
+Die online Tigermaps können nun aus dem Kartenmenu heraus eingeschaltet
+und die anzuzeigenden Daten individuell angepaßt werden.
+
+Das Stationen-Menu wurde reorganisiert, um so eine intuitive Filterung der
+darzustellenden Stationen und der dann anzuzeigenden Daten zu erlauben.
+
+Andere kleinere Änderungen beinhalten:
+  * Die Dichte der Gitterlinien kann mit den '+', '=' und '-'-Tasten
+    geändert werden.
+  * Objekte und Items wurden zum Menu "Zeige" hinzugefügt.
+  * Der Maidenhead Locator wird nun in der Stationsinfo und im
+    Koordinatenrechner angezeigt.
+  * Es gibt einen Schalter "Verfolge mich", um die eigene Station auf
+    einfache Weise immer auf dem Bildschirm zu sehen.
+  * Die Länge und der Startzeitpunkt der von findu.com herunterzuladenden
+    Spuren können nun eingestellt werden.
+  * Xastir can now ID via voice ID's or Screen ID's, by editing the
+    configuration file. This is intended for configurations when the Xastir
+    screen is seen remotely via fast-scan TV. 
+  * Zeitstempel werden alle 30 Sekunden in die Protokolldateien geschrieben,
+    um so besser informiert zu sein, wann eine Station gehört wurde.
+  * Die Statuszeile kann nun auch die Entfernung und Richtung zur eigenen
+    Station anzeigen, wenn dies im "Datei - Einstellungen" Menu aktiviert
+    wurde.
+  * Eine Bereichsskala ergänzt nun die Längenskala. Dies ist ein Versuch,
+    den Ansatz bezüglich der Zoom-Stufen bei verschiedenen APRS-Programmen
+    zu standardisieren.
+
+Die Möglichkeiten von Wetterberichten wurden verbessert, mit dem
+Hinzufügen einer optionalen Windfahne bei Wetterstationen und der
+Dekodierung des Radius von Sturmwinden. Die Markierung von gebieten mit 
+Wetterwarnungen wird nun mit Mustern vorgenommen, die die Art der Warnung
+zeigen. Weitere Informationen zu einer Warnung stehen über das Internet
+vom Wetterserver zur Verfügung und werden durch Doppelklicken auf die
+Warnung in der Wetterwarnungsliste angezeigt. Wetterwarnungne benutzen
+nun Karten mit dem neueren ESRI Shapefile-Format.
+
+Xastir's kartenunterstützung wurde verbessert mit Erweiterungen des ESRI
+Shapefile Kodes um Punkt-Typ ESRI Shapefiles handhaben zu können. Zusätzlich
+wurden Geschwindigkeitsverbesserungen beim Laden von Kartengrafiken mit
+ImageMagick erzielt und etliche Farbkorreturmöglichkeiten hinzugefügt.
+Wie oben erwähnt, wurde die Kartenauswahl deutlich verbessert und Wetterkarten
+benutzen Karten im ESRI Shapefile-Format.
+
+Im Hintergrund hat Xastir einige wichtige Verbesserungen erfahren:
+
+Das Nachrichtensystem wurde größtenteils umgeschrieben und die nervenden
+zeitgesteuerten Updates im Nachrichtenfesnter erscheinen nicht mehr.
+Das neue Nachrichtensystem erlaubt es, mehrere Nachrichten in einer
+Warteschlange zu halten und verwendet Reply-ACK's für mehr Geschwindigkeit.
+Xastir versucht auch einen vernünftigen Pfad aufgrund einer empfangenen
+Nachricht vorzugeben. Dies erhöht die Geschwindigkeit und vermeidet die
+Überflutung von Digipeatern.
+
+Der Build-Prozeß wurde signifikant verbessert. Xastir kann nun auf vielen
+Betriebssystemen übersetzt werden, wobei nur wenige manuelle Eingriffe nötig
+sind.
+
+Xastir unterstützt nun GPSMan/gpsmanshp, um so Wegpunkte, Tracklogs und
+Routen von verschiedenen Arten von GPS-Empfängern zu importieren. Hiermit
+können auch Karten im ESRI Shapefile-Format aus GPS-Daten erzeugt werden.
+
+Xastir hat nun SmartBeaconing(tm) implementiert, das die Spurqualität
+deutlich erhöht und unnötige Kanalbelegung vermeidet. Siehe hierzu die Hilfe
+"Einstellungen - Smart Beaconing".
+
+Die Unterstützung für Internet-Gateways wurde verbessert, mit der Möglichkeit
+für weitergereichte Pakete einen speziellen Pfad zu definieren, sowie einer
+29 Sekunden Warteschlange zur Aussonderung von Doppeln, um so die unnötige
+Redundanz auf dem Funkkanal zu reduzieren.
+
+Kartenbereiche und Dateinamen werden nun gecached, so daß Karten nur von der
+Festplatte geladen werden müssen, wenn sie auf dem Schirm darstellbar sind.
+Dies ist eine wichtige Verbesserungen für Karten, die diese Information nicht
+angeben. Zusätzlich wird diese Information von "automatischen Karten"
+verwendet, wodurch dies auch bei vielen installierten Karten noch verwendbar
+ist.
+
+Von Xastir kontrollierte Objekte werden nun in einer Datei gespeichert, so
+daß sie bei einem Neustart von Xastir nicht verloren gehen. Außerdem
+unterstützt Xastir nun das komprimierte Format bei Objekten und Items, was 
+dabei helfen kann, die Überfüllung von Funkkanälen zu reduzieren. Dies
+führt auch zu einer höheren Genauigkeit der platzierten Objekte. Siehe
+hierzu "Datei - Einstellungen - Grundeinstellungen".
+
+Xastir gibt nun root-Privilegien auf, wenn sie nicht benötigt werden, wenn
+es mittels setuid gestartet wird. Bitte lesen Sie die Informationen hierzu
+in der datei INSTALL. Diese Änderung bietet einen eingeschränkten Schutz.
+
+Xastir unterstützt nun die Benutzung einer eigenen Farbtabelle mit dem
+Kommandozeilenparameter "-i". Dies wird empfohlen für Systeme, die im
+8-Bit Farbmodus laufen.
+
+Zudem wurden einige weitere Pufferüberläufe und andere Fehler im Datenparser
+von Xastir korrigiert und viele ander Fehler wurden beseitigt.
+
+Erfreuen Sie sich am neuen Xastir !
+
 
 HELP-INDEX>Der erste Aufruf von Xastir
 

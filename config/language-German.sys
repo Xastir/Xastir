@@ -4,7 +4,7 @@
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 21. Mai 2003, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 28. Mai 2003, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -103,7 +103,7 @@ MPUPTGR013|Flüsse||
 MPUPTGR014|Seen||
 MPUPTGR015|Flughäfen, Parks, etc||
 MPUPTGR016|Karten Intensität||
-MPUPTGR017|Timeout [sec]||
+MPUPTGR017|Timeout [Sek]||
 MPUPTGR018|Tiger Maps erlauben||
 #
 #
@@ -144,7 +144,7 @@ PULDNOT003|Kurz||
 # Menu "Stationen"
 PULDNDP014|Station finden|f|
 PULDNDP001|Verfolge Station|V|
-PULDNDP022|Spur von Findu holen|h|
+PULDNDP022|Spur von findu holen|h|
 PULDNDP032|Daten filtern||
 PULDNDP040|Nichts||
 PULDNDP041|Meine Daten||
@@ -295,7 +295,7 @@ BBARSTA039|Indizieren %s||
 BBARSTA040|APRS Station %s||
 BBARSTA041|Warten auf GPS Daten..||
 BBARSTA042|Senden von Objekten||
-BBARSTA043|Logging||
+BBARSTA043|Protokoll||
 #
 # PopUp "Zeige - Packet Radio"
 WPUPDPD001|Packet Radio Daten||
@@ -349,9 +349,9 @@ WPUPCFTM02|SendeIntervall Position [Min]||
 WPUPCFTM03|Station schemenhaft nach [Min]||
 WPUPCFTM04|SendeIntervall Objekt [Min]||
 WPUPCFTM05|Alte Station anzeigen für [Std]||
-WPUPCFTM06|GPS Abfrage alle [Sec]||
+WPUPCFTM06|GPS Abfrage alle [Sek]||
 WPUPCFTM07|Station löschen nach [Tage]||
-WPUPCFTM08|Pos-Voraussage Timeout [Min]||
+WPUPCFTM08|Timeout Pos-Voraussage [Min]||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||
@@ -417,15 +417,15 @@ WPUPCFT027|ASCII||
 WPUPCFT028|Einstellungen für TNC mit GPS über AUX-Kabel||
 WPUPCFT029|Einstellungen für TNC mit GPS über INVALID ENUM||
 WPUPCFT030|KISS TNC konfigurieren||
-WPUPCFT031|TNC Configuration Files||
-WPUPCFT032|TNC Setup Filename|| 
-WPUPCFT033|TNC Shutdown Filename||
-WPUPCFT034|KISS Parameters||
-WPUPCFT035|TXDelay (10 ms units)||
+WPUPCFT031|TNC Konfigurationsdateien||
+WPUPCFT032|Datei für TNC-Setup|| 
+WPUPCFT033|Datei für TNC-Shutdown||
+WPUPCFT034|KISS Parameter||
+WPUPCFT035|TXDelay (in 10 ms Einheiten)||
 WPUPCFT036|Persistence (0 to 255)||
-WPUPCFT037|SlotTime (10 ms units)||
-WPUPCFT038|TxTail (10 ms units)||
-WPUPCFT039|Full Duplex||
+WPUPCFT037|SlotTime (in 10 ms Einheiten)||
+WPUPCFT038|TxTail (in 10 ms Einheiten)||
+WPUPCFT039|Voll-Duplex||
 # 
 # PopUp "Einstellungen Wetterstation"
 WPUPCFWX01|Einstellungen Wetterstation||
@@ -507,7 +507,7 @@ POPUPOB036|Geschwindigkeit [knots]:||
 POPUPOB037|Kurs:||
 POPUPOB038|als Peil-Objekt||
 POPUPOB039|Leistung - Höhe - Gewinn - Richtung||
-POPUPOB040|Beam Width - Bearing||
+POPUPOB040|Öffnungswinkel - Richtung||
 POPUPOB041|Rundstrahlantenne||
 POPUPOB042|Richtantenne||
 POPUPOB043|unbekannt||
@@ -521,13 +521,13 @@ WPUPCFI005|Host1||
 WPUPCFI006|Port1||
 WPUPCFI007|Host2||
 WPUPCFI008|Port2||
-WPUPCFI009|Pass-Code||
+WPUPCFI009|Zugangs-Kode||
 WPUPCFI010|(freilassen falls keiner)||
 WPUPCFI011|Wiederverbinden bei NET Fehler?||
 WPUPCFI012|Als I-Gate verwenden?||
 WPUPCFI013|Nachrichten aus Internet via TNC aussenden wenn I-Gate?||
 WPUPCFI014|I-Gate Transaktionen protokollieren?|||
-WPUPCFI015|Filter Parameter||
+WPUPCFI015|Filter-Parameter||
 #
 # PopUp "Databank Einstellungen"
 WPUPCFID01|Datenbank Einstellungen (TBD)||
@@ -538,13 +538,13 @@ WPUPCFID05|Host1||
 WPUPCFID06|Port1||
 WPUPCFID07|Host2||
 WPUPCFID08|Port2||
-WPUPCFID09|Pass-Code||
+WPUPCFID09|Zugangs-Kode||
 WPUPCFID10|(Freilassen falls keines)||
 WPUPCFID11|Wiederverbinden bei NET Fehler?||
 WPUPCFID12|Als I-Gate verwenden?||
 WPUPCFID13|Nachrichten aus Internet via TNC aussenden wenn I-Gate?||
 WPUPCFID14|I-Gate Transaktionen protokollieren?|||
-WPUPCFID15|Filter Parameter||
+WPUPCFID15|Filter-Parameter||
 #
 # PopUp "Configure AGWPE"
 WPUPCFIA01|AGWPE konfigurieren||
@@ -555,7 +555,7 @@ WPUPCFIA05|Host1||
 WPUPCFIA06|Port1||
 WPUPCFIA07|Host2||
 WPUPCFIA08|Port2||
-WPUPCFIA09|Pass-code||
+WPUPCFIA09|Zugangs-Kode||
 WPUPCFIA10|Freilassen falls keines)||
 WPUPCFIA11|Wiederverbinden bei NET Fehler?||
 WPUPCFIA12|Als I-Gate verwenden?||
@@ -596,8 +596,8 @@ WPUPTSP005|Verfolge jetzt!||
 WPUPTSP006|Verfolgung aufheben|| 
 WPUPTSP007|Spur aus dem Internet||
 WPUPTSP008|Rufzeichen||
-WPUPTSP009|Start Trail (hrs ago)||
-WPUPTSP010|Trail Length (hrs)||
+WPUPTSP009|Start der Spur (vor ... Std)||
+WPUPTSP010|Länge der Spur (Std)||
 #
 # PopUp "Nachrichten..."
 WPUPMSB001|Nachricht Fenster %d||
@@ -974,15 +974,15 @@ COORD010|UTM Northing||
 #
 # Smart Beaconing Dialog
 SMARTB001|Smart Beaconing||
-SMARTB002|Hohe Rate [sec]                ||
+SMARTB002|Hohe Rate [Sek]                ||
 SMARTB003|Hohe Geschwindigkeit [mph]     ||
 SMARTB004|Hohe Geschwindigkeit [km/h]    ||
-SMARTB005|Niedrige Rate [min]            ||
+SMARTB005|Niedrige Rate [Min]            ||
 SMARTB006|Niedrige Geschwindigkeit [mph] ||
 SMARTB007|Niedrige Geschwindigkeit [km/h]||
-SMARTB008|Kurve Schwellwert [deg]        ||
+SMARTB008|Kurve Schwellwert [Grad]        ||
 SMARTB009|Kurvenparameter (Turn Slope)   ||
-SMARTB010|Wartezeit [sec]                ||
+SMARTB010|Wartezeit [Sek]                ||
 SMARTB011|SmartBeaconing(tm) einschalten||
 #
 #
