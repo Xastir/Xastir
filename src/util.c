@@ -4133,16 +4133,43 @@ void split_string( char *data, char *cptr[], int max ) {
 
 
 
+
 // This function checks to make sure an unproto path falls within
 // the socially acceptable values, such as only one RELAY which may
 // appear only as the first option, use of WIDE4-4 and higher should
 // be questioned, etc.
+//
+// "MAX_WIDES" is defined in util.h
 //
 int check_unproto_path ( char *data ) {
     char *tmpdata;
     char *ViaCalls[10];
     int bad_path, ii, have_relay, have_wide, have_widen;
     int have_trace, have_tracen;
+    int lastp = 0;
+    int prevp = 0;
+    int last = 0;
+    int prev = 0;
+
+
+    // Function to check for proper relations between the n-N
+    // numbers.
+    //
+    int check_n_N (void ) {
+        if (prev < last) {
+            // Whoa, n < N, not good
+            bad_path = 1;
+        }
+        else if (last > MAX_WIDES) {
+            // N is greater than MAX_WIDES
+            bad_path = 1;
+        }
+        else if (prev > MAX_WIDES) {
+            // n is greater than MAX_WIDES
+            bad_path = 1;
+        }
+        return(bad_path);
+    }
 
 
     bad_path = ii = have_relay = have_wide = 0;
@@ -4158,12 +4185,27 @@ int check_unproto_path ( char *data ) {
     split_string(tmpdata, ViaCalls, 10);
 
     for (ii = 0; ii < 10; ii++) {
+        lastp = 0;
+        prevp = 0;
+        last = 0;
+        prev = 0;
+
 
         // Check for empty string in this slot
         if (ViaCalls[ii] == NULL) {
             // We're done.  Exit the loop with whatever flags were
             // set in previous iterations.
             break;
+        }
+
+        lastp = strlen(ViaCalls[ii]) - 1;
+        prevp = lastp - 2;
+        // Snag the N character, convert to integer
+        last  = ViaCalls[ii][lastp] - 0x30;
+ 
+        if (prevp >= 0) {
+            // Snag the n character, convert to integer
+            prev = ViaCalls[ii][prevp] - 0x30;
         }
 
         // Check whether RELAY appears later in the path
@@ -4180,7 +4222,7 @@ int check_unproto_path ( char *data ) {
         // Check for WIDE/TRACE/WIDEn-N/TRACEn-N in the path
         else if (strstr(ViaCalls[ii], "WIDE") || strstr(ViaCalls[ii], "TRACE")) {
             // This is some variant of WIDE or TRACE, could be
-            // WIDE/WIDEn-n/TRACE/TRACEn-n
+            // WIDE/WIDEn-N/TRACE/TRACEn-N
             int is_wide = 0;
 
 
@@ -4203,55 +4245,37 @@ int check_unproto_path ( char *data ) {
                 if (is_wide) {
                     have_widen++;
 
-                    // We know its a WIDEn-n time to find out what n
-                    // is
+                    // We know its a WIDEn-N, time to find out what n is
                     if (strlen(ViaCalls[ii]) != 7) {
-                        // This should be WIDEn-n and should be
+                        // This should be WIDEn-N and should be
                         // exactly 7 characters
                         bad_path = 1;
                         break;
                     }
-                    else {
-                        if (ViaCalls[ii][4] < ViaCalls[ii][6]) {
-                            // Whoa, N < n
-                            bad_path = 1;
-                            break;
-                        }
-                        if (atoi(ViaCalls[ii]+=6) > MAX_WIDES) {
-                            // Greater than WIDEn-3
-                            bad_path = 1;
-                            break;
-                        }
 
-
-                    }
+                    // Check for proper relations between the n-N
+                    // numbers.
+                    if ( check_n_N() )
+                        break;
                 }
 
                 // Perform similar checks for TRACEn-N
                 else {
                     have_tracen++;
 
-                    // We know its a TRACEn-n time to find out what
+                    // We know its a TRACEn-N time to find out what
                     // n is
                     if (strlen(ViaCalls[ii]) != 8) {
-                        // This should be TRACEn-n and should be
+                        // This should be TRACEn-N and should be
                         // exactly 8 characters
                         bad_path = 1;
                         break;
                     }
-                    else {
-                        if (ViaCalls[ii][5] < ViaCalls[ii][7]) {
-                            // Whoa, N < n
-                            bad_path = 1;
-                            break;
-                        }
-                        // Valid TRACEn-n, check for > 3
-                        if (atoi(ViaCalls[ii]+=7) > MAX_WIDES) {
-                            bad_path = 1;
-                            break;
-                        }
 
-                    }
+                    // Check for proper relations between the n-N
+                    // numbers.
+                    if ( check_n_N() )
+                        break;
                 }
 
             }
@@ -4267,7 +4291,7 @@ int check_unproto_path ( char *data ) {
                 }
 
                 if (have_relay && (ii > MAX_WIDES)) {
-                    // RELAY and more than 3 WIDE/TRACE calls
+                    // RELAY and more than "MAX_WIDES" WIDE/TRACE calls
 // Here we could check have_wide/have_trace to see what the actual
 // count of WIDE/TRACE calls is at this point...
                     bad_path = 1;
@@ -4291,7 +4315,7 @@ int check_unproto_path ( char *data ) {
         // Not RELAY/WIDE/TRACE/WIDEn-N/TRACEn-N call
         else {
             // Might as well stub this out, could be anything at
-            // this point, a LINKn-n or LANn-n or a explicit
+            // this point, a LINKn-N or LANn-N or a explicit
             // callsign
             if (!strstr(ViaCalls[ii], "-")) {
 /*
@@ -4308,23 +4332,20 @@ int check_unproto_path ( char *data ) {
             else {
                 // Could be a LAN or LINK or explicit call, check
                 // for a digit preceding the dash
-                if (atoi(ViaCalls[ii]+=(strlen(ViaCalls[ii]) - 3)) > 0) {
-                    // We have a n-n */
+
+                if (prev > 0) {
+                    // We've found an n-N */
                     if (have_widen || have_tracen) {
                         // Already have a previous wide path
                         bad_path = 1;
                         break;
                     }
-                    else if (ViaCalls[ii][0] != ViaCalls[ii][2]) {
-                        // Whoa, n != n
-                        bad_path = 1;
+
+                    // Check for proper relations between the n-N
+                    // numbers.
+                    if ( check_n_N() )
                         break;
-                    }
-                    else if (atoi(ViaCalls[ii]+=strlen(ViaCalls[ii]) - 1) > MAX_WIDES) {
-                        // Greater than -3
-                        bad_path = 1;
-                        break;
-                    }
+
                     have_widen++;
                 }
                 else {
