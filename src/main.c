@@ -13299,7 +13299,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 NULL);
  
         // Interval for station being removed from database
-        removal_time = XtVaCreateManagedWidget("Station Removeal Time",
+        removal_time = XtVaCreateManagedWidget("Station Removal Time",
                 xmScaleWidgetClass,
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
