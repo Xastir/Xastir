@@ -3328,6 +3328,10 @@ void port_read(int port) {
             }
         }
         if (port_data[port].active == DEVICE_IN_USE)  {
+
+            // We need to delay here so that the thread doesn't use
+            // high amounts of CPU doing nothing.
+
             /*usleep(100);*/
             FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
@@ -3460,29 +3464,15 @@ void port_write(int port) {
         }
         if (port_data[port].active == DEVICE_IN_USE) {
 
-            // Take care of possible line pacing needs here
+            // We need to delay here so that the thread doesn't use
+            // high amounts of CPU doing nothing.
 
-            switch (port_data[port].device_type) {
-
-                case DEVICE_NET_STREAM:
-                case DEVICE_AX25_TNC:
-                case DEVICE_NET_GPSD:
-                case DEVICE_NET_WX:
-                case DEVICE_NET_DATABASE:
-                case DEVICE_NET_AGWPE: 
-                                    // Don't delay after each line
-                    break;
-
-                default:            // Delay after each line (line pacing)
-                    /*usleep(100);*/
-                    FD_ZERO(&wd);
-                    FD_SET(port_data[port].channel, &wd);
-                    tmv.tv_sec = 0;
-                    tmv.tv_usec = 100000;  // Delay 100ms
-                    (void)select(0,NULL,&wd,NULL,&tmv);
-                    break;
-
-            }   // End of switch
+            /*usleep(100);*/
+            FD_ZERO(&wd);
+            FD_SET(port_data[port].channel, &wd);
+            tmv.tv_sec = 0;
+            tmv.tv_usec = 100000;  // Delay 100ms
+            (void)select(0,NULL,&wd,NULL,&tmv);
         }
     }
     if (debug_level & 2)
