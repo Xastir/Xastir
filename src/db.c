@@ -6696,7 +6696,7 @@ int extract_position(DataRow *p_station, char **info, int type) {
  */
 int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type) {
     int ok;
-    char x1, x2, x3, x4, y1, y2, y3, y4;
+    int x1, x2, x3, x4, y1, y2, y3, y4;
     int c = 0;
     int s = 0;
     int T = 0;
@@ -6740,13 +6740,20 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     // thing to do.
     len = strlen(my_data);
     ok = (int)(len >= 10);
+
     if (ok) {
-        y1 = my_data[1] - '!';  y2 = my_data[2] - '!';  y3 = my_data[3] - '!';  y4 = my_data[4] - '!';
-        x1 = my_data[5] - '!';  x2 = my_data[6] - '!';  x3 = my_data[7] - '!';  x4 = my_data[8] - '!';
+        y1 = (int)my_data[1] - '!';
+        y2 = (int)my_data[2] - '!';
+        y3 = (int)my_data[3] - '!';
+        y4 = (int)my_data[4] - '!';
+        x1 = (int)my_data[5] - '!';
+        x2 = (int)my_data[6] - '!';
+        x3 = (int)my_data[7] - '!';
+        x4 = (int)my_data[8] - '!';
 
         // Have at least a 'c' byte?
         if (len > 10) {
-            c = (int)(my_data[10] - '!');
+            c = (int)my_data[10] - '!';
             skip = 11;
         }
         else {  // No 'c' byte.  Not per spec, but we decode the packet ok.
@@ -6756,43 +6763,52 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
       
         // Have 's' and 'T' bytes?   'c' must not be a space (now -1).
         if ( (len >= 13) && (c != -1) ) { 
-            s = (int)(my_data[11] - '!');
-            T = (int)(my_data[12] - '!');
+            s = (int)my_data[11] - '!';
+            T = (int)my_data[12] - '!';
             skip = 13;
         }
         else {  // Not enough chars for csT, so zero them
             c = -1; // This causes us to ignore csT
         }
 
-        if ((int)x1 == -1) x1 = '\0';   if ((int)x2 == -1) x2 = '\0';   // convert ' ' to '0'
-        if ((int)x3 == -1) x3 = '\0';   if ((int)x4 == -1) x4 = '\0';   // not specified in
-        if ((int)y1 == -1) y1 = '\0';   if ((int)y2 == -1) y2 = '\0';   // APRS Reference!
-        if ((int)y3 == -1) y3 = '\0';   if ((int)y4 == -1) y4 = '\0';   // do we need it ???
+        // Convert ' ' to '0'.  Not specified in APRS Reference!  Do
+        // we need it?
+        if (x1 == -1) x1 = '\0';
+        if (x2 == -1) x2 = '\0';
+        if (x3 == -1) x3 = '\0';
+        if (x4 == -1) x4 = '\0';
+        if (y1 == -1) y1 = '\0';
+        if (y2 == -1) y2 = '\0';
+        if (y3 == -1) y3 = '\0';
+        if (y4 == -1) y4 = '\0';
 
-        ok = (int)(ok && (x1 >= '\0' && x1 < (char)91));                //  /YYYYXXXX$csT
-        ok = (int)(ok && (x2 >= '\0' && x2 < (char)91));                //  0123456789012
-        ok = (int)(ok && (x3 >= '\0' && x3 < (char)91));
-        ok = (int)(ok && (x4 >= '\0' && x4 < (char)91));
-        ok = (int)(ok && (y1 >= '\0' && y1 < (char)91));
-        ok = (int)(ok && (y2 >= '\0' && y2 < (char)91));
-        ok = (int)(ok && (y3 >= '\0' && y3 < (char)91));
-        ok = (int)(ok && (y4 >= '\0' && y4 < (char)91));
+        ok = (int)(ok && (x1 >= '\0' && x1 < 91));  //  /YYYYXXXX$csT
+        ok = (int)(ok && (x2 >= '\0' && x2 < 91));  //  0123456789012
+        ok = (int)(ok && (x3 >= '\0' && x3 < 91));
+        ok = (int)(ok && (x4 >= '\0' && x4 < 91));
+        ok = (int)(ok && (y1 >= '\0' && y1 < 91));
+        ok = (int)(ok && (y2 >= '\0' && y2 < 91));
+        ok = (int)(ok && (y3 >= '\0' && y3 < 91));
+        ok = (int)(ok && (y4 >= '\0' && y4 < 91));
+
         T &= 0x3F;      // DK7IN: force Compression Byte to valid format
                         // mask off upper two unused bits, they should be zero!?
 
         ok = (int)(ok && (c == -1 || ((c >=0 && c < 91) && (s >= 0 && s < 91) && (T >= 0 && T < 64))));
+
         if (ok) {
-            lat = ((((int)y1 * 91 + (int)y2) * 91 + (int)y3) * 91 + (int)y4 ) / 380926.0; // in deg, 0:  90°N
-            lon = ((((int)x1 * 91 + (int)x2) * 91 + (int)x3) * 91 + (int)x4 ) / 190463.0; // in deg, 0: 180°W
+            lat = (((y1 * 91 + y2) * 91 + y3) * 91 + y4 ) / 380926.0; // in deg, 0:  90°N
+            lon = (((x1 * 91 + x2) * 91 + x3) * 91 + x4 ) / 190463.0; // in deg, 0: 180°W
             lat *= 60 * 60 * 100;                       // in 1/100 sec
             lon *= 60 * 60 * 100;                       // in 1/100 sec
 
             // The below check should _not_ be done.  Compressed
-            // format can resolve down about 1 foot worldwide (0.3
-            // meters).
+            // format can resolve down to about 1 foot worldwide
+            // (0.3 meters).
             //if ((((long)(lat+4) % 60) > 8) || (((long)(lon+4) % 60) > 8))
-            //    ok = 0;                                 // check max resolution 0.01 min
-        }                                               // to catch even more errors
+            //    ok = 0;   // check max resolution 0.01 min to
+                            // catch even more errors
+        }
     }
 
     if (ok) {
