@@ -373,9 +373,10 @@ void output_message(char *from, char *to, char *message) {
 
                 // Roll over message_counter if we hit the max.  Now
                 // with Reply/Ack protocol the max is only two
-                // characters worth (in Base-91?).
+                // characters worth (change to Base-91 soon to get
+                // more range).
                 message_counter++;
-                if (message_counter > 99999)
+                if (message_counter > 99)
                     message_counter=0;
 
                 message_pool[i].active = MESSAGE_ACTIVE;
@@ -383,6 +384,7 @@ void output_message(char *from, char *to, char *message) {
                 strcpy(message_pool[i].to_call_sign,to);
                 strcpy(message_pool[i].from_call_sign,from);
                 strcpy(message_pool[i].message_line,message_out);
+
                 xastir_snprintf(message_pool[i].seq, sizeof(message_pool[i].seq),
                         "%d", message_counter);
 
