@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
 #include "awk.h"
 
 #define min(a,b) ((a)<(b)?(a):(b))
