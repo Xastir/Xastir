@@ -5226,6 +5226,12 @@ static void* snapshot_thread(void *arg) {
                     xpm_filename,
                     png_filename);
             }
+            else {
+                fprintf(stderr,
+                    "System call return error: convert: %s -> %s\n",
+                    xpm_filename,
+                    png_filename);
+            }
         }
         else {
             chmod( png_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
