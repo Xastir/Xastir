@@ -4410,6 +4410,18 @@ int check_unproto_path ( char *data ) {
             }
         }
 
+        // Check whether WIDE1-1 appears later in the path (the new
+        // "RELAY")
+        else if (!strncmp(ViaCalls[ii], "WIDE1-1", 7)) {
+            have_relay++;
+            if (ii != 0) {
+                // WIDE1-1 should not appear after the first item in
+                // a path!
+                bad_path = 1;
+                break;
+            }
+        }
+
         // Check for WIDE/TRACE/WIDEn-N/TRACEn-N in the path
         else if (strstr(ViaCalls[ii], "WIDE") || strstr(ViaCalls[ii], "TRACE")) {
             // This is some variant of WIDE or TRACE, could be
