@@ -212,9 +212,10 @@ void get_path_data(char *callsign, char *path) {
 
         reverse_path(new_path);
 
-        printf("  Path to %s: %s\n",
-            callsign,
-            new_path);
+        if (debug_level & 2)
+            printf("  Path to %s: %s\n",
+                callsign,
+                new_path);
 
         strcpy(path,new_path);
     }
