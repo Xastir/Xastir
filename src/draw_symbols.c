@@ -735,108 +735,116 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 
 
 // Ghost the wind barb if sec_heard is too long.
+// (TBD)
 
+
+    // Refuse to draw the barb at all if we're past the "clear"
+    // interval:
+    if ( ((sec_clear+sec_heard)>sec_now()) || show_old_data ) {
+
+ 
 // What to do if my_speed is zero?  Blank out any wind barbs
 // that were written before?
 
 
-    // Convert from mph to knots for wind speed.
-    my_speed = my_speed * 0.8689607;
+        // Convert from mph to knots for wind speed.
+        my_speed = my_speed * 0.8689607;
 
-    //printf("mph:%s, knots:%d\n",speed,my_speed);
+        //printf("mph:%s, knots:%d\n",speed,my_speed);
 
-    // Adjust so that it fits our screen angles.  We're off by
-    // 90 degrees.
-    my_course = (my_course - 90) % 360;
+        // Adjust so that it fits our screen angles.  We're off by
+        // 90 degrees.
+        my_course = (my_course - 90) % 360;
 
-    square_flags = (int)(my_speed / 100);
-    my_speed = my_speed % 100;
+        square_flags = (int)(my_speed / 100);
+        my_speed = my_speed % 100;
 
-    triangle_flags = (int)(my_speed / 50);
-    my_speed = my_speed % 50;
+        triangle_flags = (int)(my_speed / 50);
+        my_speed = my_speed % 50;
 
-    full_barbs = (int)(my_speed / 10);
-    my_speed = my_speed % 10;
+        full_barbs = (int)(my_speed / 10);
+        my_speed = my_speed % 10;
 
-    half_barbs = (int)(my_speed / 5);
+        half_barbs = (int)(my_speed / 5);
 
-    shaft_length = BARB_SPACING * (square_flags + triangle_flags + full_barbs
-        + half_barbs + 1);
+        shaft_length = BARB_SPACING * (square_flags + triangle_flags + full_barbs
+            + half_barbs + 1);
 
-    // Set a minimum length for the shaft?
-    if (shaft_length < 20)
-        shaft_length = 20;
+        // Set a minimum length for the shaft?
+        if (shaft_length < 20)
+            shaft_length = 20;
 
-    if (debug_level & 128) {
-        printf("Course:%d,\tL:%d,\tsq:%d,\ttr:%d,\tfull:%d,\thalf:%d\n",
-            atoi(course),
-            shaft_length,
-            square_flags,
-            triangle_flags,
-            full_barbs,
-            half_barbs);
+        if (debug_level & 128) {
+            printf("Course:%d,\tL:%d,\tsq:%d,\ttr:%d,\tfull:%d,\thalf:%d\n",
+                atoi(course),
+                shaft_length,
+                square_flags,
+                triangle_flags,
+                full_barbs,
+                half_barbs);
+        }
+
+        // Draw shaft at proper angle.
+        bearing_radians = (my_course/360.0) * 2.0 * M_PI;
+
+        off_y = (long)( shaft_length * sin(bearing_radians) );
+        off_x = (long)( shaft_length * cos(bearing_radians) );
+
+        x = (x_long - x_long_offset)/scale_x;
+        y = (y_lat - y_lat_offset)/scale_y;
+
+        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+        (void)XDrawLine(XtDisplay(da),where,gc,
+            x,
+            y,
+            x + off_x,
+            y + off_y);
+
+        // Increment along shaft and draw filled polygons at:
+        // "(angle + 45) % 360" degrees to create flags.
+
+        i = BARB_SPACING;
+        // Draw half barbs if any
+        if (half_barbs)
+        	draw_half_barbs(&i,
+                half_barbs,
+                bearing_radians,
+                x,
+                y,
+                course,
+                where);
+ 
+        // Draw full barbs if any
+        if (full_barbs)
+        	draw_full_barbs(&i,
+                full_barbs,
+                bearing_radians,
+                x,
+                y,
+                course,
+                where);
+ 
+        // Draw triangle flags if any
+        if (triangle_flags)
+        	draw_triangle_flags(&i,
+                triangle_flags,
+                bearing_radians,
+                x,
+                y,
+                course,
+                where);
+ 
+        // Draw rectangle flags if any
+        if (square_flags)
+        	draw_square_flags(&i,
+                square_flags,
+                bearing_radians,
+                x,
+                y,
+                course,
+                where);
     }
-
-    // Draw shaft at proper angle.
-    bearing_radians = (my_course/360.0) * 2.0 * M_PI;
-
-    off_y = (long)( shaft_length * sin(bearing_radians) );
-    off_x = (long)( shaft_length * cos(bearing_radians) );
-
-    x = (x_long - x_long_offset)/scale_x;
-    y = (y_lat - y_lat_offset)/scale_y;
-
-    (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
-    (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
-    (void)XDrawLine(XtDisplay(da),where,gc,
-        x,
-        y,
-        x + off_x,
-        y + off_y);
-
-    // Increment along shaft and draw filled polygons at:
-    // "(angle + 45) % 360" degrees to create flags.
-
-    i = BARB_SPACING;
-    // Draw half barbs if any
-    if (half_barbs)
-    	draw_half_barbs(&i,
-            half_barbs,
-            bearing_radians,
-            x,
-            y,
-            course,
-            where);
- 
-    // Draw full barbs if any
-    if (full_barbs)
-    	draw_full_barbs(&i,
-            full_barbs,
-            bearing_radians,
-            x,
-            y,
-            course,
-            where);
- 
-    // Draw triangle flags if any
-    if (triangle_flags)
-    	draw_triangle_flags(&i,
-            triangle_flags,
-            bearing_radians,
-            x,
-            y,
-            course,
-            where);
- 
-    // Draw rectangle flags if any
-    if (square_flags)
-    	draw_square_flags(&i,
-            square_flags,
-            bearing_radians,
-            x,
-            y,
-            course,
-            where);
 }
 
 
