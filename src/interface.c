@@ -294,13 +294,58 @@ void channel_data(int port, unsigned char *string, int length) {
 
 //********************************* START AX.25 ********************************
 
+#ifdef HAVE_AX25
+// stolen from libax25-0.0.9 and modified to set digipeated bit based on '*'
+int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
+{
+    char *bp;
+    char *addrp;
+    int n = 0;
+    int argp = 0;
+
+    addrp = sax->fsa_ax25.sax25_call.ax25_call;
+
+    do {
+	/* Fetch one callsign token */
+	if ((bp = call[argp++]) == NULL)
+	    break;
+
+	/* Check for the optional 'via' syntax */
+	if (n == 1 && (strcasecmp(bp, "V") == 0 || strcasecmp(bp, "VIA") == 0))
+	    continue;
+
+	/* Process the token */
+	if (ax25_aton_entry(bp, addrp) == -1)
+	    return -1;
+	else {
+	    if (n >= 1 && index(bp, '*'))
+		addrp[6] |= 0x80; // set digipeated bit
+	}
+
+	n++;
+
+	if (n == 1)
+	    addrp  = sax->fsa_digipeater[0].ax25_call;      /* First digipeater address */
+	else
+	    addrp += sizeof(ax25_address);
+
+    } while (n < AX25_MAX_DIGIS && call[argp] != NULL);
+
+    /* Tidy up */
+    sax->fsa_ax25.sax25_ndigis = n - 1;
+    sax->fsa_ax25.sax25_family = AF_AX25;
+
+    return sizeof(struct full_sockaddr_ax25);
+}
+#endif
+
 
 //***********************************************************
 // ui connect: change call and proto paths and reconnect net
 // port device to work with
 //***********************************************************
 int ui_connect( int port, char *to[]) {
-    int    s = -1;
+    int    s = -1, sockopt;
 #ifdef HAVE_AX25
     int    addrlen = sizeof(struct full_sockaddr_ax25);
     struct full_sockaddr_ax25 axbind, axconnect;
@@ -343,7 +388,7 @@ int ui_connect( int port, char *to[]) {
         return -1;
     }
 
-    if (ax25_aton_arglist((const char **)to, &axconnect) == -1) {
+    if (my_ax25_aton_arglist(to, &axconnect) == -1) {
         popup_message(langcode("POPEM00004"),langcode("POPEM00008"));
         return -1;
     }
@@ -366,6 +411,16 @@ int ui_connect( int port, char *to[]) {
         xastir_snprintf(temp, sizeof(temp), langcode("POPEM00010"), strerror(errno));
         popup_message(langcode("POPEM00004"),temp);
         return -1;
+    }
+
+    if (devices[port].relay_digipeat)
+	sockopt = 1;
+    else
+	sockopt = 0;
+
+    if (setsockopt(s, SOL_AX25, AX25_IAMDIGI, &sockopt, sizeof(int))) {
+	printf("AX25 IAMDIGI setsockopt FAILED");
+	return -1;
     }
 
     if (debug_level & 2)
@@ -735,7 +790,7 @@ int ax25_init(int port) {
     char temp[200];
     char *dev = NULL;
 #endif
- 
+
     if (begin_critical_section(&port_data_lock, "interface.c:ax25_init(1)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
 
@@ -785,7 +840,7 @@ int ax25_init(int port) {
     ENABLE_SETUID_PRIVILEGE;
     port_data[port].channel = socket(AF_INET, SOCK_PACKET, htons(proto));
     DISABLE_SETUID_PRIVILEGE;
- 
+
     if (port_data[port].channel == -1) {
         perror("socket");
         if (end_critical_section(&port_data_lock, "interface.c:ax25_init(4)" ) > 0)
@@ -1848,7 +1903,6 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     int erd;
     int write_in_pos_hold;
 
- 
     //printf("KISS String:%s>%s,%s:%s\n",source,destination,path,data);
 
     transmit_txt[0] = '\0';
@@ -1895,7 +1949,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     strcat(transmit_txt,control);
 
     // Add the PID byte
-    pid[0] = 0xf0; 
+    pid[0] = 0xf0;
     pid[1] = '\0';
     strcat(transmit_txt,pid);
 
@@ -2003,7 +2057,7 @@ void send_kiss_config(int port, int device, int command, int value) {
         printf("send_kiss_config: out-of-range value for value\n");
         return;
     }
- 
+
     // Add the KISS framing characters and do the proper escapes.
     j = 0;
     transmit_txt[j++] = KISS_FEND;
@@ -2112,7 +2166,7 @@ void port_write_string(int port, char *data) {
     if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write_string(2)" ) > 0)
         printf("write_lock, Port = %d\n", port);
 }
- 
+
 
 
 
@@ -3746,7 +3800,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
                         && !posit_tx_disable) {
-                    port_write_string(port,header_txt); 
+                    port_write_string(port,header_txt);
                 }
                 /*sleep(1);*/
                 break;

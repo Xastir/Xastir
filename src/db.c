@@ -11151,23 +11151,22 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 //
 void relay_digipeat(char *call, char *path, char *info, int port) {
     char new_path[110+1];
-    char *short_path;
-    char *r_ptr;
-    char *c_ptr;
-    char *a_ptr;
-    char *temp_ptr;
+    char *short_path = NULL;
+    char *r_ptr = NULL;
+    char *c_ptr = NULL;
+    char *a_ptr = NULL;
+    char *temp_ptr = NULL;
     int ok;
     char destination[MAX_CALLSIGN+1];
 
-
     // Check whether relay_digipeat has been enabled for this interface.
-    // If not, get out while the gettin's good. 
+    // If not, get out while the gettin's good.
     if (devices[port].relay_digipeat != 1) {
         return;
     }
 
     // Check whether transmit has been enabled for this interface.
-    // If not, get out while the gettin's good. 
+    // If not, get out while the gettin's good.
     if (devices[port].transmit_data != 1) {
         return;
     }
@@ -11176,6 +11175,12 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     // do RELAY digipeating.  If not one of these, go bye-bye.
     if ( (devices[port].device_type != DEVICE_SERIAL_KISS_TNC)
             && (devices[port].device_type != DEVICE_AX25_TNC)) {
+        return;
+    }
+
+    // Check to see if this is a packet from me (in some cases, you hear
+    // yourself transmit...)
+    if (!strcasecmp(call, my_callsign)) {
         return;
     }
 
@@ -11303,7 +11308,6 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
         strcat(new_path,my_callsign);                       // Callsign substitution
         strcat(new_path,"*");                               // Has been digipeated
         strcat(new_path,c_ptr + strlen(my_callsign) );      // Suffix
- 
     }
     // Only RELAY found
     else if (r_ptr != NULL) {
@@ -11326,14 +11330,37 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
 
     }
     else if (devices[port].device_type == DEVICE_AX25_TNC) {
-//        printf("AX25 RELAY: Coming soon to an Xastir near you: %s\n", short_path);
+//#define I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT 1
+#ifdef I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
+        char header_txt[MAX_LINE_SIZE+5];
+
+        //printf("AX25 RELAY short_path: %s\n", short_path);
+        //printf("AX25 RELAY   new_path: %s\n", new_path);
+
+        // set from call
+        xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s\r", '\3', "MYCALL", call);
+        if (port_data[port].status == DEVICE_UP)
+            port_write_string(port, header_txt);
+        // set path
+        xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO",
+                        destination, new_path);
+        if (port_data[port].status == DEVICE_UP)
+            port_write_string(port, header_txt);
+        // set converse mode
+        xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "CONV");
+        if (port_data[port].status == DEVICE_UP)
+            port_write_string(port, header_txt);
+        // send packet
+        if (port_data[port].status == DEVICE_UP)
+            port_write_string(port, info);
+#endif
     }
 
 // Example packet:
 //K7FZO>APW251,SEATAC*,WIDE4-1:=4728.00N/12140.83W;PHG3030/Middle Fork Snoqualmie River -251-<630>
 
 }
- 
+
 
 
 
