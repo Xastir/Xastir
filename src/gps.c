@@ -45,8 +45,8 @@
 #include "util.h"
 
 
-char gps_gprmc[MAX_GPS_STRING];
-char gps_gpgga[MAX_GPS_STRING];
+char gps_gprmc[MAX_GPS_STRING+1];
+char gps_gpgga[MAX_GPS_STRING+1];
 char gps_sats[4] = "";
 char gps_alt[8] = "";
 char gps_spd[10] = "";
@@ -301,25 +301,38 @@ int decode_gps_gga( char *data,
 
 
 
+//
+// Note that the length of "gps_line_data" can be up to
+// MAX_DEVICE_BUFFER, which is currently set to 4096.
+//
 void gps_data_find(char *gps_line_data, int port) {
 
     char long_pos[20],lat_pos[20],aunit[2];
     time_t t;
     struct timeval tv;
     struct timezone tz;
-    char temp_str[MAX_GPS_STRING];
+    char temp_str[MAX_GPS_STRING+1];
     int have_valid_string = 0;
 
     if (strncmp(gps_line_data,"$GPRMC,",7)==0) {
+
         if (debug_level & 128) {
             char filtered_data[MAX_LINE_SIZE+1];
-            strcpy(filtered_data, gps_line_data);
+
+            // Make sure not to overrun our local variable
+            strncpy(filtered_data, gps_line_data, MAX_LINE_SIZE);
+            filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+            
             makePrintable(filtered_data);
             printf("Got RMC %s\n", filtered_data);
         }
+
         statusline(langcode("BBARSTA015"),0);
-        strcpy(gps_gprmc,gps_line_data);
-        strcpy(temp_str,gps_line_data);
+
+        strncpy(gps_gprmc, gps_line_data, MAX_GPS_STRING);
+        gps_gprmc[MAX_GPS_STRING] = '\0';   // Terminate it
+
+        strcpy(temp_str, gps_gprmc);
         // decode_gps_rmc is destructive to its first parameter
         if (decode_gps_rmc( temp_str,
                             long_pos,
@@ -363,21 +376,30 @@ void gps_data_find(char *gps_line_data, int port) {
             int i;
             printf("Not $GPRMC: ");
             for (i = 0; i<7; i++)
-                printf("%c",gps_line_data[i]);
+                printf("%c", gps_line_data[i]);
             printf("\n");
         }
     }
 
     if (strncmp(gps_line_data,"$GPGGA,",7)==0) {
+
         if (debug_level & 128) {
             char filtered_data[MAX_LINE_SIZE+1];
-            strcpy(filtered_data, gps_line_data);
+
+            strncpy(filtered_data, gps_line_data, MAX_LINE_SIZE);
+            filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+
             makePrintable(filtered_data);
             printf("Got GGA %s\n", filtered_data);
         }
+
         statusline(langcode("BBARSTA016"),0);
-        strcpy(gps_gpgga,gps_line_data);
-        strcpy(temp_str,gps_line_data);
+
+        strncpy(gps_gpgga, gps_line_data, MAX_GPS_STRING);
+        gps_gpgga[MAX_GPS_STRING] = '\0';   // Terminate it
+
+        strcpy(temp_str, gps_gpgga);
+
         // decode_gps_gga is destructive to its first parameter
         if ( decode_gps_gga( temp_str,
                              long_pos,

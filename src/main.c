@@ -5499,10 +5499,10 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         /* NET Data stream */
                         case DEVICE_NET_STREAM:
                             if (log_net_data)
-                                log_data(LOGFILE_NET,(char *)data);
+                                log_data(LOGFILE_NET,(char *)incoming_data);
 
-                            packet_data_add(langcode("WPUPDPD006"),(char *)data);
-                            decode_ax25_line((char *)data,'I',data_port, 1);
+                            packet_data_add(langcode("WPUPDPD006"),(char *)incoming_data);
+                            decode_ax25_line((char *)incoming_data,'I',data_port, 1);
                             break;
 
                         /* TNC Devices */
@@ -5510,37 +5510,37 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         case DEVICE_AX25_TNC:
                             if (log_tnc_data)
-                                log_data(LOGFILE_TNC,(char *)data);
+                                log_data(LOGFILE_TNC,(char *)incoming_data);
 
-                            packet_data_add(langcode("WPUPDPD005"),(char *)data);
-                            decode_ax25_line((char *)data,'T',data_port, 1);
+                            packet_data_add(langcode("WPUPDPD005"),(char *)incoming_data);
+                            decode_ax25_line((char *)incoming_data,'T',data_port, 1);
                             break;
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
                             if (port_data[data_port].dtr==1) // get GPS data
-                                gps_data_find((char *)data,data_port);
+                                gps_data_find((char *)incoming_data,data_port);
                             else {
                                 /* get TNC data */
                                 if (log_tnc_data)
-                                    log_data(LOGFILE_TNC,(char *)data);
+                                    log_data(LOGFILE_TNC,(char *)incoming_data);
 
-                                packet_data_add(langcode("WPUPDPD005"),(char *)data);
-                                decode_ax25_line((char *)data,'T',data_port, 1);
+                                packet_data_add(langcode("WPUPDPD005"),(char *)incoming_data);
+                                decode_ax25_line((char *)incoming_data,'T',data_port, 1);
                             }
                             break;
 
                         case DEVICE_SERIAL_TNC_AUX_GPS:
-                            tnc_data_clean((char *)data);
-                            data_type=tnc_get_data_type((char *)data, data_port);
+                            tnc_data_clean((char *)incoming_data);
+                            data_type=tnc_get_data_type((char *)incoming_data, data_port);
                             if (data_type)  // GPS Data
-                                gps_data_find((char *)data, data_port);
+                                gps_data_find((char *)incoming_data, data_port);
                             else {          // APRS Data
                                 if (log_tnc_data)
-                                    log_data(LOGFILE_TNC, (char *)data);
+                                    log_data(LOGFILE_TNC, (char *)incoming_data);
 
                                 packet_data_add(langcode("WPUPDPD005"),
-                                    (char *)data);
-                                decode_ax25_line((char *)data, 'T', data_port, 1);
+                                    (char *)incoming_data);
+                                decode_ax25_line((char *)incoming_data, 'T', data_port, 1);
                             }
                             break;
 
@@ -5548,8 +5548,8 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_SERIAL_GPS:
 
                         case DEVICE_NET_GPSD:
-                            /*printf("GPS Data <%s>\n",data);*/
-                            gps_data_find((char *)data,data_port);
+                            /*printf("GPS Data <%s>\n",incoming_data);*/
+                            gps_data_find((char *)incoming_data,data_port);
                             break;
 
                         /* WX Devices */
@@ -5557,9 +5557,9 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         case DEVICE_NET_WX:
                             if (log_wx)
-                                log_data(LOGFILE_WX,(char *)data);
+                                log_data(LOGFILE_WX,(char *)incoming_data);
 
-                            wx_decode(data,data_port);
+                            wx_decode(incoming_data,data_port);
                             break;
 
                         default:

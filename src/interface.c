@@ -116,7 +116,7 @@ void port_write_string(int port, char *data);
 int ax25_ports_loaded = 0;
 
 // decode data
-unsigned char *data;
+unsigned char *incoming_data;
 int data_avail = 0;
 int data_port;
 
@@ -210,7 +210,9 @@ int get_device_status(int port) {
 //***********************************************************
 // channel_data()
 //
-// Sends data out a port
+// Takes data read in from a port and makes the incoming_data
+// pointer point to it.  Waits until the string is processed.
+//
 // port #                                                    
 // string is the string of data
 //***********************************************************
@@ -236,7 +238,7 @@ void channel_data(int port, unsigned char *string) {
         if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
             printf("data_lock, Port = %d\n", port);
 
-        data = string;
+        incoming_data = string;
         data_port = port;
         data_avail = 1;
 
@@ -3743,15 +3745,23 @@ end_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
 // Can be used to add any additional data cleaning functions desired.
 // Currently only called for SERIAL_TNC_AUX_GPS, but could be added
 // to other device routines to improve packet decode on other devices.
+//
+// Note that the length of "buf" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
 void tnc_data_clean(char *buf) {
     register int i;
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
-        strcpy(filtered_data, buf);
+
+        strncpy(filtered_data, buf, MAX_LINE_SIZE);
+        filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+
         makePrintable(filtered_data);
         printf("tnc_data_clean: called to clean %s\n", filtered_data);
     }
+
     while (buf[0]=='c' && buf[1]=='m' && buf[2]=='d' && buf[3]==':') {
         for(i=4; i<strlen(buf); i++) {
             buf[i-4]=buf[i];
@@ -3761,9 +3771,13 @@ void tnc_data_clean(char *buf) {
         buf[i++]=0;
         buf[i++]=0;
     }
+
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
-        strcpy(filtered_data, buf);
+
+        strncpy(filtered_data, buf, MAX_LINE_SIZE);
+        filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+
         makePrintable(filtered_data);
         printf("tnc_data_clean: clean result %s\n", filtered_data);
     }
@@ -3779,13 +3793,20 @@ void tnc_data_clean(char *buf) {
 // returns int 0=AX25, 1=GPS
 // Tries to guess from the contents of buf whether it represents data from
 // the GPS or data from an AX25 packet.
+//
+// Note that the length of "buf" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
 int tnc_get_data_type(char *buf, int port) {
     register int i;
     int type=1;      // Don't know what it is yet.  Assume NMEA for now.
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
-        strcpy(filtered_data, buf);
+
+        strncpy(filtered_data, buf, MAX_LINE_SIZE);
+        filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+
         makePrintable(filtered_data);
         printf("tnc_get_data_type: parsing %s\n", filtered_data);
     }
@@ -3800,7 +3821,10 @@ int tnc_get_data_type(char *buf, int port) {
                     type=0; // Disqualified, not valid NMEA-0183
                     if (debug_level & 1) {
                         char filtered_data[MAX_LINE_SIZE+1];
-                        strcpy(filtered_data, buf);
+
+                        strncpy(filtered_data, buf, MAX_LINE_SIZE);
+                        filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+
                         makePrintable(filtered_data);
                         printf("tnc_get_data_type: Not NMEA %s\n",
                             filtered_data);
@@ -3814,7 +3838,10 @@ int tnc_get_data_type(char *buf, int port) {
                     type=0; // Disqualified, not valid NMEA-0183
                     if (debug_level & 1) {
                         char filtered_data[MAX_LINE_SIZE+1];
-                        strcpy(filtered_data, buf);
+
+                        strncpy(filtered_data, buf, MAX_LINE_SIZE);
+                        filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+
                         makePrintable(filtered_data);
                         printf("tnc_get_data_type: Not NMEA %s\n",
                             filtered_data);

@@ -69,8 +69,10 @@
 #include "util.h"
 
 
+#define MAX_RAW_WX_STRING 800
+
 char wx_station_type[100];
-char raw_wx_string[800];
+char raw_wx_string[MAX_RAW_WX_STRING+1];
 
 #define MAX_WX_STRING 300
 #define WX_TYPE 'X'
@@ -918,6 +920,10 @@ int rswnc(unsigned char c) {
 // connected weather station, not for decoding other
 // people's weather packets.
 //*********************************************************
+//
+// Note that the length of "data" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
 void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     time_t last_speed_time;
     float last_speed;
@@ -926,7 +932,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     int  temp2;
     int  temp3;
     float temp_temp;
-    char temp[20];
+    char temp[MAX_DEVICE_BUFFER+1];
     char temp_data1[10];
     char *temp_conv;
     int len;
@@ -943,7 +949,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
     last_speed_time=0;
     format = 0;
 
-     len=(int)strlen((char*)data);
+    len=(int)strlen((char*)data);
 
     weather = fill->weather_data;  // should always be defined
 
@@ -1568,6 +1574,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             weather->wx_type=WX_TYPE;
             strcpy(weather->wx_station,"Q-N");
 
+            // Can this sscanf overflow the "temp" buffer?  I
+            // changed the length of temp to MAX_DEVICE_BUFFER to
+            // avoid this problem.
             (void)sscanf((char *)data,"%19s %d %19s %d %19s %d",temp,&temp1,temp,&temp2,temp,&temp3);
 
             /* outdoor temp */
@@ -1808,6 +1817,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 // WX interfaces only.   It calls wx_fill_data() to do the
 // real work once it figures out what type of data it has.
 //**********************************************************
+//
+// Note that the length of "wx_line" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
 void wx_decode(unsigned char *wx_line, int port) {
     DataRow *p_station;
     int decoded;
@@ -1832,7 +1845,10 @@ void wx_decode(unsigned char *wx_line, int port) {
                     /* Found Peet Bros U-2k */
                     /*printf("Found Peet Bros U-2k WX:%s\n",wx_line+2);*/
                     strcpy(wx_station_type,langcode("WXPUPSI011"));
-                    strcpy(raw_wx_string,wx_line);
+
+                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                    raw_wx_string[MAX_RAW_WX_STRING] = '\0';    // Terminate it
+
                     strcpy(weather->wx_time,get_time(time_data));
                     weather->wx_sec_time=sec_now();
                     //weather->wx_data=1;
@@ -1843,7 +1859,10 @@ void wx_decode(unsigned char *wx_line, int port) {
                         /* Found Peet Bros raw U2 data */
                         strcpy(wx_station_type,langcode("WXPUPSI012"));
                         /*printf("Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);*/
-                        strcpy(raw_wx_string,wx_line);
+
+                        strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                        raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
+
                         strcpy(weather->wx_time,get_time(time_data));
                         weather->wx_sec_time=sec_now();
                         //weather->wx_data=1;
@@ -1854,7 +1873,10 @@ void wx_decode(unsigned char *wx_line, int port) {
                             /* Found Peet Bros raw U2 data */
                             strcpy(wx_station_type,langcode("WXPUPSI013"));
                             /*printf("Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
-                            strcpy(raw_wx_string,wx_line);
+
+                            strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                            raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
+
                             weather->wx_sec_time=sec_now();
                             //weather->wx_data=1;
                             wx_fill_data(0,APRS_WX5,wx_line,p_station);
@@ -1883,7 +1905,10 @@ void wx_decode(unsigned char *wx_line, int port) {
                             } else {
                                 if (strncmp("&CR&",wx_line,4)==0 && is_xnum_or_dash((char *)(wx_line+5),44) && port_data[port].data_type==0) {
                                     strcpy(wx_station_type,langcode("WXPUPSI017"));
-                                    strcpy(raw_wx_string,wx_line);
+
+                                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                                    raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
+
                                     weather->wx_sec_time=sec_now();
                                     //weather->wx_data=1;
                                     wx_fill_data(0,PEET_COMPLETE,wx_line,p_station);

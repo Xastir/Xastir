@@ -8213,6 +8213,10 @@ void display_packet_data(void) {
 
 
 
+//
+// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
 void packet_data_add(char *from, char *line) {
     int i;
     int offset;
@@ -9288,6 +9292,8 @@ else {
 
 /*
  *  UI-View format messages, not relevant for APRS, format is not specified in APRS Reference
+ *
+ * This function is not currently called anywhere in the code.
  */
 int decode_UI_message(char *call,char *path,char *message,char from,int port,int third_party) {
     char *temp_ptr;
@@ -9776,6 +9782,8 @@ void extract_TNC_text(char *info) {
 
 
 
+
+
 /*
  *  Decode AX.25 line
  *  \r and \n should already be stripped from end of line
@@ -9784,6 +9792,10 @@ void extract_TNC_text(char *info) {
  * If dbadd is set, add to database.  Otherwise, just return true/false
  * to indicate whether input is valid AX25 line.
  */
+//
+// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
 int decode_ax25_line(char *line, char from, int port, int dbadd) {
     char *call_sign;
     char *path0;
@@ -9799,7 +9811,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
-        strcpy(filtered_data, line);
+
+        strncpy(filtered_data, line, MAX_LINE_SIZE);
+        filtered_data[MAX_LINE_SIZE] = '\0';    // Terminate it
+
         makePrintable(filtered_data);
         printf("decode_ax25_line: start parsing %s\n", filtered_data);
     }
@@ -9808,6 +9823,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         printf("decode_ax25_line: line == NULL.\n");
         return(FALSE);
     }
+
     if ( (line != NULL) && (strlen(line) > MAX_TNC_LINE_SIZE) ) { // Overly long message, throw it away.  We're done.
         if (debug_level & 1)
             printf("decode_ax25_line: LONG packet.  Dumping it.\n");

@@ -1363,6 +1363,10 @@ time_t file_time(char *fn) {
 
 
 
+//
+// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
 void log_data(char *file, char *line) {
     FILE *f;
 
