@@ -39,6 +39,47 @@ contribution!
 
 -- The Xastir Group.
 
+
+
+General steps to configure/compiling/installing Xastir (most systems):
+----------------------------------------------------------------------
+1a) Get one of the source releases and explode it:
+
+  mkdir xastir
+  cp xastir*.tgz xastir
+  cd xastir
+  tar xzvf xastir*
+
+-OR-
+
+1b) Get the CVS version of Xastir (easier to keep up with the
+developers this way).  Just hit the ENTER key when it asks you for a
+password:
+
+  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
+  cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
+
+2) Go into the xastir directory to build the executable:
+
+  cd xastir*
+  ./configure
+  make
+  su (become the root user)
+  make install-strip;chmod 4555 /usr/local/bin/xastir
+  exit (from root)
+
+3) Xastir should now be installed in /usr/local/bin (the default on
+most systesm).  You can run it by typing this from a shell:
+
+    xastir &
+
+If /usr/local/bin is not in your path, you might have to type this
+instead to get it running:
+
+    /usr/local/bin/xastir &
+
+
+
 Short summary of libraries Xastir can use:
 -------------------------------------------------------------------------
 Motif or OpenMotif or LessTiff  Required  The GUI widget set
