@@ -7719,7 +7719,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     int ok;
 
     if (debug_level & 256)
-        fprintf(stderr,"extract_RMC\n");
+        fprintf(stderr,"extract_RMC start\n");
 
     // should we copy it before processing? it changes data: ',' gets substituted by '\0' !!
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
@@ -7869,7 +7869,15 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
     char lat_s[20];
     char long_s[20];
-    int ok;
+    int  ok;
+    char *Substring[15];  // Pointers to substrings parsed by split_string()
+    char temp_string[MAX_MESSAGE_LENGTH+1];
+    char temp_char;
+    int  temp_num;
+
+
+    if (debug_level & 256)
+        fprintf(stderr, "extract_GGA start\n");
 
     ok = 0; // Start out as invalid.  If we get enough info, we change this to a 1.
  
@@ -7885,130 +7893,133 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     /* check aprs type on call sign */
     p_station->aprs_symbol = *id_callsign(call_sign, path);
-    if (strchr(data,',')!=NULL) {
-        if (strtok(data,",")!=NULL) { /* get gpgga and throw it away */
-            if (strtok(NULL,",")!=NULL)  { /* get time and throw it away */
 
-                temp_ptr = strtok(NULL,",");        // get latitude
-                if (temp_ptr != NULL) {
-                    temp_ptr2 = strtok(NULL,",");   // Find end of latitude
+    // Make a copy of the incoming data.  The string passed to
+    // split_string() gets destroyed.
+    strncpy(temp_string, data, sizeof(temp_string));
+    split_string(temp_string, Substring, 15);
+
+    // The Substring[] array contains pointers to each substring in
+    // the original data string.
+
+
+// GPGGA,hhmmss,ddmm.mmm[m],{N|S},dddmm.mmm[m],{E|W},{0|1|2},nsat,hdop,mmm.m,M,mm.m,M,,[*CHK]
+//   0     1        2         3        4         5      6     7    8     9   1  1   1 1 1
+//                                                                           0  1   2 3 4
+
+    if (Substring[0] == NULL)  // No GPGGA string
+        return(ok);
+
+    if (Substring[1] == NULL)  // No time string
+        return(ok);
+
+    if (Substring[2] == NULL)   // No latitude string
+        return(ok);
+
+    if (Substring[3] == NULL)   // No latitude N/S
+        return(ok);
 
 // Need to check lat_s for validity here.  Note that some GPS's put out another digit of precision
 // (4801.1234).  Next character after digits should be a ','
 
-// We really should check for a terminating zero at the end of each substring we collect,
-// and not rely on strtok exclusively.  We could have an extra-long field due to packet
-// corruption and therefore our substrings wouldn't have terminating zeroes.
-// We should also check the length of the string we're collecting from to make sure
-// we don't run off the end for a short packet.
+    temp_char = toupper((int)Substring[3][0]);
 
-                    if (temp_ptr2 != NULL) {
-                        int length = temp_ptr2 - temp_ptr - 1;
+    if (temp_char != 'N' && temp_char != 'S')   // Bad N/S
+        return(ok);
 
-                        strncpy(lat_s,temp_ptr,length);
-                        lat_s[length+1] = '\0';     // Terminate it (just in case)
-                        temp_ptr = temp_ptr2;       // Point to N-S character
+    xastir_snprintf(lat_s,
+        sizeof(lat_s),
+        "%s%c",
+        Substring[2],
+        temp_char);
 
-                        strncpy(temp_data,temp_ptr,1);
-                        lat_s[length] = toupper((int)temp_data[0]);
-                        lat_s[length+1] = '\0';
-                        if (lat_s[length] == 'N' || lat_s[length] == 'S') { // Check validity
+    if (Substring[4] == NULL)   // No longitude string
+        return(ok);
 
-                            temp_ptr = strtok(NULL,",");            /* get long */
-                            if(temp_ptr != NULL /* && temp_ptr[5] == '.' */ ) {  // ??
-                                temp_ptr2 = strtok(NULL,","); // Find end of longitude
+    if (Substring[5] == NULL)   // No longitude E/W
+        return(ok);
 
 // Need to check long_s for validity here.  Should be all digits.  Note that some GPS's put out another
 // digit of precision.  (12201.1234).  Next character after digits should be a ','
 
-                                if (temp_ptr2 != NULL) {
-                                    length = temp_ptr2 - temp_ptr - 1;
+    temp_char = toupper((int)Substring[5][0]);
 
-                                    strncpy(long_s,temp_ptr,length);
-                                    long_s[length] = '\0';  // Terminate it, just in case
-                                    temp_ptr = temp_ptr2;   // Point to E-W character
+    if (temp_char != 'E' && temp_char != 'W')   // Bad E/W
+        return(ok);
+
+    xastir_snprintf(long_s,
+        sizeof(long_s),
+        "%s%c",
+        Substring[4],
+        temp_char);
+
+    p_station->coord_lat = convert_lat_s2l(lat_s);
+    p_station->coord_lon = convert_lon_s2l(long_s);
+
+    // If we've made it this far, We have enough for a position now!
+    ok = 1;
 
 
-                                    strncpy(temp_data,temp_ptr,1);
-                                    long_s[length] = toupper((int)temp_data[0]);
-                                    long_s[length+1] = '\0';
-                                    if (long_s[length] == 'E' || long_s[length] == 'W') {   // Check validity
-                                        p_station->coord_lat = convert_lat_s2l(lat_s);
-                                        p_station->coord_lon = convert_lon_s2l(long_s);
-                                        ok = 1;     // We have enough for a position now
-                                        temp_ptr = strtok(NULL,",");                   /* get FIX Quality */
-                                        if (temp_ptr!=NULL) {
-// What are the possible values here for fix quality?
-                                            strncpy(temp_data,temp_ptr,2);
-                                            if (temp_data[0]=='1' || temp_data[0] =='2' ) { // Check for valid fix
-                                                temp_ptr=strtok(NULL,",");  // Get sats visible
-                                                if (temp_ptr!=NULL) {
-                                                    strncpy(p_station->sats_visible,temp_ptr,MAX_SAT);
-// Need to check for validity of this number.  Should be 0-12?  Perhaps a few more with WAAS, GLONASS, etc?
-                                                    if ( (p_station->sats_visible[1] != '\0') && (p_station->sats_visible[2] != '\0') ) {
-                                                        if (debug_level & 1)
-                                                            fprintf(stderr,"extract_GGA: Exiting, number of sats not valid\n");
-                                                        strcpy(p_station->sats_visible,""); // Store empty sats visible
-                                                        strcpy(p_station->altitude,""); // Store empty altitude
-                                                        ok = 1; // Invalid rest of packet.  We got all but altitude.
-                                                        return(ok);
-                                                    }
-                                                    temp_ptr=strtok(NULL,","); // get horizontal dilution of precision
-                                                    if (temp_ptr!=NULL) {
-// Need to check for valid number for HDOP instead of just throwing it away
-                                                        temp_ptr=strtok(NULL,","); /* Get altitude */
-                                                        if (temp_ptr!=NULL) {
-                                                            if (strlen(temp_ptr) < MAX_ALTITUDE)    // Not too long
-                                                                strcpy(p_station->altitude,temp_ptr); /* Get altitude */
-                                                            else // Too long, truncate it
-                                                                strncpy(p_station->altitude,temp_ptr,MAX_ALTITUDE);
-                                                            p_station->altitude[MAX_ALTITUDE] = '\0'; // Terminate it, just in case
-// Need to check for valid altitude before conversion
-                                                            // unit is in meters, if not adjust value ???
-                                                            temp_ptr=strtok(NULL,",");            /* get UNIT */
-                                                            if (temp_ptr!=NULL) {
-                                                                strncpy(temp_data,temp_ptr,1);    /* get UNIT */
-                                                                if (temp_data[0] != 'M') {
-                                                                    //fprintf(stderr,"ERROR: should adjust altitude for meters\n");
-                                                                //} else {  // Altitude units wrong.  Assume altitude bad
-                                                                    strcpy(p_station->altitude,"");
-                                                                }
-                                                            } else {  // Short packet, no altitude units
-                                                                strcpy(p_station->altitude,"");
-                                                            }
-                                                        } else {  // Short packet, no altitude
-                                                            strcpy(p_station->altitude,"");
-                                                        }
-                                                    } else { // Short packet, no HDOP number
-                                                        strcpy(p_station->altitude,"");
-                                                    }
-                                                } else { // Short packet, no sats visible number
-                                                    strcpy(p_station->altitude,"");
-                                                }
-                                            } else {  // Invalid fix
-                                                strcpy(p_station->altitude,"");
-                                            }
-                                        } else { // Short packet, no fix quality
-                                            strcpy(p_station->altitude,"");
-                                        }
-                                    } else { // 'E' or 'W' not found, bad longitude direction
-                                    }
-                                } else { // Short packet, no 'E' or 'W' found
-                                }
-                            } else { // Short packet, no longitude found
-                            }
-                        } else { // 'N' or 'S' not found, bad latitude direction
-                        }
-                    } else { // Short packet, no 'N' or 'S' found
-                    }
-                } else { // Short packet, no latitude found
-                }
-            } else { // Short packet, no timestamp found
-            }
-        } else { // Short packet, no 'GPGGA' found.  Then how'd we get here???
-        }
-    } else { // Short packet, empty data field.  We should never have gotten to this routine.
+    // Now that we have a basic position, let's see what other data
+    // can be parsed from the packet.  The rest of it can still be
+    // corrupt, so we're proceeding carefully under yellow alert on
+    // impulse engines only.
+
+// What are the possible values for fix quality anyway?
+
+    // Check for valid fix {
+    if (Substring[6] == NULL
+            || Substring[6][0] == '0'   // Fix quality
+            || Substring[7] == NULL     // Sat number
+            || Substring[8] == NULL     // hdop
+            || Substring[9] == NULL) {  // Altitude in meters
+        strcpy(p_station->sats_visible,""); // Store empty sats visible
+        strcpy(p_station->altitude,""); // Store empty altitude
+        return(ok); // A field between fix quality and altitude is missing
     }
+
+// Need to check for validity of this number.  Should be 0-12?  Perhaps a few more with WAAS, GLONASS, etc?
+    temp_num = atoi(Substring[7]);
+    if (temp_num < 0 || temp_num > 30) {
+        return(ok); // Number of satellites not valid
+    }
+    else {
+        // Store 
+        xastir_snprintf(p_station->sats_visible,
+            MAX_SAT,
+            "%d",
+            temp_num);
+    }
+
+// Check for valid number for HDOP instead of just throwing it away?
+
+    if (strlen(Substring[9]) < MAX_ALTITUDE)    // Not too long
+        strcpy(p_station->altitude,Substring[9]); // Get altitude
+    else // Too long, truncate it
+        strncpy(p_station->altitude,Substring[9],MAX_ALTITUDE);
+
+    p_station->altitude[MAX_ALTITUDE] = '\0'; // Terminate it, just in case
+
+// Need to check for valid altitude before conversion
+
+    // unit is in meters, if not adjust value ???
+
+    if (Substring[10] == NULL)  // No units for altitude
+        return(ok);
+
+    if (Substring[10][0] != 'M') {
+        //fprintf(stderr,"ERROR: should adjust altitude for meters\n");
+        //} else {  // Altitude units wrong.  Assume altitude bad
+        strcpy(p_station->altitude,"");
+    }
+
+    if (debug_level & 256) {
+        if (ok)
+            fprintf(stderr,"extract_GGA succeeded\n");
+        else
+            fprintf(stderr,"extract_GGA failed\n");
+    }
+
     return(ok);
 }
 
@@ -8663,13 +8674,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
         }
 
-        if (ok && p_station->coord_lat > 0 && p_station->coord_lon > 0)
+        if (ok && (p_station->coord_lat > 0) && (p_station->coord_lon > 0))
             extract_multipoints(p_station, data, type);     // KG4NBB
     }
 
     if (!ok) {  // non-APRS beacon, treat it as Other Packet   [APRS Reference, chapter 19]
+
         if (debug_level & 1) {
             char filtered_data[MAX_LINE_SIZE + 1];
+
             strcpy(filtered_data,data-1);
             makePrintable(filtered_data);
             fprintf(stderr,"store non-APRS data as status: %s: |%s|\n",call,filtered_data);
