@@ -81,6 +81,7 @@
 #include "datum.h"
 #include "draw_symbols.h"
 #include "rotated.h"
+#include "color.h"
 
 #define DOS_HDR_LINES 8
 #define GRID_MORE 5000
