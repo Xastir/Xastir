@@ -28394,11 +28394,13 @@ int main(int argc, char *argv[], char *envp[]) {
             // that leads to several problems in the initialisation
 
             // DK7IN: inserted next line here for avoiding scanf errors during init!
-            (void)setlocale(LC_NUMERIC, "en_US");       // DK7IN: It's now ok
+            (void)setlocale(LC_NUMERIC, "C");       // DK7IN: It's now ok
 
             // DK7IN: XtOpenDisplay again changes the scanf function
             display = XtOpenDisplay(app_context, NULL, argv[0], "XApplication",NULL, 0, &argc, argv);
-            (void)setlocale(LC_NUMERIC, "en_US");       // repairs wrong scanf
+
+            // So change it back!
+            (void)setlocale(LC_NUMERIC, "C");       // repairs wrong scanf
             // DK7IN: scanf again uses '.' instead of ','
 
             if (!display) {
@@ -28452,7 +28454,7 @@ int main(int argc, char *argv[], char *envp[]) {
 //fprintf(stderr,"***check_fcc_data\n");
 
             /* reset language attribs for numeric, program needs decimal in US for all data! */
-//            (void)setlocale(LC_NUMERIC, "en_US");
+            (void)setlocale(LC_NUMERIC, "C");
             // DK7IN: now scanf and printf work as wanted...
 
             /* check for ham databases */
