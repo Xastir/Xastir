@@ -228,7 +228,9 @@ void *my_envp;
 
 // A count of the stations currently on the screen.  Counted by
 // db.c:display_file() routine.
-int currently_selected_stations = 0;
+int currently_selected_stations      = 0;
+int currently_selected_stations_save = 0;
+
 
 // Used in segfault handler
 char dangerous_operation[200];
