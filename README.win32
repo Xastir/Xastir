@@ -86,7 +86,7 @@ be selected as well, that's ok and necessary:
     editors/vim
     graphics/tiff (install sources for this one too? TBD)
     interpreters/m4
-    interpreters/perl
+    interpreters/perl (install 5.6.1 instead of 5.8.0)
     text/less
     utils/diff
     utils/patch
