@@ -2169,7 +2169,8 @@ int ok_to_draw_station(DataRow *p_station) {
 
     // Check tactical flag
     if (Select_.tactical
-            && p_station->tactical_call_sign == NULL)
+            && (p_station->tactical_call_sign == NULL
+               || p_station->tactical_call_sign[0] == '\0'))
         return 0;
 
     // Check for my station and my objects/items
@@ -2314,7 +2315,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // Set up call string for display
     if (Display_.callsign) {
-        if (p_station->tactical_call_sign) {
+        if (p_station->tactical_call_sign
+                && p_station->tactical_call_sign[0] != '\0') {
             // Display tactical callsign instead if it has one
             // defined.
             xastir_snprintf(temp_call,
@@ -3594,7 +3596,8 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
             temp,
             tactical_pointer->call_sign);
 
-        // Log the change in the tactical_calls.log file
+        // Log the change in the tactical_calls.log file.
+        // Also adds it to the tactical callsign hash here.
         log_tactical_call(tactical_pointer->call_sign,
             tactical_pointer->tactical_call_sign);
     }
@@ -4166,7 +4169,8 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     }
 
     // Print the tactical call, if any
-    if (p_station->tactical_call_sign) {
+    if (p_station->tactical_call_sign
+            && p_station->tactical_call_sign[0] != '\0') {
         xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI065"), p_station->tactical_call_sign);
         XmTextInsert(si_text,pos,temp);
         pos += strlen(temp);
@@ -7685,6 +7689,7 @@ void delete_station_memory(DataRow *p_del) {
 /*@null@*/ DataRow *add_new_station(DataRow *p_name, DataRow *p_time, char *call) {
     DataRow *p_new;
     int hash_key;   // We use a 14-bit hash key
+    char *tactical_call;
 
 
     if (call[0] == '\0') {
@@ -7762,6 +7767,31 @@ void delete_station_memory(DataRow *p_del) {
 //}
 //
 //fprintf(stderr,"\n");
+
+    // Check whether we have a tactical call to assign to this
+    // station in our tactical hash table.
+//fprintf(stderr,"Call:'%s'\n", call);
+    tactical_call = get_tactical_from_hash(call);
+
+    // If tactical call found and not blank
+    if (tactical_call && tactical_call[0] != '\0') {
+
+        // Malloc some memory to hold it in the station record.
+        p_new->tactical_call_sign = (char *)malloc(MAX_TACTICAL_CALL+1);
+        CHECKMALLOC(p_new->tactical_call_sign);
+
+//fprintf(stderr,"***Assigning tactical call to new record***\n");
+        xastir_snprintf(p_new->tactical_call_sign,
+            MAX_TACTICAL_CALL+1,
+            "%s",
+            tactical_call);
+
+        //if (tactical_call[0] == '\0')
+        //    fprintf(stderr,"Blank tactical call\n");
+    }
+    else {
+//fprintf(stderr,".");
+    }
 
     return(p_new);                      // return pointer to new element
 }
@@ -8400,6 +8430,7 @@ void check_station_remove(void) {
 
                 }
 
+/*
                 else if (p_station->tactical_call_sign) {
                     // Station has a tactical callsign assigned,
                     // don't delete it.
@@ -8410,6 +8441,7 @@ void check_station_remove(void) {
 #endif
 
                 }
+*/
 
                 else {  // Not one of mine, doesn't have a tactical
                         // callsign assigned, so start deleting

@@ -52,12 +52,15 @@
 #include "main.h"
 #include "xa_config.h"
 #include "datum.h"
+#include "hashtable.h"
+#include "hashtable_itr.h"
 
 
 #ifdef HAVE_DMALLOC
 #include <dmalloc.h>
 #endif  // HAVE_DMALLOC
 
+#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
 // For mutex debugging with Linux threads only
 #ifdef MUTEX_DEBUG
@@ -74,6 +77,223 @@ char echo_digis[6][MAX_CALLSIGN+1];
 struct timeval timer_start;
 struct timeval timer_stop;
 struct timezone tz;
+
+
+static struct hashtable *tactical_hash = NULL;
+#define TACTICAL_HASH_SIZE 1024
+
+
+
+
+
+// Multiply all the characters in the callsign, truncated to
+// TACTICAL_HASH_SIZE
+//
+unsigned int tactical_hash_from_key(void *key) {
+    unsigned char *jj = key;
+    unsigned int tac_hash = 1;
+
+    while (*jj != '\0') {
+       tac_hash = tac_hash * (unsigned int)*jj++;
+    }
+
+    tac_hash = tac_hash % TACTICAL_HASH_SIZE;
+
+//    fprintf(stderr,"hash = %d\n", tac_hash);
+    return (tac_hash);
+}
+
+
+
+
+
+int tactical_keys_equal(void *key1, void *key2) {
+
+//fprintf(stderr,"Comparing %s to %s\n",(char *)key1,(char *)key2);
+    if (strlen((char *)key1) == strlen((char *)key2)
+            && strncmp((char *)key1,(char *)key2,strlen((char *)key1))==0) {
+//fprintf(stderr,"    match\n");
+        return(1);
+    }
+    else {
+//fprintf(stderr,"  no match\n");
+        return(0);
+    }
+}
+
+
+
+
+
+void init_tactical_hash(int clobber) {
+//    fprintf(stderr," Initializing tactical hash \n");
+    // make sure we don't leak
+//fprintf(stderr,"init_tactical_hash\n");
+    if (tactical_hash) {
+//fprintf(stderr,"Already have one!\n");
+        if (clobber) {
+//fprintf(stderr,"Clobbering hash table\n");
+            hashtable_destroy(tactical_hash, 1);
+            tactical_hash=create_hashtable(TACTICAL_HASH_SIZE,
+                tactical_hash_from_key,
+                tactical_keys_equal);
+        }
+    }
+    else {
+//fprintf(stderr,"Creating has table from scratch\n");
+        tactical_hash=create_hashtable(TACTICAL_HASH_SIZE,
+            tactical_hash_from_key,
+            tactical_keys_equal);
+    }
+}
+
+
+
+
+
+char *get_tactical_from_hash(char *callsign) {
+    char *result;
+
+    if (callsign == NULL || *callsign == '\0') {
+        fprintf(stderr,"Empty callsign passed to get_tactical_from_hash()\n");
+        return(NULL);
+    }
+
+    if (!tactical_hash) {  // no table to search
+//fprintf(stderr,"Creating hash table\n");
+        init_tactical_hash(1); // so create one
+        return NULL;
+    }
+
+//    fprintf(stderr,"   searching for %s...",callsign);
+
+    result=hashtable_search(tactical_hash,callsign);
+
+        if (result) {
+//            fprintf(stderr,"\t\tFound it, %s, len=%d, %s\n",
+//                callsign,
+//                strlen(callsign),
+//                result);
+        } else {
+//            fprintf(stderr,"\t\tNot found, %s, len=%d\n",
+//                callsign,
+//                strlen(callsign));
+        }
+
+    return (result);
+}
+
+
+
+
+
+// This function checks whether there already is something in the
+// hashtable that matches.  If a match found, it overwrites the
+// tactical call for that entry, else it inserts a new record.
+//
+void add_tactical_to_hash(char *callsign, char *tactical_call) {
+    char *temp;     // tac-call
+    char *temp2;    // callsign
+
+
+    // Note that tactical_call can be '\0', which means we're
+    // getting rid of a previous tactical call.
+    //
+    if (callsign == NULL || *callsign == '\0'
+            || tactical_call == NULL) {
+        return;
+    }
+
+    if (!tactical_hash) {  // no table to add to
+//fprintf(stderr,"init_tactical_hash\n");
+        init_tactical_hash(1); // so create one
+    }
+
+    // Check whether we already have a hash entry for this
+    // callsign/SSID.  If so, overwrite it with the new tactical
+    // callsign.
+    temp = get_tactical_from_hash(callsign);
+
+    if (!temp) {
+        temp = (char *)malloc(MAX_TACTICAL_CALL+1);
+        CHECKMALLOC(temp);
+
+        temp2 = (char *)malloc(MAX_CALLSIGN+1);
+        CHECKMALLOC(temp2);
+
+//fprintf(stderr, "\t\t\tAdding %s = %s...\n", callsign, tactical_call);
+
+        xastir_snprintf(temp2,
+            MAX_CALLSIGN+1,
+            "%s",
+            callsign);
+
+        xastir_snprintf(temp,
+            MAX_TACTICAL_CALL+1,
+            "%s",
+            tactical_call);
+
+        //                         hash      call   tac-call
+        if (!hashtable_insert(tactical_hash, temp2, temp)) {
+            fprintf(stderr,"Insert failed on tactical hash --- fatal\n");
+            exit(1);
+        }
+    }
+    else {
+
+//fprintf(stderr,"\t\t\tOverwriting previous value: %s = %s\n", callsign, tactical_call);
+
+        xastir_snprintf(temp,
+            MAX_TACTICAL_CALL+1,
+            "%s",
+            tactical_call);
+    }
+
+    // Yet another check to see whether hash insert/update worked
+    // properly
+    temp = get_tactical_from_hash(callsign);
+    if (!temp) {
+        fprintf(stderr,"***Failed hash insert/update***\n");
+    }
+    else {
+//fprintf(stderr,"Current: %s -> %s\n",
+//    callsign,
+//    temp);
+    }
+}
+
+
+
+
+
+void destroy_tactical_hash(void) {
+    struct hashtable_itr *iterator = NULL;
+    char *value;
+
+    if (tactical_hash && hashtable_count(tactical_hash) > 0) {
+
+        iterator = hashtable_iterator(tactical_hash);
+
+        do {
+            if (iterator) {
+                value = hashtable_iterator_value(iterator);
+                if (value) {
+                    free(value);
+                }
+            }
+        } while (hashtable_iterator_remove(iterator));
+
+        // Destroy the hashtable, freeing what's left of the
+        // entries.
+        hashtable_destroy(tactical_hash, 1);
+
+        tactical_hash = NULL;
+
+        if (iterator) {
+            free(iterator);
+        }
+    }
+}
 
 
 
@@ -2632,6 +2852,12 @@ void log_tactical_call(char *call_sign, char *tactical_call_sign) {
     char *file;
     FILE *f;
 
+
+    // Add it to our in-memory hash so that if stations expire and
+    // then appear again they get assigned the same tac-call.
+    add_tactical_to_hash(call_sign, tactical_call_sign);
+
+ 
     file = get_user_base_dir("config/tactical_calls.log");
 
     f=fopen(file,"a");
@@ -2661,139 +2887,6 @@ void log_tactical_call(char *call_sign, char *tactical_call_sign) {
 
 
 //
-// Function to load saved tactical calls back into Xastir.  This
-// is called on startup.  This implements persistent tactical calls
-// across Xastir restarts.
-//
-// To fully implement persistent tactical calls, we need to create
-// dummy station records for each of these which get filled in when
-// the station is actually heard.  We'd also need to assure the
-// records don't get deleted if the station isn't heard for a while.
-// Changed db.c:check_station_remove() so that it doesn't remove any
-// station records that have a tactical call assigned.
-//
-// We can cheat a little:  Throw a simulated packet for that
-// callsign into the decoding (maybe a status packet?), then assign
-// a tactical callsign to it.  Changed the expire code to skip
-// records that have a tactical callsign.  This assures that the
-// tactical calls will stay in the in-memory database even if the
-// call is not heard, so that if/when the call _is_ heard, the
-// tactical call will apply to it.
-//
-// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
-// which is currently set to 4096.
-//
-void reload_tactical_calls_old(void) {
-    char *file;
-    FILE *f;
-    char line[300+1];
-    char line2[300+1];
-
-
-    file = get_user_base_dir("config/tactical_calls.log");
-
-    f=fopen(file,"r");
-    if (f!=NULL) {
-
-        while (fgets(line, 300, f) != NULL) {
-
-            if (debug_level & 1)
-                fprintf(stderr,"Loading tactical calls from file: %s",line);
-   
-            if (line[0] != '#') {   // Skip comment lines
-                char *ptr;
-
-                // We're dealing with comma-separated files, so
-                // break the two pieces at the comma.
-                ptr = index(line,',');
-
-                if (ptr != NULL) {
-                    DataRow *p_station;
-                    char *ptr2;
-
-
-                    ptr[0] = '\0';  // Terminate the callsign
-                    ptr++;  // Point to the tactical callsign
-
-                    // Check for LF
-                    ptr2 = index(ptr,'\n');
-                    if (ptr2 != NULL)
-                        ptr2[0] = '\0';
-
-                    // Check for CR
-                    ptr2 = index(ptr,'\r');
-                    if (ptr2 != NULL)
-                        ptr2[0] = '\0';
-
-                    if (debug_level & 1)
-                        fprintf(stderr, "Call=%s\tTac=%s\n", line, ptr);
-
-                    // Create a dummy packet here.  Something
-                    // without a position, perhaps a status packet
-                    // or an ID packet.  This is just to get it into
-                    // our in-memory station database.
-                    xastir_snprintf(line2,
-                        sizeof(line2),
-                        "%s>APRS:ID",
-                        line);
-
-                    // Decode this packet.  This will put it into
-                    // our station database.  Port is set to -3
-                    // here to prevent igating/transmitting them.
-                    decode_ax25_line( line2, DATA_VIA_LOCAL, -3, 1);
-
-                    // Add the tactical callsign to the recently
-                    // added station.  We must search for it first.
-                    if (search_station_name(&p_station,line,1)) {
-
-                        if (debug_level & 1)
-                            fprintf(stderr,"Found callsign to add tactical call to: %s\n",line);
-
-                        if (p_station->tactical_call_sign == NULL) {
-                            // Malloc some memory to hold it.
-                            p_station->tactical_call_sign = (char *)malloc(MAX_TACTICAL_CALL+1);
-                        }
-
-                        if (p_station->tactical_call_sign != NULL) {
-
-                            // Check for blank tactical call.  If so, free the space.
-                            if (ptr[0] == '\0') {
-                                free(p_station->tactical_call_sign);
-                                p_station->tactical_call_sign = NULL;
-                            }
-                            else {
-                                xastir_snprintf(p_station->tactical_call_sign,
-                                    MAX_TACTICAL_CALL,
-                                    "%s",
-                                    ptr);
-                            }
-                        }
-                        else {
-                            fprintf(stderr,
-                                "Couldn't malloc space for tactical callsign\n");
-                        }
-                    }
-                    else {
-                        fprintf(stderr,
-                            "Couldn't find callsign to add tactical call to!  %s\n",
-                            line);
-                    }
-                }
-            }
-        }
-        (void)fclose(f);
-    }
-    else {
-        if (debug_level & 1)
-            fprintf(stderr,"Couldn't open file for reading: %s\n", file);
-    }
-}
-
-
-
-
-
-//
 // Function to load saved tactical calls back into xastir.  This
 // is called on startup.  This implements persistent tactical calls
 // across xastir restarts.
@@ -2812,14 +2905,6 @@ void reload_tactical_calls(void) {
     char *file;
     FILE *f;
     char line[300+1];
-
-
-/////////////////////////////////////////////////////////////////////
-// Call the old function so that everything works until this new
-// function is fully implemented.  Remember to delete the 2nd call
-// to this function in main.c when all done too.
-/////////////////////////////////////////////////////////////////////
-reload_tactical_calls_old();
 
 
     file = get_user_base_dir("config/tactical_calls.log");
@@ -2857,7 +2942,10 @@ reload_tactical_calls_old();
                         ptr2[0] = '\0';
 
                     if (debug_level & 1)
-                        fprintf(stderr, "call=%s\ttac=%s\n", line, ptr);
+                        fprintf(stderr, "Call=%s,\tTactical=%s\n", line, ptr);
+
+                    //                   call tac-call
+                    add_tactical_to_hash(line, ptr);
                 }
             }
         }
@@ -2867,6 +2955,14 @@ reload_tactical_calls_old();
         if (debug_level & 1)
             fprintf(stderr,"couldn't open file for reading: %s\n", file);
     }
+
+/*
+    if (tactical_hash) {
+        fprintf(stderr,"Stations w/tactical calls defined: %d\n",
+            hashtable_count(tactical_hash));
+    }
+*/
+
 }
 
 

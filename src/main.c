@@ -3604,6 +3604,9 @@ void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clie
     // tactical_call_sign fields in each.
     clear_all_tactical();
 
+    // Get rid of the tactical callsign hash here
+    destroy_tactical_hash();
+
     // Comment out all active lines in the log file via a '#' mark.
     ptr = get_user_base_dir("config/tactical_calls.log");
     xastir_snprintf(file,sizeof(file),"%s",ptr);
@@ -3675,6 +3678,9 @@ void Tactical_Callsign_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPoin
     // Loop through all station records and clear out the
     // tactical_call_sign fields in each.
     clear_all_tactical();
+
+    // Get rid of the tactical callsign hash here
+    destroy_tactical_hash();
 
     // Wipe out the log file.
     file = get_user_base_dir("config/tactical_calls.log");
@@ -15918,14 +15924,6 @@ void Stations_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     // Reload saved objects and items from previous runs.
     // This implements persistent objects.
     reload_object_item();
-
-
-//  We shouldn't have to call this next function here once the new
-//  function is fully implemented.
-    // Reload tactical calls from file.  This implements persistence
-    // for this feature as well.
-    reload_tactical_calls();
-
 
     redraw_on_new_data=2;
 }
@@ -29187,25 +29185,30 @@ int main(int argc, char *argv[], char *envp[]) {
 // 
             XtRealizeWidget(Global.top);
 
-
 //fprintf(stderr,"***index_restore_from_file\n");
 
             // Read the current map index file into the index linked list
             index_restore_from_file();
 
+            // Reload tactical calls.  This implements persistence
+            // for this type.
+            reload_tactical_calls();
+
 //fprintf(stderr,"***create_appshell\n");
 
             create_appshell(display, argv[0], argc, argv);      // does the init
-
-//fprintf(stderr,"***check_fcc_data\n");
 
             /* reset language attribs for numeric, program needs decimal in US for all data! */
             (void)setlocale(LC_NUMERIC, "C");
             // DK7IN: now scanf and printf work as wanted...
 
+//fprintf(stderr,"***check_fcc_data\n");
+
             /* check for ham databases */
             (void)check_fcc_data();
+
             (void)check_rac_data();
+
 
             // Find the extents of every map we have.  Use the smart
             // timestamp-checking reindexing (quicker).
@@ -29213,29 +29216,31 @@ int main(int argc, char *argv[], char *envp[]) {
               map_indexer(0);
             }
 
+
             // Mark the "selected" field in the in-memory map index
             // to correspond to the selected_maps.sys file.
             map_chooser_init();
+
 
             // Start UpdateTime.  It schedules itself to be run
             // again each time.  This is also the process that
             // starts up the interfaces.
             UpdateTime( (XtPointer) da , (XtIntervalId) NULL );
 
+
             // Reload saved objects and items from previous runs.
             // This implements persistent objects.
             reload_object_item();
 
-            // Reload tactical calls.  This implements persistence
-            // for this type.
-            reload_tactical_calls();
 
             // Reload any CAD objects from file.  This implements
             // persistent objects.
             Restore_CAD_Objects_from_file();
 
+
             // Update the logging indicator 
             Set_Log_Indicator();
+
 
             XtAppMainLoop(app_context);
 
@@ -29248,3 +29253,5 @@ int main(int argc, char *argv[], char *envp[]) {
     quit(0);
     return 0;
 }
+
+
