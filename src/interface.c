@@ -7275,12 +7275,25 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0))
                     strcpy(output_brk,"/");
 
-                xastir_snprintf(data_txt, sizeof(data_txt), "%s%c%s%s%s%s%s\r",
-                        output_net, aprs_station_message_type, my_pos,output_phg,
-                        output_brk, output_alt, my_comment);
-                xastir_snprintf(data_txt_save, sizeof(data_txt_save), "%c%s%s%s%s%s\r",
-                        aprs_station_message_type, my_pos, output_phg,
-                        output_brk, output_alt, my_comment);
+                xastir_snprintf(data_txt,
+                        sizeof(data_txt),
+                        "%s%c%s%s%s%s%s\r",
+                        output_net,
+                        aprs_station_message_type,
+                        my_pos,
+                        output_phg,
+                        output_brk,
+                        output_alt,
+                        my_comment);
+                xastir_snprintf(data_txt_save,
+                        sizeof(data_txt_save),
+                        "%c%s%s%s%s%s\r",
+                        aprs_station_message_type,
+                        my_pos,
+                        output_phg,
+                        output_brk,
+                        output_alt,
+                        my_comment);
                 break;
         }
 
