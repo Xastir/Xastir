@@ -402,6 +402,14 @@ scr_s_x_min = 0;
 
 
 
+// `gdal-config --libs` `gdal-config * --cflags`
+//
+// This is very nearly verbatim the example C-API code off the OGR
+// web pages.  We are only printing out the attribute field names so
+// far, but at least we are exercising the OGR draw code.  We
+// currently call this function from the draw_shapefile_map()
+// function.
+//
 void draw_ogr_map(Widget w,
                    char *dir,
                    char *filenm,
@@ -409,7 +417,74 @@ void draw_ogr_map(Widget w,
                    u_char alert_color,
                    int destination_pixmap,
                    int draw_filled) {
+
+    OGRDataSourceH datasource;
+    int i, numLayers;
+    char full_filename[300];
+
+
+    xastir_snprintf(full_filename,
+        sizeof(full_filename),
+        "%s/%s",
+        dir,
+        filenm);
+
+    /* Register all OGR drivers */
+    OGRRegisterAll();
+
+    /* Open data source */
+    datasource = OGROpen(full_filename, 0 /* bUpdate */, NULL);
+
+    if (datasource == NULL)
+    {
+        printf("Unable to open %s\n", full_filename);
+        return;
+    }
+
+    /* Loop through layers and dump their contents */
+
+    numLayers = OGR_DS_GetLayerCount(datasource);
+    for(i=0; i<numLayers; i++)
+    {
+        OGRLayerH layer;
+        int j, numFields;
+//        OGRFeatureH feature;
+        OGRFeatureDefnH layerDefn;
+
+        layer = OGR_DS_GetLayer( datasource, i );
+
+        /* Dump info about this layer */
+        layerDefn = OGR_L_GetLayerDefn( layer );
+        numFields = OGR_FD_GetFieldCount( layerDefn );
+
+        printf("\n===================\n");
+        printf("Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
+
+        for(j=0; j<numFields; j++)
+        {
+            OGRFieldDefnH fieldDefn;
+
+            fieldDefn = OGR_FD_GetFieldDefn( layerDefn, j );
+            printf(" Field %d: %s (%s)\n", 
+                   j, OGR_Fld_GetNameRef(fieldDefn), 
+                   OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
+        }
+        printf("\n");
+
+//        /* And dump each feature individually */
+//        while( (feature = OGR_L_GetNextFeature( layer )) != NULL )
+//        {
+//            OGR_F_DumpReadable( feature, stdout );
+//            OGR_F_Destroy( feature );
+//        }
+
+        /* No need to free layer handle, it belongs to the datasource */
+    }
+
+    /* Close data source */
+    OGR_DS_Destroy( datasource );
 }
+
 
 
 #endif // HAVE_LIBGDAL
