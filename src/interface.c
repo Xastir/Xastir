@@ -726,7 +726,8 @@ void channel_data(int port, unsigned char *string, int length) {
     cleanup_mutex1 = &output_data_lock.lock;
 
     // Then install the cleanup routine:
-    pthread_cleanup_push(pthread_mutex_unlock, (void *)cleanup_mutex1);
+    pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex1);
+
 
     // This protects channel_data from being run by more than one
     // thread at the same time.
@@ -746,7 +747,7 @@ void channel_data(int port, unsigned char *string, int length) {
         cleanup_mutex2 = &data_lock.lock;
 
         // Then install the cleanup routine:
-        pthread_cleanup_push(pthread_mutex_unlock, (void *)cleanup_mutex2);
+        pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex2);
 
         if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
             fprintf(stderr,"data_lock, Port = %d\n", port);
@@ -3653,7 +3654,7 @@ static void* net_connect_thread(void *arg) {
     cleanup_mutex = &connect_lock.lock;
 
     // Then install the cleanup routine:
-    pthread_cleanup_push(pthread_mutex_unlock, (void *)cleanup_mutex);
+    pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex);
 
     if (begin_critical_section(&connect_lock, "interface.c:net_connect_thread(2)" ) > 0)
         fprintf(stderr,"net_connect_thread():connect_lock, Port = %d\n", port);
@@ -5038,7 +5039,7 @@ void port_write(int port) {
             cleanup_mutex = &port_data[port].write_lock.lock;
 
             // Then install the cleanup routine:
-            pthread_cleanup_push(pthread_mutex_unlock, (void *)cleanup_mutex);
+            pthread_cleanup_push((void *)pthread_mutex_unlock, (void *)cleanup_mutex);
 
 
             if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write(1)" ) > 0)
