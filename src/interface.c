@@ -485,6 +485,8 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 
 
 /*
+// Here is a "monitor" UI packet
+//
 Total Length = 150
 HEX:00 00 00 00 55 00 00 00 4b 4b 31 57 00 ed 12 00 96 ed 41 50 54
 57 30 31 00 00 00 00 72 00 00 00 00 00 00 00 20 31 3a 46 6d 20 4b 4b
@@ -496,6 +498,93 @@ HEX:00 00 00 00 55 00 00 00 4b 4b 31 57 00 ed 12 00 96 ed 41 50 54
 ASC:....U...KK1W......APTW01....r....... 1:Fm KK1W To APTW01 Via WIDE3 <UI pid=F0 Len=50 >[10:43:43]._08061039c359s000g000t062r000p003P096h00b10093tU2k...
 */
 
+/*
+// And here are some "raw" UI packets
+//
+AGWPE: Got raw frame packet
+3:2e
+Bad KISS packet.  Dropping it.
+Total Length = 135
+HEX:00 00 00 00 4b 00 00 00 4e 32 4c 42 54 2d 37 00 01 00 41 50 58
+31 33 33 00 00 00 00 63 00 00 00 00 00 00 00
+
+c0 82 a0 b0 62 66 66 60
+9c 64 98 84 a8 40 6e 96 82 64 a2 b2 8a f4 ae 92 88 8a 40 40 61 03 f0
+40 30 37 30 30 32 37 7a 34 32 33 39 2e 30 34 4e 5c 30 37 33 34 38 2e
+31 30 57 5f 30 30 30 2f 30 30 30 67 30 30 30 74 30 36 34 72 30 30 30
+50 30 30 30 70 30 30 30 68 35 33 62 31 30 31 32 37 58 55 32 6b 0d 
+ASC:....K...N2LBT-7...APX133....c...........bff`.d...@n..d........@@a..@070027z4239.04N\07348.10W_000/000g000t064r000P000p000h53b10127XU2k.
+AGWPE: Got raw frame packet
+3:23
+Bad KISS packet.  Dropping it.
+Total Length = 104
+HEX:00 00 00 00 4b 00 00 00 4e 31 45 44 5a 2d 37 00 01 00 54 52 31
+55 37 58 00 00 00 00 44 00 00 00 00 00 00 00
+
+c0 a8 a4 62 aa 6e b0 60
+9c 62 8a 88 b4 40 ee 96 82 62 a2 8c 8a fe ae 62 a8 9e 9a 40 fe 96 82
+64 a2 b2 8a f5 03 f0 60 64 2a 39 6c 23 22 3e 2f 3e 22 35 6b 7d 6e 31
+65 64 7a 40 61 6d 73 61 74 2e 6f 72 67 0d 
+ASC:....K...N1EDZ-7...TR1U7X....D..........b.n.`.b...@...b.....b...@...d......`d*9l#">/>"5k}n1edz@amsat.org.
+AGWPE: Got raw frame packet
+3:2e
+Bad KISS packet.  Dropping it.
+Total Length = 103
+HEX:00 00 00 00 4b 00 00 00 4b 32 52 52 54 2d 39 00 01 00 41 50 54
+33 31 31 00 00 00 00 43 00 00 00 00 00 00 00
+
+c0 82 a0 a8 66 62 62 60
+96 64 a4 a4 a8 40 72 ae 82 64 aa 9a b0 e4 ae 92 88 8a 40 40 61 03 f0
+21 34 33 31 39 2e 37 39 4e 2f 30 37 33 34 30 2e 38 37 57 3e 32 36 38
+2f 30 32 30 2f 41 3d 30 30 30 34 38 35 
+ASC:....K...K2RRT-9...APT311....C...........fbb`.d...@r..d........@@a..!4319.79N/07340.87W>268/020/A=000485
+AGWPE: Got raw frame packet
+3:74
+Bad KISS packet.  Dropping it.
+Total Length = 82
+HEX:00 00 00 00 4b 00 00 00 4b 32 52 52 54 2d 39 00 01 00 41 50 54
+33 31 31 00 00 00 00 2e 00 00 00 00 00 00 00
+
+c0 82 a0 a8 66 62 62 60
+96 64 a4 a4 a8 40 72 ae 64 8e ae b2 40 e4 ae 82 64 aa 9a b0 e5 03 f0
+3e 6e 32 79 71 74 40 61 72 72 6c 2e 6e 65 74 
+ASC:....K...K2RRT-9...APT311................fbb`.d...@r.d...@...d......>n2yqt@arrl.net
+AGWPE: Got raw frame packet
+3:2e
+Bad KISS packet.  Dropping it.
+Total Length = 103
+HEX:00 00 00 00 4b 00 00 00 4b 32 52 52 54 2d 39 00 01 00 41 50 54
+33 31 31 00 00 00 00 43 00 00 00 00 00 00 00
+
+c0 82 a0 a8 66 62 62 60
+96 64 a4 a4 a8 40 72 ae 64 8e ae b2 40 e4 96 82 64 a2 b2 8a f5 03 f0
+21 34 33 31 39 2e 37 39 4e 2f 30 37 33 34 30 2e 38 37 57 3e 32 36 38
+2f 30 32 30 2f 41 3d 30 30 30 34 38 35 
+ASC:....K...K2RRT-9...APT311....C...........fbb`.d...@r.d...@...d......!4319.79N/07340.87W>268/020/A=000485
+AGWPE: Got raw frame packet
+3:74
+Bad KISS packet.  Dropping it.
+Total Length = 82
+HEX:00 00 00 00 4b 00 00 00 4b 32 52 52 54 2d 39 00 01 00 41 50 54
+33 31 31 00 00 00 00 2e 00 00 00 00 00 00 00
+
+c0 82 a0 a8 66 62 62 60
+96 64 a4 a4 a8 40 72 ae 64 8e ae b2 40 e4 96 82 64 a2 b2 8a f5 03 f0
+3e 6e 32 79 71 74 40 61 72 72 6c 2e 6e 65 74 
+ASC:....K...K2RRT-9...APT311................fbb`.d...@r.d...@...d......>n2yqt@arrl.net
+AGWPE: Got raw frame packet
+3:2e
+Bad KISS packet.  Dropping it.
+Total Length = 103
+HEX:00 00 00 00 4b 00 00 00 4b 32 52 52 54 2d 39 00 01 00 41 50 54
+33 31 31 00 00 00 00 43 00 00 00 00 00 00 00
+
+c0 82 a0 a8 66 62 62 60
+96 64 a4 a4 a8 40 72 ae 82 64 aa 9a b0 e4 96 82 64 a2 b2 8a f5 03 f0
+21 34 33 31 39 2e 37 39 4e 2f 30 37 33 34 30 2e 38 37 57 3e 32 36 38
+2f 30 32 30 2f 41 3d 30 30 30 34 38 35 
+ASC:....K...K2RRT-9...APT311....C...........fbb`.d...@r..d......d......!4319.79N/07340.87W>268/020/A=000485
+*/
 
 
 // Parse an AGWPE header.  Create a TAPR-2 style header out of the
@@ -533,7 +622,14 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
     char *via_ptr;
     char temp_str[512];
     int special_debug = 0;
+    int data_length;
 
+
+    // Fetch the length of the data portion of the packet
+    data_length = (unsigned char)(input_string[31]);
+    data_length = (data_length << 8) + (unsigned char)(input_string[30]);
+    data_length = (data_length << 8) + (unsigned char)(input_string[29]);
+    data_length = (data_length << 8) + (unsigned char)(input_string[28]);
 
     // Implementing some special debugging output for the case of
     // third-party NWS messages, which so far haven't been parsed
@@ -542,37 +638,213 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
     // Check for NWS string past the header part of the AGWPE
     // packet.
     //
-    if (strstr(&input_string[36],"NWS-") || strstr(&input_string[36],"NWS_")) {
-        special_debug = 1;
-    }
+
+// Check the data_length here to make sure we don't run off the end.
+//    if (strstr(&input_string[36],"NWS-") || strstr(&input_string[36],"NWS_")) {
+//        special_debug = 1;
+//    }
+
+
+    // Make sure we have a terminating '\0' at the end.
+// Note that this doesn't help for binary packets (like OpenTrac),
+// but doesn't really hurt either.
+    input_string[38+data_length] = '\0';
+
  
-    // Check that it's a UI packet.  It should have a 'U' at
-    // position input_string[4].
+    // Check what sort of AGWPE packet it is.
     switch (input_string[4]) {
-        case 'U':
-            if (special_debug)
-              fprintf(stderr,"\nAGWPE: Got UI packet\n");
-            break;
+
         case 'R':
-            if (special_debug)
-              fprintf(stderr,"\nAGWPE: Got software version packet\n");
-            return(NULL);
+            //fprintf(stderr,"AGWPE: Got software version packet\n");
+            if (data_length == 8) { 
+                fprintf(stderr,
+                    "\nConnected to AGWPE server, version: %d.%d\n",
+                    (input_string[37] << 8) + input_string[36],
+                    (input_string[41] << 8) + input_string[40]);
+            }
+            return(NULL);   // All done!
             break;
+
+        case 'G':
+            //fprintf(stderr,"AGWPE: Got port information packet\n");
+
+            // Print out the data, changing all ';' characters to
+            // <CR> and a bunch of spaces to format it nicely.
+            fprintf(stderr, "    Port Info, total ports = ");
+            ii = 36;
+            while (ii < data_length + 36 && input_string[ii] != '\0') {
+                if (input_string[ii] == ';')
+                    fprintf(stderr, "\n    ");
+                else
+                    fprintf(stderr, "%c", input_string[ii]);
+                ii++;
+            }
+            fprintf(stderr,"\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'g':
+            //fprintf(stderr,"AGWPE: Got port capabilities packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'X':
+            //fprintf(stderr,"AGWPE: Got callsign registration results packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'y':
+            //fprintf(stderr,"AGWPE: Got outstanding frames on port packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'Y':
+            //fprintf(stderr,"AGWPE: Got outstanding frames on connection packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'H':
+            //fprintf(stderr,"AGWPE: Got heard stations on port packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'C':
+            //fprintf(stderr,"AGWPE: Got connection results packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'v':
+            //fprintf(stderr,"AGWPE: Got v packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'c':
+            //fprintf(stderr,"AGWPE: Got c packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'D':
+            //fprintf(stderr,"AGWPE: Got connected data packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'd':
+            //fprintf(stderr,"AGWPE: Got disconnection results packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'U':
+            //fprintf(stderr,"AGWPE: Got UI data packet\n");
+            // We can decode this one ok in the below code (after
+            // this switch statement), but we no longer use
+            // "monitor" mode packets in AGWPE, switching to the
+            // "raw" mode instead.
+            return(NULL);   // All done!
+            break;
+
+        case 'I':
+            //fprintf(stderr,"AGWPE: Got connected information data packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'S':
+            //fprintf(stderr,"AGWPE: Got supervisory frame packet\n");
+            return(NULL);   // All done!
+            break;
+
+        case 'T':
+            //fprintf(stderr,"AGWPE: Got our own transmitted packet back\n");
+            //fprintf(stderr, "%s\n", &input_string[37]);
+            // We should decode this one ok in the below code (after
+            // this switch statement), but we no longer use
+            // "monitor" mode packets in AGWPE, switching to the
+            // "raw" mode instead.
+            return(NULL);   // All done!
+            break;
+
+        case 'K':
+            //fprintf(stderr,"AGWPE: Got raw frame packet\n");
+
+            // Code here processes the packet for handing to our
+            // KISS decoding routines.  Chop off the header, add
+            // anything to the beginning/end that we need, then send
+            // it to decode_ax25_header().
+
+            // Try to decode header and checksum.  If bad, break,
+            // else continue through to ASCII logging & decode
+            // routines.  We skip the first byte as it's not part of
+            // the AX.25 packet.
+            if ( !decode_ax25_header( (char *)&input_string[37], data_length ) ) {
+                // Had a problem decoding it.  Drop it on the floor.
+                fprintf(stderr, "AGWPE: Bad KISS packet.  Dropping it.\n");
+                return(NULL);
+            }
+
+            // Good header.  Compute the new length, again skipping
+            // the first byte.
+            data_length = strlen(&input_string[37]);
+ 
+// The above strlen() requires it to be printable ascii in the KISS
+// packet, so won't work for OpenTrac protocol or other binary
+// protocols.  The decode_ax25_header() function also looks for
+// PID=0xF0, which again won't work for OpenTrac.  It would be
+// better to have the decode_ax25_header routine return the new
+// length of the packet so that decoding of binary packets is still
+// possible.
+
+// Check for OpenTrac packets.  If found, dump them into
+// OpenTrac-specific decode and skip the other decode below.  Must
+// tweak the above stuff to allow binary-format packets to get
+// through to this point.
+
+            // Do more stuff with the packet here.  The actual
+            // packet itself starts at offset 37.  We can end up
+            // with 0x0d, 0x0d 0x0d, or 0x0d 0x00 0x0d on the end of
+            // it (or none of the above).  Best method should be to
+            // just search for any 0x0d's or 0x0a's starting at the
+            // beginning of the string and overwrite them with
+            // 0x00's.
+
+            for (ii = 0; ii < data_length; ii++) {
+                if (input_string[ii+37] == 0x0d
+                        || input_string[ii+37] == 0x0a)
+                    input_string[ii+37] = '\0';
+            }
+
+            // Compute data_length again.
+            data_length = strlen(&input_string[37]);
+
+            // Send the processed string back for decoding
+            xastir_snprintf(output_string,
+                output_string_length,
+                "%s",
+                &input_string[37]);
+ 
+            // Send back the new length. 
+            *new_length = data_length;
+
+            return(output_string);
+            break;
+
         default:
-            if (special_debug)
-              fprintf(stderr,"\nAGWPE: Got '%c' packet\n",input_string[4]);
-            return(NULL);
+            fprintf(stderr,"AGWPE: Got unrecognized '%c' packet\n",input_string[4]);
+            return(NULL);   // All done!
             break;
     }
+
+
+// NOTE:  All of the code below gets used in "monitor" mode, which
+// we no longer use.  We might keep this code around for a bit and
+// then delete it, as we've probably switched to "raw" mode for
+// good.  "raw" mode allows us to use our KISS processing routines,
+// plus allows us to support digipeating and OpenTrac (binary)
+// protocol in the future.
+
 
     if (special_debug) {
         // Dump the hex & ascii representation of the whole packet
  
-        // Fetch the length of the data portion of the packet
-        kk = (unsigned char)(input_string[29]) << 8;
-        kk = kk + (unsigned char)(input_string[28]);
-
-        kk = kk + 36; // Add the header length
+        kk = data_length + 36; // Add the header length
         fprintf(stderr, "Total Length = %d\n", kk);
 
         fprintf(stderr, "HEX:");
@@ -636,11 +908,6 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
     // Make sure that the protocol ID is "F0".  If not, return.
     if (strstr(temp_str, "pid=F0") == NULL) {
         char *pid_ptr;
-
-// It'd be great to support OpenTrac protocol with the AGWPE port as
-// well, but we might have to switch to another one of AGWPE's
-// packet formats to do so, probably the raw packet format, which is
-// similar to KISS format.
 
         // Look for the "pid=" string and print out what we can
         // figure out about the protocol ID.
@@ -6575,6 +6842,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     break;
 
                 case DEVICE_NET_AGWPE:
+
                     // Query for the AGWPE version
                     //
                     send_agwpe_packet(port_avail,
@@ -6586,7 +6854,23 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         NULL,   // Data
                         0);     // Length
 
-                    // Ask to receive "Monitor" frames
+
+                    // Query for port information
+                    //
+                    send_agwpe_packet(port_avail,
+                        0,      // AGWPE RadioPort
+                        'G',    // Request Port Info Frame
+                        NULL,   // FromCall
+                        NULL,   // ToCall
+                        NULL,   // Path
+                        NULL,   // Data
+                        0);     // Length
+
+
+/*
+                    // Ask to receive "Monitor" frames.  Once we
+                    // switch to "raw" mode for decoding, we won't
+                    // need this one anymore.
                     //
                     send_agwpe_packet(port_avail,
                         0,      // AGWPE RadioPort
@@ -6596,6 +6880,20 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         NULL,   // Path
                         NULL,   // Data
                         0);     // Length
+*/
+
+
+                    // Ask to receive "raw" frames
+                    //
+                    send_agwpe_packet(port_avail,
+                        0,      // AGWPE RadioPort
+                        'k',    // Request Raw Packets Frame
+                        NULL,   // FromCall
+                        NULL,   // ToCall
+                        NULL,   // Path
+                        NULL,   // Data
+                        0);     // Length
+
 
 /*
                     // Send a dummy UI frame for testing purposes.
@@ -6608,6 +6906,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                         NULL,       // Path
                         "Test",     // Data
                         4);         // length
+
 
                     // Send another dummy UI frame.
                     //
