@@ -735,6 +735,7 @@ UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Stel de systeem klok in vanuit GPS?||
 UNIOP00030|RELAY Digipeat?||
+UNIOP00031|m||
 #
 # PopUp "Station Chooser"
 STCHO00001|Station Kiezer||

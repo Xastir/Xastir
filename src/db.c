@@ -3513,7 +3513,7 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
                     sizeof(temp_my_distance),
                     "%d %s",
                     (int)(value*1.852*1000),
-                    langcode("SPCHSTR002"));    // meters
+                    langcode("UNIOP00031"));    // 'm' as in meters
             }
             else {
                 xastir_snprintf(temp_my_distance,

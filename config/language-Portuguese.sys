@@ -728,6 +728,7 @@ UNIOP00027|inHg||
 UNIOP00028|mm Hg||
 UNIOP00029|Definir o relógio do sistema desde o GPS?||
 UNIOP00030|Digipeater de rele?||
+UNIOP00031|m||
 #
 # Seleccionar estação
 STCHO00001|Seleccionar estação||

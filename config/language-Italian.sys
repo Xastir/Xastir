@@ -505,7 +505,7 @@ POPUPOB039|Segnale - Altezza(HAAT) - Guadagno - Direttività||
 POPUPOB040|Larghezza fascio - Puntamento||
 POPUPOB041|Antenna Omni||
 POPUPOB042|Antenna Direzionale||
-POPUPOB043|Useless||
+POPUPOB043|Sconosciuta||
 #
 #Configure Internet
 WPUPCFI001|Configura Rete||
@@ -726,6 +726,7 @@ UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Regolare il tempo del sistema dal GPS||
 UNIOP00030|RELAY Digipeat?||
+UNIOP00031|m||
 #
 # PopUp "Station Chooser"
 STCHO00001|Scelta Stazione||

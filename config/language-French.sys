@@ -724,6 +724,7 @@ UNIOP00027|pouces Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Placez le temps de système du GPS||
 UNIOP00030|RELAY Digipeat?||
+UNIOP00031|m||
 #
 # PopUp "Station Chooser"
 STCHO00001|Choix de station||
