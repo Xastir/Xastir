@@ -1072,6 +1072,14 @@ MAC OS X NOTES:
 
         No changes necessary now for Mac OS X!
 
+     You may want to install everything to /sw though, so that the normal
+     user can find it easily and add maps.  To do this, run this instead:
+
+        ./configure --prefix=/sw
+
+     That will cause Xastir to be installed in /sw/xastir/* directories, and
+     the executable will go into /sw/bin/xastir.
+
 END OF MAC OS X NOTES.
      -----------------------------------------------------------------------
 
