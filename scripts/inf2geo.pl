@@ -1,9 +1,19 @@
 #!/usr/bin/perl
 
-# Copyright (C) 2001-2003 Curt Mills, WE7U
+# Copyright (C) 2001-2004 Curt Mills, WE7U
 # Released to the public domain.
 #
 # $Id$
+#
+#
+# Invoke this script against one or more info files by typing:
+#
+#       inf2geo.pl filename.inf
+# -or-
+#       inf2geo.pl *.inf
+#
+# To process all .inf files in that directory.
+#
 #
 # Read in .inf file (from Ui-View)
 # Convert the lat/long coordinates into dd.dddd format
@@ -23,11 +33,26 @@
 use IO::File;
 
 #go through every filename passed to this script
-foreach my $file (@ARGV) {
-    print "*** $file ***\n";
+
+#printf("ARGV:%d\n",$#ARGV);
+
+if ($#ARGV == -1) {
+    # No filenames on the command line
+    printf("\n\n\nNo filenames specified.  Invoke this script against one\n");
+    printf("or more .inf files by typing:\n\n");
+    printf("        inf2geo.pl filename.inf\n");
+    printf("-or-\n");
+    printf("        inf2geo.pl *.inf\n\n");
+    printf("To process all .inf files in that directory.\n\n");
+    exit;
+}
+else {
+    foreach my $file (@ARGV) {
+        print "*** $file ***\n";
     
-    #make a geo of this file
-    makeGeo ($file);
+        #make a geo of this file
+        makeGeo ($file);
+    }
     
 }
 
