@@ -114,12 +114,12 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
                                         /* log traffic for the first "up" interface only */
                                         if (log_igate && first) {
-                                            xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
+                                            xastir_snprintf(temp, sizeof(temp), "IGATE RF->NET(%c):%s\n", third_party ? 'T':'N', line);
                                             log_data(LOGFILE_IGATE,temp);
                                             first = 0;
                                         }
 
-                                        xastir_snprintf(temp, sizeof(temp), "TRANSMIT: IGate RF->NET packet on device:%d", x);
+                                        xastir_snprintf(temp, sizeof(temp), "TRANSMIT: IGate RF->NET packet on device:%d\n", x);
 
                                         /* log output */
                                         if (log_igate)
@@ -138,7 +138,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
                             }
                             else {
                                 if (log_igate && (debug_level & 1024) ) {
-                                    xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
+                                    xastir_snprintf(temp, sizeof(temp), "IGATE RF->NET(%c):%s\n", third_party ? 'T':'N', line);
                                     log_data(LOGFILE_IGATE,temp);
 
                                     xastir_snprintf(temp, sizeof(temp), "REJECT: No RF->NET from input port [%d]\n", port);
@@ -152,7 +152,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                         }
                         else {
                             if (log_igate && (debug_level & 1024) ) {
-                                xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
+                                xastir_snprintf(temp, sizeof(temp), "IGATE RF->NET(%c):%s\n", third_party ? 'T':'N', line);
                                 log_data(LOGFILE_IGATE,temp);
 
                                 xastir_snprintf(temp, sizeof(temp), "REJECT: From my call\n");
@@ -163,7 +163,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                     }
                     else {
                         if (log_igate && (debug_level & 1024) ) {
-                            xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
+                            xastir_snprintf(temp, sizeof(temp), "IGATE RF->NET(%c):%s\n", third_party ? 'T':'N', line);
                             log_data(LOGFILE_IGATE,temp);
 
                             xastir_snprintf(temp, sizeof(temp), "REJECT: Third party traffic\n");
@@ -227,12 +227,12 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
 
                                     /* log traffic for first "up" interface only */
                                     if (log_igate && first) {
-                                        xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                                        xastir_snprintf(temp, sizeof(temp), "IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                                         log_data(LOGFILE_IGATE,temp);
                                         first = 0;
                                     }
 
-                                    xastir_snprintf(temp, sizeof(temp), "TRANSMIT: IGate NET->RF packet on device:%d", x);
+                                    xastir_snprintf(temp, sizeof(temp), "TRANSMIT: IGate NET->RF packet on device:%d\n", x);
 
                                     /* log output */
                                     if (log_igate)
@@ -248,7 +248,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                                 }
                                 else {
                                     if (log_igate && (debug_level & 1024) ) {
-                                        xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                                        xastir_snprintf(temp, sizeof(temp), "IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                                         log_data(LOGFILE_IGATE,temp);
 
                                         xastir_snprintf(temp, sizeof(temp), "REJECT: NET->RF on port [%d]\n", x);
@@ -269,7 +269,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
             }
             else {
                 if (log_igate && (debug_level & 1024) ) {
-                    xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                    xastir_snprintf(temp, sizeof(temp), "IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                     log_data(LOGFILE_IGATE,temp);
 
                 //  heard(call),  heard(from) : RF-to-RF talk
@@ -287,7 +287,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
         }
         else {  // "TCPXX*" was found in the header.  We have an unregistered user.
             if (log_igate && (debug_level & 1024) ) {
-                xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                xastir_snprintf(temp, sizeof(temp), "IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                 log_data(LOGFILE_IGATE,temp);
 
                 xastir_snprintf(temp, sizeof(temp), "REJECT: Unregistered net user!\n");
@@ -445,12 +445,12 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
 
                                         /* log traffic for first "up" interface only */
                                         if (log_igate && first) {
-                                            xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                                            xastir_snprintf(temp, sizeof(temp), "NWS IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                                             log_data(LOGFILE_IGATE,temp);
                                             first = 0;
                                         }
 
-                                        xastir_snprintf(temp, sizeof(temp), "TRANSMIT: IGate NET->RF packet on device:%d", x);
+                                        xastir_snprintf(temp, sizeof(temp), "TRANSMIT: IGate NET->RF packet on device:%d\n", x);
 
                                         /* log output */
                                         if (log_igate)
@@ -466,7 +466,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                                     }
                                     else {
                                         if (log_igate && (debug_level & 1024) ) {
-                                            xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                                            xastir_snprintf(temp, sizeof(temp), "NWS IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                                             log_data(LOGFILE_IGATE,temp);
 
                                             xastir_snprintf(temp, sizeof(temp), "REJECT: NET->RF on port [%d]\n", x);
@@ -487,7 +487,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                 }
                 else { /* end check for NWS station */
                     if (log_igate && (debug_level & 1024) ) {
-                        xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                        xastir_snprintf(temp, sizeof(temp), "NWS IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                         log_data(LOGFILE_IGATE,temp);
 
                         xastir_snprintf(temp, sizeof(temp), "REJECT: No matching station in nws-stations.txt file!\n");
@@ -498,7 +498,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
             }
             else { /* end check for NWS file check */
                 if (log_igate && (debug_level & 1024) ) {
-                    xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                    xastir_snprintf(temp, sizeof(temp), "NWS IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                     log_data(LOGFILE_IGATE,temp);
 
                     xastir_snprintf(temp, sizeof(temp), "REJECT: No nws-stations.txt file!\n");
@@ -509,7 +509,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
         }
         else {  // Found "TCPXX*".  We have an unregistered net user.
             if (log_igate && (debug_level & 1024) ) {
-                xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
+                xastir_snprintf(temp, sizeof(temp), "NWS IGATE NET->RF(%c):%s\n", third_party ? 'T':'N', line);
                 log_data(LOGFILE_IGATE,temp);
 
                 xastir_snprintf(temp, sizeof(temp), "REJECT: Unregistered net user!\n");
