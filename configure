@@ -6018,6 +6018,20 @@ cat >> confdefs.h <<EOF
 #define XASTIR_TOCALL "$to_call"
 EOF
 
+
+if test "x${prefix}" = "xNONE"; then
+  cat >> confdefs.h <<EOF
+#define XASTIR_DATA_BASE "${ac_default_prefix}/xastir"
+EOF
+
+else
+  cat >> confdefs.h <<EOF
+#define XASTIR_DATA_BASE "${prefix}/xastir"
+EOF
+
+fi
+
+
 if test -z "$no_pipe"
 then
   if test -n "$GCC"

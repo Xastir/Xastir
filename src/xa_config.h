@@ -25,9 +25,6 @@
 
 #define MAX_VALUE 300
 
-#define XASTIR_USER_BASE "/usr/local/xastir"
-#define XASTIR_DATA_BASE "/usr/local/xastir"
-
 extern time_t next_time;
 
 void store_string(FILE *fout,char *option, char *value);

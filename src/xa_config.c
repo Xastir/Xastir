@@ -177,12 +177,12 @@ char *get_user_base_dir(char *dir) {
     static char base[MAX_VALUE];
     char *env_ptr;
 
-    strcpy (base, ((env_ptr = getenv ("XASTIR_USER_BASE")) != NULL) ? env_ptr : XASTIR_USER_BASE);
+    strcpy (base, ((env_ptr = getenv ("XASTIR_USER_BASE")) != NULL) ? env_ptr : user_dir);
 
-    if (base[strlen (base) - 1] != '/') {
-        sprintf (base, "%s/.xastir/", user_dir);
-        /*sprintf(base,"%s/",XASTIR_BASE); */
-    }
+    if (base[strlen (base) - 1] != '/')
+        strcat (base, "/");
+
+    strcat (base, ".xastir/");
     return strcat (base, dir);
 }
 

@@ -155,6 +155,9 @@
 
 #undef XASTIR_TOCALL
 
+/* Base data dir. */
+#undef XASTIR_DATA_BASE
+
 #undef XASTIR_SYSTEM
 
 #undef DLOPEN_1

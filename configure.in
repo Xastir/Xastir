@@ -168,6 +168,14 @@ AC_DEFINE_UNQUOTED(STIPPLE, 1) dnl Use crowbar and lets keep going
 to_call=APX$MAJOR_VERSION$MINOR_VERSION$MICRO_VERSION
 AC_SUBST(to_call)
 AC_DEFINE_UNQUOTED(XASTIR_TOCALL, "$to_call")
+
+dnl Set XASTIR_DATA_BASE in config.h.
+if test "x${prefix}" = "xNONE"; then
+  AC_DEFINE_UNQUOTED(XASTIR_DATA_BASE, "${ac_default_prefix}/xastir")
+else
+  AC_DEFINE_UNQUOTED(XASTIR_DATA_BASE, "${prefix}/xastir")
+fi
+
 XASTIR_CHECK_CCPIPE
 AC_PATH_PROG(xastirpath, xastir)
 XASTIR_PRUNE_DUPLICATES
