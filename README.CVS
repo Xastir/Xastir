@@ -97,6 +97,9 @@ CVS Instructions:
          exit (from root)
          xastir
 
+     Note that you'll need autoconf 2.53 or newer and automake 1.6.3 or newer
+     in order to run the "./bootstrap.sh" script.
+
      For the "cvs update" line, you can also choose which version to update to,
      just like the "cvs co" lines shown above:
 
