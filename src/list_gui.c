@@ -389,6 +389,7 @@ void Station_List_fill(int type, int new_offset) {
     int i;
     int row;
     char temp[8];
+    char *temp_ptr;
     Dimension w,h;            // size of scrollbar in pixel
     Dimension ww,wh;          // size of entire widget in pixel
     Dimension new_h;          // overall height in pixel
@@ -575,7 +576,9 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
 
                 // call (or object/item name)
                 /* check to see if string changed and over write */
-                strcpy(temp_call,XmTextFieldGetString(SL_call[type][row]));
+                temp_ptr = XmTextFieldGetString(SL_call[type][row]);
+                xastir_snprintf(temp_call, sizeof(temp_call), "%s", temp_ptr);
+                XtFree(temp_ptr);
                 if (strcmp(temp_call,p_station->call_sign) !=0 ) {
                     XmTextFieldSetString(SL_call[type][row],p_station->call_sign);
                     if (ghost)
