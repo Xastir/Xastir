@@ -855,13 +855,13 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 //    transform.  We currently only check the GEOGCS field.  Have
 //    seen some .prj files that don't contain a GEOGCS but do have a
 //    DATUM field we could parse.
-// *) Fast Extents:  Pass a variable to the draw functions that tell
-//    whether we can do fast extents.  If not, don't do them in the
-//    lower-level functions.  Instead, compute our own extents after
-//    we have the points in an array.
+// *) Fast Extents:  We now pass a variable to the draw functions
+//    that tells whether we can do fast extents.  We still need to
+//    compute our own extents after we have the points in an array.
 // *) Figure out why SDTS hypsography (contour lines) on top of
 //    terraserver gives strange results when zooming/panning
-//    sometimes.  Restarting Xastir cleans up the image.
+//    sometimes.  Restarting Xastir cleans up the image.  Perhaps
+//    colors or GC's are getting messed up?
 //
 // 
 void draw_ogr_map(Widget w,
@@ -1729,8 +1729,8 @@ fprintf(stderr, "  DATUM: %s\n", datum);
 
 // Hard-coded drawing attributes
 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
 
                     Draw_OGR_Lines(geometryH,
                         1,
@@ -1745,9 +1745,9 @@ fprintf(stderr, "  DATUM: %s\n", datum);
 
 // Hard-coded drawing attributes
 (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
-(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
+//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
-//(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
 
                     Draw_OGR_Polygons(geometryH,
                         1,
