@@ -1069,9 +1069,7 @@ Getting Data Files for Xastir:
       some radars are offscreen: (bash syntax, modify for your shell...)
       for a in srb_*; do echo "IMAGESIZE 620 620" >> $a; done
 
-      Selecting a .geo file with just the word "TIGERMAP" inside will cause
-      Xastir to retrieve an online tiger map of the relevant area. A .geo with
-      the word "TERRASERVER" will retrieve a satellite photo of the area from
+      A .geo with the word "TERRASERVER" will retrieve a satellite photo of the area from
       terraserver. No additional downloads are needed if these are the only 
       maps that you want to use. 
 
