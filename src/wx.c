@@ -24,7 +24,8 @@
 
 
 //
-// The code currently supports these types of weather stations:
+// The code currently supports these types of locally-connected or
+// network-connected weather stations:
 //
 //   Peet Brothers Ultimeter 2000 (Set to Data logging mode)
 //   Peet Brothers Ultimeter 2000 (Set to Packet mode)
@@ -396,7 +397,7 @@ void cycle_weather(void) {
         if (p_station->weather_data != NULL) {  // If station has WX data
             weather = p_station->weather_data;
             // Cycle the rain queues, feed in the last rain total we had
-            (void)compute_rain(atof(weather->wx_rain_total));
+            (void)compute_rain((float)atof(weather->wx_rain_total));
 
             // Hourly rain total
             xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
@@ -570,7 +571,7 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
                 (float)strtol(temp_data1,&temp_conv,16)/100.0);
         if (!from) {
             /* local station */
-            compute_rain(atof(weather->wx_rain_total));
+            compute_rain((float)atof(weather->wx_rain_total));
             /*last hour rain */
             xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
                     rain_minute_total);
@@ -726,7 +727,7 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
                 (float)strtol(temp_data1,&temp_conv,16)/100.0);
         if (!from) {
             /* local station */
-            compute_rain(atof(weather->wx_rain_total));
+            compute_rain((float)atof(weather->wx_rain_total));
             /*last hour rain */
             xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
                     rain_minute_total);
@@ -871,7 +872,7 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
                 (float)strtol(temp_data1,&temp_conv,16)/100.0);
         if (!from) {
             /* local station */
-            compute_rain(atof(weather->wx_rain_total));
+            compute_rain((float)atof(weather->wx_rain_total));
             /*last hour rain */
             xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
                     rain_minute_total);
@@ -1028,7 +1029,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             break;
                     }
                     /* local station */
-                    compute_rain(atof(weather->wx_rain_total));
+                    compute_rain((float)atof(weather->wx_rain_total));
                     /*last hour rain */
                     xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
                             rain_minute_total);
@@ -1125,7 +1126,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             break;
                     }
                     /* local station */
-                    compute_rain(atof(weather->wx_rain_total));
+                    compute_rain((float)atof(weather->wx_rain_total));
                     /*last hour rain */
                     xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
                             rain_minute_total);
@@ -1273,7 +1274,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             break;
                     }
                     /* local station */
-                    compute_rain(atof(weather->wx_rain_total));
+                    compute_rain((float)atof(weather->wx_rain_total));
                     /*last hour rain */
                     xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
                             rain_minute_total);
@@ -1406,7 +1407,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 */
 
                 /* rain total long term */
-                if (data[432]!='-') {
+                if ((char)data[432]!='-') {
                     substr(temp_data1,(char *)(data+432),4);
 //WE7U
 // Correct this section of code for the different rain gauge types
@@ -1427,7 +1428,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             break;
                     }
                     /* Since local station only */
-                    compute_rain(atof(weather->wx_rain_total));
+                    compute_rain((float)atof(weather->wx_rain_total));
 
                     /*last hour rain */
                     xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
@@ -1676,7 +1677,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                                 "%0.2f", atof(temp_data1) * 3.9370079);
 
                             /* Since local station only */
-                            compute_rain(atof(weather->wx_rain_total));
+                            compute_rain((float)atof(weather->wx_rain_total));
 
                             /* Last hour rain */
                             xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
