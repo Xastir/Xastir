@@ -83,8 +83,8 @@ PULDNMP008|Kaart Intensiteit|I|
 PULDNMP020|Aanzetten/Configureren Tigermap||
 PULDNMP021|Automatische Kaartkeuze - Zet Raster Kaarten Uit||
 PULDNMP022|Indexeer Kaarten bij het Starten||
-PULDNMP023|Herindexeer Kaarten|R|
-PULDNMP024|Map Re-Index: ALL Maps|A|
+PULDNMP023|Index: Voeg nieuwe kaarten toe|N|
+PULDNMP024|Index: Herindexeer ALLE kaarten|R|
 #
 #
 # PopUp "Configureren Tigermap"
