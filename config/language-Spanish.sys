@@ -35,10 +35,6 @@ PULDNFI012|Bitácora del I-Gate|G|
 PULDNFI013|Bitácora del Tiempo|W|
 PULDNFI014|Activa PNG Instantánea||
 PULDNFI015|Imprimir Mapa|P|
-PULDNFI003|Prueba|P|
-PULDNFI007|Cambia nivel Debug|D|
-PULDNFI004|Salir|S|
-PULDNFI005|Yes I'm Sure!|Y|
 #
 # Menú visor
 PULDNVI001|Boletines|B|
