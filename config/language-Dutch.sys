@@ -742,6 +742,8 @@ POPEM00026|Volgen begint op het moment van verschijnen||
 POPEM00027|Incorrecte gegevens.  Zijn er velden leeg?||
 POPEM00028|Kan bestand niet openen||
 POPEM00029|Gevonden!||
+POPEM00030|Weather Station Symbol||
+POPEM00031|Changed to WX symbol '/_', other option is '\_'||
 #
 # Jump Location
 JMLPO00001|Kaart Lokatie||

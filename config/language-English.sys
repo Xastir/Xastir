@@ -738,6 +738,8 @@ POPEM00026|Tracking will commence when it appears||
 POPEM00027|Improper info.  Some fields empty?||
 POPEM00028|Can't open file||
 POPEM00029|Found It!||
+POPEM00030|Weather Station Symbol||
+POPEM00031|Changed to WX symbol '/_', other option is '\_'||
 #
 # Jump Location 
 JMLPO00001|Map Display Bookmarks||

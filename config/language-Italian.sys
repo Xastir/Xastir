@@ -737,6 +737,8 @@ POPEM00026|Il tracciamento verrà visualizzato quando appare||
 POPEM00027|Informazione non completa. Campi vuoti?||
 POPEM00028|Non è possibile aprire il file||
 POPEM00029|Trovato!||
+POPEM00030|Weather Station Symbol||
+POPEM00031|Changed to WX symbol '/_', other option is '\_'||
 # 
 # Jump Location 
 JMLPO00001|Posizione Mappa||

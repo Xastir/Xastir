@@ -674,6 +674,34 @@ int moving_object = 0;
 /////////////////////////////////////////////////////////////////////////
 
 
+
+void check_weather_symbol(void) {
+    // Check for weather station, if so, make sure symbol is proper type
+    if ( (output_station_type == 4) || (output_station_type == 5) ) {
+        // Need '/_' or '\_' symbols if a weather station
+        if ( (my_symbol != '_')
+            || ( (my_group != '\\') && (my_group != '/') ) ) {
+
+            // Force it to '/_'
+            my_group = '/';
+            my_symbol = '_';
+
+            // Update my station data with the new symbol
+            station_del(my_callsign);  // move to new sort location...
+            my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
+            redraw_on_new_data=2;
+
+            // Notify the operator that the symbol has been changed
+            // "Weather Station", "Changed to WX symbol '/_', other option is '\\_'"
+            popup_message( langcode("POPEM00030"), langcode("POPEM00031") );
+        }
+    }
+}
+
+
+
+
+
 void Coordinate_calc_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     XtPopdown(shell);
@@ -4532,6 +4560,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             // Time to spit out a posit?
             if ( (transmit_now) || (sec_now() > posit_next_time) ) {
+
+                // Check for proper symbol in case we're a weather station
+                (void)check_weather_symbol();
+
                 posit_last_time = sec_now();
                 posit_next_time = posit_last_time + POSIT_rate;  // Set in Configure->Defaults dialog
                 transmit_now = 0;
@@ -7372,6 +7404,9 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     } else {
         max_transmit_time = (time_t)900l;
     }
+
+    // Check for proper symbol in case we're a weather station
+    (void)check_weather_symbol();
 
     transmit_raw_wx = (int)XmToggleButtonGetState(raw_wx_tx);
 

@@ -737,6 +737,8 @@ POPEM00026|Suivi commencera quand elle apparaîtra||
 POPEM00027|Mauvaise info.  Certains champs vides?||
 POPEM00028|Ne peut ouvrier fichier||
 POPEM00029|Trouvé!||
+POPEM00030|Weather Station Symbol||
+POPEM00031|Changed to WX symbol '/_', other option is '\_'||
 #
 # Jump Location 
 JMLPO00001|Lieu de la carte||

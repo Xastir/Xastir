@@ -736,6 +736,8 @@ POPEM00026|O rastreamento começará quando ele aparecer||
 POPEM00027|Info imprópia. Alguns campos vazios?||
 POPEM00028|Não se pode abrir o ficheiro||
 POPEM00029|Encontrado!||
+POPEM00030|Weather Station Symbol||
+POPEM00031|Changed to WX symbol '/_', other option is '\_'||
 #
 # Salto de localização
 JMLPO00001|Localização de mapa||

@@ -743,6 +743,8 @@ POPEM00026|Tracking will commence when it appears||
 POPEM00027|Falsche Eingabe.  Einige Felder leer?||
 POPEM00028|Kann Datei nicht öffnen||
 POPEM00029|Gefunden!||
+POPEM00030|Weather Station Symbol||
+POPEM00031|Changed to WX symbol '/_', other option is '\_'||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
