@@ -71,7 +71,7 @@ password:
   ./configure
   make
   su (become the root user) (not needed on Cygwin)
-  make install-strip
+  make install (make install-strip can be used after the first time)
   chmod 4555 /usr/local/bin/xastir (not needed on Cygwin)
   exit (from root) (not needed on Cygwin)
 
@@ -1296,7 +1296,7 @@ WINDOWS/CYGWIN NOTES:
         ./bootstrap.sh (This step needed only for those using CVS)
         ./configure
         make
-        make install-strip
+        make install (make install-strip can be used after the first time)
 
      Ignore the "PACKAGE_* redefined" warnings.  They won't break anything!
 
@@ -1356,11 +1356,12 @@ WINDOWS/CYGWIN NOTES:
         cd /usr/local/lib
         cp * /usr/lib
 
-     Now you should be ready to configure and compile:
+     Now you should be ready to configure and compile Xastir with Shapelib
+     support.  Change to the Xastir source directory again, then:
 
          ./configure
          make
-         make install-strip
+         make install (make install-strip can be used after the first time)
 
      Adding ImageMagick to Cygwin (ImageMagick 5.5.3):
      -------------------------------------------------
@@ -1503,7 +1504,8 @@ CVS Instructions:
          ./configure
          (make clean;make -j3 2>&1) | tee make.log
          su
-         make install-strip (removes debugging info from executable)
+         make install (make install-strip can be used after the first time,
+                       it removes debugging info from executable)
          chmod 4555 /usr/local/bin/xastir (only needed if using kernel AX.25)
          exit (from root)
          xastir
