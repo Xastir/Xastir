@@ -100,7 +100,7 @@ void draw_gnis_map (Widget w,
     char file[MAX_FILENAME];        // Complete path/name of GNIS file
     FILE *f;                        // Filehandle of GNIS file
     char line[MAX_FILENAME];        // One line of text from file
-    char *i, *j, *k;
+    char *i, *j;
     char state[50];
     char name[200];
     char type[100];
@@ -230,7 +230,7 @@ Cell Name
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
 
-                    // Find end of Name field
+                    // Find end of Feature Name field
                     j = index(i+1, '|');
 
                     if (j == NULL) {    // Pipe not found
@@ -241,7 +241,7 @@ Cell Name
                     strncpy(name,i+1,199);
                     clean_string(name);
 
-                    // Find Type
+                    // Find end of Feature Type field
                     i = index(j+1, '|');
 
                     if (i == NULL) {    // Pipe not found
@@ -252,7 +252,7 @@ Cell Name
                     strncpy(type,j+1,99);
                     clean_string(type);
 
-                    // Find County          // Can there be commas in the county name?
+                    // Find end of County Name field
                     j = index(i+1, '|');
 
                     if (j == NULL) {    // Pipe not found
@@ -847,7 +847,7 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
     char file[MAX_FILENAME];        // Complete path/name of GNIS file
     FILE *f;                        // Filehandle of GNIS file
     char line[MAX_FILENAME];        // One line of text from file
-    char *i, *j, *k;
+    char *i, *j;
     char state[50];
     char state_in2[50];
     char name[200];
@@ -930,195 +930,189 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 //NOTE:  How do we handle running off the end of "line" while using "index"?
 // Short lines here can cause segfaults.
 
+                    // Find end of Feature ID Number field
+                    j = index(line,'|');
 
-                    // Find State feature resides in
-                    i = index(line,',');    // Find ',' after state
+                    if (j == NULL) {    // Pipe not found
+                        continue;   // Skip this line
+                    }
 
-                    if (i == NULL) {    // Comma not found
+                    // Find end of State field
+                    i = index(j+1,'|');
+
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     i[0] = '\0';
-                    strncpy(state,line+1,49);
+                    strncpy(state,j+1,49);
 //                    state[strlen(state)-1] = '\0';
                     clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
-                    // Find Name
-                    j = index(i+1, ',');    // Find ',' after Name.  Note that there may be commas in the name.
 
-                    if (j == NULL) {    // Comma not found
-                        continue;   // Skip line
-                    }
+                    // Find end of Feature Name field
+                    j = index(i+1, '|');
 
-                    while ( (j != NULL) && (j[1] != '\"') ) {
-                        k = j;
-                        j = index(k+1, ',');
-                    }
-
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     j[0] = '\0';
-                    strncpy(name,i+2,199);
+                    strncpy(name,i+1,199);
 //                    name[strlen(name)-1] = '\0';
                     clean_string(name);
 
-                    // Find Type
-                    i = index(j+1, ',');
+                    // Find end of Feature Type field
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     i[0] = '\0';
-                    strncpy(type,j+2,99);
+                    strncpy(type,j+1,99);
 //                    type[strlen(type)-1] = '\0';
                     clean_string(type);
 
-                    // Find County          // Can there be commas in the county name?
-                    j = index(i+1, ',');
+                    // Find end of County Name field
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     j[0] = '\0';
-                    strncpy(county,i+2,99);
+                    strncpy(county,i+1,99);
 //                    county[strlen(county)-1] = '\0';
                     clean_string(county);
 
-                    // Find ?
-                    i = index(j+1, ',');
+                    // Find end of State Number Code field
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     i[0] = '\0';
 
-                    // Find ?
-                    j = index(i+1, ',');
+                    // Find end of County Number Code field
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     j[0] = '\0';
 
-                    // Find latitude (DDMMSSN)
-                    i = index(j+1, ',');
+                    // Find end of Primary Latitude field (DDMMSSN)
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     i[0] = '\0';
-                    strncpy(latitude,j+2,14);
+                    strncpy(latitude,j+1,14);
 //                    latitude[strlen(latitude)-1] = '\0';
                     clean_string(latitude);
 
-                    // Find longitude (DDDMMSSW)
-                    j = index(i+1, ',');
+                    // Find end of Primary Longitude field (DDDMMSSW)
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     j[0] = '\0';
-                    strncpy(longitude,i+2,14);
+                    strncpy(longitude,i+1,14);
 //                    longitude[strlen(longitude)-1] = '\0';
                     clean_string(longitude);
 
-                    // Find another latitude
-                    i = index(j+1, ',');
+                    // Find end of Primary Latitude field (decimal
+                    // degrees)
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     i[0] = '\0';
 
-                    // Find another longitude
-                    j = index(i+1, ',');
+                    // Find end of Primary Longitude field (decimal
+                    // degrees)
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     j[0] = '\0';
 
-                    // Find ?
-                    i = index(j+1, ',');
+                    // Find end of Source Latitude field (DMS)
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     i[0] = '\0';
 
-                    // Find ?
-                    j = index(i+1, ',');
+                    // Find end of Source Longitude (DMS)
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     j[0] = '\0';
 
-                    // Find ?
-                    i = index(j+1, ',');
+                    // Find end of Source Latitude field (decimal
+                    // degrees)
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     i[0] = '\0';
 
-                    // Find ?
-                    j = index(i+1, ',');
+                    // Find end of Source Longitude field (decimal
+                    // degrees)
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     j[0] = '\0';
 
-                    // Find altitude
-                    i = index(j+1, ',');
+                    // Find end of Elevation field
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     i[0] = '\0';
 
-                    // Find population
-                    j = index(i+1, ',');
+                    // Find end of Estimated Population field
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip line
                     }
 
                     j[0] = '\0';
-                    strncpy(population,i+2,14);
+                    strncpy(population,i+1,14);
 //                    population[strlen(population)-1] = '\0';
                     clean_string(population);
- 
-                    // Find quad name (last field)
-                    i = index(j+1, '"');
 
-                    if (i == NULL) {    // Comma not found
-                        continue;   // Skip line
-                    }
-
-                    i[0] = '\0';
-                    strncpy(quad,j+2,14);
+                    // Snag Cell Name field (Quad name, last field)
+                    strncpy(quad,j+1,14);
 //                    quad[strlen(quad)] = '\0';
                     clean_string(quad);
-
 
                     // If "Match Case" togglebutton is not set, convert
                     // the data to upper-case before we do our compare.
@@ -1129,7 +1123,6 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                         to_upper(quad);
                         to_upper(type);
                     }
-
 
 // Still need to code for the "Match Exact" togglebutton.
 
