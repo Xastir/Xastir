@@ -731,6 +731,11 @@ char *new_get_line(FILE *f, char *linedata, int maxline) {
 
 
 
+// time_from_aprsstring()
+//
+// Called from alert.c:alert_build_list() only.  Converts to
+// localtime if it's a zulu time string we're parsing.
+//
 time_t time_from_aprsstring(char *aprs_time) {
     int day, hour, minute;
     char tz[20];
@@ -743,13 +748,27 @@ time_t time_from_aprsstring(char *aprs_time) {
 #endif  // __solaris__
 
 
+    // Compute our current time and the offset from GMT.  If
+    // daylight savings time is in effect, factor that in as well.
     (void)time(&timenw);
     time_now = localtime(&timenw);
 #ifdef HAVE_GMTOFF
-    zone = (time_now->tm_gmtoff) - 3600 * (int)(time_now->tm_isdst);
+    // tm_gmtoff is the GMT offset in seconds.  Some Unix systems
+    // have this extra field in the tm struct, some don't.
+    zone = (time_now->tm_gmtoff) - (3600 * (int)(time_now->tm_isdst));
+    //fprintf(stderr,"gmtoff: %ld, tm_isdst: %d\n",
+    //    time_now->tm_gmtoff,
+    //    time_now->tm_isdst);
 #else   // HAVE_GMTOFF
     zone = (int)timezone - 3600 * (int)(time_now->tm_isdst > 0);
+    //fprintf(stderr,"timezone: %d\n",timezone);
 #endif  // HAVE_GMTOFF
+    // zone should now be the number to add to gmtime in order to
+    // get localtime, in seconds.  For PST, I get -28800 which
+    // equals -8 hours.
+    //fprintf(stderr,"Zone: %ld\n",zone);
+
+    // Split the input time string into its component parts.
     tz[0] = tz[1] = '\0';
     switch (sscanf(aprs_time, "%2d%2d%2d%19s", &day, &hour, &minute, tz)) {
         case 0:
@@ -764,37 +783,79 @@ time_t time_from_aprsstring(char *aprs_time) {
         default:
             break;
     }
+
+    // We set up our alert_time so that it points into the same
+    // struct as time_now.  We do this both so that we can get
+    // automatically filled in pieces of the struct (year, etc), and
+    // so that we have a more global struct to return the time in.
+    // We'll have to adjust a few things like month/year if the time
+    // is too far distant from our current time and crosses some
+    // boundary.
     alert_time = *time_now;
     alert_time.tm_sec = 0;
-    if (day) {
-        alert_time.tm_mday = day;
+
+    //fprintf(stderr,"alert_time: %d %d %d\n",
+    //    alert_time.tm_mday,
+    //    alert_time.tm_hour,
+    //    alert_time.tm_min);
+
+    // Check to see how many parameters we parsed, and do our
+    // computations accordingly.
+    if (day) {  // If we parsed out the day
+        // Check whether our new day is more than ten days +/- from
+        // the current day of the month.  If so, assume it was from
+        // the month previous or after.
         if (day < (time_now->tm_mday - 10)) {
+            // Day of month went down drastically.  Must be a date
+            // in the next month.  Bump up by one month and check
+            // whether we overflowed into the next year.  Note that
+            // month ranges from 0 to 11.
             if (++alert_time.tm_mon > 11) {
                 alert_time.tm_mon = 0;
                 alert_time.tm_year++;
             }
         }
-        if (day > (time_now->tm_mday + 10)) {
+        else if (day > (time_now->tm_mday + 10)) {
+            // Day of month went up drastically.  Must be a date
+            // during last month.  Decrement by one month and check
+            // whether we need to also decrement the year.
             if (--alert_time.tm_mon < 0) {
                 alert_time.tm_mon = 11;
                 alert_time.tm_year--;
             }
         }
+
+        // Fill in the struct with our new values that we parsed.
+        alert_time.tm_mday = day;
         alert_time.tm_min = minute;
         alert_time.tm_hour = hour;
+
+        // Need to do conversions from zulu time?
         if ((char)tolower((int)tz[0]) == 'z') {
-            alert_time.tm_hour -= zone/3600;
+            // Yep, do the conversions.  Note that the zone variable
+            // already has the sign set correctly to get the correct
+            // time by using addition (PDT zone = -28800).
+
+            // Do the hour offset
+            alert_time.tm_hour += zone/3600;
+
+            // Now check whether we have any offsets left to do.
             zone %= 3600;
             if (zone)
                 alert_time.tm_min += zone/60;
 
-            if (alert_time.tm_min > 60) {
+            // Now check whether we have any overflows.  According
+            // to the "mktime()" man page, we probably don't need to
+            // do this.  It normalizes the time itself.  On all
+            // systems though?
+/*
+            if (alert_time.tm_min > 59) {
                 alert_time.tm_hour++;
                 alert_time.tm_min -= 60;
             }
             if (alert_time.tm_hour > 23) {
-                alert_time.tm_hour -= 24;
                 alert_time.tm_mday++;
+                alert_time.tm_hour -= 24;
                 if (mktime(&alert_time) == -1) {
                     alert_time.tm_mday = 1;
                     alert_time.tm_mon++;
@@ -803,27 +864,36 @@ time_t time_from_aprsstring(char *aprs_time) {
                         alert_time.tm_year++;
                     }
                 }
-            } else if (alert_time.tm_hour < 0) {
+            }
+            else if (alert_time.tm_hour < 0) {
                 alert_time.tm_hour += 24;
                 if (--alert_time.tm_mday <= 0) {
                     if (--alert_time.tm_mon < 0) {
                         alert_time.tm_year--;
                         alert_time.tm_mon = 11;
                         alert_time.tm_mday = 31;
-                    } else if (alert_time.tm_mon == 3 || alert_time.tm_mon == 5 ||
-                                alert_time.tm_mon == 8 || alert_time.tm_mon == 10)
+                    }
+                    else if (alert_time.tm_mon == 3 || alert_time.tm_mon == 5 ||
+                             alert_time.tm_mon == 8 || alert_time.tm_mon == 10) {
                         alert_time.tm_mday = 30;
-
-                    else if (alert_time.tm_mon == 1)
+                    }
+                    else if (alert_time.tm_mon == 1) {
                         alert_time.tm_mday = (alert_time.tm_year%4 == 0) ? 29: 28;
-
-                    else
+                    }
+                    else {
                         alert_time.tm_mday = 31;
+                    }
                 }
             }
+*/
         }
     }
-    else alert_time.tm_year--;
+    else {  // We didn't parse out the day from the input string.
+
+        // What's this all about???  Different format of APRS
+        // time/date string?
+        alert_time.tm_year--;
+    }
     return(mktime(&alert_time));
 }
 
@@ -1763,6 +1833,8 @@ void reload_object_item(void) {
 
 
 
+// Returns time in seconds since the Unix epoc.
+//
 time_t sec_now(void) {
     time_t timenw;
     time_t ret;

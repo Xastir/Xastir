@@ -40,7 +40,7 @@ typedef enum {
 
 typedef struct {
     double top_boundary, left_boundary, bottom_boundary, right_boundary;
-    time_t expiration;
+    time_t expiration;  // In local time (secs since epoch)
     char activity[21];
     char alert_tag[21];
     char title[33];

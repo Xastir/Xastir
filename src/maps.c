@@ -11938,7 +11938,7 @@ static int alert_count;
  * draw_shapefile_map() fills in the index field.
  **********************************************************/
 void load_alert_maps (Widget w, char *dir) {
-    int i, level;
+    int ii, level;
     char alert_scan[MAX_FILENAME], *dir_ptr;
 
     /* gray86, red2, yellow2, cyan2, RoyalBlue, ForestGreen, orange3 */
@@ -11963,31 +11963,43 @@ void load_alert_maps (Widget w, char *dir) {
         //fprintf(stderr,"Weather Alerts, alert_scan: %s\t\talert_status: %s\n", alert_scan, alert_status);
 
         // Iterate through the weather alerts we currently have.
-        for (i = 0; i < alert_max_count; i++) {
+        for (ii = 0; ii < alert_max_count; ii++) {
 
             // Check whether alert slot is empty/filled
-            if (alert_list[i].title[0] == '\0') // It's empty
+            if (alert_list[ii].title[0] == '\0') // It's empty
                 continue;
+
+            // Expire old alerts (zero the title string)
+            if (sec_now() >= alert_list[ii].expiration) {
+                if (debug_level & 2) {
+                    fprintf(stderr,"Expiring alert: %s:%lu, sec_now:%lu\n",
+                        alert_list[ii].title,
+                        alert_list[ii].expiration,
+                       sec_now());
+                }
+                alert_list[ii].title[0] = '\0'; // Clear this alert
+                continue;   // Skip this alert (it's empty!)
+            }
 
             // The last parameter denotes loading into pixmap_alerts instead
             // of pixmap or pixmap_final.  Note that just calling map_search
             // gets the alert areas drawn on the screen via the draw_map()
             // function.
-            //fprintf(stderr,"load_alert_maps() Title: %s\n",alert_list[i].title);
+            //fprintf(stderr,"load_alert_maps() Title: %s\n",alert_list[ii].title);
 
 // It looks like we want to do this section just to fill in the
 // alert struct and to determine whether the alert is within our
 // viewport.  We don't really wish to draw the alerts at this stage.
 // That comes just a bit later in this routine.
-            if ( (alert_list[i].title[0] != '\0')       // Alert in the slot
-                    && (!alert_list[i].filename[0]) ) { // but filename is empty
+            if ( (alert_list[ii].title[0] != '\0')       // Alert in the slot
+                    && (!alert_list[ii].filename[0]) ) { // but filename is empty
                 map_search (w,
                     alert_scan,
-                    &alert_list[i],
+                    &alert_list[ii],
                     &alert_count,
-                    (int)(alert_status[i + 2] == DATA_VIA_TNC || alert_status[i + 2] == DATA_VIA_LOCAL),
+                    (int)(alert_status[ii + 2] == DATA_VIA_TNC || alert_status[ii + 2] == DATA_VIA_LOCAL),
                     DRAW_TO_PIXMAP_ALERTS);
-//fprintf(stderr,"Title1:%s\n",alert_list[i].title);
+//fprintf(stderr,"Title1:%s\n",alert_list[ii].title);
             }
         }
     }
@@ -12002,14 +12014,14 @@ void load_alert_maps (Widget w, char *dir) {
 // Are we drawing them in reverse order so that the important 
 // alerts end up drawn on top of the less important alerts?
 
-    for (i = alert_max_count - 1; i >= 0; i--) {
+    for (ii = alert_max_count - 1; ii >= 0; ii--) {
 
         //  Check whether the alert slot is filled/empty
-        if (alert_list[i].title[0] == '\0') // Empty slot
+        if (alert_list[ii].title[0] == '\0') // Empty slot
             continue;
 
-//        if (alert_list[i].flags[0] == 'Y' && (level = alert_active (&alert_list[i], ALERT_ALL))) {
-        if ( (level = alert_active(&alert_list[i], ALERT_ALL) ) ) {
+//        if (alert_list[ii].flags[0] == 'Y' && (level = alert_active (&alert_list[ii], ALERT_ALL))) {
+        if ( (level = alert_active(&alert_list[ii], ALERT_ALL) ) ) {
             if (level >= (int)sizeof (fill_color))
                 level = 0;
 
@@ -12019,23 +12031,23 @@ void load_alert_maps (Widget w, char *dir) {
 // Why do we need to draw alerts again here?  Looks like it's to get
 // the right tint color.
 
-            //fprintf(stderr,"Drawing %s\n",alert_list[i].filename);
-            //fprintf(stderr,"Title4:%s\n",alert_list[i].title);
+            //fprintf(stderr,"Drawing %s\n",alert_list[ii].filename);
+            //fprintf(stderr,"Title4:%s\n",alert_list[ii].title);
 
             // Attempt to draw alert
-            if ( (alert_list[i].alert_level != 'C')             // Alert not cancelled
-                    && (alert_list[i].index != -1) ) {          // Shape found in shapefile
+            if ( (alert_list[ii].alert_level != 'C')             // Alert not cancelled
+                    && (alert_list[ii].index != -1) ) {          // Shape found in shapefile
 
-                if (map_visible_lat_lon(alert_list[i].bottom_boundary, // Shape visible
-                        alert_list[i].top_boundary,
-                        alert_list[i].left_boundary,
-                        alert_list[i].right_boundary,
-                        alert_list[i].title) ) {    // Error text if failure
+                if (map_visible_lat_lon(alert_list[ii].bottom_boundary, // Shape visible
+                        alert_list[ii].top_boundary,
+                        alert_list[ii].left_boundary,
+                        alert_list[ii].right_boundary,
+                        alert_list[ii].title) ) {    // Error text if failure
 
                     draw_map (w,
                         dir,
-                        alert_list[i].filename,
-                        &alert_list[i],
+                        alert_list[ii].filename,
+                        &alert_list[ii],
                         fill_color[level],
                         DRAW_TO_PIXMAP_ALERTS,
                         1 /* draw_filled */ );
@@ -12053,10 +12065,10 @@ void load_alert_maps (Widget w, char *dir) {
     }
 
 
-//    for (i = 0; i < alert_max_count; i++) {
-//        if (alert_list[i].title[0] == '\0')
+//    for (ii = 0; ii < alert_max_count; ii++) {
+//        if (alert_list[ii].title[0] == '\0')
 //            continue;
-//        fprintf(stderr,"Title5:%s\n",alert_list[i].title);
+//        fprintf(stderr,"Title5:%s\n",alert_list[ii].title);
 //    }
 
 

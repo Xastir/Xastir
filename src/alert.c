@@ -474,9 +474,6 @@ void alert_print_list(void) {
     // Delete stored alerts that have expired (zero the title string)
     for (i = 0; i < alert_max_count; i++) {
         if ( (alert_list[i].title[0] != '\0')
-//WE7U
-// Tweaks to test out expiration.  Add 12 hours to expire.
-//                && (alert_list[i].expiration < (time(NULL)) + 60*60*24) ) {
                 && (alert_list[i].expiration < time(NULL)) ) {
             if (debug_level & 2) {
                 fprintf(stderr,
@@ -530,13 +527,13 @@ void alert_print_list(void) {
 
     // If we got to here, the title was empty or the alert has
     // already expired?  Figure out why we might ever get here.
-//    if (debug_level & 2) {
+    if (debug_level & 2) {
         fprintf(stderr,"Exiting alert_add_entry() without actually adding the alert:\n");
         fprintf(stderr,"%s %s %lu\n",
             entry->to,
             entry->title,
             entry->expiration);
-//    }
+    }
 
     return(NULL);
 }

@@ -289,9 +289,9 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
 
 
 void wx_alert_update_list(void) {
-    int nn;         // index into alert table
-    int ii;         // index into dialog lines
-    int item_count; // max dialog lines
+    int nn;         // index into alert table.  Starts at 0
+    int ii;         // index into dialog lines.  Starts at 1
+    int max_item_count; // max dialog lines
     char temp[600];
     XmString item;
 
@@ -300,9 +300,9 @@ void wx_alert_update_list(void) {
 begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
         // Get the previous alert count from the alert list window
-        XtVaGetValues(wx_alert_list, XmNitemCount, &item_count, NULL);
+        XtVaGetValues(wx_alert_list, XmNitemCount, &max_item_count, NULL);
 
-        ii = 0; // Dialog item number
+        ii = 0; // Current dialog count
 
         // Step through the alert list.  Create a string for each
         // non-expired/non-blank entry.
@@ -320,10 +320,13 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             // Expire old alerts (zero the title string)
             if (sec_now() >= alert_list[nn].expiration) {
                 //xastir_snprintf(status, sizeof(status), "Exp");
+                if (debug_level & 2) {
+                    fprintf(stderr,"Expiring alert: %s:%lu, sec_now:%lu\n",
+                        alert_list[nn].title,
+                        alert_list[nn].expiration,
+                        sec_now());
+                }
                 alert_list[nn].title[0] = '\0'; // Clear this alert
-            }
-
-            if (alert_list[nn].title[0] == '\0') {
                 continue;   // Skip this alert (it's empty!)
             }
 
@@ -356,21 +359,27 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
             item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
 
-            // It looks like if we are higher than 'item_count', it must be a new entry
-            // that we haven't written to the window yet.  Add it.
-            if (item_count <= ii)
-                XmListAddItemUnselected(wx_alert_list, item, 0);
-            else    // Replace it in the window.  Note: This will re-order the list each time.
-                XmListReplaceItemsPosUnselected(wx_alert_list, &item, 1, ii+1);
             ii++;
 
+            // It looks like if we are higher than 'max_item_count',
+            // it must be a new entry that we haven't written to the
+            // window yet.  Add it.
+            if (max_item_count < ii) {
+                XmListAddItemUnselected(wx_alert_list, item, 0);
+            }
+            else {  // Replace it in the window.  Note: This might
+                    // re-order the list each time.
+                XmListReplaceItemsPosUnselected(wx_alert_list, &item, 1, ii);
+            }
+
             XmStringFree(item);
-        }
+
+        }   // End of for loop
+
         // If we have fewer alerts now, delete the extras from the window
-        //if (alert_list_count < item_count)
-        //    XmListDeleteItemsPos(wx_alert_list, item_count - alert_list_count, alert_list_count+1);
-        if ((ii+1) < item_count)
-            XmListDeleteItemsPos(wx_alert_list, item_count - (ii+1), ii+2);
+        if (ii < max_item_count) {
+            XmListDeleteItemsPos(wx_alert_list, max_item_count - ii, ii+1);
+        }
 
 end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
