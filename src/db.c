@@ -12444,8 +12444,17 @@ int process_directed_query(char *call,char *path,char *message,char from) {
                         strncat(temp,
                             p_station->call_sign,
                             sizeof(temp) - strlen(temp));
-                    } else
-                        break;
+                    } else {
+                        transmit_message_data(call,temp,NULL);
+                        xastir_snprintf(temp, sizeof(temp), 
+                                        ":%s:Directs=",from_call);
+                        strncat(temp,
+                            " ",
+                            sizeof(temp) - strlen(temp));
+                        strncat(temp,
+                            p_station->call_sign,
+                            sizeof(temp) - strlen(temp));
+                    }
                 }
             }
             p_station = p_station->n_next;

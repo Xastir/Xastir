@@ -522,6 +522,21 @@ Getting Maps and other Data Files for Xastir:
 	DBF Signatures match!
 	name=Hancock Ave, key=80309984, symbol=, color=40, lanes=1, filled=0, pattern=1,display_level=96,label_level=16
 
+      testawk takes the following command line syntax:
+        testawk --help
+          Prints command line usage
+        testawk -D directory -d file.dbf
+          Scans directory for dbfawk files with signatures matching file.dbf,
+          runs the dbfawk program that matches if it's found.
+        testawk -f file.dbfawk -d file.dbf
+          runs the dbfawk file "file.dbfawk" over the dbf file "file.dbf"
+
+      So in the example above, testawk (which is assumed to be in the current
+      working directory) scans the current directory for dbfawk files with
+      signatures that match tgr36119lkA.dbf's signature.  testawk dumps 
+      its output to standard error, so in the example standard error is 
+      redirected to standard out and piped into "less" for paging.
+
       To create a .dbfawk file, you need to understand the layout and contents
       of your .dbf file.  Use "dbfinfo" and "dbfdump" which are in the shapelib
       contrib directory.  Dbfinfo will list the field names and dbfdump will
