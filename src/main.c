@@ -13544,7 +13544,7 @@ void Test(Widget w, XtPointer clientData, XtPointer callData) {
 
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
-    test_create_shapefile_map();
+    //test_create_shapefile_map();
 }
 
 
