@@ -207,8 +207,7 @@ typedef struct {
     unsigned color : 4;
     unsigned sqrt_lat_off : 8;
     unsigned sqrt_lon_off : 8;
-    unsigned corridor_width : 8;
-    // Will corridors bigger than 255 miles on one side of the line be needed?
+    unsigned corridor_width : 16;
 } AreaObject;
 
 typedef struct {

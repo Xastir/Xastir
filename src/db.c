@@ -7552,7 +7552,7 @@ void extract_area(DataRow *p_station, char *data) {
         if (temp_area.type == AREA_LINE_RIGHT || temp_area.type == AREA_LINE_LEFT) {
             if (data[0] == '{') {
                 if (sscanf(data, "{%u}", &val) == 1) {
-                    temp_area.corridor_width = val & 0xff;
+                    temp_area.corridor_width = val & 0xffff;
                     for (i = 0; i <= len; i++)
                         if (data[i] == '}')
                             break;

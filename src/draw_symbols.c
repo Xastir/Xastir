@@ -1223,7 +1223,7 @@ static __inline__ short l16(long val) {
 // the bottom right and the bottom of the triangle being horizontal.
 //
 void draw_area(long x_long, long y_lat, char type, char color,
-               char sqrt_lat_off, char sqrt_lon_off, char width, time_t sec_heard, Pixmap where) {
+               char sqrt_lat_off, char sqrt_lon_off, unsigned int width, time_t sec_heard, Pixmap where) {
     long left, top, right, bottom, xoff, yoff;
     int  c;
     XPoint points[4];
