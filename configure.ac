@@ -183,6 +183,7 @@ AC_DEFINE(HAVE_LIBGEOTIFF, , Define to 1 if you have the `geotiff' library (-lge
 # Check for AX.25 library 
 has_axlib=no
 AC_CHECK_HEADERS(netax25/ax25.h, [AC_CHECK_LIB(ax25, ax25_config_load_ports, has_axlib=yes
+LIBS="$LIBS -lax25"
 AC_DEFINE(HAVE_LIBAX25, , Define to 1 if you have the `ax25' library (-lax25). )
 break)])
  
