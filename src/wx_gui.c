@@ -96,6 +96,30 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
 
 
 
+void wx_alert_double_click_action( Widget widget, XtPointer clientData, XtPointer callData) {
+    char *choice;
+    XmListCallbackStruct *selection = callData;
+
+    XmStringGetLtoR(selection->item, XmFONTLIST_DEFAULT_TAG, &choice);
+    printf("Selected item %d (%s)\n", selection->item_position, choice);
+    XtFree(choice);
+
+//    Widget shell = (Widget) clientData;
+//    XtPopdown(shell);
+
+//begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
+
+//    XtDestroyWidget(shell);
+//    wx_alert_shell = (Widget)NULL;
+
+//end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
+
+}
+
+
+
+
+
 void wx_alert_update_list(void) {
     int n, item_count;
     char temp[600];
@@ -224,7 +248,8 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
         XtSetArg(al[ac], XmNvisibleItemCount, 13); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
-        XtSetArg(al[ac], XmNselectionPolicy, XmMULTIPLE_SELECT); ac++;
+//        XtSetArg(al[ac], XmNselectionPolicy, XmMULTIPLE_SELECT); ac++;
+        XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
 
         XtSetArg(al[ac], XmNvisualPolicy, XmCONSTANT); ac++;
         XtSetArg(al[ac], XmNscrollingPolicy,XmAUTOMATIC); ac++;
@@ -264,6 +289,7 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
                         NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, wx_alert_destroy_shell, wx_alert_shell);
+        XtAddCallback(wx_alert_list, XmNdefaultActionCallback, wx_alert_double_click_action, NULL);
 
         pos_dialog(wx_alert_shell);
 
@@ -284,7 +310,6 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:Display_Wx_Alert" );
         // <SPACE> key, and that activates the option.
 //        XmUpdateDisplay(wx_alert_shell);
         XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
-
     } else {
         (void)XRaiseWindow(XtDisplay(wx_alert_shell), XtWindow(wx_alert_shell));
     }
