@@ -8042,7 +8042,10 @@ Samples Per Pixel: 1
                             || (xastir_current_x < (SW_x_bounding_wgs84 + 25) )
                             || (xastir_current_x > (SE_x_bounding_wgs84 - 25) ) )
                         {
-                            *(imageMemory + column) = 0x01;     // Change to White
+                            if (column < bytesPerRow)
+                                *(imageMemory + column) = 0x01; // Change to White
+                            else
+                                printf("draw_geotiff_image_map: Bad fgd file for map?: %s\n", filenm);
                         }
                     }
                 }
