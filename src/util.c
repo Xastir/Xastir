@@ -710,6 +710,8 @@ time_t time_from_aprsstring(char *aprs_time) {
 
 
 
+// Note: last_speed should be in knots.
+//
 char *compress_posit(const char *input_lat, const char group, const char *input_lon, const char symbol,
             const int last_course, const int last_speed, const char *phg) {
     static char pos[100];
@@ -756,11 +758,13 @@ char *compress_posit(const char *input_lat, const char group, const char *input_
     // Set up csT bytes for course/speed if either are non-zero
     c = s = t = ' ';
     if (last_course > 0 || last_speed > 0) {
+
         if (last_course >= 360)
             c = '!';    // 360 would be past 'z'.  Set it to zero.
         else
             c = (char)(last_course/4 + 33);
-        s = (char)(log(last_speed + 1) / log(1.08) + 0.5);  // Poor man's rounding
+
+        s = (char)(log(last_speed + 1.0) / log(1.08) + 0.5);  // Poor man's rounding
         s = (char)(s + 33); // Convert to ASCII
         t = 'C';
     }
