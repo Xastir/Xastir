@@ -436,6 +436,10 @@ First Time Install:
          sudo cp shapefil.h /sw/include/libshp/
        -----------------------------------------------
 
+    Note that you'll have to set up /etc/sudoers file to allow those
+    commands to be run by a normal user before sudo will work for
+    you.  See the README.CVS file for sudo instructions.
+
 
    5. OPTIONAL:  Install ImageMagick graphics support.  Allows using more than
      68 different graphics format files as maps, by creating an associated .geo

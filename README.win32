@@ -550,6 +550,11 @@ updated.
 
 Repeat step 6) above to recompile/reinstall the latest Xastir.
 
+A very good option is to read the SUDO instructions in the
+README.CVS file, setting up the /etc/sudoers file and creating an
+update-xastir script as shown.  Then you can type "./update-xastir"
+at any time to snag down the latest Xastir changes, compile, and
+install it.
 
 
 -----

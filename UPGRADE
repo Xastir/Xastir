@@ -54,7 +54,7 @@ Previous Install Notes:
         cd scripts
         su
         ./xastir-migrate.sh (this will move the Xastir system directories)
-        make install-strip
+        make install (or make install-strip)
         chmod 4555 /usr/local/bin/xastir
         exit (from root)
         ./xastir-fixcfg.sh (run this for each user that has ever run Xastir)

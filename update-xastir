@@ -1,0 +1,14 @@
+#! /bin/sh
+
+
+# $Id$
+# Copyright (C) 2004 The Xastir Group
+
+
+cvs update
+./bootstrap.sh
+./configure --without-errorpopups
+sudo make clean
+sudo make install
+sudo chmod 4755 /usr/local/bin/xastir
+
