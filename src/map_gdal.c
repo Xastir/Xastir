@@ -460,6 +460,10 @@ void draw_ogr_map(Widget w,
         fprintf(stderr,"Opening datasource\n");
 
     // Open data source
+//
+// Home system segfaults here if a .proj file is present with a
+// shapefile.
+//
     datasource = OGROpen(full_filename,
         0 /* bUpdate */,
         &driver);
@@ -670,6 +674,7 @@ void draw_ogr_map(Widget w,
                     // Convert to WGS84.
                 OGRSpatialReferenceH wgs84_spatial = NULL;
                 OGRCoordinateTransformationH transformH = NULL;
+
 
                 if (geographic) {
                     fprintf(stderr,
