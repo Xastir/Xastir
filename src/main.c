@@ -7112,6 +7112,8 @@ void da_resize_execute(Widget w) {
     Dimension width, height;
 
 
+    busy_cursor(appshell);
+
     // Reset the flags that may have brought us here.
     interrupt_drawing_now = 0;
     request_resize = 0;
@@ -8432,6 +8434,9 @@ void check_range(void) {
 
 // Called by UpdateTime() when request_new_image flag is set.
 void new_image(Widget da) {
+
+
+    busy_cursor(appshell);
 
     // Reset flags
     interrupt_drawing_now = 0;
