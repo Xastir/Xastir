@@ -1638,7 +1638,7 @@ void convert_lon_l2s(long lon, char *str, int str_len, int type) {
 long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
     long centi_sec;
     char copy[11];
-    char n[4];
+    char n[11];
 
     strncpy(copy,lat,sizeof(copy));
     copy[10] = '\0';
@@ -1650,21 +1650,40 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
                 || (char)toupper((int)copy[7])=='S'
                 || (char)toupper((int)copy[8])=='S'
                 || (char)toupper((int)copy[9])=='S')) {
+
         substr(n, copy, 2);       // degrees
         centi_sec=atoi(n)*60*60*100;
+
         substr(n, copy+2, 2);     // minutes
         centi_sec += atoi(n)*60*100;
-        substr(n, copy+5, 4);     // fractional minutes
-        if ( (!isdigit((int)n[2]))
-                && (n[2] != '\0') )
-            n[2] = '0';            /* extend low precision */
-        n[3] = '\0';    // Throw this one away
 
-        centi_sec += atoi(n)*6;
+        substr(n, copy+5, 4);     // fractional minutes
+        // Keep the fourth digit if present, as it resolves to 0.6
+        // of a 1/100 sec resolution.  Two counts make one count in
+        // the Xastir coordinate system.
+ 
+        // Extend the digits to full precision by adding zeroes on
+        // the end.
+        strcat(n, "0000");
+
+        // Get rid of the N/S character
+        if (!isdigit((int)n[2]))
+            n[2] = '0';
+        if (!isdigit((int)n[3]))
+            n[3] = '0';
+
+        // Terminate substring at the correct digit
+        n[4] = '\0';
+//fprintf(stderr,"Lat: %s\n", n);
+
+        // Add 0.5 (poor man's rounding)
+        centi_sec += (long)((atoi(n) * 0.6) + 0.5);
+
         if (       (char)toupper((int)copy[7])=='N'
                 || (char)toupper((int)copy[8])=='N'
-                || (char)toupper((int)copy[9])=='N')
+                || (char)toupper((int)copy[9])=='N') {
             centi_sec = -centi_sec;
+        }
 
         centi_sec += 90*60*60*100;
     }
@@ -1681,7 +1700,7 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
 long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
     long centi_sec;
     char copy[12];
-    char n[4];
+    char n[12];
 
     strncpy(copy,lon,sizeof(copy));
     copy[11] = '\0';
@@ -1693,21 +1712,41 @@ long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
                 || (char)toupper((int)copy[ 8])=='E'
                 || (char)toupper((int)copy[ 9])=='E'
                 || (char)toupper((int)copy[10])=='E')) {
+
         substr(n,copy,3);    // degrees 013
         centi_sec=atoi(n)*60*60*100;
 
         substr(n,copy+3,2);  // minutes 26
         centi_sec += atoi(n)*60*100;
         // 01326.66E  01326.660E
+
         substr(n,copy+6,4);  // fractional minutes 66E 660E or 6601
-        if (!isdigit((int)n[2]) && (n[2] != '\0'))
-            n[2] = '0';            /* extend low precision */
-        n[3] = '\0';    // Throw this one away
-        centi_sec += atoi(n)*6;
+        // Keep the fourth digit if present, as it resolves to 0.6
+        // of a 1/100 sec resolution.  Two counts make one count in
+        // the Xastir coordinate system.
+ 
+        // Extend the digits to full precision by adding zeroes on
+        // the end.
+        strcat(n, "0000");
+
+        // Get rid of the E/W character
+        if (!isdigit((int)n[2]))
+            n[2] = '0';
+        if (!isdigit((int)n[3]))
+            n[3] = '0';
+
+        n[4] = '\0';    // Make sure substring is terminated
+//fprintf(stderr,"Lon: %s\n", n);
+
+        // Add 0.5 (poor man's rounding)
+        centi_sec += (long)((atoi(n) * 0.6) + 0.5);
+
         if (       (char)toupper((int)copy[ 8])=='W'
                 || (char)toupper((int)copy[ 9])=='W'
-                || (char)toupper((int)copy[10])=='W')
+                || (char)toupper((int)copy[10])=='W') {
             centi_sec = -centi_sec;
+        }
+
         centi_sec +=180*60*60*100;;
     }
     return(centi_sec);
