@@ -5373,8 +5373,8 @@ end_critical_section(&db_station_popup_lock, "db.c:Station_info_select_destroy_s
 void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldata) {
     DataRow *p_station;
     DataRow *p_found;
-    int num_found;
-    unsigned long min_diff,diff;
+    int num_found = 0;
+    unsigned long min_diff_x, diff_x, min_diff_y, diff_y;
     XmString str_ptr;
     unsigned int n;
     Atom delw;
@@ -5385,36 +5385,54 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
 
     busy_cursor(appshell);
 
-    num_found=0;
-    min_diff=32000000ul;
+    min_diff_y = scale_y * 20;  // Pixels each way in y-direction.
+    min_diff_x = scale_x * 20;  // Pixels each way in x-direction.
     p_found = NULL;
     p_station = n_first;
 
     // Here we just count them.  We go through the same type of code
     // again later if we find more than one station.
     while (p_station != NULL) {    // search through database for nearby stations
+
         if ( ( (p_station->flag & ST_INVIEW) != 0)
                 && ok_to_draw_station(p_station) ) { // only test stations in view
+
             if (!altnet || is_altnet(p_station)) {
-                diff = (unsigned long)( labs((x_long_offset+(menu_x*scale_x)) - p_station->coord_lon)
-                    + labs((y_lat_offset+(menu_y*scale_y))  - p_station->coord_lat) );
-                if (diff < min_diff) {
-                    min_diff  = diff;
-                    p_found   = p_station;
-                    num_found = 1;
-                } else {
-                    if (diff <= min_diff+(scale_x+scale_y))
-                        num_found++;
+
+                // Here we calculate diff in terms of XX pixels,
+                // changed into lat/long values.  This keeps the
+                // affected rectangle the same at any zoom level.
+                // scale_y/scale_x is Xastir units/pixel.  Xastir
+                // units are in 1/100 of a second.  If we want to go
+                // 10 pixels in any direction (roughly, scale_x
+                // varies by latitude), then we want (10 * scale_y),
+                // and (10 * scale_x) if we want to make a very
+                // accurate square.
+
+                diff_y = (unsigned long)( labs((y_lat_offset+(menu_y*scale_y))
+                                          - p_station->coord_lat));
+
+                diff_x = (unsigned long)( labs((x_long_offset+(menu_x*scale_x))
+                                          - p_station->coord_lon));
+
+                // If the station fits within our bounding box,
+                // count it 
+                if ((diff_y < min_diff_y) && (diff_x < min_diff_x)) {
+                    p_found = p_station;
+                    num_found++;
                 }
             }
         }
         p_station = p_station->n_next;
     }
 
-    if (p_found != NULL && (min_diff < (unsigned)(125*(scale_x+scale_y)))) {
-        if (num_found == 1) { // We only found one station, so it's easy
+    if (p_found != NULL) {  // We found at least one station
+
+        if (num_found == 1) {
+            // We only found one station, so it's easy
             Station_data(w,p_found->call_sign,clientData);
-        } else {            // We found more: create dialog to choose a station
+        }
+        else {  // We found more: create dialog to choose a station
 
             // Set up this global variable so that we can pass it
             // off to Station_data from the
@@ -5520,15 +5538,24 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                 n = 1;
                 p_station = n_first;
                 while (p_station != NULL) {    // search through database for nearby stations
+
                     if ( ( (p_station->flag & ST_INVIEW) != 0)
                             && ok_to_draw_station(p_station) ) { // only test stations in view
+
                         if (!altnet || is_altnet(p_station)) {
-                            diff = (unsigned long)( labs((x_long_offset+(menu_x*scale_x)) - p_station->coord_lon)
-                                + labs((y_lat_offset+(menu_y*scale_y))  - p_station->coord_lat) );
-                            if (diff <= min_diff+(scale_x+scale_y)) {
+
+                            diff_y = (unsigned long)( labs((y_lat_offset+(menu_y*scale_y))
+                                                      - p_station->coord_lat));
+
+                            diff_x = (unsigned long)( labs((x_long_offset+(menu_x*scale_x))
+                                                      - p_station->coord_lon));
+
+                            // If the station fits within our
+                            // bounding box, count it.
+                            if ((diff_y < min_diff_y) && (diff_x < min_diff_x)) {
                                 /*fprintf(stderr,"Station %s\n",p_station->call_sign);*/
                                 XmListAddItem(station_list, str_ptr = XmStringCreateLtoR(p_station->call_sign,
-                                        XmFONTLIST_DEFAULT_TAG), (int)n++);
+                                    XmFONTLIST_DEFAULT_TAG), (int)n++);
                                 XmStringFree(str_ptr);
                             }
                         }
