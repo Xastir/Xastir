@@ -1389,19 +1389,19 @@ WINDOWS/CYGWIN NOTES:
      ends up putting you somewhere other than your home directory, and your
      .profile doesn't end up getting sourced.  There must be a better way.
 
-     Adding libproj to Cygwin (proj-4.4.6):
+     Adding libproj to Cygwin (proj-4.4.5):
      --------------------------------------
  
      Should be similar to the previous instructions for installing libproj
-     all the way through the "make" stage, but then you must type these
-     commands:
+     all the way through the "make install" stage, but then you must type
+     these commands when it dies due to an error:
 
      rm /usr/local/bin/invproj (2nd and later installs only)
      rm /usr/local/bin/invgeod (2nd and later installs only)
-     ln /usr/local/bin/proj.exe /usr/local/bin/invproj
-     ln /usr/local/bin/geod.exe /usr/local/bin/invgeod
+     ln /usr/local/bin/proj.exe /usr/local/bin/proj
+     ln /usr/local/bin/geod.exe /usr/local/bin/geod
 
-     then "make install".
+     then again run "make install" to complete the install.
 
      NOTE:  If using proj-4.4.6 or higher, it should install right out of
      the box with no problems.
