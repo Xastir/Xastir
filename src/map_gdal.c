@@ -80,10 +80,6 @@
 //#include "xa_config.h"
 
 #ifdef TIGER_POLYGONS
-// Snag these .h files and a few .c files from:
-// http://www.cl.cam.ac.uk/users/cwc22/hashtable/
-// We'll add them to Xastir eventually, once the code is
-// written/debugged that uses these hash tables.
 #include "hashtable.h"
 #include "hashtable_itr.h"
 #endif  // TIGER_POLYGONS
@@ -1599,7 +1595,7 @@ Region create_clip_mask( int num,
     Region region;
 
 
-//    fprintf(stderr,"Create mask:");
+//fprintf(stderr,"create_clip_mask: num=%i ", num);
 
     rectangle.x      = (short) minX;
     rectangle.y      = (short) minY;
@@ -1628,6 +1624,8 @@ Region create_clip_mask( int num,
         region,
         region);
 
+//fprintf(stderr,"Done\n");
+
     return(region);
 }
 
@@ -1652,7 +1650,7 @@ Region create_hole_in_mask( Region mask,
     int ii;
 
 
-//    fprintf(stderr,"Hole:");
+//fprintf(stderr,"create_hole_in_mask: num=%i ", num);
 
     if (num < 3) {  // Not enough for a polygon
         fprintf(stderr,
@@ -1684,12 +1682,13 @@ Region create_hole_in_mask( Region mask,
     if (xpoints)
         free(xpoints);
 
-    // Subtract region2 from mask and put the result into region3.
     XSubtractRegion(mask, region2, region3);
 
     // Get rid of the two regions we no longer need.
     XDestroyRegion(mask);
     XDestroyRegion(region2);
+
+//fprintf(stderr,"Done\n");
 
     // Return our new region that has another hole in it.
     return(region3);
@@ -1716,7 +1715,7 @@ void draw_polygon_with_mask( Region mask,
     XGCValues gc_temp_values;
 
 
-//    fprintf(stderr,"Draw w/mask:");
+//    fprintf(stderr,"draw_polygon_with_mask: ");
 
     // There were "hole" polygons, so by now we've created a "holey"
     // region.  Draw a filled polygon with gc_temp here and then get
@@ -1856,7 +1855,7 @@ void Draw_OGR_Polygons( Widget w,
                 // (fill) rings.  If (level > 0), it's a
                 // multipolygon layer.
 
-                //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
+//fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
 
                 Draw_OGR_Polygons(w,
                     featureH,
@@ -1879,16 +1878,16 @@ void Draw_OGR_Polygons( Widget w,
             // If (kk>0) we're dealing with an inner (hole) ring.
             if (kk == 0 || object_num == 1) {
                 if (object_num == 1) {
-                    //fprintf(stderr,"Polygon->Fill\n");
+//fprintf(stderr,"Polygon->Fill\n");
                     single_polygon++;
                 }
                 else {
-                    //fprintf(stderr,"Polygon->Fill w/holes\n");
+//fprintf(stderr,"Polygon->Fill w/holes\n");
                 }
                 
             }
             else if (object_num > 1) {
-                //fprintf(stderr,"Polygon->Hole\n");
+//fprintf(stderr,"Polygon->Hole\n");
                 polygon_hole++;
             }
 
@@ -1927,7 +1926,7 @@ void Draw_OGR_Polygons( Widget w,
             }
 
             polygon_points = OGR_G_GetPointCount(child_geometryH);
-            //fprintf(stderr, "Vertices: %d\n", polygon_points);
+//fprintf(stderr, "Vertices: %d\n", polygon_points);
 
             if (polygon_points > 3) { // Not a polygon if < 3 points
                 int mm;
@@ -1954,6 +1953,7 @@ void Draw_OGR_Polygons( Widget w,
                         &vectorZ[mm]);
                 }
 
+ 
                 if (transformH) {
                     // Convert entire polygon to WGS84 coordinates.
                     if (!OCTTransform(transformH, polygon_points, vectorX, vectorY, vectorZ)) {
@@ -1963,6 +1963,7 @@ void Draw_OGR_Polygons( Widget w,
                     }
                 }
 
+ 
                 // For the non-fast_extents case, we need to compute
                 // the extents and check whether this object is
                 // within our view.
@@ -1990,11 +1991,11 @@ void Draw_OGR_Polygons( Widget w,
                             MinX, // left
                             MaxX, // right
                             NULL)) {
-                        //fprintf(stderr, "Polygon is visible\n");
+//fprintf(stderr, "Polygon is visible\n");
                     }
                     else {
 
-                        //fprintf(stderr, "Polygon is NOT visible\n");
+//fprintf(stderr, "Polygon is NOT visible\n");
 
                         // Free the allocated vector memory
                         if (vectorX)
@@ -2036,6 +2037,7 @@ void Draw_OGR_Polygons( Widget w,
                             vectorY[nn]);
                     }
 
+
                     XI = (long *)malloc(sizeof(long) * polygon_points);
                     YI = (long *)malloc(sizeof(long) * polygon_points);
                     CHECKMALLOC(XI);
@@ -2047,6 +2049,7 @@ void Draw_OGR_Polygons( Widget w,
                     minY = -15000;
                     maxY =  15000;
  
+
                     // Convert arrays to screen coordinates.
                     // Careful here!  The format conversions you'll
                     // need if you try to compress this into two
@@ -2083,6 +2086,7 @@ void Draw_OGR_Polygons( Widget w,
                         }
                     }
 
+
                     // We don't need the Xastir coordinate system
                     // arrays anymore.  We've already converted to
                     // screen coordinates.
@@ -2108,6 +2112,7 @@ void Draw_OGR_Polygons( Widget w,
                         }
                         num_outer_points = polygon_points;
                     }
+
 
                     // If we have no inner polygons, skip the whole
                     // X11 Region thing and just draw a filled
@@ -2137,11 +2142,22 @@ void Draw_OGR_Polygons( Widget w,
                         // so that underlying map layers can show
                         // through.
 
-                        mask = create_hole_in_mask(mask,
-                            polygon_points,
-                            XI,
-                            YI);
+                        // This segfaults for TIGER polygons without
+                        // the if(mask) part.
+                        //
+                        if (mask) { // create_clip_mask has been
+                                    // called already
+                            mask = create_hole_in_mask(mask,
+                                polygon_points,
+                                XI,
+                                YI);
+                        }
+                        else {
+                            fprintf(stderr,
+                                "Draw_OGR_Polygons: Attempt to make hole in empty polygon mask!\n");
+                        }
                     }
+
 
                     // Free the screen coordinate arrays.
                     if (XI)
@@ -2218,6 +2234,7 @@ fprintf(stderr,"Vector %d: %7.5f %8.5f  %7.5f %8.5f\n",
 */
 
                 }
+
 
 // For weather polygons, we might want to draw the border color in a
 // different color so that we can see these borders easily, or skip
@@ -3652,6 +3669,9 @@ fprintf(stderr,"    Landmarks Layer ");
                     OGR_F_Destroy( featureH );
 
             }   // End of while
+
+            // Restart reads of this layer at the first feature.
+            OGR_L_ResetReading(layerH);
         }
 
 
@@ -3886,6 +3906,10 @@ fprintf(stderr,"CompleteChain Layer ");
                     OGR_F_Destroy( featureH );
 
             }   // End of while
+
+            // Restart reads of this layer at the first feature.
+            OGR_L_ResetReading(layerH);
+
         }   // End of CompleteChain layer section
 
 
@@ -3951,7 +3975,7 @@ fprintf(stderr,"Done with Polygon data reassembly\n");
 //fprintf(stderr,"?");
                     }
  
-                    // Skip to the next record
+                    // Skip to the next tlid entry
                     head = head->next;
                 }
 
@@ -3963,41 +3987,41 @@ fprintf(stderr,"Done with Polygon data reassembly\n");
                     0.0,   // dfTolerance
                     &error);  // OGRerr
                 if (error == OGRERR_NONE) {
-                    //fprintf(stderr,"\t\t\tCreated polygon!\n");
+//fprintf(stderr,"\t\t\tCreated polygon!\n");
                 }
                 else {
                     fprintf(stderr,"Failed to create polygon!\n");
                 }
 
 
-
-
-
-// Here's where we would draw the polygon.  All of the information
-// is in one place now.
+                // Draw the polygons.  All of the information to do
+                // so is available now.
 /*
-guess_vector_attributes(w,
-    driver_type,
-    full_filename,
-    layerH,
-    featureH,
-    geometry_type);
+                guess_vector_attributes(w,
+                    driver_type,
+                    full_filename,
+                    layerH,
+                    featureH,
+                    geometry_type);
 */
 
-//if (label_color_guess != -1) {
-    Draw_OGR_Polygons(w,
-//        featureH,
-        NULL,
-        newpolygonH,
-        1,
-        transformH,
-        draw_filled,
-//        fast_extents);
-        1);
-//}
+// For testing purposes only draw the water polygons.
+                if (record->WATER > 0) {
+                    label_color_guess = 0x1a;   // Steel Blue
  
-
-
+                    if (label_color_guess != -1) {
+                        Draw_OGR_Polygons(w,
+                            //featureH,
+                            NULL,
+                            newpolygonH,
+                            1,
+                            transformH,
+                            //draw_filled,
+                            1,
+                            //fast_extents);
+                            1);
+                    }
+                }
 
 
                 // Free the polygon structure
@@ -4109,7 +4133,7 @@ fprintf(stderr,"Free'ing hash memory\n");
 
     }   // End of special TIGER section
 
-fprintf(stderr,"Done\n");
+//fprintf(stderr,"Done\n");
 
 #endif  // TIGER_POLYGONS
 
