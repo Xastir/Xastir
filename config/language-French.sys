@@ -51,6 +51,7 @@ PULDNVI014|Durée de fonctionnement du logiciel||
 # Menu "Configure"
 PULDNCF004|Station|S|
 PULDNCF001|Défauts|D|
+PULDNCF002|Coordinate System|C|
 PULDNCF006|Alertes sonores|A|
 PULDNCF007|Parole|P|
 PULDNCF008|Sauver configuration maintenant!|a|
@@ -263,7 +264,15 @@ WPUPCFD022|Position de station + date/heure Zulu + météo||
 WPUPCFD023|Données météo non traités?||
 WPUPCFD024|Compresser la position à la transmission?||
 WPUPCFD025|Activer réseau alterne?|A|
-WPUPCFD026|Transmettre position à quel intervalle?||
+WPUPCFD026|Transmettre position à quel intervalle?|||
+#
+# PopUp "Configure Coordinate System"
+WPUPCFC001|Configure Coordinate System||
+WPUPCFC002|Select Coordinate System||
+WPUPCFC003|DD.DDDDD|D|
+WPUPCFC004|DD MM.MMM|M|
+WPUPCFC005|DD MM SSS|S|
+WPUPCFC006|UTM|U|
 #
 # PopUp "Configure GPS"
 WPUPCFG001|Configurer GPS||

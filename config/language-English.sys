@@ -52,6 +52,7 @@ PULDNVI014|Program Uptime||
 # Menu "Configure"
 PULDNCF004|Station|S|
 PULDNCF001|Defaults|D|
+PULDNCF002|Coordinate System|o|
 PULDNCF006|Audio Alarms|A|
 PULDNCF007|Speech|p|
 PULDNCF008|Save Config Now!|C|
@@ -265,6 +266,14 @@ WPUPCFD023|Transmit Raw WX data?|R|
 WPUPCFD024|Compress position data when transmitting?|C|
 WPUPCFD025|Activate Alternate net?|A|
 WPUPCFD026|Send position reports at what intervals?||
+#
+# PopUp "Configure Coordinate System"
+WPUPCFC001|Configure Coordinate System||
+WPUPCFC002|Select Coordinate System||
+WPUPCFC003|DD.DDDDD|D|
+WPUPCFC004|DD MM.MMM|M|
+WPUPCFC005|DD MM SSS|S|
+WPUPCFC006|UTM|U|
 #
 # PopUp "Configure GPS"
 WPUPCFG001|Configure GPS||

@@ -53,6 +53,7 @@ PULDNVI014|Uptime del programma||
 #
 # Menu' di Configurazione
 PULDNCF001|Configurazioni originali|D|
+PULDNCF002|Coordinate System|C|
 PULDNCF004|Dati Stazione|S|
 PULDNCF006|Allarmi Audio|A|
 PULDNCF007|Annunci Vocali|p|
@@ -266,7 +267,15 @@ WPUPCFD022|Posizione stazione, Data e ora UTC, dati meteo||
 WPUPCFD023|Devo trasmettere i dati Meteo?||
 WPUPCFD024|Devo comprimere i dati della posizione quando trasmetto i dati meteo?||
 WPUPCFD025|Attivare rete alternativa?|A|
-WPUPCFD026|Intervallo per invio rapporti posizione||
+WPUPCFD026|Intervallo per invio rapporti posizione|||
+#
+# PopUp "Configure Coordinate System"
+WPUPCFC001|Configure Coordinate System||
+WPUPCFC002|Select Coordinate System||
+WPUPCFC003|DD.DDDDD|D|
+WPUPCFC004|DD MM.MMM|M|
+WPUPCFC005|DD MM SSS|S|
+WPUPCFC006|UTM|U|
 #
 # Configurazione GPS
 WPUPCFG001|Configura GPS||

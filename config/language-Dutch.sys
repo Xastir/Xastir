@@ -55,6 +55,7 @@ PULDNVI014|Tijd programma beschikbaar||
 #
 # Menu "Configure"
 PULDNCF001|Standaard|S|
+PULDNCF002|Coordinate System|C|
 PULDNCF004|Station|t|
 PULDNCF006|Audio Alarm|A|
 PULDNCF007|Spraak|p|
@@ -268,7 +269,15 @@ WPUPCFD022|Stations Positie, Zulu datum-tijd en weer||
 WPUPCFD023|Verzend Ruwe WX gegevens?||
 WPUPCFD024|Positie gegevens comprimeren bij verzenden?||
 WPUPCFD025|Activeer Alternatief net?||
-WPUPCFD026|Met welk interval positie gegevens verzenden?||
+WPUPCFD026|Met welk interval positie gegevens verzenden?|||
+#
+# PopUp "Configure Coordinate System"
+WPUPCFC001|Configure Coordinate System||
+WPUPCFC002|Select Coordinate System||
+WPUPCFC003|DD.DDDDD|D|
+WPUPCFC004|DD MM.MMM|M|
+WPUPCFC005|DD MM SSS|S|
+WPUPCFC006|UTM|U|
 #
 # PopUp "Configure GPS"
 WPUPCFG001|GPS Instelling||

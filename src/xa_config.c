@@ -255,6 +255,9 @@ void save_data(void)  {
         store_long (fout, "SCREEN_HEIGHT", screen_height);
         store_long (fout, "SCREEN_LAT", mid_y_lat_offset);
         store_long (fout, "SCREEN_LONG", mid_x_long_offset);
+
+        store_int (fout, "COORDINATE_SYSTEM", coordinate_system);
+
         store_int (fout, "STATION_TRANSMIT_AMB", position_amb_chars);
 
         if (scale_y > 0)
@@ -554,6 +557,9 @@ void load_data_or_default(void) {
 
     if (!get_long ("SCREEN_LONG", &mid_x_long_offset))
         mid_x_long_offset = 64800000l;
+
+    if (!get_int ("COORDINATE_SYSTEM", &coordinate_system))
+        coordinate_system = USE_DDMMMM;
 
     if (!get_long ("SCREEN_ZOOM", &scale_y))
         scale_y = 327680;

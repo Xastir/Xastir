@@ -76,6 +76,7 @@
 #include "gps.h"
 #include "bulletin_gui.h"
 #include "rotated.h"
+#include "datum.h"
 
 
 #include <Xm/XmAll.h>
@@ -87,7 +88,6 @@
 #define STATUSLINE_ACTIVE 10    /* status line is cleared after 10 seconds */
 #define REPLAY_DELAY       0    /* delay between replayed packets in sec, 0 is ok */
 #define REDRAW_WAIT        2    /* delay between consecutive redraws in seconds (file load) */
-#define SHOW_DEC_DEGREES   0    /* show decimal degrees in status line 0/1 */
 
 
 #define XmFONTLIST_DEFAULT_MY "fixed"
@@ -145,6 +145,7 @@ Widget Display_data_text;
 int Display_packet_data_type;
 
 Widget configure_defaults_dialog = (Widget)NULL;
+Widget configure_coordinates_dialog = (Widget)NULL;
 Widget change_debug_level_dialog = (Widget)NULL;
 int old_station_item;
 int clear_station_item;
@@ -301,6 +302,11 @@ double cvt_hm2len;              // from hectometer
 
 void update_units(void);
 
+
+// Coordinate System
+int coordinate_system = USE_DDMMMM; // Default, used for most APRS systems
+
+
 // ---------------------------- object -------------------------------
 Widget object_dialog = (Widget)NULL;
 Widget df_object_dialog = (Widget)NULL;
@@ -435,6 +441,8 @@ static void Configure_station(Widget w, XtPointer clientData, XtPointer callData
 
 
 static void Configure_defaults(Widget w, XtPointer clientData, XtPointer callData);
+
+static void Configure_coordinates(Widget w, XtPointer clientData, XtPointer callData);
 
 static void Stations_Clear(Widget w, XtPointer clientData, XtPointer callData);
 
@@ -974,6 +982,9 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     char str_lat[20];
     char str_long[20];
     long x, y;
+    double utmNorthing;
+    double utmEasting;
+    char utmZone[10];
 
     Widget textarea = (Widget) clientData;
 
@@ -992,14 +1003,31 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     if (y > 64800000l)
         y = 64800000l;          //  90°S
 
-    if (SHOW_DEC_DEGREES) {     // see #define at begin of file
-        convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
-        convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
-    } else {
-        convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
-        convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
+    if (coordinate_system == USE_UTM) {
+        ll_to_utm(gDatum[E_WGS_84].ellipsoid,
+            (double)(-((y - 32400000l )/360000.0)),
+            (double)((x - 64800000l )/360000.0),
+            &utmNorthing,
+            &utmEasting,
+            utmZone,
+            sizeof(utmZone) );
+        utmZone[9] = '\0';
+        //printf( "%s %07.0f %07.0f\n", utmZone, utmEasting, utmNorthing );
+        xastir_snprintf(my_text, sizeof(my_text), "%s %07.0f %07.0f",
+            utmZone, utmEasting, utmNorthing );
+
     }
-    xastir_snprintf(my_text, sizeof(my_text), "%s %s", str_lat, str_long);
+    else {
+        if (coordinate_system == USE_DDDDDD) {
+            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
+            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
+        } else {    // Assume coordinate_system == USE_DDMMMM
+            convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
+            convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
+        }
+        xastir_snprintf(my_text, sizeof(my_text), "%s %s", str_lat, str_long);
+    }
+
     XmTextFieldSetString(textarea, my_text);
     XtManageChild(textarea);
 }
@@ -1380,7 +1408,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
        view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
        localstations_button, laststations_button,
        weather_button, wx_station_button, locate_button, locate_place_button, jump_button, alert_button,
-       config_button, defaults_button, station_button,
+       config_button, defaults_button, coordinates_button, station_button,
        map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
        map_levels_button, map_labels_button, map_fill_button,
        Map_background_color_Pane, map_background_button, map_pointer_menu_button,
@@ -1628,8 +1656,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /* Configure */
     station_button = XtVaCreateManagedWidget(langcode("PULDNCF004"),xmPushButtonGadgetClass,configpane,
                             XmNmnemonic,langcode_hotkey("PULDNCF004"),XmNbackground,colors[0xff],NULL);
+
     defaults_button = XtVaCreateManagedWidget(langcode("PULDNCF001"),xmPushButtonGadgetClass,configpane,
                             XmNmnemonic,langcode_hotkey("PULDNCF001"),XmNbackground,colors[0xff],NULL);
+
+    coordinates_button = XtVaCreateManagedWidget(langcode("PULDNCF002"),xmPushButtonGadgetClass,configpane,
+                            XmNmnemonic,langcode_hotkey("PULDNCF002"),XmNbackground,colors[0xff],NULL);
+
     aa_button = XtVaCreateManagedWidget(langcode("PULDNCF006"),xmPushButtonGadgetClass,configpane,
                     XmNmnemonic,langcode_hotkey("PULDNCF006"),XmNbackground,colors[0xff],NULL);
 
@@ -2203,6 +2236,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(exit_button,          XmNactivateCallback,Menu_Quit,NULL);
 
     XtAddCallback(defaults_button,      XmNactivateCallback,Configure_defaults,NULL);
+    XtAddCallback(coordinates_button,   XmNactivateCallback,Configure_coordinates,NULL);
     XtAddCallback(aa_button,            XmNactivateCallback,Configure_audio_alarms,NULL);
     XtAddCallback(speech_button,        XmNactivateCallback,Configure_speech,NULL);
     XtAddCallback(station_button,       XmNactivateCallback,Configure_station,NULL);
@@ -3079,10 +3113,10 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     if (y > 64800000l)
                     y = 64800000l;          //  90°S
 
-                    if (SHOW_DEC_DEGREES) {     // see #define at begin of file
+                    if (coordinate_system == USE_DDDDDD) {
                     convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
                     convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
-                    } else {
+                    } else {    // Assume coordinate_system == USE_DDMMMM
                     convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
                     convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
                     }
@@ -7124,6 +7158,197 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
     } else
         (void)XRaiseWindow(XtDisplay(configure_defaults_dialog), XtWindow(configure_defaults_dialog));
 }
+
+
+
+
+
+///////////////////////////////////   Configure Coordinates Dialog   //////////////////////////////////
+
+void coordinates_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if (state->set)
+        coordinate_system = atoi(which);
+    else
+        coordinate_system = USE_DDMMMM;
+
+}
+
+
+
+
+
+void Configure_coordinates_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    configure_coordinates_dialog = (Widget)NULL;
+}
+
+
+
+
+
+void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    static Widget  pane, my_form, button_ok, button_cancel, frame,
+                label, coord_box, coord_0, coord_1, coord_2, coord_3;
+    Atom delw;
+    Arg al[2];                    /* Arg List */
+    register unsigned int ac = 0;           /* Arg Count */
+
+    if (!configure_coordinates_dialog) {
+        configure_coordinates_dialog = XtVaCreatePopupShell(langcode("WPUPCFC001"),xmDialogShellWidgetClass,Global.top,
+                                    XmNdeleteResponse,XmDESTROY,
+                                    XmNdefaultPosition, FALSE,
+                                    NULL);
+
+        pane = XtVaCreateWidget("Configure_coordinates pane",xmPanedWindowWidgetClass, configure_coordinates_dialog,
+                            XmNbackground, colors[0xff],
+                            NULL);
+
+        my_form =  XtVaCreateWidget("Configure_coordinates my_form",xmFormWidgetClass, pane,
+                                XmNfractionBase, 5,
+                                XmNbackground, colors[0xff],
+                                XmNautoUnmanage, FALSE,
+                                XmNshadowThickness, 1,
+                                NULL);
+
+
+        // Interval for station being considered old
+        frame = XtVaCreateManagedWidget("Configure_coordinates frame", xmFrameWidgetClass, my_form,
+                                        XmNtopAttachment,XmATTACH_FORM,
+                                        XmNtopOffset,10,
+                                        XmNbottomAttachment,XmATTACH_NONE,
+                                        XmNleftAttachment, XmATTACH_FORM,
+                                        XmNleftOffset, 10,
+                                        XmNrightAttachment,XmATTACH_FORM,
+                                        XmNrightOffset, 10,
+                                        XmNbackground, colors[0xff],
+                                        NULL);
+
+        label = XtVaCreateManagedWidget(langcode("WPUPCFC002"),xmLabelWidgetClass,frame,
+                                        XmNchildType, XmFRAME_TITLE_CHILD,
+                                        XmNbackground, colors[0xff],
+                                        NULL);
+        /*set args for color */
+        ac=0;
+        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+
+        coord_box = XmCreateRadioBox(frame,"Configure_coordinates coord_box",al,ac);
+
+        XtVaSetValues(coord_box,
+                    XmNpacking, XmPACK_TIGHT,
+                    XmNorientation, XmHORIZONTAL,
+                    XmNnumColumns,5,
+                    NULL);
+
+
+        coord_0 = XtVaCreateManagedWidget(langcode("WPUPCFC003"),xmToggleButtonGadgetClass,
+                                            coord_box,
+                                            XmNbackground, colors[0xff],
+                                            NULL);
+        XtAddCallback(coord_0,XmNvalueChangedCallback,coordinates_toggle,"0");
+
+
+        coord_1 = XtVaCreateManagedWidget(langcode("WPUPCFC004"),xmToggleButtonGadgetClass,
+                                            coord_box,
+                                            XmNbackground, colors[0xff],
+                                            NULL);
+        XtAddCallback(coord_1,XmNvalueChangedCallback,coordinates_toggle,"1");
+
+
+        coord_2 = XtVaCreateManagedWidget(langcode("WPUPCFC005"),xmToggleButtonGadgetClass,
+                                            coord_box,
+                                            XmNbackground, colors[0xff],
+                                            NULL);
+        XtAddCallback(coord_2,XmNvalueChangedCallback,coordinates_toggle,"2");
+
+XtSetSensitive(coord_2, FALSE);
+
+        coord_3 = XtVaCreateManagedWidget(langcode("WPUPCFC006"),xmToggleButtonGadgetClass,
+                                            coord_box,
+                                            XmNbackground, colors[0xff],
+                                            NULL);
+        XtAddCallback(coord_3,XmNvalueChangedCallback,coordinates_toggle,"3");
+
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, my_form,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, frame,
+                                        XmNtopOffset, 5,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 5,
+                                        XmNleftAttachment, XmATTACH_POSITION,
+                                        XmNleftPosition, 1,
+                                        XmNrightAttachment, XmATTACH_POSITION,
+                                        XmNrightPosition, 2,
+                                        XmNbackground, colors[0xff],
+                                        XmNnavigationType, XmTAB_GROUP,
+                                        NULL);
+
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, my_form,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, frame,
+                                        XmNtopOffset, 5,
+                                        XmNbottomAttachment, XmATTACH_FORM,
+                                        XmNbottomOffset, 5,
+                                        XmNleftAttachment, XmATTACH_POSITION,
+                                        XmNleftPosition, 3,
+                                        XmNrightAttachment, XmATTACH_POSITION,
+                                        XmNrightPosition, 4,
+                                        XmNbackground, colors[0xff],
+                                        XmNnavigationType, XmTAB_GROUP,
+                                        NULL);
+
+        XtAddCallback(button_ok, XmNactivateCallback, Configure_coordinates_destroy_shell, configure_coordinates_dialog);
+        XtAddCallback(button_cancel, XmNactivateCallback, Configure_coordinates_destroy_shell, configure_coordinates_dialog);
+
+        // Set the toggle buttons based on current data
+        switch (coordinate_system) {
+            case(USE_DDDDDD):
+                XmToggleButtonSetState(coord_0,TRUE,FALSE);
+                break;
+
+            case(USE_DDMMSS):
+                XmToggleButtonSetState(coord_2,TRUE,FALSE);
+                break;
+
+            case(USE_UTM):
+                XmToggleButtonSetState(coord_3,TRUE,FALSE);
+                break;
+
+            case(USE_DDMMMM):
+            default:
+                XmToggleButtonSetState(coord_1,TRUE,FALSE);
+                break;
+        }
+
+        pos_dialog(configure_coordinates_dialog);
+
+        delw = XmInternAtom(XtDisplay(configure_coordinates_dialog),"WM_DELETE_WINDOW", FALSE);
+        XmAddWMProtocolCallback(configure_coordinates_dialog, delw, Configure_coordinates_destroy_shell, (XtPointer)configure_coordinates_dialog);
+
+        XtManageChild(my_form);
+        XtManageChild(coord_box);
+        XtManageChild(pane);
+
+        XtPopup(configure_coordinates_dialog,XtGrabNone);
+        fix_dialog_size(configure_coordinates_dialog);
+
+        // Move focus to the Close button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(configure_coordinates_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+    } else
+        (void)XRaiseWindow(XtDisplay(configure_coordinates_dialog), XtWindow(configure_coordinates_dialog));
+}
+
 
 
 

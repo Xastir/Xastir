@@ -52,6 +52,7 @@ PULDNVI014|Programar SobreHora||
 # Menú de Configuración
 PULDNCF004|Estación|E|
 PULDNCF001|Predefinidos|P|
+PULDNCF002|Coordinate System|C|
 PULDNCF006|Audio Alarmas|A|
 PULDNCF007|Sintetizador de Voz|S|
 PULDNCF008|Guardar Configuración!|G|
@@ -264,7 +265,15 @@ WPUPCFD022|Posición de la estación, fecha-hora Zulu, y Tiempo|f|
 WPUPCFD023|Transmitir datos WX en Raw?||
 WPUPCFD024|Dato de posición comprimida cuando transmita?||
 WPUPCFD025|Activar Red Alternada?|A|
-WPUPCFD026|Enviar reportes de posición en qué intervalos?||
+WPUPCFD026|Enviar reportes de posición en qué intervalos?|||
+#
+# PopUp "Configure Coordinate System"
+WPUPCFC001|Configure Coordinate System||
+WPUPCFC002|Select Coordinate System||
+WPUPCFC003|DD.DDDDD|D|
+WPUPCFC004|DD MM.MMM|M|
+WPUPCFC005|DD MM SSS|S|
+WPUPCFC006|UTM|U|
 #
 # Configurar GPS
 WPUPCFG001|Configurar GPS||

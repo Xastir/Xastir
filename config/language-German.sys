@@ -57,6 +57,7 @@ PULDNVI014|Programmlaufzeit||
 # Menu "Einstellungen"
 PULDNCF004|Meine Stationdaten|M|
 PULDNCF001|Grundeinstellungen|G|
+PULDNCF002|Coordinate System|C|
 PULDNCF006|Audio Alarm|A|
 PULDNCF007|Sprachausgabe|S|
 PULDNCF008|Einstellungen sichern|E|
@@ -269,7 +270,15 @@ WPUPCFD022|Station mit UTC Zeit, Position und Wetter||
 WPUPCFD023|Sende Wetter Rohdaten?||
 WPUPCFD024|Sende komprimierte Position?||
 WPUPCFD025|Alternatives Netz?||
-WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen||
+WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen|||
+#
+# PopUp "Configure Coordinate System"
+WPUPCFC001|Configure Coordinate System||
+WPUPCFC002|Select Coordinate System||
+WPUPCFC003|DD.DDDDD|D|
+WPUPCFC004|DD MM.MMM|M|
+WPUPCFC005|DD MM SSS|S|
+WPUPCFC006|UTM|U|
 #
 # PopUp "GPS Einstellungen"
 WPUPCFG001|GPS Einstellungen||
