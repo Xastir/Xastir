@@ -1939,8 +1939,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNshadowThickness, 1,
                                 NULL);
 
-//        label1 = XtVaCreateManagedWidget(langcode("UTM"), xmLabelWidgetClass, form,
-        label1 = XtVaCreateManagedWidget("UTM", xmLabelWidgetClass, form,
+        label1 = XtVaCreateManagedWidget(langcode("COORD005"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_FORM,
                                 XmNtopOffset, 5,
                                 XmNbottomAttachment, XmATTACH_NONE,
@@ -1950,8 +1949,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNbackground, colors[0xff],
                                 NULL);
 
-//        label2 = XtVaCreateManagedWidget(langcode("Latitude or"), xmLabelWidgetClass, form,
-        label2 = XtVaCreateManagedWidget("Latitude or", xmLabelWidgetClass, form,
+        label2 = XtVaCreateManagedWidget(langcode("COORD006"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_FORM,
                                 XmNtopOffset, 5,
                                 XmNbottomAttachment, XmATTACH_NONE,
@@ -1961,8 +1959,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNbackground, colors[0xff],
                                 NULL);
 
-//        label3 = XtVaCreateManagedWidget(langcode("Longitude or"), xmLabelWidgetClass, form,
-        label3 = XtVaCreateManagedWidget("Longitude or", xmLabelWidgetClass, form,
+        label3 = XtVaCreateManagedWidget(langcode("COORD007"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_FORM,
                                 XmNtopOffset, 5,
                                 XmNbottomAttachment, XmATTACH_NONE,
@@ -1972,8 +1969,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNbackground, colors[0xff],
                                 NULL);
 
-//        label4 = XtVaCreateManagedWidget(langcode("Zone"), xmLabelWidgetClass, form,
-        label4 = XtVaCreateManagedWidget("Zone", xmLabelWidgetClass, form,
+        label4 = XtVaCreateManagedWidget(langcode("COORD008"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label1,
                                 XmNtopOffset, 2,
@@ -1984,8 +1980,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNbackground, colors[0xff],
                                 NULL);
 
-//        label5 = XtVaCreateManagedWidget(langcode("UTM Easting"), xmLabelWidgetClass, form,
-        label5 = XtVaCreateManagedWidget("UTM Easting", xmLabelWidgetClass, form,
+        label5 = XtVaCreateManagedWidget(langcode("COORD009"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label1,
                                 XmNtopOffset, 2,
@@ -1996,8 +1991,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
                                 XmNbackground, colors[0xff],
                                 NULL);
 
-//        label6 = XtVaCreateManagedWidget(langcode("UTM Northing"), xmLabelWidgetClass, form,
-        label6 = XtVaCreateManagedWidget("UTM Northing", xmLabelWidgetClass, form,
+        label6 = XtVaCreateManagedWidget(langcode("COORD010"), xmLabelWidgetClass, form,
                                 XmNtopAttachment, XmATTACH_WIDGET,
                                 XmNtopWidget, label1,
                                 XmNtopOffset, 2,
