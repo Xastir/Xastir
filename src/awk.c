@@ -36,7 +36,6 @@
  * Alan Crosswell, n2ygk@weca.org
  *
  * TODO
- *   find minlen=-1 segfault (fencepost decrementing len=0 on buffer full)
  *   permit embedded ;#} inside string assignment (balance delims)
  *   implement \t, \n, \0[x]nn etc.
  *   instantiate new symbols instead of ignoring them?
@@ -166,9 +165,10 @@ int awk_set_sym(awk_symbol *s,
         return -1;
     switch(s->type) {
     case STRING:
-        if (minlen > 0)
+        if (minlen > 0) {
             strncpy(s->val,val,minlen);
-        s->len = l - 1;
+            s->len = l - 1;
+        }
         break;
     case INT:
         *((int *)s->val) = atoi(val);
@@ -205,8 +205,11 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
     case STRING:
         if (s->len > 0) {
             minlen = min(s->len,size-1);
-            strncpy(store,s->val,minlen);
-            *len = minlen;
+            if (minlen > 0) {
+                strncpy(store,s->val,minlen);
+                *len = minlen;
+            } else 
+                *len = 0;
         } else
             *len = 0;
         break;
@@ -215,8 +218,11 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
             sprintf(cbuf,"%d",*((int *)s->val));
             cbl = strlen(cbuf);
             minlen = min(cbl,size-1);
-            strncpy(store,cbuf,minlen);
-            *len = minlen;
+            if (minlen > 0) {
+                strncpy(store,cbuf,minlen);
+                *len = minlen;
+            } else
+                *len = 0;
         } else
             *len = 0;
         break;
@@ -225,8 +231,11 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
             sprintf(cbuf,"%f",*((double *)s->val));
             cbl = strlen(cbuf);
             minlen = min(cbl,size-1);
-            strncpy(store,cbuf,minlen);
-            *len = minlen;
+            if (minlen > 0) {
+                strncpy(store,cbuf,minlen);
+                *len = minlen;
+            } else
+                *len = 0;
         } else
             *len = 0;
         break;
@@ -729,7 +738,6 @@ awk_program *awk_load_program_file(awk_symtab *this, /* symtab for this program 
  */
 int awk_compile_program(awk_program *rs)
 {
-    pcre *re = NULL;
     pcre_extra *pe;
     const unsigned char *tables;
     const char *error;
@@ -747,7 +755,7 @@ int awk_compile_program(awk_program *rs)
                                  &error,    /* for error message */
                                  &erroffset,        /* for error offset */
                                  tables);   /* NLS locale character tables */
-            if (!re) {
+            if (!r->re) {
                 int i;
                 
                 fprintf(stderr,"parse error: %s\n",r->pattern);
@@ -757,7 +765,7 @@ int awk_compile_program(awk_program *rs)
                 fprintf(stderr,"^\n");
                 return -1;
             }
-            pe = pcre_study(re, 0, &error); /* optimize the regexp */
+            pe = pcre_study(r->re, 0, &error); /* optimize the regexp */
         } else if (r->ruletype == BEGIN) {
             rs->begin = r;
         } else if (r->ruletype == BEGIN_REC) {

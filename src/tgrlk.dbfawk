@@ -1,0 +1,75 @@
+# $Id$
+# This dbfawk file is used to map arbitrary dbf data that accompanies
+# a shapefile into Xastir canoncical values of:
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   pattern - line pattern for road, river, etc.
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+# NOTE: This file format is modeled after awk but is nowhere near awk
+#  compatible.
+#
+# This file is used to map US Census Tiger/Line "lk" shapefiles which are
+# named tgrSSCCClk[A-H].dbf, where SSCCC are the FIPS state and county codes.
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column names in order.
+# dbfinfo should match the dbf file that we say this dbfawk file goes with.
+dbfinfo="TLID:FNODE:TNODE:LENGTH:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC:FRADDL:TOADDL:FRADDR:TOADDR:ZIPL:ZIPR:CENSUS1:CENSUS2:CFCC1:CFCC2:SOURCE";
+# dbffields is which of the above fields we actually want to look at.
+# No point reading dbffields that are not looked at further.
+dbffields="TLID:FEDIRP:FENAME:FETYPE:FEDIRS:CFCC"}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple fields.
+# Use this rule to re-initialize variables between records.
+BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=0; pattern=1; display_level=8192; label_level=32; symbol=""}
+
+# per-field rules are applied to the dbffields that are read from each record.
+# key: set the search key to be the Tiger/Line ID.  Not currently used.
+/^TLID=(.*)$/ {key=$1; next}
+# name: concatenate FEDIRP (direction prefix), FENAME (name), 
+#   FETYPE (type: Rd, Ln, Pky, etc.) and FEDIRS (direction suffix).
+# also abbreviate United States Highway to US, etc.
+/^FEDIRP=(.+)$/ {name="$1 ";next}
+/^FENAME=United States Highway (.*)$/ {name="$(name)US $1"; next}
+/^FENAME=State Highway (.*)$/ {name="$(name)State $1";next}
+/^FENAME=State Route (.*)$/ {name="$(name)SR $1";next}
+/^FENAME=(.*)$/ {name="$(name)$1; next}
+/^FETYPE=(.+)$/ {name="$(name) $1"; next}
+/^FEDIRS=(.+)$/ {name="$(name) $1"; next}
+# Census Feature Class Codes are used to set lanbes, color, display_level, etc.
+# CFCC A..: roads
+/^CFCC=A1/ {lanes=4; color=4}
+/^CFCC=A2/ {lanes=3; color=8}
+/^CFCC=A3/ {lanes=2; color=8}
+/^CFCC=A3[1-6]/ {display_level=256; next}
+/^CFCC=A3[7-8]/ {display_level=128; next}
+/^CFCC=A4/ {display_level=96; label_level=16; color=40; lanes=1; next}
+/^CFCC=A5/ {lanes=2; color=40; display_level=64; next}
+/^CFCC=A65/ {lanes=2, color=8, pattern=2; next}
+/^CFCC=A6[^5]/ {color=40; display_level=64; next}
+/^CFCC=A7[12]/ {lanes=1; color=12; pattern=2; display_level=64; next}
+/^CFCC=A7[03-9]/ {lanes=1; color=40; pattern=2; display_level=64; next}
+# need to implement these:
+# B: railroads
+# C: transmission lines
+# D: landmarks
+# E: physical featuers
+# F: legal boundaries
+# (G not used by census;  tig2aprs uses for special maps)
+# H: hydrography
+/^CFCC=H0/ {lanes=0; color=27;}
+/^CFCC=H02/ {pattern=2; next}
+/^CFCC=H[1-6]2/ {lanes=1; pattern=2; next}
+/^CFCC=H[1-6][013-9]/ {lanes=1; next}
+/^CFCC=H7/ {display_level=0; label_level=0; next}
+/^CFCC=H8/ {color=27; lanes=1}
+/^CFCC=H81/ {color=15; next}
+# just a demo of the END_RECORD and END rules:
+#END_RECORD {name="$name ($key)";}
+#END {}

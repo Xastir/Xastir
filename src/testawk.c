@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
     char dbffields[1024];	/* subset we want to read */
     char name[128];
     char key[128];
+    char symbol[4];
     int filled = 5;
     int pattern;
     int display_level = 1234;
@@ -97,6 +98,7 @@ int main(int argc, char *argv[])
     awk_declare_sym(symtbl,"lanes",INT,&lanes,sizeof(lanes));
     awk_declare_sym(symtbl,"name",STRING,name,sizeof(name));
     awk_declare_sym(symtbl,"key",STRING,key,sizeof(key));
+    awk_declare_sym(symtbl,"symbol",STRING,symbol,sizeof(symbol));
     awk_declare_sym(symtbl,"filled",INT,&filled,sizeof(filled));
     awk_declare_sym(symtbl,"pattern",INT,&pattern,sizeof(pattern));
     awk_declare_sym(symtbl,"display_level",INT,&display_level,sizeof(display_level));
@@ -106,7 +108,7 @@ int main(int argc, char *argv[])
     }
 
     awk_exec_begin(rs);		/* execute a BEGIN rule if any */
-    print_symtbl(symtbl);
+    //    print_symtbl(symtbl);
 
     if (dfile) {		/* parse dbf file */
       DBFHandle dbf = DBFOpen(dfile,"rb");
@@ -182,6 +184,7 @@ int main(int argc, char *argv[])
 	awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 	fprintf(stderr,"name=%s, ",name);
 	fprintf(stderr,"key=%s, ",key);
+	fprintf(stderr,"symbol=%s, ",symbol);
 	fprintf(stderr,"color=%d, ", color);
 	fprintf(stderr,"lanes=%d, ", lanes);
 	fprintf(stderr,"filled=%d, ",filled);
@@ -196,12 +199,12 @@ int main(int argc, char *argv[])
       for (args = 1; args < argc; args++) {
 	fprintf(stderr,"==> %s\n",argv[args]);
         awk_exec_program(rs,argv[args],strlen(argv[args]));
-        print_symtbl(symtbl);
+	//        print_symtbl(symtbl);
       }
       awk_exec_end_record(rs);
     }
     awk_exec_end(rs);		/* execute an END rule if any */
-    print_symtbl(symtbl);
+    //    print_symtbl(symtbl);
     awk_free_program(rs);
     awk_free_symtab(symtbl);
     exit(0);

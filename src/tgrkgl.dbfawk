@@ -1,0 +1,61 @@
+# $Id$
+# This dbfawk file is used to map arbitrary dbf data that accompanies
+# a shapefile into Xastir canoncical values of:
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   pattern - line pattern for road, river, etc.
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+#
+# NOTE: This file format is modeled after awk but is nowhere near awk
+#  compatible.
+#
+# This file is used to map US Census Tiger/Line "kgl" (Key Geographic
+# Location) shapefiles which are named tgrSSCCCkgl.dbf, where SSCCC 
+# are the FIPS state and county codes.
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column names in order.
+# dbfinfo should match the dbf file that we say this dbfawk file goes with.
+dbfinfo="ID:POLYID:COUNTY:CFCC:KGLNAME";
+# dbffields is which of the above fields we actually want to look at.
+dbffields="KGLNAME:CFCC"}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple fields.
+# Use this rule to re-initialize variables between records.
+BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=1; pattern=1;
+display_level=0; label_level=0; symbol="/. "}
+
+# name and key are both the KGL name
+/^KGLNAME=(.*)$/ {name=$1; key=$1; next}
+# CFCC=D.. for landmarks.  Use the same code here and for tgrlk.
+#D2: residence?
+#D23: trailer park
+#D28: campground
+/^CFCC=D2/ {symbol="/- "; display_level=64; label_level=32}
+/^CFCC=D23$/ {symbol="/R "; next}
+/^CFCC=D28$/ {symbol="/; "; next}
+/^CFCC=D2/ {next}
+#D31: hospital
+/^CFCC=D31$/ {color=9; symbol="/h "; display_level=128; label_level=64; next}
+#D40: unknown educational or religious
+#D41: sorority or fraternity
+#D42: convent or monastery
+#D43: educational institution
+#D44: religious institution
+/^CFCC=D4/ {color=8; symbol="/K "; display_level=64; label_level=32}
+/^CFCC=D4[03]$/ {color=14; next}
+#D51: airport
+#D54: harbor
+/^CFCC=D51$/ {symbol="/' "; display_level=128; label_level=32; next}
+/^CFCC=D54$/ {symbol="\\s "; display_level=128; label_level=32; next }
+#DB: state forests, etc.
+/^CFCC=D8/ {color=73; display_level=64; label_level=32; next}
+# don't need special end case handling...
+#END_RECORD {}
+#END {}

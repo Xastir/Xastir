@@ -1,0 +1,44 @@
+# $Id$
+# This dbfawk file is used to map arbitrary dbf data that accompanies
+# a shapefile into Xastir canoncical values of:
+#   key     - search key
+#   lanes   - width of feature (usually a road but applies to rivers, etc. too)
+#   color   - color to draw the road
+#   name    - name of the road for labels
+#   filled  - whether a polygon is drawn filled or not
+#   pattern - line pattern for road, river, etc.
+#   display_level - highest zoom level at which to display the feature
+#   label_level - highest zoom level at which to display the label
+#   symbol  - 3 char 'TIO': table, ID, overlay
+#
+# NOTE: This file format is modeled after awk but is nowhere near awk
+#  compatible.
+#
+# This file is used to map US Census Tiger/Line "cty" polygon shapefiles
+# which are named tgrSSCCCcty00.dbf, where SSCCC are the FIPS state and
+# county codes.
+
+# BEGIN is called once per dbf file which contains multiple records.
+BEGIN {
+# dbfinfo is the "signature" of the dbf file listing the column names in order.
+# dbfinfo should match the dbf file that we say this dbfawk file goes with.
+dbfinfo="ID:FIPSSTCO:STATE:COUNTY";
+# dbffields is which of the above fields we actually want to look at.
+# Note that the order we list these is important since we are appending the
+# word County or Parish depending on what state the county is in.
+dbffields="COUNTY:FIPSSTCO"}
+
+# BEGIN_RECORD is called once per dbf record which contains multiple fields.
+# Use this rule to re-initialize variables between records.
+BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=1; pattern=1; display_level=8192; label_level=512; symbol=""}
+
+# name: name is just the county name.
+/^COUNTY=(.*)$/ {name="$1"; next}
+# key: set the search key to be the FIPS code.  Not currently used.
+# also append County to the name except for Louisiana, use Parish:
+# XXX - find out what the FIPS code is for Louisiana and replace 99 with it:
+/^FIPSSTCO=(99.*)$/ {name="$name Parish"; key=$1; next}
+/^FIPSSTCO=(.*)$/ {name="$name County"; key=$1; next}
+# don't need special end case handling...
+#END_RECORD {name="$name ($key)";}
+#END {}
