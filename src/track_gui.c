@@ -56,6 +56,7 @@ Widget posit_length_value;
 
 
 int track_station_on;           /* used for tracking stations */
+int track_me;
 int track_case;                 /* used for tracking stations */
 int track_match;                /* used for tracking stations */
 char tracking_station_call[30]; /* Tracking station callsign */

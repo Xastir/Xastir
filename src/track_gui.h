@@ -31,6 +31,7 @@
 extern void track_gui_init(void);
 extern void Track_station(Widget w, XtPointer clientData, XtPointer callData);
 extern int track_station_on;
+extern int track_me;
 extern int track_case;
 extern int track_match;
 extern char tracking_station_call[30];

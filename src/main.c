@@ -134,6 +134,7 @@ Widget configure_station_dialog     = (Widget)NULL;
 Widget right_menu_popup              = (Widget)NULL;    // Button one or left mouse button
 //Widget middle_menu_popup=(Widget)NULL;  // Button two or middle mouse button
 //Widget right_menu_popup=(Widget)NULL;   // Button three or right mouse button
+Widget trackme_button;
 Widget measure_button;
 Widget move_button;
 
@@ -497,6 +498,7 @@ static void Zoom_out(Widget w, XtPointer clientData, XtPointer calldata);
 static void Zoom_out_no_pan(Widget w, XtPointer clientData, XtPointer calldata);
 static void Zoom_level(Widget w, XtPointer clientData, XtPointer calldata);
 static void display_zoom_image(int recenter);
+static void Track_Me( Widget w, XtPointer clientData, XtPointer calldata);
 static void Measure_Distance( Widget w, XtPointer clientData, XtPointer calldata);
 static void Move_Object( Widget w, XtPointer clientData, XtPointer calldata);
  
@@ -3344,7 +3346,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget sep;
     Widget filepane, configpane, exitpane, mappane, viewpane, stationspane, messagepane, ifacepane, helppane;
 
-    Widget measure_frame, move_frame, display_button,
+    Widget trackme_frame, measure_frame, move_frame, display_button,
         track_button, download_trail_button,
         symbols_button,
         station_trails_button,
@@ -4943,7 +4945,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNbottomAttachment, XmATTACH_NONE,
             XmNleftAttachment, XmATTACH_WIDGET,
             XmNleftWidget, menubar,
-            XmNleftOffset, 10,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
             XmNfractionBase, 3,
             XmNautoUnmanage, FALSE,
@@ -4954,12 +4956,46 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-    measure_frame = XtVaCreateManagedWidget("Measure frame",
+    trackme_frame = XtVaCreateManagedWidget("Trackme frame",
             xmFrameWidgetClass,
             toolbar,
             XmNtopAttachment, XmATTACH_FORM,
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset, 0,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+//    trackme_button=XtVaCreateManagedWidget(langcode("TrackMe"),
+    trackme_button=XtVaCreateManagedWidget("TrackMe",
+            xmToggleButtonGadgetClass,
+            trackme_frame,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset, 0,
+            XmNrightAttachment, XmATTACH_FORM,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(trackme_button,XmNvalueChangedCallback,Track_Me,"1");
+
+    measure_frame = XtVaCreateManagedWidget("Measure frame",
+            xmFrameWidgetClass,
+            toolbar,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, trackme_frame,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, FALSE,
@@ -4973,6 +5009,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNtopAttachment, XmATTACH_FORM,
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_FORM,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
@@ -4990,7 +5027,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_WIDGET,
             XmNleftWidget, measure_frame,
-            XmNleftOffset, 10,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
             XmNnavigationType, XmTAB_GROUP,
             XmNtraversalOn, FALSE,
@@ -5004,6 +5041,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNtopAttachment, XmATTACH_FORM,
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_FORM,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_FORM,
             XmNvisibleWhenOff, TRUE,
             XmNindicatorSize, 12,
@@ -5024,7 +5062,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_WIDGET,
             XmNleftWidget, move_frame,
-            XmNleftOffset, 10,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
             XmNarrowDirection,  XmARROW_LEFT,
             XmNnavigationType, XmTAB_GROUP,
@@ -5039,6 +5077,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_WIDGET,
             XmNleftWidget, pan_left_menu,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
             XmNarrowDirection,  XmARROW_UP,
             XmNnavigationType, XmTAB_GROUP,
@@ -5053,6 +5092,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_WIDGET,
             XmNleftWidget, pan_up_menu,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
             XmNarrowDirection,  XmARROW_DOWN,
             XmNnavigationType, XmTAB_GROUP,
@@ -5067,6 +5107,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNbottomAttachment, XmATTACH_FORM,
             XmNleftAttachment, XmATTACH_WIDGET,
             XmNleftWidget, pan_down_menu,
+            XmNleftOffset, 0,
             XmNrightAttachment, XmATTACH_NONE,
             XmNarrowDirection,  XmARROW_RIGHT,
             XmNnavigationType, XmTAB_GROUP,
@@ -5644,6 +5685,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback (da, XmNexposeCallback, da_expose,(XtPointer)text);
 
     UpdateTime( (XtPointer) da , (XtIntervalId) NULL );
+
+    if (track_me)
+        XmToggleButtonSetState(trackme_button,TRUE,TRUE);
+    else
+        XmToggleButtonSetState(trackme_button,FALSE,TRUE);
 
     if(debug_level & 8)
         printf("Create appshell stop\n");
@@ -12438,6 +12484,31 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     } else
         (void)XRaiseWindow(XtDisplay(configure_speech_dialog), XtWindow(configure_speech_dialog));
 
+}
+
+
+
+
+
+/*
+ *  Track_Me
+ *
+ */
+void Track_Me( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set) {
+        strcpy(tracking_station_call, my_callsign);
+        track_me = atoi(which);
+        track_station_on = atoi(which);
+        display_zoom_status();
+    }
+    else {
+        track_me = 0;
+        track_station_on = 0;
+        display_zoom_status();
+    }
 }
 
 
