@@ -624,11 +624,12 @@ char *get_line(FILE *f, char *linedata, int maxline) {
     strcpy(linedata, "");
     (void)fgets(linedata, 32767, f);
     size_line = (int)strlen(linedata);
-    if (size_line > maxline)
-        linedata[maxline] = '\0';
-    else
-        linedata[size_line-1] = '\0';
-
+    if (size_line >0) {
+        if (size_line > maxline)
+            linedata[maxline] = '\0';
+        else
+            linedata[size_line-1] = '\0';
+    }
     return(linedata);
 }
 

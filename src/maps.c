@@ -4121,13 +4121,13 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
                     // the min/max for the Xastir coordinate system,
                     // but in practice zeroes should work just as
                     // well.
-                    if ((coord_lat < bottom_extent) || (bottom_extent == 0l))
+                    if ((coord_lat > bottom_extent) || (bottom_extent == 0l))
                         bottom_extent = coord_lat;
-                    if ((coord_lat > top_extent) || (top_extent == 0l))
+                    if ((coord_lat < top_extent) || (top_extent == 0l))
                         top_extent = coord_lat;
                     if ((coord_lon < left_extent) || (left_extent == 0l))
                         left_extent = coord_lon;
-                    if ((coord_lat > right_extent) || (right_extent == 0l))
+                    if ((coord_lon > right_extent) || (right_extent == 0l))
                         right_extent = coord_lon;
 
 
