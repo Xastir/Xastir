@@ -8773,7 +8773,10 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     input_y = event->xbutton.y;
 
 
-// Check whether we're in CAD Object draw mode first
+
+// Start of CAD Objects code.  We have both ButtonPress and
+// ButtonRelease code handlers here, for this mode only.
+    // Check whether we're in CAD Object draw mode first
     if (draw_CAD_objects_flag
             && event->xbutton.button == Button2) {
 
@@ -8834,8 +8837,11 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             done++;
         }
     }
+// End of CAD Objects code.
 
 
+
+// Start of ButtonRelease code
     if (!done && event->type == ButtonRelease) {
         //fprintf(stderr,"ButtonRelease %d %d\n",event->xbutton.button,Button3);
 
@@ -8999,8 +9005,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     //
                     // Calculate center of mouse-marked area and get the scaling relation
                     // between x and y for that position. This position will be the new
-                    // center, so that lattitude-dependant relation does not change with
-                    // a zoom-in. For both x and y calculate a new zoom factor neccessary
+                    // center, so that lattitude-dependent relation does not change with
+                    // a zoom-in. For both x and y calculate a new zoom factor necessary
                     // to fit that screen direction. Select the one that allows both x
                     // and y part to fall into the screen area. Draw the new screen with
                     // new center and new zoom factor.
@@ -9098,10 +9104,12 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             Zoom_in_no_pan(w, client_data, call_data);
             mouse_zoom = 0;
         }   // End of Button7 release code
-    }   // End of ButtonRelease code
+    }
+// End of ButtonRelease code
 
 
 
+// Start of ButtonPress code
     else if (!done && event->type == ButtonPress) {
         //fprintf(stderr,"ButtonPress %d %d\n",event->xbutton.button,Button3);
 
@@ -9127,9 +9135,12 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             // Nothing attached here.
             mouse_zoom = 0;
         }   // End of Button3 Press code
-    }   // End of ButtonPress code
+    }
+// End of ButtonPress code
 
 
+
+// Start of KeyPress code
     else if (!done && event->type == KeyPress) {
 
         // We want to branch from the keysym instead of the keycode
@@ -9214,16 +9225,19 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             grid_size--;
             redraw = 1;
         }
-    }   // End of KeyPress code
+    }
+// End of KeyPress code
+
 
 
     else if (!done) {  // Something else
         if (event->type == MotionNotify) {
             input_x = event->xmotion.x;
             input_y = event->xmotion.y;
-            /*fprintf(stderr,"da_input2 x %d y %d\n",input_x,input_y);*/
+//fprintf(stderr,"da_input2 x %d y %d\n",input_x,input_y);
         }
     }   // End of SomethingElse code
+
 
 
     if (redraw) {
@@ -9251,6 +9265,201 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 //    while (ct < sec_now()) {
 //    }
 //}
+
+
+
+
+
+static time_t last_pointer_check = (time_t)0;
+
+
+// This function snags the current pointer information and tries to
+// determine whether we're doing some sort of draw or zoom function.
+// If so, draws the appropriate temporary squares or lines that the
+// operator expects.
+//
+void check_pointer_position(void) {
+    Window  root_return, child_return;
+    int rootx_return, rooty_return;
+    int win_x_return, win_y_return;
+    unsigned int mask_return;
+    Bool ret;
+    int x_return;
+    int y_return;
+    unsigned int width_return;
+    unsigned int height_return;
+    unsigned int border_width_return;
+    unsigned int depth_return;
+
+
+    // Check once per second only.
+    if ( last_pointer_check >= sec_now() ) {
+        return;
+    }
+    last_pointer_check = sec_now();
+
+    // Snag the current pointer info
+    ret = XQueryPointer(XtDisplay(da),
+            XtWindow(da),  // Window we are interested in
+            &root_return,  // Root window that pointer is in
+            &child_return, // Child windows that pointer is in, if any
+            &rootx_return, // Pointer coord. relative to root window
+            &rooty_return, // Pointer coord. relative to root window
+            &win_x_return, // Pointer coord. relative to specified window
+            &win_y_return, // Pointer coord. relative to specified window
+            &mask_return); // State of modifier keys and pointer buttons
+
+    switch (ret) {
+
+        case True:
+            // If we made it here, we're on the same screen as the
+            // specified window.  It's a good start anyway.
+//fprintf(stderr, "x:%d  y:%d  ", win_x_return, win_y_return);
+//fprintf(stderr, "root:%lx  child:%lx  ", root_return, child_return);
+//fprintf(stderr, "mask:%03x  ret:%02x\n", mask_return, ret);
+
+            // Check mask_return to see if button one is being
+            // pressed down (a drag operation).  If so, we're doing
+            // a zoom-in operation and need to draw a box.  0x100
+
+            // Check if button two (middle button) is being pressed
+            // down (a drag operation).  If so, we're doing a CAD
+            // Object draw and need to draw a line.  0x200
+
+            // Figure out how to erase previous lines/boxes so that
+            // only the current object is shown.  We might need to
+            // keep track of earlier vectors and then redraw them
+            // with an XOR function to erase.
+
+            // Get the dimensions for the drawing area
+            // XGetGeometry(Display *display,
+            //     Drawable d,
+            //     Window *root_return,
+            //     int *x_return,
+            //     int *y_return,
+            //     unsigned int *width_return,
+            //     unsigned int *height_return,
+            //     unsigned int *border_width_return,
+            //     unsigned int *depth_return);
+            XGetGeometry(XtDisplay(da),
+                XtWindow(da),
+                &root_return,
+                &x_return,
+                &y_return,
+                &width_return,
+                &height_return,
+                &border_width_return,
+                &depth_return);
+
+            // Check that X/Y are positive and below the max size of
+            // the child window.
+            if ( win_x_return >= width_return
+                    || win_y_return >= height_return) {
+
+                /*
+                fprintf(stderr, "Out of bounds: %d:%d  %d:%d\n",
+                    win_x_return,
+                    width_return,
+                    win_y_return,
+                    height_return);
+                */
+                return;
+            }
+            else {
+                // Draw what we need to.
+                // For CAD objects, polygon_last_x and
+                // polygon_last_y contain the last position.
+                // For the zoom-in function, menu_x and menu_y
+                // contain the last position.
+
+                if (draw_CAD_objects_flag) {
+                    // Check if button two (middle button) is being
+                    // pressed down (a drag operation).  If so,
+                    // we're doing a CAD Object draw and need to
+                    // draw a line.  0x200
+                    if ( (mask_return & 0x200) == 0) {
+                        return;
+                    }
+
+                    // Remove the last line drawn (if any).  Draw a
+                    // line from polygon_last_x and polygon_last_y
+                    // to the current pointer position.
+/*
+                    (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x0e]); // yellow
+                    XDrawLine(XtDisplay(da),
+                        XtWindow(da),
+                        gc,
+                        polygon_last_x,
+                        polygon_last_y,
+                        win_x_return,
+                        win_y_return);
+*/
+                    return;
+                }
+                else {  // Zoom-in function?
+                    // Check mask_return to see if button one is
+                    // being pressed down (a drag operation).  If
+                    // so, we're doing a zoom-in operation and need
+                    // to draw a box.  0x100
+                    if ( (mask_return & 0x100) == 0) {
+                        return;
+                    }
+
+                    (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+                    (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x0e]); // yellow
+ 
+                    // Remove the last box drawn (if any).  Draw a
+                    // box around the current zoom area.
+                    XDrawLine(XtDisplay(da),
+                        XtWindow(da),
+                        gc,
+                        menu_x,         // Keep x constant
+                        menu_y,
+                        menu_x,
+                        win_y_return);
+                    XDrawLine(XtDisplay(da),
+                        XtWindow(da),
+                        gc,
+                        menu_x,
+                        menu_y,         // Keep y constant
+                        win_x_return,
+                        menu_y);
+                    XDrawLine(XtDisplay(da),
+                        XtWindow(da),
+                        gc,
+                        win_x_return,   // Keep x constant
+                        menu_y,
+                        win_x_return,
+                        win_y_return);
+                    XDrawLine(XtDisplay(da),
+                        XtWindow(da),
+                        gc,
+                        menu_x,
+                        win_y_return,   // Keep y constant
+                        win_x_return,
+                        win_y_return);
+                    return;
+                }
+
+            }
+
+        break;
+
+        case BadWindow: // A window passed to the function was no
+                        // good.
+            fprintf(stderr, "check_pointer_position: BadWindow\n");
+            return;
+            break;
+
+        case False: // Pointer is not on the same screen as the
+                    // specified window.
+        default:
+            return;
+            break;
+ 
+    }
+}   // End of check_pointer_position()
 
 
 
@@ -9851,6 +10060,8 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
                 stations);
             XmTextFieldSetString(text3, station_num);
         }
+
+        check_pointer_position();
 
     }
     sched_yield();  // Yield the processor to another thread
