@@ -4,7 +4,8 @@
 
 
 /* Copyright (C) 2002, 2004 Christopher Clark  <firstname.lastname@cl.cam.ac.uk> */
-/* Modified by the Xastir Group */
+/* Portions Copyright (C) 2004-2005  The Xastir Group */
+
 
 #include <stdlib.h> /* defines NULL */
 #include <stdio.h>

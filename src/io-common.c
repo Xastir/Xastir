@@ -3,6 +3,7 @@
 
 
 /* Copyright 2002 Daniel Egnor.  See LICENSE.geocoder file.
+ * Portions Copyright (C) 2004-2005  The Xastir Group
  */
 #include "io.h"
 
