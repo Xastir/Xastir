@@ -1051,6 +1051,11 @@ CPU to be used by gprof to generate it:
 
     gprof -l /usr/local/bin/xastir | tee profile.txt
 
+Also see this link, which talks about how to profile multithreaded
+applications:
+
+    http://sam.zoy.org/writings/programming/gprof.html
+
 
 Checking for Memory Leaks:
 --------------------------
