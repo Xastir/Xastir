@@ -365,7 +365,7 @@ void gps_data_find(char *gps_line_data, int port) {
                     fprintf(stderr,"Setting Time %ld EUID: %d, RUID: %d\n",
                         (long)t, (int)getuid(), (int)getuid());
                 }
-#ifdef __linux__
+#ifdef HAVE_SETTIMEOFDAY
                 settimeofday(&tv, &tz);
 #endif
             }

@@ -518,7 +518,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       NULL);
 
 // We can only set the time properly on Linux systems
-#ifndef __linux__
+#ifndef HAVE_SETTIMEOFDAY
                 XtSetSensitive(TNC_GPS_set_time,FALSE);
 #endif
 
@@ -1592,7 +1592,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
 // We can only set the time properly on Linux systems
-#ifndef __linux__
+#ifndef HAVE_SETTIMEOFDAY
         XtSetSensitive(GPS_set_time,FALSE);
 #endif
  
@@ -3118,7 +3118,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
                                       NULL);
 
 // We can only set the time properly on Linux systems
-#ifndef __linux__
+#ifndef HAVE_SETTIMEOFDAY
         XtSetSensitive(NGPS_set_time,FALSE);
 #endif
  
