@@ -168,7 +168,9 @@ PULDNDP004|Snelheid|S|
 PULDNDP017|- Geef snelheid kort traject weer||
 PULDNDP002|Hoogte|H|
 PULDNDP009|Weer Informatie|W|
-PULDNDP018|- Geef alleen temperatuur weer||
+PULDNDP046|- Weer Text||
+PULDNDP018|-- Geef alleen temperatuur weer||
+PULDNDP047|- Wind Barb||
 PULDNDP013|Zet stations nadering aan||
 PULDNDP008|Stations Vermogen/Winst|V|
 PULDNDP021|- Activeer standaard Vermogen/Winst||

@@ -164,7 +164,9 @@ PULDNDP004|Mostrar Velocidad|V|
 PULDNDP017|- Mostrar Velocidad Corta||
 PULDNDP002|Mostrar Altura|A|
 PULDNDP009|Mostrar Informe del Tiempo|T|
-PULDNDP018|- Mostrar sólo la Temperatura||
+PULDNDP046|- Mostrar Texto||
+PULDNDP018|-- Sólo la Temperatura||
+PULDNDP047|- Mostrar Indicación de Viento||
 PULDNDP013|Mostrar Ambigüedad de Posición||
 PULDNDP008|Mostrar Potencia/Ganancia|P|
 PULDNDP021|- Usar Pot/Ganancia por Defecto||

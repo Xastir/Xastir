@@ -164,7 +164,9 @@ PULDNDP004|Velocità|S|
 PULDNDP017|- Visualizza basse velocità||
 PULDNDP002|Altitudine||A
 PULDNDP009|Informazioni Meteo|W|
-PULDNDP018|- Visualizza solo temperatura||
+PULDNDP046|- Display Weather Text||
+PULDNDP018|-- Visualizza solo temperatura||
+PULDNDP047|- Display Wind Barb||
 PULDNDP013|Ambiguità di posizione|
 PULDNDP008|Potenza/Guadagno|P|
 PULDNDP021|- Potenza/Guadagno - default||

@@ -169,7 +169,9 @@ PULDNDP004|Geschwindigkeit||
 PULDNDP017|- kurz||
 PULDNDP002|Höhe||
 PULDNDP009|Wetterdaten||
-PULDNDP018|- nur Temperatur||
+PULDNDP046|- Display Weather Text||
+PULDNDP018|-- nur Temperatur||
+PULDNDP047|- Display Wind Barb||
 PULDNDP013|Positionsverschleierung||
 PULDNDP008|Leistung/Gewinn||
 PULDNDP021|- mit Standardwert||

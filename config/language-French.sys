@@ -163,7 +163,9 @@ PULDNDP004|Afficher vitesse|v|
 PULDNDP017|- Afficher vitesse abrégée||
 PULDNDP002|Afficher altitude|A|
 PULDNDP009|Afficher info météo|I|
-PULDNDP018|- Afficher seulement température||
+PULDNDP046|- Afficher texte||
+PULDNDP018|-- Seulement la température||
+PULDNDP047|- Afficher indicateur de vent||
 PULDNDP013|Afficher ambiguïté de position|b|
 PULDNDP008|Afficher puissance/gain|g|
 PULDNDP021|- Activer puissance/gain défaut||

@@ -162,7 +162,9 @@ PULDNDP004|Mostrar velocidade|v|
 PULDNDP017|- Mostrar velocidade baixa||
 PULDNDP002|Mostrar altura|a|
 PULDNDP009|Mostrar info do tempo|t|
-PULDNDP018|- Mostrar só a temperatura||
+PULDNDP046|- Display Weather Text||
+PULDNDP018|-- Mostrar só a temperatura||
+PULDNDP047|- Display Wind Barb||
 PULDNDP013|Ambiguidade de posição||
 PULDNDP008|Estação potência/ganho|p|
 PULDNDP021|- Activar por defeito pot/ganho||
