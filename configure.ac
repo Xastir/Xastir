@@ -345,7 +345,16 @@ if test "${use_imagemagick}" = "yes"; then
   XASTIR_CHECK_IMAGEMAGICK
 fi
 
+
+
+
+
+# Check for Berkeley DB.
 XASTIR_BERKELEY_DB_CHK
+
+
+
+
  
 # Set XASTIR_DATA_BASE in CPPFLAGS due to Gnu coding standard that requires
 # datadir expansion to be deferred until make time.
