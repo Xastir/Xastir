@@ -96,6 +96,10 @@
 
 #define ARROWS     1            // Arrow buttons on menubar
 
+/* JMT - works under FreeBSD */
+uid_t euid;
+gid_t egid;
+
 FILE *file_wx_test;
 
 int dtr_on = 1;
@@ -13213,6 +13217,10 @@ int main(int argc, char *argv[], char *envp[]) {
         NULL
     };
 
+    euid = geteuid();
+    egid = getegid();
+
+    DISABLE_SETUID_PRIVILEGE;
 
     program_start_time = sec_now(); // For use by "Display Uptime"
 
@@ -13450,21 +13458,14 @@ int main(int argc, char *argv[], char *envp[]) {
 
             /* set language attribs */
             (void)XtSetLanguageProc((XtAppContext) NULL, (XtLanguageProc) NULL, (XtPointer) NULL );
-            if (debug_level & 1)
-                printf("main: Before XtTookitInitialize() call\n");
             XtToolkitInitialize();
 
-            if (debug_level & 1)
-                printf("main: Before XtVaAppInitialize() call\n");
             // ERROR:
             Global.top = XtVaAppInitialize(&app_context,"Xastir", NULL, 0,
                                        &argc, argv,
                                        fallback_resources,
                                        XmNmappedWhenManaged, FALSE,
                                        NULL);
-            if (debug_level & 1)
-                printf("main: After XtVaAppInitialize() call\n");
-
             // DK7IN: now scanf and printf use "," instead of "."
             // that leads to several problems in the initialisation
 
@@ -13481,15 +13482,8 @@ int main(int argc, char *argv[], char *envp[]) {
                 exit (-1);
             }
 
-            if (debug_level & 1)
-                printf("main: Before XtRealizeWidget() call\n");
             XtRealizeWidget(Global.top);
-            if (debug_level & 1)
-                printf("main: After XtRealizeWidget() call\n");
-
             create_appshell(display, argv[0], argc, argv);      // does the init
-            if (debug_level & 1)
-                printf("main: After create_appshell() call\n");
 
             /* reset language attribs for numeric, program needs decimal in US for all data! */
 //            (void)setlocale(LC_NUMERIC, "en_US");

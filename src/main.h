@@ -44,12 +44,7 @@ extern FILE *read_file_ptr;
 
 #ifdef __LCLINT__
 #define PACKAGE "xastir"
-
-#ifdef __LCLINT__
-#undef VERSION
 #define VERSION "lclint"
-#endif
-
 #define VERSIONTXT "xastir lclint debug version"
 #else
 #define VERSIONTXT PACKAGE " " VERSION
@@ -236,6 +231,22 @@ extern double cvt_dm2len;
 extern double cvt_hm2len;
 extern double cvt_kn2len;
 extern double cvt_mi2len;
+
+// euid and egid
+extern uid_t euid;
+extern gid_t egid;
+
+/* JMT - works in FreeBSD */
+#define DISABLE_SETUID_PRIVILEGE do { \
+seteuid(getuid()); \
+setegid(getgid()); \
+if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", getuid(), getgid()); } \
+} while(0)
+#define ENABLE_SETUID_PRIVILEGE do { \
+seteuid(euid); \
+setegid(egid); \
+if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", euid, egid); } \
+} while(0)
 
 #endif /* XASTIR_MAIN_H */
 

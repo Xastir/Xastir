@@ -719,14 +719,19 @@ int ax25_init(int port) {
     // WE7U:  Commented out sections below.  We keep the old socket number
     // around now, so have to start a new socket in all cases to make it work.
 //    if (port_data[port].channel == -1) {  // WE7U
-        if ((port_data[port].channel = socket(AF_INET, SOCK_PACKET, htons(proto))) == -1) {
-            perror("socket");
 
-            if (end_critical_section(&port_data_lock, "interface.c:ax25_init(4)" ) > 0)
-                printf("port_data_lock, Port = %d\n", port);
+    ENABLE_SETUID_PRIVILEGE;
+    port_data[port].channel = socket(AF_INET, SOCK_PACKET, htons(proto));
+    DISABLE_SETUID_PRIVILEGE;
+ 
+    if (port_data[port].channel == -1) {
+        perror("socket");
+        if (end_critical_section(&port_data_lock, "interface.c:ax25_init(4)" ) > 0)
+            printf("port_data_lock, Port = %d\n", port);
 
-            return -1;
-        }
+        return -1;
+    }
+
 //    } // WE7U
 //    else {    // WE7U
         // Use socket number that is already defined
@@ -797,7 +802,6 @@ int command_file_to_tnc_port(int port, char *filename) {
 
                         port_write_string(port,command);
                         line[0] = (char)0;
-                        usleep(500000); // 500ms to let TNC process each line
                     }
                 }
             }
@@ -941,11 +945,15 @@ int serial_init (int port) {
   #endif
 #endif
             }
+
             (void)fclose(lock);
+
             /* check to see if it is stale*/
             if (status != mypid) {
                 printf("Lock is stale removing\n");
+                ENABLE_SETUID_PRIVILEGE;
                 (void)unlink(fn);
+                DISABLE_SETUID_PRIVILEGE;
             } else {
                 printf("Can not open port other program has a lock\n");
 
@@ -965,7 +973,9 @@ int serial_init (int port) {
     }
 
     /* try to open channel */
+    ENABLE_SETUID_PRIVILEGE;
     port_data[port].channel = open(port_data[port].device_name, O_RDWR|O_NOCTTY);
+    DISABLE_SETUID_PRIVILEGE;
     if (port_data[port].channel == -1){
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(4)" ) > 0)
@@ -982,7 +992,9 @@ int serial_init (int port) {
     if (debug_level & 2)
         printf("Create lock file %s\n",fn);
 
+    ENABLE_SETUID_PRIVILEGE;
     lock = fopen(fn,"w");
+    DISABLE_SETUID_PRIVILEGE;
     if (lock != NULL) {
         /* get my process id for lock file*/
         mypid = getpid();
@@ -1157,7 +1169,9 @@ int serial_detach(int port) {
         if (debug_level & 2)
             printf("Delete lock file %s\n",fn);
 
+        ENABLE_SETUID_PRIVILEGE;
         (void)unlink(fn);
+        DISABLE_SETUID_PRIVILEGE;
         (void)tcsetattr(port_data[port].channel, TCSANOW, &port_data[port].t_old);
         if (close(port_data[port].channel) == 0) {
             port_data[port].status = DEVICE_DOWN;
@@ -1702,7 +1716,19 @@ void port_write_string(int port, char *data) {
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write_string(2)" ) > 0)
         printf("write_lock, Port = %d\n", port);
+
+    // Delay so that we don't send too fast to serial-port TNC's
+    switch (port_data[port].device_type) {
+        case DEVICE_SERIAL_TNC_HSP_GPS:
+        case DEVICE_SERIAL_TNC_AUX_GPS:
+        case DEVICE_SERIAL_TNC:
+            usleep(500000); // 500ms to let TNC process each line
+            break;
+        default:
+            break;
+    }
 }
+ 
 
 
 
@@ -3128,8 +3154,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 if ( (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
-                        && !posit_tx_disable)
+                        && !posit_tx_disable) {
                     port_write_string(port,header_txt);
+                }
 
 
                 /* Set converse mode */
@@ -3137,8 +3164,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 if ( (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
-                        && !posit_tx_disable)
-                    port_write_string(port,header_txt);
+                        && !posit_tx_disable) {
+                    port_write_string(port,header_txt); 
+                }
                 /*sleep(1);*/
                 break;
 
@@ -3309,6 +3337,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     && !transmit_disable
                     && !posit_tx_disable) {
                 port_write_string(port, data_txt);          // Transmit the posit
+
                 if (debug_level & 2)
                     printf("TX:%d<%s>\n",port,data_txt);
 
