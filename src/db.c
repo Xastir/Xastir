@@ -5503,6 +5503,9 @@ int test_extract_weather_item(char *data, char type, int datalen) {
 // decode these two new parameters used for RAWS weather station
 // objects.
 //
+// By the time we call this function we've already extracted any
+// time/position info at the beginning of the string.
+//
 int extract_weather(DataRow *p_station, char *data, int compr) {
     char time_data[MAX_TIME];
     char temp[5];
@@ -5689,6 +5692,7 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             p_station->speed[0]          = '\0';
             p_station->course[0]         = '\0';
         }
+
         (void)extract_weather_item(data,'g',3,weather->wx_gust);      // gust (peak wind speed in mph in the last 5 minutes)
 
         (void)extract_weather_item(data,'t',3,weather->wx_temp);      // temperature (in deg Fahrenheit), could be negative
@@ -5708,7 +5712,12 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
                 "%0.1f",
                 (float)(atoi(weather->wx_baro)/10.0));
 
-        (void)extract_weather_item(data,'s',3,weather->wx_snow);      // snowfall, inches in the last 24 hours
+        // If we parsed a speed/course, a second 's' parameter means
+        // snowfall.  Try to parse it, but only in the case where
+        // we've parsed speed out of this packet already.
+        if ( (speed[0] != '\0') && (course[0] != '\0') ) {
+            (void)extract_weather_item(data,'s',3,weather->wx_snow);      // snowfall, inches in the last 24 hours
+        }
 
         (void)extract_weather_item(data,'L',3,temp);                  // luminosity (in watts per square meter) 999 and below
 
