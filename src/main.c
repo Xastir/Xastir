@@ -11386,8 +11386,8 @@ void new_image(Widget da) {
 void check_range(void) {
     Dimension width, height;
 
-    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
 
+    XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
 
     // Check the window itself to see if our new y-scale fits it
     //
@@ -11400,48 +11400,55 @@ void check_range(void) {
         new_scale_y = 64800000l / height;
     }
 
-
-
-
-
-// Find the four corners of the map in the new scale system.  Make
-// sure they are on the display, but not all inside the display.
-
-
-
-
-
     if ((new_mid_y < (height*new_scale_y)/2))
-            new_mid_y  = (height*new_scale_y)/2;                 // upper border max 90°N
+            new_mid_y  = (height*new_scale_y)/2;    // upper border max 90°N
 
-
-            if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
-                new_mid_y = 64800000l-((height*new_scale_y)/2);  // lower border max 90°S
-
+    if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
+        new_mid_y = 64800000l-((height*new_scale_y)/2); // lower border max 90°S
 
     // Adjust scaling based on latitude of new center
     new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
     //fprintf(stderr,"x:%ld\ty:%ld\n\n",new_scale_x,new_scale_y);
 
+//    // scale_x will always be bigger than scale_y, so no problem here...
+//    if ((width*new_scale_x) > 129600000l) {
+//        // Center between 180°W and 180°E
+//        new_mid_x = 129600000l/2;
+//    }
 
-    // scale_x will always be bigger than scale_y, so no problem here...
-    if ((width*new_scale_x) > 129600000l) {
-        // Center between 180°W and 180°E
-        new_mid_x = 129600000l/2;
+
+// The below code causes the map image to snap to the left or right
+// of the display.  I'd rather see the scale factor changed so that
+// the map fits perfectly left/right in the display, so that we
+// cannot go past the edges of the earth.  Change the code to work
+// this way later.  We'll have to compute new_y_scale from the
+// new_x_scale once we scale X appropriately, then will probably
+// have to test the y scaling again?
+
+
+    // Check against left border
+    if ((new_mid_x < (width*new_scale_x)/2)) {
+        // This will cause the map image to snap to the left of the
+        // display.
+        new_mid_x = (width*new_scale_x)/2;  // left border max 180°W
+    }
+    else {
+        // Check against right border
+        if ((new_mid_x + (width*new_scale_x)/2) > 129600000l)
+            // This will cause the map image to snap to the right of
+            // the display.
+            new_mid_x = 129600000l-((width*new_scale_x)/2); // right border max 180°E
     }
 
+// Find the four corners of the map in the new scale system.  Make
+// sure they are on the display, but not well inside the borders of
+// the display.
 
-    if ((new_mid_x < (width*new_scale_x)/2))
-            new_mid_x = (width*new_scale_x)/2;                   // left border max 180°W
-
-
-            if ((new_mid_x + (width*new_scale_x)/2) > 129600000l)
-                new_mid_x = 129600000l-((width*new_scale_x)/2);  // right border max 180°E
-
-
-    // Check for all earth borders inside window border.  If so,
-    // rescale/recenter so that it does a best fit inside the
-    // window.
+// We keep getting mid_x_long_offset out of range when zooming out
+// and having the edge of the world map to the right of the middle
+// of the window.  This shows up in new_image() above during the
+// convert_from_xastir_coordinates() call.  new_mid_x is the data of
+// interest in this routine.
 
 }
 
