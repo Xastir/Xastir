@@ -40,8 +40,8 @@ sound_DATA=placeholder
 docdir=${prefix}/xastir/doc
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README.1ST COPYING
 
-mandir=${prefix}/man/man1
-man_DATA=xastir.1
+mandir=${prefix}/man
+man_MANS=xastir.1
 
 ChangeLog::
 
