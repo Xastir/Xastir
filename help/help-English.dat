@@ -1630,7 +1630,8 @@ HELP-INDEX>Creating a log
 Xastir can log data from the internet or TNC for later playback, or for
 debugging purposes.  WARNING: Logging can fill up your hard drive, so be
 careful using it, or make preparations for rolling over the log files
-automatically via cron.
+automatically via cron. An indication will be shown on the status bar when
+logging is enabled.
 
 All these choices are accessible via the File menu:
 
@@ -1680,6 +1681,10 @@ text will only be converted to upper case...
 
 Clicking on the "Locate Now!" button will center the first station
 found in the center of your screen at the current zoom level.
+
+Clicking "FCC/RAC Lookup" will look up the user's information if the FCC or RAC
+database, of those databases are installed.
+
 Clicking on "Cancel" will close the window.
 
 This dialog will pop up if a station sends a Mic-e "Emergency!" packet, to
@@ -1771,6 +1776,9 @@ inf2geo.pl
 This script creates .geo files from UI-View .inf files. To create a map.geo
 from a map.inf, typical usage would be "inf2geo.pl map".
 
+kiss-off.pl
+This script sends the commands needed to turn off a TNC's KISS mode.
+
 mapblast2geo.pl
 This script creates .geo files for Mapblast pixel maps. It includes usage
 information.
@@ -1782,15 +1790,32 @@ crop the white borders and rotate/scale the map properly. Typical usage would
 be "mapfgd.pl mapdir" where mapdir is the directory containing the GeoTIFF
 images.
 
+overlay.pl
+This script creates .log format files from comma-seperated overlay files. See
+the script comments for full usage information. 
+
+ozi2geo.pl
+This script creates .geo files from OziExplorer .map files.
+
+permutations.pl
+This script converts between different lat/lon formats. See the script comments
+for further details.
+
+split_gnis.bash
+This will take a GNIS datapoint file (typically for a whole state, 8+Mb), break
+it down into smaller chunks (typically for a county, 30-200k) it will also
+throw away the trailing spaces and <CR>'s at EOL.
+
+split_gnis.pl
+This is a perl version of the above script.
+
+test_coord.pl
+Tests for the Coordinate.pm perl module.
+
 track-get.pl
 This script downloads the tracklog of a specified object from a Garmin GPS.
 It requires the GPS::Garmin module. It prompts for an object name, and writes
 the tracklog to the ~/.xastir/logs directory.
-
-waypoint-get.pl
-This similar script downloads the waypoints from a Garmin GPS, and creates a
-log in the ~/.xastir/logs directory containing the waypoints as objects. It
-also requires the GPS::Garmin module.
 
 update_langfile.pl
 This script is targeted toward developers. It rebuilds a specified language
@@ -1800,6 +1825,11 @@ English file. When the second language file lacks a string in the main file,
 the untranslated string is inserted. Typical usage would be 
 "update_langfile.pl language-German.sys" . The main language file is
 hard-coded but easily editable.
+
+waypoint-get.pl
+This similar script downloads the waypoints from a Garmin GPS, and creates a
+log in the ~/.xastir/logs directory containing the waypoints as objects. It
+also requires the GPS::Garmin module.
 
 HELP-INDEX>Configuring Interfaces
 
@@ -1824,6 +1854,7 @@ Serial TNC w/GPS on AUX port
 Serial KISS TNC
 Networked Database (Not Implemented Yet)
 Networked AGWPE
+Serial Multi-Port KISS TNC
 
 To add a device, click on the add button. A "Choose Interface Type" box will
 appear. Click on the type of device you would like to add. Then click the Add
