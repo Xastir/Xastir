@@ -7087,7 +7087,7 @@ void station_del_ptr(DataRow *p_name) {
         // deleting our own objects from time to time.  Leave this
         // in until we're sure the problem has been fixed.
         if (is_my_call(p_name->origin,1)) {
-            printf("station_del_ptr: Removing my own object: %s\n",
+            fprintf(stderr,"station_del_ptr: Removing my own object: %s\n",
                 p_name->call_sign);
         }
 

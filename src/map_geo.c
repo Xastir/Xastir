@@ -699,7 +699,7 @@ void draw_geo_image_map (Widget w,
                ((float)(scale_x/map_c_dx) > rasterfuzz) ||
                ((float)(map_c_dy/scale_y) > rasterfuzz) ||
                ((float)(scale_y/map_c_dy) > rasterfuzz)) {
-      printf("Skipping fuzzy map %s with sx=%f,sy=%f.\n", file,
+      fprintf(stderr,"Skipping fuzzy map %s with sx=%f,sy=%f.\n", file,
              (float)(map_c_dx/scale_x),(float)(map_c_dy/scale_y));
       return;
 #endif //FUZZYRASTER
