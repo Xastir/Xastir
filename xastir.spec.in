@@ -1,13 +1,16 @@
-Summary         : Amateur Station Tracking and Reporting system for amateur radio
-Name            : @PACKAGE@
-Version         : @VERSION@
-Release         : 1
-Group           : Applications/Networking
-Copyright       : GPL
-Packager        : cbyam@virginia.edu
-# Icon            : src/@PACKAGE@.xpm
-BuildRoot       : /var/tmp/%{name}-buildroot
-Source          : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
+Summary   : Amateur Station Tracking and Reporting system for amateur radio
+Name      : @PACKAGE@
+Version   : @VERSION@
+Release   : 1
+#Epoch    : 1
+License   : GPL
+Group     : Applications/Networking
+Packager  : cbyam@virginia.edu
+# Icon    : src/@PACKAGE@.xpm
+Source    : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
+URL       : http://www.xastir.org
+BuildRoot : %{_tmppath}/%{name}-root
+Requires  : /usr/X11R6/include/Xm/Xm.h
 
 %description
 Xastir is a graphical application that interfaces HAM radio
@@ -16,33 +19,39 @@ and internet access to realtime mapping software.
 Install XASTIR if you are interested in APRS and HAM radio
 software.
 
-%requires lesstif
-
 %prep
 %setup -q
 #%patch
 
 %build
-./configure
+%configure
 make
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 gzip -9nf xastir.1
-mv xastir.1.gz $RPM_BUILD_ROOT/usr/man/man1
-make DESTDIR=$RPM_BUILD_ROOT install
+mkdir %{buildroot} %{buildroot}/usr %{buildroot}/usr/man
+%{buildroot}/usr/man/man1
+mv xastir.1.gz %{buildroot}/usr/man/man1
+%makeinstall
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
 %attr(4555,root,root) /usr/local/bin/xastir
+/usr/local/bin/Coordinate.pm
 /usr/local/bin/callpass
+/usr/local/bin/coord-convert.pl
+/usr/local/bin/fcc-get
+/usr/local/bin/icontable.pl
 /usr/local/bin/inf2geo.pl
 /usr/local/bin/mapblast2geo.pl
 /usr/local/bin/mapfgd.pl
+/usr/local/bin/permutations.pl
 /usr/local/bin/track-get.pl
+/usr/local/bin/update_langfile.pl
 /usr/local/bin/waypoint-get.pl
 /usr/local/xastir/config/language-Dutch.sys
 /usr/local/xastir/config/language-English.sys
@@ -60,6 +69,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/xastir/config/tnc-stop.sys
 /usr/local/xastir/config/xastir.rgb
 /usr/local/xastir/Counties/placeholder
+/usr/local/xastir/GNIS/placeholder
 /usr/local/xastir/doc/AUTHORS
 /usr/local/xastir/doc/ChangeLog
 /usr/local/xastir/doc/COPYING
@@ -75,9 +85,20 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/xastir/help/help-Portuguese.sys
 /usr/local/xastir/help/help-Spanish.dat
 /usr/local/xastir/maps/placeholder
+/usr/local/xastir/maps/GPS/placeholder
 /usr/local/xastir/sounds/placeholder
 /usr/local/xastir/symbols/symbols.dat
+/usr/local/xastir/symbols/13pct.xbm
+/usr/local/xastir/symbols/25pct.xbm
+/usr/local/xastir/symbols/2x2.xbm
+/usr/local/xastir/symbols/alert.xbm
+/usr/local/xastir/symbols/flood.xbm
+/usr/local/xastir/symbols/snow.xbm
+/usr/local/xastir/symbols/tornado.xbm
+/usr/local/xastir/symbols/wind.xbm
+/usr/local/xastir/symbols/winter_wx.xbm
+/usr/local/xastir/symbols/wntr_strm.xbm
 /usr/man/man1/xastir.1.gz
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL
-%doc LICENSE NEWS README README.1ST TODO UPDATES
+%doc LICENSE NEWS README README.1ST README.win32 TODO UPDATES
 
