@@ -495,6 +495,7 @@ WPUPCFI011|Reconnect on NET failure?||
 WPUPCFI012|Run as an I-Gate?||
 WPUPCFI013|Broadcast messages via TNC when an I-Gate?||
 WPUPCFI014|Log I-Gate Transactions?||
+WPUPCFI015|Filter Parameters||
 #
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Configure Audio Alarms||

@@ -3131,7 +3131,8 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 // this will return the port # if one is available
 // otherwise it will return -1 if there is an error
 //***********************************************************
-int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck_p,int dev_sp,int dev_sty,int reconnect) {
+int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck_p,
+        int dev_sp,int dev_sty,int reconnect, char *filter_string) {
     char logon_txt[200];
     int ok;
     char temp[300];
@@ -3257,11 +3258,46 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                 if (ok == 1) {
 
                     /* if connected now send password */
-                    if (strlen(passwd))
-                        xastir_snprintf(logon_txt, sizeof(logon_txt), "user %s pass %s vers %s%c%c", my_callsign, passwd, verstr,'\r','\n');
-                    else
-                        xastir_snprintf(logon_txt, sizeof(logon_txt), "user %s pass -1 vers %s %c%c", my_callsign, verstr, '\r', '\n');
+                    if (strlen(passwd)) {
 
+                        if (strlen(filter_string)) {    // Filter specified
+
+                            // Please note that "filter" must be the 8th
+                            // parameter on the line in order to be
+                            // parsed properly by the servers.
+                            xastir_snprintf(logon_txt,
+                                sizeof(logon_txt),
+                                "user %s pass %s vers %s filter %s%c%c",
+                                my_callsign,
+                                passwd,
+                                verstr,
+                                filter_string,
+                                '\r',
+                                '\n');
+                        }
+                        else {  // No filter specified
+                            xastir_snprintf(logon_txt,
+                                sizeof(logon_txt),
+                                "user %s pass %s vers %s%c%c",
+                                my_callsign,
+                                passwd,
+                                verstr,
+                                '\r',
+                                '\n');
+                        }
+                    }
+                    else {
+                        xastir_snprintf(logon_txt,
+                            sizeof(logon_txt),
+                            "user %s pass -1 vers %s %c%c",
+                            my_callsign,
+                            verstr,
+                            '\r',
+                            '\n');
+                    }
+
+//printf("Sending this string: %s\n", logon_txt);
+ 
                     port_write_string(port_avail,logon_txt);
                 }
                 break;
@@ -3456,12 +3492,14 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
 //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
                         (void)add_device(i,
-                            DEVICE_NET_STREAM,devices[i].device_host_name,
+                            DEVICE_NET_STREAM,
+                            devices[i].device_host_name,
                             devices[i].device_host_pswd,
                             devices[i].sp,
                             0,
                             0,
-                            devices[i].reconnect);
+                            devices[i].reconnect,
+                            devices[i].device_host_filter_string);
                     }
                     break;
 
@@ -3472,15 +3510,29 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
 //                    (void)del_device(i);    // Disconnect old port if it exists
 //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
-                        (void)add_device(i,DEVICE_NET_GPSD,devices[i].device_host_name,
-                            "", devices[i].sp,0, 0, devices[i].reconnect);
+                        (void)add_device(i,
+                            DEVICE_NET_GPSD,
+                            devices[i].device_host_name,
+                            "",
+                            devices[i].sp,
+                            0,
+                            0,
+                            devices[i].reconnect,
+                            NULL);
                     }
                     break;
 
                 case DEVICE_SERIAL_WX:
                     if (devices[i].connect_on_startup == 1 || override) {
-                        (void)add_device(i,DEVICE_SERIAL_WX,devices[i].device_name,devices[i].device_host_pswd,
-                            -1,devices[i].sp,devices[i].style,0);
+                        (void)add_device(i,
+                            DEVICE_SERIAL_WX,
+                            devices[i].device_name,
+                            devices[i].device_host_pswd,
+                            -1,
+                            devices[i].sp,
+                            devices[i].style,
+                            0,
+                            NULL);
                     }
                     break;
 
@@ -3491,15 +3543,29 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
 //                    (void)del_device(i);    // Disconnect old port if it exists
 //begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" );
 
-                        (void)add_device(i,DEVICE_NET_WX,devices[i].device_host_name,devices[i].device_host_pswd,
-                            devices[i].sp,0, 0, devices[i].reconnect);
+                        (void)add_device(i,
+                            DEVICE_NET_WX,
+                            devices[i].device_host_name,
+                            devices[i].device_host_pswd,
+                            devices[i].sp,
+                            0,
+                            0,
+                            devices[i].reconnect,
+                            NULL);
                     }
                     break;
 
                 case DEVICE_SERIAL_GPS:
                     if (devices[i].connect_on_startup == 1 || override) {
-                        (void)add_device(i,DEVICE_SERIAL_GPS,devices[i].device_name,"",-1,
-                            devices[i].sp,devices[i].style,0);
+                        (void)add_device(i,
+                            DEVICE_SERIAL_GPS,
+                            devices[i].device_name,
+                            "",
+                            -1,
+                            devices[i].sp,
+                            devices[i].style,
+                            0,
+                            NULL);
                     }
                     break;
 
@@ -3511,14 +3577,29 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (devices[i].connect_on_startup == 1 || override) {
-                        (void)add_device(i,devices[i].device_type,devices[i].device_name,"",-1,
-                            devices[i].sp,devices[i].style,0);
+                        (void)add_device(i,
+                            devices[i].device_type,
+                            devices[i].device_name,
+                            "",
+                            -1,
+                            devices[i].sp,
+                            devices[i].style,
+                            0,
+                            NULL);
                     }
                     break;
 
                 case DEVICE_AX25_TNC:
                     if (devices[i].connect_on_startup == 1 || override) {
-                        (void)add_device(i,DEVICE_AX25_TNC,devices[i].device_name,"",-1,-1,-1,0);
+                        (void)add_device(i,
+                            DEVICE_AX25_TNC,
+                            devices[i].device_name,
+                            "",
+                            -1,
+                            -1,
+                            -1,
+                            0,
+                            NULL);
                     }
                     break;
 

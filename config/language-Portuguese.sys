@@ -493,7 +493,8 @@ WPUPCFI010|(Deixar em branco se não houver nada)||
 WPUPCFI011|Voltar a ligar em caso de falha de rede?||
 WPUPCFI012|Correr como num I-Gate?||
 WPUPCFI013|Difundir mensagens via TNC quando houver um I-Gate?||
-WPUPCFI014|Log de transações do I-Gate?||
+WPUPCFI014|Log de transações do I-Gate?|||
+WPUPCFI015|Filter Parameters||
 #
 # Configurar Alarmas de Audio
 WPUPCFA001|Configurar alarme de audio||

@@ -448,6 +448,10 @@ void save_data(void)  {
             store_string (fout, name, devices[i].device_host_pswd);
 
             strcpy (name, name_temp);
+            strcat (name, "FILTER_PARAMS");
+            store_string (fout, name, devices[i].device_host_filter_string);
+
+            strcpy (name, name_temp);
             strcat (name, "UNPROTO1");
             store_string (fout, name, devices[i].unproto1);
 
@@ -968,6 +972,11 @@ void load_data_or_default(void) {
         strcat (name, "PASSWD");
         if (!get_string (name, devices[i].device_host_pswd))
             strcpy (devices[i].device_host_pswd, "");
+
+        strcpy (name, name_temp);
+        strcat (name, "FILTER_PARAMS");
+        if (!get_string (name, devices[i].device_host_filter_string))
+            strcpy (devices[i].device_host_filter_string, "");
 
         strcpy (name, name_temp);
         strcat (name, "UNPROTO1");

@@ -95,7 +95,7 @@ typedef struct {
     char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
     char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
     unsigned long int address;                    /* socket address for network              */
-    int    thread_status;                         /* thread status for connect thread         */
+    int    thread_status;                         /* thread status for connect thread        */
     int    connect_status;                        /* connect status for connect thread       */
     int    decode_errors;                         /* decode error count, used for data type  */
     int    data_type;                             /* 0=normal 1=wx_binary                    */
@@ -138,6 +138,7 @@ typedef struct {
     char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
     char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
     char   device_host_pswd[MAX_DEVICE_HOSTPW+1]; /* host password also WX device data type  */
+    char   device_host_filter_string[201];        /* host filter string                      */
     char   unproto1[50];                          /* unproto path 1 for this port            */
     char   unproto2[50];                          /* unproto path 2 for this port            */
     char   unproto3[50];                          /* unproto path 3 for this port            */
@@ -177,7 +178,8 @@ extern int add_device(int port_avail,int dev_type,
                char *passwd,
                int dev_sck_p, int dev_sp,
                int dev_sty,
-               int reconnect);
+               int reconnect,
+               char *filter_string);
 
 extern xastir_mutex data_lock;          // Protects global data, data_port, data_avail variables
 extern xastir_mutex output_data_lock;   // Protects interface.c:channel_data() function only

@@ -495,7 +495,8 @@ WPUPCFI010|Dejar en blanco si nada||
 WPUPCFI011|Reconectar en fallo de la RED?||
 WPUPCFI012|Correr como un I-Gate?||
 WPUPCFI013|Disfundir mensajes vía TNC cuando un I-Gate?||
-WPUPCFI014|Bitácora de Transacciones del I-Gate?||
+WPUPCFI014|Bitácora de Transacciones del I-Gate?|||
+WPUPCFI015|Filter Parameters||
 #
 # Configurar Alarmas de Audio
 WPUPCFA001|Configurar Alarma de Audio||

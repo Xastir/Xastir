@@ -494,7 +494,8 @@ WPUPCFI010|(Laisser vide si nul)||
 WPUPCFI011|Reconnexion sur erreur réseau?||
 WPUPCFI012|Fonction IGate?||
 WPUPCFI013|Diffusion de messages par le TNC lorsqu'en IGate?||
-WPUPCFI014|Archivage des transactions IGate?||
+WPUPCFI014|Archivage des transactions IGate?|||
+WPUPCFI015|Filter Parameters||
 #
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Configurer alarmes sonores||

@@ -379,8 +379,17 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
     }
 
     /* reopen or open port*/
-    if (devices[TNC_port].connect_on_startup==1 || was_up)
-        (void)add_device(TNC_port,type,devices[TNC_port].device_name,"",-1,devices[TNC_port].sp,devices[TNC_port].style,0);
+    if (devices[TNC_port].connect_on_startup==1 || was_up) {
+        (void)add_device(TNC_port,
+            type,
+            devices[TNC_port].device_name,
+            "",
+            -1,
+            devices[TNC_port].sp,
+            devices[TNC_port].style,
+            0,
+            NULL);
+    }
 
     /* delete list */
     modify_device_list(0,0);
@@ -1469,8 +1478,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" )
     set_port_speed(GPS_port);
     devices[GPS_port].style=device_style;
     /* reopen or open port*/
-    if (devices[GPS_port].connect_on_startup==1 || was_up)
-        (void)add_device(GPS_port,DEVICE_SERIAL_GPS,devices[GPS_port].device_name,"",-1,devices[GPS_port].sp,devices[GPS_port].style,0);
+    if (devices[GPS_port].connect_on_startup==1 || was_up) {
+        (void)add_device(GPS_port,
+            DEVICE_SERIAL_GPS,
+            devices[GPS_port].device_name,
+            "",
+            -1,
+            devices[GPS_port].sp,
+            devices[GPS_port].style,
+            0,
+            NULL);
+    }
 
     /* delete list */
     modify_device_list(0,0);
@@ -1932,9 +1950,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
             sizeof( devices[WX_port].device_host_pswd), "%d", device_data_type);
 
     /* reopen or open port*/
-    if (devices[WX_port].connect_on_startup==1 || was_up)
-        (void)add_device(WX_port,DEVICE_SERIAL_WX,devices[WX_port].device_name,devices[WX_port].device_host_pswd,-1,
-               devices[WX_port].sp,devices[WX_port].style,0);
+    if (devices[WX_port].connect_on_startup==1 || was_up) {
+        (void)add_device(WX_port,
+            DEVICE_SERIAL_WX,
+            devices[WX_port].device_name,
+            devices[WX_port].device_host_pswd,
+            -1,
+            devices[WX_port].sp,
+            devices[WX_port].style,
+            0,
+            NULL);
+    }
 
     /* delete list */
     modify_device_list(0,0);
@@ -2508,9 +2534,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" )
             sizeof(devices[NWX_port].device_host_pswd), "%d", device_data_type);
 
     /* reopen or open port*/
-    if (devices[NWX_port].connect_on_startup==1 || was_up)
-        (void)add_device(NWX_port,DEVICE_NET_WX,devices[NWX_port].device_host_name,
-               devices[NWX_port].device_host_pswd, devices[NWX_port].sp,0, 0, devices[NWX_port].reconnect);
+    if (devices[NWX_port].connect_on_startup==1 || was_up) {
+        (void)add_device(NWX_port,
+            DEVICE_NET_WX,
+            devices[NWX_port].device_host_name,
+            devices[NWX_port].device_host_pswd,
+            devices[NWX_port].sp,
+            0,
+            0,
+            devices[NWX_port].reconnect,
+            NULL);
+    }
 
 
     /* delete list */
@@ -2933,9 +2967,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" 
         devices[NGPS_port].set_time=0;
 
     /* reopen or open port*/
-    if (devices[NGPS_port].connect_on_startup==1 || was_up)
-        (void)add_device(NGPS_port,DEVICE_NET_GPSD,devices[NGPS_port].device_host_name,
-               "", devices[NGPS_port].sp,0, 0, devices[NGPS_port].reconnect);
+    if (devices[NGPS_port].connect_on_startup==1 || was_up) {
+        (void)add_device(NGPS_port,
+            DEVICE_NET_GPSD,
+            devices[NGPS_port].device_host_name,
+            "",
+            devices[NGPS_port].sp,
+            0,
+            0,
+            devices[NGPS_port].reconnect,
+            NULL);
+    }
 
 
     /* delete list */
@@ -3264,8 +3306,17 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
     devices[AX25_port].reconnect=1;
 
     /* reopen or open port*/
-    if (devices[AX25_port].connect_on_startup==1 || was_up)
-        (void)add_device(AX25_port,DEVICE_AX25_TNC,devices[AX25_port].device_name,"",-1,-1,-1,0);
+    if (devices[AX25_port].connect_on_startup==1 || was_up) {
+        (void)add_device(AX25_port,
+            DEVICE_AX25_TNC,
+            devices[AX25_port].device_name,
+            "",
+            -1,
+            -1,
+            -1,
+            0,
+            NULL);
+    }
 
 
     /* delete list */
@@ -3705,12 +3756,14 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_AX25" );
 /* Configure Network server GUI                      */
 /*****************************************************/
 
+//WE7U2
 /**** INTERNET CONFIGURE ******/
 Widget config_Inet_dialog = (Widget)NULL;
 Widget Inet_active_on_startup;
 Widget Inet_host_data;
 Widget Inet_port_data;
 Widget Inet_password_data;
+Widget Inet_filter_data;
 Widget Inet_transmit_data;
 Widget Inet_reconnect_data;
 int    Inet_port;
@@ -3752,6 +3805,10 @@ begin_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
     (void)remove_trailing_spaces(devices[Inet_port].device_host_name);
     strcpy(devices[Inet_port].device_host_pswd,XmTextFieldGetString(Inet_password_data));
     (void)remove_trailing_spaces(devices[Inet_port].device_host_pswd);
+//WE7U2
+    strcpy(devices[Inet_port].device_host_filter_string,XmTextFieldGetString(Inet_filter_data));
+    (void)remove_trailing_spaces(devices[Inet_port].device_host_filter_string);
+
     devices[Inet_port].sp=atoi(XmTextFieldGetString(Inet_port_data));
 
     if(XmToggleButtonGetState(Inet_active_on_startup))
@@ -3770,9 +3827,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
         devices[Inet_port].reconnect=0;
 
     if (devices[Inet_port].connect_on_startup==1 || was_up) {
-        (void)add_device(Inet_port,DEVICE_NET_STREAM,devices[Inet_port].device_host_name,
-               devices[Inet_port].device_host_pswd, devices[Inet_port].sp,
-               0, 0, devices[Inet_port].reconnect);
+        (void)add_device(Inet_port,
+            DEVICE_NET_STREAM,
+            devices[Inet_port].device_host_name,
+            devices[Inet_port].device_host_pswd,
+            devices[Inet_port].sp,
+            0,
+            0,
+            devices[Inet_port].reconnect,
+            devices[Inet_port].device_host_filter_string);
     }
 
     /* delete list */
@@ -3795,7 +3858,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
 
 void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                ihost, iport, password, password_fl,sep;
+                ihost, iport, password, password_fl, filter, sep;
 
     Atom delw;
     char temp[40];
@@ -3902,7 +3965,7 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 30,
+                                      XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
@@ -3937,9 +4000,38 @@ void Config_Inet( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-        Inet_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFI011"),xmToggleButtonWidgetClass,form,
+        filter = XtVaCreateManagedWidget(langcode("WPUPCFI015"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, password,
+                                      XmNtopOffset, 20,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        Inet_filter_data = XtVaCreateManagedWidget("Config_Inet filter_data", xmTextFieldWidgetClass, form,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, FALSE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 30,
+                                      XmNmaxLength, 200,
+                                      XmNbackground, colors[0x0f],
+                                      XmNleftAttachment,XmATTACH_WIDGET,
+                                      XmNleftWidget, filter,
+                                      XmNleftOffset, 10,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, password,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+
+        Inet_reconnect_data = XtVaCreateManagedWidget(langcode("WPUPCFI011"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, filter,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -4021,6 +4113,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_Inet" );
             xastir_snprintf(temp, sizeof(temp), "%d", devices[Inet_port].sp);
             XmTextFieldSetString(Inet_port_data,temp);
             XmTextFieldSetString(Inet_password_data,devices[Inet_port].device_host_pswd);
+            XmTextFieldSetString(Inet_filter_data,devices[Inet_port].device_host_filter_string);
 
             if (devices[Inet_port].reconnect)
                 XmToggleButtonSetState(Inet_reconnect_data,TRUE,FALSE);
@@ -4596,6 +4689,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                     strcpy(devices[port].device_name,"");
                     strcpy(devices[port].device_host_name,"");
                     strcpy(devices[port].device_host_pswd,"");
+                    strcpy(devices[port].device_host_filter_string,"");
                     strcpy(devices[port].unproto1,"");
                     strcpy(devices[port].unproto1,"");
                     strcpy(devices[port].unproto1,"");

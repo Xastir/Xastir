@@ -499,7 +499,8 @@ WPUPCFI010|(Bij Geen Blanco Laten)||
 WPUPCFI011|Verbinding herstellen bij NET fout?||
 WPUPCFI012|Laten lopen als I-Gate?||
 WPUPCFI013|Bij I-Gate Berichten verspreiden via TNC?||
-WPUPCFI014|I-Gate Transacties Loggen?||
+WPUPCFI014|I-Gate Transacties Loggen?|||
+WPUPCFI015|Filter Parameters||
 #
 # PopUp "Configure Audio Alarms"
 WPUPCFA001|Audio Alarm Instellen||

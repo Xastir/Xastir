@@ -495,7 +495,8 @@ WPUPCFI010|(Lascia vuoto se non necessario)||
 WPUPCFI011|Riconnettersi in caso di sconnessione?||
 WPUPCFI012|Funzionare da Gateway?||
 WPUPCFI013|Trasmetto i dati al TNC quando sono collegato ad Internet?||
-WPUPCFI014|Scrivo nel log le trasmissioni dalla Rete al TNC?||
+WPUPCFI014|Scrivo nel log le trasmissioni dalla Rete al TNC?|||
+WPUPCFI015|Filter Parameters||
 #
 #Configure Audio Alarms
 WPUPCFA001|Configura Suoni||

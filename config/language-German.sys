@@ -500,7 +500,8 @@ WPUPCFI010|(Freilassen falls keines)||
 WPUPCFI011|Wiederverbinden bei NET Fehler?||
 WPUPCFI012|Als I-Gate verwenden?||
 WPUPCFI013|Nachrichten aus Internet via TNC aussenden wenn I-Gate?||
-WPUPCFI014|I-Gate Transaktionen protokollieren?||
+WPUPCFI014|I-Gate Transaktionen protokollieren?|||
+WPUPCFI015|Filter Parameters||
 #
 # PopUp "Einstellungen für Audio Alarm"
 WPUPCFA001|Einstellungen für Audio Alarm||
