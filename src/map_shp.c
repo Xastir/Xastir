@@ -26,7 +26,7 @@
  * SHPRingDir_2d() function in this file.
  *
  * DBFAWK TODO:
- *  - default.dbfawk when no signature matches
+ *  - reload .dbfawk's when they've changed (or maps are reindexed)
  *  - scale line widths based on zoom level (see city_flag, for example)
  *  - center area polygon labels
  *  - do more config/ *.dbfawk files!
@@ -579,6 +579,12 @@ MRC         string      (8,0)   48122-G7
 #ifdef WITH_DBFAWK
 static dbfawk_sig_info *Dbf_sigs = NULL;
 static awk_symtab *Symtbl = NULL;
+/* default dbfawk rule when no better signature match is found */
+static awk_rule dbfawk_default_rules[] = {
+    { 0, BEGIN, NULL, NULL, 0, 0, "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; name=\"\"; filled=0; pattern=0; display_level=8192; label_level=0",0 },
+};
+#define dbfawk_default_nrules (sizeof(dbfawk_default_rules)/sizeof(dbfawk_default_rules[0]))
+static dbfawk_sig_info *dbfawk_default_sig = NULL;
 #endif
 
 void draw_shapefile_map (Widget w,
@@ -672,6 +678,9 @@ void draw_shapefile_map (Widget w,
     if (debug_level & 16)
         fprintf(stderr,"DBFAWK signatures %sfound in %s.\n",
                 (Dbf_sigs)?" ":"NOT ",get_data_base_dir("config"));
+    /* set up default dbfawk when no sig matches */
+    dbfawk_default_sig = calloc(1,sizeof(dbfawk_sig_info));
+    dbfawk_default_sig->prog = awk_load_program_array(dbfawk_default_rules,dbfawk_default_nrules);
 #endif
 
     //fprintf(stderr,"*** Alert color: %d ***\n",alert_color);
@@ -740,6 +749,10 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
     if (Dbf_sigs) {   /* see if we have a .dbfawk file that matches */
         sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig,file);
+        if (!sig_info) {
+            fprintf(stderr,"No DBFAWK signature for %s!  Using default.\n",filenm);
+            sig_info = dbfawk_default_sig;
+        }
         if (sig_info) {         /* we've got a .dbfawk, so set up symtbl */
             if (!Symtbl) {
                 Symtbl = awk_new_symtab();
@@ -765,8 +778,9 @@ void draw_shapefile_map (Widget w,
             awk_exec_begin(sig_info->prog); /* execute a BEGIN rule if any */
             /* find out which dbf fields we care to read */
             fld_info = dbfawk_field_list(hDBF, dbffields);
-        } else {
-            fprintf(stderr,"No DBFAWK signature for %s!\n",filenm);
+        } else {                /* should never be reached anymore! */
+            fprintf(stderr,"No DBFAWK signature for %s and no default!\n",filenm);
+            exit(1);
         }
     }
 #endif /* WITH_DBFAWK */
@@ -1646,7 +1660,7 @@ void draw_shapefile_map (Widget w,
                         (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                         (void)XSetLineAttributes(XtDisplay (w), gc, 
                                                  (lanes)?lanes:1,
-                                                 (pattern)?LineSolid:LineOnOffDash,
+                                                 pattern,
                                                  CapButt,JoinMiter);
                     }
 #else /*!WITH_DBFAWK*/
@@ -3110,11 +3124,11 @@ if (on_screen) {
                                 /* And so are lanes and pattern.  Let's
                                    use what was specified. */
                                 (void)XSetLineAttributes(XtDisplay(w),
-                                    gc,
-                                    (lanes)?lanes:1,
-                                    (pattern)?LineSolid:LineOnOffDash,
-                                    CapButt,
-                                    JoinMiter);
+                                                         gc,
+                                                         (lanes)?lanes:1,
+                                                         pattern,
+                                                         CapButt,
+                                                         JoinMiter);
 #else /* !WITH_DBFAWK */
                             else if (glacier_flag||lake_flag||river_flag) {
                                 int color = (glacier_flag)?0x0f:
