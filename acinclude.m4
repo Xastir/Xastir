@@ -174,17 +174,21 @@ if test "$cat" != "no"; then
   AC_DEFINE_UNQUOTED(HAVE_CAT, 1, [Define if you have cat])
   AC_DEFINE_UNQUOTED(CAT_PATH, "${cat}", [Path to cat])
 fi
- 
-AC_PATH_PROG(festival, [festival], no, $BINPATH)
-if test "$festival" != "no"; then
-  AC_DEFINE_UNQUOTED(HAVE_FESTIVAL, 1, [Define if you have festival])
-  AC_DEFINE_UNQUOTED(FESTIVAL_PATH, "${festival}", [Path to festival])
+
+if test "$use_festival" != "no"; then 
+ AC_PATH_PROG(festival, [festival], no, $BINPATH)
+ if test "$festival" != "no"; then
+   AC_DEFINE_UNQUOTED(HAVE_FESTIVAL, 1, [Define if you have festival])
+   AC_DEFINE_UNQUOTED(FESTIVAL_PATH, "${festival}", [Path to festival])
+ fi
 fi
 
-AC_PATH_PROG(gpsman, [gpsman haslib gpsmanshp], no, $BINPATH)
-if test "$gpsman" != "no"; then
-  AC_DEFINE_UNQUOTED(HAVE_GPSMAN, 1, [Define if you have gpsman])
-  AC_DEFINE_UNQUOTED(GPSMAN_PATH, "${gpsman}", [Path to gpsman])
+if test "$use_gpsman" != "no"; then
+ AC_PATH_PROG(gpsman, [gpsman haslib gpsmanshp], no, $BINPATH)
+ if test "$gpsman" != "no"; then
+   AC_DEFINE_UNQUOTED(HAVE_GPSMAN, 1, [Define if you have gpsman])
+   AC_DEFINE_UNQUOTED(GPSMAN_PATH, "${gpsman}", [Path to gpsman])
+ fi
 fi
 
 ])
