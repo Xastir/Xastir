@@ -3635,7 +3635,7 @@ void tnc_data_clean(char *buf) {
 // the GPS or data from an AX25 packet.
 int tnc_get_data_type(char *buf, int port) {
     register int i;
-    int type=-1;      // Don't know what it is yet.
+    int type=0;      // Don't know what it is yet.
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
@@ -3652,7 +3652,7 @@ int tnc_get_data_type(char *buf, int port) {
             type=1; // Assume NMEA until disqualified.
             for(i=2; i<=5; i++) {
                 if (buf[i]<'A' || buf[i]>'Z') {
-                    type=-1; // Disqualified, not valid NMEA-0183
+                    type=0; // Disqualified, not valid NMEA-0183
                     if (debug_level & 1) {
                         char filtered_data[MAX_LINE_SIZE+1];
                         strcpy(filtered_data, buf);
@@ -3667,7 +3667,7 @@ int tnc_get_data_type(char *buf, int port) {
         if(buf[1]=='G' && buf[2]=='P') {
             for(i=3; i<=5; i++) {
                 if (buf[i]<'A' || buf[i]>'Z') {
-                    type=-1; // Disqualified, not valid NMEA-0183
+                    type=0; // Disqualified, not valid NMEA-0183
                     if (debug_level & 1) {
                         char filtered_data[MAX_LINE_SIZE+1];
                         strcpy(filtered_data, buf);
@@ -3678,21 +3678,6 @@ int tnc_get_data_type(char *buf, int port) {
                 }
             }
         }
-    }
-    // Next, let's look for AX25-ish things
-    // call>path:data
-    else if (decode_ax25_line(buf, 'T', port, 0)) {
-        type=0;
-    }
-    else if (type < 0) {
-        if (debug_level & 1) {
-            char filtered_data[MAX_LINE_SIZE+1];
-            strcpy(filtered_data, buf);
-            makePrintable(filtered_data);
-            printf("tnc_get_data_type: Couldn't decode %s made GPS\n",
-                filtered_data);
-        }
-        type=1;
     }
     return(type);
 }
