@@ -815,7 +815,20 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
             char temp[10];
 
             distance = (int)distance_from_my_station(call_sign,temp);
-            if ((distance <= bulletin_range) || (bulletin_range == 0))
+
+            // Note:  The old method caused bulletins of distance
+            // zero to bring up the View->Bulletins dialog.  It gets
+            // very annoying very quickly.  We instead now wait for
+            // a posit to come in from the station so that the
+            // distance is known.  The user can either set
+            // bulletin_range to zero or leave the View->Bulletins
+            // dialog up to see the zero-distance bulletins.
+//            if ((distance <= bulletin_range) || (bulletin_range == 0))
+
+            // New method:  Pop it up only if distance is non-zero
+            // and within range, or range setting set to zero.
+            if ( (bulletin_range == 0)
+                || ( (distance <= bulletin_range) && (distance > 0) ) )
             {
                 // We have a _new_ bulletin that's within our
                 // current range setting.  Pop up the Bulletins
@@ -890,8 +903,8 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     if (debug_level & 1)
         printf("msg_data_add end\n");
 
-    // Bring up the bulletins dialog if new bulletin and within our
-    // range.
+    // Bring up the bulletins dialog if it's a new bulletin and
+    // within our range.
     if (bring_up_bulletins) {
         popup_bulletins();
         //printf("%05d:%9s:%c:%c:%9s:%s:%s\n",
