@@ -143,7 +143,7 @@ long vectors_num;
 long text_label_num;
 long object_label_num;
 
-float geotiff_map_intensity = 1.0;  // Map color intensity, set from Maps->Map Intensity
+float geotiff_map_intensity = 0.65;  // Map color intensity, set from Maps->Map Intensity
 
 
 
@@ -3437,9 +3437,11 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         if (debug_level >= 2)   // Draw some calibration dots
                 xastir_snprintf(fileimg, sizeof(fileimg), "\'http://tiger.census.gov/cgi-bin/mapgen?lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%imark=-122,48;-122,47;-121,48;-121,47;-123,47;-123,48;-123,47.5;-122,47.5;-121,47.5\'",\
                         lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1);
-            else
-                xastir_snprintf(fileimg, sizeof(fileimg), "\'http://tiger.census.gov/cgi-bin/mapgen?lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
+            else {
+                // N0VH turned the grids and other data on for the census tiger maps
+                xastir_snprintf(fileimg, sizeof(fileimg), "\'http://tiger.census.gov/cgi-bin/mapper/map.gif?on=GRID&on=places&&on=interstate&on=states&on=ushwy&lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%i\'",\
                         lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1);
+            }
         } else if (findu_flag)   // Set up the URL for 2 weeks worth of raw data.
             xastir_snprintf(fileimg, sizeof(fileimg),
                 "\'http://64.34.101.121/cgi-bin/rawposit.cgi?call=%s&start=336&length=336\'",
