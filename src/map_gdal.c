@@ -3270,38 +3270,385 @@ clear_dangerous();
     misc_transportation_layer = 0;
 
 
-    // Loop through all layers in the data source.
-//
-// Optimizations:
-//   SDTS, load only those layers that make sense.
-//   TIGER, same thing, based on the type of file.  We probably need
-//     to do some serious changes to how we do TIGER layers anyway,
-//     as we have to pull multiple things together in order to draw
-//     polygons.
-//
-// Tiger Polygons:
-// *) Read "Polygon".  Snag "POLYID" field.
-// *) Read "PolyChainLink".  Match "POLYID" to either "POLYIDL" or 
-//    "POLYIDR".  Snag "TLID" field.
-// *) Read "PIP".  Match "POLYID" field.  Snag "POLYLONG", 
-//    "POLYLAT", and "WATER" fields.  We'll use the lat/long as the 
-//    point to draw labels.  "WATER"=1: Perennial.  "WATER"=2: 
-//    Intermittent.
-// *) Read "AreaLandmarks".  Match on "POLYID" if possible.  Snag 
-//    "LAND" field.
-// *) Read "Landmarks".  Match on "LAND" field.  Snag "CFCC" and 
-//    "LANAME" fields.
-// *) Read the "CompleteChain" layer, caching the geometry of any 
-//    lines that match "TLID" fields found above.
-// *) Once we've processed the CompleteChain layer, turn those 
-//    geometries into real polygons using BuildPolygonFromEdges() 
-//    and draw them.  Decide whether to draw any particular polygon
-//    based on the WATER field and/or the CFCC field (if
-//    AreaLandmarks and Landmarks were present for that polygon).
-// *) Draw non-polygon vectors.
-//
-    //
+
     numLayers = OGR_DS_GetLayerCount(datasourceH);
+
+
+
+
+
+
+
+
+
+
+    // Special handling for TIGER files so that we can extract/draw
+    // polygons.
+    //
+    // Tiger Polygons:
+    // *) Read "Polygon".  Snag "POLYID" field.
+    // *) Read "PIP".  Match "POLYID" field.  Snag "POLYLONG", 
+    //    "POLYLAT", and "WATER" fields.  We'll use the lat/long as the 
+    //    point to draw labels.  "WATER"=1: Perennial.  "WATER"=2: 
+    //    Intermittent.
+    // *) Read "AreaLandmarks".  Match on "POLYID" if possible.  Snag 
+    //    "LAND" field.
+    // *) Read "Landmarks".  Match on "LAND" field.  Snag "CFCC" and 
+    //    "LANAME" fields.
+    // *) Read "PolyChainLink".  Match "POLYID" to either "POLYIDL" or 
+    //    "POLYIDR".  Snag "TLID" fields.
+    // *) Read the "CompleteChain" layer, caching the geometry of any 
+    //    lines that match "TLID" fields found above.
+    // *) Once we've processed the CompleteChain layer, turn those 
+    //    geometries into real polygons using BuildPolygonFromEdges() 
+    //    and draw them.  Decide whether to draw any particular polygon
+    //    based on the WATER field and/or the CFCC field (if
+    //    AreaLandmarks and Landmarks were present for that polygon).
+    // *) Draw non-polygon vectors.
+    //
+/*
+    if (strcasecmp(driver_type,"TIGER") == 0) {
+        OGRLayerH layerH;
+        OGRFeatureH featureH;
+
+        typedef struct _tlid_struct {
+            int TLID;
+            struct _tlid_struct *next;
+        }tlid_struct;
+
+        typedef struct _polyinfo {
+            int POLYID;       // From Polygon
+            double POLYLONG;  // From PIP
+            double POLYLAT;   // From PIP
+            int WATER;        // From PIP
+            int LAND;         // From AreaLandmarks
+            char CFCC[100];   // From Landmarks
+            char LANAME[100]; // From Landmarks
+            struct _tlid_struct *tlid_list; // From PolyChainLink
+            struct _polyinfo *next;
+        }polyinfo;
+
+        // Head pointer for our linked list
+        polyinfo *polyhead = NULL;
+
+
+        layerH = OGR_DS_GetLayerByName(datasourceH, "Polygon");
+        if (layerH) {
+            // Loop through all of the "Polygon" layer records,
+            // saving the POLYID fields.  MODULE too?
+            polyinfo *temp;
+
+            while ( (featureH = OGR_L_GetNextFeature( layerH )) != NULL ) {
+                int kk;
+
+                kk = OGR_F_GetFieldIndex( featureH, "POLYID");
+                if (kk != -1) {
+                    int polyid;
+
+                    polyid = OGR_F_GetFieldAsInteger( featureH, kk);
+
+// Change this so that we have an array of pointers which point to
+// either NULL or the malloc'ed structs.  This will give us a hash
+// table and very fast access to the data structure.
+
+                    // Allocate struct
+                    temp = (polyinfo *)malloc(sizeof(polyinfo));
+                    temp->POLYID = polyid;
+
+//fprintf(stderr,"POLYID:%i\n", polyid);
+
+                    // Fill in some defaults
+                    temp->WATER = -1;
+                    temp->LAND = -1;
+                    temp->CFCC[0] = '\0';
+                    temp->LANAME[0] = '\0';
+                    temp->tlid_list = NULL;
+ 
+                    // Link it into chain
+                    temp->next = polyhead;
+                    polyhead = temp;
+// Remember to free() the storage later
+                }
+
+                if (featureH != NULL)
+                    OGR_F_Destroy( featureH );
+            }   // End of while
+        }   // End of if (layerH)
+
+
+        layerH = OGR_DS_GetLayerByName(datasourceH, "PIP");
+        if (layerH) {
+            // Loop through all of the "PIP" layer records,
+            // saving the POLYLONG/POLYLAT/WATER fields.
+            polyinfo *temp;
+
+            while ( (featureH = OGR_L_GetNextFeature( layerH )) != NULL ) {
+                int kk;
+
+                kk = OGR_F_GetFieldIndex( featureH, "POLYID");
+                if (kk != -1) {
+                    int polyid;
+
+                    polyid = OGR_F_GetFieldAsInteger( featureH, kk);
+
+                    // Look through our linked list for a match with
+                    // the polyid field
+                    temp = polyhead;
+                    while (temp) {
+                        if (temp->POLYID == polyid) {
+                            int mm;
+                            // Found a match!
+
+//fprintf(stderr,"Found a match for POLYID in PIP layer!\n");
+
+                            mm = OGR_F_GetFieldIndex( featureH, "POLYLONG");
+                            if (mm != -1) {
+                                double polylong;
+
+//fprintf(stderr,"POLYLONG\t");
+                                polylong = OGR_F_GetFieldAsDouble( featureH, mm);
+                                temp->POLYLONG = polylong;
+                            }
+
+                            mm = OGR_F_GetFieldIndex( featureH, "POLYLAT");
+                            if (mm != -1) {
+                                double polylat;
+ 
+//fprintf(stderr,"POLYLAT\t");
+                                polylat = OGR_F_GetFieldAsDouble( featureH, mm);
+                                temp->POLYLAT = polylat;
+                            }
+
+                            mm = OGR_F_GetFieldIndex( featureH, "WATER");
+                            if (mm != -1) {
+                                int water;
+ 
+//fprintf(stderr,"WATER\n");
+                                water = OGR_F_GetFieldAsInteger( featureH, mm);
+                                temp->WATER = water;
+                            }
+
+                            temp = NULL; // Exit the linked-list search loop
+                        }
+                        else {
+                            // Try the next record
+                            temp = temp->next;
+                        }
+                    }
+                }
+
+                if (featureH != NULL)
+                    OGR_F_Destroy( featureH );
+            }   // End of while
+        }   // End of if (layerH)
+
+
+        layerH = OGR_DS_GetLayerByName(datasourceH, "AreaLandmarks");
+        if (layerH) {
+            // Loop through all of the "AreaLandmarks" layer records,
+            // saving the LAND fields.
+            polyinfo *temp;
+
+            while ( (featureH = OGR_L_GetNextFeature( layerH )) != NULL ) {
+                int kk;
+
+                kk = OGR_F_GetFieldIndex( featureH, "POLYID");
+                if (kk != -1) {
+                    int polyid;
+
+                    polyid = OGR_F_GetFieldAsInteger( featureH, kk);
+
+                    // Look through our linked list for a match with
+                    // the polyid field
+                    temp = polyhead;
+                    while (temp) {
+                        if (temp->POLYID == polyid) {
+                            int mm;
+                            // Found a match!
+
+//fprintf(stderr,"Found a match for POLYID in AreaLandmarks layer!\n");
+
+                            mm = OGR_F_GetFieldIndex( featureH, "LAND");
+                            if (mm != -1) {
+                                int land;
+
+//fprintf(stderr,"LAND\n");
+                                land = OGR_F_GetFieldAsInteger( featureH, mm);
+                                temp->LAND = land;
+                            }
+
+                            temp = NULL; // Exit the linked-list search loop
+                        }
+                        else {
+                            // Try the next record
+                            temp = temp->next;
+                        }
+                    }
+                }
+
+                if (featureH != NULL)
+                    OGR_F_Destroy( featureH );
+            }   // End of while
+        }   // End of if (layerH)
+
+
+        layerH = OGR_DS_GetLayerByName(datasourceH, "Landmarks");
+        if (layerH) {
+            // Loop through all of the "Landmarks" layer records,
+            // saving the LANAME/CFCC fields.
+            polyinfo *temp;
+
+            while ( (featureH = OGR_L_GetNextFeature( layerH )) != NULL ) {
+                int kk;
+
+                kk = OGR_F_GetFieldIndex( featureH, "LAND");
+                if (kk != -1) {
+                    int land;
+
+                    land = OGR_F_GetFieldAsInteger( featureH, kk);
+
+                    // Look through our linked list for a match with
+                    // the polyid field
+                    temp = polyhead;
+                    while (temp) {
+                        if (temp->LAND == land) {
+                            int mm;
+                            // Found a match!
+
+//fprintf(stderr,"Found a match for LAND (%i) in Landmarks layer!\n", land);
+
+                            mm = OGR_F_GetFieldIndex( featureH, "CFCC");
+                            if (mm != -1) {
+                                const char *cfcc;
+
+//fprintf(stderr,"CFCC\t");
+                                cfcc = OGR_F_GetFieldAsString( featureH, mm);
+                                xastir_snprintf(temp->CFCC,
+                                    sizeof(temp->CFCC),
+                                    "%s",
+                                    cfcc);
+                            }
+
+                            mm = OGR_F_GetFieldIndex( featureH, "LANAME");
+                            if (mm != -1) {
+                                const char *laname;
+
+                                laname = OGR_F_GetFieldAsString( featureH, mm);
+//fprintf(stderr,"LANAME:%s\n",laname);
+ 
+                                xastir_snprintf(temp->LANAME,
+                                    sizeof(temp->LANAME),
+                                    "%s",
+                                    laname);
+                            }
+
+                            temp = NULL; // Exit the linked-list search loop
+                        }
+                        else {
+                            // Try the next record
+                            temp = temp->next;
+                        }
+                    }
+                }
+
+                if (featureH != NULL)
+                    OGR_F_Destroy( featureH );
+            }   // End of while
+ 
+        }
+
+
+
+// The below section is probably not correct yet.  I'll assume that
+// we need to watch how we do the right/left thing and construct our
+// chain appropriately, else we'll end up with weird polygons that
+// have all of the correct vertices but the wrong line segments
+// between them.
+// We also need to collect the geometry information for all of the
+// matches and link them together, so we can then use
+// OGRBuildPolygonFromEdges() to construct a real polygon that we
+// can draw.
+//
+        layerH = OGR_DS_GetLayerByName(datasourceH, "PolyChainLink");
+        if (layerH) {
+            // Match "POLYID" from above to either "POLYIDL" or
+            // "POLYIDR" fields.  Save the "TLID" fields on matches.
+            polyinfo *temp;
+
+            while ( (featureH = OGR_L_GetNextFeature( layerH )) != NULL ) {
+                int kk, mm, nn;
+                int polyidl = -1;
+                int polyidr = -1;
+                int tlid = -1;
+
+                kk = OGR_F_GetFieldIndex( featureH, "POLYIDL" );
+                mm = OGR_F_GetFieldIndex( featureH, "POLYIDR" );
+                nn = OGR_F_GetFieldIndex( featureH, "TLID" );
+
+                if (kk != -1)
+                    polyidl = OGR_F_GetFieldAsInteger( featureH, kk);
+                if (mm != -1)
+                    polyidr = OGR_F_GetFieldAsInteger( featureH, mm);
+                if (nn != -1)
+                    tlid = OGR_F_GetFieldAsInteger( featureH, nn);
+
+                // Look through our linked list for a match with the
+                // polyidl or polyidr fields
+                temp = polyhead;
+                while (temp) {
+                    if (temp->POLYID == polyidl
+                            || temp->POLYID == polyidr) {
+                        tlid_struct *tlid_temp;
+                        // Found a match!
+
+fprintf(stderr,"Found a match for POLYIDL or POLYIDR in PolyChainLink layer!\n");
+
+                        // Allocate a new record and link it in at
+                        // the top of the list.  Fill it in with the
+                        // value of TLID.
+                        tlid_temp = (tlid_struct *)malloc(sizeof(tlid_struct));
+                        tlid_temp->TLID = tlid;
+                        tlid_temp->next = temp->tlid_list;
+                        temp->tlid_list = tlid_temp;
+
+                        temp = NULL; // Exit the linked-list search loop
+                    }
+                    else {
+                        // Try the next record
+                        temp = temp->next;
+                    }
+                }
+
+                if (featureH != NULL)
+                    OGR_F_Destroy( featureH );
+            }   // End of while
+        }
+
+
+        layerH = OGR_DS_GetLayerByName(datasourceH, "CompleteChain");
+        if (layerH) {
+        }
+    }
+*/
+ 
+
+
+
+
+
+
+
+
+
+    // Loop through all layers in the data source.
+    //
+    // Optimizations:
+    //   SDTS, load only those layers that make sense.
+    //   TIGER, same thing, based on the type of file.  We probably need
+    //     to do some serious changes to how we do TIGER layers anyway,
+    //     as we have to pull multiple things together in order to draw
+    //     polygons.
+    //
     for ( ii=0; ii<numLayers; ii++ ) {
         OGRLayerH layerH;
         OGRFeatureH featureH;
