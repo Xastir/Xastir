@@ -4776,7 +4776,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         Map_icon_outline_Pane, map_icon_outline_button,
         map_wx_alerts_button, index_maps_on_startup_button,
         units_choice_button, dbstatus_choice_button,
-        device_config_button, iface_button, iface_connect_button,
+        iface_button, iface_connect_button,
         tnc_logging, transmit_disable_toggle, net_logging,
         igate_logging, wx_logging, enable_snapshots, print_button,
         test_button, debug_level_button, aa_button, speech_button,
@@ -6788,14 +6788,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-    device_config_button = XtVaCreateManagedWidget(langcode("PULDNTNT02"),
-            xmPushButtonGadgetClass,
-            ifacepane,
-            XmNmnemonic,langcode_hotkey("PULDNTNT02"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
     (void)XtVaCreateManagedWidget("create_appshell sep5a",
             xmSeparatorGadgetClass,
             ifacepane,
@@ -6988,9 +6980,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     XtAddCallback(help_about,           XmNactivateCallback,Help_About,NULL);
     XtAddCallback(help_help,            XmNactivateCallback,Help_Index,NULL);
-
-    /* Interface */
-    XtAddCallback(device_config_button, XmNactivateCallback,Configure_interface,NULL);
 
     /* TNC */
     XtAddCallback(iface_transmit_now,   XmNactivateCallback,TNC_Transmit_now,NULL);
@@ -15951,6 +15940,26 @@ void map_properties_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientD
 
 
 
+//WE7U
+// Possible changes:
+// *) Save/restore the map selections while changing properties.
+//    Malloc a char array the size of the map_properties_list and
+//    fill it in based on the current highlighting.  Free it when
+//    we're done.
+// *) Change the labels at the top into buttons?  Zoom/Layer buttons
+//    would pop up a dialog asking for the number.  Others would
+//    just toggle the feature.
+// *) Change to a single "Apply" button.  This won't allow us to
+//    easily change only some parameters unless we skip input fields
+//    that are blank.  Run through highlighted items, fill in input
+//    fields if the parameter is the same for all.  If different for
+//    some, leave input field blank.
+// *) Bring up an "Abandon Changes?" confirmation dialog if input
+//    fields are filled in but "Cancel" was pressed instead of
+//    "Apply".
+
+
+
 // Fills in the map properties file entries.
 //
 void map_properties_fill_in (void) {
@@ -15964,11 +15973,33 @@ void map_properties_fill_in (void) {
 
     i=0;
     if (map_properties_dialog) {
+        char *current_selections = NULL;
+        int kk, mm;
+
 
         // Save our current place in the dialog
         XtVaGetValues(map_properties_list,
             XmNtopItemPosition, &top_position,
             NULL);
+
+        // Get the list count from the dialog
+        XtVaGetValues(map_properties_list,
+            XmNitemCount,&kk,
+            NULL);
+
+        if (kk) {   // If list is not empty
+            // Allocate enough chars to hold the highlighting info
+            current_selections = (char *)malloc(sizeof(char) * kk);
+//fprintf(stderr,"List entries:%d\n", kk);
+
+            // Iterate over the list, saving the highlighting values
+            for (mm = 0; mm < kk; mm++) {
+                if (XmListPosSelected(map_properties_list, mm))
+                    current_selections[mm] = 1;
+                else
+                    current_selections[mm] = 0;
+            }
+        }
 
 //        fprintf(stderr,"Top Position: %d\n",top_position);
 
@@ -16190,6 +16221,16 @@ if (current->temp_select) {
 }
 
             current = current->next;
+        }
+
+        if (kk) {   // If list is not empty
+            // Restore the highlighting values
+            for (mm = 0; mm < kk; mm++) {
+                if (current_selections[mm])
+                    XmListSelectPos(map_properties_list,mm,TRUE);
+            }
+            // Free the highlighting array we allocated
+            free(current_selections);
         }
 
         // Restore our place in the dialog

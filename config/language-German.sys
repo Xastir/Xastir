@@ -226,8 +226,7 @@ PULDNMG005|Automatische Antwort|A|
 PULDNMG006|Satelliten ACK Modus|M|
 #
 # Menu "Schnittstellen"
-PULDNTNT04|Schnittstellen Ein/Aus|A|
-PULDNTNT02|Einstellungen|E|
+PULDNTNT04|Interface Control||
 PULDNTNT03|Nicht senden: ALLES||
 PULDNTNT05|Nicht senden: Meine Position||
 PULDNTNT06|Nicht senden: Objekte||

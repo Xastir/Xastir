@@ -230,8 +230,7 @@ PULDNMG005|Automatisch Beantwoorden|B|
 PULDNMG006|Sateliet Bevestigings Mode|M|
 #
 # Menu "Interfaces"
-PULDNTNT04|Interface besturing|I|
-PULDNTNT02|Interface bewerken|B|
+PULDNTNT04|Interface Control||
 PULDNTNT03|Zet verzenden van alle data uit||
 PULDNTNT05|Zet verzenden positie uit||
 PULDNTNT06|Zet verzenden van objecten uit||

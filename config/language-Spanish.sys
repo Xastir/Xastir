@@ -223,8 +223,7 @@ PULDNMG005|Activar Auto contestación de Mensaje|A|
 PULDNMG006|Satélite Modo de Reconocimiento|M|
 #
 # Menú de Interfaces
-PULDNTNT04|Iniciar/Detener|I|
-PULDNTNT02|Propiedades|P|
+PULDNTNT04|Interface Control||
 PULDNTNT03|Desactivar Transmitir: TODOS||
 PULDNTNT05|Desactivar Transmitir: Mi Posición||
 PULDNTNT06|Desactivar Transmitir: Objetos/Artículos||

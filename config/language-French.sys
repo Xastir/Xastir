@@ -219,8 +219,7 @@ PULDNMG005|Activer réponse automatique|R|
 PULDNMG006|Mode "Satellite Ack"|M|
 #
 # Menu "Interfaces"
-PULDNTNT04|Départ/arrêt|C|
-PULDNTNT02|Propriétés|P|
+PULDNTNT04|Interface Control|C|
 PULDNTNT03|Désactiver transmission: Tout||
 PULDNTNT05|Désactiver transmission: Ma position||
 PULDNTNT06|Désactiver transmission: Objets/Articles||

@@ -220,8 +220,7 @@ PULDNMG005|Risposta automatica ai messaggi in arrivo|R|
 PULDNMG006|Modalità Satellite Ack|M|
 #
 # Menu "Interfaces"
-PULDNTNT04|Avvia/Ferma|S|
-PULDNTNT02|Proprietà|P|
+PULDNTNT04|Interface Control||
 PULDNTNT03|Disabilita Trasmissioni: TUTTE||
 PULDNTNT05|Disabilita Trasmissioni: Mia Posizione||
 PULDNTNT06|Disabilita Trasmissioni: Oggetti/Entità||

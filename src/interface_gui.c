@@ -46,7 +46,6 @@
 #endif  // HAVE_DMALLOC
 
 Widget configure_interface_dialog = NULL;
-Widget interface_list = NULL;
 Widget choose_interface_dialog = NULL;
 Widget interface_type_list = NULL;
 Widget control_interface_dialog = NULL;
@@ -6257,22 +6256,6 @@ int are_shells_up(void) {
 
 
 
-void Configure_interface_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
-    Widget shell = (Widget) clientData;
-    if (are_shells_up()==0) {
-        if (choose_interface_dialog != NULL)
-            Choose_interface_destroy_shell(choose_interface_dialog,choose_interface_dialog,NULL);
-
-        XtPopdown(shell);
-        XtDestroyWidget(shell);
-    }
-    configure_interface_dialog = (Widget)NULL;
-}
-
-
-
-
-
 void Choose_interface_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
     if (are_shells_up()==0) {
@@ -6298,13 +6281,13 @@ void modify_device_list(int option, int port) {
             switch (option) {
                 case 0 :
                     /* delete entire list available */
-                    XmListDeletePos(interface_list,1);
+                    XmListDeletePos(control_iface_list,1);
                     break;
 
                 case 1 :
                     /* delete item pointed to by port */
                     if (i==port)
-                        XmListDeletePos(interface_list,n);
+                        XmListDeletePos(control_iface_list,n);
                     n++;
                     break;
 
@@ -6383,7 +6366,8 @@ void modify_device_list(int option, int port) {
                             break;
                     }
                     /* look at list data (Must be "Device" port#) */
-                    XmListAddItem(interface_list, str_ptr = XmStringCreateLtoR(temp,XmFONTLIST_DEFAULT_TAG),n++);
+                    XmListAddItem(control_iface_list, str_ptr = XmStringCreateLtoR(temp,XmFONTLIST_DEFAULT_TAG),n++);
+ 
                     XmStringFree(str_ptr);
                     break;
 
@@ -6826,13 +6810,13 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
 
         case 2:/* interface properties */
             /* get option selected */
-            XtVaGetValues(interface_list,
+            XtVaGetValues(control_iface_list,
                     XmNitemCount,&i,
                     XmNitems,&list,
                     NULL);
 
             for (x=1; x<=i;x++) {
-                if(XmListPosSelected(interface_list,x)) {
+                if(XmListPosSelected(control_iface_list,x)) {
                     found=1;
                     if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
                         x=i+1;
@@ -7038,162 +7022,6 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
 
 
-void Configure_interface( /*@unused@*/ Widget w,  /*@unused@*/ XtPointer clientData,  /*@unused@*/ XtPointer callData) {
-    static Widget pane, rowcol, form, button_add, button_delete, button_properties, button_cancel;
-    /*int n,i;
-    char temp[600];*/
-    Atom delw;
-    Arg al[15];                    /* Arg List */
-    register unsigned int ac = 0;           /* Arg Count */
-
-    if(!configure_interface_dialog) {
-        configure_interface_dialog = XtVaCreatePopupShell(langcode("WPUPCIF001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  XmNresize, FALSE,
-                                  NULL);
-
-        pane = XtVaCreateWidget("Configure_interface pane",xmPanedWindowWidgetClass, configure_interface_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
-
-        rowcol =  XtVaCreateWidget("Configure_interface rowcol",xmRowColumnWidgetClass, pane,
-                            XmNorientation, XmVERTICAL,
-                            XmNnumColumns, 1,
-                            XmNpacking, XmPACK_TIGHT,
-                            XmNisAligned, TRUE,
-                            XmNentryAlignment, XmALIGNMENT_CENTER,
-                            XmNkeyboardFocusPolicy, XmEXPLICIT,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
- 
-        /*set args for color */
-        ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-        XtSetArg(al[ac], XmNvisibleItemCount, MAX_IFACE_DEVICES); ac++;
-        XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-        XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
-        XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
-        XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
-        XtSetArg(al[ac], XmNtopAttachment, XmATTACH_FORM); ac++;
-        XtSetArg(al[ac], XmNtopOffset, 5); ac++;
-        XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_NONE); ac++;
-        XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
-        XtSetArg(al[ac], XmNrightOffset, 5); ac++;
-        XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
-        XtSetArg(al[ac], XmNleftOffset, 5); ac++;
-
-        interface_list = XmCreateScrolledList(rowcol,"Configure_interface list",al,ac);
-
-        /* build device list */
-
-begin_critical_section(&devices_lock, "interface_gui.c:Configure_interface" );
-        modify_device_list(2,0);
-end_critical_section(&devices_lock, "interface_gui.c:Configure_interface" );
-
-        form =  XtVaCreateWidget("Configure_interface form",xmFormWidgetClass, rowcol,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
-
-
-        button_add = XtVaCreateManagedWidget(langcode("UNIOP00007"),xmPushButtonGadgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset,5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset,5,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 1,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
-
-        button_delete = XtVaCreateManagedWidget(langcode("UNIOP00008"),xmPushButtonGadgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset,5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 1,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
-
-        button_properties = XtVaCreateManagedWidget(langcode("UNIOP00009"),xmPushButtonGadgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset,5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 3,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
-
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      XmNtraversalOn, TRUE,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset,5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 4,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 5,
-                                      XmNrightOffset,5,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
-
-        XtAddCallback(button_cancel, XmNactivateCallback, Configure_interface_destroy_shell, configure_interface_dialog);
-        XtAddCallback(button_add, XmNactivateCallback, interface_option, "0");
-        XtAddCallback(button_delete, XmNactivateCallback, interface_option, "1");
-        XtAddCallback(button_properties, XmNactivateCallback, interface_option, "2");
-
-        pos_dialog(configure_interface_dialog);
-
-        delw = XmInternAtom(XtDisplay(configure_interface_dialog),"WM_DELETE_WINDOW", FALSE);
-        XmAddWMProtocolCallback(configure_interface_dialog, delw, Configure_interface_destroy_shell, (XtPointer)configure_interface_dialog);
-
-        XtManageChild(form);
-        XtManageChild(rowcol);
-        XtManageChild(interface_list);
-        XtVaSetValues(interface_list, XmNbackground, colors[0x0f], NULL);
-        XtManageChild(pane);
-
-        XtPopup(configure_interface_dialog,XtGrabNone);
-        fix_dialog_vsize(configure_interface_dialog);
-
-        // Move focus to the Close button.  This appears to highlight the
-        // button fine, but we're not able to hit the <Enter> key to
-        // have that default function happen.  Note:  We _can_ hit the
-        // <SPACE> key, and that activates the option.
-//        XmUpdateDisplay(configure_interface_dialog);
-        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
-
-    } else {
-        (void)XRaiseWindow(XtDisplay(configure_interface_dialog), XtWindow(configure_interface_dialog));
-    }
-}
-
-
-
-
-
 /*****************************************************/
 /* Control Interface GUI                           */
 /*****************************************************/
@@ -7317,6 +7145,7 @@ end_critical_section(&control_interface_dialog_lock, "interface_gui.c:Control_in
 
 void control_interface( /*@unused@*/ Widget w,  /*@unused@*/ XtPointer clientData,  /*@unused@*/ XtPointer callData) {
     static Widget rowcol, form, button_start, button_stop, button_start_all, button_stop_all, button_cancel;
+    static Widget button_add, button_delete, button_properties;
     Atom delw;
     Arg al[15];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
@@ -7368,7 +7197,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:control_interface" );
 end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
 
         form =  XtVaCreateWidget("control_interface form",xmFormWidgetClass, rowcol,
-                    XmNfractionBase, 6,
+                    XmNfractionBase, 4,
                     XmNbackground, colors[0xff],
                     XmNautoUnmanage, FALSE,
                     XmNshadowThickness, 1,
@@ -7377,7 +7206,63 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
         button_start = XtVaCreateManagedWidget(langcode("IFPUPCT001"),xmPushButtonGadgetClass, form,
                             XmNnavigationType, XmTAB_GROUP,
                             XmNtraversalOn, TRUE,
+                            XmNtopAttachment, XmATTACH_FORM,
+                            XmNtopOffset, 5,
                             XmNleftAttachment, XmATTACH_FORM,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 1,
+                            XmNbottomAttachment, XmATTACH_NONE,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+
+        button_start_all = XtVaCreateManagedWidget(langcode("IFPUPCT003"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
+                            XmNtopAttachment, XmATTACH_FORM,
+                            XmNtopOffset, 5,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 1,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 2,
+                            XmNbottomAttachment, XmATTACH_NONE,
+                            XmNbackground, colors[0xff],
+                            XmNnavigationType, XmTAB_GROUP,
+                            NULL);
+
+        button_add = XtVaCreateManagedWidget(langcode("UNIOP00007"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
+                            XmNtopAttachment, XmATTACH_FORM,
+                            XmNtopOffset,5,
+                            XmNbottomAttachment, XmATTACH_NONE,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 2,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 3,
+                            XmNbackground, colors[0xff],
+                            NULL);
+
+        button_delete = XtVaCreateManagedWidget(langcode("UNIOP00008"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
+                            XmNtopAttachment, XmATTACH_FORM,
+                            XmNtopOffset,5,
+                            XmNbottomAttachment, XmATTACH_NONE,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 3,
+                            XmNrightAttachment, XmATTACH_POSITION,
+                            XmNrightPosition, 4,
+                            XmNbackground, colors[0xff],
+                            NULL);
+
+        button_stop = XtVaCreateManagedWidget(langcode("IFPUPCT002"),xmPushButtonGadgetClass, form,
+                            XmNnavigationType, XmTAB_GROUP,
+                            XmNtraversalOn, TRUE,
+                            XmNtopAttachment, XmATTACH_WIDGET,
+                            XmNtopWidget, button_start,
+                            XmNleftAttachment, XmATTACH_POSITION,
+                            XmNleftPosition, 0,
                             XmNrightAttachment, XmATTACH_POSITION,
                             XmNrightPosition, 1,
                             XmNbottomAttachment, XmATTACH_FORM,
@@ -7385,9 +7270,11 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
 
-        button_stop = XtVaCreateManagedWidget(langcode("IFPUPCT002"),xmPushButtonGadgetClass, form,
+        button_stop_all = XtVaCreateManagedWidget(langcode("IFPUPCT004"),xmPushButtonGadgetClass, form,
                             XmNnavigationType, XmTAB_GROUP,
                             XmNtraversalOn, TRUE,
+                            XmNtopAttachment, XmATTACH_WIDGET,
+                            XmNtopWidget, button_start,
                             XmNleftAttachment, XmATTACH_POSITION,
                             XmNleftPosition, 1,
                             XmNrightAttachment, XmATTACH_POSITION,
@@ -7397,40 +7284,35 @@ end_critical_section(&devices_lock, "interface_gui.c:control_interface" );
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
 
-        button_start_all = XtVaCreateManagedWidget(langcode("IFPUPCT003"),xmPushButtonGadgetClass, form,
+        button_properties = XtVaCreateManagedWidget(langcode("UNIOP00009"),xmPushButtonGadgetClass, form,
                             XmNnavigationType, XmTAB_GROUP,
                             XmNtraversalOn, TRUE,
+                            XmNtopAttachment, XmATTACH_WIDGET,
+                            XmNtopWidget, button_start,
+                            XmNbottomAttachment, XmATTACH_FORM,
                             XmNleftAttachment, XmATTACH_POSITION,
                             XmNleftPosition, 2,
                             XmNrightAttachment, XmATTACH_POSITION,
                             XmNrightPosition, 3,
-                            XmNbottomAttachment, XmATTACH_FORM,
                             XmNbackground, colors[0xff],
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
-
-        button_stop_all = XtVaCreateManagedWidget(langcode("IFPUPCT004"),xmPushButtonGadgetClass, form,
-                            XmNnavigationType, XmTAB_GROUP,
-                            XmNtraversalOn, TRUE,
-                            XmNleftAttachment, XmATTACH_POSITION,
-                            XmNleftPosition, 3,
-                            XmNrightAttachment, XmATTACH_POSITION,
-                            XmNrightPosition, 4,
-                            XmNbottomAttachment, XmATTACH_FORM,
-                            XmNbackground, colors[0xff],
-                            XmNnavigationType, XmTAB_GROUP,
                             NULL);
 
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
                             XmNnavigationType, XmTAB_GROUP,
                             XmNtraversalOn, TRUE,
+                            XmNtopAttachment, XmATTACH_WIDGET,
+                            XmNtopWidget, button_start,
                             XmNrightAttachment, XmATTACH_FORM,
                             XmNleftAttachment, XmATTACH_POSITION,
-                            XmNleftPosition, 4,
+                            XmNleftPosition, 3,
                             XmNbottomAttachment, XmATTACH_FORM,
                             XmNbackground, colors[0xff],
                             XmNnavigationType, XmTAB_GROUP,
                             NULL);
+
+        XtAddCallback(button_add, XmNactivateCallback, interface_option, "0");
+        XtAddCallback(button_delete, XmNactivateCallback, interface_option, "1");
+        XtAddCallback(button_properties, XmNactivateCallback, interface_option, "2");
 
         XtAddCallback(button_cancel, XmNactivateCallback, Control_interface_destroy_shell, control_interface_dialog);
         XtAddCallback(button_start, XmNactivateCallback, start_stop_interface, "0");
@@ -7570,3 +7452,5 @@ if (end_critical_section(&port_data_lock, "interface_gui.c:interface_status(4)" 
 end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
 
 }
+
+

@@ -220,8 +220,7 @@ PULDNMG005|Enable Auto Reply Message||
 PULDNMG006|Satellite Ack Mode|M|
 #
 # Menu "Interfaces"
-PULDNTNT04|Start/Stop|S|
-PULDNTNT02|Properties|P|
+PULDNTNT04|Interface Control|C|
 PULDNTNT03|Disable Transmit: ALL||
 PULDNTNT05|Disable Transmit: My Position||
 PULDNTNT06|Disable Transmit: Objects/Items||
