@@ -108,7 +108,8 @@ int build_rac_index(void) {
         if(file_time(get_data_base_dir("fcc/AMACALL.LST"))<=file_time(get_user_base_dir("data/AMACALL.ndx"))) {
             return(1);
         } else {
-            statusline("RAC Index old rebuilding",1);
+            statusline("RAC index old rebuilding",1);
+            fprintf(stderr,"RAC index is old.  Rebuilding index.\n");
 //            XmTextFieldSetString(text,"RAC Index old rebuilding");
 //            XtManageChild(text);
 //            XmUpdateDisplay(XtParent(text));
@@ -159,6 +160,7 @@ int build_rac_index(void) {
 
 //    XmTextFieldSetString(text,"");
 //    XtManageChild(text);
+
     return(1);
 }
 

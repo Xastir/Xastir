@@ -102,6 +102,7 @@ int build_fcc_index(int type){
             return(1);
         else {
             statusline("FCC index old, rebuilding",1);
+            fprintf(stderr,"FCC index is old.  Rebuilding index.\n");
 //            XmTextFieldSetString(text,"FCC index old, rebuilding");
 //            XtManageChild(text);
 //            XmUpdateDisplay(XtParent(text));     // DK7IN: do we need this ???
@@ -155,6 +156,7 @@ int build_fcc_index(int type){
 
 //    XmTextFieldSetString(text,"");
 //    XtManageChild(text);
+
     return(1);
 }
 

@@ -15,23 +15,39 @@ cd /var/tmp
 #
 #
 # Get the FCC database, process it.
-#       Download:  71MB
-# Resulting file: 101MB
+#   Download size:  ~71MB
+# Final file size: ~101MB
+echo "*********************************"
+echo "*** Fetching the FCC database ***"
+echo "*********************************"
 wget -c  --passive-ftp ftp://ftp.fcc.gov/pub/Bureaus/Wireless/Databases/uls/complete/l_amat.zip
 #
 # Get rid of characters "^M^M^J" which are sometimes present, sort
 # the file by callsign.
+echo "*****************************************************"
+echo "*** Filtering/sorting/installing the FCC database ***"
+echo "*****************************************************"
 unzip -p l_amat.zip EN.dat | /usr/bin/perl -pe 's/\r\r\n//g' | sort +4 -t \| >$XASTIR_BASE/fcc/EN.dat
 #
 #
 # Get the RAC database, process it.
-#       Download:   2MB
-# Resulting file:  13MB
+#   Download size:  ~2MB
+# Final file size: ~13MB
+echo "*********************************"
+echo "*** Fetching the RAC database ***"
+echo "*********************************"
 wget -c --passive-ftp ftp://ftp.rac.ca/pub/cdncaldb.zip
+#
+echo "***********************************"
+echo "*** Installing the RAC database ***"
+echo "***********************************"
 unzip cdncaldb.zip AMATEUR.RPT
 mv AMATEUR.RPT $XASTIR_BASE/fcc/AMACALL.LST
 #
 #
 # Remove the original downloads
 rm l_amat.zip cdncaldb.zip
+echo "*************"
+echo "*** Done! ***"
+echo "*************"
 
