@@ -8010,6 +8010,7 @@ void Save_CAD_Objects_to_file(void) {
     }
 
     while (object_ptr != NULL) {
+        VerticeRow *vertice = object_ptr->start;
 
         // Write out the main object info:
         fprintf(f,"\nCAD_Object\n");
@@ -8025,8 +8026,6 @@ void Save_CAD_Objects_to_file(void) {
         fprintf(f,"comment: %s\n",object_ptr->comment);
 
         // Iterate through the vertices:
-        VerticeRow *vertice = object_ptr->start;
-
         while (vertice != NULL) {
 
             fprintf(f,"Vertice: %lu %lu\n",
@@ -8354,21 +8353,50 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         area = -area;
 
 
-    // Format it for output and dump it out.  We're using square
-    // terms, so apply the conversion factor twice to convert from
-    // nautical square miles to the units of interest.
-    xastir_snprintf(temp,
-        sizeof(temp),
-        "Area: %0.2f square %s",
-        area * cvt_kn2len * cvt_kn2len,
-        un_dst);
-    popup_message(langcode("POPUPMA020"),temp);
-
-    fprintf(stderr,"%s\n",temp);
-
     // Save it in the object.  Convert nautical square miles to
     // square kilometers.
     CAD_list_head->computed_area = area * 1.852 * 1.852; //km2
+
+
+    // Format it for output and dump it out.  We're using square
+    // terms, so apply the conversion factor twice to convert from
+    // nautical square miles to the units of interest.
+    area = area * cvt_kn2len * cvt_kn2len;
+
+    // We could be measuring a very small or a very large object.
+    // In the case of very small, convert it to square feet or
+    // square meters.
+    if (area < 0.1) {
+
+        // Small area.  Convert to square feet or square meters
+
+        if (units_english_metric) { // Square feet
+            area = area * 5280 * 5280;
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "Area: %0.2f square feet",
+                area);
+            popup_message(langcode("POPUPMA020"),temp);
+        }
+        else {  // Square meters
+            area = area * 1000 * 1000;  // Square meters
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "Area: %0.2f square meters",
+                area);
+            popup_message(langcode("POPUPMA020"),temp);
+        }
+    }
+    else {  // Not small
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "Area: %0.2f square %s",
+            area,
+            un_dst);
+        popup_message(langcode("POPUPMA020"),temp);
+    }
+
+    fprintf(stderr,"%s\n",temp);
 
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
