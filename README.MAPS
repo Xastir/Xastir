@@ -360,6 +360,20 @@ Getting Maps and other Data Files for Xastir:
       That's a long winded way of saying "You can also use ogr2ogr.  See the
       gdal distribution for more details."  didididit didit."
 
+      Yet another note from Tom:
+
+      "I just spent a few minutes and now understand a little about how to use
+      ogr2ogr to do projections with datum shifts.  I added a small section to 
+      http://www.swcp.com/~russo/shape_web explaining how to do it, with a link
+      to a site that has all the different WKT and EPSG numbers for J.  Random
+      Projection.  
+
+      I still find "shpcs2cs" easier to use because can remember "+proj=utm
+      +zone=13 +datum=NAD27 +to +proj=latlong +datum=WGS84" much easier than I
+      can remember "-s_srs EPSG:26713 -t_srs EPSG:4326", but there it is.  Some
+      users might find this helpful."
+
+
 
       -----
 
