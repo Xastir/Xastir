@@ -9194,13 +9194,21 @@ void check_for_new_gps_map(void) {
 static void* gps_transfer_thread(void *arg) {
     int input_param;
     char temp[500];
+    char prefix[100];
+    char postfix[100];
+ 
 
-// Hard-coded executable path here!  (change)
-    char prefix[100] = "cd /home/src/gpsman/gpsman-pre6.0;./gpsman.tcl -dev /dev/ttyS0";
+    // Set up the prefix string.  Note that we depend on the correct
+    // setup of serial ports and such in GPSMan's configs.
+    xastir_snprintf(prefix, sizeof(prefix),
+        "%s",
+        GPSMAN_PATH);
 
-// Hard-coded map directory path here!  (change)
-    char postfix[100] = "Shapefile_2D /usr/local/xastir/maps/GPS/";
-
+    // Set up the postfix string.  The files will be created in the
+    // "SELECTED_MAP_DIR/GPS/" directory.
+    xastir_snprintf(postfix, sizeof(postfix),
+        "Shapefile_2D %s/GPS/",
+        SELECTED_MAP_DIR);
 
     input_param = *((int *) arg);
 

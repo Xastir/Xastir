@@ -327,7 +327,7 @@ AC_CHECK_FUNCS([vsnprintf])
  
  
  
-# Check for wget, find out its path
+# Check for wget, discover its path
 # 
 #
 AC_CHECK_PROG(wget, [wget --version], /usr/bin, , /usr/bin)
@@ -358,7 +358,7 @@ fi
  
  
  
-# Check for convert, find out its path
+# Check for convert, discover its path
 # 
 AC_CHECK_PROG(convert, [convert], /usr/bin, , /usr/bin)
 if test "$convert" != "/usr/bin"; then
@@ -408,7 +408,7 @@ fi
  
  
  
-# Check for gv, find out its path
+# Check for gv, discover its path
 # 
 # Is there a way to find out the path to the executable here and 
 # then compile that into the Xastir code? 
@@ -447,7 +447,7 @@ fi
  
  
  
-# Check for cp, find out its path
+# Check for cp, discover its path
 # 
 AC_CHECK_PROG(cp, [cp -version], /bin, , /bin)
 if test "$cp" != "/bin"; then
@@ -948,23 +948,43 @@ fi
 
 
  
-# Check for gpsman/gpsmanshp
-# 
-# Make sure to check /usr/local/lib & /usr/local/include as well 
-#
-# Change to:
-# AC_CHECK_LIB(gpsmanshp.so, GSHPForgetRT,
-#   AC_CHECK_PROG(gpsman, [gpsman.tcl --version], /usr/bin, , /usr/bin)
-#if test "$gpsman" != "/usr/bin"; then
+# Check for gpsman & gpsmanshp library, discover the path
 # 
 use_gpsman=no
-AC_CHECK_FILE(/usr/lib/tcl8.3/gpsmanshp/gpsmanshp.so,
-  AC_CHECK_FILE(/home/src/gpsman/gpsman-pre6.0/gpsman.tcl,use_gpsman="yes",
-    AC_MSG_WARN(*** Cannot find gpsman.tcl ***)),
-      AC_MSG_WARN(*** Cannot find gpsmanshp.so ***))
-if test "$use_gpsman" = "yes"; then
-  AC_DEFINE_UNQUOTED(HAVE_GPSMAN, 1, [Define if you have GPSMan/gpsmanshp Packages])
+AC_CHECK_PROG(gpsman, [gpsman haslib gpsmanshp], /usr/X11R6/bin, , /usr/X11R6/bin)
+if test "$gpsman" != "/usr/X11R6/bin"; then
+  AC_CHECK_PROG(gpsman, [gpsman haslib gpsmanshp], /usr/bin, , /usr/bin)
+  if test "$gpsman" != "/usr/bin"; then
+    AC_CHECK_PROG(gpsman, [gpsman haslib gpsmanshp], /usr/local/bin, , /usr/local/bin)
+    if test "$gpsman" != "/usr/local/bin"; then
+      AC_CHECK_PROG(gpsman, [gpsman haslib gpsmanshp], /bin, , /bin)
+      if test "$gpsman" != "/bin"; then
+        AC_CHECK_PROG(gpsman, [gpsman haslib gpsmanshp], /usr/sfw/bin, , /usr/sfw/bin)
+        if test "$gpsman" != "/usr/sfw/bin"; then
+          AC_CHECK_PROG(gpsman, [gpsman haslib gpsmanshp], /opt/sfw/bin, , /opt/sfw/bin)
+          if test "$gpsman" != "/opt/sfw/bin"; then
+            AC_CHECK_PROG(gpsman, [gpsman haslib gpsmanshp], /sw/bin, no, /sw/bin)
+            if test "$gpsman" != "/sw/bin"; then 
+              AC_MSG_WARN(*** Cannot find gpsman/gpsmanshp:  Building w/o gpsman support. ***) 
+            fi
+          fi
+        fi
+      fi
+    fi
+  fi 
 fi
+if test "$gpsman" != "no"; then
+  AC_DEFINE_UNQUOTED(HAVE_GPSMAN, 1, [Define if you have GPSMan/gpsmanshp Packages]) 
+  AC_DEFINE_UNQUOTED(GPSMAN_PATH, "${gpsman}/gpsman", [Path to gpsman]) 
+  use_gpsman="yes"
+fi
+#AC_CHECK_FILE(/usr/lib/tcl8.3/gpsmanshp/gpsmanshp.so,
+#  AC_CHECK_FILE(/home/src/gpsman/gpsman-pre6.0/gpsman.tcl,use_gpsman="yes",
+#    AC_MSG_WARN(*** Cannot find gpsman.tcl ***)),
+#      AC_MSG_WARN(*** Cannot find gpsmanshp.so ***))
+#if test "$use_gpsman" = "yes"; then
+#  AC_DEFINE_UNQUOTED(HAVE_GPSMAN, 1, [Define if you have GPSMan/gpsmanshp Packages])
+#fi
 #
 # End of gpsman/gpsmanshp checks 
  

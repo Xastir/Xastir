@@ -195,12 +195,13 @@ To use online maps or findu.com historical data, you'll need wget installed.
 
 To download GPS tracks/waypoints/routes from a Garmin GPS into Xastir,
 converting to Shapefile format maps as it runs, you'll need gpsmanshp and
-GPSMan.  You'll need to wait for GPSMan 6.0 to be released which has
-command-line support built-in (so that Xastir can control it directly):
+GPSMan.  GPSMan 6.0 and later has command-line support built-in so that
+Xastir can control it directly:
     gpsmanshp:
-        http://www.ncc.up.pt/~mig/gpsmanshp/
+        http://www.ncc.up.pt/gpsmanshp/
     GPSMan:
-        http://www.ncc.up.pt/~mig/gpsman.html
+        http://www.ncc.up.pt/gpsman
+        http://sunsite.unc.edu/pub/Linux/science/cartography
 
 See below for instructions on installing all of these libraries. Once the 
   libraries are installed, ./configure should find the libraries and install
@@ -442,10 +443,42 @@ First Time Install:
      timeouts/retries in Xastir by specifying new defaults in their ~/.wgetrc
      file.
 
-   7. OPTIONAL:  Install gpsmanshp/GPSMan.  Install Shapelib first (see
-      above).  Install gpsmanshp per instructions.  Install GPSMan per
-      instructions.  Verify that GPSMan will start up and will download
-      information from a Garmin GPS in Garmin-Garmin mode.
+   7. OPTIONAL:  Installing gpsmanshp/GPSMan allows Xastir to fetch GPS
+     waypoints/routes/tracks from a GPS.  Xastir can fetch the data
+     automatically, create a Shapefile map, then index/select/display the
+     new map.
+
+     Make sure you have Shapelib installed first (see above instructions).
+
+     Install gpsmanshp:
+
+     tar xzvf gpsmanshp_1.0.2.tgz
+     cd gpsmanshp
+     make
+     su (root)
+     make install
+     exit (from root)
+
+     Install GPSMan:
+
+     tar xzvf gpsman-6.0.tgz
+     cd gpsman-6.0
+     vi /usr/lib/gpsman/gpsman.tcl
+       Change SRCDIR line to: "set SRCDIR /usr/lib/gpsman"
+     su (root)
+     mkdir /usr/lib/gpsman
+     cp gpsman.tcl /usr/lib/gpsman
+     ln -s /usr/lib/gpsman/gpsman.tcl /usr/X11R6/bin/gpsman
+     cd gmsrc
+     cp * /usr/lib/gpsman
+     cp -R gmicons /usr/lib/gpsman
+     chmod -R 755 /usr/lib/gpsman
+     chmod 644 /usr/lib/gpsman/gmicons
+     exit (from root
+
+     Verify that GPSMan will start up and will download information from a
+     Garmin GPS in Garmin-Garmin mode.  This also creates the configuration
+     files needed to use GPSMan with Garmin GPS'es from within Xastir.
 
    8. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
