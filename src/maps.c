@@ -2255,6 +2255,10 @@ extern void draw_gnis_map(Widget w,
   {NULL,none,NULL},
 }, *map_driver_ptr;
 
+
+
+
+
 void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
                 u_char alert_color, int destination_pixmap,
                 int draw_filled) {
@@ -3504,6 +3508,15 @@ static void index_update_accessed(char *filename) {
 // stop when we hit something after this filename in the alphabet.
 // It'll speed things up a bit.  Make this change sometime soon.
 //
+// In order to speed this up slightly for the general case, we'll
+// assume that we'll be fetching indexes in alphabetical order, as
+// that's how we store them everywhere.  We'll save the last map
+// index pointer away and start searching there each time.  If we
+// hit the end and haven't found it, we'll start from the beginning
+// again.  That should make all but the _first_ lookup much faster.
+//
+map_index_record *last_index_lookup = NULL;
+
 int index_retrieve(char *filename,
                    unsigned long *bottom,
                    unsigned long *top,
@@ -3513,8 +3526,18 @@ int index_retrieve(char *filename,
                    int *draw_filled,
                    int *auto_maps) {
 
-    map_index_record *current = map_index_head;
+    map_index_record *current;
     int status = 0;
+    int first_iteration = 1;
+
+
+    // Start where we left off last time
+    if (last_index_lookup != NULL) {
+        current = last_index_lookup;
+    }
+    else {
+        current = map_index_head;
+    }
 
     if ( (filename == NULL)
             || (strlen(filename) >= MAX_FILENAME) ) {
@@ -3539,7 +3562,18 @@ int index_retrieve(char *filename,
         else {
             current = current->next;
         }
+
+        if (current == NULL && first_iteration) {
+            // We hit the end.  Start over at the beginning of the
+            // list.
+            first_iteration = 0;
+            current = map_index_head;
+        }
     }
+
+    // Save the pointer away for next time
+    last_index_lookup = current;
+
     return(status);
 }
 
