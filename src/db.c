@@ -15518,24 +15518,37 @@ void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat) 
 
     *x_long = p_station->coord_lon;
     *y_lat = p_station->coord_lat;
+
+    // Compute range in miles
     range = (double)((sec_now()-p_station->sec_heard)*(1.1508/3600)*(atof(p_station->speed)));
+
+    // Get the bearing in radians, as that's what sin/cos functions
+    // use here.
     bearing_radians = (my_course/360.0) * 2.0 * M_PI;
-    off_y = (double)( range * cos(bearing_radians) );
-    off_x = (double)( range * sin(bearing_radians) );
-    fprintf(stderr,"range: %f, off_x: %f, off_y: %f\n", range, off_x, off_y);
+
+    // Compute offsets in miles.
+    off_y = (double)( range * sin(bearing_radians) );
+    off_x = (double)( range * cos(bearing_radians) );
+//    fprintf(stderr,"range: %f, off_x: %f, off_y: %f\n", range, off_x, off_y);
 
     // Convert off_y/off_x to hundredths of seconds (Xastir coordinate
     // system), then add to x_long/y_lat to get current position of
     // object/item.
-    off_x = off_x * 60.0 * 100.0;
-    off_y = off_y * 60.0 * 100.0;
-    off_y = -off_y;  // Correct the direction for the Y offset
+    off_x = off_x * 60.0 * 60.0 * 100.0;
+    off_y = off_y * 60.0 * 60.0 * 100.0;
+
+    // Correct the Y offset to correspond with the Xastir coordinate
+    // system.
+    off_y = -off_y;
     fprintf(stderr,"\trange: %f, off_x: %f, off_y: %f\n", range, off_x, off_y);
 
     // Add the offsets to our object's lat/long.  Coordinates are in
-    // Xastir coordinate format (100'ths of seconds).
-    *x_long = *x_long + (long)off_x;
-    *y_lat = *y_lat + (long)off_y;
+    // Xastir coordinate format (100'ths of seconds).  Offsets are
+    // in miles.
+
+// This code isn't correct yet.  Need to convert units.
+//    *x_long = *x_long + (long)off_x;
+//    *y_lat = *y_lat + (long)off_y;
 }
 
 
