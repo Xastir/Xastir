@@ -60,6 +60,11 @@ int alert_redraw_on_update = 0;
 
 
 
+
+
+//
+// Converts "County Warning Area" text to "CWA"
+//
 void normal_title(char *incoming_title, char *outgoing_title) {
     char *c_ptr;
 
@@ -85,6 +90,12 @@ void normal_title(char *incoming_title, char *outgoing_title) {
 
 
 
+
+
+//
+// Debug routine.  Currently attached to the Test() function in
+// main.c, but the button in the file menu is normally grey'ed out.
+//
 void alert_print_list(void) {
     int i;
     char title[100], *c_ptr;
@@ -104,6 +115,11 @@ void alert_print_list(void) {
 
 
 
+
+
+//
+// Called from alert_build_list()
+//
 /*@null@*/ static alert_entry *alert_add_entry(alert_entry *entry) {
     alert_entry *ptr;
     int i;
@@ -140,6 +156,12 @@ void alert_print_list(void) {
 
 
 
+
+
+//
+// Called from alert_build_list(), alert_update_list(), and
+// alert_active().
+//
 static alert_entry *alert_match(alert_entry *alert, alert_match_level match_level) {
     int i;
     char *ptr, title_e[33], title_m[33], alert_f[33], filename[33];
@@ -185,6 +207,12 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
 
 
+
+
+//
+// Called from maps.c:load_alert_maps() (both copies of it, compiled
+// in with different map support).
+//
 void alert_update_list(alert_entry *alert, alert_match_level match_level) {
     alert_entry *ptr;
     int i;
@@ -226,7 +254,15 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
 
 
-// Here's where we mark the expired alerts in the list
+
+
+//
+// Here's where we mark the expired alerts in the list.
+// Called from alert_compare(), alert_display_request(),
+// alert_on_screen(), alert_build_list(), alert_message_scan().
+// Also called from maps.c:load_alert_maps() functions (both of
+// them).
+//
 int alert_active(alert_entry *alert, alert_match_level match_level) {
     alert_entry *a_ptr;
     char l_list[] = {"?RYBTGC"};
@@ -249,6 +285,12 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 
 
 
+
+
+//
+// Used in qsort as the compare function in alert_sort_active()
+// function below.
+//
 static int alert_compare(const void *a, const void *b) {
     alert_entry *a_entry = (alert_entry *)a;
     alert_entry *b_entry = (alert_entry *)b;
@@ -287,6 +329,11 @@ static int alert_compare(const void *a, const void *b) {
 
 
 
+
+
+//
+// Called from maps.c:load_alert_maps() functions (both of them).
+//
 void alert_sort_active(void) {
     qsort(alert_list, (size_t)alert_list_count, sizeof(alert_entry), alert_compare);
     for (; alert_list_count && alert_list[alert_list_count-1].title[0] == '\0'; alert_list_count--);
@@ -294,6 +341,11 @@ void alert_sort_active(void) {
 
 
 
+
+
+//
+// Called from maps.c:load_alert_maps() functions (both of them).
+//
 int alert_display_request(void) {
     int i, alert_count;
     static int last_alert_count;
@@ -313,7 +365,12 @@ int alert_display_request(void) {
 
 
 
+
+
+//
+// Called from main.c:UpdateTime() function.
 // Returns a count of active weather alerts in the list
+//
 int alert_on_screen(void) {
     int i, alert_count;
 
@@ -326,6 +383,11 @@ int alert_on_screen(void) {
 
 
 
+
+
+//
+// Called from alert_message_scan().
+//
 // This function builds alert_entry structs from message entries that
 // contain NWS alert messages.  The original form is this:
 //
@@ -436,6 +498,12 @@ static void alert_build_list(Message *fill) {
 
 
 
+
+
+//
+// Called from db.c:decode_message() function and
+// maps.c:load_alert_maps() functions (both of them).
+//
 int alert_message_scan(void) {
     char *a_ptr;
     int i, j;
@@ -485,4 +553,5 @@ int alert_message_scan(void) {
     }
     return ( (int)strlen(alert_tag) );
 }
+
 
