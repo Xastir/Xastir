@@ -11346,8 +11346,11 @@ void map_properties_fill_in (void) {
                 else {
                     xastir_snprintf(temp_filled,
                         sizeof(temp_filled),
-                        "  %s ",
+                        "  %3s ",
                         langcode("MAPP006"));
+                    // In case the language string was too long,
+                    // truncate it so it fits our column width.
+                    temp_filled[6] = '\0';
                 }
 
                 if (current->auto_maps == 0) {
@@ -11356,8 +11359,11 @@ void map_properties_fill_in (void) {
                 else {
                     xastir_snprintf(temp_auto,
                         sizeof(temp_auto),
-                        "  %s  ",
+                        "  %3s  ",
                         langcode("MAPP006"));
+                    // In case the language string was too long,
+                    // truncate it so it fits our column width.
+                    temp_filled[7] = '\0';
                 }
 
                 xastir_snprintf(temp,
