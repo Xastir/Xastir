@@ -87,6 +87,7 @@ Assorted bug fixes
 Tigermaps menu accesable
 Messaging cleanup, no more timed updates; reply-acks
 ImageMagick speedups and correction features
+Compressed objects/items
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -194,6 +195,13 @@ position will be viewable in the box at the bottom of the Xastir screen
 2nd from the left, whenever the mouse is over the drawing area. If you
 have a GPS you can skip this and set up the GPS later.
 
+"Send Compressed posits", if selected, will transmit in the newer compressed
+format. This format will reduce the amount of data on the air, thereby
+increasing the capacity of the APRS(tm) network. The maximum precision of the
+transmitted position is also higher. Some older programs, including even
+recent versions of WinAPRS, do not decode this format yet. Findu.com might
+also have trouble with it.
+
 To select a symbol to be used for your station you need to specify
 a group and a symbol character. You can manually fill in these fields,
 or press select to graphically choose a symbol. There are two groups
@@ -288,12 +296,10 @@ If you want to have your igate forward NWS weather alerts to RF, you must
 create a ~/.xastir/data/nws-stations.txt file listing each call or NWS station
 (like "PHISVR") that you would like to transmit via RF.
                      
-"Compress position data while transmitting?", if selected, will transmit in
-the newer compressed format. This format will reduce the amount of data on
-the air, thereby increasing the capacity of the APRS(tm) network. The maximum
-precision of the transmitted position is also higher. Some older programs,
-including even recent versions of WinAPRS, do not decode this format yet.
-Findu.com might also have trouble with it.
+"Compress object/item data while transmitting?", if selected, will transmit
+obejcts and items in the newer compressed format. The maximum precision of the
+transmitted position is higher, and the transmission is shorter, but some older
+programs do not decode this format yet.
 
 "Transmit Raw WX data", if selected, will also send a packet containing raw
 Weather Station Data. This is useful on ASCII types of WX stations, 
@@ -1096,6 +1102,13 @@ This will set the message that is sent as an Auto Reply.
 Enable Auto Reply Msg
 This will turn on an automatic reply when an incoming message is received.
 
+Satellite Ack Mode
+This mode disables the sending of ack messages in response to recieved
+messages. Messages are still acknologed using the reply-ack system. When
+operating over a satellite it is clear that your message made it, because you
+will hear it repeated. The recieving station sending an independant ack only
+adds QRM.
+ 
 HELP-INDEX>Interfaces Menu
 
                          Interfaces menu
