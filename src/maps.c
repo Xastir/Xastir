@@ -371,6 +371,100 @@ int convert_to_xastir_coordinates ( unsigned long* x,
 /** MAP DRAWING ROUTINES **/
 
 
+
+// Draws a vector onto a pixmap.  Assumes that the proper GC has
+// already been set up for drawing the correct color/width/etc.
+// Input points are in the Xastir coordinate system.  If the
+// bounding box containing the vector doesn't intersect with the
+// current view, the line isn't drawn.
+//
+void draw_vector(Widget w,
+                 unsigned long x1,
+                 unsigned long y1,
+                 unsigned long x2,
+                 unsigned long y2,
+                 GC gc,
+                 Pixmap which_pixmap) {
+
+    int x1i, x2i, y1i, y2i;
+
+
+    // Check whether the two bounding boxes intersect.  If not, skip
+    // the rest of this function.  Do we need to worry about
+    // vertical/horizontal lines here (width or length of zero)?
+    if (!map_visible(y1, y2, x1, x2)) {
+        if (!map_visible(y2, y1, x2, x1)) {
+fprintf(stderr,"Line not visible\n");
+            return;
+        }
+    }
+
+    // Convert to screen coordinates.  Careful here!
+    // The format conversions you'll need if you try to
+    // compress this into two lines will get you into
+    // trouble.
+    x1i = x1 - x_long_offset;
+    x1i = x1i / scale_x;
+ 
+    y1i = y1 - y_lat_offset;
+    y1i = y1i / scale_y;
+
+    x2i = x2 - x_long_offset;
+    x2i = x2i / scale_x;
+ 
+    y2i = y2 - y_lat_offset;
+    y2i = y2i / scale_y;
+
+    // XDrawLines uses 16-bit unsigned integers
+    // (shorts).  Make sure we stay within the limits.
+
+// We should truncate the line along the line, instead of changing
+// the endpoint.  The way we're doing it is easier, but it changes
+// the slope of the line.
+
+    if (x1i >  16000) x1i =  10000;
+    if (x1i < -16000) x1i = -10000;
+
+    if (y1i >  16000) y1i =  10000;
+    if (y1i < -16000) y1i = -10000;
+
+    if (x2i >  16000) x2i =  10000;
+    if (x2i < -16000) x2i = -10000;
+
+    if (y2i >  16000) y2i =  10000;
+    if (y2i < -16000) y2i = -10000;
+
+    (void)XDrawLine(XtDisplay(w),
+        which_pixmap,
+        gc,
+        x1i,
+        y1i,
+        x2i,
+        y2i);
+}
+
+
+
+
+
+// Draws a vector onto a pixmap.  Assumes that the proper GC has
+// already been set up for drawing the correct color/width/etc.
+// Input points are in lat/long.
+//
+//void draw_vector_ll(float x1,
+//                    float y1,
+//                    float x2,
+//                    float y2,
+//                    GC gc,
+//                    pixmap which_pixmap)
+
+//    draw_vector(x1, y1, x2, y2, gc, which_pixmap);
+//}
+
+
+
+
+
 /**********************************************************
  * draw_grid()
  *
@@ -438,7 +532,7 @@ void draw_grid(Widget w) {
 // -------------------------
 // UTM Zone 32 has been widened to 9° (at the expense of zone 31)
 // between latitudes 56° and 64° (band V) to accommodate southwest
-// Norway. Thus zone 32 it extends westwards to 3°E in the North
+// Norway. Thus zone 32 extends westwards to 3°E in the North
 // Sea.  Similarly, between 72° and 84° (band X), zones 33 and 35
 // have been widened to 12° to accommodate Svalbard. To compensate
 // for these 12° wide zones, zones 31 and 37 are widened to 9° and
@@ -554,7 +648,7 @@ void draw_grid(Widget w) {
         // draw a vertical line again, repeating until we pass the
         // right edge of the view.
 
-        // Right edge of screen = view_min_x.  Convert to whole
+        // Left edge of screen = view_min_x.  Convert to whole
         // degrees, then divide into 6 degree zone.
         temp_x = (view_min_x / 360000) / 6;
 
@@ -576,7 +670,7 @@ void draw_grid(Widget w) {
 // -------------------------
 // UTM Zone 32 has been widened to 9° (at the expense of zone 31)
 // between latitudes 56° and 64° (band V) to accommodate southwest
-// Norway. Thus zone 32 it extends westwards to 3°E in the North
+// Norway. Thus zone 32 extends westwards to 3°E in the North
 // Sea.  Similarly, between 72° and 84° (band X), zones 33 and 35
 // have been widened to 12° to accommodate Svalbard. To compensate
 // for these 12° wide zones, zones 31 and 37 are widened to 9° and
@@ -594,7 +688,39 @@ void draw_grid(Widget w) {
             }
             else {  // Draw a vertical line
                 int x, y1, y2;
+                int zone_num;
+                int irregular_zone = 0;
 
+
+                // Check what UTM zone we're doing.  If we're in
+                // zones 31 through 37 and drawing lines north of
+                // 56°, we may need to draw some irregular areas.
+                zone_num = ((temp_x / 360000) / 6) + 1;
+                if ((zone_num >= 31) && (zone_num <= 37)) {
+                    float y_temp2;
+
+                    // Check top border of view.  We could also
+                    // check the bottom border of the view.
+                    y_temp2 = y_lat_offset / 360000;
+                    if ( y_temp2 <= (90 - 57) ) {
+//fprintf(stderr,"Drawing irregular zone area %d\n",zone_num);
+                        irregular_zone++;
+
+
+                        // Check whether we have the zone 31/32
+                        // boundary between 56N and 64N ("V" zone).
+                        // If so, draw that boundary 3 degrees left
+                        // of normal.
+
+
+                        // Check whether we have the "X" zone in
+                        // view.  If so, draw those special borders
+                        // a bit wider than normal.
+
+
+                        // The "W" stripe should be drawn normally.
+                    }
+                }
 
                 // Convert to screen coordinates.  Careful here!
                 // The format conversions you'll need if you try to
@@ -639,6 +765,22 @@ void draw_grid(Widget w) {
 // Here we'll draw the subzone (lettered) lines, which are
 // horizontal.
 
+
+// We need a function that checks which part of a line fits the
+// screen, given endpoints in Xastir coordinates (or lat/long),
+// converts it to screen coordinates, then calls XDrawLine.  The
+// function would assume that the GC has already been set up.  We
+// could then feed it a bunch of vectors and let it do all the work.
+// The major UTM grid lines could be reduced to a bunch of
+// hard-coded vectors.
+
+
+        // Draw a line at 90S and 90N first.  These are the poles.
+
+        // Bottom edge of UTM = 80S.  Attempt to draw a line there
+        // (if it fits on the screen), then increment north by 8
+        // degrees and try again.  After we draw 72N, increment by
+        // 12 degrees and draw a line at 84N.
 
     }
     else { // Not UTM coordinate system, draw some lat/long lines
