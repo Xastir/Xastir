@@ -516,6 +516,14 @@ ASC:....U...KK1W......APTW01....r....... 1:Fm KK1W To APTW01 Via WIDE3 <UI pid=F
 // output_string variable should be quite long, perhaps 1000
 // characters.
 //
+// Someday it would be nice to turn on raw packet format in AGWPE
+// which gives us the AX.25 packet format directly.  We should be
+// able to use our normal KISS decoding functions to parse those
+// types of packets, instead of the mess we have below which is
+// parsing a few things out of the header, a few things out of the
+// text that AGWPE puts after the header, and then snagging the info
+// field of the packet from the tail-end.
+//
 unsigned char *parse_agwpe_packet(unsigned char *input_string,
                                   int output_string_length,
                                   unsigned char *output_string,
@@ -531,9 +539,11 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
     // third-party NWS messages, which so far haven't been parsed
     // properly by this function.
     //
+    // Check for NWS string past the header part of the AGWPE
+    // packet.
+    //
     if (strstr(&input_string[36],"NWS-") || strstr(&input_string[36],"NWS_")) {
         special_debug = 1;
-        //fprintf(stderr, "AGWPE input: %s\n", &input_string[36]);
     }
  
     // Check that it's a UI packet.  It should have a 'U' at
@@ -632,16 +642,18 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
 // packet formats to do so, probably the raw packet format, which is
 // similar to KISS format.
 
+        // Look for the "pid=" string and print out what we can
+        // figure out about the protocol ID.
         pid_ptr = strstr(temp_str, "pid=");
         if (pid_ptr) {
             pid_ptr +=4;
             fprintf(stderr,
-                "Non APRS protocol was seen: PID=%2s\n",
+                "parse_agwpe_packet: Non-APRS protocol was seen: PID=%2s.  Dropping the packet.\n",
                 pid_ptr);
         }
         else {
             fprintf(stderr,
-                "Non APRS protocol was seen.\n");
+                "parse_agwpe_packet: Non-APRS protocol was seen.  Dropping the packet.\n");
         }
         output_string[0] = '\0';
         new_length = 0;
