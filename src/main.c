@@ -7682,6 +7682,96 @@ void create_gc(Widget w) {
 
 
 
+//////////////////// Draw CAD Objects Functions ////////////////////
+
+
+//WE7U
+
+// Allocate a struct for a new object and add one (two?) vertice(s)
+// to it.
+void CAD_object_allocate_new(void) {
+}
+
+// Split an existing CAD object into two others.  Could do this more
+// simply by drawing a line across it?
+void CAD_object_split_existing(void) {
+}
+
+// Join two existing objects into one.
+void CAD_object_join_two(void) {
+}
+
+// Move an entire CAD object, with all it's vertices, somewhere
+// else.  Move the label along with it as well.
+void CAD_object_move(void) {
+}
+
+// Delete an entire CAD object and all it's vertices.
+void CAD_object_delete(void) {
+}
+
+// Compute the area enclosed by a CAD object.  Check that it is a
+// closed polygon first.
+void CAD_object_compute_area(void) {
+}
+
+// Allocate a label for an object, and place it according to the
+// user's requests.  Keep track of where from the origin to place
+// the label, font to use, color, etc.
+void CAD_object_allocate_label(void) {
+}
+
+// Set the probability for an object.  We should probably allocate
+// the raw probability to small "buckets" within the closed polygon.
+// This will allow us to split/join polygons later without messing
+// up the probablity assigned to each area originally.  Check that
+// it is a closed polygon first.
+void CAD_object_set_raw_probability(void) {
+}
+
+// Get the raw probability for an object.  Sum up the raw
+// probability "buckets" contained within the closed polygon.  Check
+// that it _is_ a closed polygon first.
+void CAD_object_get_raw_probability(void) {
+}
+
+void CAD_object_set_line_width(void) {
+}
+
+void CAD_object_set_color(void) {
+}
+
+void CAD_object_set_linetype(void) {
+}
+
+// Allocate a new vertice along the polygon.  If the vertice is very
+// close to the first vertice, ask the operator if they wish to
+// close the polygon.  If closing, ask for a raw probability?
+void CAD_vertice_allocate_new(void) {
+}
+
+// Used to break a line segment into two.  Can then move the vertice
+// if needed.  Recompute the raw probability if need be, or make it
+// an invalid value so that we know we need to recompute it.
+void CAD_vertice_insert_new(void) {
+}
+
+// Move an existing vertice.  Recompute the raw probability if need
+// be, or make it an invalid value so that we know we need to
+// recompute it.
+void CAD_vertice_move(void) {
+}
+
+// Remove a vertice, thereby joining two segments into one.
+// Recompute the raw probability if need be, or make it an invalid
+// value so that we know we need to recompute it.
+void CAD_vertice_delete(void) {
+}
+
+
+
+
+
 // This is the callback for the Draw CAD Objects menu option
 //
 void Draw_CAD_Objects( /*@unused@*/ Widget w,
@@ -7692,7 +7782,9 @@ void Draw_CAD_Objects( /*@unused@*/ Widget w,
 
 
 //    fprintf(stderr,"Draw_CAD_Objects function enabled\n");
- 
+
+    // Create the "pencil" cursor so we know what mode we're in.
+    //
     if(!cs_CAD) {
         cs_CAD=XCreateFontCursor(XtDisplay(da),XC_pencil);
     }
@@ -7716,7 +7808,7 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
 //    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
     draw_CAD_objects_flag = 0;
 
-    // Remove the special "pencil" cursor
+    // Remove the special "pencil" cursor.
     (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
     (void)XFlush(XtDisplay(da));
 }
@@ -7729,8 +7821,12 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
 
-    // Does nothing so far.  Will need to free the vertice list then
-    // do a screen update.
+    // Does nothing so far.  Will need to free the object and
+    // vertice lists then do a screen update.
+
+    // It would be good to ask the user whether to delete all CAD
+    // objects or a single CAD object.  If single, present a list to
+    // choose from.
 }
 
 
