@@ -246,12 +246,16 @@ The Answers
       some files needed for Xastir. The version in the beta directory on
       RedHat's ftp site works.
 
-      A message like "*** Cannot find Motif include files" means that you are
-      missing the development package for Motif/OpenMotif/Lesstif.  It is
+      A message like "*** Cannot find Motif include files" either means that 
+      you are missing the development package for Motif/OpenMotif/Lesstif, or 
+      that it is installed in a place where configure can't find it.  It is
       recommended that you use Motif or OpenMotif instead of Lesstif, as you'll
       have few problems with those libraries.  For SuSE 9.0, install the
       "openmotif-libs", "openmotif-devel", and "openmotif" packages.  Other
-      distributions have similar naming.
+      distributions have similar naming.  If you have the Motif libraries and
+      headers installed in a place where Xastir doesn't look for them, see 
+      the references to the "--with-motif-includes" and 
+      "--with-motif-libraries" configure options in the INSTALL file.
 
     - Your operating system or compiler may be out of version.
 

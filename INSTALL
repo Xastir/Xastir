@@ -242,16 +242,6 @@ First Time Install:
        Download the lestif-devel (if it exists) and lestif, and install it
        as your distribution instructs you to install pacakges.
 
-     If you get the message:
-
-       "*** Cannot find Motif include files: Please install one of
-        Motif/OpenMotif/Lesstif development packages.  ***"
-
-     even though you've got the Motif libraries and headers installed in the
-     proper places, you might need to add this to the configure line:
-
-        "--x-includes=/usr/X11R6/include"
-
 
    3. OPTIONAL:  Install geoTIFF support.  Allows using USGS DRG topo maps or
      other types of geoTIFF maps/images and has the ability to tile smaller
@@ -630,6 +620,35 @@ First Time Install:
 
      This builds XASTIR, You should not get any error or warning messages.
 
+     If you get the message from Xastir's configure script saying:
+
+       "**** NO MOTIF HEADERS FOUND **** install Motif development headers or
+         use --with-motif-includes to specify location of Xm/Xm.h" 
+
+     even though you've got the Motif libraries and headers installed in the
+     proper places, you might need to add this to the configure line:
+
+        "--x-includes=/usr/X11R6/include"
+
+     If that option does not help, then Motif is installed somewhere other 
+     than with the standard X includes.  You must locate the file "Xm.h," 
+     which should be in a subdirectory called "Xm" somewhere.  Once located
+     (let's say in /usr/include/Motif/Xm/Xm.h), use the configure option:
+
+       "--with-motif-includes=/usr/include/Motif"
+
+     If you get the message:
+
+       "**** MOTIF LIBRARIES NOT FOUND **** Install Motif development 
+        headers/libraries or use --with-motif-libraries to specify path 
+        to libXm.a"
+
+     then your Motif libraries are not installed in the same directory as your
+     other X libraries, and you must find the file libXm.a, libXm.so, 
+     or libXm.sl.  Once found (say in /usr/lib/Motif, for example), tell 
+     configure where to find it with:
+
+        "--with-motif-libraries=/usr/lib/Motif"
 
      If you wish to install Xastir in a location other than the default
      ("/usr/local/bin" and "/usr/local/share/xastir" directories), you may
@@ -655,7 +674,7 @@ First Time Install:
      You'll need the "pcre" package installed in order to compile in
      dbfawk support.
 
-     If you see some errors, they be because you are missing
+     If you see some errors, they might be because you are missing
      GNU msgfmt or GNU gettext/xgettext?  These packages are required
      to compile the latest Xastir sources.  Beware of packages with the
      same names installed into /usr/openwin/bin, these are probably NOT

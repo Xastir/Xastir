@@ -119,110 +119,23 @@ AC_CHECK_LIB(rt, sched_yield, LIBS="-lrt $LIBS")
 # Check for endian 
 AC_C_BIGENDIAN 
  
-AC_SUBST(LDFLAGS) 
-AC_SUBST(LIBS) 
-
 
 
 # Our old stuff.  Doesn't work in all cases.
 # Checks for header files. 
 #AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes", AC_MSG_ERROR(*** Cannot find Motif include files:  Please install one of Motif/OpenMotif/Lesstif development packages. ***))
 
-# New stuff to check for Motif/Lesstif.  Shamelessly borrowed from
-# the "vim" project.
-
-# From Tom Russo:
-#
-# "Ideally, instead of doing a simple "if test -f $try/Xm/Xm.h", it
-# should add -I$try to CPPFLAGS and attempt an AC_CHECK_HEADER.  For
-# libXm it should add -L$try to LDFLAGS and try an AC_CHECK_LIB."
-#
-# Someone want to add that stuff in?
-
-# Check for Motif include files location.
-# The LAST one found is used, this makes the highest version to be
-# used, e.g. when Motif1.2 and Motif2.0 are both present.
-
-if test -z "$SKIP_MOTIF"; then gui_XXX="/usr/XXX/Motif* /usr/Motif*/XXX /usr/XXX /usr/shlib /usr/X11*/XXX /usr/XXX/X11* /usr/dt/XXX /local/Motif*/XXX /local/XXX/Motif* /usr/local/Motif*/XXX /usr/local/XXX/Motif* /usr/local/XXX /usr/local/X11*/XXX /usr/local/LessTif/Motif*/XXX $MOTIFHOME/XXX"
-  # Remove "-I" from before $GUI_INC_LOC if it's there
-  GUI_INC_LOC="`echo $GUI_INC_LOC|sed 's%-I%%g'`"
-
-  AC_MSG_CHECKING(for location of Motif GUI includes)
-  gui_includes="`echo $x_includes|sed 's%/[^/][^/]*$%%'` `echo "$gui_XXX" | sed s/XXX/include/g` $GUI_INC_LOC"
-  GUI_INC_LOC=
-  for try in $gui_includes; do
-    if test -f "$try/Xm/Xm.h"; then
-      GUI_INC_LOC=$try
-    fi
-  done
-  if test -n "$GUI_INC_LOC"; then
-    if test "$GUI_INC_LOC" = /usr/include; then
-      GUI_INC_LOC=
-      AC_MSG_RESULT(in default path)
-    else
-      AC_MSG_RESULT($GUI_INC_LOC)
-    fi
-  else
-    AC_MSG_RESULT(<not found>)
-    SKIP_MOTIF=YES
-  fi
+XASTIR_PATH_MOTIF
+if test "x$xm_includes" != "x" ; then
+    CFLAGS="$CFLAGS -I$xm_includes"
+    CPPFLAGS="$CPPFLAGS -I$xm_includes"
+fi
+if test "x$xm_libraries" != "x" ; then
+    LDFLAGS="-L$xm_libraries $LDFLAGS"
 fi
 
-# Check for Motif library files location.  In the same order as the
-# include files, to avoid a mixup if several versions are present
-
-if test -z "$SKIP_MOTIF"; then
-  AC_MSG_CHECKING(--with-motif-lib argument)
-  AC_ARG_WITH(motif-lib,
-  [  --with-motif-lib=STRING   Library for Motif ],
-  [ MOTIF_LIBNAME="${withval}" ] )
-
-  if test -n "$MOTIF_LIBNAME"; then
-    AC_MSG_RESULT($MOTIF_LIBNAME)
-    GUI_LIB_LOC=
-  else
-    AC_MSG_RESULT(no)
-
-    # Remove "-L" from before $GUI_LIB_LOC if it's there
-    GUI_LIB_LOC="`echo $GUI_LIB_LOC|sed 's%-L%%g'`"
-
-    AC_MSG_CHECKING(for location of Motif GUI libs)
-    gui_libs="`echo $x_libraries|sed 's%/[^/][^/]*$%%'` `echo "$gui_XXX" | sed s/XXX/lib/g` `echo "$GUI_INC_LOC" | sed s/include/lib/` $GUI_LIB_LOC"
-    GUI_LIB_LOC=
-    for try in $gui_libs; do
-      for libtry in "$try"/libXm.a "$try"/libXm.so* "$try"/libXm.sl; do
-        if test -f "$libtry"; then
-          GUI_LIB_LOC=$try
-        fi
-      done
-    done
-    if test -n "$GUI_LIB_LOC"; then
-      # Remove /usr/lib, it causes trouble on some systems
-      if test "$GUI_LIB_LOC" = /usr/lib; then
-        GUI_LIB_LOC=
-        AC_MSG_RESULT(in default path)
-      else
-        if test -n "$GUI_LIB_LOC"; then
-          AC_MSG_RESULT($GUI_LIB_LOC)
-          if test "`(uname) 2>/dev/null`" = SunOS &&
-                     uname -r | grep '^5' >/dev/null; then
-            GUI_LIB_LOC="$GUI_LIB_LOC -R $GUI_LIB_LOC"
-          fi
-        fi
-      fi
-      MOTIF_LIBNAME=-lXm
-    else
-      AC_MSG_RESULT(<not found>)
-      SKIP_MOTIF=YES
-    fi
-  fi
-fi
-if test -z "$SKIP_MOTIF"; then
-  SKIP_ATHENA=YES
-  SKIP_NEXTAW=YES
-  GUITYPE=MOTIF
-  AC_SUBST(MOTIF_LIBNAME)
-fi
+AC_SUBST(LDFLAGS) 
+AC_SUBST(LIBS) 
 
 
 #
