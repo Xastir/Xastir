@@ -7851,11 +7851,20 @@ void Pan_right_less( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     
     Dimension width, height;
+    long my_new_latl, my_new_lonl;
 
     if(display_up) {
         XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
-        convert_lon_l2s( (mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x)), my_long, sizeof(my_long), CONVERT_HP_NOSP);
-        convert_lat_l2s( (mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y)), my_lat, sizeof(my_lat), CONVERT_HP_NOSP);
+        my_new_lonl = (mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x));
+        my_new_latl = (mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y));
+        // Check if we are still on the planet... 
+        if ( my_new_latl > 64800000l  ) my_new_latl = 64800000l;
+        if ( my_new_latl < 0 ) my_new_latl = 0;
+        if ( my_new_lonl > 129600000l ) my_new_lonl = 129600000l;
+        if ( my_new_lonl < 0 ) my_new_lonl = 0;
+
+        convert_lon_l2s( my_new_lonl, my_long, sizeof(my_long), CONVERT_HP_NOSP);
+        convert_lat_l2s( my_new_latl,  my_lat,  sizeof(my_lat),  CONVERT_HP_NOSP);
 
         // Update my station data with the new lat/lon
             my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
