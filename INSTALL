@@ -1024,7 +1024,7 @@ NOTES FOR DEVELOPERS:
 ---------------------
 
 Profiling:
-
+----------
 1) Add "-pg" to the CFLAGS section of xastir/src/Makefile.  Mine
 looks like this:
 
@@ -1050,6 +1050,23 @@ profile listing, but be prepared for a long run-time and a lot of
 CPU to be used by gprof to generate it:
 
     gprof -l /usr/local/bin/xastir | tee profile.txt
+
+
+Checking for Memory Leaks:
+--------------------------
+1) Install libgc, the conservative garbage collector for C and C++.
+Find it at:
+
+    http://www.hpl.hp.com/personal/Hans_Boehm/gc
+
+2) Configure Xastir with --with-libgc
+
+3) Run Xastir.
+
+Libgc should output lines to the xterm as memory leaks are found.
+Any Xastir memory leaks should have a filename and a line number
+listed.  Memory leaks from lower-level libraries will be missing the
+detailed information.
 
 
   ------------------------------------------------------------------------
