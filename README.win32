@@ -108,29 +108,40 @@ create desktop links.  Select these items to create an icon
 is now installed.
 
 
-Step 2)  Create an X-Windows icon on the desktop and the startup
-file to go with it.
+Step 2)  Create customized startup script for X:
 
-Copy "C:\cygwin\usr\X11r6\bin\startxwin.bat" to (same path)
-"C:\cygwin\usr\X11r6\bin\startxwin.fvwm2.bat".  Edit this new file,
-changing all instances of "twm" to "fvwm2".  Make a shortcut on your
-desktop that points to this file, and rename the shortcut
-"X-Windows" or similar.  You may be able to find a large red X in
-the system32\moricons.dll file if you wish to change the icon
-(depending on which Windows version you're running).
+Using File Explorer, copy
+
+    "C:\cygwin\usr\X11r6\bin\startxwin.bat" to
+    "C:\cygwin\usr\X11r6\bin\startxwin.fvwm2.bat"
+
+(same path, different filename).  Edit this new file
+"startxwin.fvwm2.bat", changing all instances of "twm" to "fvwm2".
 
 
-Step 3)  Test the two icons.
+Step 3)  Test Cygwin and create startup shortcuts:
 
 Double-click on the green/black cygwin icon.  You should get a shell
-window that looks very much like a DOS window.  Type "exit" and then
-press <Enter> to make it disappear.
+window that looks very much like a DOS window.
 
-Double-click on the "X-Windows" icon.  You should get a large window
-with a smaller shell window displayed on it.  If you right-click on
-the background, you should get a menu.  Select "Exit FVWM" to make
-the large window go away, or click on the "X" in the corner of the
-window.
+Inside the Cygwin window, type these commands:
+
+    cd
+    ln -s /usr/X11r6/bin/startxwin.fvwm2.bat go.bat
+
+This creates a shortcut method "go.bat" for starting the graphical
+user environment.  You can name it nearly anything you want as
+long as you don't duplicate any names already used for Cygwin
+programs.
+
+Type "./go.bat".  You should get a large window with a smaller
+shell window displayed on it.  If you right-click on the background
+(outside the smaller window), you should see a menu.  Select "Exit
+FVWM" to make the large window go away, or click on the "X" in the
+corner of the window.
+
+Type "exit" and then press <Enter> to make the Cygwin
+window disappear.
 
 
 Step 4)  Create a file at C:\cygwin\home\<user>\ called ".cvsrc",
@@ -197,13 +208,21 @@ commands in the Cygwin shell:
     ln -s /usr/local/bin/xastir xastir
 
 That will create a symbolic link from your home directory to the
-Xastir executable, to make it easier to run Xastir without typing a
-long path each time.
+Xastir executable, to make it easier to run Xastir without typing
+the long path each time.
 
 
-Step 8)  Run Xastir:  Start X-Windows using the desktop icon you
-created before.  From the "xterm" window displayed, type "xastir &"
-or "/usr/local/bin/xastir &".  Xastir should start.
+Step 8)  Actually run the darn thing:
+
+Let's start from scratch to make sure it all works.  Close any
+Cygwin and/or X11 windows you may have.
+
+Click on the Cygwin icon.
+
+From the resulting Cygwin window, type "./go.bat".
+
+Once the large window with the one small window appears, type
+"xastir &" in the small window.  Xastir should start up shortly.
 
 Note:  Xastir has support for pocketAPRS, dosAPRS, WinAPRS, MacAPRS
 and GNIS maps by default.  For additional types of maps, you'll need
@@ -340,11 +359,13 @@ Xastir, and NOAA weather radar images.  Other people are working on
 integrating even more online mapping sources.  This will also allow
 you to use any GIF/JPG/XPM/BMP/... image as an Xastir map.
 
-Please note that the released Cygwin binary for ImageMagick-5.5.5
-has a problem in it's Magick-config script which makes it impossible
-to use for our purposes.  Don't try to use that version.  Hopefully
-the new 5.5.6 release will work for us, when a Cygwin binary of it
-is made available on their site.
+Note:  The Cygwin binary for ImageMagick-5.5.5 has a problem in it's
+Magick-config script which makes it impossible to use for our
+purposes.  Don't try to use that version.
+
+Note:  The Cygwin binary for ImageMagick-5.5.6 fails at the link
+stage trying to link to "liblcms", which is the "little cms engine"
+library.  Don't try to use that version.
 
 ImageMagick:
         http://www.imagemagick.org/
