@@ -299,7 +299,7 @@ BBARSTA039|Bezig Met Indexeren Van: %s||
 BBARSTA040|Amateur APRS Station %s||
 BBARSTA041|Wacht op GPS gegevens..||
 BBARSTA042|Uitzenden van objecten/items||
-BBARSTA043|Logging||
+BBARSTA043|Log bijwerken||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Ontvangen Packets Bekijken||
@@ -350,7 +350,7 @@ WPUPCFD029|Geef Bulletins Zonder Afstand Weer||
 # PopUp "Configure - Timing"
 WPUPCFTM01|Configureer Tijdsinstelling|||
 WPUPCFTM02|Interval Verzenden Positie (min)||
-WPUPCFTM03|Station Ghosting Time (min)||
+WPUPCFTM03|Tijd Tot Vervagen Station (min)||
 WPUPCFTM04|Interval Verzenden Object/Item (min)||
 WPUPCFTM05|Tijd Tot Verdwijnen Van Kaart (uren)||
 WPUPCFTM06|GPS Status Controle Interval (sec)||
@@ -514,7 +514,7 @@ POPUPOB039|Signaal - Hoogte(HAAT) - Versterking - Richting||
 POPUPOB040|Straal breedte - Richting||
 POPUPOB041|Rondstraler||
 POPUPOB042|Richtantenne||
-POPUPOB043|Useless||
+POPUPOB043|Onbruikbaar||
 #
 # PopUp "Configure Internet"
 WPUPCFI001|Internet Instelling||
