@@ -42,6 +42,8 @@
 
 #define DEFAULT_GPS_RETR 0x05 /* CTRL-E */
 
+// Define a 60 second max wait on a serial port (in microseconds)
+#define SERIAL_MAX_WAIT 60000000
 
 // KISS Protocol Special Characters & Commands:
 #define KISS_FEND           0xc0  // Frame End

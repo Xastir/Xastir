@@ -3131,6 +3131,7 @@ int command_file_to_tnc_port(int port, char *filename) {
         if (debug_level & 2)
             fprintf(stderr,"Could not open TNC command file: %s\n",filename);
     }
+
     return(error);
 }
 
@@ -5523,6 +5524,8 @@ void init_device_names(void) {
 int del_device(int port) {
     int ok;
     char temp[300];
+    long wait_time = 0;
+
 
     if (debug_level & 2)
         fprintf(stderr,"Delete Device start\n");
@@ -5551,7 +5554,6 @@ begin_critical_section(&devices_lock, "interface.c:del_device" );
 end_critical_section(&devices_lock, "interface.c:del_device" );
 
                     (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
-                    usleep(2000000);    // 2secs
                     break;
 
                 case DEVICE_SERIAL_KISS_TNC:
@@ -5588,7 +5590,6 @@ begin_critical_section(&devices_lock, "interface.c:del_device" );
 end_critical_section(&devices_lock, "interface.c:del_device" );
 
                     (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
-                    usleep(2000000);    // 2secs
                     break;
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
@@ -5606,12 +5607,28 @@ end_critical_section(&devices_lock, "interface.c:del_device");
 
                     (void)command_file_to_tnc_port(port,
                         get_data_base_dir(temp));
-                    usleep(2000000);    // 2secs
                     break;
 
                 default:
                     break;
+            }   // End of switch
+
+
+            // Let the write queue empty before we return, to make
+            // sure all of the data gets written out.
+            while ( (port_data[port].write_in_pos != port_data[port].write_out_pos)
+                    && port_data[port].status == DEVICE_UP) {
+
+                // Check whether we're hung waiting on the device
+                if (wait_time > SERIAL_MAX_WAIT)
+                    break;   // Break out of the while loop
+
+                sched_yield();
+                usleep(25000);    // 25ms
+                wait_time = wait_time + 25000;
             }
+
+
             if (debug_level & 2)
                 fprintf(stderr,"Serial detach\n");
 
