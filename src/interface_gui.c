@@ -1561,13 +1561,6 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
     xastir_snprintf(devices[WX_port].device_host_pswd,
             sizeof( devices[WX_port].device_host_pswd), "%d", device_data_type);
 
-//    if(XmToggleButtonGetState(WX_tenths))
-//        WX_rain_gauge_type = 0;     // 0.1 inch rain gauge
-//    else if (XmToggleButtonGetState(WX_hundredths))
-//        WX_rain_gauge_type = 1;     // 0.01 inch rain gauge
-//    else if (XmToggleButtonGetState(WX_millimeters))
-//        WX_rain_gauge_type = 2;     // 0.1 mm rain gauge
-
     /* reopen or open port*/
     if (devices[WX_port].connect_on_startup==1 || was_up)
         (void)add_device(WX_port,DEVICE_SERIAL_WX,devices[WX_port].device_name,devices[WX_port].device_host_pswd,-1,
@@ -1593,7 +1586,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
 
 void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
     static Widget  pane, form, button_ok, button_cancel,
-                frame, frame2, frame3, frame4,
+                frame, frame2, frame3, frame4, WX_none,
                 device, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
@@ -1858,6 +1851,10 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
             XmNorientation, XmHORIZONTAL,
             NULL);
 
+        WX_none = XtVaCreateManagedWidget(langcode("WPUPCFWX07"),xmToggleButtonGadgetClass,
+                                      gauge_box,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
         WX_tenths = XtVaCreateManagedWidget(langcode("WPUPCFWX04"),xmToggleButtonGadgetClass,
                                       gauge_box,
                                       XmNbackground, colors[0xff],
@@ -1871,9 +1868,10 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-        XtAddCallback(WX_tenths,XmNvalueChangedCallback,rain_gauge_toggle,"0");
-        XtAddCallback(WX_hundredths,XmNvalueChangedCallback,rain_gauge_toggle,"1");
-        XtAddCallback(WX_millimeters,XmNvalueChangedCallback,rain_gauge_toggle,"2");
+        XtAddCallback(WX_none,XmNvalueChangedCallback,rain_gauge_toggle,"0");
+        XtAddCallback(WX_tenths,XmNvalueChangedCallback,rain_gauge_toggle,"1");
+        XtAddCallback(WX_hundredths,XmNvalueChangedCallback,rain_gauge_toggle,"2");
+        XtAddCallback(WX_millimeters,XmNvalueChangedCallback,rain_gauge_toggle,"3");
 
         sep = XtVaCreateManagedWidget("Config_WX sep", xmSeparatorGadgetClass,form,
                                       XmNorientation, XmHORIZONTAL,
@@ -1920,6 +1918,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
         delw = XmInternAtom(XtDisplay(config_WX_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(config_WX_dialog, delw, Config_WX_destroy_shell, (XtPointer)config_WX_dialog);
 
+begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
+
         if (config_type==0) {
             /* first time port */
             XmTextFieldSetString(WX_device_name_data,GPS_PORT);
@@ -1930,15 +1930,8 @@ void Config_WX( /*@unused@*/ Widget w, int config_type, int port) {
             device_style=0;
             device_data_type=0;
             XmToggleButtonSetState(data_auto,TRUE,FALSE);
-            WX_rain_gauge_type=0;
-            XmToggleButtonSetState(WX_tenths,FALSE,FALSE);
-            XmToggleButtonSetState(WX_hundredths,TRUE,FALSE);
-            XmToggleButtonSetState(WX_millimeters,FALSE,FALSE);
         } else {
             /* reconfig */
-
-begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
-
             XmTextFieldSetString(WX_device_name_data,devices[WX_port].device_name);
             if (devices[WX_port].connect_on_startup)
                 XmToggleButtonSetState(WX_active_on_startup,TRUE,FALSE);
@@ -2042,25 +2035,29 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
                     device_data_type=0;
                     break;
             }
-            switch (WX_rain_gauge_type) {
-                case(1):
-                    XmToggleButtonSetState(WX_hundredths,TRUE,FALSE);
-//                    WX_rain_gauge_type=1;
-                    break;
-                case(2):
-                    XmToggleButtonSetState(WX_millimeters,TRUE,FALSE);
-//                    WX_rain_gauge_type=2;
-                    break;
-                case(0):
-                default:
-                    XmToggleButtonSetState(WX_tenths,TRUE,FALSE);
-//                    WX_rain_gauge_type=0;
-                    break;
-            }
+        }
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
 
+        XmToggleButtonSetState(WX_none,FALSE,FALSE);
+        XmToggleButtonSetState(WX_tenths,FALSE,FALSE);
+        XmToggleButtonSetState(WX_hundredths,FALSE,FALSE);
+        XmToggleButtonSetState(WX_millimeters,FALSE,FALSE);
+        switch (WX_rain_gauge_type) {
+            case(1):
+                XmToggleButtonSetState(WX_tenths,TRUE,FALSE);
+                break;
+            case(2):
+                XmToggleButtonSetState(WX_hundredths,TRUE,FALSE);
+                break;
+            case(3):
+                XmToggleButtonSetState(WX_millimeters,TRUE,FALSE);
+                break;
+            default:
+                XmToggleButtonSetState(WX_none,TRUE,FALSE);
+                break;
         }
+
         XtManageChild(form);
         XtManageChild(speed_box);
         XtManageChild(style_box);
@@ -2163,10 +2160,12 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" );
 
 
 void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
-    static Widget  pane, form, frame3, button_ok, button_cancel,
+    static Widget  pane, form, frame3, frame4, WX_none,
+                button_ok, button_cancel,
                 hostn, portn,
                 data_type, data_box,
                 data_auto, data_bin, data_ascii,
+                gauge_type, gauge_box,
                 sep;
     char temp[20];
     Arg al[2];                    /* Arg List */
@@ -2318,10 +2317,57 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
                                         NULL);
         XtAddCallback(data_ascii,XmNvalueChangedCallback,data_toggle,"2");
 
+        frame4 = XtVaCreateManagedWidget("Config_WX frame4", xmFrameWidgetClass, form,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, frame3,
+                                        XmNtopOffset, 10,
+                                        XmNbottomAttachment, XmATTACH_NONE,
+                                        XmNleftAttachment, XmATTACH_FORM,
+                                        XmNleftOffset, 10,
+                                        XmNrightAttachment, XmATTACH_FORM,
+                                        XmNrightOffset, 10,
+                                        XmNbackground, colors[0xff],
+                                        NULL);
+
+        // Rain Gauge Type
+        gauge_type= XtVaCreateManagedWidget(langcode("WPUPCFWX03"),xmLabelWidgetClass, frame4,
+                                        XmNchildType, XmFRAME_TITLE_CHILD,
+                                        XmNbackground, colors[0xff],
+                                        NULL);
+
+        gauge_box = XmCreateRadioBox(frame4,"Config_WX gauge box",al,ac);
+
+        XtVaSetValues(gauge_box,
+            XmNorientation, XmHORIZONTAL,
+            NULL);
+
+        WX_none = XtVaCreateManagedWidget(langcode("WPUPCFWX07"),xmToggleButtonGadgetClass,
+                                      gauge_box,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+        WX_tenths = XtVaCreateManagedWidget(langcode("WPUPCFWX04"),xmToggleButtonGadgetClass,
+                                      gauge_box,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+        WX_hundredths = XtVaCreateManagedWidget(langcode("WPUPCFWX05"),xmToggleButtonGadgetClass,
+                                      gauge_box,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+        WX_millimeters = XtVaCreateManagedWidget(langcode("WPUPCFWX06"),xmToggleButtonGadgetClass,
+                                      gauge_box,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        XtAddCallback(WX_none,XmNvalueChangedCallback,rain_gauge_toggle,"0");
+        XtAddCallback(WX_tenths,XmNvalueChangedCallback,rain_gauge_toggle,"1");
+        XtAddCallback(WX_hundredths,XmNvalueChangedCallback,rain_gauge_toggle,"2");
+        XtAddCallback(WX_millimeters,XmNvalueChangedCallback,rain_gauge_toggle,"3");
+
+
         sep = XtVaCreateManagedWidget("Config_NWX sep", xmSeparatorGadgetClass,form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, frame3,
+                                      XmNtopWidget, frame4,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -2363,6 +2409,8 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
         delw = XmInternAtom(XtDisplay(config_NWX_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(config_NWX_dialog, delw, Config_NWX_destroy_shell, (XtPointer)config_NWX_dialog);
 
+begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX" );
+
         if (config_type==0) {
             /* first time port */
             XmTextFieldSetString(NWX_host_name_data,"localhost");
@@ -2373,8 +2421,6 @@ void Config_NWX( /*@unused@*/ Widget w, int config_type, int port) {
             XmToggleButtonSetState(data_auto,TRUE,FALSE);
         } else {
             /* reconfig */
-
-begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX" );
 
             XmTextFieldSetString(NWX_host_name_data,devices[NWX_port].device_host_name);
             xastir_snprintf(temp, sizeof(temp), "%d", devices[NWX_port].sp); /* port number */
@@ -2409,13 +2455,33 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX" );
                     device_data_type=0;
                     break;
             }
+        }
+
+        XmToggleButtonSetState(WX_none,FALSE,FALSE);
+        XmToggleButtonSetState(WX_tenths,FALSE,FALSE);
+        XmToggleButtonSetState(WX_hundredths,FALSE,FALSE);
+        XmToggleButtonSetState(WX_millimeters,FALSE,FALSE);
+        switch (WX_rain_gauge_type) {
+            case(1):
+                XmToggleButtonSetState(WX_tenths,TRUE,FALSE);
+                break;
+            case(2):
+                XmToggleButtonSetState(WX_hundredths,TRUE,FALSE);
+                break;
+            case(3):
+                XmToggleButtonSetState(WX_millimeters,TRUE,FALSE);
+                break;
+            default:
+                XmToggleButtonSetState(WX_none,TRUE,FALSE);
+                break;
+        }
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_NWX" );
 
-       }
         XtManageChild(form);
         XtManageChild(data_box);
         XtManageChild(frame3);
+        XtManageChild(gauge_box);
         XtManageChild(pane);
 
         XtPopup(config_NWX_dialog,XtGrabNone);

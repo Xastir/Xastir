@@ -333,10 +333,11 @@ WPUPCFT029|Configure TNC w/INVALID ENUM||
 # Configurar a porta da estação meteorológica
 WPUPCFWX01|Configurar a porta da estação meteorológica||
 WPUPCFWX02|Dispositivo da estação meteorológica||
-WPUPCFWX03|Rain Gauge Type (Global Setting)||
-WPUPCFWX04|0.1 in / 2.5 mm||
-WPUPCFWX05|0.01 in / 0.25 mm||
-WPUPCFWX06|0.1 mm||
+WPUPCFWX03|Rain Gauge Correction (Global Setting)||
+WPUPCFWX04|.1 inch/2.5mm||
+WPUPCFWX05|.01 inch/.25mm||
+WPUPCFWX06|.1mm||
+WPUPCFWX07|No Correction||
 #
 # Configurar a estação
 WPUPCFS001|Configurar a estação||

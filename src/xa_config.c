@@ -996,7 +996,7 @@ void load_data_or_default(void) {
         print_invert = 0;
 
     if (!get_int ("RAIN_GAUGE_TYPE", &WX_rain_gauge_type))
-        WX_rain_gauge_type = 0;     // Tenth of an inch
+        WX_rain_gauge_type = 0;     // No Correction
 
 
     /* list attributes */

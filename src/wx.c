@@ -945,10 +945,109 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
      len=(int)strlen((char*)data);
 
     weather = fill->weather_data;  // should always be defined
+
     switch (type) {
 
+        case (APRS_WX4):     // Peet Brothers Ultimeter-II
+            // This one assume 0.1" rain gauge.  Must correct in software if
+            // any other type is used.
 
-        case (APRS_WX3):
+            if (debug_level & 1)
+                printf("APRS WX4 Peet Bros U-II %s:<%s>\n",fill->call_sign,data);
+
+            weather->wx_type=WX_TYPE;
+            strcpy(weather->wx_station,"UII");
+
+            /* wind direction */
+            substr(temp_data1,(char *)(data+1),1);
+            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                    (int)(((float)strtol(temp_data1,&temp_conv,16)/16.0)*360.0));
+
+            /* get last gust speed */
+            if (strlen(weather->wx_gust) > 0 && !from) {    // From local station
+                /* get last speed */
+                last_speed=atof(weather->wx_gust);
+                last_speed_time=weather->wx_speed_sec_time;
+            }
+
+            /* wind speed */
+            substr(temp_data1,(char *)(data+2),2);
+            if (data[0]=='#') {
+                /* mph */
+                xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                        (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
+            } else {
+                /* from kph to mph */
+                xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                        (int)(0.5 + (float)(strtol(temp_data1,&temp_conv,16)*0.62137)));
+            }
+
+            if (from) { // From remote station
+                weather->wx_speed_sec_time = sec_now();
+            } else {
+                /* local station */
+                computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
+                weather->wx_speed_sec_time = sec_now();
+                if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
+                    xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
+                            (int)(0.5 + computed_gust));
+            }
+
+            /* outdoor temp */
+            if (data[4]!='-') {
+                substr(temp_data1,(char *)(data+4),2);
+                xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
+                        (int)((float)strtol(temp_data1,&temp_conv,16)-56));
+            } else {
+                if (!from)  // From local station
+                    weather->wx_temp[0]=0;
+            }
+
+            /* rain div by 100 for readings 0.1 inch */
+// What?  Shouldn't this be /10?
+
+            if (data[6]!='-') {
+                substr(temp_data1,(char *)(data+6),4);
+                if (!from) {    // From local station
+//WE7U
+// Correct this section of code for the different rain gauge types
+                    switch (WX_rain_gauge_type) {
+                        case 2: // 0.01" rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                            break;
+                        case 3: // 0.1mm rain gauge
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                            break;
+                        case 1: // 0.1" rain gauge
+                        case 0: // No conversion
+                        default:
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                            break;
+                    }
+                    /* local station */
+                    compute_rain(atof(weather->wx_rain_total));
+                    /*last hour rain */
+                    xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
+                            rain_minute_total);
+                    /*last 24 hour rain */
+                    xastir_snprintf(weather->wx_prec_24, sizeof(weather->wx_prec_24),
+                            "%0.2f", rain_24);
+                    /* rain since midnight */
+                    xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
+                            "%0.2f", rain_00);
+                }
+            } else {
+                if (!from)  // From local station
+                    weather->wx_rain_total[0]=0;
+            }
+            break;
+
+
+
+        case (APRS_WX3):    // Peet Brothers Ultimeter 2000 in data logging mode
             if (debug_level & 1)
                 printf("APRS WX3 Peet Bros U-2k (data logging mode) %s:<%s>\n",fill->call_sign,data+2);
 
@@ -1010,7 +1109,7 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 //WE7U
 // Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
-                        case 0: // 0.1" rain gauge
+                        case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
                             break;
@@ -1018,7 +1117,8 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
                             break;
-                        case 1: // 0.01" rain gauge
+                        case 3: // 0.01" rain gauge
+                        case 0: // No conversion
                         default:
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
@@ -1074,109 +1174,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 if (!from)  // From local station
                     weather->wx_prec_00[0]=0;
             }
-
             break;
 
 
 
-        // This one assume 0.1" rain gauge.  Must correct in software if
-        // any other type is used.
-        case(APRS_WX4):
-            if (debug_level & 1)
-                printf("APRS WX4 Peet Bros U-II %s:<%s>\n",fill->call_sign,data);
-
-            weather->wx_type=WX_TYPE;
-            strcpy(weather->wx_station,"UII");
-
-            /* wind direction */
-            substr(temp_data1,(char *)(data+1),1);
-            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
-                    (int)(((float)strtol(temp_data1,&temp_conv,16)/16.0)*360.0));
-
-            /* get last gust speed */
-            if (strlen(weather->wx_gust) > 0 && !from) {    // From local station
-                /* get last speed */
-                last_speed=atof(weather->wx_gust);
-                last_speed_time=weather->wx_speed_sec_time;
-            }
-
-            /* wind speed */
-            substr(temp_data1,(char *)(data+2),2);
-            if (data[0]=='#') {
-                /* mph */
-                xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
-                        (int)(0.5 + (float)strtol(temp_data1,&temp_conv,16)));
-            } else {
-                /* from kph to mph */
-                xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
-                        (int)(0.5 + (float)(strtol(temp_data1,&temp_conv,16)*0.62137)));
-            }
-
-            if (from) { // From remote station
-                weather->wx_speed_sec_time = sec_now();
-            } else {
-                /* local station */
-                computed_gust = compute_gust(atof(weather->wx_speed),last_speed,&last_speed_time);
-                weather->wx_speed_sec_time = sec_now();
-                if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
-                    xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
-                            (int)(0.5 + computed_gust));
-            }
-
-            /* outdoor temp */
-            if (data[4]!='-') {
-                substr(temp_data1,(char *)(data+4),2);
-                xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
-                        (int)((float)strtol(temp_data1,&temp_conv,16)-56));
-            } else {
-                if (!from)  // From local station
-                    weather->wx_temp[0]=0;
-            }
-
-            /* rain div by 100 for readings 0.1 inch */
-// What?  Shouldn't this be /10?
-
-            if (data[6]!='-') {
-                substr(temp_data1,(char *)(data+6),4);
-                if (!from) {    // From local station
-//WE7U
-// Correct this section of code for the different rain gauge types
-                    switch (WX_rain_gauge_type) {
-                        case 1: // 0.01" rain gauge
-                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
-                            break;
-                        case 2: // 0.1mm rain gauge
-                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
-                            break;
-                        case 0: // 0.1" rain gauge
-                        default:
-                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
-                            break;
-                    }
-                    /* local station */
-                    compute_rain(atof(weather->wx_rain_total));
-                    /*last hour rain */
-                    xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
-                            rain_minute_total);
-                    /*last 24 hour rain */
-                    xastir_snprintf(weather->wx_prec_24, sizeof(weather->wx_prec_24),
-                            "%0.2f", rain_24);
-                    /* rain since midnight */
-                    xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
-                            "%0.2f", rain_00);
-                }
-            } else {
-                if (!from)  // From local station
-                    weather->wx_rain_total[0]=0;
-            }
-            break;
-
-
-
-        case(APRS_WX5):
+        case(APRS_WX5):     // Peet Brothers Ultimeter 2000 in packet mode
             if (debug_level & 1)
                 printf("APRS WX5 Peet Bros U-2k Packet (Packet mode) %s:<%s>\n",fill->call_sign,data);
 
@@ -1255,15 +1257,16 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 //WE7U
 // Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
-                        case 0: // 0.1" rain gauge
+                        case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
                             break;
-                        case 2: // 0.1mm rain gauge
+                        case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
                             break;
-                        case 1: // 0.01" rain gauge
+                        case 2: // 0.01" rain gauge
+                        case 0: // No conversion
                         default:
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
@@ -1332,51 +1335,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         weather->wx_speed[0]=0;
                 }
             }
-
             break;
 
 
 
-        case(QM_WX):
-            if (debug_level & 1)
-                printf("Qualimetrics Q-Net %s:<%s>\n",fill->call_sign,data);
-
-            weather->wx_type=WX_TYPE;
-            strcpy(weather->wx_station,"Q-N");
-
-            (void)sscanf((char *)data,"%19s %d %19s %d %19s %d",temp,&temp1,temp,&temp2,temp,&temp3);
-
-            /* outdoor temp */
-            xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
-                    (int)((temp2/10.0)));
-
-            /* baro */
-            xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro), "%0.1f",
-                    ((float)temp3/100.0)*33.864);
-
-            if (!from) {    // From local station
-                xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.2f",
-                        (float)temp3/100.0);
-            }
-
-            /* outdoor humidity */
-            xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d", temp1);
-
-            if (!from) {    // From local station
-                weather->wx_gust[0]=0;
-                weather->wx_course[0]=0;
-                weather->wx_rain[0]=0;
-                weather->wx_prec_00[0]=0;
-                weather->wx_prec_24[0]=0;
-                weather->wx_rain_total[0]=0;
-                weather->wx_gust[0]=0;
-                weather->wx_speed[0]=0;
-            }
-            break;
-
-
-
-        case(PEET_COMPLETE):
+        case(PEET_COMPLETE):    // Peet Brothers Ultimeter 2000 in complete record mode
             if (debug_level & 1)
                 printf("Peet Bros U-2k Packet (Complete Record Mode) %s:<%s>\n",fill->call_sign,data);
 
@@ -1416,15 +1379,16 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 //WE7U
 // Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
-                        case 0: // 0.1" rain gauge
+                        case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
                             break;
-                        case 2: // 0.1mm rain gauge
+                        case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
                             break;
-                        case 1: // 0.01" rain gauge
+                        case 2: // 0.01" rain gauge
+                        case 0: // No conversion
                         default:
                             xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
@@ -1439,15 +1403,16 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 //WE7U
 // Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
-                        case 0: // 0.1" rain gauge
+                        case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
                             break;
-                        case 2: // 0.1mm rain gauge
+                        case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
                             break;
-                        case 1: // 0.01" rain gauge
+                        case 2: // 0.01" rain gauge
+                        case 0: // No conversion
                         default:
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
@@ -1559,206 +1524,248 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             t2=(t2 * t2);
 
             if (hidx_temp >= 70) {
-                heat_index=-42.379+2.04901523 * hidx_temp+10.1433127 * hi_hum-0.22475541 * hidx_temp * hi_hum-0.00683783 * t2-0.05481717 * rh2+0.00122874 * t2 * hi_hum+0.00085282 * hidx_temp * rh2-0.00000199 * t2 * rh2;
+                heat_index=-42.379+2.04901523 * hidx_temp+10.1433127 * hi_hum-0.22475541
+                    * hidx_temp * hi_hum-0.00683783 * t2-0.05481717 * rh2+0.00122874
+                    * t2 * hi_hum+0.00085282 * hidx_temp * rh2-0.00000199 * t2 * rh2;
                 xastir_snprintf (wx_heat_index, sizeof(wx_heat_index), "%03d", heat_index);
                 wx_heat_index_on = 1;
             } else
                 wx_heat_index_on = 0;
         }
-
         break;
 
 
 
-    case(RSWX200):  // Radio Shack WX-200 or Huger/Oregon Scientific WM-918
-
-        // Notes:  Many people run the wx200d daemon connected to the weather station,
-        // with Xastir then connected to wx200d.  Note that wx200d changes the protocol
-        // slightly:  It only sends frames that have changed to the clients.  This means
-        // even if the weather station is sending regular packets, wx200d won't send
-        // them along to Xastir if all the bits are the same as the last packet of that
-        // type.  To fix this I had to tie into the main.c:UpdateTime() function to do
-        // regular updates at a 30 second rate, to keep the rain and gust queues cycling
-        // on a regular basis.
-        //
-        // 2nd Note:  Some WX-200 weather stations send bogus data.  I had to add in a
-        // bunch of filtering to keep the global variables from getting corrupted by
-        // this data.  More filtering may need to be done and/or the limits may need to
-        // be changed.
-
-        if (!from) {    // From local station
+        case(QM_WX):    // Qualimetrics Q-Net
             if (debug_level & 1)
-                printf("RSWX200 WX (binary)\n");
+                printf("Qualimetrics Q-Net %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
-            strcpy(weather->wx_station,"RSW");
+            strcpy(weather->wx_station,"Q-N");
 
-            switch (data[0]) {
-                case 0x8f: /* humidity */
-                    if ( (rswnc(data[20]) <= 100) && (rswnc(data[2]) >= 0) )
-                        xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d",
-                                rswnc(data[20]));
-                    else
-                        //sprintf(weather->wx_hum,"100");
-                        printf("Humidity out-of-range, ignoring: %03d\n",rswnc(data[20]) );
-                    break;
+            (void)sscanf((char *)data,"%19s %d %19s %d %19s %d",temp,&temp1,temp,&temp2,temp,&temp3);
 
-                case 0x9f: /* temp */
-                    /* all data in C ?*/
-                    xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%0.1f",
-                            ((data[17]&0x08) ? '-' : '+'),(data[17]&0x7),rswnc(data[16])/10.0);
-                    /*printf("temp data: <%s> %d %d %d\n", temp_data1,((data[17]&0x08)==0x08),(data[17]&0x7),rswnc(data[16]));*/
-                    temp_temp = (atof(temp_data1)*1.8)+32;
-                    if ( (temp_temp >= -99.0) && (temp_temp < 200.0) ) {
-                        xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
-                                (int)((atof(temp_data1)*1.8)+32));
-                        /*printf("Temp %s C %0.2f %03d\n",temp_data1,atof(temp_data1),(int)atof(temp_data1));
-                        printf("Temp F %0.2f %03d\n",(atof(temp_data1)*1.8)+32,(int)(atof(temp_data1)*1.8)+32);
-                        */
-                    } else {  // We don't want to save this one
-                        printf("Temp out-of-range, ignoring: %0.2f\n", temp_temp);
-                    }
-                    xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%d.%d",
+            /* outdoor temp */
+            xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
+                    (int)((temp2/10.0)));
+
+            /* baro */
+            xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro), "%0.1f",
+                    ((float)temp3/100.0)*33.864);
+
+            if (!from) {    // From local station
+                xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.2f",
+                        (float)temp3/100.0);
+            }
+
+            /* outdoor humidity */
+            xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d", temp1);
+
+            if (!from) {    // From local station
+                weather->wx_gust[0]=0;
+                weather->wx_course[0]=0;
+                weather->wx_rain[0]=0;
+                weather->wx_prec_00[0]=0;
+                weather->wx_prec_24[0]=0;
+                weather->wx_rain_total[0]=0;
+                weather->wx_gust[0]=0;
+                weather->wx_speed[0]=0;
+            }
+            break;
+
+
+
+        case(RSWX200):  // Radio Shack WX-200 or Huger/Oregon Scientific WM-918
+
+            // Notes:  Many people run the wx200d daemon connected to the weather station,
+            // with Xastir then connected to wx200d.  Note that wx200d changes the protocol
+            // slightly:  It only sends frames that have changed to the clients.  This means
+            // even if the weather station is sending regular packets, wx200d won't send
+            // them along to Xastir if all the bits are the same as the last packet of that
+            // type.  To fix this I had to tie into the main.c:UpdateTime() function to do
+            // regular updates at a 30 second rate, to keep the rain and gust queues cycling
+            // on a regular basis.
+            //
+            // 2nd Note:  Some WX-200 weather stations send bogus data.  I had to add in a
+            // bunch of filtering to keep the global variables from getting corrupted by
+            // this data.  More filtering may need to be done and/or the limits may need to
+            // be changed.
+
+            if (!from) {    // From local station
+                if (debug_level & 1)
+                    printf("RSWX200 WX (binary)\n");
+
+                weather->wx_type=WX_TYPE;
+                strcpy(weather->wx_station,"RSW");
+
+                switch (data[0]) {
+                    case 0x8f: /* humidity */
+                        if ( (rswnc(data[20]) <= 100) && (rswnc(data[2]) >= 0) )
+                            xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d",
+                                    rswnc(data[20]));
+                        else
+                            //sprintf(weather->wx_hum,"100");
+                            printf("Humidity out-of-range, ignoring: %03d\n",rswnc(data[20]) );
+                        break;
+
+                    case 0x9f: /* temp */
+                        /* all data in C ?*/
+                        xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%0.1f",
+                                ((data[17]&0x08) ? '-' : '+'),(data[17]&0x7),rswnc(data[16])/10.0);
+                        /*printf("temp data: <%s> %d %d %d\n", temp_data1,((data[17]&0x08)==0x08),(data[17]&0x7),rswnc(data[16]));*/
+                        temp_temp = (atof(temp_data1)*1.8)+32;
+                        if ( (temp_temp >= -99.0) && (temp_temp < 200.0) ) {
+                            xastir_snprintf(weather->wx_temp, sizeof(weather->wx_temp), "%03d",
+                                    (int)((atof(temp_data1)*1.8)+32));
+                            /*printf("Temp %s C %0.2f %03d\n",temp_data1,atof(temp_data1),(int)atof(temp_data1));
+                            printf("Temp F %0.2f %03d\n",(atof(temp_data1)*1.8)+32,(int)(atof(temp_data1)*1.8)+32);
+                            */
+                        } else {  // We don't want to save this one
+                            printf("Temp out-of-range, ignoring: %0.2f\n", temp_temp);
+                        }
+                        xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%d.%d",
                             ((data[18]&0x80) ? '-' : '+'),(data[18]&0x70)>>4,(data[18]&0x0f),(data[17] & 0xf0) >> 4);
-                    xastir_snprintf(wx_hi_temp, sizeof(wx_hi_temp), "%03d",
+                        xastir_snprintf(wx_hi_temp, sizeof(wx_hi_temp), "%03d",
                             (int)((atof(temp_data1)*1.8)+32));
-                    wx_hi_temp_on=1;
-                    xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%d.%d",
+                        wx_hi_temp_on=1;
+                        xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d%d.%d",
                             ((data[23]&0x80) ? '-' : '+'),(data[23]&0x70)>>4,(data[23]&0x0f),(data[22] & 0xf0) >> 4);
-                    xastir_snprintf(wx_low_temp, sizeof(wx_low_temp), "%03d",
+                        xastir_snprintf(wx_low_temp, sizeof(wx_low_temp), "%03d",
                             (int)((atof(temp_data1)*1.8)+32));
-                    wx_low_temp_on=1;
-                    break;
+                        wx_low_temp_on=1;
+                        break;
 
-                case 0xaf: /* baro/dewpt */
-                    // local baro pressure in mb?
-                    // sprintf(weather->wx_baro,"%02d%02d",rswnc(data[2]),rswnc(data[1]));
-                    // Sea Level Adjusted baro in mb
-                    xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro),
+                    case 0xaf: /* baro/dewpt */
+                        // local baro pressure in mb?
+                        // sprintf(weather->wx_baro,"%02d%02d",rswnc(data[2]),rswnc(data[1]));
+                        // Sea Level Adjusted baro in mb
+                        xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro),
                             "%0d%02d%0.1f",(data[5]&0x0f),rswnc(data[4]),
                             ((float)rswnc(data[3])/10.0));
 
-                    xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.2f",
+                        xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.2f",
                             (atof(weather->wx_baro)*0.02953));
-                    wx_baro_inHg_on=1;
+                        wx_baro_inHg_on=1;
 
-                    /* dew point in C */
-                    temp_temp = (int)((rswnc(data[18])*1.8)+32);
-                    if ( (temp_temp >= 32.0) && (temp_temp < 150.0) )
-                        xastir_snprintf(wx_dew_point, sizeof(wx_dew_point), "%03d",
+                        /* dew point in C */
+                        temp_temp = (int)((rswnc(data[18])*1.8)+32);
+                        if ( (temp_temp >= 32.0) && (temp_temp < 150.0) )
+                            xastir_snprintf(wx_dew_point, sizeof(wx_dew_point), "%03d",
                                 (int)((rswnc(data[18])*1.8)+32));
-                    else
-                        printf("Dew point out-of-range, ignoring: %0.2f\n", temp_temp);
+                        else
+                            printf("Dew point out-of-range, ignoring: %0.2f\n", temp_temp);
+                        break;
 
-                    break;
-
-                case 0xbf: /* Rain */
-                    // All data in mm.  Convert to hundredths of an inch.
-                    xastir_snprintf(temp_data1, sizeof(temp_data1), "%02d%02d",
+                    case 0xbf: /* Rain */
+                        // All data in mm.  Convert to hundredths of an inch.
+                        xastir_snprintf(temp_data1, sizeof(temp_data1), "%02d%02d",
                             rswnc(data[6]), rswnc(data[5]));
 
-                    temp_temp = atof(temp_data1) * 3.9370079;
+                        temp_temp = atof(temp_data1) * 3.9370079;
 
-                    if ( (temp_temp >= 0) && (temp_temp < 51200.0) ) { // Between 0 and 512 inches
-                        xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
+                        if ( (temp_temp >= 0) && (temp_temp < 51200.0) ) { // Between 0 and 512 inches
+                            xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
                                 "%0.2f", atof(temp_data1) * 3.9370079);
 
-                        /* Since local station only */
-                        compute_rain(atof(weather->wx_rain_total));
+                            /* Since local station only */
+                            compute_rain(atof(weather->wx_rain_total));
 
-                        /* Last hour rain */
-                        xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
+                            /* Last hour rain */
+                            xastir_snprintf(weather->wx_rain, sizeof(weather->wx_rain), "%0.2f",
                                 rain_minute_total);
 
-                        /* Last 24 hour rain */
-                        xastir_snprintf(weather->wx_prec_24, sizeof(weather->wx_prec_24),
+                            /* Last 24 hour rain */
+                            xastir_snprintf(weather->wx_prec_24, sizeof(weather->wx_prec_24),
                                 "%0.2f", rain_24);
 
-                        /* Rain since midnight */
-                        xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
+                            /* Rain since midnight */
+                            xastir_snprintf(weather->wx_prec_00, sizeof(weather->wx_prec_00),
                                 "%0.2f", rain_00);
-                    } else {
-                        printf("Total Rain out-of-range, ignoring: %0.2f\n", temp_temp);
-                    }
-                    break;
+                        } else {
+                            printf("Total Rain out-of-range, ignoring: %0.2f\n", temp_temp);
+                        }
+                        break;
 
-                case 0xcf: /* Wind w/chill*/
-                    /* get last gust speed */
-                    if (strlen(weather->wx_gust) > 0) {
-                        /* get last speed */
-                        last_speed=atof(weather->wx_gust);
-                        last_speed_time=weather->wx_speed_sec_time;
-                    }
-                    /* all data in m/s */
-                    /* average wind speed */
-                    xastir_snprintf(temp_data1, sizeof(temp_data1), "%01d%0.1f",
+                    case 0xcf: /* Wind w/chill*/
+                        /* get last gust speed */
+                        if (strlen(weather->wx_gust) > 0) {
+                            /* get last speed */
+                            last_speed=atof(weather->wx_gust);
+                            last_speed_time=weather->wx_speed_sec_time;
+                        }
+                        /* all data in m/s */
+                        /* average wind speed */
+                        xastir_snprintf(temp_data1, sizeof(temp_data1), "%01d%0.1f",
                             (data[5]&0xf),(float)( rswnc(data[4]) / 10 ));
-                    // Convert to mph
-                    xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                        // Convert to mph
+                        xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
                             (int)(0.5 + (atof(temp_data1)*2.2369)));
 
-                    /* wind gust */
-                    xastir_snprintf(temp_data1, sizeof(temp_data1), "%01d%0.1f",
+                        /* wind gust */
+                        xastir_snprintf(temp_data1, sizeof(temp_data1), "%01d%0.1f",
                             (data[2]&0xf),(float)( rswnc(data[1]) / 10 ));
-                    /*sprintf(weather->wx_gust,"%03d",(int)(0.5 + (atof(temp_data1)*2.2369)));*/
+                        /*sprintf(weather->wx_gust,"%03d",(int)(0.5 + (atof(temp_data1)*2.2369)));*/
 
-                    /* do computed gust, convert to mph */
-                    computed_gust = compute_gust((int)(0.5 + (atof(temp_data1)*2.2369)),last_speed,&last_speed_time);
-                    weather->wx_speed_sec_time = sec_now();
-                    if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
-                        xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
+                        /* do computed gust, convert to mph */
+                        computed_gust = compute_gust((int)(0.5 + (atof(temp_data1)*2.2369)),last_speed,&last_speed_time);
+                        weather->wx_speed_sec_time = sec_now();
+                        if ( (computed_gust > 0.0) || (weather->wx_gust != 0) )
+                            xastir_snprintf(weather->wx_gust, sizeof(weather->wx_gust), "%03d",
                                 (int)(0.5 + computed_gust));
 
-                    /* high wind gust */
-                    xastir_snprintf(temp_data1, sizeof(temp_data1), "%01d%0.1f",
+                        /* high wind gust */
+                        xastir_snprintf(temp_data1, sizeof(temp_data1), "%01d%0.1f",
                             (data[8]&0xf), (float)( rswnc(data[7]) / 10 ));
-                    xastir_snprintf(wx_high_wind, sizeof(wx_high_wind), "%03d",
+                        xastir_snprintf(wx_high_wind, sizeof(wx_high_wind), "%03d",
                             (int)(0.5 + (atof(temp_data1)*2.2369)));
-                    wx_high_wind_on = 1;
+                        wx_high_wind_on = 1;
 
-                    xastir_snprintf(weather->wx_course, sizeof(weather->wx_course),
+                        xastir_snprintf(weather->wx_course, sizeof(weather->wx_course),
                             "%02d%01d", rswnc(data[3]),(data[2]&0xf0)>>4);
 
-                    /* wind chill in C */
-                    xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d",
+                        /* wind chill in C */
+                        xastir_snprintf(temp_data1, sizeof(temp_data1), "%c%d",
                             ((data[21]&0x20) ? '-' : '+'),rswnc(data[16]));
 
-                    temp_temp = (atof(temp_data1)*1.8)+32;
-                    if ( (temp_temp > -200.0) && (temp_temp < 200.0) )
-                        xastir_snprintf(wx_wind_chill, sizeof(wx_wind_chill), "%03d",
+                        temp_temp = (atof(temp_data1)*1.8)+32;
+                        if ( (temp_temp > -200.0) && (temp_temp < 200.0) )
+                            xastir_snprintf(wx_wind_chill, sizeof(wx_wind_chill), "%03d",
                                 (int)((atof(temp_data1)*1.8)+32));
-                    else
-                        printf("Wind_chill out-of-range, ignoring: %0.2f\n", temp_temp);
+                        else
+                            printf("Wind_chill out-of-range, ignoring: %0.2f\n", temp_temp);
 
-                    wx_wind_chill_on = 1;
-                    break;
-                default:
-                    break;
-            }
+                        wx_wind_chill_on = 1;
+                        break;
+                    default:
+                        break;
+                }
 
+                if (strlen(weather->wx_hum) > 0 && strlen(weather->wx_temp) > 0) {
+                    /* Heat Index Calculation*/
+                    hi_hum=atoi(weather->wx_hum);
+                    rh2= atoi(weather->wx_hum);
+                    rh2=(rh2 * rh2);
+                    hidx_temp=atoi(weather->wx_temp);
+                    t2= atoi(weather->wx_temp);
+                    t2=(t2 * t2);
 
-            if (strlen(weather->wx_hum) > 0 && strlen(weather->wx_temp) > 0) {
-                /* Heat Index Calculation*/
-                hi_hum=atoi(weather->wx_hum);
-                rh2= atoi(weather->wx_hum);
-                rh2=(rh2 * rh2);
-                hidx_temp=atoi(weather->wx_temp);
-                t2= atoi(weather->wx_temp);
-                t2=(t2 * t2);
-
-                if (hidx_temp >= 70) {
-                    heat_index=(-42.379+2.04901523 * hidx_temp+10.1433127 * hi_hum-0.22475541 * hidx_temp *
+                    if (hidx_temp >= 70) {
+                        heat_index=(-42.379+2.04901523 * hidx_temp+10.1433127 * hi_hum-0.22475541 * hidx_temp *
                                 hi_hum-0.00683783 * t2-0.05481717 * rh2+0.00122874 * t2 * hi_hum+0.00085282 *
                                 hidx_temp * rh2-0.00000199 * t2 * rh2);
-                    xastir_snprintf(wx_heat_index, sizeof(wx_heat_index), "%03d", heat_index);
+                        xastir_snprintf(wx_heat_index, sizeof(wx_heat_index), "%03d", heat_index);
 
-                    wx_heat_index_on=1;
-                } else
-                    wx_heat_index[0] = 0;
-            }
-        }
-    }
-}
+                        wx_heat_index_on=1;
+                    }
+                    else {
+                            wx_heat_index[0] = 0;
+                    }
+                }   // end of heat index calculation
+            }   // end of if (!from)
+            break;  // End of case for RSWX200 weather station
+
+    }   // End of big switch
+}   // End of wx_fill_data()
 
 
 
