@@ -12706,6 +12706,9 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
 }
 
 
+
+
+
 // Update the "max_zoom" field in the in-memory map_index based on
 // the "max_zoom" input parameter.
 void map_index_update_max_zoom(char *filename, int max_zoom) {
@@ -12760,7 +12763,7 @@ void map_properties_max_zoom_change(Widget widget, XtPointer clientData, XtPoint
                 // path/filename portion.
                 temp2 = temp + 40;
 
-                fprintf(stderr,"New string:%s\n",temp2);
+//                fprintf(stderr,"New string:%s\n",temp2);
 
                 // Update this file or directory in the in-memory
                 // map index, setting/resetting the "selected" field
@@ -12777,6 +12780,9 @@ void map_properties_max_zoom_change(Widget widget, XtPointer clientData, XtPoint
     // Save the updated index to the file
     index_save_to_file();
 }
+
+
+
 
 
 // Update the "min_zoom" field in the in-memory map_index based on
@@ -12850,6 +12856,8 @@ void map_properties_min_zoom_change(Widget widget, XtPointer clientData, XtPoint
     // Save the updated index to the file
     index_save_to_file();
 }
+
+
 
 
 
