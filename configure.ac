@@ -3,12 +3,15 @@
 # $Id$
 
 
-#
+#########################################################################
 # SET VERSION HERE!
 #
 # It should look something like this:  (xastir, 1.1.4, xastir@xastir.org)
+# The revision number must contain at least one '.' and two digits.
 #
 AC_INIT(xastir, 1.1.4, xastir@xastir.org)
+#########################################################################
+
 
 AC_PREREQ(2.53)
 
@@ -24,11 +27,14 @@ echo ""
 SHORT_VERSION="AC_PACKAGE_VERSION"
 SHORT_VERSION=`echo $SHORT_VERSION | sed -e 's/\.//g'`
 AC_SUBST(SHORT_VERSION)
-
 AC_DEFINE_UNQUOTED(XASTIR_TOCALL, "APX$SHORT_VERSION", [Defines the version tocall])
+
+
 
 # Check for host type
 AC_CANONICAL_HOST
+
+
 
 # Checks for programs.
 #AC_PROG_CXX
@@ -39,6 +45,8 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_AWK
 #AC_PROG_YACC
+
+
 
 # Liberated from ethereal's configure.in
 #
@@ -51,15 +59,12 @@ then
     # Not GCC - assume it's the vendor's compiler.
     #
     case "$host_os" in 
-    hpux*) 
-        # 
-        # HP's ANSI C compiler; flags suggested by Jost Martin. 
-        # "-Ae" for ANSI C plus extensions such as "long long". 
-        # "+O2", for optimization.  XXX - works with "-g"? 
-        # 
-        CFLAGS="-Ae +O2 $CFLAGS" 
-        AC_MSG_RESULT(HP ANSI C compiler - added -Ae +O2) 
-        ;; 
+    cygwin*) 
+        ac_tnc_port='"com1"' 
+        ac_gps_port='"com2"' 
+		AC_MSG_RESULT(none needed) 
+		AC_DEFINE(SYS_CYGWIN, 1, Compiling for Cygwin) 
+		;; 
     darwin*) 
         # 
         # It may be called "cc", but it's really a GCC derivative 
@@ -72,6 +77,22 @@ then
         AC_MSG_RESULT(Apple GCC - added -no-cpp-precomp) 
 		darwin="yes" 
         ;; 
+    freebsd*) 
+        ac_tnc_port='"/dev/cuaa0"' 
+        ac_gps_port='"/dev/cuaa1"' 
+        CFLAGS="-g -O2 -pipe -pthread" 
+		AC_MSG_RESULT(FreeBSD - added -g -02 -pipe -pthread) 
+		AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD) 
+		;; 
+    hpux*) 
+        # 
+        # HP's ANSI C compiler; flags suggested by Jost Martin. 
+        # "-Ae" for ANSI C plus extensions such as "long long". 
+        # "+O2", for optimization.  XXX - works with "-g"? 
+        # 
+        CFLAGS="-Ae +O2 $CFLAGS" 
+        AC_MSG_RESULT(HP ANSI C compiler - added -Ae +O2) 
+        ;; 
 	linux*) 
         ac_tnc_port='"/dev/ttyS0"' 
         ac_gps_port='"/dev/ttyS1"' 
@@ -79,41 +100,29 @@ then
 		AC_MSG_RESULT(LINUX - added -g -O2 -pipe -pthread) 
 		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS) 
 		;; 
-	freebsd*) 
-        ac_tnc_port='"/dev/cuaa0"' 
-        ac_gps_port='"/dev/cuaa1"' 
-        CFLAGS="-g -O2 -pipe -pthread" 
-		AC_MSG_RESULT(FreeBSD - added -g -02 -pipe -pthread) 
-		AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD) 
-		;; 
 	openbsd*) 
         ac_tnc_port='"/dev/cuaa0"' 
         ac_gps_port='"/dev/cuaa1"' 
 		AC_MSG_RESULT(none needed) 
 		AC_DEFINE(SYS_OPENBSD, 1, Compiling for OpenBSD) 
 		;; 
-	cygwin*) 
-        ac_tnc_port='"com1"' 
-        ac_gps_port='"com2"' 
-		AC_MSG_RESULT(none needed) 
-		AC_DEFINE(SYS_CYGWIN, 1, Compiling for Cygwin) 
-		cygwin="yes" 
-		;; 
+    solaris*) 
+        ac_tnc_port='"/dev/cua/a"' 
+        ac_gps_port='"/dev/cua/b"' 
+        ;; 
     *) 
         AC_MSG_RESULT(none needed) 
         ;; 
     esac 
 else 
     case "$host_os" in 
-    solaris*) 
-        AC_DEFINE(XASTIR_SYSTEM, "Solaris", [Define system type])
-        ac_tnc_port='"/dev/cua/a"' 
-        ac_gps_port='"/dev/cua/b"' 
-        # the X11 headers don't automatically include prototype info 
-        # and a lot don't include the return type 
-        CFLAGS="$CFLAGS -Wno-return-type -DFUNCPROTO=15" 
-        AC_MSG_RESULT(GCC on Solaris - added -Wno-return-type -DFUNCPROTO=15) 
-        ;; 
+    cygwin*) 
+        AC_DEFINE(XASTIR_SYSTEM, "CYGWIN", [Define system type]) 
+        ac_tnc_port='"com1"' 
+        ac_gps_port='"com2"' 
+		AC_MSG_RESULT(none needed) 
+		AC_DEFINE(SYS_CYGWIN, 1, Compiling for Cygwin) 
+		;; 
     darwin*) 
         AC_DEFINE(XASTIR_SYSTEM, "Darwin", [Define system type]) 
         ac_tnc_port='"/dev/cua/a"' 
@@ -125,14 +134,6 @@ else
         AC_MSG_RESULT(Apple GCC - added -no-cpp-precomp) 
 		darwin="yes" 
         ;; 
-	linux*) 
-        AC_DEFINE(XASTIR_SYSTEM, "Linux", [Define system type]) 
-        ac_tnc_port='"/dev/ttyS0"' 
-        ac_gps_port='"/dev/ttyS1"' 
-        CFLAGS="-g -O2 -Wall -pipe -pthread" 
-		AC_MSG_RESULT(LINUX - added -g -O2 -Wall -pipe -pthread) 
-		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS) 
-		;; 
     freebsd*) 
         AC_DEFINE(XASTIR_SYSTEM, "FreeBSD", [Define system type]) 
         ac_tnc_port='"/dev/cuaa0"' 
@@ -141,6 +142,16 @@ else
         AC_MSG_RESULT(FreeBSD gcc - added -g -O2 -Wall -pipe -pthread) 
         AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD) 
         ;; 
+    hpux*) 
+        ;; 
+	linux*) 
+        AC_DEFINE(XASTIR_SYSTEM, "Linux", [Define system type]) 
+        ac_tnc_port='"/dev/ttyS0"' 
+        ac_gps_port='"/dev/ttyS1"' 
+        CFLAGS="-g -O2 -Wall -pipe -pthread" 
+		AC_MSG_RESULT(LINUX - added -g -O2 -Wall -pipe -pthread) 
+		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS) 
+		;; 
     openbsd*) 
         AC_DEFINE(XASTIR_SYSTEM, "OpenBSD", [Define system type]) 
         ac_tnc_port='"/dev/cuaa0"' 
@@ -148,29 +159,32 @@ else
         CFLAGS="-g -O2 -Wall -pipe -pthread" 
         AC_MSG_RESULT(OpenBSD gcc - added -g -O2 -Wall -pipe -pthread) 
         AC_DEFINE(SYS_OPENBSD, 1, Compiling for OpenBSD) 
+        ;;
+    solaris*) 
+        AC_DEFINE(XASTIR_SYSTEM, "Solaris", [Define system type])
+        ac_tnc_port='"/dev/cua/a"' 
+        ac_gps_port='"/dev/cua/b"' 
+        # the X11 headers don't automatically include prototype info 
+        # and a lot don't include the return type 
+        CFLAGS="$CFLAGS -Wno-return-type -DFUNCPROTO=15" 
+        AC_MSG_RESULT(GCC on Solaris - added -Wno-return-type -DFUNCPROTO=15) 
         ;; 
-	cygwin*) 
-        AC_DEFINE(XASTIR_SYSTEM, "CYGWIN", [Define system type]) 
-        ac_tnc_port='"com1"' 
-        ac_gps_port='"com2"' 
-		AC_MSG_RESULT(none needed) 
-		AC_DEFINE(SYS_CYGWIN, 1, Compiling for Cygwin) 
-		cygwin="yes" 
-		;; 
     *) 
         AC_MSG_RESULT(none needed) 
         ;; 
     esac 
-fi 
- 
+fi
+#
 # CXXFLAGS="$CXXFLAGS $CFLAGS" 
- 
+#
 AC_DEFINE_UNQUOTED(TNC_PORT, $ac_tnc_port, [Define default TNC port.]) 
 AC_DEFINE_UNQUOTED(GPS_PORT, $ac_gps_port, [Define default GPS port.]) 
- 
+#
 AC_DEFINE(_GNU_SOURCE, 1, [This is GNU compliant source, use GNU extensions.]) 
 AC_DEFINE(_REENTRANT, 1, [Use reentrant code if available.]) 
 AC_DEFINE_UNQUOTED(STIPPLE, 1, [Legacy stuff, use crowbar and lets keep going]) 
+
+
  
 # Checks for libraries. 
 # 
@@ -205,14 +219,17 @@ then
   have_x='yes' 
 else 
   have_x='no' 
-  AC_MSG_ERROR([Working X-dev not found... This ain't going to work, giving up.])
+  #
+  # Should be be checking for X11 headers in this section as well?
+  # We do check for Motif/Lesstif header files below.
+  #
+  AC_MSG_ERROR(*** X11 libraries not found... This isn't going to work, giving up. ***)
 fi 
 
 AM_CONDITIONAL(HasX11, test "$have_x" = 'yes') 
 AC_SUBST(LIB_X11) 
 AC_SUBST(LIB_XEXT) 
 AC_SUBST(LIB_XT) 
- 
  
 AC_CHECK_LIB([math], [tan]) 
 AC_CHECK_LIB([m], [tan]) 
@@ -225,7 +242,7 @@ AC_CHECK_LIB(compat, main,
     AC_SUBST(LIBCOMPAT)])
 AC_CHECK_LIB([pthread],[pthread_create]) 
  
-# Check for sched_yield in librt (needed for Solaris)
+# Check for sched_yield in librt (needed only for Solaris)
 AC_CHECK_LIB(rt,sched_yield,LIB_RT='-lrt',,)
 LIBS="$LIB_RT $LIBS"
  
@@ -234,21 +251,24 @@ AC_C_BIGENDIAN
  
 AC_SUBST(LDFLAGS) 
 AC_SUBST(LIBS) 
+
+
  
 # Checks for header files. 
 # 
-# Motif include files
-#AC_CHECK_HEADERS([Xm/Xm.h],,AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install them first. ***))
+# Check for Motif include files in the normal spots
 AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes",)
+#
+# Check special MacOSX path
+AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes") 
+#
+# Check special Solaris path
+AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes")
+#
 if test "$MOTIF_INC" != "yes"; then
-  # Check special MacOSX paths
-  AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes") 
-  AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes")
-  if test "$MOTIF_INC" != "yes"; then
-    AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install them first. ***)
-  fi
+  AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install one of them. ***)
 fi
-
+#
 AC_FUNC_ALLOCA 
 AC_HEADER_DIRENT 
 AC_HEADER_STDC 
@@ -257,6 +277,8 @@ AC_CHECK_HEADERS([argz.h arpa/inet.h fcntl.h libintl.h limits.h locale.h malloc.
 AC_CHECK_HEADERS([netinet/in.h nl_types.h stdarg.h stddef.h stdlib.h string.h strings.h])
 AC_CHECK_HEADERS([sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h signal.h])
 AC_CHECK_HEADERS([termios.h unistd.h]) 
+
+
  
 # Checks for typedefs, structures, and compiler characteristics. 
 # 
@@ -268,6 +290,8 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME 
 AC_STRUCT_TM 
 AC_TYPE_SIGNAL 
+
+
  
 # Checks for library functions. 
 # 
@@ -708,18 +732,14 @@ else
     XPM_CFLAGS="-DNO_XPM" 
     XPM_LIBS="" 
 fi 
+  
+# For the case of apple-darwin, we don't want -lXpm included due to
+# other libraries providing those interfaces.
 # 
-# For the case of apple-darwin, we don't want -lXpm 
-# included due to other libraries also providing the 
-# same interfaces 
-# 
-case "$host" in 
-   *-*apple-darwin* ) 
-      XPM_LIBS="" 
-      ;; 
-   * ) 
-      ;; 
-esac 
+if test "$darwin" = "yes"; then
+    XPM_LIBS="" 
+fi
+
 AC_MSG_RESULT([libraries $xpm_libraries_result, headers $xpm_includes_result]) 
 AC_SUBST(XPM_CFLAGS) 
 AC_SUBST(XPM_LIBS) 
@@ -774,26 +794,23 @@ if test "$use_imagemagick" = "yes"; then
   LDFLAGS="$LDFLAGS `${MAGIC_BIN} --ldflags`" 
   LIBS="${MAGIC_LIB_DIR} `${MAGIC_BIN} --libs` $LIBS" 
 
-# 
-# For the case of apple-darwin, we don't want to check the
-# headers/libraries 'cuz the standard macros won't find them anyway.
-# 
-  case "$host" in 
-  *-*apple-darwin* ) 
-      AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
-      ;; 
-  * ) 
-      AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no")
+  # 
+  # For the case of apple-darwin, we don't want to check the
+  # headers/libraries 'cuz the standard macros won't find them anyway.
+  #
+  if test "$darwin" = "yes"; then
+    AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library])
+  else
+    AC_CHECK_HEADER(magick/api.h, use_imagemagick="yes", use_imagemagick="no")
+    if test "$use_imagemagick" = "no"; then
+      AC_MSG_WARN(*** Missing ImageMagick include files.  Building w/o ImageMagick support. ***)
+    else
+      AC_CHECK_LIB([Magick], [WriteImage], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
       if test "$use_imagemagick" = "no"; then
-        AC_MSG_WARN(*** Missing ImageMagick include files.  Building w/o ImageMagick support. ***)
-      else
-        AC_CHECK_LIB([Magick], [WriteImage], AC_DEFINE(HAVE_IMAGEMAGICK, 1, [Imagemagick image library]), use_imagemagick="no")
-        if test "$use_imagemagick" = "no"; then
-          AC_MSG_WARN(*** Missing ImageMagick library.  Building w/o ImageMagick support. ***)
-        fi
+        AC_MSG_WARN(*** Missing ImageMagick library.  Building w/o ImageMagick support. ***)
       fi
-      ;; 
-  esac 
+    fi
+  fi
 
   if test "$magickold" = "yes"; then 
     AC_MSG_WARN(*********************************************************)
@@ -994,4 +1011,5 @@ if test "x$xastirpath" != "x" ; then
         echo Warning: You have an old copy of Xastir at $xastirpath. 
 fi 
 echo "Type 'make' to build Xastir (Use 'gmake' instead on some systems)." 
+
  
