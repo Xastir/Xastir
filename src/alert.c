@@ -313,10 +313,30 @@
 #include "util.h"
 #include "snprintf.h"
 #include "wx.h"
+#include "hashtable.h"
+#include "hashtable_itr.h"
 
 
+
+#define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
+
+
+// New method for weather alerts, using a hash
+//
+#define ALERT_HASH_SIZE 4096
+static struct hashtable *wx_alert_hash = NULL;
+//
+// Old method (alert_list is still used in one place, soon to be
+// phased out)
+//
 alert_entry *alert_list = NULL;
+
+// alert_list_count probably needs to be taken out of use, and a
+// function created to replace it.  The function could just make one
+// call to the hash functions to determine how many active alerts
+// are in the hash.
 static int alert_list_count = 0;           // Count of active alerts
+
 int alert_max_count = 0;     // Alerts we've allocated space for
 int alert_redraw_on_update = 0;
 
@@ -324,10 +344,310 @@ int alert_redraw_on_update = 0;
 
 
 
+/////////////////////////////////////////////////////////////////////
+// The following group of functions implement hash storage for
+// weather alerts.  This makes the code very fast, which is good
+// because we run through these alerts often.
+/////////////////////////////////////////////////////////////////////
+
+
+
+// Starting with an alert_entry, create a concatenated string
+// containing:
+//
+//   *) "From" callsign
+//   *) Zone
+//   *) First four chars after the '{' char (the "issue date" field
+//      plus one more character).
+//
+// These items should make the alert unique or nearly unique whether
+// it was received from the WXSVR software or from hand-entered
+// alerts.  WXSVR is where all of the machine-readable alerts come
+// from and is run by Dale Huguley.
+//
+// This function takes a mostly filled-in alert_entry and fills in
+// the unique_string variable portion with values from other
+// variables in the record.
+//
+void alert_fill_unique_string(alert_entry *alert) {
+    xastir_snprintf(alert->unique_string,
+        sizeof(alert->unique_string),
+        "%s%s%c%c%c%c",
+        alert->from,
+        alert->title,
+        alert->seq[0],
+        alert->seq[1],
+        alert->seq[2],
+        alert->seq[3]);
+
+    //fprintf(stderr,"'%s'\t'%s'\t'%s'\n", alert->from, alert->title, alert->seq);
+//    fprintf(stderr,"Unique string:'%s'\n", alert->unique_string);
+}
+
+
+
+
+
+// Add the chars (multiplied by a function of their index number to
+// weight them) then truncate the final number to ALERT_HASH_SIZE.
+// This should spread them nicely over the entire hash table.
+//
+unsigned int wx_alert_hash_from_key(void *key) {
+    alert_entry *temp = key;
+    unsigned char *jj = temp->unique_string;
+    unsigned int hash = 1;
+    int ii = 1;
+
+    while (*jj != '\0') {
+        hash = hash + ((unsigned int)*jj++ * ii);
+        ii += 4;
+    }
+
+    hash = hash % ALERT_HASH_SIZE;
+
+//fprintf(stderr,"%d\n", hash);
+
+    return ((unsigned int)hash);
+}
+
+
+
+
+
+// According to Dale Huguley the FROM callsign plus the first four
+// chars after the curly brace (at the end) should make the record
+// unique.  Whether or not CANCEL messages get assigned to the
+// proper live record is another matter.  They may, or may not match
+// using this scheme, but it's probably better than other schemes.
+// Multiple types of alerts can come out in the same message for the
+// same zone/county.  In this case the fourth character will change
+// from an 'A' to a 'B' or other char to denote the different
+// messages with the same FROM and timestamp chars.  This again
+// keeps each alert unique.
+//
+int wx_alert_keys_equal(void *key1, void *key2) {
+    alert_entry *t1 = key1;
+    alert_entry *t2 = key2;
+
+    // These fprintf's allow us to see how many cache hits we get
+    // and what the results were of the match.  If different
+    // unique_string's hash to the same value, we run through this
+    // compare once for each already-inserted record that also has
+    // the same hash vaue.
+//    fprintf(stderr,"Comparing %s to %s\t",(char *)key1,(char *)key2);
+
+    if (strlen((char *)t1->unique_string) == strlen((char *)t2->unique_string)
+            && strncmp((char *)t1->unique_string,
+                    (char *)t2->unique_string,
+                    strlen((char *)t1->unique_string))==0) {
+
+//        fprintf(stderr,"    match %s = %s\n", t1->unique_string, t2->unique_string);
+        return(1);
+    }
+    else {
+//        fprintf(stderr,"  no match\n");
+        return(0);
+    }
+}
+
+
+
+
+
+// Creates the wx_alert_hash if it doesn't exist yet.  If clobber is
+// non-zero, destroys any existing hash then creates a new one.
+//
+void init_wx_alert_hash(int clobber) {
+//    fprintf(stderr," Initializing wx_alert_hash \n");
+    // make sure we don't leak
+//fprintf(stderr,"init_wx_alert_hash\n");
+    if (wx_alert_hash) {
+//fprintf(stderr,"Already have one!\n");
+        if (clobber) {
+//fprintf(stderr,"Clobbering hash table\n");
+            hashtable_destroy(wx_alert_hash, 1);
+            wx_alert_hash = create_hashtable(ALERT_HASH_SIZE,
+                wx_alert_hash_from_key,
+                wx_alert_keys_equal);
+        }
+    }
+    else {
+//fprintf(stderr,"Creating hash table from scratch\n");
+        wx_alert_hash = create_hashtable(ALERT_HASH_SIZE,
+            wx_alert_hash_from_key,
+            wx_alert_keys_equal);
+    }
+}
+
+
+
+
+
+// Fetch an alert from the wx_alert_hash based on the from call
+// concatenated with the first four chars after the '{' character.
+// This concatenated string should be unique across weather alerts
+// if the alert came from the WXSVR.
+//
+// If it was a hand-entered alert, it won't have the '{' string at
+// the end.  In that case use the from call and zone concatenated
+// together instead for matching purposes.
+//
+alert_entry *get_wx_alert_from_hash(char *unique_string) {
+    alert_entry *result = NULL;
+
+    if (unique_string == NULL || *unique_string == '\0') {
+        fprintf(stderr,"Empty unique_string passed to get_wx_alert_from_hash()\n");
+        return(NULL);
+    }
+
+    if (!wx_alert_hash) {  // no table to search
+//fprintf(stderr,"Creating hash table\n");
+        init_wx_alert_hash(1); // so create one
+        return NULL;
+    }
+
+//fprintf(stderr,"   searching for %s...",unique_string);
+
+    result = hashtable_search(wx_alert_hash, unique_string);
+
+/*
+        if (result) {
+            fprintf(stderr,"\t\tFound it, %s, len=%d\n",
+                unique_string,
+                strlen(unique_string));
+        } else {
+            fprintf(stderr,"\t\tNot found, %s, len=%d\n",
+                unique_string,
+                strlen(unique_string));
+        }
+*/
+
+    return (result);
+}
+
+
+
+
+
+// Add a wx alert to the hash.
+// This function checks whether there already is something in the
+// hash table that matches.  If a match found, it skips the record,
+// else it inserts a new wx alert record into the hash.
+//
+// Unfortunately it appears that any unique_string that hashes to
+// the same value causes us to think it's a duplicate.
+//
+void add_wx_alert_to_hash(char *unique_string, alert_entry *alert_record) {
+    alert_entry *temp;  // alert_record
+
+
+    if (unique_string == NULL
+            || *unique_string == '\0'
+            || alert_record == NULL) {
+        return;
+    }
+
+    if (!wx_alert_hash) {  // no table to add to
+//fprintf(stderr,"init_wx_alert_hash\n");
+        init_wx_alert_hash(1); // so create one
+    }
+
+    // Check whether we already have a hash entry for this wx alert.
+    // If so, overwrite it with the new info?
+    temp = get_wx_alert_from_hash(unique_string);
+
+    if (!temp) {
+        alert_entry *new_record;
+        char *new_unique_str;
+
+//fprintf(stderr, "\t\t\tAdding %s...\n", unique_string);
+
+        // Allocate new space for the key and the record
+        new_unique_str = (char *)malloc(50);
+        CHECKMALLOC(new_unique_str);
+        new_record = (alert_entry*)malloc(sizeof(alert_entry));
+        CHECKMALLOC(new_record);
+
+        memcpy(new_unique_str, unique_string, 50);
+        memcpy(new_record, alert_record, sizeof(alert_entry));
+
+        //                    hash           title  alert_record
+        if (!hashtable_insert(wx_alert_hash, new_unique_str, new_record)) {
+            fprintf(stderr,"Insert failed on wx alert hash --- fatal\n");
+//            exit(1);
+        }
+    }
+    else {
+//WE7U
+//fprintf(stderr,"\t\t\tOverwriting previous value: %s\n", unique_string);
+fprintf(stderr,"Found a duplicate while inserting.  Dropping the new entry: %s\n", unique_string);
+//fprintf(stderr,"\t%s\n",temp);
+    }
+
+/*
+    // Yet another check to see whether hash insert/update worked
+    // properly
+    temp = get_wx_alert_from_hash(unique_string);
+    if (!temp) {
+        fprintf(stderr,"***Failed wx alert hash insert/update***\n");
+    }
+    else {
+//fprintf(stderr,"Current: %s -> %s\n",
+//    unique_string,
+//    temp);
+    }
+*/
+}
+
+
+
+
+
+// Create the wx alert hash table iterator so that we can iterate
+// through the entire hash table and draw the alerts.
+//
+struct hashtable_itr *create_wx_alert_iterator(void) {
+
+    if (wx_alert_hash && hashtable_count(wx_alert_hash) > 0) {
+        return(hashtable_iterator(wx_alert_hash));
+    }
+    else {
+        return(NULL);
+    }
+}
+
+
+
+
+
+// Get the wx alert entry that the iterator is pointing to.  Advance
+// the iterator to the following wx alert.
+//
+alert_entry *get_next_wx_alert(struct hashtable_itr *iterator) {
+    alert_entry *temp = NULL;
+
+    if (wx_alert_hash
+            && iterator
+            && hashtable_count(wx_alert_hash) > 0) {
+
+        // Get record
+        temp = hashtable_iterator_value(iterator);
+
+        // Advance to the next record
+        hashtable_iterator_advance(iterator);
+    }
+    return(temp);
+}
+
+
+
+
+
+/*
 // normal_title_CWA()
 //
 // Function to convert "County Warning Area " to "CWA" in a string.
-// Called from alert_match() and alert_update_list() functions.
+// Called from alert_match() function.
 //
 void normal_title_CWA(char *incoming_title, char *outgoing_title, int outgoing_title_size) {
     char *c_ptr;
@@ -376,6 +696,7 @@ void normal_title_CWA(char *incoming_title, char *outgoing_title, int outgoing_t
 //    if (debug_level & 2)
 //        fprintf(stderr,"normal_title_CWA: Outgoing: %s\n",outgoing_title);
 }
+*/
 
 
 
@@ -389,11 +710,14 @@ void normal_title_CWA(char *incoming_title, char *outgoing_title, int outgoing_t
 // xterm.
 //
 void alert_print_list(void) {
+/*
     int i;
     char title[100], *c_ptr;
 
+//WE7U
     fprintf(stderr,"Alert counts: %d/%d\n", alert_list_count, alert_max_count);
 
+//WE7U
     for (i = 0; i < alert_max_count; i++) {
 
         // Check whether it's an active alert
@@ -424,6 +748,7 @@ void alert_print_list(void) {
                 title);                                     // WI_Z003
         }
     }
+*/
 }
 
 
@@ -437,16 +762,18 @@ static time_t last_alert_expire = 0;
 
 // alert_expire()
 //
-// Delete stored alerts that have expired, by zeroing the title
-// string.  This free's up the slot to be used by another alert, and
-// makes sure that the expired alert doesn't get drawn or shown in
-// the View->WX Alerts dialog.
+// Function which iterates through the wx alert hash table, removing
+// expired alerts as it goes.  Makes sure that the expired alert
+// doesn't get drawn or shown in the View->WX Alerts dialog.
 //
 // Returns the quantity of alerts that were just expired.
 //
 int alert_expire(void) {
-    int ii;
+//    int ii;
     int expire_count = 0;
+    struct hashtable_itr *iterator;
+    alert_entry *temp;
+
 
     // Check only every 60 seconds
     if ( (last_alert_expire + 60) > sec_now() ) {
@@ -457,7 +784,10 @@ int alert_expire(void) {
     if (debug_level & 2)
         fprintf(stderr,"Checking for expired alerts...\n");
 
+
+/*
     // Delete stored alerts that have expired (zero the title string)
+//WE7U
     for (ii = 0; ii < alert_max_count; ii++) {
         if ( (alert_list[ii].title[0] != '\0')
                 && (alert_list[ii].expiration < time(NULL)) ) {
@@ -477,6 +807,47 @@ int alert_expire(void) {
             expire_count++;
         }
     }
+*/
+
+
+    iterator = create_wx_alert_iterator();
+    while (iterator) {
+
+        // Get current record
+        temp = hashtable_iterator_value(iterator);
+
+        if (!temp) {
+            free(iterator);
+            return(expire_count);
+        }
+
+        // If wx alert has expired, remove the record from the hash.
+        if (temp->expiration < time(NULL)) {
+
+            if (debug_level & 2) {
+                fprintf(stderr,
+                    "alert_expire: Clearing %s, current: %lu, alert: %lu\n",
+                    temp->unique_string,
+                    time(NULL),
+                    temp->expiration);
+            }
+
+            // Free the storage space
+            free(temp);
+
+            // Delete the entry and advance to the next
+            hashtable_iterator_remove(iterator);
+
+            expire_count++;
+        }
+        else {
+            if (temp && iterator) {
+                // Else advance to the next entry
+                hashtable_iterator_advance(iterator);
+            }
+        }
+    }
+    free(iterator);
 
     // Cause a screen redraw if we expired some alerts
     if (expire_count) {
@@ -496,12 +867,12 @@ int alert_expire(void) {
 //
 // This function adds a new alert to our alert list.
 //
-// Returns address of entry in alert_list or NULL.
+// Returns address of new entry or NULL.
 // Called from alert_build_list() function.
 //
 /*@null@*/ static alert_entry *alert_add_entry(alert_entry *entry) {
-    alert_entry *ptr;
-    int i;
+//    alert_entry *ptr;
+//    int i;
 
 
     if (debug_level & 2)
@@ -539,6 +910,8 @@ int alert_expire(void) {
         return(NULL);
     }
 
+
+/*
     // Allocate more space if we're at our maximum already.
     // Allocate space for ALERT_COUNT_INCREMENT more alerts.
     if (alert_list_count == alert_max_count) {
@@ -585,6 +958,7 @@ int alert_expire(void) {
                 alert_max_count);
         }
     }
+*/
 
     // Check for non-zero alert title, non-expired alert time in new
     // alert.
@@ -593,7 +967,13 @@ int alert_expire(void) {
         // Schedule a screen update 'cuz we have a new alert
         alert_redraw_on_update = redraw_on_new_data = 2;
 
+//WE7U
+add_wx_alert_to_hash(entry->unique_string, entry);
+return(entry);
+
+/*
         // Scan for an empty entry, fill it in if found
+//WE7U
         for (i = 0; i < alert_max_count; i++) {
             if (alert_list[i].title[0] == '\0') {   // If alert entry is empty
                 memcpy(&alert_list[i], entry, sizeof(alert_entry)); // Use it
@@ -607,6 +987,7 @@ int alert_expire(void) {
                 return( &alert_list[i]);
             }
         }
+*/
     }
 
     // If we got to here, the title was empty or the alert has
@@ -626,12 +1007,12 @@ int alert_expire(void) {
 
 
 
+/*
 // alert_match()
 //
 // Function used for matching on alerts.
 // Returns address of matching entry in alert_list or NULL.
-// Called from alert_build_list(), alert_update_list(), and
-// alert_active() functions.
+// Called from alert_build_list() and alert_active() functions.
 //
 static alert_entry *alert_match(alert_entry *alert, alert_match_level match_level) {
     int i;
@@ -670,6 +1051,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     while ((ptr = strpbrk(filename, "_ -")))
         memmove(ptr, ptr+1, strlen(ptr)+1);
 
+//WE7U
     for (i = 0; i < alert_max_count; i++) {
 
         if (alert_list[i].title[0] == '\0') {
@@ -740,11 +1122,11 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         }
 
 
-/*
+//
 // I've been told by Dale Huguely that this might occur:  A new
 // alert that shouldn't match the cancelled alert.  Tabling this
 // ammendment for now.  ;-)
-*/
+//
 
         // Now check whether a new alert passed to us might match a
         // cancelled existing alert.  We use a much looser match for
@@ -772,91 +1154,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     }
     return (NULL);
 }
-
-
-
-
-
-// alert_update_list()
-//
-// Updates entry in alert_list from new matching alert.  Checks for
-// matching entry first, else fills in blank entry.
-// Called from maps.c:load_alert_maps() function.
-//
-void alert_update_list(alert_entry *alert, alert_match_level match_level) {
-    alert_entry *ptr;
-    int i;
-    char title_e[33], title_m[33];
-
-
-    if (debug_level & 2)
-        fprintf(stderr,"alert_update_list:%s\n",alert->title);
-
-    // Find the matching alert in alert_list, copy updated
-    // parameters from new alert into existing alert_list entry.
-    if ((ptr = alert_match(alert, match_level))) {
-        if (!ptr->filename[0]) {    // We found a match!  Fill it in.
-            xastir_snprintf(ptr->filename,
-                sizeof(ptr->filename),
-                "%s",
-                alert->filename);
-            xastir_snprintf(ptr->title,
-                sizeof(ptr->title),
-                "%s",
-                alert->title);
-            // Boundary markers now being used for shape lookup
-            //ptr->top_boundary = alert->top_boundary;
-            //ptr->left_boundary = alert->left_boundary;
-            //ptr->bottom_boundary = alert->bottom_boundary;
-            //ptr->right_boundary = alert->right_boundary;
-        }
-        ptr->flags[on_screen] = alert->flags[on_screen];
-
-        // Shorten the title while copying into title_e
-        normal_title_CWA(alert->title, title_e, sizeof(title_e));
-
-        // Force the string to be terminated
-        title_e[sizeof(title_e)-1] = title_m[sizeof(title_m)-1] = '\0';
-
-        // Interate through the entire alert_list, checking flags
-        for (i = 0; i < alert_max_count; i++) {
-
-            // If flag was '?' or has changed, update the alert
-            if ((alert_list[i].flags[on_screen] == '?' || alert_list[i].flags[on_screen] != ptr->flags[on_screen])) {
-
-// We shouldn't need to call normal_title_CWA here, as this one
-// should already have the short title.  Just copy it directly to
-// the title_m variable instead.
-                // Shorten the title while copying into title_m
-//                normal_title_CWA(alert_list[i].title, title_m, sizeof(title_m));
-                xastir_snprintf(title_m,
-                    sizeof(title_m),
-                    "%s",
-                    alert_list[i].title);
-
-                if (strcmp(title_e, title_m) == 0) {
-
-                    // Update parameters
-                    if (!alert_list[i].filename[0]) {
-                        xastir_snprintf(alert_list[i].filename,
-                            sizeof(alert_list[i].filename),
-                            "%s",
-                            alert->filename);
-                        //alert_list[i].top_boundary = alert->top_boundary;
-                        //alert_list[i].left_boundary = alert->left_boundary;
-                        //alert_list[i].bottom_boundary = alert->bottom_boundary;
-                        //alert_list[i].right_boundary = alert->right_boundary;
-                        xastir_snprintf(alert_list[i].title,
-                            sizeof(alert_list[i].title),
-                            "%s",
-                            alert->title);
-                    }
-                    alert_list[i].flags[on_screen] = alert->flags[on_screen];
-                }
-            }
-        }
-    }
-}
+*/
 
 
 
@@ -865,7 +1163,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 // alert_active()
 //
 // Here's where we get rid of expired alerts in the list.  Called
-// from alert_compare(), alert_display_request(), alert_on_screen(),
+// from alert_display_request(), alert_on_screen(),
 // and alert_build_list() functions.  Also called from
 // maps.c:load_alert_maps() function.
 //
@@ -898,7 +1196,8 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 
     (void)time(&now);
 
-    if ((a_ptr = alert_match(alert, match_level))) {
+//    if ((a_ptr = alert_match(alert, match_level))) {
+    if ((a_ptr = get_wx_alert_from_hash(alert->unique_string))) {
         if (a_ptr->expiration >= now) {
             for (level = 0; a_ptr->alert_level != l_list[level] && level < (int)sizeof(l_list); level++);
         }
@@ -929,87 +1228,23 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 
 
 
-// alert_compare()
-//
-// Used by qsort as the compare function in alert_sort_active()
-// function below.
-//
-static int alert_compare(const void *a, const void *b) {
-    alert_entry *a_entry = (alert_entry *)a;
-    alert_entry *b_entry = (alert_entry *)b;
-    int a_active, b_active;
-
-    if (a_entry->title[0] && !b_entry->title[0])
-        return (-1);
-
-    if (!a_entry->title[0] && b_entry->title[0])
-        return (1);
-
-    if (a_entry->flags[on_screen] == 'Y' && b_entry->flags[on_screen] != 'Y')
-        return (-1);
-
-    if (a_entry->flags[on_screen] != 'Y' && b_entry->flags[on_screen] == 'Y')
-        return (1);
-
-    if (a_entry->flags[on_screen] == '?' && b_entry->flags[on_screen] == 'N')
-        return (-1);
-
-    if (a_entry->flags[on_screen] == 'N' && b_entry->flags[on_screen] == '?')
-        return (1);
-
-    a_active = alert_active(a_entry, ALERT_ALL);
-    b_active = alert_active(b_entry, ALERT_ALL);
-    if (a_active && b_active) {
-        if (a_active - b_active) {
-            return (a_active - b_active);
-        }
-    } else if (a_active) {
-        return (-1);
-    }
-    else if (b_active) {
-        return (1);
-    }
-
-    return (strcmp(a_entry->title, b_entry->title));
-}
-
-
-
-
-
-// alert_sort_active()
-//
-// This sorts the alert_list so that the active items are at the
-// beginning.
-// Called from maps.c:load_alert_maps() function.
-//
-void alert_sort_active(void) {
-
-
-    if (debug_level & 2)
-        fprintf(stderr,"alert_sort_active\n");
-
-    qsort(alert_list, (size_t)alert_max_count, sizeof(alert_entry), alert_compare);
-}
-
-
-
-
-
 // alert_display_request()
 //
 // Function which checks whether an alert should be displayed.
 // Called from maps.c:load_alert_maps() function.
 //
 int alert_display_request(void) {
-    int i, alert_count;
+//    int i;
+    int alert_count;
     static int last_alert_count;
 
 
     if (debug_level & 2)
         fprintf(stderr,"alert_display_request\n");
 
+/*
     // Iterate through entire alert_list
+//WE7U
     for (i = 0, alert_count = 0; i < alert_max_count; i++) {
 
         // If it's an active alert (not expired), and flags == 'Y'
@@ -1019,6 +1254,13 @@ int alert_display_request(void) {
             alert_count++;
         }
     }
+*/
+
+//WE7U
+    if (wx_alert_hash)
+        alert_count = hashtable_count(wx_alert_hash);
+    else
+        return((int)FALSE);
 
     // If we found any, return TRUE.
     if (alert_count != last_alert_count) {
@@ -1037,21 +1279,39 @@ int alert_display_request(void) {
 //
 // Returns a count of active weather alerts in the list which are
 // within our viewport.
-// Called from main.c:UpdateTime() function.
+// Called from main.c:UpdateTime() function.  Used for sounding
+// alarm if a new weather alert appears on screen.
 //
 int alert_on_screen(void) {
-    int i, alert_count;
+//    int i;
+    int alert_count = 0;
+    struct hashtable_itr *iterator;
+    alert_entry *temp;
 
 
     if (debug_level & 2)
         fprintf(stderr,"alert_on_screen\n");
 
+//WE7U
+/*
     for (i = 0, alert_count = 0; i < alert_max_count; i++) {
         if (alert_active(&alert_list[i], ALERT_ALL)
                 && alert_list[i].flags[on_screen] == 'Y') {
             alert_count++;
         }
     }
+*/
+
+    iterator = create_wx_alert_iterator();
+    temp = get_next_wx_alert(iterator);
+    while (iterator != NULL && temp) {
+        if (alert_active(temp, ALERT_ALL)
+                && temp->flags[on_screen] == 'Y') {
+            alert_count++;
+        }
+        temp = get_next_wx_alert(iterator);
+    }
+    free(iterator);
 
     return (alert_count);
 }
@@ -1187,6 +1447,7 @@ void alert_build_list(Message *fill) {
 
         // Run through the alert_list looking for a match to the
         // FROM and first four chars of SEQ
+//WE7U
         for (ii = 0; ii < alert_max_count; ii++) {
             if ( (strcasecmp(alert_list[ii].from, fill->from_call_sign) == 0)
                     && ( strncmp(alert_list[ii].seq,fill->seq,4) == 0 ) ) {
@@ -1721,7 +1982,7 @@ if (debug_level & 2)
                 "%s",
                 "312359z");
         }
- 
+
         if (debug_level & 2)
             fprintf(stderr,"6\n");
 
@@ -1884,7 +2145,18 @@ if (debug_level & 2)
 // we're comparing all four fields, the cancels don't match any
 // existing alerts.
 
-            if ((list_ptr = alert_match(&entry, ALERT_ALL))) {
+
+//            if ((list_ptr = alert_match(&entry, ALERT_ALL))) {
+
+
+//WE7U
+            // Fill in the unique_string variable.  We need this for
+            // our hash code.
+            alert_fill_unique_string(&entry);
+ 
+            if ((list_ptr = get_wx_alert_from_hash(entry.unique_string))) {
+//fprintf(stderr,"alert_build_list: found match: %s\n",entry.unique_string);
+
 
 // We found a match!  We probably need to copy some more data across
 // between the records:  seq, alert_tag, alert_level, from, to,
@@ -1929,8 +2201,10 @@ if (debug_level & 2)
                     // Don't copy the info across, as we'd be making a
                     // cancelled alert active again if we did.
                 }
-            } else {    // No similar alert, add a new one to the list
+            }
+            else {    // No similar alert, add a new one to the list
                 entry.index = -1;    // Haven't found it in a file yet
+
                 (void)alert_add_entry(&entry);
             }
 

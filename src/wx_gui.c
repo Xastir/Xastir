@@ -314,13 +314,15 @@ end_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_destroy_shell" );
 
 
 void wx_alert_update_list(void) {
-    int nn;         // index into alert table.  Starts at 0
+//    int nn;         // index into alert table.  Starts at 0
     int ii;         // index into dialog lines.  Starts at 1
     int max_item_count; // max dialog lines
     char temp[600];
     XmString item;
 
     if (wx_alert_shell) {
+        struct hashtable_itr *iterator;
+        alert_entry *alert;
 
 begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
@@ -329,14 +331,22 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
         ii = 0; // Current dialog count
 
-        // Step through the alert list.  Create a string for each
+        // Iterate through the alert hash.  Create a string for each
         // non-expired/non-blank entry.
-        for (nn = 0; nn < alert_max_count; nn++) {
+        iterator = create_wx_alert_iterator();
+        alert = get_next_wx_alert(iterator);
+        while (iterator != NULL && alert) {
             char status[10];
 
-            // Check whether alert slot is empty/filled
-            if (alert_list[nn].title[0] == '\0')    // It's empty
+            // Check whether alert record is empty/filled.  This
+            // code is from the earlier array implementation.  If
+            // we're expiring records from our hash properly we
+            // probably don't need this anymore.
+            //
+            if (alert->title[0] == '\0') {    // It's empty
+                alert = get_next_wx_alert(iterator);
                 continue;
+            }
 
             // AFGNPW      NWS-WARN    Until: 191500z   AK_Z213   WIND               P7IAA
             // TSATOR      NWS-ADVIS   Until: 190315z   OK_C127   TORNDO             H2VAA
@@ -349,28 +359,28 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
             xastir_snprintf(temp,
                 sizeof(temp),
                 "%-9s%s   %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %s   %s%s%s%s",
-                alert_list[nn].from,
-                alert_list[nn].seq,
-                alert_list[nn].to,
-                alert_list[nn].issue_date_time[0],
-                alert_list[nn].issue_date_time[1],
-                alert_list[nn].issue_date_time[2],
-                alert_list[nn].issue_date_time[3],
-                alert_list[nn].issue_date_time[4],
-                alert_list[nn].issue_date_time[5],
-                alert_list[nn].activity[0],
-                alert_list[nn].activity[1],
-                alert_list[nn].activity[2],
-                alert_list[nn].activity[3],
-                alert_list[nn].activity[4],
-                alert_list[nn].activity[5],
+                alert->from,
+                alert->seq,
+                alert->to,
+                alert->issue_date_time[0],
+                alert->issue_date_time[1],
+                alert->issue_date_time[2],
+                alert->issue_date_time[3],
+                alert->issue_date_time[4],
+                alert->issue_date_time[5],
+                alert->activity[0],
+                alert->activity[1],
+                alert->activity[2],
+                alert->activity[3],
+                alert->activity[4],
+                alert->activity[5],
                 status,
-                alert_list[nn].title,
-                alert_list[nn].alert_tag,
-                alert_list[nn].desc0,
-                alert_list[nn].desc1,
-                alert_list[nn].desc2,
-                alert_list[nn].desc3);
+                alert->title,
+                alert->alert_tag,
+                alert->desc0,
+                alert->desc1,
+                alert->desc2,
+                alert->desc3);
 
 
             item = XmStringCreateLtoR(temp, XmFONTLIST_DEFAULT_TAG);
@@ -390,7 +400,11 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
 
             XmStringFree(item);
 
+            alert = get_next_wx_alert(iterator);
+
         }   // End of for loop
+        free(iterator);
+
 
         // If we have fewer alerts now, delete the extras from the window
         if (ii < max_item_count) {

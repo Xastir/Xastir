@@ -57,6 +57,7 @@ typedef enum {
 enum flag_list {on_screen, source, max_flag=16};
 
 typedef struct {
+    char unique_string[50];
     double top_boundary, left_boundary, bottom_boundary, right_boundary;
     time_t expiration;  // In local time (secs since epoch)
     char activity[21];
@@ -81,7 +82,6 @@ typedef struct {
 } alert_entry;
 
 
-extern alert_entry *alert_list;
 extern int alert_max_count;
 
 extern void alert_print_list(void);
@@ -92,6 +92,8 @@ extern int alert_on_screen(void);
 extern int alert_redraw_on_update;
 extern int alert_expire(void);
 extern void alert_build_list(Message *fill);
+extern struct hashtable_itr *create_wx_alert_iterator(void);
+extern alert_entry *get_next_wx_alert(struct hashtable_itr *iterator);
 
 #endif /* __XASTIR_ALERT_H */
 

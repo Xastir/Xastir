@@ -1084,9 +1084,9 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
 
 // alert_data_add:  Function which adds NWS weather alerts to the
-// alert_list.
+// alert hash.
 //
-// This function adds alerts directly to the alert_list, bypassing
+// This function adds alerts directly to the alert hash, bypassing
 // the message list and associated message-scan functions.
 //
 void alert_data_add(char *call_sign, char *from_call, char *data,
@@ -1144,7 +1144,7 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
         "%s",
         get_time(time_data));
 
-    // Go try to add it to our alert_list.  alert_build_list() will
+    // Go try to add it to our alert hash.  alert_build_list() will
     // check for duplicates before adding it.
 
     alert_build_list(&m_fill);

@@ -5719,8 +5719,11 @@ static int alert_count;
  * draw_shapefile_map() fills in the index field.
  *******************************************************************/
 void fill_in_new_alert_entries(Widget w, char *dir) {
-    int ii;
+//    int ii;
     char alert_scan[MAX_FILENAME], *dir_ptr;
+    struct hashtable_itr *iterator;
+    alert_entry *temp;
+
 
 
     alert_count = MAX_ALERT - 1;
@@ -5736,24 +5739,20 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
         sizeof(alert_scan) - strlen(alert_scan));
     dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
-    // Iterate through the weather alerts we currently have on
-    // our list.  It looks like we wish to just fill in the
-    // alert struct and to determine whether the alert is within
-    // our viewport here.  We don't really wish to draw the
-    // alerts at this stage, that comes just a bit later in this
-    // routine.
-    for (ii = 0; ii < alert_max_count; ii++) {
+    // Iterate through the weather alerts.  It looks like we wish to
+    // just fill in the alert struct and to determine whether the
+    // alert is within our viewport here.  We don't wish to draw the
+    // alerts at this stage, that happens in the load_alert_maps()
+    // function below.
 
-        // Check whether alert slot is empty/filled
-        if (alert_list[ii].title[0] == '\0') {  // It's empty,
-            // skip this iteration of the loop and advance to
-            // the next slot.
-            continue;
-        }
-        else if (!alert_list[ii].filename[0]) { // Filename is
+    iterator = create_wx_alert_iterator();
+    temp = get_next_wx_alert(iterator);
+    while (iterator != NULL && temp) {
+
+        if (!temp->filename[0]) { // Filename is
             // empty, we need to fill it in.
 
-            //fprintf(stderr,"load_alert_maps() Title: %s\n",alert_list[ii].title);
+//            fprintf(stderr,"fill_in_new_alert_entries() Title: %s\n",temp->title);
 
             // The last parameter denotes loading into
             // pixmap_alerts instead of pixmap or pixmap_final.
@@ -5769,14 +5768,16 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
             // operator (the weather must be near).
             map_search (w,
                 alert_scan,
-                &alert_list[ii],
+                temp,
                 &alert_count,
-                (int)alert_list[ii].flags[1],
+                (int)temp->flags[1],
                 DRAW_TO_PIXMAP_ALERTS);
 
-            //fprintf(stderr,"Title1:%s\n",alert_list[ii].title);
+//            fprintf(stderr,"fill_in_new_alert_entries() Title1:%s\n",temp->title);
         }
+        temp = get_next_wx_alert(iterator);
     }
+    free(iterator);
 }
 
 
@@ -5796,7 +5797,8 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
  * draw_shapefile_map() fills in the index field.
  *******************************************************************/
 void load_alert_maps (Widget w, char *dir) {
-    int ii, level;
+//    int ii;
+    int level;
     unsigned char fill_color[] = {  (unsigned char)0x69,    // gray86
                                     (unsigned char)0x4a,    // red2
                                     (unsigned char)0x63,    // yellow2
@@ -5804,6 +5806,10 @@ void load_alert_maps (Widget w, char *dir) {
                                     (unsigned char)0x61,    // RoyalBlue
                                     (unsigned char)0x64,    // ForestGreen
                                     (unsigned char)0x62 };  // orange3
+
+    struct hashtable_itr *iterator;
+    alert_entry *temp;
+
 
 
 // TODO:
@@ -5831,69 +5837,77 @@ void load_alert_maps (Widget w, char *dir) {
 
 // Are we drawing them in reverse order so that the important 
 // alerts end up drawn on top of the less important alerts?
-// Actually, since the alert_list isn't currently ordered at all,
-// perhaps we need to order it by priority, then by map file, so
-// that we can draw the shapes from each map file in the correct
-// order.  This might cause each map file to be drawn up to three
-// times (once for each priority level), but that's better than
-// calling each map for each zone as is done now.
+// Actually, since the alert hash isn't ordered, perhaps we need to
+// order them by priority, then by map file, so that we can draw the
+// shapes from each map file in the correct order.  This might cause
+// each map file to be drawn up to three times (once for each
+// priority level), but that's better than calling each map for each
+// zone as is done now.
 
-
-    for (ii = alert_max_count - 1; ii >= 0; ii--) {
+    iterator = create_wx_alert_iterator();
+    temp = get_next_wx_alert(iterator);
+    while (iterator != NULL && temp) {
 
         HandlePendingEvents(app_context);
-        if (interrupt_drawing_now)
+        if (interrupt_drawing_now) {
+            free(iterator);
             return;
+        }
 
-        if (disable_all_maps)
+        if (disable_all_maps) {
+            free(iterator);
             return;
+        }
 
         //  Check whether the alert slot is filled/empty
-        if (alert_list[ii].title[0] == '\0') // Empty slot
+        if (temp->title[0] == '\0') { // Empty slot
+            temp = get_next_wx_alert(iterator);
             continue;
+        }
 
-//        if (alert_list[ii].flags[0] == 'Y' && (level = alert_active (&alert_list[ii], ALERT_ALL))) {
-        if ( (level = alert_active(&alert_list[ii], ALERT_ALL) ) ) {
+        if ( (level = alert_active(temp, ALERT_ALL) ) ) {
             if (level >= (int)sizeof (fill_color))
                 level = 0;
 
             // The last parameter denotes drawing into pixmap_alert
             // instead of pixmap or pixmap_final.
 
-            //fprintf(stderr,"Drawing %s\n",alert_list[ii].filename);
-            //fprintf(stderr,"Title4:%s\n",alert_list[ii].title);
+//            fprintf(stderr,"load_alert_maps() Drawing %s\n",temp->filename);
+//            fprintf(stderr,"load_alert_maps() Title4:%s\n",temp->title);
 
             // Attempt to draw alert
-            if ( (alert_list[ii].alert_level != 'C')             // Alert not cancelled
-                    && (alert_list[ii].index != -1) ) {          // Shape found in shapefile
+            if ( (temp->alert_level != 'C')             // Alert not cancelled
+                    && (temp->index != -1) ) {          // Shape found in shapefile
 
-                if (map_visible_lat_lon(alert_list[ii].bottom_boundary, // Shape visible
-                        alert_list[ii].top_boundary,
-                        alert_list[ii].left_boundary,
-                        alert_list[ii].right_boundary,
-                        alert_list[ii].title) ) {    // Error text if failure
+                if (map_visible_lat_lon(temp->bottom_boundary, // Shape visible
+                        temp->top_boundary,
+                        temp->left_boundary,
+                        temp->right_boundary,
+                        temp->title) ) {    // Error text if failure
 
                     draw_map (w,
                         dir,
-                        alert_list[ii].filename,
-                        &alert_list[ii],
+                        temp->filename,
+                        temp,
                         fill_color[level],
                         DRAW_TO_PIXMAP_ALERTS,
-                        1 /* draw_filled */ );
+                        1);  // draw filled
                 }
                 else {
-                    //fprintf(stderr,"Alert not visible\n");
+//                    fprintf(stderr,"load_alert_maps() Alert not visible\n");
                 }
             }
             else {
                 // Cancelled alert, can't find the shapefile, or not
                 // in our viewport, don't draw it!
-                //fprintf(stderr,"Alert cancelled or shape not found\n");
+//                fprintf(stderr,"load_alert_maps() Alert cancelled or shape not found\n");
             }
         }
+        temp = get_next_wx_alert(iterator);
     }
+    free(iterator);
 
-    //fprintf(stderr,"Done drawing all active alerts\n");
+//    fprintf(stderr,"load_alert_maps() Done drawing all active alerts\n");
 
     if (alert_display_request()) {
         alert_redraw_on_update = redraw_on_new_data = 2;

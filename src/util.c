@@ -140,7 +140,7 @@ void init_tactical_hash(int clobber) {
         }
     }
     else {
-//fprintf(stderr,"Creating has table from scratch\n");
+//fprintf(stderr,"Creating hash table from scratch\n");
         tactical_hash=create_hashtable(TACTICAL_HASH_SIZE,
             tactical_hash_from_key,
             tactical_keys_equal);

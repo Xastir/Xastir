@@ -599,8 +599,8 @@ MRC         string      (8,0)   48122-G7
 
 
 // Need to figure out which type of alert it is, select the corresponding shapefile,
-// then store the shapefile AND the alert_tag in the alert_list[i].filename list?
-// and draw the map.  Add an item to alert_list structure to keep track?
+// then store the shapefile AND the alert_tag in the alert hash .filename list?
+// and draw the map.  Add an item to alert hash to keep track?
 
 // The last parameter denotes loading into pixmap_alerts instead of pixmap or pixmap_final
 // Here's the old APRS-type map call:
@@ -2700,6 +2700,7 @@ void draw_shapefile_map (Widget w,
                         }
 
                         if (ok == 1 && ok_to_draw) {
+
                             int new_label = 1;
                             int mod_number;
 
@@ -2792,6 +2793,7 @@ void draw_shapefile_map (Widget w,
                                     ptr2 = ptr2->next;
                                 }
                             }
+
                             if (!skip_label) {  // Draw the string
 
                                 // Compute the label rotation angle
@@ -2840,6 +2842,7 @@ void draw_shapefile_map (Widget w,
                                         font_size);
                                 }
                             }
+
                             if (new_label) {
 
                                 // Create a new record for this string
