@@ -430,7 +430,8 @@ else
 
   if test "$XASTIR_SHAPELIB_INC" = "yes"
   then
-    AC_CHECK_FILE(/sw/lib/libshp.so, XASTIR_SHAPELIB_LIB="-lshp") 
+    AC_CHECK_FILE(/sw/lib/libshp.a, XASTIR_SHAPELIB_LIB="-lshp") 
+    AC_CHECK_FILE(/sw/lib/libshp.so, XASTIR_SHAPELIB_LIB="-lshp")
     if test "$XASTIR_SHAPELIB_LIB" = "-lshp" 
     then 
       XASTIR_SHAPE_LIB_PATH="-L/sw/lib"
