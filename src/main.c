@@ -4012,8 +4012,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNallowShellResize, TRUE);            ac++;
     XtSetArg(al[ac], XmNtitle,            title);           ac++;
     XtSetArg(al[ac], XmNargv,             app_argv);        ac++;
-    XtSetArg(al[ac], XmNminWidth,         320);             ac++;
-    XtSetArg(al[ac], XmNminHeight,        240);             ac++;
+    XtSetArg(al[ac], XmNminWidth,         100);             ac++;
+    XtSetArg(al[ac], XmNminHeight,        100);             ac++;
     XtSetArg(al[ac], XmNdefaultPosition,  FALSE);           ac++;
     XtSetArg(al[ac], XmNforeground,       MY_FG_COLOR);     ac++;
     XtSetArg(al[ac], XmNbackground,       MY_BG_COLOR);     ac++;
