@@ -673,7 +673,8 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
         XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
         XtSetArg(args[n], XmNtopWidget, dist); n++;
         XtSetArg(args[n], XmNtopOffset, 20); n++;
-        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_NONE); n++;
+        XtSetArg(args[n], XmNbottomAttachment, XmATTACH_FORM); n++;
+        XtSetArg(args[n], XmNbottomOffset, 30); n++;
         XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
@@ -690,9 +691,7 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
                 xmPushButtonGadgetClass, 
                 form,
-                XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, XtParent(Display_bulletins_text),
-                XmNtopOffset, 2,
+                XmNtopAttachment, XmATTACH_NONE,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
                 XmNleftAttachment, XmATTACH_POSITION,
@@ -721,8 +720,6 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
 
         redraw_on_new_packet_data=1;
         XtPopup(Display_bulletins_dialog,XtGrabNone);
-        fix_dialog_vsize(Display_bulletins_dialog);
-
 
 end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins" );
 
