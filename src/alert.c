@@ -536,10 +536,10 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
             strncpy(ptr->filename, alert->filename, 32);
             strncpy(ptr->title, alert->title, 32);
             ptr->filename[32] = ptr->title[32] = '\0';
-            ptr->top_boundary = alert->top_boundary;
-            ptr->left_boundary = alert->left_boundary;
-            ptr->bottom_boundary = alert->bottom_boundary;
-            ptr->right_boundary = alert->right_boundary;
+//            ptr->top_boundary = alert->top_boundary;
+//            ptr->left_boundary = alert->left_boundary;
+//            ptr->bottom_boundary = alert->bottom_boundary;
+//            ptr->right_boundary = alert->right_boundary;
         }
         ptr->flags[0] = alert->flags[0];
 
@@ -565,10 +565,10 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
                     if (!alert_list[i].filename[0]) {
                         strncpy(alert_list[i].filename, alert->filename, 32);
                         alert_list[i].filename[32] = '\0';
-                        alert_list[i].top_boundary = alert->top_boundary;
-                        alert_list[i].left_boundary = alert->left_boundary;
-                        alert_list[i].bottom_boundary = alert->bottom_boundary;
-                        alert_list[i].right_boundary = alert->right_boundary;
+//                        alert_list[i].top_boundary = alert->top_boundary;
+//                        alert_list[i].left_boundary = alert->left_boundary;
+//                        alert_list[i].bottom_boundary = alert->bottom_boundary;
+//                        alert_list[i].right_boundary = alert->right_boundary;
                         strncpy(alert_list[i].title, alert->title, 32);
                         alert_list[i].title[32] = '\0';
                     }

@@ -1116,7 +1116,7 @@ void draw_shapefile_map (Widget w,
                         char *dir,
                         char *filenm,
                         alert_entry * alert,
-                        unsigned char alert_color,
+                        char alert_color,
                         int destination_pixmap) {
 
     DBFHandle       hDBF;
@@ -1145,8 +1145,13 @@ void draw_shapefile_map (Widget w,
     int             found_shape = -1;
     int             start_record;
     int             end_record;
+    int             ok_to_draw = 0;
 
 printf("*** Alert color: %d ***\n",alert_color);
+
+    // We don't draw the shapes if alert_color == -1
+    if (alert_color != -1)
+        ok_to_draw++;
 
     search_param1[0] = '\0';
     search_param2[0] = '\0';
@@ -1157,7 +1162,7 @@ printf("*** Alert color: %d ***\n",alert_color);
     i = strlen(filenm);
     while ( (filenm[i] != '/') && (i >= 0) )
         filename = &filenm[i--];
-printf("draw_shapefile_map:filename = %s\n",filename);    
+printf("draw_shapefile_map:filename:%s\ttitle:%s\n",filename,alert->title);    
 
     if (alert)
         weather_alert_flag++;
@@ -1345,7 +1350,7 @@ printf("Search_param2: %s\n",search_param2);
         for( i = 0; i < recordcount && !done; i++ ) {
             switch (filenm[0]) {
                 case 'c':   // County File
-                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     fips = DBFReadIntegerAttribute(hDBF,i,search_field2);
                     fips = fips % 1000; // We care about last 3 digits
                     if ( (!strncasecmp(search_param1,string1,strlen(string1)))
@@ -1356,7 +1361,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                     }
                     break;
                 case 'w':   // County Warning Area File
-                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
 printf("Found it!  %s\tShape: %d\n",string1,i);
                         done++;
@@ -1364,7 +1369,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                     }
                     break;
                 case 'o':   // High Seas Marine Area File
-                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
 printf("Found it!  %s\tShape: %d\n",string1,i);
                         done++;
@@ -1372,7 +1377,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                     }
                     break;
                 case 'm':   // Marine Area File
-                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
 printf("Found it!  %s\tShape: %d\n",string1,i);
                         done++;
@@ -1380,7 +1385,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
                     }
                     break;
                 case 'z':   // Zone File
-                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
 printf("Found it!  %s\tShape: %d\n",string1,i);
                         done++;
@@ -1452,7 +1457,7 @@ printf("Found it!  %s\tShape: %d\n",string1,i);
         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
         // This is how we tint it instead of obscuring the whole map
-        (void)XSetFunction (XtDisplay (w), gc_tint, GXand);
+        (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
         /*
         Options are:
             GXclear         0                       (Don't use)
@@ -1533,6 +1538,10 @@ printf("Inside loop: %d\n",structure);
 printf("Shape %d is visible, drawing it\t", structure);
 printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this structure
 
+            if (alert)
+                alert->flags[0] = 'Y';
+
+
             if (debug_level & 16) {
                 // Print the field contents
                 for (jj = 0; jj < fieldcount; jj++) {
@@ -1581,7 +1590,7 @@ printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this 
                         if (y >  16000) ok = 0;     // Skip this point
                         if (y < -16000) ok = 0;     // Skip this point
 
-                        if (ok == 1) {
+                        if (ok == 1 && ok_to_draw) {
                             (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
                         }
                     }
@@ -1627,7 +1636,7 @@ printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this 
                         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
                     }
 
-                    if (1) {
+                    if (ok_to_draw) {
                         int temp;
 
                         //printf("Index = %d\n", index);
@@ -1696,9 +1705,10 @@ printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this 
 
                             //printf("%d %d\t", points[i].x, points[i].y);
 
-                            // This doesn't do anything KG4IJB
-                            if ( ( (x < -16383) && (x > 16383) )
-                                || ( (y < -16383) && (y > -16383) ) ) {
+                            if (       (x < -16383)
+                                    || (x > 16383)
+                                    || (y < -16383)
+                                    || (y > 16383) ) {
                                 //printf("Out of Range\n");
                             } else {
                                 //printf("\n");
@@ -1707,7 +1717,7 @@ printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this 
                             index++;
                             i++;    // Number of points to draw
                         }
-                        if (i >= 3) {   // We have a polygon to draw
+                        if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
                             //(void)XSetForeground(XtDisplay (w), gc_tint, colors[(int)0x64]);
                             if (map_color_fill || water_flag || weather_alert_flag) {
                                 if (weather_alert_flag)
@@ -1748,7 +1758,7 @@ printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this 
                         if (y >  16000) ok = 0;     // Skip this point
                         if (y < -16000) ok = 0;     // Skip this point
 
-                        if (ok == 1) {
+                        if (ok == 1 && ok_to_draw) {
                             (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
                         }
                     }
@@ -1762,6 +1772,10 @@ printf( "Parts in shape: %d\n", object->nParts );    // Number of parts in this 
                         // Not implemented.
                     break;
             }
+        }
+        else {  // Shape not currently visible
+            if (alert)
+                alert->flags[0] = 'N';
         }
         SHPDestroyObject( object ); // Done with this structure
     }
@@ -7115,14 +7129,14 @@ printf("Alert!\n");
                 printf ("Total vector points %ld, total labels %ld\n",total_vector_points, total_labels);
             }
 
-            if (alert) {
-                strncpy (alert->filename, filenm, sizeof (alert->filename));
-                strcpy (alert->title, map_title);
-                alert->top_boundary    = top_boundary;
-                alert->bottom_boundary = bottom_boundary;
-                alert->left_boundary   = left_boundary;
-                alert->right_boundary  = right_boundary;
-            }
+//            if (alert) {
+//                strncpy (alert->filename, filenm, sizeof (alert->filename));
+//                strcpy (alert->title, map_title);
+//                alert->top_boundary    = top_boundary;
+//                alert->bottom_boundary = bottom_boundary;
+//                alert->left_boundary   = left_boundary;
+//                alert->right_boundary  = right_boundary;
+//            }
 
             in_window = map_onscreen(left_boundary, right_boundary, top_boundary, bottom_boundary);
 
@@ -7821,12 +7835,12 @@ printf("%s\n",dl->d_name);
                 }
             }
             if (done) {    // We found a filename match for the alert
-                // Go draw the weather alert
+                // Go draw the weather alert (kind'a)
                 draw_map (w,
                     dir,                // Alert directory
                     alert->filename,    // Shapefile filename
                     alert,
-                    '\0',
+                    -1,                 // Signifies "DON'T DRAW THE SHAPE"
                     destination_pixmap);
             }
             else {      // No filename found that matches the first two
@@ -7993,12 +8007,18 @@ printf("Weather Alerts, alert_scan: %s\t\talert_tag: %s\n", alert_scan, alert_ta
             // gets the alert areas drawn on the screen via the draw_map()
             // function.
 printf("load_alert_maps() Title: %s\n",alert_list[i].title);
+
+// It looks like we want to do this section just to fill in the
+// alert struct and to determine whether the alert is within our
+// viewport.  We don't really wish to draw the alerts at this stage.
+// That comes just a bit later in this routine.
             map_search (w,
                 alert_scan,
                 &alert_list[i],
                 &alert_count,
                 (int)(alert_tag[i + 2] == DATA_VIA_TNC || alert_tag[i + 2] == DATA_VIA_LOCAL),
                 DRAW_TO_PIXMAP_ALERTS);
+printf("Title1:%s\n",alert_list[i].title);
         }
     }
 
@@ -8017,27 +8037,39 @@ printf("load_alert_maps() Title: %s\n",alert_list[i].title);
     // Draw each alert map in the alert_list for which we have a
     // filename.
     for (i = 0; i < alert_list_count; i++) {
+
+printf("Title2:%s\n",alert_list[i].title);
+
         if (alert_list[i].filename[0]) {    // If filename is non-zero
             alert[0] = alert_list[i];       // Reordering the alert_list???
 
             // The last parameter denotes drawing into pixmap_alerts
             // instead of pixmap or pixmap_final.
 // Why do we need to draw alerts again here?
-            draw_map (w,
-                dir,
-                alert_list[i].filename,
-                &alert[0],
-                '\0',
-                DRAW_TO_PIXMAP_ALERTS);
+//            draw_map (w,
+//                dir,
+//                alert_list[i].filename,
+//                &alert[0],
+//                '\0',
+//                DRAW_TO_PIXMAP_ALERTS);
 
             alert_update_list (&alert[0], ALERT_ALL);
+printf("Title3:%s\n",alert_list[i].title);
         }
     }
+
+printf("Calling alert_sort_active()\n");
 
     // Mark all of the active alerts in the list
     alert_sort_active ();
 
+printf("Drawing all active alerts\n");
+
     // Run through all the alerts, drawing any that are active
+
+// Are we drawing them in reverse order so that the important 
+// alerts end up drawn on top of the less important alerts?
+
     for (i = alert_list_count - 1; i >= 0; i--) {
         if (alert_list[i].flags[0] == 'Y' && (level = alert_active (&alert_list[i], ALERT_ALL))) {
             if (level >= (int)sizeof (fill_color))
@@ -8045,15 +8077,29 @@ printf("load_alert_maps() Title: %s\n",alert_list[i].title);
 
             // The last parameter denotes drawing into pixmap_alert
             // instead of pixmap or pixmap_final.
-// Why do we need to draw alerts again here?
+
+// Why do we need to draw alerts again here?  Looks like it's to get
+// the right tint color.
+
+printf("Drawing %s\n",alert_list[i].filename);
+printf("Title4:%s\n",alert_list[i].title);
+
+
             draw_map (w,
                 dir,
                 alert_list[i].filename,
-                NULL,
+                &alert_list[i],
                 fill_color[level],
                 DRAW_TO_PIXMAP_ALERTS);
         }
     }
+
+
+for (i = 0; i < alert_list_count; i++)
+    printf("Title5:%s\n",alert_list[i].title);
+
+
+printf("Done drawing all active alerts\n");
 
     (void)alert_display_request ();
 }
