@@ -837,7 +837,7 @@ void channel_data(int port, unsigned char *string, int length) {
         while (data_avail && max < 5400) {
             sched_yield();  // Yield to other threads
             tmv.tv_sec = 0;
-            tmv.tv_usec = 1;  // 1 usec
+            tmv.tv_usec = 2;  // 2 usec
             (void)select(0,NULL,NULL,NULL,&tmv);
             max++;
         }
@@ -5091,6 +5091,7 @@ void port_write(int port) {
                         // special amount of time _before_ we send
                         // it out the serial port.
                         if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03) {
+                            // Sending control-C.
 
                             if (debug_level & 128) {
                                 fprintf(stderr,"Writing command [%x] on port %d, at pos %d\n",
@@ -5279,7 +5280,7 @@ void port_write(int port) {
             FD_ZERO(&wd);
             FD_SET(port_data[port].channel, &wd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 200000;  // Delay 200ms
+            tmv.tv_usec = 100;  // Delay 100us
             (void)select(0,NULL,&wd,NULL,&tmv);
         }
     }
