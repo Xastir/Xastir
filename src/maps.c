@@ -6670,147 +6670,12 @@ int read_fgd_file ( char* tif_filename,
 
 
 
-/***********************************************************
- * datum_shift_to_wgs84()
- *
- * Attempt to convert from whatever datum the image is in
- * to WGS84 datum (the normal APRS map datum).
- *
- * TODO:  Generalize this code to take a pointer to the
- * data area and a count of points to convert.
- ***********************************************************/
-int datum_shift_to_wgs84 (  float* f_west_bounding,
-                            float* f_east_bounding,
-                            float* f_north_bounding,
-                            float* f_south_bounding,
-                            char* original_datum,
-                            geocode_t datum )
-{
-    /* For the moment we'll assume that NAD27 is the initial datum
-     * Note that some USGS DRG maps are NAD83.  Will need a large
-     * number of possible datum translations for world-wide coverage.
-     * I'm not currently looking at the "original_datum" or "datum"
-     * input parameters.  They're for future expansion.
-     */
-
-    /* Here is the datum definition that we are translating from */
-    static char* src_parms[] =
-    {
-        "proj=latlong",     /* Might change based on geotiff file */
-        "datum=NAD27",      /* Needs to be "original_datum" */
-    };
-
-    /* Here is the datum definition that we want to translate to */
-    static char* dest_parms[] =
-    {
-        "proj=latlong",
-        "datum=WGS84",
-    };
-
-    PJ *src, *dest;
-    double* x_ptr;
-    double* y_ptr;
-    double* z_ptr;
-    long point_count = 2l;  /* That's an 'L', not a '1' */
-    int point_offset = 1;
-    double x[2];
-    double y[2];
-    double z[2];
-    int status;
-  
-
-    x_ptr = x;
-    y_ptr = y;
-    z_ptr = z;
-
-
-    z[0] = (double)0.0;
-    z[1] = (double)0.0;
-
-
-    if ( ! (src  = pj_init(sizeof(src_parms) /sizeof(char *), src_parms )) )
-    {
-        printf("datum_shift_to_wgs84: Initialization failed.\n");
-        if (src)
-            printf("Source: %s\n", pj_strerrno((int)src) );
-        return(0);
-    }
-
-
-    if ( ! (dest = pj_init(sizeof(dest_parms)/sizeof(char *), dest_parms)) )
-    {
-        printf("datum_shift_to_wgs84: Initialization failed.\n");
-        if (dest)
-            printf("Destination: %s\n", pj_strerrno((int)dest) );
-        return(0);
-    }
-
-
-    y[0] = (double)( DEG_TO_RAD * *f_north_bounding );
-    x[0] = (double)( DEG_TO_RAD * *f_west_bounding );
-
-    y[1] = (double)( DEG_TO_RAD * *f_south_bounding );
-    x[1] = (double)( DEG_TO_RAD * *f_east_bounding );
-
-
-    /*
-     * This call seems to fail the first time it is used, quite
-     * often other times as well.  Try it again if it fails the
-     * first time.  The datums appear to be defined in pj_datums.c
-     * in the proj.4 source code.  Currently defined datums are:
-     * WGS84, GGRS87, NAD83, NAD27.
-     */
-    status = pj_transform( src, dest, point_count, point_offset, x_ptr, y_ptr, z_ptr);
-    if (status)
-    {
-        status = pj_transform( src, dest, point_count, point_offset, x_ptr, y_ptr, z_ptr);
-        if (status)
-        {
-            printf( "datum_shift_to_wgs84: Non-zero status from pj_transform: %d\n",status );
-            printf( "datum_shift_to_wgs84: %s\n", pj_strerrno(status) );
-
-            // May or may not be a good idea to skip this, but we'll try to recover.
-            // Datum translation failed for some reason, but let's try to load the
-            // maps anyway.
-            //return(0);
-        }
-    }
-
-
-    y[0] = RAD_TO_DEG * y[0];
-    x[0] = RAD_TO_DEG * x[0];
-    y[1] = RAD_TO_DEG * y[1];
-    x[1] = RAD_TO_DEG * x[1];
-
-
-
-    if (debug_level & 512)
-        printf( "Datum shifted values:  %f\t%f\t%f\t%f\n",
-                x[0],
-                y[0],
-                x[1],
-                y[1] );
-
-
-    /* Free up memory that we used */
-    pj_free(src);
-    pj_free(dest);
-
-
-    /* Plug our new values back in */
-    *f_north_bounding = (float)y[0];
-    *f_west_bounding = (float)x[0];
-
-    *f_south_bounding = (float)y[1];
-    *f_east_bounding = (float)x[1];
-
-
-    return(1);
-}
-
-
-
-
+// Check the "GTIFProj4*" functions to see if we can use
+// datum.c instead for any of them.  These calls are all in
+// draw_geotiff_image_map().  It looks like they deal with
+// converting from pixels to coordinates and vice-versa, so we
+// probably still need them.  Perhaps we can borrow the code for
+// that and do it ourselves, to get rid of the extra library?
 
 /***********************************************************
  * draw_geotiff_image_map()
@@ -6886,23 +6751,23 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
 
     unsigned long NW_x_bounding_wgs84 = 0;
     unsigned long NW_y_bounding_wgs84 = 0;
-    float f_NW_x_bounding_wgs84 = 0.0;
-    float f_NW_y_bounding_wgs84 = 0.0;
+    double f_NW_x_bounding_wgs84 = 0.0;
+    double f_NW_y_bounding_wgs84 = 0.0;
 
     unsigned long NE_x_bounding_wgs84 = 0;
     unsigned long NE_y_bounding_wgs84 = 0;
-    float f_NE_x_bounding_wgs84 = 0.0;
-    float f_NE_y_bounding_wgs84 = 0.0;
+    double f_NE_x_bounding_wgs84 = 0.0;
+    double f_NE_y_bounding_wgs84 = 0.0;
 
     unsigned long SW_x_bounding_wgs84 = 0;
     unsigned long SW_y_bounding_wgs84 = 0;
-    float f_SW_x_bounding_wgs84 = 0.0;
-    float f_SW_y_bounding_wgs84 = 0.0;
+    double f_SW_x_bounding_wgs84 = 0.0;
+    double f_SW_y_bounding_wgs84 = 0.0;
 
     unsigned long SE_x_bounding_wgs84 = 0;
     unsigned long SE_y_bounding_wgs84 = 0;
-    float f_SE_x_bounding_wgs84 = 0.0;
-    float f_SE_y_bounding_wgs84 = 0.0;
+    double f_SE_x_bounding_wgs84 = 0.0;
+    double f_SE_y_bounding_wgs84 = 0.0;
 
     int NW_x = 0;               /* Store pixel values for map neat-line */
     int NW_y = 0;               /* ditto */
@@ -7346,34 +7211,40 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
      */
     if (   (defn.Datum != 6030)     /* DatumE_WGS84 */
         && (defn.Datum != 6326)     /*  Datum_WGS84 */
-        && (defn.Datum != 6269) )   /* Datum_North_American_Datum_1983 */
-    {
+        && (defn.Datum != 6269) )   /* Datum_North_American_Datum_1983 */ {
+
         if (debug_level & 16)
             printf("***** Attempting Datum Conversions\n");
 
-        // Change datum_shift to use arrays and counts and make
-        // only one call for all 4 corners
-        if (   (! datum_shift_to_wgs84 ( &f_NW_x_bounding_wgs84,
-                                        &f_NE_x_bounding_wgs84,
-                                        &f_NW_y_bounding_wgs84,
-                                        &f_NE_y_bounding_wgs84,
-                                        datum_name,
-                                        defn.Datum) )
-            || (! datum_shift_to_wgs84 ( &f_SW_x_bounding_wgs84,
-                                        &f_SE_x_bounding_wgs84,
-                                        &f_SW_y_bounding_wgs84,
-                                        &f_SE_y_bounding_wgs84,
-                                        datum_name,
-                                        defn.Datum) ) )
-        {
-            /* Problem doing the datum shift */
-            printf("Problem with datum shift.  Perhaps that conversion is not implemented?\n");
-            /*
-            GTIFFree (gtif);
-            XTIFFClose (tif);
-            return;
-            */
-        }
+
+        // This code uses datum.h/datum.c to do the conversion
+        // instead of the proj.4 library as we had before.
+        // Here we assume that if it's not one of the three datums
+        // listed above, it's NAD27.
+
+        // Convert NW corner to WGS84
+        wgs84_datum_shift(TO_WGS_84,
+            &f_NW_y_bounding_wgs84,
+            &f_NW_x_bounding_wgs84,
+            D_NAD_27_CONUS);   // NAD27 CONUS
+
+        // Convert NE corner to WGS84
+        wgs84_datum_shift(TO_WGS_84,
+            &f_NE_y_bounding_wgs84,
+            &f_NE_x_bounding_wgs84,
+            D_NAD_27_CONUS);   // NAD27 CONUS
+
+        // Convert SW corner to WGS84
+        wgs84_datum_shift(TO_WGS_84,
+            &f_SW_y_bounding_wgs84,
+            &f_SW_x_bounding_wgs84,
+            D_NAD_27_CONUS);   // NAD27 CONUS
+
+        // Convert SE corner to WGS84
+        wgs84_datum_shift(TO_WGS_84,
+            &f_SE_y_bounding_wgs84,
+            &f_SE_x_bounding_wgs84,
+            D_NAD_27_CONUS);   // NAD27 CONUS (131)
     }
     else
         if (debug_level & 16)
@@ -7388,8 +7259,8 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
     // NW corner
     if (!convert_to_xastir_coordinates(  &NW_x_bounding_wgs84,
                                         &NW_y_bounding_wgs84,
-                                        f_NW_x_bounding_wgs84,
-                                        f_NW_y_bounding_wgs84 ) ) {
+                                        (float)f_NW_x_bounding_wgs84,
+                                        (float)f_NW_y_bounding_wgs84 ) ) {
         printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
         printf("Did you follow the instructions for installing PROJ?\n");
         return;
@@ -7398,8 +7269,8 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
     // NE corner
     if (!convert_to_xastir_coordinates(  &NE_x_bounding_wgs84,
                                         &NE_y_bounding_wgs84,
-                                        f_NE_x_bounding_wgs84,
-                                        f_NE_y_bounding_wgs84 ) ) {
+                                        (float)f_NE_x_bounding_wgs84,
+                                        (float)f_NE_y_bounding_wgs84 ) ) {
         printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
         printf("Did you follow the instructions for installing PROJ?\n");
  
@@ -7409,8 +7280,8 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
     // SW corner
     if (!convert_to_xastir_coordinates(  &SW_x_bounding_wgs84,
                                         &SW_y_bounding_wgs84,
-                                        f_SW_x_bounding_wgs84,
-                                        f_SW_y_bounding_wgs84 ) ) {
+                                        (float)f_SW_x_bounding_wgs84,
+                                        (float)f_SW_y_bounding_wgs84 ) ) {
         printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
         printf("Did you follow the instructions for installing PROJ?\n");
  
@@ -7420,8 +7291,8 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
     // SE corner
     if (!convert_to_xastir_coordinates(  &SE_x_bounding_wgs84,
                                         &SE_y_bounding_wgs84,
-                                        f_SE_x_bounding_wgs84,
-                                        f_SE_y_bounding_wgs84 ) ) {
+                                        (float)f_SE_x_bounding_wgs84,
+                                        (float)f_SE_y_bounding_wgs84 ) ) {
         printf("draw_geotiff_image_map: Problem converting from lat/lon\n");
         printf("Did you follow the instructions for installing PROJ?\n");
  

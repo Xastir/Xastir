@@ -92,3 +92,5 @@ void ll_to_utm(short ellipsoidID, const double lat, const double lon,
 void utm_to_ll(short ellipsoidID, const double utmNorthing, const double utmEasting,
                const char* utmZone, double *lat, double *lon);
 char utm_letter_designator(double lat);
+
+
