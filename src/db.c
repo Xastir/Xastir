@@ -7766,7 +7766,7 @@ int extract_signpost(char *info, char *signpost) {
 
 /*
  *  Extract probability_min data from APRS info field: "Pmin1.23,"
- *  Please note the ending comma.
+ *  Please note the ending comma.  We use it to delimit the field.
  */
 int extract_probability_min(char *info, char *prob_min) {
     int len,done;
@@ -7835,7 +7835,7 @@ int extract_probability_min(char *info, char *prob_min) {
 
 /*
  *  Extract probability_max data from APRS info field: "Pmax1.23,"
- *  Please note the ending comma.
+ *  Please note the ending comma.  We use it to delimit the field.
  */
 int extract_probability_max(char *info, char *prob_max) {
     int len,done;
@@ -12902,6 +12902,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     char lat_str[MAX_LAT];
     char lon_str[MAX_LONG];
     char comment[43+1];                 // max 43 characters of comment
+    char comment2[43+1];
     char time[7+1];
     struct tm *day_time;
     time_t sec;
@@ -12982,6 +12983,34 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     }
     else {
         comment[0] = '\0';  // Empty string
+    }
+
+//WE7U
+    if ( (p_station->probability_min[0] != '\0')
+            || (p_station->probability_max[0] != '\0') ) {
+
+        if (p_station->probability_max[0] == '\0') {
+            // Only have probability_min
+            xastir_snprintf(comment2,
+                sizeof(comment2)," Pmin%s, %s",
+                p_station->probability_min,
+                comment);
+        }
+        else if (p_station->probability_min[0] == '\0') {
+            // Only have probability_max
+            xastir_snprintf(comment2,
+                sizeof(comment2)," Pmax%s, %s",
+                p_station->probability_max,
+                comment);
+        }
+        else {  // Have both
+            xastir_snprintf(comment2,
+                sizeof(comment2)," Pmin%s, Pmax%s, %s",
+                p_station->probability_min,
+                p_station->probability_max,
+                comment);
+        }
+        xastir_snprintf(comment,sizeof(comment),comment2);
     }
     
     (void)remove_trailing_spaces(comment);
