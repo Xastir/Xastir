@@ -48,9 +48,9 @@ Widget geocoder_address_data = (Widget)NULL;
 Widget geocoder_map_file_data = (Widget)NULL;
 char geocoder_zip_name[50];
 char geocoder_state_name[50];
-char geocoder_locality_name[50];
-char geocoder_address_name[200];
-char geocoder_map_filename[200];
+char geocoder_locality_name[255];
+char geocoder_address_name[255];
+char geocoder_map_filename[255];
 static xastir_mutex geocoder_place_dialog_lock;
 
 long destination_coord_lat = 0;
@@ -100,7 +100,7 @@ end_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_place
 void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
     struct io_file *index;
     struct geo_location loc;
-    char input[256];
+    char input[1024];
 
     /* find place and go there */
     strcpy(geocoder_zip_name, XmTextFieldGetString(geocoder_zip_data));
@@ -115,7 +115,7 @@ void Geocoder_place_now(Widget w, XtPointer clientData, XtPointer callData) {
     (void)remove_trailing_spaces(geocoder_address_name);
 
     index = io_open(geocoder_map_filename);
-    xastir_snprintf(input, 255, "%s %s%s%s %s", geocoder_address_name, geocoder_locality_name, (strlen(geocoder_state_name) != 0)?",":"", geocoder_state_name, geocoder_zip_name);
+    xastir_snprintf(input, 1024, "%s %s%s%s %s", geocoder_address_name, geocoder_locality_name, (strlen(geocoder_state_name) != 0)?",":"", geocoder_state_name, geocoder_zip_name);
     if (geo_find(index,input,strlen(input),&loc)) {
         long coord_lon, coord_lat;
         char lat_str[20];
@@ -233,7 +233,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNshadowThickness,    1,
                 XmNcolumns, 32,
                 XmNwidth, ((32*7)+2),
-                XmNmaxLength, 30,
+                XmNmaxLength, 254,
                 XmNbackground, colors[0x0f],
                 XmNtopAttachment, XmATTACH_FORM,
                 XmNtopOffset, 5,
@@ -267,7 +267,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNshadowThickness,    1,
                 XmNcolumns, 32,
                 XmNwidth, ((32*7)+2),
-                XmNmaxLength, 30,
+                XmNmaxLength, 254,
                 XmNbackground, colors[0x0f],
                 XmNtopAttachment,XmATTACH_WIDGET,
                 XmNtopWidget, address,
@@ -391,7 +391,7 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
                 XmNshadowThickness,    1,
                 XmNcolumns, 40,
                 XmNwidth, ((40*7)+2),
-                XmNmaxLength, 199,
+                XmNmaxLength, 254,
                 XmNbackground, colors[0x0f],
                 XmNtopAttachment,XmATTACH_WIDGET,
                 XmNtopWidget, zip,
