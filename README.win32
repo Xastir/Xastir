@@ -296,8 +296,8 @@ findings on the Xastir mailing lists.
 
 
 
-RECOMMENDED:  Adding Shapelib (tested with shapelib-1.2.9):
------------------------------------------------------------
+RECOMMENDED:  Adding Shapelib (tested with shapelib-1.2.10):
+------------------------------------------------------------
 Allows using many sources of online polygon, polyline, and point
 maps, including ones from NOAA.  This is the only format used for
 weather alert maps.
@@ -307,7 +307,7 @@ From a Cygwin bash shell, type:
     cd ~/src
     mkdir shapelib
     
-Fetch "shapelib-1.2.9.tar.gz" from one of these sites:
+Fetch "shapelib-1.2.10.tar.gz" from one of these sites:
 
     http://gdal.velocet.ca/projects/shapelib/index.html
 or  http://wetnet.net/~we7u/xastir/shapelib/
@@ -316,7 +316,7 @@ Put it in the C:\cygwin\home\<user>\src\shapelib directory.  Untar it
 from the Cygwin shell window:
 
     cd ~/src/shapelib
-    tar xzvf shapelib-1.2.9.tar.gz
+    tar xzvf shapelib-1.2.10.tar.gz
 
 1) Edit Shapelib's Makefile to remove the space after the "-h"
 on the line that starts like this:
@@ -325,7 +325,7 @@ on the line that starts like this:
 
 then type:
 
-    cd ~/src/shapelib/shapelib-1.2.9
+    cd ~/src/shapelib/shapelib-1.2.10
     make lib
     make lib_install
 
