@@ -456,7 +456,6 @@ void draw_ogr_map(Widget w,
         return;
     }
 
-
     // Implement the indexing functions, so that we can use these
     // map formats from within Xastir.  Without an index, it'll
     // never appear in the map chooser.  Use the OGR "envelope"
@@ -495,18 +494,15 @@ void draw_ogr_map(Widget w,
             -180.0,  // Left
              180.0); // Right
 
-
 // Query the coordinate system.  Need to have the extents in WGS84
-// lat/long coordinate system in order to compute the extents
-// properly.
-
+// or NAD83 lat/long coordinate systems in order to compute the
+// extents properly.
 
         // Close data source
         OGR_DS_Destroy( datasource );
 
         return; // Done indexing the file
     }
-
 
     // This one returns the name/path.  Less than useful since we
     // should already know this.
@@ -518,8 +514,7 @@ void draw_ogr_map(Widget w,
     // for Shapefiles.
     // 
     ptr = OGR_Dr_GetName(driver);
-    fprintf(stderr,"  Type: %s\n", ptr);
-
+    fprintf(stderr,"Type: %s\n", ptr);
 
     // If we're going to write, we need to test the capability using
     // these functions:
@@ -535,9 +530,9 @@ void draw_ogr_map(Widget w,
 
 
 
-// Optimization:  Get the envelope for each layer, skip the layer if
-// it's completely outside our viewport.
-
+// Optimization:  Get the envelope for each layer if it's not an
+// expensive operation.  Skip the layer if it's completely outside
+// our viewport.
  
     // Loop through all layers in the data source.
     //
@@ -572,7 +567,6 @@ void draw_ogr_map(Widget w,
             return;
         }
 
-
         // Test the capabilities of the layer so that we know the
         // best way to access it.
         //
@@ -597,27 +591,23 @@ void draw_ogr_map(Widget w,
         //   spatial filter is installed after which it will return FALSE.
         //   NOTE: Shapefile reports this as TRUE.
         //
+        fprintf(stderr,"  Layer %d Supports: ", i);
         if (OGR_L_TestCapability(layer, OLCRandomRead)) {
-            fprintf(stderr,
-                "    Layer %d: Random Read Supported.\n",
-                i);
+            fprintf(stderr, "Random Read, ");
         }
         if (OGR_L_TestCapability(layer, OLCFastSpatialFilter)) {
             fprintf(stderr,
-                "    Layer %d: Fast Spatial Filter supported.\n",
-                i);
+                "Fast Spatial Filter, ");
         }
         if (OGR_L_TestCapability(layer, OLCFastFeatureCount)) {
             fprintf(stderr,
-                "    Layer %d: Fast Feature Count Supported.\n",
-                i);
+                "Fast Feature Count, ");
         }
         if (OGR_L_TestCapability(layer, OLCFastGetExtent)) {
             fprintf(stderr,
-                "    Layer %d: Fast Get Extent Supported.\n",
-                i);
+                "Fast Get Extent");
         }
-
+        fprintf(stderr,"\n");
 
         // Query the coordinate system.  Need to have the extents in
         // WGS84 lat/long coordinate system in order to compute the
@@ -627,24 +617,46 @@ void draw_ogr_map(Widget w,
         fprintf(stderr,"    Layer %d: ", i);
         if (spatial) {
             const char *temp;
+            int geographic = 0;
+            int projected = 0;
 
-            if (OSRIsGeographic(spatial))
+            if (OSRIsGeographic(spatial)) {
                 fprintf(stderr,"Geographic, ");
-            else
+                geographic++;
+            }
+            else {
                 fprintf(stderr,"not Geographic, ");
-            if (OSRIsProjected(spatial))
-                fprintf(stderr,"Projected, ");
-            else
-                fprintf(stderr,"not Projected, ");
+            }
+            if (OSRIsProjected(spatial)) {
+                fprintf(stderr,"Projected\n");
+                projected++;
+            }
+            else {
+                fprintf(stderr,"not Projected\n");
+            }
 
             // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
+            if (projected) {
+                temp = OSRGetAttrValue(spatial, "PROJCS", 0);
+                fprintf(stderr,"    PROJCS: %s\n", temp);
+ 
+                temp = OSRGetAttrValue(spatial, "PROJECTION", 0);
+                fprintf(stderr,"    PROJECTION: %s\n", temp);
+            }
+
             temp = OSRGetAttrValue(spatial, "DATUM", 0);
-            fprintf(stderr,"Datum: %s\n", temp);
+            fprintf(stderr,"    DATUM: %s\n", temp);
+
+            temp = OSRGetAttrValue(spatial, "GEOGCS", 0);
+            fprintf(stderr,"    GEOGCS: %s, ", temp);
+
+            temp = OSRGetAttrValue(spatial, "SPHEROID", 0);
+            fprintf(stderr,"SPHEROID: %s\n", temp);
+
         }
         else {
             fprintf(stderr,"No Spatial Info in dataset\n");
         }
-
 
         // Get the extents for this layer.  OGRERR_FAILURE means
         // that the layer has no spatial info or that it would be
@@ -653,13 +665,17 @@ void draw_ogr_map(Widget w,
         if (OGR_L_GetExtent(layer, &psExtent, FALSE) != OGRERR_FAILURE) {
             // We have extents.  Check whether any part of the layer
             // is within our viewport.
-            fprintf(stderr,"    Got extents for layer %d\n", i);
+            fprintf(stderr, "    Layer %d extents obtained.\n", i);
         }
         else {
-            fprintf(stderr,"    Extents unavailable for layer %d without a FORCE.\n", i);
+//            fprintf(stderr, "    Extents unavailable for layer %d without a FORCE.\n", i);
+            if (OGR_L_GetExtent(layer, &psExtent, TRUE) != OGRERR_FAILURE) {
+                fprintf(stderr, "    Layer %d extents obtained via FORCE\n", i);
+            }
+            else {
+                fprintf(stderr, "    Layer %d extents are not available even with FORCE.\n", i);
+            }
         }
-
-
 
         // Dump info about this layer
 //        layerDefn = OGR_L_GetLayerDefn( layer );
@@ -681,8 +697,6 @@ void draw_ogr_map(Widget w,
 //            fprintf(stderr,"\n");
 //        }
 
-
-
 // Here we need to convert to WGS84 and lat/long if necessary (using
 // OGRCoordinateTransformation class and PROJ.4), then start
 // plotting the points/lines/whatever.
@@ -691,7 +705,6 @@ void draw_ogr_map(Widget w,
 // OGRLayer::GetNextFeature() will return one feature at a time from
 // a layer.  Can also install a spatial filter first to limit what
 // it returns.  OGRLayer::SetSpatialFilter().
-
 
 /*
     {
@@ -715,11 +728,8 @@ fprintf(stderr,"4\n");
     }
 */
 
-
-
 // Optimization:  Get the envelope for each feature, skip the
 // feature if it's completely outside our viewport.
-
 
         // Loop through all of the features in the layer.
         //
@@ -776,7 +786,6 @@ fprintf(stderr,"4\n");
 //                fprintf(stderr,"Point/Line: Number of points: %d\n",num);
             }
 
-
 /*
             // Print out the points
             for (ii=0; ii < num; ii++) {
@@ -793,12 +802,10 @@ fprintf(stderr,"4\n");
             // If polygon feature, do we do the "rotation one way =
             // fill, rotation the other way = hole" thing?
 
-
 // At this point it'd be nice to either have all of the coordinates
 // in WGS84 lat/long, or WGS84 Xastir coordinate system.  It'd be
 // very nice if the coordinate transformation calls could do the
 // latter one for us.  We'd then just draw the darn things.
-
 
             if (num > 0) {
 
