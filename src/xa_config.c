@@ -633,10 +633,10 @@ void load_data_or_default(void) {
     if (screen_height < 320)
         screen_height = 320;
 
-    if (!get_long ("SCREEN_LAT", &mid_y_lat_offset, 0l, 32400000l, 32400000l))
+    if (!get_long ("SCREEN_LAT", &mid_y_lat_offset, 0l, 64800000l, 32400000l))
         mid_y_lat_offset = 32400000l;
 
-    if (!get_long ("SCREEN_LONG", &mid_x_long_offset, 0l, 64800000l, 64800000l))
+    if (!get_long ("SCREEN_LONG", &mid_x_long_offset, 0l, 129600000l, 64800000l))
         mid_x_long_offset = 64800000l;
 
     if (!get_int ("COORDINATE_SYSTEM", &coordinate_system, 0, 3, USE_DDMMMM))
