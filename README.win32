@@ -354,6 +354,19 @@ the next command:
     make
     make install
 
+NOTE:  The "make" step can be extremely memory hungry.  If you don't
+have much free memory, that step might take a long time to run.  One
+Win2k machine with only 20MB of free RAM (128MB total RAM) couldn't
+complete this step, but adding another 128MB of RAM to that machine
+caused it to succeed.  Another machine running Win2k with 128MB
+total RAM took six hours.  Free up memory if you're having trouble
+completing that step.  This behavior is only seen on Windows/Cygwin,
+not on the Unix-based systems.  On a typical Linux box that step
+takes under two seconds.  Hopefully Cygwin linking will improve over
+time to alleviate this issue.  We've added a new link-stage
+parameter to reduce the memory usage here, but it doesn't totally
+resolve the problem.
+
 Ignore the "PACKAGE_* redefined" warnings.  They won't break
 anything and are just an annoyance.
 
@@ -362,24 +375,6 @@ installed on your system, with minimal map support.  Later sections
 of this document detail adding additional map libraries in order to
 give you access to the full mapping capability of Xastir.
 
-Note:  Sometimes on WinXP and perhaps Win2k the configure script
-will hang on the "checking for devices" line.  It's unknown what
-causes this.  You can force it by editing the top portion of
-"acinclude.m4" so that it looks like this (just deleting a bunch of
-lines):
-
-  # test for devices
-  AC_DEFUN([XASTIR_DETECT_DEVICES],
-  [
-  AC_MSG_CHECKING([for devices])
-  ac_tnc_port=/dev/ttyS0
-  ac_gps_port=/dev/ttyS1
-  AC_DEFINE_UNQUOTED([TNC_PORT], "$ac_tnc_port", [Default TNC port.])
-  AC_DEFINE_UNQUOTED([GPS_PORT], "$ac_gps_port", [Default GPS port.])
-  AC_MSG_RESULT(found $ac_tnc_port and $ac_gps_port)
-  ])
-
-Then re-running the "./bootstrap.sh" and following commands.
 
 [ ] Step 7)  Create a link to the Xastir executable.  Type the
 following commands into the BASH shell:
