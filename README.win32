@@ -90,7 +90,7 @@ be selected as well, that's ok and necessary:
     text/less
     utils/diff
     utils/patch
-    web/wget
+    web/wget (or can use libcurl instead)
     XFree86/fvwm
     XFree86/lesstif
     XFree86/XFree86-prog

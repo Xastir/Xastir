@@ -103,6 +103,7 @@ libtiff/libgeotiff/libproj      Optional  geoTIFF maps (USGS topos)
 AX.25                           Optional  Kernel AX.25 networking support
 festival                        Optional  Speaking alerts
 wget                            Optional  Internet images as maps
+libcurl                         Optional  Internet images as maps (faster than wget)
 GPSMan/gpsmanshp                Optional  Converts GPS data to Shapefiles
 
 Installing only the required libs gives you these capabilities:
@@ -208,12 +209,14 @@ For ImageMagick support for maps in any of 68 major graphics formats,
     ImageMagick:
         http://www.imagemagick.org/
 
-To use online maps or findu.com historical data, you'll need wget installed.
-   Many systems have this preinstalled, so check first.  You may need to
-   upgrade your installed version for this feature to work correctly from
-   within Xastir:
+To use online maps or findu.com historical data, you'll need wget or
+   libcurl/libcurl-devel installed.  Many systems have these preinstalled,
+   so check first.  You may need to upgrade your installed version for
+   this feature to work correctly from within Xastir:
     Wget:
         ftp://ftp.gnu.org/gnu/wget/
+    libcurl:
+        Check your operating system distribution.
 
 To download GPS tracks/waypoints/routes from a Garmin GPS into Xastir,
 converting to Shapefile format maps as it runs, you'll need gpsmanshp and
@@ -440,9 +443,10 @@ First Time Install:
      called ImageMagick-devel or similar.
 
 
-   6. OPTIONAL:  If your system doesn't have wget installed, and you want to
-     use online maps, install it now. Installation instructions are included
-     in the package.  Some older versions of wget don't work properly with
+   6. OPTIONAL:  If your system doesn't have wget or libcurl/libcurl-devel
+     installed, and you want to use online maps, install either or both of
+     those packages now. Installation instructions are included in the
+     package.  Some older versions of wget don't work properly with
      Xastir, so even if you already have wget you may need to upgrade it.
 
      Please refer to the wget man pages or the web pages at
@@ -459,6 +463,9 @@ First Time Install:
      the .wgetrc files, which means the user can override the hard-coded
      timeouts/retries in Xastir by specifying new defaults in their ~/.wgetrc
      file.
+
+     Libcurl should be a drop-in replacement for the wget functionality that
+     we use, and it's a faster and more secure method.
 
    7. OPTIONAL:  Installing gpsmanshp/GPSMan allows Xastir to fetch GPS
      waypoints/routes/tracks from a GPS.  Xastir can fetch the data
@@ -826,11 +833,11 @@ Getting Data Files for Xastir:
 
     Download some maps:
 
-      If you compiled with ImageMagick and have wget installed, you can skip
-      this step and use the online Tiger/Terraserver maps exclusively. However,
-      having maps on your computer is often faster than transferring images
-      over a modem, and is not subject to the failures of your internet
-      connection.
+      If you compiled with ImageMagick and have wget or libcurl installed,
+      you can skip this step and use the online Tiger/Terraserver maps
+      exclusively. However, having maps on your computer is often faster
+      than transferring images over a modem, and is not subject to the
+      failures of your internet connection.
 
       You can have any number of maps in the /usr/local/xastir/maps directory.
       You can organize the maps however you like. You can also use symbolic
@@ -1040,8 +1047,8 @@ Getting Data Files for Xastir:
 
     .geo files/online maps & graphics:
 
-      If you have ImageMagick and wget installed, .geo files for NWS radars
-      are available from one of these sites:
+      If you have ImageMagick and wget or libcurl installed, .geo files
+      for NWS radars are available from one of these sites:
 
           ftp://gcpoolz.com/geos/Srb_geos.zip
           http://wetnet.net/~we7u/xastir/maps/radar-geos.tgz
@@ -1061,10 +1068,10 @@ Getting Data Files for Xastir:
       bureau webserver.
 
       A .geo with only the word "TERRASERVER" in it will retrieve a satellite
-      photo of the area from terraserver.  You need "wget" and ImageMagick
-      installed, and support for them compiled into Xastir.  No additional
-      map downloads are needed if these are the only maps that you want to
-      use.
+      photo of the area from terraserver.  You need "wget" or libcurl, plus
+      ImageMagick installed, and support for them compiled into Xastir.  No
+      additional map downloads are needed if these are the only maps that you
+      want to use.
 
      PocketAPRS maps:
 
