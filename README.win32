@@ -823,6 +823,19 @@ compile might fail:
 To fix this, edit the Makefile to add "-lc" to the end of the LIBS
 line and run "make" again, then "make install".
 
+I have another report from a user that says this:
+
+    "I just installed in Cygwin earlier this morning and I hit this
+    'bug'.  You can update the README.win32 with this info:
+
+        edit the Makefile and change the -lc to -lcygwin
+
+    That fixes the 'bug'."
+
+I don't know whether the last note refers to the Shapelib Makefile
+or the Xastir Makefile, but should find out shortly and I'll change
+this README to comply.  --we7u
+
 
 [ ] TEMPORARY:  It looks like we need to switch to a newer version
 of the libtiff DLL in order to work with libgeotiff.  Some Cygwin
