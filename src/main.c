@@ -18241,7 +18241,7 @@ else if (Area_object_enabled) {
         XtAddCallback(toption1,XmNvalueChangedCallback,Area_type_toggle,"0");
 
         // "Line-Right '/'"
-        toption2 = XtVaCreateManagedWidget(langcode("POPUPOB012"),
+        toption2 = XtVaCreateManagedWidget(langcode("POPUPOB013"),
                 xmToggleButtonGadgetClass,
                 shape_box,
                 MY_FOREGROUND_COLOR,
@@ -18250,7 +18250,7 @@ else if (Area_object_enabled) {
         XtAddCallback(toption2,XmNvalueChangedCallback,Area_type_toggle,"1");
 
         // "Line-Left '\'
-        toption3 = XtVaCreateManagedWidget(langcode("POPUPOB013"),
+        toption3 = XtVaCreateManagedWidget(langcode("POPUPOB012"),
                 xmToggleButtonGadgetClass,
                 shape_box,
                 MY_FOREGROUND_COLOR,
