@@ -77,7 +77,8 @@
 #warning
 #warning
 #warning GDAL/OGR library support is not fully implemented yet!
-#warning Only very preliminary TIGER/Line support has been coded to date.
+#warning Preliminary TIGER/Line, Shapefile, mid/mif/tab (MapInfo)
+#warning support is working.
 #warning
 #warning
 
@@ -1287,7 +1288,7 @@ void Draw_Polygons(OGRGeometryH geometry, int level) {
         if (sub_object_num) {
             // We found geometries below this.  Recurse.
             if (level < 5) {
-fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
+//fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
                 Draw_Polygons(child, level+1);
             }
         }
