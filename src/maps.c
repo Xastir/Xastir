@@ -7800,12 +7800,15 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 // 
                                 if (strncasecmp(alert->filename,dl->d_name,2) == 0) {
                                     // We have a match
-                                    printf("%s\n",fullpath);
+printf("%s\n",fullpath);
                                     // Force last three characters to
                                     // "shp"
                                     dl->d_name[strlen(dl->d_name)-3] = 's';
                                     dl->d_name[strlen(dl->d_name)-2] = 'h';
                                     dl->d_name[strlen(dl->d_name)-1] = 'p';
+
+                                    // Save the filename in the alert
+                                    strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
                                     done++;
 printf("%s\n",dl->d_name);
                                 }
@@ -7818,11 +7821,10 @@ printf("%s\n",dl->d_name);
                 }
             }
             if (done) {    // We found a filename match for the alert
-                strncpy(alert->filename,dl->d_name,strlen(dl->d_name));
                 // Go draw the weather alert
                 draw_map (w,
-                    dir,            // Alert directory
-                    dl->d_name,     // Shapefile filename
+                    dir,                // Alert directory
+                    alert->filename,    // Shapefile filename
                     alert,
                     '\0',
                     destination_pixmap);
