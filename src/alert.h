@@ -67,15 +67,12 @@ typedef struct {
 extern alert_entry *alert_list;
 extern int alert_max_count;
 
-extern void alert_update_list(alert_entry * alert, alert_match_level match_level);
 extern void alert_print_list(void);
-extern void alert_sort_active(void);
 extern int alert_active(alert_entry *alert, alert_match_level match_level);
 extern int alert_display_request(void);
 extern int alert_on_screen(void);
 extern int alert_redraw_on_update;
 extern int alert_expire(void);
-extern int alert_active_count(void);
 extern void alert_build_list(Message *fill);
 
 #endif /* __XASTIR_ALERT_H */

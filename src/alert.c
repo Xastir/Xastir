@@ -24,8 +24,6 @@
 
 
 
-// We may want to call or schedule somehow that refresh_image gets
-// called, so that new alerts will show up in a timely manner.
 // alert_redraw_on_update will cause refresh_image to get called.
 // alert_add_entry sets it.
 
@@ -197,10 +195,11 @@
 //       if the first two char == 'LM' ||
 //            then use the "mzshapefile"
 //       else use the "z_shapefile"
-// I am running out of time - Need to meet Gerry at the EOC in 30 min- but 
-// that should be all there is to it- I will send you a complete list of 
-// marine zones later today- I think there are no more than 13 or 14 to 
-// search through - better that the 54 "states"- could be hard coded. 
+//
+// I am running out of time but that should be all there is to it- I
+// will send you a complete list of marine zones later today- I
+// think there are no more than 13 or 14 to search through - better
+// that the 54 "states"- could be hard coded.
 
 
 // Found on the AWIPS web pages so far:
@@ -395,18 +394,6 @@ void alert_print_list(void) {
 
 
 
-// alert_active_count()
-//
-// Returns the quantity of active alerts
-//
-int alert_active_count(void) {
-    return(alert_list_count);
-}
-
-
-
-
-
 // Needed by alert_expire() below
 static time_t last_alert_expire = 0;
 
@@ -447,6 +434,10 @@ int alert_expire(void) {
             }
             alert_list[ii].title[0] = '\0'; // Clear this alert
             alert_list_count--;
+
+//WE7U
+//fprintf(stderr,"alerts:%d\tmax:%d\n",alert_list_count,alert_max_count);
+
             expire_count++;
         }
     }
@@ -537,6 +528,9 @@ int alert_expire(void) {
             if (alert_list[i].title[0] == '\0') {   // If alert entry is empty
                 memcpy(&alert_list[i], entry, sizeof(alert_entry)); // Use it
                 alert_list_count++;
+//WE7U
+//fprintf(stderr,"alerts:%d\tmax:%d\n",alert_list_count,alert_max_count);
+
                 if (debug_level & 2) {
                     fprintf(stderr,"Found empty alert slot %d, filling it\n", i);
                 }
@@ -800,6 +794,9 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
             // Knock the active count down by one
             alert_list_count--;
 
+//WE7U
+//fprintf(stderr,"alerts:%d\tmax:%d\n",alert_list_count,alert_max_count);
+
             // Schedule an update 'cuz we need to delete an expired
             // alert from the list.
             alert_redraw_on_update = redraw_on_new_data = 2;
@@ -879,11 +876,6 @@ void alert_sort_active(void) {
         fprintf(stderr,"alert_sort_active\n");
 
     qsort(alert_list, (size_t)alert_max_count, sizeof(alert_entry), alert_compare);
-
-    // Looks like this code was trying to figure out the new
-    // alert_list_count.  We don't need this anymore due to the new
-    // organization.
-    //for (; alert_list_count && alert_list[alert_list_count-1].title[0] == '\0'; alert_list_count--);
 }
 
 
