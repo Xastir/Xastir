@@ -75,7 +75,9 @@ char *langcode(char *code) {
                     return(lang_code_ptr[i]);   // Found it, length ok
                 }
                 else {
-                    printf("String size: %d,  Max size: %d, %s\n", strlen(lang_code[i]), MAX_LANG_LINE_SIZE,code);
+                    printf("String size: %d,  Max size: %d, %s\n",
+                        (int)strlen(lang_code[i]),
+                        MAX_LANG_LINE_SIZE,code);
                     return(invalid_code);       // Found it, but string too long
                 }
             }
