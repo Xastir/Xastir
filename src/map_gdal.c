@@ -471,6 +471,10 @@ scr_s_x_min = 0;
 
 
 
+int label_color_guess = 0x08;    // Default black
+
+
+
 // guess_vector_attributes()
 //
 // Feel free to change the name.  At the moment it's somewhat
@@ -542,6 +546,8 @@ void guess_vector_attributes( Widget w,
                               OGRLayerH layerH,
                               int geometry_type ) {
 
+    label_color_guess = 0x08;   // Default black
+
 
 /*
     switch (driver_type) {
@@ -583,6 +589,11 @@ void guess_vector_attributes( Widget w,
 // Determine whether it is a hypsography layer we're dealing with.
                 // Set to yellow for SDTS hypsography layer (contours)
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+                label_color_guess = 0x08;   // black
+            }
+            else if (strstr(full_filename,"lkH")) {
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
+                label_color_guess = 0x1a;
             }
             else {
 // DEBUG:
@@ -602,10 +613,12 @@ void guess_vector_attributes( Widget w,
 // Determine whether it is a hypsography layer we're dealing with.
                 // Set to yellow for SDTS hypsography layer (contours)
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+                label_color_guess = 0x08;   // black
             }
             else {
 // DEBUG:
                 (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
+                label_color_guess = 0x1a;
             }
             (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
             break;
@@ -630,13 +643,15 @@ void Draw_OGR_Labels( Widget w,
                       OGRFeatureH featureH,
                       OGRGeometryH geometryH,
                       XPoint *xpoints,
-                      int num_points) {
+                      int num_points,
+                      int color) {
 
-    int i,j;
-    const char *pi = NULL;
-    const char *pj = NULL;
+    int ii;
+    const char *pii = NULL;
     char label[200] = "";
+    char extra[100] = "";
     float angle = 0.0;  // Angle for the beginning of this polyline
+    int my_color = color;
 
 
     if (num_points > 1) {
@@ -669,27 +684,34 @@ void Draw_OGR_Labels( Widget w,
     //OGR_F_DumpReadable( featureH, stderr );
     //OGR_G_DumpReadable(geometryH, stderr, "Shape: ");
 
-    // Snag any feature called "NAME" or "FENAME", use this for the
-    // label.
-    i = OGR_F_GetFieldIndex(featureH, "NAME");
-    j = OGR_F_GetFieldIndex(featureH, "FENAME");
-    if (i != -1) {  // Found "NAME" field
-        pi = OGR_F_GetFieldAsString(featureH, i);
+    // Snag a few special features, use for labels
+    //
+    ii = OGR_F_GetFieldIndex(featureH, "NAME");
+    if (ii == -1) {
+        ii = OGR_F_GetFieldIndex(featureH, "FENAME");
     }
-    if (j != -1) {  // Found "FENAME" field
-        pj = OGR_F_GetFieldAsString(featureH, j);
+    if (ii == -1) {
+        ii = OGR_F_GetFieldIndex(featureH, "ELEVATION");
+//        my_color = 0x0e;  // yellow
+        xastir_snprintf(extra,sizeof(extra), " ft");
     }
-
-    // Debug code
-    if (pi && pi[0] != '\0') {
-        xastir_snprintf(label,sizeof(label),"%s",pi);
-//        fprintf(stderr,"  NAME:%s\n", label);
-    }
-    if (pj && pj[0] != '\0') {
-        xastir_snprintf(label,sizeof(label),"%s",pj);
-//        fprintf(stderr,"FENAME:%s\n", label);
+    if (ii == -1) {
+        ii = OGR_F_GetFieldIndex(featureH, "LANDNAME");
+        my_color = 0x1a;  // Steel Blue
+        extra[0] = '\0';
     }
 
+    if (ii != -1) {  // Found one of the fields
+        pii = OGR_F_GetFieldAsString(featureH, ii);
+    }
+
+    if (pii && pii[0] != '\0') {
+        xastir_snprintf(label,
+            sizeof(label),
+            "%s%s",
+            pii,
+            extra);
+    }
 
     // Draw at least one label.  In the future we can pick and
     // choose among the points passed to us and draw the quantity of
@@ -705,7 +727,7 @@ void Draw_OGR_Labels( Widget w,
                 xpoints[0].x+10,
                 xpoints[0].y+5,
                 strlen(label),
-                colors[0],
+                colors[my_color],
                 label,
                 FONT_DEFAULT);
         }
@@ -716,7 +738,7 @@ void Draw_OGR_Labels( Widget w,
                 xpoints[0].x+10,
                 xpoints[0].y+5,
                 strlen(label),
-                colors[0],
+                colors[my_color],
                 label,
                 FONT_DEFAULT);
         }
@@ -798,14 +820,6 @@ void Draw_OGR_Points( Widget w,
 
     // Draw
 
-/*
-guess_vector_attributes(w,
-    driver_type,
-    full_filename,
-    layerH,
-    geometry_type);
-*/
-
     // Get number of elements (points)
     num_points = OGR_G_GetPointCount(geometryH);
     //fprintf(stderr,"  Number of elements: %d\n",num_points);
@@ -833,6 +847,7 @@ guess_vector_attributes(w,
             }
         }
 
+
         // Skip the map_visible_lat_lon() check:
         // draw_point_ll() does the check for us.
         //
@@ -856,7 +871,8 @@ guess_vector_attributes(w,
             featureH,
             geometryH,
             &xpoint,
-            1); // Number of points
+            1,   // Number of points
+            label_color_guess);
 */
     }
 }
@@ -1171,13 +1187,6 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
         if (YI)
             free(YI);
 
-/*
-guess_vector_attributes(w,
-    driver_type,
-    full_filename,
-    layerH,
-    geometry_type);
-*/
 
         // Actually draw the lines
         (void)XDrawLines(XtDisplay(da),
@@ -1193,7 +1202,8 @@ guess_vector_attributes(w,
             featureH,
             geometryH,
             xpoints,
-            num_points);
+            num_points,
+            label_color_guess);
 
         if (xpoints)
             free(xpoints);
@@ -1633,15 +1643,6 @@ void Draw_OGR_Polygons( Widget w,
                 }
 
 
-/*
-guess_vector_attributes(w,
-    driver_type,
-    full_filename,
-    layerH,
-    geometry_type);
-*/
-
-
                 // If draw_filled != 0, draw the polygon using X11
                 // polygon calls instead of just drawing the border.
                 //
@@ -1790,6 +1791,16 @@ guess_vector_attributes(w,
                             xpoints,
                             num_outer_points);
 
+
+                        // Draw the corresponding labels
+                        Draw_OGR_Labels(w,
+                            pixmap,
+                            featureH,
+                            geometryH,
+                            xpoints,
+                            num_outer_points,
+                            label_color_guess);
+
                         free(xpoints);
                     }
                 }   // end of draw_filled
@@ -1818,6 +1829,7 @@ fprintf(stderr,"Vector %d: %7.5f %8.5f  %7.5f %8.5f\n",
     vectorX[mm]);
 */
 
+
                         draw_vector_ll(da,
                             (float)vectorY[mm-1],
                             (float)vectorX[mm-1],
@@ -1826,6 +1838,18 @@ fprintf(stderr,"Vector %d: %7.5f %8.5f  %7.5f %8.5f\n",
                             gc,
                             pixmap);
                     }
+
+/*
+                    // Draw the corresponding labels
+                    Draw_OGR_Labels(w,
+                        pixmap,
+                        featureH,
+                        geometryH,
+                        xpoints,
+                        num_points,
+                        label_color_guess);
+*/
+
                 }
 
 // For weather polygons, we might want to draw the border color in a
@@ -2853,10 +2877,8 @@ clear_dangerous();
     numLayers = OGR_DS_GetLayerCount(datasourceH);
     for ( i=0; i<numLayers; i++ ) {
         OGRLayerH layerH;
-//        int jj;
-//        int numFields;
         OGRFeatureH featureH;
-//        OGRFeatureDefnH layerDefn;
+        OGRFeatureDefnH layerDefn;
         OGREnvelope psExtent;  
         int extents_found = 0;
         char geometry_type_name[50] = "";
@@ -3156,9 +3178,11 @@ int features_processed = 0;
 
 
 // Dump info about this layer
-/*
         layerDefn = OGR_L_GetLayerDefn( layerH );
         if (layerDefn != NULL) {
+            int jj;
+            int numFields;
+ 
             numFields = OGR_FD_GetFieldCount( layerDefn );
 
             fprintf(stderr,"  Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
@@ -3173,7 +3197,6 @@ int features_processed = 0;
             }
             fprintf(stderr,"\n");
         }
-*/
 
 
         // Restart reads of this layer at the first feature.
