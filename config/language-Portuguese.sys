@@ -656,6 +656,7 @@ WPUPMSB008|Mensagem:||
 WPUPMSB009|Enviar agora!||
 WPUPMSB010|Encaminhamento:||
 WPUPMSB011|Cancelar mensagens pendentes||
+WPUPMSB012|Kick Timer||
 #
 # Auto resposta
 WPUPARM001|Mudar resposta automatica||

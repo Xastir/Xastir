@@ -653,6 +653,7 @@ WPUPMSB008|Message:||
 WPUPMSB009|Send Now!||
 WPUPMSB010|Path:||
 WPUPMSB011|Cancel Pending Msgs||
+WPUPMSB012|Kick Timer||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Change Auto Reply||

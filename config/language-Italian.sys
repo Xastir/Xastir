@@ -652,6 +652,7 @@ WPUPMSB008|Messaggio:||
 WPUPMSB009|Invia ora!||
 WPUPMSB010|Percorso:||
 WPUPMSB011|Cancella Msg in attesa||
+WPUPMSB012|Kick Timer||
 #
 #Auto Reply
 WPUPARM001|Cambia risposta automatica||

@@ -651,6 +651,7 @@ WPUPMSB008|Message:||
 WPUPMSB009|Transmettre maintenant!||
 WPUPMSB010|Voie:||
 WPUPMSB011|Annuler messages en suspens||
+WPUPMSB012|Kick Timer||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Modifier réponse automatique||

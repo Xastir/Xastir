@@ -655,6 +655,7 @@ WPUPMSB008|Mensaje:||
 WPUPMSB009|Enviar ahora!||
 WPUPMSB010|Ruta:||
 WPUPMSB011|Cancel Pending Msgs||
+WPUPMSB012|Kick Timer||
 #
 # Auto Contestación
 WPUPARM001|Cambiar auto Contestación||

@@ -658,6 +658,7 @@ WPUPMSB008|Nachricht:||
 WPUPMSB009|Sende jetzt!||
 WPUPMSB010|Pfad:||
 WPUPMSB011|Wartende Nachrichten zurücknehmen||
+WPUPMSB012|Kick Timer||
 #
 # PopUp "Automatische Antwort"
 WPUPARM001|Automatische Antwort ändern||

@@ -389,6 +389,39 @@ void clear_outgoing_messages_to(char *callsign) {
 
 
 
+time_t last_check_and_transmit = (time_t)0l;
+
+
+// Kick the interval timer back to 7 and tries back to 1 for
+// messages in this QSO.  Used to get a QSO going again when the
+// interval timer has gotten large, but the message is important to
+// get through quickly.
+//
+void kick_outgoing_timer(char *callsign) {
+    int ii;
+
+
+//    fprintf(stderr,"Callsign: %s\n", callsign);
+
+    // Run through the entire outgoing message queue
+    for (ii = 0; ii < MAX_OUTGOING_MESSAGES; ii++) {
+
+        // If it matches the callsign we're talking to
+        if (strcasecmp(message_pool[ii].to_call_sign,callsign) == 0) {
+            message_pool[ii].next_time = (time_t)7l;
+            message_pool[ii].tries = 1;
+            message_pool[ii].active_time = (time_t)0l;
+        }
+    }
+
+    // Cause the transmit routine to get called again
+    last_check_and_transmit = (time_t)0l;
+}
+
+
+
+
+
 void reset_outgoing_messages(void) {
     int i;
 
@@ -423,20 +456,70 @@ end_critical_section(&send_message_dialog_lock, "messages.c:clear_outgoing_messa
 
 
 
+// Bumps message sequence ID up to the next value.
+//
+// Roll over message_counter if we hit the max.  Now with Reply/Ack
+// protocol the max is only two characters worth.  We changed to
+// sending the sequence number in Base-?? format in order to get
+// more range from the 2-character variable.
+//
+void bump_message_counter(void) {
+
+    message_counter[2] = '\0';  // Terminate at 2 chars
+
+    // Increment the least significant digit
+    message_counter[1]++;
+
+    // Span the gaps between the correct ranges
+    if (message_counter[1] == ':')
+        message_counter[1] = 'A';
+
+    if (message_counter[1] == '[')
+        message_counter[1] = 'a';
+
+    if (message_counter[1] == '{') {
+        message_counter[1] = '0';
+        message_counter[0]++;   // Roll over to next char
+    }
+
+    // Span the gaps between the correct ranges
+    if (message_counter[0] == ':')
+        message_counter[0] = 'A';
+
+    if (message_counter[0] == '[')
+        message_counter[0] = 'a';
+
+    if (message_counter[0] == '{') {
+        message_counter[0] = '0';
+        message_counter[0]++;
+    }
+}
+
+
+
+
+
 // Adds a message to the outgoing message queue.  Doesn't actually
 // cause a transmit.  "check_and_transmit_messages()" is the
 // function which actually gets things moving.
+//
+// We also stuff the message into the main message queue so that the
+// queued messages will appear in the Send Message box.
+//
 void output_message(char *from, char *to, char *message, char *path) {
     int ok,i,j;
     char message_out[MAX_MESSAGE_OUTPUT_LENGTH+1];
     int last_space, message_ptr, space_loc;
     int wait_on_first_ack;
     int error;
+    long record;
+
 
     message_ptr=0;
     last_space=0;
     ok=0;
     error=0;
+
     if (debug_level & 2)
         fprintf(stderr,"Output Message from <%s>  to <%s>\n",from,to);
 
@@ -483,40 +566,8 @@ void output_message(char *from, char *to, char *message, char *path) {
                 /* found a spot */
                 ok=1;
 
-                // Roll over message_counter if we hit the max.  Now
-                // with Reply/Ack protocol the max is only two
-                // characters worth.  We changed to sending the
-                // sequence number in Base-?? format in order to get
-                // more range from the 2-character variable.
-
-                message_counter[2] = '\0';  // Terminate at 2 chars
-
-                // Increment the least significant digit
-                message_counter[1]++;
-
-                // Span the gaps between the correct ranges
-                if (message_counter[1] == ':')
-                    message_counter[1] = 'A';
-
-                if (message_counter[1] == '[')
-                    message_counter[1] = 'a';
-
-                if (message_counter[1] == '{') {
-                    message_counter[1] = '0';
-                    message_counter[0]++;   // Roll over to next char
-                }
-
-                // Span the gaps between the correct ranges
-                if (message_counter[0] == ':')
-                    message_counter[0] = 'A';
-
-                if (message_counter[0] == '[')
-                    message_counter[0] = 'a';
-
-                if (message_counter[0] == '{') {
-                    message_counter[0] = '0';
-                    message_counter[0]++;
-                }
+                // Increment the message sequence ID variable
+                bump_message_counter();
 
 
 // Note that Xastir's messaging can lock up if we do a rollover and
@@ -574,6 +625,29 @@ void output_message(char *from, char *to, char *message, char *path) {
                     message_pool[i].tries = 0;
                 else
                     message_pool[i].tries = MAX_TRIES-1;
+
+                // Cause the message to get added to the main
+                // message queue as well, with the proper sequence
+                // number, so queued messages will appear in the
+                // Send Message box as unacked messages.
+                //
+
+// We must get rid of the lock we already have for a moment, as
+// update_messages(), which is called by msg_data_add(), also snags
+// this lock.
+end_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
+
+                msg_data_add(to,
+                    from,
+                    message,
+                    message_pool[i].seq,
+                    MESSAGE_MESSAGE,
+                    'L',    // From the Local system
+                    &record);
+
+// Regain the lock we had before
+begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
+
             }
         }
         if(!ok) {
@@ -645,8 +719,6 @@ void transmit_message_data(char *to, char *message, char *path) {
 
 
 
-time_t last_check_and_transmit = (time_t)0l;
-
 void check_and_transmit_messages(time_t time) {
     int i;
     char temp[200];
@@ -661,7 +733,7 @@ void check_and_transmit_messages(time_t time) {
 
     for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
-            if (message_pool[i].wait_on_first_ack!=1) {
+            if (message_pool[i].wait_on_first_ack!=1) { // Tx only if 0
                 if (message_pool[i].active_time < time) {
                     char *last_ack_ptr;
                     char last_ack[5+1];
@@ -717,6 +789,12 @@ void check_and_transmit_messages(time_t time) {
                         //fprintf(stderr,"%d\n",(int)message_pool[i].next_time);
                     }
 
+fprintf(stderr,
+    "Msg Interval = %3ld seconds or %4.1f minutes\n",
+    message_pool[i].next_time,
+    message_pool[i].next_time / 60.0);
+
+
                     // Start at 7 seconds for the interval.  We set
                     // it to 7 seconds in output_message() above.
                     // Double the interval each retry until we hit
@@ -729,6 +807,13 @@ void check_and_transmit_messages(time_t time) {
                     // Limit the max interval to 10 minutes
                     if (message_pool[i].next_time > (time_t)600l)
                         message_pool[i].next_time = (time_t)600l;
+
+/*
+// WE7U:  DEBUG
+// Limit the max interval to 5 minutes
+if (message_pool[i].next_time > (time_t)300l)
+    message_pool[i].next_time = (time_t)300l;
+*/
 
                     message_pool[i].tries++;
 
@@ -808,7 +893,13 @@ void clear_acked_message(char *from, char *to, char *seq) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
 
             if (debug_level & 1)
-                fprintf(stderr,"TO <%s> <%s> from <%s> <%s> seq <%s> <%s>\n",to,message_pool[i].to_call_sign,from,message_pool[i].from_call_sign,seq,message_pool[i].seq);
+                fprintf(stderr,
+                    "TO <%s> <%s> from <%s> <%s> seq <%s> <%s>\n",
+                    to,
+                    message_pool[i].to_call_sign,
+                    from,
+                    message_pool[i].from_call_sign,seq,
+                    message_pool[i].seq);
 
             if (strcmp(message_pool[i].to_call_sign,from)==0) {
                 if (debug_level & 1)
