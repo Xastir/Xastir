@@ -2840,4 +2840,47 @@ void curl_getfile(char *fileimg, char *local_filename) {
             return;
         }
 }        
-#endif
+#endif  //HAVE_LIBCURL
+
+
+
+
+
+// Breaks up a string into substrings using comma as the delimiter.
+// Makes each entry in the array of char ptrs point to one
+// substring.  Modifies incoming string and cptr[] array.  Send a
+// character constant string to it and you'll get an instant
+// segfault (can't modify it).
+//
+void split_string( char *data, char *cptr[], int max ) {
+  int ii;
+  char *temp;
+  char *current = data;
+
+
+  // NULL each char pointer
+  for (ii = 0; ii < max; ii++) {
+    cptr[ii] = NULL;
+  }
+
+  // Save the beginning substring address
+  cptr[0] = current;
+
+  for (ii = 1; ii < max; ii++) {
+    temp = strchr(current,',');  // Find next comma
+
+    if(!temp) { // No commas found 
+      return; // All done with string
+    }
+
+    // Store pointer to next substring in array
+    cptr[ii] = &temp[1];
+    current  = &temp[1];
+
+    // Overwrite comma with end-of-string char and bump pointer by
+    // one.
+    temp[0] = '\0';
+  }
+}
+
+
