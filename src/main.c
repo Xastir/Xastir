@@ -78,6 +78,7 @@
 #include "bulletin_gui.h"
 #include "rotated.h"
 #include "datum.h"
+#include "igate.h"
 
 
 #include <Xm/XmAll.h>
@@ -16601,6 +16602,7 @@ int main(int argc, char *argv[], char *envp[]) {
     (void)track_gui_init();
     (void)view_message_gui_init();
     (void)wx_gui_init();
+    (void)igate_init();
 
     clear_all_port_data();                              // clear interface port data
 

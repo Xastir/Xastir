@@ -9330,6 +9330,9 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 /*printf("Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); { */
                 shorten_path(path,short_path);
                 xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
+
+//printf("Attempting to send ACK to RF\n");
+
                 output_igate_rf(call,addr,path,ipacket_message,port,third_party);
                 igate_msgs_tx++;
             }
@@ -9508,6 +9511,9 @@ else {
                         call,addr);*/     // {
             shorten_path(path,short_path);
             xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s{%s",call,short_path,my_callsign,addr9,message,msg_id);
+
+//printf("Attempting to send message to RF\n");
+
             output_igate_rf(call,addr,path,ipacket_message,port,third_party);
             igate_msgs_tx++;
         }
@@ -10598,6 +10604,12 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     if (ok && info[0] == '}') {                                 // look for third-party traffic
         ok = extract_third_party(call,path,&info,origin);       // extract third-party data
         third_party = 1;
+
+//WE7U
+        // Add it to the HEARD queue for this interface.  We use this
+        // for igating purposes.  If some other igate beat us to this
+        // packet, we don't want to duplicate it over the air.
+        insert_into_heard_queue(port, backup);
     }
 
     if (ok && (info[0] == ';' || info[0] == ')')) {             // look for objects or items
