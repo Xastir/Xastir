@@ -412,6 +412,12 @@ Keep trying the failed commands until they succeed!  Notice that
 up-arrow (on the keyboard) and then <ENTER> will repeat the last
 command, saving you some typing.
 
+Every once in a while Windows will refuse to allow you to
+delete/rename one of the files.  The only way I've found to get
+around this problem is to reboot.  I sometimes see this when trying
+to do a CVS update, and Windows won't allow one or more files to get
+updated.
+
 Repeat step 6) above to recompile/reinstall the latest Xastir.
 
 
