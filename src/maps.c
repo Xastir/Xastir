@@ -373,10 +373,11 @@ int convert_to_xastir_coordinates ( unsigned long* x,
 
 
 // Draws a vector onto a pixmap.  Assumes that the proper GC has
-// already been set up for drawing the correct color/width/etc.
-// Input points are in the Xastir coordinate system.  If the
-// bounding box containing the vector doesn't intersect with the
-// current view, the line isn't drawn.
+// already been set up for drawing the correct color/width/linetype,
+// etc.  If the bounding box containing the vector doesn't intersect
+// with the current view, the line isn't drawn.
+//
+// Input points are in the Xastir coordinate system.
 //
 void draw_vector(Widget w,
                  unsigned long x1,
@@ -391,9 +392,12 @@ void draw_vector(Widget w,
 
     // Check whether the two bounding boxes intersect.  If not, skip
     // the rest of this function.  Do we need to worry about
-    // vertical/horizontal lines here (width or length of zero)?
+    // special-case code here to handle vertical/horizontal lines
+    // (width or length of zero)?
+    //
     if (!map_visible(y1, y2, x1, x2)) {
         if (!map_visible(y2, y1, x2, x1)) {
+            // Skip this vector
 fprintf(stderr,"Line not visible\n");
             return;
         }
@@ -419,8 +423,8 @@ fprintf(stderr,"Line not visible\n");
     // (shorts).  Make sure we stay within the limits.
 
 // We should truncate the line along the line, instead of changing
-// the endpoint.  The way we're doing it is easier, but it changes
-// the slope of the line.
+// the endpoint.  The way we're doing it here is easier/faster, but
+// it changes the slope of the line.  Not accurate.
 
     if (x1i >  16000) x1i =  10000;
     if (x1i < -16000) x1i = -10000;
@@ -448,18 +452,35 @@ fprintf(stderr,"Line not visible\n");
 
 
 // Draws a vector onto a pixmap.  Assumes that the proper GC has
-// already been set up for drawing the correct color/width/etc.
-// Input points are in lat/long.
+// already been set up for drawing the correct color/width/linetype,
+// etc.
 //
-//void draw_vector_ll(float x1,
-//                    float y1,
-//                    float x2,
-//                    float y2,
-//                    GC gc,
-//                    pixmap which_pixmap)
+// Input points are in lat/long coordinates.
+//
+void draw_vector_ll(Widget w,
+                    float y1,   // lat1
+                    float x1,   // long1
+                    float y2,   // lat2
+                    float x2,   // long2
+                    GC gc,
+                    Pixmap which_pixmap) {
 
-//    draw_vector(x1, y1, x2, y2, gc, which_pixmap);
-//}
+    unsigned long x1L, x2L, y1L, y2L;
+
+    // Convert the points to the Xastir coordinate system.
+    convert_to_xastir_coordinates(&x1L,
+        &y1L,
+        x1,
+        y1);
+
+    convert_to_xastir_coordinates(&x2L,
+        &y2L,
+        x2,
+        y2);
+
+    // Call the draw routine.
+    draw_vector(w, x1L, y1L, x2L, y2L, gc, which_pixmap);
+}
 
 
 
@@ -826,16 +847,9 @@ void draw_grid(Widget w) {
         // degrees and try again.  After we draw 72N, increment by
         // 12 degrees and draw a line at 84N.
 
-// Draw labels for each UTM zone?
-
-
-
-
-// Need to draw a horizontal line at each pole, if in the view.
-
-
-// Here we'll draw the subzone (lettered) lines, which are
-// horizontal.
+// Test vectors
+//draw_vector(w, 0l, 0l, 129600000l, 64800000l, gc, pixmap_final);
+//draw_vector_ll(w, -90.0, -180.0, 90.0, 180.0, gc, pixmap_final);
 
     }
     else { // Not UTM coordinate system, draw some lat/long lines
