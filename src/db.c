@@ -2703,7 +2703,8 @@ _do_the_drawing:
                 p_station->aprs_symbol.area_object.type,
                 p_station->signpost,
                 p_station->probability_min,
-                p_station->probability_max);
+                p_station->probability_max,
+                1); // Increment "currently_selected_stations"
 
 
     // Draw other points associated with the station, if any.

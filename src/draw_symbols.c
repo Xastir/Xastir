@@ -1999,10 +1999,12 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
 
 
 // Speed is in converted units by this point (kph or mph)
-void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay, long x_long,long y_lat,
-        char *callsign_text, char *alt_text, char *course_text, char *speed_text, char *my_distance,
-        char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, int temp_show_last_heard,
-        Pixmap where, char orient, char area_type, char *signpost, char *pmin, char *pmax) {
+void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay,
+        long x_long,long y_lat, char *callsign_text, char *alt_text, char *course_text,
+        char *speed_text, char *my_distance, char *my_course, char *wx_temp,
+        char* wx_wind, time_t sec_heard, int temp_show_last_heard, Pixmap where,
+        char orient, char area_type, char *signpost, char *pmin, char *pmax,
+        int bump_count) {
 
     long x_offset,y_offset;
     int length;
@@ -2019,7 +2021,8 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                     y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
                     ghost = (int)(((sec_old+sec_heard)) < sec_now());
 
-                    currently_selected_stations++;
+                    if (bump_count)
+                        currently_selected_stations++;
 
                     if (Display_.symbol)
                          symbol(w,ghost,symbol_table,symbol_id,symbol_overlay,where,1,x_offset,y_offset,orient);
@@ -2811,7 +2814,8 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
             p_station->aprs_symbol.area_object.type,
             p_station->signpost,
             "",
-            "");
+            "",
+            0); // Don't bump the station count
     }
 }
 
