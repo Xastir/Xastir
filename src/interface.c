@@ -2821,38 +2821,47 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                         comment);
                 }
                 else {
+
                     // Not a measurement unit.  Print out something
                     // about what we found.
                     fprintf(stderr,
                         "Unknown Element Type, ");
 
-                    // Provide more data if known.
-                    if ((etype & 0xfff0) == 0x000) {
-                        fprintf(stderr, "Classification: Stream Control\n");
+                    // Provide more data about the class of element
+                    // if we can, even if we don't know the specific
+                    // element type.
+                    //
+                    if (     (etype & 0xfff0) == 0x0000) {
+                        fprintf(stderr, "Class: Stream Control\n");
                     }
-                    else if ((etype & 0xfff0) == 0x10) {
-                        fprintf(stderr, "Classification: Common Attribute\n");
+                    else if ((etype & 0xfff0) == 0x0010) {
+                        fprintf(stderr, "Class: Common Attribute\n");
                     }
-                    else if ((etype & 0xfff0) == 0x20) {
-                        fprintf(stderr, "Classification: Network Information\n");
+                    else if ((etype & 0xfff0) == 0x0020) {
+                        fprintf(stderr, "Class: Network Information\n");
                     }
-                    else if ((etype & 0xfff0) == 0x30) {
-                        fprintf(stderr, "Classification: ??\n");
+//                    else if ((etype & 0xfff0) == 0x0030) {
+//                        fprintf(stderr, "Class: ??\n");
+//                    }
+                    else if ((etype & 0xfff0) == 0x0040) {
+                        fprintf(stderr, "Class: Weather\n");
                     }
-                    else if ((etype & 0xfff0) == 0x40) {
-                        fprintf(stderr, "Classification: Weather\n");
+//                    else if ((etype & 0xfff0) == 0x0050) {
+//                        fprintf(stderr, "Class: ??\n");
+//                    }
+                    else if ((etype & 0xff00) == 0x0100) {
+                        fprintf(stderr, "Class: Status Flags\n");
                     }
-                    else if ((etype & 0xff00) == 0x100) {
-                        fprintf(stderr, "Classification: Reserved for Status Flags\n");
-                    }
-                    else if ((etype & 0xff00) == 0x200) {
-                        fprintf(stderr, "Classification: Incident Command System\n");
+                    else if ((etype & 0xff00) == 0x0200) {
+                        fprintf(stderr, "Class: Incident Command System\n");
                     }
                     else if ((etype & 0xff00) == 0xf000) {
-                        fprintf(stderr, "Classification: Experimental\n");
+                        // Note:  0xffff Null element is caught in
+                        // before we get to here.
+                        fprintf(stderr, "Class: Experimental\n");
                     }
                     else {
-                        fprintf(stderr, "Classification: Unknown\n");
+                        fprintf(stderr, "Class: Unknown\n");
                     }
                 }
                 break;
