@@ -887,14 +887,15 @@ void draw_grid(Widget w) {
 
 //WE7U
 // It appears that the horizontal grid lines get messed up in cases
-// where the top horizontal line doesn't make it all the way across
-// the screen before it goes out of view.  That's a major clue!
-// Looks like the left end of the grid line being above the current
-// view is concurrent with the problem showing up.
-// Actually, read the comment below (again with a "WE7U" tag).  It
-// appears that the problem occurs at the point where we copy the
-// last point from the previous grid over to the first point of a
-// new grid.  That can cause us to be off by one.
+// where the top horizontal line isn't in view on it's left end.
+// That's a major clue!  Read the comment below (again with a "WE7U"
+// tag).  The problem occurs at the point where we copy the last
+// point from the previous grid over to the first point of a new
+// grid.  That can cause us to be off by one, as for the grid on the
+// left, the top horizontal line _is_ in view on the left.  We end
+// up connecting the wrong horizontal lines together because of this
+// mismatch, but again, only if the top horizontal line on the left
+// grid is above the current view.
 //
 // It also appears that the vertical lines that are missing in some
 // cases are on the right of the zone boundary.  This is probably
@@ -902,7 +903,7 @@ void draw_grid(Widget w) {
 // On views where it does, the line is drawn.  I assume this is
 // because we're drawing from NW corner to the right, and then down,
 // which would cause that line to be skipped if it's not present on
-// the first line.
+// the first line?
 
 
         e[1] = e[0];
@@ -1093,12 +1094,13 @@ void draw_grid(Widget w) {
                         // copy over last points to start off new
                         // zone
 
-//WE7U:  This is where we can end up linking up/down one grid width
-//between zones!!!  Without it though, we end up have a blank
-//section to the right of the zone boundary.  Perhaps we could do
-//this here, but when we get the next points calculated, we could
-//check to see if we're off by about one grid width in the vertical
-//direction.  If so, shift the initial point by that amount?
+//WE7U
+// This is where we can end up linking up/down one grid width
+// between zones!!!  Without it though, we end up have a blank
+// section to the right of the zone boundary.  Perhaps we could do
+// this here, but when we get the next points calculated, we could
+// check to see if we're off by about one grid width in the vertical
+// direction.  If so, shift the initial point by that amount?
 
 #ifdef UT_DEBUG
                         fprintf(stderr,"ztm_grid.zone[%d].row[%d].point[%d] =  [ %ld,%ld ]\n",
