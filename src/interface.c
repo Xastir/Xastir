@@ -310,6 +310,8 @@ int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
     char *addrp;
     int n = 0;
     int argp = 0;
+    int len = 0;
+    int star = 0;
 
     addrp = sax->fsa_ax25.sax25_call.ax25_call;
 
@@ -322,12 +324,22 @@ int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
 	if (n == 1 && (strcasecmp(bp, "V") == 0 || strcasecmp(bp, "VIA") == 0))
 	    continue;
 
-	/* Process the token */
-	if (ax25_aton_entry(bp, addrp) == -1)
-	    return -1;
+	/* Process the token (Removes the star before the ax25_aton_entry call
+           because it would call it a bad callsign.) */
+	len = strlen(bp);
+	if (len > 1 && bp[len-1] == '*') {
+	    star = 1;
+	    bp[len-1] = '\0';
+	}
 	else {
-	    if (n >= 1 && index(bp, '*'))
-		addrp[6] |= 0x80; // set digipeated bit
+	    star = 0;
+	}
+	if (ax25_aton_entry(bp, addrp) == -1) {
+	    popup_message("Bad callsign!", bp);
+	    return -1;
+	}
+	if (n >= 1 && star) {
+	    addrp[6] |= 0x80; // set digipeated bit if we had found a star
 	}
 
 	n++;
