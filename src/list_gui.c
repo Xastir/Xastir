@@ -782,10 +782,29 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
 
                         XtManageChild(SL_wx_hum[type][row]);
 
-                        if (strlen(weather->wx_baro) > 0)
-                            XmTextFieldSetString(SL_wx_baro[type][row],weather->wx_baro);
-                        else
+//WE7U
+// Change this to inches mercury when English Units is selected
+                        if (strlen(weather->wx_baro) > 0) {
+                            if (!units_english_metric) {    // hPa
+                                XmTextFieldSetString(SL_wx_baro[type][row],
+                                    weather->wx_baro);
+                            }
+                            else {  // Inches Mercury
+                                float temp;
+                                char temp2[15];
+
+                                temp = atof(weather->wx_baro)*0.02953;
+                                xastir_snprintf(temp2,
+                                    sizeof(temp2),
+                                    "%0.2f",
+                                    temp);
+                                XmTextFieldSetString(SL_wx_baro[type][row],
+                                    temp2);
+                            }
+                        }
+                        else {
                             XmTextFieldSetString(SL_wx_baro[type][row],"");
+                        }
 
                         XtManageChild(SL_wx_baro[type][row]);
 
