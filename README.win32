@@ -5,31 +5,32 @@ $Id$
 Installing Xastir on Windows/Cygwin:
 ------------------------------------
 
-Please Note:  It's beneficial to actually log in to your Windows box
-rather than skipping that step of the Windows login process (Don't
-hit escape just to get rid of the dialog!).  If you log into Windows
-properly, Cygwin will be able to figure out where to put your home
-directory.  If you don't do this, you'll be referred to as "unknown"
-and you won't have a home directory in Cygwin.  This means there
-won't be a good place to put your Xastir startup files.  Of course,
-log in as the same user each time in order for Cygwin to use the
-proper home directory for you.
+Please Note:  It's beneficial to actually log in to your Windows
+computer rather than skipping that step of the Windows login process
+(Don't hit escape just to get rid of the dialog!).  If you log into
+Windows properly, Cygwin will be able to figure out where to put your
+home directory.  If you don't do this, you'll be referred to as
+"unknown" and you won't have a home directory in Cygwin.  This means
+there won't be a good place to put your Xastir startup files.  Of
+course, log in as the same user each time in order for Cygwin to use
+the proper home directory for you.
 
-Explanation of this login box, for those that don't see it:  If you have
-the option of running networking, you'll have a login box show up when you
-first start up Windows.  It'll ask for you user name and password, then let
-you in.  If you escape out of that dialog, Windows may start right up but
-networking will be disabled.
+Explanation of this login box, for those that don't see it:  If you
+have the option of running networking, you'll have a login box show
+up when you first start up Windows.  It'll ask for you user name and
+password, then let you in.  If you escape out of that dialog, Windows
+may start right up but networking will be disabled.
 
-If you don't see that box, there are two options that I know about, either
-you or someone else set it up to auto-login with your user/password combo,
-or you don't have networking installed at all.
+If you don't see that box, there are two options that I know about,
+either you or someone else set it up to auto-login with your user/
+password combo, or you don't have networking installed at all.
 
-The following steps direct you through installing Cygwin, Xastir,
-and a few optional map libraries that Xastir can use.  Note that in
-most of the places below where the directions state to type
-commands, this must be done from within a Cygwin bash shell, not a
-DOS window.
+The following steps direct you through installing Cygwin, Xastir, and
+a few optional map libraries that Xastir can use.  Note that in most
+of the places below where the directions state to type commands, this
+must be done from within a Cygwin bash shell, not a DOS window.
+Where you are asked to edit files, it's best to use Wordpad instead
+of Notepad, as Notepad doesn't do nice things to Unix-format files.
 
 
 Step 1)  Install Cygwin, a free download.
@@ -97,15 +98,17 @@ click on the '+' symbols to the left of the various categories.
 Clicking on the small circle with the two arrows will run you
 through the various select/de-select options for each package.
 
+
 Step 1d)  Click Next and the packages will get downloaded/installed.
 Repeat the above if you have network difficulties, until the install
 succeeds.
 
 
 Step 1e)  At the end of the install it'll ask you if you wish to
-create desktop links.  Select these items to create an icon
-(Black/Green Cygwin icon) and a menu entry.  Click "Finish".  Cygwin
-is now installed.
+create desktop icons and menu entries.  Definitely select these!
+They will create a Black/Green Cygwin icon on the desktop and a
+menu entry so that you can start Cygwin that way as well.  Click
+"Finish".  Cygwin is now installed.
 
 
 Step 2)  Create customized startup script for X:
@@ -137,16 +140,18 @@ programs.
 Type "./go.bat &".  You should get a large window with a smaller
 shell window displayed on it.  If you right-click on the background
 (outside the smaller window), you should see a menu.  Select "Exit
-FVWM" to make the large window go away, or click on the "X" in the
-corner of the window.
+FVWM" to make the large window go away (although that doesn't always
+work for me), or click on the "X" in the upper right corner of the
+window.
 
 Type "exit" and then press <Enter> to make the Cygwin
-window disappear.
+window itself disappear.
 
 
 Step 4)  Create a file at C:\cygwin\home\<user>\ called ".cvsrc",
-where the "<user>" part is your Windows login name.  For instance, I
-created a file:  "C:\cygwin\home\hacker\.cvsrc".  The file should
+where the "<user>" part is your Windows login name.  Don't forget
+the leading period in the filename as it's important.  For instance,
+I created a file:  "C:\cygwin\home\hacker\.cvsrc".  The file should
 contain the following lines:
 
     cvs -z3
@@ -154,15 +159,17 @@ contain the following lines:
     status -v
 
 
-Step 5)  Download Xastir sources.  Start up a Cygwin shell
-(black/green icon).  Type the commands below into the shell exactly.
-Hit <ENTER> when asked for a password:
+Step 5)  Download Xastir sources.  Start up a Cygwin shell (black/
+green icon).  Type the five lines below into the shell exactly as
+shown.
 
-    cd ~
-    mkdir src
-    cd src
-    cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
-    cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
+Hit <ENTER> when asked for a password during the last command:
+
+  cd ~
+  mkdir src
+  cd src
+  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
+  cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
 If you keep seeing "EOF" at the end of a short error message, it
 means that the anonymous CVS server at SourceForge is overloaded.
@@ -302,7 +309,7 @@ Fetch "shapelib-1.2.9.tar.gz" from here:
 
     http://gdal.velocet.ca/projects/shapelib/index.html
 
-Put it in the C:\cygwin\home\<user>\shapelib directory.  Untar it
+Put it in the C:\cygwin\home\<user>\src\shapelib directory.  Untar it
 from the Cygwin shell window:
 
     cd ~/src/shapelib
@@ -327,10 +334,17 @@ from this line:
 
 then try "make lib" and make "lib_install" again.
 
-Edit or create your .profile file in your home directory.  It
-appears that Cygwin uses the PATH variable to look for both binaries
-and libraries.  Add this line to the file (create the "~/.profile"
-file if the file doesn't exist):
+Edit or create your .profile file in your home directory.
+
+NOTE:  Your "home" directory would be at "C:\cygwin\<user>\" if you
+installed Cygwin in the default location.  From inside a Cygwin
+window you can get to your home directory just by typing "cd" and
+then pressing <Enter>.  When you see things like "~/.profile" it is
+really referring to the file ".profile" in your home directory (~).
+
+It appears that Cygwin uses the PATH variable to look for both
+binaries and libraries.  Add this line to the file (create the
+"~/.profile" file if the file doesn't exist):
 
     export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib
 
