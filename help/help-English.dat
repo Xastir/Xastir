@@ -295,7 +295,7 @@ New Track Time adjusts how many minutes must elapse before a new
 separate track is started.
 
 RINO -> Objects Interval adjusts how often waypoints are downloaded from an
-attached Garmin RINO radio/GPS unit.  APRS Objects are created out of any
+attached Garmin RINO radio/GPS unit.  APRS(tm) Objects are created out of any
 waypoints beginning with "APRS".  The "APRS" prefix is removed when creating
 the Object names.
 
@@ -941,7 +941,7 @@ HELP-INDEX>Map files and WX Counties
 
 Map Types
 Xastir will work with various types of map files. All DosAPRS, Windows/Mac
-APRS(TM) map files are supported, as well as PocketAPRS format maps and GNIS
+APRS(tm) map files are supported, as well as PocketAPRS format maps and GNIS
 (Geographic Names Information System) label files.  Xastir also can be
 compiled to use external libraries to support XPixmap (XPM) images, GeoTIFF
 topographic maps, and ESRI Shapefile maps.  The graphics handling capability
@@ -1339,7 +1339,7 @@ Clear Object/Item History
 This will clear the ~/.xastir/config/objects.log file used for Object and Item
 persistence. It is recommended that you manually select and delete all Objects
 and Items that you own before doing this, otherwise they may remain on the
-screens of other APRS users.
+screens of other APRS(tm) users.
 
 Clear All Tactical Calls
 Clears all assigned tactical calls. This will take effect the next redraw.
@@ -1461,13 +1461,13 @@ configuration menus as well.
 
 Enable Server Port
 This enables/disables a listening socket at port 2023.  You may connect other
-APRS clients to that port in order to send/receive APRS data.  Once they
+APRS(tm) clients to that port in order to send/receive APRS(tm) data.  Once they
 authenticate, they'll be able to send data to Xastir.  Without authentication,
 they'll be able to receive every bit of TNC and INET data that Xastir receives.
 
     "user WE7U-13 pass XXXX vers XASTIR 1.3.3"
 
-Connect another APRS client to that port and it should authenticate
+Connect another APRS(tm) client to that port and it should authenticate
 and be able to send to any server that Xastir is connected to, as
 well as receive packets from all ports/servers Xastir is hooked to.
 
@@ -1489,7 +1489,7 @@ Fetch GPS Waypoints
 Download a set of waypoints from an attached GPS.
 
 Fetch Garmin RINO Waypoints
-Snag waypoints from an attached Garmin RINO, create APRS Objects out of any
+Snag waypoints from an attached Garmin RINO, create APRS(tm) Objects out of any
 waypoints which begin with "APRS".
 
 HELP-INDEX>Station info box - FCC and RAC lookup
@@ -2385,7 +2385,7 @@ HELP-INDEX>What was new in Xastir 1.2
                     What was new in Xastir 1.2
 
 The latest Xastir release adds numerous new capabilities, keeping Xastir a
-benchmark for APRS programs on any operating system.
+benchmark for APRS(tm) programs on any operating system.
 
 Xastir's hardware support has been enhanced, with
 * Support for Serial KISS TNC's
@@ -2443,12 +2443,12 @@ Other smaller interface changes include:
 * The status bar can display the course/distance to your station when
   enabled in the file|configure menu.
 * Range scales are now shown opposite the map scale. This is an attempt to
-  standardize various APRS client approaches to zoom levels.
+  standardize various APRS(tm) client approaches to zoom levels.
 
 New additions under-the-hood:
 * Tracked proximity alarms.
 * Export waypoints within proximity boundaries.  Your GPS can show
-  you the locations of APRS stations as waypoints on the GPS map
+  you the locations of APRS(tm) stations as waypoints on the GPS map
   screen.
 * Export trail as ESRI Shapefile.  New feature if you have Shapelib
   compiled in.  Station Info->Store Track button also creates a

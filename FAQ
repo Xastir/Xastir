@@ -15,7 +15,7 @@ The Questions
     1.1 What is Xastir?
     1.2 How and why was Xastir created?
     1.3 Why the name "Xastir"?
-    1.4 OK, so how does Xastir compare to other APRS clients?
+    1.4 OK, so how does Xastir compare to other APRS(tm) clients?
     1.5 How thoroughly tested is Xastir?
     1.6 Whom do I contact for support?
     1.7 Where can I submit Bug reports or feature requests?
@@ -100,14 +100,14 @@ The Answers
     1.1 What is Xastir?
 
 
-    Xastir is an APRS client program that uses amateur radio and Internet
+    Xastir is an APRS(tm) client program that uses amateur radio and Internet
     services to convey GPS mapping, weather, and positional data in a graphical
     application.  It has been developed by and for amateur radio enthusiasts to
     provide real-time data in an easy to use package.
 
     1.2 How and why was Xastir created?
 
-    There were already several APRS client programs available to the
+    There were already several APRS(tm) client programs available to the
     Mac/DOS world when Frank Giannandrea, KC2GJS decided to develop
     a Unix client using X Window's and the Motif/LessTiff widget set.
     From its meager beginnings, Xastir is now a very robust client that
@@ -118,12 +118,12 @@ The Answers
     Xastir is an acronym for X Amateur Station Tracking and Information
     Reporting.  Besides it sounds much cooler that those other names ;)
 
-    1.4 OK, so how does Xastir compare to other APRS clients?
+    1.4 OK, so how does Xastir compare to other APRS(tm) clients?
 
     Being actively developed by and for Hams, Xastir is constantly being
-    improved upon to reflect the changing state of APRS.  Xastir has all
-    the functionality you would find in any other APRS client, from any
-    OS, and quite possibly some unique features.
+    improved upon to reflect the changing state of APRS(tm).  Xastir has
+    all the functionality you would find in any other APRS(tm) client,
+    from any OS, and quite possibly some unique features.
 
     1.5 How thoroughly tested is Xastir?
 
@@ -482,7 +482,7 @@ The Answers
     settings. "Select Stations" and "Display Symbols" must be selected.
 
     If you are using an older version of Xastir, Qxx packets are considered
-    invalid. This is a newer addition to APRS, and recent Xastir releases
+    invalid. This is a newer addition to APRS(tm), and recent Xastir releases
     decode this correctly.
 
     4.6 Who is this APX112 guy who all my stuff is getting sent to? Who are
@@ -496,7 +496,7 @@ The Answers
     unconnected protocol, where you broadcast UI (unnumbered information)
     packets to the world. Since these packets aren't directed toward a
     specific user, the TO address of the packet is simply a summary of the
-    software you're running. AP=APRS, X=X Windowing System, 110=Version 1.10.
+    software you're running. AP=APRS(tm), X=X Windowing System, 110=Version 1.10.
     RELAY, WIDE, and TRACE are aliases for generic digipeaters. Most base
     stations have (or should have!) their TNC's configured to digipeat with the
     call of RELAY. Very large stations should be set up as WIDE's. Newer
@@ -826,6 +826,8 @@ The Answers
     digi_ned.
 
 ----------------------------------------------------------------
+
+APRS(tm) is a Trademark of Bob Bruninga
 
 If you find other problems, or would like to point out other caveats to add to
 this FAQ, please point them out to the developers on the Xastir-dev mailing

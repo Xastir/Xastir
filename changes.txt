@@ -535,5 +535,5 @@ of FREE Alpha version software!
 
 
 
-APRS[tm] is a Trademark of Bob Bruninga, 
+APRS(tm) is a Trademark of Bob Bruninga,
 his home page is at "http://web.usna.navy.mil/~bruninga/aprs.html"

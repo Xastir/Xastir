@@ -613,7 +613,7 @@ port.  In the "File->Configure->Timing" dialog you'll see an option
 for "RINO -> Objects Interval".  That sets the interval at which
 Xastir will download waypoints from an attached RINO unit.  Any
 waypoints that begin with "APRS" will have the "APRS" chopped off,
-and the remaining name will be used to create APRS Objects.  Those
+and the remaining name will be used to create APRS(tm) Objects.  Those
 objects will be plotted on the map and transmitted as well if
 transmit for objects/items is enabled.
 TBD
@@ -658,7 +658,6 @@ Anything else?  Let's hear about what's still confusing or needs to
 be expanded in this document.  Thanks!
 
 
+APRS(tm) is a Trademark of Bob Bruninga
 
 Copyright (C) 2005 The Xastir Group
-
-

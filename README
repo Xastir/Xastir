@@ -37,7 +37,7 @@ README
      (1) WHAT IS XASTIR?
 
           Xastir is an open-source project to create a free X11 graphical
-          APRS(tm) client. APRS use amateur radio and Internet services to
+          APRS(tm) client. APRS(tm) use amateur radio and Internet services to
           convey GPS mapping, weather, and positional data in a graphical
           application.  It has been developed by and for amateur radio
           enthusiasts to provide real-time data in an easy to use package.
@@ -363,8 +363,8 @@ README
       - added  #include <sys/modem.h> to interface.h
 
 
-      Current status:  It runs, but it seg-faults when connected to an APRS IS
-      server.
+      Current status:  It runs, but it seg-faults when connected to an APRS(tm)
+      IS server.
 
         END OF HP/UX NOTES.
       -----------------------------------------------------------------------
@@ -483,6 +483,8 @@ README
 
 
   ------------------------------------------------------------------------
+APRS(tm) is a Trademark of Bob Bruninga
+
 Copyright (C) 1999 Frank Giannandrea
 Copyright (C) 2000-2005 The Xastir Group
 

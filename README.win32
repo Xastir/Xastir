@@ -442,7 +442,7 @@ Click on the shortcut you created to start Xwindows.
 From the resulting BASH window, type "xastir &".  Xastir should
 start up shortly.
 
-Note:  Xastir has support for pocketAPRS, dosAPRS, WinAPRS, MacAPRS
+Note:  Xastir has support for PocketAPRS, DosAPRS, WinAPRS, MacAPRS
 and GNIS maps by default.  For additional types of maps, you'll need
 to install some libraries, then recompile Xastir so that it knows to
 use them.  See the instructions below.
@@ -450,7 +450,7 @@ use them.  See the instructions below.
 The README.MAPS file has instructions for where to get maps and where
 to put them under the Xastir hierarchy.
 
-If you have any WinAPRS, dosAPRS, or pocketAPRS maps, now is a good
+If you have any WinAPRS, DosAPRS, or PocketAPRS maps, now is a good
 time to place them in the /cygwin/usr/local/share/xastir/maps folder
 (or a subdirectory of it).  You can also use "*.geo" files and the
 associated image files with Xastir.  You may place them in this
@@ -1212,6 +1212,7 @@ support for it into Xastir.  Follow with the rest of the commands to
 make/install Xastir.
 
 
+APRS(tm) is a Trademark of Bob Bruninga
 
 Copyright (C) 2003-2005 The Xastir Group
 

@@ -918,9 +918,9 @@ First Time Install:
      If you have a Garmin RINO attached to a serial port, have GPSMan
      installed, and have support for GPSMan compiled into Xastir, then Xastir
      has the capability to periodically download waypoints from the RINO unit
-     and create APRS Objects out of them.  Any RINO waypoints that begin with
+     and create APRS(tm) Objects out of them.  Any RINO waypoints that begin with
      "APRS" will be automatically created, placed on the map, and transmitted
-     as your own Xastir APRS objects.  If you wish to see them but not transmit
+     as your own Xastir APRS(tm) objects.  If you wish to see them but not transmit
      them, turn off Object/Item transmit or global transmit in the interface
      menu.  Another option is to turn off the transmit enable per interface.
 
@@ -937,11 +937,11 @@ First Time Install:
      third rino radio to xastir with serial in the plane, xastir will query
      rino radio #3 at any one minute interval between 0 and 30 minutes, get the
      APRS* waypoints, lop off the first four characters and publish the shorter
-     named waypoints as SAR1 and SAR2 as APRS objects on to your TNC.  The
+     named waypoints as SAR1 and SAR2 as APRS(tm) objects on to your TNC.  The
      hitch to this is that the rino radio cannot automatically poll the RINO
      users' locations on the ground.  You have to manually (on the radio)
      select a menu item called POLL and poll the users that way.  The reason
-     the first four characters of the rino callsign have to be APRS is that
+     the first four characters of the rino callsign have to be "APRS" is that
      when you send a query, rino only asks about the first 4 chars... so any
      station with the first four that match will answer... ie all of them in
      your group.  The other method is to simply fly the plane overhead and
@@ -1121,6 +1121,8 @@ for the purpose of finding and patching memory leaks).
 
 
   ------------------------------------------------------------------------
+APRS(tm) is a Trademark of Bob Bruninga
+
 Copyright (C) 1999 Frank Giannandrea
 Copyright (C) 2000-2005 The Xastir Group
 

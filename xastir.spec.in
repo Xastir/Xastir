@@ -16,7 +16,7 @@ Requires  : /usr/X11R6/include/Xm/Xm.h
 Xastir is a graphical application that interfaces HAM radio
 and internet access to realtime mapping software.
 
-Install XASTIR if you are interested in APRS and HAM radio
+Install XASTIR if you are interested in APRS(tm) and HAM radio
 software.
 
 %prep
