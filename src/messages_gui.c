@@ -60,6 +60,133 @@ void messages_gui_init(void)
 
 /**** Send Message ******/
 
+
+
+
+
+// This function chops off the first callsign, then returns a string
+// containing the same string in reversed callsign order.  Note that
+// if RELAY was used by the sending station and that RELAY did _not_
+// do callsign substitution, that part of the path will be chopped
+// heading back.  If the sending station really needed that relay
+// station in order to receive the reply, he/she should have put in
+// a callsign instead of RELAY.  We can't in good conscience use
+// RELAY on the end of the return path.
+void reverse_path(char *input_string) {
+    char reverse_path[200];
+    int indexes[20];
+    int i, j, len;
+    char temp[MAX_CALLSIGN+1];
+
+
+    // Check for NULL pointer
+    if (input_string == NULL)
+        return;
+
+    // Check for zero-length string
+    len = strlen(input_string);
+    if (len == 0)
+        return;
+
+    // Initialize
+    reverse_path[0] = '\0';
+    for (i = 0; i < 20; i++)
+        indexes[i] = -1;
+
+    // Add a comma onto the end (makes later code easier)
+    input_string[len++] = ',';
+    input_string[len] = '\0';   // Terminate it
+
+    // Find each comma 
+    j = 0; 
+    for (i = 0; i < strlen(input_string); i++) {
+        if (input_string[i] == ',') {
+            indexes[j++] = i;
+            //printf("%d\n",i);     // Debug code
+        }
+    }
+
+    // Get rid of asterisks and commas in the original string:
+    for (i = 0; i < len; i++) {
+        if (input_string[i] == '*' || input_string[i] == ',') {
+            input_string[i] = '\0';
+        }
+    }
+
+    // Convert used "WIDEn-N"/"TRACEn-N" paths back to their
+    // original glory.  Convert "TRACE" to "WIDE" as well.  We could
+    // also choose to change "WIDEn-N" to a slimmer version based on
+    // how many digi's were used, for instance "WIDE7-6" could
+    // change to "WIDE1-1" or "WIDE7-1", and "WIDE5-2" could change
+    // to "WIDE3-3" or "WIDE5-3".
+//    for ()
+
+    // j now tells us how many were found.  Now go in the reverse
+    // order and concatenate the substrings together.  Get rid of
+    // "RELAY" calls as we're doing it?
+    input_string[0] = '\0'; // Clear out the old string first
+    for ( i = j - 1; i >= 0; i-- ) {
+        if ( (input_string[indexes[i]+1] != '\0')
+                && (strncasecmp(&input_string[indexes[i]+1],"RELAY",5) != 0) ) {
+
+            // Snag each callsign into temp:
+            strncpy(temp, &input_string[indexes[i]+1], indexes[i+1] - indexes[i]);
+
+            // Massage temp until it resembles something we want to
+            // use.
+            //  "WIDEn" -> "WIDEn-N,"
+            // "TRACEn" -> "WIDEn-N,"
+            //  "TRACE" -> "WIDE,"
+            if (strncasecmp(temp,"WIDE",4) == 0) {
+                if ( (temp[4] != ',') && is_num_chr(temp[4]) ) {
+printf("Found a WIDEn-N\n");
+                    xastir_snprintf(temp,
+                        sizeof(temp),
+                        "WIDE%c-%c",
+                        temp[4],
+                        temp[4]);
+                }
+                else {
+printf("Found a WIDE\n");
+                    // Leave temp alone, it's just a WIDE
+                }
+            }
+            else if (strncasecmp(temp,"TRACE",5) == 0) {
+                if ( (temp[5] != ',') && is_num_chr(temp[5]) ) {
+printf("Found a TRACEn-N\n");
+                    xastir_snprintf(temp,
+                        sizeof(temp),
+                        "WIDE%c-%c",
+                        temp[5],
+                        temp[5]);
+                }
+                else {
+printf("Found a TRACE\n");
+                    // Convert it from TRACE to WIDE
+                    xastir_snprintf(temp,
+                        sizeof(temp),
+                        "WIDE");
+                }
+            }
+
+            // Add temp to the end of our path:
+            strncat(reverse_path,temp,sizeof(temp));
+ 
+            strncat(reverse_path,",",1);
+        }
+    }
+
+    // Remove the ending comma
+    reverse_path[strlen(reverse_path) - 1] = '\0';
+
+    // Save the new path back into the string we were given.
+    strcat(input_string,reverse_path);
+}
+
+
+
+
+
 void Send_message_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int i; 
 
@@ -290,6 +417,7 @@ void Send_message( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtP
     int groupon;
     int box_len;
     Atom delw;
+    DataRow *p_station;
 
     groupon=0;
     box_len=90;
@@ -491,8 +619,41 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
         XtAddCallback(mw[i].button_submit_call, XmNactivateCallback,  Check_new_call_messages, (XtPointer)mw[i].win);
 
-        if (clientData != NULL)
-        XmTextFieldSetString(mw[i].send_message_call_data, group);
+
+
+//WE7U
+        if (clientData != NULL) {
+            XmTextFieldSetString(mw[i].send_message_call_data, group);
+            if (search_station_name(&p_station,group,1)) {  // Found callsign
+                char new_path[200];
+
+                xastir_snprintf(new_path,sizeof(new_path),p_station->node_path_ptr);
+
+                printf("\nPath from %s: %s\n",
+                    group,
+                    new_path);
+
+// We need to chop off the first call, remove asterisks and
+// injection ID's, and reverse the order of the callsigns.  We need
+// to do the same thing in the callback for button_submit_call, so
+// that we get a new path whenever the callsign is changed.  Create
+// a new TextFieldWidget to hold the path info, which gets filled in
+// here (and the callback) but can be changed by the user.  Must
+// find a nice way to use this path from output_my_data() as well.
+
+                reverse_path(new_path);
+
+                printf("  Path to %s: %s\n",
+                    group,
+                    new_path);
+            }
+            else {  // Couldn't find callsign.  It's
+                    // not in our station database.
+                printf("Path from %s: No Path Known\n",group);
+            }
+        }
+
+
 
         pos_dialog(mw[i].send_message_dialog);
 
