@@ -133,7 +133,7 @@ void map_gdal_init() {
     //
     ii = GDALGetDriverCount();
 
-    fprintf(stderr,"\nGDAL Registered Drivers:\n");
+    fprintf(stderr,"\nGDAL Registered Drivers: (not implemented yet)\n");
     for (jj = 0; jj < ii; jj++) {
         gDriver = GDALGetDriver(jj);
         printf("%10s   %s\n",
@@ -147,7 +147,7 @@ void map_gdal_init() {
     //
     ii = OGRGetDriverCount();
 
-    fprintf(stderr,"OGR Registered Drivers:\n");
+    fprintf(stderr,"OGR Registered Drivers: (not implemented yet)\n");
     for  (jj = 0; jj < ii; jj++) {
         oDriver = OGRGetDriver(jj);
         printf("%10s   %s\n",
