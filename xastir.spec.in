@@ -29,11 +29,9 @@ make
 
 %install
 rm -rf %{buildroot}
-gzip -9nf xastir.1
-mkdir %{buildroot} %{buildroot}/usr %{buildroot}/usr/man
-%{buildroot}/usr/man/man1
-mv xastir.1.gz %{buildroot}/usr/man/man1
 %makeinstall
+gzip -9nf xastir.1
+cp xastir.1.gz %{buildroot}/usr/man/man1
 
 %clean
 rm -rf %{buildroot}
