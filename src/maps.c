@@ -4578,6 +4578,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     register uint32 column_offset;
     register unsigned long xastir_current_x;
     double *PixelScale;
+    int have_PixelScale;
     uint16 qty;
     int SkipRows;
     unsigned long view_min_x, view_max_x;
@@ -4747,10 +4748,17 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
             GTIFPrintDefn (&defn, stdout);
     }
 
-
+ 
     /* Fetch a few TIFF fields for this image */
-    TIFFGetField (tif, TIFFTAG_IMAGEWIDTH, &width);
-    TIFFGetField (tif, TIFFTAG_IMAGELENGTH, &height);
+    if ( !TIFFGetField (tif, TIFFTAG_IMAGEWIDTH, &width) ) {
+        width = 5493;
+        printf("No width tag found in file, setting it to 5493\n");
+    }
+
+    if ( !TIFFGetField (tif, TIFFTAG_IMAGELENGTH, &height) ) {
+        height = 6840;
+        printf("No height tag found in file, setting it to 6840\n");
+    }
 
 
     /*
@@ -4922,12 +4930,16 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
      * 0.000000         Z
      *
      */
-    // if (debug_level & 16)
-    //     printf("Tiepoints:\n");
-    // TIFFGetField( tif, TIFFTAG_GEOTIEPOINTS, &qty, &GeoTie );
-    // for ( i = 0; i < qty; i++ )
-    //   if (debug_level & 16)
-    //     printf( "%f\n", *(GeoTie + i) );
+    /*
+    if (debug_level & 16) {
+        printf("Tiepoints:\n");
+        if ( TIFFGetField( tif, TIFFTAG_GEOTIEPOINTS, &qty, &GeoTie ) ) {
+            for ( i = 0; i < qty; i++ ) {
+                printf( "%f\n", *(GeoTie + i) );
+            }
+        }
+    }
+    */
 
 
     /* Get the geotiff horizontal datum name */
@@ -5063,12 +5075,37 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         return;         /* Skip this map */
     }
 
+/*
+From running in debug mode:
+            Width: 5493
+           Height: 6840
+   Rows Per Strip: 1
+  Bits Per Sample: 8
+Samples Per Pixel: 1
+    Planar Config: 1
+*/
+
 
     /* Fetch a few TIFF fields for this image */
-    TIFFGetField (tif, TIFFTAG_ROWSPERSTRIP, &rowsPerStrip);
-    TIFFGetField (tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample);
-    TIFFGetField (tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel);
-    TIFFGetField (tif, TIFFTAG_PLANARCONFIG, &planarConfig);
+    if ( !TIFFGetField (tif, TIFFTAG_ROWSPERSTRIP, &rowsPerStrip) ) {
+        rowsPerStrip = 1;
+        printf("No rowsPerStrip tag found in file, setting it to 1\n");
+    }
+
+    if ( !TIFFGetField (tif, TIFFTAG_BITSPERSAMPLE, &bitsPerSample) ) {
+        bitsPerSample = 8;
+        printf("No bitsPerSample tag found in file, setting it to 8\n");
+    }
+
+    if ( !TIFFGetField (tif, TIFFTAG_SAMPLESPERPIXEL, &samplesPerPixel) ) {
+        samplesPerPixel = 1;
+        printf("No samplesPerPixel tag found in file, setting it to 1\n");
+    }
+
+    if ( !TIFFGetField (tif, TIFFTAG_PLANARCONFIG, &planarConfig) ) {
+        planarConfig = 1;
+        printf("No planarConfig tag found in file, setting it to 1\n");
+    }
 
 
     if (debug_level & 16) {
@@ -5819,12 +5856,18 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
 
     /* Get the pixel scale */
-    TIFFGetField( tif, TIFFTAG_GEOPIXELSCALE, &qty, &PixelScale );
-    if (debug_level & 16)
-        printf("PixelScale: %f %f %f\n",
-            *PixelScale,
-            *(PixelScale + 1),
-            *(PixelScale + 2) );
+    have_PixelScale = TIFFGetField( tif, TIFFTAG_GEOPIXELSCALE, &qty, &PixelScale );
+    if (debug_level & 16) {
+        if (have_PixelScale) {
+            printf("PixelScale: %f %f %f\n",
+                *PixelScale,
+                *(PixelScale + 1),
+                *(PixelScale + 2) );
+        }
+        else {
+            printf("No PixelScale tag found in file\n");
+        }
+    }
 
 
     // Use PixelScale to determine lines to skip at each
@@ -5853,11 +5896,16 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     // probably).  A higher number means less rows skipped,
     // which improves the look but slows the map drawing down.
     //
-    SkipRows = (int)( ( scale_y / ( *PixelScale * 3.15 ) ) + 0.5 );
-    if (SkipRows < 1)
+    if (have_PixelScale) {
+        SkipRows = (int)( ( scale_y / ( *PixelScale * 3.15 ) ) + 0.5 );
+        if (SkipRows < 1)
+            SkipRows = 1;
+        if (SkipRows > (int)(height / 10) )
+            SkipRows = height / 10;
+    }
+    else {
         SkipRows = 1;
-    if (SkipRows > (int)(height / 10) )
-        SkipRows = height / 10;
+    }
     if (debug_level & 16)
         printf("SkipRows: %d\n", SkipRows);
 
