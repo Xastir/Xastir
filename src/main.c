@@ -2014,12 +2014,12 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
                 have_utm = 0;
             }
         }
+
         if (have_utm) { // If we still think it's a valid UTM number
             easting = atol(str_ptr);
             //fprintf(stderr,"Easting: %lu\n",easting);
         }
         else {
-            have_utm = 0;
             //fprintf(stderr,"Bad Easting value\n");
         }
     }
@@ -2170,7 +2170,6 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
             //fprintf(stderr,"Northing: %lu\n",northing);
         }
         else {
-            have_utm = 0;
             //fprintf(stderr,"Bad Northing value\n");
         }
     }
@@ -2300,6 +2299,7 @@ void Coordinate_calc_compute(Widget widget, XtPointer clientData, XtPointer call
     // we have a good value and can convert it to the other formats for
     // display.
     if (have_utm) {
+//fprintf(stderr,"Processing 'good' UTM values\n");
         // Process UTM values
         utm_ups_to_ll(E_WGS_84,
             (double)northing,
