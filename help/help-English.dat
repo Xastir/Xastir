@@ -81,7 +81,7 @@ Different Coordinate systems
 Different rain guage sizes
 Shapefile weather alerts/pixmaps
 WXserver info via finger
-Major shapefile improvments, point-type shapefiles
+Major shapefile improvements, point-type shapefiles
 Private colormaps->8bit color usable
 Assorted bug fixes
 Tigermaps menu accesable
@@ -89,7 +89,7 @@ Messaging cleanup, no more timed updates; reply-acks
 ImageMagick speedups and correction features
 Compressed objects/items
 SmartBeaconing(tm)
-Memory usage improvments, multiple comments stored
+Memory usage improvements, multiple comments stored
 bulletins bring up dialog
 export waypoints within proximity boundries
 findu train length contols
@@ -313,7 +313,7 @@ altitude in "standard" objects/items.
 
 "Enable SmartBeaconing(tm)" This will cause Xastir to transmit positions at
 various rates and locations based on the movement of the station. It creates
-more realistic trails and makes dead-reconing much more accurate. This option
+more realistic trails and makes dead-reckoning much more accurate. This option
 is only useful in a mobile station with a GPS attached.
   
 You can also select Altnet and choose an altnet call from this dialog. Altnet 
