@@ -11081,7 +11081,7 @@ void index_restore_from_file(void) {
     char in_string[MAX_FILENAME*2];
 
 
-    //printf("Restoring map index from file\n");
+printf("Restoring map index from file\n");
 
     map_index_head = NULL;  // Starting with empty list
     current = NULL;
@@ -11100,6 +11100,8 @@ void index_restore_from_file(void) {
                                             // line.
                 char scanf_format[50];
                 int processed;
+
+printf("%s\n",in_string);
 
                 // Malloc an index record.  We'll add it to the list
                 // only if the data looks reasonable.
