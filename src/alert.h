@@ -39,7 +39,7 @@ typedef enum {
 #define ALERT_ALL ALERT_FROM
 
 typedef struct {
-//    unsigned long top_boundary, left_boundary, bottom_boundary, right_boundary;
+    double top_boundary, left_boundary, bottom_boundary, right_boundary;
     time_t expiration;
     char activity[21];
     char alert_tag[21];

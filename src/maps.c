@@ -1226,7 +1226,6 @@ void draw_shapefile_map (Widget w,
                 snprintf(search_param1,sizeof(search_param1),"%c%c",
                     alert->title[0],
                     alert->title[1]);
-// Correct.
                 snprintf(search_param2,sizeof(search_param2),"%c%c%c",
                     alert->title[4],
                     alert->title[5],
@@ -1240,7 +1239,6 @@ void draw_shapefile_map (Widget w,
                 // Need field 0
                 search_field1 = 0;  // WFO
                 search_field2 = -1;
-// Correct
                 snprintf(search_param1,sizeof(search_param1),"%c%c%c",
                     alert->title[4],
                     alert->title[5],
@@ -1254,7 +1252,6 @@ void draw_shapefile_map (Widget w,
                 // Need field 0
                 search_field1 = 0;  // ID
                 search_field2 = -1;
-// Correct
                 snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
                     alert->title[0],
                     alert->title[1],
@@ -1271,7 +1268,6 @@ void draw_shapefile_map (Widget w,
                 // Need field 0
                 search_field1 = 0;  // ID
                 search_field2 = -1;
-// Correct
                 snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
                     alert->title[0],
                     alert->title[1],
@@ -1289,7 +1285,6 @@ void draw_shapefile_map (Widget w,
                 // Need field 4
                 search_field1 = 4;  // STATE_ZONE
                 search_field2 = -1;
-// Correct
                 snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c",
                     alert->title[0],
                     alert->title[1],
@@ -1461,7 +1456,6 @@ void draw_shapefile_map (Widget w,
         printf( "File Bounds: (%15.10g,%15.10g)\n\t(%15.10g,%15.10g)\n",
             adfBndsMin[0], adfBndsMin[1], adfBndsMax[0], adfBndsMax[1] );
 
-
     if (! map_visible_lat_lon(  adfBndsMin[1],       // Bottom
                                 adfBndsMax[1],       // Top
                                 adfBndsMin[0],       // Left
@@ -1565,6 +1559,18 @@ void draw_shapefile_map (Widget w,
 
         if (object == NULL)
             continue;   // Skip this iteration, go on to the next
+
+//WE7U
+        // Fill in the boundary variables in the alert record.  We use
+        // this info in load_alert_maps() to determine which alerts are
+        // within our view, without having to open up the shapefiles to
+        // get this info (faster).
+        if (weather_alert_flag) {
+            alert->top_boundary    = object->dfYMax;
+            alert->left_boundary   = object->dfXMin;
+            alert->bottom_boundary = object->dfYMin;
+            alert->right_boundary  = object->dfXMax;
+        }
 
         // Here we check the bounding box against our current viewport.
         // If we can't see it, don't draw it.  bottom/top/left/right
@@ -8110,18 +8116,29 @@ void load_alert_maps (Widget w, char *dir) {
             //printf("Drawing %s\n",alert_list[i].filename);
             //printf("Title4:%s\n",alert_list[i].title);
 
+            // Attempt to draw alert
+            if ( (alert_list[i].alert_level != 'C')             // Alert not cancelled
+                    && (alert_list[i].index != -1) ) {          // Shape found in shapefile
 
-            // Attempt to draw all but cancelled alerts
-            if (alert_list[i].alert_level != 'C') {
-                draw_map (w,
-                    dir,
-                    alert_list[i].filename,
-                    &alert_list[i],
-                    fill_color[level],
-                    DRAW_TO_PIXMAP_ALERTS);
+                if (map_visible_lat_lon(alert_list[i].bottom_boundary, // Shape visible
+                        alert_list[i].top_boundary,
+                        alert_list[i].left_boundary,
+                        alert_list[i].right_boundary) ) {
+                    draw_map (w,
+                        dir,
+                        alert_list[i].filename,
+                        &alert_list[i],
+                        fill_color[level],
+                        DRAW_TO_PIXMAP_ALERTS);
+                }
+                else {
+                    //printf("Alert not visible\n");
+                }
             }
             else {
-                // Cancelled alert, don't draw it!
+                // Cancelled alert, can't find the shapefile, or not
+                // in our viewport, don't draw it!
+                //printf("Alert cancelled or shape not found\n");
             }
         }
     }
