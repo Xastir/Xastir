@@ -207,7 +207,7 @@ First Time Install:
      you may need to
       edit /etc/ld.so.conf
       and run:
-      run ldconfig
+      ldconfig
 
 
    2c. Install LessTif (for older SuSE systems !!)
@@ -227,7 +227,8 @@ First Time Install:
        3a.  Check/Edit your startup files:
        -----------------------------
        Check that /usr/local/lib, /usr/lib, and /usr/X11R6/lib are
-       all listed in /etc/ld.so.conf. If you don't have permission to
+       all listed in /etc/ld.so.conf, and run ldconfig to re-create
+       the system's cache file. If you don't have permission to
        edit this file:
             Edit ~/.bashrc, ~/.bash_profile, .cshrc, or
             .login and add:
@@ -384,6 +385,8 @@ First Time Install:
      You may also need to tweak "/etc/ld.so.conf" to contain the proper path
      to the libraries and then run ldconfig to update "/etc/ld.so.cache".
      Once this is done the loader should be able to find the Shapelib library.
+     Must run ldconfig as root for the system to be able to re-create its
+     cache file.
 
 
    5. OPTIONAL:  Install ImageMagick graphics support.  Allows using more than
@@ -778,10 +781,10 @@ END OF MANDRAKE LINUX NOTES.
 
      If you see errors at this point that say something like "Can't load
      xxx library" this means you forgot to either update /etc/ld.so.conf
-     or add the LD_LIBRARY_PATH variable for your shell, and the "ld"
-     loader can't link the libraries with the Xastir executable to get it
-     running in memory.  Note that if you're running Xastir as SUID
-     root, the LD_LIBRARY_PATH variable is ignored.
+     and run ldconfig, or add the LD_LIBRARY_PATH variable for your shell,
+     and the "ld" loader can't link the libraries with the Xastir executable
+     to get it running in memory.  Note that if you're running Xastir as
+     SUID root, the LD_LIBRARY_PATH variable is ignored.
 
      To set a new language or change the language current choice, use
      this command line:
