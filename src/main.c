@@ -19966,6 +19966,7 @@ int Setup_item_data(char *line, int line_length) {
  */
 void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char line[43+1+40];                 // ???
+    DataRow *p_station = global_parameter1;
 
     //fprintf(stderr,"Object_change_data_set\n");
 
@@ -19973,6 +19974,12 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 
         // Update this object in our save file
         log_object_item(line,0,last_object);
+
+        // Set up the timer properly for the decaying algorithm
+        if (p_station != NULL) {
+            p_station->transmit_time_increment = OBJECT_CHECK_RATE;
+//fprintf(stderr,"Object_change_data_set(): Setting transmit increment to %d\n", OBJECT_CHECK_RATE);
+        }
 
         if (object_tx_disable)
             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
@@ -20000,12 +20007,20 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
  */
 void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char line[43+1+40];                 // ???
-    
+    DataRow *p_station = global_parameter1;
+
+   
     if (Setup_item_data(line,sizeof(line))) {
 
         // Update this item in our save file
         log_object_item(line,0,last_object);
-
+ 
+        // Set up the timer properly for the decaying algorithm
+        if (p_station != NULL) {
+            p_station->transmit_time_increment = OBJECT_CHECK_RATE;
+//fprintf(stderr,"Item_change_data_set(): Setting transmit increment to %d\n", OBJECT_CHECK_RATE);
+        }
+ 
         if (object_tx_disable)
             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
         else
@@ -20013,7 +20028,9 @@ void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
 
         sched_yield();                  // Wait for transmitted data to get processed
         Object_destroy_shell(widget,clientData,NULL);
-        redraw_symbols(da);
+        // Getting a segfault here on a Move operation, so just
+        // comment it out.  A redraw will occur shortly anyway.
+        //redraw_symbols(da);
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     } else {
         // error message
@@ -20030,6 +20047,8 @@ void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
  */
 void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char line[43+1+40];                 // ???
+    DataRow *p_station = global_parameter1;
+
     
     if (Setup_object_data(line, sizeof(line))) {
 
@@ -20038,6 +20057,12 @@ void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
         // Update this object in our save file, then comment all
         // instances out in the file.
         log_object_item(line,1,last_object);
+
+        // Set up the timer properly for the decaying algorithm
+        if (p_station != NULL) {
+            p_station->transmit_time_increment = OBJECT_CHECK_RATE;
+//fprintf(stderr,"Object_change_data_del(): Setting transmit increment to %d\n", OBJECT_CHECK_RATE);
+        }
 
         if (object_tx_disable)
             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
@@ -20058,6 +20083,8 @@ void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     char line[43+1+40];                 // ???
     int i, done;
+    DataRow *p_station = global_parameter1;
+
     
     if (Setup_item_data(line,sizeof(line))) {
 
@@ -20074,6 +20101,12 @@ void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
         // Update this item in our save file, then comment all
         // instances out in the file.
         log_object_item(line,1,last_object);
+
+        // Set up the timer properly for the decaying algorithm
+        if (p_station != NULL) {
+            p_station->transmit_time_increment = OBJECT_CHECK_RATE;
+//fprintf(stderr,"Item_change_data_del(): Setting transmit increment to %d\n", OBJECT_CHECK_RATE);
+        }
 
         if (object_tx_disable)
             output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
@@ -23746,12 +23779,14 @@ if (Area_object_enabled) {
     if (calldata != NULL) { // If we're doing a "move" operation
         if (strcmp(calldata,"2") == 0) {
             if ((p_station->flag & ST_ITEM) != 0) {     // Moving an Item
-                //fprintf(stderr,"Item\n");
+//fprintf(stderr,"Calling Item_change_data_set()\n");
                 Item_change_data_set(w,object_dialog,object_dialog);    // Move it now!
+//fprintf(stderr,"Done with call\n");
             }
             else {                                      // Moving an Object
-                //fprintf(stderr,"Object\n");
+//fprintf(stderr,"Calling Object_change_data_set()\n");
                 Object_change_data_set(w,object_dialog,object_dialog);  // Move it now!
+//fprintf(stderr,"Done with call\n");
             }
         }
     }

@@ -6281,6 +6281,8 @@ void init_station(DataRow *p_station) {
     p_station->time_sn            = 0;
     p_station->flag               = 0;            // set all flags to inactive
     p_station->object_retransmit  = -1;           // transmit forever
+    p_station->last_transmit_time = sec_now();    // Used for object/item decaying algorithm
+    p_station->transmit_time_increment = 0;       // Used in data_add()
     p_station->record_type        = '\0';
     p_station->data_via           = '\0';         // L local, T TNC, I internet, F file
     p_station->heard_via_tnc_port = 0;
@@ -9096,6 +9098,18 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                             && (!is_my_call(origin,1)) ) {  // But isn't now
                         disown_object_item(call_sign,origin);
                     }
+
+                    // If station is owned by me but it's a new
+                    // object/item
+                    if ( (is_my_call(p_station->origin,1))
+                            && (p_station->transmit_time_increment == 0) ) {
+                        // This will get us transmitting this object
+                        // on the decaying algorithm schedule.
+                        // We've transmitted it once if we've just
+                        // gotten to this code.
+                        p_station->transmit_time_increment = OBJECT_CHECK_RATE;
+//fprintf(stderr,"data_add(): Setting transmit_time_increment to %d\n", OBJECT_CHECK_RATE);
+                    }
  
                     // Create a timestamp from the current time
                     strcpy(p_station->pos_time,get_time(temp_data));
@@ -9140,6 +9154,18 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if ( (is_my_call(p_station->origin,1))  // If station was owned by me
                             && (!is_my_call(origin,1)) ) {  // But isn't now
                         disown_object_item(call_sign,origin);
+                    }
+ 
+                    // If station is owned by me but it's a new
+                    // object/item
+                    if ( (is_my_call(p_station->origin,1))
+                            && (p_station->transmit_time_increment == 0) ) {
+                        // This will get us transmitting this object
+                        // on the decaying algorithm schedule.
+                        // We've transmitted it once if we've just
+                        // gotten to this code.
+                        p_station->transmit_time_increment = OBJECT_CHECK_RATE;
+//fprintf(stderr,"data_add(): Setting transmit_time_increment to %d\n", OBJECT_CHECK_RATE);
                     }
  
                     // Create a timestamp from the current time
@@ -13444,25 +13470,26 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 
 // check_and_transmit_objects_items
 //
-// This function first checks the time.  If it is time to do a retransmit,
-// it runs through the received stations list looking for objects/items that
-// are locally-owned, any found are retransmitted.
+// This function checks the last_transmit_time for each
+// locally-owned object/item.  If it has been at least the
+// transmit_time_increment since the last transmit, the increment is
+// doubled and the object/item transmitted.
 //
-// It would be nice to transmit killed objects/items for a short period of
-// time and then mark them as finished.  Need to add a counter to the struct
-// for keeping track of expiration times.  This would be a good place to
-// implement auto-expiration of objects that's been discussed on the mailing
-// lists.  Note that object/items will never expire currently, 'cuz they keep
-// getting received on at least the loopback interface, updating their imes.
+// Killed objects/items are transmitted for
+// MAX_KILLED_OBJECT_RETRANSMIT times and then transmitting of those
+// objects ceases.
 //
-// This function depends on the local loopback that is in interface.c.  If we
-// don't hear & decode our own packets, we won't have our own objects/items in
-// our list.
+// This would be a good place to implement auto-expiration of
+// objects that's been discussed on the mailing lists.
 //
-// We need to check DataRow objects for ST_OBJECT or ST_ITEM types that were
-// transmitted by our callsign & SSID.  We might also need to modify the
-// remove_time() and check_station_remove functions in order not to delete
-// our own objects/items too quickly.
+// This function depends on the local loopback that is in
+// interface.c.  If we don't hear & decode our own packets, we won't
+// have our own objects/items in our list.
+//
+// We need to check DataRow objects for ST_OBJECT or ST_ITEM types
+// that were transmitted by our callsign & SSID.  We might also need
+// to modify the remove_time() and check_station_remove functions in
+// order not to delete our own objects/items too quickly.
 //
 // insert_time/remove_time/next_station_time/prev_station_time
 //
@@ -13474,20 +13501,43 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
 // In order to make them use the same code we'd have to separate out the
 // fetch-from-dialog code from the create-transmit-packet code.
 //
+// This is what aprsDOS does, from Bob's APRS.TXT file:  "a
+// fundamental precept is that old data is less important than new
+// data."  "Each new packet is transmitted immediately, then 20
+// seconds later.  After every transmission, the period is doubled.
+// After 20 minutes only six packets have been transmitted.  From
+// then on the rate remains at 10 minutes times the number of
+// digipeater hops you are using."
+//
+// Added these to db.h:DataRow struct:
+// time_t last_transmit_time;          // Time we last transmitted an object/item.  Used to
+//                                     // implement decaying transmit time algorithm
+// short transmit_time_increment;      // Seconds to add to transmit next time around.  Used
+//                                     // to implement decaying transmit time algorithm
+//
+// The earlier code here transmitted objects/items at a specified
+// rate.  This can cause large transmissions every OBJECT_rate
+// seconds, as all objects/items are transmitted at once.
+//
 void check_and_transmit_objects_items(time_t time) {
     DataRow *p_station;     // pointer to station data
     char line[256];
-    int first = 1;
+    int first = 1;  // Used to output debug message only once
+    short increment;
 
 
     // Time to re-transmit objects/items?
-    if (sec_now() < (last_object_check + OBJECT_rate) ) // Check every OBJECT_rate seconds
+    // Check every OBJECT_CHECK_RATE seconds.  No faster else we'll
+    // be running through the station list too often and wasting
+    // cycles.
+    if (sec_now() < (last_object_check + OBJECT_CHECK_RATE) )
         return;
 
-    if (debug_level & 1)
-        fprintf(stderr,"Retransmitting objects/items now\n");
-
+    // Set up timer for next go-around
     last_object_check = sec_now();
+
+    if (debug_level & 1)
+        fprintf(stderr,"Checking whether to retransmit any objects/items\n");
 
     p_station = n_first;    // Go through received stations alphabetically
     while (p_station != NULL) {
@@ -13501,45 +13551,94 @@ void check_and_transmit_objects_items(time_t time) {
                 if (debug_level & 1)
                     fprintf(stderr,"Found a locally-owned object or item: %s\n",p_station->call_sign);
 
-                if (first) {    // "Transmitting objects/items"
-                    statusline(langcode("BBARSTA042"),1);
-                    first = 0;
-                }
 
-                // Here we need to re-assemble and re-transmit the object or item
-                // Check whether it is a "live" or "killed" object and vary the
-                // number of retransmits accordingly.  Actually we should be able
-                // to keep retransmitting "killed" objects until they expire out of
-                // our station queue with no problems.  If someone wants to ressurect
-                // the object we'll get new info into our struct and this function will
-                // ignore that object from then on, unless we again snatch control of
-                // the object.
+// Implementing sped-up transmission of new objects, regular
+// transmission of old objects (decaying algorithm).  We'll do this
+// by keeping a last_transmit_time variable and a
+// transmit_time_increment with each DataRow struct.  If the
+// last_transmit_time is older than the transmit_time_increment, we
+// transmit the object and double the increment variable, until we
+// hit the OBJECT_rate limit for the increment.  This will make
+// newer objects/items transmit more often, and will also space out
+// the transmissions of old objects so they're not transmitted all
+// at once in a group.  Each time a new object/item is created that
+// is owned by us, it needs to have it's timer set to 20 (seconds).
+// If an object/item is touched, it needs to again be set to 20
+// seconds.
+///////////////////////////////////
 
-                // if signpost, area object, df object, or generic object
-                // check p_station->APRS_Symbol->aprs_type:
-                //   APRS_OBJECT
-                //   APRS_ITEM
-                //   APRS_DF (looks like I didn't use this one when I implemented DF objects)
+// Run through the station list.
 
-                //   Whether area, df, signpost.
-                // Check ->signpost for signpost data.  Check ->df_color also.
+// Transmit any objects/items that have equalled or gone past
+// (last_transmit_time + transmit_time_increment).  Update the
+// last_transmit_time to current time.
+//
+// Double the transmit_time_increment.  If it has gone beyond
+// OBJECT_rate, set it to OBJECT_rate instead.
+//
+///////////////////////////////////
 
-                // call_sign, sec_heard, coord_lon, coord_lat, packet_time, origin,
-                // aprs_symbol, pos_time, altitude, speed, course, bearing, NRQ,
-                // power_gain, signal_gain, signpost, station_time, station_time_type,
-                // comments, df_color
-                if (Create_object_item_tx_string(p_station, line, sizeof(line)) ) {
+                increment = p_station->transmit_time_increment;
 
-                    // Attempt to transmit the object/item again
-                    if (object_tx_disable) {
-                        output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
+                if ( ( p_station->last_transmit_time + increment) <= sec_now() ) {
+                    // We should transmit this object/item as it has
+                    // hit its transmit interval.
+
+                    if (first) {    // "Transmitting objects/items"
+                        statusline(langcode("BBARSTA042"),1);
+                        first = 0;
+                    }
+
+                    // Set the last transmit time into the object.
+                    // Keep this based off the time the object was
+                    // last created/modified/deleted, so that we
+                    // don't end up with a bunch of them transmitted
+                    // together.
+                    p_station->last_transmit_time = p_station->last_transmit_time + increment;
+
+                    // Set up the new doubling increment
+                    increment = increment * 2;
+                    if (increment > OBJECT_rate) {
+                        increment = OBJECT_rate;
+                    }
+                    p_station->transmit_time_increment = increment;
+//fprintf(stderr,"check_and_transmit_objects_items(): Setting transmit_time_increment to %d\n", increment);
+ 
+                    // Here we need to re-assemble and re-transmit the object or item
+                    // Check whether it is a "live" or "killed" object and vary the
+                    // number of retransmits accordingly.  Actually we should be able
+                    // to keep retransmitting "killed" objects until they expire out of
+                    // our station queue with no problems.  If someone wants to ressurect
+                    // the object we'll get new info into our struct and this function will
+                    // ignore that object from then on, unless we again snatch control of
+                    // the object.
+
+                    // if signpost, area object, df object, or generic object
+                    // check p_station->APRS_Symbol->aprs_type:
+                    //   APRS_OBJECT
+                    //   APRS_ITEM
+                    //   APRS_DF (looks like I didn't use this one when I implemented DF objects)
+
+                    //   Whether area, df, signpost.
+                    // Check ->signpost for signpost data.  Check ->df_color also.
+
+                    // call_sign, sec_heard, coord_lon, coord_lat, packet_time, origin,
+                    // aprs_symbol, pos_time, altitude, speed, course, bearing, NRQ,
+                    // power_gain, signal_gain, signpost, station_time, station_time_type,
+                    // comments, df_color
+                    if (Create_object_item_tx_string(p_station, line, sizeof(line)) ) {
+
+                        // Attempt to transmit the object/item again
+                        if (object_tx_disable) {
+                            output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
+                        }
+                        else {
+                            output_my_data(line,-1,0,0,0,NULL);    // Transmit/loopback object data, not igating
+                        }
                     }
                     else {
-                        output_my_data(line,-1,0,0,0,NULL);    // Transmit/loopback object data, not igating
+                        // Don't transmit it.
                     }
-                }
-                else {
-                    // Don't transmit it.
                 }
             }
         }

@@ -39,7 +39,11 @@
 
 // Number of times to send killed objects/items before ceasing to
 // transmit them.
-#define MAX_KILLED_OBJECT_RETRANSMIT 10
+#define MAX_KILLED_OBJECT_RETRANSMIT 20
+
+// Check entire station list at this rate for objects/items that
+// might need to be transmitted via the decaying algorithm.
+#define OBJECT_CHECK_RATE 15
 
 // We should probably be using APRS_DF in extract_bearing_NRQ()
 // and extract_omnidf() functions.  We aren't currently.
@@ -311,6 +315,13 @@ typedef struct _DataRow {
     int  time_sn;                       // serial number for making time index unique
     short flag;                         // several flags, see below
     short object_retransmit;            // Number of times to retransmit object.  -1 = forever
+                                        // Used currently to stop sending killed objects.
+
+    time_t last_transmit_time;          // Time we last transmitted an object/item.  Used to
+                                        // implement decaying transmit time algorithm
+    short transmit_time_increment;      // Seconds to add to transmit next time around.  Used
+                                        // to implement decaying transmit time algorithm
+
     char pos_amb;                       // Position ambiguity, 0 = none, 1 = 0.1 minute...
     long coord_lon;                     // Xastir coordinates 1/100 sec, 0 = 180°W
     long coord_lat;                     // Xastir coordinates 1/100 sec, 0 =  90°N
