@@ -130,6 +130,8 @@ extern char my_callsign[MAX_CALLSIGN+1];
 extern char my_lat[MAX_LAT];
 extern char my_long[MAX_LONG];
 
+
+// Used for messages and bulletins
 typedef struct {
     char active;
     char data_via;
@@ -143,6 +145,7 @@ typedef struct {
     char message_line[MAX_MESSAGE_LENGTH+1];
     char seq[MAX_MESSAGE_ORDER+1];
     char acked;
+    char position_known;
 } Message;
 
 

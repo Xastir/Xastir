@@ -880,7 +880,10 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         if (type == MESSAGE_BULLETIN) { // Found a bulletin
             char temp[10];
 
-            distance = (int)distance_from_my_station(from_call,temp);
+            // We add to the distance in order to come up with 0.0
+            // if the distance is not known at all (no position
+            // found yet).
+            distance = (int)(distance_from_my_station(from_call,temp) + 0.9999);
 
             // Note:  The old method caused bulletins of distance
             // zero to bring up the View->Bulletins dialog.  It gets
@@ -930,6 +933,14 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     m_fill.type=type;
     if (m_fill.heard_via_tnc != VIA_TNC)
         m_fill.heard_via_tnc = (from == 'T') ? VIA_TNC : NOT_VIA_TNC;
+
+    if (distance != 0) {    // Have a posit from the sending station
+        m_fill.position_known = 1;
+        //printf("Position known: %s\n",from_call);
+    }
+    else {
+//printf("Position not known: %s\n",from_call);
+    }
 
     substr(m_fill.call_sign,call_sign,MAX_CALLSIGN);
     (void)remove_trailing_asterisk(m_fill.call_sign);
