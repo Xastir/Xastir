@@ -121,6 +121,9 @@ int rac_lookup_pushed = 0;
 
 time_t last_object_check = 0;   // Used to determine when to re-transmit objects/items
 
+time_t last_emergency_time = 0;
+char last_emergency_callsign[MAX_CALLSIGN+1];
+
 
 
 
@@ -129,6 +132,7 @@ void db_init(void)
 {
     init_critical_section( &db_station_info_lock );
     init_critical_section( &db_station_popup_lock );
+    last_emergency_callsign[0] = '\0';
 }
 
 
@@ -9050,16 +9054,33 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                 strcat(new_info,"Emergency");
 
                 // Do a popup to alert the operator to this
-                // condition
-                popup_message("Emergency!",call_sign);
+                // condition.  Make sure we haven't popped up an
+                // emergency message for this station within the
+                // last 30 minutes.  If we pop these up constantly
+                // it gets quite annoying.
+                if ( (strncmp(call_sign, last_emergency_callsign, sizeof(call_sign)) != 0)
+                        || ((last_emergency_time + 60*30) < sec_now()) ) {
 
-                // Bring up the Find Station dialog so that the
-                // operator can go to the location quickly
-                xastir_snprintf(locate_station_call,
-                    sizeof(locate_station_call),
-                    "%s",
-                    call_sign);
-                Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)NULL );
+                    // Callsign is different or enough time has
+                    // passed
+
+                    last_emergency_time = sec_now();
+                    xastir_snprintf(last_emergency_callsign,
+                        sizeof(last_emergency_callsign),
+                        "%s",
+                        call_sign);
+
+                    popup_message("Emergency!",call_sign);
+
+                    // Bring up the Find Station dialog so that the
+                    // operator can go to the location quickly
+                    xastir_snprintf(locate_station_call,
+                        sizeof(locate_station_call),
+                        "%s",
+                        call_sign);
+
+                    Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)NULL );
+                }
                 break;
 
             default:
