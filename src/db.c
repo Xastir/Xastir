@@ -531,8 +531,11 @@ void msg_update_ack_stamp(long record_num) {
 // Called when we receive an ACK.  Sets the "acked" field in a
 // Message which gets rid of the highlighting in the Send Message
 // dialog for that line.  This lets us know which messages have
-// been acked and which have not.
-void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
+// been acked and which have not.  If timeout is non-zero, then
+// set acked to 2.  We use this in the update_messages() to flag
+// that "TIMEOUT:" should prefix the string.
+//
+void msg_record_ack(char *to_call_sign, char *my_call, char *seq, int timeout) {
     Message m_fill;
     long record;
     int do_update = 0;
@@ -584,7 +587,11 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
         else {  // This message has already been acked.
         }
 
-        msg_data[msg_index[record]].acked = (char)1;
+        if (timeout)
+            msg_data[msg_index[record]].acked = (char)2;
+        else
+            msg_data[msg_index[record]].acked = (char)1;
+
         if (debug_level & 1) {
             printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
                 msg_data[msg_index[record]].acked,
@@ -927,13 +934,15 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 // in and pressing "New Call" button.  First message is missing.
 
                                 // Label the message line with who sent it.
+                                // If acked = 2 a timeout has occurred
                                 xastir_snprintf(temp2, sizeof(temp2),
-                                    "%s  %-9s>%s\n",
+                                    "%s  %-9s>%s%s\n",
                                     // Debug code.  Trying to find sorting error
                                     //"%ld  %s  %-9s>%s\n",
                                     //msg_data[msg_index[j]].sec_heard,
                                     stemp,
                                     msg_data[msg_index[j]].from_call_sign,
+                                    (msg_data[msg_index[j]].acked == 2) ? "*TIMEOUT* " : "",
                                     msg_data[msg_index[j]].message_line);
 
 //printf("update_message: %s|%s", temp1, temp2);
@@ -947,6 +956,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 //                                            pos,
 //                                            pos+strlen(temp2),
 //                                            temp2);
+
                                     XmTextInsert(mw[mw_p].send_message_text,
                                             pos,
                                             temp2);
@@ -8024,6 +8034,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     char addr[9+1];
     char addr9[9+1];
     char msg_id[5+1];
+    char orig_msg_id[5+1];
     char ack_string[6];
     int done;
 
@@ -8067,6 +8078,9 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             temp_ptr[0] = '\0';                 // adjust message end (chops off message ID)
         }
 
+        // Save the original msg_id away.
+        strncpy(orig_msg_id,msg_id,5+1);
+
         // Check for Reply/Ack protocol in msg_id, which looks like
         // this:  "{XX}BB", where XX is the sequence number for the
         // message, and BB is the ack for the previous message from
@@ -8086,7 +8100,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 printf("Orig_msg_id:%s\t",msg_id);
             }
 
-// Put this code into the UI message area as well?
+// Put this code into the UI message area as well (if applicable).
 
             // Separate out the extra ack so that we can deal with
             // it properly.
@@ -8117,7 +8131,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                     printf("Found Reply/Ack:%s\n",message);
                 }
 
-// Put this code into the UI message area as well?
+// Put this code into the UI message area as well (if applicable).
 
                 while (temp_ptr[zz] != '\0') {
                     ack_string[yy++] = temp_ptr[zz++];
@@ -8146,8 +8160,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         substr(msg_id,message+3,5);
         // printf("ACK: %s: |%s| |%s|\n",call,addr,msg_id);
         if (is_my_call(addr,1)) {
-            clear_acked_message(call,addr,msg_id);      // got an ACK for me
-            msg_record_ack(call,addr,msg_id);      // Record the ack for this message
+            clear_acked_message(call,addr,msg_id);  // got an ACK for me
+            msg_record_ack(call,addr,msg_id,0);     // Record the ack for this message
         }
         else {                                          // ACK for other station
             /* Now if I have Igate on and I allow to retransmit station data           */
@@ -8191,16 +8205,18 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         printf("4\n");
 
     //--------------------------------------------------------------------------
-    if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) { // Message for me with msg_id (sequence number)
+    if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) { // Message for me with msg_id
+                                                             // (sequence number)
         time_t last_ack_sent;
         long record;
 
-// Remember to put this code into the UI message area as well.
+// Remember to put this code into the UI message area as well (if
+// applicable).
 
         // Check for Reply/Ack
         if (strlen(ack_string) != 0) {  // Have a free-ride ack to deal with
             clear_acked_message(call,addr,ack_string);  // got an ACK for me
-            msg_record_ack(call,addr,ack_string);   // Record the ack for this message
+            msg_record_ack(call,addr,ack_string,0);   // Record the ack for this message
         }
 
         // printf("found Msg w line to me: |%s| |%s|\n",message,msg_id);
@@ -8235,8 +8251,11 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             msg_update_ack_stamp(record);
 
             pad_callsign(from_call,call);         /* ack the message */
-            //sprintf(ack,":%s:ack%s",from_call,msg_id);
-            xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,msg_id);
+
+            // In this case we want to send orig_msg_id back, not
+            // the (possibly) truncated msg_id.  This is per Bob B's
+            // Reply/Ack spec, sent to xastir-dev on Nov 14, 2001.
+            xastir_snprintf(ack, sizeof(ack), ":%s:ack%s",from_call,orig_msg_id);
             transmit_message_data(call,ack);
             if (auto_reply == 1) {
                 if (debug_level & 2)
@@ -8370,7 +8389,7 @@ else {
             // for auto-reply, with an embedded free-ride Ack.
             if (strlen(ack_string) != 0) {  // Have an extra ack to deal with
                 clear_acked_message(call,addr,ack_string);  // got an ACK for me
-                msg_record_ack(call,addr,ack_string);   // Record the ack for this message
+                msg_record_ack(call,addr,ack_string,0);   // Record the ack for this message
             }
         }
  
@@ -8467,7 +8486,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
         substr(msg_id,message,5);
         if (is_my_call(addr,1)) {
             clear_acked_message(call,addr,msg_id);      // got an ACK for me
-            msg_record_ack(call,addr,msg_id);      // Record the ack for this message
+            msg_record_ack(call,addr,msg_id,0);      // Record the ack for this message
         }
 //        else {                                          // ACK for other station
             /* Now if I have Igate on and I allow to retransmit station data           */

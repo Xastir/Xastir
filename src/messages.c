@@ -59,7 +59,7 @@ int message_counter;
 int auto_reply;
 char auto_reply_message[100];
 
-Message_Window mw[MAX_MESSAGE_WINDOWS+1];
+Message_Window mw[MAX_MESSAGE_WINDOWS+1];   // Send Message widgets
 
 Message_transmit message_pool[MAX_OUTGOING_MESSAGES+1]; // Transmit message queue
 
@@ -565,6 +565,15 @@ void check_and_transmit_messages(time_t time) {
                         // do another compare (to enable the Send Msg
                         // button again).
                         strcpy(temp_to,message_pool[i].to_call_sign);
+
+                        // Record a fake ack and add "TIMEOUT:" to
+                        // the message.  This will be displayed in
+                        // the Send Message dialog.
+                        msg_record_ack(temp_to,
+                            message_pool[i].from_call_sign,
+                            message_pool[i].seq,
+                            1); // "1" specifies a timeout
+
                         clear_acked_message(temp_to,
                             message_pool[i].from_call_sign,
                             message_pool[i].seq);
@@ -585,6 +594,8 @@ void check_and_transmit_messages(time_t time) {
 
 
 
+// Function which marks a message as ack'ed in the transmit queue
+// and releases the next message to allow it to be transmitted.
 void clear_acked_message(char *from, char *to, char *seq) {
     int i,ii;
     int found;
