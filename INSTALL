@@ -1025,22 +1025,24 @@ NOTES FOR DEVELOPERS:
 
 Profiling:
 ----------
-1) Add "-pg" to the CFLAGS section of xastir/src/Makefile.  Mine
-looks like this:
+1) "./configure --with-profiling"
 
-    CFLAGS = -g -O2 -pipe -Wall -pthread -pg
+This will add "-pg" to the CFLAGS section of the Makefiles, which
+turns on the collection of profiling data while the executable is
+running (on Linux anyway).
 
-2) make clean
+2) "make clean"
 
-3) make install
+3) "make install" (Don't do "make install-strip" here, as that will
+strip off the symbol table information that gprof requires)
 
-4) xastir &
+4) "xastir &"
 
 5) Let Xastir run for some period of time.
 
 6) Close Xastir
 
-7) gprof /usr/local/bin/xastir | tee profile.txt
+7) "gprof /usr/local/bin/xastir | tee profile.txt"
 
 Gprof will use the Xastir binary and the gmon.out file created from
 running Xastir to give you the profile listing.
@@ -1049,12 +1051,18 @@ Add the "-l" flag to the gprof line to give you a line-by-line
 profile listing, but be prepared for a long run-time and a lot of
 CPU to be used by gprof to generate it:
 
-    gprof -l /usr/local/bin/xastir | tee profile.txt
+    "gprof -l /usr/local/bin/xastir | tee profile.txt"
 
 Also see this link, which talks about how to profile multithreaded
 applications:
 
     http://sam.zoy.org/writings/programming/gprof.html
+
+With the method described, you compile/install their library code,
+then invoke Xastir like this:
+
+    LD_PRELOAD=xastir/src/gprof-helper.so xastir &
+
 
 
 Checking for Memory Leaks:
@@ -1064,14 +1072,20 @@ Find it at:
 
     http://www.hpl.hp.com/personal/Hans_Boehm/gc
 
-2) Configure Xastir with --with-libgc
+2) "./configure --with-libgc"
 
-3) Run Xastir.
+3) "make clean"
 
-Libgc should output lines to the xterm as memory leaks are found.
+4) "make install"
+
+5) "xastir &".   Let Xastir run for some period of time.
+
+Libgc will dump messages to the xterm as memory leaks are found.
 Any Xastir memory leaks should have a filename and a line number
 listed.  Memory leaks from lower-level libraries will be missing the
-detailed information.
+detailed information, so they are easy to spot (and mostly useless
+for the purpose of finding and patching memory leaks).
+
 
 
   ------------------------------------------------------------------------

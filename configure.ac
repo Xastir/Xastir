@@ -320,7 +320,19 @@ fi
 
 
 
- 
+
+# Check whether profiling was requested.  If so, add the "-pg" flag
+# to CFLAGS.  Require "--with-profiling" flag to enable it.
+use_profiling=no
+AC_ARG_WITH(profiling,[  --with-profiling       Enable profiling features.],use_profiling=$withval)
+if test "${use_profiling}" = "yes"; then
+    CFLAGS="$CFLAGS -pg"
+fi
+
+
+
+
+
 # Check for ImageMagick.  This check is VERY important to have as
 # the last check, as it messes up the previous checks if it fails.
 use_imagemagick=yes
@@ -415,6 +427,9 @@ fi
 if test "${use_libgc}" = "yes"; then
   ILIBS="$ILIBS libgc"
 fi
+if test "${use_profiling}" = "yes"; then
+  ILIBS="$ILIBS profiling"
+fi
 AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
 
 
@@ -479,18 +494,19 @@ echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured using the
 echo following external libraries.
 echo  
 echo 
-echo Building with AX25.......... : $use_ax25 
-echo Building with Festival...... : $use_festival 
-echo Building with GPSMan........ : $use_gpsman
-echo Building with ImageMagick... : $use_imagemagick 
-echo Building with libproj....... : $use_proj
-echo Building with GeoTiff....... : $use_geotiff
-echo Building with GDAL/OGR...... : $use_gdal
-echo Building with ShapeLib...... : $use_shapelib 
-echo Building with pcre.......... : $use_pcre
-echo Building with dbfawk........ : $use_dbfawk
-echo "Building with libgc (Debug). : $use_libgc"
-#echo Building with Davis/MySQL... : $davis
+echo Building with AX25 ................ : $use_ax25 
+echo Building with Festival ............ : $use_festival 
+echo Building with GPSMan .............. : $use_gpsman
+echo Building with ImageMagick ......... : $use_imagemagick 
+echo Building with libproj ............. : $use_proj
+echo Building with GeoTiff ............. : $use_geotiff
+echo Building with GDAL/OGR ............ : $use_gdal
+echo Building with ShapeLib ............ : $use_shapelib 
+echo Building with pcre ................ : $use_pcre
+echo Building with dbfawk .............. : $use_dbfawk
+echo "Building with libgc (Debug) ....... : $use_libgc"
+echo "Building with profiling (Debug) ... : $use_profiling"
+#echo Building with Davis/MySQL.......... : $davis
 echo 
 echo AC_PACKAGE_NAME will be installed in $prefix/bin. 
 if test "x$xastirpath" != "x" ; then 
