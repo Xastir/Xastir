@@ -137,6 +137,8 @@
 
 #define XmFONTLIST_DEFAULT_MY "fixed"
 
+//#define USE_LARGE_FONT  // If defined, will use larger fonts
+
 #define LINE_WIDTH 1
 
 #define ARROWS     1            // Arrow buttons on menubar
@@ -6761,6 +6763,12 @@ void create_gc(Widget w) {
     char xbm_path[500];
     int ret_val;
 
+#ifdef USE_LARGE_FONT
+    XFontStruct *font = NULL;
+    char fonttext[40] = "-*-*-*-*-*-*-20-*-*-*-*-*-*-*";
+#endif  // USE_LARGE_FONT
+
+
     if (debug_level & 8)
         fprintf(stderr,"Create gc start\n");
 
@@ -6891,6 +6899,12 @@ void create_gc(Widget w) {
     values.background=GetPixelByName(w,"darkgray");
 
     gc = XCreateGC(my_display, XtWindow(w), mask, &values);
+
+#ifdef USE_LARGE_FONT
+    // Assign a large font to this gc
+    font = (XFontStruct *)XLoadQueryFont(XtDisplay(w), fonttext);
+    XSetFont(XtDisplay(w), gc, font->fid);
+#endif  // USE_LARGE_FONT
 
     gc_tint = XCreateGC(my_display, XtWindow(w), mask, &values);
 
@@ -21895,6 +21909,10 @@ int main(int argc, char *argv[]) {
 
         "*initialResourcesPersistent: False\n",
 
+#ifdef USE_LARGE_FONT
+        "*.fontList: -*-*-*-*-*-*-20-*-*-*-*-*-*-*\n",
+#endif  // USE_LARGE_FONT
+
         "*List.Translations: #override \n\
         <Key>Return:    Select(children)\n\
         <Key>space:     Select(children)\n",
@@ -22363,7 +22381,7 @@ int main(int argc, char *argv[]) {
             reload_object_item();
 
             // Update the logging indicator 
-	    Set_Log_Indicator();
+	        Set_Log_Indicator();
 
             XtAppMainLoop(app_context);
 
