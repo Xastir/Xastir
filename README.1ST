@@ -970,6 +970,65 @@ Getting Data Files for Xastir:
       the latter file, you'd type "bunzip2 filename" and then
       "tar xvf filename".
 
+      -----
+      Reprojecting shapefiles (or: why doesn't my shapefile show up?)
+
+      A shapefile is pretty much just a collection of points and lines
+      between points.  Xastir expects that those points are expressed in
+      degrees of longitude and latitude with positive values indicating N
+      and E and negative values indicating S and W.
+
+      One often comes across shapefiles with data in some other format, such
+      as UTM or stateplane projections with units in meters or feet.  You
+      must re-project the shapefile in order to use it in Xastir.
+
+      Fortunately, the shapelib-1.2.9 distribution (which you probably
+      compiled and installed to enable shapefile maps in Xastir) includes a
+      tool for performing this reprojection. 
+
+      First make the shpproj utility by:
+
+      1. change to directory: <shapelib source directory>/contrib
+      2. type 'make' to compile the contrib files
+      3. Optionally install shpproj by copying it to /usr/local/bin
+
+      shpproj takes 4 arguments:
+
+          shpproj shp_file new_shp -i="in_params" -o="out_params"
+
+      shp_file is the name of your existing shapefile triad (without the
+      extension).
+
+      new_shp is the name of your new shapefile triad (which doesn't exist
+      yet).
+
+      -i="in_params" are the  parameters describing the existing shapefile.
+
+      -o="out_params" are the parameters describing the new shapefile.  We
+      want this to be "geographic".
+
+      Examples:
+
+      Convert shapefile triad from US Stateplane, South Central Texas region
+      (FIPS code 4204), in feet to geographic:
+
+        shpproj stateplane_shapefile geographic_shapefile \
+             -i="init=nad83:4204 units=us-ft" -o=geographic
+
+      Convert UTM zone 15 to geographic:
+
+        shpproj utm_shapefile geographic_shapefile \
+             -i="proj=utm zone=15 units=m" -o=geographic
+
+      To get a listing of the FIPS codes, you need to have proj installed
+      (see elsewhere in this file for more information).  Look in the
+      "<proj source directory>/nad/nad.lst" file.
+
+      For more detailed documentation, see the shpproj.txt file in the
+      "<shapelib source directory>/contrib/doc" directory.
+      -----
+
+
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget installed, .geo files for NWS radars
