@@ -29,6 +29,7 @@ EXTRA_DIST = \
     nwsozddmmyy.dbfawk \
     nwsw_ddmmyy.dbfawk \
     nwsz_ddmmyy.dbfawk \
+    nwsfz_ddmmyy.dbfawk \
     tnc-startup.kpc3 \
     tnc-startup.thd7 \
     tnc-startup.kam \
