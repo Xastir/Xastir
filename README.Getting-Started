@@ -440,6 +440,57 @@ at this point.  If you're in command-line Linux/Unix only, Xastir
 won't run.
 
 
+Various ways to manipulate Xastir:
+
+
+Context-Dependent Operations:
+-----------------------------
+                Normal      Draw-CAD    Measure     Move
+                ------      --------    -------     ----
+Cursor          Arrow       Pencil      Crosshairs  Crosshairs
+LeftClick                                           SelectObject
+LeftDrag        ZoomToArea  ZoomToArea  MeasureArea MoveObject
+MiddleClick     ZoomOut     SetCADPoint ZoomOut     ZoomOut
+
+Alt-F, Alt-V, etc to bring up main menus via the keyboard.  Use
+arrow keys to navigate menus and/or single letters corresponding to
+the "hot" letter (underlined lettter) for each menu item.
+
+"ESC" to back out of the menu system.
+
+
+Global Operations:
+------------------
+LeftClick       Select Menu or GUI Item (when in menus or dialogs)
+LeftDblClick    FetchAlertText (when in View->Wx Alerts dialog)
+RightClick      OptionsMenu
+PageUp          ZoomOut
+PageDown        ZoomIn
+ArrowUp         PanUp
+ArrowDown       PanDown
+ArrowLeft       PanLeft
+ArrowRight      PanRight
+"="             GridSize++
+"+"             GridSize++
+"Num+"          GridSize++
+"-"             GridSize--
+"Num-"          GridSize--
+"Space"         Activate current widget
+"Tab"           Rotate among widgets
+"Back-Tab"      Rotate among widgets backwards
+
+
+Other Possible External Stimuli:
+--------------------------------
+Send a SIGUSR1 to cause a snapshot to be taken.
+Connect to Port 2023 if Server Port is enabled.
+
+
+Note that you can also tweak a define/recompile to reverse the
+left/right button functions.
+
+
+
 Configuring Xastir:
 -------------------
 *) Note that the menu's have a dashed line near the top.  If you
