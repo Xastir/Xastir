@@ -3190,6 +3190,10 @@ void draw_shapefile_map (Widget w,
                     // rings, and each ring has multiple points that
                     // define it.
 
+
+
+
+
 //WE7U
 // We don't handle the "hole" drawing in polygon shapefiles, where
 // clockwise direction around the ring means a fill, and CCW means a
@@ -3230,16 +3234,22 @@ void draw_shapefile_map (Widget w,
 // Create a polygon Region, then create a Region for each hole and
 // subtract the hole from the polygon Region.  Once we have a
 // complete polygon + holes, use that as the clip-mask for drawing
-// the real polygon.  Use XSetRegion() on the GC to set this up.
+// the real polygon.  Use XSetRegion() on the GC to set this up.  We
+// might have to do offsets as well so that the region maps properly
+// to our map pixmap when we draw the final polygon to it.
+// SUMMARY:  Should be faster than methods 1-5.
 //
 // 7) Do method 6 but instead of drawing a polygon region, draw a
 // rectangle region first, then knock holes in it.  Use that region
 // as the clip-mask for the XFillPolygon() later by calling
 // XSetRegion() on the GC.  We don't really need a polygon region
 // for a clip-mask.  A rectangle with holes in it will work just as
-// well and should be faster overall.
-// SUMMARY:  This should be the fast method of the ones listed.  We
-// end up drawing the polygon only once instead of twice, and each
+// well and should be faster overall.  We might have to do offsets
+// as well so that the region maps properly to our map pixmap when
+// we draw the final polygon to it.
+// SUMMARY:  This might be the fastest method of the ones listed, if
+// drawing a rectangle region is faster than drawing a polygon
+// region.  We draw the polygon once here instead of twice, and each
 // hole only once.  The only added drawing time would be the
 // creation of the rectangle region, which should be fairly fast,
 // and the subtracting of the hole regions from it.
@@ -3258,10 +3268,18 @@ void draw_shapefile_map (Widget w,
 // XUnionRegion:  Creates a new region from two
 // XOffsetRegion
 
+
+
+
+
 /*
     // Determine first whether we have any CCW rotation of vertices
     // in the Shape.  If so, we need to go through the below steps.
     // If not, just draw the filled polygon directly.
+
+// Note:  We probably need to use a temporary GC for drawing these
+// regions as I can't find a way to set the clip-mask to NULL after
+// we're finished.
 
     // Creates separate structures for each hole.  It might be good
     // to separate out the main polygon (without holes) as well for
@@ -3289,17 +3307,34 @@ void draw_shapefile_map (Widget w,
         int temp_region1 = 0;
         int temp_region2;
         int temp_region3;
+//        XRectangle rectangle;   // Used only for method 7
 
 
         // Draw the polygon region, whether we skip the hole
         // vertices shouldn't matter at this point except perhaps
         // for speed.  They lie inside the rest of the filled region
         // so those areas just get filled more than once.
+
 // Speed-up:  Create a rectangle region instead of a polygon.  That
 // way we won't draw the polygon twice.
+
+// Method 6: Creating a Polygon clip-mask.
         region[temp_region1] = XPolygonRegion(Xpoint points,
             int n,
             WindingRule);
+
+// Method 7: Creating a Rectangular clip-mask.
+        // Create empty region
+        //region[temp_region1] = XCreateRegion();
+
+        // Draw a rectangle region inside it
+        //rectangle.x      = (short) x;
+        //rectangle.y      = (short) y;
+        //rectangle.width  = (unsigned short) width;
+        //rectangle.height = (unsigned short) height;
+        //XUnionRectWithRegion(&rectangle,
+        //    region[temp_region1],
+        //    region[temp_region1]);
 
         // Create a region for each set of hole vertices (CCW
         // rotation of the vertices) and subtract each from the
@@ -3334,10 +3369,10 @@ void draw_shapefile_map (Widget w,
         XSetRegion(XtDisplay(w), gc, region[temp_region1]);
         XDestroyRegion(region[temp_region1]);
 
-        // Draw the original polygon.  Whether or not we subtract
-        // out the hole vectors here doesn't matter (except for
-        // speed reasons).  They won't get drawn due to the region
-        // clip-mask.
+        // Draw the original polygon onto the correct pixmap.
+        // Whether or not we subtract out the hole vectors here
+        // doesn't matter (except for speed reasons):  They won't
+        // get drawn due to the region clip-mask.
         (void)XFillPolygon(XtDisplay(w),
             pixmap,
             gc,
