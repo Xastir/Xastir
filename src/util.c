@@ -2503,7 +2503,7 @@ int valid_path(char *path) {
                     && ch != 'o') {     // Q-construct stuff
 
                 if (debug_level & 1)
-                    fprintf(stderr, "valid_path: Bad Path: Anti-loop stuff from aprsd\n");
+                    fprintf(stderr, "valid_path: Bad Path: Anti-loop stuff from aprsd or lower-case chars found\n");
                 return(0);          // wrong character in path
             }
         }
