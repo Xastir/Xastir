@@ -1496,6 +1496,7 @@ void draw_shapefile_map (Widget w,
                     // in the file, iff at least part of that shape
                     // is within our viewport.
 
+
                     if (debug_level & 16)
                         fprintf(stderr,"Found Polylines\n");
 
@@ -1575,7 +1576,7 @@ void draw_shapefile_map (Widget w,
                             index = MAX_MAP_POINTS - 1;
                             fprintf(stderr,"Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
                         }
-                    }
+                    }   // End of "for" loop for polyline points
 
 // Set up width and zoom level for roads
                     if (road_flag) {
@@ -1709,7 +1710,7 @@ void draw_shapefile_map (Widget w,
                         else {
                             (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
                         }
-                    }
+                    }   // End of road flag portion
 
 // Set up width and zoom levels for water
                     else if (river_flag || lake_flag) {
@@ -1966,7 +1967,8 @@ void draw_shapefile_map (Widget w,
 //                        (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineSolid, CapButt,JoinMiter);
                         (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineOnOffDash, CapButt,JoinMiter);
 //                        (void)XSetLineAttributes (XtDisplay (w), gc, 3, LineDoubleDash, CapButt,JoinMiter);
-                    }
+
+                    }   // End of gps flag portion
 
 
                     if (ok_to_draw && !skip_it) {
