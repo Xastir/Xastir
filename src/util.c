@@ -151,6 +151,7 @@ char *remove_trailing_asterisk(char *data) {
     if (strlen(data) == 0)
         return NULL;
 
+// Should the test here be i>=0 ??
     for(i=strlen(data)-1;i>0;i--) {
         if(data[i] == '*')
             data[i] = '\0';
@@ -3005,8 +3006,8 @@ int valid_inet_name(char *name, char *info, char *origin) {
         if (!isprint((int)name[i]))
             return(0);                  // not printable
 
-    if (len > 5 && strncmp(name,"aprsd",5) == 0) {
-        strncpy(origin, "INET", 5);
+    if (len >= 5 && strncmp(name,"aprsd",5) == 0) {
+        strncpy(origin, "INET", 4);
         origin[4] = '\0';   // Terminate it
         return(1);                      // aprsdXXXX is ok
     }
