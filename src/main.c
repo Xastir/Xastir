@@ -17953,7 +17953,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
                 XmNminimum, 10,
-                XmNmaximum, 120,
+                XmNmaximum, 180,
                 XmNshowValue, TRUE,
                 XmNvalue, tigermap_timeout,
                 XtVaTypedArg, XmNtitleString, XmRString, langcode("MPUPTGR017"), timeout_length,
