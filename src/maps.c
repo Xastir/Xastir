@@ -8412,8 +8412,14 @@ static int map_onscreen(long left, long right, long top, long bottom) {
 
 
 
+// Note:  There are long's in the pdb_hdr that are not being used.
+// If they were, the ntohl() function would need to be used in order
+// to make sure they were represented correctly on big-endian and
+// little-endian machines.  Same goes for short's, make sure ntohs()
+// is used in all cases.
+//
 void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixmap) {
-
+ 
 #pragma pack(1)
     struct {
         char name[32];
@@ -8493,12 +8499,12 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
 
     xastir_snprintf(filename, sizeof(filename), "%s/%s", dir, filenm);
+
     if ((fn = fopen(filename, "r")) != NULL) {
 
         if (debug_level & 1)
             printf("opened file: %s\n", filename);
 
-// Note:  This may not work across big/little-endian architectures!
         fread(&pdb_hdr, sizeof(pdb_hdr), 1, fn);
 
         if (strncmp(pdb_hdr.database_type, "map1", 4) != 0
@@ -8507,21 +8513,21 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
             fclose(fn);
             return;
         }
+
         records = ntohs(pdb_hdr.number_of_records);
 
-// Note:  This may not work across big/little-endian architectures!
         fread(&prl, sizeof(prl), 1, fn);
 
-        if (debug_level & 512)
+        if (debug_level & 512) {
             printf("Palm Map: %s, %d records, offset: %8x\n",
                 pdb_hdr.name,
                 records,
                 (unsigned int)ntohl(prl.record_data_offset));
+        }
 
         record_ptr = ftell(fn);
         fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
 
-// Note:  This may not work across big/little-endian architectures!
         fread(&pmf_hdr, sizeof(pmf_hdr), 1, fn);
 
         scale = ntohs(pmf_hdr.granularity);
@@ -8529,7 +8535,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         map_right = ntohl(pmf_hdr.right_bounds);
         map_top = ntohl(pmf_hdr.top_bounds);
         map_bottom = ntohl(pmf_hdr.bottom_bounds);
-        if (debug_level & 512)
+
+        if (debug_level & 512) {
             printf("\tLeft %ld, Right %ld, Top %ld, Bottom %ld, %s, Scale %d, %d\n",
                 map_left,
                 map_right,
@@ -8538,6 +8545,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                 pmf_hdr.menu_name,
                 scale,
                 pmf_hdr.sort_order);
+        }
 
         // DNN: multipy by 10; pocketAPRS corners in tenths of seconds,
         // internal map in hundredths of seconds (was "scale" which was wrong,
@@ -8547,44 +8555,50 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         map_right = map_right * 10;
         map_top = map_top * 10;
         map_bottom = map_bottom * 10;
+
         if (map_onscreen(map_left, map_right, map_top, map_bottom)) {
+
             max_x = screen_width  + MAX_OUTBOUND;
             max_y = screen_height + MAX_OUTBOUND;
+
             /* read vectors */
             for (record_count = 2; record_count <= records; record_count++) {
+
                 fseek(fn, record_ptr, SEEK_SET);
 
-// Note:  This may not work across big/little-endian architectures!
                 fread(&prl, sizeof(prl), 1, fn);
 
-                if (debug_level & 512)
+                if (debug_level & 512) {
                     printf("\tRecord %d, offset: %8x\n",
                         record_count,
                         (unsigned int)ntohl(prl.record_data_offset));
+                }
 
                 record_ptr = ftell(fn);
                 fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
 
-// Note:  This may not work across big/little-endian architectures!
                 fread(&record_hdr, sizeof(record_hdr), 1, fn);
 
-                if (debug_level & 512)
+                if (debug_level & 512) {
                     printf("\tType %d, Sub %d, Zoom %d\n",
                         record_hdr.type,
                         record_hdr.sub_type,
                         ntohs(record_hdr.minimum_zoom));
+                }
 
                 if (record_hdr.type > 0 && record_hdr.type < 16) {
+
                     vector = True;
 
-// Note:  This may not work across big/little-endian architectures!
                     while (vector && fread(&vector_hdr, sizeof(vector_hdr), 1, fn)) {
 
                         count = ntohs(vector_hdr.next_vector);
+
                         if (count && !(count&1)) {
                             line_x = ntohs(vector_hdr.line_start_x);
                             line_y = ntohs(vector_hdr.line_start_y);
-                            if (debug_level & 512)
+
+                            if (debug_level & 512) {
                                 printf("\tvector %d, left %d, right %d, top %d, bottom %d, start x %ld, start y %ld\n",
                                     count,
                                     ntohs(vector_hdr.left_bounds),
@@ -8593,6 +8607,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                     ntohs(vector_hdr.bottom_bounds),
                                     line_x,
                                     line_y);
+                            }
 
                             // DNN: Only line_x and line_y are scaled,
                             // not map_left and map_top
@@ -8607,15 +8622,15 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
                             for (count -= sizeof(vector_hdr); count > 0; count -= sizeof(vector_point)) {
 
-// Note:  This may not work across big/little-endian architectures!
                                 fread(&vector_point, sizeof(vector_point), 1, fn);
 
-                                if (debug_level & 512)
+                                if (debug_level & 512) {
                                     printf("\tnext x %d, next y %d\n",
                                         vector_point.next_x,
                                         vector_point.next_y);
                                         line_x += vector_point.next_x - 127;
                                         line_y += vector_point.next_y - 127;
+                                }
 
                                 // DNN: Only line_x and line_y are scaled,
                                 // not map_left and map_top
@@ -8627,24 +8642,24 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                     record_hdr.type,
                                     0,
                                     destination_pixmap);
-                                        }
+                            }
 
-                                        // DNN: Only line_x and line_y are scaled,
-                                        // not map_left and map_top
-                                        map_plot (w,
+                            // DNN: Only line_x and line_y are scaled,
+                            // not map_left and map_top
+                            map_plot (w,
                                 max_x,
                                 max_y,
                                 map_left + (line_x * scale),
                                 map_top + (line_y * scale),
                                 0,
-                                                0,
+                                0,
                                 destination_pixmap);
-                                    }
+                        }
                         else {
-                                        vector = False;
+                            vector = False;
                         }
-                            }
-                        }
+                    }
+                }
                 else if (record_hdr.type == 0) {  // We have a label
                     long label_x_cord;
                     long label_y_cord;
@@ -8667,10 +8682,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
  
                     label = True;
 
-// Note:  This may not work across big/little-endian architectures!
                     while (label && fread(&label_record, sizeof(label_record), 1, fn)) {
 
                         count = ntohs(label_record.next_label);
+
                         if (count && !(count&1)) {
                             line_x = ntohs(vector_hdr.line_start_x);
                             line_y = ntohs(vector_hdr.line_start_y);
@@ -8776,9 +8791,11 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                         }
                     }
                 }   // End of while
-                }
             }
-            fclose(fn);
+        }
+
+        fclose(fn);
+
         if (debug_level & 1)
             printf("Closed file\n");
     }
