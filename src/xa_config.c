@@ -1705,7 +1705,7 @@ void load_data_or_default(void) {
     if (!get_string ("SOUND_COMMAND", sound_command, sizeof(sound_command)))
         xastir_snprintf(sound_command,
             sizeof(sound_command),
-            "vplay -q");
+            "play");
 
     if (!get_int ("SOUND_PLAY_ONS", &sound_play_new_station,0,1,0))
         sound_play_new_station = 0;
