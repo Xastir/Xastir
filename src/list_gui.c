@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-indent: 4; indent-tabs-mode: nil -*-
  * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
@@ -542,16 +542,16 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 XtVaSetValues(SL_da[type][row],XmNlabelPixmap, blank_icon,NULL);
                 XtManageChild(SL_da[type][row]);
 
-                if ( (type == LST_OBJ || type == LST_MYOBJ)
-                    && (((p_station)->flag & ST_ACTIVE) != 0) ) {
-                    // Active object/item
-                    //printf("Active object\n");
-                    ghost = 0;
+                if (type == LST_OBJ || type == LST_MYOBJ) {
+                    if (p_station->flag & ST_ACTIVE) {
+                        ghost = 0;      // Active object/item
+                    }
+                    else {
+                        ghost = 1;      // Deleted object/item
+                    }
                 }
                 else {
-                    // Deleted object/item
-                    //printf("Inactive object\n");
-                    ghost = 1;
+                    ghost = 0;          // Not an object
                 }
 
                 // Blank out the icon first
@@ -565,7 +565,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                 symbol(SL_da[type][row],ghost,p_station->aprs_symbol.aprs_type,
                     p_station->aprs_symbol.aprs_symbol,
                     p_station->aprs_symbol.special_overlay,SL_icon[type][row],ghost,0,0,' ');
- 
+
                 XtVaSetValues(SL_da[type][row],XmNlabelPixmap, SL_icon[type][row],NULL);
                 XtManageChild(SL_da[type][row]);
 
@@ -1026,21 +1026,21 @@ void mouseScrollHandler(Widget w, XtPointer clientData, XButtonEvent* event, Boo
     // control moves 10 lines
 
     if (event->type == ButtonRelease) {
-	if (event->state & ControlMask)
-	    lines = 10;
-	else if (event->state & ShiftMask)
-	    lines = 1;
+        if (event->state & ControlMask)
+            lines = 10;
+        else if (event->state & ShiftMask)
+            lines = 1;
 
-	if (event->button == Button4) {	        // Scroll up
-	    if (last_offset[i] > 0) {
-		if ((last_offset[i] - lines) < 0)
-		    Station_List_fill(i, 0);
-		else
-		    Station_List_fill(i, last_offset[i] - lines);
-	    }
+        if (event->button == Button4) {         // Scroll up
+            if (last_offset[i] > 0) {
+                if ((last_offset[i] - lines) < 0)
+                    Station_List_fill(i, 0);
+                else
+                    Station_List_fill(i, last_offset[i] - lines);
+            }
         }
         else if (event->button == Button5) {    // Scroll down
-	    Station_List_fill(i, last_offset[i] + lines);
+            Station_List_fill(i, last_offset[i] + lines);
         }
     }
 }
@@ -1648,8 +1648,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNrightAttachment,         XmATTACH_FORM,
                                     XmNbackground,              colors[0xff],
                                     NULL);
-	XtAddEventHandler(SL_scroll[type], ButtonReleaseMask, FALSE,
-			  (XtEventHandler)mouseScrollHandler, (char*)clientData);
+        XtAddEventHandler(SL_scroll[type], ButtonReleaseMask, FALSE,
+                          (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
         win_list =  XtVaCreateWidget("Station_List win_list",xmFormWidgetClass, form,
                                     XmNtopAttachment,           XmATTACH_WIDGET,
@@ -1663,8 +1663,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNrightWidget,             SL_scroll[type],
                                     XmNbackground,              colors[0xff],
                                     NULL);
-	XtAddEventHandler(win_list, ButtonReleaseMask, FALSE,
-			  (XtEventHandler)mouseScrollHandler, (char*)clientData);
+        XtAddEventHandler(win_list, ButtonReleaseMask, FALSE,
+                          (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
         for (i=0; i<17;i++) {   // setup widgets for maximum number of rows
             if (i != 0) {         // not first row
@@ -1713,8 +1713,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNbackground,            colors[0xff],
                                       NULL);
             }
-	    XtAddEventHandler(SL_list[type][i], ButtonReleaseMask, FALSE,
-			      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+            XtAddEventHandler(SL_list[type][i], ButtonReleaseMask, FALSE,
+                              (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
             // station symbol graphics
             SL_da[type][i] = XtVaCreateManagedWidget("Station_List icon", xmLabelWidgetClass, win_list,
@@ -1729,8 +1729,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNlabelPixmap,           SL_icon[type][i],
                                       XmNbackground,            colors[0xff],
                                       NULL);
-	    XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
-			      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+            XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
+                              (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
             // call sign
             SL_call[type][i]= XtVaCreateManagedWidget("Station_List call data", xmTextFieldWidgetClass, win_list,
@@ -1749,8 +1749,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
                                       NULL);
-	    XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
-			      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+            XtAddEventHandler(SL_da[type][i], ButtonReleaseMask, FALSE,
+                              (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
             switch (type) {
                 case LST_ALL:   // station list
@@ -1776,8 +1776,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
                                       NULL);
-		    XtAddEventHandler(SL_packets[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_packets[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     // Last time of position report
                     SL_pos_time[type][i] = XtVaCreateManagedWidget("Station_List pos_time", xmTextFieldWidgetClass, win_list,
@@ -1797,8 +1797,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
                                       NULL);
-		    XtAddEventHandler(SL_pos_time[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_pos_time[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     // path
                     SL_node_path[type][i] = XtVaCreateManagedWidget("Station_List node_path", xmTextFieldWidgetClass, win_list,
@@ -1818,8 +1818,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                       XmNbottomAttachment,      XmATTACH_NONE,
                                       XmNrightAttachment,       XmATTACH_NONE,
                                       NULL);
-		    XtAddEventHandler(SL_node_path[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_node_path[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     // PHG
                     SL_power_gain[type][i] = XtVaCreateManagedWidget("Station_List packets", xmTextFieldWidgetClass, win_list,
@@ -1839,8 +1839,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNbottomAttachment,        XmATTACH_NONE,
                                     XmNrightAttachment,         XmATTACH_NONE,
                                     NULL);
-		    XtAddEventHandler(SL_power_gain[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_power_gain[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     // Comment
                     SL_comments[type][i] = XtVaCreateManagedWidget("Station_List comments", xmTextFieldWidgetClass, win_list,
@@ -1860,8 +1860,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                     XmNbottomAttachment,        XmATTACH_NONE,
                                     XmNrightAttachment,         XmATTACH_NONE,
                                     NULL);
-		    XtAddEventHandler(SL_comments[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_comments[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
                     break;
 
                 case LST_MOB:   /*mobile list */
@@ -1882,8 +1882,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_course[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_course[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_speed[type][i] = XtVaCreateManagedWidget("Station_List speed", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -1902,8 +1902,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_speed[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_speed[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_alt[type][i] = XtVaCreateManagedWidget("Station_List alt", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -1922,8 +1922,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_alt[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_alt[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_lat_long[type][i] = XtVaCreateManagedWidget("Station_List lat/lon", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -1942,8 +1942,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_lat_long[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_lat_long[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_packets[type][i] = XtVaCreateManagedWidget("Station_List packets", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -1962,8 +1962,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_packets[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_packets[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_sats[type][i] = XtVaCreateManagedWidget("Station_List sats", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -1982,8 +1982,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_sats[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_sats[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_my_course[type][i] = XtVaCreateManagedWidget("Station_List my course", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2002,8 +2002,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_my_course[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_my_course[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_my_distance[type][i] = XtVaCreateManagedWidget("Station_List my distance", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2022,8 +2022,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_my_distance[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_my_distance[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     break;
 
@@ -2045,8 +2045,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_wind_course[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_wind_course[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_wx_wind_speed[type][i] = XtVaCreateManagedWidget("Station_List wind speed", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2065,8 +2065,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_wind_speed[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_wind_speed[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
 
                     SL_wx_wind_gust[type][i] = XtVaCreateManagedWidget("Station_List wind gust", xmTextFieldWidgetClass, win_list,
@@ -2086,8 +2086,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_wind_gust[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_wind_gust[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_wx_temp[type][i] = XtVaCreateManagedWidget("Station_List temp", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2106,8 +2106,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_temp[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_temp[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_wx_hum[type][i] = XtVaCreateManagedWidget("Station_List humidity", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2126,8 +2126,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_hum[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_hum[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_wx_baro[type][i] = XtVaCreateManagedWidget("Station_List wx baro", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2146,8 +2146,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_baro[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_baro[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_wx_rain_h[type][i] = XtVaCreateManagedWidget("Station_List rain hour", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2166,8 +2166,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_rain_h[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_rain_h[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_wx_rain_00[type][i] = XtVaCreateManagedWidget("Station_List rain since mid", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2186,8 +2186,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_rain_00[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_rain_00[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     SL_wx_rain_24[type][i] = XtVaCreateManagedWidget("Station_List rain last 24", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
@@ -2206,8 +2206,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbottomAttachment,XmATTACH_NONE,
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
-		    XtAddEventHandler(SL_wx_rain_24[type][i], ButtonReleaseMask, FALSE,
-				      (XtEventHandler)mouseScrollHandler, (char*)clientData);
+                    XtAddEventHandler(SL_wx_rain_24[type][i], ButtonReleaseMask, FALSE,
+                                      (XtEventHandler)mouseScrollHandler, (char*)clientData);
 
                     break;
 
