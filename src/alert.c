@@ -1448,7 +1448,8 @@ void alert_build_list(Message *fill) {
                 }
                 // Skip past '-' character, if any, so that we can
                 // get to the next prefix
-                if (ptr[0] == '-') {
+                // RZG:Added the ptr check, so we don't read a byte off the end
+                if ( (ptr < (compressed_wx + strlen(compressed_wx))) && (ptr[0] == '-') ) {
                     ptr++;
                 }
             }
