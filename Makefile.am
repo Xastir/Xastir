@@ -19,7 +19,7 @@ EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh \
         README.Getting-Started README.MAPS README.win32 DEBUG_LEVELS \
         bootstrap.sh INSTALL UPGRADE xastir.1 terraserver.geo \
         toposerver.geo tigermap.geo USRadar.geo CanadaTopo250k.geo \
-        CanadaTopo50k.geo Davis
+        CanadaTopo50k.geo TXRadar.geo Davis
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
         config.guess config.sub install-sh missing mkinstalldirs \
@@ -38,7 +38,8 @@ mapdir=${pkgdatadir}/maps
 
 onlinedir=${pkgdatadir}/maps/Online
 online_DATA=terraserver.geo toposerver.geo tigermap.geo \
-        USRadar.geo CanadaTopo250k.geo CanadaTopo50k.geo
+        USRadar.geo CanadaTopo250k.geo CanadaTopo50k.geo \
+        TXRadar.geo
 
 gpsdir=${pkgdatadir}/maps/GPS
 gps_DATA=placeholder
