@@ -1241,7 +1241,7 @@ WINDOWS/CYGWIN NOTES:
             devel/make
             devel/rcs
             editors/vim
-            graphics/tiff (install sources for this one)
+            graphics/tiff (install sources for this one too? TBD)
             interpreters/m4
             interpreters/perl
             text/less
@@ -1389,8 +1389,16 @@ WINDOWS/CYGWIN NOTES:
 
      So far it appears to compile fine until it gets to the "ld -shared"
      step.  At that point it bombs out with a hundred or so "undefined
-     reference" messages.  Perhaps a new link line would solve that.
-     Investigating that possibility...
+     reference" messages.  Perhaps a new link line would solve that?  Line
+     at which the compile fails:
+
+     ld -shared xtiff.o geo_free.o geo_get.o geo_names.o geo_new.o
+     geo_print.o geo_set.o geo_tiffp.o geo_write.o geo_trans.o
+     geo_normalize.o geotiff_proj4.o geo_extra.o cpl_serv.o cpl_csv.o -lproj
+     -ltiff -ljpeg -lz -lm -L/usr/local/lib -o libgeotiff.so.1.1.5
+
+     Another possibility is that Xastir will use the ".a" library and we
+     won't have to create the shared library at this step at all.
  
      -------------------------
 
