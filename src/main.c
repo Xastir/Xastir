@@ -4420,6 +4420,13 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
+// Used by view_gps_status() function below.  We must either expire
+// this data or associate a time with it on the display.
+char gps_status_save[100];
+time_t gps_status_save_time = 0;
+
+
+
 char *report_gps_status(void) {
     static char gps_temp[100];
     char temp2[20];
@@ -4445,6 +4452,15 @@ char *report_gps_status(void) {
         "Sats/View:%s Fix:%s",
         gps_sats,
         temp2);
+
+    // Save it in global variable in case we request status via the
+    // menus.
+    xastir_snprintf(gps_status_save,
+        sizeof(gps_status_save),
+        "%s",
+        gps_temp);
+
+    gps_status_save_time = sec_now();
  
     // Reset the variables.
     strncpy(gps_sats, "00", 3);
@@ -4458,10 +4474,18 @@ char *report_gps_status(void) {
 
 
 void view_gps_status(Widget w, XtPointer clientData, XtPointer callData) {
-    char temp[200];
 
-    strcpy(temp, report_gps_status());
-    popup_message(langcode("PULDNVI015"),temp);
+    // GPS status data too old?
+    if ((gps_status_save_time + 30) >= sec_now()) {
+        // Nope, within 30 seconds
+        popup_message(langcode("PULDNVI015"),
+            gps_status_save);
+    }
+    else {
+        // Yes, GPS status data is old
+        popup_message(langcode("PULDNVI015"),
+            "!GPS data is older than 30 seconds!");
+    }
 }
 
 
