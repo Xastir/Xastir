@@ -625,7 +625,13 @@ void guess_vector_attributes( Widget w,
 
 
 
-void Draw_OGR_Labels(Widget w, Pixmap pixmap, OGRFeatureH featureH, OGRGeometryH geometryH, XPoint *xpoints, int num_points) {
+void Draw_OGR_Labels( Widget w,
+                      Pixmap pixmap,
+                      OGRFeatureH featureH,
+                      OGRGeometryH geometryH,
+                      XPoint *xpoints,
+                      int num_points) {
+
     int i,j;
     const char *pi = NULL;
     const char *pj = NULL;
@@ -691,11 +697,11 @@ void Draw_OGR_Labels(Widget w, Pixmap pixmap, OGRFeatureH featureH, OGRGeometryH
 // determine which field in the file to use as a label and the
 // font/color/placement/size/etc.
 // 
-void Draw_OGR_Points(Widget w,
-        OGRFeatureH featureH,
-        OGRGeometryH geometryH,
-        int level,
-        OGRCoordinateTransformationH transformH) {
+void Draw_OGR_Points( Widget w,
+                      OGRFeatureH featureH,
+                      OGRGeometryH geometryH,
+                      int level,
+                      OGRCoordinateTransformationH transformH) {
  
     int kk;
     int object_num = 0;
@@ -825,12 +831,12 @@ guess_vector_attributes(w,
 // snagging the extents instead of the entire object, so we might
 // just leave it as-is.
 //
-void Draw_OGR_Lines(Widget w,
-        OGRFeatureH featureH,
-        OGRGeometryH geometryH,
-        int level,
-        OGRCoordinateTransformationH transformH,
-        int fast_extents) {
+void Draw_OGR_Lines( Widget w,
+                     OGRFeatureH featureH,
+                     OGRGeometryH geometryH,
+                     int level,
+                     OGRCoordinateTransformationH transformH,
+                     int fast_extents) {
  
     int kk;
     int object_num = 0;
@@ -1137,7 +1143,12 @@ guess_vector_attributes(w,
 // Create a rectangular X11 Region.  It should be the size of the
 // extents for the outer polygon.
 //
-Region create_clip_mask(int num, int minX, int minY, int maxX, int maxY) {
+Region create_clip_mask( int num,
+                         int minX,
+                         int minY,
+                         int maxX,
+                         int maxY) {
+
     XRectangle rectangle;
     Region region;
 
@@ -1184,10 +1195,10 @@ Region create_clip_mask(int num, int minX, int minY, int maxX, int maxY) {
 // Region must have been created with "create_clip_mask()" before
 // this function is called.
 //
-Region create_hole_in_mask(Region mask,
-        int num,
-        long *X,
-        long *Y) {
+Region create_hole_in_mask( Region mask,
+                            int num,
+                            long *X,
+                            long *Y) {
 
     Region region2 = NULL;
     Region region3 = NULL;
@@ -1251,9 +1262,9 @@ Region create_hole_in_mask(Region mask,
 // the initial X11 Region was saved away during the creation.  Now
 // we just draw it to the pixmap using the X11 Region as a mask.
 //
-void draw_polygon_with_mask(Region mask,
-        XPoint *xpoints,
-        int num_points) {
+void draw_polygon_with_mask( Region mask,
+                             XPoint *xpoints,
+                             int num_points) {
 
     GC gc_temp = NULL;
     XGCValues gc_temp_values;
@@ -1350,13 +1361,13 @@ void draw_polygon_with_mask(Region mask,
 // snagging the extents instead of the entire object, so we might
 // just leave it as-is.
 //
-void Draw_OGR_Polygons(Widget w,
-        OGRFeatureH featureH,
-        OGRGeometryH geometryH,
-        int level,
-        OGRCoordinateTransformationH transformH,
-        int draw_filled,
-        int fast_extents) {
+void Draw_OGR_Polygons( Widget w,
+                        OGRFeatureH featureH,
+                        OGRGeometryH geometryH,
+                        int level,
+                        OGRCoordinateTransformationH transformH,
+                        int draw_filled,
+                        int fast_extents) {
  
     int kk;
     int object_num = 0;
@@ -1860,7 +1871,7 @@ void clear_dangerous(void) {
 // drivers.  The only applications that I am aware of taking
 // advantage of it are OpenEV and MapServer."
 
-void draw_ogr_map(Widget w,
+void draw_ogr_map( Widget w,
                    char *dir,
                    char *filenm,
                    alert_entry *alert,
