@@ -1170,6 +1170,10 @@ Getting Data Files for Xastir:
       for the U.S.  Check for it under the "Index Grids" link on
       their web pages.
 
+      A nice world map is available at http://aprsworld.net/gisdata/world/
+      thanks to James Jefferson, TerraSpace, Russia, and the Digital Chart
+      of the World (for Antartica).
+
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget installed, .geo files for NWS radars are
