@@ -66,7 +66,7 @@
 
 #ifdef DEBUG
 static int debug=1;
-#else
+#else   // DEBUG
 static int debug=0;
 #endif /*DEBUG*/
 
@@ -82,7 +82,7 @@ static int debug=0;
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
-#endif
+#endif  // M_PI
 
 
 /* ---------------------------------------------------------------------- */
@@ -778,7 +778,7 @@ static RotatedTextItem *XRotRetrieveFromCache(dpy, font, angle, text, align)
         font_name=NULL;
         fid=font->fid;
     }
-#else
+#else   // CACHE_FID
     /* not allowed to cache font ID's */
     else {
         DEBUG_PRINT1("can't get fontname, can't cache\n");
@@ -1215,7 +1215,7 @@ static void XRotAddToLinkedList(dpy, item)
 
     item->size=((item->cols_out-1)/8+1)*item->rows_out;
 
-#else
+#else   // CACHE_BITMAPS
 
     /* this is pretty much the size of a RotatedTextItem */
 
@@ -1242,7 +1242,7 @@ static void XRotAddToLinkedList(dpy, item)
         DEBUG_PRINT2("Cache has %d items.\n", i);
         i1=first_text_item;
     }
-#endif
+#endif  // DEBUG
 
     DEBUG_PRINT4("current cache size=%ld, new item=%ld, limit=%ld\n",
                  current_size, item->size, (long)(CACHE_SIZE_LIMIT*1024));
@@ -1323,7 +1323,7 @@ static void XRotFreeTextItem(dpy, item)
 
 #ifdef CACHE_BITMAPS
     XFreePixmap(dpy, item->bitmap);
-#else
+#else   // CACHE_BITMAPS
     XDestroyImage(item->ximage);
 #endif /* CACHE_BITMAPS */
 

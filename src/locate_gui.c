@@ -30,7 +30,7 @@
 #include <Xm/XmAll.h>
 #ifdef HAVE_XBAE_MATRIX_H
 #include <Xbae/Matrix.h>
-#endif
+#endif  // HAVE_XBAE_MATRIX_H
 
 #include "main.h"
 #include "xastir.h"

@@ -43,7 +43,7 @@
 
 #ifdef HAVE_DMALLOC
 #include <dmalloc.h>
-#endif
+#endif  // HAVE_DMALLOC
 
 Widget configure_interface_dialog = NULL;
 Widget interface_list = NULL;
@@ -203,9 +203,9 @@ void set_port_speed(int port) {
         case(10):
 #ifndef B230400
             devices[port].sp=B115200;
-#else
+#else   // B230400
             devices[port].sp=B230400;
-#endif
+#endif  // B230400
             break;
 
         default:
@@ -520,7 +520,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 // We can only set the time properly on Linux systems
 #ifndef HAVE_SETTIMEOFDAY
                 XtSetSensitive(TNC_GPS_set_time,FALSE);
-#endif
+#endif  // HAVE_SETTIMEOFDAY
 
                 break;
             case DEVICE_SERIAL_KISS_TNC:
@@ -1318,7 +1318,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;
                     break;
-#endif
+#endif  // B230400
 
                 default:
                     XmToggleButtonSetState(speed_4800,TRUE,FALSE);
@@ -1594,7 +1594,7 @@ void Config_GPS( /*@unused@*/ Widget w, int config_type, int port) {
 // We can only set the time properly on Linux systems
 #ifndef HAVE_SETTIMEOFDAY
         XtSetSensitive(GPS_set_time,FALSE);
-#endif
+#endif  // HAVE_SETTIMEOFDAY
  
         frame = XtVaCreateManagedWidget("Config_GPS frame", xmFrameWidgetClass, form,
                                     XmNtopAttachment,XmATTACH_WIDGET,
@@ -1843,7 +1843,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS" );
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;
                     break;
-#endif
+#endif  // B230400
 
                 default:
                     XmToggleButtonSetState(speed_4800,TRUE,FALSE);
@@ -2386,7 +2386,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;
                     break;
-#endif
+#endif  // B230400
 
                 default:
                     XmToggleButtonSetState(speed_4800,TRUE,FALSE);
@@ -3120,7 +3120,7 @@ void Config_NGPS( /*@unused@*/ Widget w, int config_type, int port) {
 // We can only set the time properly on Linux systems
 #ifndef HAVE_SETTIMEOFDAY
         XtSetSensitive(NGPS_set_time,FALSE);
-#endif
+#endif  // HAVE_SETTIMEOFDAY
  
         sep = XtVaCreateManagedWidget("Config_NGPS sep", xmSeparatorGadgetClass,form,
                                       XmNorientation, XmHORIZONTAL,
@@ -3278,9 +3278,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
 //#define I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT 1
 #ifdef I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
         XtSetSensitive(AX25_relay_digipeat, TRUE);
-#else
+#else   // I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
         XtSetSensitive(AX25_relay_digipeat, FALSE);
-#endif
+#endif  // I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
     }
     else {
         devices[AX25_port].transmit_data=0;
@@ -3404,7 +3404,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
 
 #ifndef I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
 	XtSetSensitive(AX25_relay_digipeat, FALSE);
-#endif
+#endif  // I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
 
         devn = XtVaCreateManagedWidget(langcode("WPUPCAX002"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
@@ -4872,11 +4872,11 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
 #ifdef HAVE_AX25
                             fprintf(stderr,"ADD AX.25 TNC\n");
                         Config_AX25(w, 0, port);
-#else
+#else   // HAVE_AX25
                         fprintf(stderr,"AX.25 support not compiled into Xastir!\n");
                         popup_message(langcode("POPEM00004"),langcode("POPEM00021"));
 
-#endif
+#endif  // HAVE_AX25
                         break;
 
                     case DEVICE_NET_STREAM:

@@ -47,7 +47,7 @@
 
 #ifdef HAVE_DMALLOC
 #include <dmalloc.h>
-#endif
+#endif  // HAVE_DMALLOC
 
 Widget All_messages_dialog = NULL;
 Widget view_messages_text = NULL;

@@ -52,7 +52,7 @@
   #ifndef NO_XPM
     #include <Xm/XpmI.h>
   #endif    // NO_XPM
-#else
+#else   // HAVE_XPMI
 #include <X11/xpm.h>
 #endif  // HAVE_XPMI
 
@@ -9691,7 +9691,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 // Lclint can't handle this structure for some reason.
 #ifndef __LCLINT__
                 for (j = 0; j < DOS_HDR_LINES; strlen (Buffer) ? 1: j++) {
-#else
+#else   // __LCLINT__
 // So we do it this way for Lclint:
                 for (j = 0; j < DOS_HDR_LINES;) {
                     if (!strlen(Buffer))

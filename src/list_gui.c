@@ -32,20 +32,20 @@
 
 #ifdef  HAVE_LOCALE_H
 #include <locale.h>
-#endif
+#endif  // HAVE_LOCALE_H
 
 #ifdef  HAVE_LIBINTL_H
 #include <libintl.h>
 #define _(x)        gettext(x)
-#else
+#else   // HAVE_LIBINTL_H
 #define _(x)        (x)
-#endif
+#endif  // HAVE_LIBINTL_H
 
 #include <Xm/XmAll.h>
 
 #ifdef HAVE_XBAE_MATRIX_H
 #include <Xbae/Matrix.h>
-#endif
+#endif  // HAVE_XBAE_MATRIX_H
 
 #include "main.h"
 #include "xastir.h"

@@ -48,14 +48,14 @@
 
 #ifdef HAVE_DMALLOC
 #include <dmalloc.h>
-#endif
+#endif  // HAVE_DMALLOC
 
 
 // For mutex debugging with Linux threads only
 #ifdef MUTEX_DEBUG
 #include <asm/errno.h>
 extern int pthread_mutexattr_setkind_np(pthread_mutexattr_t *attr, int kind);
-#endif
+#endif  // MUTEX_DEBUG
 
 
 int position_amb_chars;
@@ -740,16 +740,16 @@ time_t time_from_aprsstring(char *aprs_time) {
 
 #ifdef __solaris__
     extern time_t timezone;
-#endif
+#endif  // __solaris__
 
 
     (void)time(&timenw);
     time_now = localtime(&timenw);
 #ifdef HAVE_GMTOFF
     zone = (time_now->tm_gmtoff) - 3600 * (int)(time_now->tm_isdst);
-#else
+#else   // HAVE_GMTOFF
     zone = (int)timezone - 3600 * (int)(time_now->tm_isdst > 0);
-#endif
+#endif  // HAVE_GMTOFF
     tz[0] = tz[1] = '\0';
     switch (sscanf(aprs_time, "%2d%2d%2d%19s", &day, &hour, &minute, tz)) {
         case 0:
@@ -954,7 +954,7 @@ int position_defined(long lat, long lon, int strict) {
         return(0);              // undefined location
 #ifndef ACCEPT_0N_0E
     if (strict)
-#endif
+#endif  // ACCEPT_0N_0E
         if (lat == 90*60*60*100l && lon == 180*60*60*100l)      // 0N/0E
             return(0);          // undefined location
     return(1);
@@ -1538,7 +1538,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
     FILE *f_temp;
 #ifdef HAVE_CP
     char command[300];
-#endif
+#endif  // HAVE_CP
     char line[300];
     char name[15];
 
@@ -1584,7 +1584,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
             file_temp);
         return;
     }
-#endif
+#endif  // HAVE_CP
 
     // Open the temp file and write to the original file, with hash
     // marks in front of the appropriate lines.
@@ -2454,9 +2454,9 @@ void init_critical_section(xastir_mutex *lock) {
     (void)pthread_mutexattr_setkind_np(&attr, PTHREAD_MUTEX_ERRORCHECK_NP);
     (void)pthread_mutexattr_init(&attr);
     (void)pthread_mutex_init(&lock->lock, &attr);
-#else
+#else   // MUTEX_DEBUG
     (void)pthread_mutex_init(&lock->lock, NULL); // Set to default POSIX-compatible type
-#endif
+#endif  // MUTEX_DEBUG
 
     lock->threadID = 0;  // No thread has locked it yet
 }
@@ -2475,7 +2475,7 @@ int begin_critical_section(xastir_mutex *lock, char *text) {
     int problems;
 #ifdef MUTEX_DEBUG
     int ret;
-#endif
+#endif  // MUTEX_DEBUG
 
     problems = 0;
 
@@ -2521,9 +2521,9 @@ int begin_critical_section(xastir_mutex *lock, char *text) {
 
     if (problems)
         fprintf(stderr,"Returning %d to calling thread\n", problems);
-#else
+#else   // MUTEX_DEBUG
     pthread_mutex_lock(&lock->lock);
-#endif
+#endif  // MUTEX_DEBUG
 
     // Note:  This can only be set AFTER we already have the mutex lock.
     // Otherwise there may be contention with other threads for setting
@@ -2547,7 +2547,7 @@ int end_critical_section(xastir_mutex *lock, char *text) {
     int problems;
 #ifdef MUTEX_DEBUG
     int ret;
-#endif
+#endif  // MUTEX_DEBUG
 
     problems = 0;
 
@@ -2600,9 +2600,9 @@ int end_critical_section(xastir_mutex *lock, char *text) {
 
     if (problems)
         fprintf(stderr,"Returning %d to calling thread\n", problems);
-#else
+#else   // MUTEX_DEBUG
     (void)pthread_mutex_unlock(&lock->lock);
-#endif
+#endif  // MUTEX_DEBUG
 
     return(problems);
 }
@@ -2630,7 +2630,7 @@ void time_mark(int start)
         fprintf(stderr,"time:  %ld.%06lds\n", sec, usec);
     }
 }
-#endif
+#endif  // TIMING_DEBUG
 
 
 // Function which adds commas to callsigns (and other abbreviations?)

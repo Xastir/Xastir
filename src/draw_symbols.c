@@ -1994,7 +1994,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
         }
 
         if (onscreen(mostWest, mostEast, mostNorth, mostSouth))
-#else
+#else   // 0
 
         // See if the station icon is on the screen. If so, draw the associated
         // points. The drawback to this approach is that if the station icon is
@@ -2003,7 +2003,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
 
         if((x_long > x_long_offset) && (x_long < (x_long_offset + (long)(screen_width * scale_x)))
             && (y_lat > y_lat_offset) && (y_lat < (y_lat_offset + (long)(screen_height * scale_y))))
-#endif
+#endif  // 0
         {
             //x_offset = (x_long - x_long_offset) / scale_x;
             //y_offset = (y_lat - y_lat_offset) / scale_y;

@@ -380,7 +380,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     char fileimg[400];
 #ifdef HAVE_WGET
     char tempfile[500];
-#endif
+#endif  // HAVE_WGET
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
@@ -423,9 +423,9 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         fprintf(stderr,"Couldn't download the trail\n");
         return;
     }
-#else
+#else   // HAVE_WGET
     fprintf(stderr,"'wget' not installed.  Can't download trail\n");
-#endif
+#endif  // HAVE_WGET
 
     // Set permissions on the file so that any user can overwrite it.
     chmod(log_filename, 0666);

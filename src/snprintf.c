@@ -90,31 +90,31 @@
 #if defined(__STDC__)
 #  ifdef HAVE_STDARG_H
 #    include <stdarg.h>
-#  else
+#  else // HAVE_STDARG_H
 #    ifdef HAVE_STD_ARGS_H
 #      include <std_args.h>
-#    endif
-#  endif
+#    endif  // HAVE_STD_ARGS_H
+#  endif    // HAVE_STDARG_H
 #  include <stdarg.h>
 #  define HAVE_STDARGS  /* let's hope that works everywhere (mj) */
 #  define VA_LOCAL_DECL va_list ap
 #  define VA_START(f) va_start(ap, f)
 #  define VA_SHIFT(v,t); /* no-op for ANSI */
 #  define VA_END va_end(ap)
-#else
+#else   // __STDC__
 #  include <varargs.h>
 #  undef HAVE_STDARGS
 #  define VA_LOCAL_DECL va_list ap
 #  define VA_START(f) va_start(ap)      /* f is ignored! */
 #  define VA_SHIFT(v,t) v = va_arg(ap,t)
 #  define VA_END va_end(ap)
-#endif
+#endif  // __STDC__
 
 #ifdef HAVE_LONG_DOUBLE
 #define LDOUBLE long double
-#else
+#else   // HAVE_LONG_DOUBLE
 #define LDOUBLE double
-#endif
+#endif  // HAVE_LONG_DOUBLE
 
 static void dopr(char *buffer, size_t maxlen, const char *format, va_list args);
 static void fmtstr(char *buffer, size_t * currlen, size_t maxlen, char *value,
@@ -501,7 +501,7 @@ static void fmtint(char *buffer, size_t * currlen, size_t maxlen,
 #ifdef DEBUG_SNPRINTF
     dprint(1, (debugfile, "zpad: %d, spad: %d, min: %d, max: %d, place: %d\n",
             zpadlen, spadlen, min, max, place));
-#endif
+#endif  // DEBUG_SNPRINTF
 
     /* Spaces */
     while (spadlen > 0) {
@@ -597,7 +597,7 @@ static void fmtfp(char *buffer, size_t * currlen, size_t maxlen,
 #if 0
     if (flags & DP_F_UP)
         caps = 1; /* Should characters be upper case? */
-#endif
+#endif  // 0
 
     intpart = ufvalue;
 
@@ -714,15 +714,15 @@ int xastir_vsnprintf(char *str, size_t count, const char *fmt, va_list args)
 #ifndef HAVE_SNPRINTF
 #  ifdef HAVE_STDARGS
 int xastir_snprintf(char *str, size_t count, const char *fmt, ...)
-#  else
+#  else // HAVE_STDARGS
 int xastir_snprintf(va_alist) va_dcl
-#  endif
+#  endif    // HAVE_STDARGS
 {
 #  ifndef HAVE_STDARGS
     char *str;
     size_t count;
     char *fmt;
-#  endif
+#  endif    // HAVE_STDARGS
     VA_LOCAL_DECL;
 
     VA_START(fmt);
@@ -734,3 +734,5 @@ int xastir_snprintf(va_alist) va_dcl
     return (strlen(str));
 }
 #endif /* !HAVE_SNPRINTF */
+
+

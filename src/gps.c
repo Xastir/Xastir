@@ -367,7 +367,7 @@ void gps_data_find(char *gps_line_data, int port) {
                 }
 #ifdef HAVE_SETTIMEOFDAY
                 settimeofday(&tv, &tz);
-#endif
+#endif  // HAVE_SETTIMEOFDAY
             }
         }
     }

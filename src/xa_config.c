@@ -24,7 +24,7 @@
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif  // HAVE_CONFIG_H
 
 #include <stdio.h>
 #include <fcntl.h>
@@ -333,12 +333,12 @@ void save_data(void)  {
 #if defined(HAVE_IMAGEMAGICK)
         sprintf (name, "%f", imagemagick_gamma_adjust);
         store_string(fout, "IMAGEMAGICK_GAMMA_ADJUST", name);
-#endif
+#endif  // HAVE_IMAGEMAGICK
 #if defined(HAVE_GEOTIFF)
         sprintf (name, "%f", geotiff_map_intensity);
         store_string(fout, "GEOTIFF_MAP_INTENSITY", name);
-#endif
-#endif
+#endif  // HAVE_GEOTIFF
+#endif  // NO_GRAPHICS
 
         store_int (fout, "MAP_LETTERSTYLE", letter_style);
         store_int (fout, "MAP_WX_ALERT_STYLE", wx_alert_style);
@@ -565,7 +565,7 @@ void save_data(void)  {
 
 #ifdef TRANSMIT_RAW_WX
         store_int (fout, "BST_WX_RAW", transmit_raw_wx);
-#endif
+#endif  // TRANSMIT_RAW_WX
 
         store_int (fout, "BST_COMPRESSED_POSIT", transmit_compressed_posit);
 
@@ -622,7 +622,7 @@ void save_data(void)  {
         store_int (fout, "SPEAK_MESSAGE_BODY",festival_speak_new_message_body);
         store_int (fout, "SPEAK_WEATHER_ALERT",festival_speak_new_weather_alert);
         store_int (fout, "SPEAK_ID",festival_speak_ID);
-#endif
+#endif  // HAVE_FESTIVAL
         store_int (fout, "ATV_SCREEN_ID", ATV_screen_ID);
 
         /* defaults */
@@ -773,14 +773,14 @@ void load_data_or_default(void) {
         imagemagick_gamma_adjust = 0.0;
     else
         sscanf(name, "%f", &imagemagick_gamma_adjust);
-#endif
+#endif  // HAVE_IMAGEMAGICK
 #if defined(HAVE_GEOTIFF)
     if (!get_string("GEOTIFF_MAP_INTENSITY", name))
         geotiff_map_intensity = 1.0;
     else
         sscanf(name, "%f", &geotiff_map_intensity);
-#endif
-#endif
+#endif  // HAVE_GEOTIFF
+#endif  // NO_GRAPHICS
 
     if (!get_int ("MAP_LETTERSTYLE", &letter_style, 0, 2, 1))
         letter_style = 1;
@@ -1143,7 +1143,7 @@ void load_data_or_default(void) {
     /* raw wx transmit */
     if (!get_int ("BST_WX_RAW", &transmit_raw_wx,0,1,0))
         transmit_raw_wx = 0;
-#endif
+#endif  // TRANSMIT_RAW_WX
 
     /* compressed posit transmit */
     if (!get_int ("BST_COMPRESSED_POSIT", &transmit_compressed_posit,0,1,0))
@@ -1259,7 +1259,7 @@ void load_data_or_default(void) {
 
     if (!get_int ("SPEAK_ID",&festival_speak_ID,0,1,0))
         festival_speak_new_station = 0;
-#endif
+#endif  // HAVE_FESTIVAL
     if (!get_int ("ATV_SCREEN_ID",&ATV_screen_ID,0,1,0))
         ATV_screen_ID = 0; 
  

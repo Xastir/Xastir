@@ -54,7 +54,7 @@
 
 #ifdef  WITH_DMALLOC
 #include <dmalloc.h>
-#endif
+#endif  // WITH_DMALLOC
 
 
 #define STATION_REMOVE_CYCLE 60         /* check station remove in seconds (every minute) */
@@ -9079,7 +9079,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     speech_callsign);
                 SayText(station_id);
             }
-#endif
+#endif  // HAVE_FESTIVAL
         }
 
         // check for range and DX
@@ -9139,7 +9139,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 SayText(station_id);
             }
-#endif
+#endif  // HAVE_FESTIVAL
             /* FG really should check the path before we do this and add setup for these ranges */
             if ((distance > atof(bando_min)) && (distance < atof(bando_max)) &&
                     sound_play_band_open_message && from == DATA_VIA_TNC) {
@@ -9165,7 +9165,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     units_english_metric?langcode("SPCHSTR003"):langcode("SPCHSTR001"));
                 SayText(station_id);
             }
-#endif
+#endif  // HAVE_FESTIVAL
         } // end found_pos
 
     }   // valid data into database
@@ -10654,7 +10654,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             SayText(ipacket_message);
         }
 
-#endif
+#endif  // HAVE_FESTIVAL
         // Only send an ack out once per 30 seconds
         if ( (from != 'F')  // Not from a log file
                 && ((last_ack_sent + 30 ) < sec_now())
@@ -11757,7 +11757,7 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
         // send packet
         if (port_data[port].status == DEVICE_UP)
             port_write_string(port, info);
-#endif
+#endif  // I_WANT_TO_TRY_AX25_RELAY_DIGIPEAT
     }
 
 // Example packet:

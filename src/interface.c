@@ -52,7 +52,7 @@
 
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
-#endif
+#endif  // HAVE_NETDB_H
 
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -61,14 +61,14 @@
 
 #ifdef  HAVE_LOCALE_H
 #include <locale.h>
-#endif
+#endif  // HAVE_LOCALE_H
 
 #ifdef  HAVE_LIBINTL_H
 #include <libintl.h>
 #define _(x)        gettext(x)
-#else
+#else   // HAVE_LIBINTL_H
 #define _(x)        (x)
-#endif
+#endif  // HAVE_LIBINTL_H
 
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>
@@ -88,14 +88,13 @@
 #ifdef HAVE_AX25
 #include <netax25/ax25.h>
 #include <netrose/rose.h>
-
 #include <netax25/axlib.h>
 #include <netax25/axconfig.h>
-#endif
+#endif  // HAVE_AX25
 
 #ifndef SIGRET
 #define SIGRET  void
-#endif
+#endif  // SIGRET
 
 
 //extern pid_t getpgid(pid_t pid);
@@ -346,7 +345,7 @@ int my_ax25_aton_arglist(char *call[], struct full_sockaddr_ax25 *sax)
 
     return sizeof(struct full_sockaddr_ax25);
 }
-#endif
+#endif  // HAVE_AX25
 
 
 //***********************************************************
@@ -799,7 +798,7 @@ int ax25_init(int port) {
     int proto = PF_AX25;
     char temp[200];
     char *dev = NULL;
-#endif
+#endif  // HAVE_AX25
 
     if (begin_critical_section(&port_data_lock, "interface.c:ax25_init(1)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
@@ -850,9 +849,9 @@ int ax25_init(int port) {
     ENABLE_SETUID_PRIVILEGE;
 #if __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
     port_data[port].channel = socket(PF_INET, SOCK_DGRAM, htons(proto));   // proto = AF_AX25
-#else
+#else   // __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
     port_data[port].channel = socket(PF_INET, SOCK_PACKET, htons(proto));
-#endif    
+#endif      // __GLIBC__ >= 2 && __GLIBC_MINOR >= 3
     DISABLE_SETUID_PRIVILEGE;
 
     if (port_data[port].channel == -1) {
@@ -977,16 +976,16 @@ void port_dtr(int port, int dtr) {
             fprintf(stderr,"DTR %d\n",port_data[port].dtr);
 #ifdef TIOCMGET
         (void)ioctl(port_data[port].channel, TIOCMGET, &sg);
-#endif
+#endif  // TIOCMGET
         sg &= 0xff;
 #ifdef TIOCM_DTR
         sg = TIOCM_DTR;
-#endif
+#endif  // TIOCM_DIR
         if (dtr) {
             dtr &= ~sg;
 #ifdef TIOCMBIC
             (void)ioctl(port_data[port].channel, TIOCMBIC, &sg);
-#endif
+#endif  // TIOCMBIC
             if (debug_level & 2)
                 fprintf(stderr,"Down\n");
 
@@ -996,7 +995,7 @@ void port_dtr(int port, int dtr) {
             dtr |= sg;
 #ifdef TIOCMBIS
             (void)ioctl(port_data[port].channel, TIOCMBIS, &sg);
-#endif
+#endif  // TIOCMBIS
             if (debug_level & 2)
                 fprintf(stderr,"UP\n");
 
@@ -1127,10 +1126,10 @@ int serial_init (int port) {
 #ifdef HAVE_GETPGRP
   #ifdef GETPGRP_VOID
                 status = getpgrp();
-  #else
+  #else // GETPGRP_VOID
                 status = getpgrp(mypid);
   #endif // GETPGRP_VOID
-#else
+#else   // HAVE_GETPGRP
                 status = getpgid(mypid);
 #endif // HAVE_GETPGRP
 
@@ -1254,9 +1253,9 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
 
 #ifdef    CBAUD
     speed = (int)(port_data[port].t.c_cflag & CBAUD);
-#else
+#else   // CBAUD
     speed = 0;
-#endif
+#endif  // CBAUD
     port_data[port].t.c_cflag = (tcflag_t)(HUPCL|CLOCAL|CREAD);
     port_data[port].t.c_cflag &= ~PARENB;
     switch (port_data[port].style){
@@ -1378,9 +1377,9 @@ static void* net_connect_thread(void *arg) {
 
 #ifdef __solaris__
     char flag;
-#else
+#else   // __solaris__
     int flag;
-#endif
+#endif  // __solaris__
 
     //int stat;
     struct sockaddr_in address;
@@ -2211,13 +2210,13 @@ void port_read(int port) {
 
 #ifdef __solaris__
     unsigned int    from_len;
-#else
+#else   // __solaris__
   #ifndef socklen_t
     int             from_len;
-  #else
+  #else // socklen_t
     socklen_t       from_len;
-  #endif
-#endif
+  #endif    // socklen_t
+#endif  // __solaris__
 
 #ifdef HAVE_AX25
     char           *dev;
@@ -2258,13 +2257,13 @@ void port_read(int port) {
 
 #ifdef __solaris__
                     from_len = (unsigned int)sizeof(from);
-#else
+#else   // __solaris__
   #ifndef socklen_t
                     from_len = (int)sizeof(from);
-  #else
+  #else // socklen_t
                     from_len = (socklen_t)sizeof(from);
-  #endif
-#endif
+  #endif    // socklen_t
+#endif  // __solaris__
 
                     pthread_testcancel();   // Check for thread termination request
                     port_data[port].scan = recvfrom(port_data[port].channel,buffer,

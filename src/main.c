@@ -47,18 +47,18 @@
 #include <sys/types.h>
 #undef RETSIGTYPE
 #include <magick/api.h>
-#endif
+#endif  // HAVE_IMAGEMAGICK
 
 #ifdef  HAVE_LIBINTL_H
 #include <libintl.h>
 #define _(x)        gettext(x)
-#else
+#else   // HAVE_LIBINTL_H
 #define _(x)        (x)
-#endif
+#endif  // HAVE_LIBINTL_H
 
 //#ifdef HAVE_NETAX25_AXLIB_H
 //#include <netax25/axlib.h>
-//#endif
+//#endif    // HAVE_NETAX25_AXLIB_H
 
 #include "xastir.h"
 #include "draw_symbols.h"
@@ -197,7 +197,7 @@ int re_sort_maps = 1;
 
 #ifdef HAVE_IMAGEMAGICK
 static void Config_tiger(Widget w, XtPointer clientData, XtPointer callData);
-#endif
+#endif  // HAVE_IMAGEMAGICK
 
 Widget grid_on, grid_off;
 static void Grid_toggle( Widget w, XtPointer clientData, XtPointer calldata);
@@ -236,12 +236,12 @@ int tiger_flag;
 #if defined(HAVE_GEOTIFF)
 Widget geotiff_intensity[11];
 static void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata);
-#endif
+#endif  // HAVE_GEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
 Widget gamma_adjust_dialog = (Widget)NULL;
 Widget gamma_adjust_text;
-#endif
-#endif
+#endif  // HAVE_IMAGEMAGICK
+#endif  // NO_GRAPHICS
 
 Widget map_station_label0,map_station_label1,map_station_label2;
 static void Map_station_label(Widget w, XtPointer clientData, XtPointer calldata);
@@ -498,7 +498,7 @@ int festival_speak_new_message_alert;
 int festival_speak_new_message_body;
 int festival_speak_new_weather_alert;
 int festival_speak_ID;
-//#endif
+//#endif    // HAVE_FESTIVAL
 int ATV_screen_ID;
 
 #ifdef HAVE_IMAGEMAGICK //N0VH
@@ -538,7 +538,7 @@ int tiger_show_misc = TRUE;
 int tigermap_intensity = 100;
 int tigermap_timeout = 30;
 
-#endif
+#endif  // HAVE_IMAGEMAGICK
 
 
 // -------------------------------------------------------------------
@@ -560,7 +560,7 @@ Pixmap CS_icon0, CS_icon;
 /* defaults*/
 #ifdef TRANSMIT_RAW_WX
 Widget raw_wx_tx;
-#endif
+#endif  // TRANSMIT_RAW_WX
 Widget compressed_posit_tx;
 Widget compressed_objects_items_tx;
 Widget new_bulletin_popup_enable;
@@ -754,7 +754,7 @@ int dead_reckoning_timeout = 60 * 10;   // 10 minutes;
 
 #ifdef TRANSMIT_RAW_WX
 int transmit_raw_wx;            /* transmit raw wx data? */
-#endif
+#endif  // TRANSMIT_RAW_WX
 
 int transmit_compressed_posit;  // transmit location in compressed format?
 int transmit_compressed_objects_items;  // Same for objects & items
@@ -3101,7 +3101,7 @@ void check_statusline_timeout(void) {
                     my_speech_callsign);
                 SayText(status_text);
             }
-#endif
+#endif  // HAVE_FESTIVAL
         }
 
         last_statusline = 0;	// now inactive
@@ -3471,7 +3471,7 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     } else
         (void)XRaiseWindow(XtDisplay(gamma_adjust_dialog), XtWindow(gamma_adjust_dialog));
 }
-#endif
+#endif  // NO_GRAPHICS && HAVE_IMAGEMAGICK
 
 
 
@@ -3651,11 +3651,11 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_GEOTIFF)
         Geotiff_intensity_Pane, geotiff_intensity_button,
-#endif
+#endif  // HAVE_GEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
         gamma_adjust_button, tiger_config_button,
-#endif
-#endif
+#endif  // HAVE_IMAGEMAGICK
+#endif  // NO_GRAPHICS
         Map_station_label_Pane, map_station_label_button,
         map_wx_alerts_button, index_maps_on_startup_button,
         units_choice_button, dbstatus_choice_button,
@@ -4212,7 +4212,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(tiger_config_button,   XmNactivateCallback,Config_tiger,NULL);
-#endif
+#endif  // HAVE_IMAGEMAGICK
 
 
     jump_button = XtVaCreateManagedWidget(langcode("PULDNMP012"),
@@ -4598,7 +4598,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(geotiff_intensity[8],  XmNactivateCallback,Geotiff_intensity,"0.8");
     XtAddCallback(geotiff_intensity[9],  XmNactivateCallback,Geotiff_intensity,"0.9");
     XtAddCallback(geotiff_intensity[10], XmNactivateCallback,Geotiff_intensity,"1.0");
-#endif
+#endif  // HAVE_GEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
     // Adjust Gamma Correction
     gamma_adjust_button = XtVaCreateManagedWidget(langcode("GAMMA001"),
@@ -4608,8 +4608,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
     XtAddCallback(gamma_adjust_button, XmNactivateCallback, Gamma_adjust, NULL);
-#endif
-#endif
+#endif  // HAVE_IMAGEMAGICK
+#endif  // NO_GRAPHICS
 
     Map_station_label_Pane = XmCreatePulldownMenu(mappane,
             "create_appshell map_station_label",
@@ -7480,7 +7480,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 #ifdef TRANSMIT_RAW_WX
                 if (transmit_raw_wx)
                     tx_raw_wx_data();
-#endif
+#endif  // TRANSMIT_RAW_WX
 
                 /* check wx data last received */
                 wx_last_data_check();
@@ -8384,7 +8384,7 @@ void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
         XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     }
 }
-#endif
+#endif  // NO_GRAPHICS && HAVE_GEOTIFF
 
 
 
@@ -9567,7 +9567,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XmStringFree(xa);
     XmStringFree(xb);
     //}
-#endif
+#endif  // AVE_NETAX25_AXLIB_H
 
 #ifdef HAVE_IMAGEMAGICK
     xb = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);  // Add a newline
@@ -9581,7 +9581,7 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XmStringFree(xa);
     XmStringFree(xb);
     //xms is still defined
-#endif
+#endif  // HAVE_IMAGEMAGICK
     xb = XmStringCreateLtoR("\n", XmFONTLIST_DEFAULT_TAG);  // Add a newline
     xa = XmStringConcat(xb, xms);
     XmStringFree(xb);
@@ -12557,7 +12557,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
 #ifdef TRANSMIT_RAW_WX
     transmit_raw_wx = (int)XmToggleButtonGetState(raw_wx_tx);
-#endif
+#endif  // TRANSMIT_RAW_WX
 
     transmit_compressed_objects_items = (int)XmToggleButtonGetState(compressed_objects_items_tx);
 
@@ -12880,7 +12880,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-#endif
+#endif  // TRANSMIT_RAW_WX
 
         altnet_active  = XtVaCreateManagedWidget(langcode("WPUPCFD025"),
                 xmToggleButtonWidgetClass,
@@ -12927,9 +12927,9 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNtopAttachment, XmATTACH_WIDGET,
 #ifdef TRANSMIT_RAW_WX
                 XmNtopWidget, raw_wx_tx,
-#else
+#else   // TRANSMIT_RAW_WX
                 XmNtopWidget, zero_bulletin_popup_enable,
-#endif
+#endif  // TRANSMIT_RAW_WX
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
@@ -12949,9 +12949,9 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmNtopAttachment, XmATTACH_WIDGET,
 #ifdef TRANSMIT_RAW_WX
                 XmNtopWidget, raw_wx_tx,
-#else
+#else   // TRANSMIT_RAW_WX
                 XmNtopWidget, zero_bulletin_popup_enable,
-#endif
+#endif  // TRANSMIT_RAW_WX
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
                 XmNbottomOffset, 5,
@@ -13009,7 +13009,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             XmToggleButtonSetState(raw_wx_tx,TRUE,FALSE);
         else
             XmToggleButtonSetState(raw_wx_tx,FALSE,FALSE);
-#endif
+#endif  // TRANSMIT_RAW_WX
 
         if(transmit_compressed_objects_items)
             XmToggleButtonSetState(compressed_objects_items_tx,TRUE,FALSE);
@@ -20651,7 +20651,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
 #ifndef optarg
     extern char *optarg;
-#endif
+#endif  // optarg
 
 
     // Define some overriding resources for the widgets.
@@ -20783,10 +20783,10 @@ int main(int argc, char *argv[], char *envp[]) {
 #ifdef HAVE_IMAGEMAGICK
     #if (MagickLibVersion < 0x0538)
         MagickIncarnate(*argv);
-    #else
+    #else   // MagickLibVersion < 0x0538
         InitializeMagick(*argv);
-    #endif
-#endif
+    #endif  // MagickLibVersion < 0x0538
+#endif  // HAVE_IMAGEMAGICK
 
     /* get User info */
     user_id   = getuid();
@@ -21025,7 +21025,7 @@ int main(int argc, char *argv[], char *envp[]) {
         fprintf(stderr,"Error connecting to Festival speech server.\n");
         exit(0);
     }  
-#endif
+#endif  // HAVE_FESTIVAL
 
     if (load_color_file()) {
         if (load_language_file(get_user_base_dir("config/language.sys"))) {
