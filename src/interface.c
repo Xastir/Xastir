@@ -1953,7 +1953,7 @@ int OpenTrac_decode_maidenhead(unsigned char *element,
     strncpy(maidenhead, element, element_len);
     maidenhead[element_len] = 0;
 
-    fprintf(stderr, "Grid ID: %s\n", maidenhead);
+    fprintf(stderr, "Maidenhead Grid: %s\n", maidenhead);
     return 0;
 }
 
@@ -1968,7 +1968,7 @@ int OpenTrac_decode_maidenhead(unsigned char *element,
 int OpenTrac_decode_radio_capabilities(unsigned char *element,
                                        int           element_len) {
 
-//WE7U: Need code here that passes back values.
+//WE7U: Need to decode/pass back values.
 
     fprintf(stderr, "Radio Capabilites\n");
 
@@ -2049,7 +2049,7 @@ int OpenTrac_decode_acreg(unsigned char *element,
 int OpenTrac_surface_observation(unsigned char *element,
                                  int           element_len) {
 
-//WE7U: Need to pass back the data.
+//WE7U: Need to decode/pass back the data.
 
     fprintf(stderr, "Surface Observation Report Element\n");
 
@@ -2067,7 +2067,7 @@ int OpenTrac_surface_observation(unsigned char *element,
 int OpenTrac_rainfall_history(unsigned char *element,
                               int           element_len) {
 
-//WE7U: Need to pass back the data.
+//WE7U: Need to decode/pass back the data.
 
     fprintf(stderr, "Rainfall History Element\n");
 
@@ -2117,7 +2117,7 @@ int OpenTrac_decode_rivergauge(unsigned char *element,
 int OpenTrac_decode_storm(unsigned char *element,
                           int           element_len) {
 
-// WE7U:  Need to pass back storm info.
+// WE7U:  Need to decode/pass back storm info.
 
     fprintf(stderr, "Storm Report Element\n");
     return 0;
@@ -2134,7 +2134,7 @@ int OpenTrac_decode_storm(unsigned char *element,
 int OpenTrac_decode_shape(unsigned char *element,
                           int           element_len) {
 
-// WE7U:  Need to pass back Shape info.
+// WE7U:  Need to decode/pass back Shape info.
 
     fprintf(stderr, "Shape Element\n");
 
@@ -2229,7 +2229,7 @@ int OpenTrac_decode_units(int           unitnum,
         "Square Meters","Joules","Newtons","Pascals","Hertz",
         "Meters/Sec^2","Grays","Lumens","Cubic Meters/Second",
         "Pascal Seconds","Kilograms/Meter^3","Radians/Second^2",
-        "Coulombs","Farads","Siemens"};
+        "Coulombs","Farads","Siemens","Counts"};
 
     union measurement {
         char c;
