@@ -367,8 +367,8 @@ WPUPCFG005|GPS exclusivo||
 WPUPCFG006|TNC ligado a GPS (cabo HSP)||
 WPUPCFG007|TNC ligado a GPS usando CTL-E||
 WPUPCFG008|GPS tempo (a mostrar cada)||
-WPUPCFG009|10 sec||
-WPUPCFG010|20 sec||
+WPUPCFG009|5 sec||
+WPUPCFG010|15 sec||
 WPUPCFG011|30 sec||
 WPUPCFG012|1 minuto||
 WPUPCFG013|2 minutos||
