@@ -82,10 +82,14 @@ int decode_gps_rmc( char *data,
     char speed_unit;
     char course[7];
     char sampledate[7];
+
+#ifndef __CYGWIN__
     char sampledatime[15];
     char *tzp;
     char tzn[512];
     struct tm stm;
+#endif // __CYGWIN__
+ 
     int ok;
 
 // We should check for a minimum line length before parsing,
