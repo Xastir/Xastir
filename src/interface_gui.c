@@ -532,16 +532,19 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     }
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[TNC_port].device_type=type;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     Config_TNC_destroy_shell(widget,clientData,callData);
 }
@@ -1811,17 +1814,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" )
     }
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[GPS_port].device_type=DEVICE_SERIAL_GPS;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_GPS_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     Config_GPS_destroy_shell(widget,clientData,callData);
 }
@@ -2356,17 +2362,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
     }
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[WX_port].device_type=DEVICE_SERIAL_WX;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_WX_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     Config_WX_destroy_shell(widget,clientData,callData);
 }
@@ -3011,17 +3020,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" )
 
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[NWX_port].device_type=DEVICE_NET_WX;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_NWX_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     Config_NWX_destroy_shell(widget,clientData,callData);
 }
@@ -3519,17 +3531,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" 
 
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[NGPS_port].device_type=DEVICE_NET_GPSD;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_NGPS_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     Config_NGPS_destroy_shell(widget,clientData,callData);
 }
@@ -3974,17 +3989,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
 
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[AX25_port].device_type=DEVICE_AX25_TNC;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 
 end_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     Config_AX25_destroy_shell(widget,clientData,callData);
 }
@@ -4583,17 +4601,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
     }
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[Inet_port].device_type=DEVICE_NET_STREAM;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 
 end_critical_section(&devices_lock, "interface_gui.c:Inet_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     Inet_destroy_shell(widget,clientData,callData);
 }
@@ -5057,17 +5078,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
     }
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[Database_port].device_type=DEVICE_NET_DATABASE;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 
 end_critical_section(&devices_lock, "interface_gui.c:Database_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     Database_destroy_shell(widget,clientData,callData);
 }
@@ -5601,17 +5625,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
     }
 
     /* delete list */
-    modify_device_list(4,0);
+//    modify_device_list(4,0);
 
 
     /* add device type */
     devices[AGWPE_port].device_type=DEVICE_NET_AGWPE;
 
     /* rebuild list */
-    modify_device_list(3,0);
+//    modify_device_list(3,0);
 
 
 end_critical_section(&devices_lock, "interface_gui.c:AGWPE_change_data" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
     AGWPE_destroy_shell(widget,clientData,callData);
 }
@@ -6523,6 +6550,26 @@ void modify_device_list(int option, int port) {
 
 
 
+// Rebuild the list in the interface control dialog so that the
+// current status of each interface is shown.
+//
+void update_interface_list(void) {
+
+    // If the interface control dialog exists
+    if (control_interface_dialog) {
+
+        // Delete the entire list
+        modify_device_list(4,0);
+
+        // Create the list again with updated values
+        modify_device_list(3,0);
+    }
+}
+
+
+
+
+
 void interface_setup(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer callData) {
     char *what = (char *)clientData;
     int x,i,do_w;
@@ -7081,9 +7128,9 @@ void start_stop_interface( /*@unused@*/ Widget widget, XtPointer clientData,  /*
 
         /* delete list */
 
-begin_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
-        modify_device_list(4,0);
-end_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
+//begin_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
+//        modify_device_list(4,0);
+//end_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
 
         /* look at list data (Must be "Device" port#) */
         (void)sscanf(temp,"%49s %d",temp2,&port);
@@ -7102,9 +7149,12 @@ end_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
         }
         /* rebuild list */
 
-begin_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
-        modify_device_list(3,0);
-end_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
+//begin_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
+//        modify_device_list(3,0);
+//end_critical_section(&devices_lock, "interface_gui.c:start_stop_interface" );
+
+        // Rebuild the interface control list
+        update_interface_list();
 
         XtFree(temp);
     }
@@ -7120,9 +7170,9 @@ void start_stop_all_interfaces( /*@unused@*/ Widget widget, XtPointer clientData
 
     busy_cursor(appshell);
 
-begin_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
-    modify_device_list(4,0);
-end_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
+//begin_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
+//    modify_device_list(4,0);
+//end_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
 
     do_w = atoi(which);
     if (do_w) {     // We wish to shut down all ports
@@ -7133,9 +7183,12 @@ end_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" 
     }
     /* rebuild list */
 
-begin_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
-    modify_device_list(3,0);
-end_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
+//begin_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
+//    modify_device_list(3,0);
+//end_critical_section(&devices_lock, "interface_gui.c:start_stop_all_interfaces" );
+
+    // Rebuild the interface control list
+    update_interface_list();
 
 }
 

@@ -208,6 +208,7 @@ extern int data_avail;
 extern void control_interface(Widget w, XtPointer clientData, XtPointer callData);
 extern void dtr_all_set(int dtr);
 extern void interface_status(Widget w);
+extern void update_interface_list(void);
 extern int WX_rain_gauge_type;
 
 /* interface.c */

@@ -3650,6 +3650,9 @@ int ax25_init(int port) {
     /* clear port status */
     port_data[port].status = DEVICE_DOWN;
 
+    // Show the latest status in the interface control dialog
+    update_interface_list();
+
 #ifdef HAVE_LIBAX25
     if (ax25_ports_loaded == 0) {
         /* port file has not been loaded before now */
@@ -3711,6 +3714,8 @@ int ax25_init(int port) {
     /* port status */
     port_data[port].status = DEVICE_UP;
 
+    // Show the latest status in the interface control dialog
+    update_interface_list();
 
     temp[0] = proto = (int)dev;     // Converting pointer to int, then to char?????
     // ^^^^ this doesn't do anything
@@ -3995,13 +4000,20 @@ int serial_detach(int port) {
             usleep(200);
             port_data[port].active = DEVICE_NOT_IN_USE;
             ok = 1;
-        } else {
+
+            // Show the latest status in the interface control dialog
+            update_interface_list();
+        }
+        else {
             if (debug_level & 2)
                 fprintf(stderr,"Could not close port %s\n",port_data[port].device_name);
 
             port_data[port].status = DEVICE_DOWN;
             usleep(200);
             port_data[port].active = DEVICE_NOT_IN_USE;
+
+            // Show the latest status in the interface control dialog
+            update_interface_list();
         }
 
         // Delete lockfile
@@ -4054,6 +4066,9 @@ int serial_init (int port) {
 
     // clear port status
     port_data[port].status = DEVICE_DOWN;
+
+    // Show the latest status in the interface control dialog
+    update_interface_list();
 
 
     // Check whether we have a port with the same device already
@@ -4318,6 +4333,9 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     // clear port status
     port_data[port].status = DEVICE_UP;
 
+    // Show the latest status in the interface control dialog
+    update_interface_list();
+
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(12)" ) > 0)
         fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
@@ -4405,11 +4423,18 @@ static void* net_connect_thread(void *arg) {
 
             port_data[port].status = DEVICE_UP;
             ok = 1;
-        } else {    /* net connection failed */
+
+            // Show the latest status in the interface control dialog
+            update_interface_list();
+        }
+        else {    /* net connection failed */
             ok = 0;
             if (debug_level & 2)
                 fprintf(stderr,"net_connect_thread():net connection failed, port %d, DEVICE_ERROR ***\n",port);
             port_data[port].status = DEVICE_ERROR;
+
+            // Show the latest status in the interface control dialog
+            update_interface_list();
 
             // Shut down and close the socket
 
@@ -4439,6 +4464,9 @@ static void* net_connect_thread(void *arg) {
         if (debug_level & 2)
             fprintf(stderr,"net_connect_thread():could not bind socket, port %d, DEVICE_ERROR ***\n",port);
         port_data[port].status = DEVICE_ERROR;
+
+        // Show the latest status in the interface control dialog
+        update_interface_list();
 
         // Shut down and close the socket
         //pthread_testcancel();   // Check for thread termination request
@@ -4532,6 +4560,9 @@ int net_init(int port) {
 
     /* clear port status */
     port_data[port].status = DEVICE_DOWN;
+
+    // Show the latest status in the interface control dialog
+    update_interface_list();
 
     ok = -1;
 
@@ -4649,6 +4680,9 @@ int net_init(int port) {
                     port_data[port].status = DEVICE_ERROR;
                     if (debug_level & 2)
                         fprintf(stderr,"Thread did not return, port %d, DEVICE_ERROR ***\n",port);
+
+                    // Show the latest status in the interface control dialog
+                    update_interface_list();
                 }
                 if (begin_critical_section(&connect_lock, "interface.c:net_init(8)" ) > 0)
                     fprintf(stderr,"connect_lock, Port = %d\n", port);
@@ -4695,6 +4729,10 @@ int net_init(int port) {
                 port_data[port].status = DEVICE_ERROR;
                 if (debug_level & 2)
                     fprintf(stderr,"Host lookup timeout, port %d, DEVICE_ERROR ***\n",port);
+
+                // Show the latest status in the interface control dialog
+                update_interface_list();
+
                 ok = 0;
             }
         } else {    /* Host ip look up failure (no ip address for that host) */
@@ -4703,6 +4741,9 @@ int net_init(int port) {
             port_data[port].status = DEVICE_ERROR;
             if (debug_level & 2)
                 fprintf(stderr,"Host IP lookup failure, port %d, DEVICE_ERROR ***\n",port);
+
+            // Show the latest status in the interface control dialog
+            update_interface_list();
         }
     }
     else {    /* Host look up failure (no host by that name) */
@@ -4711,6 +4752,9 @@ int net_init(int port) {
         port_data[port].status = DEVICE_ERROR;
         if (debug_level & 2)
             fprintf(stderr,"Host lookup failure, port %d, DEVICE_ERROR ***\n",port);
+
+        // Show the latest status in the interface control dialog
+        update_interface_list();
     }
 
     if (end_critical_section(&port_data_lock, "interface.c:net_init(10)" ) > 0)
@@ -4806,6 +4850,9 @@ int net_detach(int port) {
     port_data[port].status = DEVICE_DOWN;
     //usleep(300);
     port_data[port].active = DEVICE_NOT_IN_USE;
+
+    // Show the latest status in the interface control dialog
+    update_interface_list();
 
     if (end_critical_section(&port_data_lock, "interface.c:net_detach(2)" ) > 0)
         fprintf(stderr,"net_detach():port_data_lock, Port = %d\n", port);
@@ -5793,10 +5840,19 @@ void port_read(int port) {
                         port_data[port].status = DEVICE_ERROR;
                         if (debug_level & 2)
                             fprintf(stderr,"end of file on read, or signal interrupted the read, port %d\n",port);
+
+                        // Show the latest status in the interface control dialog
+                        update_interface_list();
+
                     } else {
                         if (port_data[port].scan == -1) {
                             /* Should only get this if an real error occurs */
                             port_data[port].status = DEVICE_ERROR;
+
+                            // Show the latest status in the
+                            // interface control dialog
+                            update_interface_list();
+
                             if (debug_level & 2) {
                                 fprintf(stderr,"error on read with error no %d, or signal interrupted the read, port %d, DEVICE_ERROR ***\n",
                                     errno,port);
@@ -6030,6 +6086,8 @@ void port_write(int port) {
                                         fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
                                 }
                             }
+                            // Show the latest status in the interface control dialog
+                            update_interface_list();
                         }
 //fprintf(stderr,"Char pacing ");
 //                        usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
@@ -6096,6 +6154,8 @@ void port_write(int port) {
                                         fprintf(stderr,"error on write with error no %d, or port %d\n",errno,port);
                                 }
                             }
+                            // Show the latest status in the interface control dialog
+                            update_interface_list();
                         }
                         break;
 
@@ -6259,6 +6319,10 @@ void clear_port_data(int port, int clear_more) {
     port_data[port].device_type = -1;
     port_data[port].active = DEVICE_NOT_IN_USE;
     port_data[port].status = DEVICE_DOWN;
+
+    // Show the latest status in the interface control dialog
+    update_interface_list();
+
     port_data[port].device_name[0] = '\0';
     port_data[port].device_host_name[0] = '\0';
 
@@ -7451,6 +7515,10 @@ void check_ports(void) {
                         if (debug_level & 2)
                             fprintf(stderr,"check_ports(): Inactivity on port %d, DEVICE_ERROR ***\n",i);
                         port_data[i].status = DEVICE_ERROR; // No activity, so force a shutdown
+
+                        // Show the latest status in the interface control dialog
+                        update_interface_list();
+
 
                         // If the below statement is enabled, it causes an immediate reconnect
                         // after one time-period of inactivity, currently 7.5 minutes, as set in
@@ -8873,3 +8941,5 @@ int tnc_get_data_type(char *buf, int port) {
 
     return(type);
 }
+
+
