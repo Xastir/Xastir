@@ -27,7 +27,7 @@
  *
  */
 
-#define GDAL_SHAPEFILES
+//#define GDAL_SHAPEFILES
 //#define MAP_SCALE_CHECK
 
 
