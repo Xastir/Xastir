@@ -5002,23 +5002,19 @@ void port_read(int port) {
             // We need to delay here so that the thread doesn't use
             // high amounts of CPU doing nothing.
 
-// Note:  100ms is too high here.  It lets Xastir get very much
-// behind on receive packets from fast interfaces.  50ms seems to
-// work.  If 50ms doesn't cause CPU usage to go too high, we'll
-// probably leave it here.  Smaller numbers are better as long as
-// port_read() doesn't use too much CPU.
+// This select that waits on data and a timeout, so that if data
+// doesn't come in within a certain period of time, we wake up to
+// check whether the socket has gone down.  Else, we go back into
+// the select to wait for more data or a timeout.
 
-// Try to change this to a select that waits on data and a timeout,
-// so that if data doesn't come in within a certain period of time,
-// we wake up to check whether the socket has gone down.  Else, we
-// go back into the select to wait for more data or a timeout.
+//sched_yield();  // Yield to other threads
 
-            sched_yield();  // Yield to other threads
-
+            // Set up the select to block until data ready or 200ms
+            // timeout, whichever occurs first.
             FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 20000;    // 20 ms
+            tmv.tv_usec = 200000;    // 200 ms
             (void)select(0,&rd,NULL,NULL,&tmv);
         }
     }
@@ -5278,7 +5274,7 @@ void port_write(int port) {
             FD_ZERO(&wd);
             FD_SET(port_data[port].channel, &wd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 50000;  // Delay 50ms
+            tmv.tv_usec = 200000;  // Delay 200ms
             (void)select(0,NULL,&wd,NULL,&tmv);
         }
     }
