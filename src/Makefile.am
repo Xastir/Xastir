@@ -1,6 +1,7 @@
 # $Id$
 
 bin_PROGRAMS = xastir
+noinst_PROGRAMS = testawk
 
 xastir_SOURCES = \
     alert.c alert.h \
@@ -48,5 +49,13 @@ xastir_SOURCES = \
     xa_config.c xa_config.h \
     xastir.h
 
+testawk_SOURCES = \
+    testawk.c \
+    awk.c \
+    dbfawk.c
+
+
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+
+testawk_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 

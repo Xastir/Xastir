@@ -570,7 +570,7 @@ MRC         string      (8,0)   48122-G7
 
  **********************************************************/
 
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
 static dbfawk_sig_info *Dbf_sigs = NULL;
 static awk_symtab *Symtbl = NULL;
 #endif
@@ -632,7 +632,7 @@ void draw_shapefile_map (Widget w,
     int             high_water_mark_index = 0;
     char            quad_label[100];
     char            status_text[MAX_FILENAME];
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
     char            dbfsig[1024],dbffields[1024],name[64],key[64],sym[2];
     int             color,lanes,layer,filled,pattern,display_level,label_level;
     dbfawk_sig_info *sig_info = NULL;
@@ -648,7 +648,7 @@ void draw_shapefile_map (Widget w,
     label_string *label_ptr = NULL;
     label_string *ptr2 = NULL;
 
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
     if (Dbf_sigs == NULL)
         Dbf_sigs = dbfawk_load_sigs(get_data_base_dir("config"),".dbfawk");
     if (debug_level & 16)
@@ -697,12 +697,12 @@ void draw_shapefile_map (Widget w,
     if (debug_level & 16)
         fprintf(stderr,"\n---------------------------------------------\nInfo for %s\n",filenm);
 
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
     *dbfsig = '\0';
     fieldcount = dbfawk_sig(hDBF,dbfsig,sizeof(dbfsig));
 #else
     fieldcount = DBFGetFieldCount(hDBF);
-#endif /* !DBFAWK */
+#endif /* !WITH_DBFAWK */
     if (fieldcount == 0) {
         DBFClose( hDBF );   // Clean up open file descriptors
         return;     // Should have at least one field
@@ -715,13 +715,13 @@ void draw_shapefile_map (Widget w,
     }
     if (debug_level & 16) {
         fprintf(stderr,"%d Columns,  %d Records in file\n", fieldcount, recordcount);
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
         fprintf(stderr,"DBF signature: %s\n",dbfsig);
 #endif
     }
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
     if (Dbf_sigs) {   /* see if we have a .dbfawk file that matches */
-        sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig);
+        sig_info = dbfawk_find_sig(Dbf_sigs,dbfsig,file);
         if (sig_info) {         /* we've got a .dbfawk, so set up symtbl */
             if (!Symtbl) {
                 Symtbl = awk_new_symtab();
@@ -748,10 +748,10 @@ void draw_shapefile_map (Widget w,
             fprintf(stderr,"No DBFAWK signature for %s!\n",filenm);
         }
     }
-#endif /* DBFAWK */
-#ifdef DBFAWK
+#endif /* WITH_DBFAWK */
+#ifdef WITH_DBFAWK
     /* XXX - need to figure out weather alerts to use dbfawk */
-#endif /* DBFAWK */
+#endif /* WITH_DBFAWK */
     // If we're doing weather alerts and index is not filled in yet
     if (weather_alert_flag && (alert->index == -1) ) {
 
@@ -1409,9 +1409,9 @@ void draw_shapefile_map (Widget w,
                                   warning_text) ) { // Error text if failure
 
             const char *temp;
-#ifndef DBFAWK
+#ifndef WITH_DBFAWK
             char temp2[100];
-#endif /*!DBFAWK*/
+#endif /*!WITH_DBFAWK*/
             int jj;
             int x0 = 0; // Used for computing label rotation
             int x1 = 0;
@@ -1441,7 +1441,7 @@ void draw_shapefile_map (Widget w,
                 fprintf(stderr,"\n");
                 fprintf(stderr,"Done with field contents\n");
             }
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
             if (sig_info) {
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
                 if (debug_level & 16) {
@@ -1457,7 +1457,7 @@ void draw_shapefile_map (Widget w,
                     fprintf(stderr,"label_level=%d\n",label_level);
                 }
             }
-#endif /* DBFAWK */
+#endif /* WITH_DBFAWK */
 
             switch ( nShapeType ) {
 
@@ -1486,7 +1486,7 @@ void draw_shapefile_map (Widget w,
                         int ok = 1;
                         int temp_ok;
 
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
                         if (map_labels)
                             temp = name;
 #else
@@ -1496,7 +1496,7 @@ void draw_shapefile_map (Widget w,
                             // Snag the label from the .dbf file
                             temp = DBFReadStringAttribute( hDBF, structure, 0 );
                         }
-#endif /* !DBFAWK */
+#endif /* !WITH_DBFAWK */
                         // Convert point to Xastir coordinates
                         temp_ok = convert_to_xastir_coordinates(&my_long,
                             &my_lat,
@@ -1567,7 +1567,7 @@ void draw_shapefile_map (Widget w,
 
 
 // Set up width and zoom level for roads
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
                     skip_it = (map_color_levels && scale_y > display_level);
                     skip_label = (map_color_levels && scale_y > label_level);
                     if (!skip_it) {
@@ -1577,7 +1577,7 @@ void draw_shapefile_map (Widget w,
                                                  (pattern)?LineSolid:LineOnOffDash,
                                                  CapButt,JoinMiter);
                     }
-#else /*!DBFAWK*/
+#else /*!WITH_DBFAWK*/
                     if (road_flag) {
                         int lanes = 0;
                         int dashed_line = 0;
@@ -1914,7 +1914,7 @@ void draw_shapefile_map (Widget w,
                     else {  // Set default line width, use whatever color is already defined by this point.
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
                     }
-#endif /* !DBFAWK */
+#endif /* !WITH_DBFAWK */
 
 //WE7U
 // I'd like to be able to change the color of each GPS track for
@@ -2079,9 +2079,9 @@ void draw_shapefile_map (Widget w,
 // Don't do unnecessary calculations if we're not going to draw the
 // label.
 
-#ifdef DBFAWK
+#ifdef WITH_DBFAWK
                     temp = (gps_flag)?gps_label:name;
-#else /* !DBFAWK */
+#else /* !WITH_DBFAWK */
                     // We're done with drawing the arc's.  Draw the
                     // labels in this next section.
                     //
@@ -2235,7 +2235,7 @@ void draw_shapefile_map (Widget w,
                             }
                         }
                     }
-#endif /* !DBFAWK */
+#endif /* !WITH_DBFAWK */
                     if ( (temp != NULL)
                             && (strlen(temp) != 0)
                             && map_labels

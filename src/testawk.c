@@ -2,6 +2,8 @@
 #include <string.h>
 #include "config.h"
 
+#ifdef WITH_DBFAWK
+
 #ifdef HAVE_SHAPEFIL_H
 #include <shapefil.h>
 #else
@@ -88,6 +90,10 @@ int main(int argc, char *argv[])
     dbfawk_sig_info *si = NULL, *sigs = NULL;
 
     symtbl = awk_new_symtab();
+    if (argc >= 2 && (strcmp(argv[1],"--help") == 0 || strcmp(argv[1],"-?") == 0)) {
+      usage();
+      exit(1);
+    }
     if (argc > 2 && strcmp(argv[1],"-D") == 0) {
       dir = argv[2];
       argv++; argv++;
@@ -138,7 +144,7 @@ int main(int argc, char *argv[])
 
       /* If -D then search for matching sig; else use the supplied awk_prog */
       if (sigs) {
-	si = dbfawk_find_sig(sigs,sig);
+	si = dbfawk_find_sig(sigs,sig,dfile);
 	if (!si)
 	  die("No mathing dbfawk signature found");
 	rs = si->prog;
@@ -189,3 +195,4 @@ int main(int argc, char *argv[])
     awk_free_symtab(symtbl);
     exit(0);
 }
+#endif /* WITH_DBFAWK */

@@ -53,7 +53,9 @@ typedef struct dbfawk_sig_info_ {
 extern int dbfawk_sig(DBFHandle dbf, char *sig, int size);
 extern dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields);
 extern dbfawk_sig_info *dbfawk_load_sigs(const char *dir, const char *ftype);
-extern dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info, const char *sig);
+extern dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info, 
+                                        const char *sig,
+                                        const char *file);
 extern void dbfawk_free_sig(dbfawk_sig_info *sig);
 extern void dbfawk_free_sigs(dbfawk_sig_info *list);
 extern void dbfawk_parse_record(awk_program *rs,

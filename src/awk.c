@@ -621,7 +621,6 @@ awk_program *awk_load_program_file(const char *file) /* rules filename */
     int line = 0;
 
     if (!f) {
-        perror(file);
         return NULL;
     }
 
