@@ -470,6 +470,10 @@ void save_data(void)  {
             store_int (fout, name, devices[i].transmit_data);
 
             strcpy (name, name_temp);
+            strcat (name, "RELAY_DIGIPEAT");
+            store_int (fout, name, devices[i].relay_digipeat);
+
+            strcpy (name, name_temp);
             strcat (name, "RECONN");
             store_int (fout, name, devices[i].reconnect);
 
@@ -970,6 +974,11 @@ void load_data_or_default(void) {
         strcat (name, "TXMT");
         if (!get_int (name, &devices[i].transmit_data,0,1,0))
             devices[i].transmit_data = 0;
+
+        strcpy (name, name_temp);
+        strcat (name, "RELAY_DIGIPEAT");
+        if (!get_int (name, &devices[i].relay_digipeat,0,1,1))
+            devices[i].relay_digipeat = 1;
 
         strcpy (name, name_temp);
         strcat (name, "RECONN");

@@ -616,6 +616,7 @@ UNIOP00026|%||
 UNIOP00027|inHg||
 UNIOP00028|mm Hg||
 UNIOP00029|Definir o relógio do sistema desde o GPS?||
+UNIOP00030|RELAY Digipeat?||
 #
 # Seleccionar estação
 STCHO00001|Seleccionar estação||

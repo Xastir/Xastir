@@ -618,6 +618,7 @@ UNIOP00026|%||
 UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Regolare il tempo del sistema dal GPS||
+UNIOP00030|RELAY Digipeat?||
 #
 # PopUp "Station Chooser"
 STCHO00001|Scelta Stazione||

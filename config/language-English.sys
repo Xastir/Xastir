@@ -618,6 +618,7 @@ UNIOP00026|%||
 UNIOP00027|in Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Set System Clock from GPS Data?||
+UNIOP00030|RELAY Digipeat?||
 #
 # PopUp "Station Chooser"
 STCHO00001|Station Chooser||

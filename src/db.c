@@ -10225,6 +10225,49 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 
 
 
+// RELAY the packet back out onto RF if it was received on a port
+// that has this feature enabled and has a non-digipeated RELAY
+// entry.  This is for AX.25 kernel networking ports or Serial KISS
+// TNC ports only.
+//
+// Adding asterisks:
+// Keep whatever digipeated fields have already been set.  If
+// there's a "RELAY" entry that hasn't been digipeated yet, change
+// "RELAY" to our callsign and set the digipeated field.
+//
+// This might be much easier to code into the routine that first
+// receives the packet.  There we'd have access to every digipeated
+// bit directly instead of parsing asterisks out of a string.
+//
+void relay_digipeat(char *line, char from, int port) {
+
+    if ( (devices[port].device_type != DEVICE_SERIAL_KISS_TNC)
+            && (devices[port].device_type != DEVICE_AX25_TNC)) {
+        return;
+    }
+ 
+    if (devices[port].relay_digipeat != 1) {
+        return;
+    }
+
+    printf("Soon we may have code in place to RELAY this packet: %s\n",
+        line);
+
+    // Scan for "RELAY" and "mycall" in the string.  Make sure it's
+    // not "RELAY*" or "mycall*".  Do we also need to check
+    // callsigns after it for '*' characters?  If "RELAY" or
+    // "mycall" is found, substitute "mycall*" in the string and
+    // retransmit it out the same interface.
+    //
+    // We could also do premptive digipeating here and skip over
+    // callsigns that haven't been digipeated yet.  Should we set
+    // the digipeated bits on everything before it?  Probably.
+}
+ 
+
+
+
+
 /*
  *  Decode AX.25 line
  *  \r and \n should already be stripped from end of line
@@ -10247,6 +10290,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     int ok;
     int third_party;
     char backup[MAX_LINE_SIZE+1];
+
+    // Relay the packet if we're supposed to on the port it was
+    // received on
+    relay_digipeat(line, from, port);
 
     strcpy(backup, line);
 

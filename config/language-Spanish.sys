@@ -618,6 +618,7 @@ UNIOP00026|%||
 UNIOP00027|pg Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Fije el tiempo del sistema del GPS||
+UNIOP00030|RELAY Digipeat?||
 #
 # Seleccionar Estación
 STCHO00001|Seleccionar Estación||

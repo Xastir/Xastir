@@ -623,6 +623,7 @@ UNIOP00026|%||
 UNIOP00027|Inch Hg||
 UNIOP00028|mm Hg||
 UNIOP00029|Stellen Sie Systemzeit von GPS ein||
+UNIOP00030|RELAY Digipeat?||
 #
 # popUp "Stationsauswahl"
 STCHO00001|Stationsauswahl||

@@ -240,6 +240,7 @@ Widget TNC_persistence;
 Widget TNC_slottime;
 Widget TNC_fullduplex;
 Widget TNC_GPS_set_time;
+Widget TNC_relay_digipeat;
 
 
 
@@ -292,6 +293,13 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
         devices[TNC_port].transmit_data=1;
     else
         devices[TNC_port].transmit_data=0;
+
+    if (type == DEVICE_SERIAL_KISS_TNC) {
+        if (XmToggleButtonGetState(TNC_relay_digipeat))
+            devices[TNC_port].relay_digipeat=1;
+        else
+            devices[TNC_port].relay_digipeat=0;
+    }
 
     switch(type) {
 
@@ -455,7 +463,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-        TNC_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
+        TNC_transmit_data = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -486,8 +494,21 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 #endif
 
                 break;
-            case DEVICE_SERIAL_TNC:
             case DEVICE_SERIAL_KISS_TNC:
+                // Add a "RELAY Digipeat?" button for KISS TNC's
+                TNC_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, TNC_transmit_data,
+                                      XmNleftOffset ,35,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+                break;
+
+            case DEVICE_SERIAL_TNC:
             default:
                 break;
         }
@@ -1111,8 +1132,10 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
                     break;
-                case DEVICE_SERIAL_TNC:
                 case DEVICE_SERIAL_KISS_TNC:
+                    XmToggleButtonSetState(TNC_relay_digipeat, TRUE, FALSE);
+                    break;
+                case DEVICE_SERIAL_TNC:
                 default:
                     break;
             }
@@ -1174,8 +1197,13 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     else
                         XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
                     break;
+                case  DEVICE_SERIAL_KISS_TNC:
+                    if (devices[TNC_port].relay_digipeat)
+                        XmToggleButtonSetState(TNC_relay_digipeat, TRUE, FALSE);
+                    else
+                        XmToggleButtonSetState(TNC_relay_digipeat, FALSE, FALSE);
+                    break;
                 case DEVICE_SERIAL_TNC:
-                case DEVICE_SERIAL_KISS_TNC:
                 default:
                     break;
             }
