@@ -2749,6 +2749,7 @@ void draw_shapefile_map (Widget w,
 
                         if (i >= 3 && ok_to_draw) {   // We have a polygon to draw
                             if (quad_overlay_flag) {
+                                (void)XSetLineAttributes(XtDisplay(w), gc, 0, LineSolid, CapButt,JoinMiter);
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else if (glacier_flag) {
@@ -2876,7 +2877,12 @@ void draw_shapefile_map (Widget w,
                             if (y < -16000) ok = 0;     // Skip this point
 
                             if (ok == 1 && ok_to_draw) {
-                                 (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                                if (quad_overlay_flag) {
+                                    draw_nice_string(w, pixmap, 0, x+2, y-1, (char*)temp, 0xf, 0x10, strlen(temp));
+                                }
+                                else {
+                                    (void)draw_label_text ( w, x, y, strlen(temp), colors[0x08], (char *)temp);
+                                }
                             }
                         }
                     }
