@@ -35,10 +35,10 @@ extern int map_cache_expired( char * mc_filename, time_t mc_max_age );
 extern char * map_cache_fileid();
 
 // about 6mo
-//#define MC_MAX_FILE_AGE 6*30*24*60*60
+#define MC_MAX_FILE_AGE 6*30*24*60*60
 
 // 1 hr
-#define MC_MAX_FILE_AGE 60*60
+//#define MC_MAX_FILE_AGE 60*60
 
 // 5 seconds -- don't do this except for testing 
 //#define MC_MAX_FILE_AGE 5

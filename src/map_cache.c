@@ -52,15 +52,15 @@
 int map_cache_put( char * map_cache_url, char * map_cache_file ){
 
     char mc_database_filename[MAX_FILENAME]; 
+    int mc_ret, mc_t_ret;
+    DBT putkey, putdata ; 
+    DB *dbp; 
+
 
     xastir_snprintf(mc_database_filename,
     sizeof(mc_database_filename),
     "%s/map_cache.db", 
     get_user_base_dir("map_cache"));
-
-    int mc_ret, mc_t_ret;
-    DBT putkey, putdata ; 
-    DB *dbp; 
 
 // Create handle 
 
@@ -77,14 +77,16 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 #elif (DB_VERSION_MAJOR==4 && DB_VERSION_MINOR<=0 )
 
     if ((mc_ret = dbp->open(dbp,
-    mc_database_filename , NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
+            mc_database_filename , NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
+
         dbp->err(dbp, mc_ret, "%s", mc_database_filename);
         db_strerror(mc_ret); 
     }
 #elif	 (DB_VERSION_MAJOR==4 && DB_VERSION_MINOR>=1 )
 
     if ((mc_ret = dbp->open(dbp,
-        NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
+            NULL,mc_database_filename, NULL, DB_CREATE, DB_BTREE, 0664)) != 0) {
+
         dbp->err(dbp, mc_ret, "%s", mc_database_filename);
         db_strerror(mc_ret); 
     }
@@ -123,10 +125,8 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
     } else {
         dbp->err(dbp, mc_ret, "DB->put");
         db_strerror(mc_ret); 
-
-
-
     } 
+
     if ((mc_t_ret = dbp->close(dbp, 0)) != 0 && mc_ret == 0) {
         mc_ret = mc_t_ret;
         db_strerror(mc_ret); 
@@ -142,13 +142,13 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 
 
 int map_cache_get( char * map_cache_url, char * map_cache_file ){
+
     DBT mc_key, mc_data ; 
     DB *dbp;
     int mc_ret, mc_t_ret, mc_file_stat ;
-
     char mc_database_filename[MAX_FILENAME]; 
-
     struct stat file_status;
+
 
     xastir_snprintf(mc_database_filename,
         sizeof(mc_database_filename),   // change to max_filename?
@@ -262,10 +262,9 @@ int map_cache_del( char * map_cache_url ){
    
     DBT mc_key, mc_data ; 
     DB *dbp;
-    
     int mc_ret, mc_t_ret;
-
     char mc_database_filename[MAX_FILENAME]; 
+
 
     xastir_snprintf(mc_database_filename,
         MAX_FILENAME,
@@ -348,11 +347,14 @@ int map_cache_del( char * map_cache_url ){
 
 
 char * map_cache_fileid(){
+
     // returns a unique identifier 
     // used for generating filenames for cached files
 
     time_t t; 
     char * mc_time_buf;
+
+
     mc_time_buf = malloc (16); 
     sprintf( mc_time_buf, "%d",(int) time(&t)); 
     return (mc_time_buf);
