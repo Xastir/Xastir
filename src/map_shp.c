@@ -1727,6 +1727,11 @@ void draw_shapefile_map (Widget w,
                                     switch (temp[2]) {
                                         case '2':   // Intermittent
                                             dashed_line++;
+                                            // Skip the vector if we're above this zoom level
+                                            if (map_color_levels && scale_y > 64)
+                                                skip_it++;
+                                            if (map_color_levels && scale_y > 16)
+                                                skip_label++;
                                            break;
                                         default:
                                             break;
@@ -1734,6 +1739,9 @@ void draw_shapefile_map (Widget w,
 
                                    break;
                                 case '1':
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 128)
                                         skip_label++;
                                     switch (temp[2]) {
@@ -1766,6 +1774,9 @@ void draw_shapefile_map (Widget w,
                                     }
                                     break;
                                 case '2':
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
@@ -1780,6 +1791,9 @@ void draw_shapefile_map (Widget w,
 
                                    break;
                                 case '3':
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
@@ -1794,6 +1808,9 @@ void draw_shapefile_map (Widget w,
 
                                    break;
                                 case '4':
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
@@ -1808,11 +1825,17 @@ void draw_shapefile_map (Widget w,
 
                                    break;
                                 case '5':
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                                 case '6':
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
@@ -1822,6 +1845,9 @@ void draw_shapefile_map (Widget w,
                                     skip_label++;
                                     break;
                                 case '8':
+                                    // Skip the vector if we're above this zoom level
+                                    if (map_color_levels && scale_y > 256)
+                                        skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
