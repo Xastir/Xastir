@@ -30,7 +30,7 @@
 
 extern int gps_stop_now;
 
-extern void gps_data_find(char *gps_line_data, int port);
+extern int gps_data_find(char *gps_line_data, int port);
 
 extern void create_garmin_waypoint(long latitude,long longitude,char *call_sign);
 

@@ -305,7 +305,7 @@ int decode_gps_gga( char *data,
 // Note that the length of "gps_line_data" can be up to
 // MAX_DEVICE_BUFFER, which is currently set to 4096.
 //
-void gps_data_find(char *gps_line_data, int port) {
+int gps_data_find(char *gps_line_data, int port) {
 
     char long_pos[20],lat_pos[20],aunit[2];
     time_t t;
@@ -313,6 +313,7 @@ void gps_data_find(char *gps_line_data, int port) {
     struct timezone tz;
     char temp_str[MAX_GPS_STRING+1];
     int have_valid_string = 0;
+
 
     if (strncmp(gps_line_data,"$GPRMC,",7)==0) {
 
@@ -327,10 +328,10 @@ void gps_data_find(char *gps_line_data, int port) {
             fprintf(stderr,"Got RMC %s\n", filtered_data);
         }
 
-//        if (debug_level & 128) {
+        if (debug_level & 128) {
             // Got GPS RMC String
             statusline(langcode("BBARSTA015"),0);
-//        }
+        }
 
         strncpy(gps_gprmc, gps_line_data, MAX_GPS_STRING);
         gps_gprmc[MAX_GPS_STRING] = '\0';   // Terminate it
@@ -396,10 +397,10 @@ void gps_data_find(char *gps_line_data, int port) {
             fprintf(stderr,"Got GGA %s\n", filtered_data);
         }
 
-//        if (debug_level & 128) {
+        if (debug_level & 128) {
             // Got GPS GGA String
             statusline(langcode("BBARSTA016"),0);
-//        }
+        }
 
         strncpy(gps_gpgga, gps_line_data, MAX_GPS_STRING);
         gps_gpgga[MAX_GPS_STRING] = '\0';   // Terminate it
@@ -454,6 +455,7 @@ void gps_data_find(char *gps_line_data, int port) {
             port_dtr(port,0);
         }
     }
+    return(have_valid_string);
 }
 
 

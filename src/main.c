@@ -7513,6 +7513,8 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                 for(i=0; i<MAX_IFACE_DEVICES; i++) {
                     if (port_data[i].status) {
                         char tmp[3];
+                        int ret1 = 0;
+                        int ret2 = 0;
 
                         switch (port_data[i].device_type) {
                             case DEVICE_SERIAL_TNC_AUX_GPS:
@@ -7544,13 +7546,20 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 // old data with new and not processing the strings.
 
                                 if (gprmc_save_string[0] != '\0')
-                                    gps_data_find(gprmc_save_string, gps_port_save);
+                                    ret1 = gps_data_find(gprmc_save_string, gps_port_save);
                                 if (gpgga_save_string[0] != '\0')
-                                    gps_data_find(gpgga_save_string, gps_port_save);
+                                    ret2 = gps_data_find(gpgga_save_string, gps_port_save);
 
                                 // Blank out the global variables
                                 gprmc_save_string[0] = '\0';
                                 gpgga_save_string[0] = '\0';
+
+                                if (ret1 && ret2)
+                                    statusline("GPS:  $GPRMC, $GPGGA", 0);
+                                else if (ret1)
+                                    statusline("GPS:  $GPRMC", 0);
+                                else if (ret2)
+                                    statusline("GPS:  $GPGGA", 0);
 
                                 break;
                             default:
@@ -7750,7 +7759,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
                             if (port_data[data_port].dtr==1) // get GPS data
-                                gps_data_find((char *)incoming_data,data_port);
+                                (void)gps_data_find((char *)incoming_data,data_port);
                             else {
                                 /* get TNC data */
                                 if (log_tnc_data)
@@ -7765,7 +7774,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             tnc_data_clean((char *)incoming_data);
                             data_type=tnc_get_data_type((char *)incoming_data, data_port);
                             if (data_type)  // GPS Data
-                                gps_data_find((char *)incoming_data, data_port);
+                                (void)gps_data_find((char *)incoming_data, data_port);
                             else {          // APRS Data
                                 if (log_tnc_data)
                                     log_data(LOGFILE_TNC, (char *)incoming_data);
@@ -7781,7 +7790,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         case DEVICE_NET_GPSD:
                             /*fprintf(stderr,"GPS Data <%s>\n",incoming_data);*/
-                            gps_data_find((char *)incoming_data,data_port);
+                            (void)gps_data_find((char *)incoming_data,data_port);
                             break;
 
                         /* WX Devices */
