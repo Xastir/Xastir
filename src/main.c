@@ -4288,6 +4288,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             al,
             ac);
 
+
+    // Make at least one Motif call so that the next function won't
+    // result in this problem:  'Error: atttempt to add non-widget
+    // child "DropSiteManager" to parent "xastir"'.
+    //
+    XmStringFree(XmStringCreateSimple(""));
+
+
     form = XtVaCreateWidget("create_appshell form",
             xmFormWidgetClass,
             appshell,
