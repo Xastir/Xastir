@@ -47,9 +47,10 @@
 // Global alert_tag string contains three characters for each alert.
 // These contain the first two characters of the title, and then 0
 // or 1 for the source of the alert (DATA_VIA_TNC or
-// DATA_VIA_LOCAL).  This string was probably initially added so
-// that we would know which subdirectory to look for the maps in, as
-// they use two-character abbreviations by state.
+// DATA_VIA_LOCAL).  The first two characters are used to add on to
+// the end of the path ("/usr/local/xastir/Counties/") to come up
+// with the State subdirectory to search for this map file
+// ("/usr/local/xastir/Counties/MS").
 //
 
 
