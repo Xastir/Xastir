@@ -3473,7 +3473,6 @@ void spell_it_out(char *text) {
 
 
 #define kKey 0x73e2 // This is the seed for the key
-#define true 1
 
 
 
