@@ -78,6 +78,7 @@ extern int interrupt_drawing_now;
 #define MAX_GPS_CHARS 128
 #define MAX_WX_CHARS 4
 
+extern int disable_all_maps;
 extern int re_sort_maps;
 extern Widget trackme_button;
 extern int debug_level;

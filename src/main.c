@@ -8853,14 +8853,18 @@ void  Map_disable_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
     char *which = (char *)clientData;
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
-    if(state->set)
+    if(state->set) {
         disable_all_maps = atoi(which);
-    else
-        disable_all_maps = 0;
-
-    if (create_image(da)) {
-        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     }
+    else {
+        disable_all_maps = 0;
+    }
+
+    request_new_image++;
+
+//    if (create_image(da)) {
+//        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    }
 }
 
 

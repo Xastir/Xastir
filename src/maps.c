@@ -4132,6 +4132,9 @@ void load_alert_maps (Widget w, char *dir) {
         if (interrupt_drawing_now)
             return;
 
+        if (disable_all_maps)
+            return;
+
         //  Check whether the alert slot is filled/empty
         if (alert_list[ii].title[0] == '\0') // Empty slot
             continue;
@@ -4373,6 +4376,9 @@ void load_auto_maps (Widget w, char *dir) {
     if (interrupt_drawing_now)
         return;
 
+    if (disable_all_maps)
+        return;
+
         // Debug
 //        fprintf(stderr,"Drawing level:%05d, file:%s\n",
 //            current->map_layer,
@@ -4570,6 +4576,8 @@ void load_maps (Widget w) {
             return;
         }
 
+        if (disable_all_maps)
+            return;
  
         // Debug
 //        fprintf(stderr,"Drawing level:%05d, file:%s\n",
