@@ -28,9 +28,19 @@
    $Id$
 */
 
+
+
+// Equatorial radius of the Earth.  In our distance/angular/area
+// calculations (not here in datum.h/datum.c, but elsewhere in the
+// code) we currently ignore flattening as you go towards the poles.
+//
+// The datum translation code in datum.h/datum.c doesn't use these
+// three defines at all:  That code uses ellipsoids and so
+// flattening is accounted for there.
 #define EARTH_RADIUS_METERS     6378138.0
 #define EARTH_RADIUS_KILOMETERS 6378.138
 #define EARTH_RADIUS_MILES      3963.1836
+
 
 #define FROM_WGS_84 1
 #define TO_WGS_84   0
