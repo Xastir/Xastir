@@ -73,7 +73,7 @@ README
 
      (2) HOW TO GET XASTIR
 
-          Currently, the 1.1.x tree of Xastir is developed at
+          Currently, the 1.4.x tree of Xastir is developed at
           <http://sourceforge.net/projects/xastir/>
           You can get the latest version of Xastir from there.
 
@@ -169,15 +169,24 @@ README
 
      Other options:
 
-     Like all software that uses autoconf, Xastir requires GNU make, so use
-     gmake instead of make.
+     The FreeBSD port of xastir uses a development snapshot, and not
+     necessarily the latest snapshot, depending on how busy the port
+     maintainer is.  If you wish to be on the bleeding edge you can build
+     xastir yourself from the latest development snapshot or from CVS,
+     without much more difficulty than Linux users have.  There are a few
+     caveats, though.
 
      The version of autoconf used to generate configuration files for
-     Xastir is 2.13.  If you have autoconf 2.52 installed, there will be
-     difficulties.  
+     Xastir is 2.57 or later.  If you have autoconf 2.13 installed,
+     there will be difficulties if you try to run "bootstrap.sh."  It
+     is best to install recent, matching versions of autoconf and automake
+     directly from sources into a separate binary directory other than
+     /usr/local/bin, without relying on the FreeBSD ports system.  The 
+     ports system installs autoconf and automake with odd suffixes that
+     can interfere with the xastir build process.
 
-     Contact Jack Twilley <jmt@twilley.org> for more help in getting Xastir
-     configured and built under FreeBSD.
+     Contact Jack Twilley <jmt@twilley.org> or Tom Russo <russo@bogodyn.org> 
+     for more help in getting Xastir configured and built under FreeBSD.
 
        END OF FreeBSD NOTES.
      -----------------------------------------------------------------------
