@@ -3093,7 +3093,7 @@ clear_dangerous();
         short_filenm);
     statusline(status_text,0);       // Loading ...
 
-    fprintf(stderr,"Loading %s\n", filenm);
+//    fprintf(stderr,"Loading %s\n", filenm);
 
 
  
