@@ -200,7 +200,7 @@ Xastir can control it directly:
     gpsmanshp:
         http://www.ncc.up.pt/gpsmanshp/
     GPSMan:
-        http://www.ncc.up.pt/gpsman
+        http://www.ncc.up.pt/gpsman/
         http://sunsite.unc.edu/pub/Linux/science/cartography
 
 See below for instructions on installing all of these libraries. Once the 
@@ -463,7 +463,7 @@ First Time Install:
 
      tar xzvf gpsman-6.0.tgz
      cd gpsman-6.0
-     vi /usr/lib/gpsman/gpsman.tcl
+     vi gpsman.tcl
        Change SRCDIR line to: "set SRCDIR /usr/lib/gpsman"
      su (root)
      mkdir /usr/lib/gpsman
