@@ -2,7 +2,7 @@
 # $Id$
 
 # XASTIR .geo file generator for mapblast pixel maps    16.10.2001
-#  Copyright (C) 2001 Rolf Bleher <Rolf@dk7in.de>  http://www.dk7in.de
+#  Copyright (C) 2001 Rolf Bleher              http://www.dk7in.de
 
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
