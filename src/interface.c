@@ -3049,18 +3049,28 @@ void port_dtr(int port, int dtr) {
         port_data[port].dtr = dtr;
         if (debug_level & 2)
             fprintf(stderr,"DTR %d\n",port_data[port].dtr);
+
 #ifdef TIOCMGET
+            ENABLE_SETUID_PRIVILEGE;
         (void)ioctl(port_data[port].channel, TIOCMGET, &sg);
+            DISABLE_SETUID_PRIVILEGE;
 #endif  // TIOCMGET
+
         sg &= 0xff;
+
 #ifdef TIOCM_DTR
         sg = TIOCM_DTR;
 #endif  // TIOCM_DIR
+
         if (dtr) {
             dtr &= ~sg;
+
 #ifdef TIOCMBIC
+            ENABLE_SETUID_PRIVILEGE;
             (void)ioctl(port_data[port].channel, TIOCMBIC, &sg);
+            DISABLE_SETUID_PRIVILEGE;
 #endif  // TIOCMBIC
+
             if (debug_level & 2)
                 fprintf(stderr,"Down\n");
 
@@ -3068,9 +3078,13 @@ void port_dtr(int port, int dtr) {
 
         } else {
             dtr |= sg;
+
 #ifdef TIOCMBIS
+            ENABLE_SETUID_PRIVILEGE;
             (void)ioctl(port_data[port].channel, TIOCMBIS, &sg);
+            DISABLE_SETUID_PRIVILEGE;
 #endif  // TIOCMBIS
+
             if (debug_level & 2)
                 fprintf(stderr,"UP\n");
 
@@ -6518,7 +6532,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
             case DEVICE_SERIAL_TNC_HSP_GPS:
 
-                /* make dtr normal */
+                /* make dtr normal (talk to TNC) */
                 if (port_data[port].status == DEVICE_UP) {
                     port_dtr(port,0);
                 }
@@ -6930,7 +6944,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                     if (port_data[i].status == DEVICE_UP && !loopback_only) {
-                        port_dtr(i,0);           // make DTR normal
+                        port_dtr(i,0);           // make DTR normal (talk to TNC)
                     }
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
