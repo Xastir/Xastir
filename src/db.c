@@ -4513,6 +4513,76 @@ int is_trailpoint_echo(DataRow *p_station) {
 
 
 
+//
+//  Expire trail points.
+//
+// We now store track data in a doubly-linked list.  Each record has a
+// pointer to the previous and the next record in the list.  The main
+// station record has a pointer to the oldest and the newest end of the
+// chain, and the chain can be traversed in either order.  We use
+// this to advantage by adding records at one end of the list and
+// expiring them at the other.
+//
+void expire_trail_points(DataRow *p_station, time_t sec) {
+    int i = 0;
+    int done = 0;
+    TrackRow2 *ptr;
+
+    //printf("expire_trail_points: %s\n",p_station->call_sign);
+
+    if (debug_level & 256) {
+        printf("expire_trail_points: %s\n",p_station->call_sign);
+    }
+
+    // Check whether we have any track data saved
+    if (p_station->oldest_trackpoint == NULL) {
+        return;     // Nothing to expire
+    }
+
+    // Iterate from oldest->newest trackpoints
+    while (!done && p_station->oldest_trackpoint != NULL) {
+        ptr = p_station->oldest_trackpoint;
+        if ( (ptr->sec + sec) >= sec_now() ) {
+            // New trackpoint, within expire time.  Quit checking
+            // the rest of the trackpoints for this station.
+            done++;
+        }
+        else {
+            //printf("Found old trackpoint\n");
+
+            // Track too old.  Unlink this trackpoint and free it.
+            p_station->oldest_trackpoint = ptr->next;
+
+            // End of chain in this direction
+            if (p_station->oldest_trackpoint != NULL) {
+                p_station->oldest_trackpoint->prev = NULL;
+            }
+            else {
+                p_station->newest_trackpoint = NULL;
+            }
+
+            // Free up the space used by the expired trackpoint
+            free(ptr);
+
+            //printf("Free'ing a trackpoint\n");
+
+            i++;
+
+            // Reduce our count of mobile stations if the size of
+            // the track just went to zero.
+            if (p_station->oldest_trackpoint == NULL)
+                tracked_stations--;
+        }
+    }
+
+    if ( (debug_level & 256) && i )
+        printf("expire_trail_points: %d trackpoints free'd for %s\n",i,p_station->call_sign);
+}
+
+
+
+
+
 /*
  *  Delete comment records and free memory
  */
@@ -4609,6 +4679,12 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
     long brightness;
     char flag1;
     TrackRow2 *ptr;
+
+    // Expire old trackpoints first.  We use the
+    // remove-station-from-display time as the expire time for
+    // trackpoints.  This can be set from the Configure->Defaults
+    // dialog.
+    expire_trail_points(fill, sec_clear);
 
     ptr = fill->newest_trackpoint;
 
