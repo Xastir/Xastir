@@ -200,6 +200,9 @@
 uid_t euid;
 gid_t egid;
 
+// Used in segfault handler
+char dangerous_operation[200];
+
 FILE *file_wx_test;
 
 int serial_char_pacing;  // Inter-char delay in ms for serial ports.
@@ -9854,6 +9857,8 @@ void quit(int sig) {
 void segfault(/*@unused@*/ int sig) {
     fprintf(stderr, "Caught Segfault! Xastir will terminate\n");
     fprintf(stderr, "Last incoming line was: %s\n", incoming_data_copy);
+    if (dangerous_operation[0] != '\0')
+        fprintf(stderr, "Possibly died at: %s\n", dangerous_operation);
     fprintf(stderr, "%02d:%02d:%02d\n", get_hours(), get_minutes(), get_seconds() );
     quit(-1);
 }

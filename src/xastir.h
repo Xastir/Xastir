@@ -79,6 +79,7 @@
 #endif  // M_PI
 
 /* GLOBAL DEFINES */
+extern char dangerous_operation[200];
 extern GC gc;
 extern Pixmap  pixmap;
 extern Pixmap  pixmap_final;

@@ -1581,6 +1581,27 @@ void guess_vector_attributes( Widget w,
 
 
 
+// Set string printed out by segfault handler
+void set_dangerous( char *ptr ) {
+    xastir_snprintf(dangerous_operation,
+        sizeof(dangerous_operation),
+        "%s",
+        ptr);
+}
+
+
+
+
+
+// Clear string printed out by segfault handler
+void clear_dangerous(void) {
+    dangerous_operation[0] = '\0';
+}
+
+
+
+
+
 // The GDAL docs say to use these flags to compile:
 // `gdal-config --libs` `gdal-config * --cflags`
 // but so far they return: "-L/usr/local/lib -lgdal" and
@@ -1702,9 +1723,11 @@ void draw_ogr_map(Widget w,
     // libgeotiff/ libshape/ libgdal/ Xastir seemed to fix it.
     //
     // Open data source
+set_dangerous("map_gdal: OGROpen");
     datasourceH = OGROpen(full_filename,
         0 /* bUpdate */,
         &driver);
+clear_dangerous();
 
     if (datasourceH == NULL) {
 /*
@@ -1730,18 +1753,26 @@ void draw_ogr_map(Widget w,
     // drawing so we do it first and keep a pointer to our
     // transform.
     //
+set_dangerous("map_gdal: OGR_DS_GetLayerCount");
     if (OGR_DS_GetLayerCount(datasourceH) > 0) {
         // We have at least one layer.
         OGRLayerH layer;
+clear_dangerous();
+
 
 
         // Snag a pointer to the first layer so that we can get the
         // spatial info from it, if it exists.
         //
+set_dangerous("map_gdal: OGR_DS_GetLayer");
         layer = OGR_DS_GetLayer( datasourceH, 0 );
+clear_dangerous();
+
 
         // Query the coordinate system for the dataset.
+set_dangerous("map_gdal: OGR_L_GetSpatialRef");
         map_spatialH = OGR_L_GetSpatialRef(layer);
+clear_dangerous();
 
         if (map_spatialH) {
             const char *temp;
@@ -1750,6 +1781,7 @@ void draw_ogr_map(Widget w,
             // We found spatial data
             no_spatial = 0;
 
+set_dangerous("map_gdal: OGRIsGeographic");
             if (OSRIsGeographic(map_spatialH)) {
                 geographic++;
             }
@@ -1759,9 +1791,11 @@ void draw_ogr_map(Widget w,
             else {
                 local++;
             }
+clear_dangerous();
 
             // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
             //
+set_dangerous("map_gdal:OSRGetAttrValue");
             if (projected) {
                 temp = OSRGetAttrValue(map_spatialH, "PROJCS", 0);
                 temp = OSRGetAttrValue(map_spatialH, "PROJECTION", 0);
@@ -1769,6 +1803,8 @@ void draw_ogr_map(Widget w,
             temp = OSRGetAttrValue(map_spatialH, "SPHEROID", 0);
             datum = OSRGetAttrValue(map_spatialH, "DATUM", 0);
             geogcs = OSRGetAttrValue(map_spatialH, "GEOGCS", 0);
+clear_dangerous();
+
         }
         else {
 
@@ -1920,6 +1956,8 @@ fprintf(stderr, "  DATUM: %s\n", datum);
             }
         }
     }
+clear_dangerous();
+
 
 
     // Implement the indexing functions, so that we can use these
@@ -2069,6 +2107,11 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                 else {
                     fprintf(stderr,
                         "Geographic coordinates out of bounds, skipping indexing\n");
+                    fprintf(stderr,"MinY:%f  MinY:%f  MaxX:%f MaxY:%f\n",
+                        file_MinX,
+                        file_MinY,
+                        file_MaxX,
+                        file_MaxY);
                 }
             }
             else {  // We have coordinates but they're in the wrong
@@ -2087,22 +2130,38 @@ fprintf(stderr, "  DATUM: %s\n", datum);
                     x[0],y[0],
                     x[1],y[1]);
 
-                if (OCTTransform(transformH, 2, x, y, NULL)) {
-                            
-                    fprintf(stderr," After: %f,%f\t%f,%f\n",
+                // We can get files that have a weird coordinate
+                // system in them that doesn't have a transform
+                // defined.  On such was "unamed".  Check whether we
+                // have a valid transform.  If not, just assume
+                // we're ok and index it as-is.
+                if (transformH == NULL) {
+                    fprintf(stderr, "No transform available!\n");
+                }
+                else {
+
+                    fprintf(stderr,"Before: %f,%f\t%f,%f\n",
                         x[0],y[0],
                         x[1],y[1]);
+
+
+                    if (OCTTransform(transformH, 2, x, y, NULL)) {
+                            
+                        fprintf(stderr," After: %f,%f\t%f,%f\n",
+                            x[0],y[0],
+                            x[1],y[1]);
+                    }
+                }
  
 // Debug:  Don't add them to the index so that we can experiment
 // with datum translation and such.
 #ifndef WE7U
-                    index_update_ll(filenm, // Filename only
-                        y[0],  // Bottom
-                        y[1],  // Top
-                        x[0],  // Left
-                        x[1]); // Right
+                index_update_ll(filenm, // Filename only
+                    y[0],  // Bottom
+                    y[1],  // Top
+                    x[0],  // Left
+                    x[1]); // Right
 #endif  // WE7U
-                }
             }
         }
 
