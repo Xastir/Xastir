@@ -467,16 +467,23 @@ void awk_eval_expr(awk_symtab *this,
                     && dp >= (char *)src->val 
                     && dp <= &((char *)src->val)[src->size]) {
                     char *sp;
+                    int free_it = 0;
 
                     if ((int)sizeof(tbuf) >= src->size) { /* tbuf big enuf */
                         sp = tbuf;
                     } else {    /* tbuf too small */
+                        free_it++;
                         sp = malloc(src->size);
                         if (!sp) /* oh well! */
                             break; 
                     }
                     awk_get_sym(src,sp,src->size,&newlen);
                     bcopy(sp,dp,newlen); /* now copy it in */
+
+                    // We only want to free it if we malloc'ed it.
+                    if (free_it)
+                        free(sp);
+
                 } else {
                     awk_get_sym(src,dp,(dmax-dl),&newlen);
                 }
