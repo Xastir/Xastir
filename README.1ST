@@ -1384,6 +1384,9 @@ WINDOWS/CYGWIN NOTES:
 
      then "make install".
 
+     NOTE:  If using proj-4.4.6 or higher, it should install right out of
+     the box with no problems.
+
      Adding libgeotiff to Cygwin (libgeotiff-1.1.5):
      -----------------------------------------------
 
