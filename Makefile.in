@@ -1,6 +1,6 @@
-# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
+# Makefile.in generated automatically by automake 1.4 from Makefile.am
 
-# Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
+# Copyright (C) 1994, 1995-8, 1999 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
 # gives unlimited permission to copy and/or distribute it,
 # with or without modifications, as long as this notice is preserved.
@@ -114,12 +114,10 @@ SUBDIRS = src m4 config help symbols callpass
 # Remove this file here (it is created via configure), not from within intl.
 # DISTCLEANFILES = intl/libintl.h
 
-EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh ltconfig \
-	ltmain.sh missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README
+EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh ltconfig         ltmain.sh missing mkinstalldirs TODO placeholder FAQ LICENSE README.1ST README
 
 
-MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
-	config.guess config.sub install-sh ltconfig ltmain.sh missing mkinstalldirs
+MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile         config.guess config.sub install-sh ltconfig ltmain.sh missing mkinstalldirs         xastir.spec
 
 
 countydir = ${prefix}/xastir/Counties
@@ -160,7 +158,7 @@ install-sh ltconfig ltmain.sh missing mkinstalldirs xastir.spec.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -398,7 +396,7 @@ maintainer-clean-recursive:
 	dot_seen=no; \
 	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
 	  rev="$$subdir $$rev"; \
-	  test "$$subdir" != "." || dot_seen=yes; \
+	  test "$$subdir" = "." && dot_seen=yes; \
 	done; \
 	test "$$dot_seen" = "no" && rev=". $$rev"; \
 	target=`echo $@ | sed s/-recursive//`; \
@@ -502,7 +500,7 @@ distdir: $(DISTFILES)
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
-	    cp -pr $$d/$$file $(distdir)/$$file; \
+	    cp -pr $$/$$file $(distdir)/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
 	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
@@ -606,7 +604,6 @@ install uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
-	xastir.spec
 
 ChangeLog::
 
