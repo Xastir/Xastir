@@ -2162,6 +2162,51 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 pixmap_final);
         }
 
+
+//WE7U
+        // Draw additional stuff if this is a storm
+        weather = p_station->weather_data;
+        if ( (weather != NULL)
+                && (   (weather->wx_hurricane_radius[0]  != '\0')
+                    || (weather->wx_trop_storm_radius[0] != '\0')
+                    || (weather->wx_whole_gale_radius[0] != '\0') ) ) {
+            char temp[4];
+
+
+            //printf("Plotting a storm symbol:%s:%s:%s:\n",
+            //    weather->wx_hurricane_radius,
+            //    weather->wx_trop_storm_radius,
+            //    weather->wx_whole_gale_radius);
+
+            strcpy(temp,weather->wx_hurricane_radius);
+            if ( (temp[0] != '\0')
+                    && (strncmp(temp,"000",3) != 0) ) {
+                draw_pod_circle(p_station->coord_lon,
+                    p_station->coord_lat,
+                    atof(temp), // Convert from nautical mi.
+                    pixmap_final);
+            }
+
+            strcpy(temp,weather->wx_trop_storm_radius);
+            if ( (temp[0] != '\0')
+                    && (strncmp(temp,"000",3) != 0) ) {
+                draw_pod_circle(p_station->coord_lon,
+                    p_station->coord_lat,
+                    atof(temp), // Convert from nautical mi.
+                    pixmap_final);
+            }
+
+            strcpy(temp,weather->wx_whole_gale_radius);
+            if ( (temp[0] != '\0')
+                    && (strncmp(temp,"000",3) != 0) ) {
+                draw_pod_circle(p_station->coord_lon,
+                    p_station->coord_lat,
+                    atof(temp), // Convert from nautical mi.
+                    pixmap_final);
+            }
+        }
+
+
         // Draw other points associated with the station, if any.
         // KG4NBB
 	
@@ -2253,6 +2298,51 @@ void display_station(Widget w, DataRow *p_station, int single) {
             0.0035 * scale_y,
             pixmap_final);
     }
+
+
+//WE7U
+        // Draw additional stuff if this is a storm
+        weather = p_station->weather_data;
+        if ( (weather != NULL)
+                && (   (weather->wx_hurricane_radius[0]  != '\0')
+                    || (weather->wx_trop_storm_radius[0] != '\0')
+                    || (weather->wx_whole_gale_radius[0] != '\0') ) ) {
+            char temp[4];
+
+
+            //printf("Plotting a storm symbol:%s:%s:%s:\n",
+            //    weather->wx_hurricane_radius,
+            //    weather->wx_trop_storm_radius,
+            //    weather->wx_whole_gale_radius);
+ 
+            strcpy(temp,weather->wx_hurricane_radius);
+            if ( (temp[0] != '\0')
+                    && (strncmp(temp,"000",3) != 0) ) {
+                draw_pod_circle(p_station->coord_lon,
+                    p_station->coord_lat,
+                    atof(temp), // Need to convert from nautical miles to miles
+                    pixmap_final);
+            }
+
+            strcpy(temp,weather->wx_trop_storm_radius);
+            if ( (temp[0] != '\0')
+                    && (strncmp(temp,"000",3) != 0) ) {
+                draw_pod_circle(p_station->coord_lon,
+                    p_station->coord_lat,
+                    atof(temp), // Convert from nautical mi
+                    pixmap_final);
+            }
+
+            strcpy(temp,weather->wx_whole_gale_radius);
+            if ( (temp[0] != '\0')
+                    && (strncmp(temp,"000",3) != 0) ) {
+                draw_pod_circle(p_station->coord_lon,
+                    p_station->coord_lat,
+                    atof(temp), // Convert from nautical mi
+                    pixmap_final);
+            }
+        }
+
 
     // Draw other points associated with the station, if any.
     // KG4NBB
@@ -4946,24 +5036,28 @@ static void extract_multipoints(DataRow *p_station, char* data, int type) {
 
 void init_weather(WeatherRow *weather) {    // clear weather data
 
-    weather->wx_sec_time         = 0; // ?? is 0 ok ??
-    weather->wx_time[0]          = '\0';
-    weather->wx_course[0]        = '\0';
-    weather->wx_speed[0]         = '\0';
-    weather->wx_speed_sec_time   = 0; // ??
-    weather->wx_gust[0]          = '\0';
-    weather->wx_temp[0]          = '\0';
-    weather->wx_rain[0]          = '\0';
-    weather->wx_rain_total[0]    = '\0';
-    weather->wx_snow[0]          = '\0';
-    weather->wx_prec_24[0]       = '\0';
-    weather->wx_prec_00[0]       = '\0';
-    weather->wx_hum[0]           = '\0';
-    weather->wx_baro[0]          = '\0';
-    weather->wx_fuel_temp[0]     = '\0';
-    weather->wx_fuel_moisture[0] = '\0';
-    weather->wx_type             = '\0';
-    weather->wx_station[0]       = '\0';
+    weather->wx_sec_time             = 0; // ?? is 0 ok ??
+    weather->wx_time[0]              = '\0';
+    weather->wx_course[0]            = '\0';
+    weather->wx_speed[0]             = '\0';
+    weather->wx_speed_sec_time       = 0; // ??
+    weather->wx_gust[0]              = '\0';
+    weather->wx_sustained[0]         = '\0';
+    weather->wx_hurricane_radius[0]  = '\0';
+    weather->wx_trop_storm_radius[0] = '\0';
+    weather->wx_whole_gale_radius[0] = '\0';
+    weather->wx_temp[0]              = '\0';
+    weather->wx_rain[0]              = '\0';
+    weather->wx_rain_total[0]        = '\0';
+    weather->wx_snow[0]              = '\0';
+    weather->wx_prec_24[0]           = '\0';
+    weather->wx_prec_00[0]           = '\0';
+    weather->wx_hum[0]               = '\0';
+    weather->wx_baro[0]              = '\0';
+    weather->wx_fuel_temp[0]         = '\0';
+    weather->wx_fuel_moisture[0]     = '\0';
+    weather->wx_type                 = '\0';
+    weather->wx_station[0]           = '\0';
 }
 
 
