@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include <Xm/XmAll.h>
 
