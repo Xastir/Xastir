@@ -288,7 +288,7 @@ BBARSTA039|Indexant %s||
 BBARSTA040|Station d'amateur APRS %s||
 BBARSTA041|Attendant données GPS..||
 BBARSTA042|Transmission objets/articles||
-BBARSTA043|Logging||
+BBARSTA043|Journalisation||
 #
 # PopUp "View - Incoming Packet Data"
 WPUPDPD001|Affichage de données paquet||
@@ -992,24 +992,24 @@ GPS011|Violet||
 #
 #
 # Map Properties Dialog
-MAPP001|Map Properties||
-MAPP002| Map     Draw||
-MAPP003|Layer   Filled   AutoMap   Path/Filename||
-MAPP004|Change Layer->||
-MAPP005|Filled->||
-MAPP006|Yes||
-MAPP007|No||
-MAPP008|Automaps->||
+MAPP001|Caractéristiques des cartes||
+MAPP002|Carte Afficher||
+MAPP003|Couche  Remplie AutoCartes Voie/Fichier||
+MAPP004|Modifier Couche->||
+MAPP005|Remplie->||
+MAPP006|Oui||
+MAPP007|Non||
+MAPP008|AutoCartes->||
 #
 #
 # Time Strings
-TIME001|Day||
-TIME002|Days||
-TIME003|Hour||
-TIME004|Hours||
-TIME005|Minute||
-TIME006|Minutes||
-TIME007|Second||
-TIME008|Seconds||
+TIME001|jour||
+TIME002|jours||
+TIME003|heure||
+TIME004|heures||
+TIME005|minute||
+TIME006|minutes||
+TIME007|seconde||
+TIME008|secondes||
 #
 #
