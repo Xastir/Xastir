@@ -471,6 +471,8 @@ int Get_Latest_WX( double *winddir,
         if (debug_level & 1)
             fprintf(stderr,"err: Latest timestamp query failed - exiting: number of results %d\n",
                 mysql_num_rows(result));
+         // release query buffer
+         mysql_free_result(result);
         return 0;
     }
 	
@@ -479,6 +481,8 @@ int Get_Latest_WX( double *winddir,
     if( row[0] == NULL ) {
         if(debug_level & 1)
             fprintf(stderr,"err: NULL result for timestamp query\n");
+        // release query buffer
+        mysql_free_result(result);
         return 0;
     }
     // if no new data. exit with negative status
@@ -486,6 +490,8 @@ int Get_Latest_WX( double *winddir,
     if (!strncmp(last_timestamp, row[0], 11)) {
         if (debug_level & 1)
             fprintf(stderr,"info: No new weather data recorded - exiting: negative data\n");
+        // release query buffer
+        mysql_free_result(result);
         return -1;
     }
     strcpy(last_timestamp, row[0]);	  // For next pass & following query
@@ -512,6 +518,8 @@ int Get_Latest_WX( double *winddir,
     if ((nrows=mysql_num_rows(result)) < 1 ) {
         if (debug_level & 1)
             fprintf(stderr,"err: Latest Weather Data query failed - exiting: number of results %d\n",nrows);
+        // release query buffer
+        mysql_free_result(result);
         return 0;
     } 
     else {
