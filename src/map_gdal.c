@@ -74,9 +74,6 @@
 #warning GDAL library support not implemented yet.  Coming soon!!!
 
 
-#define HAVE_LIBGDAL
-
-
 #ifdef HAVE_LIBGDAL
 // WE7U - Getting rid of stupid compiler warnings in GDAL
 #define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
@@ -114,7 +111,10 @@
 void map_gdal_init() {
 
 #ifdef HAVE_LIBGDAL
+
+    // Register all known GDAL drivers
     GDALAllRegister();
+
 #endif  // HAVE_LIBGDAL
 
 }
