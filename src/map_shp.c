@@ -678,6 +678,21 @@ void draw_shapefile_map (Widget w,
     label_string *ptr2 = NULL;
 
 
+#ifdef WITH_DBFAWK
+    // Re-initialize these static variables every time through here.
+    // Otherwise, if a dbfawk file forgets to set one, we'd use what the
+    // last map used.  Sometimes that's ugly.
+    color=8;
+    lanes=1;
+    filled=0;
+    fill_style=0;
+    fill_color=13;
+    pattern=0;
+    display_level=8192;
+    label_level=0;
+    label_color=8;
+    font_size=FONT_DEFAULT;
+#endif
 
 #ifdef WITH_DBFAWK
     if (Dbf_sigs == NULL)
