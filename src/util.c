@@ -838,6 +838,14 @@ time_t time_from_aprsstring(char *aprs_time) {
             // already has the sign set correctly to get the correct
             // time by using addition (PDT zone = -28800).
 
+//WE7U
+            // Initialize daylight savings time to 0 in this
+            // instance, 'cuz we're starting with Zulu time and we
+            // want the localtime conversion to change it correctly.
+            // Zulu time has no daylight savings time offset.
+            alert_time.tm_isdst = 0;
+
+
             // Do the hour offset
             alert_time.tm_hour += zone/3600;
 
@@ -895,6 +903,34 @@ time_t time_from_aprsstring(char *aprs_time) {
         // time/date string?
         alert_time.tm_year--;
     }
+
+    if ( debug_level & 2 ) {
+        time_t a_time,now_time,diff;
+
+        fprintf(stderr,"\n Input: %s\n",aprs_time);
+
+        fprintf(stderr,"Output: %02d%02d%02d\n\n",
+            alert_time.tm_mday,
+            alert_time.tm_hour,
+            alert_time.tm_min);
+
+        a_time = mktime(&alert_time);
+        fprintf(stderr,"Alert: %ld\n", a_time);
+
+        now_time = sec_now();
+        fprintf(stderr,"  Now: %ld\n", now_time);
+
+        diff = now_time - a_time;
+
+        if (diff >= 0)
+            fprintf(stderr,"Expired by %ld minutes\n", diff/60);
+        else
+            fprintf(stderr,"%ld minutes until expiration\n", (-diff)/60);
+
+        if (alert_time.tm_isdst > 0)
+            fprintf(stderr,"Daylight savings time is in effect\n");
+    }
+
     return(mktime(&alert_time));
 }
 
