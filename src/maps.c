@@ -1348,12 +1348,13 @@ void draw_shapefile_map (Widget w,
 
         // Check the filename for mapshots.com filetypes to see what
         // type of file we may be dealing with.
-        if (strncasecmp(filename,"Tgr",3) == 0) {   // Found a Mapshots file
+        if (strncasecmp(filename,"tgr",3) == 0) {   // Found Mapshots or GeographyNetwork file
 
-            if (strstr(filename,"ccdcu")) {         // Cities:  Arlington
+            if (strstr(filename,"plc")) {         // Designated Places:  Arlington
+                city_flag++;
+                mapshots_labels_flag++;
                 if (debug_level & 16) {
-                    city_flag++;
-                    printf("*** Found (mapshots political subdivisions: Cities) ***\n");
+                    printf("*** Found (Designated Places) ***\n");
                     break;
                 }
                 else
@@ -2466,8 +2467,12 @@ void draw_shapefile_map (Widget w,
                                 (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
                             }
                             else if (map_color_fill) {  // Land masses?
-                                (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
-(void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
+                                if (city_flag) {
+                                    (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"PaleGoldenrod")); // PaleGoldenrod
+                                }
+                                else {
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
+                                }
 
                                 (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
@@ -2489,6 +2494,14 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 3 );
                         else if (fieldcount >= 1)
                             temp = DBFReadStringAttribute( hDBF, structure, 0 );    // NAME (lakes)
+                        else
+                            temp = NULL;
+                    }
+                    else if (city_flag) {
+                        if (map_color_levels && scale_y > 512)
+                            skip_label++;
+                        if (mapshots_labels_flag && (fieldcount >= 4) )
+                            temp = DBFReadStringAttribute( hDBF, structure, 3 );    // NAME (designated places)
                         else
                             temp = NULL;
                     }
