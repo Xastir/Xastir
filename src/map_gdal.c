@@ -527,7 +527,13 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
 // depth so that we can recover if we exceed the maximum.  If we
 // keep finding geometries below us, keep calling the same function.
 // Simple and efficient.
-// 
+//
+// TODO:
+// Implement a function which calls XDrawLines() instead of
+// draw_vector_ll().  This should make things faster as we'll draw
+// the entire line segment instead of one vector at a time.  Pass an
+// array of vertices to it.
+//
 void Draw_OGR_Lines(OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
@@ -687,7 +693,7 @@ Region create_clip_mask(int num, int minX, int minY, int maxX, int maxY) {
     Region region;
 
 
-    fprintf(stderr,"Create mask:");
+//    fprintf(stderr,"Create mask:");
 
     rectangle.x      = (short) minX;
     rectangle.y      = (short) minY;
@@ -740,7 +746,7 @@ Region create_hole_in_mask(Region mask,
     int ii;
 
 
-    fprintf(stderr,"Hole:");
+//    fprintf(stderr,"Hole:");
 
     points = NULL;
  
@@ -805,7 +811,7 @@ void draw_polygon_with_mask(Region mask,
     XGCValues gc_temp_values;
 
 
-    fprintf(stderr,"Draw w/mask:");
+//    fprintf(stderr,"Draw w/mask:");
 
     // There were "hole" polygons, so by now we've created a "holey"
     // region.  Draw a filled polygon with gc_temp here and then get
@@ -826,7 +832,7 @@ void draw_polygon_with_mask(Region mask,
     // Set the clip-mask into the GC.  This GC is now ruined for
     // other purposes, so destroy it when we're done drawing this
     // one shape.
-//    if (mask != NULL)
+    if (mask != NULL)
         XSetRegion(XtDisplay(da), gc_temp, mask);
 
     // Actually draw the filled polygon
@@ -844,7 +850,7 @@ void draw_polygon_with_mask(Region mask,
     if (gc_temp != NULL)
         XFreeGC(XtDisplay(da), gc_temp);
 
-    fprintf(stderr,"Done!\n");
+//    fprintf(stderr,"Done!\n");
 }
 
 
@@ -952,6 +958,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
             int polygon_points;
             OGREnvelope envelopeH;
             int polygon_hole = 0;
+            int single_polygon = 0;
 
 
             // if (kk==0) we're dealing with an outer (fill) ring.
@@ -959,6 +966,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
             if (kk == 0 || object_num == 1) {
                 if (object_num == 1) {
                     //fprintf(stderr,"Polygon->Fill\n");
+                    single_polygon++;
                 }
                 else {
                     //fprintf(stderr,"Polygon->Fill w/holes\n");
@@ -1043,199 +1051,86 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                 // polygon calls instead of just drawing the border.
                 //
                 if (draw_filled) { // Draw a filled polygon
-
-// TODO:
-// If we have no inner polygons, skip the whole X11 Region thing and
-// just draw a filled polygon to the pixmap for speed.
-
-                    if (object_num > 1) {   // Multiple rings
-                        unsigned long *XL = NULL;
-                        unsigned long *YL = NULL;
-                        long *XI = NULL;
-                        long *YI = NULL;
-                        int nn;
-                        int minX, maxX, minY, maxY;
+                    unsigned long *XL = NULL;
+                    unsigned long *YL = NULL;
+                    long *XI = NULL;
+                    long *YI = NULL;
+                    int nn;
+                    int minX, maxX, minY, maxY;
 
 
-                        XL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
-                        YL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
+                    XL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
+                    YL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
  
-                        // Convert arrays to the Xastir coordinate
-                        // system
-                        for (nn = 0; nn < polygon_points; nn++) {
-                            convert_to_xastir_coordinates(&XL[nn],
-                                &YL[nn],
-                                vectorX[nn],
-                                vectorY[nn]);
-                        }
+                    // Convert arrays to the Xastir coordinate
+                    // system
+                    for (nn = 0; nn < polygon_points; nn++) {
+                        convert_to_xastir_coordinates(&XL[nn],
+                            &YL[nn],
+                            vectorX[nn],
+                            vectorY[nn]);
+                    }
 
-                        XI = (long *)malloc(sizeof(long) * polygon_points);
-                        YI = (long *)malloc(sizeof(long) * polygon_points);
+                    XI = (long *)malloc(sizeof(long) * polygon_points);
+                    YI = (long *)malloc(sizeof(long) * polygon_points);
  
 // Note:  We're limiting screen size to 1700 in this routine.
-                        minX = 1700;
-                        maxX = 0;
-                        minY = 1700;
-                        maxY = 0;
+                    minX = 1700;
+                    maxX = 0;
+                    minY = 1700;
+                    maxY = 0;
  
-                        // Convert arrays to screen coordinates.
-                        // Careful here!  The format conversions
-                        // you'll need if you try to compress this
-                        // into two lines will get you into trouble.
-                        //
-                        // We also clip to screen size and compute
-                        // min/max values here.
-                        for (nn = 0; nn < polygon_points; nn++) {
-                            XI[nn] = XL[nn] - x_long_offset;
-                            XI[nn] = XI[nn] / scale_x;
+                    // Convert arrays to screen coordinates.
+                    // Careful here!  The format conversions you'll
+                    // need if you try to compress this into two
+                    // lines will get you into trouble.
+                    //
+                    // We also clip to screen size and compute
+                    // min/max values here.
+                    for (nn = 0; nn < polygon_points; nn++) {
+                        XI[nn] = XL[nn] - x_long_offset;
+                        XI[nn] = XI[nn] / scale_x;
 
-                            YI[nn] = YL[nn] - y_lat_offset;
-                            YI[nn] = YI[nn] / scale_y;
+                        YI[nn] = YL[nn] - y_lat_offset;
+                        YI[nn] = YI[nn] / scale_y;
  
 // Here we truncate:  We should polygon clip instead, so that the
 // slopes of the line segments don't change.  Points beyond +/-
 // 16000 can cause problems in X11 when we draw.  Here we are more
 // interested in keeping the rectangles small and fast.  Screen-size
 // or smaller basically.
-                            if      (XI[nn] > 1700l) XI[nn] = 1700l;
-                            else if (XI[nn] <    0l) XI[nn] =    0l;
-                            if      (YI[nn] > 1700l) YI[nn] = 1700l;
-                            else if (YI[nn] <    0l) YI[nn] =    0l;
+                        if      (XI[nn] > 1700l) XI[nn] = 1700l;
+                        else if (XI[nn] <    0l) XI[nn] =    0l;
+                        if      (YI[nn] > 1700l) YI[nn] = 1700l;
+                        else if (YI[nn] <    0l) YI[nn] =    0l;
 
-                            if (!polygon_hole) {
+                        if (!polygon_hole) {
 
-                                // Find the min/max extents for the
-                                // arrays.  We use that to set the
-                                // size of our mask region.
-                                if (XI[nn] < minX) minX = XI[nn];
-                                if (XI[nn] > maxX) maxX = XI[nn];
-                                if (YI[nn] < minY) minY = YI[nn];
-                                if (YI[nn] > maxY) maxY = YI[nn];
-                            }
-                        }
-
-                        // We don't need the Xastir coordinate
-                        // system arrays anymore.  We've already
-                        // converted to screen coordinates.
-                        if (XL)
-                            free(XL);
-                        if (YL)
-                            free(YL);
-
-                        if (!polygon_hole) {   // Outer ring (fill)
-                            int pp;
-
-                            // Pass the extents of the polygon to
-                            // create a mask rectangle out of them.
-                            mask = create_clip_mask(polygon_points,
-                                minX,
-                                minY,
-                                maxX,
-                                maxY);
-
-                            // Set up the XPoint array that we'll
-                            // need for our final draw (once the
-                            // "holey" region is set up).
-                            points = (XPoint *)malloc(sizeof(XPoint) * polygon_points);
-
-                            // Load up our points array
-                            for (pp = 0; pp < polygon_points; pp++) {
-                                points[pp].x = (short)XI[pp];
-                                points[pp].y = (short)YI[pp];
-                            }
-                            num_outer_points = polygon_points;
-                        }
-                        else {  // Inner ring (hole)
-
-                            // Pass the entire "hole" polygon set of
-                            // vertices into the hole region
-                            // creation function.  This knocks a
-                            // hole in our mask so that underlying
-                            // map layers can show through.
-
-                            mask = create_hole_in_mask(mask,
-                                polygon_points,
-                                XI,
-                                YI);
-                        }
-
-                        // Free the screen coordinate arrays.
-                        if (XI)
-                            free(XI);
-                        if (YI)
-                            free(YI);
-
-                        // Draw the original polygon to the pixmap
-                        // using the X11 Region as a mask.
-                        if (kk == (object_num - 1)) {
-                            draw_polygon_with_mask(mask,
-                                points,
-                                num_outer_points);
-
-                            free(points);
+                            // Find the min/max extents for the
+                            // arrays.  We use that to set the size
+                            // of our mask region.
+                            if (XI[nn] < minX) minX = XI[nn];
+                            if (XI[nn] > maxX) maxX = XI[nn];
+                            if (YI[nn] < minY) minY = YI[nn];
+                            if (YI[nn] > maxY) maxY = YI[nn];
                         }
                     }
 
-//WE7U
-// Below is partially duplicated code.
-                    else {  // No inner rings, just one outer ring
-/*
-                        unsigned long *XL = NULL;
-                        unsigned long *YL = NULL;
-                        long *XI = NULL;
-                        long *YI = NULL;
-                        int nn, pp;
+                    // We don't need the Xastir coordinate system
+                    // arrays anymore.  We've already converted to
+                    // screen coordinates.
+                    if (XL)
+                        free(XL);
+                    if (YL)
+                        free(YL);
 
+                    if (!polygon_hole) {    // Outer ring (fill)
+                        int pp;
 
-                        XL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
-                        YL = (unsigned long *)malloc(sizeof(unsigned long) * polygon_points);
- 
-                        // Convert arrays to the Xastir coordinate
-                        // system
-                        for (nn = 0; nn < polygon_points; nn++) {
-                            convert_to_xastir_coordinates(&XL[nn],
-                                &YL[nn],
-                                vectorX[nn],
-                                vectorY[nn]);
-                        }
-
-                        XI = (long *)malloc(sizeof(long) * polygon_points);
-                        YI = (long *)malloc(sizeof(long) * polygon_points);
- 
-                        // Convert arrays to screen coordinates.
-                        // Careful here!  The format conversions
-                        // you'll need if you try to compress this
-                        // into two lines will get you into trouble.
-                        //
-                        // We also clip to screen size and compute
-                        // min/max values here.
-                        for (nn = 0; nn < polygon_points; nn++) {
-                            XI[nn] = XL[nn] - x_long_offset;
-                            XI[nn] = XI[nn] / scale_x;
-
-                            YI[nn] = YL[nn] - y_lat_offset;
-                            YI[nn] = YI[nn] / scale_y;
- 
-// Here we truncate:  We should polygon clip instead, so that the
-// slopes of the line segments don't change.  Points beyond +/-
-// 16000 can cause problems in X11 when we draw.  Here we are more
-// interested in keeping the rectangles small and fast.  Screen-size
-// or smaller basically.
-                            if      (XI[nn] > 1700l) XI[nn] = 1700l;
-                            else if (XI[nn] <    0l) XI[nn] =    0l;
-                            if      (YI[nn] > 1700l) YI[nn] = 1700l;
-                            else if (YI[nn] <    0l) YI[nn] =    0l;
-                        }
-
-                        // We don't need the Xastir coordinate
-                        // system arrays anymore.  We've already
-                        // converted to screen coordinates.
-                        if (XL)
-                            free(XL);
-                        if (YL)
-                            free(YL);
-
-                        // Set up the XPoint array.
+                        // Set up the XPoint array that we'll need
+                        // for our final draw (after the "holey"
+                        // region is set up if we have multiple
+                        // rings).
                         points = (XPoint *)malloc(sizeof(XPoint) * polygon_points);
 
                         // Load up our points array
@@ -1244,25 +1139,60 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                             points[pp].y = (short)YI[pp];
                         }
                         num_outer_points = polygon_points;
- 
-                        // Free the screen coordinate arrays.
-                        if (XI)
-                            free(XI);
-                        if (YI)
-                            free(YI);
+                    }
 
-                        // Draw the original polygon to the pixmap
-                        // using a blank mask.
-                        draw_polygon_with_mask(NULL,
+                    // If we have no inner polygons, skip the whole
+                    // X11 Region thing and just draw a filled
+                    // polygon to the pixmap for speed.  We do that
+                    // here via the "single_polygon" variable.
+                    //
+                    if (!polygon_hole) {   // Outer ring (fill)
+
+                        if (single_polygon) {
+                            mask = NULL;
+                        }
+                        else {
+                            // Pass the extents of the polygon to
+                            // create a mask rectangle out of them.
+                            mask = create_clip_mask(polygon_points,
+                                minX,
+                                minY,
+                                maxX,
+                                maxY);
+                        }
+                    }
+                    else {  // Inner ring (hole)
+
+                        // Pass the entire "hole" polygon set of
+                        // vertices into the hole region creation
+                        // function.  This knocks a hole in our mask
+                        // so that underlying map layers can show
+                        // through.
+
+                        mask = create_hole_in_mask(mask,
+                            polygon_points,
+                            XI,
+                            YI);
+                    }
+
+                    // Free the screen coordinate arrays.
+                    if (XI)
+                        free(XI);
+                    if (YI)
+                        free(YI);
+
+                    // Draw the original polygon to the pixmap
+                    // using the X11 Region as a mask.  Mask may be
+                    // null if we're doing a single outer polygon
+                    // with no "hole" polygons.
+                    if (kk == (object_num - 1)) {
+                        draw_polygon_with_mask(mask,
                             points,
                             num_outer_points);
- 
-                        if (points)
-                            free(points);
-*/
+
+                        free(points);
                     }
                 }   // end of draw_filled
-
                 else {  // We're drawing non-filled polygons.
                         // Draw just the border.
 
@@ -1300,6 +1230,9 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                     free(vectorZ);
  
             }
+            else {
+                // Not enough points to draw a polygon
+            }
         }
     }
 }
@@ -1330,16 +1263,13 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 //
 //
 // TODO:
-// *) Dbfawk support or similar?  Implement proper map preferences
-//    drawing:  Colors, line widths, layering, filled, choose label
-//    field, label fonts/placement/color.
+// *) Dbfawk support or similar?  Map preferences:  Colors, line
+//    widths, layering, filled, choose label field, label
+//    fonts/placement/color.
 // *) Allow user to select layers to draw/ignore.  Very important
-//    for those sorts of files that provide all layers (i.e. Tiger).
-// *) Implement filled polygons, fill/hole polygon detection, and
-//    draw appropriately.  First ring is fill, all others are holes
-//    according to the OGR simple features methods.
-// *) Implement weather alert tinted polygons, draw them to the
-//    correct pixmap.
+//    for those sorts of files that provide all layers (i.e. Tiger &
+//    SDTS).
+// *) Weather alert tinted polygons, draw to the correct pixmap.
 // *) Fast Extents:  We now pass a variable to the draw functions
 //    that tells whether we can do fast extents, but we still need
 //    to compute our own extents after we have the points for a
