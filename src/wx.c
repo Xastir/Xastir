@@ -198,7 +198,7 @@ void compute_rain_hour(float rain_total) {
     // Found it, subtract the two to get total for the last hour
     rain_minute_total = rain_total - lowest;
 
-    if (debug_level > 2)
+    if (debug_level & 2)
         printf("Rain_total:%0.2f  Hourly:%0.2f  (Low:%0.2f)  ", rain_total, rain_minute_total, lowest);
 }
 
@@ -275,7 +275,7 @@ void compute_rain(float rain_total) {
     // We don't return anything except in global variables.
 
 
-    if (debug_level > 2) {
+    if (debug_level & 2) {
         printf("24hrs:%0.2f  ", rain_24);
         printf("rain_00:%0.2f\n", rain_00);
     }
@@ -358,7 +358,7 @@ float compute_gust(float wx_speed, float last_speed, time_t *last_speed_time) {
         j = (j + 1) % 60;
     }
 
-    if (debug_level > 2) {
+    if (debug_level & 2) {
         j = gust_read_ptr;
         while (j != ((gust_write_ptr + 1) % 60) ) {
             printf("%0.2f   ", gust[j]);
@@ -387,7 +387,7 @@ void cycle_weather(void) {
     time_t last_speed_time;
 
 
-    if (debug_level > 2)
+    if (debug_level & 2)
         printf("%02d:%02d  ", hour(), minute() );
 
     // Find my own local weather data

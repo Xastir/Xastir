@@ -114,7 +114,7 @@ char *host_lookup(char *host, char *ip, int time) {
     char ttemp[60];
     int wait_host;
 
-    if (debug_level & 256)
+    if (debug_level & 1024)
         printf("Start Host lookup\n");
 
     memset(ip_addr,(int)'\0',sizeof(ip_addr));
@@ -122,14 +122,14 @@ char *host_lookup(char *host, char *ip, int time) {
 
     busy_cursor(appshell);
 
-    if (debug_level & 256)
+    if (debug_level & 1024)
         printf("Creating pipe\n");
 
     if (pipe(fp)==0) {          // Create a pipe for communication
 
         host_pid = fork();      // Fork off a child process
 
-        if (debug_level & 256)
+        if (debug_level & 1024)
             printf("Host fork\n");
 
         if (host_pid!=-1) {     // If the fork was successful
@@ -139,12 +139,12 @@ char *host_lookup(char *host, char *ip, int time) {
 
                 // Close the end of the pipe we don't need here
 
-                if (debug_level & 256)
+                if (debug_level & 1024)
                     printf("Child closing read end of pipe\n");
 
                 close(fp[0]);   // Read end of the pipe
 
-                if (debug_level & 256)
+                if (debug_level & 1024)
                     printf("Set alarm \n");
 
                 previous_loc = signal(SIGALRM, host_time_out);
@@ -162,7 +162,7 @@ char *host_lookup(char *host, char *ip, int time) {
                     strcpy(ip_addr,"TIMEOUT");
                     (void)write(fp[1],ip_addr,strlen(ip_addr));
 
-                    if (debug_level & 256)
+                    if (debug_level & 1024)
                         printf("Child closing write end of pipe\n");
 
                     close(fp[1]);   // All done writing to the pipe
@@ -200,7 +200,7 @@ char *host_lookup(char *host, char *ip, int time) {
                                 xastir_snprintf(temp, sizeof(temp), "%s",
                                         inet_ntoa(*(struct in_addr *)*addrs));
 
-                                if (debug_level & 256)
+                                if (debug_level & 1024)
                                     printf("IP [%s]\n",temp);
 
                                 if (strlen(temp)>7) {
@@ -226,7 +226,7 @@ char *host_lookup(char *host, char *ip, int time) {
                         /* Host not found */
                         strcpy(ip_addr,"NOIP");
 
-                        if (debug_level & 256)
+                        if (debug_level & 1024)
                             printf("Host NO IP");
 
                     }
@@ -235,19 +235,19 @@ char *host_lookup(char *host, char *ip, int time) {
                     /* Host not found */
                     strcpy(ip_addr,"NOHOST");
 
-                    if (debug_level & 256)
+                    if (debug_level & 1024)
                         printf("NO HOST\n");
 
                 }
-                if (debug_level & 256)
+                if (debug_level & 1024)
                     printf("Clear alarm 1\n");
 
-                if (debug_level & 256)
+                if (debug_level & 1024)
                     printf("Clear alarm 2\n");
 
                 (void)write(fp[1],ip_addr,strlen(ip_addr));
 
-                if (debug_level & 256)
+                if (debug_level & 1024)
                     printf("Child closing write end of pipe\n");
 
                 close(fp[1]);   // All done writing to the pipe
@@ -260,7 +260,7 @@ char *host_lookup(char *host, char *ip, int time) {
 
                 // Close the end of the pipe we don't need here
 
-                if (debug_level & 256)
+                if (debug_level & 1024)
                     printf("Parent closing write end of pipe\n");
 
                 close(fp[1]);   // Write end of the pipe
@@ -282,7 +282,7 @@ char *host_lookup(char *host, char *ip, int time) {
                 (void)read(fp[0],buf,sizeof(buf)-1);
                 strcpy(ip,buf);
 
-                if (debug_level & 256)
+                if (debug_level & 1024)
                     printf("Parent closing read end of pipe\n");
 
                 close(fp[0]);   // Close the read end of the pipe

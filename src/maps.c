@@ -748,7 +748,7 @@ int map_visible (unsigned long bottom_map_boundary,
     if (view_max_y > 64800000ul)
         view_max_y = 64800000ul;
 
-    if (debug_level & 2) {
+    if (debug_level & 16) {
         printf ("              Bottom     Top       Left     Right\n");
 
         printf ("View Edges:  %lu  %lu  %lu  %lu\n",
@@ -855,7 +855,7 @@ int map_visible (unsigned long bottom_map_boundary,
     }
 
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf("map_inside_view: %d  view_inside_map: %d  parallel_edges: %d\n",
                 map_inside_view,
                 view_inside_map,
@@ -1125,18 +1125,18 @@ void draw_shapefile_map (Widget w,
     // data (attributes) associated with each shape.
     hDBF = DBFOpen( file, "rb" );
     if ( hDBF == NULL ) {
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("draw_shapefile_map: DBFOpen(%s,\"rb\") failed.\n", file );
 
         return;
     }
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf ("\n---------------------------------------------\nInfo for %s\n",filenm);
 
     fieldcount = DBFGetFieldCount(hDBF);
     recordcount = DBFGetRecordCount(hDBF);
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf ("%d Columns,  %d Records in file\n", fieldcount, recordcount);
 
     panWidth = (int *) malloc( fieldcount * sizeof(int) );
@@ -1145,7 +1145,7 @@ void draw_shapefile_map (Widget w,
         lake_flag++;
         water_flag++;
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("*** Found some lakes ***\n");
     }
  
@@ -1175,13 +1175,13 @@ void draw_shapefile_map (Widget w,
                 break;
         }
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf ("%15.15s\t%15s  (%d,%d)\n",szTitle, ftype, nWidth, nDecimals);
 
         if (strncasecmp (szTitle, "SPEEDLIM", 8) == 0) {
             road_flag++;
 
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("*** Found some roads ***\n");
         }
         if (strncasecmp (szTitle, "US_RIVS_ID", 10) == 0)
@@ -1189,7 +1189,7 @@ void draw_shapefile_map (Widget w,
 
             water_flag++;
 
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("*** Found some water ***\n");
         }
     }
@@ -1224,10 +1224,10 @@ void draw_shapefile_map (Widget w,
                 break;
     }
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf ("%s(%d), %d Records in file\n",sType,nShapeType,nEntities);
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf( "File Bounds: (%15.10g,%15.10g)\n\t(%15.10g,%15.10g)\n",
             adfBndsMin[0], adfBndsMin[1], adfBndsMax[0], adfBndsMax[1] );
 
@@ -1236,7 +1236,7 @@ void draw_shapefile_map (Widget w,
                                 adfBndsMax[1],       // Top
                                 adfBndsMin[0],       // Left
                                 adfBndsMax[0]) ) {   // Right
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("No shapes within viewport.  Skipping file...\n");
 
         DBFClose( hDBF );   // Clean up open file descriptors
@@ -1314,11 +1314,11 @@ void draw_shapefile_map (Widget w,
             for (jj = 0; jj < fieldcount; jj++) {
                 temp = DBFReadStringAttribute( hDBF, structure, jj );
 
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf("%s, ", temp);
             }
 
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("\n");
 
             switch ( nShapeType ) {
@@ -1600,7 +1600,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
     Print_properties_destroy_shell(widget, print_properties_dialog, NULL );
 
 
-    if ( debug_level & 2 )
+    if ( debug_level & 512 )
         printf( "Creating %s\n", xpm_filename );
 
     xastir_snprintf(temp, sizeof(temp), langcode("PRINT0012") );
@@ -1617,7 +1617,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 
         chmod( xpm_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
 
-        if ( debug_level & 2 )
+        if ( debug_level & 512 )
             printf( "Convert %s ==> %s\n", xpm_filename, ps_filename );
 
 
@@ -1648,7 +1648,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
             invert[0] = '\0';   // Empty string
 
 
-        if (debug_level & 2)
+        if (debug_level & 512)
             printf("Width: %ld\tHeight: %ld\n", screen_width, screen_height);
 
 
@@ -1661,16 +1661,16 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
             if (screen_width > screen_height) {
                 xastir_snprintf(rotate, sizeof(rotate), "-rotate -90 " );
                 xastir_snprintf(format, sizeof(format), "-landscape " );
-                if (debug_level & 2)
+                if (debug_level & 512)
                     printf("Rotating\n");
             } else {
                 rotate[0] = '\0';   // Empty string
-                if (debug_level & 2)
+                if (debug_level & 512)
                     printf("Not Rotating\n");
             }
         } else {
             rotate[0] = '\0';   // Empty string
-            if (debug_level & 2)
+            if (debug_level & 512)
                 printf("Not Rotating\n");
         }
 
@@ -1702,7 +1702,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 
         xastir_snprintf(command, sizeof(command), "convert -filter Point %s%s%s%s%s %s %s",
                 mono, invert, rotate, scale, density, xpm_filename, ps_filename );
-        if ( debug_level & 2 )
+        if ( debug_level & 512 )
             printf( "%s\n", command );
 
         if ( system( command ) != 0 ) {
@@ -1713,10 +1713,10 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
         chmod( ps_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
 
         // Delete temporary xpm file
-        if ( !(debug_level & 2) )
+        if ( !(debug_level & 512) )
             unlink( xpm_filename );
 
-        if ( debug_level & 2 )
+        if ( debug_level & 512 )
             printf("Printing postscript file %s\n", ps_filename);
 
 //WE7U4
@@ -1728,7 +1728,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 // calling "system" anyway.  Several problems with it.
 /*
         xastir_snprintf(command, sizeof(command), "lpr -Plp %s", ps_filename );
-        if ( debug_level & 2 )
+        if ( debug_level & 512 )
             printf("%s\n", command);
 
         if ( system( command ) != 0 ) {
@@ -1742,7 +1742,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
         xastir_snprintf(command, sizeof(command), "gv %s-scale -2 -media Letter %s &",
                 format, ps_filename );
 
-        if ( debug_level & 2 )
+        if ( debug_level & 512 )
             printf("%s\n", command);
 
         if ( system( command ) != 0 ) {
@@ -1750,11 +1750,11 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
             return;
         }
 /*
-        if ( !(debug_level & 2) )
+        if ( !(debug_level & 512) )
             unlink( ps_filename );
 */
 
-        if ( debug_level & 2 )
+        if ( debug_level & 512 )
             printf("  Done printing.\n");
     }
 
@@ -2322,7 +2322,7 @@ void Snapshot(void) {
 
     last_snapshot = sec_now(); // Set up timer for next time
 
-    if ( debug_level & 2 )
+    if ( debug_level & 512 )
         printf( "Creating %s\n", xpm_filename );
 
     if ( !XpmWriteFileFromPixmap( XtDisplay(appshell),    // Display *display
@@ -2334,7 +2334,7 @@ void Snapshot(void) {
     } else {  // We now have the xpm file created on disk
         chmod( xpm_filename, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH );
 
-        if ( debug_level & 2 )
+        if ( debug_level & 512 )
             printf( "Convert %s ==> %s\n", xpm_filename, png_filename );
 
         // Convert it to a png file.  This depends on having the
@@ -2348,7 +2348,7 @@ void Snapshot(void) {
         // Delete temporary xpm file
         unlink( xpm_filename );
 
-        if ( debug_level & 2 )
+        if ( debug_level & 512 )
             printf("  Done creating png.\n");
     }
 
@@ -2557,7 +2557,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm)
                     if (coord_lon >= min_lon && coord_lon <= max_lon
                             && coord_lat <= min_lat && coord_lat >= max_lat) {
 
-                        if (debug_level & 2) {
+                        if (debug_level & 16) {
                             printf("%s\t%s\t%s\t%s\t%s\t%s\t\t",
                                     state, name, type, county, latitude, longitude);
                             printf("%s %s %s %s\t%s %s %s %s\t\t",
@@ -2938,7 +2938,7 @@ int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
  
  
     strcpy(file,filename_in);
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf("File: %s\n",file);
 
 
@@ -2954,7 +2954,7 @@ int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
     to_upper(state_in2);
 
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf("Name:%s\tState:%s\tCounty:%s\tQuad:%s\tType:%s\n",
         name_in,state_in2,county_in,quad_in,type_in);
 
@@ -3138,7 +3138,7 @@ int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
 
                     if (ok) {
-                        if (debug_level & 2)
+                        if (debug_level & 16)
                             printf("Match: %s,%s,%s,%s\n",name,state,county,type);
 
                         popup_message( langcode("POPEM00029"), name );
@@ -3452,7 +3452,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 */
 
         if (tiger_flag) {
-        if (debug_level >= 2)   // Draw some calibration dots
+        if (debug_level & 512)   // Draw some calibration dots
                 xastir_snprintf(fileimg, sizeof(fileimg), "\'http://tiger.census.gov/cgi-bin/mapgen?lat=%f\046lon=%f\046wid=%f\046ht=%f\046iwd=%i\046iht=%imark=-122,48;-122,47;-121,48;-121,47;-123,47;-123,48;-123,47.5;-122,47.5;-121,47.5\'",\
                         lat_center, long_center, map_width, map_height, tp[1].img_x + 1, tp[1].img_y + 1);
             else {
@@ -3465,7 +3465,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
                 "\'http://64.34.101.121/cgi-bin/rawposit.cgi?call=%s&start=336&length=336\'",
                 remote_callsign);
 
-        if (debug_level >= 2) {
+        if (debug_level & 512) {
           printf("left side is %f\n", left);
           printf("right side is %f\n", right);
           printf("top  is %f\n", top);
@@ -3583,7 +3583,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     if (tp_c_dy < 0) tp_c_dy = -tp_c_dy;       // New height between tiepoints
 
 
-    if (debug_level & 2) {
+    if (debug_level & 512) {
         printf("X tiepoint width: %ld\n", tp_c_dx);
         printf("Y tiepoint width: %ld\n", tp_c_dy);
     }
@@ -3596,7 +3596,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     scr_dx = (int) (map_c_dx / scale_x) + 1;
     scr_dy = (int) (map_c_dy / scale_y) + 1;
 
-    if (debug_level & 2) {
+    if (debug_level & 512) {
         printf ("\nImage: %s\n", file);
         printf ("Image size %d %d\n", geo_image_width, geo_image_height);
         printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
@@ -3607,13 +3607,13 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         tp[0].x_long -= (tp[0].img_x * map_c_dx);   // map left edge longitude
         map_c_L = tp[0].x_long - x_long_offset;     // delta ??
         tp[0].img_x = 0;
-        if (debug_level >= 2) printf("Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
+        if (debug_level & 512) printf("Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
     }
     if (tp[0].img_y != 0) {
         tp[0].y_lat -= (tp[0].img_y * map_c_dy);    // map top edge latitude
         map_c_T = tp[0].y_lat - y_lat_offset;
         tp[0].img_y = 0;
-        if (debug_level >= 2) printf("Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
+        if (debug_level & 512) printf("Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
     }
 
     // calculate bottom right map corner from tiepoints
@@ -3621,25 +3621,25 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     if (tp[1].img_x != (geo_image_width - 1) ) {
         tp[1].img_x = geo_image_width - 1;
         tp[1].x_long = tp[0].x_long + (tp[1].img_x * map_c_dx); // right
-        if (debug_level >= 2) printf("Translated tiepoint_1 x: %d\t%lu\n", tp[1].img_x, tp[1].x_long);
+        if (debug_level & 512) printf("Translated tiepoint_1 x: %d\t%lu\n", tp[1].img_x, tp[1].x_long);
     }
     if (tp[1].img_y != (geo_image_height - 1) ) {
         tp[1].img_y = geo_image_height - 1;
         tp[1].y_lat = tp[0].y_lat + (tp[1].img_y * map_c_dy);   // bottom
-        if (debug_level >= 2) printf("Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
+        if (debug_level & 512) printf("Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
     }
 
     // Check whether map is inside our current view
     //                bottom        top    left        right
     if (!map_visible (tp[1].y_lat, tp[0].y_lat, tp[0].x_long, tp[1].x_long)) {
-        if (debug_level & 2) {
+        if (debug_level & 16) {
             printf ("Map not in current view, skipping: %s\n", file);
             printf ("\nImage: %s\n", file);
             printf ("Image size %d %d\n", geo_image_width, geo_image_height);
             printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
         }
         return;            /* Skip this map */
-    } else if (debug_level >= 2) {
+    } else if (debug_level & 16) {
         printf ("Loading imagemap: %s\n", file);
         printf ("\nImage: %s\n", file);
         printf ("Image size %d %d\n", geo_image_width, geo_image_height);
@@ -3671,7 +3671,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 #ifdef HAVE_IMAGEMAGICK
         char *ext;
 
-        if (debug_level >= 2) printf("ftp or http file: %s\n", fileimg);
+        if (debug_level & 16) printf("ftp or http file: %s\n", fileimg);
 
         if (findu_flag)
             ext = "log";
@@ -3690,7 +3690,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
                 local_filename,
                 fileimg);
 
-        if (debug_level >= 2)
+        if (debug_level & 16)
             printf("%s",tempfile);
 
         if ( system(tempfile) ) {   // Go get the file
@@ -3740,7 +3740,7 @@ if (findu_flag) {
 // Need to figure out the visual and color depth/type here so
 // that we can draw the right colors on the screen.
 
-    if (debug_level & 2) {
+    if (debug_level & 16) {
         visual_list = XGetVisualInfo ( XtDisplay(w), VisualNoMask, &visual_template, &visuals_matched );
         if (visuals_matched) {
             int ii;
@@ -3784,7 +3784,7 @@ if (findu_flag) {
     GetExceptionInfo(&exception);
     image_info=CloneImageInfo((ImageInfo *) NULL);
     (void) strcpy(image_info->filename, file);
-    if (debug_level >= 2){
+    if (debug_level & 16){
            printf ("Copied %s into image info.\n", file);
            printf ("image_info got: %s\n", image_info->filename);
            printf ("Entered ImageMagick code.\n");
@@ -3796,7 +3796,7 @@ if (findu_flag) {
     // don't kill Xastir in the ReadImage routine.
     f = fopen (image_info->filename, "r");
     if (f == NULL) {
-        if (debug_level >= 2)
+        if (debug_level & 16)
             printf("File could not be read\n");
         return;
     }
@@ -3810,7 +3810,7 @@ if (findu_flag) {
         return;
     }
 
-    if (debug_level & 2) 
+    if (debug_level & 16) 
         printf("Color depth is %i \n", (int)image->depth);
 
 //    if (image->colors == 0) {
@@ -3842,7 +3842,7 @@ if (findu_flag) {
         // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
         // of image files
         temp_pack = image->colormap[l];
-        if (debug_level & 2) 
+        if (debug_level & 16) 
             printf("Colormap color is %i  %i  %i \n", temp_pack.red, temp_pack.green, temp_pack.blue);
 
 
@@ -3852,13 +3852,13 @@ if (findu_flag) {
         // We can determine which by looking at MaxRGB or QuantumDepth.
         //
         if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
-            if (debug_level & 2) printf("Color quantum is [0..65535]\n");
+            if (debug_level & 16) printf("Color quantum is [0..65535]\n");
             my_colors[l].red   = (unsigned short)(temp_pack.red  * geotiff_map_intensity);
             my_colors[l].green = (unsigned short)(temp_pack.green* geotiff_map_intensity);
             my_colors[l].blue  = (unsigned short)(temp_pack.blue * geotiff_map_intensity);
         }
         else {  // QuantumDepth = 8
-            if (debug_level & 2) printf("Color quantum is [0..255]\n");
+            if (debug_level & 16) printf("Color quantum is [0..255]\n");
             my_colors[l].red   = (unsigned short)(temp_pack.red  * geotiff_map_intensity) << 8;
             my_colors[l].green = (unsigned short)(temp_pack.green* geotiff_map_intensity) << 8;
             my_colors[l].blue  = (unsigned short)(temp_pack.blue * geotiff_map_intensity) << 8;
@@ -3867,11 +3867,11 @@ if (findu_flag) {
 
         //  Get the color allocated.  Allocated pixel color is written to my_colors.pixel
         XAllocColor( XtDisplay (w), cmap, &my_colors[l] );
-        if (debug_level & 2) 
+        if (debug_level & 16) 
             printf("Color allocated is %li  %i  %i  %i \n", my_colors[l].pixel, my_colors[l].red, my_colors[l].blue, my_colors[l].green);
     } 
 
-    if (debug_level >= 2) {
+    if (debug_level & 16) {
        printf ("Image size %d %d\n", atb.width, atb.height);
        printf ("Total colors = %d\n", (int)image->colors); 
        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
@@ -3928,7 +3928,7 @@ if (findu_flag) {
             XDestroyImage (xi);
         return;
     }
-    if (debug_level & 2) {
+    if (debug_level & 16) {
         printf ("Image size %d %d\n", (int)atb.width, (int)atb.height);
         printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
     }
@@ -4175,7 +4175,7 @@ int read_fgd_file ( char* tif_filename,
     fgd_file[length-2] = 'g';
     fgd_file[length-1] = 'd';
 
-    if (debug_level & 2)
+    if (debug_level & 512)
         printf("%s\n",fgd_file);
 
     /*
@@ -4189,7 +4189,7 @@ int read_fgd_file ( char* tif_filename,
     if (fgd == NULL) {
         get_alt_fgd_path(fgd_file, sizeof(fgd_file) );
 
-        if (debug_level & 2)
+        if (debug_level & 512)
             printf("%s\n",fgd_file);
 
         fgd = fopen (fgd_file, "r");
@@ -4206,7 +4206,7 @@ int read_fgd_file ( char* tif_filename,
                 if ( (ptr = strstr(line, "WEST BOUNDING COORDINATE:") ) != NULL)
                 {
                     sscanf (ptr + 25, " %f", f_west_bounding);
-                    if (debug_level & 2)
+                    if (debug_level & 512)
                         printf("West Bounding:  %f\n",*f_west_bounding);
                     num_coordinates++;
                 }
@@ -4217,7 +4217,7 @@ int read_fgd_file ( char* tif_filename,
                 if ( (ptr = strstr(line, "EAST BOUNDING COORDINATE:") ) != NULL)
                 {
                     sscanf (ptr + 25, " %f", f_east_bounding);
-                    if (debug_level & 2)
+                    if (debug_level & 512)
                         printf("East Bounding:  %f\n",*f_east_bounding);
                     num_coordinates++;
                 }
@@ -4228,7 +4228,7 @@ int read_fgd_file ( char* tif_filename,
                 if ( (ptr = strstr(line, "NORTH BOUNDING COORDINATE:") ) != NULL)
                 {
                     sscanf (ptr + 26, " %f", f_north_bounding);
-                    if (debug_level & 2)
+                    if (debug_level & 512)
                         printf("North Bounding: %f\n",*f_north_bounding);
                     num_coordinates++;
                 }
@@ -4239,7 +4239,7 @@ int read_fgd_file ( char* tif_filename,
                 if ( (ptr = strstr(line, "SOUTH BOUNDING COORDINATE:") ) != NULL)
                 {
                     sscanf (ptr + 26, " %f", f_south_bounding);
-                    if (debug_level & 2)
+                    if (debug_level & 512)
                         printf("South Bounding: %f\n",*f_south_bounding);
                     num_coordinates++;
                 }
@@ -4250,7 +4250,7 @@ int read_fgd_file ( char* tif_filename,
     }
     else
     {
-        if (debug_level & 2)
+        if (debug_level & 512)
             printf("Couldn't open '.fgd' file, assuming no map collar to chop %s\n",
                     tif_filename);
         return(0);
@@ -4270,7 +4270,7 @@ int read_fgd_file ( char* tif_filename,
     }
 
 
-    if (debug_level & 2)
+    if (debug_level & 512)
     {
         printf("%f %f %f %f\n",
         *f_south_bounding,
@@ -4401,7 +4401,7 @@ int datum_shift_to_wgs84 (  float* f_west_bounding,
 
 
 
-    if (0 && debug_level & 2)
+    if (debug_level & 512)
         printf( "Datum shifted values:  %f\t%f\t%f\t%f\n",
                 x[0],
                 y[0],
@@ -4592,7 +4592,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
 
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf ("%s/%s\n", dir, filenm);
 
 
@@ -4674,7 +4674,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
                              west_bounding - 1000,
                              east_bounding + 1000 ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf ("Map not within current view.\n");
                 printf ("Skipping map: %s\n", file);
@@ -4738,7 +4738,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
      */
     if (GTIFGetDefn (gtif, &defn))
     {
-        if (debug_level & 2)
+        if (debug_level & 16)
             GTIFPrintDefn (&defn, stdout);
     }
 
@@ -4777,7 +4777,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
 
         /* Figure out the bounding coordinates for this map */
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("\nCorner Coordinates:\n");
 
         /* Find lat/lon for NW corner of image */
@@ -4785,7 +4785,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         yyy = 0.0;
         if ( GTIFImageToPCS( gtif, &xxx, &yyy ) )   // Do all 4 of these in one call?
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf( "%-13s ", "Upper Left" );
                 printf( "(%11.3f,%11.3f)\n", xxx, yyy );
@@ -4793,7 +4793,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         }
         if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )   // Do all 4 of these in one call?
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf( "  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
                 printf( "%s)\n", GTIFDecToDMS( yyy, "Lat", 2 ) );
@@ -4809,7 +4809,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         yyy = 0.0;
         if ( GTIFImageToPCS( gtif, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf( "%-13s ", "Lower Right" );
                 printf( "(%11.3f,%11.3f)\n", xxx, yyy );
@@ -4817,7 +4817,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         }
         if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf( "  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
                 printf( "%s)\n", GTIFDecToDMS( yyy, "Lat", 2 ) );
@@ -4832,7 +4832,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         yyy = height - 1;
         if ( GTIFImageToPCS( gtif, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf( "%-13s ", "Lower Right" );
                 printf( "(%11.3f,%11.3f)\n", xxx, yyy );
@@ -4840,7 +4840,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         }
         if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf( "  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
                 printf( "%s)\n", GTIFDecToDMS( yyy, "Lat", 2 ) );
@@ -4855,7 +4855,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         yyy = height - 1;
         if ( GTIFImageToPCS( gtif, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf( "%-13s ", "Lower Right" );
                 printf( "(%11.3f,%11.3f)\n", xxx, yyy );
@@ -4863,7 +4863,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         }
         if ( GTIFProj4ToLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
             {
                 printf( "  (%s,", GTIFDecToDMS( xxx, "Long", 2 ) );
                 printf( "%s)\n", GTIFDecToDMS( yyy, "Lat", 2 ) );
@@ -4910,7 +4910,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
     /* Get the datum */
     // GTIFKeyGet( gtif, GeogGeodeticDatumGeoKey, &datum, 0, 1 );
-    // if (debug_level & 2)
+    // if (debug_level & 16)
     //     printf( "GeogGeodeticDatumGeoKey: %d\n", datum );
 
 
@@ -4925,18 +4925,18 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
      * 0.000000         Z
      *
      */
-    // if (debug_level & 2)
+    // if (debug_level & 16)
     //     printf("Tiepoints:\n");
     // TIFFGetField( tif, TIFFTAG_GEOTIEPOINTS, &qty, &GeoTie );
     // for ( i = 0; i < qty; i++ )
-    //   if (debug_level & 2)
+    //   if (debug_level & 16)
     //     printf( "%f\n", *(GeoTie + i) );
 
 
     /* Get the geotiff horizontal datum name */
     if ( defn.Datum != 32767 ) {
         GTIFGetDatumInfo( defn.Datum, &datum_name, NULL );
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("Datum: %d/%s\n", defn.Datum, datum_name );
     }
 
@@ -4951,7 +4951,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         && (defn.Datum != 6326)     /*  Datum_WGS84 */
         && (defn.Datum != 6269) )   /* Datum_North_American_Datum_1983 */
     {
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("***** Attempting Datum Conversions\n");
 
         // Change datum_shift to use arrays and counts and make
@@ -4979,7 +4979,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         }
     }
     else
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("***** Skipping Datum Conversion\n");
 
 
@@ -5047,7 +5047,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
                          west_bounding_wgs84,
                          east_bounding_wgs84 ) )
     {
-        if (debug_level & 2)
+        if (debug_level & 16)
         {
             printf ("Map not within current view.\n");
             printf ("Skipping map: %s\n", file);
@@ -5075,7 +5075,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     TIFFGetField (tif, TIFFTAG_PLANARCONFIG, &planarConfig);
 
 
-    if (debug_level & 2)
+    if (debug_level & 16)
     {
         printf ("            Width: %ld\n", width);
         printf ("           Height: %ld\n", height);
@@ -5105,7 +5105,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     }
 
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf ("Loading geoTIFF map: %s\n", file);
 
 
@@ -5137,7 +5137,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
 
     /* Print out the colormap info */
-    //    if (debug_level & 2)
+    //    if (debug_level & 16)
     //    {
     //        int l;
     //
@@ -5169,7 +5169,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
          * datum-shifted values to plot the points in Xastir.
          */
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("\nNW neat-line corner = %f\t%f\n",
                     f_NW_x_bounding,
                     f_NW_y_bounding);
@@ -5180,19 +5180,19 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         /* Convert lat/long to projected coordinates */
         if ( GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )     // Do all 4 in one call?
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("%11.3f,%11.3f\n", xxx, yyy);
 
             /* Convert from PCS coordinates to image pixel coordinates */
             if ( GTIFPCSToImage( gtif, &xxx, &yyy ) )           // Do all 4 in one call?
             {
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf("X/Y Pixels: %f, %f\n", xxx, yyy);
 
                 NW_x = (int)(xxx + 0.5);    /* Tricky way of rounding */
                 NW_y = (int)(yyy + 0.5);    /* Tricky way of rounding */
 
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf("X/Y Pixels: %d, %d\n", NW_x, NW_y);
             }
         }
@@ -5200,7 +5200,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
             printf("Problem in translating\n");
 
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("NE neat-line corner = %f\t%f\n",
                     f_NE_x_bounding,
                     f_NE_y_bounding);
@@ -5211,19 +5211,19 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         /* Convert lat/long to projected coordinates */
         if ( GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("%11.3f,%11.3f\n", xxx, yyy);
 
             /* Convert from PCS coordinates to image pixel coordinates */
             if ( GTIFPCSToImage( gtif, &xxx, &yyy ) )
             {
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf("X/Y Pixels: %f, %f\n", xxx, yyy);
 
                 NE_x = (int)(xxx + 0.5);    /* Tricky way of rounding */
                 NE_y = (int)(yyy + 0.5);    /* Tricky way of rounding */
 
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf("X/Y Pixels: %d, %d\n", NE_x, NE_y);
             }
         }
@@ -5231,7 +5231,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
             printf("Problem in translating\n");
 
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("SW neat-line corner = %f\t%f\n",
                     f_SW_x_bounding,
                     f_SW_y_bounding);
@@ -5242,19 +5242,19 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         /* Convert lat/long to projected coordinates */
         if ( GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("%11.3f,%11.3f\n", xxx, yyy);
 
             /* Convert from PCS coordinates to image pixel coordinates */
             if ( GTIFPCSToImage( gtif, &xxx, &yyy ) )
             {
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf("X/Y Pixels: %f, %f\n", xxx, yyy);
 
                 SW_x = (int)(xxx + 0.5);    /* Tricky way of rounding */
                 SW_y = (int)(yyy + 0.5);    /* Tricky way of rounding */
 
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf("X/Y Pixels: %d, %d\n", SW_x, SW_y);
             }
         }
@@ -5262,7 +5262,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
             printf("Problem in translating\n");
 
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("SE neat-line corner = %f\t%f\n",
                     f_SE_x_bounding,
                     f_SE_y_bounding);
@@ -5273,19 +5273,19 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         /* Convert lat/long to projected coordinates */
         if ( GTIFProj4FromLatLong( &defn, 1, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("%11.3f,%11.3f\n", xxx, yyy);
 
         /* Convert from PCS coordinates to image pixel coordinates */
         if ( GTIFPCSToImage( gtif, &xxx, &yyy ) )
         {
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("X/Y Pixels: %f, %f\n", xxx, yyy);
 
             SE_x = (int)(xxx + 0.5);    /* Tricky way of rounding */
             SE_y = (int)(yyy + 0.5);    /* Tricky way of rounding */
 
-            if (debug_level & 2)
+            if (debug_level & 16)
                 printf("X/Y Pixels: %d, %d\n", SE_x, SE_y);
             }
         }
@@ -5368,7 +5368,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     // outside these ranges.
 
 
-    if (debug_level & 2)
+    if (debug_level & 16)
     {
         printf("Crop points (pixels):\n");
         printf("Top: %d\tBottom: %d\tLeft: %d\tRight: %d\n",
@@ -5428,7 +5428,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
     bytesPerRow = TIFFScanlineSize(tif);
 
-    if (debug_level & 2)
+    if (debug_level & 16)
     {
         printf("\nInitial Bytes Per Row: %d\n", bytesPerRow);
     }
@@ -5564,7 +5564,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         if (SW_x < NW_x)
             left_x_increment = -left_x_increment;
 
-        if (debug_level & 2)
+        if (debug_level & 16)
              printf("xastir_left_x_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
              xastir_left_x_increment,
              SW_x_bounding_wgs84,
@@ -5603,7 +5603,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         if (SW_y_bounding_wgs84 < NW_y_bounding_wgs84)  // Ain't gonn'a happen
             xastir_left_y_increment = -xastir_left_y_increment;
 
-        if (debug_level & 2)
+        if (debug_level & 16)
              printf("xastir_left_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
              xastir_left_y_increment,
              SW_y_bounding_wgs84,
@@ -5646,7 +5646,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         if (SE_x < NE_x)
             right_x_increment = -right_x_increment;
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("xastir_right_x_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
             xastir_right_x_increment,
             SE_x_bounding_wgs84,
@@ -5685,7 +5685,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         if (SE_y_bounding_wgs84 < NE_y_bounding_wgs84)  // Ain't gonn'a happen
             xastir_right_y_increment = -xastir_right_y_increment;
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("xastir_right_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
             xastir_right_y_increment,
             SE_y_bounding_wgs84,
@@ -5706,7 +5706,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     }
 
 
-    if (debug_level & 2)
+    if (debug_level & 16)
     {
         printf(" Left x increments: %f %f\n", xastir_left_x_increment, left_x_increment);
         printf(" Left y increments: %f %f\n", xastir_left_y_increment, left_y_increment);
@@ -5738,7 +5738,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         if (NE_y < NW_y)
             top_y_increment = -top_y_increment;
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("xastir_top_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
             xastir_top_y_increment,
             NE_y_bounding_wgs84,
@@ -5782,7 +5782,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         if (SE_y < SW_y)
             bottom_y_increment = -bottom_y_increment;
 
-        if (debug_level & 2)
+        if (debug_level & 16)
             printf("xastir_bottom_y_increment: %f  %ld  %ld     %f  %d  %d  %d  %d\n",
             xastir_bottom_y_increment,
             SE_y_bounding_wgs84,
@@ -5829,7 +5829,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
     /* Get the pixel scale */
     TIFFGetField( tif, TIFFTAG_GEOPIXELSCALE, &qty, &PixelScale );
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf("PixelScale: %f %f %f\n",
             *PixelScale,
             *(PixelScale + 1),
@@ -5851,7 +5851,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
     //   25.400001        25.400001        0                
     //
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf("Size: x %ld, y %ld\n", scale_x,scale_y);
 
 
@@ -5867,7 +5867,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         SkipRows = 1;
     if (SkipRows > (int)(height / 10) )
         SkipRows = height / 10;
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf("SkipRows: %d\n", SkipRows);
 
     // Use SkipRows to set increments for the loops below.
@@ -5947,7 +5947,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
             -   NE_xastir_x_offset );
 
 
-        //if (debug_level & 2)
+        //if (debug_level & 16)
         //  printf("Left: %ld  Right:  %ld\n",
         //      current_xastir_left,
         //      current_xastir_right);
@@ -5967,7 +5967,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         current_line_width = current_right - current_left + 1;  // Pixels
 
 
-        // if (debug_level & 2)
+        // if (debug_level & 16)
         //     printf("Left: %ld  Right: %ld  Width: %ld\n",
         //         current_left,
         //         current_right, current_line_width);
@@ -5983,7 +5983,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
 
 
 
-        // if (debug_level & 2)
+        // if (debug_level & 16)
         //     printf("\t\t\t\t\t\tPixel Width: %f\n",stepw);
 
         // Compute scaled pixel size for XFillRectangle
@@ -6107,7 +6107,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm)
         free(imageMemory);
 
 
-    if (debug_level & 2)
+    if (debug_level & 16)
         printf ("%d rows read in\n", (int) row);
 
     /* We're finished with the geoTIFF key parser, so get rid of it */
@@ -6140,7 +6140,7 @@ static int map_onscreen(long left, long right, long top, long bottom) {
     max_x_long_offset=(unsigned long)(x_long_offset+ (screen_width * scale_x));
     max_y_lat_offset =(unsigned long)(y_lat_offset + (screen_height* scale_y));
 
-    if (debug_level & 4)
+    if (debug_level & 16)
       printf("x_long_offset: %ld, y_lat_offset: %ld, max_x_long_offset: %ld, max_y_lat_offset: %ld\n",
 	     x_long_offset, y_lat_offset, (long)max_x_long_offset, (long)max_y_lat_offset);
 
@@ -6296,7 +6296,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         }
         records = ntohs(pdb_hdr.number_of_records);
         fread(&prl, sizeof(prl), 1, f);
-        if (debug_level & 4)
+        if (debug_level & 512)
             printf("Palm Map: %s, %d records, offset: %8x\n",
                 pdb_hdr.name,
                 records,
@@ -6310,7 +6310,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         map_right = ntohl(pmf_hdr.right_bounds);
         map_top = ntohl(pmf_hdr.top_bounds);
         map_bottom = ntohl(pmf_hdr.bottom_bounds);
-        if (debug_level & 4)
+        if (debug_level & 512)
             printf("\tLeft %ld, Right %ld, Top %ld, Bottom %ld, %s, Scale %d, %d\n",
                 map_left,
                 map_right,
@@ -6335,7 +6335,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
             for (record_count = 2; record_count <= records; record_count++) {
                 fseek(f, record_ptr, SEEK_SET);
                 fread(&prl, sizeof(prl), 1, f);
-                if (debug_level & 4)
+                if (debug_level & 512)
                     printf("\tRecord %d, offset: %8x\n",
                         record_count,
                         (unsigned int)ntohl(prl.record_data_offset));
@@ -6343,7 +6343,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                 record_ptr = ftell(f);
                 fseek(f, ntohl(prl.record_data_offset), SEEK_SET);
                 fread(&record_hdr, sizeof(record_hdr), 1, f);
-                if (debug_level & 4)
+                if (debug_level & 512)
                     printf("\tType %d, Sub %d, Zoom %d\n",
                         record_hdr.type,
                         record_hdr.sub_type,
@@ -6356,7 +6356,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                         if (count && !(count&1)) {
                             line_x = ntohs(vector_hdr.line_start_x);
                             line_y = ntohs(vector_hdr.line_start_y);
-                            if (debug_level & 4)
+                            if (debug_level & 512)
                                 printf("\tvector %d, left %d, right %d, top %d, bottom %d, start x %ld, start y %ld\n",
                                     count,
                                     ntohs(vector_hdr.left_bounds),
@@ -6379,7 +6379,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
                             for (count -= sizeof(vector_hdr); count > 0; count -= sizeof(vector_point)) {
                                 fread(&vector_point, sizeof(vector_point), 1, f);
-                                if (debug_level & 4)
+                                if (debug_level & 512)
                                     printf("\tnext x %d, next y %d\n",
                                         vector_point.next_x,
                                         vector_point.next_y);
@@ -6441,7 +6441,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                             line_x = ntohs(vector_hdr.line_start_x);
                             line_y = ntohs(vector_hdr.line_start_y);
  
-                            if (debug_level & 4) {
+                            if (debug_level & 512) {
                                 printf("\t%d, %d, %d, %d, %d, %d, 0x%x, %s\n",
                                     ntohs(label_record.next_label),
                                     ntohs(label_record.start_x),
@@ -6665,7 +6665,7 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
                 /* DOS-type map header portion of the code */
                 int j;
 
-                if (debug_level & 2)
+                if (debug_level & 512)
                     printf("DOS Map\n");
 
 //printf("DOS Map\n");
@@ -6730,7 +6730,7 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
                 }   // End of DOS-type map header portion
             } else {    // Windows-type map header portion
 
-                if (debug_level & 2)
+                if (debug_level & 512)
                     printf("Windows map\n");
 
 //printf("Windows map\n");
@@ -6743,22 +6743,22 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
 
                 (void)fread (map_title, 32, 1, f);
                 map_title[32] = '\0';
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf ("Map Title %s\n", map_title);
 
                 (void)fread (map_creator, 8, 1, f);
                 map_creator[8] = '\0';
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf ("Map Creator %s\n", map_creator);
 
                 (void)fread (&temp, 4, 1, f);
                 creation_date = ntohl (temp);
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf ("Creation Date %lX\n", creation_date);
 
                 year = creation_date / 31536000l;
                 days = (creation_date - (year * 31536000l)) / 86400l;
-                if (debug_level & 2)
+                if (debug_level & 16)
                     printf ("year is %ld + days %ld\n", 1904l + year, (long)days);
 
                 (void)fread (&temp, 4, 1, f);
@@ -6787,7 +6787,7 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
                 (void)fread (map_reserved2, 140, 1, f);
             }   // End of Windows-type map header portion
 
-            if (debug_level & 2) {
+            if (debug_level & 16) {
                 printf ("Map Type %s, Version: %s, Filename %s\n", map_type,map_version, file_name);
                 printf ("Left Boundary %ld, Right Boundary %ld\n", (long)left_boundary,(long)right_boundary);
                 printf ("Top Boundary %ld, Bottom Boundary %ld\n", (long)top_boundary,(long)bottom_boundary);
@@ -7069,7 +7069,7 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
                                                 strcpy( label_text, Buffer+3 );     // Take the object out of the label text
                                             }
                                         }
-                                        if (debug_level & 2)
+                                        if (debug_level & 512)
                                             printf("Found embedded object: %c %c %c %s\n",symbol_table,symbol_id,symbol_color,label_text);
                                     }
 
@@ -7154,7 +7154,7 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
                                 // format documents that I could find.
                                 if (label_text[0] == '#') {
                                     int i,j;
-                                    if (debug_level & 2)
+                                    if (debug_level & 512)
                                         printf("%s\n",label_text);
 
                                     // Save the rotation factor in "rotation"
@@ -7274,12 +7274,12 @@ void draw_map (Widget w, char *dir, char *filenm, int tn, alert_entry * alert,
                                 draw_label_text (w, x+10, y+5, strlen(label_text),colors[0x21 + label_text_color],label_text);
                                 symbol(w,0,label_symbol_del,label_symbol_char,' ',pixmap,1,x-10,y-10,' ');
 
-                                if (debug_level & 2)
+                                if (debug_level & 512)
                                     printf("Windows map, embedded object: %c %c %c %s\n",
                                         label_symbol_del,label_symbol_char,label_text_color,label_text);
                             }
                             else {
-                                if (debug_level & 2)
+                                if (debug_level & 512)
                                     printf("Weird label in Windows map, neither a plain label nor an object: %d %d\n",
                                         label_type_1[0],label_type_2[0]);
                             }
@@ -7399,7 +7399,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                 }
             }
         }
-        if (debug_level & 8)
+        if (debug_level & 16)
             printf ("Number of maps queried: %d\n", count);
 
         (void)closedir (dm);

@@ -380,7 +380,7 @@ static void alert_build_list(Message *fill) {
           memmove(ptr, ptr+1, strlen(ptr));
 
         if ((ptr = strpbrk(entry[i].title, "}>=!:/*+;"))) {
-            if (debug_level > 0) {
+            if (debug_level & 2) {
                 fprintf(stderr,
                     "Warning: Weird Weather Message: %ld:%s>%s:%s!\n",
                     (long)fill->sec_heard,

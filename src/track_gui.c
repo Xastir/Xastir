@@ -377,7 +377,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
             log_filename,
             fileimg);
 
-    if (debug_level >= 2)
+    if (debug_level & 2)
         printf("%s",tempfile);
 
     if ( system(tempfile) ) {   // Go get the file

@@ -326,7 +326,7 @@ void output_message(char *from, char *to, char *message) {
     last_space=0;
     ok=0;
     error=0;
-    if (debug_level>1)
+    if (debug_level & 2)
         printf("Output Message from <%s>  to <%s>\n",from,to);
 
     while (!error && (message_ptr < (int)strlen(message))) {
@@ -352,7 +352,7 @@ void output_message(char *from, char *to, char *message) {
                 last_space=strlen(message)+1;
             }
         }
-        if (debug_level>1)
+        if (debug_level & 2)
             printf("MESSAGE <%s> %d %d\n",message_out,message_ptr,last_space);
 
         message_ptr=last_space;
@@ -403,12 +403,12 @@ void output_message(char *from, char *to, char *message) {
 void transmit_message_data(char *to, char *message) {
     DataRow *p_station;
 
-    if (debug_level>1)
+    if (debug_level & 2)
         printf("Transmitting data to %s : %s\n",to,message);
 
     p_station = NULL;
     if (search_station_name(&p_station,to,1)) {
-        if (debug_level>1)
+        if (debug_level & 2)
             printf("found station %s\n",p_station->call_sign);
 
         if (strcmp(to,my_callsign)!=0) {
@@ -430,7 +430,7 @@ void transmit_message_data(char *to, char *message) {
                     output_my_data(message,p_station->last_port_heard,0,0);
                 } else {
                     /* Not a TNC or a NET try all possible */
-                    if (debug_level>1)
+                    if (debug_level & 2)
                         printf("VIA any way\n");
 
                     output_my_data(message,-1,0,0);
@@ -439,7 +439,7 @@ void transmit_message_data(char *to, char *message) {
         } else {
             /* my station message */
             /* try all possible */
-            if (debug_level>1)
+            if (debug_level & 2)
                 printf("My call VIA any way\n");
 
             output_my_data(message,-1,0,0);
@@ -447,7 +447,7 @@ void transmit_message_data(char *to, char *message) {
     } else {
         /* no data found try every way*/
         /* try all possible */
-        if (debug_level>1)
+        if (debug_level & 2)
             printf("VIA any way\n");
 
         output_my_data(message,-1,0,0);
@@ -468,10 +468,10 @@ void check_and_transmit_messages(time_t time) {
             if (message_pool[i].wait_on_first_ack!=1) {
                 if (message_pool[i].active_time<time) {
                     /* sending message let the tnc and net transmits check to see if we should */
-                    if (debug_level>1)
+                    if (debug_level & 2)
                         printf("Time %ld Active time %ld next time %ld\n",(long)time,(long)message_pool[i].active_time,(long)message_pool[i].next_time);
 
-                    if (debug_level>1)
+                    if (debug_level & 2)
                         printf("Send message#%d to <%s> from <%s>:%s-%s\n",
                             message_pool[i].tries,message_pool[i].to_call_sign,message_pool[i].from_call_sign,message_pool[i].message_line,message_pool[i].seq);
 
@@ -480,7 +480,7 @@ void check_and_transmit_messages(time_t time) {
                     xastir_snprintf(temp, sizeof(temp), ":%s:%s{%s",
                             to_call, message_pool[i].message_line,message_pool[i].seq);
 
-                    if (debug_level>1)
+                    if (debug_level & 2)
                         printf("MESSAGE OUT>%s<\n",temp);
 
                     transmit_message_data(message_pool[i].to_call_sign,temp);
@@ -494,7 +494,7 @@ void check_and_transmit_messages(time_t time) {
                         clear_outgoing_message(i);
                 }
             } else {
-                if (debug_level>5)
+                if (debug_level & 2)
                     printf("Message #%s is waiting to have a previous one cleared\n",message_pool[i].seq);
             }
         }
@@ -529,7 +529,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
                     if (debug_level & 1)
                         printf("Matched message from_call_sign\n");
                     if (strcmp(message_pool[i].seq,seq)==0) {
-                        if (debug_level>1)
+                        if (debug_level & 2)
                             printf("Found and cleared\n");
 
                         clear_outgoing_message(i);
