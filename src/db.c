@@ -16031,6 +16031,7 @@ fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
             if (transmit_compressed_objects_items) {
                 char temp_group = object_group;
+                long x_long, y_lat;
 
                 // If we have a numeric overlay, we need to convert
                 // it to 'a-j' for compressed objects.
@@ -16038,10 +16039,22 @@ fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
                     temp_group = temp_group + 'a';
                 }
 
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
                 // We need higher precision lat/lon strings than
                 // those created above.
-                convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-                convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
 
                 xastir_snprintf(line, line_length, ";%-9s*%s%s%s",
                     p_station->call_sign,
@@ -16070,6 +16083,7 @@ fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
         else {  // It's an item
             if (transmit_compressed_objects_items) {
                 char temp_group = object_group;
+                long x_long, y_lat;
 
                 // If we have a numeric overlay, we need to convert
                 // it to 'a-j' for compressed objects.
@@ -16077,11 +16091,23 @@ fprintf(stderr,"\t%s  %s\n", lat_str, lon_str);
                     temp_group = temp_group + 'a';
                 }
 
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
                 // We need higher precision lat/lon strings than
                 // those created above.
-                convert_lat_l2s(p_station->coord_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
-                convert_lon_l2s(p_station->coord_lon, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
- 
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
                 xastir_snprintf(line, line_length, ")%s!%s%s",
                     p_station->call_sign,
                     compress_posit(lat_str,
