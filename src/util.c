@@ -219,6 +219,10 @@ double phg_range(char p, char h, char g) {
 //    if (range > 70.0)
 //        printf("PHG%c%c%c results in range of %f\n", p, h, g, range);
 
+    // Note:  Bob Bruninga, WB4APR, decided to cut PHG circles by
+    // 1/2 in order to show more realistic mobile ranges.
+    range = range / 2.0;
+
     return(range);
 }
 
