@@ -1,7 +1,7 @@
 # $Id$
 
 bin_PROGRAMS = xastir
-noinst_PROGRAMS = testawk
+noinst_PROGRAMS = testawk x_spider
 
 xastir_SOURCES = \
     alert.c alert.h \
@@ -55,8 +55,14 @@ testawk_SOURCES = \
     awk.c \
     dbfawk.c
 
+x_spider_SOURCES = \
+    x_spider.c x_spider.h
+ 
+
 
 xastir_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
 testawk_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+
+x_spider_LINK=$(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 
