@@ -368,7 +368,9 @@ void draw_toporama_map (Widget w,
 
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
-        curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+
+// This is only available in later versions of libcurl?
+// curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 
         /* write function */
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
@@ -1237,7 +1239,9 @@ fprintf(stderr,"1 ");
 
             curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
             curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 30);
-            curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+
+// This is only available in later versions of libcurl?
+// curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 
             /* write function */
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_fwrite);
