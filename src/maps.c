@@ -5530,9 +5530,6 @@ void draw_tiger_map (Widget w) {
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
     register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
-// DK7IN--
-    int test;                       // temporary debugging
-
     unsigned long c_x_min,  c_y_min;// top left coordinates of map inside screen
     unsigned long c_y_max;          // bottom right coordinates of map inside screen
     double c_x;                     // Xastir coordinates 1/100 sec, 0 = 180°W
@@ -5615,17 +5612,6 @@ void draw_tiger_map (Widget w) {
 
     geo_image_width  = screen_width;
     geo_image_height = screen_height;
-
-    if (debug_level & 512) {
-          printf("left side is %f\n", left);
-          printf("right side is %f\n", right);
-          printf("top  is %f\n", top);
-          printf("bottom is %f\n", bottom);
-          printf("screen width is %li\n", screen_width);
-          printf("screen height is %li\n", screen_height);
-          printf("map width is %f\n", map_width);
-          printf("map height is %f\n", map_height);
-    }
 
     long_center = (left + right)/2.0l;
     lat_center  = (top + bottom)/2.0l;
@@ -5726,106 +5712,8 @@ void draw_tiger_map (Widget w) {
           printf("map width is %f\n", map_width);
           printf("map height is %f\n", map_height);
           printf("fileimg is %s\n", fileimg);
+          printf("ftp or http file: %s\n", fileimg);
     }
-
-
-    //
-    // DK7IN: we should check what we got from the geo file
-    //   we use geo_image_width, but it might not be initialised...
-    //   and it's wrong if the '\n' is missing a the end...
-
-    /*
-    * Here are the corners of our viewport, using the Xastir
-    * coordinate system.  Notice that Y is upside down:
-    *
-    *   left edge of view = x_long_offset
-    *  right edge of view = x_long_offset + (screen_width  * scale_x)
-    *    top edge of view =  y_lat_offset
-    * bottom edge of view =  y_lat_offset + (screen_height * scale_y)
-    *
-    * The corners of our map will soon be (after translating the
-    * tiepoints to the corners if they're not already there):
-    *
-    *   left edge of map = tp[0].x_long   in Xastir format
-    *  right edge of map = tp[1].x_long
-    *    top edge of map = tp[0].y_lat
-    * bottom edge of map = tp[1].y_lat
-    *
-    */
-    map_c_L = tp[0].x_long - x_long_offset;     // map left coordinate
-    map_c_T = tp[0].y_lat  - y_lat_offset;      // map top  coordinate
-
-    tp_c_dx = (long)(tp[1].x_long - tp[0].x_long);//  Width between tiepoints
-    tp_c_dy = (long)(tp[1].y_lat  - tp[0].y_lat); // Height between tiepoints
-
-
-    // Check for tiepoints being in wrong relation to one another
-    if (tp_c_dx < 0) tp_c_dx = -tp_c_dx;       // New  width between tiepoints
-    if (tp_c_dy < 0) tp_c_dy = -tp_c_dy;       // New height between tiepoints
-
-
-    if (debug_level & 512) {
-        printf("X tiepoint width: %ld\n", tp_c_dx);
-        printf("Y tiepoint width: %ld\n", tp_c_dy);
-    }
-
-    // Calculate step size per pixel
-    map_c_dx = ((double) tp_c_dx / abs(tp[1].img_x - tp[0].img_x));
-    map_c_dy = ((double) tp_c_dy / abs(tp[1].img_y - tp[0].img_y));
-
-    // Scaled screen step size for use with XFillRectangle below
-    scr_dx = (int) (map_c_dx / scale_x) + 1;
-    scr_dy = (int) (map_c_dy / scale_y) + 1;
-
-    if (debug_level & 512) {
-        printf ("\nImage: %s\n", file);
-        printf ("Image size %d %d\n", geo_image_width, geo_image_height);
-        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
-    }
-
-    // calculate top left map corner from tiepoints
-    if (tp[0].img_x != 0) {
-        tp[0].x_long -= (tp[0].img_x * map_c_dx);   // map left edge longitude
-        map_c_L = tp[0].x_long - x_long_offset;     // delta ??
-        tp[0].img_x = 0;
-        if (debug_level & 512)
-            printf("Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
-    }
-    if (tp[0].img_y != 0) {
-        tp[0].y_lat -= (tp[0].img_y * map_c_dy);    // map top edge latitude
-        map_c_T = tp[0].y_lat - y_lat_offset;
-        tp[0].img_y = 0;
-        if (debug_level & 512)
-            printf("Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
-    }
-
-    // calculate bottom right map corner from tiepoints
-    // map size is geo_image_width / geo_image_height
-    if (tp[1].img_x != (geo_image_width - 1) ) {
-        tp[1].img_x = geo_image_width - 1;
-        tp[1].x_long = tp[0].x_long + (tp[1].img_x * map_c_dx); // right
-        if (debug_level & 512)
-            printf("Translated tiepoint_1 x: %d\t%lu\n", tp[1].img_x, tp[1].x_long);
-    }
-    if (tp[1].img_y != (geo_image_height - 1) ) {
-        tp[1].img_y = geo_image_height - 1;
-        tp[1].y_lat = tp[0].y_lat + (tp[1].img_y * map_c_dy);   // bottom
-        if (debug_level & 512)
-            printf("Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
-    }
-
-    if (debug_level & 512) {
-        printf ("Loading imagemap: %s\n", file);
-        printf ("\nImage: %s\n", file);
-        printf ("Image size %d %d\n", geo_image_width, geo_image_height);
-        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n",
-	    map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
-    } //debug_level & 16
-
-    atb.valuemask = 0;
-
-    if (debug_level & 512)
-            printf("ftp or http file: %s\n", fileimg);
 
     xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s", username,"gif");
 
@@ -5885,9 +5773,9 @@ void draw_tiger_map (Widget w) {
         return;
     }
 
+    atb.valuemask = 0;
     atb.width = image->columns;
     atb.height = image->rows;
-
 
 #if (MagickLibVersion >= 0x0539)
     //  Code to mute the image so it's not as bright.
@@ -5981,39 +5869,93 @@ void draw_tiger_map (Widget w) {
                        my_colors[l].red, my_colors[l].blue, my_colors[l].green);
         }
     }
+    /*
+    * Here are the corners of our viewport, using the Xastir
+    * coordinate system.  Notice that Y is upside down:
+    *
+    *   left edge of view = x_long_offset
+    *  right edge of view = x_long_offset + (screen_width  * scale_x)
+    *    top edge of view =  y_lat_offset
+    * bottom edge of view =  y_lat_offset + (screen_height * scale_y)
+    *
+    * The corners of our map will soon be (after translating the
+    * tiepoints to the corners if they're not already there):
+    *
+    *   left edge of map = tp[0].x_long   in Xastir format
+    *  right edge of map = tp[1].x_long
+    *    top edge of map = tp[0].y_lat
+    * bottom edge of map = tp[1].y_lat
+    *
+    */
+    map_c_L = tp[0].x_long - x_long_offset;     // map left coordinate
+    map_c_T = tp[0].y_lat  - y_lat_offset;      // map top  coordinate
+
+    tp_c_dx = (long)(tp[1].x_long - tp[0].x_long);//  Width between tiepoints
+    tp_c_dy = (long)(tp[1].y_lat  - tp[0].y_lat); // Height between tiepoints
+
+
+    // Check for tiepoints being in wrong relation to one another
+    if (tp_c_dx < 0) 
+        tp_c_dx = -tp_c_dx;       // New  width between tiepoints
+    if (tp_c_dy < 0) 
+        tp_c_dy = -tp_c_dy;       // New height between tiepoints
+
+    // Calculate step size per pixel
+    map_c_dx = ((double) tp_c_dx / abs(tp[1].img_x - tp[0].img_x));
+    map_c_dy = ((double) tp_c_dy / abs(tp[1].img_y - tp[0].img_y));
+
+    // Scaled screen step size for use with XFillRectangle below
+    scr_dx = (int) (map_c_dx / scale_x) + 1;
+    scr_dy = (int) (map_c_dy / scale_y) + 1;
+
+    // calculate top left map corner from tiepoints
+    if (tp[0].img_x != 0) {
+        tp[0].x_long -= (tp[0].img_x * map_c_dx);   // map left edge longitude
+        map_c_L = tp[0].x_long - x_long_offset;     // delta ??
+        tp[0].img_x = 0;
+        if (debug_level & 512)
+            printf("Translated tiepoint_0 x: %d\t%lu\n", tp[0].img_x, tp[0].x_long);
+    }
+    if (tp[0].img_y != 0) {
+        tp[0].y_lat -= (tp[0].img_y * map_c_dy);    // map top edge latitude
+        map_c_T = tp[0].y_lat - y_lat_offset;
+        tp[0].img_y = 0;
+        if (debug_level & 512)
+            printf("Translated tiepoint_0 y: %d\t%lu\n", tp[0].img_y, tp[0].y_lat);
+    }
+
+    // calculate bottom right map corner from tiepoints
+    // map size is geo_image_width / geo_image_height
+    if (tp[1].img_x != (geo_image_width - 1) ) {
+        tp[1].img_x = geo_image_width - 1;
+        tp[1].x_long = tp[0].x_long + (tp[1].img_x * map_c_dx); // right
+        if (debug_level & 512)
+            printf("Translated tiepoint_1 x: %d\t%lu\n", tp[1].img_x, tp[1].x_long);
+    }
+    if (tp[1].img_y != (geo_image_height - 1) ) {
+        tp[1].img_y = geo_image_height - 1;
+        tp[1].y_lat = tp[0].y_lat + (tp[1].img_y * map_c_dy);   // bottom
+        if (debug_level & 512)
+            printf("Translated tiepoint_1 y: %d\t%lu\n", tp[1].img_y, tp[1].y_lat);
+    }
 
     if (debug_level & 512) {
-       printf ("Image size %d %d\n", atb.width, atb.height);
+        printf("X tiepoint width: %ld\n", tp_c_dx);
+        printf("Y tiepoint width: %ld\n", tp_c_dy);
+        printf ("Loading imagemap: %s\n", file);
+        printf ("\nImage: %s\n", file);
+        printf ("Image size %d %d\n", geo_image_width, geo_image_height);
+        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n",
+	    map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+        printf ("Image size %d %d\n", atb.width, atb.height);
 #if (MagickLibVersion < 0x0540)
-       printf ("Unique colors = %d\n", GetNumberColors(image, NULL));
+        printf ("Unique colors = %d\n", GetNumberColors(image, NULL));
 #else // MagickLib < 540
-       printf ("Unique colors = %ld\n", GetNumberColors(image, NULL, &exception));
+        printf ("Unique colors = %ld\n", GetNumberColors(image, NULL, &exception));
 #endif // MagickLib < 540
-       printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
-       map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
-
-#if (MagickLibVersion < 0x0540)
-       printf ("is Gray Image = %i\n", IsGrayImage(image));
-       printf ("is Monochrome Image = %i\n", IsMonochromeImage(image));
-       //printf ("is Opaque Image = %i\n", IsOpaqueImage(image));
-       //printf ("is PseudoClass = %i\n", IsPseudoClass(image));
-#else // MagickLib < 540
-       printf ("is Gray Image = %i\n", IsGrayImage( image, &exception ));
-       printf ("is Monochrome Image = %i\n", IsMonochromeImage( image, &exception ));
-       //printf ("is Opaque Image = %i\n", IsOpaqueImage( image, &exception ));
-       //printf ("is PseudoClass = %i\n", IsPseudoClass( image, &exception ));
-#endif // MagickLib < 540
-
-       printf ("image matte is %i\n", image->matte);
-       printf ("Colorspace = %i\n", image->colorspace);
-       if (image->colorspace == UndefinedColorspace)
-            printf("Class Type = Undefined\n");
-       else if (image->colorspace == RGBColorspace)
-            printf("Class Type = RGBColorspace\n");
-       else if (image->colorspace == GRAYColorspace)
-            printf("Class Type = GRAYColorspace\n");
-       else if (image->colorspace == sRGBColorspace)
-            printf("Class Type = sRGBColorspace\n");
+        printf ("XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T,
+            map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
+        printf ("image matte is %i\n", image->matte);
     } // debug_level & 512
 
     // draw the image from the file out to the map screen
@@ -6060,7 +6002,6 @@ void draw_tiger_map (Widget w) {
         }
         c_x_min = (unsigned long)(tp[0].x_long + map_x_min * map_c_dx);   // left map inside screen coordinate
 
-    test = 1;           // DK7IN: debuging
     scr_yp = -1;
     scr_c_xr = x_long_offset + screen_width * scale_x;
     c_dx = map_c_dx;                            // map pixel width
@@ -6117,7 +6058,7 @@ void draw_tiger_map (Widget w) {
        DestroyImageInfo(image_info);
 }
 #endif //HAVE_IMAGEMAGICK
-
+///////////////////////////////////////////// End of Tigermap code ///////////////////////////////////////
 
 #ifdef HAVE_GEOTIFF
 /***********************************************************
