@@ -2466,11 +2466,24 @@ void draw_shapefile_map (Widget w,
 // where they happen to cross.
 
                     if (gps_flag) {
+                        int jj;
+                        int done = 0;
 
                         // Fill in the label we'll use later
                         xastir_snprintf(gps_label,
                             sizeof(gps_label),
                             filename);
+
+                        // Knock off the ".shp" portion of the label
+                        jj = strlen(gps_label);
+                        while ( !done && (jj > 0) ) {
+                            if (gps_label[jj] == '.') {
+                                gps_label[jj] = '\0';   // Terminate it here
+                                done++;
+                            }
+                            jj--;
+                        }
+
 
                         // Check for a color in the filename: i.e.
                         // "Team2TrackRed.shp"
