@@ -2043,11 +2043,6 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
                     break;
             }
             switch (WX_rain_gauge_type) {
-                case(0):
-                default:
-                    XmToggleButtonSetState(WX_tenths,TRUE,FALSE);
-//                    WX_rain_gauge_type=0;
-                    break;
                 case(1):
                     XmToggleButtonSetState(WX_hundredths,TRUE,FALSE);
 //                    WX_rain_gauge_type=1;
@@ -2055,6 +2050,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
                 case(2):
                     XmToggleButtonSetState(WX_millimeters,TRUE,FALSE);
 //                    WX_rain_gauge_type=2;
+                    break;
+                case(0):
+                default:
+                    XmToggleButtonSetState(WX_tenths,TRUE,FALSE);
+//                    WX_rain_gauge_type=0;
                     break;
             }
 

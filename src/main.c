@@ -8242,7 +8242,6 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 XmToggleButtonSetState(styp1,TRUE,FALSE);
                 Station_transmit_type=0;
                 break;
-
         }
 
         if (transmit_raw_wx)
@@ -12563,11 +12562,6 @@ if (Area_object_enabled) {
                 XtSetSensitive(area_frame,TRUE);
 
                 switch (p_station->aprs_symbol.area_object.type) {
-                    case (0):   // Open Circle
-                    default:
-                        XmToggleButtonGadgetSetState(toption1, TRUE, TRUE);
-                        XmToggleButtonGadgetSetState(open_filled_toggle, FALSE, TRUE);
-                        break;
                     case (1):   // Line '/'
                         XmToggleButtonSetState(toption2, TRUE, TRUE);
                         XmToggleButtonGadgetSetState(open_filled_toggle, FALSE, TRUE);
@@ -12610,14 +12604,14 @@ if (Area_object_enabled) {
                         XmToggleButtonGadgetSetState(toption5, TRUE, TRUE);
                         XmToggleButtonGadgetSetState(open_filled_toggle, TRUE, TRUE);
                         break;
+                    case (0):   // Open Circle
+                    default:
+                        XmToggleButtonGadgetSetState(toption1, TRUE, TRUE);
+                        XmToggleButtonGadgetSetState(open_filled_toggle, FALSE, TRUE);
+                        break;
                 }
 
                 switch (p_station->aprs_symbol.area_object.color) {
-                    case (0):   // Black Bright
-                    default:
-                        XmToggleButtonGadgetSetState(coption1, TRUE, TRUE);
-                        XmToggleButtonGadgetSetState(bright_dim_toggle, TRUE, TRUE);
-                        break;
                     case (1):   // Blue Bright
                         XmToggleButtonGadgetSetState(coption2, TRUE, TRUE);
                         XmToggleButtonGadgetSetState(bright_dim_toggle, TRUE, TRUE);
@@ -12678,6 +12672,11 @@ if (Area_object_enabled) {
                         XmToggleButtonGadgetSetState(coption8, TRUE, TRUE);
                         XmToggleButtonGadgetSetState(bright_dim_toggle, FALSE, TRUE);
                         break;
+                    case (0):   // Black Bright
+                    default:
+                        XmToggleButtonGadgetSetState(coption1, TRUE, TRUE);
+                        XmToggleButtonGadgetSetState(bright_dim_toggle, TRUE, TRUE);
+                        break;
                 }
 
                 xastir_snprintf(temp_data, sizeof(temp_data), "%d",
@@ -12736,10 +12735,6 @@ if (Area_object_enabled) {
 
                         // Set the received signal quality toggle
                         switch (p_station->signal_gain[3]) {
-                            case ('0'):   // 0
-                            default:
-                                XmToggleButtonGadgetSetState(soption0, TRUE, TRUE);
-                                break;
                             case ('1'):   // 1
                                 XmToggleButtonGadgetSetState(soption1, TRUE, TRUE);
                                 break;
@@ -12767,14 +12762,14 @@ if (Area_object_enabled) {
                             case ('9'):   // 9
                                 XmToggleButtonGadgetSetState(soption9, TRUE, TRUE);
                                 break;
+                            case ('0'):   // 0
+                            default:
+                                XmToggleButtonGadgetSetState(soption0, TRUE, TRUE);
+                                break;
                         }
 
                         // Set the HAAT toggle
                         switch (p_station->signal_gain[4]) {
-                            case ('0'):   // 10ft
-                            default:
-                                XmToggleButtonGadgetSetState(hoption0, TRUE, TRUE);
-                                break;
                             case ('1'):   // 20ft
                                 XmToggleButtonGadgetSetState(hoption1, TRUE, TRUE);
                                 break;
@@ -12802,14 +12797,14 @@ if (Area_object_enabled) {
                             case ('9'):   // 5120ft
                                 XmToggleButtonGadgetSetState(hoption9, TRUE, TRUE);
                                 break;
+                            case ('0'):   // 10ft
+                            default:
+                                XmToggleButtonGadgetSetState(hoption0, TRUE, TRUE);
+                                break;
                         }
 
                         // Set the antenna gain toggle
                         switch (p_station->signal_gain[5]) {
-                            case ('0'):   // 0dB
-                            default:
-                                XmToggleButtonGadgetSetState(goption0, TRUE, TRUE);
-                                break;
                             case ('1'):   // 1dB
                                 XmToggleButtonGadgetSetState(goption1, TRUE, TRUE);
                                 break;
@@ -12837,14 +12832,14 @@ if (Area_object_enabled) {
                             case ('9'):   // 9dB
                                 XmToggleButtonGadgetSetState(goption9, TRUE, TRUE);
                                 break;
+                            case ('0'):   // 0dB
+                            default:
+                                XmToggleButtonGadgetSetState(goption0, TRUE, TRUE);
+                                break;
                         }
 
                         // Set the antenna directivity toggle
                         switch (p_station->signal_gain[6]) {
-                            case ('0'):   // Omni
-                            default:
-                                XmToggleButtonGadgetSetState(doption0, TRUE, TRUE);
-                                break;
                             case ('1'):   // 45
                                 XmToggleButtonGadgetSetState(doption1, TRUE, TRUE);
                                 break;
@@ -12869,6 +12864,10 @@ if (Area_object_enabled) {
                             case ('8'):   // 360
                                 XmToggleButtonGadgetSetState(doption8, TRUE, TRUE);
                                 break;
+                            case ('0'):   // Omni
+                            default:
+                                XmToggleButtonGadgetSetState(doption0, TRUE, TRUE);
+                                break;
                         }
                     }
                     else {  // Must be a beam-heading object
@@ -12879,10 +12878,6 @@ if (Area_object_enabled) {
                         XmTextFieldSetString(ob_bearing_data, p_station->bearing);
 
                         switch (p_station->NRQ[2]) {
-                            case ('0'):   // Useless
-                            default:
-                                XmToggleButtonGadgetSetState(woption0, TRUE, TRUE);
-                                break;
                             case ('1'):   // 240°
                                 XmToggleButtonGadgetSetState(woption1, TRUE, TRUE);
                                 break;
@@ -12909,6 +12904,10 @@ if (Area_object_enabled) {
                                 break;
                             case ('9'):   // 1°
                                 XmToggleButtonGadgetSetState(woption9, TRUE, TRUE);
+                                break;
+                            case ('0'):   // Useless
+                            default:
+                                XmToggleButtonGadgetSetState(woption0, TRUE, TRUE);
                                 break;
                         }
                     }
@@ -14327,10 +14326,6 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 
         if (my_phg[0]=='P') {
             switch (my_phg[3]) {
-                case 'x':
-                default:
-                    XmToggleButtonGadgetSetState(poption0, TRUE, TRUE);
-                    break;
                 case '0':
                     XmToggleButtonGadgetSetState(poption1, TRUE, TRUE);
                     break;
@@ -14361,10 +14356,12 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 case '9':
                     XmToggleButtonGadgetSetState(poption10, TRUE, TRUE);
                     break;
+                case 'x':
+                default:
+                    XmToggleButtonGadgetSetState(poption0, TRUE, TRUE);
+                    break;
             }
             switch (my_phg[4]) {
-                default:
-                    break;
                 case '0':
                     XmToggleButtonGadgetSetState(hoption1, TRUE, TRUE);
                     break;
@@ -14395,10 +14392,10 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 case '9':
                     XmToggleButtonGadgetSetState(hoption10, TRUE, TRUE);
                     break;
-            }
-            switch (my_phg[5]) {
                 default:
                     break;
+            }
+            switch (my_phg[5]) {
                 case '0':
                     XmToggleButtonGadgetSetState(goption1, TRUE, TRUE);
                     break;
@@ -14429,10 +14426,10 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                 case '9':
                     XmToggleButtonGadgetSetState(goption10, TRUE, TRUE);
                     break;
-            }
-            switch (my_phg[6]) {
                 default:
                     break;
+            }
+            switch (my_phg[6]) {
                 case '0':
                     XmToggleButtonGadgetSetState(doption1, TRUE, TRUE);
                     break;
@@ -14459,6 +14456,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                     break;
                 case '8':
                     XmToggleButtonGadgetSetState(doption9, TRUE, TRUE);
+                    break;
+                default:
                     break;
             }
         } else {  // PHG field disabled
