@@ -37,6 +37,8 @@
 #define MAX_OUTGOING_MESSAGES 100
 #define MAX_MESSAGE_OUTPUT_LENGTH 64
 #define MAX_MESSAGE_ORDER 10
+
+// Max tries to get a message through
 #define MAX_TRIES 18
 
 typedef struct {
