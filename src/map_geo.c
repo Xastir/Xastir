@@ -338,7 +338,9 @@ void draw_geo_image_map (Widget w,
             if (strncasecmp (line, "TOPOSERVER", 10) == 0) {
                 // Set to max brightness as it looks weird when the
                 // intensity variable comes into play.
+#ifdef HAVE_IMAGEMAGICK
                 xastir_snprintf(imagemagick_options.modulate,32,"100 100 100");
+#endif  // HAVE_IMAGEMAGICK
                 toposerver_flag = 1;
             }
 
