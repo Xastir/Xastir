@@ -43,6 +43,7 @@
 #include "util.h"
 #include "bulletin_gui.h"
 #include "fcc_data.h"
+#include "gps.h"
 #include "rac_data.h"
 #include "interface.h"
 #include "wx.h"
@@ -7322,6 +7323,11 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 statusline(station_id,0);
                 play_sound(sound_command,sound_prox_message);
                 /*printf("%s> PROX distance %f\n",p_station->call_sign, distance);*/
+
+//WE7U
+            //printf("Station within proximity circle, creating waypoint\n");
+            create_garmin_waypoint(p_station->coord_lat,p_station->coord_lon,p_station->call_sign);
+
             }
 #ifdef HAVE_FESTIVAL
             if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && festival_speak_proximity_alert) {

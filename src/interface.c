@@ -2567,7 +2567,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             case DEVICE_SERIAL_TNC_HSP_GPS:
 
-                        case DEVICE_SERIAL_TNC_AUX_GPS:
+            case DEVICE_SERIAL_TNC_AUX_GPS:
                 switch (dev_type) {
                     case DEVICE_SERIAL_TNC:
                         if (debug_level & 2)
@@ -2593,7 +2593,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                         break;
 
-                                        case DEVICE_SERIAL_TNC_AUX_GPS:
+                    case DEVICE_SERIAL_TNC_AUX_GPS:
                         if (debug_level & 2)
                             printf("Opening a Serial TNC w/AUX GPS device\n");
 
@@ -3644,6 +3644,75 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     // Note that this function call is destructive to the first parameter.
     // This is why we call it _after_ we call the log_data functions.
     decode_ax25_line( data_txt, DATA_VIA_LOCAL, port, 1);
+}
+
+
+
+
+
+//WE7U
+//*****************************************************************************
+// output_waypoint_data()
+//
+// message: the message data to send
+//
+// This function sends out waypoint creation strings to GPS
+// interfaces capable of dealing with it.
+//
+//*****************************************************************************
+void output_waypoint_data(char *message) {
+    char data_txt[MAX_LINE_SIZE+5];
+    char data_txt_save[MAX_LINE_SIZE+5];
+    int ok, start, finish, i;
+
+    if (debug_level & 1)
+        printf("Sending to GPS interfaces: %s\n", message);
+
+    if (message == NULL)
+        return;
+
+    if (message[0] == '\0')
+        return;
+ 
+    data_txt_save[0] = '\0';
+
+    start = 0;
+    finish = MAX_IFACE_DEVICES;
+
+begin_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
+
+    for (i = start; i < finish; i++) {
+        ok = 1;
+        switch (port_data[i].device_type) {
+            case DEVICE_SERIAL_TNC_HSP_GPS:
+                port_dtr(i,1);   // make DTR active (select GPS)
+                break;
+
+            case DEVICE_SERIAL_GPS:
+                break;
+
+            default: /* unknown */
+                ok = 0;
+                break;
+        } // End of switch
+
+        if (ok) {   // Found a GPS interface
+            /* send data */
+            xastir_snprintf(data_txt, sizeof(data_txt), "%s\r\n", message);
+
+            if (port_data[i].status == DEVICE_UP) {
+                port_write_string(i,data_txt);
+                if (debug_level & 1)
+                    printf("Sending to interface:%d, %s\n",i,data_txt);
+            }
+
+            if (debug_level & 2)
+                printf("TX:%d<%s>\n",i,data_txt);
+        }
+    }
+
+end_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
+
 }
 
 

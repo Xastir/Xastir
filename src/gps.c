@@ -426,3 +426,123 @@ void gps_data_find(char *gps_line_data, int port) {
 }
 
 
+
+
+
+static char checksum[3];
+
+
+
+
+ 
+// Function to compute checksums for NMEA sentences
+//
+// Input: "$............*"
+// Output: Two character string containing the checksum
+//
+// Checksum is computed from the '$' to the '*', but not including
+// these two characters.  It is an 8-bit Xor of the characters
+// specified, encoded in hexadecimal format.
+//
+char *nmea_checksum(char *nmea_sentence) {
+    int i;
+    int sum = 0;
+    int right;
+    int left;
+    char convert[17] = "0123456789ABCDEF";
+
+
+    for (i = 1; i < (strlen(nmea_sentence) - 1); i++) {
+        sum = sum ^ nmea_sentence[i];
+    }
+  
+    right = sum % 16;
+    left = (sum / 16) % 16;
+
+    xastir_snprintf(checksum, sizeof(checksum), "%c%c",
+        convert[left],
+        convert[right]);
+
+    return(checksum);
+}
+ 
+
+
+
+
+
+// Function which will send an NMEA sentence to a Garmin GPS which
+// will create a waypoint if the Garmin is set to NMEA-in/NMEA-out
+// mode.  The sentence looks like this:
+//
+// $GPWPL,4807.038,N,01131.000,E,WPTNME*31
+//
+// $GPWPL,4849.65,N,06428.53,W,0001*54
+// $GPWPL,4849.70,N,06428.50,W,0002*50
+//
+// 4807.038,N   Latitude
+// 01131.000,E  Longitude
+// WPTNME       Waypoint Name (stick to 6 chars for compatibility?)
+// *31          Checksum, always begins with '*'
+//
+void create_garmin_waypoint(long latitude,long longitude,char *call_sign) {
+    char short_callsign[10];
+    char lat_string[15];
+    char long_string[15];
+    char lat_char;
+    char long_char;
+    int i,j,len;
+    char out_string[80];
+    char out_string2[80];
+
+
+    convert_lat_l2s(latitude,
+        lat_string,
+        sizeof(lat_string),
+        CONVERT_HP_NOSP);
+    lat_char = lat_string[strlen(lat_string) - 1];
+    lat_string[strlen(lat_string) - 1] = '\0';
+
+    convert_lon_l2s(longitude,
+        long_string,
+        sizeof(long_string),
+        CONVERT_HP_NOSP);
+    long_char = long_string[strlen(long_string) - 1];
+    long_string[strlen(long_string) - 1] = '\0';
+
+    len = strlen(call_sign);
+    if (len > 9)
+        len = 9;
+
+    j = 0;
+    for (i = 0; i <= len; i++) {    // Copy the '\0' as well
+        if (call_sign[i] != '-') {  // We don't want the dash
+            short_callsign[j++] = call_sign[i];
+        }
+    }
+    short_callsign[6] = '\0';   // Truncate at 6 chars
+
+    //printf("Creating waypoint for %s:%s\n",call_sign,short_callsign);
+
+    xastir_snprintf(out_string, sizeof(out_string),
+        "$GPWPL,%s,%c,%s,%c,%s*",
+        lat_string,
+        lat_char,
+        long_string,
+        long_char,
+        short_callsign);
+
+    nmea_checksum(out_string);
+
+    xastir_snprintf(out_string2,
+        sizeof(out_string2),
+        "%s%s",
+        out_string,
+        checksum);
+
+    output_waypoint_data(out_string2);
+
+    //printf("%s\n",out_string2);
+}
+
+

@@ -184,6 +184,7 @@ extern void init_device_names(void);
 extern void output_my_data(char *message, int port, int type, int loopback_only);
 int tnc_get_data_type(char *buf, int port);
 void tnc_data_clean(char *buf);
+extern void output_waypoint_data(char *message);
 
 
 extern pid_t getpgid(pid_t pid);
