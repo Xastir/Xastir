@@ -7334,40 +7334,6 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     if (sec_remove < (time_t)(24*3600))
         sec_remove = (time_t)(24*3600);
 
-    switch(GPS_time) {
-        case(5):
-            gps_time=(time_t)5l;
-            break;
-
-        case(15):
-            gps_time=(time_t)15l;
-            break;
-
-        case(30):
-            gps_time=(time_t)30l;
-            break;
-
-        case(60):
-            gps_time=(time_t)60l;
-            break;
-
-        case(120):
-            gps_time=(time_t)120l;
-            break;
-
-        case(300):
-            gps_time=(time_t)300l;
-            break;
-
-        case(600):
-            gps_time=(time_t)600l;
-            break;
-
-        default:
-            gps_time=(time_t)30l;
-            break;
-    }
-
     output_station_type = Station_transmit_type;
     if ((output_station_type >= 1) && (output_station_type <= 3)) {
         next_time = 60;
@@ -7434,6 +7400,41 @@ void gps_time_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointe
     else
         GPS_time = (time_t)30l;
 
+    switch(GPS_time) {
+        case(5):
+            gps_time=(time_t)5l;
+            break;
+
+        case(15):
+            gps_time=(time_t)15l;
+            break;
+
+        case(30):
+            gps_time=(time_t)30l;
+            break;
+
+        case(60):
+            gps_time=(time_t)60l;
+            break;
+
+        case(120):
+            gps_time=(time_t)120l;
+            break;
+
+        case(300):
+            gps_time=(time_t)300l;
+            break;
+
+        case(600):
+            gps_time=(time_t)600l;
+            break;
+
+        default:
+            gps_time=(time_t)30l;
+            break;
+    }
+    // Set the new GPS rate into effect immediately
+    sec_next_gps = sec_now() + gps_time;
 }
 
 
