@@ -74,6 +74,14 @@ new timing params wrt trails, need to add to config|timing part
 geocoder (already in docs)
 exponential/random backoff for everything
 dbfawk default, memory leaks fixed
+click+drag zoom boxes
+tactical callsign support
+numerious small memory leaks, unintialized data uses, and similar bugs fixed. 
+GPS quality info
+RINO waypoints downloading
+label trackpoints
+comment/status timestamps
+listener socket
 
 
 HELP-INDEX>What's new in Xastir 1.3
