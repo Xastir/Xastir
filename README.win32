@@ -310,7 +310,7 @@ From a Cygwin bash shell, type:
 Fetch "shapelib-1.2.9.tar.gz" from one of these sites:
 
     http://gdal.velocet.ca/projects/shapelib/index.html
-or  http://wetnet.net/~we7u/xastir/shapelib-1.2.9.tar.gz
+or  http://wetnet.net/~we7u/xastir/shapelib/
 
 Put it in the C:\cygwin\home\<user>\src\shapelib directory.  Untar it
 from the Cygwin shell window:
@@ -394,7 +394,7 @@ Download the ImageMagick cygwin binary from www.imagemagick.org or
 one of it's mirrors.  If you can't find the version you need, try
 here:
 
-    http://wetnet.net/~we7u/xastir/cygwin/
+    http://wetnet.net/~we7u/xastir/ImageMagick/cygwin/
 
 Put it in the ~/src/imagemagick directory.
 Extract the files:
@@ -449,18 +449,24 @@ contiguous map of an area:
 For geoTIFF support (such as USGS DRG topo maps) you need one each
 of libproj, proj-nad27, and libgeotiff:
 
-    libproj:
+
+    libproj (tested with proj-4.4.6):
+    ---------------------------------
         http://www.remotesensing.org/proj/
-or      http://wetnet.net/~we7u/xastir/proj-4.4.6.tar.gz
+or      http://wetnet.net/~we7u/xastir/libproj/
 
-    and for datum translations:
-        ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
-or      http://wetnet.net/~we7u/xastir/proj-nad27-1.1.tar.gz
 
-    libgeotiff:
+    Datum translations (tested with proj-nad27-1.1):
+    ------------------------------------------------
+        ftp://ftp.remotesensing.org/pub/proj/
+or      http://wetnet.net/~we7u/xastir/libproj/
+
+
+    libgeotiff (tested with libgeotiff-1.2.0):
+    ------------------------------------------
         http://www.remotesensing.org/geotiff/geotiff.html
-or      ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.2.0.tar.gz
-or      http://wetnet.net/~we7u/xastir/libgeotiff-1.1.5.tar.gz
+or      ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
+or      http://wetnet.net/~we7u/xastir/libgeotiff/
 
 
 Please note that the order of installation for these libraries is

@@ -164,17 +164,25 @@ Things you need for this version:
 
 
 For geoTIFF support (such as USGS DRG topo maps) you also need:
-    libtiff:
+
+    libtiff (should be on your distribution's CD's):
+    ------------------------------------------------
         http://www.libtiff.org
-    libproj:
+
+    libproj (proj-4.4.6):
+    ---------------------
         http://www.remotesensing.org/proj/
         http://wetnet.net/~we7u/xastir/
-     and for datum translations:
-        ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
+
+    Datum translations (proj-nad27-1.1.):
+    -------------------------------------
+        ftp://ftp.remotesensing.org/pub/proj/
         http://wetnet.net/~we7u/xastir/
-    libgeotiff:
+
+    libgeotiff (libgeotiff-1.1.5):
+    ------------------------------
         http://www.remotesensing.org/geotiff/geotiff.html
-        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.1.4.tar.gz
+        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
         http://wetnet.net/~we7u/xastir/
 
     Please note that the order of installation for the above libraries is
@@ -373,7 +381,7 @@ First Time Install:
        file.  A patched version of the geo_trans.c file for
        libgeotiff-1.1.3 is available here:
 
-       http://wetnet.net/~we7u/xastir/geo_trans.diff
+       http://wetnet.net/~we7u/xastir/libgeotiff/geo_trans.diff
 
        Apply the patch to geo_trans.c BEFORE compiling libgeotiff.
        The patch might not apply to anything later than 1.1.3.
@@ -1032,10 +1040,14 @@ Getting Data Files for Xastir:
     .geo files/online maps & graphics:
 
       If you have ImageMagick and wget installed, .geo files for NWS radars
-      are available from "ftp://gcpoolz.com/geos/Srb_geos.zip" or from
-      "http://wetnet.net/~we7u/xastir/radar-geos.tgz". You'll
-      probably want to add an IMAGESIZE line to each one to speed up loading
-      when some radars are offscreen: (bash syntax, modify for your shell...)
+      are available from one of these sites:
+
+          ftp://gcpoolz.com/geos/Srb_geos.zip
+          http://wetnet.net/~we7u/xastir/maps/radar-geos.tgz
+
+      You'll probably want to add an IMAGESIZE line to each one to speed up
+      loading when some radars are offscreen: (bash syntax, modify for your
+      shell...)
 
           for a in srb_*; do echo "IMAGESIZE 620 620" >> $a; done
 
