@@ -75,7 +75,7 @@ enum Device_Types {
     DEVICE_SERIAL_TNC_AUX_GPS,  // KB6MER -> KAM XL or other TNC w/GPS on AUX port
     DEVICE_SERIAL_KISS_TNC,     // KISS TNC on serial port (not ax.25 kernel device)
     DEVICE_NET_DATABASE,
-    DEVICE_NET_AGWPE,
+    DEVICE_NET_AGWPE
 };
 
 enum Device_Active {
@@ -206,6 +206,8 @@ extern void interface_status(Widget w);
 extern int WX_rain_gauge_type;
 
 /* interface.c */
+extern void send_agwpe_packet(int xastir_interface, int RadioPort, unsigned char type, unsigned char *FromCall, unsigned char *ToCall, unsigned char *Path, unsigned char *Data, int length);
+
 extern unsigned char *incoming_data;
 extern int incoming_data_length;
 extern unsigned char incoming_data_copy[MAX_LINE_SIZE];

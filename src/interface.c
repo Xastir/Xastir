@@ -226,7 +226,7 @@ fprintf(stderr,"%s %s %s\n",
 */
 
     // Clear the output_string (set to binary zeroes)
-    for (ii = 0; ii < sizeof(output_string); ii++) {
+    for (ii = 0; ii < (int)sizeof(output_string); ii++) {
         output_string[ii] = '\0';
     }
 
@@ -279,7 +279,7 @@ fprintf(stderr,"%s %s %s\n",
             // Compute the callsign base string
             // (callsign minus SSID)
             strcpy(callsign_base,my_callsign);
-            for (jj = 0; jj < strlen(my_callsign); jj++) {
+            for (jj = 0; jj < (int)strlen(my_callsign); jj++) {
                 // Change '-' into end of string
                 if (callsign_base[jj] == '-')
                     callsign_base[jj] = '\0';
@@ -2385,7 +2385,7 @@ void fix_up_callsign(unsigned char *data) {
 
     // Change callsign to upper-case and pad out to six places with
     // space characters.
-    for (i = 0; i < strlen(data); i++) {
+    for (i = 0; i < (int)strlen(data); i++) {
         toupper(data[i]);
 
         if (data[i] == '-') {   // Stop at '-'
@@ -2403,7 +2403,7 @@ void fix_up_callsign(unsigned char *data) {
 
     // Handle SSID.  'i' should now be pointing at a dash or at the
     // terminating zero character.
-    if ( (i < strlen(data)) && (data[i++] == '-') ) {   // We might have an SSID
+    if ( (i < (int)strlen(data)) && (data[i++] == '-') ) {   // We might have an SSID
         if (data[i] != '\0')
             ssid = atoi(&data[i]);
 //            ssid = data[i++] - 0x30;    // Convert from ascii to int
@@ -2589,7 +2589,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     // specified:
     transmit_txt2[j++] = 0x00;
 
-    for (i = 0; i < strlen(transmit_txt); i++) {
+    for (i = 0; i < (int)strlen(transmit_txt); i++) {
         c = transmit_txt[i];
         if (c == KISS_FEND) {
             transmit_txt2[j++] = KISS_FESC;
@@ -4209,8 +4209,6 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                 ok = net_init(port_avail);
                 if (ok == 1) {
-                    int ii;
-
                     // If password isn't empty, send login
                     // information
                     //
@@ -5638,8 +5636,8 @@ void tnc_data_clean(char *buf) {
     }
 
     while (buf[0]=='c' && buf[1]=='m' && buf[2]=='d' && buf[3]==':') {
-        for(i=4; i<strlen(buf); i++) {
-            buf[i-4]=buf[i];
+        for(i = 4; i < (int)strlen(buf); i++) {
+            buf[i-4] = buf[i];
         }
         buf[i++]=0;     //Null out any remaining old data just in case
         buf[i++]=0;

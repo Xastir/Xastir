@@ -485,7 +485,7 @@ char *nmea_checksum(char *nmea_sentence) {
     char convert[17] = "0123456789ABCDEF";
 
 
-    for (i = 1; i < (strlen(nmea_sentence) - 1); i++) {
+    for (i = 1; i < ((int)strlen(nmea_sentence) - 1); i++) {
         sum = sum ^ nmea_sentence[i];
     }
   

@@ -8682,7 +8682,7 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
 
         // Change spaces to underlines
         // Wed Mar  5 15:24:48 PST 2003
-        for (ii = 0; ii < strlen(short_filename); ii++) {
+        for (ii = 0; ii < (int)strlen(short_filename); ii++) {
             if (short_filename[ii] == ' ')
                 short_filename[ii] = '_';
         }

@@ -341,7 +341,7 @@ void draw_grid(Widget w) {
 
         y2 = (180*60*60*100-y_lat_offset)/scale_y;
 
-        if (y2 > screen_height)
+        if (y2 > (unsigned int)screen_height)
             y2 = screen_height-1;
 
         coord = x_long_offset+stepsx[step]-(x_long_offset%stepsx[step]);
@@ -379,7 +379,7 @@ void draw_grid(Widget w) {
             x1 = -x_long_offset/scale_x;
 
         x2 = (360*60*60*100-x_long_offset)/scale_x;
-        if (x2 > screen_width)
+        if (x2 > (unsigned int)screen_width)
             x2 = screen_width-1;
 
         coord = y_lat_offset+stepsy[step]-(y_lat_offset%stepsy[step]);
@@ -2154,7 +2154,7 @@ void draw_shapefile_map (Widget w,
 
                     if (1) {    // Need a bracket so we can define
                                 // some local variables.
-                        const char *temp;
+                        const char *temp = NULL;
                         int ok = 1;
                         int temp_ok;
 
@@ -4631,13 +4631,13 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
                     // the min/max for the Xastir coordinate system,
                     // but in practice zeroes should work just as
                     // well.
-                    if ((coord_lat > bottom_extent) || (bottom_extent == 0l))
+                    if ((coord_lat > (long)bottom_extent) || (bottom_extent == 0l))
                         bottom_extent = coord_lat;
-                    if ((coord_lat < top_extent) || (top_extent == 0l))
+                    if ((coord_lat < (long)top_extent) || (top_extent == 0l))
                         top_extent = coord_lat;
-                    if ((coord_lon < left_extent) || (left_extent == 0l))
+                    if ((coord_lon < (long)left_extent) || (left_extent == 0l))
                         left_extent = coord_lon;
-                    if ((coord_lon > right_extent) || (right_extent == 0l))
+                    if ((coord_lon > (long)right_extent) || (right_extent == 0l))
                         right_extent = coord_lon;
 
 
@@ -6109,7 +6109,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     }
 
     if (image->storage_class == PseudoClass && image->colors <= 256) {
-        for (l = 0; l < image->colors; l++) {
+        for (l = 0; l < (int)image->colors; l++) {
             // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
             // of image files
             temp_pack = image->colormap[l];
@@ -6744,7 +6744,7 @@ void draw_tiger_map (Widget w) {
     }
 
     if (image->storage_class == PseudoClass && image->colors <= 256) {
-        for (l = 0; l < image->colors; l++) {
+        for (l = 0; l < (int)image->colors; l++) {
             // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
             // of image files
             temp_pack = image->colormap[l];
@@ -8010,7 +8010,7 @@ Samples Per Pixel: 1
                 if (debug_level & 16)
                     fprintf(stderr,"X/Y Pixels: %d, %d\n", NW_x, NW_y);
 
-                if (NW_x < 0 || NW_y < 0 || NW_x >= width || NW_y >= height) {
+                if (NW_x < 0 || NW_y < 0 || NW_x >= (int)width || NW_y >= (int)height) {
 
                     fprintf(stderr,"\nWarning:  NW Neat-line corner calculated at x:%d, y:%d, %s\n",
                         NW_x, NW_y, filenm);
@@ -8020,13 +8020,13 @@ Samples Per Pixel: 1
                     if (NW_x < 0)
                         NW_x = 0;
 
-                    if (NW_x >= width)
+                    if (NW_x >= (int)width)
                         NW_x = width - 1;
 
                     if (NW_y < 0)
                         NW_y = 0;
 
-                    if (NW_y >= height)
+                    if (NW_y >= (int)height)
                         NW_y = height -1;
 
 /*
@@ -8073,7 +8073,7 @@ Samples Per Pixel: 1
                 if (debug_level & 16)
                     fprintf(stderr,"X/Y Pixels: %d, %d\n", NE_x, NE_y);
 
-                if (NE_x < 0 || NE_y < 0 || NE_x >= width || NE_y >= height) {
+                if (NE_x < 0 || NE_y < 0 || NE_x >= (int)width || NE_y >= (int)height) {
 
                     fprintf(stderr,"\nWarning:  NE Neat-line corner calculated at x:%d, y:%d, %s\n",
                         NE_x, NE_y, filenm);
@@ -8083,13 +8083,13 @@ Samples Per Pixel: 1
                     if (NE_x < 0)
                         NE_x = 0;
 
-                    if (NE_x >= width)
+                    if (NE_x >= (int)width)
                         NE_x = width - 1;
 
                     if (NE_y < 0)
                         NE_y = 0;
 
-                    if (NE_y >= height)
+                    if (NE_y >= (int)height)
                         NE_y = height -1;
 
 /*
@@ -8136,7 +8136,7 @@ Samples Per Pixel: 1
                 if (debug_level & 16)
                     fprintf(stderr,"X/Y Pixels: %d, %d\n", SW_x, SW_y);
 
-                if (SW_x < 0 || SW_y < 0 || SW_x >= width || SW_y >= height) {
+                if (SW_x < 0 || SW_y < 0 || SW_x >= (int)width || SW_y >= (int)height) {
 
                     fprintf(stderr,"\nWarning:  SW Neat-line corner calculated at x:%d, y:%d, %s\n",
                         SW_x, SW_y, filenm);
@@ -8146,13 +8146,13 @@ Samples Per Pixel: 1
                     if (SW_x < 0)
                         SW_x = 0;
 
-                    if (SW_x >= width)
+                    if (SW_x >= (int)width)
                         SW_x = width - 1;
 
                     if (SW_y < 0)
                         SW_y = 0;
 
-                    if (SW_y >= height)
+                    if (SW_y >= (int)height)
                         SW_y = height -1;
 
 /*
@@ -8199,7 +8199,7 @@ Samples Per Pixel: 1
             if (debug_level & 16)
                 fprintf(stderr,"X/Y Pixels: %d, %d\n", SE_x, SE_y);
 
-                if (SE_x < 0 || SE_y < 0 || SE_x >= width || SE_y >= height) {
+                if (SE_x < 0 || SE_y < 0 || SE_x >= (int)width || SE_y >= (int)height) {
 
                     fprintf(stderr,"\nWarning:  SE Neat-line corner calculated at x:%d, y:%d, %s\n",
                         SE_x, SE_y, filenm);
@@ -8209,13 +8209,13 @@ Samples Per Pixel: 1
                     if (SE_x < 0)
                         SE_x = 0;
 
-                    if (SE_x >= width)
+                    if (SE_x >= (int)width)
                         SE_x = width - 1;
 
                     if (SE_y < 0)
                         SE_y = 0;
 
-                    if (SE_y >= height)
+                    if (SE_y >= (int)height)
                         SE_y = height -1;
 
 /*
@@ -8311,16 +8311,16 @@ Samples Per Pixel: 1
     // outside these ranges.
 
 //WE7U
-if (top_crop < 0 || top_crop >= height)
+if (top_crop < 0 || top_crop >= (int)height)
 top_crop = 0;
 
-if (bottom_crop < 0 || bottom_crop >= height)
+if (bottom_crop < 0 || bottom_crop >= (int)height)
 bottom_crop = height - 1;
 
-if (left_crop < 0 || left_crop >= width)
+if (left_crop < 0 || left_crop >= (int)width)
 left_crop = 0;
 
-if (right_crop < 0 || right_crop >= width)
+if (right_crop < 0 || right_crop >= (int)width)
 right_crop = width - 1;
 
     if (debug_level & 16) {
@@ -8975,7 +8975,7 @@ right_crop = width - 1;
                         + ( 1.0 * right_x_increment * row_offset ) + 0.5
                         -   NE_x_offset );
 
-//WE7U
+//WE7U:  This is always false:  current_left is unsigned
 if (current_left < 0)
     current_left = 0;
 
@@ -9083,7 +9083,8 @@ if (current_right >= width)
                             || (xastir_current_x < (SW_x_bounding_wgs84 + 25) )
                             || (xastir_current_x > (SE_x_bounding_wgs84 - 25) ) )
                         {
-                            if (column < bytesPerRow && column >= 0) {
+//WE7U: column is unsigned so "column >= 0" is always true
+                            if ((int)column < bytesPerRow && column >= 0) {
                                 *(imageMemory + column) = 0x01; // Change to White
                             }
                             else {
@@ -10949,7 +10950,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
                         // Check the file/directory name for control
                         // characters
-                        for (i = 0; i < strlen(dl->d_name); i++) {
+                        for (i = 0; i < (int)strlen(dl->d_name); i++) {
                             // Dump out a warning if control
                             // characters other than LF or CR are
                             // found.
@@ -11051,7 +11052,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
                 // Check the file/directory name for control
                 // characters
-                for (i = 0; i < strlen(dl->d_name); i++) {
+                for (i = 0; i < (int)strlen(dl->d_name); i++) {
                     // Dump out a warning if control characters
                     // other than LF or CR are found.
                     if ( (dl->d_name[i] != '\n')
@@ -11204,7 +11205,7 @@ void index_update_directory(char *directory) {
     // Make sure there aren't any weird characters in the directory
     // that might cause problems later.  Look for control characters
     // and convert them to string-end characters.
-    for ( i = 0; i < strlen(directory); i++ ) {
+    for ( i = 0; i < (int)strlen(directory); i++ ) {
         // Change any control characters to '\0' chars
         if (directory[i] < 0x20) {
 
@@ -11349,7 +11350,7 @@ void index_update_xastir(char *filename,
     // Make sure there aren't any weird characters in the filename
     // that might cause problems later.  Look for control characters
     // and convert them to string-end characters.
-    for ( i = 0; i < strlen(filename); i++ ) {
+    for ( i = 0; i < (int)strlen(filename); i++ ) {
         // Change any control characters to '\0' chars
         if (filename[i] < 0x20) {
 
@@ -11512,7 +11513,7 @@ void index_update_ll(char *filename,
     // Make sure there aren't any weird characters in the filename
     // that might cause problems later.  Look for control characters
     // and convert them to string-end characters.
-    for ( i = 0; i < strlen(filename); i++ ) {
+    for ( i = 0; i < (int)strlen(filename); i++ ) {
         // Change any control characters to '\0' chars
         if (filename[i] < 0x20) {
 
@@ -11761,7 +11762,7 @@ void index_save_to_file() {
         // filename that might cause problems later.  Look for
         // control characters and convert them to string-end
         // characters.
-        for ( i = 0; i < strlen(current->filename); i++ ) {
+        for ( i = 0; i < (int)strlen(current->filename); i++ ) {
             // Change any control characters to '\0' chars
             if (current->filename[i] < 0x20) {
 
@@ -11792,7 +11793,7 @@ void index_save_to_file() {
                 current->auto_maps,
                 current->filename);
 
-            if (fprintf(f,"%s",out_string) < strlen(out_string)) {
+            if (fprintf(f,"%s",out_string) < (int)strlen(out_string)) {
                 // Failed to write
                 fprintf(stderr,"Couldn't write objects to map index file: %s\n",
                     MAP_INDEX_DATA);
@@ -11834,7 +11835,7 @@ void index_insert_sorted(map_index_record *new_record) {
     // Make sure there aren't any weird characters in the filename
     // that might cause problems later.  Look for any control
     // characters and convert them to string-end characters.
-    for ( i = 0; i < strlen(new_record->filename); i++ ) {
+    for ( i = 0; i < (int)strlen(new_record->filename); i++ ) {
         if (new_record->filename[i] < 0x20) {
 
             fprintf(stderr,"\nindex_insert_sorted: Found control char 0x%02x in map name:\n%s\n",
@@ -12085,7 +12086,7 @@ void index_restore_from_file(void) {
 
                 // Check for control characters in the filename.
                 // Reject any that have them.
-                for (i = 0; i < strlen(temp_record->filename); i++)
+                for (i = 0; i < (int)strlen(temp_record->filename); i++)
                 {
                     if (temp_record->filename[i] < 0x20) {
 

@@ -109,7 +109,7 @@ void popup_bulletins(void) {
 
 
 
-void bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char *packet_message, time_t sec_heard) {
+void bulletin_message(char *call_sign, char *tag, char *packet_message, time_t sec_heard) {
     char temp[200];
     char temp_my_course[10];
     char temp_text[30];
@@ -181,7 +181,7 @@ end_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_me
 
 
 static void bulletin_line(Message *fill) {
-    bulletin_message(fill->data_via, fill->from_call_sign, fill->call_sign, fill->message_line, fill->sec_heard);
+    bulletin_message(fill->from_call_sign, fill->call_sign, fill->message_line, fill->sec_heard);
 }
 
 
@@ -209,8 +209,7 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
     int distance = -1;
 
     // Update the View->Bulletins dialog if it's up
-    bulletin_message(from,
-        from_call,
+    bulletin_message(from_call,
         call_sign,
         data,
         sec_now());
@@ -278,7 +277,7 @@ void bulletin_data_add(char *call_sign, char *from_call, char *data,
 // Find each bulletin that is within our range _and_ within our time
 // parameters for new bulletins.  Count them only.  Results returned
 // in the new_bulletin_count variable.
-void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag, char *packet_message, time_t sec_heard) {
+void count_bulletin_messages(char *call_sign, char *packet_message, time_t sec_heard) {
     char temp_my_course[10];
     double distance;
 
@@ -307,7 +306,7 @@ void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag,
 
 
 static void count_bulletin_line(Message *fill) {
-    count_bulletin_messages(fill->data_via, fill->from_call_sign, fill->call_sign, fill->message_line, fill->sec_heard);
+    count_bulletin_messages(fill->from_call_sign, fill->message_line, fill->sec_heard);
 }
 
 
