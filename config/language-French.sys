@@ -284,6 +284,7 @@ WPUPLSP002|Localiser l'indicatif||
 WPUPLSP003|Casse exacte|C|
 WPUPLSP004|Correspondance exacte|E|
 WPUPLSP005|Localiser maintenant!|L|
+WPUPLSP006|Emergency Locate!||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Configurer défauts||

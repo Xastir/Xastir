@@ -285,6 +285,7 @@ WPUPLSP002|Localizar Indicativo||
 WPUPLSP003|Macheo Sensible|S|
 WPUPLSP004|Macheo Exacto|E|
 WPUPLSP005|Localizar ahora!|A|
+WPUPLSP006|Emergency Locate!||
 #
 # Configurar predefinidos
 WPUPCFD001|Configurar valores predefinidos||

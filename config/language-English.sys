@@ -284,6 +284,7 @@ WPUPLSP002|Locate Callsign||
 WPUPLSP003|Match Case|C|
 WPUPLSP004|Match Exact|E|
 WPUPLSP005|Locate Now!|N|
+WPUPLSP006|Emergency Locate!||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Configure Defaults||

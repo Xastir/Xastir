@@ -9884,8 +9884,6 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                         "%s",
                         call_sign);
 
-                    popup_message("Emergency!",call_sign);
-
                     // Bring up the Find Station dialog so that the
                     // operator can go to the location quickly
                     xastir_snprintf(locate_station_call,
@@ -9893,7 +9891,7 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                         "%s",
                         call_sign);
 
-                    Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)NULL );
+                    Locate_station( (Widget)NULL, (XtPointer)NULL, (XtPointer)1 );
                 }
                 break;
 

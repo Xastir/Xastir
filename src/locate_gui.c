@@ -127,18 +127,34 @@ void Locate_station_now(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 
-void Locate_station(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+// Here we pass in a 1 in callData if it's an emergency locate,
+// for when we've received a Mic-E emergency packet.
+//
+void Locate_station(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, XtPointer callData) {
     static Widget pane, form, button_ok, button_cancel, call, sep;
     Atom delw;
+    int emergency_flag = (int) callData;
 
+ 
     if (!locate_station_dialog) {
 
 begin_critical_section(&locate_station_dialog_lock, "locate_gui.c:Locate_station" );
 
-        locate_station_dialog = XtVaCreatePopupShell(langcode("WPUPLSP001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        if (emergency_flag == 1) {
+                locate_station_dialog = XtVaCreatePopupShell(langcode("WPUPLSP006"),
+                xmDialogShellWidgetClass,Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
+        }
+        else {  // Non-emergency locate
+            locate_station_dialog = XtVaCreatePopupShell(langcode("WPUPLSP001"),
+                xmDialogShellWidgetClass,Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
+        }
+
 
         pane = XtVaCreateWidget("Locate_station pane",xmPanedWindowWidgetClass, locate_station_dialog,
                           XmNbackground, colors[0xff],
