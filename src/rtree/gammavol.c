@@ -25,7 +25,7 @@
  * MODULE:       R-Tree library 
  *              
  * AUTHOR(S):    Antonin Guttman - original code
- *               Daniel Green (green@superliminal.com) - major clean-up
+ *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
  *               
  * PURPOSE:      Multidimensional index

@@ -25,7 +25,7 @@
  * MODULE:       R-Tree library 
  *              
  * AUTHOR(S):    Antonin Guttman - original code
- *               Daniel Green (green@superliminal.com) - major clean-up
+ *               Melinda Green (melinda@superliminal.com) - major clean-up
  *                               and implementation of bounding spheres
  *               
  * PURPOSE:      Multidimensional index
@@ -34,8 +34,8 @@
 
 /*
  *                   SPHERE VOLUME
- *                   by Daniel Green
- *                   dgreen@superliminal.com
+ *                   by Melinda Green
+ *                   melinda@superliminal.com
  *
  * Calculates and prints the volumes of the unit hyperspheres for
  * dimensions zero through the given value, or 9 by default.
