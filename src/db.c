@@ -360,7 +360,6 @@ char *get_most_recent_ack(char *callsign) {
 void init_message_data(void) {  // called at start of main
 
     new_message_data = 0;
-//    message_counter = 0;  // Now read in from config file instead
     last_message_remove = sec_now();
 }
 
