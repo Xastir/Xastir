@@ -1816,12 +1816,17 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 atof(p_station->altitude) * cvt_m2len,un_alt);
         }
 
-        // Else check whether the previous position had altitude
-        else if (p_station->newest_trackpoint != NULL) {
-            if ( p_station->newest_trackpoint->altitude > -99999l) {
+        // Else check whether the previous position had altitude.
+        // Note that newest_trackpoint if it exists should be the
+        // same as the current data, so we have to go back one
+        // further trackpoint.
+        else if ( (p_station->newest_trackpoint != NULL)
+                && (p_station->newest_trackpoint->prev != NULL) ) {
+            if ( p_station->newest_trackpoint->prev->altitude > -99999l) {
                 // Found it in the tracklog
                 xastir_snprintf(temp_altitude, sizeof(temp_altitude), "%.0f%s",
-                    (float)(p_station->newest_trackpoint->altitude * cvt_dm2len), un_alt);
+                    (float)(p_station->newest_trackpoint->prev->altitude * cvt_dm2len),
+                    un_alt);
 
 //                printf("Trail data              with altitude: %s : %s\n",
 //                    p_station->call_sign,
@@ -1854,16 +1859,23 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 atof(p_station->speed)*cvt_kn2len,tmp);
         }
         // Else check whether the previous position had speed
-        else if (p_station->newest_trackpoint != NULL) {
+        // Note that newest_trackpoint if it exists should be the
+        // same as the current data, so we have to go back one
+        // further trackpoint.
+        else if ( (p_station->newest_trackpoint != NULL)
+                && (p_station->newest_trackpoint->prev != NULL) ) {
+
             strncpy(tmp, un_spd, sizeof(tmp));
             tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
+
             if (symbol_speed_display == 1)
                 tmp[0] = '\0';          // without unit
  
-            if ( p_station->newest_trackpoint->speed > 0)
+            if ( p_station->newest_trackpoint->prev->speed > 0)
                 speed_ok++;
                 xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
-                    p_station->newest_trackpoint->speed * cvt_hm2len, tmp);
+                    p_station->newest_trackpoint->prev->speed * cvt_hm2len,
+                    tmp);
         }
     }
 
@@ -1875,11 +1887,15 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 atof(p_station->course));
         }
         // Else check whether the previous position had a course
-        else if (p_station->newest_trackpoint != NULL) {
-            if( p_station->newest_trackpoint->course > 0 ) {
+        // Note that newest_trackpoint if it exists should be the
+        // same as the current data, so we have to go back one
+        // further trackpoint.
+        else if ( (p_station->newest_trackpoint != NULL)
+                && (p_station->newest_trackpoint->prev != NULL) ) {
+            if( p_station->newest_trackpoint->prev->course > 0 ) {
                 course_ok++;
                 xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
-                    (float)p_station->newest_trackpoint->course);
+                    (float)p_station->newest_trackpoint->prev->course);
             }
         }
     }
