@@ -153,6 +153,13 @@ Getting Maps and other Data Files for Xastir:
      which we do not have access to the decoding algorithm.  We
      cannot use those from within Xastir.
 
+     SDTS format maps:
+
+        http://edc.usgs.gov/geodata/
+
+      The "hypsography" maps contain topo lines.  They look very nice overlaid
+      on top of terraserver satellite images.  Note that for some types of maps
+      you also need to download a data dictionary file to go with them.
 
      Shapefile format maps:
 
