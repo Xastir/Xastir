@@ -11622,6 +11622,10 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     int ok;
     char destination[MAX_CALLSIGN+1];
 
+char small_string[200];
+char big_string[2000];
+
+
     // Check whether relay_digipeat has been enabled for this interface.
     // If not, get out while the gettin's good.
     if (devices[port].relay_digipeat != 1) {
@@ -11643,16 +11647,14 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
 
 
 //WE7U
-fprintf(stderr,"relay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %s\n\tinfo: %s\n",
+sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %s\n\tinfo: %s\n",
     port, call, path, info);
 
 
     // Check to see if this is a packet from me (in some cases, you hear
     // yourself transmit...)
     if (!strcasecmp(call, my_callsign)) {
-
-fprintf(stderr,"relay_digipeat: packet was mine, don't digipeat it!\n");
-
+        //fprintf(stderr,"relay_digipeat: packet was mine, don't digipeat it!\n");
         return;
     }
 
@@ -11676,9 +11678,7 @@ fprintf(stderr,"relay_digipeat: packet was mine, don't digipeat it!\n");
 
     // Check to see if we just ran out of path
     if (short_path == NULL || short_path[0] == '\0') {
-
-fprintf(stderr,"relay_digipeat: ran out of path, don't digipeat it!\n");
-
+        //fprintf(stderr,"relay_digipeat: ran out of path, don't digipeat it!\n");
         return;
     }
 
@@ -11691,19 +11691,19 @@ fprintf(stderr,"relay_digipeat: ran out of path, don't digipeat it!\n");
     // see where they are and whether the packet has been digipeated
     // through that callsign (or a later one).
     if ( (r_ptr = strstr(short_path,"RELAY")) != NULL) {
-        if ( (r_ptr = strstr(short_path,"SOMTN")) != NULL) {  // DEBUG STATEMENT
-fprintf(stderr,"*** FOUND RELAY: ", short_path);
-        }
+sprintf(small_string,"*** FOUND RELAY: %s\n", short_path);
+strcat(big_string,small_string);
     }
 
     if ( (c_ptr = strstr(short_path,my_callsign)) != NULL) {
         // Note that my_callsign is in all caps already
-fprintf(stderr,"*** FOUND MY CALLSIGN: ", short_path);
+sprintf(small_string,"*** FOUND MY CALLSIGN: %s\n", short_path);
+strcat(big_string,small_string);
     }
 
     // Check whether either RELAY or my_callsign were found
     if (c_ptr == NULL && r_ptr == NULL) {   // Nope, neither one found
-fprintf(stderr,"Nothing to see here folks, move along: %s\n", short_path);
+        //fprintf(stderr,"Nothing to see here folks, move along: %s\n", short_path);
         return;
     }
 
@@ -11747,7 +11747,7 @@ fprintf(stderr,"Nothing to see here folks, move along: %s\n", short_path);
     }
 
     if (!ok) {
-fprintf(stderr,"Used up digi: %s\n", short_path);
+        //fprintf(stderr,"Used up digi: %s\n", short_path);
         return;
     }
 
@@ -11803,13 +11803,6 @@ fprintf(stderr,"Used up digi: %s\n", short_path);
 //        fprintf(stderr,"KISS RELAY short_path: %s\n", short_path);
 //        fprintf(stderr,"KISS RELAY   new_path: %s\n", new_path);
         send_ax25_frame(port, call, destination, new_path, info);
-
-
-//WE7U
-fprintf(stderr,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\tpath: %s\n\tinfo: %s\n",
-    port, call, destination, new_path, info);
-
-
 #endif
 
     }
@@ -11839,8 +11832,10 @@ fprintf(stderr,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\t
 
 
 //WE7U
-fprintf(stderr,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\tpath: %s\n\tinfo: %s\n",
+sprintf(small_string,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\tpath: %s\n\tinfo: %s\n",
     port, call, destination, new_path, info);
+strcat(big_string,small_string);
+fprintf(stderr,"%s",big_string);
 
 
 // Example packet:
