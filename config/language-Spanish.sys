@@ -77,8 +77,8 @@ PULDNMP008|Intensidad del Mapa|I|
 PULDNMP020|Activar/Configurar Tigermap||
 PULDNMP021|Auto Mapa - Desactivar Mapas de Trama||
 PULDNMP022|Indezar Mapas en Inicio||
-PULDNMP023|Re-Indezar Mapas|R|
-PULDNMP024|Re-Indezar Mapa: TODOS los Mapas|T|
+PULDNMP023|Indice: Agregar Nuevos Mapas|N|
+PULDNMP024|Indice: Reindezar TODOS los Mapas|R|
 #
 # Menú "Configurar Tigermapa"
 MPUPTGR001|Rejilla||
