@@ -125,7 +125,7 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
 
 For Linux kernel AX.25 interfaces, you require these packages:
     Lib AX25:http://prdownloads.sourceforge.net/ax25/libax25-0.0.11.tar.gz
-    AX25 apps:http://prdownloads.sourceforge.net/ax25/ax25-apps-0.0.5.tar.gz
+    AX25 apps:http://prdownloads.sourceforge.net/ax25/ax25-apps-0.0.6.tar.gz
     AX25 tools:http://prdownloads.sourceforge.net/ax25/ax25-tools-0.0.8.tar.gz
     The apps package is not required, but strongly suggested. These versions
      are current as of the writing of this document; feel free to use newer
@@ -298,11 +298,12 @@ First Time Install:
        -----------------------------
        The best way to install libtiff is to get it from the ftp site
        for your Linux distribution.  You must have libtiff 3.5.5 or
-       newer for libgeotiff to compile and run correctly.
+       newer for libgeotiff 1.1.x to compile and run correctly, and libtiff
+       3.6.0 or newer for libgeotiff 1.2.x to work correctly.
 
-       If you are compiling from source, you must use "make install_private",
-       because the private include files are required for libgeotiff to compile
-       and work correctly.
+       If you are compiling 1.1.x from source, you must use "make
+       install_private", because the private include files are required for
+       libgeotiff to compile and work correctly.
 
        If you upgrade libtiff, check that programs like XV, ImageMagick, and
        the Gimp still run (if you have these programs installed).  Graphics
