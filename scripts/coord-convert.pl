@@ -26,25 +26,82 @@
 #
 
 
-use Coordinate;         # Snag WE7U's Coordinate module
+use Coordinate;         # WE7U's Coordinate.pm module
 
 
 # Create new Coordinate object
 my $position = Coordinate->new();
 
 
+$position->datum("WGS 84");    # Datum
+
+
 print "\n";
 print "Examples:    48.123N     122.123W\n";
 print "             48 07.380N  122 07.380W\n";
 print "             48 07 22.8N 122 07 22.8W\n";
+print "             10U  0565264  5330343\n";
 
 
 while (1) {
 
-    print "\nEnter a Lat/Long value:\n";
+    print "\nEnter a Lat/Long value or UTM value:\n";
 
     # Snag the input
     $_ = <>;
+
+    # If the first item has 2 digits and one character and there are
+    # three "words" in the input, we're starting with a UTM value.
+    if (/^\d\d[a-zA-Z]\s+\w+\s+\w+\s*$/) {
+
+        # printf("Found a UTM value\n");
+
+        # We'll convert it to the standard format first and then run
+        # through the rest of the code.
+
+        $zone = $_;
+        $easting = $_;
+        $northing = $_;
+
+        $zone =~ s/^(\d\d[a-zA-Z])\s+\w+\s+\w+\s*$/$1/;
+        $easting =~ s/^\d\d[a-zA-Z]\s+(\w+)\s+\w+\s*$/$1/;
+        $northing =~ s/^\d\d[a-zA-Z]\s+\w+\s+(\w+)\s*$/$1/;
+
+        $position->zone($zone);
+        $position->easting($easting);
+        $position->northing($northing);
+
+        # Convert to lat/lon values
+        $position->utm_to_lat_lon();
+
+        # printf("Calculated Lat, Long position(Lat, Long):  %f   %f\n",
+        #    $position->latitude(),
+        #    $position->longitude() );
+
+        $latitude = $position->latitude();
+        $longitude = $position->longitude();
+
+        $lat_dir = "N";
+        $long_dir = "E";
+ 
+        if ($latitude < 0.0) {
+            $latitude = abs($latitude);
+            $lat_dir = "S"
+        }
+        if ($longitude < 0.0) {
+            $longitude = abs($longitude);
+            $long_dir = "W";
+        }
+
+ 
+        # printf("%f%s %f%s\n", $latitude,$lat_dir,$longitude,$long_dir);
+
+       $_ = sprintf("%f%s %f%s",
+            $latitude,$lat_dir,$longitude,$long_dir);
+
+    }
+
+    # Look for lat/long value in the input
 
     # Check for N/S/E/W characters in the input.  Set the
     # appropriate flags if found.
@@ -57,7 +114,7 @@ while (1) {
 
     # Convert to DD MM SS format
     ($lat_deg, $lat_min, $lat_sec,
-     $long_deg, $long_min, $long_sec) = split(' ');
+    $long_deg, $long_min, $long_sec) = split(' ');
 
     # Decimal Degrees?
     if ($lat_deg =~ /\./) {
@@ -130,8 +187,6 @@ while (1) {
     }
 
     #printf("%f %f\n",$position->latitude,$position->longitude);
-
-    $position->datum("WGS 84");    # Datum
 
     $position->lat_lon_to_utm();
     printf("  Universal Transverse Mercator: %s  %07.0f  %07.0f\n",
