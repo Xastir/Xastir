@@ -3295,8 +3295,6 @@ clear_dangerous();
 
 
 #ifdef TIGER_POLYGONS
-//fprintf(stderr,"Sleep 1, 20 seconds\n");
-//sleep(20);
     // Special handling for TIGER files so that we can extract/draw
     // polygons.
     //
@@ -3346,7 +3344,7 @@ clear_dangerous();
         struct hashtable_itr *iterator = NULL;
 
         typedef struct _tlid_struct {
-            int TLID;
+            long TLID;
             struct _tlid_struct *next;
         }tlid_struct;
 
@@ -3362,7 +3360,7 @@ clear_dangerous();
         }polyinfo;
 
         typedef struct _tlidinfo {
-            int TLID;       // Tiger/Line ID
+            long TLID;      // Tiger/Line ID
             char FEDIRP[3]; // Size from Tiger 2003 definitions
             char FENAME[31];// Size from Tiger 2003 definitions
             char FETYPE[5]; // Size from Tiger 2003 definitions
@@ -3434,10 +3432,6 @@ clear_dangerous();
             tlid_keys_equal);
 
 
-//fprintf(stderr,"Sleep 3, 20 seconds\n");
-//sleep(20);
- 
-
 fprintf(stderr,"Starting polygon reassembly\n");
 fprintf(stderr,"      Polygon Layer ");
 start_timer();
@@ -3470,7 +3464,6 @@ start_timer();
                     temp->CFCC[0] = '\0';
                     temp->LANAME[0] = '\0';
                     temp->tlid_list = NULL;
-
 
                     // Insert a new value into the hash
 // Remember to free() the hash storage later
@@ -3680,8 +3673,9 @@ fprintf(stderr,"PolyChainLink Layer ");
                 int kk, mm, nn;
                 int polyidl = -1;
                 int polyidr = -1;
-                int tlid = -1;
-                polyinfo *found;
+                long tlid = -1;
+                polyinfo *found1;
+                polyinfo *found2;
 
 
                 kk = OGR_F_GetFieldIndex( featureH, "POLYIDL" );
@@ -3693,33 +3687,75 @@ fprintf(stderr,"PolyChainLink Layer ");
                 if (mm != -1)
                     polyidr = OGR_F_GetFieldAsInteger( featureH, mm);
                 if (nn != -1)
-                    tlid = OGR_F_GetFieldAsInteger( featureH, nn);
+                    tlid = atol(OGR_F_GetFieldAsString( featureH, nn));
 
 
                 // Find an entry in the hash.  Check both polyidl
                 // and polyidr for matches this time.  If either
                 // match, add to the record.
                 //
-                found = hashtable_search(polyid_hash, &polyidl);
-                if (!found)
-                    found = hashtable_search(polyid_hash, &polyidr);
-                if (found) {    // Found a match!
+                found1 = hashtable_search(polyid_hash, &polyidl);
+                found2 = hashtable_search(polyid_hash, &polyidr);
+
+                if (found1 || found2) { // Found at least one match!
                     tlid_struct *tlid_temp;
+                    tlid_struct *p;
 
 //fprintf(stderr,"Found a match for POLYIDL or POLYIDR in PolyChainLink layer!\n");
 
-                    // Allocate a new record and link it in at the
-                    // top of the list.  Fill it in with the value
-                    // of TLID.
+                    // Link it in at the END of the list to keep the
+                    // line order correct.  These are short lists on
+                    // average so we're not losing too much time by
+                    // traversing down the list each time.  We could
+                    // later make it a doubly-linked list in order
+                    // to speed things up.
+                    //
+                    if (found1) {
+                        // Allocate a new record and link it in at the
+                        // end of the list.  Fill it in with the value
+                        // of TLID.
+                        tlid_temp = (tlid_struct *)malloc(sizeof(tlid_struct));
+                        tlid_temp->TLID = tlid;
+                        tlid_temp->next = NULL;
 
-// NOTE:  This might reverse the direction of the polygon, but we're
-// not doing the holes/fills versions of polygons like as in
-// Shapefiles here, are we?  Might not make a difference.
+                        if (found1->tlid_list == NULL) {
+                            // List is NULL:  Add the new record
+                            found1->tlid_list = tlid_temp;
+                        }
+                        else {  // List has at least one record.
+                                // Traverse to the end of the list.
+                            p = found1->tlid_list;  // Head of list
+                            while (p->next != NULL) {
+                                p = p->next;
+                            }
+                            // We should be sitting at the last record.
+                            // Add our new record to the end.
+                            p->next = tlid_temp;
+                        }
+                    }
+                    if (found2) {
+                        // Allocate a new record and link it in at the
+                        // end of the list.  Fill it in with the value
+                        // of TLID.
+                        tlid_temp = (tlid_struct *)malloc(sizeof(tlid_struct));
+                        tlid_temp->TLID = tlid;
+                        tlid_temp->next = NULL;
 
-                    tlid_temp = (tlid_struct *)malloc(sizeof(tlid_struct));
-                    tlid_temp->TLID = tlid;
-                    tlid_temp->next = found->tlid_list;
-                    found->tlid_list = tlid_temp;
+                        if (found2->tlid_list == NULL) {
+                            // List is NULL:  Add the new record
+                            found2->tlid_list = tlid_temp;
+                        }
+                        else {  // List has at least one record.
+                                // Traverse to the end of the list.
+                            p = found2->tlid_list;  // Head of list
+                            while (p->next != NULL) {
+                                p = p->next;
+                            }
+                            // We should be sitting at the last record.
+                            // Add our new record to the end.
+                            p->next = tlid_temp;
+                        }
+                    }
                 }
 
                 if (featureH != NULL)
@@ -3748,7 +3784,7 @@ fprintf(stderr,"CompleteChain Layer ");
                 kk = OGR_F_GetFieldIndex( featureH, "TLID");
                 if (kk != -1) {
                     int ll,mm,nn,oo,pp;
-                    int tlid;
+                    long tlid;
                     const char *fedirp;
                     const char *fename;
                     const char *fetype;
@@ -3757,7 +3793,7 @@ fprintf(stderr,"CompleteChain Layer ");
                     OGRGeometryH geometryH;
  
 
-                    tlid = OGR_F_GetFieldAsInteger( featureH, kk);
+                    tlid = atol(OGR_F_GetFieldAsString(featureH, kk));
  
                     // Allocate struct
                     temp = (tlidinfo *)malloc(sizeof(tlidinfo));
@@ -3769,7 +3805,7 @@ fprintf(stderr,"CompleteChain Layer ");
                     temp->CFCC[0] = '\0';
                     temp->geometryH = NULL;
 
-//fprintf(stderr,"TLID:%i\n", tlid);
+//fprintf(stderr,"TLID:%li\n", tlid);
 
                     ll = OGR_F_GetFieldIndex( featureH, "FEDIRP");
                     mm = OGR_F_GetFieldIndex( featureH, "FENAME");
@@ -3850,8 +3886,99 @@ stop_timer(); print_timer_results();
 fprintf(stderr,"Done with Polygon data reassembly\n");
 
 
+        // We have two hashes with part of the info in each of them.
+        // We should be able to iterate through the polyid_hash,
+        // snag the TLID parameters out of each polygon, and then
+        // snag the geometry for each TLID out of the tlid_hash.
+        // Through this method we can draw each polygon one at a
+        // time by creating a polygon geometry out of each one.
 
-// Draw the polygons here...
+        // Iterate over the polyid_hash, drawing polygons as we go.
+        //
+        if (hashtable_count(polyid_hash) > 0) {
+//fprintf(stderr,"polyid_hash\n");
+            iterator = hashtable_iterator(polyid_hash);
+//fprintf(stderr,"got iterator\n");
+            do {
+                polyinfo *record;
+                tlid_struct *head;
+                OGRGeometryH collectionH;
+                OGRGeometryH newpolygonH;
+                OGRErr error;
+
+
+                record = hashtable_iterator_value(iterator);
+
+//fprintf(stderr,"got record\n");
+
+
+// Create an empty geometry collection that we can add other
+// geometries to.
+                collectionH = OGR_G_CreateGeometry(wkbGeometryCollection);
+
+                if (collectionH == NULL)
+                    fprintf(stderr,"collectionH is empty\n");
+
+
+                // Iterate through the tlid_list linked list.  Look
+                // up each TLID in the tlid_hash.
+                head = record->tlid_list;
+                while (head) {
+                    tlidinfo *found;
+                    OGRErr error;
+
+                    // Find this TLID in the tlid_hash
+                    found = hashtable_search(tlid_hash, &head->TLID);
+                    if (found) {    // Found a match!
+//fprintf(stderr,"T");
+                        // Snag the geometry associated with this
+                        // TLID.  Add it to the geometry collection
+                        // for this POLYID.
+                        error = OGR_G_AddGeometry(collectionH,
+                            found->geometryH);
+                        if (error != OGRERR_NONE)
+                            fprintf(stderr,
+                                "OGR_G_AddGeometry: Unsupported geometry type?\n");
+                    }
+                    else {
+fprintf(stderr,"?");
+                    }
+ 
+                    // Skip to the next record
+                    head = head->next;
+                }
+
+
+// Create a polygon geometry out of the geometry collection.
+                newpolygonH = OGRBuildPolygonFromEdges(collectionH,
+                    1,        // bBestEffort
+                    1,        // bAutoClose
+                    0.0,   // dfTolerance
+                    &error);  // OGRerr
+                if (error == OGRERR_NONE) {
+                    //fprintf(stderr,"\t\t\tCreated polygon!\n");
+                }
+                else {
+                    fprintf(stderr,"Failed to create polygon!\n");
+                }
+
+
+// Here's where we would draw the polygon.  All of the information
+// is in one place now.
+
+                // Free the polygon structure
+                OGR_G_DestroyGeometry(newpolygonH);
+
+                // Free the geometry collection structure
+                OGR_G_DestroyGeometry(collectionH);
+
+            // Free the current hash element, advance to the next
+            } while (hashtable_iterator_advance(iterator));
+        }
+        free(iterator);
+
+
+
 
 
 fprintf(stderr,"Free'ing hash memory\n");
@@ -3947,9 +4074,6 @@ fprintf(stderr,"Free'ing hash memory\n");
 // have two chains of them for the two types of allocated memory.
 
     }   // End of special TIGER section
-
-//fprintf(stderr,"Sleep 2, 30 seconds\n");
-//sleep(30);
 
 fprintf(stderr,"Done\n");
 
