@@ -288,7 +288,8 @@ WPUPCFD022|Position de station + date/heure Zulu + météo||
 WPUPCFD023|Données météo non traités?||
 WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Activer réseau alterne?|A|
-WPUPCFD026|Transmettre position à quel intervalle?|||
+WPUPCFD026|Transmettre position à quel intervalle?||
+WPUPCFD027|Enable SmartBeaconing||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||

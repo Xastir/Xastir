@@ -289,7 +289,8 @@ WPUPCFD022|Posizione stazione, Data e ora UTC, dati meteo||
 WPUPCFD023|Devo trasmettere i dati Meteo?||
 WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Attivare rete alternativa?|A|
-WPUPCFD026|Intervallo per invio rapporti posizione|||
+WPUPCFD026|Intervallo per invio rapporti posizione||
+WPUPCFD027|Enable SmartBeaconing||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||

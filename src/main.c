@@ -480,6 +480,7 @@ Widget raw_wx_tx;
 #endif
 Widget compressed_posit_tx;
 Widget compressed_objects_items_tx;
+Widget smart_beacon_enable;
 Widget altnet_active;
 Widget altnet_text;
 Widget debug_level_text;
@@ -606,7 +607,7 @@ time_t POSIT_rate;              // Posit & object/item rate timer
 // SmartBeaconing stuff.  If enabled, POSIT_rate is only used for
 // objects & items, sb_POSIT_rate computed via SmartBeaconing will
 // be used for posits.
-int smart_beaconing = 0;        // Master enable/disable for SmartBeaconing mode
+int smart_beaconing;            // Master enable/disable for SmartBeaconing mode
 int sb_POSIT_rate;              // Computed SmartBeaconing posit rate (secs)
 int sb_last_heading;            // Heading at time of last posit
 int sb_current_heading;         // Most recent heading parsed from GPS sentence
@@ -8306,6 +8307,13 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     transmit_compressed_objects_items = (int)XmToggleButtonGetState(compressed_objects_items_tx);
 
+    smart_beaconing = (int)XmToggleButtonGetState(smart_beacon_enable);
+
+    //if (smart_beaconing)
+    //    printf("SmartBeaconing Enabled\n");
+    //else
+    //    printf("SmartBeaconing Disabled\n");
+
     altnet = (int)(XmToggleButtonGetState(altnet_active));
 
     //WE7U
@@ -8875,10 +8883,22 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                                         XmNnavigationType, XmTAB_GROUP,
                                         NULL);
 
+        smart_beacon_enable = XtVaCreateManagedWidget(langcode("WPUPCFD027"),xmToggleButtonWidgetClass,my_form,
+                                        XmNtopAttachment, XmATTACH_WIDGET,
+                                        XmNtopWidget, compressed_objects_items_tx,
+                                        XmNbottomAttachment, XmATTACH_NONE,
+                                        XmNleftAttachment, XmATTACH_FORM,
+                                        XmNleftOffset,10,
+                                        XmNrightAttachment, XmATTACH_NONE,
+                                        XmNbackground, colors[0xff],
+                                        XmNnavigationType, XmTAB_GROUP,
+                                        NULL);
+
+
 #ifdef TRANSMIT_RAW_WX
         raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),xmToggleButtonWidgetClass,my_form,
                                         XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, compressed_objects_items_tx,
+                                        XmNtopWidget, smart_beacon_enable,
                                         XmNbottomAttachment, XmATTACH_NONE,
                                         XmNleftAttachment, XmATTACH_FORM,
                                         XmNleftOffset, 10,
@@ -9159,6 +9179,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             XmToggleButtonSetState(compressed_objects_items_tx,TRUE,FALSE);
         else
             XmToggleButtonSetState(compressed_objects_items_tx,FALSE,FALSE);
+
+        if(smart_beaconing)
+            XmToggleButtonSetState(smart_beacon_enable,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(smart_beacon_enable,FALSE,FALSE);
 
         XmToggleButtonSetState(altnet_active, altnet, FALSE);
 

@@ -487,6 +487,8 @@ void save_data(void)  {
 
         store_int (fout, "COMPRESSED_OBJECTS_ITEMS", transmit_compressed_objects_items);
 
+        store_int (fout, "SMART_BEACONING", smart_beaconing);
+
         /* -dk7in- variable beacon interval */
         /*         mobile:   max  2 min */
         /*         fixed:    max 15 min  */
@@ -982,6 +984,9 @@ void load_data_or_default(void) {
     /* compressed objects/items transmit */
     if (!get_int ("COMPRESSED_OBJECTS_ITEMS", &transmit_compressed_objects_items,0,1,0))
         transmit_compressed_objects_items = 0;
+
+    if (!get_int ("SMART_BEACONING", &smart_beaconing,0,1,1))
+        smart_beaconing = 1;
 
     /* Audio Alarms*/
     if (!get_string ("SOUND_COMMAND", sound_command))

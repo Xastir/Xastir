@@ -289,6 +289,7 @@ WPUPCFD023|Transmit Raw WX data?|R|
 WPUPCFD024|Compress object/item data when transmitting?|C|
 WPUPCFD025|Activate Alternate net?|A|
 WPUPCFD026|Send position reports at what intervals?||
+WPUPCFD027|Enable SmartBeaconing||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||
