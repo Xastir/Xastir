@@ -730,6 +730,8 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
                         dblib="no")
 
 	CPPFLAGS=$xastir_save_CPPFLAGS
+    LIBS="-ldb $LIBS"
+ 
 ])
 
 dnl add -L(arg), and possibly (runpath switch)(arg), to LDFLAGS
