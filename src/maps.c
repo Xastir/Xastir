@@ -105,12 +105,12 @@ Widget print_properties_dialog = (Widget)NULL;
 static xastir_mutex print_properties_dialog_lock;
 Widget rotate_90 = (Widget)NULL;
 Widget auto_rotate = (Widget)NULL;
-char  print_paper_size[20] = "Letter";  // Displayed in dialog, but not used yet.
+//char  print_paper_size[20] = "Letter";  // Displayed in dialog, but not used yet.
 int   print_rotated = 0;
 int   print_auto_rotation = 0;
-float print_scale = 1.0;                // Not used yet.
+//float print_scale = 1.0;                // Not used yet.
 int   print_auto_scale = 0;
-int   print_blank_background_color = 0; // Not used yet.
+//int   print_blank_background_color = 0; // Not used yet.
 int   print_in_monochrome = 0;
 int   print_resolution = 150;           // 72 dpi is normal for Postscript.
                                         // 100 or 150 dpi work well with HP printer
@@ -2999,7 +2999,8 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
 
 
         // Bring up the "gv" postscript viewer
-        xastir_snprintf(command, sizeof(command), "gv %s-scale -2 -media Letter %s &",
+//        xastir_snprintf(command, sizeof(command), "gv %s-scale -2 -media Letter %s &",
+        xastir_snprintf(command, sizeof(command), "gv %s-scale -2 %s &",
                 format, ps_filename );
 
         if ( debug_level & 512 )
@@ -3127,10 +3128,11 @@ void  Invert( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callDa
 // 2) -label
 //
 void Print_properties( Widget w, XtPointer clientData, XtPointer callData ) {
-    static Widget pane, form, button_preview, button_ok, button_cancel,
-            sep, paper_size, paper_size_data, auto_scale, scale,
-            scale_data, blank_background, monochrome, invert, res_label1,
-            res_label2, res_x, res_y;
+    static Widget pane, form, button_ok, button_cancel,
+            sep, auto_scale,
+//            paper_size, paper_size_data, scale, scale_data, blank_background,
+//            res_label1, res_label2, res_x, res_y, button_preview,
+            monochrome, invert;
     Atom delw;
 
     if (!print_properties_dialog) {
@@ -3151,13 +3153,14 @@ begin_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" 
 
 
         form =  XtVaCreateWidget("Print_properties form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 3,
+                            XmNfractionBase, 2,
                             XmNbackground, colors[0xff],
                             XmNautoUnmanage, FALSE,
                             XmNshadowThickness, 1,
                             NULL);
 
 
+/*
         paper_size = XtVaCreateManagedWidget(langcode("PRINT0002"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 10,
@@ -3191,12 +3194,15 @@ XtSetSensitive(paper_size,FALSE);
                                       XmNtraversalOn, TRUE,
                                       NULL);
 XtSetSensitive(paper_size_data,FALSE);
+*/
 
 
         auto_rotate  = XtVaCreateManagedWidget(langcode("PRINT0003"),xmToggleButtonWidgetClass,form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, paper_size_data,
-                                      XmNtopOffset, 5,
+//                                      XmNtopAttachment, XmATTACH_WIDGET,
+//                                      XmNtopWidget, paper_size_data,
+//                                      XmNtopOffset, 5,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 10,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
                                       XmNleftOffset ,10,
@@ -3209,14 +3215,17 @@ XtAddCallback(auto_rotate,XmNvalueChangedCallback,Auto_rotate,"1");
 
 
         rotate_90  = XtVaCreateManagedWidget(langcode("PRINT0004"),xmToggleButtonWidgetClass,form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, paper_size_data,
-                                      XmNtopOffset, 5,
+//                                      XmNtopAttachment, XmATTACH_WIDGET,
+//                                      XmNtopWidget, paper_size_data,
+//                                      XmNtopOffset, 5,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 10,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, auto_rotate,
                                       XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNrightAttachment, XmATTACH_FORM,
+                                      XmNrightOffset, 10,
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
@@ -3239,6 +3248,7 @@ XtAddCallback(rotate_90,XmNvalueChangedCallback,Rotate_90,"1");
 XtAddCallback(auto_scale,XmNvalueChangedCallback,Auto_scale,"1");
 
 
+/*
         scale = XtVaCreateManagedWidget(langcode("PRINT0006"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, auto_rotate,
@@ -3275,11 +3285,14 @@ XtSetSensitive(scale,FALSE);
                                       XmNtraversalOn, TRUE,
                                       NULL);
 XtSetSensitive(scale_data,FALSE);
+*/
 
 
+/*
         blank_background = XtVaCreateManagedWidget(langcode("PRINT0007"),xmToggleButtonWidgetClass,form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, scale_data,
+                                      XmNtopWidget, auto_rotate,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -3290,11 +3303,13 @@ XtSetSensitive(scale_data,FALSE);
                                       XmNtraversalOn, TRUE,
                                       NULL);
 XtSetSensitive(blank_background,FALSE);
+*/
 
 
         monochrome = XtVaCreateManagedWidget(langcode("PRINT0008"),xmToggleButtonWidgetClass,form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, blank_background,
+//                                      XmNtopWidget, blank_background,
+                                      XmNtopWidget, auto_scale,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -3322,6 +3337,7 @@ XtAddCallback(monochrome,XmNvalueChangedCallback,Monochrome,"1");
 XtAddCallback(invert,XmNvalueChangedCallback,Invert,"1");
 
 
+/*
         res_label1 = XtVaCreateManagedWidget(langcode("PRINT0009"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, invert,
@@ -3394,12 +3410,14 @@ XtSetSensitive(res_label2,FALSE);
                                       XmNtraversalOn, TRUE,
                                       NULL);
 XtSetSensitive(res_y,FALSE);
+*/
 
 
         sep = XtVaCreateManagedWidget("Print_properties sep", xmSeparatorGadgetClass,form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, res_y,
+//                                      XmNtopWidget, res_y,
+                                      XmNtopWidget, invert,
                                       XmNtopOffset, 10,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -3408,6 +3426,7 @@ XtSetSensitive(res_y,FALSE);
                                       NULL);
 
 
+/*
         button_preview = XtVaCreateManagedWidget(langcode("PRINT0010"),xmPushButtonGadgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
@@ -3425,19 +3444,21 @@ XtSetSensitive(res_y,FALSE);
                                       XmNtraversalOn, TRUE,
                                       NULL);
 XtSetSensitive(button_preview,FALSE);
+*/
 
 
-        button_ok = XtVaCreateManagedWidget(langcode("PRINT0011"),xmPushButtonGadgetClass, form,
+//        button_ok = XtVaCreateManagedWidget(langcode("PRINT0011"),xmPushButtonGadgetClass, form,
+        button_ok = XtVaCreateManagedWidget(langcode("PRINT0010"),xmPushButtonGadgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, sep,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_FORM,
                                       XmNbottomOffset, 5,
                                       XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 1,
+                                      XmNleftPosition, 0,
                                       XmNleftOffset, 3,
                                       XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
+                                      XmNrightPosition, 1,
                                       XmNrightOffset, 2,
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
@@ -3452,10 +3473,10 @@ XtSetSensitive(button_preview,FALSE);
                                       XmNbottomAttachment, XmATTACH_FORM,
                                       XmNbottomOffset, 5,
                                       XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
+                                      XmNleftPosition, 1,
                                       XmNleftOffset, 3,
                                       XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 3,
+                                      XmNrightPosition, 2,
                                       XmNrightOffset, 5,
                                       XmNbackground, colors[0xff],
                                       XmNnavigationType, XmTAB_GROUP,
@@ -3463,7 +3484,7 @@ XtSetSensitive(button_preview,FALSE);
                                       NULL);
 
 
-        XtAddCallback(button_preview, XmNactivateCallback, Print_window, "1" );
+//        XtAddCallback(button_preview, XmNactivateCallback, Print_window, "1" );
         XtAddCallback(button_ok, XmNactivateCallback, Print_window, "0" );
         XtAddCallback(button_cancel, XmNactivateCallback, Print_properties_destroy_shell, print_properties_dialog);
 
@@ -3502,7 +3523,7 @@ XtSetSensitive(button_preview,FALSE);
             XmToggleButtonSetState(auto_scale, FALSE, TRUE);
  
 
-        XmTextFieldSetString(paper_size_data,print_paper_size);
+//        XmTextFieldSetString(paper_size_data,print_paper_size);
 
 
 end_critical_section(&print_properties_dialog_lock, "maps.c:Print_properties" );
