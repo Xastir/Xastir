@@ -337,6 +337,8 @@ typedef struct _DataRow {
     char power_gain[MAX_POWERGAIN+1];   // Holds the phgd values
     char signal_gain[MAX_POWERGAIN+1];  // Holds the shgd values (for DF'ing)
     char signpost[5+1];                 // Holds signpost data
+    char probability_min[10+1];         // Holds prob_min (miles)
+    char probability_max[10+1];         // Holds prob_max (miles)
     char station_time[MAX_STATION_TIME];
     char station_time_type;
     char sats_visible[MAX_SAT];

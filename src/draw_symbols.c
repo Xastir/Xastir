@@ -1827,7 +1827,7 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
 void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overlay, long x_long,long y_lat,
         char *callsign_text, char *alt_text, char *course_text, char *speed_text, char *my_distance,
         char *my_course, char *wx_temp, char* wx_wind, time_t sec_heard, int temp_show_last_heard,
-        Pixmap where, char orient, char area_type, char *signpost) {
+        Pixmap where, char orient, char area_type, char *signpost, char *pmin, char *pmax) {
 
     long x_offset,y_offset;
     int length;
@@ -1990,6 +1990,25 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
                         draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
                     }
+
+                    // Draw min proximity circle?
+                    if (pmin[0] != '\0') {
+                        double range = atof(pmin);
+                        // Draw red circle
+                        draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
+                    }
+
+                    // Draw max proximity circle?
+                    if (pmax[0] != '\0') {
+                        double range = atof(pmax);
+                        // Draw red circle
+                        draw_pod_circle(x_long, y_lat, range, colors[0x44], where);
+                    }
+
+// DEBUG STUFF
+//                    draw_pod_circle(x_long, y_lat, 1.5, colors[0x44], where);
+//                    draw_pod_circle(x_long, y_lat, 3.0, colors[0x44], where);
+
                 }
             }
         }
@@ -2617,7 +2636,9 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
             where,
             symbol_orient(p_station->course),
             p_station->aprs_symbol.area_object.type,
-            p_station->signpost);
+            p_station->signpost,
+            "",
+            "");
     }
 }
 

@@ -534,8 +534,10 @@ Widget object_name_data,
        object_group_data, object_symbol_data, object_icon,
        object_comment_data, ob_frame, ob_group, ob_symbol,
        signpost_frame, area_frame, area_toggle, signpost_toggle, df_bearing_toggle,
+       probabilities_toggle,
        ob_bearing_data, frameomni, framebeam,
        ob_speed, ob_speed_data, ob_course, ob_course_data, ob_altitude_data, signpost_data,
+       probability_data_min, probability_data_max,
        open_filled_toggle, ob_lat_offset_data, ob_lon_offset_data,
        ob_corridor, ob_corridor_data, ob_corridor_miles,
        omni_antenna_toggle, beam_antenna_toggle;
@@ -547,6 +549,7 @@ char Area_color[3] = "/0";
 int Area_bright = 0;
 int Area_filled = 0;
 int Signpost_object_enabled = 0;
+int Probability_circles_enabled = 0;
 int DF_object_enabled = 0;
 int Omni_antenna_enabled = 0;
 int Beam_antenna_enabled = 0;
@@ -16589,6 +16592,8 @@ int Setup_object_data(char *line, int line_length) {
     long temp2;
     float temp3;
     char signpost[6];
+    char prob_min[20+1];
+    char prob_max[20+1];
     int bearing;
 
 
@@ -16806,6 +16811,37 @@ int Setup_object_data(char *line, int line_length) {
             altitude);
 
         //fprintf(stderr,"String is: %s\n", line);
+
+    } else if (Probability_circles_enabled) {
+        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
+        //fprintf(stderr,"Probability min circle entered: %s\n", line);
+        if (strlen(line) != 0) {   // Probability circle data was entered
+            xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s", line);
+        } else {  // No data entered, blank it out
+            prob_min[0] = '\0';
+        }
+        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
+        //fprintf(stderr,"Probability max circle entered: %s\n", line);
+        if (strlen(line) != 0) {   // Probability circle data was entered
+            xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s", line);
+        } else {  // No data entered, blank it out
+            prob_max[0] = '\0';
+        }
+ 
+        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s%s%s",
+            last_object,
+            time,
+            lat_str,
+            last_obj_grp,
+            lon_str,
+            last_obj_sym,
+            speed_course,
+            altitude,
+            prob_min,
+            prob_max);
+ 
+        //fprintf(stderr,"String is: %s\n", line);
+
     } else if (Signpost_object_enabled) {
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(signpost_data));
         //fprintf(stderr,"Signpost entered: %s\n", line);
@@ -16967,6 +17003,8 @@ int Setup_item_data(char *line, int line_length) {
     float temp3;
     char tempstr[MAX_CALLSIGN+1];
     char signpost[6];
+    char prob_min[20+1];
+    char prob_max[20+1];
     int bearing;
 
 
@@ -17177,6 +17215,36 @@ int Setup_item_data(char *line, int line_length) {
             speed_course,
             complete_corridor,
             altitude);
+
+    } else if (Probability_circles_enabled) {
+        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
+        //fprintf(stderr,"Probability min circle entered: %s\n",
+        //line);
+        if (strlen(line) != 0) {   // Probability circle data was entered
+            xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s", line);
+        } else {  // No data entered, blank it out
+            prob_min[0] = '\0';
+        }
+        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
+        //fprintf(stderr,"Probability max circle entered: %s\n",
+        //line);
+        if (strlen(line) != 0) {   // Probability circle data was entered
+            xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s", line);
+        } else {  // No data entered, blank it out
+            prob_max[0] = '\0';
+        }
+
+        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s%s%s",
+            last_object,
+            lat_str,
+            last_obj_grp,
+            lon_str,
+            last_obj_sym,
+            speed_course,
+            altitude,
+            prob_min,
+            prob_max);
+
     } else if (Signpost_object_enabled) {
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(signpost_data));
         //fprintf(stderr,"Signpost entered: %s\n", line);
@@ -17485,7 +17553,7 @@ void updateObjectPictureCallback(/*@unused@*/ Widget w, /*@unused@*/ XtPointer c
 
 
 // Handler for "Signpost" toggle button
-void  Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
     char temp_data[40];
  
@@ -17493,6 +17561,7 @@ void  Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
         Signpost_object_enabled = 1;
         Area_object_enabled = 0;
         DF_object_enabled = 0;
+        Probability_circles_enabled = 0;
 
         //fprintf(stderr,"Signpost Objects are ENABLED\n");
 
@@ -17502,6 +17571,7 @@ void  Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
 
         XmToggleButtonSetState(area_toggle, FALSE, FALSE);
         XmToggleButtonSetState(df_bearing_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(probabilities_toggle, FALSE, FALSE);
 
         temp_data[0] = '\\';
         temp_data[1] = '\0';
@@ -17545,6 +17615,69 @@ void  Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
 
 
 
+// Handler for "Probability Circles" toggle button
+void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+    char temp_data[40];
+ 
+    if(state->set) {
+        Signpost_object_enabled = 0;
+        Area_object_enabled = 0;
+        DF_object_enabled = 0;
+        Probability_circles_enabled = 1;
+
+        //fprintf(stderr,"Probability Circles are ENABLED\n");
+
+        // Call Set_Del_Object again, causing it to redraw with the new options.
+        //Set_Del_Object( widget, clientData, callData );
+        Set_Del_Object( widget, global_parameter1, global_parameter2 );
+
+        XmToggleButtonSetState(area_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(df_bearing_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(signpost_toggle, FALSE, FALSE);
+
+        // Set to hiker symbol by default, but can be changed by
+        // user to something else.
+        temp_data[0] = '/';
+        temp_data[1] = '\0';
+        XmTextFieldSetString(object_group_data,temp_data);
+
+        temp_data[0] = '[';
+        temp_data[1] = '\0';
+        XmTextFieldSetString(object_symbol_data,temp_data);
+
+        // update symbol picture
+        (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
+   }
+    else {
+        Probability_circles_enabled = 0;
+
+        //fprintf(stderr,"Signpost Objects are DISABLED\n");
+
+        // Call Set_Del_Object again, causing it to redraw with the new options.
+        //Set_Del_Object( widget, clientData, callData );
+        Set_Del_Object( widget, global_parameter1, global_parameter2 );
+
+
+        temp_data[0] = '\\';
+        temp_data[1] = '\0';
+        XmTextFieldSetString(object_group_data,temp_data);
+
+        temp_data[0] = '!';
+        temp_data[1] = '\0';
+        XmTextFieldSetString(object_symbol_data,temp_data);
+
+        XtSetSensitive(ob_frame,TRUE);
+
+        // update symbol picture
+        (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
+  }
+}
+
+
+
+
+
 // Handler for "Enable Area Type" toggle button
 void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
@@ -17554,6 +17687,7 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
         Area_object_enabled = 1;
         Signpost_object_enabled = 0;
         DF_object_enabled = 0;
+        Probability_circles_enabled = 0;
 
         //fprintf(stderr,"Area Objects are ENABLED\n");
 
@@ -17564,6 +17698,8 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 
         XmToggleButtonSetState(signpost_toggle, FALSE, FALSE);
         XmToggleButtonSetState(df_bearing_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(probabilities_toggle, FALSE, FALSE);
+
         XtSetSensitive(ob_speed,FALSE);
         XtSetSensitive(ob_speed_data,FALSE);
         XtSetSensitive(ob_course,FALSE);
@@ -17625,6 +17761,7 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         Area_object_enabled = 0;
         Signpost_object_enabled = 0;
         DF_object_enabled = 1;
+        Probability_circles_enabled = 0;
 
         //fprintf(stderr,"DF Objects are ENABLED\n");
 
@@ -17635,6 +17772,8 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 
         XmToggleButtonSetState(signpost_toggle, FALSE, FALSE);
         XmToggleButtonSetState(area_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(probabilities_toggle, FALSE, FALSE);
+
         XtSetSensitive(ob_speed,TRUE);
         XtSetSensitive(ob_speed_data,TRUE);
         XtSetSensitive(ob_course,TRUE);
@@ -17951,6 +18090,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 ob_form1, ob_ts,
                 signpost_form,signpost_ts,
                 signpost_label,
+                probability_frame,probability_form,probability_ts,
+                probability_label_min, probability_label_max,
                 ob_option_frame,ob_option_ts,ob_option_form,
                 ob_altitude,
                 ob_comment, area_ts, area_form,
@@ -17966,7 +18107,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 width_box,woption0,woption1,woption2,woption3,woption4,woption5,woption6,woption7,woption8,woption9,
                 ob_bearing,
                 ob_lat_offset,ob_lon_offset,
-                ob_sep, ob_sep2, ob_button_set, ob_button_del,ob_button_cancel,it_button_set,
+                ob_sep, ob_button_set, ob_button_del,ob_button_cancel,it_button_set,
                 ob_button_symbol,
                 compute_button;
     char temp_data[40];
@@ -18062,6 +18203,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         Area_object_enabled = 0;
         Signpost_object_enabled = 0;
         DF_object_enabled = 0;
+        Probability_circles_enabled = 0;
  
         if (p_station->aprs_symbol.area_object.type != AREA_NONE) { // Found an area object
             Area_object_enabled = 1;
@@ -18076,6 +18218,10 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                     || (strlen(p_station->bearing) == 3)
                     || (strlen(p_station->NRQ) == 3) ) ) {
             DF_object_enabled = 1;
+        }
+        else if (p_station->probability_min[0] != '\0'      // Found some data
+                || p_station->probability_max[0] != '\0') { // Found some data
+            Probability_circles_enabled = 1;
         }
     }
 
@@ -18709,8 +18855,45 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 NULL);
 
 
-        // "Signpost Enable"
-        signpost_toggle = XtVaCreateManagedWidget(langcode("POPUPOB029"),
+//----- Comment Field
+        // "Comment:"
+        ob_comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),
+                xmLabelWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_option_frame,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        object_comment_data = XtVaCreateManagedWidget("Set_Del_Object comment", 
+                xmTextFieldWidgetClass, 
+                ob_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 43,     // max 43 without Data Extension
+                XmNmaxLength,               43,
+                XmNtopOffset,               6,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_comment,
+                XmNleftOffset,              5,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_option_frame,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
+
+
+        // "Probability Circles Enable"
+        probabilities_toggle = XtVaCreateManagedWidget("Probability Circles",
                 xmToggleButtonGadgetClass,
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
@@ -18725,10 +18908,28 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        XtAddCallback(probabilities_toggle,XmNvalueChangedCallback,Probability_circle_toggle,(XtPointer)p_station);
+
+ 
+        // "Signpost Enable"
+        signpost_toggle = XtVaCreateManagedWidget(langcode("POPUPOB029"),
+                xmToggleButtonGadgetClass,
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               probabilities_toggle,
+                XmNtopOffset,               0,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNbottomOffset,            0,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_option_frame,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(signpost_toggle,XmNvalueChangedCallback,Signpost_object_toggle,(XtPointer)p_station);
 
 
- 
         // "Area Enable"
         area_toggle = XtVaCreateManagedWidget(langcode("POPUPOB008"),
                 xmToggleButtonGadgetClass,
@@ -18769,8 +18970,137 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
 
 
 
+//----- Frame for Probability Circles info
+if (Probability_circles_enabled) {
+
+        //fprintf(stderr,"Drawing probability circle data\n");
+
+        probability_frame = XtVaCreateManagedWidget("Set_Del_Object probability_frame", 
+                xmFrameWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               df_bearing_toggle,
+                XmNtopOffset,               0,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // "Probability Circles"
+
+// Change this to langcode format later
+
+        probability_ts  = XtVaCreateManagedWidget("Probability Circles",
+                xmLabelWidgetClass,
+                probability_frame,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        probability_form =  XtVaCreateWidget("Set_Del_Object probability_form",
+                xmFormWidgetClass, 
+                probability_frame,
+                XmNfractionBase,            5,
+                XmNautoUnmanage,            FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        // "Probability Data"
+
+// Change this to langcode format later
+
+        probability_label_min = XtVaCreateManagedWidget("Min (mi):",
+                xmLabelWidgetClass, 
+                probability_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        probability_data_min = XtVaCreateManagedWidget("Set_Del_Object probability_data_min", 
+                xmTextFieldWidgetClass, 
+                probability_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 10,
+                XmNmaxLength,               10,
+                XmNtopOffset,               3,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              probability_label_min,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
+
+        probability_label_max = XtVaCreateManagedWidget("Max (mi):",
+                xmLabelWidgetClass, 
+                probability_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               probability_label_min,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        probability_data_max = XtVaCreateManagedWidget("Set_Del_Object probability_data_max", 
+                xmTextFieldWidgetClass, 
+                probability_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 10,
+                XmNmaxLength,               10,
+                XmNtopOffset,               3,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              probability_label_max,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               probability_label_min,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
+
+
+
+        ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", 
+                xmSeparatorGadgetClass,
+                ob_form,
+                XmNorientation,             XmHORIZONTAL,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               probability_frame,
+                XmNtopOffset,               14,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+}
+
+
+
 //----- Frame for signpost info
-if (Signpost_object_enabled) {
+else if (Signpost_object_enabled) {
 
         //fprintf(stderr,"Drawing signpost data\n");
 
@@ -18778,8 +19108,8 @@ if (Signpost_object_enabled) {
                 xmFrameWidgetClass, 
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               ob_option_frame,
-                XmNtopOffset,               10,
+                XmNtopWidget,               df_bearing_toggle,
+                XmNtopOffset,               0,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNleftAttachment,          XmATTACH_FORM,
                 XmNleftOffset,              10,
@@ -18866,8 +19196,8 @@ else if (Area_object_enabled) {
                 xmFrameWidgetClass, 
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               ob_option_frame,
-                XmNtopOffset,               10,
+                XmNtopWidget,               df_bearing_toggle,
+                XmNtopOffset,               0,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNleftAttachment,          XmATTACH_FORM,
                 XmNleftOffset,              10,
@@ -19289,8 +19619,8 @@ else if (DF_object_enabled) {
                 xmFrameWidgetClass, 
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               ob_option_frame,
-                XmNtopOffset,               10,
+                XmNtopWidget,               df_bearing_toggle,
+                XmNtopOffset,               0,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNleftAttachment,          XmATTACH_FORM,
                 XmNleftOffset,              10,
@@ -19962,7 +20292,10 @@ else if (DF_object_enabled) {
 
 
 //----- No Special options selected.  We need a widget here for the next widget to attach to.
-        if (!DF_object_enabled && !Area_object_enabled && !Signpost_object_enabled) {
+        if (!DF_object_enabled
+                && !Area_object_enabled
+                && !Signpost_object_enabled
+                && !Probability_circles_enabled) {
 
             //fprintf(stderr,"No special object types\n");
 
@@ -19971,8 +20304,8 @@ else if (DF_object_enabled) {
                     ob_form,
                     XmNorientation,             XmHORIZONTAL,
                     XmNtopAttachment,           XmATTACH_WIDGET,
-                    XmNtopWidget,               ob_option_frame,
-                    XmNtopOffset,               14,
+                    XmNtopWidget,               df_bearing_toggle,
+                    XmNtopOffset,               0,
                     XmNbottomAttachment,        XmATTACH_NONE,
                     XmNleftAttachment,          XmATTACH_FORM,
                     XmNrightAttachment,         XmATTACH_FORM,
@@ -19982,57 +20315,6 @@ else if (DF_object_enabled) {
         }
 
 
-
-//----- Comment Field
-        // "Comment:"
-        ob_comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),
-                xmLabelWidgetClass, 
-                ob_form,
-                XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               ob_sep,
-                XmNtopOffset,               10,
-                XmNbottomAttachment,        XmATTACH_NONE,
-                XmNleftAttachment,          XmATTACH_FORM,
-                XmNleftOffset,              10,
-                XmNrightAttachment,         XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
-        object_comment_data = XtVaCreateManagedWidget("Set_Del_Object comment", 
-                xmTextFieldWidgetClass, 
-                ob_form,
-                XmNeditable,                TRUE,
-                XmNcursorPositionVisible,   TRUE,
-                XmNsensitive,               TRUE,
-                XmNshadowThickness,         1,
-                XmNcolumns,                 43,     // max 43 without Data Extension
-                XmNmaxLength,               43,
-                XmNtopOffset,               6,
-                XmNbackground,              colors[0x0f],
-                XmNleftAttachment,          XmATTACH_WIDGET,
-                XmNleftWidget,              ob_comment,
-                XmNleftOffset,              5,
-                XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               ob_sep,
-                XmNbottomAttachment,        XmATTACH_NONE,
-                XmNrightAttachment,         XmATTACH_NONE,
-                NULL);
-
-
-        ob_sep2 = XtVaCreateManagedWidget("Set_Del_Object ob_sep2", 
-                xmSeparatorGadgetClass,
-                ob_form,
-                XmNorientation,             XmHORIZONTAL,
-                XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               ob_comment,
-                XmNtopOffset,               14,
-                XmNbottomAttachment,        XmATTACH_NONE,
-                XmNleftAttachment,          XmATTACH_FORM,
-                XmNrightAttachment,         XmATTACH_FORM,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
 
 //----- Buttons
         if (p_station != NULL) {  // We were called from the Modify_object() or Move function
@@ -20044,7 +20326,7 @@ else if (DF_object_enabled) {
                         xmPushButtonGadgetClass, 
                         ob_form,
                         XmNtopAttachment,           XmATTACH_WIDGET,
-                        XmNtopWidget,               ob_sep2,
+                        XmNtopWidget,               ob_sep,
                         XmNtopOffset,               5,
                         XmNbottomAttachment,        XmATTACH_FORM,
                         XmNbottomOffset,            5,
@@ -20061,7 +20343,7 @@ else if (DF_object_enabled) {
                         xmPushButtonGadgetClass, 
                         ob_form,
                         XmNtopAttachment,           XmATTACH_WIDGET,
-                        XmNtopWidget,               ob_sep2,
+                        XmNtopWidget,               ob_sep,
                         XmNtopOffset,               5,
                         XmNbottomAttachment,        XmATTACH_FORM,
                         XmNbottomOffset,            5,
@@ -20082,7 +20364,7 @@ else if (DF_object_enabled) {
                         xmPushButtonGadgetClass, 
                         ob_form,
                         XmNtopAttachment,           XmATTACH_WIDGET,
-                        XmNtopWidget,               ob_sep2,
+                        XmNtopWidget,               ob_sep,
                         XmNtopOffset,               5,
                         XmNbottomAttachment,        XmATTACH_FORM,
                         XmNbottomOffset,            5,
@@ -20099,7 +20381,7 @@ else if (DF_object_enabled) {
                         xmPushButtonGadgetClass, 
                         ob_form,
                         XmNtopAttachment,           XmATTACH_WIDGET,
-                        XmNtopWidget,               ob_sep2,
+                        XmNtopWidget,               ob_sep,
                         XmNtopOffset,               5,
                         XmNbottomAttachment,        XmATTACH_FORM,
                         XmNbottomOffset,            5,
@@ -20118,7 +20400,7 @@ else if (DF_object_enabled) {
         else {  // We were called from Create->Object mouse menu
             ob_button_set = XtVaCreateManagedWidget(langcode("POPUPOB003"),xmPushButtonGadgetClass, ob_form,
                     XmNtopAttachment,           XmATTACH_WIDGET,
-                    XmNtopWidget,               ob_sep2,
+                    XmNtopWidget,               ob_sep,
                     XmNtopOffset,               5,
                     XmNbottomAttachment,        XmATTACH_FORM,
                     XmNbottomOffset,            5,
@@ -20133,7 +20415,7 @@ else if (DF_object_enabled) {
 
             it_button_set = XtVaCreateManagedWidget(langcode("POPUPOB006"),xmPushButtonGadgetClass, ob_form,
                     XmNtopAttachment,           XmATTACH_WIDGET,
-                    XmNtopWidget,               ob_sep2,
+                    XmNtopWidget,               ob_sep,
                     XmNtopOffset,               5,
                     XmNbottomAttachment,        XmATTACH_FORM,
                     XmNbottomOffset,            5,
@@ -20152,7 +20434,7 @@ else if (DF_object_enabled) {
         
         ob_button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               ob_sep2,
+                XmNtopWidget,               ob_sep,
                 XmNtopOffset,               5,
                 XmNbottomAttachment,        XmATTACH_FORM,
                 XmNbottomOffset,            5,
@@ -20175,6 +20457,8 @@ else if (DF_object_enabled) {
             XmToggleButtonSetState(signpost_toggle, TRUE, FALSE);
         if (DF_object_enabled)
             XmToggleButtonSetState(df_bearing_toggle, TRUE, FALSE);
+        if (Probability_circles_enabled)
+            XmToggleButtonSetState(probabilities_toggle, TRUE, FALSE);
 
 
 // Fill in current data if object already exists
@@ -20185,6 +20469,7 @@ else if (DF_object_enabled) {
             XtSetSensitive(area_toggle, FALSE);
             XtSetSensitive(signpost_toggle, FALSE);
             XtSetSensitive(df_bearing_toggle, FALSE);
+            XtSetSensitive(probabilities_toggle, FALSE);
 
             XmTextFieldSetString(object_name_data,p_station->call_sign);
             // Need to make the above field non-editable 'cuz we're trying to modify
@@ -20361,7 +20646,7 @@ if (Area_object_enabled) {
 
             }   // Done with filling in Area Objects
 
-            else {  // Signpost or Normal Object
+            else {  // Signpost/Probability/Normal Object
 
                 // Handle Generic Options (common to Signpost/Normal Objects)
                 if (strlen(p_station->speed) != 0) {
@@ -20383,9 +20668,17 @@ if (Area_object_enabled) {
                 if (Signpost_object_enabled) {
                     XtSetSensitive(ob_frame,FALSE);
                     XtSetSensitive(signpost_frame,TRUE);
-                    Signpost_object_enabled = 1;
                     XmTextFieldSetString( signpost_data, p_station->signpost);
                 }   // Done with filling in Signpost Objects
+
+
+                if (Probability_circles_enabled) {
+                    // Fetch the min/max fields from the object data and
+                    // write that data into the input fields.
+                    XmTextFieldSetString( probability_data_min, p_station->probability_min );
+                    XmTextFieldSetString( probability_data_max, p_station->probability_max );
+                }
+
 
 //                else if ( (p_station->aprs_symbol.aprs_type == '/') // Found a DF object
 //                        && (p_station->aprs_symbol.aprs_symbol == '\\' )) {
@@ -20628,6 +20921,18 @@ if (Area_object_enabled) {
                 XmTextFieldSetString( signpost_data, "" );
 
                 XtSetSensitive(ob_frame,FALSE);
+
+
+} else if (Probability_circles_enabled) {
+
+                // Fetch the min/max fields from the object data and
+                // write that data into the input fields.
+
+// Fix this!
+                XmTextFieldSetString( probability_data_min, "" );
+                XmTextFieldSetString( probability_data_max, "" );
+
+
             } else if (DF_object_enabled) {
                 temp_data[0] = '/';
                 temp_data[1] = '\0';
@@ -20727,6 +21032,8 @@ if (Area_object_enabled) {
 
         if (Signpost_object_enabled) {
             XtManageChild(signpost_form);
+        } else if (Probability_circles_enabled) {
+            XtManageChild(probability_form);
         } else if (Area_object_enabled) {
             XtManageChild(shape_box);
             XtManageChild(color_box);
