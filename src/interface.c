@@ -4602,7 +4602,7 @@ int net_init(int port) {
 
                     /* update display while waiting */
                     // XmUpdateDisplay(XtParent(da));
-                    usleep(20000);      // 20mS
+                    usleep(250000);      // 250mS
                     //sched_yield();    // Too fast!
                 }
 
