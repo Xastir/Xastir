@@ -345,6 +345,24 @@ First Time Install:
      Must run ldconfig as root for the system to be able to re-create its
      cache file.
 
+     For MacOSX:  Bill Owen, N2RKL, suggested the following for
+     ShapeLib:
+
+       "The shapelib Makefile wouldn't work out of the box, so I
+       figured out what the important bits were and built them by
+       hand:"
+
+       -----------------------------------------------
+         cc -c shpopen.c
+         cc -c shptree.c
+         cc -c dbfopen.c
+         ar cru libshp.a shpopen.o shptree.o dbfopen.o
+         sudo cp libshp.a /sw/lib
+         sudo ranlib /sw/lib/libshp.a
+         sudo mkdir /sw/include/libshp
+         sudo cp shapefil.h /sw/include/libshp/
+       -----------------------------------------------
+
 
    5. OPTIONAL:  Install ImageMagick graphics support.  Allows using more than
      68 different graphics format files as maps, by creating an associated .geo
