@@ -750,8 +750,8 @@ void Position_calculator(Widget w, XtPointer clientData, XtPointer callData) {
     char temp_string[10];
 
     if (!position_calculator_dialog) {
-//        position_calculator_dialog = XtVaCreatePopupShell(langcode("PULDNFI007"),xmDialogShellWidgetClass,Global.top,
-        position_calculator_dialog = XtVaCreatePopupShell("Coordinate Calc",xmDialogShellWidgetClass,Global.top,
+//        position_calculator_dialog = XtVaCreatePopupShell(langcode("Calc"),xmDialogShellWidgetClass,Global.top,
+        position_calculator_dialog = XtVaCreatePopupShell(langcode("Coordinate Calc"),xmDialogShellWidgetClass,Global.top,
                                     XmNdeleteResponse,XmDESTROY,
                                     XmNdefaultPosition, FALSE,
                                     NULL);
@@ -2080,12 +2080,12 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                                     XmNsubMenuId, Map_station_label_Pane,XmNmnemonic,langcode_hotkey("PULDNMP006"),
                                     XmNbackground,colors[0xff],NULL);
     map_station_label0 = XtVaCreateManagedWidget(langcode("PULDNMSL01"),xmPushButtonGadgetClass,Map_station_label_Pane,
-                                XmNmnemonic,langcode_hotkey("PULDNSLC01"),XmNbackground,colors[0xff],NULL);
+                              XmNmnemonic,langcode_hotkey("PULDNMSL01"),XmNbackground,colors[0xff],NULL);
     map_station_label1 = XtVaCreateManagedWidget(langcode("PULDNMSL02"),xmPushButtonGadgetClass,Map_station_label_Pane,
-                                XmNmnemonic,langcode_hotkey("PULDNMSL02"),XmNbackground,colors[0xff],NULL);
+                              XmNmnemonic,langcode_hotkey("PULDNMSL02"),XmNbackground,colors[0xff],NULL);
 //WE7U4
     map_station_label2 = XtVaCreateManagedWidget(langcode("PULDNMSL03"),xmPushButtonGadgetClass,Map_station_label_Pane,
-                                XmNmnemonic,langcode_hotkey("PULDNMSL03"),XmNbackground,colors[0xff],NULL);
+                              XmNmnemonic,langcode_hotkey("PULDNMSL03"),XmNbackground,colors[0xff],NULL);
     sel3_switch(letter_style,map_station_label2,map_station_label1,map_station_label0);
     XtAddCallback(map_station_label0,   XmNactivateCallback,Map_station_label,"0");
     XtAddCallback(map_station_label1,   XmNactivateCallback,Map_station_label,"1");
