@@ -10603,8 +10603,12 @@ void index_update_directory(char *directory) {
                 temp_record->next = current;
                 //printf("Inserting before current\n");
             }
+
             //printf("Adding:%d:%s\n",strlen(directory),directory);
-        
+ 
+            // Fill in some default values for the new record.
+            temp_record->selected = 0;
+
             //current = current->next;
             done++;
         }
@@ -10630,6 +10634,9 @@ void index_update_directory(char *directory) {
         }
 
         //printf("Adding:%d:%s\n",strlen(directory),directory);
+ 
+        // Fill in some default values for the new record.
+        temp_record->selected = 0;
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -10645,8 +10652,8 @@ void index_update_directory(char *directory) {
     temp_record->left = 0;
     temp_record->right = 0;
     temp_record->accessed = 1;
-    temp_record->map_layer = 0;     // Default.  Not used for directories though.
-    temp_record->draw_filled = 0;   // Default.  Not used for directories though.
+    temp_record->map_layer = 0;
+    temp_record->draw_filled = 0;
 }
 
 
@@ -10723,7 +10730,13 @@ void index_update_xastir(char *filename,
                 temp_record->next = current;
                 //printf("Inserting before current\n");
             }
+
             //printf("Adding:%d:%s\n",strlen(filename),filename);
+
+            // Fill in some default values for the new record
+            temp_record->map_layer = 0;
+            temp_record->draw_filled = 0;
+            temp_record->selected = 0;
         
             //current = current->next;
             done++;
@@ -10750,6 +10763,11 @@ void index_update_xastir(char *filename,
         }
 
         //printf("Adding:%d:%s\n",strlen(filename),filename);
+
+        // Fill in some default values for the new record
+        temp_record->map_layer = 0;
+        temp_record->draw_filled = 0;
+        temp_record->selected = 0;
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -10765,8 +10783,6 @@ void index_update_xastir(char *filename,
     temp_record->left = left;
     temp_record->right = right;
     temp_record->accessed = 1;
-    temp_record->map_layer = 0;     // Default
-    temp_record->draw_filled = 0;   // Default
 }
 
 
@@ -10848,8 +10864,14 @@ void index_update_ll(char *filename,
                 temp_record->next = current;
                 //printf("Inserting before current\n");
             }
+
             //printf("Adding:%d:%s\n",strlen(filename),filename);
 
+            // Fill in some default values for the new record
+            temp_record->map_layer = 0;
+            temp_record->draw_filled = 0;
+            temp_record->selected = 0;
+ 
             //current = current->next;
             done++;
         }
@@ -10877,6 +10899,11 @@ void index_update_ll(char *filename,
         }
 
         //printf("Adding:%d:%s\n",strlen(filename),filename);
+
+        // Fill in some default values for the new record
+        temp_record->map_layer = 0;
+        temp_record->draw_filled = 0;
+        temp_record->selected = 0;
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -10910,8 +10937,6 @@ void index_update_ll(char *filename,
     temp_record->left = temp_left;
     temp_record->right = temp_right;
     temp_record->accessed = 1;
-    temp_record->map_layer = 0;     // Default
-    temp_record->draw_filled = 0;   // Default
 }
 
 
