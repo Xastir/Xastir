@@ -1120,6 +1120,11 @@ Getting Data Files for Xastir:
      After I started removing the index file between restarts during
      the testing, it was working as Curt had described."
 
+     Be wary of DRG-E or DOQQ files that are compressed with MrSID
+     compression.  That is a proprietary compression format for
+     which we do not have access to the decoding algorithm.  We
+     cannot use those from within Xastir.
+
 
      Shapefile format maps:
 
