@@ -561,7 +561,21 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
                     case DRAW_TO_PIXMAP:
                         // We must be drawing maps 'cuz this is the pixmap we use for it.
                         if (map_color_fill && draw_filled)
-                            (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, npoints, Nonconvex,CoordModeOrigin);
+
+                            if (npoints >= 3) {
+                                (void)XFillPolygon(XtDisplay(w),
+                                    pixmap,
+                                    gc,
+                                    points,
+                                    npoints,
+                                    Nonconvex,
+                                    CoordModeOrigin);
+                            }
+                            else {
+                                fprintf(stderr,
+                                    "map_plot:Too few points:%d, Skipping XFillPolygon()",
+                                    npoints);
+                            }
                         break;
 
                     case DRAW_TO_PIXMAP_ALERTS:
@@ -570,7 +584,21 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
 
                     case DRAW_TO_PIXMAP_FINAL:
                         // We must be drawing symbols/tracks 'cuz this is the pixmap we use for it.
-                        (void)XFillPolygon (XtDisplay (w), pixmap_final, gc, points, npoints, Nonconvex,CoordModeOrigin);
+
+                        if (npoints >= 3) {
+                            (void)XFillPolygon(XtDisplay(w),
+                                pixmap_final,
+                                gc,
+                                points,
+                                npoints,
+                                Nonconvex,
+                                CoordModeOrigin);
+                        }
+                        else {
+                            fprintf(stderr,
+                                "map_plot:Too few points:%d, Skipping XFillPolygon()",
+                                npoints);
+                        }
                         break;
                     }
 
@@ -3719,9 +3747,16 @@ if (on_screen) {
                                     region[temp_region3] = XCreateRegion();
 
                                     // Draw the hole polygon
-                                    region[temp_region2] = XPolygonRegion(points,
-                                        num_vertices,
-                                        WindingRule);
+                                    if (num_vertices >= 3) {
+                                        region[temp_region2] = XPolygonRegion(points,
+                                            num_vertices,
+                                            WindingRule);
+                                    }
+                                    else {
+                                        fprintf(stderr,
+                                            "draw_shapefile_map:XPolygonRegion with too few vertices:%d\n",
+                                            num_vertices);
+                                    }
 
                                     // Subtract region2 from region1 and
                                     // put the result into region3.
@@ -3903,12 +3938,38 @@ if (on_screen) {
 
                                     if (polygon_hole_flag) {
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[0x0f]); // white
-                                        (void)XFillPolygon(XtDisplay(w), pixmap, gc_temp, points, i, Nonconvex, CoordModeOrigin);
+
+                                        if (i >= 3) {
+                                            (void)XFillPolygon(XtDisplay(w),
+                                                pixmap,
+                                                gc_temp,
+                                                points,
+                                                i,
+                                                Nonconvex,
+                                                CoordModeOrigin);
+                                        }
+                                        else {
+                                            fprintf(stderr,
+                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                                npoints);
+                                        }
                                     }
                                     else {
-                                        (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
+                                        if (i >= 3) {
+                                            (void)XFillPolygon(XtDisplay(w),
+                                                pixmap,
+                                                gc,
+                                                points,
+                                                i,
+                                                Nonconvex,
+                                                CoordModeOrigin);
+                                        }
+                                        else {
+                                            fprintf(stderr,
+                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                                npoints);
+                                        }
                                     }
-
                                 }
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
@@ -3918,10 +3979,37 @@ if (on_screen) {
 
                                     if (polygon_hole_flag) {
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[0x1a]); // Steel Blue
-                                        (void)XFillPolygon(XtDisplay(w), pixmap, gc_temp, points, i, Nonconvex, CoordModeOrigin);
+
+                                        if (i >= 3) {
+                                            (void)XFillPolygon(XtDisplay(w),
+                                                pixmap,
+                                                gc_temp,
+                                                points,
+                                                i,
+                                                Nonconvex,
+                                                CoordModeOrigin);
+                                        }
+                                        else {
+                                            fprintf(stderr,
+                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                                npoints);
+                                        }
                                     }
                                     else {
-                                        (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
+                                        if (i >= 3) {
+                                            (void)XFillPolygon(XtDisplay(w),
+                                                pixmap,
+                                                gc,
+                                                points,
+                                                i,
+                                                Nonconvex,
+                                                CoordModeOrigin);
+                                        }
+                                        else {
+                                            fprintf(stderr,
+                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                                npoints);
+                                        }
                                     }
 
 //                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
@@ -3934,10 +4022,37 @@ if (on_screen) {
 
                                     if (polygon_hole_flag) {
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[0x1a]); // Steel Blue
-                                        (void)XFillPolygon(XtDisplay(w), pixmap, gc_temp, points, i, Nonconvex, CoordModeOrigin);
+
+                                        if (i >= 3) {
+                                            (void)XFillPolygon(XtDisplay(w),
+                                                pixmap,
+                                                gc_temp,
+                                                points,
+                                                i,
+                                                Nonconvex,
+                                                CoordModeOrigin);
+                                        }
+                                        else {
+                                            fprintf(stderr,
+                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                                npoints);
+                                        }
                                     }
                                     else {
-                                        (void)XFillPolygon(XtDisplay(w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
+                                        if (i >= 3) {
+                                            (void)XFillPolygon(XtDisplay(w),
+                                                pixmap,
+                                                gc,
+                                                points,
+                                                i,
+                                                Nonconvex,
+                                                CoordModeOrigin);
+                                        }
+                                        else {
+                                            fprintf(stderr,
+                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                                npoints);
+                                        }
                                     }
 
                                 }
@@ -3948,7 +4063,22 @@ if (on_screen) {
                             else if (weather_alert_flag) {
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
 // We skip the hole/fill thing for these?
-                                (void)XFillPolygon(XtDisplay(w), pixmap_alerts, gc_tint, points, i, Nonconvex, CoordModeOrigin);
+
+                                if (i >= 3) {
+                                    (void)XFillPolygon(XtDisplay(w),
+                                        pixmap_alerts,
+                                        gc_tint,
+                                        points,
+                                        i,
+                                        Nonconvex,
+                                        CoordModeOrigin);
+                                }
+                                else {
+                                    fprintf(stderr,
+                                        "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                        npoints);
+                                }
+
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillSolid);
                                 (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
                             }
@@ -3958,14 +4088,42 @@ if (on_screen) {
                                         (void)XSetForeground(XtDisplay(w), gc_temp, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
                                         (void)XSetForeground(XtDisplay(w), gc_temp, colors[0xff]); // grey
-                                    (void)XFillPolygon(XtDisplay(w), pixmap, gc_temp, points, i, Nonconvex, CoordModeOrigin);
+
+                                    if (i >= 3) {
+                                        (void)XFillPolygon(XtDisplay(w),
+                                            pixmap,
+                                            gc_temp,
+                                            points,
+                                            i,
+                                            Nonconvex,
+                                            CoordModeOrigin);
+                                    }
+                                    else {
+                                        fprintf(stderr,
+                                            "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                            npoints);
+                                    }
                                 }
                                 else {
                                     if (city_flag)
                                         (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
                                         (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
-                                    (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Nonconvex, CoordModeOrigin);
+
+                                    if (i >= 3) {
+                                        (void)XFillPolygon(XtDisplay (w),
+                                            pixmap,
+                                            gc,
+                                            points,
+                                            i,
+                                            Nonconvex,
+                                            CoordModeOrigin);
+                                    }
+                                    else {
+                                        fprintf(stderr,
+                                            "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
+                                            npoints);
+                                    }
                                 }
 
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
