@@ -1403,8 +1403,8 @@ WINDOWS/CYGWIN NOTES:
      At the "make install" step, it'll fail to
      install listgeo and geotifcp because they have a .exe extension on
      Cygwin, which the install script doesn't know about.  Edit the Makefile
-     to add a ".exe" after those to names and try again.  It should complete
-     ok.
+     to add a ".exe" after those two names and try again.  It should
+     complete ok.
 
      "configure" still doesn't find libgeotiff.  Am investigating why.
  
