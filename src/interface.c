@@ -2856,7 +2856,7 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                         fprintf(stderr, "Class: Incident Command System\n");
                     }
                     else if ((etype & 0xff00) == 0xf000) {
-                        // Note:  0xffff Null element is caught in
+                        // Note:  0xffff Null element is caught
                         // before we get to here.
                         fprintf(stderr, "Class: Experimental\n");
                     }
