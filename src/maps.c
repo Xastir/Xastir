@@ -1947,9 +1947,16 @@ void draw_label_text (Widget w, int x, int y, int label_length, int color, char 
 // takes a big chunk of memory each time.  Can you say "memory
 // leak"?
 
-XFontStruct *rotated_label_font=NULL;
-char rotated_label_fontname[MAX_LABEL_FONTNAME];
-static char current_rotated_label_fontname[sizeof(rotated_label_fontname)] = {'\0'};
+#define FONT_TINY 0
+#define FONT_SMALL 1
+#define FONT_MEDIUM 2
+#define FONT_LARGE 3
+#define FONT_HUGE 4
+#define FONT_MAX 5
+
+XFontStruct *rotated_label_font[FONT_MAX]={NULL,NULL,NULL,NULL,NULL};
+char rotated_label_fontname[FONT_MAX][MAX_LABEL_FONTNAME];
+static char current_rotated_label_fontname[FONT_MAX][sizeof(rotated_label_fontname)] = {"","","","",""};
 
 /**********************************************************
  * draw_rotated_label_text()
@@ -1963,24 +1970,24 @@ static char current_rotated_label_fontname[sizeof(rotated_label_fontname)] = {'\
  **********************************************************/
 /* common code used by the two entries --- a result of retrofitting a new
    feature (centered) */
-static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int label_length, int color, char *label_text, int align) {
+static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int label_length, int color, char *label_text, int align, int fontsize) {
 //    XPoint *corner;
 //    int i;
 
     /* see if fontname has changed */
-    if (rotated_label_font && 
-        strcmp(rotated_label_fontname,current_rotated_label_fontname) != 0) {
-        XFreeFont(XtDisplay(w),rotated_label_font);
-        rotated_label_font = NULL;
-        strcpy(current_rotated_label_fontname,rotated_label_fontname);
+    if (rotated_label_font[fontsize] && 
+        strcmp(rotated_label_fontname[fontsize],current_rotated_label_fontname[fontsize]) != 0) {
+        XFreeFont(XtDisplay(w),rotated_label_font[fontsize]);
+        rotated_label_font[fontsize] = NULL;
+        strcpy(current_rotated_label_fontname[fontsize],rotated_label_fontname[fontsize]);
     }
     /* load font */
-    if(!rotated_label_font) {
-        rotated_label_font=(XFontStruct *)XLoadQueryFont(XtDisplay (w),
-                                                rotated_label_fontname);
-        if (rotated_label_font == NULL) {    // Couldn't get the font!!!
+    if(!rotated_label_font[fontsize]) {
+        rotated_label_font[fontsize]=(XFontStruct *)XLoadQueryFont(XtDisplay (w),
+                                                rotated_label_fontname[fontsize]);
+        if (rotated_label_font[fontsize] == NULL) {    // Couldn't get the font!!!
             fprintf(stderr,"draw_rotated_label_text: Couldn't get font %s\n",
-                rotated_label_fontname);
+                rotated_label_fontname[fontsize]);
             return;
         }
     }
@@ -1998,7 +2005,7 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
     //fprintf(stderr,"%0.1f\t%s\n",my_rotation,label_text);
 
     (void)XRotDrawAlignedString(XtDisplay (w),
-                                rotated_label_font,
+                                rotated_label_font[fontsize],
                                 my_rotation,
                                 pixmap,
                                 gc,
@@ -2008,7 +2015,7 @@ static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, 
                                 align);
 }
 
-void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text) {
+void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize) {
     float my_rotation = (float)((-rotation)-90);
 
     if ( ( (my_rotation < -90.0) && (my_rotation > -270.0) )
@@ -2021,7 +2028,8 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
             label_length,                                    
             color,
             label_text,
-            BRIGHT);
+            BRIGHT,
+            fontsize);
     } else {
         (void)draw_rotated_label_text_common(w,
             my_rotation,
@@ -2030,11 +2038,12 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
             label_length,                                    
             color,
             label_text,
-            BLEFT);
+            BLEFT,
+            fontsize);
     }
 }
 
-void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text) {
+void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize) {
     float my_rotation = (float)((-rotation)-90);
 
         (void)draw_rotated_label_text_common(w,
@@ -2044,7 +2053,8 @@ void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_l
             label_length,                                    
             color,
             label_text,
-            BCENTRE);
+            BCENTRE,
+            fontsize);
 }
 
 static void Print_properties_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {

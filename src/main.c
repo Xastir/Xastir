@@ -349,7 +349,7 @@ Widget gamma_adjust_text;
 #endif  // NO_GRAPHICS
 
 Widget map_font_dialog = (Widget)NULL;
-Widget map_font_text;
+Widget map_font_text[FONT_MAX];
 
 
 Widget map_station_label0,map_station_label1,map_station_label2;
@@ -718,7 +718,7 @@ Widget debug_level_text;
 static int sec_last_dr_update = 0;
 
 
-FILE *f_xfontsel_pipe;
+FILE *f_xfontsel_pipe[FONT_MAX];
 int xfontsel_query = 0;
 
 
@@ -3940,49 +3940,55 @@ void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /
 // read the first time and quit.
 //
 void Query_xfontsel_pipe (void) {
-    char xfontsel_font[sizeof(rotated_label_fontname)];
+    char xfontsel_font[FONT_MAX][sizeof(rotated_label_fontname[0])];
     struct timeval tmv;
     fd_set rd;
     int retval;
     int fd;
+    int i;
 
+    for (i = 0; i < FONT_MAX; i++) {
 
-//    if (fgets(xfontsel_font,sizeof(xfontsel_font),f_xfontsel_pipe)) {
+        //    if (fgets(xfontsel_font,sizeof(xfontsel_font),f_xfontsel_pipe)) {
 
-    // Find out the file descriptor associated with our pipe.
-    fd = fileno(f_xfontsel_pipe);
+        // Find out the file descriptor associated with our pipe.
+        if (!f_xfontsel_pipe[i])
+            continue;
+        fd = fileno(f_xfontsel_pipe[i]);
 
-    FD_ZERO(&rd);
-    FD_SET(fd, &rd);
-    tmv.tv_sec = 0;
-    tmv.tv_usec = 1;    // 1 usec
+        FD_ZERO(&rd);
+        FD_SET(fd, &rd);
+        tmv.tv_sec = 0;
+        tmv.tv_usec = 1;    // 1 usec
 
-    // Do a non-blocking check of the read end of the pipe.
-    retval = select(fd+1,&rd,NULL,NULL,&tmv);
+        // Do a non-blocking check of the read end of the pipe.
+        retval = select(fd+1,&rd,NULL,NULL,&tmv);
 
-//fprintf(stderr,"1\n");
+        //fprintf(stderr,"1\n");
 
-    if (retval) {
-        int l = strlen(xfontsel_font);
+        if (retval) {
+            int l = strlen(xfontsel_font[i]);
 
-        // We have something to process.  Wait a bit, then snag the
-        // data.
-        usleep(250000); // 250ms
-
-        fgets(xfontsel_font,sizeof(xfontsel_font),f_xfontsel_pipe);
+            // We have something to process.  Wait a bit, then snag the
+            // data.
+            usleep(250000); // 250ms
+            
+            fgets(xfontsel_font[i],sizeof(xfontsel_font[0]),f_xfontsel_pipe[i]);
  
-        if (xfontsel_font[l-1] == '\n')
-           xfontsel_font[l-1] = '\0';
-        if (map_font_text != NULL) {
-            XmTextSetString(map_font_text, xfontsel_font);
+            if (xfontsel_font[i][l-1] == '\n')
+                xfontsel_font[i][l-1] = '\0';
+            if (map_font_text[i] != NULL) {
+                XmTextSetString(map_font_text[i], xfontsel_font[i]);
+            }
+            pclose(f_xfontsel_pipe[i]);
+            f_xfontsel_pipe[i] = 0;
+            //fprintf(stderr,"Resetting xfontset_query\n");
+            xfontsel_query = 0;
         }
-        pclose(f_xfontsel_pipe);
-//fprintf(stderr,"Resetting xfontset_query\n");
-        xfontsel_query = 0;
-    }
-    else {
-        // Read nothing.  Let UpdateTime() run this function again
-        // shortly.
+        else {
+            // Read nothing.  Let UpdateTime() run this function again
+            // shortly.
+        }
     }
 }
 
@@ -3991,9 +3997,11 @@ void Query_xfontsel_pipe (void) {
 
  
 void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
-
+    int fontsize = (int) clientData;
+    char xfontsel[50];
     /* invoke xfontsel -print and stick into map_font_text */
-    if ((f_xfontsel_pipe = popen("xfontsel -print","r"))) {
+    sprintf(xfontsel,"xfontsel -print -title \"xfontsel %d\"",fontsize);
+    if ((f_xfontsel_pipe[fontsize] = popen(xfontsel,"r"))) {
 
         // Request UpdateTime to keep checking the pipe periodically
         // using non-blocking reads.
@@ -4012,13 +4020,15 @@ void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) 
 void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
     Widget shell = (Widget) clientData;
+    int i;
+    for (i = 0; i < FONT_MAX; i++) {
+        temp = XmTextGetString(map_font_text[i]);
 
-    temp = XmTextGetString(map_font_text);
+        strncpy(rotated_label_fontname[i],temp,sizeof(rotated_label_fontname[0]));
+        XtFree(temp);
+        XmTextSetString(map_font_text[i], rotated_label_fontname[i]);
+    }
 
-    strncpy(rotated_label_fontname,temp,sizeof(rotated_label_fontname));
-    XtFree(temp);
-
-    XmTextSetString(map_font_text, rotated_label_fontname);
     // Set interrupt_drawing_now because conditions have changed
     // (new map center).
     interrupt_drawing_now++;
@@ -4037,9 +4047,12 @@ void Map_font_change_data(Widget widget, XtPointer clientData, XtPointer callDat
 
 
 void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
-    static Widget  pane, my_form, fontname, button_ok,
-                button_cancel,button_xfontsel;
+    static Widget  pane, my_form, fontname[FONT_MAX], button_ok,
+                button_cancel,button_xfontsel[FONT_MAX];
     Atom delw;
+    int i;
+    Arg al[20];                 /* Arg List */
+    register unsigned int ac = 0; /* Arg Count */
 
     if (!map_font_dialog) {
         map_font_dialog = XtVaCreatePopupShell(langcode("MAPFONT002"),
@@ -4068,64 +4081,88 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
         //        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
 
-        fontname = XtVaCreateManagedWidget(langcode("MAPFONT003"),
-                xmLabelWidgetClass, 
-                my_form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 10,
-                XmNbottomAttachment, XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_FORM,
-                XmNleftOffset, 5,
-                XmNrightAttachment, XmATTACH_NONE,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
+        for (i = 0; i < FONT_MAX; i++) {
+            char *fonttitle[FONT_MAX] = {"MAPFONT003","MAPFONT004","MAPFONT005",
+                                         "MAPFONT006","MAPFONT007"};
+            ac = 0;
+            if (i == 0) {
+                XtSetArg(al[ac], XmNtopAttachment, XmATTACH_FORM); ac++;
+                XtSetArg(al[ac], XmNtopOffset, 10); ac++;
+            } else {
+                XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ac++;
+                XtSetArg(al[ac], XmNtopWidget, fontname[i-1]); ac++;
+            }
+            XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_NONE); ac++;
+            XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
+            XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+            XtSetArg(al[ac], XmNwidth, 100); ac++;
+            XtSetArg(al[ac], XmNheight, 30); ac++;
+            XtSetArg(al[ac], XmNrightAttachment, XmATTACH_NONE); ac++;
+            XtSetArg(al[ac], XmNforeground,colors[0x08]); ac++;
+            XtSetArg(al[ac], XmNbackground,colors[0xff]); ac++;
+            fontname[i] = XtCreateManagedWidget(langcode(fonttitle[i]),
+                                                xmLabelWidgetClass, 
+                                                my_form,
+                                                al, ac);
+            ac = 0;
+            if (i == 0) {
+                XtSetArg(al[ac], XmNtopAttachment, XmATTACH_FORM); ac++;
+                XtSetArg(al[ac], XmNtopOffset, 10); ac++;
+            } else {
+                XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ac++;
+                XtSetArg(al[ac], XmNtopWidget, map_font_text[i-1]); ac++;
+            }
+            XtSetArg(al[ac], XmNeditable,              TRUE); ac++;
+            XtSetArg(al[ac], XmNcursorPositionVisible, TRUE); ac++;
+            XtSetArg(al[ac], XmNsensitive,             TRUE); ac++;
+            XtSetArg(al[ac], XmNshadowThickness,       1); ac++;
+            XtSetArg(al[ac], XmNcolumns,               60); ac++;
+            XtSetArg(al[ac], XmNwidth,                 (60*7)+2); ac++;
+            XtSetArg(al[ac], XmNmaxLength,             128); ac++;
+            XtSetArg(al[ac], XmNbackground,            colors[0x0f]); ac++;
+            XtSetArg(al[ac], XmNbottomAttachment,XmATTACH_NONE); ac++;
+            XtSetArg(al[ac], XmNleftAttachment, XmATTACH_WIDGET); ac++;
+            XtSetArg(al[ac], XmNleftWidget, fontname[i]); ac++;
+            XtSetArg(al[ac], XmNleftOffset, 10); ac++;
+            XtSetArg(al[ac], XmNheight, 30); ac++;
+            XtSetArg(al[ac], XmNrightAttachment,XmATTACH_NONE); ac++;
+            XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+            XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+            map_font_text[i] = XtCreateManagedWidget("Map font text",
+                                                       xmTextFieldWidgetClass, my_form,
+                                                       al, ac);
 
-        map_font_text = XtVaCreateManagedWidget("Map font text",
-                xmTextFieldWidgetClass,        my_form,
-                XmNeditable,              TRUE,
-                XmNcursorPositionVisible, TRUE,
-                XmNsensitive,             TRUE,
-                XmNshadowThickness,       1,
-                XmNcolumns,               60,
-                XmNwidth,                 (60*7)+2,
-                XmNmaxLength,             128,
-                XmNbackground,            colors[0x0f],
-                XmNtopAttachment,XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment,XmATTACH_NONE,
-                XmNleftAttachment, XmATTACH_WIDGET,
-                XmNleftWidget, fontname,
-                XmNleftOffset, 10,
-                XmNrightAttachment,XmATTACH_FORM,
-                XmNrightOffset, 5,
-                XmNnavigationType, XmTAB_GROUP,
-                XmNtraversalOn, TRUE,
-                NULL);
+            XmTextSetString(map_font_text[i], rotated_label_fontname[i]);
 
-        XmTextSetString(map_font_text, rotated_label_fontname);
+            // Xfontsel
+            ac = 0;
+            if (i == 0) {
+                XtSetArg(al[ac], XmNtopAttachment, XmATTACH_FORM); ac++;
+                XtSetArg(al[ac], XmNtopOffset, 10); ac++;
+            } else {
+                XtSetArg(al[ac], XmNtopAttachment, XmATTACH_WIDGET); ac++;
+                XtSetArg(al[ac], XmNtopWidget, button_xfontsel[i-1]); ac++;
+            }
+            XtSetArg(al[ac], XmNbottomAttachment, XmATTACH_NONE); ac++;
+            XtSetArg(al[ac], XmNleftAttachment, XmATTACH_WIDGET); ac++;
+            XtSetArg(al[ac], XmNleftWidget, map_font_text[i]); ac++;
+            XtSetArg(al[ac], XmNrightAttachment, XmATTACH_FORM); ac++;
+            XtSetArg(al[ac], XmNrightOffset, 10); ac++;
+            XtSetArg(al[ac], XmNheight, 30); ac++;
+            XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+            XtSetArg(al[ac], XmNforeground,colors[0x08]); ac++;
+            XtSetArg(al[ac], XmNbackground,colors[0xff]); ac++;
+            button_xfontsel[i] = XtCreateManagedWidget(langcode("PULDNMP015"),
+                                                         xmPushButtonGadgetClass, my_form,
+                                                         al,ac);
 
-        // Xfontsel
-        button_xfontsel = XtVaCreateManagedWidget(langcode("PULDNMP015"),
-                xmPushButtonGadgetClass, my_form,
-                XmNtopAttachment,        XmATTACH_WIDGET,
-                XmNtopWidget,            map_font_text,
-                XmNtopOffset,            10,
-                XmNbottomAttachment,     XmATTACH_FORM,
-                XmNbottomOffset,         5,
-                XmNleftAttachment,       XmATTACH_POSITION,
-                XmNleftPosition,         0,
-                XmNrightAttachment,      XmATTACH_POSITION,
-                XmNrightPosition,        1,
-                XmNnavigationType,       XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-
+            XtAddCallback(button_xfontsel[i],
+                          XmNactivateCallback, Map_font_xfontsel, (void *)i);
+        }
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
                 xmPushButtonGadgetClass, my_form,
                 XmNtopAttachment,        XmATTACH_WIDGET,
-                XmNtopWidget,            map_font_text,
+                XmNtopWidget,            map_font_text[FONT_MAX-1],
                 XmNtopOffset,            10,
                 XmNbottomAttachment,     XmATTACH_FORM,
                 XmNbottomOffset,         5,
@@ -4141,7 +4178,7 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
         button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
                 xmPushButtonGadgetClass, my_form,
                 XmNtopAttachment,        XmATTACH_WIDGET,
-                XmNtopWidget,            map_font_text,
+                XmNtopWidget,            map_font_text[FONT_MAX-1],
                 XmNtopOffset,            10,
                 XmNbottomAttachment,     XmATTACH_FORM,
                 XmNbottomOffset,         5,
@@ -4155,8 +4192,6 @@ void Map_font(Widget w, XtPointer clientData, XtPointer callData) {
                 MY_BACKGROUND_COLOR,
                 NULL);
 
-        XtAddCallback(button_xfontsel,
-                      XmNactivateCallback, Map_font_xfontsel,      map_font_dialog);
         XtAddCallback(button_ok,
                       XmNactivateCallback, Map_font_change_data,   map_font_dialog);
         XtAddCallback(button_cancel,

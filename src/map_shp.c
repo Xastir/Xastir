@@ -670,7 +670,7 @@ void draw_shapefile_map (Widget w,
     /* these have to be static since I recycle Symtbl between calls */
     static char     dbfsig[1024],dbffields[1024],name[64],key[64],sym[4];
     static int      color,lanes,filled,pattern,display_level,label_level;
-    static int      fill_style,fill_color;
+    static int      fill_style,fill_color,font_size;
     //static int layer;
     dbfawk_sig_info *sig_info = NULL;
     dbfawk_field_info *fld_info = NULL;
@@ -797,6 +797,7 @@ void draw_shapefile_map (Widget w,
                 awk_declare_sym(Symtbl,"display_level",INT,&display_level,sizeof(display_level));
                 awk_declare_sym(Symtbl,"label_level",INT,&label_level,sizeof(label_level));
                 awk_declare_sym(Symtbl,"label_color",INT,&label_color,sizeof(label_color));
+                awk_declare_sym(Symtbl,"font_size",INT,&font_size,sizeof(font_size));
             }
             if (awk_compile_program(Symtbl,sig_info->prog) < 0) {
                 fprintf(stderr,"Unable to compile .dbfawk program\n");
@@ -2503,7 +2504,8 @@ void draw_shapefile_map (Widget w,
                                         y,
                                         strlen(temp),
                                         colors[gps_color],
-                                        (char *)temp);
+                                        (char *)temp,
+                                        font_size);
                                 }
                                 else {
                                     (void)draw_rotated_label_text(w,
@@ -2512,7 +2514,8 @@ void draw_shapefile_map (Widget w,
                                         y,
                                         strlen(temp),
                                         colors[label_color],
-                                        (char *)temp);
+                                        (char *)temp,
+                                        font_size);
                                 }
                             }
                             if (new_label) {
@@ -3484,7 +3487,8 @@ if (on_screen) {
                                         y,
                                         strlen(temp),
                                         colors[label_color],
-                                        (char *)temp);
+                                        (char *)temp,
+                                        font_size);
                                 }
                             }
                         }

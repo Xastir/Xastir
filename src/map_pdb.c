@@ -513,7 +513,8 @@ void draw_palm_image_map(Widget w,
                                                 y,
                                                 label_length,
                                                 colors[color],
-                                                label_record.text);
+                                                label_record.text,
+                                                FONT_DEFAULT);
                                         }
                                     }
                                 }

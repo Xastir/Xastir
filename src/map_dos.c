@@ -1106,7 +1106,8 @@ draw_dos_map(Widget w,
                                                y,
                                                label_length,
                                                colors[(int)(label_type_1[0] & 0x7f)],
-                                               label_text);
+                                               label_text,
+                                               FONT_DEFAULT);
                     }
                     else {  // Rotated label
                       draw_rotated_label_text (w,
@@ -1115,7 +1116,8 @@ draw_dos_map(Widget w,
                                                y,
                                                label_length,
                                                colors[(int)(label_type_1[0] & 0x7f)],
-                                               label_text);
+                                               label_text,
+                                               FONT_DEFAULT);
                     }
                   }
                 }

@@ -361,7 +361,13 @@ void save_data(void)  {
         store_int (fout, "MAPS_AUTO_MAPS", map_auto_maps);
         store_int (fout, "MAPS_AUTO_MAPS_SKIP_RASTER", auto_maps_skip_raster);
         store_int (fout, "MAPS_INDEX_ON_STARTUP", index_maps_on_startup);
-        store_string (fout, "MAPS_LABEL_FONT", rotated_label_fontname);
+
+        store_string (fout, "MAPS_LABEL_FONT_TINY", rotated_label_fontname[FONT_TINY]);
+        store_string (fout, "MAPS_LABEL_FONT_SMALL", rotated_label_fontname[FONT_SMALL]);
+        store_string (fout, "MAPS_LABEL_FONT_MEDIUM", rotated_label_fontname[FONT_MEDIUM]);
+        store_string (fout, "MAPS_LABEL_FONT_LARGE", rotated_label_fontname[FONT_LARGE]);
+        store_string (fout, "MAPS_LABEL_FONT_HUGE", rotated_label_fontname[FONT_HUGE]);
+        store_string (fout, "MAPS_LABEL_FONT", rotated_label_fontname[FONT_DEFAULT]);
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
         store_int (fout, "TIGERMAP_TIMEOUT", tigermap_timeout);
@@ -865,8 +871,18 @@ void load_data_or_default(void) {
     if (!get_int ("MAPS_INDEX_ON_STARTUP", &index_maps_on_startup, 0, 1, 1))
       index_maps_on_startup = 1;
 
-    if (!get_string ("MAPS_LABEL_FONT", rotated_label_fontname))
-        strcpy(rotated_label_fontname,"-adobe-helvetica-medium-o-normal--24-240-75-75-p-130-iso8859-1");
+    if (!get_string ("MAPS_LABEL_FONT_TINY", rotated_label_fontname[FONT_TINY]))
+        strcpy(rotated_label_fontname[FONT_TINY],"-adobe-helvetica-medium-o-normal--8-*-*-*-*-*-iso8859-1");
+    if (!get_string ("MAPS_LABEL_FONT_SMALL", rotated_label_fontname[FONT_SMALL]))
+        strcpy(rotated_label_fontname[FONT_SMALL],"-adobe-helvetica-medium-o-normal--10-*-*-*-*-*-iso8859-1");
+    if (!get_string ("MAPS_LABEL_FONT_MEDIUM", rotated_label_fontname[FONT_MEDIUM]))
+        strcpy(rotated_label_fontname[FONT_MEDIUM],"-adobe-helvetica-medium-o-normal--12-*-*-*-*-*-iso8859-1");
+    if (!get_string ("MAPS_LABEL_FONT_LARGE", rotated_label_fontname[FONT_LARGE]))
+        strcpy(rotated_label_fontname[FONT_LARGE],"-adobe-helvetica-medium-o-normal--14-*-*-*-*-*-iso8859-1");
+    if (!get_string ("MAPS_LABEL_FONT_HUGE", rotated_label_fontname[FONT_HUGE]))
+        strcpy(rotated_label_fontname[FONT_HUGE],"-adobe-helvetica-medium-o-normal--24-*-*-*-*-*-iso8859-1");
+    if (!get_string ("MAPS_LABEL_FONT", rotated_label_fontname[FONT_DEFAULT]))
+        strcpy(rotated_label_fontname[FONT_DEFAULT],"-adobe-helvetica-medium-o-normal--12-*-*-*-*-*-iso8859-1");
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
     if (!get_int ("TIGERMAP_TIMEOUT", &tigermap_timeout, 10, 120, 30))
