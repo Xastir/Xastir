@@ -241,13 +241,15 @@ file should contain the following lines:
     update -P -d
     status -v
 
-Please note:  this file must be created in Unix format, not DOS
-format.  Do not use Notepad or other Windows tools to create the
+PLEASE NOTE:  this file must be created in Unix format, not DOS
+format.  DO NOT USE Notepad or other Windows tools to create the
 file, as CVS will not recognize the contents.  Thanks to Kirk
 Mefford <kc2elo@softhome.net> for noticing this.  The editor "nano"
 can be invoked from a Cygwin window to create this file, or for
 those of you who know "vi" or have Windows editors available that
-can save in Unix format, use those.
+can save in Unix format, use those.  If you don't, the "cvs update"
+commands won't work for you, at least until you recreate the file in
+Unix format.  You've been warned!
 
 The "." in ".cvsrc" makes it a Unix hidden file, and it won't appear
 in most Unix listings.  Unix files don't need a file extension, so
