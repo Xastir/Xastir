@@ -106,24 +106,25 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
     ------------------------------------------------
         http://www.libtiff.org
 
-    libproj (proj-4.4.7):
+    libproj (proj-4.4.8):
     ---------------------
         http://www.remotesensing.org/proj/
         http://wetnet.net/~we7u/xastir/
 
-    Datum translations (proj-nad27-1.1.):
+    Datum translations (proj-nad27-1.1):
     -------------------------------------
         ftp://ftp.remotesensing.org/pub/proj/
         http://wetnet.net/~we7u/xastir/
 
-    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.0):
+    libgeotiff (libgeotiff-1.1.5 or libgeotiff-1.2.1):
     --------------------------------------------------
         http://www.remotesensing.org/geotiff/geotiff.html
         ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/
         http://wetnet.net/~we7u/xastir/
 
     Please note that the order of installation for the above libraries is
-    critical.  Follow the instructions below carefully.
+    critical.  Follow the instructions below carefully.  Also, the particular
+    libgeotiff you use depends on the version of libtiff you have installed.
 
 For Linux kernel AX.25 interfaces, you require these packages:
     Lib AX25:http://prdownloads.sourceforge.net/ax25/libax25-0.0.11.tar.gz
@@ -274,8 +275,8 @@ First Time Install:
        The proj-nad27-1.1.tar.gz must be decompressed in the nad subdirectory
        of the proj distribution directory before you run configure.
         
-        tar xzvf proj-4.4.7.tar.gz (or newer)
-        cd proj-4.4.7/nad
+        tar xzvf proj-4.4.8.tar.gz (or newer)
+        cd proj-4.4.8/nad
         tar xzvf ../../proj-nad27-1.1.tar.gz (or newer)
         cd ..
         ./configure
@@ -336,7 +337,7 @@ First Time Install:
        -----------------------
 
      NOTE: Depending on your version of libtiff, either libgeotiff-1.1.5 or
-       libgeotiff-1.2.0 may compile properly.  libgeotiff is intimately
+       libgeotiff-1.2.1 may compile properly.  libgeotiff is intimately
        tied to your version of libtiff.  libgeotiff 1.2.x or greater
        requires libtiff-3.6.0 BETA or later.  If your version of libtiff is
        older, get libgeotiff 1.1.4 or 1.1.5.  For the latter case you may
@@ -371,7 +372,7 @@ First Time Install:
        using private include files, yet still compile in support for your
        particular version of libtiff.
 
-       With libgeotiff-1.2.0/libtiff-3.6.0-beta or newer you shouldn't
+       With libgeotiff-1.2.1/libtiff-3.6.0-beta or newer you shouldn't
        need to copy these files across.  The newer libtiff and libgeotiff
        can work together using public interfaces.
 
