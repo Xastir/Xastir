@@ -1,5 +1,5 @@
 # $Id$
-AUTOMAKE_OPTIONS = gnu
+AUTOMAKE_OPTIONS = gnu dist-bzip2
 ACLOCAL_AMFLAGS = -I m4
 
 D=      `date +%G%m%d.%H%M%S`
