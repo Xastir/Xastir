@@ -314,7 +314,7 @@ void get_send_message_path(char *callsign, char *path, int path_size) {
         path_size,
         "%s",
         temp1);
-fprintf(stderr,"Found custom path: %s\n", path);
+//fprintf(stderr,"Found custom path: %s\n", path);
 }
 
 
