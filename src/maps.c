@@ -11292,7 +11292,6 @@ printf("Not Found: Adding to end: %s\n",new_record->filename);
 //
 void index_restore_from_file(void) {
     FILE *f;
-//    map_index_record *current;
     map_index_record *temp_record;
     char in_string[MAX_FILENAME*2];
 
@@ -11300,7 +11299,6 @@ void index_restore_from_file(void) {
 //printf("\nRestoring map index from file\n");
 
     map_index_head = NULL;  // Starting with empty list
-//    current = NULL;
 
     f = fopen(MAP_INDEX_DATA,"r");
     if (f == NULL)  // No map_index file yet
@@ -11382,22 +11380,18 @@ void index_restore_from_file(void) {
                 // If correct number of parameters
                 if (processed == 8) {
 
+                    //printf("Restored: %s\n",temp_record->filename);
+ 
                     // Insert the new record into the in-memory map
                     // list in sorted order.
                     index_insert_sorted(temp_record);
 
-/*
-                    // Link the new record to the end of the list
-                    if (current == NULL) {  // Empty list
-                        map_index_head = temp_record;
-                        current = temp_record;
-                    }
-                    else {
-                        current->next = temp_record;
-                        current = temp_record;
-                    }
-*/
-                    //printf("Restored: %s\n",temp_record->filename);
+                    // Remember that we may just have attached the
+                    // record to our in-memory map list, or we may
+                    // have free'ed it in the above function call.
+                    // Set the pointer to NULL to make sure we don't
+                    // try to do anything else with the memory.
+                    temp_record = NULL;
                 }
                 else {  // sscanf didn't parse the proper number of
                         // items.  Delete the record.
