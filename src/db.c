@@ -2129,6 +2129,16 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 pixmap_final);
         }
 
+        // Draw other points associated with the station, if any.
+        // KG4NBB
+	
+        draw_multipoints(p_station->coord_lon, p_station->coord_lat, 
+            p_station->num_multipoints, 
+            p_station->multipoints,
+            p_station->type, p_station->style,
+            temp_sec_heard,
+            XtWindow(da));
+
         temp_sec_heard = p_station->sec_heard;    // DK7IN: ???
     }   // End of "if (single)" portion
 
@@ -2210,6 +2220,16 @@ void display_station(Widget w, DataRow *p_station, int single) {
             0.0035 * scale_y,
             pixmap_final);
     }
+
+    // Draw other points associated with the station, if any.
+    // KG4NBB
+	
+    draw_multipoints(p_station->coord_lon, p_station->coord_lat, 
+        p_station->num_multipoints, 
+        p_station->multipoints,
+        p_station->type, p_station->style,
+        temp_sec_heard,
+        pixmap_final);  // or pixmap_alerts
 
     if (show_phg && strlen(p_station->power_gain) == 7) {   // There's a PHG defined
         /*printf("PHG:%s\n",p_station->power_gain);*/
@@ -4242,7 +4262,11 @@ int heard_via_tnc_in_past_hour(char *call) {
 
 
 
+
+
 //////////////////////////////////// Weather Data //////////////////////////////////////////////////
+
+
 
 
 
@@ -4257,6 +4281,8 @@ int is_aprs_chr(char ch) {
 
 
 
+
+
 /* check data format    123 ___ ... */
 int is_weather_data(char *data, int len) {
     int ok = 1;
@@ -4267,6 +4293,8 @@ int is_weather_data(char *data, int len) {
             ok = 0;
     return(ok);
 }
+
+
 
 
 
@@ -4290,6 +4318,9 @@ int extract_weather_item(char *data, char type, int datalen, char *temp) {
         temp[0] = '\0';
     return(found);
 }
+
+
+
 
 
 // DK7IN 77
@@ -4398,6 +4429,161 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
 }
 
 
+
+
+
+/*
+ * Look for information about other points associated with this station.
+ * If found, compute the coordinates and save the information in the
+ * station structure.
+ * KG4NBB
+ */
+
+#define MULTI_DEBUG 2048
+#define LBRACE '{'
+#define RBRACE '}'
+#define START_STR " }"
+
+static void extract_multipoints(DataRow *p_station, char* data, int type) {
+    // If they're in there, the multipoints start with the
+    // sequence <space><rbrace><lower><digit> and end with a <lbrace>.
+    // In addition, there must be no spaces in there, and there
+    // must be an even number of characters (after the lead-in).
+
+    char *p, *p2;
+    int found = 0;
+    char* end = data + (strlen(data) - 7);  // 7 == 3 lead-in chars, plus 2 points
+
+    p_station->num_multipoints = 0;
+
+    /*
+    for (p = data; !found && p <= end; ++p) {
+        if (*p == ' ' && *(p+1) == RBRACE && islower(*(p+2)) && isdigit(*(p+3)) && 
+                            (p2 = strchr(p+4, LBRACE)) != NULL && ((p2 - p) % 2) == 1) {
+            found = 1;
+        }
+    }
+    */
+
+    // Start looking at the beginning of the data.
+
+    p = data;
+
+    // Look for the opening string.
+
+    while (!found && p < end && (p = strstr(p, START_STR)) != NULL) {
+        // The opening string was found. Check the following information.
+
+        if (islower(*(p+2)) && isdigit(*(p+3)) && (p2 = strchr(p+4, LBRACE)) != NULL && ((p2 - p) % 2) == 1) {
+            // It all looks good!
+
+            found = 1;
+        }
+        else {
+            // The following characters are not right. Advance and
+            // look again.
+
+            ++p;
+        }
+    }
+
+    if (found) {
+        long multiplier;
+        double d;
+
+        if (debug_level & MULTI_DEBUG)
+            printf("station %s contains \"%s\"\n", p_station->call_sign, p);
+
+        // The second character (the lowercase) indicates additional style information,
+        // such as color, line type, etc.
+
+        p_station->style = *(p+2);
+
+        // The third character (the digit) indicates the way the points should be
+        // used. They may be used to draw a closed polygon, a series of line segments,
+        // etc.
+
+        p_station->type = *(p+3);
+
+        // The fourth character indicates the scale of the coordinates that
+        // follow. It may range from '!' to 'z'. The value represents the
+        // unit of measure (1, 0.1, 0.001, etc., in degrees) used in the offsets.
+        //
+        // Use the following formula to convert the char to the value:
+        // (10 ^ ((c - 33) / 20)) / 10000 degrees
+        //
+        // Finally we have to convert to Xastir units. Xastir stores coordinates
+        // as hudredths of seconds. There are 360,000 of those per degree, so we
+        // need to multiply by that factor so our numbers will be converted to
+        // Xastir units.
+
+        p = p + 4;
+
+        if (*p < '!' || *p > 'z') {
+            printf("extract_multipoints: invalid scale character %d\n", *p);
+        }
+        else {
+            d = (double)(*p);
+            d = pow(10.0, ((d - 33) / 20)) / 10000.0 * 360000.0;
+            multiplier = (long)d;
+            if (debug_level & MULTI_DEBUG)
+                printf("    multiplier factor is: %c %d %f (%ld)\n", *p, *p, d, multiplier);
+
+            ++p;
+
+            // The remaining characters are in pairs. Each pair is the
+            // offset lat and lon for one of the points. (The offset is
+            // from the actual location of the object.) Convert each
+            // character to its numeric value and save it.
+
+            while (*p != LBRACE && p_station->num_multipoints < MAX_MULTIPOINTS) {
+                // The characters are in the range '"' (34 decimal) to 'z' (122). They
+                // encode values in the range -44 to +44. To convert to the correct
+                // value 78 is subtracted from the character's value.
+
+                int lat_val = *p - 78;
+                int lon_val = *(p+1) - 78;
+
+                // Check for correct values.
+
+                if (lon_val < -44 || lon_val > 44 || lat_val < -44 || lat_val > 44) {
+                    printf("extract_multipoints: invalid value in \"%s\": %d,%d\n", data, lat_val, lon_val);
+                    p_station->num_multipoints = 0;     // forget any points we already set
+                    break;
+                }
+
+                if (debug_level & MULTI_DEBUG)
+                    printf("computed offset %d,%d\n", lat_val, lon_val);
+
+                // Add the offset to the object's position to obtain the position of the point.
+                // Note that we're working in Xastir coordinates, and in North America they
+                // are exactly opposite to lat/lon (larger numbers are farther east and south).
+                // An offset with a positive value means that the point should be north and/or
+                // west of the object, so we have to *subtract* the offset to get the correct
+                // placement in Xastir coordinates.
+                // TODO: Consider what we should do in the other geographic quadrants. Should we
+                // check here for the correct sign of the offset? Or should the program that
+                // creates the offsets take that into account?
+
+                p_station->multipoints[p_station->num_multipoints][0] = p_station->coord_lon - (lon_val * multiplier);
+                p_station->multipoints[p_station->num_multipoints][1] = p_station->coord_lat - (lat_val * multiplier);
+
+                if (debug_level & MULTI_DEBUG)
+                    printf("computed point %ld, %ld\n", p_station->multipoints[p_station->num_multipoints][0], p_station->multipoints[p_station->num_multipoints][1]);
+                p += 2;
+                ++p_station->num_multipoints;
+            }
+        }
+
+        if (debug_level & MULTI_DEBUG)
+            printf("    station has %d points\n", p_station->num_multipoints);
+    }
+}
+
+#undef MULTI_DEBUG
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -4424,6 +4610,8 @@ void init_weather(WeatherRow *weather) {    // clear weather data
 
 
 
+
+
 int get_weather_record(DataRow *fill) {    // get or create weather storage
     int ok=1;
 
@@ -4436,6 +4624,8 @@ int get_weather_record(DataRow *fill) {    // get or create weather storage
     }
     return(ok);
 }
+
+
 
 
 
@@ -4454,6 +4644,7 @@ int delete_weather(DataRow *fill) {    // delete weather storage, if allocated
 ////////////////////////////////////////// Trails //////////////////////////////////////////////////
 
 
+
 /*
  *  See if current color is defined as active trail color
  */
@@ -4464,6 +4655,9 @@ int trail_color_active(int color_index) {
     
     return(1);          // accept this color
 }
+
+
+
 
 
 /*
@@ -5212,6 +5406,14 @@ void init_station(DataRow *p_station) {
     p_station->status_data        = NULL;
     p_station->comment_data       = NULL;
     p_station->df_color           = -1;
+    
+    // Show that there are no other points associated with this
+    // station. We could also zero all the entries of the 
+    // multipoints[][] array, but nobody should be looking there
+    // unless this is non-zero.
+    // KG4NBB
+    
+    p_station->num_multipoints = 0;
 }
 
 
@@ -7573,6 +7775,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 ok = 0;
                 break;
         }
+
+        if (ok && p_station->coord_lat > 0 && p_station->coord_lon > 0)
+            extract_multipoints(p_station, data, type);     // KG4NBB
     }
 
     if (!ok) {  // non-APRS beacon, treat it as Other Packet   [APRS Reference, chapter 19]

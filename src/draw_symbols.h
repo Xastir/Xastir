@@ -64,6 +64,7 @@ extern void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard
 extern void draw_bearing(long x_long, long y_lat, char *course, char *bearing, char *NRQ, int color, time_t sec_heard, Pixmap where);
 extern void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap where);
 extern void draw_area(long x_long, long y_lat, char type, char color, char sqrt_lat_off, char sqrt_lon_off, char width, time_t sec_heard, Pixmap where);
+extern void draw_multipoints(long x_long, long y_lat, int numpoints, long points[][2], char type, char style, time_t sec_heard, Pixmap where);  // KG4NBB
 extern void Select_symbol( Widget w, XtPointer clientData, XtPointer callData);
 extern int symbol_change_requested_from;
 extern Widget select_symbol_dialog;

@@ -1525,6 +1525,7 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                             draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
                             posyr += 12;
                         }
+
                         length=(int)strlen(wx_wind);
                         if ( (!ghost || show_old_data) && length>0) {
                             x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
@@ -1533,6 +1534,195 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+
+
+
+
+/*
+ * Looks at the style to determine what color to use.
+ * KG4NBB
+ */
+static int getLineColor(char styleChar) {
+    int color;
+
+    switch (styleChar) {
+        case 'a':
+        case 'b':
+        case 'c':
+            color = colors[0x0c];   // red
+            break;
+
+        case 'd':
+        case 'e':
+        case 'f':
+            color = colors[0x0e];   // yellow
+            break;
+
+        case 'g':
+        case 'h':
+        case 'i':
+            color = colors[0x09];   // blue
+            break;
+
+        case 'j':
+        case 'k':
+        case 'l':
+            color = colors[0x0a];   // green
+            break;
+
+        default:
+            color = colors[0x0a];   // green
+            break;
+    }
+
+    return color;
+}
+
+
+
+
+
+/*
+ * Looks at the style to determine what line type to use.
+ * KG4NBB
+ */
+static int getLineStyle(char styleChar) {
+    int style;
+
+    switch (styleChar) {
+        case 'a':
+        case 'd':
+        case 'g':
+        case 'j':
+            style = LineSolid;
+            break;
+        
+        case 'b':
+        case 'e':
+        case 'h':
+        case 'k':
+            style = LineOnOffDash;
+            break;
+
+        case 'c':
+        case 'f':
+        case 'i':
+        case 'l':
+            style = LineDoubleDash;
+            break;
+
+        default:
+            style = LineSolid;
+            break;
+    }
+
+    return style;
+}
+
+
+
+
+
+/*
+ * Draw the other points associated with the station.
+ * KG4NBB
+ */
+void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2], char type, char style, time_t sec_heard, Pixmap where) {
+    // See if we should draw multipoints for this station. This only happens
+    // if there are points to draw, and the object has not been cleared (or 
+    // we're supposed to show old data).
+
+    if (numpoints > 0 && (((sec_clear + sec_heard) > sec_now()) || show_old_data )) {
+        //long x_offset, y_offset;
+        int  i;
+        XPoint xpoints[MAX_MULTIPOINTS + 1];
+
+#if 0
+        long mostNorth, mostSouth, mostWest, mostEast;
+
+        // Check to see if the object is onscreen.
+        // Look for the coordinates that are farthest north, farthest south,
+        // farthest west, and farthest east. Then check to see if any of that
+        // box is onscreen. If so, proceed with drawing. This is all done in
+        // Xastir coordinates.
+
+        mostNorth = mostSouth = y_lat;
+        mostWest = mostEast = x_long;
+
+        for (i = 0; i < numpoints; ++i) {
+            if (mypoints[i][0] < mostNorth)
+                mostNorth = mypoints[i][0];
+            if (mypoints[i][0] > mostSouth)
+                mostSouth = mypoints[i][0];
+            if (mypoints[i][1] < mostWest)
+                mostWest = mypoints[i][1];
+            if (mypoints[i][1] > mostEast)
+                mostEast = mypoints[i][1];
+        }
+        
+        if (onscreen(mostWest, mostEast, mostNorth, mostSouth))
+#else
+
+        // See if the station icon is on the screen. If so, draw the associated
+        // points. The drawback to this approach is that if the station icon is
+        // scrolled off the edge of the display the points aren't drawn even if
+        // one or more of them is on the display.
+
+        if((x_long > x_long_offset) && (x_long < (x_long_offset + (long)(screen_width * scale_x)))
+            && (y_lat > y_lat_offset) && (y_lat < (y_lat_offset + (long)(screen_height * scale_y)))) 
+#endif
+        {
+            //x_offset = (x_long - x_long_offset) / scale_x;
+            //y_offset = (y_lat - y_lat_offset) / scale_y;
+
+            // Convert each of the points from Xastir coordinates to
+            // screen coordinates and fill in the xpoints array.
+
+            for (i = 0; i < numpoints; ++i) {
+                xpoints[i].x = (mypoints[i][0] - x_long_offset) / scale_x;
+                xpoints[i].y = (mypoints[i][1] - y_lat_offset) / scale_y;
+                // printf("   %d: %d,%d\n", i, xpoints[i].x, xpoints[i].y);
+            }
+
+            // The type parameter determines how the points will be used.
+            // After determining the type, use the style parameter to
+            // get the color and line style.
+
+            switch (type) {
+                case '0':           // closed polygon
+                default:
+                    // Repeat the first point so the polygon will be closed.
+
+                    xpoints[numpoints].x = xpoints[0].x;
+                    xpoints[numpoints].y = xpoints[0].y;
+
+                    // First draw a wider black line.
+
+                    (void)XSetForeground(XtDisplay(da), gc, colors[0x08]);  // black
+                    (void)XSetLineAttributes(XtDisplay(da), gc, 4, LineSolid, CapButt, JoinMiter);
+                    (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints+1, CoordModeOrigin);
+
+                    // Then draw the appropriate colored line on top of it.
+
+                    (void)XSetForeground(XtDisplay(da), gc, getLineColor(style));
+                    (void)XSetLineAttributes(XtDisplay(da), gc, 2, getLineStyle(style), CapButt, JoinMiter);
+                    (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints+1, CoordModeOrigin);
+                    
+                    break;
+
+                case '1':           // line segments
+                    (void)XSetForeground(XtDisplay(da), gc, getLineColor(style));
+                    (void)XSetLineAttributes(XtDisplay(da), gc, 2, getLineStyle(style), CapButt, JoinMiter);
+                    (void)XDrawLines(XtDisplay(da), where, gc, xpoints, numpoints, CoordModeOrigin);
+                    
+                    break;
+
+                // Other types have yet to be implemented.
             }
         }
     }
