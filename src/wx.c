@@ -100,9 +100,7 @@ char wx_high_wind[10];
 char wx_high_wind_on;
 char wx_wind_chill[10];
 char wx_wind_chill_on;
-char wx_baro_inHg[10];
-char wx_baro_inHg_on;
-char wx_three_hour_baro[10];
+char wx_three_hour_baro[10];  // hPa
 char wx_three_hour_baro_on;
 char wx_hi_temp[10];
 char wx_hi_temp_on;
@@ -447,9 +445,6 @@ void clear_local_wx_data(void) {
     memset(wx_wind_chill,0,sizeof(wx_wind_chill));
     wx_wind_chill_on = 0;
 
-    memset(wx_baro_inHg,0,sizeof(wx_baro_inHg));
-    wx_baro_inHg_on = 0;
-
     memset(wx_three_hour_baro,0,sizeof(wx_three_hour_baro));
     wx_three_hour_baro_on = 0;
 
@@ -593,11 +588,11 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
         substr(temp_data1,(char *)(data+16),4);
         xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro), "%0.1f",
                 (float)strtol(temp_data1,&temp_conv,16)/10.0);
-
-        if (!from) {
-            xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.1f", (atof(weather->wx_baro)*0.02953));
-        }
+    } else {
+        if (!from)
+            weather->wx_baro[0]=0;
     }
+    
 
     /* outdoor humidity */
     if (data[24] != '-') {
@@ -749,11 +744,6 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
         substr(temp_data1,(char *)(data+16),4);
         xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro), "%0.1f",
                 (float)strtol(temp_data1,&temp_conv,16)/10.0);
-
-        if (!from) {
-            xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.2f",
-                    (atof(weather->wx_baro)*0.02953));
-        }
     } else {
         if (!from)
             weather->wx_baro[0] = 0;
@@ -1161,11 +1151,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 substr(temp_data1,(char *)(data+18),4);
                 xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro), "%0.1f",
                         (float)strtol(temp_data1,&temp_conv,16)/10.0);
-
-                if (!from) {    // From local station
-                    xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.1f",
-                            (atof(weather->wx_baro)*0.02953));
-                }
             }
 
             /* outdoor humidity */
@@ -1319,11 +1304,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 substr(temp_data1,(char *)(data+21),4);
                 xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro), "%0.1f",
                         (float)strtol(temp_data1, &temp_conv, 16)/10.0);
-
-                if (!from) {    // From local station
-                    xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.2f",
-                            (atof(weather->wx_baro)*0.02953));
-                }
             } else {
                 if (!from)  // From local station
                     weather->wx_baro[0]=0;
@@ -1594,14 +1574,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 wx_wind_chill_on = 1;
             }
 
-            /* Barometric Pressure inHg */
-            if (data[32]!='-') {
-                substr(temp_data1,(char *)(data+32),4);
-                xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%2.2f",
-                        (float)strtol(temp_data1,&temp_conv,16)/100.0/3.38639);
-                wx_baro_inHg_on = 1;
-            }
-
             /*3-Hr Barometric Change */
             if (data[36]!='-') {
                 substr(temp_data1,(char *)(data+36),4);
@@ -1671,11 +1643,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             /* baro */
             xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro), "%0.1f",
                     ((float)temp3/100.0)*33.864);
-
-            if (!from) {    // From local station
-                xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.2f",
-                        (float)temp3/100.0);
-            }
 
             /* outdoor humidity */
             xastir_snprintf(weather->wx_hum, sizeof(weather->wx_hum), "%03d", temp1);
@@ -1764,10 +1731,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                         xastir_snprintf(weather->wx_baro, sizeof(weather->wx_baro),
                             "%0d%02d%0.1f",(data[5]&0x0f),rswnc(data[4]),
                             ((float)rswnc(data[3])/10.0));
-
-                        xastir_snprintf(wx_baro_inHg, sizeof(wx_baro_inHg), "%0.2f",
-                            (atof(weather->wx_baro)*0.02953));
-                        wx_baro_inHg_on=1;
 
                         /* dew point in C */
                         temp_temp = (int)((rswnc(data[18])*1.8)+32);

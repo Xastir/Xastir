@@ -3422,7 +3422,16 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }
 
         if (strlen(weather->wx_baro) > 0) {
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI033"),weather->wx_baro);
+            if (!units_english_metric) {  // hPa
+                xastir_snprintf(temp, sizeof(temp),
+                    langcode("WPUPSTI033"),
+                    weather->wx_baro);
+            }
+            else {  // Inches Mercury
+                xastir_snprintf(temp, sizeof(temp),
+                    langcode("WPUPSTI063"),
+                    atof(weather->wx_baro)*0.02953);
+            }
             XmTextInsert(si_text,pos,temp);
             pos += strlen(temp);
             xastir_snprintf(temp, sizeof(temp), "\n");

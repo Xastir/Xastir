@@ -41,10 +41,8 @@ extern char wx_high_wind[10];
 extern char wx_high_wind_on;
 extern char wx_wind_chill[10];
 extern char wx_wind_chill_on;
-extern char wx_baro_inHg[10];
-extern char wx_baro_inHg_on;
-extern char wx_three_hour_baro[10];
-extern char wx_three_hour_baro_on;
+extern char wx_three_hour_baro[10]; // hPa
+extern char wx_three_hour_baro_on;  // hPa
 extern char wx_hi_temp[10];
 extern char wx_hi_temp_on;
 extern char wx_low_temp[10];

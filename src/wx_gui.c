@@ -501,7 +501,6 @@ Widget WX_rain_data;
 Widget WX_to_rain_data;
 Widget WX_rain_h_data;
 Widget WX_rain_24_data;
-Widget WX_baro_data;
 Widget WX_humidity_data;
 Widget WX_speed_label;
 Widget WX_gust_label;
@@ -514,8 +513,8 @@ Widget WX_dew_point_data;
 Widget WX_high_wind_data;
 Widget WX_wind_chill_data;
 Widget WX_heat_index_data;
-Widget WX_baro_inHg_data;
-Widget WX_baro_inHg_label;
+Widget WX_baro_data;
+Widget WX_baro_label;
 Widget WX_three_hour_baro_data;
 Widget WX_three_hour_baro_label;
 Widget WX_hi_temp_data;
@@ -558,16 +557,17 @@ void WX_station_change_data(Widget widget, XtPointer clientData, XtPointer callD
 
 
 
+// This is the "Own Weather Station" Dialog
+//
 void WX_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, form1, button_close, frame, 
             WX_type, temp, wind_cse, wind_deg, wind_spd, wind_gst, 
-            my_rain, to_rain, rain_h, my_rain_24, baro, baro_n, 
+            my_rain, to_rain, rain_h, my_rain_24, baro,
             humidity, humidity_n,
             dew_point,
-            high_wind,wind_chill,
-            heat_index,three_hour_baro,
-            baro_inHg,
-            hi_temp,low_temp,
+            high_wind, wind_chill,
+            heat_index, three_hour_baro,
+            hi_temp, low_temp,
             sts;
 
     Atom delw;
@@ -1014,50 +1014,9 @@ XmNtraversalOn, FALSE,
                                       XmNbackground, colors[0xff], 
                                       NULL);
 
-        baro = XtVaCreateManagedWidget(langcode("WXPUPSI009"),xmLabelWidgetClass, form1,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, my_rain_24,
-                                      XmNtopOffset, 11,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 5,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff], 
-                                      NULL);
-
-
-        WX_baro_data = XtVaCreateManagedWidget("WX_station Baro data", xmTextFieldWidgetClass, form1,
-                                      XmNeditable,   FALSE,
-                                      XmNcursorPositionVisible, FALSE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 6,
-                                      XmNmaxLength, 8,
-                                      XmNtopOffset, 7, 
-                                      XmNbackground, colors[0x0f],
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, my_rain_24,                    
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      NULL);
-
-        baro_n = XtVaCreateManagedWidget(langcode("UNIOP00025"),xmLabelWidgetClass, form1,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, my_rain_24,
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, WX_baro_data,
-                                      XmNleftOffset, 5,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff], 
-                                      NULL);
-
         humidity = XtVaCreateManagedWidget(langcode("WXPUPSI010"),xmLabelWidgetClass, form1,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, baro,
+                                      XmNtopWidget, my_rain_24,
                                       XmNtopOffset, 11,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -1080,13 +1039,13 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 2,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, baro,                    
+                                      XmNtopWidget, my_rain_24,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       NULL);
 
         humidity_n = XtVaCreateManagedWidget(langcode("UNIOP00026"),xmLabelWidgetClass, form1,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, baro, 
+                                      XmNtopWidget, my_rain_24, 
                                       XmNtopOffset, 12,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
@@ -1266,7 +1225,7 @@ XmNtraversalOn, FALSE,
                                       XmNbackground, colors[0xff], 
                                       NULL);
 
-        baro_inHg = XtVaCreateManagedWidget(langcode("WXPUPSI009"),xmLabelWidgetClass, form1,
+        baro = XtVaCreateManagedWidget(langcode("WXPUPSI009"),xmLabelWidgetClass, form1,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, heat_index,
                                       XmNtopOffset, 11,
@@ -1277,7 +1236,7 @@ XmNtraversalOn, FALSE,
                                       XmNbackground, colors[0xff], 
                                       NULL);
 
-        WX_baro_inHg_data = XtVaCreateManagedWidget("WX_station Baro", xmTextFieldWidgetClass, form1,
+        WX_baro_data = XtVaCreateManagedWidget("WX_station Baro", xmTextFieldWidgetClass, form1,
                                       XmNeditable,   FALSE,
                                       XmNcursorPositionVisible, FALSE,
                                       XmNcolumns, 5,
@@ -1293,7 +1252,7 @@ XmNtraversalOn, FALSE,
                                       XmNbackground, colors[0x0f], 
                                       NULL);
 
-        WX_baro_inHg_label = XtVaCreateManagedWidget("WX_Station baro unit label",xmTextFieldWidgetClass, form1,
+        WX_baro_label = XtVaCreateManagedWidget("WX_Station baro unit label",xmTextFieldWidgetClass, form1,
                                       XmNeditable,   FALSE,
                                       XmNcursorPositionVisible, FALSE,
                                       XmNsensitive, STIPPLE,
@@ -1303,7 +1262,7 @@ XmNtraversalOn, FALSE,
                                       XmNtopOffset, 12,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, WX_baro_inHg_data,
+                                      XmNleftWidget, WX_baro_data,
                                       XmNleftOffset, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff], 
@@ -1312,7 +1271,7 @@ XmNtraversalOn, FALSE,
 
         three_hour_baro = XtVaCreateManagedWidget(langcode("WXPUPSI022"),xmLabelWidgetClass, form1,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, baro_inHg,
+                                      XmNtopWidget, baro,
                                       XmNtopOffset, 11,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_POSITION,
@@ -1331,7 +1290,7 @@ XmNtraversalOn, FALSE,
                                       XmNleftPosition, 5,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, baro_inHg,
+                                      XmNtopWidget, baro,
                                       XmNtopOffset, 7,                    
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNbackground, colors[0x0f], 
@@ -1343,7 +1302,7 @@ XmNtraversalOn, FALSE,
                                       XmNsensitive, STIPPLE,
                                       XmNshadowThickness,0,
                                       XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget,  baro_inHg,
+                                      XmNtopWidget,  baro,
                                       XmNtopOffset, 12,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
@@ -1599,13 +1558,6 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     XtManageChild(WX_rain_data);
 
-                    if (strlen(weather->wx_baro) > 0)
-                        XmTextFieldSetString(WX_baro_data,weather->wx_baro);
-                    else
-                        XmTextFieldSetString(WX_baro_data,"");
-
-                    XtManageChild(WX_baro_data);
-
                     if (strlen(weather->wx_hum) > 0)
                         XmTextFieldSetString(WX_humidity_data,weather->wx_hum);
                     else
@@ -1649,25 +1601,33 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
 
                     XtManageChild(WX_wind_chill_data);
 
-                    if (wx_baro_inHg_on) {
+                    if (strlen(weather->wx_baro) > 0) {
                         if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%0.0f",
-                                    atof(wx_baro_inHg)*25.4); // inch Hg -> mm Hg
-                            XmTextFieldSetString(WX_baro_inHg_data,temp);
-                        } else
-                            XmTextFieldSetString(WX_baro_inHg_data,wx_baro_inHg);
+                            //xastir_snprintf(temp, sizeof(temp), "%0.0f",
+                            //        atof(wx_baro_inHg)*25.4); // inch Hg -> mm Hg
+                            //XmTextFieldSetString(WX_baro_data,temp);
+                            XmTextFieldSetString(WX_baro_data,weather->wx_baro); // hPa
+                        }
+                        else {  // inches mercury
+                            xastir_snprintf(temp, sizeof(temp), "%0.1f",
+                                (atof(weather->wx_baro)*0.02953));
+                            XmTextFieldSetString(WX_baro_data,temp);
+                        }
                     } else
-                        XmTextFieldSetString(WX_baro_inHg_data,"");
+                        XmTextFieldSetString(WX_baro_data,"");
 
-                    XtManageChild(WX_baro_inHg_data);
+                    XtManageChild(WX_baro_data);
 
                     if (wx_three_hour_baro_on) {
-                        if (!units_english_metric) {
-                            xastir_snprintf(temp, sizeof(temp), "%0.0f",
-                                    atof(wx_three_hour_baro)*25.4); // inch Hg -> mm Hg
-                            XmTextFieldSetString(WX_three_hour_baro_data,temp);
-                        } else
+                        if (!units_english_metric) {  // hPa
+                            //xastir_snprintf(temp, sizeof(temp), "%0.0f",
+                            //        atof(wx_three_hour_baro)*25.4); // inch Hg -> mm Hg
                             XmTextFieldSetString(WX_three_hour_baro_data,wx_three_hour_baro);
+                        } else {  // inches mercury
+                            xastir_snprintf(temp, sizeof(temp), "%0.1f",
+                                (atof(wx_three_hour_baro)*0.02953));
+                            XmTextFieldSetString(WX_three_hour_baro_data,temp);
+			}
                     } else
                         XmTextFieldSetString(WX_three_hour_baro_data,"");
 
@@ -1805,14 +1765,14 @@ begin_critical_section(&wx_station_dialog_lock, "wx_gui.c:fill_wx_data" );
         XtManageChild(WX_high_wind_label);
 
         if (!units_english_metric)
-            XmTextFieldSetString(WX_baro_inHg_label,langcode("UNIOP00028"));
+            XmTextFieldSetString(WX_baro_label,langcode("UNIOP00025"));
         else
-            XmTextFieldSetString(WX_baro_inHg_label,langcode("UNIOP00027"));
+            XmTextFieldSetString(WX_baro_label,langcode("UNIOP00027"));
 
-        XtManageChild(WX_baro_inHg_label);
+        XtManageChild(WX_baro_label);
 
         if (!units_english_metric)
-            XmTextFieldSetString(WX_three_hour_baro_label,langcode("UNIOP00028"));
+            XmTextFieldSetString(WX_three_hour_baro_label,langcode("UNIOP00025"));
         else
             XmTextFieldSetString(WX_three_hour_baro_label,langcode("UNIOP00027"));
 

@@ -574,7 +574,7 @@ WPUPSTI059|Status: %s||
 WPUPSTI060|Fuel Temp: %02.1f°C  ||
 WPUPSTI061|Fuel Temp: %s°F   ||
 WPUPSTI062|Fuel Moisture: %s%%   ||
-WPUPSTI063|Baro: %s in Hg||
+WPUPSTI063|Baro: %0.1f in Hg||
 #
 # FCC-RAC procurar indicativo
 STIFCC0001|Procurar FCC banco de datos||
