@@ -1495,9 +1495,7 @@ be sent to this device for broadcast.
 The TNC Port is the Unix serial device that the TNC is hooked to.
 Normally you can use /dev/ttyS0 (com1), /dev/ttyS1 (com2) etc..
 
-Now set the bps rate under port settings.  The parameters under port
-style must be set to "8,N,1" for KISS operation, which means 8 data
-bits, No parity and 1 stop bit. The dialog forces this choice.
+Now set the bps rate under port settings.
 
 Choose the correct IGate operation for this device. You may have several TNC
 devices, and this option can be different for each device. If you are not
