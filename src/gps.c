@@ -74,9 +74,9 @@ int decode_gps_rmc( char *data,
     char *temp_ptr;
     char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
         char sampletime[10];
-    char long_pos_x[10];
+    char long_pos_x[11];
     char long_ew;
-    char lat_pos_y[9];
+    char lat_pos_y[10];
     char lat_ns;
     char speed[9];
     char speed_unit;
@@ -109,9 +109,12 @@ int decode_gps_rmc( char *data,
                     if (temp_data[0]=='A') {    /* V is a warning but we can get good data still ? */
                         temp_ptr=strtok(NULL,",");  /* get latitude */
                         if (temp_ptr!=NULL && temp_ptr[4]=='.') {
-                            strncpy(lat_pos_y,temp_ptr,8);
+                            strncpy(lat_pos_y,temp_ptr,9);
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
-                            lat_pos_y[8]='\0';
+                            // Check for comma char
+                            if (lat_pos_y[8] == ',')
+                                lat_pos_y[8] = '\0';
+                            lat_pos_y[9]='\0';
                             temp_ptr=strtok(NULL,",");  /* get N-S */
                             if (temp_ptr!=NULL) {
                                 strncpy(temp_data,temp_ptr,1);
@@ -119,9 +122,12 @@ int decode_gps_rmc( char *data,
                                 if(lat_ns =='N' || lat_ns =='S') {
                                     temp_ptr=strtok(NULL,",");  /* get long */
                                     if (temp_ptr!=NULL && temp_ptr[5] == '.') {
-                                        strncpy(long_pos_x,temp_ptr,9);
+                                        strncpy(long_pos_x,temp_ptr,10);
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
-                                        long_pos_x[9]='\0';
+                                        // Check for comma char
+                                        if (long_pos_x[9] == ',')
+                                            long_pos_x[9] = '\0';
+                                        long_pos_x[10]='\0';
                                         temp_ptr=strtok(NULL,",");  /* get E-W */
                                         if (temp_ptr!=NULL) {
                                             strncpy(temp_data,temp_ptr,1);
@@ -201,9 +207,9 @@ int decode_gps_gga( char *data,
 
     char *temp_ptr;
     char temp_data[MAX_TNC_LINE_SIZE+1];    // Big in case we get concatenated packets (it happens!)
-    char long_pos_x[10];
+    char long_pos_x[11];
     char long_ew;
-    char lat_pos_y[9];
+    char lat_pos_y[10];
     char lat_ns;
     char sats_visible[4];
     char altitude[8];
@@ -224,9 +230,12 @@ int decode_gps_gga( char *data,
                 if(strtok(NULL,",")!=NULL) { /* get time and skip it */
                     temp_ptr = strtok(NULL,","); /* get latitude */
                     if (temp_ptr !=NULL) {
-                        strncpy(lat_pos_y,temp_ptr,8);
+                        strncpy(lat_pos_y,temp_ptr,9);
 // Note that some GPS's put out latitude with extra precision, such as 4801.1234
-                        lat_pos_y[8]='\0';
+                        // Check for comma char
+                        if (lat_pos_y[8] == ',')
+                            lat_pos_y[8] = '\0';
+                        lat_pos_y[9]='\0';
                         temp_ptr = strtok(NULL,",");    /* get N-S */
                         if (temp_ptr!=NULL) {
                             strncpy(temp_data,temp_ptr,1);
@@ -234,9 +243,12 @@ int decode_gps_gga( char *data,
                             if(lat_ns == 'N' || lat_ns == 'S') {
                                 temp_ptr = strtok(NULL,",");                             /* get long */
                                 if(temp_ptr!=NULL) {
-                                    strncpy(long_pos_x,temp_ptr,9);
+                                    strncpy(long_pos_x,temp_ptr,10);
 // Note that some GPS's put out longitude with extra precision, such as 12201.1234
-                                    long_pos_x[9]='\0';
+                                    // Check for comma char
+                                    if (long_pos_x[9] == ',')
+                                        long_pos_x[9] = '\0';
+                                    long_pos_x[10]='\0';
                                     temp_ptr = strtok(NULL,",");                          /* get E-W */
                                     if (temp_ptr!=NULL) {
                                         strncpy(temp_data,temp_ptr,1);
