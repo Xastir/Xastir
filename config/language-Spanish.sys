@@ -292,7 +292,7 @@ BBARSTA039|Indezando %s||
 BBARSTA040|Estación de Aficionado APRS %s||
 BBARSTA041|Esperando por GPS data..||
 BBARSTA042|Transmitiendo objetos/articulos||
-BBARSTA043|Logging||
+BBARSTA043|Anotando||
 #
 # Despliegue Paquete de Datos
 WPUPDPD001|Despligue de Datos||
@@ -413,7 +413,7 @@ WPUPCFT026|Tipo Binario||
 WPUPCFT027|Tipo ASCII||
 WPUPCFT028|Configurar el TNC c/AUX GPS||
 WPUPCFT029|Configurar el TNC c/MAL ENUM||
-WPUPCFT030|Configure KISS TNC||
+WPUPCFT030|Configurar un KISS TNC||
 WPUPCFT031|TNC Configuration Files||
 WPUPCFT032|TNC Setup Filename|| 
 WPUPCFT033|TNC Shutdown Filename||
@@ -592,8 +592,8 @@ WPUPTSP005|Rastrear Ahora!||
 WPUPTSP006|Limpiar Rastro|| 
 WPUPTSP007|Abajar Rastro||
 WPUPTSP008|Indicativo||
-WPUPTSP009|Start Trail (hrs ago)||
-WPUPTSP010|Trail Length (hrs)||
+WPUPTSP009|Inicio Del Rastro (hace horas)||
+WPUPTSP010|Longitud del Rastro (horas)||
 #
 # Menú de Mensajes
 WPUPMSB001|Enviar mensaje %d||
