@@ -203,7 +203,7 @@ void get_timestamp(char *timestring) {
 
     secs_now=sec_now();
     time_now = localtime(&secs_now);
-    (void)strftime(timestring,100,"%a %b %e %T %Z %Y",time_now);
+    (void)strftime(timestring,100,"%a %b %e %H:%M:%S %Z %Y",time_now);
 }
 
 
