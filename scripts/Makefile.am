@@ -22,7 +22,9 @@ pkglib_SCRIPTS = \
     waypoint-get.pl \
     xastir-fixcfg.sh \
     xastir-migrate.sh \
-    kiss-off.pl
+    kiss-off.pl \
+    toporama50k.pl \
+    toporama250k.pl
 
 
 EXTRA_DIST = $(pkglib_SCRIPTS)
