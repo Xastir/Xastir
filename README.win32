@@ -495,6 +495,26 @@ Repeat step 6) above to recompile/reinstall the latest Xastir.
 
 
 
+-----
+Notes from Henk de Groot:
+
+1) On Windows ME I had to configure the shortcut to start Xwindows,
+it ran out of environment memory. Selecting an "Inital Environment"
+of 4096 bytes in tab "Memory" (I hope that is correct, I have a
+Dutch language version...) fixed it.
+
+2) My keyboard layout was a mess in the xterm, I had to add
+"setxkbmap us" to c:\cygwin\usr\X11R6\bin\startxwin.bat (just below
+"run XWin....").
+
+3) I had to run ./configure on "lcms" twice. The first time
+./configure stopped half way, the second time it runs to the end.
+First I thought it was a glitch, but today it happend again with a
+brand new installation.  (From editor:  lcms may be required for the
+ImageMagick library install, see below)
+-----
+
+
 -------------------------------------------
 OPTIONAL:  ADDING ADDITIONAL MAP LIBRARIES:
 -------------------------------------------
