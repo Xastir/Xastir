@@ -309,10 +309,8 @@ int map_background_color;       /* Background color for maps */
 
 int tiger_flag;
 #if !defined(NO_GRAPHICS)
-#if defined(HAVE_LIBGEOTIFF)
 Widget raster_intensity[11];
 static void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata);
-#endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
 Widget gamma_adjust_dialog = (Widget)NULL;
 Widget gamma_adjust_text;
@@ -4167,9 +4165,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         Map_background_color_Pane, map_background_button,
         map_pointer_menu_button,
 #if !defined(NO_GRAPHICS)
-#if defined(HAVE_LIBGEOTIFF)
         Raster_intensity_Pane, raster_intensity_button,
-#endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
         gamma_adjust_button, tiger_config_button,
 #endif  // HAVE_IMAGEMAGICK
