@@ -122,6 +122,64 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 
 /* symbol drawing routines */
 
+
+
+
+//draw_pod_circle(64000000l, 32400000l, 10, pixmap_final);
+//
+// Probability of Detection circle:  A circle around the point last
+// seen drawn at the distance that a person of that description
+// could travel since they were last seen.  It helps to limit a
+// search to a reasonable area.
+void draw_pod_circle(long x_long, long y_lat, double range, Pixmap where) {
+    double diameter;
+    long max_x, max_y;
+    double a,b;
+
+
+    /* max off screen values */
+    max_x = screen_width+800l;
+    max_y = screen_height+800l;
+    if ((x_long>=0) && (x_long<=129600000l)) {
+        if ((y_lat>=0) && (y_lat<=64800000l)) {
+
+// Prevents it from being drawn when the symbol is off-screen.
+// It'd be better to check for lat/long +/- range to see if it's on the screen.
+
+            if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+                if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+
+                    // Range is in miles.  Bottom term is in meters before the 0.0006214
+                    // multiplication factor which converts it to miles.
+                    // Equation is:  2 * ( range(mi) / x-distance across window(mi) )
+                    diameter = 2.0 * ( range/
+                        (scale_x * calc_dscale_x(mid_x_long_offset,mid_y_lat_offset) * 0.0006214 ) );
+
+                    a=diameter;
+                    b=diameter/2;
+
+                    //printf("Range:%f\tDiameter:%f\n",range,diameter);
+
+                    if (diameter>4.0) {
+                        (void)XSetLineAttributes(XtDisplay(da), gc, 3, LineSolid, CapButt,JoinMiter);
+                        //(void)XSetForeground(XtDisplay(da),gc,colors[0x0a]);
+                        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+
+                        (void)XDrawArc(XtDisplay(da),where,gc,
+                            (int)(((x_long-x_long_offset)/scale_x)-(diameter/2)),
+                            (int)(((y_lat-y_lat_offset)/scale_y)-(diameter/2)),
+                            (unsigned int)diameter,(unsigned int)diameter,0,64*360);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
 void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap where) {
     double range, diameter;
     int offx,offy;
