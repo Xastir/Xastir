@@ -54,7 +54,9 @@ Previous Install Notes:
         ./xastir-fixcfg.sh (run this for each user that has ever run Xastir)
         
         
-     After you start the new Xastir, you'll need to reindex all maps.
+     After you start the new Xastir, you'll need to reindex all maps.  Xastir
+     binary is still installed to the old location.  Other files are now
+     installed in /usr/local/share/xastir/*.
         
  
   ------------------------------------------------------------------------

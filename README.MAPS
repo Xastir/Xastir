@@ -11,7 +11,7 @@ Getting Maps and other Data Files for Xastir:
       commands exactly as shown in order to set the map directory's
       permissions properly.  Do this as the root user:
 
-      cd /usr/local/xastir/maps
+      cd /usr/local/share/xastir/maps
       find . -type d -exec chmod 755 {} \;
       find . -type f -exec chmod 644 {} \;
 
@@ -24,7 +24,7 @@ Getting Maps and other Data Files for Xastir:
       changed at some future date, moving this directory into the user's
       home directory instead.
 
-      cd /usr/local/xastir/maps
+      cd /usr/local/share/xastir/maps
       chmod 777 GPS
       find GPS -type d -exec chmod 777 {} \;
       find GPS -type f -exec chmod 777 {} \;
@@ -38,12 +38,13 @@ Getting Maps and other Data Files for Xastir:
       than transferring images over a modem, and is not subject to the
       failures of your internet connection.
 
-      You can have any number of maps in the /usr/local/xastir/maps directory.
-      You can organize the maps however you like. You can also use symbolic
-      links to link to files/directories on other disks. Map files are loaded
-      in the order that they appear in the chooser unless you adjust the
-      layering priorities in the properties dialog (it's recommended that you
-      use these now instead of a directory heirarchy to choose the layering).
+      You can have any number of maps in the /usr/local/share/xastir/maps
+      directory.  You can organize the maps however you like. You can also
+      use symbolic links to link to files/directories on other disks. Map
+      files are loaded in the order that they appear in the chooser unless
+      you adjust the layering priorities in the properties dialog (it's
+      recommended that you use these now instead of a directory heirarchy to
+      choose the layering).
 
       There are many methods for organizing many maps. Create a map
       heirarchy using something that makes sense to you. The old method of
@@ -342,12 +343,12 @@ Getting Maps and other Data Files for Xastir:
 
       These files should be named in the form "<ST>.gnis", where <ST> is the
       abbreviation for the state that they cover, and should be placed in the
-      /usr/local/xastir/GNIS/ directory. To make sure that maps are layered
-      correctly with GNIS labels on the top, it is suggested that you link
-      /usr/local/xastir/maps/z to this GNIS directory.
+      /usr/local/share/xastir/GNIS/ directory. To make sure that maps are
+      layered correctly with GNIS labels on the top, it is suggested that you
+      link /usr/local/share/xastir/maps/z to this GNIS directory.
 
       Type this as root to create the link and directories:
-       cd /usr/local/xastir/maps
+       cd /usr/local/share/xastir/maps
        ln -s ../GNIS z
 
       The map files must end in ".gnis" to be used by Xastir, and must be in
@@ -364,7 +365,7 @@ Getting Maps and other Data Files for Xastir:
 
 
      County Warning maps:
-      All WX County maps should be stored in the /usr/local/xastir/Counties
+      All WX County maps should be stored in /usr/local/share/xastir/Counties
 
       WinAPRS style:
        Xastir no longer suppports WinAPRS style county maps. Please download
@@ -391,7 +392,7 @@ Getting Maps and other Data Files for Xastir:
         -----------------
         AWIPS Counties
 
-      Unzip those files in the /usr/local/xastir/Counties/ directory and
+      Unzip those files in the /usr/local/share/xastir/Counties/ directory and
       Xastir should find them and use them for weather alerts.
 
       These are what I currently have loaded:
@@ -418,7 +419,8 @@ Getting Maps and other Data Files for Xastir:
         ftp://ftp.tapr.org/software_lib/Linux/xastir/xastir-sounds.tgz
 
        Untar this archive into the /usr/local directory, assuming Xastir
-       is installed in /usr/local/xastir. (FIXME: thunder.wav is missing?) 
+       is installed in /usr/local/share/xastir. (FIXME: thunder.wav is
+       missing?) 
 
      Download FCC and/or RAC Database files:
 
@@ -451,7 +453,7 @@ Getting Maps and other Data Files for Xastir:
          Install it in the xastir/fcc directory:
 
          su
-         mv EN.dat.sorted /usr/local/xastir/fcc/EN.dat
+         mv EN.dat.sorted /usr/local/share/xastir/fcc/EN.dat
 
 
        To use the RAC lookup:
@@ -461,7 +463,7 @@ Getting Maps and other Data Files for Xastir:
          ftp://ftp.rac.ca/pub/cdncaldb.zip
 
          unzip cdncaldb.zip
-         mv AMATEUR.RPT /usr/local/xastir/fcc/AMACALL.LST
+         mv AMATEUR.RPT /usr/local/share/xastir/fcc/AMACALL.LST
 
   ------------------------------------------------------------------------
 Copyright (C) 1999 Frank Giannandrea

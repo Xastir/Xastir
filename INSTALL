@@ -464,7 +464,7 @@ First Time Install:
      cp -R gmicons /usr/lib/gpsman
      chmod -R 755 /usr/lib/gpsman
      chmod 644 /usr/lib/gpsman/gmicons
-     chmod 777 /usr/local/xastir/maps/GPS   (IMPORTANT!)
+     chmod 777 /usr/local/share/xastir/maps/GPS   (IMPORTANT!)
      exit (from root
 
      Verify that GPSMan will start up and will download information from a
@@ -495,8 +495,8 @@ First Time Install:
      This builds XASTIR, You should not get any error or warning messages.
 
      If you wish to install Xastir in a location other than the default
-     ("/usr/local/bin" and "/usr/local/xastir" directories), you may add the
-     "--prefix=<path>" flag to configure before compiling.  i.e.
+     ("/usr/local/bin" and "/usr/local/share/xastir" directories), you may
+     add the "--prefix=<path>" flag to configure before compiling.  i.e.
 
      "./configure --prefix=/home/apps/xastir"
 
@@ -614,7 +614,7 @@ First Time Install:
      serious security implications for some of this!
 
      If you're using a serial TNC, configure your TNC startup files in the
-     /usr/local/xastir/config directory:
+     /usr/local/share/xastir/config directory:
 
      tnc-startup.sys is used to set up your TNC for Xastir and tnc-stop.sys
      is to change the TNC back to your normal settings. There are several
@@ -629,11 +629,11 @@ First Time Install:
      dialog, stations weren't showing up on the Xastir screen at all. The
      cause was incorrect settings in the tnc-startup files for that specific
      TNC. If you change these files in the xastir source directories make sure
-     to do a "make install" to install them into the /usr/local/xastir/config/
-     directory. Another option would be to edit the files in
-     /usr/local/xastir/config/ directly. Keep a copy of them in a safe place
-     in any case.  You don't want to lose your custom mods you worked so
-     hard to create.
+     to do a "make install" to install them into the
+     /usr/local/share/xastir/config/ directory. Another option would be to
+     edit the files in /usr/local/share/xastir/config/ directly. Keep a copy
+     of them in a safe place in any case.  You don't want to lose your custom
+     mods you worked so hard to create.
 
      Some systems don't allow normal users to access the serial ports.  It's
      a permissions thing, but is actually the _correct_ way to configure the

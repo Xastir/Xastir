@@ -334,17 +334,18 @@ The README.MAPS file has instructions for where to get maps and where
 to put them under the Xastir heirarchy.
 
 If you have any WinAPRS, dosAPRS, or pocketAPRS maps, now is a good
-time to place them in the /cygwin/usr/local/xastir/maps folder (or a
-subdirectory of it).  You can also use "*.geo" files and the
+time to place them in the /cygwin/usr/local/share/xastir/maps folder
+(or a subdirectory of it).  You can also use "*.geo" files and the
 associated image files with Xastir.  You may place them in this
 directory (or a subdirectory of it) as well.
 
 What Xastir paths look like from within Windows (in case you're
 moving maps around with Explorer):  Just prefix them all with
-"cygwin/".  For instance, maps go into /cygwin/usr/local/xastir/maps
-instead of /usr/local/xastir/maps.  Xastir will continue to see them
-as "/usr/local/xastir/maps" though from inside Cygwin.  It kind of
-looks like a miniature Unix box from inside Cygwin.
+"cygwin/".  For instance, maps go into
+/cygwin/usr/local/share/xastir/maps instead of
+/usr/local/share/xastir/maps.  Xastir will continue to see them as
+"/usr/local/share/xastir/maps" though from inside Cygwin.  It kind
+of looks like a miniature Unix box from inside Cygwin.
 
 Run Windows in 15-bit color or better (32768 colors or more) or
 you'll get lots of warnings about Xastir not being able to allocate
@@ -519,9 +520,9 @@ Shapelib support.  Type these commands:
 The installed copy of Xastir should now have Shapelib support.  You
 can download NOAA weather alert maps and many other sorts of maps,
 and Xastir will recognize and use them.  Note that weather alert
-shapefiles must go into the /usr/local/xastir/Counties directory.
-All other shapefiles must go into the /cygwin/user/local/xastir/maps
-directory.
+shapefiles must go into the /usr/local/share/xastir/Counties
+directory.  All other shapefiles must go into the
+/cygwin/user/local/share/xastir/maps directory.
 
 See the README.MAPS file for where to get the maps.
 
@@ -669,7 +670,7 @@ MAGICK_HOME=/usr" at the top of the bat file.
 
 
 HIGHLY RECOMMENDED:  If you create a file called "terraserver.geo"
-in the /usr/local/xastir/maps directory, containing the single line
+in the /usr/local/share/xastir/maps directory, containing the single line
 "TERRASERVER", and select it with the Map Chooser, you should see
 satellite images on the map screen.  This is assuming that you have
 an internet connection up and running of course.  It fetches the
@@ -868,7 +869,7 @@ configuation to use "auplay"
 From within xastir click on File>Configure>Audio Alarms.
 The "Audio Play Command" box should be changed to "auplay"
 Then ensure the audio files listed to play are located in
-"/usr/local/xastir/sounds" directory.
+"/usr/local/share/xastir/sounds" directory.
 
 Click ok to accept the changes and be sure to save your config before
 exiting xastir or sound will not work the next time it is loaded.
