@@ -837,15 +837,11 @@ if test "$use_imagemagick" = "yes"; then
   MAGIC_BIN="Magick-config"
 else
   #
-  # Test for MacOSX/Fink directories under "/sw".  If found, we may
-  # need to add another "-L" path to the LIBS variable.
+  # Test for MacOSX/Fink directories under "/sw".
   #
   AC_CHECK_FILE(/sw/bin/Magick-config, use_imagemagick="yes") 
   if test "$use_imagemagick" = "yes"; then
     MAGIC_BIN="/sw/bin/Magick-config"
-    #
-    # Do we need this next line for MacOSX?
-    #MAGIC_LIB_DIR="-L/sw/lib -lMagick"
   else
     AC_MSG_WARN(*** Missing Magick-config (or it is not in the path).  Building w/o ImageMagick support. ***) 
   fi
