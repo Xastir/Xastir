@@ -363,6 +363,9 @@ void save_data(void)  {
         store_int (fout, "MAPS_LEVELS", map_color_levels);
         store_int (fout, "MAPS_LABELS", map_labels);
         store_int (fout, "MAPS_AUTO_MAPS", map_auto_maps);
+//N0VH
+        store_int (fout, "USE_TIGERMAPS", tiger_flag);
+        store_int (fout, "TIGERMAP_INTENSITY", tigermap_intensity);
 
         // display values
         store_int (fout, "DISPLAY_SYMBOL",        symbol_display);
@@ -717,6 +720,12 @@ void load_data_or_default(void) {
 
     if (!get_int ("MAPS_AUTO_MAPS", &map_auto_maps, 0, 1, 0))
         map_auto_maps = 0;
+//N0VH
+    if (!get_int ("USE_TIGERMAPS", &tiger_flag, 0, 1, 0))
+        tiger_flag = 0;
+
+    if (!get_int ("TIGERMAP_INTENSITY", &tigermap_intensity, 60, 100, 100))
+        tigermap_intensity = 100;
 
     // display values
     if (!get_int ("DISPLAY_SYMBOL", &symbol_display, 0, 2, 2))
