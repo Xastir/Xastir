@@ -613,17 +613,17 @@ void draw_shapefile_map (Widget w,
     int             gps_color = 0x0c;
 #ifndef WITH_DBFAWK
     int             road_flag = 0;
-#endif /*!WITH_DBFAWK*/
     int             lake_flag = 0;
     int             river_flag = 0;
-#ifndef WITH_DBFAWK
     int             railroad_flag = 0;
     int             school_flag = 0;
     int             path_flag = 0;
 #endif /*!WITH_DBFAWK*/
     int             city_flag = 0;
     int             quad_overlay_flag = 0;
+#ifndef WITH_DBFAWK
     int             mapshots_labels_flag = 0;
+#endif /*!WITH_DBFAWK*/
     int             weather_alert_flag = 0;
     char            *filename;  // filename itself w/o directory
     char            search_param1[10];
@@ -1492,8 +1492,8 @@ void draw_shapefile_map (Widget w,
                 }
                 /* set attributes */
                 (void)XSetForeground(XtDisplay(w), gc, colors[color]);
-                draw_filled = filled;; /* XXX this overrides map properties! */
-                /* XXX set draw_filled  and all the other XXX's below */
+                draw_filled = filled; /* XXX this overrides map properties! */
+                /* set all the other XXX's below */
 
             }
 #endif /* WITH_DBFAWK */
@@ -1959,7 +1959,8 @@ void draw_shapefile_map (Widget w,
 // I'd like to be able to change the color of each GPS track for
 // each team in the field.  It'll help to differentiate the tracks
 // where they happen to cross.
-
+/* XXX - WITH_DBFAWK should handle this case too.  Need to add a color
+   attribute to the generated dbf file */
                     if (gps_flag) {
                         int jj;
                         int done = 0;
@@ -2943,9 +2944,9 @@ if (on_screen) {
                     // Read the vertices for each ring in this Shape
                     for (ring = 0; ring < object->nParts; ring++ ) {
                         int endpoint;
+#ifndef WITH_DBFAWK
                         int glacier_flag = 0;
                         const char *temp;
-
 
                         if (lake_flag || river_flag) {
                             if ( mapshots_labels_flag && (fieldcount >= 3) ) {
@@ -2965,7 +2966,7 @@ if (on_screen) {
                                 }
                             }
                         }
- 
+#endif /* !WITH_DBFAWK */
                         //fprintf(stderr,"Ring: %d\t\t", ring);
 
                         if ( (ring+1) < object->nParts)
@@ -3051,7 +3052,6 @@ if (on_screen) {
                                 && (ok_to_draw)
                                 && ( !draw_filled || !map_color_fill || (draw_filled && polygon_hole_storage[ring] == 0) ) ) {
                             // We have a polygon to draw!
-
 //WE7U3
                             if ((!draw_filled || !map_color_fill) && polygon_hole_storage[ring] == 1) {
                                 // We have a hole drawn as unfilled.
@@ -3064,13 +3064,22 @@ if (on_screen) {
                             else if (quad_overlay_flag) {
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
-                            /* XXX - glacier_flag not set WITH_DBFAWK */
-                            else if (glacier_flag) {
-                                (void)XSetForeground(XtDisplay(w), gc, colors[0x0f]); // white
+                            /* XXX - glacier,lake,river not set WITH_DBFAWK */
+                            /* old glacier, lake and river code was identical
+                               with the exception of what color to use! */
+#ifdef WITH_DBFAWK
+                            else if (1) {
+                                /* color is already set by dbfawk! */
+#else /* !WITH_DBFAWK */
+                            else if (glacier_flag||lake_flag||river_flag) {
+                                int color = (glacier_flag)?0x0f:
+                                    (lake_flag||river_flag)?0x1a:8;
+#endif /* !WITH_DBFAWK */
+                                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
                                 if (map_color_fill && draw_filled) {
 
                                     if (polygon_hole_flag) {
-                                        (void)XSetForeground(XtDisplay(w), gc_temp, colors[0x0f]); // white
+                                        (void)XSetForeground(XtDisplay(w), gc_temp, colors[color]);
 
                                         if (i >= 3) {
                                             (void)XFillPolygon(XtDisplay(w),
@@ -3105,95 +3114,6 @@ if (on_screen) {
                                     }
                                 }
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
-                            }
-                            /* XXX - lake_flag not set WITH_DBFAWK */
-                            else if (lake_flag) {
-                                (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
-                                if (map_color_fill && draw_filled) {
-
-                                    if (polygon_hole_flag) {
-                                        (void)XSetForeground(XtDisplay(w), gc_temp, colors[0x1a]); // Steel Blue
-
-                                        if (i >= 3) {
-                                            (void)XFillPolygon(XtDisplay(w),
-                                                pixmap,
-                                                gc_temp,
-                                                points,
-                                                i,
-                                                Nonconvex,
-                                                CoordModeOrigin);
-                                        }
-                                        else {
-                                            fprintf(stderr,
-                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                                                npoints);
-                                        }
-                                    }
-                                    else {
-                                        if (i >= 3) {
-                                            (void)XFillPolygon(XtDisplay(w),
-                                                pixmap,
-                                                gc,
-                                                points,
-                                                i,
-                                                Nonconvex,
-                                                CoordModeOrigin);
-                                        }
-                                        else {
-                                            fprintf(stderr,
-                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                                                npoints);
-                                        }
-                                    }
-
-//                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
-                                }
-                                (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
-                            }
-                            /* XXX -- river_flag not set WITH_DBFAWK */
-                            else if (river_flag) {
-                                (void)XSetForeground(XtDisplay(w), gc, colors[0x1a]); // Steel Blue
-                                if (map_color_fill && draw_filled) {
-
-                                    if (polygon_hole_flag) {
-                                        (void)XSetForeground(XtDisplay(w), gc_temp, colors[0x1a]); // Steel Blue
-
-                                        if (i >= 3) {
-                                            (void)XFillPolygon(XtDisplay(w),
-                                                pixmap,
-                                                gc_temp,
-                                                points,
-                                                i,
-                                                Nonconvex,
-                                                CoordModeOrigin);
-                                        }
-                                        else {
-                                            fprintf(stderr,
-                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                                                npoints);
-                                        }
-                                    }
-                                    else {
-                                        if (i >= 3) {
-                                            (void)XFillPolygon(XtDisplay(w),
-                                                pixmap,
-                                                gc,
-                                                points,
-                                                i,
-                                                Nonconvex,
-                                                CoordModeOrigin);
-                                        }
-                                        else {
-                                            fprintf(stderr,
-                                                "draw_shapefile_map:Too few points:%d, Skipping XFillPolygon()",
-                                                npoints);
-                                        }
-                                    }
-
-                                }
-                                else {
-                                    (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
-                                }
                             }
                             else if (weather_alert_flag) {
                                 (void)XSetFillStyle(XtDisplay(w), gc_tint, FillStippled);
@@ -3219,6 +3139,7 @@ if (on_screen) {
                             }
                             else if (map_color_fill && draw_filled) {  // Land masses?
                                 if (polygon_hole_flag) {
+                                    /* XXX city_flag not set WITH_DBFAWK */
                                     if (city_flag)
                                         (void)XSetForeground(XtDisplay(w), gc_temp, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
                                     else
@@ -3264,7 +3185,7 @@ if (on_screen) {
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
 
                                 // Draw a thicker border for city boundaries
-                                /* XXX - city_flag not set WITH_DBFAWK */
+                                /* XXX - city_flag not set WITH_DBFAWK (not needed?) */
                                 if (city_flag) {
                                     if (scale_y <= 64) {
                                         (void)XSetLineAttributes(XtDisplay(w), gc, 2, LineSolid, CapButt,JoinMiter);
@@ -3305,11 +3226,15 @@ if (on_screen) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Done with drawing shapes, now draw labels
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+// XXX - todo: center large polygon labels in the center (e.g. county boundary)
 
-
+#ifdef WITH_DBFAWK
+                    temp = name;
+#else /* !WITH_DBFAWK */
                     temp = "";
 
                     /* XXX lake_flag, city_flag, etc. not WITH_DBFAWK */
+                    /* labels come from dbfawk, not here... */
                     if (lake_flag) {
                         if (map_color_levels && scale_y > 128)
                             skip_label++;
@@ -3328,7 +3253,8 @@ if (on_screen) {
                         else
                             temp = NULL;
                     }
-
+#endif /* !WITH_DBFAWK */
+                    /* XXX - figure out how to set this from dbfawk: */
                     if (quad_overlay_flag) {
                         if (fieldcount >= 5) {
                             // Use just the last two characters of
@@ -3366,6 +3292,7 @@ if (on_screen) {
                         // to make the label appear inside the quad
                         // (attached to the bottom left corner in
                         // this case).
+                        /* XXX - figure out how to do WITH_DBFAWK: */
                         if (quad_overlay_flag) {
                             const char *dbf_temp;
                             float lat_f;
@@ -3437,7 +3364,7 @@ if (on_screen) {
                                         x,
                                         y,
                                         strlen(temp),
-                                        colors[0x08],
+                                        colors[0x08], /* XXX - label color should be set by dbfawk */
                                         (char *)temp);
                                 }
                             }

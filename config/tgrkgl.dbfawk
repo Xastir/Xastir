@@ -28,7 +28,7 @@ dbffields="KGLNAME:CFCC"}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
-BEGIN_RECORD {key=""; lanes=1; color=8; name=""; filled=1; pattern=1;
+BEGIN_RECORD {key=""; lanes=1; color=255; name=""; filled=1; pattern=1;
 display_level=0; label_level=0; symbol="/. "}
 
 # name and key are both the KGL name
