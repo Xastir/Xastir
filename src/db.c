@@ -1928,6 +1928,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char temp_altitude[20];
     char temp_course[20];
     char temp_speed[20];
+    char dr_speed[20];
     char temp_call[20+1];
     char wx_tm[50];
     char temp_wx_temp[30];
@@ -1993,68 +1994,70 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // Set up speed and course strings for display
     strcpy(temp_speed,"");
+    strcpy(dr_speed,"");
     strcpy(temp_course,"");
 
 
     // don't display 'fixed' stations speed and course.
-    if (symbol_speed_display) {
-        // Check whether we have speed in the current data and it's
-        // non-zero
-        if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) > 0) ) {
+    // Check whether we have speed in the current data and it's
+    // non-zero
+    if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) > 0) ) {
+        speed_ok++;
+        strncpy(tmp, un_spd, sizeof(tmp));
+        tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
+        if (symbol_speed_display == 1)
+            tmp[0] = '\0';          // without unit
+ 
+        xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
+            atof(p_station->speed)*cvt_kn2len,tmp);
+    }
+    // Else check whether the previous position had speed
+    // Note that newest_trackpoint if it exists should be the
+    // same as the current data, so we have to go back one
+    // further trackpoint.
+    else if ( (p_station->newest_trackpoint != NULL)
+            && (p_station->newest_trackpoint->prev != NULL) ) {
+
+        strncpy(tmp, un_spd, sizeof(tmp));
+        tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
+
+        if (symbol_speed_display == 1)
+            tmp[0] = '\0';          // without unit
+ 
+        if ( p_station->newest_trackpoint->prev->speed > 0) {
             speed_ok++;
-            strncpy(tmp, un_spd, sizeof(tmp));
-            tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
-            if (symbol_speed_display == 1)
-                tmp[0] = '\0';          // without unit
- 
+
             xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
-                atof(p_station->speed)*cvt_kn2len,tmp);
-        }
-        // Else check whether the previous position had speed
-        // Note that newest_trackpoint if it exists should be the
-        // same as the current data, so we have to go back one
-        // further trackpoint.
-        else if ( (p_station->newest_trackpoint != NULL)
-                && (p_station->newest_trackpoint->prev != NULL) ) {
-
-            strncpy(tmp, un_spd, sizeof(tmp));
-            tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
-
-            if (symbol_speed_display == 1)
-                tmp[0] = '\0';          // without unit
- 
-            if ( p_station->newest_trackpoint->prev->speed > 0)
-                speed_ok++;
-                xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
-                    p_station->newest_trackpoint->prev->speed * cvt_hm2len,
-                    tmp);
+                p_station->newest_trackpoint->prev->speed * cvt_hm2len,
+                tmp);
         }
     }
 
-    if (symbol_course_display) {
-        // Check whether we have course in the current data
-        if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
+    // Check whether we have course in the current data
+    if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
+        course_ok++;
+        xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
+            atof(p_station->course));
+    }
+    // Else check whether the previous position had a course
+    // Note that newest_trackpoint if it exists should be the
+    // same as the current data, so we have to go back one
+    // further trackpoint.
+    else if ( (p_station->newest_trackpoint != NULL)
+            && (p_station->newest_trackpoint->prev != NULL) ) {
+        if( p_station->newest_trackpoint->prev->course > 0 ) {
             course_ok++;
             xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
-                atof(p_station->course));
-        }
-        // Else check whether the previous position had a course
-        // Note that newest_trackpoint if it exists should be the
-        // same as the current data, so we have to go back one
-        // further trackpoint.
-        else if ( (p_station->newest_trackpoint != NULL)
-                && (p_station->newest_trackpoint->prev != NULL) ) {
-            if( p_station->newest_trackpoint->prev->course > 0 ) {
-                course_ok++;
-                xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
-                    (float)p_station->newest_trackpoint->prev->course);
-            }
+                (float)p_station->newest_trackpoint->prev->course);
         }
     }
 
-    if (!speed_ok)
+    // Save the speed into the dr string, in case we need it later
+    strcpy(dr_speed,temp_speed);
+    if (!speed_ok || !symbol_speed_display)
         strcpy(temp_speed,"");
-    if (!course_ok)
+
+    if (!course_ok || !symbol_course_display)
         strcpy(temp_course,"");
 
     // Set up distance and direction strings for display
@@ -2208,7 +2211,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         if (show_DR
                 && (p_station->newest_trackpoint!=0
                 && course_ok
-                && atof(temp_speed)>0
+                && atof(dr_speed)>0
                 && speed_ok) ) {
             if ( (sec_now()-temp_sec_heard) < sec_old ) {
                 draw_deadreckoning_features(p_station,
@@ -2386,7 +2389,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
         if (show_DR
                 && (p_station->newest_trackpoint!=0
                 && course_ok
-                && atof(temp_speed)>0
+                && atof(dr_speed)>0
                 && speed_ok) ) {
             if ( (sec_now()-temp_sec_heard) < sec_old ) {
                 draw_deadreckoning_features(p_station,
