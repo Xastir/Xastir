@@ -3927,7 +3927,8 @@ int check_unproto_path ( char *data ) {
     int have_trace, have_tracen;
 
 
-    bad_path = ii = have_relay = have_wide = have_widen = have_trace = have_tracen = 0;
+    bad_path = ii = have_relay = have_wide = 0;
+    have_widen = have_trace = have_tracen = 0;
 
     // Remember to free() tmpdata before we return
 #ifdef HAVE_STRNDUP
@@ -4074,11 +4075,13 @@ int check_unproto_path ( char *data ) {
             // this point, a LINKn-n or LANn-n or a explicit
             // callsign
             if (!strstr(ViaCalls[ii], "-")) {
+/*
                 // We do not have an SSID, treat it as a RELAY
                 if (have_relay) {
                     bad_path = 1;
                     break;
                 }
+*/
 
                 have_relay++;
             }
@@ -4106,11 +4109,13 @@ int check_unproto_path ( char *data ) {
                     have_widen++;
                 }
                 else {
+/*
                     // Must be an explicit callsign, treat as relay
                     if (have_relay) {
                        bad_path = 1;
                         break;
                     }
+*/
                     have_relay++;
                 }
             }
