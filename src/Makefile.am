@@ -36,6 +36,7 @@ xastir_SOURCES = \
     location_gui.c \
     main.c main.h \
     maps.c maps.h \
+    map_cache.c map_cache.h \
     map_dos.c \
     map_geo.c \
     map_gdal.c \

@@ -730,7 +730,11 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
                         dblib="no")
 
 	CPPFLAGS=$xastir_save_CPPFLAGS
-    LIBS="-ldb $LIBS"
+
+    if test "${dblib}" = "berkeley"; then
+        LIBS="-ldb $LIBS"
+        AC_DEFINE(USE_MAP_CACHE, 1, [Berkeley DB Map Caching])
+    fi
  
 ])
 
