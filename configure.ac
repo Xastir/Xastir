@@ -963,6 +963,23 @@ AC_CONFIG_FILES([Makefile \
     xastir.spec]) 
  
 AC_OUTPUT 
+
+
+
+# Please leave these in as they're very useful for debug when we
+# port to new platforms!  Leave them commented out unless doing
+# debugging on the configure scripts.
+#
+#echo "" 
+#echo "        LIBS: $LIBS" 
+#echo "     LDFLAGS: $LDFLAGS" 
+#echo "      CFLAGS: $CFLAGS" 
+#echo "    CPPFLAGS: $CPPFLAGS" 
+#echo "      X_LIBS: $X_LIBS" 
+#echo "  X_PRE_LIBS: $X_PRE_LIBS" 
+#echo "X_EXTRA_LIBS: $X_EXTRA_LIBS" 
+
+
  
 echo ===========================================
 echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured using the 
