@@ -65,29 +65,55 @@ on APRS(tm) can be found in the APRSdos documentation written by
 Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
-HELP-INDEX>What's new in Xastir BETA
-(This is an informal list that will be formally written before the next
-release)
+HELP-INDEX>What's new in Xastir 1.3
 
-REFRESH tags on .geos
-Beginnings of Opentrac support- see opentrac.org
-yellow2->yellow3 on tracks to be visable on polygon fill (minor)
-Optional MAP_SCALE_CHECK/FUZZYRASTER to avoid useless map loading
-usr/local/xastir->/usr/local/share/xastir, migration scripts
-break up maps.c
-Interrupting a sequence of map redraws
-Major CPU Usage improvments
-TRANSPAERENT and CROP tags in .geos
-dbfawk- configurable shapefile metadata
-UTM grid support
-Configurable map label font
-snapshot .geo generation
-map label font, style changes
-various menu reorginization
-cad drawing mode
-cursor changes based on mode
-gdal/ogr integration, optional gdal shapefile loading
-tiger maps back in the chooser (reverts to pre-1.2 behavior)
+                    What's new in Xastir 1.3
+
+This latest Xastir release greatly improves on the efficiency and usability of
+Xastir, and adds many helpful and often-requested new features.
+
+.geo files can now have REFRESH tags, to specify how often the file is
+reloaded. This is useful for weather radars, or other dynamic images. .geo
+files can also have a TRANSPARENT tag to make a certain color transparent, and
+a CROP tag to specify a specific region to display.
+
+Opentrac packets are now decoded. See http://opentrac.org/ for more details.
+
+The default main Xastir directory is now /usr/local/share/xastir; please see
+the upgrade notes in README for migration information. This more closely
+mirrors the behavior of other applications.
+
+Xastir efficiency has been greatly improved. Changes in data structures and
+timing values have made this Xastir release the most efficient yet.
+Additionally, map redraw sequences are interruptible, so map panning speed
+has been improved.
+
+dbfawk support - Experimental support for configurable shapefile metadata, in
+an awk-like language. See README.MAPS for more details; this must be turned
+on with a specific switch to the configure command
+
+GDAL/OGR support - Experimental support for GDAL and loading of native TIGER
+data (.RT1 files). This is automatically enabled if the GDAL library is
+found.
+
+Support for UTM w/special zones and MGRS coordinate systems.
+
+Cad drawing mode allows one to draw regions on your screen using the center
+mouse button. This feature is not yet complete, but is functional.
+
+User interface changes:
+* Several of the menus have been reorganized to have a hierarchical design.
+* Additionally, a few colors have been modified for better visibility.
+* The map label font and style are more configurable
+* The cursor changes to let one know if they're in move object or measure mode.
+* If the coordinate system is set to UTM, and "Map Grid" is selected, an UTM
+  grid is displayed. 
+
+Snapshot mode now generates a .geo file, allowing the image to later be used
+as a map.
+
+Tiger maps have been moved back back the chooser, as was the pre-1.2 behavior.
+This is more consistent.
 
 
 HELP-INDEX>What's new in Xastir 1.2
