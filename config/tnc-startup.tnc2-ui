@@ -6,7 +6,7 @@
 # lines that begin with a pound sign are comments.
 
 HID off
-CWID off
+#CWID off
 MONITOR OFF
 ECHO OFF
 LF OFF

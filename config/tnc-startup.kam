@@ -29,7 +29,7 @@ CT APRS Network no connected messages supported!
 ECHO OFF
 FLOW OFF
 HID OFF/OFF
-CWID EVERY 0
+#CWID EVERY 0
 MSTAMP OFF
 PASSALL OFF
 #

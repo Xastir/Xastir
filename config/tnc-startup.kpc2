@@ -7,7 +7,7 @@
 #
 #
 HID off
-CWID every 0
+#CWID every 0
 B E 0
 DIGI on
 ECho off

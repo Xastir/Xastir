@@ -9,8 +9,8 @@ int terminal
 
 ECHO off
 HID off
-CWID off
-CWID every 0
+#CWID off
+#CWID every 0
 MYAlias RELAY
 B E 0
 DIGI on

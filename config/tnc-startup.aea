@@ -10,7 +10,7 @@
 # Thanks.
 #
 HID off
-CWID off
+#CWID off
 EXP on
 ECHO off
 MYAlias RELAY
