@@ -686,6 +686,7 @@ void save_data(void)  {
         store_int (fout, "MAP_CHOOSER_EXPAND_DIRS", map_chooser_expand_dirs);
         store_int (fout, "ST_DIRECT_TIMEOUT", st_direct_timeout);
         store_int (fout, "DEAD_RECKONING_TIMEOUT", dead_reckoning_timeout);
+        store_int (fout, "SERIAL_CHAR_PACING", serial_char_pacing);
 
         if (debug_level & 1)
             fprintf(stderr,"Save Data Stop\n");
@@ -1438,6 +1439,11 @@ void load_data_or_default(void) {
 
     if (!get_int ("DEAD_RECKONING_TIMEOUT", &dead_reckoning_timeout,1,60*60*24*30,60*10))
         dead_reckoning_timeout = 60*10;     // Ten minute default
+
+    if (!get_int ("SERIAL_CHAR_PACING", &serial_char_pacing,0,50,25))
+        serial_char_pacing = 25;    // 25ms default
+
+
 
     input_close();
 }
