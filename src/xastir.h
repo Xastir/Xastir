@@ -106,6 +106,21 @@ extern Widget text;
 extern XtAppContext app_context;
 extern int redraw_on_new_data;
 //extern Widget hidden_shell;
+extern int tiger_flag;
+
+#ifdef HAVE_IMAGEMAGICK  //N0VH
+extern int tiger_show_grid;
+extern int tiger_show_counties;
+extern int tiger_show_cities;
+extern int tiger_show_places;
+extern int tiger_show_majroads;
+extern int tiger_show_streets;
+extern int tiger_show_railroad;
+extern int tiger_show_states;
+extern int tiger_show_interstate;
+extern int tiger_show_ushwy;
+extern int tiger_show_statehwy;
+#endif
 
 extern void sort_list(char *filename,int size, Widget list, int *item);
 
