@@ -303,6 +303,9 @@ Getting Maps and other Data Files for Xastir:
       convert them from State Plane to Lat/Long projection using
       instructions later in this document.
 
+      Canada street maps in Shapefile format are available at
+      http://www.geobase.ca
+
       If you also use GeoTIFF images, get the handy usgs_24kgrid.zip file from
       http://data.geocomm.com/quadindex/.  This file provides a grid of all of
       the 7.5' maps and their names for the U.S.
