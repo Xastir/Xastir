@@ -1844,7 +1844,6 @@ void draw_shapefile_map (Widget w,
                         y = y / scale_y;
 
 
-//WE7U
                         // Save the endpoints of the first line
                         // segment for later use in label rotation
                         if (ring == 0) {
@@ -2171,15 +2170,14 @@ void draw_shapefile_map (Widget w,
                         if (y >  16000) ok = 0;     // Skip this point
                         if (y < -16000) ok = 0;     // Skip this point
 
-//WE7U
                         if (ok == 1 && ok_to_draw) {
                             int new_label = 1;
                             int mod_number;
 
                             // Set up the mod_number, which is used
                             // below to determine how many of each
-                            // identical label to draw at each zoom
-                            // level.
+                            // identical label are skipped at each
+                            // zoom level.
                             if      (scale_y <= 2)
                                 mod_number = 1;
                             else if (scale_y <= 4)
@@ -2188,8 +2186,10 @@ void draw_shapefile_map (Widget w,
                                 mod_number = 5;
                             else if (scale_y <= 16)
                                 mod_number = 10;
+                            else if (scale_y <= 32)
+                                mod_number = 15;
                             else
-                                mod_number = 5;
+                                mod_number = 20;
 
 // Change "United States Highway 2" into "US 2" and "State Highway 204"
 // into "State 204"?
@@ -2229,6 +2229,7 @@ void draw_shapefile_map (Widget w,
                                 }
                             }
                             if (!skip_label) {  // Draw the string
+//WE7U
                                 // Compute the label rotation angle
                                 float diff_X = (int)x1 - x0;
                                 float diff_Y = (int)y1 - y0;
