@@ -7289,9 +7289,15 @@ void map_chooser_fill_in (void) {
     }
 }
 
+
+
+
+
 ///////////////////////////////////////  Configure Tigermaps Dialog //////////////////////////////////////////////
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
+
+
 
 void Configure_tiger_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
 	Widget shell = (Widget) clientData;
@@ -7299,6 +7305,10 @@ void Configure_tiger_destroy_shell( /*@unused@*/ Widget widget, XtPointer client
 	XtDestroyWidget(shell);
 	configure_tiger_dialog = (Widget)NULL;
 }
+
+
+
+
 
 void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
 
@@ -7384,6 +7394,10 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
+
+
+
+
 ////////////////////////////////////////////// Config_tiger//////////////////////////////////////////////////////
 //
 //
@@ -7393,6 +7407,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
     Atom delw;
 
     if (!configure_tiger_dialog) {
+
         configure_tiger_dialog = XtVaCreatePopupShell(langcode("PULDNMP020"),xmDialogShellWidgetClass,Global.top,
                                   XmNdeleteResponse,XmDESTROY,
                                   XmNdefaultPosition, FALSE,
@@ -7409,7 +7424,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                             XmNshadowThickness, 1,
                             NULL);
 // Need to add langcode stuff here
-        tiger_enable_widget = XtVaCreateManagedWidget("Enable Tiger Maps",xmToggleButtonWidgetClass, tiger_form,
+       tiger_enable_widget = XtVaCreateManagedWidget("Enable Tiger Maps",xmToggleButtonWidgetClass, tiger_form,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment, XmATTACH_NONE,
@@ -7418,7 +7433,6 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
-
 
         tiger_file  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),xmLabelWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
@@ -7536,7 +7550,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNsensitive, TRUE,
                                       NULL);
 
-        tiger_lakes  = XtVaCreateManagedWidget(langcode("MPUPTGR014"),xmToggleButtonWidgetClass,tiger_form,
+       tiger_lakes  = XtVaCreateManagedWidget(langcode("MPUPTGR014"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_water,
                                       XmNtopOffset, 6,
@@ -7549,7 +7563,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNsensitive, TRUE,
                                       NULL);
 
-        tiger_misc  = XtVaCreateManagedWidget(langcode("MPUPTGR015"),xmToggleButtonWidgetClass,tiger_form,
+       tiger_misc  = XtVaCreateManagedWidget(langcode("MPUPTGR015"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_lakes,
                                       XmNtopOffset, 6,
@@ -7562,7 +7576,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNsensitive, TRUE,
                                       NULL);
 
-        tiger_states  = XtVaCreateManagedWidget(langcode("MPUPTGR008"),xmToggleButtonWidgetClass,tiger_form,
+       tiger_states  = XtVaCreateManagedWidget(langcode("MPUPTGR008"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_misc,
                                       XmNtopOffset, 6,
@@ -7575,7 +7589,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNsensitive, TRUE,
                                       NULL);
 
-        tiger_interstate  = XtVaCreateManagedWidget(langcode("MPUPTGR009"),xmToggleButtonWidgetClass,tiger_form,
+       tiger_interstate  = XtVaCreateManagedWidget(langcode("MPUPTGR009"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_states,
                                       XmNtopOffset, 6,
@@ -7588,7 +7602,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNsensitive, TRUE,
                                       NULL);
 
-        tiger_ushwy  = XtVaCreateManagedWidget(langcode("MPUPTGR010"),xmToggleButtonWidgetClass,tiger_form,
+       tiger_ushwy  = XtVaCreateManagedWidget(langcode("MPUPTGR010"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_interstate,
                                       XmNtopOffset, 6,
@@ -7601,7 +7615,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNsensitive, TRUE,
                                       NULL);
 
-        tiger_statehwy  = XtVaCreateManagedWidget(langcode("MPUPTGR011"),xmToggleButtonWidgetClass,tiger_form,
+       tiger_statehwy  = XtVaCreateManagedWidget(langcode("MPUPTGR011"),xmToggleButtonWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_ushwy,
                                       XmNtopOffset, 6,
@@ -7614,7 +7628,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNsensitive, TRUE,
                                       NULL);
 
-        tiger_intensity  = XtVaCreateManagedWidget("Intensity", xmScaleWidgetClass,tiger_form,
+       tiger_intensity  = XtVaCreateManagedWidget("Intensity", xmScaleWidgetClass,tiger_form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, tiger_statehwy,
                                       XmNtopOffset, 10,
@@ -7622,19 +7636,18 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
                                       XmNleftOffset ,5,
-				      XmNwidth, 100,
+                                      XmNwidth, 100,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       XmNsensitive, TRUE,
-				      XmNorientation, XmHORIZONTAL,
-				      XmNborderWidth, 1,
-				      XmNminimum, 50,
-				      XmNmaximum, 100,
-				      XmNshowValue, TRUE,
-				      XmNvalue, tigermap_intensity,
-				      XmNtitleString, (XmString) "Intensity",
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNborderWidth, 1,
+                                      XmNminimum, 50,
+                                      XmNmaximum, 100,
+                                      XmNshowValue, TRUE,
+                                      XmNvalue, tigermap_intensity,
+                                      XtVaTypedArg, XmNtitleString, XmRString, "Intensity", 10,
                                       NULL);
-
 
         sep = XtVaCreateManagedWidget("Configure_speech sep", xmSeparatorGadgetClass,tiger_form,
                                       XmNorientation, XmHORIZONTAL,
@@ -7676,6 +7689,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_tiger_change_data, configure_tiger_dialog);
+
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_tiger_destroy_shell, configure_tiger_dialog);
 
         pos_dialog(configure_tiger_dialog);
@@ -7771,6 +7785,10 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         (void)XRaiseWindow(XtDisplay(configure_tiger_dialog), XtWindow(configure_tiger_dialog));
 }
 #endif // HAVE_IMAGEMAGICK
+
+
+
+
 
 //WE7U
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
