@@ -410,70 +410,81 @@ draw_dos_map(Widget w,
       int j;
       
       if (debug_level & 512)
-	fprintf(stderr,"DOS Map\n");
-      
-      //fprintf(stderr,"DOS Map\n");
+	    fprintf(stderr,"\nDOS Map\n");
       
       top_boundary = left_boundary = bottom_boundary = right_boundary = 0;
       rewind (f);
       map_title[0] = map_creator[0] = Buffer[0] = '\0';
       strncpy (map_type, "DOS ", 4);          // set map_type for DOS ASCII maps
+      map_type[4] = '\0';
       strncpy (file_name, filenm, 32);
+      file_name[31] = '\0';
       total_vector_points = 200000;
       total_labels = 2000;
 
-      for (j = 0; j < DOS_HDR_LINES;) {
-        if (!strlen(Buffer))
-          j++;
+      for (j = 0; j < DOS_HDR_LINES; j++) {
         
 	  (void)fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f);
+
+//      if (!strlen(Buffer))
+//        j++;
+ 
 	  while ((ptr = strpbrk (Buffer, "\r\n")) != NULL && j < DOS_HDR_LINES) {
 	    *ptr = '\0';
 	    for (ptr++; *ptr == '\r' || *ptr == '\n'; ptr++) ;
 	    switch (j) {
 	    case 0:
+//fprintf(stderr,"top_boundary: %s\n", Buffer);
 	      top_boundary = (unsigned long) (-atof (Buffer) * 360000 + 32400000);
 	      break;
 	      
 	    case 1:
+//fprintf(stderr,"left_boundary: %s\n", Buffer);
 	      left_boundary = (unsigned long) (-atof (Buffer) * 360000 + 64800000);
 	      break;
 	      
 	    case 2:
+//fprintf(stderr,"points_per_degree: %s\n", Buffer);
 	      points_per_degree = (int) atof (Buffer);
 	      break;
 	      
 	    case 3:
+//fprintf(stderr,"bottom_boundary: %s\n", Buffer);
 	      bottom_boundary = (unsigned long) (-atof (Buffer) * 360000 + 32400000);
 	      bottom_boundary = bottom_boundary + bottom_boundary - top_boundary;
 	      break;
 	      
 	    case 4:
+//fprintf(stderr,"right_boundary: %s\n", Buffer);
 	      right_boundary = (unsigned long) (-atof (Buffer) * 360000 + 64800000);
 	      right_boundary = right_boundary + right_boundary - left_boundary;
 	      break;
 	      
 	    case 5:
+//fprintf(stderr,"map_range: %s\n", Buffer);
 	      map_range = (int) atof (Buffer);
 	      break;
 	      
 	    case 7:
+//fprintf(stderr,"Map Version: %s\n", Buffer);
 	      strncpy (map_version, Buffer, 4);
+          map_version[4] = '\0';    // Terminate it.
+//fprintf(stderr,"MAP VERSION: %s\n", map_version);
 	      break;
             }
 	    strcpy (Buffer, ptr);
-	    if (strlen (Buffer))
-	      j++;
+
+//	    if (strlen (Buffer))
+//	      j++;
+
           }
       }   // End of DOS-type map header portion
     } else {
       // Windows-type map header portion
 	
       if (debug_level & 512)
-        fprintf(stderr,"Windows map\n");
+        fprintf(stderr,"\nWindows map\n");
 	
-      //fprintf(stderr,"Windows map\n");
-      
       (void)fread (map_version, 4, 1, f);
       map_version[4] = '\0';
       
@@ -534,10 +545,10 @@ draw_dos_map(Widget w,
     
     
     if (debug_level & 16) {
-      fprintf(stderr,"Map Type %s, Version: %s, Filename %s\n", map_type,map_version, file_name);
-      fprintf(stderr,"Left Boundary %ld, Right Boundary %ld\n", (long)left_boundary,(long)right_boundary);
-      fprintf(stderr,"Top Boundary %ld, Bottom Boundary %ld\n", (long)top_boundary,(long)bottom_boundary);
-      fprintf(stderr,"Total vector points %ld, total labels %ld\n",total_vector_points, total_labels);
+      fprintf(stderr,"Map Type: %s, Version: %s, Filename: %s\n", map_type, map_version, file_name);
+      fprintf(stderr,"Left Boundary: %ld, Right Boundary: %ld\n", (long)left_boundary,(long)right_boundary);
+      fprintf(stderr,"Top Boundary: %ld, Bottom Boundary: %ld\n", (long)top_boundary,(long)bottom_boundary);
+      fprintf(stderr,"Total vector points: %ld, total labels: %ld\n",total_vector_points, total_labels);
     }
       
       
@@ -661,6 +672,7 @@ draw_dos_map(Widget w,
                   LatHld = strtol (trailer, &trailer, 0);
                 } else if (LongHld == 0 && *trailer != '\0') {
                   strncpy (map_version, "Comp", 4);
+                  map_version[4] = '\0';
                   goto process;
                 }
                 if (LongHld == 0 && LatHld == 0) {
@@ -711,6 +723,7 @@ draw_dos_map(Widget w,
                   for (; *trailer == ',' || *trailer == ' '; trailer++) ;
                   dos_flag = (int)strtol (trailer, &trailer, 0);
                   strncpy (Tag, trailer, 80);
+                  Tag[79] = '\0';
                   if (dos_flag == -1)
                     dos_labels = (int)TRUE;
                 }
@@ -780,6 +793,7 @@ draw_dos_map(Widget w,
                 if (*trailer == ',' || *trailer == ' ') {
                   if (LongHld == 0)
                     strncpy (map_version, "ASCII", 4);
+                    map_version[4] = '\0';
                   
                   trailer++;
                   dos_flag = (int)strtol (trailer, &trailer, 0);
@@ -788,12 +802,14 @@ draw_dos_map(Widget w,
                   
                   if (dos_flag == 0 && *trailer != '\0') {
                     strncpy (map_version, "Line", 4);
+                    map_version[4] = '\0';
                     goto process;
                   }
                   color = (int)LongHld;
                 }
               } else
                 strncpy (map_version, "Comp", 4);
+                map_version[4] = '\0';
             }
             strcpy (Buffer, ptr);
           }
@@ -1137,4 +1153,5 @@ draw_dos_map(Widget w,
   else
     fprintf(stderr,"Couldn't open file: %s\n", file);
 }
+
 
