@@ -22,6 +22,7 @@
  * Look at the README for more information on the program.
  */
 
+//#define WE7U 1
 
 #include "config.h"
 #include "snprintf.h"
@@ -406,6 +407,11 @@ int posit_tx_disable;
 int object_tx_disable;
 Widget iface_transmit_now, posit_tx_disable_toggle, object_tx_disable_toggle;
 
+#ifdef WE7U
+Widget Fetch_gps_track, Fetch_gps_route, Fetch_gps_waypoints;
+Widget Send_gps_track, Send_gps_route, Send_gps_waypoints;
+#endif  // WE7U
+
 // ------------------------ unit conversion --------------------------
 static void Units_choice_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
@@ -608,6 +614,10 @@ static void Menu_Quit(Widget w, XtPointer clientData, XtPointer calldata);
 
 static void TNC_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 static void TNC_Transmit_now(Widget w, XtPointer clientData, XtPointer calldata);
+
+#ifdef WE7U
+static void GPS_operations(Widget w, XtPointer clientData, XtPointer calldata);
+#endif  // WE7U
 
 static void Net_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 
@@ -5612,6 +5622,55 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     if (transmit_disable)
         XtSetSensitive(iface_transmit_now,FALSE);
 
+#ifdef WE7U
+    Fetch_gps_track = XtVaCreateManagedWidget(langcode("Fetch_Tr"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("Fetch_Tr"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    Fetch_gps_route = XtVaCreateManagedWidget(langcode("Fetch_Rt"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("Fetch_Rt"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    Fetch_gps_waypoints = XtVaCreateManagedWidget(langcode("Fetch_Wp"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("Fetch_Wp"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    Send_gps_track = XtVaCreateManagedWidget(langcode("Send_Tr"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("Send_Tr"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    Send_gps_route = XtVaCreateManagedWidget(langcode("Send_Rt"), 
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("Send_Rt"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    Send_gps_waypoints = XtVaCreateManagedWidget(langcode("Send_Wp"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("Send_Wp"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+#endif  // WE7U 
 
     /* Help*/
     help_about = XtVaCreateManagedWidget(langcode("PULDNHEL01"),
@@ -5666,6 +5725,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /* TNC */
     XtAddCallback(iface_transmit_now,   XmNactivateCallback,TNC_Transmit_now,NULL);
 
+#ifdef WE7U
+    XtAddCallback(Fetch_gps_track,      XmNactivateCallback,GPS_operations,"1");
+    XtAddCallback(Fetch_gps_route,      XmNactivateCallback,GPS_operations,"2");
+    XtAddCallback(Fetch_gps_waypoints,  XmNactivateCallback,GPS_operations,"3");
+    XtAddCallback(Send_gps_track,       XmNactivateCallback,GPS_operations,"4");
+    XtAddCallback(Send_gps_route,       XmNactivateCallback,GPS_operations,"5");
+    XtAddCallback(Send_gps_waypoints,   XmNactivateCallback,GPS_operations,"6");
+#endif  // WE7U
 
     XtAddCallback(auto_msg_set_button,XmNactivateCallback,Auto_msg_set,NULL);
 
@@ -8515,6 +8582,90 @@ void  Index_maps_on_startup_toggle( /*@unused@*/ Widget widget, XtPointer client
 void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
     transmit_now = 1;              /* toggle transmission of station now*/
 }
+
+
+
+
+
+#ifdef WE7U
+void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+    char temp[500];
+    FILE *f;
+
+// We really need to put the GPS operations into their own thread as
+// they halt the main thread while running.
+
+    if (clientData != NULL) {
+        if (strcmp(clientData,"1") == 0) {
+            // Fetch track from GPS
+            fprintf(stderr,"Fetch track from GPS\n");
+// gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile_2D track.date
+            xastir_snprintf(temp,
+                sizeof(temp),
+"cd /home/src/gpsman/gpsman-pre6.0;./gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile_2D /usr/local/xastir/maps/track");
+            if ( system(temp) ) {
+                fprintf(stderr,"Couldn't download the track\n");
+                return;
+            }
+            else {  // We succeeded!
+                // Add the file to the selected maps file, cause a
+                // reload of the maps to occur, and then re-index
+                // maps (so that map may be deselected by the user).
+
+//WE7U
+f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
+if (f!=NULL) {
+    fprintf(f,"%s\n","track.shp");
+    (void)fclose(f);
+}
+else {
+    fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
+}
+
+// Set permissions on the new map files also!!!
+
+map_indexer();      // Have to have the new map in the index first before we can select it
+map_chooser_init(); // Re-read the selected_maps.sys file
+re_sort_maps = 1;   // Creates a new sorted list from the selected maps
+create_image(da);
+(void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+            }
+        }
+        else if (strcmp(clientData,"2") == 0) {
+            // Fetch route from GPS
+            fprintf(stderr,"Fetch route from GPS\n");
+// gpsman.tcl -dev /dev/ttyS0 getwrite RT Shapefile_2D routes.date
+        }
+        else if (strcmp(clientData,"3") == 0) {
+            // Fetch waypoints from GPS
+            fprintf(stderr,"Fetch waypoints from GPS\n");
+// gpsman.tcl -dev /dev/ttyS0 getwrite WP Shapefile_2D waypoints.date
+        }
+        else if (strcmp(clientData,"4") == 0) {
+            // Send track to GPS
+            fprintf(stderr,"Send track to GPS\n");
+// gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D track.date TR 
+        }
+        else if (strcmp(clientData,"5") == 0) {
+            // Send route to GPS
+            fprintf(stderr,"Send route to GPS\n");
+// gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D routes.date RT 
+        }
+        else if (strcmp(clientData,"6") == 0) {
+            // Send waypoints to GPS
+            fprintf(stderr,"Send waypoints to GPS\n");
+// gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D waypoints.date WP 
+        }
+        else {
+            fprintf(stderr,"Illegal param passed to GPS_operations function!\n");
+        }
+    }
+}
+#endif  // WE7U
+
+
+
+
 
 void Set_Log_Indicator(){
 	if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate)) {
