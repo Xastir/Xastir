@@ -841,7 +841,7 @@ void msg_record_ack(char *to_call_sign,
 
     if (do_update) {
 
-//        update_messages(1); // Force an update
+        update_messages(1); // Force an update
 
         // Call check_popup_messages() here in order to pop up any
         // closed Send Message dialogs.  For first ack's or
