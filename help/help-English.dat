@@ -116,140 +116,6 @@ Tiger maps have been moved back back the chooser, as was the pre-1.2 behavior.
 This is more consistent.
 
 
-HELP-INDEX>What's new in Xastir 1.2
-
-                    What's new in Xastir 1.2
-
-The latest Xastir release adds numerous new capabilities, keeping Xastir a
-benchmark for APRS programs on any operating system.
-
-Xastir's hardware support has been enhanced, with
-* Support for Serial KISS TNCs
-* Support for Serial TNCs with GPS on the AUX port
-* Support for using AGWPE as a TNC
-* Support for Dallas One-Wire weather station
-  (see http://melhuish.info/simon/projects/oww/)
-* Support for more weather stations via the wx200d daemon (WX-200/WM-918/
-  WMR-918/WMR-968)
-* Support for the different sized rain gauges of the Peet Brothers weather
-  stations.
-
-Additionally, several bugs in the weather reporting code were corrected, and
-support for setting the system clock based on the GPS was added.
-
-There have been many additions and improvements to the Xastir user interface:
-The most notable is the addition of dead-reckoning. This means that stations
-that are moving will continue to move on your screen in the direction and at
-the speed speed that they last reported. The estimated location can be shown
-with any combination of a ghosted icon, a dashed line from the last position,
-or an arc of expected possible distance and angle.
-
-Also very notable are the improvements to the Map Chooser. Maps can now be
-selected a directory at a time, or individually. And the new map properties
-dialog allows individual control of map layering, map color filling, and
-consideration for auto-maps. Additionally, with extent caching under the hood,
-auto-maps regains much of its formal usefulness even with many maps installed!
-
-Bulletins pop up on screen, and emergency beacons cause an alert with the 
-locate station dialog on hand. These changes are helpful in emergencies and
-event coordination.
-
-Xastir can now be set to use one of several coordinate systems, including UTM,
-dd.ddddd, dd mm.mmm, and dd mm ss.s. This is helpful for coordinating with
-other groups using a different system.
-
-The online Tiger maps can now be enabled from the map menu, and options can
-be adjusted to request maps with just the data you want displayed.
-
-The stations menu has been reorganized, allowing more intuitive filtering of
-stations shown and of accompanying data.
-
-Other smaller interface changes include:
-* The density of the grid-lines can be adjusted with the +, =, and - keys.
-* Objects and item lists have been added to the view menu.
-* Station maidenhead grid squares are now shown in station info and the
-  coordinate calculator.
-* There is a check-box "Track me" to enable easily tracking your own station
-* The length of trails downloaded from findu.com can now be specified.
-* Xastir can now ID via voice ID's or Screen ID's, by editing the configuration
-  file. This is intended for configurations when the Xastir screen is seen
-  remotely via fast-scan TV. 
-* Timestamps are written to log files every 30 seconds of operation, to keep a
-  record of when data was heard.
-* The status bar can display the course/distance to your station when
-  enabled in the file|configure menu.
-* Range scales are now shown opposite the map scale. This is an attempt to
-  standardize various APRS client approaches to zoom levels.
-
-New additions under-the-hood:
-* Tracked proximity alarms.
-* Export waypoints within proximity boundaries.  Your GPS can show
-  you the locations of APRS stations as waypoints on the GPS map
-  screen.
-* Export trail as ESRI Shapefile.  New feature if you have Shapelib
-  compiled in.  Station Info->Store Track button also creates a
-  Shapefile map of the station's track now.
-
-The weather reporting features have been improved, with the addition of
-optional wind barbs to weather stations and decoding of storm wind radius data.
-Weather alert shading is now done with pixmap stipples showing the type of
-alert. Further information on an alert is available over the internet from
-the WXserver by simply double-clicking the alert in the weather alerts list.
-Weather alerts now use the newer ESRI Shapefile-format maps.
-
-Xastir's map support has been improved with enhancements to the ESRI Shapefile
-code to handle point-type ESRI Shapefiles. Additionally, speed improvements
-have been made in the ImageMagick graphical map loading, and many
-color-correction features have been added. As mentioned above, the Map Chooser
-has been greatly improved, and weather alerts use ESRI Shapefile-format maps.
-
-Under the hood, Xastir has had several major improvements:
-
-The messaging system has been largely rewritten, and the annoying timed updates
-to dialogs no longer occur. The new messaging system allows multiple messages
-to be queued, and implements reply-ack's for speed. Xastir also attempts to
-specify a reasonable path for the message based on received messages. This
-improves speed and congestion control. The messaging GUI has been largly
-untouched, and remains high on the list of future improvements.
-
-The build process has been significantly improved; Xastir is now able to be
-built on numerous operating systems with few manual interventions.
-
-Xastir now supports GPSMan/gpsmanshp, allowing the importing of waypoints,
-tracks, and routes from several types of GPS receivers.  This allows you to
-create ESRI Shapefile-format maps out of GPS data.
-
-Xastir now implements SmartBeaconing(tm), which greatly improves trail quality
-and reduces unneeded channel usage. See the "Configure SmartBeaconing" help
-topic.
-
-IGating support has also improved, with the ability to configure a specific RF
-path for IGated packets, and the addition of a 29 second anti-dupe queue to
-reduce unnecessary redundancy on the RF channel.
-
-Map extents and filenames are now cached, so maps will not be loaded from disk
-unless they are on screen. This is a major improvement for map types that did
-not specify this information. Additionally, auto-maps uses this information,
-making it usable even with many maps installed.
-
-Objects controlled by Xastir are now stored in a file, so a restart of Xastir
-will not cause them to be lost. Additionally, Xastir now supports the
-compressed format for objects and items, which can help reduce RF channel
-congestion. It also gives you better location accuracy of the placed objects.
-See the help topic "Configure Default Operation".
-
-Xastir now drops root privileges when not needed if run setuid root. Please
-read the information about this in INSTALL; this change provides only
-limited protection.
-
-Xastir now supports using a private colormap with the command-line argument
-"-i". This is recommended for systems running in 8-bit color mode. 
-
-Additionally, several more buffer overruns and other errors were corrected in
-Xastir's data parser, and numerous other bugs have been fixed.
-
-Enjoy the new Xastir!
-
 HELP-INDEX>Starting Xastir for the first time
 
                     Starting Xastir for the first time
@@ -2388,3 +2254,138 @@ Other notable improvements:
   bugs and memory leaks have been fixed. And several more errors have been
   corrected in the parsing routines, so Xastir should remain stable no matter
   what is thrown at it! 
+
+
+HELP-INDEX>What was new in Xastir 1.2
+
+                    What was new in Xastir 1.2
+
+The latest Xastir release adds numerous new capabilities, keeping Xastir a
+benchmark for APRS programs on any operating system.
+
+Xastir's hardware support has been enhanced, with
+* Support for Serial KISS TNCs
+* Support for Serial TNCs with GPS on the AUX port
+* Support for using AGWPE as a TNC
+* Support for Dallas One-Wire weather station
+  (see http://melhuish.info/simon/projects/oww/)
+* Support for more weather stations via the wx200d daemon (WX-200/WM-918/
+  WMR-918/WMR-968)
+* Support for the different sized rain gauges of the Peet Brothers weather
+  stations.
+
+Additionally, several bugs in the weather reporting code were corrected, and
+support for setting the system clock based on the GPS was added.
+
+There have been many additions and improvements to the Xastir user interface:
+The most notable is the addition of dead-reckoning. This means that stations
+that are moving will continue to move on your screen in the direction and at
+the speed speed that they last reported. The estimated location can be shown
+with any combination of a ghosted icon, a dashed line from the last position,
+or an arc of expected possible distance and angle.
+
+Also very notable are the improvements to the Map Chooser. Maps can now be
+selected a directory at a time, or individually. And the new map properties
+dialog allows individual control of map layering, map color filling, and
+consideration for auto-maps. Additionally, with extent caching under the hood,
+auto-maps regains much of its formal usefulness even with many maps installed!
+
+Bulletins pop up on screen, and emergency beacons cause an alert with the 
+locate station dialog on hand. These changes are helpful in emergencies and
+event coordination.
+
+Xastir can now be set to use one of several coordinate systems, including UTM,
+dd.ddddd, dd mm.mmm, and dd mm ss.s. This is helpful for coordinating with
+other groups using a different system.
+
+The online Tiger maps can now be enabled from the map menu, and options can
+be adjusted to request maps with just the data you want displayed.
+
+The stations menu has been reorganized, allowing more intuitive filtering of
+stations shown and of accompanying data.
+
+Other smaller interface changes include:
+* The density of the grid-lines can be adjusted with the +, =, and - keys.
+* Objects and item lists have been added to the view menu.
+* Station maidenhead grid squares are now shown in station info and the
+  coordinate calculator.
+* There is a check-box "Track me" to enable easily tracking your own station
+* The length of trails downloaded from findu.com can now be specified.
+* Xastir can now ID via voice ID's or Screen ID's, by editing the configuration
+  file. This is intended for configurations when the Xastir screen is seen
+  remotely via fast-scan TV. 
+* Timestamps are written to log files every 30 seconds of operation, to keep a
+  record of when data was heard.
+* The status bar can display the course/distance to your station when
+  enabled in the file|configure menu.
+* Range scales are now shown opposite the map scale. This is an attempt to
+  standardize various APRS client approaches to zoom levels.
+
+New additions under-the-hood:
+* Tracked proximity alarms.
+* Export waypoints within proximity boundaries.  Your GPS can show
+  you the locations of APRS stations as waypoints on the GPS map
+  screen.
+* Export trail as ESRI Shapefile.  New feature if you have Shapelib
+  compiled in.  Station Info->Store Track button also creates a
+  Shapefile map of the station's track now.
+
+The weather reporting features have been improved, with the addition of
+optional wind barbs to weather stations and decoding of storm wind radius data.
+Weather alert shading is now done with pixmap stipples showing the type of
+alert. Further information on an alert is available over the internet from
+the WXserver by simply double-clicking the alert in the weather alerts list.
+Weather alerts now use the newer ESRI Shapefile-format maps.
+
+Xastir's map support has been improved with enhancements to the ESRI Shapefile
+code to handle point-type ESRI Shapefiles. Additionally, speed improvements
+have been made in the ImageMagick graphical map loading, and many
+color-correction features have been added. As mentioned above, the Map Chooser
+has been greatly improved, and weather alerts use ESRI Shapefile-format maps.
+
+Under the hood, Xastir has had several major improvements:
+
+The messaging system has been largely rewritten, and the annoying timed updates
+to dialogs no longer occur. The new messaging system allows multiple messages
+to be queued, and implements reply-ack's for speed. Xastir also attempts to
+specify a reasonable path for the message based on received messages. This
+improves speed and congestion control. The messaging GUI has been largly
+untouched, and remains high on the list of future improvements.
+
+The build process has been significantly improved; Xastir is now able to be
+built on numerous operating systems with few manual interventions.
+
+Xastir now supports GPSMan/gpsmanshp, allowing the importing of waypoints,
+tracks, and routes from several types of GPS receivers.  This allows you to
+create ESRI Shapefile-format maps out of GPS data.
+
+Xastir now implements SmartBeaconing(tm), which greatly improves trail quality
+and reduces unneeded channel usage. See the "Configure SmartBeaconing" help
+topic.
+
+IGating support has also improved, with the ability to configure a specific RF
+path for IGated packets, and the addition of a 29 second anti-dupe queue to
+reduce unnecessary redundancy on the RF channel.
+
+Map extents and filenames are now cached, so maps will not be loaded from disk
+unless they are on screen. This is a major improvement for map types that did
+not specify this information. Additionally, auto-maps uses this information,
+making it usable even with many maps installed.
+
+Objects controlled by Xastir are now stored in a file, so a restart of Xastir
+will not cause them to be lost. Additionally, Xastir now supports the
+compressed format for objects and items, which can help reduce RF channel
+congestion. It also gives you better location accuracy of the placed objects.
+See the help topic "Configure Default Operation".
+
+Xastir now drops root privileges when not needed if run setuid root. Please
+read the information about this in INSTALL; this change provides only
+limited protection.
+
+Xastir now supports using a private colormap with the command-line argument
+"-i". This is recommended for systems running in 8-bit color mode. 
+
+Additionally, several more buffer overruns and other errors were corrected in
+Xastir's data parser, and numerous other bugs have been fixed.
+
+Enjoy the new Xastir!
