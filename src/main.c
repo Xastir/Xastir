@@ -11922,7 +11922,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNmaximum, 120,
                 XmNshowValue, TRUE,
                 XmNvalue, tigermap_timeout,
-                XtVaTypedArg, XmNtitleString, XmRString, "Timeout (sec)", 10,
+                XtVaTypedArg, XmNtitleString, XmRString, "Timeout (sec)", 14,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13190,7 +13190,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNdecimalPoints, 1,    // Move decimal point over one
                 XmNshowValue, TRUE,
                 XmNvalue, (int)((POSIT_rate * 10) / 60),  // Minutes * 10
-                XtVaTypedArg, XmNtitleString, XmRString, "Posit TX Interval (min)", 6,
+                XtVaTypedArg, XmNtitleString, XmRString, "Posit TX Interval (min)", 24,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13215,7 +13215,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 3*60,   // Three hours
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_old/60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Station Ghosting Time (min)", 15,
+                XtVaTypedArg, XmNtitleString, XmRString, "Station Ghosting Time (min)", 28,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13241,7 +13241,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 120,    // 120 minutes
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(OBJECT_rate / 60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Object/Item TX Interval (min)", 6,
+                XtVaTypedArg, XmNtitleString, XmRString, "Object/Item TX Interval (min)", 30,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13267,7 +13267,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 24*7,   // One week
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_clear/(60*60)),
-                XtVaTypedArg, XmNtitleString, XmRString, "Station Clear Time (hours)", 6,
+                XtVaTypedArg, XmNtitleString, XmRString, "Station Clear Time (hours)", 27,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13293,13 +13293,13 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 60,     // Sixty seconds
                 XmNshowValue, TRUE,
                 XmNvalue, (int)gps_time,
-                XtVaTypedArg, XmNtitleString, XmRString, "GPS Check Interval (sec)", 6,
+                XtVaTypedArg, XmNtitleString, XmRString, "GPS Check Interval (sec)", 25,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
  
         // Interval for station being removed from database
-        removal_time = XtVaCreateManagedWidget("Station Removal Time",
+        removal_time = XtVaCreateManagedWidget("Station Delete Time",
                 xmScaleWidgetClass,
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
@@ -13319,7 +13319,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 14,     // Two weeks
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(sec_remove/(60*60*24)),
-                XtVaTypedArg, XmNtitleString, XmRString, "Station Delete Time (days)", 6,
+                XtVaTypedArg, XmNtitleString, XmRString, "Station Delete Time (days)", 27,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13345,7 +13345,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
                 XmNmaximum, 60,     // Sixty minutes
                 XmNshowValue, TRUE,
                 XmNvalue, (int)(dead_reckoning_timeout / 60),
-                XtVaTypedArg, XmNtitleString, XmRString, "Dead-Reckoning Timeout (min)", 6,
+                XtVaTypedArg, XmNtitleString, XmRString, "Dead-Reckoning Timeout (min)", 29,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
