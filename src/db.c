@@ -534,8 +534,12 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
                 seq,
                 record);
         }
+        // Only cause an update if this is the first ack.  This
+        // reduces dialog "flashing" a great deal
+        if ( msg_data[msg_index[record]].acked == 0 ) {
+            do_update++;
+        }
         msg_data[msg_index[record]].acked = 1;
-        do_update++;
         if (debug_level & 1) {
             printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
                 msg_data[msg_index[record]].acked,
