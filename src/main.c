@@ -620,6 +620,7 @@ Widget object_name_data,
        object_lon_data_deg, object_lon_data_min, object_lon_data_ew,
        object_group_data, object_symbol_data, object_icon,
        object_comment_data, ob_frame, ob_group, ob_symbol,
+       ob_option_frame,
        signpost_frame, area_frame, area_toggle, signpost_toggle,
        df_bearing_toggle, map_view_toggle, probabilities_toggle,
        ob_bearing_data, frameomni, framebeam,
@@ -23056,16 +23057,6 @@ void  Map_View_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
         XmToggleButtonSetState(df_bearing_toggle, FALSE, FALSE);
         XmToggleButtonSetState(probabilities_toggle, FALSE, FALSE);
  
-        // Make fields insensitive that we don't use here.
-        XtSetSensitive(ob_speed,FALSE);
-        XtSetSensitive(ob_speed_data,FALSE);
-        XtSetSensitive(ob_course,FALSE);
-        XtSetSensitive(ob_course_data,FALSE);
-        XtSetSensitive(ob_altitude,FALSE);
-        XtSetSensitive(ob_altitude_data,FALSE);
-//        XtSetSensitive(ob_comment,FALSE);
-//        XtSetSensitive(object_comment_data,FALSE);
-
         temp_data[0] = '/';
         temp_data[1] = '\0';
         XmTextFieldSetString(object_group_data,temp_data);
@@ -23075,6 +23066,7 @@ void  Map_View_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
         XmTextFieldSetString(object_symbol_data,temp_data);
 
         XtSetSensitive(ob_frame,FALSE);
+        XtSetSensitive(ob_option_frame,FALSE);
 
        // update symbol picture
         (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
@@ -23098,6 +23090,7 @@ void  Map_View_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, 
         XmTextFieldSetString(object_symbol_data,temp_data);
 
         XtSetSensitive(ob_frame,TRUE);
+        XtSetSensitive(ob_option_frame,TRUE);
 
         // update symbol picture
         (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
@@ -23384,7 +23377,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 signpost_label,
                 probability_frame,probability_form,probability_ts,
                 probability_label_min, probability_label_max,
-                ob_option_frame,ob_option_ts,ob_option_form,
+                ob_option_ts,ob_option_form,
                 area_ts, area_form,
                 bright_dim_toggle,
                 shape_box,toption1,toption2,toption3,toption4,toption5,
@@ -26309,6 +26302,7 @@ if (Area_object_enabled) {
 
             XmTextFieldSetString(object_name_data,"");
 
+
             // Set the symbol type based on the global variables
             if (Area_object_enabled) {
                 temp_data[0] = '\\';
@@ -26320,6 +26314,8 @@ if (Area_object_enabled) {
                 XmTextFieldSetString(object_symbol_data,temp_data);
 
                 XtSetSensitive(ob_frame,FALSE);
+
+
             } else if (Signpost_object_enabled) {
                 temp_data[0] = '\\';
                 temp_data[1] = '\0';
@@ -26366,6 +26362,20 @@ if (Area_object_enabled) {
                 XmToggleButtonGadgetSetState(woption5, TRUE, TRUE); // 16 degree beamwidth
 
                 XtSetSensitive(ob_frame,FALSE);
+
+
+            } else if (Map_View_object_enabled){
+                temp_data[0] = '/';
+                temp_data[1] = '\0';
+                XmTextFieldSetString(object_group_data,temp_data);
+
+                temp_data[0] = 'E';
+                temp_data[1] = '\0';
+                XmTextFieldSetString(object_symbol_data,temp_data);
+
+                XtSetSensitive(ob_frame,FALSE);
+                XtSetSensitive(ob_option_frame,FALSE);
+
 
             } else {  // Normal object/item
                 temp_data[0] = '/';
