@@ -15519,21 +15519,23 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
 void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat) {
     int my_course = atoi(p_station->course); // In ° true
     double range;
-    float bearing_radians, lat_M_radians;
+    double bearing_radians, lat_M_radians;
     float lat_A, lat_B, lon_A, lon_B, lat_M;
     int ret;
+    unsigned long x_u_long, y_u_lat;
 
 
     // Get distance in nautical miles
     range = (double)( (sec_now() - p_station->sec_heard)
             * ( atof(p_station->speed) / 3600.0 ) );
 
-fprintf(stderr,"Distance:%fnm, Time:%d\n",
+fprintf(stderr,"Distance:%fnm, Course:%d,  Time:%d\n",
     range,
+    my_course,
     (int)(sec_now() - p_station->sec_heard));
 
     // Bearing in radians
-    bearing_radians = (my_course/360.0) * 2.0 * M_PI;
+    bearing_radians = (double)((my_course/360.0) * 2.0 * M_PI);
 
     // Convert lat/long to floats
     ret = convert_from_xastir_coordinates( &lon_A,
@@ -15550,17 +15552,17 @@ fprintf(stderr,"Distance:%fnm, Time:%d\n",
     }
 
     // Compute new latitude
-    lat_B = lat_A + ( (range/60.0) * cos(bearing_radians) );
+    lat_B = (float)((double)(lat_A) + (range/60.0) * cos(bearing_radians));
 
     // Compute mid-range latitude
     lat_M = (lat_A + lat_B) / 2.0;
 
     // Convert lat_M to radians
-    lat_M_radians = (lat_M/360.0) * 2.0 * M_PI;
+    lat_M_radians = (double)((lat_M/360.0) * 2.0 * M_PI);
 
     // Compute new longitude
-    lon_B = lon_A
-        + ( (range/60.0) * ( sin(bearing_radians) / cos(lat_M_radians) ) );
+    lon_B = (float)((double)(lon_A)
+        + (range/60.0) * ( sin(bearing_radians) / cos(lat_M_radians) ) );
 
     // Test for out-of-bounds longitude, correct if so.
     if (lon_B < -360.0)
@@ -15570,8 +15572,8 @@ fprintf(stderr,"Distance:%fnm, Time:%d\n",
 
 fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
 
-    ret = convert_to_xastir_coordinates(x_long,
-        y_lat,
+    ret = convert_to_xastir_coordinates(&x_u_long,
+        &y_u_lat,
         lon_B,
         lat_B);
 
@@ -15583,7 +15585,15 @@ fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
         return;
     }
 
+    // Convert from unsigned long to long
+    *x_long = (long)x_u_long;
+    *y_lat  = (long)y_u_lat;
+
+
 // Possible Problems:
+// *) At 225 degrees, object went at 180 degrees for a bit.  At 315
+//    degrees, object changes direction slightly with each segment.
+//    Need higher accuracy for the angle?
 // *) Compressed objects/items don't go through this code?
 // *) Looks like direction is slightly off from dead-reckoning local
 //    display.  Due to screen angle vs. lat/lon angle differences?
