@@ -620,10 +620,12 @@ Widget object_name_data,
        object_lon_data_deg, object_lon_data_min, object_lon_data_ew,
        object_group_data, object_symbol_data, object_icon,
        object_comment_data, ob_frame, ob_group, ob_symbol,
-       signpost_frame, area_frame, area_toggle, signpost_toggle, df_bearing_toggle,
-       probabilities_toggle,
+       signpost_frame, area_frame, area_toggle, signpost_toggle,
+       df_bearing_toggle, map_view_toggle, probabilities_toggle,
        ob_bearing_data, frameomni, framebeam,
-       ob_speed, ob_speed_data, ob_course, ob_course_data, ob_altitude_data, signpost_data,
+       ob_speed, ob_speed_data, ob_course, ob_course_data,
+       ob_comment,
+       ob_altitude, ob_altitude_data, signpost_data,
        probability_data_min, probability_data_max,
        open_filled_toggle, ob_lat_offset_data, ob_lon_offset_data,
        ob_corridor, ob_corridor_data, ob_corridor_miles,
@@ -631,6 +633,7 @@ Widget object_name_data,
 Pixmap Ob_icon0, Ob_icon;
 void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata);
 int Area_object_enabled = 0;
+int Map_View_object_enabled = 0;
 int Area_type = 0;
 char Area_color[3] = "/0";
 int Area_bright = 0;
@@ -4636,7 +4639,7 @@ void Mouse_button_handler (Widget w, Widget popup, XButtonEvent *event) {
 #ifdef SWAP_MOUSE_BUTTONS
         // This gets the menus out of the way that are on pointer
         // button1 if SWAP_MOUSE_BUTTONS is enabled.  If it's not
-        // enabled, the don't interfere with each other anyway.
+        // enabled, they don't interfere with each other anyway.
         if (!measuring_distance && !moving_object) {
 #else   // SWAP_MOUSE_BUTTONS
         if (1) {    // Always bring up the menu if SWAP is disabled
@@ -22641,6 +22644,7 @@ void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
         Signpost_object_enabled = 1;
         Area_object_enabled = 0;
         DF_object_enabled = 0;
+        Map_View_object_enabled = 0;
         Probability_circles_enabled = 0;
 
         //fprintf(stderr,"Signpost Objects are ENABLED\n");
@@ -22651,6 +22655,7 @@ void Signpost_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, X
 
         XmToggleButtonSetState(area_toggle, FALSE, FALSE);
         XmToggleButtonSetState(df_bearing_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(map_view_toggle, FALSE, FALSE);
         XmToggleButtonSetState(probabilities_toggle, FALSE, FALSE);
 
         temp_data[0] = '\\';
@@ -22732,6 +22737,7 @@ void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         Signpost_object_enabled = 0;
         Area_object_enabled = 0;
         DF_object_enabled = 0;
+        Map_View_object_enabled = 0;
         Probability_circles_enabled = 1;
 
         //fprintf(stderr,"Probability Circles are ENABLED\n");
@@ -22742,6 +22748,7 @@ void Probability_circle_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 
         XmToggleButtonSetState(area_toggle, FALSE, FALSE);
         XmToggleButtonSetState(df_bearing_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(map_view_toggle, FALSE, FALSE);
         XmToggleButtonSetState(signpost_toggle, FALSE, FALSE);
 
         // Set to hiker symbol by default, but can be changed by
@@ -22823,6 +22830,7 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
         Area_object_enabled = 1;
         Signpost_object_enabled = 0;
         DF_object_enabled = 0;
+        Map_View_object_enabled = 0;
         Probability_circles_enabled = 0;
 
         //fprintf(stderr,"Area Objects are ENABLED\n");
@@ -22834,6 +22842,7 @@ void  Area_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
 
         XmToggleButtonSetState(signpost_toggle, FALSE, FALSE);
         XmToggleButtonSetState(df_bearing_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(map_view_toggle, FALSE, FALSE);
         XmToggleButtonSetState(probabilities_toggle, FALSE, FALSE);
 
         XtSetSensitive(ob_speed,FALSE);
@@ -22924,6 +22933,7 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
         Area_object_enabled = 0;
         Signpost_object_enabled = 0;
         DF_object_enabled = 1;
+        Map_View_object_enabled = 0;
         Probability_circles_enabled = 0;
 
         //fprintf(stderr,"DF Objects are ENABLED\n");
@@ -22935,6 +22945,7 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
 
         XmToggleButtonSetState(signpost_toggle, FALSE, FALSE);
         XmToggleButtonSetState(area_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(map_view_toggle, FALSE, FALSE);
         XmToggleButtonSetState(probabilities_toggle, FALSE, FALSE);
 
         XtSetSensitive(ob_speed,TRUE);
@@ -22986,6 +22997,120 @@ void  DF_bearing_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData
     // Restore name and comment fields
     XmTextFieldSetString(object_name_data,signpost_name);
     XmTextFieldSetString(object_comment_data,comment);
+}
+
+
+
+
+
+// Handler for "Map View Object" toggle button
+void  Map_View_object_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+    char temp_data[40];
+    char comment[43+1];     // max 43 characters of comment
+    char signpost_name[10];
+    char *temp_ptr;
+
+
+    // Save name and comment fields temporarily
+    temp_ptr = XmTextFieldGetString(object_name_data);
+    xastir_snprintf(signpost_name,
+        sizeof(signpost_name),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+
+    (void)remove_trailing_spaces(signpost_name);
+
+    temp_ptr = XmTextFieldGetString(object_comment_data); 
+    xastir_snprintf(comment,
+        sizeof(comment),
+        "%s",
+        temp_ptr);
+    XtFree(temp_ptr);
+    (void)remove_trailing_spaces(comment);
+
+ 
+    if(state->set) {
+        // Make a bunch of the fields insensitive that we don't use
+        // here.
+
+        Area_object_enabled = 0;
+        Signpost_object_enabled = 0;
+        DF_object_enabled = 0;
+        Map_View_object_enabled = 1;
+        Probability_circles_enabled = 0;
+
+        //fprintf(stderr,"Map View Objects are ENABLED\n");
+
+
+// Make a bunch of the fields insensitive that we don't use here?
+
+
+        // Call Set_Del_Object again, causing it to redraw with the new options.
+        //Set_Del_Object( widget, clientData, callData );
+        Set_Del_Object( widget, global_parameter1, global_parameter2 );
+
+        XmToggleButtonSetState(signpost_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(area_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(df_bearing_toggle, FALSE, FALSE);
+        XmToggleButtonSetState(probabilities_toggle, FALSE, FALSE);
+ 
+        // Make fields insensitive that we don't use here.
+        XtSetSensitive(ob_speed,FALSE);
+        XtSetSensitive(ob_speed_data,FALSE);
+        XtSetSensitive(ob_course,FALSE);
+        XtSetSensitive(ob_course_data,FALSE);
+        XtSetSensitive(ob_altitude,FALSE);
+        XtSetSensitive(ob_altitude_data,FALSE);
+//        XtSetSensitive(ob_comment,FALSE);
+//        XtSetSensitive(object_comment_data,FALSE);
+
+        temp_data[0] = '/';
+        temp_data[1] = '\0';
+        XmTextFieldSetString(object_group_data,temp_data);
+
+        temp_data[0] = 'E'; // Eyeball symbol
+        temp_data[1] = '\0';
+        XmTextFieldSetString(object_symbol_data,temp_data);
+
+        XtSetSensitive(ob_frame,FALSE);
+
+       // update symbol picture
+        (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
+   }
+    else {
+        Map_View_object_enabled = 0;
+
+        //fprintf(stderr,"Map View Objects are DISABLED\n");
+
+        // Call Set_Del_Object again, causing it to redraw with the new options.
+        //Set_Del_Object( widget, clientData, callData );
+        Set_Del_Object( widget, global_parameter1, global_parameter2 );
+
+
+        temp_data[0] = '/';
+        temp_data[1] = '\0';
+        XmTextFieldSetString(object_group_data,temp_data);
+
+        temp_data[0] = '/';
+        temp_data[1] = '\0';
+        XmTextFieldSetString(object_symbol_data,temp_data);
+
+        XtSetSensitive(ob_frame,TRUE);
+
+        // update symbol picture
+        (void)updateObjectPictureCallback((Widget)NULL,(XtPointer)NULL,(XtPointer)NULL);
+    }
+
+    // Restore name and comment fields
+    XmTextFieldSetString(object_name_data,signpost_name);
+
+    // Don't want to restore the comment if it is a Map View object,
+    // as Set_Del_Object() changes that field in that case.
+    if (!Map_View_object_enabled) {
+        XmTextFieldSetString(object_comment_data,comment);
+    }
 }
 
 
@@ -23260,8 +23385,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 probability_frame,probability_form,probability_ts,
                 probability_label_min, probability_label_max,
                 ob_option_frame,ob_option_ts,ob_option_form,
-                ob_altitude,
-                ob_comment, area_ts, area_form,
+                area_ts, area_form,
                 bright_dim_toggle,
                 shape_box,toption1,toption2,toption3,toption4,toption5,
                 color_box,coption1,coption2,coption3,coption4,coption5,coption6,coption7,coption8,
@@ -23322,11 +23446,24 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         lon = p_station->coord_lon;     // Fill in values from the original object
         lat = p_station->coord_lat;
     }
-    else {  // We were called from the "Create New Object" mouse menu or by the "Move" option
-        // get default position for object, the position we have clicked at
-        XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
-        lon = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
-        lat = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+    else {
+        // We were called from the "Create New Object" mouse menu or
+        // by the "Move" option get default position for object, the
+        // position we have clicked at.  For the special case of a
+        // Map View object, we instead want the screen center for
+        // this new object.
+        //
+        if (Map_View_object_enabled) {
+            // Get center of screen
+            lon = mid_x_long_offset;
+            lat = mid_y_lat_offset;
+        }
+        else {
+            // Get mouse position
+            XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+            lon = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
+            lat = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+        }
     }
 
 
@@ -23370,22 +23507,31 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         Area_object_enabled = 0;
         Signpost_object_enabled = 0;
         DF_object_enabled = 0;
+        Map_View_object_enabled = 0;
         Probability_circles_enabled = 0;
  
         if (p_station->aprs_symbol.area_object.type != AREA_NONE) { // Found an area object
             Area_object_enabled = 1;
         }
-        else if ( (p_station->aprs_symbol.aprs_symbol == 'm')   // Found a signpost object
+        else if ( (p_station->aprs_symbol.aprs_symbol == 'm') // Found a signpost object
                 && (p_station->aprs_symbol.aprs_type == '\\') ) {
             Signpost_object_enabled = 1;
         }
-        else if ( (p_station->aprs_symbol.aprs_symbol == '\\')   // Found a DF object
+        else if ( (p_station->aprs_symbol.aprs_symbol == '\\') // Found a DF object
                 && (p_station->aprs_symbol.aprs_type == '/')
-                && ((strlen(p_station->signal_gain) == 7)          // That has data associated with it
+                && ((strlen(p_station->signal_gain) == 7) // That has data associated with it
                     || (strlen(p_station->bearing) == 3)
                     || (strlen(p_station->NRQ) == 3) ) ) {
             DF_object_enabled = 1;
         }
+        else if ( (p_station->aprs_symbol.aprs_symbol == 'E') // Found a Map View object
+                && (p_station->aprs_symbol.aprs_type == '/')
+                && (strstr(p_station->power_gain,"RNG") != 0) ) { // Has a range value
+
+            //fprintf(stderr,"Found a range\n");
+            Map_View_object_enabled = 1;
+        }
+
         else if (p_station->probability_min[0] != '\0'      // Found some data
                 || p_station->probability_max[0] != '\0') { // Found some data
             Probability_circles_enabled = 1;
@@ -24137,6 +24283,27 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
 
 
 
+        // "Map View Object"
+//        map_view_toggle = XtVaCreateManagedWidget(langcode("POPUPOB038"),
+        map_view_toggle = XtVaCreateManagedWidget("Map View Object",
+                xmToggleButtonGadgetClass,
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               df_bearing_toggle,
+                XmNtopOffset,               0,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNbottomOffset,            0,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_option_frame,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(map_view_toggle,XmNvalueChangedCallback,Map_View_object_toggle,(XtPointer)p_station);
+
+
+
 //----- Frame for Probability Circles info
 if (Probability_circles_enabled) {
 
@@ -24146,7 +24313,7 @@ if (Probability_circles_enabled) {
                 xmFrameWidgetClass, 
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               df_bearing_toggle,
+                XmNtopWidget,               map_view_toggle,
                 XmNtopOffset,               0,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNleftAttachment,          XmATTACH_FORM,
@@ -24275,7 +24442,7 @@ else if (Signpost_object_enabled) {
                 xmFrameWidgetClass, 
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               df_bearing_toggle,
+                XmNtopWidget,               map_view_toggle,
                 XmNtopOffset,               0,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNleftAttachment,          XmATTACH_FORM,
@@ -24363,7 +24530,7 @@ else if (Area_object_enabled) {
                 xmFrameWidgetClass, 
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               df_bearing_toggle,
+                XmNtopWidget,               map_view_toggle,
                 XmNtopOffset,               0,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNleftAttachment,          XmATTACH_FORM,
@@ -24786,7 +24953,7 @@ else if (DF_object_enabled) {
                 xmFrameWidgetClass, 
                 ob_form,
                 XmNtopAttachment,           XmATTACH_WIDGET,
-                XmNtopWidget,               df_bearing_toggle,
+                XmNtopWidget,               map_view_toggle,
                 XmNtopOffset,               0,
                 XmNbottomAttachment,        XmATTACH_NONE,
                 XmNleftAttachment,          XmATTACH_FORM,
@@ -25471,7 +25638,7 @@ else if (DF_object_enabled) {
                     ob_form,
                     XmNorientation,             XmHORIZONTAL,
                     XmNtopAttachment,           XmATTACH_WIDGET,
-                    XmNtopWidget,               df_bearing_toggle,
+                    XmNtopWidget,               map_view_toggle,
                     XmNtopOffset,               0,
                     XmNbottomAttachment,        XmATTACH_NONE,
                     XmNleftAttachment,          XmATTACH_FORM,
@@ -25680,6 +25847,8 @@ else if (DF_object_enabled) {
             XmToggleButtonSetState(signpost_toggle, TRUE, FALSE);
         if (DF_object_enabled)
             XmToggleButtonSetState(df_bearing_toggle, TRUE, FALSE);
+        if (Map_View_object_enabled)
+            XmToggleButtonSetState(map_view_toggle, TRUE, FALSE);
         if (Probability_circles_enabled)
             XmToggleButtonSetState(probabilities_toggle, TRUE, FALSE);
 
@@ -25692,6 +25861,7 @@ else if (DF_object_enabled) {
             XtSetSensitive(area_toggle, FALSE);
             XtSetSensitive(signpost_toggle, FALSE);
             XtSetSensitive(df_bearing_toggle, FALSE);
+            XtSetSensitive(map_view_toggle, FALSE);
             XtSetSensitive(probabilities_toggle, FALSE);
 
             XmTextFieldSetString(object_name_data,p_station->call_sign);
@@ -25720,11 +25890,29 @@ else if (DF_object_enabled) {
             // We only check the first possible comment string in
             // the record
             //if (strlen(p_station->comments) > 0)
-            if ( (p_station->comment_data != NULL)
+            if (Map_View_object_enabled) {
+
+                if ( (p_station->comment_data != NULL)
+                        && (p_station->comment_data->text_ptr != NULL) ) {
+                    char temp[100];
+
+                    xastir_snprintf(temp,
+                        sizeof(temp),
+                        "%s%s",
+                        p_station->power_gain,
+                        p_station->comment_data->text_ptr);
+                    XmTextFieldSetString(object_comment_data,temp);
+                }
+                else {
+                    XmTextFieldSetString(object_comment_data,p_station->power_gain);
+                }
+            }
+
+            else if ( (p_station->comment_data != NULL)
                     && (p_station->comment_data->text_ptr != NULL) ) {
-                //XmTextFieldSetString(object_comment_data,p_station->comments);
                 XmTextFieldSetString(object_comment_data,p_station->comment_data->text_ptr);
             }
+
             else {
                 XmTextFieldSetString(object_comment_data,"");
             }
@@ -26178,6 +26366,7 @@ if (Area_object_enabled) {
                 XmToggleButtonGadgetSetState(woption5, TRUE, TRUE); // 16 degree beamwidth
 
                 XtSetSensitive(ob_frame,FALSE);
+
             } else {  // Normal object/item
                 temp_data[0] = '/';
                 temp_data[1] = '\0';
@@ -26188,8 +26377,35 @@ if (Area_object_enabled) {
                 XmTextFieldSetString(object_symbol_data,temp_data);
             }
 
-            XmTextFieldSetString(object_comment_data,"");
+            // Compute the range for the Map View object and store
+            // it in the comment field.
+            if (Map_View_object_enabled) {
+
+/*
+// Get mouse position
+XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+lon = mid_x_long_offset - ((width *scale_x)/2) + (menu_x*scale_x);
+lat = mid_y_lat_offset  - ((height*scale_y)/2) + (menu_y*scale_y);
+
+// Find distance from center to top of screen.
+top_range = distance from mid_x_long_offset, mid_y_lat_offset to
+mid_x_long_offset, mid_y_lat_offset-((height*scale_y)/2).
+
+// Find distance from center to left of screen.
+left_range = distance from mid_x_long_offset, mid_y_lat_offset to
+mid_x_long_offset-((width*scale_x)/2), mid_y_lat_offset.
+
+// Compute greater of the two.  This is our range in miles that we
+// need to put into the comment.  Restrict it to four digits.
+*/
+ 
+                XmTextFieldSetString(object_comment_data,"RNG0011 just for testing");
+            }
+            else {
+                XmTextFieldSetString(object_comment_data,"");
+            }
         }
+
 
 
         if (strcmp(calldata,"2") != 0) {  // Normal Modify->Object or Create->Object behavior
@@ -28407,20 +28623,20 @@ int main(int argc, char *argv[], char *envp[]) {
                 fprintf(stderr,"Language is");
                 if (optarg) {
                     lang_to_use_or[0] = '\0';
-                    if (strcasecmp(optarg,"ENGLISH") == 0) {
-                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "English");
-                    } else if (strcasecmp(optarg,"DUTCH") == 0) {
-                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "Dutch");
-                    } else if (strcasecmp(optarg,"FRENCH") == 0) {
-                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "French");
-                    } else if (strcasecmp(optarg,"GERMAN") == 0) {
-                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "German");
-                    } else if (strcasecmp(optarg,"SPANISH") == 0) {
-                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "Spanish");
-                    } else if (strcasecmp(optarg,"ITALIAN") == 0) {
-                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "Italian");
-                    } else if (strcasecmp(optarg,"PORTUGUESE") == 0) {
-                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "Portuguese");
+                    if        (strncasecmp(optarg,"ENGLISH",    7) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "English");
+                    } else if (strncasecmp(optarg,"DUTCH",      5) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Dutch");
+                    } else if (strncasecmp(optarg,"FRENCH",     6) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "French");
+                    } else if (strncasecmp(optarg,"GERMAN",     6) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "German");
+                    } else if (strncasecmp(optarg,"SPANISH",    7) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Spanish");
+                    } else if (strncasecmp(optarg,"ITALIAN",    7) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Italian");
+                    } else if (strncasecmp(optarg,"PORTUGUESE",10) == 0) {
+                        xastir_snprintf(lang_to_use_or, sizeof(lang_to_use_or), "Portuguese");
                    } else {
                         ag_error++;
                         fprintf(stderr," INVALID");
