@@ -55,11 +55,11 @@ foreach $mapdir (@dirlist)
                 printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
             } else {
                 if ($letter eq 'k') {
-                    $dlon = 0-$mlon-1;
+                    $dlon = 0-$mlon-(.125*$mlons)-.125;
                     printf INI "1.5.1.1   WEST BOUNDING COORDINATE:  %.6f\n", $dlon;
-                    $dlon = 0-$mlon-(.125*$mlons)+.25;
+                    $dlon = 0-$mlon-(.125*$mlons)+.125;
                     printf INI "1.5.1.2   EAST BOUNDING COORDINATE:  %.6f\n", $dlon;
-                    $dlat = $mlat+.375+(.125*(&lettonum ($mlats)));
+                    $dlat = $mlat+(.125*(&lettonum ($mlats)));
                     printf INI "1.5.1.3   NORTH BOUNDING COORDINATE:  %.6f\n", $dlat;
                     $dlat = $mlat-.125+(.125*(&lettonum ($mlats)));
                     printf INI "1.5.1.4   SOUTH BOUNDING COORDINATE:  %.6f\n", $dlat;
