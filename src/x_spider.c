@@ -574,7 +574,10 @@ int pipe_check(char *client_address) {
                     //    "x_spider: Authenticated user %s\n",
                     //    callsign);
                     p->authenticated = 1;
-                    xastir_snprintf(p->callsign, 20, "%s", callsign);
+                    xastir_snprintf(p->callsign,
+                        sizeof(p->callsign),
+                        "%s",
+                        callsign);
                     p->callsign[19] = '\0';
                 }
                 else {
