@@ -5013,10 +5013,12 @@ void port_read(int port) {
 // we wake up to check whether the socket has gone down.  Else, we
 // go back into the select to wait for more data or a timeout.
 
-           FD_ZERO(&rd);
+            sched_yield();  // Yield to other threads
+
+            FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 1000;   // 1 ms
+            tmv.tv_usec = 20000;    // 20 ms
             (void)select(0,&rd,NULL,NULL,&tmv);
         }
     }
