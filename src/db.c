@@ -6526,30 +6526,48 @@ void delete_station_memory(DataRow *p_del) {
 
     if (station_shortcuts[hash_key] == NULL) {
         // New hash key entry point found.  Fill in the pointer.
-//fprintf(stderr,"\t\t\t\t\t\tNew hash key: %i\n", hash_key);
+//fprintf(stderr,"New hash key: %i, call: %s\n",
+//    hash_key,
+//    call);
+
         station_shortcuts_update_function(hash_key, p_new);
     }
     else if (p_new->n_prev == NULL) {
         // We just inserted at the beginning of the list.  Assume
         // that we inserted at the beginning of our hash_key
         // segment.
-//fprintf(stderr,"\t\t\t\t\t\tBeginning hash_key1: %i\n", hash_key);
+//fprintf(stderr,"Start of list hash_key: %i, call: %s\n",
+//    hash_key,
+//    call);
+
         station_shortcuts_update_function(hash_key, p_new);
     }
-    else if (p_new->n_prev != NULL) {
-        int hash_key_prev;
+    else {
+        // Check whether either of the first two chars of the new
+        // callsign and the previous callsign are different.  If so,
+        // we need to update the hash table entry for our new record
+        // 'cuz we're at the start of a new hash table entry.
+        if (p_new->n_prev->call_sign[0] != call[0]
+                || p_new->n_prev->call_sign[1] != call[1]) {
+//fprintf(stderr,"Hash segment start: %i, call: %s\n",
+//    hash_key,
+//    call);
 
-        // Compute the hash key for the previous entry in the linked
-        // list.  If it's different, then we just inserted at the
-        // beginning of our hash_key segment.
-        hash_key_prev = (int)((p_new->n_prev->call_sign[0] & 0x7f) << 7);
-        hash_key_prev = hash_key_prev | (int)(p_new->n_prev->call_sign[1] & 0x7f);
-       
-        if (hash_key != hash_key_prev) {
-//fprintf(stderr,"\t\t\t\t\t\tBeginning hash_key2: %i\n", hash_key);
             station_shortcuts_update_function(hash_key, p_new);
         }
     }
+
+//if (p_new->n_prev != NULL) {
+//    fprintf(stderr,"\tprev: %s",
+//        p_new->n_prev->call_sign);\
+//}
+
+//if (p_new->n_next != NULL) {
+//    fprintf(stderr,"\t\tnext: %s",
+//        p_new->n_next->call_sign);
+//}
+//
+//fprintf(stderr,"\n");
 
     return(p_new);                      // return pointer to new element
 }
@@ -6616,11 +6634,6 @@ void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
     int hash_key;
 
 
-/*
-// Commenting out this speedup code for now until it can be examined
-// more closely to see if it is correct.
-
-
 // I just changed the function so that we can pass in the hash_key
 // that we wish to update:  We should be able to speed things up by
 // updating one hash key instead of all 16384 pointers.
@@ -6634,7 +6647,6 @@ void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
 //fprintf(stderr,"%i ",hash_key_in);
     }
     else {  // We're removing a hash key entry.
-*/
 
         // Clear and rebuild the entire hash table.
 
@@ -6675,9 +6687,7 @@ void station_shortcuts_update_function(int hash_key_in, DataRow *p_rem) {
         }
 //fprintf(stderr,"\n");
 
-/*
     }
-*/
 
 }
 
@@ -6769,7 +6779,7 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
             result = strncmp( call, (*p_name)->call_sign, kk );
         }
 
-        if (result > 0) {   // We went past the right location.
+        if (result < 0) {   // We went past the right location.
                             // We're done.
             ok = 0;
 //fprintf(stderr,"Went past possible entry point, searching for call: %s\n",call);
@@ -6781,7 +6791,7 @@ int search_station_name(DataRow **p_name, char *call, int exact) {
 //    call);
             break;
         }
-        else {  // Result < 0.  We haven't found it yet.
+        else {  // Result > 0.  We haven't found it yet.
             (*p_name) = (*p_name)->n_next;  // Next element in list
         }
     }
