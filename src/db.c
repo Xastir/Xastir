@@ -8051,6 +8051,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         }
     }
 
+    ack_string[0] = '\0';   // Clear out the Reply/Ack result string
+
     len = (int)strlen(message);
     ok = (int)(len > 9 && message[9] == ':');
     if (ok) {
@@ -8065,8 +8067,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             temp_ptr[0] = '\0';                 // adjust message end (chops off message ID)
         }
 
-        // Check for Reply/Ack protocol, which looks like this:
-        // "{XX}BB", where XX is the sequence number for the
+        // Check for Reply/Ack protocol in msg_id, which looks like
+        // this:  "{XX}BB", where XX is the sequence number for the
         // message, and BB is the ack for the previous message from
         // my station.  I've also seen this from APRS+: "{XX}B", so
         // perhaps this is also possible "{X}B" or "{X}BB}".  We can
@@ -8074,8 +8076,6 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // "}X" or "}XX" at the end.  We need to decode these as
         // well.
         //
-        ack_string[0] = '\0';   // Make sure the string is empty
-
         temp_ptr = strstr(msg_id,"}"); // look for Reply Ack in msg_id
 
         if (temp_ptr != NULL) { // Found Reply/Ack protocol!
@@ -8106,13 +8106,13 @@ printf("New_msg_id:%s\tReply_ack:%s\n\n",msg_id,ack_string);
 }
 
         }
+        else {  // Look for Reply Ack in message without sequence
+                // number
+            temp_ptr = strstr(message,"}");
 
-        // Look for Reply Ack in message without sequence number
-        temp_ptr = strstr(message,"}");
-
-        if (temp_ptr != NULL) {
-            int zz = 1;
-            int yy = 0;
+            if (temp_ptr != NULL) {
+                int zz = 1;
+                int yy = 0;
 
 if (is_my_call(addr,1)) {
 printf("Found Reply/Ack:%s\n",message);
@@ -8120,20 +8120,20 @@ printf("Found Reply/Ack:%s\n",message);
 
 // Put this code into the UI message area as well?
 
-            while (temp_ptr[zz] != '\0') {
-                ack_string[yy++] = temp_ptr[zz++];
-            }
-            ack_string[yy] = '\0';  // Terminate the string
+                while (temp_ptr[zz] != '\0') {
+                    ack_string[yy++] = temp_ptr[zz++];
+                }
+                ack_string[yy] = '\0';  // Terminate the string
 
-            // Terminate it here so that rest of decode works
-            // properly.  We can get duplicate messages
-            // otherwise.
-            temp_ptr[0] = '\0'; // adjust message end
+                // Terminate it here so that rest of decode works
+                // properly.  We can get duplicate messages
+                // otherwise.
+                temp_ptr[0] = '\0'; // adjust message end
 
 if (is_my_call(addr,1)) {
 printf("Reply_ack:%s\n\n",ack_string);
 }
- 
+            } 
         }
  
         done = 0;
