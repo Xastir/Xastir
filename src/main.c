@@ -563,6 +563,8 @@ XtPointer global_parameter1 = (XtPointer)NULL;
 XtPointer global_parameter2 = (XtPointer)NULL;
 
 void Draw_CAD_Objects(Widget w, XtPointer clientData, XtPointer calldata);
+void Draw_CAD_Objects_close_polygon(Widget w, XtPointer clientData, XtPointer calldata);
+void Draw_CAD_Objects_end_mode(Widget w, XtPointer clientData, XtPointer calldata);
 Widget draw_CAD_objects_dialog = (Widget)NULL;
 int draw_CAD_objects_flag = 0;
 
@@ -920,7 +922,11 @@ time_t WX_ALERTS_REFRESH_TIME;  /* Minimum WX alert map refresh time in seconds 
 /* button zoom */
 int menu_x;
 int menu_y;
+int menu_prev_x;
+int menu_prev_y;
 int mouse_zoom = 0;
+int polygon_start_x;            // Draw CAD objects functions
+int polygon_start_y;            // Draw CAD objects functions
 
 // log file replay
 int read_file;
@@ -4200,6 +4206,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     register unsigned int ac;   /* Arg Count */
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3, zl4, zl5, zl6, zl7, zl8, zl9;
+    Widget CAD_sub, CAD1, CAD2, CAD3;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
     Widget setmyposition, pan_up, pan_down, pan_left, pan_right;
     /*menu widgets */
@@ -7039,20 +7046,65 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
 //WE7U
-    // "Draw CAD Objects Mode"
+
+    CAD_sub=XmCreatePulldownMenu(right_menu_popup,
+            "create_appshell CAD sub",
+            al,
+            ac);
+
+    // "CAD Objects"
+//    draw_CAD_objects_menu=XtVaCreateManagedWidget(langcode("POPUPMA004"),
+    draw_CAD_objects_menu=XtVaCreateManagedWidget("Draw CAD Objects",
+            xmCascadeButtonGadgetClass,
+            right_menu_popup,
+            XmNsubMenuId,CAD_sub,
+//            XmNmnemonic,langcode_hotkey(""),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+    // "Draw Mode"
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA019")); ac++;
-//    modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),
-    draw_CAD_objects_menu=XtCreateManagedWidget("Draw CAD Objects",
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
+//    CAD1=XtCreateManagedWidget(langcode(""),
+    CAD1=XtCreateManagedWidget("Start Draw Mode",
             xmPushButtonGadgetClass,
-            right_menu_popup,
+            CAD_sub,
             al,
             ac);
-    XtAddCallback(draw_CAD_objects_menu,XmNactivateCallback,Draw_CAD_Objects,NULL);
+    XtAddCallback(CAD1,XmNactivateCallback,Draw_CAD_Objects,NULL);
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
+//    CAD2=XtCreateManagedWidget(langcode(""),
+    CAD2=XtCreateManagedWidget("Close Polygon",
+            xmPushButtonGadgetClass,
+            CAD_sub,
+            al,
+            ac);
+    XtAddCallback(CAD2,XmNactivateCallback,Draw_CAD_Objects_close_polygon,NULL);
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
+//    CAD3=XtCreateManagedWidget(langcode(""),
+    CAD3=XtCreateManagedWidget("End Draw Mode",
+            xmPushButtonGadgetClass,
+            CAD_sub,
+            al,
+            ac);
+    XtAddCallback(CAD3,XmNactivateCallback,Draw_CAD_Objects_end_mode,NULL);
 
     XtCreateManagedWidget("create_appshell sep7b",
             xmSeparatorWidgetClass,
@@ -7472,14 +7524,25 @@ void create_gc(Widget w) {
 
 
 
-void Draw_CAD_Objects_destroy_shell( /*@unused@*/ Widget widget,
-        XtPointer clientData,
-        /*@unused@*/ XtPointer callData) {
+// This is the callback for the Draw CAD Objects menu option
+//
+void Draw_CAD_Objects( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer calldata) {
 
-    Widget shell = (Widget) clientData;
-    XtPopdown(shell);
-    XtDestroyWidget(shell);
-    draw_CAD_objects_dialog = (Widget)NULL;
+    fprintf(stderr,"Draw_CAD_Objects function enabled\n");
+    draw_CAD_objects_flag = 1;
+    menu_x = -1;    // Invalid position
+    menu_y = -1;    // Invalid position
+}
+
+
+
+
+
+void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
 
     fprintf(stderr,"Draw_CAD_Objects function disabled\n");
     draw_CAD_objects_flag = 0;
@@ -7489,125 +7552,66 @@ void Draw_CAD_Objects_destroy_shell( /*@unused@*/ Widget widget,
 
 
 
-//WE7U
-// This is the callback for the Draw CAD Objects menu option
-//
-void Draw_CAD_Objects( /*@unused@*/ Widget w,
-        /*@unused@*/ XtPointer clientData,
-        /*@unused@*/ XtPointer calldata) {
+void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
+        XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
 
-    static Widget  pane, form, button_ok, button_cancel;
-    Atom delw;
-
-
-    if (!draw_CAD_objects_dialog) {
-
-        fprintf(stderr,"Draw_CAD_Objects function enabled\n");
-        draw_CAD_objects_flag = 1;
-        menu_x = -1;    // Invalid position
-        menu_y = -1;    // Invalid position
-
-//        draw_CAD_objects_dialog = XtVaCreatePopupShell(langcode("SMARTB001"),
-        draw_CAD_objects_dialog = XtVaCreatePopupShell("Draw CAD Objects",
+    // Draw a line from the last position recorded to the first
+    // position recorded.
+    if (menu_prev_x != -1 && menu_prev_y != -1) {
  
-                xmDialogShellWidgetClass,Global.top,
-                XmNdeleteResponse,XmDESTROY,
-                XmNdefaultPosition, FALSE,
-                NULL);
+        (void)XSetLineAttributes (XtDisplay (da),
+            gc_tint,
+            4,
+            LineOnOffDash,
+            CapButt,
+            JoinMiter);
 
-        pane = XtVaCreateWidget("Draw_CAD_Objects pane",
-                xmPanedWindowWidgetClass,
-                draw_CAD_objects_dialog,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
+        (void)XSetForeground (XtDisplay (da),
+            gc_tint,
+            colors[0x27]);
 
-        form =  XtVaCreateWidget("Draw_CAD_Objects form",
-                xmFormWidgetClass,
-                pane,
-                XmNfractionBase, 2,
-                XmNautoUnmanage, FALSE,
-                XmNshadowThickness, 1,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
+        (void)XSetFunction (XtDisplay (da),
+            gc_tint,
+            GXxor);
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-                xmPushButtonGadgetClass,
-                form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 5,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 0,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 1,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-//        XtAddCallback(button_ok,
-//            XmNactivateCallback,
-//            Smart_Beacon_change_data,
-//            draw_CAD_objects_dialog);
+        (void)XDrawLine(XtDisplay(da),
+            pixmap_final,
+            gc_tint,
+            menu_prev_x,
+            menu_prev_y,
+            polygon_start_x,
+            polygon_start_y);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
-                xmPushButtonGadgetClass,
-                form,
-                XmNtopAttachment, XmATTACH_FORM,
-                XmNtopOffset, 5,
-                XmNbottomAttachment, XmATTACH_FORM,
-                XmNbottomOffset, 5,
-                XmNleftAttachment, XmATTACH_POSITION,
-                XmNleftPosition, 1,
-                XmNrightAttachment, XmATTACH_POSITION,
-                XmNrightPosition, 2,
-                XmNnavigationType, XmTAB_GROUP,
-                MY_FOREGROUND_COLOR,
-                MY_BACKGROUND_COLOR,
-                NULL);
-        XtAddCallback(button_cancel,
-            XmNactivateCallback,
-            Draw_CAD_Objects_destroy_shell,
-            draw_CAD_objects_dialog);
+//fprintf(stderr,"drew line\n");
 
-        pos_dialog(draw_CAD_objects_dialog);
-
-        delw = XmInternAtom(
-            XtDisplay(draw_CAD_objects_dialog),
-            "WM_DELETE_WINDOW",
-            FALSE);
-
-        XmAddWMProtocolCallback(draw_CAD_objects_dialog,
-            delw,
-            Draw_CAD_Objects_destroy_shell,
-            (XtPointer)draw_CAD_objects_dialog);
-
-        XtManageChild(form);
-        XtManageChild(pane);
-        XtPopup(draw_CAD_objects_dialog,XtGrabNone);
-
-//        fix_dialog_size(draw_CAD_objects_dialog);
-
-        // Move focus to the Close button.  This appears to highlight the
-        // button fine, but we're not able to hit the <Enter> key to
-        // have that default function happen.  Note:  We _can_ hit the
-        // <SPACE> key, and that activates the option.
-//        XmUpdateDisplay(draw_CAD_objects_dialog);
-        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
-
+// Copy the new drawing to the screen.  This is of course a
+// temporary thing to test out the concepts.  Later we'll implement
+// storage for the points and an automatic refresh:  Every time we
+// refresh symbols we'll refresh the overlays.
+//
+        (void)XCopyArea(XtDisplay(da),
+            pixmap_final,
+            XtWindow(da),
+            gc,
+            0,
+            0,
+            screen_width,
+            screen_height,
+            0,
+            0);
     }
-    else {  // Raise the dialog if it already exists
-        (void)XRaiseWindow(XtDisplay(draw_CAD_objects_dialog),
-            XtWindow(draw_CAD_objects_dialog));
-    }
+
+    // Tell the code that we're starting a new polygon by wiping out
+    // the first position.
+    menu_x = -1;    // Invalid position
+    menu_y = -1;    // Invalid position
 }
 
 
 
 
- 
+
 // This routine just copies an area from pixmap_final to the
 // display, so we won't go through all the trouble of making this
 // interruptable.  Just get on with it, perform the operation, and
@@ -7790,7 +7794,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
 
 // Check whether we're in CAD object draw mode first
-    if (draw_CAD_objects_flag) {
+    if (draw_CAD_objects_flag && event->xbutton.button == Button2) {
 
 // We need to check to see whether we're dragging the pointer, and
 // then need to save the points away (in Xastir lat/long format),
@@ -7851,8 +7855,16 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 0,
                 0);
         }
+        else {  // First point of a polygon.  Save it.
+            polygon_start_x = input_x;
+            polygon_start_y = input_y;
+        }
 
-        // Save this point away for the next draw.
+        // Save last point away for close polygon code
+        menu_prev_x = menu_x;
+        menu_prev_y = menu_y;
+
+        // Save current point away for the next draw.
         menu_x = input_x;
         menu_y = input_y;
 
