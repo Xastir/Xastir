@@ -5410,11 +5410,7 @@ void port_read(int port) {
 #ifdef __solaris__
                     from_len = (unsigned int)sizeof(from);
 #else   // __solaris__
-  #ifndef socklen_t
-                    from_len = (int)sizeof(from);
-  #else // socklen_t
                     from_len = (socklen_t)sizeof(from);
-  #endif    // socklen_t
 #endif  // __solaris__
 
                     port_data[port].scan = recvfrom(port_data[port].channel,buffer,
