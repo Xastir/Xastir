@@ -4575,7 +4575,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3, zl4, zl5, zl6, zl7, zl8, zl9;
     Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
-//    Widget TAC1;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
@@ -5830,8 +5829,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(select_net_button, FALSE);
 
 
-//    select_tactical_button = XtVaCreateManagedWidget(langcode("PULDNDP034"),
-    select_tactical_button = XtVaCreateManagedWidget("Select Tactical Calls Only",
+    // "Select Tactical Calls Only"
+    select_tactical_button = XtVaCreateManagedWidget(langcode("PULDNDP051"),
             xmToggleButtonGadgetClass,
             filter_data_pane,
             XmNvisibleWhenOff, TRUE,
@@ -6435,21 +6434,21 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-//    tactical_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP025"),
-    tactical_clear_button = XtVaCreateManagedWidget("Clear All Tactical Calls",
+    // "Clear All Tactical Calls"
+    tactical_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP049"),
             xmPushButtonGadgetClass,
             stationspane,
-//            XmNmnemonic,langcode_hotkey("PULDNDP025"),
+//            XmNmnemonic,langcode_hotkey("PULDNDP049"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
 
 
-//    tactical_history_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP025"),
-    tactical_history_clear_button = XtVaCreateManagedWidget("Clear Tactical Call History",
+    // "Clear Tactical Call History"
+    tactical_history_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP050"),
             xmPushButtonGadgetClass,
             stationspane,
-//            XmNmnemonic,langcode_hotkey("PULDNDP025"),
+//            XmNmnemonic,langcode_hotkey("PULDNDP050"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
@@ -7491,20 +7490,17 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             ac);
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
-//WE7U
-
     CAD_sub=XmCreatePulldownMenu(right_menu_popup,
             "create_appshell CAD sub",
             al,
             ac);
 
-    // "CAD Objects"
-//    draw_CAD_objects_menu=XtVaCreateManagedWidget(langcode("POPUPMA004"),
-    draw_CAD_objects_menu=XtVaCreateManagedWidget("Draw CAD Objects",
+    // "Draw CAD Objects"
+    draw_CAD_objects_menu=XtVaCreateManagedWidget(langcode("POPUPMA029"),
             xmCascadeButtonGadgetClass,
             right_menu_popup,
             XmNsubMenuId,CAD_sub,
-//            XmNmnemonic,langcode_hotkey(""),
+//            XmNmnemonic,langcode_hotkey("POPUPMA029"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
@@ -7515,9 +7511,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
-//    CAD1=XtCreateManagedWidget(langcode(""),
-    CAD1=XtCreateManagedWidget("Start Draw Mode",
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA030")); ac++;
+
+    // "Start Draw Mode"
+    CAD1=XtCreateManagedWidget(langcode("POPUPMA030"),
             xmPushButtonGadgetClass,
             CAD_sub,
             al,
@@ -7529,9 +7526,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
-//    CAD2=XtCreateManagedWidget(langcode(""),
-    CAD2=XtCreateManagedWidget("Close Polygon",
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA031")); ac++;
+
+    // "Close Polygon"
+    CAD2=XtCreateManagedWidget(langcode("POPUPMA031"),
             xmPushButtonGadgetClass,
             CAD_sub,
             al,
@@ -7543,9 +7541,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
-//    CAD3=XtCreateManagedWidget(langcode(""),
-    CAD3=XtCreateManagedWidget("Erase All CAD Polygons",
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA032")); ac++;
+
+    // "Erase All CAD Polygons"
+    CAD3=XtCreateManagedWidget(langcode("POPUPMA032"),
             xmPushButtonGadgetClass,
             CAD_sub,
             al,
@@ -7557,9 +7556,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
-//    CAD4=XtCreateManagedWidget(langcode(""),
-    CAD4=XtCreateManagedWidget("End Draw Mode",
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA033")); ac++;
+
+    // "End Draw Mode"
+    CAD4=XtCreateManagedWidget(langcode("POPUPMA033"),
             xmPushButtonGadgetClass,
             CAD_sub,
             al,
@@ -7572,24 +7572,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             right_menu_popup,
             al,
             ac);
-
-/*
-    // Assign Tactical Call
-    ac = 0;
-    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
-    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
-    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
-    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
-//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
-//    TAC1=XtCreateManagedWidget(langcode(""),
-    TAC1=XtCreateManagedWidget("Assign Tactical Call",
-            xmPushButtonGadgetClass,
-            right_menu_popup,
-            al,
-            ac);
-    XtAddCallback(TAC1,XmNactivateCallback,Station_info,"3");
-*/
-
 
     XtCreateManagedWidget("create_appshell sep7c",
             xmSeparatorWidgetClass,

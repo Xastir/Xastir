@@ -208,6 +208,9 @@ PULDNDP015|Wis alle Stations|W|
 PULDNDP016|Wis Alle Sporen|S|
 PULDNDP025|Wis Object/Item Geschiedenis||
 PULDNDP048|Herlaad Object/Item Geschiedenis||
+PULDNDP049|Clear All Tactical Calls||
+PULDNDP050|Clear Tactical Call History||
+PULDNDP051|Select Tactical Calls Only||
 #
 # Units
 PULDNUT001|Engels||
@@ -269,6 +272,11 @@ POPUPMA024|Schakel CapsLock/NumLock/ScrollLock/andere Toetsen UIT||
 POPUPMA026|Centreer & Zoom||
 POPUPMA027|Breedtegraden||
 POPUPMA028| Lengtegraden||
+POPUPMA029|Draw CAD Objects||
+POPUPMA030|Start Draw Mode||
+POPUPMA031|Close Polygon||
+POPUPMA032|Erase All CAD Polygons||
+POPUPMA033|End Draw Mode||
 #
 # Status line labels
 BBARZM0001|Zoom %s||

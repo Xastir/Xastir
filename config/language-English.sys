@@ -197,6 +197,9 @@ PULDNDP015|Clear All Stations!!!|A|
 PULDNDP016|Clear All Trails!!!|C|
 PULDNDP025|Clear Object/Item History||
 PULDNDP048|Reload Object/Item History||
+PULDNDP049|Clear All Tactical Calls||
+PULDNDP050|Clear Tactical Call History||
+PULDNDP051|Select Tactical Calls Only||
 #
 # Units
 PULDNUT001|Enable English Units|E|
@@ -258,6 +261,11 @@ POPUPMA024|Please turn OFF CapsLock/NumLock/ScrollLock/other modifiers||
 POPUPMA026|Center & Zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
+POPUPMA029|Draw CAD Objects||
+POPUPMA030|Start Draw Mode||
+POPUPMA031|Close Polygon||
+POPUPMA032|Erase All CAD Polygons||
+POPUPMA033|End Draw Mode||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -704,6 +712,7 @@ WPUPSTI062|Fuel Moisture: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
 WPUPSTI064|Fetch NWS Alert||
 WPUPSTI065|Tactical Call: %s||
+WPUPSTI066|Assign Tactical Call||
 #
 #
 # FCC-RAC Call Look up

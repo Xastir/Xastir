@@ -203,6 +203,9 @@ PULDNDP015|Stationen löschen|l|
 PULDNDP016|Spuren löschen|S|
 PULDNDP025|ObjektHistorie löschen||
 PULDNDP048|ObjektHistorie erneut laden||
+PULDNDP049|Clear All Tactical Calls||
+PULDNDP050|Clear Tactical Call History||
+PULDNDP051|Select Tactical Calls Only||
 #
 # Maßeinheiten
 PULDNUT001|Englische Maße||
@@ -264,6 +267,11 @@ POPUPMA024|Bitte Umschalt/Num/Rollen/andere Modifikationstasten ausschalten||
 POPUPMA026|Zentrieren & Zoom||
 POPUPMA027|    Breite||
 POPUPMA028|     Länge||
+POPUPMA029|Draw CAD Objects||
+POPUPMA030|Start Draw Mode||
+POPUPMA031|Close Polygon||
+POPUPMA032|Erase All CAD Polygons||
+POPUPMA033|End Draw Mode||
 #
 # Texte in Statuszeile
 BBARZM0001|Zoom %s||

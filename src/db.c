@@ -4654,8 +4654,8 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
         XtAddCallback(station_data_auto_update_w,XmNvalueChangedCallback,station_data_auto_update_toggle,"1");
 
         //Add tactical button at the top/right
-//        button_tactical = XtVaCreateManagedWidget(langcode("WPUPSTI004"),xmPushButtonGadgetClass, form,
-        button_tactical = XtVaCreateManagedWidget("Assign Tactical Call",xmPushButtonGadgetClass, form,
+        // "Assign Tactical Call"
+        button_tactical = XtVaCreateManagedWidget(langcode("WPUPSTI066"),xmPushButtonGadgetClass, form,
             XmNtopAttachment, XmATTACH_FORM,
             XmNtopOffset, 5,
             XmNbottomAttachment, XmATTACH_NONE,

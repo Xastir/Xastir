@@ -200,6 +200,9 @@ PULDNDP015|Anular Todas las Estaciones|A|
 PULDNDP016|Limpiar Rastros|n|
 PULDNDP025|Limpiar Historia de Objeto/Artículo||
 PULDNDP048|Recargar Historia de Objeto/Artículo||
+PULDNDP049|Clear All Tactical Calls||
+PULDNDP050|Clear Tactical Call History||
+PULDNDP051|Select Tactical Calls Only||
 #
 # Inglesa/Métrica
 PULDNUT001|Activar Unidades Inglesa||
@@ -261,6 +264,11 @@ POPUPMA024|Por favor apague OFF CapsLock/NumLock/ScrollLock/otro modificadores||
 POPUPMA026|Center & Zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
+POPUPMA029|Draw CAD Objects||
+POPUPMA030|Start Draw Mode||
+POPUPMA031|Close Polygon||
+POPUPMA032|Erase All CAD Polygons||
+POPUPMA033|End Draw Mode||
 #
 # Menú de Estados de la líneas de Etiquetas
 BBARZM0001|Foco %s||

@@ -197,6 +197,9 @@ PULDNDP015|Elimina tutte le stazioni|C|
 PULDNDP016|Elimina tutti i percorsi|T|
 PULDNDP025|Cancella Storico Oggetti/Dettagli||
 PULDNDP048|Ricarica Storico Oggetti/Dettagli||
+PULDNDP049|Clear All Tactical Calls||
+PULDNDP050|Clear Tactical Call History||
+PULDNDP051|Select Tactical Calls Only||
 #
 # Sistema di misura
 PULDNUT001|Sistema inglese||
@@ -258,6 +261,11 @@ POPUPMA024|Per Favore disabilita Blocco Maiuscole/BlocNum/Scorrimento/||
 POPUPMA026|Center & Zoom||
 POPUPMA027|  Latitude||
 POPUPMA028| Longitude||
+POPUPMA029|Draw CAD Objects||
+POPUPMA030|Start Draw Mode||
+POPUPMA031|Close Polygon||
+POPUPMA032|Erase All CAD Polygons||
+POPUPMA033|End Draw Mode||
 #
 #Etichette barra di stato
 BBARZM0001|Zoom %s||
