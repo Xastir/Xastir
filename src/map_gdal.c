@@ -24,7 +24,7 @@
  */
 
 
-//#define TIGER_POLYGONS
+#define TIGER_POLYGONS
 
 
 //
@@ -3360,7 +3360,7 @@ clear_dangerous();
     // *) Draw non-polygon vectors.
 //DONE!
     //
-    if (strcasecmp(driver_type,"TIGER") == 0) {
+    if (draw_filled && strcasecmp(driver_type,"TIGER") == 0) {
 #define POLYID_HASH_SIZE  64000
 #define TLID_HASH_SIZE   240000
 #define LAND_HASH_SIZE     5000
@@ -3500,7 +3500,7 @@ clear_dangerous();
 
 
 fprintf(stderr,"Starting polygon reassembly\n");
-fprintf(stderr,"      Polygon Layer ");
+fprintf(stderr,"                      Polygon Layer ");
 start_timer();
 
 
@@ -3565,7 +3565,7 @@ start_timer();
 
 
 stop_timer(); print_timer_results(); start_timer();
-fprintf(stderr,"          PIP Layer ");
+fprintf(stderr,"                          PIP Layer ");
 
 
         layerH = OGR_DS_GetLayerByName(datasourceH, "PIP");
@@ -3628,7 +3628,7 @@ fprintf(stderr,"          PIP Layer ");
 
 
 stop_timer(); print_timer_results(); start_timer();
-fprintf(stderr,"AreaLandmarks Layer ");
+fprintf(stderr,"                AreaLandmarks Layer ");
 
 
         layerH = OGR_DS_GetLayerByName(datasourceH, "AreaLandmarks");
@@ -3687,7 +3687,7 @@ fprintf(stderr,"AreaLandmarks Layer ");
 
 
 stop_timer(); print_timer_results(); start_timer();
-fprintf(stderr,"    Landmarks Layer ");
+fprintf(stderr,"                    Landmarks Layer ");
 
 
         layerH = OGR_DS_GetLayerByName(datasourceH, "Landmarks");
@@ -3774,7 +3774,7 @@ fprintf(stderr,"    Landmarks Layer ");
 
 
 stop_timer(); print_timer_results(); start_timer();
-fprintf(stderr,"PolyChainLink Layer ");
+fprintf(stderr,"                PolyChainLink Layer ");
 
  
         layerH = OGR_DS_GetLayerByName(datasourceH, "PolyChainLink");
@@ -3899,7 +3899,7 @@ found2->tlid_list = tlid_temp;
 
 
 stop_timer(); print_timer_results(); start_timer();
-fprintf(stderr,"CompleteChain Layer ");
+fprintf(stderr,"                CompleteChain Layer ");
 
 
         // Run through the CompleteChain layer.  Snag TLID, FEDIRP,
@@ -4105,17 +4105,14 @@ fprintf(stderr,"Combine Hashes, Create/Draw Polygon ");
 //    fprintf(stderr,"WATER polygon but no \'H\' CFCC!  CFCC=%s\n", record->CFCC);
 
                 if (record->WATER > 0 || record->CFCC[0] == 'H') {
-                    int my_draw_filled;
 
                     if (strncasecmp(record->CFCC,"H81",3) == 0) { // glacier
                         label_color_guess = 0x4d;   // white
-                        my_draw_filled = 1;
 //fprintf(stderr,"CFCC:%s\t", record->CFCC);
 //fprintf(stderr,"%s\n", record->LANAME);
                     }
                     else {
                         label_color_guess = 0x1a;   // Steel Blue
-                        my_draw_filled = 1;
                     }
  
                     if (label_color_guess != -1) {
@@ -4125,8 +4122,7 @@ fprintf(stderr,"Combine Hashes, Create/Draw Polygon ");
                             newpolygonH,
                             1,
                             transformH,
-                            //draw_filled,
-                            my_draw_filled,
+                            draw_filled,
                             //fast_extents);
                             1);
                     }
@@ -4146,10 +4142,8 @@ fprintf(stderr,"Combine Hashes, Create/Draw Polygon ");
 
 
 stop_timer(); print_timer_results(); start_timer();
-fprintf(stderr,"Done with Polygon data reassembly/drawing\n");
+fprintf(stderr,"               Free'ing hash memory ");
 
-
-//fprintf(stderr,"Free'ing hash memory\n");
 
         // Free the memory we've allocated for the hashes.
 
@@ -4232,10 +4226,12 @@ fprintf(stderr,"Done with Polygon data reassembly/drawing\n");
         hashtable_destroy(tlid_hash, 1);
         hashtable_destroy(landmark_hash, 1);
 
-    }   // End of special TIGER section
 
 stop_timer(); print_timer_results();
-fprintf(stderr,"Done\n");
+//fprintf(stderr,"Done\n");
+
+
+    }   // End of special TIGER section
 
 #endif  // TIGER_POLYGONS
 
