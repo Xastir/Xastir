@@ -1472,17 +1472,116 @@ void log_data(char *file, char *line) {
 // which is currently set to 4096.
 //
 void disown_object_item(char *call_sign, char *new_owner) {
+    char *ptr;
+    char file[200];
+    char file_temp[200];
+    FILE *f;
+    FILE *f_temp;
+    char command[300];
+    char line[300];
+    char name[15];
 
-    // TBD.  Add code here...
+
+    // If it's my call in the new_owner field, then I must have just
+    // deleted the object and am transmitting a killed object for
+    // it.  If it's not my call, someone else has assumed control of
+    // the object.
+    //
+    // Comment out any references to the object in the log file so
+    // that we don't start retransmitting it on a restart.
 
     if (is_my_call(new_owner,1)) {
-        printf("(Not implemented yet) Commenting out %s in object.log\n",
-            call_sign);
+        //printf("Commenting out %s in object.log\n", call_sign);
     }
     else {
-        printf("(Not implemented yet) Disowning '%s': '%s' is taking over control.\n",
+        printf("Disowning '%s': '%s' is taking over control of it.\n",
             call_sign, new_owner);
     }
+
+    ptr =  get_user_base_dir("config/object.log");
+    strcpy(file,ptr);
+
+    ptr =  get_user_base_dir("config/object-temp.log");
+    strcpy(file_temp,ptr);
+
+    //printf("%s\t%s\n",file,file_temp);
+
+    // Copy to a temp file
+    xastir_snprintf(command,
+        sizeof(command), "cp -f %s %s", file, file_temp);
+
+    if ( debug_level & 512 )
+        printf( "%s\n", command );
+
+    if ( system( command ) != 0 ) {
+        printf("\n\nCouldn't create temp file %s!\n\n\n",
+            file_temp);
+        return;
+    }
+
+    // Open the temp file and write to the original file, with hash
+    // marks in front of the appropriate lines.
+    f_temp=fopen(file_temp,"r");
+    f=fopen(file,"w");
+
+    if (f == NULL) {
+        printf("Couldn't open %s\n",file);
+        return;
+    }
+    if (f_temp == NULL) {
+        printf("Couldn't open %s\n",file_temp);
+        return;
+    }
+
+    // Read lines from the temp file and write them to the standard
+    // file, modifying them as necessary.
+    while (fgets(line, 300, f_temp) != NULL) {
+
+        // Need to check that the length matches for both!  Best way
+        // is to parse the object/item name out of the string and
+        // then do a normal string compare between the two.
+
+        if (line[0] == ';') {       // Object
+            substr(name,&line[1],9);
+            name[9] = '\0';
+        }
+        else if (line[0] == ')') {  // Item
+            int i;
+
+            // 3-9 char name
+            for (i = 1; i <= 9; i++) {
+                if (line[i] == '!' || line[i] == '_') {
+                    name[i-1] = '\0';
+                    break;
+                }
+                name[i-1] = line[i];
+            }
+            name[9] = '\0';  // In case we never saw '!' || '_'
+        }
+
+        remove_trailing_spaces(name);
+
+        //printf("'%s'\t'%s'\n", name, call_sign);
+
+        if (valid_object(name)) {
+
+            if ( strcmp(name,call_sign) == 0 ) {
+                // Match.  Comment it out in the file.
+                fprintf(f,"#%s",line);
+                //printf("#%s",line);
+            }
+            else {
+                // No match.  Copy the line verbatim unless it's just a
+                // blank line.
+                if (line[0] != '\n') {
+                    fprintf(f,"%s",line);
+                    //printf("%s",line);
+                }
+            }
+        }
+    }
+    fclose(f);
+    fclose(f_temp);
 }
 
 
@@ -1519,7 +1618,9 @@ void log_object_item(char *line, int disable_object, char *object_name) {
         if (debug_level & 1)
             printf("Saving object/item to file: %s",line);
 
-        // Comment out all instances of the object/item?
+        // Comment out all instances of the object/item in the log
+        // file.  This will make sure that the object is not
+        // retransmitted again when Xastir is restarted.
         if (disable_object) {
             disown_object_item(object_name, my_callsign);
        }
