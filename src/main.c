@@ -565,6 +565,7 @@ XtPointer global_parameter2 = (XtPointer)NULL;
 void Draw_CAD_Objects(Widget w, XtPointer clientData, XtPointer calldata);
 void Draw_CAD_Objects_close_polygon(Widget w, XtPointer clientData, XtPointer calldata);
 void Draw_CAD_Objects_end_mode(Widget w, XtPointer clientData, XtPointer calldata);
+void Draw_CAD_Objects_erase(Widget w, XtPointer clientData, XtPointer calldata);
 Widget draw_CAD_objects_dialog = (Widget)NULL;
 int draw_CAD_objects_flag = 0;
 
@@ -4206,7 +4207,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     register unsigned int ac;   /* Arg Count */
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3, zl4, zl5, zl6, zl7, zl8, zl9;
-    Widget CAD_sub, CAD1, CAD2, CAD3;
+    Widget CAD_sub, CAD1, CAD2, CAD3, CAD4;
     Widget pan_sub, pan_menu;
     Widget move_my_sub, move_my_menu;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
@@ -7101,19 +7102,33 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 //    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
 //    CAD3=XtCreateManagedWidget(langcode(""),
-    CAD3=XtCreateManagedWidget("End Draw Mode",
+    CAD3=XtCreateManagedWidget("Erase All CAD Polygons",
             xmPushButtonGadgetClass,
             CAD_sub,
             al,
             ac);
-    XtAddCallback(CAD3,XmNactivateCallback,Draw_CAD_Objects_end_mode,NULL);
+    XtAddCallback(CAD3,XmNactivateCallback,Draw_CAD_Objects_erase,NULL);
+
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("")); ac++;
+//    CAD4=XtCreateManagedWidget(langcode(""),
+    CAD4=XtCreateManagedWidget("End Draw Mode",
+            xmPushButtonGadgetClass,
+            CAD_sub,
+            al,
+            ac);
+    XtAddCallback(CAD4,XmNactivateCallback,Draw_CAD_Objects_end_mode,NULL);
+
 
     XtCreateManagedWidget("create_appshell sep7b",
             xmSeparatorWidgetClass,
             right_menu_popup,
             al,
             ac);
-
 
 
     pan_sub=XmCreatePulldownMenu(right_menu_popup,
@@ -7578,6 +7593,18 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
 
 //    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
     draw_CAD_objects_flag = 0;
+}
+
+
+
+
+
+void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+    // Does nothing so far.  Will need to free the vertice list then
+    // do a screen update.
 }
 
 
