@@ -3793,6 +3793,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             // We don't care if the pointer is NULL.  This will
             // succeed anyway.  It'll just make an empty string.
 
+            // Note that text_ptr may be an empty string.  That's
+            // ok.
+
             //Also print the sec_heard timestamp.
             sec = ptr->sec_heard;
             time = localtime(&sec);
@@ -3836,6 +3839,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         while (ptr != NULL) {
             // We don't care if the pointer is NULL.  This will
             // succeed anyway.  It'll just make an empty string.
+
+            // Note that text_ptr can be an empty string.  That's
+            // ok.
 
             //Also print the sec_heard timestamp.
             sec = ptr->sec_heard;
@@ -9594,7 +9600,10 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
 
 
 // Add a status line to the linked-list of status records
-// associated with a station
+// associated with a station.  Note that a blank status line is
+// allowed, but we don't store that unless we have seen a non-blank
+// status line previously.
+//
 void add_status(DataRow *p_station, char *status_string) {
     CommentRow *ptr;
     int add_it = 0;
@@ -9620,8 +9629,8 @@ void add_status(DataRow *p_station, char *status_string) {
  
     len = strlen(status_string);
 
-    // Check for valid pointer and string
-    if ( (p_station != NULL) && (len > 0) ) {
+    // Check for valid pointer
+    if (p_station != NULL) {
 
 // We should probably create a new station record for this station
 // if there isn't one.  This allows us to collect as much info about
@@ -9635,8 +9644,11 @@ void add_status(DataRow *p_station, char *status_string) {
 
         // Check whether we have any data stored for this station
         if (p_station->status_data == NULL) {
-            // Add it to end
-            add_it++;
+            if (len > 0) {
+                // No status stored yet and new status is non-NULL,
+                // so add it to the list.
+                add_it++;
+            }
         }
         else {  // We have status data stored already
                 // Check for an identical string
@@ -9646,6 +9658,10 @@ void add_status(DataRow *p_station, char *status_string) {
             ptr = p_station->status_data;
             ptr2 = ptr;
             while (ptr != NULL) {
+
+                // Note that both text_ptr and comment_string can be
+                // empty strings.
+
                 if (strcasecmp(ptr->text_ptr, status_string) == 0) {
                     // Found a matching string
                     //fprintf(stderr,"Found match:
@@ -9759,7 +9775,11 @@ void add_status(DataRow *p_station, char *status_string) {
 
  
 // Add a comment line to the linked-list of comment records
-// associated with a station
+// associated with a station.  Note that a blank comment is allowed
+// and necessary for the times when we wish to blank out the comment
+// on an object/item, but we don't store that unless we have seen a
+// non-blank comment line previously.
+//
 void add_comment(DataRow *p_station, char *comment_string) {
     CommentRow *ptr;
     int add_it = 0;
@@ -9785,13 +9805,16 @@ void add_comment(DataRow *p_station, char *comment_string) {
  
     len = strlen(comment_string);
 
-    // Check for valid pointer and string
-    if ( (p_station != NULL) && (len > 0) ) {
+    // Check for valid pointer
+    if (p_station != NULL) {
 
         // Check whether we have any data stored for this station
         if (p_station->comment_data == NULL) {
-            // Add it to end
-            add_it++;
+            if (len > 0) {
+                // No comments stored yet and new comment is
+                // non-NULL, so add it to the list.
+                add_it++;
+            }
         }
         else {  // We have comment data stored already
                 // Check for an identical string
@@ -9801,9 +9824,13 @@ void add_comment(DataRow *p_station, char *comment_string) {
             ptr = p_station->comment_data;
             ptr2 = ptr;
             while (ptr != NULL) {
+
+                // Note that both text_ptr and comment_string can be
+                // empty strings.
+
                 if (strcasecmp(ptr->text_ptr, comment_string) == 0) {
                     // Found a matching string
-                    //fprintf(stderr,"Found match: %s:%s\n",p_station->call_sign,comment_string);
+//fprintf(stderr,"Found match: %s:%s\n",p_station->call_sign,comment_string);
 
 // Instead of updating the timestamp, we'll delete the record from
 // the list and add it to the top in the code below.  Make sure to

@@ -18486,8 +18486,12 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
 
 
 void Test(Widget w, XtPointer clientData, XtPointer callData) {
+//    static char temp[256];
+//    int port = 7;
+
+
     mdisplay_file(0);
-    //mem_display();
+//    mem_display();
     alert_print_list();
 
 /*
@@ -18520,10 +18524,34 @@ void Test(Widget w, XtPointer clientData, XtPointer callData) {
         pixmap_final);          // Pixmap where);
 */
 
-    fprintf(stderr,"view_zero_distance_bulletins = %d\n",
-        view_zero_distance_bulletins);
+//    fprintf(stderr,"view_zero_distance_bulletins = %d\n",
+//        view_zero_distance_bulletins);
 
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+/*
+    // Simulate data coming in from a TNC in order to test igating.
+    // Port 7 in this case is a serial TNC port (in my current test
+    // configuration).
+    xastir_snprintf(temp,
+        sizeof(temp),
+        "WE7U-4>APOT01,SUMAS*,WIDE2-2:!4757.28N/12212.00Wv178/057/A=000208 14.0V 30C\r");
+
+    if (begin_critical_section(&data_lock, "main.c" ) > 0)
+        fprintf(stderr,"data_lock, Port = %d\n", port);
+
+    incoming_data=temp;
+    incoming_data_length = strlen(temp);
+    data_port = port;
+    data_avail = 1;
+
+    if (end_critical_section(&data_lock, "main.c" ) > 0)
+        fprintf(stderr,"data_lock, Port = %d\n", port);
+
+    fprintf(stderr, "Sent: %s\n", temp);
+*/
+
+
+//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
