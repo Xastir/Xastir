@@ -8005,7 +8005,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             /* Check to reestablish a connection */
             if(sec_now() > net_next_time) {
                 net_last_time = sec_now();
-                net_next_time = net_last_time + 450;    // Check every 7.5 minutes
+                net_next_time = net_last_time + 60;    // Check every minute
                 //net_next_time = net_last_time + 30;   // This statement is for debug
 
                 /*fprintf(stderr,"Checking for reconnects\n");*/
