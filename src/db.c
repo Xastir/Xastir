@@ -7321,8 +7321,16 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
 // Code to compute SmartBeaconing rates.
 //
-// Input: Course in degrees
-//        Speed in knots
+//
+//   Inputs: Course in degrees
+//           Speed in knots
+//
+//  Outputs: May force beacons by setting posit_next_time to zero
+//
+// Modifies: sb_POSIT_rate
+//           sb_current_heading
+//           sb_last_heading
+//
 //
 // With the defaults compiled into the code, here are the
 // turn_thresholds for a few speeds:
@@ -7456,9 +7464,20 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
 
 
     }
+
     if (beacon_now) {
         posit_next_time = 0;    // Force a posit right away
     }
+
+    // Check to see whether we've sped up sufficiently for the
+    // posit_next_time variable to be too far out.  If so, shorten
+    // that interval to match the current speed.
+    if ( (posit_next_time - sec_now()) > sb_POSIT_rate)
+        posit_next_time = sec_now() + sb_POSIT_rate;
+
+    // Should we also check for a rate too fast for the current
+    // speed?  Probably not.  It'll get modified at the next beacon
+    // time, which will happen quickly.
 
     // Save course for use later.  It gets put into sb_last_heading
     // in UpdateTime() if a beacon occurs.  We then use it above to
