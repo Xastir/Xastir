@@ -286,7 +286,7 @@ First Time Install:
        for your Linux distribution.  You must have libtiff 3.5.5 or
        newer for libgeotiff to compile and run correctly.
 
-       If you are compling from source, you must use "make install_private",
+       If you are compiling from source, you must use "make install_private",
        because the private include files are required for libgeotiff to compile
        and work correctly.
 
@@ -299,9 +299,14 @@ First Time Install:
        -----------------------
 
      NOTE: Depending on your version of libtiff, either libgeotiff-1.1.5 or
-       libgeotiff-1.2.0 may compile properly.  libgeotiff is so intimately
-       tied with libtiff that you may need to try both versions of
-       libgeotiff to find out which one will work with your libtiff.
+       libgeotiff-1.2.0 may compile properly.  libgeotiff is intimately
+       tied to your version of libtiff.  libgeotiff 1.2.x or greater
+       requires libtiff-3.6.0 BETA or later.  If your version of libtiff is
+       older, get libgeotiff 1.1.4 or 1.1.5.  For the latter case you may
+       also have to download the sources for your version of libtiff in
+       order to copy one libtiff header file into the libgeotiff source
+       directory.
+
 
      NOTE: You may need to snag one file from the libtiff source distribution
        and place it into libgeotiff-1.1.5/libtiff_private directory before
