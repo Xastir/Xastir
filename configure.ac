@@ -92,6 +92,7 @@ AC_CHECK_LIB([Xext], [XextAddDisplay])
 AC_CHECK_LIB([Xp], [XpGetDocumentData]) 
 AC_CHECK_LIB([Xt], [XtDisplay]) 
 AC_CHECK_LIB([Xm], [XmTextFindString]) 
+AC_CHECK_LIB([curl], [curl_global_init])
 # JMT - XXX - why is this here?
 AC_CHECK_LIB(compat, main, 
     [LIBCOMPAT="-lcompat"
