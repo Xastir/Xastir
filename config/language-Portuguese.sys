@@ -73,7 +73,7 @@ PULDNMP006|Estilo de texto da estação|E|
 PULDNMP011|Menú indicador do rato|r|
 PULDNMP008|Intensidade do mapa|I|
 PULDNMP020|Activar/Configurar tigermap||
-PULDNMP021|Auto Map - Disable Raster Maps||
+PULDNMP021|Auto Map - Desactivar Raster Mapas||
 #
 #
 # PopUp "Configurar tigermap"
@@ -154,14 +154,14 @@ PULDNDP015|Anular todas as estações|A|
 PULDNDP016|Limpar rastos|L|
 PULDNDP025|Limpar história de Objecto/Item||
 PULDNDP026|Mostrar Objects/Items metereológicos||
-PULDNDP027|Display Local Stations||
-PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations||
-PULDNDP030|Display WX Stations||
-PULDNDP031|Display Objects/Items||
-PULDNDP032|Filter Symbols||
-PULDNDP033|Filter Info||
-PULDNDP034|Display Non-Local Stations||
+PULDNDP027|Mostrar estações locais||
+PULDNDP028|Mostrar estações fixas||
+PULDNDP029|Mostrar estações móveis|| 
+PULDNDP030|Mostrar estações de tempo||
+PULDNDP031|Mostrar Objectos/Items||
+PULDNDP032|Simbolos filtrados||
+PULDNDP033|Info filtrada||
+PULDNDP034|Mostrar estações não locais||
 #
 # Inglesa/métrica
 PULDNUT001|Activar unidades Inglesas||
@@ -261,7 +261,7 @@ BBARSTA036|Limpando AUX para obter dados do TNC..||
 BBARSTA037|Dados do GPS completos||
 BBARSTA038|Posição alterada na minha estação||
 BBARSTA039|Indexando %s||
-BBARSTA040|This is Amateur Radio Station %s||
+BBARSTA040|É uma estação do radioamador %s||
 #
 # Visualização do tráfego de packet
 WPUPDPD001|Visualização do tráfego||
