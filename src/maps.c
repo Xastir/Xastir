@@ -5219,16 +5219,19 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
             if (QuantumDepth == 16) {   // Defined in /usr/include/magick/image.h
                 if (debug_level & 16)
                     printf("Color quantum is [0..65535]\n");
-                my_colors[l].red   = temp_pack.red;
-                my_colors[l].green = temp_pack.green;
-                my_colors[l].blue  = temp_pack.blue;
+                my_colors[l].red   = temp_pack.red * geotiff_map_intensity;
+                my_colors[l].green = temp_pack.green * geotiff_map_intensity;
+                my_colors[l].blue  = temp_pack.blue * geotiff_map_intensity;
             }
             else {  // QuantumDepth = 8
                 if (debug_level & 16)
                     printf("Color quantum is [0..255]\n");
-                my_colors[l].red   = temp_pack.red   << 8;
+                my_colors[l].red   = temp_pack.red << 8;
                 my_colors[l].green = temp_pack.green << 8;
-                my_colors[l].blue  = temp_pack.blue  << 8;
+                my_colors[l].blue  = temp_pack.blue << 8;
+                my_colors[l].red   = (temp_pack.red * geotiff_map_intensity);
+                my_colors[l].green = (temp_pack.green * geotiff_map_intensity);
+                my_colors[l].blue  = (temp_pack.blue * geotiff_map_intensity);
             }
 
             //  Get the color allocated.  Allocated pixel color is written to my_colors.pixel
