@@ -1135,6 +1135,7 @@ void draw_shapefile_map (Widget w,
     int             road_flag = 0;
     int             lake_flag = 0;
     int             river_flag = 0;
+    int             path_flag = 0;
     int             weather_alert_flag = 0;
     char            *filename;  // filename itself w/o directory
     char            search_param1[10];
@@ -1317,6 +1318,84 @@ void draw_shapefile_map (Widget w,
             break;
         }
 
+        // Check the filename for mapshots.com filetypes to see what
+        // type of file we may be dealing with.
+        if (strncasecmp(filename,"Tgr",3) == 0) {   // Found a Mapshots file
+
+            if (strstr(filename,"ccdcu")) {         // Political Subdivisions
+                if (debug_level & 16) {
+                    printf("*** Found (mapshots political subdivisions) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (strstr(filename,"ctycu")) {    // County Boundaries
+                if (debug_level & 16) {
+                    printf("*** Found county (mapshots county) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (strstr(filename,"lkA")) {      // Minor Roads
+                road_flag++;
+                if (debug_level & 16) {
+                    printf("*** Found some roads (mapshots minor roads) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (strstr(filename,"lkB")) {      // Major Roads
+                road_flag++;
+                if (debug_level & 16) {
+                    printf("*** Found some roads (mapshots major roads) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (strstr(filename,"lkC")) {      // Rail/Paths/etc
+                path_flag++;
+                if (debug_level & 16) {
+                    printf("*** Found some paths (mapshots rail/paths/etc) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (strstr(filename,"lkH")) {      // Rivers/Streams
+                river_flag++;
+                if (debug_level & 16) {
+                    printf("*** Found some rivers (mapshots rivers/streams) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (strstr(filename,"urb")) {      // Urban areas
+                if (debug_level & 16) {
+                    printf("*** Found (mapshots urban areas) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+            else if (strstr(filename,"wat")) {      // Bodies of water
+                lake_flag++;
+                if (debug_level & 16) {
+                    printf("*** Found some lakes (mapshots bodies of water) ***\n");
+                    break;
+                }
+                else
+                    break;
+            }
+        }
+
+
+        // Attempt to guess which type of shapefile we're dealing
+        // with, and how we should draw it.
         // If debug is on, we want to print out every field, otherwise
         // break once we've made our guess on the type of shapefile.
         if (debug_level & 16)
@@ -1389,6 +1468,7 @@ void draw_shapefile_map (Widget w,
             }
         }
     }
+
 
     // Search for specific record if we're doing alerts
     if (weather_alert_flag && (alert->index == -1) ) {
@@ -1581,6 +1661,8 @@ void draw_shapefile_map (Widget w,
     } else {
         if (lake_flag || river_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // SteelBlue
+        else if (path_flag)
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
         else
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
     }
