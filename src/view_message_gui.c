@@ -80,6 +80,7 @@ void view_message_print_record(Message *m_fill) {
     XmTextPosition drop_ptr;
     int distance;
 
+
     // Make sure it's within our distance range we have set
     distance = (int)distance_from_my_station(m_fill->from_call_sign,temp_my_course);
     if ((vm_range == 0) || (distance <= vm_range)) {
@@ -118,7 +119,6 @@ void view_message_print_record(Message *m_fill) {
 void view_message_display_file(char msg_type) {
     int pos;
 
-
     if ((All_messages_dialog != NULL)) {
         mscan_file(msg_type, view_message_print_record);
     }
@@ -139,6 +139,7 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
     int i;
     int my_size = 200;
     XmTextPosition drop_ptr;
+
 
     if ((temp = malloc((size_t)my_size)) == NULL)
         return;
@@ -214,13 +215,14 @@ end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:All_messages
 
 void All_messages_change_range( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;
+
     vm_range = atoi(XmTextFieldGetString(vm_dist_data));
     XtPopdown(shell);
 
     All_messages_destroy_shell(widget, clientData, callData);
-    view_all_messages(widget, clientData, callData);
+    view_all_messages(widget, clientData, callData); 
 }
-
+ 
 
 
 
@@ -345,8 +347,8 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNrightOffset, 5); n++;
-        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
-        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
+//        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+//        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
  
         view_messages_text = XmCreateScrolledText(my_form,
                 "view_all_messages text",
@@ -404,10 +406,13 @@ end_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_mes
         // have that default function happen.  Note:  We _can_ hit the
         // <SPACE> key, and that activates the option.
 //        XmUpdateDisplay(All_messages_dialog);
-        XmProcessTraversal(button_close, XmTRAVERSE_CURRENT);
+        XmProcessTraversal(button_close, XmTRAVERSE_CURRENT); 
 
-    }  else
+
+    }
+    else {
         (void)XRaiseWindow(XtDisplay(All_messages_dialog), XtWindow(All_messages_dialog));
+    }
 }
 
 
