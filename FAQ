@@ -232,7 +232,7 @@ The Answers
 
     - You haven't installed all the necessary libraries and include files.
 
-      Xastir depends on at least the X, and Motif/LessTif include files.
+      Xastir depends on at least the X, and Motif or LessTif include files.
       Be sure these are installed before trying to compile the application.
       Many linux distributions name these packages <packagename>-dev or
       <packagename>-devel.
@@ -243,6 +243,13 @@ The Answers
       NOTE: The ImageMagick-devel package included with Redhat 8 is missing
       some files needed for Xastir. The version in the beta directory on
       RedHat's ftp site works.
+
+      A message like "*** Cannot find Motif include files" means that you are
+      missing the development package for Motif/OpenMotif/Lesstif.  It is
+      recommended that you use Motif or OpenMotif instead of Lesstif, as you'll
+      have few problems with those libraries.  For SuSE 9.0, install the
+      "openmotif-libs", "openmotif-devel", and "openmotif" packages.  Other
+      distributions have similar naming.
 
     - Your operating system or compiler may be out of version.
 
