@@ -139,6 +139,9 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
 // there also.  Perhaps a small dot and/or four lines going from
 // that point to the edge of the circle?
 //
+// range is in miles
+// x_long/y_lat are in Xastir lat/lon units
+//
 void draw_pod_circle(long x_long, long y_lat, double range, Pixmap where) {
     double diameter;
     long max_x, max_y;
