@@ -602,6 +602,11 @@ void draw_geotiff_image_map (Widget w,
                 //
                 return;    // Skip this map
             }
+            else {
+                if (debug_level & 16) {
+                    fprintf(stderr,"Map is viewable\n");
+                }
+            }
         }
     }   // End of if have_fgd
 
@@ -614,12 +619,16 @@ void draw_geotiff_image_map (Widget w,
      * the bounding coordinates yet by this point.
      */
 
+    if (debug_level & 16)
+        fprintf(stderr,"XTIFFOpen\n");
 
     /* Open TIFF descriptor to read GeoTIFF tags */
     tif = XTIFFOpen (file, "r");
     if (!tif)
         return;
 
+    if (debug_level & 16)
+        fprintf(stderr,"GTIFNew\n");
 
     /* Open GTIF Key parser.  Keys will be read at this time */
     gtif = GTIFNew (tif);
@@ -630,6 +639,8 @@ void draw_geotiff_image_map (Widget w,
         return;
     }
 
+    if (debug_level & 16)
+        fprintf(stderr,"GTIFDirectoryInfo\n");
 
     /*
      * Get the GeoTIFF directory info.  Need this for
@@ -646,6 +657,9 @@ void draw_geotiff_image_map (Widget w,
         return;
     }
     */
+
+    if (debug_level & 16)
+        fprintf(stderr,"GTIFGetDefn\n");
 
 
     /* I might want to attempt to avoid the GTIFGetDefn
