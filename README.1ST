@@ -1305,11 +1305,6 @@ END OF MAC OS X NOTES.
      -----------------------------------------------------------------------
 FreeBSD NOTES:
 
-     ./configure by default will not find libraries in /usr/local/lib, so
-     run the following command instead:
-
-     LDFLAGS="-L/usr/local/lib" ./configure
-
      Like all software that uses autoconf, Xastir requires GNU make, so use
      gmake instead of make.
 
