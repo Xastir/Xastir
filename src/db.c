@@ -2699,16 +2699,31 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     XmTextInsert(si_text,pos,temp);
     pos += strlen(temp);
 
+//    // Comments ...
+//    if(strlen(p_station->comments)>0) {
+//        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI044"),p_station->comments);
+//        XmTextInsert(si_text,pos,temp);
+//        pos += strlen(temp);
+//        xastir_snprintf(temp, sizeof(temp), "\n");
+//        XmTextInsert(si_text,pos,temp);
+//        pos += strlen(temp);
+//    }
+
     // Comments ...
-    if(strlen(p_station->comments)>0) {
-        //sprintf(temp,langcode("WPUPSTI044"),p_station->comments);
-        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI044"),p_station->comments);
-        XmTextInsert(si_text,pos,temp);
-        pos += strlen(temp);
-        //sprintf(temp,"\n");
-        xastir_snprintf(temp, sizeof(temp), "\n");
-        XmTextInsert(si_text,pos,temp);
-        pos += strlen(temp);
+    if(p_station->comment_data != NULL) {   // Found at least one record
+        CommentRow *ptr;
+
+        ptr = p_station->comment_data;
+
+        while (ptr != NULL) {
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI044"),ptr->text);
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+            xastir_snprintf(temp, sizeof(temp), "\n");
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+            ptr = ptr->next;    // Advance to next record (if any)
+        }
     }
 
     // Current Power Gain ...
@@ -4380,6 +4395,33 @@ int is_trailpoint_echo(DataRow *p_station) {
 
 
 /*
+ *  Delete comment records and free memory
+ */
+int delete_comments(DataRow *fill) {
+    if (fill->comment_data != NULL) {   // We have records
+        CommentRow *ptr;
+        CommentRow *ptr_next;
+
+        ptr = fill->comment_data;
+        ptr_next = ptr->next;
+        while (ptr != NULL) {
+            free(ptr);
+            ptr = ptr_next; // Advance to next record
+            if (ptr != NULL)
+                ptr_next = ptr->next;
+            else
+                ptr_next = NULL;
+        }
+        return(1);
+    }
+    return(0);
+}
+
+
+
+
+
+/*
  *  Delete trail and free memory
  */
 int delete_trail(DataRow *fill) {
@@ -4389,7 +4431,7 @@ int delete_trail(DataRow *fill) {
         tracked_stations--;
         return(1);
     }
-        return(0);
+    return(0);
 }
 
 
@@ -4771,7 +4813,8 @@ void init_station(DataRow *p_station) {
     p_station->signpost[0]       = '\0';
     p_station->station_time[0]   = '\0';
     p_station->sats_visible[0]   = '\0';
-    p_station->comments[0]       = '\0';
+//    p_station->comments[0]       = '\0';
+    p_station->comment_data      = NULL;
     p_station->df_color          = -1;
 }
 
@@ -5266,6 +5309,7 @@ void station_del(char *call) {
     if (search_station_name(&p_name, call, 1)) {
         (void)delete_trail(p_name);     // Free track storage if it exists.
         (void)delete_weather(p_name);   // free weather memory, if allocated
+        (void)delete_comments(p_name);  // Free comment storage if it exists
         delete_station_memory(p_name);  // free memory
     }
 }
@@ -5287,6 +5331,7 @@ void station_del_ptr(DataRow *p_name) {
 
         (void)delete_trail(p_name);     // Free track storage if it exists.
         (void)delete_weather(p_name);   // free weather memory, if allocated
+        (void)delete_comments(p_name);  // Free comment storage if it exists
         delete_station_memory(p_name);  // free memory
     }
 }
@@ -6584,6 +6629,69 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
 
 
 
+// Add a comment line to the linked-list of comment records
+// associated with a station
+void add_comment(DataRow *p_station, char *comment_string) {
+    CommentRow *ptr;
+    int add_it = 0;
+    int len;
+    int count = 0;
+
+    len = strlen(comment_string);
+
+    // Eliminate line-end chars
+    if (len > 1) {
+        if ( (comment_string[len-1] == '\n')
+                || (comment_string[len-1] == '\r') ) {
+            comment_string[len-1] = '\0';
+        }
+    }
+
+    // Shorten it
+    (void)remove_trailing_spaces(comment_string);
+ 
+    len = strlen(comment_string);
+
+    // Check for valid pointer and string
+    if ( (p_station != NULL) && (len > 0) ) {
+
+        // Check whether we have any data stored for this station
+        if (p_station->comment_data == NULL) {
+            // Add it to end
+            add_it++;
+        }
+        else {  // We have comment/status data stored already
+                // Check for an identical string
+            ptr = p_station->comment_data;
+            while ( (ptr != NULL) && (count < 10) ) {
+                count++;
+                if (strcmp(ptr->text, comment_string) == 0) {
+                    // Found a matching string
+                    //printf("Found match: %s:%s\n",p_station->call_sign,comment_string);
+                    return; // No need to add the new string
+                }
+                ptr = ptr->next;
+            }
+            // No matching string found, so add it
+            add_it++;
+            //printf("No match: %s:%s\n",p_station->call_sign,comment_string);
+        }
+
+        if (add_it) {   // We add to the beginning so we don't have
+                        // to traverse the linked list
+            ptr = p_station->comment_data;  // Save old pointer to records
+            p_station->comment_data = (CommentRow *)malloc(sizeof(CommentRow));
+            p_station->comment_data->next = ptr;    // Link in old records or NULL
+            // Fill in the string
+            strncpy(p_station->comment_data->text,comment_string,MAX_COMMENTS+1);
+        }
+    }
+}
+ 
+
+
+
+
 /*
  *  Add data from APRS information field to station database
  *  Returns a 1 if successful
@@ -6707,7 +6815,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     (void)extract_weather(p_station,data,compr_pos);    // look for weather data first
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);            // altitude
-                    substr(p_station->comments,data,MAX_COMMENTS);
+
+                    //substr(p_station->comments,data,MAX_COMMENTS);
+                    add_comment(p_station,data);
+
                     p_station->record_type = NORMAL_APRS;
                     if (type == APRS_MSGCAP)
                         p_station->flag |= ST_MSGCAP;           // set "message capable" flag
@@ -6731,7 +6842,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     strcpy(p_station->pos_time,get_time(temp_data));
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
-                    substr(p_station->comments,data,MAX_COMMENTS);
+
+                    //substr(p_station->comments,data,MAX_COMMENTS);
+                    add_comment(p_station,data);
+
                     p_station->record_type = DOWN_APRS;
                     p_station->flag &= (~ST_MSGCAP);            // clear "message capable" flag
                 }
@@ -6752,7 +6866,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if (ok) {
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
-                    substr(p_station->comments,data,MAX_COMMENTS);
+
+                    //substr(p_station->comments,data,MAX_COMMENTS);
+                    add_comment(p_station,data);
+
                     if(type == APRS_MOBILE)
                         p_station->record_type = MOBILE_APRS;
                     else
@@ -6766,7 +6883,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if (ok) { 
                     if (debug_level & 1)
                         printf("data_add: Got grid data for %s\n", call);
-                    substr(p_station->comments,data,MAX_COMMENTS);
+
+                    //substr(p_station->comments,data,MAX_COMMENTS);
+                    add_comment(p_station,data);
+
                 } else {
                     if (debug_level & 1)
                         printf("data_add: Bad grid data for %s : %s\n", call, data);
@@ -6781,7 +6901,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             case (APRS_STATUS):         // '>' Status Reports     [APRS Reference, chapter 16]
                 (void)extract_time(p_station, data, type);              // we need a time
                 // todo: could contain Maidenhead or beam heading+power
-                substr(p_station->comments,data,MAX_COMMENTS);          // store status text
+
+                //substr(p_station->comments,data,MAX_COMMENTS);          // store status text
+                add_comment(p_station,data);
+
                 p_station->flag |= (ST_STATUS);                         // set "Status" flag
                 p_station->record_type = NORMAL_APRS;                   // ???
                 found_pos = 0;
@@ -6790,7 +6913,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             case (OTHER_DATA):          // Other Packets          [APRS Reference, chapter 19]
                 // non-APRS beacons, treated as status reports until we get a real one
                 if ((p_station->flag & (~ST_STATUS)) == 0) {            // only store if no status yet
-                    substr(p_station->comments,data,MAX_COMMENTS);
+
+                    //substr(p_station->comments,data,MAX_COMMENTS);
+                    add_comment(p_station,data);
+
                     p_station->record_type = NORMAL_APRS;               // ???
                 }
                 found_pos = 0;
@@ -6814,7 +6940,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
-                    substr(p_station->comments,data,MAX_COMMENTS);
+
+                    //substr(p_station->comments,data,MAX_COMMENTS);
+                    add_comment(p_station,data);
+
                     // the last char always was missing...
                     //p_station->comments[ strlen(p_station->comments) - 1 ] = '\0';  // Wipe out '\n'
                     // moved that to decode_ax25_line
@@ -6839,7 +6968,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
-                    substr(p_station->comments,data,MAX_COMMENTS);
+
+                    //substr(p_station->comments,data,MAX_COMMENTS);
+                    add_comment(p_station,data);
+
                     // the last char always was missing...
                     //p_station->comments[ strlen(p_station->comments) - 1 ] = '\0';  // Wipe out '\n'
                     // moved that to decode_ax25_line
@@ -6863,7 +6995,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if (ok) {
                     (void)extract_weather(p_station,data,compr_pos);
                     p_station->record_type = (char)APRS_WX1;
-                    substr(p_station->comments,data,MAX_COMMENTS);
+
+                    //substr(p_station->comments,data,MAX_COMMENTS);
+                    add_comment(p_station,data);
                 }
                 break;
 
@@ -6926,7 +7060,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         
         // store it as status report until we get a real one
         if ((p_station->flag & (~ST_STATUS)) == 0) {         // only store it if no status yet
-            substr(p_station->comments,data-1,MAX_COMMENTS);
+
+            //substr(p_station->comments,data-1,MAX_COMMENTS);
+            add_comment(p_station,data-1);
+
             p_station->record_type = NORMAL_APRS;               // ???
         }
         ok = 1;            
@@ -7768,7 +7905,9 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     }
 
     substr(p_station->power_gain,my_phg,7);
-    substr(p_station->comments,my_comment,MAX_COMMENTS);
+
+    //substr(p_station->comments,my_comment,MAX_COMMENTS);
+    add_comment(p_station,my_comment);
 
     my_last_course = 0;         // set my last course in deg to zero
     redo_list = (int)TRUE;      // update active station lists
@@ -9874,8 +10013,16 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     object_group = p_station->aprs_symbol.aprs_type;
     object_symbol = p_station->aprs_symbol.aprs_symbol;
 
-
-    strcpy(comment,p_station->comments);
+    // In this case we grab only the first comment field (if it
+    // exists) for the object/item
+    if (p_station->comment_data != NULL) {
+        //strcpy(comment,p_station->comments);
+        strncpy(comment,p_station->comment_data->text,sizeof(comment));
+    }
+    else {
+        comment[0] = '\0';  // Empty string
+    }
+    
     (void)remove_trailing_spaces(comment);
 
 

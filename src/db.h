@@ -118,7 +118,7 @@ enum APRS_Types {
 #define MAX_COMMENTS         80
 #define MAX_DISTANCE         10
 #define MAX_WXSTATION        50
-#define MAX_TEMP 100
+#define MAX_TEMP            100
 
 #define MAX_MESSAGE_LENGTH  100
 #define MAX_MESSAGE_ORDER    10
@@ -266,6 +266,14 @@ typedef struct {
 #define TR_NEWTRK       0x02    // start new track
 
 
+// Struct for holding comment/status data.  Will keep a dynamically
+// allocated list of text.  Every different comment field will be
+// stored in a separate line.
+typedef struct _CommentRow{
+    char    text[MAX_COMMENTS+1];   // Holds the comment text
+    struct _CommentRow *next;       // Ptr to next record or NULL
+} CommentRow;
+
 
 // Break DataRow into several structures.  DataRow will contain the parameters
 // that are common across all types of stations.  DataRow will contain a pointer
@@ -320,7 +328,8 @@ typedef struct _DataRow {
     char station_time[MAX_STATION_TIME];
     char station_time_type;
     char sats_visible[MAX_SAT];
-    char comments[MAX_COMMENTS+1];
+//    char comments[MAX_COMMENTS+1];
+    CommentRow *comment_data;           // Ptr to comment records or NULL
     int  df_color;
 } DataRow;
 

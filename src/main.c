@@ -13547,10 +13547,16 @@ else if (DF_object_enabled) {
             temp_data[1] = '\0';
             XmTextFieldSetString(object_symbol_data,temp_data);
 
-            if (strlen(p_station->comments) > 0)
-                XmTextFieldSetString(object_comment_data,p_station->comments);
-            else
+            // We only check the first possible comment string in
+            // the record
+            //if (strlen(p_station->comments) > 0)
+            if (p_station->comment_data != NULL) {
+                //XmTextFieldSetString(object_comment_data,p_station->comments);
+                XmTextFieldSetString(object_comment_data,p_station->comment_data->text);
+            }
+            else {
                 XmTextFieldSetString(object_comment_data,"");
+            }
 
 
 //            if ( (p_station->aprs_symbol.area_object.type != AREA_NONE) // Found an area object
