@@ -568,6 +568,14 @@ First Time Install:
       the "defvar default-voice-priority-list". This will change the default
       voice to "ked_diphone".
 
+      Note that you can start up the festival server and test it out manually
+      by typing these commands:
+
+        telnet localhost 1314
+        (SayText "Hello")
+
+      To exit, press control-] and then type "quit".
+
    9. OPTIONAL:  Install GDAL/OGR for support of many more map formats.
       NOTE:  This is currently being added to Xastir:  Some support is there
       now for the vector formats, but it isn't "pretty" yet.  Should you wish
