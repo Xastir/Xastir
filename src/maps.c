@@ -8533,7 +8533,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
         }
 
         // Save the current pointer into the file
-        record_ptr = ftell(fn);
+        record_ptr = (long)ftell(fn);
         // record_ptr should now be point to the next record list in
         // the sequence (if there is another one).
 
@@ -8570,8 +8570,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 
         if (map_onscreen(map_left, map_right, map_top, map_bottom)) {
 
-            max_x = screen_width  + MAX_OUTBOUND;
-            max_y = screen_height + MAX_OUTBOUND;
+            max_x = (long)(screen_width + MAX_OUTBOUND);
+            max_y = (long)(screen_height + MAX_OUTBOUND);
 
             /* read vectors */
             for (record_count = 2; record_count <= records; record_count++) {
@@ -8587,7 +8587,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                 }
 
                 // Save a pointer to the next record list header
-                record_ptr = ftell(fn);
+                record_ptr = (long)ftell(fn);
 
                 // Point to the next map file header & snag it
                 fseek(fn, ntohl(prl.record_data_offset), SEEK_SET);
@@ -8609,8 +8609,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                         count = ntohs(vector_hdr.next_vector);
 
                         if (count && !(count&1)) {
-                            line_x = ntohs(vector_hdr.line_start_x);
-                            line_y = ntohs(vector_hdr.line_start_y);
+                            line_x = (long)ntohs(vector_hdr.line_start_x);
+                            line_y = (long)ntohs(vector_hdr.line_start_y);
 
                             if (debug_level & 512) {
                                 printf("\tvector %d, left %d, right %d, top %d, bottom %d, start x %ld, start y %ld\n",
@@ -8630,7 +8630,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                 max_y,
                                 map_left + (line_x * scale),
                                 map_top + (line_y * scale),
-                                record_hdr.type,
+                                record_hdr.type,    // becomes the color choice
                                 0,
                                 destination_pixmap);
 
@@ -8642,9 +8642,10 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                     printf("\tnext x %d, next y %d\n",
                                         vector_point.next_x,
                                         vector_point.next_y);
-                                        line_x += vector_point.next_x - 127;
-                                        line_y += vector_point.next_y - 127;
                                 }
+
+                                line_x += vector_point.next_x - 127;
+                                line_y += vector_point.next_y - 127;
 
                                 // DNN: Only line_x and line_y are scaled,
                                 // not map_left and map_top
@@ -8665,7 +8666,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                                 max_y,
                                 map_left + (line_x * scale),
                                 map_top + (line_y * scale),
-                                0,
+                                0,  // Color 0
                                 0,
                                 destination_pixmap);
                         }
@@ -8701,8 +8702,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
                         count = ntohs(label_record.next_label);
 
                         if (count && !(count&1)) {
-                            line_x = ntohs(vector_hdr.line_start_x);
-                            line_y = ntohs(vector_hdr.line_start_y);
+                            line_x = (long)ntohs(vector_hdr.line_start_x);
+                            line_y = (long)ntohs(vector_hdr.line_start_y);
  
                             if (debug_level & 512) {
                                 printf("\t%d, %d, %d, %d, %d, %d, 0x%x, %s\n",
