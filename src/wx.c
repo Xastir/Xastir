@@ -1024,19 +1024,19 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 //WE7U
 // Correct this section of code for the different rain gauge types
                     switch (WX_rain_gauge_type) {
-                        case 2: // 0.01" rain gauge
+                        case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)*10);
                             break;
                         case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/2.54);
                             break;
-                        case 1: // 0.1" rain gauge
+                        case 2: // 0.01" rain gauge
                         case 0: // No conversion
                         default:
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16));
                             break;
                     }
                     /* local station */
@@ -1383,15 +1383,98 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 } else
                     weather->wx_gust[0]=0;
 
-                /* wind direction */
-                if (data[8]!='-') {
-                    substr(temp_data1,(char *)(data+8),4);
-                    xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
-                            (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
-                } else {
-                    xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
-                    weather->wx_course[0]=0;
-                }
+                    // KG9AE
+                    // Peet Bros CR mode wind values should be selected based on which are highest.
+                    /* Wind Speed fields 1, 34, and 71.  Wind direction fields 2, 35, 72. */
+                    if (data[4] !='-') {
+                        substr(temp_data1, data+4, 4);
+                        temp1 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                    }
+                    else {
+                        temp1=0;
+                    }
+                    if (data[136] !='-') {
+                        substr(temp_data1, data+136, 4);
+                        temp2 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                    }
+                    else {
+                        temp2=0;
+                    }
+                    if (data[284] !='-') {
+                        substr(temp_data1, data+284, 4);
+                        temp3 = (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137);
+                    }
+                    else {
+                        temp3=0;
+                    }
+                    // printf("WIND: wind1 %d, wind2 %d, wind3 %d\n", temp1, temp2, temp3);
+                    
+                    /* Select wind speed and direction based on which wind speed is the highest. */
+                    /* Ugh, surely there's a way to make this pretty. A function might be better. */
+                    if( temp1 >= temp2 && temp1 >= temp3 ){
+                        // printf("WIND:      ***\n");
+                        /* wind speed */
+                        substr(temp_data1,(char *)(data+4),4);
+                        xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        /* wind direction */
+                        if (data[8]!='-') {
+                            substr(temp_data1,(char *)(data+8),4);
+                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                        } else {
+                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
+                            weather->wx_course[0]=0;
+                        }
+                    }
+                    else if( temp2 >= temp1 && temp2 >= temp3 ){
+                        // printf("WIND:               ***\n");
+                        /* wind speed */
+                        substr(temp_data1,(char *)(data+136),4);
+                        xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        /* wind direction */
+                        if (data[140]!='-') {
+                            substr(temp_data1,(char *)(data+140),4);
+                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                        } else {
+                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
+                            weather->wx_course[0]=0;
+                        }
+                    }
+                    else if( temp3 >= temp2 && temp3 >= temp1 ){
+                        // printf("WIND:                        ***\n");
+                        /* wind speed */
+                        substr(temp_data1,(char *)(data+284),4);
+                        xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        /* wind direction */
+                        if (data[288]!='-') {
+                            substr(temp_data1,(char *)(data+288),4);
+                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                        } else {
+                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
+                            weather->wx_course[0]=0;
+                        }
+                    }
+                    else{   /* Or default to the first value */
+                        // printf("WIND: DEFAULTING!\n");
+                        /* wind speed */
+                        substr(temp_data1,(char *)(data+4),4);
+                        xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
+                                (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
+                        /* wind direction */
+                        if (data[8]!='-') {
+                            substr(temp_data1,(char *)(data+8),4);
+                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "%03d",
+                                    (int)(((float)strtol(temp_data1,&temp_conv,16)/256.0)*360.0));
+                        } else {
+                            xastir_snprintf(weather->wx_course, sizeof(weather->wx_course), "000");
+                            weather->wx_course[0]=0;
+                        }
+                    }
 
                 /* outdoor temp */
                 if (data[24]!='-') {
@@ -1441,17 +1524,17 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     switch (WX_rain_gauge_type) {
                         case 1: // 0.1" rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/10.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)*10);
                             break;
                         case 3: // 0.1mm rain gauge
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/254.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/2.54);
                             break;
                         case 2: // 0.01" rain gauge
                         case 0: // No conversion
                         default:
                             xastir_snprintf(weather->wx_rain_total, sizeof(weather->wx_rain_total),
-                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16)/100.0);
+                                "%0.2f", (float)strtol(temp_data1,&temp_conv,16));
                             break;
                     }
                     /* Since local station only */
@@ -1493,12 +1576,6 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     xastir_snprintf(wx_dew_point, sizeof(wx_dew_point), "%03d",
                             (int)((float)((strtol(temp_data1,&temp_conv,16)<<16)/65636)/10.0));
                     wx_dew_point_on = 1;
-                }
-
-                if (data[4] !='-') {
-                    substr(temp_data1,(char *)(data+4),4);
-                    xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
-                            (int)(0.5 + ((float)strtol(temp_data1,&temp_conv,16)/10.0)*0.62137));
                 }
 
                 /*high winds for today*/
