@@ -3346,6 +3346,10 @@ void upd_echo(char *path) {
 // I liked to have xastir to compute the locator along with the normal coordinates.
 // The algorithm derives from dk5sg's util/qth.c (wampes)
 //
+// This computes Maidenhead grid coordinates and is used for both
+// the status line ("text2" widget) and the Coordinate Calculator at
+// present.
+//
 char *sec_to_loc(long longitude, long latitude)
 {
   static char buf[7];
