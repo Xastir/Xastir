@@ -2117,14 +2117,14 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNlabelPixmap,icon,
                                 XmNbackground, colors[0xff],
                                 NULL);
-            if (debug_level & 1) {
-                station_type = XtVaCreateManagedWidget("Station Data type", xmTextFieldWidgetClass, form,
+
+            station_type = XtVaCreateManagedWidget("Station Data type", xmTextFieldWidgetClass, form,
                                 XmNeditable,   FALSE,
                                 XmNcursorPositionVisible, FALSE,
                                 XmNtraversalOn, FALSE,
                                 XmNshadowThickness,       0,
-                                XmNcolumns,15,
-                                XmNwidth,((15*7)+2),
+                                XmNcolumns,5,
+                                XmNwidth,((5*7)+2),
                                 XmNbackground, colors[0xff],
                                 XmNtopAttachment,XmATTACH_FORM,
                                 XmNtopOffset, 2,
@@ -2135,16 +2135,15 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNrightAttachment,XmATTACH_NONE,
                                 NULL);
 
-                //sprintf(temp, "%c%c%c", p_station->aprs_symbol.aprs_type,
-                //        p_station->aprs_symbol.aprs_symbol,
-                //        p_station->aprs_symbol.special_overlay);
-                xastir_snprintf(temp, sizeof(temp), "%c%c%c", p_station->aprs_symbol.aprs_type,
-                        p_station->aprs_symbol.aprs_symbol,
-                        p_station->aprs_symbol.special_overlay);
+            //sprintf(temp, "%c%c%c", p_station->aprs_symbol.aprs_type,
+            //        p_station->aprs_symbol.aprs_symbol,
+            //        p_station->aprs_symbol.special_overlay);
+            xastir_snprintf(temp, sizeof(temp), "%c%c%c", p_station->aprs_symbol.aprs_type,
+                p_station->aprs_symbol.aprs_symbol,
+                p_station->aprs_symbol.special_overlay);
 
-                XmTextFieldSetString(station_type, temp);
-                XtManageChild(station_type);
-            }
+            XmTextFieldSetString(station_type, temp);
+            XtManageChild(station_type);
 
             station_call = XtVaCreateManagedWidget("Station Data call", xmTextFieldWidgetClass, form,
                                 XmNeditable,   FALSE,
@@ -2158,7 +2157,7 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
                                 XmNtopOffset, 2,
                                 XmNbottomAttachment,XmATTACH_NONE,
                                 XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, (debug_level != 0) ? station_type: station_icon,
+                                XmNleftWidget, station_type,
                                 XmNleftOffset,10,
                                 XmNrightAttachment,XmATTACH_NONE,
                                 NULL);
