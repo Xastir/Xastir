@@ -41,6 +41,7 @@
 #define ANGLE_UPDOWN 30         /* prefer horizontal cars if less than 45 degrees */
 
 int symbols_loaded = 0;
+int symbols_cache[5] = {0,0,0,0,0};
 Widget select_symbol_dialog = (Widget)NULL;
 static xastir_mutex select_symbol_dialog_lock;
 Pixmap select_icons[(126-32)*2];    //33 to 126 with both '/' and '\' symbols (94 * 2) or 188
@@ -1863,15 +1864,45 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
 
     found = -1;
 
-    for ( i = 0; i < symbols_loaded; i++ ) {
-        if (symbol_data[i].active == SYMBOL_ACTIVE) {
-            if (symbol_data[i].table == symbol_table
-                    && symbol_data[i].symbol == symbol_id) {
-                // We found the matching symbol
-                found = i;  // index of symbol
-                break;
-            }
+    // Check last few symbols we used to see if we can shortcut
+    // looking through the entire index.  The symbols array really
+    // should be turned into a hash to save time.  Basically we've
+    // implemented a very short cache here, but it keeps us from
+    // looking through the entire symbol array sometimes.
+    //
+    for ( i = 0; i < 5; i++ ) {
+//fprintf(stderr,"Checking symbol cache\n");
+        if (symbol_data[symbols_cache[i]].table == symbol_table
+                && symbol_data[symbols_cache[i]].symbol == symbol_id) {
+            // We found the matching symbol in the cache
+            found = symbols_cache[i];  // index of symbol
+//fprintf(stderr,"Symbol cache hit:%d\n",found);
+            break;
+        }
+    }
 
+    if (found == -1) {  // Not found in symbols cache
+
+        for ( i = 0; i < symbols_loaded; i++ ) {
+            if (symbol_data[i].active == SYMBOL_ACTIVE) {
+                if (symbol_data[i].table == symbol_table
+                        && symbol_data[i].symbol == symbol_id) {
+                    // We found the matching symbol
+                    found = i;  // index of symbol
+
+                    // Save newly found symbol in cache, shift other
+                    // cache entries down by one so that newest is
+                    // at the beginning for the cache search.
+//fprintf(stderr,"Saving in cache\n");
+                    symbols_cache[4] = symbols_cache[3];
+                    symbols_cache[3] = symbols_cache[2];
+                    symbols_cache[2] = symbols_cache[1];
+                    symbols_cache[1] = symbols_cache[0];
+                    symbols_cache[0] = i;
+
+                    break;
+                }
+            }
         }
     }
 
@@ -1899,6 +1930,7 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
         }
     }
 
+
     if (mask) {
         if (ghost)
             (void)XSetClipMask(XtDisplay(w),gc,symbol_data[found].pix_mask_old);
@@ -1907,6 +1939,7 @@ void symbol(Widget w, int ghost, char symbol_table, char symbol_id, char symbol_
     }
     (void)XSetClipOrigin(XtDisplay(w),gc,x_offset,y_offset);
     (void)XCopyArea(XtDisplay(w),symbol_data[found].pix,where,gc,0,0,20,20,x_offset,y_offset);
+
 
     if(alphanum_index > 0) {
         if (ghost)
