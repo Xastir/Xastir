@@ -36,7 +36,8 @@ EXTRA_DIST = \
     tnc-startup.pico \
     tnc-startup.aea \
     tnc-startup.d700 \
-    tnc-stop.d700
+    tnc-stop.d700 \
+    tnc-stop.thd7
 
 config_DATA = ${EXTRA_DIST}
 
