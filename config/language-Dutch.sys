@@ -14,7 +14,7 @@
 # Modified 1.0.7 : Aug 27 2002, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.1.4 : Apr 15 2003, Han Sytsma <h.l.sytsma@hetnet.nl>
 # Modified 1.1.4 : May 20 2003, Han Sytsma <h.l.sytsma@hetnet.nl>
-# Modified 1.3.2 : Jun 04 2004, Han Sytsma <h.l.sytsma@hetnet.nl>
+# Modified 1.3.2 : Jun 08 2004, Han Sytsma <h.l.sytsma@hetnet.nl>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -92,7 +92,7 @@ PULDNMP022|Indexeer Kaarten bij het Starten||
 PULDNMP023|Index: Voeg nieuwe kaarten toe|n|
 PULDNMP024|Index: Herindexeer ALLE kaarten|H|
 PULDNMP025|Kaart label font||
-PULDNMP015|Xfontsel||
+PULDNMP015|Xfont selectie||
 #
 #
 # PopUp "Configureren Tigermap"
@@ -713,7 +713,7 @@ WPUPSTI060|Ontbrandings Temp: %02.1føC  ||
 WPUPSTI061|Ontbrandings Temp: %søF   ||
 WPUPSTI062|Vochtigheids Gehalte in Brandstof: %s%%   ||
 WPUPSTI063|Baro: %0.2f in Hg||
-WPUPSTI064|Fetch NWS Alert||
+WPUPSTIO64|Vraag NWS waarschuwing||
 #
 # FCC-RAC Call Look up
 STIFCC0001|FCC Databank Doorzoeken||
