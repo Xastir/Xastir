@@ -13,7 +13,8 @@ EXTRA_DIST = \
     tnc-startup.kpc3 \
     tnc-startup.thd7 \
     tnc-startup.kam \
-    tnc-startup.pico
+    tnc-startup.pico \
+    tnc-startup.aea
 
 config_DATA = \
     language-Dutch.sys \
@@ -28,5 +29,6 @@ config_DATA = \
     tnc-startup.kpc3 \
     tnc-startup.thd7 \
     tnc-startup.kam \
-    tnc-startup.pico
+    tnc-startup.pico \
+    tnc-startup.aea
 
