@@ -1,14 +1,14 @@
 #! /bin/sh
 #
-# Copyright (C) 2000-2005  The Xastir Group
-#
 # $Id$
+#
+# Copyright (C) 2000-2005  The Xastir Group
 #
 # Updated on 7/5/03 to reflect the new directory structure
 # N0VH
 #
-# Note: You must run this script as root in order to write the files
-# into the destination directory listed below:
+# Note: Run this script as root in order to write the files into the
+# destination directory listed below.
 #
 XASTIR_BASE=/usr/local/share/xastir
 cd /var/tmp
