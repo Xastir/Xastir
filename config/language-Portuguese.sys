@@ -72,7 +72,7 @@ PULDNMP005|Cor de fundo|C|
 PULDNMP006|Estilo de texto da estação|E|
 PULDNMP011|Menú indicador do rato|r|
 PULDNMP008|Intensidade do mapa|I|
-PULDNMP020|Activar/Configurar tigermap||
+PULDNMP020|Activar/configurar tigermap||
 PULDNMP021|Auto Map - Desactivar raster mapas||
 PULDNMP022|Indexar mapas no começo||
 PULDNMP023|Mapas re-indexados|R|
@@ -95,8 +95,8 @@ MPUPTGR013|Rios||
 MPUPTGR014|Lagos||
 MPUPTGR015|Aeroportos, parques, etc||
 MPUPTGR016|Intensidade do mapa||
-MPUPTGR017|Timeout (sec)||
-MPUPTGR018|Enable Tiger Maps||
+MPUPTGR017|Tempo esgotado (sec)||
+MPUPTGR018|Activar Tiger Maps||
 #
 #
 # Seleção de mapas
@@ -341,13 +341,13 @@ WPUPCFD029|Ver boletins de distância zero||
 #
 # PopUp "Configurar - momento certo"
 WPUPCFTM01|Configurar momento certo|||
-WPUPCFTM02|Posit TX Interval (min)||
-WPUPCFTM03|Station Ghosting Time (min)||
-WPUPCFTM04|Object/Item TX Interval (min)||
-WPUPCFTM05|Station Clear Time (hours)||
-WPUPCFTM06|GPS Check Interval (sec)||
-WPUPCFTM07|Station Delete Time (days)||
-WPUPCFTM08|Dead-Reckoning Timeout (min)||
+WPUPCFTM02|Intervalo Posit TX (min)||
+WPUPCFTM03|Tempo de estacao fantasma (min)||
+WPUPCFTM04|Intervalo TX objecto/item (min)||
+WPUPCFTM05|Tempo para limpar estacao (horas)||
+WPUPCFTM06|Intervalo para verificar GPS (seg)||
+WPUPCFTM07|Tempo para apagar estacao (dias)||
+WPUPCFTM08|Tempo limite para Dead-Reckoning (min)||
 #
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||
@@ -994,4 +994,5 @@ GPS010|Amarelo||
 GPS011|Violeta||
 #
 #
+
 
