@@ -402,9 +402,41 @@ then
     AC_MSG_WARN(*** Shapelib library files not found or not in the path.  Building w/o Shapelib support. ***) 
   fi 
 else 
-  AC_MSG_WARN(*** Shapelib header files not found or not in the path.  Building w/o Shapelib support. ***) 
+  #
+  # More checks for Mac OSX/Fink, which installs things into
+  # "/sw/lib", "/sw/include", "/sw/bin"
+  #
+  AC_CHECK_FILE(/sw/include/libshp/shapefil.h, XASTIR_SHAPELIB_INC="yes")
+  if test "$XASTIR_SHAPELIB_INC" = "yes"
+  then
+    SHP_CFLAGS="-I/sw/include/libshp"
+  else
+    AC_CHECK_FILE(/sw/include/shapefil.h, XASTIR_SHAPELIB_INC="yes")
+    if test "$XASTIR_SHAPELIB_INC" = "yes"
+    then
+      SHP_CFLAGS="-I/sw/include"
+    fi
+  fi
+
+  if test "$XASTIR_SHAPELIB_INC" = "yes"
+  then
+    AC_CHECK_FILE(/sw/lib/libshp.so, XASTIR_SHAPELIB_LIB="-lshp") 
+    if test "$XASTIR_SHAPELIB_LIB" = "-lshp" 
+    then 
+      XASTIR_SHAPE_LIB_PATH="-L/sw/lib"
+      AC_DEFINE_UNQUOTED(HAVE_SHAPELIB, 1, [Define if you have ShapeLib]) 
+      LIBS="${XASTIR_SHAPE_LIB_PATH} ${XASTIR_SHAPELIB_LIB} ${LIBS}" 
+      CFLAGS="${SHP_CFLAGS} ${CFLAGS}"
+      use_shapelib=yes 
+    else 
+      AC_MSG_WARN(*** Shapelib library files not found or not in the path.  Building w/o Shapelib support. ***) 
+    fi 
+  else
+    # We failed to find Shapelib
+    AC_MSG_WARN(*** Shapelib header files not found or not in the path.  Building w/o Shapelib support. ***) 
+  fi
 fi 
-# 
+#
 # End of Shapelib checks 
  
  
