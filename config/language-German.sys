@@ -4,7 +4,7 @@
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 19. Mai 2003, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 21. Mai 2003, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -55,7 +55,7 @@ PULDNVI013|Laufzeit|z|
 PULDNVI014|Programmlaufzeit||
 #
 # Menu "Einstellungen"
-PULDNCF004|Meine Stationdaten|M|
+PULDNCF004|Meine Stationsdaten|M|
 PULDNCF001|Grundeinstellungen|G|
 PULDNCF003|Zeitverhalten|Z|
 PULDNCF002|Koordinatensystem|K|
@@ -103,7 +103,7 @@ MPUPTGR013|Flüsse||
 MPUPTGR014|Seen||
 MPUPTGR015|Flughäfen, Parks, etc||
 MPUPTGR016|Karten Intensität||
-MPUPTGR017|Timeout (sec)||
+MPUPTGR017|Timeout [sec]||
 MPUPTGR018|Tiger Maps erlauben||
 #
 #
@@ -129,7 +129,7 @@ PULDNMBC08|Zartes Gelb||
 PULDNMBC09|Rötliches Braun||
 PULDNMBC10|Rot||
 PULDNMBC11|Weiß||
-PULDNMBC12|Schwarze||
+PULDNMBC12|Schwarz||
 #
 # Karten - Stil der Stationstexte
 PULDNMSL01|Schwarze Umrandung|U|
@@ -198,12 +198,12 @@ PULDNUT002|Metrisch||
 PULDNMG001|Schicke Nachricht an|N|
 PULDNMG002|Öffne Gruppen Nachricht|G|
 PULDNMG003|Lösche alle ausgehenden Nachrichten|L|
-PULDQUS001|Stationen allgemein|t|
-PULDQUS002|IGate Stationen|I|
-PULDQUS003|Wetter Stationen|W|
-PULDNMG004|Setze automatische Antwort|S|
+PULDQUS001|Abfrage Stationen allgemein|S|
+PULDQUS002|Abfrage Internet-Gateways|I|
+PULDQUS003|Abfrage Wetterstationen|W|
+PULDNMG004|Setze automatische Antwort|t|
 PULDNMG005|Automatische Antwort|A|
-PULDNMG006|Satellite Ack Modus|M|
+PULDNMG006|Satelliten ACK Modus|M|
 #
 # Menu "Schnittstellen"
 PULDNTNT04|Schnittstellen Ein/Aus|A|
@@ -336,7 +336,7 @@ WPUPCFD019|Mobile Station mit UTC Zeit/Sekunden||
 WPUPCFD021|Station mit Position und Wetter||
 WPUPCFD022|Station mit UTC Zeit, Position und Wetter||
 WPUPCFD023|Sende Wetter Rohdaten?||
-WPUPCFD024|Komprimierte Daten beim Senden von Objekten?||
+WPUPCFD024|Komprimiertes Format beim Senden von Objekten?||
 WPUPCFD025|Alternatives Netz?||
 WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen||
 WPUPCFD027|PopUp-Fenster für neue Bekanntmachungen||
@@ -344,17 +344,17 @@ WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige bei Entfernung Null||
 #
 # PopUp "Zeitverhalten"
-WPUPCFTM01|Zeitverhalten Einstellungen|||
-WPUPCFTM02|Position TX Intervall (Min)||
-WPUPCFTM03|Station Ghosting Time (Min)||
-WPUPCFTM04|Objekt SendeIntervall (Min)||
-WPUPCFTM05|alte Station anzeigen (Std)||
-WPUPCFTM06|GPS Abfrage alle (Sec)||
-WPUPCFTM07|Station löschen nach (Tage)||
-WPUPCFTM08|Voraussage Timeout (Min)||
+WPUPCFTM01|Einstellung des Zeitverhaltens|||
+WPUPCFTM02|SendeIntervall Position [Min]||
+WPUPCFTM03|Station schemenhaft nach [Min]||
+WPUPCFTM04|SendeIntervall Objekt [Min]||
+WPUPCFTM05|Alte Station anzeigen für [Std]||
+WPUPCFTM06|GPS Abfrage alle [Sec]||
+WPUPCFTM07|Station löschen nach [Tage]||
+WPUPCFTM08|Pos-Voraussage Timeout [Min]||
 #
 # PopUp "Koordinatensystem"
-WPUPCFC001|Koordinatensystem Einstellungen||
+WPUPCFC001|Koordinatensystem||
 WPUPCFC002|Koordinatensystem wählen||
 WPUPCFC003|dd.ddddd|d|
 WPUPCFC004|dd mm.mmm|m|
@@ -369,7 +369,7 @@ WPUPCFG004|GPS Optionen||
 WPUPCFG005|Eigenständiger GPS||
 WPUPCFG006|TNC mit GPS verbunden (HSP Kabel)||
 WPUPCFG007|TNC mit GPS verbunden über Ctrl-E||
-WPUPCFG008|GPS Zeit (Abgleich alle)||
+WPUPCFG008|GPS-Abfrage alle||
 WPUPCFG009|5 Sek||
 WPUPCFG010|15 Sek||
 WPUPCFG011|30 Sek||
@@ -428,7 +428,7 @@ WPUPCFWX06|.1mm||
 WPUPCFWX07|keine Korrektur||
 #
 # PopUp "Einstellungen - Stationsdaten"
-WPUPCFS001|Stationdaten||
+WPUPCFS001|Stationsdaten||
 WPUPCFS002|Rufzeichen||
 WPUPCFS003|Breite||
 WPUPCFS004|Grad||
@@ -456,7 +456,7 @@ WPUPCFS024|.18 Kilometer Kreis||
 WPUPCFS025|1.85 Kilometer Kreis||
 WPUPCFS026|18.53 Kilometer Kreis||
 WPUPCFS027|111.19 Kilometer Kreis||
-WPUPCFS029|Komprimierte Position senden|K|
+WPUPCFS029|Position in komprimiertem Format senden|k|
 #
 # PopUp "Objekt/Item"
 POPUPOB001|Objekt/Item||
@@ -493,8 +493,8 @@ POPUPOB031|Signpost Objekt||
 POPUPOB032|Komprimierung einschalten||
 POPUPOB033|Item löschen||
 POPUPOB034|Item ändern||
-POPUPOB035|Höhe (ft):||
-POPUPOB036|Geschwindigkeit (knots):||
+POPUPOB035|Höhe [ft]:||
+POPUPOB036|Geschwindigkeit [knots]:||
 POPUPOB037|Kurs:||
 POPUPOB038|als Peil-Objekt||
 POPUPOB039|Leistung - Höhe - Gewinn - Richtung||
@@ -512,7 +512,7 @@ WPUPCFI006|Port1||
 WPUPCFI007|Host2||
 WPUPCFI008|Port2||
 WPUPCFI009|Pass-Code||
-WPUPCFI010|(Freilassen falls keines)||
+WPUPCFI010|(freilassen falls keiner)||
 WPUPCFI011|Wiederverbinden bei NET Fehler?||
 WPUPCFI012|Als I-Gate verwenden?||
 WPUPCFI013|Nachrichten aus Internet via TNC aussenden wenn I-Gate?||
@@ -641,21 +641,21 @@ WPUPSTI030|Temperatur: %s°F   ||
 WPUPSTI031|Feuchte: %s%%   ||
 WPUPSTI032|rel.Feuchte: %02.1f°C  ||
 WPUPSTI033|Luftdruck: %s hPa||
-WPUPSTI034|Schnee: %0.2f (cm/h)||
-WPUPSTI035|Schnee: %0.2f (Inch/h)||
+WPUPSTI034|Schnee: %0.2f cm/h||
+WPUPSTI035|Schnee: %0.2f Inch/h||
 WPUPSTI036|Regen: ||
-WPUPSTI037|%0.2f (mm/h)   ||
-WPUPSTI038|%0.2f (Inch/h)   ||
-WPUPSTI039|%0.2f (mm/Tag)  ||
-WPUPSTI040|%0.2f (Inch/Tag)  ||
-WPUPSTI041|%0.2f (mm/seit 0:00)||
-WPUPSTI042|%0.2f (Inch/seit 0:00)||
+WPUPSTI037|%0.2f mm/h   ||
+WPUPSTI038|%0.2f Inch/h   ||
+WPUPSTI039|%0.2f mm/Tag  ||
+WPUPSTI040|%0.2f Inch/Tag  ||
+WPUPSTI041|%0.2f mm/seit 0:00||
+WPUPSTI042|%0.2f Inch/seit 0:00||
 WPUPSTI043|Datenpfad: %s||
 WPUPSTI044|Kommentar: %s||
 WPUPSTI045|Lösche Spur||
 WPUPSTI046|Regen gesamt: ||
-WPUPSTI047|%0.2f (mm)||
-WPUPSTI048|%0.2f (Inch)||
+WPUPSTI047|%0.2f mm||
+WPUPSTI048|%0.2f Inch||
 WPUPSTI049|Trace Anfrage||
 WPUPSTI050|Unbest. Nachrichten||
 WPUPSTI051|Stationsanfrage||
@@ -769,12 +769,12 @@ IFPUPCT002|Stop||
 IFPUPCT003|Alle starten||
 IFPUPCT004|Alle stoppen||
 #
-# IGate control
-IGPUPCF000|IGate Optionen||
-IGPUPCF001|Allen IGate-Verkehr verhindern||
-IGPUPCF002|Verkehr NUR von HF nach Inet erlauben||
-IGPUPCF003|HF->Inet und Inet->HF Verkehr erlauben||
-IGPUPCF004|Igate -> RF Pfad   ||
+# Internet Gateway Steuerung
+IGPUPCF000|Internet Gateway||
+IGPUPCF001|Alle Weiterleitungen verhindern||
+IGPUPCF002|Weiterleitung NUR von HF nach Internet||
+IGPUPCF003|Weiterleitung HF->Internet UND Internet->HF||
+IGPUPCF004|Igate -> HF Pfad   ||
 #
 # Wetterstation
 WXPUPSI000|Wetterstation||
@@ -808,7 +808,7 @@ WXPUPSI025|Radio Shack WX-200/Oregon Scientific WM-918||
 LHPUPNI000|Stationsliste||
 LHPUPNI001|Mobile Stationen||
 LHPUPNI002|Wetterstationen||
-LHPUPNI003|Lokale Stationen (via TNC)||
+LHPUPNI003|Lokale Stationen (über TNC)||
 LHPUPNI004|Letzte Stationen||
 LHPUPNI005|Objekte & Items||
 LHPUPNI006|Eigene Objekte & Items||
@@ -862,22 +862,22 @@ POPEM00015|Fehler beim Öffnen des Interface %d Hard Fail||
 POPEM00016|Fehler beim Öffnen des Interface %d Time Out||
 POPEM00017|Keine weiteren Schnittstellen verfügbar!||
 POPEM00018|Datenanfrage - Single Message Line||
-POPEM00019|Port transmitting is off for port %d||
+POPEM00019|Senden abgeschaltet bei Port %d||
 POPEM00020|Datenbankfehler!||
 POPEM00021|AX.25-Unterstützung nicht in Xastir kompiliert!||
 POPEM00022|Eingabefehler!||
-POPEM00023|No location name specified!||
-POPEM00024|Location name specified is in use!||
+POPEM00023|Es wurde kein Name angegeben!||
+POPEM00024|Der angegebene Name ist nicht mehr frei!||
 POPEM00025|Nicht gefunden!||
-POPEM00026|Tracking will commence when it appears||
+POPEM00026|Verfolgung wird bei Erscheinen der Station aufgenommen||
 POPEM00027|Falsche Eingabe.  Einige Felder leer?||
 POPEM00028|Kann Datei nicht öffnen||
 POPEM00029|Gefunden!||
 POPEM00030|Symbol für Wetterstation||
-POPEM00031|Changed to WX symbol '/_', other options:  '\_'  '/W'  and  '\W'||
-POPEM00032|Warning: Using National Weather Service Symbol!||
+POPEM00031|Geändert auf Wettersymbol '/_', auch möglich:  '\_'  '/W'  und  '\W'||
+POPEM00032|Warnung: Symbol des National Weather Service wird benutzt!||
 POPEM00033|Keine GPS Daten!||
-POPEM00034|Disabling My Position TX Until Valid GPS Data!||
+POPEM00034|Position wird nicht gesendet bis gültige GPS-Daten!||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
@@ -946,10 +946,10 @@ FEATURE004|Map Quad:||
 FEATURE005|Typ:||
 FEATURE006|GNIS Datei:||
 #
-# Coordinate Calculator Dialog
-COORD001|Koordinatenberechnung||
-COORD002|Calc||
-COORD003|Berechnen||
+# Koordinatenrechner Dialog
+COORD001|Koordinatenumrechnung||
+COORD002|Umrechnen||
+COORD003|Umrechnen||
 COORD004|Löschen||
 COORD005|UTM||
 COORD006|Breitengrad oder||
@@ -961,15 +961,15 @@ COORD010|UTM Northing||
 #
 # Smart Beaconing Dialog
 SMARTB001|Smart Beaconing||
-SMARTB002|Hohe Rate (secs):||
-SMARTB003|Hohe Geschwindigkeit (mph):||
-SMARTB004|Hohe Geschwindigkeit (kph):||
-SMARTB005|Niedrige Rate (mins):||
-SMARTB006|Niedrige Geschwindigkeit (mph):||
-SMARTB007|Niedrige Geschwindigkeit (kph):||
-SMARTB008|Minimale Kurve (deg):||
-SMARTB009|Turn Slope:||
-SMARTB010|Wartezeit (secs):||
+SMARTB002|Hohe Rate [sec]                ||
+SMARTB003|Hohe Geschwindigkeit [mph]     ||
+SMARTB004|Hohe Geschwindigkeit [km/h]    ||
+SMARTB005|Niedrige Rate [min]            ||
+SMARTB006|Niedrige Geschwindigkeit [mph] ||
+SMARTB007|Niedrige Geschwindigkeit [km/h]||
+SMARTB008|Kurve Schwellwert [deg]        ||
+SMARTB009|Kurve Auslöser für Bake [deg]  ||
+SMARTB010|Wartezeit [sec]                ||
 SMARTB011|SmartBeaconing(tm) einschalten||
 #
 #
@@ -980,7 +980,7 @@ GAMMA002|Gammakorrektur||
 #
 #
 #
-# Distance/Bearing on status line
+# Entfernung/Richtung auf der Statuszeile
 PULDNDB001|Entf./Richtung in Status||
 #
 #
@@ -998,25 +998,25 @@ GPS010|Gelb||
 GPS011|Violett||
 #
 #
-# Map Properties Dialog
-MAPP001|Map Properties||
-MAPP002| Map     Draw||
-MAPP003|Layer   Filled   AutoMap   Path/Filename||
-MAPP004|Change Layer->||
-MAPP005|Filled->||
-MAPP006|Yes||
-MAPP007|No||
-MAPP008|Automaps->||
+# Karten-Eigenschaften Dialog
+MAPP001|Karten-Eigenschaften||
+MAPP002|Karten gefüllt  automat.||
+MAPP003|Ebene  zeichnen Karte     Pfad/Dateiname||
+MAPP004|Ebene ändern->||
+MAPP005|gefüllt->||
+MAPP006|Ja  ||
+MAPP007|Nein||
+MAPP008|aut.Karte->||
 #
 #
-# Time Strings
-TIME001|Day||
-TIME002|Days||
-TIME003|Hour||
-TIME004|Hours||
+# Zeit Texte
+TIME001|Tag||
+TIME002|Tage||
+TIME003|Stunde||
+TIME004|Stunden||
 TIME005|Minute||
-TIME006|Minutes||
-TIME007|Second||
-TIME008|Seconds||
+TIME006|Minuten||
+TIME007|Sekunde||
+TIME008|Sekunden||
 #
 #
