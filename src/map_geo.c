@@ -73,6 +73,19 @@
 
 #define CHECKMALLOC(m)  if (!m) { fprintf(stderr, "***** Malloc Failed *****\n"); exit(0); }
 
+
+// Check for XPM and/or ImageMagick.  We use "NO_GRAPHICS"
+// to disable some routines below if the support for them
+// is not compiled in.
+#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM) || defined(HAVE_IMAGEMAGICK))
+  #define NO_GRAPHICS 1
+#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM || HAVE_IMAGEMAGICK)
+
+#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM))
+  #define NO_XPM 1
+#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM)
+
+
 #ifdef HAVE_IMAGEMAGICK
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -147,11 +160,19 @@ void draw_geo_image_map (Widget w,
 			 u_char alert_color,
 			 int destination_pixmap,
 			 int draw_filled) {
+#ifdef NO_GRAPHICS
+    fprintf(stderr,"XPM and/or ImageMagick support have not been compiled in.");
+#else   // NO_GRAPHICS
     char file[MAX_FILENAME+1];      // Complete path/name of image file
     FILE *f;                        // Filehandle of image file
     char line[MAX_FILENAME];        // One line from GEO file
     char fileimg[MAX_FILENAME+1];   // Ascii name of image file, read from GEO file
+
+    int width,height;
+#ifndef NO_XPM
     XpmAttributes atb;              // Map attributes after map's read into an XImage
+#endif  // HAVE_IMAGEMAGICK
+
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
     float temp_long, temp_lat;
@@ -667,7 +688,9 @@ void draw_geo_image_map (Widget w,
     xastir_snprintf(map_it, sizeof(map_it), langcode ("BBARSTA028"), filenm);
     statusline(map_it,0);       // Loading/Indexing ...
 
+#ifndef NO_XPM
     atb.valuemask = 0;
+#endif  // NO_XPM
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
@@ -835,8 +858,8 @@ void draw_geo_image_map (Widget w,
         return;
     }
 
-    atb.width = image->columns;
-    atb.height = image->rows;
+    width = image->columns;
+    height = image->rows;
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
@@ -1119,7 +1142,7 @@ void draw_geo_image_map (Widget w,
 #endif  // TIMING_DEBUG
 
     if (debug_level & 16) {
-       fprintf(stderr,"Image size %d %d\n", atb.width, atb.height);
+       fprintf(stderr,"Image size %d %d\n", width, height);
 #if (MagickLibVersion < 0x0540)
        fprintf(stderr,"Unique colors = %d\n", GetNumberColors(image, NULL));
 #else   // MagickLibVersion < 0x0540
@@ -1184,6 +1207,9 @@ void draw_geo_image_map (Widget w,
         return;
     }
 
+    width  = atb.width;
+    height = atb.height;
+
 #endif  // HAVE_IMAGEMAGICK
 
     // draw the image from the file out to the map screen
@@ -1192,17 +1218,17 @@ void draw_geo_image_map (Widget w,
     // for the XFillRectangle call later.
 
     map_c_yc = (tp[0].y_lat + tp[1].y_lat) / 2;     // vert center of map as reference
-    map_y_ctr = (long)(atb.height / 2 +0.499);
+    map_y_ctr = (long)(height / 2 +0.499);
     scale_x0 = get_x_scale(0,map_c_yc,scale_y);     // reference scaling at vert map center
 
     map_c_xc  = (tp[0].x_long + tp[1].x_long) / 2;  // hor center of map as reference
-    map_x_ctr = (long)(atb.width  / 2 +0.499);
+    map_x_ctr = (long)(width  / 2 +0.499);
     scr_x_mc  = (map_c_xc - x_long_offset) / scale_x; // screen coordinates of map center
 
     // calculate map pixel range in y direction that falls into screen area
     c_y_max = 0ul;
     map_y_min = map_y_max = 0l;
-    for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)atb.height; map_y_0++, c_y += map_c_dy) {
+    for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)height; map_y_0++, c_y += map_c_dy) {
         scr_y = (c_y - y_lat_offset) / scale_y;   // current screen position
         if (scr_y > 0) {
             if (scr_y < screen_height) {
@@ -1230,7 +1256,7 @@ void draw_geo_image_map (Widget w,
 //    if (map_proj != 1) {
         // calculate map pixel range in x direction that falls into screen area
         map_x_min = map_x_max = 0l;
-        for (map_x = 0, c_x = tp[0].x_long; map_x < (long)atb.width; map_x++, c_x += map_c_dx) {
+        for (map_x = 0, c_x = tp[0].x_long; map_x < (long)width; map_x++, c_x += map_c_dx) {
             scr_x = (c_x - x_long_offset)/ scale_x;  // current screen position
             if (scr_x > 0) {
                 if (scr_x < screen_width)
@@ -1252,7 +1278,7 @@ void draw_geo_image_map (Widget w,
     c_dx = map_c_dx;                            // map pixel width
     scale_xa = scale_x0;                        // the compiler likes it ;-)
 
-//    for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)atb.height; map_y_0++, c_y += map_c_dy) {
+//    for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)height; map_y_0++, c_y += map_c_dy) {
 //        scr_y = (c_y - y_lat_offset) / scale_y;   // current screen position
 
     map_done = 0;
@@ -1297,8 +1323,8 @@ void draw_geo_image_map (Widget w,
                     map_x_min = 0;
                 c_x_min = map_c_xc - (map_x_ctr - map_x_min) * c_dx;
                 map_x_max = map_x_ctr - (map_c_xc - scr_c_xr) / c_dx;
-                if (map_x_max > (long)atb.width)
-                    map_x_max = atb.width;
+                if (map_x_max > (long)width)
+                    map_x_max = width;
                 scr_dx = (int) (c_dx / scale_x) + 1;    // at least 1 pixel wide
             }
 
@@ -1387,6 +1413,7 @@ void draw_geo_image_map (Widget w,
 #ifdef TIMING_DEBUG
     time_mark(0);
 #endif  // TIMING_DEBUG
+#endif  // NO_GRAPHICS
 }
 
 

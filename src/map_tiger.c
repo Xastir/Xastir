@@ -139,7 +139,7 @@ void draw_tiger_map (Widget w) {
     FILE *f;                        // Filehandle of image file
     char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
     char tigertmp[MAX_FILENAME*2];  // Used for putting together the tigermap query
-    XpmAttributes atb;              // Map attributes after map's read into an XImage
+    int width, height;
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
     register long tp_c_dx, tp_c_dy; // tiepoint coordinate differences
@@ -486,9 +486,8 @@ void draw_tiger_map (Widget w) {
         return;
     }
 
-    atb.valuemask = 0;
-    atb.width = image->columns;
-    atb.height = image->rows;
+    width = image->columns;
+    height = image->rows;
 
     //  Code to mute the image so it's not as bright.
     if (tigermap_intensity != 100) {
@@ -717,7 +716,7 @@ void draw_tiger_map (Widget w) {
         fprintf(stderr,"Image size %d %d\n", geo_image_width, geo_image_height);
         fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n",
             map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
-        fprintf(stderr,"Image size %d %d\n", atb.width, atb.height);
+        fprintf(stderr,"Image size %d %d\n", width, height);
 #if (MagickLibVersion < 0x0540)
         fprintf(stderr,"Unique colors = %d\n", GetNumberColors(image, NULL));
 #else // MagickLib < 540
@@ -734,17 +733,17 @@ void draw_tiger_map (Widget w) {
     // for the XFillRectangle call later.
 
     map_c_yc = (tp[0].y_lat + tp[1].y_lat) / 2;     // vert center of map as reference
-    map_y_ctr = (long)(atb.height / 2 +0.499);
+    map_y_ctr = (long)(height / 2 +0.499);
     scale_x0 = get_x_scale(0,map_c_yc,scale_y);     // reference scaling at vert map center
 
     map_c_xc  = (tp[0].x_long + tp[1].x_long) / 2;  // hor center of map as reference
-    map_x_ctr = (long)(atb.width  / 2 +0.499);
+    map_x_ctr = (long)(width  / 2 +0.499);
     scr_x_mc  = (map_c_xc - x_long_offset) / scale_x; // screen coordinates of map center
 
     // calculate map pixel range in y direction that falls into screen area
     c_y_max = 0ul;
     map_y_min = map_y_max = 0l;
-    for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)atb.height; map_y_0++, c_y += map_c_dy) {
+    for (map_y_0 = 0, c_y = tp[0].y_lat; map_y_0 < (long)height; map_y_0++, c_y += map_c_dy) {
         scr_y = (c_y - y_lat_offset) / scale_y;   // current screen position
         if (scr_y > 0) {
             if (scr_y < screen_height) {
@@ -759,7 +758,7 @@ void draw_tiger_map (Widget w) {
     c_y_min = (unsigned long)(tp[0].y_lat + map_y_min * map_c_dy);   // top map inside screen coordinate
 
         map_x_min = map_x_max = 0l;
-        for (map_x = 0, c_x = tp[0].x_long; map_x < (long)atb.width; map_x++, c_x += map_c_dx) {
+        for (map_x = 0, c_x = tp[0].x_long; map_x < (long)width; map_x++, c_x += map_c_dx) {
             scr_x = (c_x - x_long_offset)/ scale_x;  // current screen position
             if (scr_x > 0) {
                 if (scr_x < screen_width)
