@@ -629,7 +629,7 @@ static awk_rule dbfawk_default_rules[] = {
         NULL,
         0,
         0,
-        "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=8192; label_level=0",
+        "dbfinfo=\"\"; key=\"\"; lanes=1; color=8; fill_color=13; fill_stipple=0; name=\"\"; filled=0; fill_style=0; pattern=0; display_level=65536; label_level=0",
         0,
         0 },
 };
@@ -1667,7 +1667,7 @@ void draw_shapefile_map (Widget w,
             }
             CHECKMALLOC(RTree_hitarray);
             RTree_hitarray[0]=found_shape;
-            //fprintf(stderr," %s contains alert\n");
+            //fprintf(stderr," %s contains alert\n",file);
             nhits=1;
         }
         else {  // Didn't find the record
