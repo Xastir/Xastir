@@ -743,26 +743,26 @@ time_t time_from_aprsstring(char *aprs_time) {
     time_t timenw;
     long zone;
 
-#ifdef __solaris__
+#ifndef HAVE_TM_GMTOFF
     extern time_t timezone;
-#endif  // __solaris__
+#endif  // HAVE_TM_GMTOFF
 
 
     // Compute our current time and the offset from GMT.  If
     // daylight savings time is in effect, factor that in as well.
     (void)time(&timenw);
     time_now = localtime(&timenw);
-#ifdef HAVE_GMTOFF
+#ifdef HAVE_TM_GMTOFF
     // tm_gmtoff is the GMT offset in seconds.  Some Unix systems
     // have this extra field in the tm struct, some don't.
     zone = (time_now->tm_gmtoff) - (3600 * (int)(time_now->tm_isdst));
     //fprintf(stderr,"gmtoff: %ld, tm_isdst: %d\n",
     //    time_now->tm_gmtoff,
     //    time_now->tm_isdst);
-#else   // HAVE_GMTOFF
+#else   // HAVE_TM_GMTOFF
     zone = (int)timezone - 3600 * (int)(time_now->tm_isdst > 0);
     //fprintf(stderr,"timezone: %d\n",timezone);
-#endif  // HAVE_GMTOFF
+#endif  // HAVE_TM_GMTOFF
     // zone should now be the number to add to gmtime in order to
     // get localtime, in seconds.  For PST, I get -28800 which
     // equals -8 hours.

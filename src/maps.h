@@ -111,9 +111,9 @@ extern int grid_size;
   #if defined(HAVE_IMAGEMAGICK)
     extern float imagemagick_gamma_adjust;
   #endif    // HAVE_IMAGEMAGICK
-  #if defined(HAVE_GEOTIFF)
+  #if defined(HAVE_LIBGEOTIFF)
     extern float geotiff_map_intensity;
-  #endif    // HAVE_GEOTIFF
+  #endif    // HAVE_LIBGEOTIFF
 #endif  // NO_GRAPHICS
 
 extern void Print_properties(Widget widget, XtPointer clientData, XtPointer callData);

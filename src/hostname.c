@@ -94,11 +94,11 @@ char *host_lookup(char *host, char *ip, int time) {
     char **names, **addrs;
     static struct hostent *hostinfo;
 
-#ifdef __linux__
-    sighandler_t previous_loc;
-#else   // __linux__
-    void *previous_loc;
-#endif  // __linux__
+#ifdef RETSIGTYPE
+    RETSIGTYPE * previous_loc;
+#else 
+#error RETSIGTYPE not defined
+#endif
 
     pid_t host_pid;
     int status;

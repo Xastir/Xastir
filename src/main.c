@@ -235,10 +235,10 @@ int map_background_color;       /* Background color for maps */
 
 int tiger_flag;
 #if !defined(NO_GRAPHICS)
-#if defined(HAVE_GEOTIFF)
+#if defined(HAVE_LIBGEOTIFF)
 Widget geotiff_intensity[11];
 static void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata);
-#endif  // HAVE_GEOTIFF
+#endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
 Widget gamma_adjust_dialog = (Widget)NULL;
 Widget gamma_adjust_text;
@@ -3695,9 +3695,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         Map_background_color_Pane, map_background_button,
         map_pointer_menu_button,
 #if !defined(NO_GRAPHICS)
-#if defined(HAVE_GEOTIFF)
+#if defined(HAVE_LIBGEOTIFF)
         Geotiff_intensity_Pane, geotiff_intensity_button,
-#endif  // HAVE_GEOTIFF
+#endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
         gamma_adjust_button, tiger_config_button,
 #endif  // HAVE_IMAGEMAGICK
@@ -4540,7 +4540,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_bgcolor[9],  XmNactivateCallback,Map_background,"9");
 
 #if !defined(NO_GRAPHICS)
-#if defined(HAVE_GEOTIFF)
+#if defined(HAVE_LIBGEOTIFF)
     Geotiff_intensity_Pane = XmCreatePulldownMenu(mappane,
             "create_appshell geotiff_intensity",
             al,
@@ -4644,7 +4644,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(geotiff_intensity[8],  XmNactivateCallback,Geotiff_intensity,"0.8");
     XtAddCallback(geotiff_intensity[9],  XmNactivateCallback,Geotiff_intensity,"0.9");
     XtAddCallback(geotiff_intensity[10], XmNactivateCallback,Geotiff_intensity,"1.0");
-#endif  // HAVE_GEOTIFF
+#endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
     // Adjust Gamma Correction
     gamma_adjust_button = XtVaCreateManagedWidget(langcode("GAMMA001"),
@@ -8573,7 +8573,7 @@ void Map_background( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
 
 
 
-#if !defined(NO_GRAPHICS) && defined(HAVE_GEOTIFF)
+#if !defined(NO_GRAPHICS) && defined(HAVE_LIBGEOTIFF)
 void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
     float my_intensity;
     int i;
@@ -8593,7 +8593,7 @@ void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
         XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     }
 }
-#endif  // NO_GRAPHICS && HAVE_GEOTIFF
+#endif  // NO_GRAPHICS && HAVE_LIBGEOTIFF
 
 
 
@@ -13341,9 +13341,9 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
-#ifndef HAVE_GEOTIFF
+#ifndef HAVE_LIBGEOTIFF
                 XmNsensitive, FALSE,
-#endif /* HAVE_GEOTIFF */
+#endif /* HAVE_LIBGEOTIFF */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13353,9 +13353,9 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
-#ifndef HAVE_GEOTIFF
+#ifndef HAVE_LIBGEOTIFF
                 XmNsensitive, FALSE,
-#endif /* HAVE_GEOTIFF */
+#endif /* HAVE_LIBGEOTIFF */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13365,9 +13365,9 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
-#ifndef HAVE_GEOTIFF
+#ifndef HAVE_LIBGEOTIFF
                 XmNsensitive, FALSE,
-#endif /* HAVE_GEOTIFF */
+#endif /* HAVE_LIBGEOTIFF */
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
@@ -13394,11 +13394,11 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         XtAddCallback(button_ok, XmNactivateCallback, map_chooser_select_maps, map_chooser_dialog);
         XtAddCallback(button_clear, XmNactivateCallback, map_chooser_deselect_maps, map_chooser_dialog);
         XtAddCallback(button_V, XmNactivateCallback, map_chooser_select_vector_maps, map_chooser_dialog);
-#ifdef HAVE_GEOTIFF
+#ifdef HAVE_LIBGEOTIFF
         XtAddCallback(button_C, XmNactivateCallback, map_chooser_select_250k_maps, map_chooser_dialog);
         XtAddCallback(button_F, XmNactivateCallback, map_chooser_select_100k_maps, map_chooser_dialog);
         XtAddCallback(button_O, XmNactivateCallback, map_chooser_select_24k_maps, map_chooser_dialog);
-#endif /* HAVE_GEOTIFF */
+#endif /* HAVE_LIBGEOTIFF */
 
         pos_dialog(map_chooser_dialog);
 

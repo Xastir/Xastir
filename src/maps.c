@@ -48,29 +48,37 @@
 #include <netinet/in.h>
 #include <Xm/XmAll.h>
 
-#ifdef HAVE_XPMI
-  #ifndef NO_XPM
-    #include <Xm/XpmI.h>
-  #endif    // NO_XPM
-#else   // HAVE_XPMI
+#ifdef HAVE_X11_XPM_H
 #include <X11/xpm.h>
-#endif  // HAVE_XPMI
+#endif // HAVE_X11_XPM_H
+
+#ifdef HAVE_XM_XPMI_H
+#include <Xm/XpmI.h>
+#endif // HAVE_XM_XPMI_H
 
 #include <X11/Xlib.h>
 
 #include <math.h>
 
-#ifdef HAVE_GEOTIFF
+#ifdef HAVE_LIBGEOTIFF
 //#include "cpl_csv.h"
 #include "xtiffio.h"
 #include "geotiffio.h"
 #include "geo_normalize.h"
 #include "projects.h"
-#endif // HAVE_GEOTIFF
+#endif // HAVE_LIBGEOTIFF
 
-#ifdef HAVE_SHAPELIB
-#include "libshp/shapefil.h"
-#endif  // HAVE_SHAPELIB
+#ifdef HAVE_LIBSHP
+#ifdef HAVE_SHAPEFIL_H
+#include <shapefil.h>
+#else
+#ifdef HAVE_LIBSHP_SHAPEFIL_H
+#include <libshp/shapefil.h>
+#else
+#error HAVE_LIBSHP defined but no corresponding include defined
+#endif // HAVE_LIBSHP_SHAPEFIL_H
+#endif // HAVE_SHAPEFIL_H
+#endif // HAVE_LIBSHP
 
 #include "xastir.h"
 #include "maps.h"
@@ -92,11 +100,9 @@
 // Check for XPM and/or ImageMagick.  We use "NO_GRAPHICS"
 // to disable some routines below if the support for them
 // is not compiled in.
-#ifdef NO_XPM
-  #ifndef HAVE_IMAGEMAGICK
-    #define NO_GRAPHICS 1
-  #endif    // HAVE_IMAGEMAGICK
-#endif  // NO_XPM
+#if !(defined(HAVE_LIBXPM) || defined(HAVE_LIBXPM_IN_XM) || defined(HAVE_IMAGEMAGICK))
+  #define NO_GRAPHICS 1
+#endif  // !(HAVE_LIBXPM || HAVE_LIBXPM_IN_XM || HAVE_IMAGEMAGICK)
 
 
 // Print options
@@ -1038,7 +1044,7 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
 
 
 
-#ifdef HAVE_SHAPELIB
+#ifdef HAVE_LIBSHP
 /*******************************************************************
  * create_shapefile_map()
  *
@@ -3310,7 +3316,7 @@ void draw_shapefile_map (Widget w,
 }
 // End of draw_shapefile_map()
 
-#endif  // HAVE_SHAPELIB
+#endif  // HAVE_LIBSHP
 
 
 
@@ -6899,7 +6905,7 @@ void draw_tiger_map (Widget w) {
 
 
 
-#ifdef HAVE_GEOTIFF
+#ifdef HAVE_LIBGEOTIFF
 /***********************************************************
  * read_fgd_file()
  *
@@ -9064,7 +9070,7 @@ if (current_right >= width)
     // four GTIFImageToPCS calls.
     //(void)CSVDeaccess(NULL);
 }
-#endif /* HAVE_GEOTIFF */
+#endif /* HAVE_LIBGEOTIFF */
 
 
 
@@ -9802,7 +9808,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             || ( (ext != NULL) && ( (strcasecmp(ext,"shp") == 0)
                                  || (strcasecmp(ext,"shx") == 0)
                                  || (strcasecmp(ext,"dbf") == 0) ) ) ) { // Or non-alert shapefile map
-#ifdef HAVE_SHAPELIB
+#ifdef HAVE_LIBSHP
         //fprintf(stderr,"Drawing shapefile map\n");
         if (alert != NULL) {
             //fprintf(stderr,"Alert!\n");
@@ -9814,7 +9820,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             alert_color,
             destination_pixmap,
             draw_filled);
-#endif // HAVE_SHAPELIB
+#endif // HAVE_LIBSHP
     }
 
 
@@ -9847,7 +9853,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
     }
 
 
-#ifdef HAVE_GEOTIFF
+#ifdef HAVE_LIBGEOTIFF
     // USGS DRG geoTIFF map?
     else if (ext != NULL && strcasecmp (ext, "tif") == 0) {
         draw_geotiff_image_map(w,
@@ -9855,7 +9861,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             filenm,
             destination_pixmap);
     }
-#endif // HAVE_GEOTIFF
+#endif // HAVE_LIBGEOTIFF
 
 
     // Else must be APRSdos or WinAPRS map

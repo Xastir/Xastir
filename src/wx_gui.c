@@ -39,9 +39,9 @@
 #define _(x)        (x)
 #endif  // HAVE_LIBINTL_H
 
-#ifdef HAVE_LIBM
+#ifdef HAVE_MATH_H
 #include <math.h>
-#endif  // HAVE_LIBM
+#endif  // HAVE_MATH_H
 
 #include "xastir.h"
 #include "wx.h"
