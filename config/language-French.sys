@@ -207,8 +207,7 @@ PULDNTNT02|Propriétés|P|
 PULDNTNT03|Désactiver transmission: Tout||
 PULDNTNT05|Désactiver transmission: Ma position||
 PULDNTNT06|Désactiver transmission: Objets/Articles||
-PULDNTNC01|Transmettre maintenant!|T|
-PULDNTNT01|Transmit Now!|T|
+PULDNTNT01|Transmettre maintenant!|T|
 PULDNTNT07|Fetch GPS Track|F|
 PULDNTNT08|Fetch GPS Routes|R|
 PULDNTNT09|Fetch GPS Waypoints|W|
