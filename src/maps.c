@@ -2542,7 +2542,7 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
         // Bessel (no)
         // Sinc (not too bad)
 
-        xastir_snprintf(command, sizeof(command), "convert -filter Point %s%s%s%s%s %s %s",
+        xastir_snprintf(command, sizeof(command), "/usr/bin/convert -filter Point %s%s%s%s%s %s %s",
                 mono, invert, rotate, scale, density, xpm_filename, ps_filename );
         if ( debug_level & 512 )
             printf( "%s\n", command );
