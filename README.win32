@@ -623,6 +623,7 @@ This means if you're online, you can have access to street maps
 (again Terraserver)!
 
 
+
 OPTIONAL:  Install geoTIFF support:
 -----------------------------------
 Allows using USGS DRG topo maps or other types of geoTIFF
@@ -743,7 +744,12 @@ line and run "make" again, then "make install".
 
 
 [ ] TEMPORARY:  It looks like we need to switch to a newer version
-of the libtiff DLL in order to work with libgeotiff:
+of the libtiff DLL in order to work with libgeotiff.  Some Cygwin
+installations end up with this "cygtiff3.dll.new" file installed in
+/bin, some do not.  If the images appear to load but always come up
+black, you need to get a different cygtiff3.dll file that works on
+your system.  Below are the instructions for fixing this problem if
+that file is already present:
 
     cd /bin
     mv cygtiff3.dll cygtiff3.dll.old
