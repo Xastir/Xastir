@@ -244,8 +244,16 @@ fi
 
 # Add a special option that makes Cygwin link much faster (from
 # Henk de Groot)
+save_LDFLAGS="$LDFLAGS"
 LDFLAGS="-Wl,--no-keep-memory $LDFLAGS"
-
+AC_TRY_LINK([#include <sys/types.h>],
+  [/* Stupid useless test for linker flags */
+   exit(0);],
+  xa_cv_no_keep_memory=yes,
+  xa_cv_no_keep_memory=no)
+if test "${xa_cv_no_keep_memory}" = "no"; then 
+  LDFLAGS="$save_LDFLAGS"
+fi
 
 # 
 # Assure we have this order for these LIBS: "-lXm -lXt -lX11" by 
