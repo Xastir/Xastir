@@ -215,13 +215,6 @@ void draw_tiger_map (Widget w,
 
 
 
-
-    xastir_snprintf(map_it,
-        sizeof(map_it),
-        langcode ("BBARSTA028"),
-        short_filenm);
-    statusline(map_it,0);       // Loading ...
-
     // Create a shorter filename for display (one that fits the
     // status line more closely).  Subtract the length of the
     // "Indexing " and/or "Loading " strings as well.
@@ -241,6 +234,11 @@ void draw_tiger_map (Widget w,
             filenm);
     }
 
+    xastir_snprintf(map_it,
+        sizeof(map_it),
+        langcode ("BBARSTA028"),
+        short_filenm);
+    statusline(map_it,0);       // Loading ...
 
 
         
