@@ -562,7 +562,7 @@ char object_NRQ[4] = "960\0";
 XtPointer global_parameter1 = (XtPointer)NULL;
 XtPointer global_parameter2 = (XtPointer)NULL;
 
-void Draw_CAD_Objects(Widget w, XtPointer clientData, XtPointer calldata);
+void Draw_CAD_Objects_start_mode(Widget w, XtPointer clientData, XtPointer calldata);
 void Draw_CAD_Objects_close_polygon(Widget w, XtPointer clientData, XtPointer calldata);
 void Draw_CAD_Objects_end_mode(Widget w, XtPointer clientData, XtPointer calldata);
 void Draw_CAD_Objects_erase(Widget w, XtPointer clientData, XtPointer calldata);
@@ -7191,7 +7191,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             CAD_sub,
             al,
             ac);
-    XtAddCallback(CAD1,XmNactivateCallback,Draw_CAD_Objects,NULL);
+    XtAddCallback(CAD1,XmNactivateCallback,Draw_CAD_Objects_start_mode,NULL);
 
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
@@ -7792,14 +7792,14 @@ void CAD_vertice_delete(void) {
 
 // This is the callback for the Draw CAD Objects menu option
 //
-void Draw_CAD_Objects( /*@unused@*/ Widget w,
+void Draw_CAD_Objects_start_mode( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer clientData,
         /*@unused@*/ XtPointer calldata) {
 
     static Cursor cs_CAD = (Cursor)NULL;
 
 
-//    fprintf(stderr,"Draw_CAD_Objects function enabled\n");
+//    fprintf(stderr,"Draw_CAD_Objects_start_mode function enabled\n");
 
     // Create the "pencil" cursor so we know what mode we're in.
     //
