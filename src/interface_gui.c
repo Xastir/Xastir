@@ -4705,9 +4705,6 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-// Not implemented yet, so make it insensitive.
-XtSetSensitive(AGWPE_relay_digipeat, FALSE);
-
         ihost = XtVaCreateManagedWidget(langcode("WPUPCFIA02"),xmLabelWidgetClass, form,
                                       XmNtopAttachment, XmATTACH_WIDGET,
                                       XmNtopWidget, AGWPE_transmit_data,
@@ -5119,11 +5116,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AGWPE" );
             else
                 XmToggleButtonSetState(AGWPE_relay_digipeat, FALSE, FALSE);
 
-//            if (devices[AGWPE_port].transmit_data) {
-//                XtSetSensitive(AGWPE_relay_digipeat, TRUE);
-//            }
-//            else
-//                XtSetSensitive(AGWPE_relay_digipeat, FALSE);
+            if (devices[AGWPE_port].transmit_data) {
+                XtSetSensitive(AGWPE_relay_digipeat, TRUE);
+            }
+            else
+                XtSetSensitive(AGWPE_relay_digipeat, FALSE);
 
             XmTextFieldSetString(AGWPE_host_data,devices[AGWPE_port].device_host_name);
             xastir_snprintf(temp, sizeof(temp), "%d", devices[AGWPE_port].sp);
