@@ -2055,9 +2055,10 @@ HELP-INDEX>Configure an AGWPE Connection
                    Configure an AGWPE Connection
 
 Xastir can use an AGWPE network interface running on a Windows box
-as a TNC interface. It cannot currently use the login/password
-security that AGWPE has built-in, so you must set up the AGWPE
-security appropriately to allow Xastir to connect.
+as a TNC interface. It can also use the login/password security that
+AGWPE has built-in, but you must set up the account in the AGWPE
+application with your callsign for the username, in all capital
+letters.  For instance: "AB7CD".
 
 The other options are described in the sections for Serial TNC and for
 Network interfaces.
