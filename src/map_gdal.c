@@ -1436,6 +1436,14 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 // if dbfawk is compiled in, go do that instead of doing what this
 // routine does.
 //
+// What we need to do:  Come up with a signature match for the
+// driver type, filename, layer, and sometimes object_type and
+// file_attributes.  Use that to determine drawing width, label
+// size/placement, color, etc.  If the signature could also specify
+// how often the signature needs to be re-examined, that would be a
+// plus.  If it only needs to be set once per file, we could save a
+// lot of time.
+//
 // Note that draw_polygon_with_mask() still has some hard-coded
 // attributes, because it creates gc_temp in order to do the
 // regions.  We need to incorporate that somehow into this "guess"
@@ -1447,8 +1455,8 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 // types/layers/geometries, we might want to break this function up
 // into several, so that we can optimize for speed.  If something
 // only needs to be set once per file, or once per layer, do so.
-// Don't set it over and over again, once per object drawn.
-//
+// Don't set it over and over again (Don't set it once per object
+// drawn).
 //
 // Set attributes based on what sort of file/layer/shape we're
 // dealing with.  driver_type may be any of:
