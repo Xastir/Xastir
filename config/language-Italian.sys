@@ -16,12 +16,11 @@
 # Menù Principale
 MENUTB0001|Dati|D|
 MENUTB0002|Liste|L|
-MENUTB0003|Configura|C|
 MENUTB0004|Mappe|M|
 MENUTB0005|Visualizza|V|
 MENUTB0006|Messaggi|e|
-MENUTB0009|Guida|G|
 MENUTB0010|Interfacce|I|
+MENUTB0009|Guida|G|
 #
 # Menù Dati
 PULDNFI001|Configura|C|
@@ -29,7 +28,6 @@ PULDNFI002|Apri file di registro|A|
 PULDNFI003|Test||
 PULDNFI004|Esci|x|
 PULDNFI005|Yes I'm Sure!|Y|
-PULDNFI006|Salva la configurazione di adesso|S|
 PULDNFI007|Cambia il livello di Debug|D|
 PULDNFI010|Registro TNC|T|
 PULDNFI011|Registro Rete|e|
@@ -43,38 +41,39 @@ PULDNVI001|Bollettini|B|
 PULDNVI002|Dati Packet in arrivo|P|
 PULDNVI003|Stazioni Mobili|M|
 PULDNVI004|Stazioni|S|
-PULDNVI005|Stazioni Meteo|W|
-PULDNVI007|Allarmi Meteo|A|
-PULDNVI008|Stazioni Meteo|t|
 PULDNVI009|Stazioni Locali|o|
-PULDNVI011|Traffico Messaggi|T|
 PULDNVI012|Ultime Stazioni|L|
+PULDNVI005|Stazioni Meteo|W|
+PULDNVI008|Stazioni Meteo|t|
+PULDNVI007|Allarmi Meteo|A|
+PULDNVI011|Traffico Messaggi|T|
 PULDNVI013|Uptime|U|
 PULDNVI014|Uptime del programma||
 #
 # Menu' di Configurazione
+PULDNCF004|Dati Stazione|S|
 PULDNCF001|Configurazioni originali|D|
 PULDNCF002|Coordinate System|C|
-PULDNCF004|Dati Stazione|S|
 PULDNCF006|Allarmi Audio|A|
 PULDNCF007|Annunci Vocali|p|
+PULDNCF008|Save Config Now!|C|
 # (per unità vedere PULDNDP006)
 #
 # Menù Mappe
 PULDNMP001|Scegli mappa|C|
+PULDNMP012|Vai alla posizione...|J|#NUOVA funzione dalla v. 0.3.2
+PULDNMP014|Localizza Elemento Mappa|E|
+PULDNMP013|Disattiva tutte le mappe|D|
 PULDNMP002|Mappe automatiche|A|
 PULDNMP003|Reticolato|G|
 PULDNMP004|Livelli delle Mappe|L|
+PULDNMP010|Abilita etichette delle mappe|F|
+PULDNMP009|Colora le aree chiuse|F|
+PULDNMP007|Map WX Alert Counties|W|
 PULDNMP005|Colore dello sfondo della mappa|B|
 PULDNMP006|Etichette Stazione|S|
-PULDNMP007|Map WX Alert Counties|W|
-PULDNMP008|Intensità Mappa|I|
-PULDNMP009|Colora le aree chiuse|F|
-PULDNMP010|Abilita etichette delle mappe|F|
 PULDNMP011|Menù sul puntatore del mouse|M|
-PULDNMP012|Vai alla posizione...|J|#NUOVA funzione dalla v. 0.3.2
-PULDNMP013|Disattiva tutte le mappe|D|
-PULDNMP014|Localizza Elemento Mappa|E|
+PULDNMP008|Intensità Mappa|I|
 #
 # Finestra di dialogo mappe
 WPUPMCP001|Scegli mappa||
@@ -110,29 +109,28 @@ PULDNOT002|Disattiva||
 PULDNOT003|Short||
 # 
 # Manù Stazioni
+PULDNDP014|Localizza Stazione|L|
 PULDNDP001|Segui Stazione|T|
+PULDNDP022|Scarica il percorso da Findu||
+PULDNDP012|Simboli|Y|
+PULDNDP011|Ruota Simboli|R|
+PULDNDP010|Nominativo|l|
+PULDNDP004|Velocità|S|
+PULDNDP017|Visualizza basse velocità||
 PULDNDP002|Altitudine||A
 PULDNDP003|Direzione|C|
-PULDNDP004|Velocità|S|
 PULDNDP005|Distanza/Direzione|D|
-PULDNDP006|Unità|U|
-PULDNDP007|Percorsi delle stazioni|i|
-PULDNDP008|Potenza/Guadagno|P|
 PULDNDP009|Informazioni Meteo|W|
-PULDNDP010|Nominativo|l|
-PULDNDP011|Ruota Simboli|R|
-PULDNDP012|Simboli|Y|
+PULDNDP018|Visualizza solo temperatura||
+PULDNDP008|Potenza/Guadagno|P|
+PULDNDP021|Potenza/Guadagno - default||
+PULDNDP020|Potenza/Guadagno - stazioni mobili||
 PULDNDP013|Ambiguità di posizione|
-PULDNDP014|Localizza Stazione|L|
+PULDNDP019|Visualizza dati scaduti||
+PULDNDP023|Visualizza i cerchi DF||
+PULDNDP007|Percorsi delle stazioni|i|
 PULDNDP015|Elimina tutte le stazioni|C|
 PULDNDP016|Elimina tutti i percorsi|T|
-PULDNDP017|Visualizza basse velocità||
-PULDNDP018|Visualizza solo temperatura||
-PULDNDP019|Visualizza dati scaduti||
-PULDNDP020|Potenza/Guadagno - stazioni mobili||
-PULDNDP021|Potenza/Guadagno - default||
-PULDNDP022|Scarica il percorso da Findu||
-PULDNDP023|Visualizza i cerchi DF||
 #
 # Sistema di misura
 PULDNUT001|Sistema inglese||
@@ -142,19 +140,19 @@ PULDNUT002|Metrico||
 PULDNMG001|Invia messaggio a...|S|
 PULDNMG002|Apri gruppo di messaggi|g|
 PULDNMG003|Elimina tutti i messaggi in uscita|C|
-PULDNMG004|Imposta risposta automatica ai messaggi in arrivo|S|
-PULDNMG005|Risposta automatica ai messaggi in arrivo|R|
 PULDQUS001|Cerca tutte le stazioni|e|
 PULDQUS002|Cerca le stazioni Gateway|I|
 PULDQUS003|Cerca le stazioni meteo|W|
+PULDNMG004|Imposta risposta automatica ai messaggi in arrivo|S|
+PULDNMG005|Risposta automatica ai messaggi in arrivo|R|
 #
-# Menù Interfacce
-PULDNTNC01|Trasmetti ora!|N|
+# Menu "Interfaces"
 PULDNTNT04|Avvia/Ferma|S|
 PULDNTNT02|Proprietà|P|
 PULDNTNT03|Disabilita Trasmissioni: TUTTE||
 PULDNTNT05|Disabilita Trasmissioni: Mia Posizione||
 PULDNTNT06|Disabilita Trasmissioni: Oggetti/Entità||
+PULDNTNC01|Trasmetti ora!|N|
 #
 # Menù Aiuto
 PULDNHEL01|Versione di Xastir|A|
@@ -173,14 +171,14 @@ POPUPMA007|Livello 64||
 POPUPMA008|Livello 256|| 
 POPUPMA009|Livello 1024|| 
 POPUPMA010|Livello 8192|| 
+POPUPMA017|Tutto il mondo||
+POPUPMA016|Ultima posizione e zoom||
+POPUPMA018|Oggetto/Entità->Crea||
+POPUPMA019|Oggetto/Entità->Modifica||
 POPUPMA011|Sposta in alto||
 POPUPMA012|Sposta in basso||
 POPUPMA013|Sposta a sinistra||
 POPUPMA014|Sposta a destra||
-POPUPMA016|Ultima posizione e zoom||
-POPUPMA017|Tutto il mondo||
-POPUPMA018|Oggetto/Entità->Crea||
-POPUPMA019|Oggetto/Entità->Modifica||
 POPUPMA020|Misurazione distanze|D|
 POPUPMA021|Muovi||
 #
@@ -280,8 +278,8 @@ WPUPCFC006|UTM|U|
 #
 # Configurazione GPS
 WPUPCFG001|Configura GPS||
-WPUPCFG002|Usare la posizione data dal GPS?||
 WPUPCFG003|GPS collegato ad una porta autonoma||
+WPUPCFG002|Usare la posizione data dal GPS?||
 WPUPCFG004|Opzioni GPS||
 WPUPCFG005|GPS Autonomo||
 WPUPCFG006|GPS Collegato al TNC(con cavo HSP)||
@@ -355,6 +353,7 @@ WPUPCFS008|(E/W)||
 WPUPCFS009|Simbolo della Stazione||
 WPUPCFS010|Raggruppa/Sovrapponi||
 WPUPCFS011|Simbolo||
+WPUPCFS028|Seleziona||
 WPUPCFS012|Potenza-guadagno||
 WPUPCFS013|Disattiva PHG||
 WPUPCFS014|Altezza antenna||
@@ -371,7 +370,6 @@ WPUPCFS024|cerchio di.18 kilometres||
 WPUPCFS025|cerchio di1.85 kilometres||
 WPUPCFS026|cerchio di18.53 kilometres||
 WPUPCFS027|cerchio di 111.19 kilometres||
-WPUPCFS028|Seleziona||
 #
 # PopUp "Oggetto/Entità"
 POPUPOB001|Oggetto/Entità||
@@ -498,6 +496,7 @@ WPUPSTI007|Ascoltata ||
 WPUPSTI008|Ascoltata l'ultima volta in locale||
 WPUPSTI009|Ascoltata l'ultima volta dal TNC, periferica %d||
 WPUPSTI010|Ascoltata l'ultima volta da Internet sulla periferica %d||
+WPUPSTI011|last via File||
 WPUPSTI012|Ascoltata l'ultima volta via Unknown||
 WPUPSTI013|, e ha cambiato posizione||
 WPUPSTI014|Potenza attuale: %s||
@@ -786,6 +785,7 @@ PRINT0005|Ridimensiona immagine||
 PRINT0006|Scala:||
 PRINT0007|Sfondo bianco||
 PRINT0008|Stampa in bianco e nero||
+PRINT0016|Inverti i colori||
 PRINT0009|Risoluzione del file Postscript:||
 PRINT0010|Anteprima||
 PRINT0011|Stampa su file||
@@ -793,7 +793,6 @@ PRINT0012|Elaborazione immagine su file...||
 PRINT0013|Conversione in Postscript...||
 PRINT0014|Fine elaborazione file.||
 PRINT0015|Stato del processo di stampa||
-PRINT0016|Inverti i colori||
 #
 # Finestra di dialogo localizza elemento mappa
 FEATURE001|Nome:||
