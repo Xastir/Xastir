@@ -13422,7 +13422,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 
                 transmit_message_data_delayed(call,ack,NULL,sec_now()+30);
                 transmit_message_data_delayed(call,ack,NULL,sec_now()+60);
-                transmit_message_data_delayed(call,ack,NULL,sec_now()+90);
+                transmit_message_data_delayed(call,ack,NULL,sec_now()+120);
             }
 
 

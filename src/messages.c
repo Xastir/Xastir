@@ -780,7 +780,7 @@ void transmit_message_data(char *to, char *message, char *path) {
 
 // The below variables and functions implement the capability to
 // schedule ACK's some number of seconds out from the current time.
-// We use it to schedule duplicate ACK's at 30/60/90 seconds out,
+// We use it to schedule duplicate ACK's at 30/60/120 seconds out,
 // but only if we see duplicate message lines from remote stations.
 //
 // Create a struct to hold the delayed ack's.
@@ -798,10 +798,47 @@ typedef struct _delayed_ack_record {
 
 void transmit_message_data_delayed(char *to, char *message,
                                    char *path, time_t when) {
-    delayed_ack_record_p ptr;
+    delayed_ack_record_p ptr = delayed_ack_list_head;
 
 
-//fprintf(stderr, "Queuing ACK for delayed transmit.\n");
+    // We need to run down the current list looking for any records
+    // that are identical and within 30 seconds time-wise of this
+    // one.  If so, don't allocate a new record.  This keeps the
+    // dupes down on transmit so that at the most we transmit one
+    // ack per 30 seconds per QSO, except of course for real-time
+    // ack's which don't go through this function.
+
+    // Run through the queue and check each record
+    while (ptr != NULL) {
+
+        if ( strcmp(ptr->to_call_sign,to) == 0
+                && strcmp(ptr->message_line,message) == 0 ) {
+
+            //
+            // We have matches on call_sign and message.  Check the
+            // time next.
+            //
+            if (abs(when - ptr->active_time) < 30) {
+                //
+                // We're within 30 seconds of an identical ack.
+                // Drop this new one (don't add it).
+                //
+
+//fprintf(stderr,"Dropping delayed ack: Too close timewise to another: %s, %s\n",
+//    to, message);
+
+                return; // Don't allocate new record on queue
+            }
+        }
+        ptr = ptr->next;
+    }
+
+    // If we made it to here, there aren't any queued ACK's that are
+    // close enough in time to drop this new one.  Add it to the
+    // queue.
+
+//fprintf(stderr, "Queuing ACK for delayed transmit: %s, %s\n",
+//    to, message);
 
     // Allocate a record to hold it
     ptr = (delayed_ack_record_p)malloc(sizeof(delayed_ack_record));
@@ -838,7 +875,6 @@ void transmit_message_data_delayed(char *to, char *message,
 
 
 
-// The below variables and functions
 time_t delayed_transmit_last_check = (time_t)0;
 
 
