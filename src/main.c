@@ -389,6 +389,11 @@ double cvt_hm2len;              // from hectometer
 
 void update_units(void);
 
+// dist/bearing on status line
+static void Dbstatus_choice_toggle(Widget w, XtPointer clientData, XtPointer calldata);
+
+int do_dbstatus; 
+
 
 // Coordinate System
 int coordinate_system = USE_DDMMMM; // Default, used for most APRS systems
@@ -2847,6 +2852,14 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     char str_lat[20];
     char str_long[20];
     long x, y;
+    //beg
+    char temp_my_distance[20];
+    char temp_my_course[20];
+    char temp1_my_course[20];
+    long ml_lat, ml_lon;
+    float value;
+    //end
+
 
     Widget textarea = (Widget) clientData;
 
@@ -2891,6 +2904,41 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
 
     strcat(my_text,"  ");
     strcat(my_text,sec_to_loc(x,y));
+    // begin dist/bearing
+    if ( do_dbstatus ) {
+      ml_lat = convert_lat_s2l(my_lat);
+      ml_lon = convert_lon_s2l(my_long);
+
+      // Get distance in nautical miles.
+      value = (float)calc_distance_course(ml_lat,ml_lon,y,x,
+                                          temp1_my_course,sizeof(temp1_my_course));
+
+      // n7tap: This is a quick hack to get some more useful values for
+      //        distance to near ojects.  I will translate the strings someday.
+      // (copied from db.c:station_data_fill_in)
+      if (units_english_metric) {
+        if (value*1.15078 < 0.99)
+          xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), "%d yards",(int)(value*1.15078*1760));
+        
+        else
+          xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), langcode("WPUPSTI020"),value*1.15078);
+      }
+      else {
+        if (value*1.852 < 0.99)
+          xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), "%d meters",(int)(value*1.852*1000));
+        
+        else
+          xastir_snprintf(temp_my_distance, sizeof(temp_my_distance), langcode("WPUPSTI021"),value*1.852);
+      }
+      xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s°",temp1_my_course);
+
+
+      strcat(my_text," ");
+      strcat(my_text,temp_my_distance);
+      strcat(my_text," ");
+      strcat(my_text,temp_my_course);
+    }
+
     XmTextFieldSetString(textarea, my_text);
     XtManageChild(textarea);
 }
@@ -3554,7 +3602,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #endif
         Map_station_label_Pane, map_station_label_button,
         map_wx_alerts_button,
-        units_choice_button,
+        units_choice_button, dbstatus_choice_button,
         device_config_button,
         iface_button, iface_connect_button, tnc_logging,
         transmit_disable_toggle,
@@ -4045,6 +4093,19 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(units_choice_button,XmNvalueChangedCallback,Units_choice_toggle,"1");
     if (units_english_metric)
         XmToggleButtonSetState(units_choice_button,TRUE,FALSE);
+
+
+    dbstatus_choice_button = XtVaCreateManagedWidget(langcode("PULDNDB001"),
+            xmToggleButtonGadgetClass,
+            configpane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    XtAddCallback(dbstatus_choice_button,XmNvalueChangedCallback,Dbstatus_choice_toggle,"1");
+    if (do_dbstatus)
+        XmToggleButtonSetState(dbstatus_choice_button,TRUE,FALSE);
 
 
 
@@ -5559,7 +5620,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             XmNsensitive,           STIPPLE,
             XmNshadowThickness,     1,
             XmNcolumns,             35,
-            XmNwidth,               ((24*FONT_WIDTH)+2),
+            XmNwidth,   do_dbstatus?((37*FONT_WIDTH)+2):((24*FONT_WIDTH)+2),
             XmNtopAttachment,       XmATTACH_NONE,
             XmNbottomAttachment,    XmATTACH_FORM,
             XmNleftAttachment,      XmATTACH_WIDGET,
@@ -8742,6 +8803,27 @@ void  Units_choice_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtP
     redraw_on_new_data=2;
     update_units();                     // setup conversion
     fill_wx_data();
+}
+
+
+
+
+
+/*
+ *  Toggle dist/bearing status (button callbacks)
+ */
+void  Dbstatus_choice_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        do_dbstatus = atoi(which);
+    else
+        do_dbstatus = 0;
+    // we need to rebuild main window now???
+    XtVaSetValues(text2, XmNwidth, do_dbstatus?((37*FONT_WIDTH)+2):((24*FONT_WIDTH)+2), NULL);
+
+    redraw_on_new_data=2;
 }
 
 

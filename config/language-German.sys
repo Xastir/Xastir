@@ -911,3 +911,7 @@ GAMMA001|Adjust Gamma Correction||
 GAMMA002|Gamma Correction||
 #
 #
+#
+# Distance/Bearing on status line
+PULDNDB001|Dist/Bearing Status||
+#

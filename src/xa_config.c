@@ -393,6 +393,7 @@ void save_data(void)  {
         store_int (fout, "DISPLAY_LAST_HEARD",    show_last_heard);
         store_int (fout, "DISPLAY_STATION_TRAILS",station_trails);
         store_int (fout, "DISPLAY_UNITS_ENGLISH", units_english_metric);
+        store_int (fout, "DISPLAY_DIST_BEAR_STATUS", do_dbstatus);
         store_int (fout, "DISPLAY_DEAD_RECKONING_INFO", show_DR);
         store_int (fout, "DISPLAY_DEAD_RECKONING_ARC", show_DR_arc);
         store_int (fout, "DISPLAY_DEAD_RECKONING_COURSE", show_DR_course);
@@ -908,6 +909,9 @@ void load_data_or_default(void) {
 
     if (!get_int ("DISPLAY_UNITS_ENGLISH", &units_english_metric, 0, 1, 0))
         units_english_metric = 0;
+
+    if (!get_int ("DISPLAY_DIST_BEAR_STATUS", &do_dbstatus, 0, 1, 0))
+        do_dbstatus = 0;
 
     if (!get_int ("DISPLAY_DEAD_RECKONING_INFO", &show_DR, 0, 1, 1))
         show_DR = 1;
