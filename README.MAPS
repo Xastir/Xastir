@@ -869,6 +869,23 @@ Getting Maps and other Data Files for Xastir:
       Individual files can have whitespace removed as follows:
         sed -e 's/[ ]*$//g' < inputfile > outputfile
 
+      Populated places GNIS file can be had at:
+
+          http://geonames.usgs.gov/stategaz/POP_PLACES_DECI.zip
+
+      A note from Jason Winningham, kg4wsv:
+
+      "The file has over 181k records in it.  You can use the following command
+      to weed out all places with populations less than 1000, and get it down
+      to just under 14k records, which is really fast to load: 
+
+        awk -F\| '{if ($17 > 1000) print $0}' \
+            /usr/local/share/xastir/GNIS/0pop_places.gnis \
+            >/usr/local/share/xastir/GNIS/0pop_places_over_1k.gnis
+
+      I stuck a zero at the beginning of the filename so this would
+      show up in the GNIS directory before any of the state files."
+
 
      County weather Warning maps (requires shapefile support):
       
