@@ -78,7 +78,7 @@ Supported PROGRAM values:
     ;;
 
   -v|--v|--ve|--ver|--vers|--versi|--versio|--version)
-    echo "missing 0.4 - GNU automake"
+    echo "missing 0.3 - GNU automake"
     ;;
 
   -*)
@@ -87,12 +87,7 @@ Supported PROGRAM values:
     exit 1
     ;;
 
-  aclocal*)
-    if test -z "$run" && ($1 --version) > /dev/null 2>&1; then
-       # We have it, but it failed.
-       exit 1
-    fi
-
+  aclocal)
     echo 1>&2 "\
 WARNING: \`$1' is missing on your system.  You should only need it if
          you modified \`acinclude.m4' or \`${configure_ac}'.  You might want
@@ -102,11 +97,6 @@ WARNING: \`$1' is missing on your system.  You should only need it if
     ;;
 
   autoconf)
-    if test -z "$run" && ($1 --version) > /dev/null 2>&1; then
-       # We have it, but it failed.
-       exit 1
-    fi
-
     echo 1>&2 "\
 WARNING: \`$1' is missing on your system.  You should only need it if
          you modified \`${configure_ac}'.  You might want to install the
@@ -116,11 +106,6 @@ WARNING: \`$1' is missing on your system.  You should only need it if
     ;;
 
   autoheader)
-    if test -z "$run" && ($1 --version) > /dev/null 2>&1; then
-       # We have it, but it failed.
-       exit 1
-    fi
-
     echo 1>&2 "\
 WARNING: \`$1' is missing on your system.  You should only need it if
          you modified \`acconfig.h' or \`${configure_ac}'.  You might want
@@ -132,55 +117,22 @@ WARNING: \`$1' is missing on your system.  You should only need it if
     for f in $files; do
       case "$f" in
       *:*) touch_files="$touch_files "`echo "$f" |
-                                       sed -e 's/^[^:]*://' -e 's/:.*//'`;;
+				       sed -e 's/^[^:]*://' -e 's/:.*//'`;;
       *) touch_files="$touch_files $f.in";;
       esac
     done
     touch $touch_files
     ;;
 
-  automake*)
-    if test -z "$run" && ($1 --version) > /dev/null 2>&1; then
-       # We have it, but it failed.
-       exit 1
-    fi
-
+  automake)
     echo 1>&2 "\
 WARNING: \`$1' is missing on your system.  You should only need it if
          you modified \`Makefile.am', \`acinclude.m4' or \`${configure_ac}'.
          You might want to install the \`Automake' and \`Perl' packages.
          Grab them from any GNU archive site."
     find . -type f -name Makefile.am -print |
-           sed 's/\.am$/.in/' |
-           while read f; do touch "$f"; done
-    ;;
-
-  autom4te)
-    if test -z "$run" && ($1 --version) > /dev/null 2>&1; then
-       # We have it, but it failed.
-       exit 1
-    fi
-
-    echo 1>&2 "\
-WARNING: \`$1' is needed, and you do not seem to have it handy on your
-         system.  You might have modified some files without having the
-         proper tools for further handling them.
-         You can get \`$1Help2man' as part of \`Autoconf' from any GNU
-         archive site."
-
-    file=`echo "$*" | sed -n 's/.*--output[ =]*\([^ ]*\).*/\1/p'`
-    test -z "$file" && file=`echo "$*" | sed -n 's/.*-o[ ]*\([^ ]*\).*/\1/p'`
-    if test -f "$file"; then
-        touch $file
-    else
-        test -z "$file" || exec >$file
-        echo "#! /bin/sh"
-        echo "# Created by GNU Automake missing as a replacement of"
-        echo "#  $ $@"
-        echo "exit 0"
-        chmod +x $file
-        exit 1
-    fi
+	   sed 's/\.am$/.in/' |
+	   while read f; do touch "$f"; done
     ;;
 
   bison|yacc)
@@ -192,24 +144,24 @@ WARNING: \`$1' is missing on your system.  You should only need it if
     rm -f y.tab.c y.tab.h
     if [ $# -ne 1 ]; then
         eval LASTARG="\${$#}"
-        case "$LASTARG" in
-        *.y)
-            SRCFILE=`echo "$LASTARG" | sed 's/y$/c/'`
-            if [ -f "$SRCFILE" ]; then
-                 cp "$SRCFILE" y.tab.c
-            fi
-            SRCFILE=`echo "$LASTARG" | sed 's/y$/h/'`
-            if [ -f "$SRCFILE" ]; then
-                 cp "$SRCFILE" y.tab.h
-            fi
-          ;;
-        esac
+	case "$LASTARG" in
+	*.y)
+	    SRCFILE=`echo "$LASTARG" | sed 's/y$/c/'`
+	    if [ -f "$SRCFILE" ]; then
+	         cp "$SRCFILE" y.tab.c
+	    fi
+	    SRCFILE=`echo "$LASTARG" | sed 's/y$/h/'`
+	    if [ -f "$SRCFILE" ]; then
+	         cp "$SRCFILE" y.tab.h
+	    fi
+	  ;;
+	esac
     fi
     if [ ! -f y.tab.h ]; then
-        echo >y.tab.h
+	echo >y.tab.h
     fi
     if [ ! -f y.tab.c ]; then
-        echo 'main() { return 0; }' >y.tab.c
+	echo 'main() { return 0; }' >y.tab.c
     fi
     ;;
 
@@ -222,42 +174,37 @@ WARNING: \`$1' is missing on your system.  You should only need it if
     rm -f lex.yy.c
     if [ $# -ne 1 ]; then
         eval LASTARG="\${$#}"
-        case "$LASTARG" in
-        *.l)
-            SRCFILE=`echo "$LASTARG" | sed 's/l$/c/'`
-            if [ -f "$SRCFILE" ]; then
-                 cp "$SRCFILE" lex.yy.c
-            fi
-          ;;
-        esac
+	case "$LASTARG" in
+	*.l)
+	    SRCFILE=`echo "$LASTARG" | sed 's/l$/c/'`
+	    if [ -f "$SRCFILE" ]; then
+	         cp "$SRCFILE" lex.yy.c
+	    fi
+	  ;;
+	esac
     fi
     if [ ! -f lex.yy.c ]; then
-        echo 'main() { return 0; }' >lex.yy.c
+	echo 'main() { return 0; }' >lex.yy.c
     fi
     ;;
 
   help2man)
-    if test -z "$run" && ($1 --version) > /dev/null 2>&1; then
-       # We have it, but it failed.
-       exit 1
-    fi
-
     echo 1>&2 "\
 WARNING: \`$1' is missing on your system.  You should only need it if
-         you modified a dependency of a manual page.  You may need the
-         \`Help2man' package in order for those modifications to take
-         effect.  You can get \`Help2man' from any GNU archive site."
+	 you modified a dependency of a manual page.  You may need the
+	 \`Help2man' package in order for those modifications to take
+	 effect.  You can get \`Help2man' from any GNU archive site."
 
     file=`echo "$*" | sed -n 's/.*-o \([^ ]*\).*/\1/p'`
     if test -z "$file"; then
-        file=`echo "$*" | sed -n 's/.*--output=\([^ ]*\).*/\1/p'`
+	file=`echo "$*" | sed -n 's/.*--output=\([^ ]*\).*/\1/p'`
     fi
     if [ -f "$file" ]; then
-        touch $file
+	touch $file
     else
-        test -z "$file" || exec >$file
-        echo ".ab help2man is required to generate this page"
-        exit 1
+	test -z "$file" || exec >$file
+	echo ".ab help2man is required to generate this page"
+	exit 1
     fi
     ;;
 
@@ -300,18 +247,18 @@ WARNING: \`$1' is missing on your system.  You should only need it if
     fi
     firstarg="$1"
     if shift; then
-        case "$firstarg" in
-        *o*)
-            firstarg=`echo "$firstarg" | sed s/o//`
-            tar "$firstarg" ${1+"$@"} && exit 0
-            ;;
-        esac
-        case "$firstarg" in
-        *h*)
-            firstarg=`echo "$firstarg" | sed s/h//`
-            tar "$firstarg" ${1+"$@"} && exit 0
-            ;;
-        esac
+	case "$firstarg" in
+	*o*)
+	    firstarg=`echo "$firstarg" | sed s/o//`
+	    tar "$firstarg" ${1+"$@"} && exit 0
+	    ;;
+	esac
+	case "$firstarg" in
+	*h*)
+	    firstarg=`echo "$firstarg" | sed s/h//`
+	    tar "$firstarg" ${1+"$@"} && exit 0
+	    ;;
+	esac
     fi
 
     echo 1>&2 "\

@@ -812,7 +812,7 @@ fi
 ac_x_libraries=$xastir_x_libraries
 ac_x_includes=$xastir_x_includes
 
-AC_PATH_X_DIRECT
+_AC_PATH_X_DIRECT
 dnl AC_PATH_X_XMKMF picks /usr/lib as the path for the X libraries.
 dnl Unfortunately, if compiling with the N32 ABI, this is not the correct
 dnl location. The correct location is /usr/lib32 or an undefined value
@@ -822,7 +822,7 @@ case "$host" in
 mips-sgi-irix6*)
   ;;
 *)
-  AC_PATH_X_XMKMF
+  _AC_PATH_X_XMKMF
   if test -z "$ac_x_includes"; then
     ac_x_includes="."
   fi
@@ -1117,7 +1117,7 @@ if test "$with_motif" != "no"; then
                 include_motif="-I$motif_includes"
                 MOTIF_CFLAGS="-I$motif_includes"
         fi
-        AC_DEFINE(HAVE_MOTIF)
+        AC_DEFINE([HAVE_MOTIF], 1, [Define if Motif is present.])
 else
         with_motif="no"
 fi
@@ -1126,7 +1126,7 @@ AC_SUBST(link_motif)
 AC_SUBST(include_motif)
 AC_SUBST(MOTIF_CFLAGS)
 AC_SUBST(MOTIF_LIBS)
-AC_DEFINE(STIPPLE,[True])
+AC_DEFINE([STIPPLE],[True],[Define if STIPPLE is True.])
 #
 #
 #
@@ -1345,7 +1345,9 @@ then
 
     if test "$xpm_skip_linking" = "1"
     then
-        AC_DEFINE(HAVE_XPM)
+        # JMT - this is only done if we are running Solaris
+        AC_DEFINE([HAVE_XPMI], 1, [Define if Xm/XmpI.h is used.])
+        AC_DEFINE([HAVE_XPM], 1, [Define if XPM is present.])
     else
 #
 # Make sure, whatever we found out, we can link.
@@ -1363,7 +1365,7 @@ then
         #
         # link passed
         #
-        AC_DEFINE(HAVE_XPM)
+        AC_DEFINE([HAVE_XPM], 1, [Define if XPM is present.])
         ],
         [
         #
@@ -1404,27 +1406,6 @@ AC_SUBST(XPM_LIBS)
 AC_SUBST(LIBS)
 AC_SUBST(CFLAGS)
 ])dnl AC_DEFN
-
-
-dnl ----------------------------------------------------------------------
-dnl From Jim Meyering.
-dnl FIXME: migrate into libit.
-dnl
-AC_DEFUN(AM_FUNC_OBSTACK,
-[AC_CACHE_CHECK([for obstacks], am_cv_func_obstack,
- [AC_TRY_LINK([#include "obstack.h"],
-              [struct obstack *mem;obstack_free(mem,(char *) 0)],
-              am_cv_func_obstack=yes,
-              am_cv_func_obstack=no)])
- if test $am_cv_func_obstack = yes; then
-   AC_DEFINE(HAVE_OBSTACK,1,[Define if libc includes obstacks])
- else
-   LIBOBJS="$LIBOBJS obstack.o"
- fi
-])
-
-
-
 
 dnl ----------------------------------------------------------------------
 dnl
@@ -1697,7 +1678,22 @@ AC_DEFUN(XASTIR_TYPE_SOCKLEN_T,
     ac_cv_type_socklen_t=no)
 ])
   if test $ac_cv_type_socklen_t != yes; then
-    AC_DEFINE(socklen_t, int)
+    AC_DEFINE([socklen_t], int, [Define to type of socklen_t.])
+  fi
+])
+
+dnl ======================================================================
+AC_DEFUN(XASTIR_STRUCT_TM_GMTOFF,
+[AC_CACHE_CHECK([for tm_gmtoff in struct tm], ac_cv_struct_tm_gmtoff,
+[
+  AC_TRY_COMPILE(
+    [#include <time.h>],
+    [struct tm t; t.tm_gmtoff = 3600; return t.tm_gmtoff;],
+    ac_cv_struct_tm_gmtoff=yes,
+    ac_cv_struct_tm_gmtoff=no)
+])
+  if test $ac_cv_struct_tm_gmtoff != yes; then
+    AC_DEFINE([HAVE_TM_GMTOFF], 1, [Define if struct tm has tm_gmtoff.])
   fi
 ])
 
