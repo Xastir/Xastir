@@ -1217,6 +1217,7 @@ void draw_shapefile_map (Widget w,
     unsigned long   my_lat, my_long;
     long            x,y;
     int             ok, index;
+    int             gps_flag = 0;
     int             road_flag = 0;
     int             lake_flag = 0;
     int             river_flag = 0;
@@ -1271,6 +1272,12 @@ void draw_shapefile_map (Widget w,
 
     if (alert)
         weather_alert_flag++;
+
+    // Check for maps/Gps directory.  We set up the labels and
+    // colors differently for these file.
+    if (strstr(filenm,"Gps")) { // We're in the maps/Gps directory
+        gps_flag++;
+    }
 
     // Open the .dbf file for reading.  This has the textual
     // data (attributes) associated with each shape.
@@ -1880,7 +1887,8 @@ void draw_shapefile_map (Widget w,
         }
 
         (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
-    } else {
+    }
+    else {
 // Are these actually used anymore by the code?  Colors get set later
 // when we know more about what we're dealing with.
         if (lake_flag || river_flag)
@@ -2447,6 +2455,20 @@ void draw_shapefile_map (Widget w,
 
                     else {  // Set default line width, use whatever color is already defined by this point.
                         (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+                    }
+
+
+//WE7U
+// I'd eventually would like to be able to change the color of each
+// GPS track for each team in the field.  That will help to keep the
+// tracks separate when they cross.
+                    if (gps_flag) {
+                        //fprintf(stderr,"Setting color to DarkOrange3\n");
+                        (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x41]); // DarkOrange3
+
+                        // Make the track nice and wide: Easy to
+                        // see.
+                        (void)XSetLineAttributes (XtDisplay (w), gc, 2, LineSolid, CapButt,JoinMiter);
                     }
 
 
