@@ -69,47 +69,81 @@ HELP-INDEX>What's new in Xastir BETA
 
                     What's new in Xastir BETA
 
-The latest Xastir release adds numerious new capabilities, keeping Xastir a
+The latest Xastir release adds numerous new capabilities, keeping Xastir a
 benchmark for APRS programs on any operating system.
 
-(This section is an informal list of changes that will be formally written
-before a release)
+Xastir's hardware support has been enhanced, with
+* Support for Serial KISS TNCs
+* Support for Serial TNCs with gps on the AUX port
+* Support for Dallas One-Wire weather station
+  (see http://melhuish.info/simon/projects/oww/)
+* Support for more weather stations via the wx200d daemon (WX-200/WM-918/
+  WMR-918/WMR-968)***FIXME***IS THIS NEW?
+* Support for the different sized rain gauges of the Peet Brothers weather
+  stations.
+
+Additionally, several bugs in the weather reporting code were corrected, and
+support for setting the system clock based on the GPS was added.
+
+There have been many additions and improvements to the Xastir user interface:
+The most notable is the addition of dead-reackoning. This means that stations
+that are moving will continue to move on your screen in the direction and at
+the speed speed that they last reported. The estimated location can be shown
+with any combination of a ghosted icon, a dashed line from the last position,
+or an arc of expected possible distance and angle.
+
+Bulletins pop up on screen, and emergency beacons cause and alert with the 
+locate station dialog on hand. These changes are helpful in emergencies and
+event coordination.
+
+Xastir can now be set to use one of several coordinate systems, including UTM,
+dd.ddddd, dd mm.mmm, and dd mm ss.s. This is helpful for coordinating with
+other groups using a different system.
+
+The online Tiger maps can now be enabled from the map menu, and many options
+can be adjusted to request the maps with the data you want.
+
+Other smaller interface changes include:
+* The Stations menu has been reorganized
+* The density of the grid-lines can be adjusted with the  +, =, and - keys.
+* Objects and item lists have been added to the view menu.
+* Station meidenhead grid squares are now shown in station info and the
+  coordinate calculator.
+* There is a checkbox "Track me" to enable easily tracking your own station
+* The length of trails downloaded from findu.com can now be specified.
+* Xastir can now ID via voice IDs or Screen IDs, by editing the configuration
+  file. This is intended for configurations when the Xastir screen is seen
+  remotely via fast-scan TV. 
+* Timestamps are written to logfiles every 30 seconds of operation, to keep a
+  record of when data was heard.
+...WORK IN PROGRESS...
+Tracked proximity alarms
+export waypoints within proximity boundaries
+
+
+The weather reporting features have been improved, with the addition of wind
+barbs to weather stations and decoding of storm wind radius data. Weather alert
+shading is now done with pixmap stipples showing the type of alert. And further
+information on an alert is available over the internet from the WXserver by
+simply double-clicking the alert in the weather alerts list. Weather alerts now
+use the newer shapefile format maps.
 
 ...WORK IN PROGRESS...
 *= More Significant
 
-The ability to set the system clock from the GPS.
-Dropping setuid root privs
-Private colormaps->8bit color usable
-*SmartBeaconing(tm)
-export waypoints within proximity boundaries
-logfile timestamps 
-
-Hardware:
-Support for serial TNCs with gps on the AUX port
-Dallas One-Wire weather station - see http://melhuish.info/simon/projects/oww/
-More weather stations supported via wx200d daemon (WX-200/WM-918/WMR-918/WMR-968)
-serial KISS TNC interface
-Different rain gauge sizes +weather station fixes
 
 UI:
-storm wind radius decoding
 stations menu cleanup
 grid density adjustment +=-
-wind barbs
 view|objects&items
-bulletin popups
 Grid square in station info/coordinate calc
 Track me
-Emergency beacons->locate station
-*dead-reckoning
 voice IDs/Screen IDs-config file only
 findu trail length controls
 Tracked proximity alarms
-Different Coordinate systems
-Weather alert pixmap stipples
-WXserver info via finger
 Tigermaps menu accessible
+export waypoints within proximity boundaries
+logfile timestamps
 
 Backend:
 *Messaging cleanup, no more timed updates
@@ -119,6 +153,9 @@ igated to RF path
 Map extent/index caching
 29 sec Anti-dupe queues
 Object persistance
+Dropping setuid root privs
+Private colormaps->8bit color usable
+*SmartBeaconing(tm)
 more parser fixes for overruns
 
 Protocol:
@@ -132,55 +169,6 @@ Map support:
 quad label shapefiles
 *Shapefile weather alert maps
 
-HELP-INDEX>What's new in Xastir 1.1
-
-                    What's new in Xastir 1.1
-
-This new release, Xastir 1.1, adds significant new features and enhancements
-to the user interface. Unlike 1.0, the interface changes will take some getting
-used to, but the flexibility and versatility of the enhanced interface will
-more than make up for the troubles.
-Among the improvements to the user interface:
-* Keyboard shortcuts for menus and dialogs, menu reorganization, and mouse
-  behavior changes.
-* The ability to move objects or measure distance with the mouse, using the
-  appropriate checkboxes in the toolbar.
-* A scale has been added to allow one to judge distance on a map.
-* Map labels for windows-style APRS(tm) maps are rotated to match the marked
-  map features.
-* The user interface for dealing with objects has been entirely redesigned.
-* Station info boxes can be set to automatically update.
-* Tear-off menus.  Allow you to keep a menu on the screen and play with
-  different options. Tear off a menu by clicking on the dashed-line portion.
-
-Map support has been greatly enhanced, with PocketAPRS, ESRI Shapefiles, GNIS
-labels and many graphics formats with ImageMagick. Additionally, support for
-downloading graphical maps from webservers has been added, allowing Xastir to
-use online radar, Tiger, and Terraserver maps. 
-
-Xastir 1.1 supports much more of the APRS(tm) protocol than its predecessor:
-* It can add, modify, move and view area objects, signpost objects, and items.
-  These features are invaluable for event coordination and search and rescue
-  use. Objects and items are also periodically retransmitted.
-* Support for displaying position ambiguity squares, precalculated radio
-  ranges, Maidenhead grid squares, and weather objects. These features aren't
-  extremely common, but do come up occasionally.
-* Support for the APRS(tm) radio direction finding features. These features
-  are useful for anything from tracking jammers to locating lost hikers. Xastir
-  supports both Omni and Beam reports.
-  
-Other notable improvements:
-* Xastir can now search for a specified location or landmark using GNIS data.
-* Track logs can now be exported to file.
-* Maps can be printed if certain tools and libraries are present.
-* Support for retrieving historical track data from findu.com.
-* Xastir now compiles and runs on Mac OS X, Solaris and FreeBSD with only
-  minimal changes; see README.1ST for details. 
-* Several major bugs found in 1.0 have been corrected, including the problems
-  loading DOS maps and the problems with the weather reporting. Other minor
-  bugs and memory leaks have been fixed. And several more errors have been
-  corrected in the parsing routines, so Xastir should remain stable no matter
-  what is thrown at it! 
 
 HELP-INDEX>Starting Xastir for the first time
 
@@ -1766,6 +1754,10 @@ data in a binary type as the Radio Shack WX-200 uses. If no binary data is
 found in the stream, Xastir will look for an ASCII type of WX station (like
 Peet Bros.).
 
+Now set the Rain Gauge correction factor. Xastir requires that the rain gauge
+report in .01 inch increments. If the unit reports in .1 inch or .1 millimeter
+increments, a correction must be specified to obtain accurate measurements.
+
 HELP-INDEX>Configure a Networked WX Station
 
                    Configure a Networked WX Station
@@ -1784,6 +1776,10 @@ Selecting "Reconnect on failure" will tell Xastir to try to reconnect when the
 data stream has failed.
 
 As before the Data Type will override the auto detection.
+
+Now set the Rain Gauge correction factor. Xastir requires that the rain gauge
+report in .01 inch increments. If the unit reports in .1 inch or .1 millimeter
+increments, a correction must be specified to obtain accurate measurements.
 
 HELP-INDEX>Printing
 
@@ -2049,3 +2045,54 @@ made to the source code to ensure that it compiles correctly on various
 systems.
 
 Enjoy the new Xastir!
+
+
+HELP-INDEX>What was new in Xastir 1.1
+
+                    What was new in Xastir 1.1
+
+This new release, Xastir 1.1, adds significant new features and enhancements
+to the user interface. Unlike 1.0, the interface changes will take some getting
+used to, but the flexibility and versatility of the enhanced interface will
+more than make up for the troubles.
+Among the improvements to the user interface:
+* Keyboard shortcuts for menus and dialogs, menu reorganization, and mouse
+  behavior changes.
+* The ability to move objects or measure distance with the mouse, using the
+  appropriate checkboxes in the toolbar.
+* A scale has been added to allow one to judge distance on a map.
+* Map labels for windows-style APRS(tm) maps are rotated to match the marked
+  map features.
+* The user interface for dealing with objects has been entirely redesigned.
+* Station info boxes can be set to automatically update.
+* Tear-off menus.  Allow you to keep a menu on the screen and play with
+  different options. Tear off a menu by clicking on the dashed-line portion.
+
+Map support has been greatly enhanced, with PocketAPRS, ESRI Shapefiles, GNIS
+labels and many graphics formats with ImageMagick. Additionally, support for
+downloading graphical maps from webservers has been added, allowing Xastir to
+use online radar, Tiger, and Terraserver maps. 
+
+Xastir 1.1 supports much more of the APRS(tm) protocol than its predecessor:
+* It can add, modify, move and view area objects, signpost objects, and items.
+  These features are invaluable for event coordination and search and rescue
+  use. Objects and items are also periodically retransmitted.
+* Support for displaying position ambiguity squares, precalculated radio
+  ranges, Maidenhead grid squares, and weather objects. These features aren't
+  extremely common, but do come up occasionally.
+* Support for the APRS(tm) radio direction finding features. These features
+  are useful for anything from tracking jammers to locating lost hikers. Xastir
+  supports both Omni and Beam reports.
+  
+Other notable improvements:
+* Xastir can now search for a specified location or landmark using GNIS data.
+* Track logs can now be exported to file.
+* Maps can be printed if certain tools and libraries are present.
+* Support for retrieving historical track data from findu.com.
+* Xastir now compiles and runs on Mac OS X, Solaris and FreeBSD with only
+  minimal changes; see README.1ST for details. 
+* Several major bugs found in 1.0 have been corrected, including the problems
+  loading DOS maps and the problems with the weather reporting. Other minor
+  bugs and memory leaks have been fixed. And several more errors have been
+  corrected in the parsing routines, so Xastir should remain stable no matter
+  what is thrown at it! 
