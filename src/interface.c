@@ -1135,10 +1135,16 @@ int OpenTrac_decode_sequence(unsigned char *element,
                              int           element_len,
                              unsigned int  *sequence) {
 
-    if (element_len != 2)
+    if (element_len != 2 && element_len != 0)
         return -1;
 
-    *sequence = fetch16bits(element);
+    // No sequence number, increment by one
+    if (element_len == 0) {
+        *sequence = *sequence + 1;
+    }
+    else {
+        *sequence = fetch16bits(element);
+    }
 
     fprintf(stderr,"Sequence: %d\n",*sequence);
 
@@ -2124,6 +2130,12 @@ int OpenTrac_decode_units(int           unitnum,
 // that deal with OpenTrac packets was generously donated by Scott
 // Miller, N1VG.  He's allowing us to put it under the GPL license.
 //
+// A new sequence or a new entityID should trigger an APRS packet to
+// be generated (with the old sequence/entityID).  A packet should
+// also be generated at the end of processing.  There can be
+// multiple ID's and multiple locations embedded inside an OpenTrac
+// packet.
+//
 //***********************************************************
 
 char *process_OpenTrac_packet( unsigned char *data,
@@ -2145,6 +2157,7 @@ char *process_OpenTrac_packet( unsigned char *data,
     unsigned char entity_ssid     = 0x00;
     unsigned int  entity_serial   = 0;
     unsigned int  entity_sequence = 0;
+    unsigned int  temp_entity_sequence = 0;
     unsigned char network         = 0;
     long          rawtime         = 0;
     int           have_position   = 0;
@@ -2165,7 +2178,190 @@ char *process_OpenTrac_packet( unsigned char *data,
     char          aprs_symbol_table = '/';
     char          aprs_symbol_char = '/';   // A "dot"
     char          comment[127];
+
+
+
+
+
+    void process_opentrac_aprs(void) {
+        // Construct a standard APRS-format packet out of the parsed
+        // information.  We may need to construct several APRS packets
+        // out of the OpenTrac packet, as there may be several entity
+        // ID's or other types of info that can't fit into one APRS
+        // packet.
+        //
+        // Note that if we got an Origination Station element, the path
+        // here is not representative of the entire path the packet
+        // took, and in fact we don't know who the transmitting station
+        // was for this packet anymore, just the originating station for
+        // the packet.
  
+        strcat(buffer,(char *)origin_call);
+        if (origin_ssid != 0x00) {
+            char temp[10];
+
+            strcat(buffer,"-");
+            xastir_snprintf(temp,sizeof(temp),"%d",origin_ssid);
+            strcat(buffer,temp);
+        }
+        strcat(buffer,">");
+        strcat(buffer,(char *)dest);
+
+        for(i = 0; i < (int)digis; i++) {
+            strcat(buffer,",");
+            strcat(buffer,(char *)digi[i]);
+            /* at the last digi always put a '*' when h_bit is set */
+            if (i == (int)(digis - 1)) {
+                if (digi_h[i] == (unsigned char)0x80) {
+                    /* this digi must have transmitted the packet */
+                    strcat(buffer,"*");
+                }
+            } else {
+                if (digi_h[i] == (unsigned char)0x80) {
+                    /* only put a '*' when the next digi has no h_bit */
+                    if (digi_h[i + 1] != (unsigned char)0x80) {
+                        /* this digi must have transmitted the packet */
+                        strcat(buffer,"*");
+                    }
+                }
+            }
+        }
+        strcat(buffer,":");
+
+
+        // If we parsed a position, finish creating an APRS packet.
+        if (have_position) {
+            // We have latitude/longitude/altitude
+            int ok;
+            unsigned long temp_lat, temp_lon;
+            char lat_str[20];
+            char lon_str[20];
+            char alt_str[20];
+
+
+            // Format it in DDMM.MMN/DDDMM.MMW format
+            // lat/lon are doubles, alt is a float
+            //
+
+//fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
+ 
+            // Convert lat/long to Xastir coordinate system first
+            ok = convert_to_xastir_coordinates (
+                &temp_lon,
+                &temp_lat,
+                (float)longitude,
+                (float)latitude);
+
+            if (ok) {
+                // Convert to the proper format for an APRS position
+                // packet:  "4903.50N/07201.75W/"
+                char temp[20];
+
+
+                convert_lat_l2s( temp_lat, lat_str, 20, CONVERT_LP_NOSP);
+                convert_lon_l2s( temp_lon, lon_str, 20, CONVERT_LP_NOSP);
+           
+                if (entity_serial) {
+                    // We have an entity that is non-zero.  Create an
+                    // APRS "Item" from the data.  NOTE:  Items have to
+                    // have at minimum 3, maximum 9 characters for the
+                    // name.
+                    char entity_name[10];
+
+                    if (strlen(displayname)) {
+                        xastir_snprintf(entity_name,
+                            sizeof(entity_name),
+                            "%s",
+                            displayname);
+                    }
+                    else {
+                        xastir_snprintf(entity_name,
+                            sizeof(entity_name),
+                            "Ent. %04x",    // Short for "Entity"
+                            entity_serial);
+                    }
+
+                    strcat(buffer,")"); // APRS Item packet
+                    strcat(buffer,entity_name);   // Entity name
+                    strcat(buffer,"!");
+                    strcat(buffer,lat_str);
+                    temp[0] = aprs_symbol_table;
+                    temp[1] = '\0';
+                    strcat(buffer,temp);
+                    strcat(buffer,lon_str);
+                    temp[0] = aprs_symbol_char;
+                    strcat(buffer,temp);
+
+                    // Course/Speed
+                    if ((int)speed != 0 || course != 0) {
+                        xastir_snprintf(temp,
+                            sizeof(temp),
+                            "%03d/%03d",
+                            course % 360,
+                            (int)(speed / 1.852));  // Convert from kph to knots
+                        strcat(buffer,temp);
+                   }
+                }
+                else {
+                    // Entity is zero.  Create an APRS position packet.
+                    strcat(buffer,"!"); // APRS non-messaging position packet
+                    strcat(buffer,lat_str);
+                    temp[0] = aprs_symbol_table;
+                    temp[1] = '\0';
+                    strcat(buffer,temp);
+                    strcat(buffer,lon_str);
+                    temp[0] = aprs_symbol_char;
+                    strcat(buffer,temp);
+
+                    // Course/Speed
+                    if ((int)speed != 0 || course != 0) {
+                        xastir_snprintf(temp,
+                            sizeof(temp),
+                            "%03d/%03d",
+                            course % 360,
+                            (int)(speed / 1.852));  // Convert from kph to knots
+                        strcat(buffer,temp);
+                    }
+                    if (strlen(displayname)) {
+                        // Add displayname to the comment field
+                        strcat(comment," ");
+                        strcat(comment,displayname);
+                    }
+                }
+
+                // Append the comment to the end.
+
+// We really should check length here.  APRS packets can't handle
+// much.  Item and position packets probably have different
+// restriction on length of comment field as well.
+
+                strcat(buffer,comment);
+
+                // Altitude should be in feet "/A=001234", and placed in
+                // the comment field of an APRS packet.
+                xastir_snprintf(alt_str,
+                    sizeof(alt_str),
+                    " /A=%06d",
+                    (int)(altitude * 3.28084)); // meters to feet
+                strcat(buffer,alt_str);
+            }
+        }
+
+
+        // Null-terminate the buffer string to make sure.
+        buffer[MAX_DEVICE_BUFFER - 1] = '\0';
+
+        fprintf(stderr, "%s\n", buffer);
+
+        decode_ax25_line( buffer, DATA_VIA_TNC, 0, 1);
+
+        // Clear the buffer for the next round.
+        buffer[0] = '\0';
+    }
+
+
+
+
 
     fprintf(stderr, "process_OpenTrac_packet()\n");
 
@@ -2217,10 +2413,17 @@ char *process_OpenTrac_packet( unsigned char *data,
         fprintf(stderr, "EID 0x%x len %d: ", etype, elen);
         switch (etype) {
             case (0x00): // Sequence
+                temp_entity_sequence = entity_sequence;
+
                 OpenTrac_decode_sequence(
                     data,
                     elen,
-                    &entity_sequence);
+                    &temp_entity_sequence);
+
+                if (temp_entity_sequence != entity_sequence) {
+                    process_opentrac_aprs();
+                    entity_sequence = temp_entity_sequence;
+                }
 
 // Problem here:  What to do for multi-sequence OpenTrac packets?
 // Generate a new APRS packet for each so that we get an entire
@@ -2228,19 +2431,28 @@ char *process_OpenTrac_packet( unsigned char *data,
 
                 break;
             case (0x01): // Originating Station
+                temp_entity_sequence = entity_sequence;
+
                 OpenTrac_decode_origination(
                     data,
                     elen,
-                    &entity_sequence,   // Origin sequence?
+                    &temp_entity_sequence,   // Origin sequence?
                     origin_call,
                     &origin_ssid,
                     &network);
+
+                if (temp_entity_sequence != entity_sequence) {
+                    process_opentrac_aprs();
+                    entity_sequence = temp_entity_sequence;
+                }
 
                 // Originating station different from transmitting
                 // station.
 
                 break;
             case (0x02): // Entity ID
+                temp_entity_sequence = entity_sequence;
+
                 OpenTrac_decode_entityid(
                     data,
                     elen,
@@ -2249,7 +2461,12 @@ char *process_OpenTrac_packet( unsigned char *data,
                     entity_call,
                     &entity_ssid,
                     &entity_serial,
-                    &entity_sequence);
+                    &temp_entity_sequence);
+
+                if (temp_entity_sequence != entity_sequence) {
+                    process_opentrac_aprs();
+                    entity_sequence = temp_entity_sequence;
+                }
 
 // We're dealing with a different entity than the transmitting or
 // originating station.  Need to do something different here,
@@ -2384,175 +2601,7 @@ char *process_OpenTrac_packet( unsigned char *data,
         data+=elen;
     }
 
-
-    // Construct a standard APRS-format packet out of the header
-    // information.  We may need to construct several APRS packets
-    // out of the OpenTrac packet, as there may be several entity
-    // ID's or other types of info that can't fit into one APRS
-    // packet.
-    //
-    // Note that if we got an Origination Station element, the path
-    // here is not representative of the entire path the packet
-    // took, and in fact we don't know who the transmitting station
-    // was for this packet anymore, just the originating station for
-    // the packet.
-    //
-    strcat(buffer,(char *)origin_call);
-    if (origin_ssid != 0x00) {
-        char temp[10];
-
-        strcat(buffer,"-");
-        xastir_snprintf(temp,sizeof(temp),"%d",origin_ssid);
-        strcat(buffer,temp);
-    }
-    strcat(buffer,">");
-    strcat(buffer,(char *)dest);
-
-    for(i = 0; i < (int)digis; i++) {
-        strcat(buffer,",");
-        strcat(buffer,(char *)digi[i]);
-        /* at the last digi always put a '*' when h_bit is set */
-        if (i == (int)(digis - 1)) {
-            if (digi_h[i] == (unsigned char)0x80) {
-                /* this digi must have transmitted the packet */
-                strcat(buffer,"*");
-            }
-        } else {
-            if (digi_h[i] == (unsigned char)0x80) {
-                /* only put a '*' when the next digi has no h_bit */
-                if (digi_h[i + 1] != (unsigned char)0x80) {
-                    /* this digi must have transmitted the packet */
-                    strcat(buffer,"*");
-                }
-            }
-        }
-    }
-    strcat(buffer,":");
-
-
-    // If we parsed a position, finish creating an APRS packet.
-    if (have_position) {
-        // We have latitude/longitude/altitude
-        int ok;
-        unsigned long temp_lat, temp_lon;
-        char lat_str[20];
-        char lon_str[20];
-        char alt_str[20];
-
-
-        // Format it in DDMM.MMN/DDDMM.MMW format
-        // lat/lon are doubles, alt is a float
-        //
-
-//fprintf(stderr, "Decoded this position: %f %f\n", latitude, longitude);
- 
-        // Convert lat/long to Xastir coordinate system first
-        ok = convert_to_xastir_coordinates (
-            &temp_lon,
-            &temp_lat,
-            (float)longitude,
-            (float)latitude);
-
-        if (ok) {
-            // Convert to the proper format for an APRS position
-            // packet:  "4903.50N/07201.75W/"
-            char temp[20];
-
-
-            convert_lat_l2s( temp_lat, lat_str, 20, CONVERT_LP_NOSP);
-            convert_lon_l2s( temp_lon, lon_str, 20, CONVERT_LP_NOSP);
-           
-            if (entity_serial) {
-                // We have an entity that is non-zero.  Create an
-                // APRS "Item" from the data.  NOTE:  Items have to
-                // have at minimum 3, maximum 9 characters for the
-                // name.
-                char entity_name[10];
-
-                if (strlen(displayname)) {
-                    xastir_snprintf(entity_name,
-                        sizeof(entity_name),
-                        "%s",
-                        displayname);
-                }
-                else {
-                    xastir_snprintf(entity_name,
-                        sizeof(entity_name),
-                        "Ent. %04x",    // Short for "Entity"
-                        entity_serial);
-                }
-
-                strcat(buffer,")"); // APRS Item packet
-                strcat(buffer,entity_name);   // Entity name
-                strcat(buffer,"!");
-                strcat(buffer,lat_str);
-                temp[0] = aprs_symbol_table;
-                temp[1] = '\0';
-                strcat(buffer,temp);
-                strcat(buffer,lon_str);
-                temp[0] = aprs_symbol_char;
-                strcat(buffer,temp);
-
-                // Course/Speed
-                if ((int)speed != 0 || course != 0) {
-                    xastir_snprintf(temp,
-                        sizeof(temp),
-                        "%03d/%03d",
-                        course % 360,
-                        (int)(speed / 1.852));  // Convert from kph to knots
-                    strcat(buffer,temp);
-                }
-            }
-            else {
-                // Entity is zero.  Create an APRS position packet.
-                strcat(buffer,"!"); // APRS non-messaging position packet
-                strcat(buffer,lat_str);
-                temp[0] = aprs_symbol_table;
-                temp[1] = '\0';
-                strcat(buffer,temp);
-                strcat(buffer,lon_str);
-                temp[0] = aprs_symbol_char;
-                strcat(buffer,temp);
-
-                // Course/Speed
-                if ((int)speed != 0 || course != 0) {
-                    xastir_snprintf(temp,
-                        sizeof(temp),
-                        "%03d/%03d",
-                        course % 360,
-                        (int)(speed / 1.852));  // Convert from kph to knots
-                    strcat(buffer,temp);
-                }
-                if (strlen(displayname)) {
-                    // Add displayname to the comment field
-                    strcat(comment," ");
-                    strcat(comment,displayname);
-                }
-            }
-
-            // Altitude should be in feet "/A=001234", and placed in
-            // the comment field
-            xastir_snprintf(alt_str,
-                sizeof(alt_str),
-                " /A=%06d",
-                (int)(altitude * 3.28084)); // meters to feet
-            strcat(comment,alt_str);
-
-            // Append the comment to the end.
-
-// We really should check length here.  APRS packets can't handle
-// much.  Item and position packets probably have different
-// restriction on length of comment field as well.
-
-            strcat(buffer,comment);
-        }
-    }
-
-
-    // Null-terminate the buffer string to make sure.
-    buffer[MAX_DEVICE_BUFFER - 1] = '\0';
-
-    fprintf(stderr, "%s\n", buffer);
+    process_opentrac_aprs();
 
     return( buffer );
 }
