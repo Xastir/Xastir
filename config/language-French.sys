@@ -165,6 +165,7 @@ PULDQUS002|Info stations IGate|n|
 PULDQUS003|Info stations météo|m|
 PULDNMG004|Configurer réponse automatique|o|
 PULDNMG005|Activer réponse automatique|R|
+PULDNMG006|Satellite Ack Mode|M|
 #
 # Menu "Interfaces"
 PULDNTNT04|Départ/arrêt|C|

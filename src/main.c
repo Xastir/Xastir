@@ -535,8 +535,10 @@ static void Read_File_Selection(Widget w, XtPointer clientData, XtPointer callDa
 static void Display_data(Widget w, XtPointer clientData, XtPointer callData);
 
 static void Auto_msg_toggle( Widget widget, XtPointer clientData, XtPointer callData);
-
+static void  Satellite_msg_ack_toggle( Widget widget, XtPointer clientData, XtPointer callData);
+ 
 Widget auto_msg_toggle;
+Widget satellite_msg_ack_toggle;
  
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3452,6 +3454,16 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                         NULL);
     XtAddCallback(auto_msg_toggle,XmNvalueChangedCallback,Auto_msg_toggle,"1");
 
+   (void)XtVaCreateManagedWidget("create_appshell sep5a",xmSeparatorGadgetClass,messagepane,XmNbackground,colors[0xff],NULL);
+
+    satellite_msg_ack_toggle = XtVaCreateManagedWidget(langcode("PULDNMG006"),xmToggleButtonGadgetClass,
+                        messagepane,
+                        XmNvisibleWhenOff, TRUE,                        
+                        XmNindicatorSize, 12,
+                        XmNbackground, colors[0xff],
+                        NULL);
+    XtAddCallback(satellite_msg_ack_toggle,XmNvalueChangedCallback,Satellite_msg_ack_toggle,"1");
+
 
 
     /* Interface */
@@ -6252,6 +6264,20 @@ void  Auto_msg_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
         auto_reply = atoi(which);
     else
         auto_reply = 0;
+}
+
+
+
+
+
+void  Satellite_msg_ack_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        satellite_ack_mode = atoi(which);
+    else
+        satellite_ack_mode = 0;
 }
 
 
@@ -15544,6 +15570,7 @@ int main(int argc, char *argv[], char *envp[]) {
     sec_next_gps = 0l;
     sec_next_raw_wx = 0l;
     auto_reply = 0;
+    satellite_ack_mode = 0;
     last_time = 0l;
     next_time = (time_t)120l;
     net_last_time = 0l;

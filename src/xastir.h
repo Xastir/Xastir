@@ -133,9 +133,10 @@ extern Colormap cmap;
 
 
 /* from messages.c */
-extern int message_counter;
-extern int auto_reply;
+extern int  message_counter;
+extern int  auto_reply;
 extern char auto_reply_message[100];
+extern int  satellite_ack_mode;
 extern void clear_outgoing_messages(void);
 extern void reset_outgoing_messages(void);
 extern void output_message(char *from, char *to, char *message);

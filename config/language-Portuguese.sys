@@ -164,6 +164,7 @@ PULDQUS002|Pergunta a estações I-Gate|I|
 PULDQUS003|Pergunta a estações WX|W|
 PULDNMG004|Modificar mensagem de resposta automática|f|
 PULDNMG005|Activar mensagem de resposta automática|A|
+PULDNMG006|Satellite Ack Mode|M|
 #
 # Menú de interfaces
 PULDNTNT04|Iniciar/Parar|I|

@@ -171,6 +171,7 @@ PULDQUS002|IGate Stationen|I|
 PULDQUS003|Wetter Stationen|W|
 PULDNMG004|Setze automatische Antwort|S|
 PULDNMG005|Automatische Antwort|A|
+PULDNMG006|Satellite Ack Mode|M|
 #
 # Menu "Schnittstellen"
 PULDNTNT04|Schnittstellen Ein/Aus|t|

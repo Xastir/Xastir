@@ -166,6 +166,7 @@ PULDQUS002|Pregunta a Estns I-Gate|I|
 PULDQUS003|Pregunta a Estns WX|W|
 PULDNMG004|Fijar Mensaje en Contestación Automática|F|
 PULDNMG005|Activar Auto contestación de Mensaje|A|
+PULDNMG006|Satellite Ack Mode|M|
 #
 # Menú de Interfaces
 PULDNTNT04|Iniciar/Detener|I|

@@ -165,6 +165,7 @@ PULDQUS002|IGate Stations Query|I|
 PULDQUS003|WX Stations Query|W|
 PULDNMG004|Modify Auto Reply Message|A|
 PULDNMG005|Enable Auto Reply Message||
+PULDNMG006|Satellite Ack Mode|M|
 #
 # Menu "Interfaces"
 PULDNTNT04|Start/Stop|S|

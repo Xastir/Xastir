@@ -169,6 +169,7 @@ PULDQUS002|IGate Stations Aanvraag|I|
 PULDQUS003|WX Stations Aanvraag|t|
 PULDNMG004|Automatisch Antwoord Bericht|A|
 PULDNMG005|Automatisch Beantwoorden|B|
+PULDNMG006|Satellite Ack Mode|M|
 #
 # Menu "Interfaces"
 PULDNTNT04|Interface besturing|I|

@@ -249,6 +249,7 @@ static long msg_index_max;
 static Message *msg_data;       // All messages, including ones we've transmitted (via loopback in the code)
 time_t last_message_update = 0;
 ack_record *ack_list_head = NULL;  // Head of linked list storing most recent ack's
+int satellite_ack_mode;
 
 
 // How often update_messages() will run, in seconds.
@@ -8341,7 +8342,8 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 #endif
         // Only send an ack out once per 30 seconds
         if ( (from != 'F')  // Not from a log file
-                && ((last_ack_sent + 30 ) < sec_now()) ) {
+                && ((last_ack_sent + 30 ) < sec_now())
+                && !satellite_ack_mode ) {  // Disable separate ack's for satellite work
 
             //printf("Sending ack: %ld %ld %ld\n",last_ack_sent,sec_now(),record);
 
