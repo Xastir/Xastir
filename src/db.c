@@ -684,6 +684,11 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     msg_data[msg_index[j]].packet_time[11]
                                 );
 
+// Somewhere in here we appear to be losing the first message.  It
+// doesn't get written to the window later in the QSO.  Same for
+// closing the window and re-opening it, putting the same callsign
+// in and pressing "New Call" button.  First message is missing.
+
                                 // Label the message line with who sent it.
                                 xastir_snprintf(temp2, sizeof(temp2), "%s  %-9s>%s\n", stemp,
                                     msg_data[msg_index[j]].from_call_sign,
