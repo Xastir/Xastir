@@ -1000,6 +1000,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             xastir_snprintf(weather->wx_speed, sizeof(weather->wx_speed), "%03d",
                 (int)(tmp4 + 0.5));
 
+// Rain:  I don't have a rain gauge, and I couldn't tell from the
+// "OWW" docs exactly which of the four rain fields did what.  If
+// someone can help me with that I'll add rain gauge code for the
+// Dallas One-Wire.
+
             break;
 
         ////////////////////////////////
