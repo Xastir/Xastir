@@ -42,7 +42,8 @@
 #define MAX_KILLED_OBJECT_RETRANSMIT 20
 
 // Check entire station list at this rate for objects/items that
-// might need to be transmitted via the decaying algorithm.
+// might need to be transmitted via the decaying algorithm.  This is
+// the start rate, which gets doubled on each transmit.
 #define OBJECT_CHECK_RATE 15
 
 // We should probably be using APRS_DF in extract_bearing_NRQ()

@@ -750,6 +750,8 @@ end_critical_section(&send_message_dialog_lock, "messages.c:clear_acked_message"
 
 
 
+// This routine is not currently used.
+//
 void send_queued(char *to) {
     int i;
 
