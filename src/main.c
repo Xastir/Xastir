@@ -1804,7 +1804,8 @@ void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer c
 // inputs are output directly.  Latitude/longitude are converted to
 // the various different lat/lon representations.
 //
-// Outputs: global variables and "result" textField.
+// Outputs: global variables and "result" textField, full_zone.
+// full_zone should be a string of at least size 4.
 //
 void Coordinate_calc_output(char *full_zone, long northing,
             long easting, double latitude, double longitude) {
