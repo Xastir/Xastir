@@ -5399,14 +5399,45 @@ int is_aprs_chr(char ch) {
 
 
 
+int count_filler_chars(char ch) {
+
+    if (isdigit((int)ch) || ch==' ' || ch=='.' || ch=='-')
+    return(1);
+    else
+    return(0);
+}
+
+
+
+
+
 /* check data format    123 ___ ... */
+// We wish to count how many ' ' or '.' characters we find.  If it
+// equals zero or the field width, it might be a weather field.  If
+// not, then it might be part of a comment field or something else.
+//
 int is_weather_data(char *data, int len) {
     int ok = 1;
     int i;
+    int count = 0;
 
     for (i=0;ok && i<len;i++)
         if (!is_aprs_chr(data[i]))
             ok = 0;
+
+    // Count filler characters.  Must equal zero or field width to
+    // be a weather field.  There doesn't appear to be a case where
+    // a single period is allowed in any weather-related fields.
+    //
+    for (i=0;ok && i<len;i++) {
+        if (data[i] == ' ' || data[i] == '.') {
+            count++;
+        }
+    }
+    if (count != 0 && count != len) {
+        ok = 0;
+    }
+
     return(ok);
 }
 
@@ -5479,6 +5510,9 @@ int test_extract_weather_item(char *data, char type, int datalen) {
                 found=0;
         }
 
+    // We really should test for numbers here (with an optional
+    // leading '-'), and test across the length of the substring.
+    //
     if(found && ((data[ofs+1] == ' ') || (data[ofs+1] == '.'))) {
         // found it, but it doesn't contain a value!
         // report "not found" - PE1DNN
