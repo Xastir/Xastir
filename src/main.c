@@ -5636,6 +5636,8 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             break;
 
                         /* TNC Devices */
+                        case DEVICE_SERIAL_KISS_TNC:
+
                         case DEVICE_SERIAL_TNC:
 
                         case DEVICE_AX25_TNC:

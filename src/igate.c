@@ -223,6 +223,8 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
 
                             case DEVICE_AX25_TNC:
 
+                            case DEVICE_SERIAL_KISS_TNC:
+
 begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
 
                                 if (devices[x].igate_options>1 && port_data[x].status==DEVICE_UP) {
@@ -438,11 +440,15 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                     for (x=0; x<MAX_IFACE_DEVICES;x++) {
                         if (x!=port) {
                             switch (port_data[x].device_type) {
+                                case DEVICE_SERIAL_TNC_AUX_GPS:
+
                                 case DEVICE_SERIAL_TNC_HSP_GPS:
 
                                 case DEVICE_SERIAL_TNC:
 
                                 case DEVICE_AX25_TNC:
+
+                                case DEVICE_SERIAL_KISS_TNC:
 
 begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
 

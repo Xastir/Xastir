@@ -232,9 +232,9 @@ void channel_data(int port, unsigned char *string) {
     // packets or concatenated APRS packets.  In any case it's some
     // kind of garbage that we don't want to try to parse.
     if (strlen(string) > MAX_LINE_SIZE) {   // Too long!
-        if (debug_level & 1) {
+//        if (debug_level & 1) {
             printf("\nchannel_data: LONG packet.  Dumping it:\n%s\n",string);
-        }
+//        }
 
         string[0] = '\0';   // Truncate it to zero length
         return;
@@ -1880,7 +1880,14 @@ void port_read(int port) {
 // if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
 //    printf("read_lock, Port = %d\n", port);
 
-                    if (port_data[port].device_type != DEVICE_AX25_TNC){
+
+                    if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+
+//WE7U: Implement KISS decode logic here
+printf("KISS DECODE logic needed\n");
+
+                    }
+                    else if (port_data[port].device_type != DEVICE_AX25_TNC){
                         if ((cin == (unsigned char)'\r'
                                     || cin == (unsigned char)'\n'
                                     || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1))
@@ -2382,6 +2389,7 @@ void init_device_names(void) {
     strcpy(dtype[DEVICE_NET_GPSD].device_name,langcode("IFDNL00007"));
     strcpy(dtype[DEVICE_NET_WX].device_name,langcode("IFDNL00008"));
     strcpy(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name,langcode("IFDNL00009"));
+    strcpy(dtype[DEVICE_SERIAL_KISS_TNC].device_name,langcode("IFDNL00010"));
 }
 
 

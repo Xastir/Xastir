@@ -96,6 +96,10 @@ void speed_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer c
         device_speed = 0;
 }
 
+
+
+
+
 void style_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
     char *which = (char *)clientData;
 
@@ -4115,7 +4119,7 @@ void interface_option(Widget w, XtPointer clientData,  /*@unused@*/ XtPointer ca
                 /*set args for color */
                 ac=0;
                 XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
-                XtSetArg(al[ac], XmNvisibleItemCount, 9); ac++;
+                XtSetArg(al[ac], XmNvisibleItemCount, 10); ac++;
                 XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
                 XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
                 XtSetArg(al[ac], XmNselectionPolicy, XmSINGLE_SELECT); ac++;
@@ -4838,9 +4842,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
                     s='6';
                     break;
 
-                                case DEVICE_SERIAL_TNC_AUX_GPS:
-                                        s='7';
-                                        break;
+                case DEVICE_SERIAL_TNC_AUX_GPS:
+                    s='7';
+                    break;
 
                 default:
                     break;

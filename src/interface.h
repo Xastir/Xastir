@@ -36,11 +36,29 @@
 #define MAX_DEVICE_HOSTPW 40
 
 #define MAX_IFACE_DEVICES 10
-#define MAX_IFACE_DEVICE_TYPES 10
 
 #define NET_CONNECT_TIMEOUT 20
 
 #define DEFAULT_GPS_RETR 0x05 /* CTRL-E */
+
+
+// KISS Protocol Special Characters & Commands:
+#define KISS_FEND           0xc0  // Frame End
+#define KISS_FESC           0xdb  // Frame Escape
+#define KISS_TFEND          0xdc  // Transposed Frame End
+#define KISS_TFESC          0xdd  // Transposed Frame Escape
+#define KISS_DATA           0x00
+#define KISS_TXDELAY        0x01
+#define KISS_PERSISTENCE    0x02
+#define KISS_SLOTTIME       0x03
+#define KISS_TXTAIL         0x04
+#define KISS_FULLDUPLEX     0x05
+#define KISS_SETHARDWARE    0x06
+#define KISS_RETURN         0xff
+
+
+
+#define MAX_IFACE_DEVICE_TYPES 11
 
 /* Define Device Types */
 enum Device_Types {
@@ -53,7 +71,8 @@ enum Device_Types {
     DEVICE_AX25_TNC,
     DEVICE_NET_GPSD,
     DEVICE_NET_WX,
-    DEVICE_SERIAL_TNC_AUX_GPS // KB6MER -> KAM XL or other TNC w/GPS on AUX port
+    DEVICE_SERIAL_TNC_AUX_GPS,  // KB6MER -> KAM XL or other TNC w/GPS on AUX port
+    DEVICE_SERIAL_KISS_TNC  // KISS TNC on serial port (not ax.25 kernel device)
 };
 
 enum Device_Active {
