@@ -683,6 +683,9 @@ Widget debug_level_text;
 static int sec_last_dr_update = 0;
 
 
+FILE *f_xfontsel_pipe;
+int xfontsel_query = 0;
+
 
 // -------------------------------------------------------------------
 static void UpdateTime( XtPointer clientData, XtIntervalId id );
@@ -3892,35 +3895,76 @@ void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /
 
 
 
-void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
+// Function called by UpdateTime() when xfontsel_query is non-zero.
+// Checks the pipe to see if xfontsel has sent anything to us yet.
+// If we get anything from the read, we should wait a small amount
+// of time and try another read, to make sure we don't get a partial
+// read the first time and quit.
+//
+void Query_xfontsel_pipe (void) {
     char xfontsel_font[sizeof(rotated_label_fontname)];
-    FILE *f;
-    /* invoke xfontsel -print and stick into map_font_text */
-    if ((f = popen("xfontsel -print","r"))) {
-        if (fgets(xfontsel_font,sizeof(xfontsel_font),f)) {
-            int l = strlen(xfontsel_font);
-            if (xfontsel_font[l-1] == '\n')
-                xfontsel_font[l-1] = '\0';
+    struct timeval tmv;
+    fd_set rd;
+    int retval;
+    int fd;
+
+
+//    if (fgets(xfontsel_font,sizeof(xfontsel_font),f_xfontsel_pipe)) {
+
+    // Find out the file descriptor associated with our pipe.
+    fd = fileno(f_xfontsel_pipe);
+
+    FD_ZERO(&rd);
+    FD_SET(fd, &rd);
+    tmv.tv_sec = 0;
+    tmv.tv_usec = 1;    // 1 usec
+
+    // Do a non-blocking check of the read end of the pipe.
+    retval = select(fd+1,&rd,NULL,NULL,&tmv);
+
+//fprintf(stderr,"1\n");
+
+    if (retval) {
+        int l = strlen(xfontsel_font);
+
+        // We have something to process.  Wait a bit, then snag the
+        // data.
+        usleep(250000); // 250ms
+
+        fgets(xfontsel_font,sizeof(xfontsel_font),f_xfontsel_pipe);
+ 
+        if (xfontsel_font[l-1] == '\n')
+           xfontsel_font[l-1] = '\0';
+        if (map_font_text != NULL) {
             XmTextSetString(map_font_text, xfontsel_font);
         }
-        pclose(f);
+        pclose(f_xfontsel_pipe);
+//fprintf(stderr,"Resetting xfontset_query\n");
+        xfontsel_query = 0;
+    }
+    else {
+        // Read nothing.  Let UpdateTime() run this function again
+        // shortly.
+    }
+}
+
+
+
+
+ 
+void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) {
+
+    /* invoke xfontsel -print and stick into map_font_text */
+    if ((f_xfontsel_pipe = popen("xfontsel -print","r"))) {
+
+        // Request UpdateTime to keep checking the pipe periodically
+        // using non-blocking reads.
+//fprintf(stderr,"Setting xfontsel_query\n");
+        xfontsel_query++;
+
     } else {
         perror("xfontsel");
     }
-
-// One current problem:  Xastir stops until you press "Quit" on
-// xfontsel.  We could fix this by putting it in another thread, but
-// then would probably have to have Xastir check periodically to see
-// if the temp file was updated, filling in the dialog when it
-// figured it out.  Could put the Xastir dialog in a separate
-// thread, and set "request_new_image" when the "OK" button was
-// pressed.  This causes UpdateTime() to update the map screen.
-
-// Check out "gps_operation_pending" and the GPS thread to see how
-// it was done before.  Probably could use the same techniques to
-// make the xfontsel stuff work properly in another thread without
-// stopping the main Xastir thread.
-
 }
 
 
@@ -8532,6 +8576,10 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // can cause a complete redraw of the maps.
             check_for_new_gps_map();
 #endif  // HAVE_GPSMAN
+
+            if (xfontsel_query) {
+                Query_xfontsel_pipe();
+            }
 
             // Check on resize requests
             if (request_resize) {
