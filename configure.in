@@ -185,6 +185,7 @@ AC_OUTPUT([Makefile \
     m4/Makefile \
     config/Makefile \
     help/Makefile \
+    scripts/Makefile \
     symbols/Makefile \
     callpass/Makefile \
     xastir.spec])

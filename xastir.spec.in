@@ -73,6 +73,11 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/xastir/maps/transparent/placeholder
 /usr/local/xastir/maps/placeholder
 /usr/local/xastir/maps/z_overlay/placeholder
+/usr/local/xastir/scripts/inf2geo.pl
+/usr/local/xastir/scripts/mapblast2geo.pl
+/usr/local/xastir/scripts/mapfgd.pl
+/usr/local/xastir/scripts/track-get.pl
+/usr/local/xastir/scripts/waypoint-get.pl
 /usr/local/xastir/sounds/placeholder
 /usr/local/xastir/symbols/symbols.dat
 /usr/man/man1/xastir.1.gz
