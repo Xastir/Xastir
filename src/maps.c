@@ -1990,6 +1990,10 @@ void draw_shapefile_map (Widget w,
 
 // Draw the PolyLines themselves:
 
+                    // Default in case we forget to set the line
+                    // width later:
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
+ 
                     index = 0;  // Index into our own points array.
                                 // Tells how many points we've
                                 // collected so far.
