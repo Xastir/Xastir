@@ -8381,7 +8381,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
     WeatherRow *weather;
     int moving;
     int changed_pos;
-    int scrupd;
+    int screen_update;
     int ok, store;
     int ok_to_display;
     int compr_pos;
@@ -9015,7 +9015,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             }
         }
 
-        scrupd = 0;
+        screen_update = 0;
         if (new_station) {
             if (debug_level & 256) {
                 fprintf(stderr,"New Station %s\n", p_station->call_sign);
@@ -9029,7 +9029,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if (p_station->coord_lat != 0 && p_station->coord_lon != 0) {   // discard undef positions from screen
                     if (!altnet || is_altnet(p_station) ) {
                         display_station(da,p_station,1);
-                        scrupd = 1;                         // ???
+                        screen_update = 1;  // ???
                     }
                 }
             }
@@ -9160,7 +9160,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
                 // now do the drawing to the screen
                 ok_to_display = !altnet || is_altnet(p_station); // Optimization step, needed twice below.
-                scrupd = 0;
+                screen_update = 0;
                 if (changed_pos == 1 && Display_.trail && ((p_station->flag & ST_INVIEW) != 0)) {
                     if (ok_to_display) {
                         if (debug_level & 256) {
@@ -9168,7 +9168,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                             p_station->call_sign);
                         }
                         draw_trail(da,p_station,1);         // update trail
-                        scrupd = 1;
+                        screen_update = 1;
                     }
                     else if (debug_level & 256) {
                         fprintf(stderr,"Skipped trail for %s (altnet)\n",
@@ -9179,18 +9179,26 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if (changed_pos == 1 || !position_defined(last_lat,last_lon,0)) {
                         if (ok_to_display) {
                             display_station(da,p_station,1);// update symbol
-                            scrupd = 1;
+                            screen_update = 1;
                         }
                     }
                 }
             } // defined position
         }
 
-        if (scrupd) {
-            if (scale_y > 2048 || p_station->data_via == 'F')
-                redraw_on_new_data = 1;         // less redraw activity
-            else
-                redraw_on_new_data = 2;         // better response
+        if (screen_update) {
+            if (p_station->data_via == 'T') {   // Data from local TNC
+//WE7U
+// or data_via == 'I' and last_port_heard == AGWPE interface
+                redraw_on_new_data = 2; // Update all symbols NOW!
+            }
+            else if (p_station->data_via == 'F') {  // If data from file
+                redraw_on_new_data = 1; // Update each 2 secs
+            }
+//            else if (scale_y > 2048) {  // Wider area of world
+            else {
+                redraw_on_new_data = 0; // Update each 60 secs
+            }
         }
 
         // announce stations in the status line
