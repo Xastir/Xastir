@@ -6224,6 +6224,7 @@ void init_station(DataRow *p_station) {
     p_station->sec_heard          = 0;
     p_station->time_sn            = 0;
     p_station->flag               = 0;            // set all flags to inactive
+    p_station->object_retransmit  = -1;           // transmit forever
     p_station->record_type        = '\0';
     p_station->data_via           = '\0';         // L local, T TNC, I internet, F file
     p_station->heard_via_tnc_port = 0;
@@ -12852,6 +12853,8 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
  *  Input is a DataRow struct, output is both an integer that says
  *  whether it completed successfully, and a char* that has the
  *  output tx string in it.
+ *
+ *  Returns 0 if there's a problem.
  */
 int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length) {
     int i, done;
@@ -12877,6 +12880,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     char tempstr[50];
     char object_group;
     char object_symbol;
+    int killed = 0;
 
 
     (void)remove_trailing_spaces(p_station->call_sign);
@@ -13272,11 +13276,13 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     if ((p_station->flag & ST_OBJECT) != 0) {               // It's an object
         if ((p_station->flag & ST_ACTIVE) != ST_ACTIVE) {   // It's been killed
             line[10] = '_';
+            killed++;
         }
     }
     // If it's a "killed" item, change '!' to an '_'
     else {                                                  // It's an item
         if ((p_station->flag & ST_ACTIVE) != ST_ACTIVE) {   // It's been killed
+            killed++;
             done = 0;
             i = 0;
             while ( (!done) && (i < 11) ) {
@@ -13285,6 +13291,47 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                     done++;                 // Exit from loop
                 }
                 i++;
+            }
+        }
+    }
+
+    // Check whether we need to stop transmitting particular killed
+    // object/items now.
+    if (killed) {
+        // Check whether we should decrement the object_retransmit
+        // counter so that we will eventually stop sending this
+        // object/item.
+        if (p_station->object_retransmit == 0) {
+            // We shouldn't be transmitting this killed object/item
+            // anymore.  We're already done transmitting it.
+//fprintf(stderr, "Done transmitting this object: %s,  %d\n",
+//p_station->call_sign,
+//p_station->object_retransmit);
+            return(0);
+        }
+
+        // Check whether the timeout has been set yet on this killed
+        // object/item.  If not, change it from -1 (continuous
+        // transmit of non-killed objects) to
+        // MAX_KILLED_OBJECT_RETRANSMIT.
+        if (p_station->object_retransmit <= -1) {
+//fprintf(stderr, "Killed object %s, setting retries.  %d\n",
+//p_station->call_sign,
+//p_station->object_retransmit);
+                if ((MAX_KILLED_OBJECT_RETRANSMIT - 1) < 0) {
+                    p_station->object_retransmit = 0;
+                    return(0);  // No retransmits desired
+                }
+                else {
+                    p_station->object_retransmit = MAX_KILLED_OBJECT_RETRANSMIT - 1;
+                }
+        }
+        else {
+            // Decrement the timeout if it is a positive number.
+            if (p_station->object_retransmit > 0) {
+//fprintf(stderr, "Killed object %s, decrementing retries.  %d\n",
+//p_station->call_sign,
+//p_station->object_retransmit); p_station->object_retransmit--;
             }
         }
     }
@@ -13407,14 +13454,18 @@ void check_and_transmit_objects_items(time_t time) {
                 // aprs_symbol, pos_time, altitude, speed, course, bearing, NRQ,
                 // power_gain, signal_gain, signpost, station_time, station_time_type,
                 // comments, df_color
-                Create_object_item_tx_string(p_station, line, sizeof(line));
+                if (Create_object_item_tx_string(p_station, line, sizeof(line)) ) {
 
-                // Attempt to transmit the object/item again
-                if (object_tx_disable) {
-                    output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
+                    // Attempt to transmit the object/item again
+                    if (object_tx_disable) {
+                        output_my_data(line,-1,0,1,0,NULL);    // Local loopback only, not igating
+                    }
+                    else {
+                        output_my_data(line,-1,0,0,0,NULL);    // Transmit/loopback object data, not igating
+                    }
                 }
                 else {
-                    output_my_data(line,-1,0,0,0,NULL);    // Transmit/loopback object data, not igating
+                    // Don't transmit it.
                 }
             }
         }
