@@ -164,6 +164,10 @@ Getting Maps and other Data Files for Xastir:
       on top of terraserver satellite images.  Note that for some types of maps
       you also need to download a data dictionary file to go with them.
 
+      Also note that the various datasets appear to reuse filenames.  You may
+      need to separate each one into its own subdirectory in order to keep all
+      of the files from getting overwritten by new maps.
+
      MapInfo TAB/MID/MIF format maps:
 
       http://www.mapinfo.com
