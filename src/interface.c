@@ -1987,6 +1987,11 @@ void port_write_string(int port, char *data) {
 // port_read()
 //
 // port is port# used
+//
+// This function becomes the long-running thread that snags
+// characters from an interface and passes them off to the
+// decoding routines.  One copy of this is run for each read
+// thread for each interface.
 //***********************************************************
 
 void port_read(int port) {
@@ -2086,7 +2091,9 @@ void port_read(int port) {
                         // Do special KISS packet processing here.  We save
                         // the last character in port_data[port].channel2,
                         // as it is otherwise only used for AX.25 ports.
+
                         if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+
                             if (port_data[port].channel2 == KISS_FESC) { // Frame Escape char
                                 if (cin == KISS_TFEND) { // Transposed Frame End char
 
@@ -2109,9 +2116,14 @@ void port_read(int port) {
                                 }
                             }
                             else if (port_data[port].channel2 == KISS_FEND) { // Frame End char
-                                // Frame start or frame end.  Drop this
-                                // next character which should either be
-                                // another frame end or a type byte.
+                                // Frame start or frame end.  Drop
+                                // the next character which should
+                                // either be another frame end or a
+                                // type byte.
+
+// Note this "type" byte is where it specifies which KISS interface
+// the packet came from.  We may want to use this later for
+// multi-drop KISS or other types of KISS protocols.
 
                                 // Save this char for next time around
                                 port_data[port].channel2 = cin;
@@ -2127,27 +2139,20 @@ void port_read(int port) {
                         }   // End of first special KISS processing
 
 
-                        // Check for AX.25 flag character inside KISS
-                        // packet
+                        // We shouldn't see any AX.25 flag
+                        // characters on a KISS interface because
+                        // they are stripped out by the KISS code.
+                        // What we should see though are KISS_FEND
+                        // characters at the beginning of each
+                        // packet.  These characters are where we
+                        // should break the data apart in order to
+                        // send strings to the decode routines.  It
+                        // may be just fine to still break it on \r
+                        // or \n chars, as the KISS_FEND should
+                        // appear immediately afterwards in
+                        // properly formed packets.
+
                         if ( (!skip)
-                                && (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
-                                && (cin == (unsigned char)0x7e
-                                    || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1))
-                                && port_data[port].data_type == 0) {     // If end-of-line
-
-                            // End serial/net type data send it to the decoder
-                            // Put a terminating zero at the end of the read-in data
-                            port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
-
-                            if (port_data[port].status == DEVICE_UP && port_data[port].read_in_pos > 0)
-                                channel_data(port, (unsigned char *)port_data[port].device_read_buffer);
-
-                            for (i = 0; i <= port_data[port].read_in_pos; i++)
-                                port_data[port].device_read_buffer[i] = (char)0;
-
-                            port_data[port].read_in_pos = 0;
-                        }
-                        else if ( (!skip)
                                 && (cin == (unsigned char)'\r'
                                     || cin == (unsigned char)'\n'
                                     || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1))
@@ -2363,6 +2368,10 @@ void port_read(int port) {
 // port_write()
 //
 // port is port# used
+//
+// This function becomes the long-running thread that sends
+// characters to and interface.  One copy of this is run for
+// each write thread for each interface.
 //***********************************************************
 void port_write(int port) {
     int retval;
