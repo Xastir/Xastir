@@ -842,6 +842,9 @@ static void alert_build_list(Message *fill) {
             entry[4].title,
             entry[5].title);
 
+/////////////////////////////////////////////////////////////////////
+// Compressed weather alert packets
+
         // Check here for the first title being very long.  This
         // signifies that we may be dealing with the new compressed
         // format instead.
@@ -849,6 +852,7 @@ static void alert_build_list(Message *fill) {
         if ( strlen(entry[0].title) > 7 ) {
             char compressed_wx[256];
             char *ptr;
+//            alert_entry temp_entry;
 
 printf("Compressed Weather Alert:%s\n",fill->message_line);
 printf("Compressed alerts are not fully implemented yet.\n");
@@ -900,6 +904,7 @@ printf("Line:%s\n",compressed_wx);
                 ptr += 3;
                 // suffix should now contain something like "039"
 
+// We have our first zone extracted
 printf("Zone:%s%s\n",prefix,suffix);
 
                 // Here we keep looping until we hit another alpha
@@ -928,6 +933,7 @@ printf("Zone:%s%s\n",prefix,suffix);
                         end_number = (int)atoi(ending);
                         for ( k=start_number+1; k<=end_number; k++) {
                             snprintf(temp,4,"%03d",k);
+// And another zone...
 printf("Zone:%s%s\n",prefix,temp);
                         }
                     }
@@ -940,6 +946,7 @@ printf("Zone:%s%s\n",prefix,temp);
                             suffix[3] = '\0';   // Terminate the string
                             ptr += 3;
                             // suffix should now contain something like "046"
+// And another zone...
 printf("Zone:%s%s\n",prefix,suffix);
 
                         }
@@ -956,6 +963,7 @@ printf("Zone:%s%s\n",prefix,suffix);
             }
         }
 
+/////////////////////////////////////////////////////////////////////
 
         entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
 
