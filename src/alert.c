@@ -24,7 +24,21 @@
 
 
 //
-// In the alert structure:
+// Changes Dale Huguely would like to see:
+// Shapefile weather alerts.
+// What are the ? and - at the beginning?  Also there seems to be no
+// parsing of the data such as issue time - expiration time or who
+// sent it.  Need to at least be able to see the stuff after the
+// curly brace on the screen.  Need the first 6 chars from the "from
+// Call" and the first 3 chars after the curly brace for a new query
+// operation that Dale has planned.
+//
+
+
+//
+// In the alert structure, flags is size 16, of which only the first
+// two are currently used:
+//
 // flags[0] ?  Initial state or ready-to-recompute state
 //          -   Expired between 1 sec and 1 hour
 //          Y   Active alert within viewport
@@ -95,6 +109,8 @@ int alert_redraw_on_update = 0;
 
 
 //
+// normal_title()
+//
 // Function to convert "County Warning Area" to "CWA" in a string.
 // Called from alert_match() and alert_update_list() functions.
 //
@@ -131,6 +147,8 @@ void normal_title(char *incoming_title, char *outgoing_title) {
 
 
 //
+// alert_print_list()
+//
 // Debug routine.  Currently attached to the Test() function in
 // main.c, but the button in the file menu is normally grey'ed out.
 // This function prints the current weather alert list out to the
@@ -159,6 +177,8 @@ void alert_print_list(void) {
 
 
 
+//
+// alert_add_entry()
 //
 // This function adds a new alert to our alert list.
 // Returns address of entry in alert_list or NULL.
@@ -214,6 +234,8 @@ void alert_print_list(void) {
 
 
 
+//
+// alert_match()
 //
 // Function used for matching on alerts.
 // Returns address of matching entry in alert_list or NULL.
@@ -275,8 +297,10 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
 
 //
-// Updates alert_list from updated variables in alert.  Also updates
-// flags in the entire alert_list?
+// alert_update_list()
+//
+// Updates entry in alert_list from new matching alert.  Checks for
+// matching entry first, else fills in blank entry.
 // Called from maps.c:load_alert_maps() functions (both copies of it,
 // compiled in with different map support).
 //
@@ -285,10 +309,10 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
     int i;
     char title_e[33], title_m[33];
 
-    // Find the matching alert in the alert_list, copy updated
-    // parameters from alert into the alert_list entry.
+    // Find the matching alert in alert_list, copy updated
+    // parameters from new alert into existing alert_list entry.
     if ((ptr = alert_match(alert, match_level))) {
-        if (!ptr->filename[0]) {
+        if (!ptr->filename[0]) {    // We found a match!  Fill it in.
             strncpy(ptr->filename, alert->filename, 32);
             strncpy(ptr->title, alert->title, 32);
             ptr->filename[32] = ptr->title[32] = '\0';
@@ -305,16 +329,16 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
         // Force the string to be terminated
         title_e[32] = title_m[32] = '\0';
 
-        // Interate through the entire alert_list
+        // Interate through the entire alert_list, checking flags
         for (i = 0; i < alert_list_count; i++) {
 
-            // If flag was '?' or has changed
+            // If flag was '?' or has changed, update the alert
             if ((alert_list[i].flags[0] == '?' || alert_list[i].flags[0] != ptr->flags[0])) {
 
-                // Shorten the title
+                // Shorten the title.  Title_m will be the shortened
+                // title.
                 normal_title(alert_list[i].title, title_m);
 
-                // If the titles are the same
                 if (strcmp(title_e, title_m) == 0) {
 
                     // Update parameters
@@ -339,6 +363,8 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
 
 
+//
+// alert_active()
 //
 // Here's where we get rid of expired alerts in the list.
 // Called from alert_compare(), alert_display_request(),
@@ -381,6 +407,8 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 
 
 
+//
+// alert_compare()
 //
 // Used via qsort as the compare function in alert_sort_active()
 // function below.
@@ -429,6 +457,8 @@ static int alert_compare(const void *a, const void *b) {
 
 
 //
+// alert_sort_active()
+//
 // This sorts the alert_list so that the active items are at the
 // beginning.
 // Called from maps.c:load_alert_maps() functions (both of them).
@@ -442,6 +472,8 @@ void alert_sort_active(void) {
 
 
 
+//
+// alert_display_request()
 //
 // Function which checks whether an alert should be displayed.
 // Called from maps.c:load_alert_maps() functions (both of them).
@@ -474,6 +506,8 @@ int alert_display_request(void) {
 
 
 //
+// alert_on_screen()
+//
 // Returns a count of active weather alerts in the list which are
 // within our viewport.
 // Called from main.c:UpdateTime() function.
@@ -495,6 +529,8 @@ int alert_on_screen(void) {
 
 
 
+//
+// alert_build_list()
 //
 // This function builds alert_entry structs from message entries that
 // contain NWS alert messages.
@@ -625,6 +661,8 @@ static void alert_build_list(Message *fill) {
 
 
 
+//
+// alert_message_scan()
 //
 // This function scans the message list to find new alerts.  It adds
 // current alerts to our alert list via the alert_build_list()
