@@ -1433,9 +1433,9 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                                     prefix,
                                     msg_data[msg_index[j]].message_line);
 
-//fprintf(stderr,"update_message: %s|%s", temp1, temp2);
+//fprintf(stderr,"update_messages: %s|%s", temp1, temp2);
  
-                                if (debug_level & 2) fprintf(stderr,"update_message: %s|%s\n", temp1, temp2);
+                                if (debug_level & 2) fprintf(stderr,"update_messages: %s|%s\n", temp1, temp2);
                                 // Replace the text from pos to pos+strlen(temp2) by the string "temp2"
                                 if (mw[mw_p].send_message_text != NULL) {
 
@@ -12829,6 +12829,8 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         transmit_message_data(call,temp,NULL);
         ok = 1;
     }
+
+
     // Check for illegal case for the APRST/PING? queries
     if (!ok && (strncasecmp(message,"APRST",5)==0
             ||  strncasecmp(message,"PING?",5)==0) && from != 'F') {
@@ -12853,6 +12855,7 @@ int process_directed_query(char *call,char *path,char *message,char from) {
         transmit_message_data(call,temp,NULL);
         if (debug_level & 1)
             fprintf(stderr,"Sent to %s:%s\n",call,temp);
+        ok = 1;
     }
 
     return(ok);
@@ -13706,6 +13709,9 @@ else {
 
         if (debug_level & 4)
             fprintf(stderr,"found Msg: |%s| |%s|\n",addr,message);
+//found Msg: |WE7U-13| |?APRSD|
+//found Msg: |WE7U-14| |Directs=|
+
 
         (void)msg_data_add(addr,
             call,
@@ -13735,6 +13741,16 @@ else {
 // packet for my_call if it is a third_party message?  Depends on
 // what the packet looks like by this point.
         if ( (message[0] != '?') && is_my_call(addr,1) ) {
+
+            // We no longer wish to have both popups and the Send
+            // Group Message dialogs come up for every query
+            // response, so we use popup_message() here instead of
+            // popup_message_always() so that by default we'll see
+            // the below message in STDERR.  If --with-errorpopups
+            // has been configured in, we'll get a popup as well.
+            // Send Group Message dialogs work well for multi-line
+            // query responses, so we'll leave it that way.
+            //
             popup_message(langcode("POPEM00018"),message);
 
             // Check for Reply/Ack.  APRS+ sends an AA: response back
