@@ -289,7 +289,7 @@ WPUPCFD023|Données météo non traités?||
 WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Activer réseau alterne?|A|
 WPUPCFD026|Transmettre position à quel intervalle?||
-WPUPCFD027|Enable SmartBeaconing||
+WPUPCFD027|Enable SmartBeaconing(tm)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||

@@ -7319,14 +7319,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
 
 
-// Code to compute SmartBeaconing rates.
+// Code to compute SmartBeaconing(tm) rates.
 //
-// SmartBeaconing was invented by Steve Bragg (KA9MVA) and Tony Arnerich
+// SmartBeaconing(tm) was invented by Steve Bragg (KA9MVA) and Tony Arnerich
 // (KD7TA).  Its main goal is to change the beacon rate based on speed
 // and cornering.  It does speed-variant corner pegging and
 // speed-variant posit rate.
 
-// Some tweaks have been added to the generic SmartBeaconing algorithm,
+// Some tweaks have been added to the generic SmartBeaconing(tm) algorithm,
 // but are current labeled as experimental and commented out:  1) We do
 // a posit as soon as we first cross below the sb_low_speed_limit, and
 // 2) We do a posit as soon as we cross above the sb_low_speed_limit if
@@ -7346,7 +7346,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 // sb_low_speed_limit for hysteresis, and not posit until we cross above
 // that new limit.
 //
-// Several special SmartBeaconing parameters come into play here:
+// Several special SmartBeaconing(tm) parameters come into play here:
 //
 // sb_turn_min          Minimum degrees at which corner pegging will
 //                      occur.  The next parameter affects this for
@@ -7355,7 +7355,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 // sb_turn_slope        Fudget factor for making turns less sensitive at
 //                      lower speeds.  No real units on this one.
 //                      It ends up being non-linear over the speed
-//                      range the way the original SmartBeaconing
+//                      range the way the original SmartBeaconing(tm)
 //                      algorithm works.
 //
 // sb_turn_time         Dead-time before/after a corner peg beacon.
@@ -7406,8 +7406,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 //
 // It'd probably be better to do a linear interpolation of
 // turn_threshold based on min/max speed and min/max turns.  That's
-// not how the SmartBeaconing algorithm coders implemented it in the
-// HamHud though.
+// not how the SmartBeaconing(tm) algorithm coders implemented it in
+// the HamHud though.
 //
 void compute_smart_beacon(char *current_course, char *current_speed) {
     int course;
@@ -7418,7 +7418,7 @@ void compute_smart_beacon(char *current_course, char *current_speed) {
     int beacon_now = 0;
 
 
-    // Don't compute SmartBeaconing parameters or force any beacons
+    // Don't compute SmartBeaconing(tm) parameters or force any beacons
     // if we're not in that mode!
     if (!smart_beaconing)
         return;
@@ -7573,7 +7573,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     // Note that speed will be in knots 'cuz it was derived from a
     // GPRMC string without modification.
 
-    // Recompute the SmartBeaconing parameters based on current/past
+    // Recompute the SmartBeaconing(tm) parameters based on current/past
     // course & speed
     compute_smart_beacon(course, speed);
 

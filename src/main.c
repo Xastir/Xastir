@@ -604,11 +604,11 @@ time_t gps_time;                /* gps delay time */
 time_t POSIT_rate;              // Posit & object/item rate timer 
 
 
-// SmartBeaconing stuff.  If enabled, POSIT_rate is only used for
-// objects & items, sb_POSIT_rate computed via SmartBeaconing will
+// SmartBeaconing(tm) stuff.  If enabled, POSIT_rate is only used for
+// objects & items, sb_POSIT_rate computed via SmartBeaconing(tm) will
 // be used for posits.
-int smart_beaconing;            // Master enable/disable for SmartBeaconing mode
-int sb_POSIT_rate = 30 * 60;    // Computed SmartBeaconing posit rate (secs)
+int smart_beaconing;            // Master enable/disable for SmartBeaconing(tm) mode
+int sb_POSIT_rate = 30 * 60;    // Computed SmartBeaconing(tm) posit rate (secs)
 int sb_last_heading = -1;       // Heading at time of last posit
 int sb_current_heading = -1;    // Most recent heading parsed from GPS sentence
 int sb_turn_min = 20;           // Min threshold for corner pegging (degrees)
@@ -616,7 +616,7 @@ int sb_turn_slope = 25;         // Threshold slope for corner pegging (degrees/m
 int sb_turn_time = 5;           // Time between other beacon & turn beacon (secs)
 int sb_posit_fast = 90;         // Fast beacon rate (secs)
 int sb_posit_slow = 30;         // Slow beacon rate (mins)
-int sb_low_speed_limit = 2;     // Speed below which SmartBeaconing is disabled &
+int sb_low_speed_limit = 2;     // Speed below which SmartBeaconing(tm) is disabled &
                                 // we'll beacon at the POSIT_slow rate (mph)
 int sb_high_speed_limit = 60;   // Speed above which we'll beacon at the
                                 // POSIT_fast rate (mph)
@@ -8311,9 +8311,9 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     smart_beaconing = (int)XmToggleButtonGetState(smart_beacon_enable);
 
     //if (smart_beaconing)
-    //    printf("SmartBeaconing Enabled\n");
+    //    printf("SmartBeaconing(tm) Enabled\n");
     //else
-    //    printf("SmartBeaconing Disabled\n");
+    //    printf("SmartBeaconing(tm) Disabled\n");
 
     altnet = (int)(XmToggleButtonGetState(altnet_active));
 

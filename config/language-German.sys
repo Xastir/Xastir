@@ -295,7 +295,7 @@ WPUPCFD023|Sende Wetter Rohdaten?||
 WPUPCFD024|Compress object/item data when transmitting?||
 WPUPCFD025|Alternatives Netz?||
 WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen||
-WPUPCFD027|Enable SmartBeaconing||
+WPUPCFD027|Enable SmartBeaconing(tm)||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||
