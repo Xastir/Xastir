@@ -824,7 +824,12 @@ int command_file_to_tnc_port(int port, char *filename) {
 // dtr 1 is down, 0 is normal(up)
 //***********************************************************
 void port_dtr(int port, int dtr) {
-#ifndef CYGWIN
+
+// It looks like we have two methods of getting this to work on
+// CYGWIN, getting rid of the entire procedure contents, and getting
+// rid of the TIO* code.  One method or the other should work to get
+// it compiled.  We shouldn't need both.
+#ifndef __CYGWIN__
     int sg;
 
     /* check for 1 or 0 */
@@ -840,14 +845,18 @@ void port_dtr(int port, int dtr) {
         port_data[port].dtr = dtr;
         if (debug_level & 2)
             printf("DTR %d\n",port_data[port].dtr);
-
+#ifdef TIOCMGET
         (void)ioctl(port_data[port].channel, TIOCMGET, &sg);
+#endif
         sg &= 0xff;
-
+#ifdef TIOCM_DTR
         sg = TIOCM_DTR;
+#endif
         if (dtr) {
             dtr &= ~sg;
+#ifdef TIOCMBIC
             (void)ioctl(port_data[port].channel, TIOCMBIC, &sg);
+#endif
             if (debug_level & 2)
                 printf("Down\n");
 
@@ -855,7 +864,9 @@ void port_dtr(int port, int dtr) {
 
         } else {
             dtr |= sg;
+#ifdef TIOCMBIS
             (void)ioctl(port_data[port].channel, TIOCMBIS, &sg);
+#endif
             if (debug_level & 2)
                 printf("UP\n");
 
@@ -866,7 +877,7 @@ void port_dtr(int port, int dtr) {
     if (end_critical_section(&port_data_lock, "interface.c:port_dtr(2)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
 
-#endif  // CYGWIN
+#endif  // __CYGWIN__
 }
 
 

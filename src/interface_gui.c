@@ -45,7 +45,6 @@
 #include <dmalloc.h>
 #endif
 
-
 Widget configure_interface_dialog = NULL;
 Widget interface_list = NULL;
 Widget choose_interface_dialog = NULL;
@@ -197,7 +196,7 @@ void set_port_speed(int port) {
             break;
 
         case(10):
-#ifdef CYGWIN
+#ifdef __CYGWIN__
             devices[port].sp=B115200;
 #else
             devices[port].sp=B230400;
@@ -978,7 +977,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     device_speed=9;
                     break;
 
-#ifndef CYGWIN
+#ifndef __CYGWIN__
                 case(B230400):
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;
@@ -1468,7 +1467,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_GPS" );
                     device_speed=9;
                     break;
 
-#ifndef CYGWIN
+#ifndef __CYGWIN__
                 case(B230400):
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;
@@ -2003,7 +2002,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_WX" );
                     device_speed=9;
                     break;
 
-#ifndef CYGWIN
+#ifndef __CYGWIN__
                 case(B230400):
                     XmToggleButtonSetState(speed_230400,TRUE,FALSE);
                     device_speed=10;
