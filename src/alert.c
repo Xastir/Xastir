@@ -333,8 +333,8 @@ void normal_title(char *incoming_title, char *outgoing_title, int outgoing_title
     char *c_ptr;
 
 
-//    if (debug_level & 2)
-//        fprintf(stderr,"normal_title: Incoming: %s\n",incoming_title);
+    if (debug_level & 2)
+        fprintf(stderr,"normal_title: Incoming: %s\n",incoming_title);
 
     xastir_snprintf(outgoing_title,
         outgoing_title_size,
@@ -501,6 +501,12 @@ int alert_expire(void) {
     if (debug_level & 2)
         fprintf(stderr,"alert_add_entry\n");
 
+    if (strlen(entry->title) == 0) {
+        if (debug_level & 2)
+            fprintf(stderr,"alert_add_entry: Empty title!\n");
+        return(NULL);
+    }
+
     // Skip NWS_SOLAR and -NoActivationExpected alerts, they don't
     // interest us.
     if ( (strcmp(entry->to, "NWS-SOLAR") == 0)
@@ -626,9 +632,15 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
     char *ptr, title_e[33], title_m[33], alert_f[33], filename[33];
 
 
-    if (debug_level & 2)
-        fprintf(stderr,"alert_match\n");
+    if (strlen(alert->title) == 0) {
+        if (debug_level & 2)
+            fprintf(stderr,"alert_match:NULL\n");
+        return(NULL);
+    }
  
+    if (debug_level & 2)
+        fprintf(stderr, "alert_match:%s\n", alert->title);
+
     // Shorten the title
     normal_title(alert->title, title_e, sizeof(title_e));
 
@@ -765,7 +777,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
 
     if (debug_level & 2)
-        fprintf(stderr,"alert_update_list\n");
+        fprintf(stderr,"alert_update_list:%s\n",alert->title);
 
     // Find the matching alert in alert_list, copy updated
     // parameters from new alert into existing alert_list entry.
@@ -856,8 +868,14 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
     time_t now;
 
 
+    if (strlen(alert->title) == 0) {
+        if (debug_level & 2)
+            fprintf(stderr,"alert_active:NULL\n");
+        return(NULL);
+    }
+ 
     if (debug_level & 2)
-        fprintf(stderr,"alert_active\n");
+        fprintf(stderr,"alert_active:%s\n",alert->title);
 
     (void)time(&now);
 
