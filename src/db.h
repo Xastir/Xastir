@@ -31,6 +31,11 @@
 #define XASTIR_DB_H
 
 
+#define MAX_CALLSIGN 9       // Objects are up to 9 chars
+#define MAX_TACTICAL_CALL 20 // Up to 20 chars for tactical calls
+#define MAX_COMMENT_LINES 10  // Save up to 10 unique comment strings per station
+#define MAX_STATUS_LINES 10   // Save up to 10 unique status strings per station
+
 /* define max tnc line size (should be from tnc.h) */
 #define MAX_TNC_LINE_SIZE 300
 
@@ -111,7 +116,6 @@ enum APRS_Types {
 #define MESSAGE_NWS      'W'
 
 // Define file info, string length are without trailing '\0'
-#define MAX_CALLSIGN         20         /* 9, objects max 9 ??? */
 #define MAX_TIME             20
 #define MAX_LONG             12
 #define MAX_LAT              11
@@ -121,7 +125,6 @@ enum APRS_Types {
 #define MAX_POWERGAIN         7
 #define MAX_STATION_TIME     10         /* 6+1 */
 #define MAX_SAT               4
-#define MAX_COMMENTS         80
 #define MAX_DISTANCE         10
 #define MAX_WXSTATION        50
 #define MAX_TEMP            100

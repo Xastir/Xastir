@@ -230,7 +230,7 @@ char lang_to_use[30];
 
 /* version info in main.h */
 int  altnet;
-char altnet_call[MAX_CALL];
+char altnet_call[MAX_CALLSIGN+1];
 
 void da_input(Widget w, XtPointer client_data, XtPointer call_data);
 void da_resize(Widget w, XtPointer client_data, XtPointer call_data);
@@ -1013,7 +1013,7 @@ FILE *read_file_ptr;
 time_t next_file_read;
 
 // Data for own station
-char my_callsign[MAX_CALL+1];
+char my_callsign[MAX_CALLSIGN+1];
 char my_lat[MAX_LAT];
 char my_long[MAX_LONG];
 char my_group;
@@ -4126,7 +4126,7 @@ void Map_font_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /
 
 
 
-// Function called by UpdateTime() when xfontsel_query is non-zero.
+// Function called by UpdateTime when xfontsel_query is non-zero.
 // Checks the pipe to see if xfontsel has sent anything to us yet.
 // If we get anything from the read, we should wait a small amount
 // of time and try another read, to make sure we don't get a partial
@@ -4179,7 +4179,7 @@ void Query_xfontsel_pipe (void) {
             xfontsel_query = 0;
         }
         else {
-            // Read nothing.  Let UpdateTime() run this function again
+            // Read nothing.  Let UpdateTime run this function again
             // shortly.
         }
     }
@@ -8825,7 +8825,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 
 
 
-// Function called by UpdateTime() when doing screen refresh.  Draws
+// Function called by UpdateTime when doing screen refresh.  Draws
 // all CAD objects onto the screen again.
 //
 void Draw_All_CAD_Objects(Widget w) {
@@ -8927,7 +8927,7 @@ void da_expose(Widget w, /*@unused@*/ XtPointer client_data, XtPointer call_data
 
 
 // The work function for resizing.  This one will be called by
-// UpdateTime() if certain flags have been set my da_resize.  This
+// UpdateTime if certain flags have been set my da_resize.  This
 // function and the functions it calls that are CPU intensive should
 // be made interruptable:  They should check interrupt_drawing_now
 // flag periodically and exit nicely if it is set.
@@ -9010,7 +9010,7 @@ void da_resize_execute(Widget w) {
 
 
 
-// We got a resize callback.  Set flags.  UpdateTime() will come
+// We got a resize callback.  Set flags.  UpdateTime will come
 // along in a bit and perform the resize.  With this method, the
 // resize can be made interruptable.  We merely need to check for
 // the interrupt_drawing_now flag periodically while doing the
@@ -9030,7 +9030,7 @@ void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPoin
 
 
 
-// We got a mouse or keyboard callback.  Set flags.  UpdateTime()
+// We got a mouse or keyboard callback.  Set flags.  UpdateTime
 // will come along in a bit and perform the screen redraw.  With
 // this method, the redraw can be made interruptable.  We merely
 // need to check for the interrupt_drawing_now flag periodically
@@ -9970,7 +9970,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
     do_time = 0;
 
-    // Start UpdateTime() again 2 milliseconds after we've
+    // Start UpdateTime again 2 milliseconds after we've
     // completed.  Note:  Setting this to a '1' or '0' can cause
     // some systems (RedHat/FreeBSD) to spin their wheels a lot,
     // using up great amounts of CPU time.
@@ -10223,7 +10223,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 port_write_string(i, tmp);
 
                                 // GPS strings are processed in
-                                // UpdateTime() function via
+                                // UpdateTime function via
                                 // gps_data_find(), if the incoming
                                 // data is GPS data instead of TNC
                                 // data.  We need to do nothing
@@ -10243,7 +10243,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 }
 
                                 // GPS strings are processed in
-                                // UpdateTime() function via
+                                // UpdateTime function via
                                 // gps_data_find(), if the incoming
                                 // data is GPS data instead of TNC
                                 // data.  We need to do nothing
@@ -10877,7 +10877,7 @@ void sel4_switch(int switchpos, Widget first, Widget second, Widget third, Widge
 
 
 
-// Called by UpdateTime() when request_new_image flag is set.
+// Called by UpdateTime when request_new_image flag is set.
 void new_image(Widget da) {
 
 
@@ -12826,7 +12826,7 @@ void GPS_transfer_select( void ) {
 
 
 
-// Function called by UpdateTime() periodically.  Checks whether
+// Function called by UpdateTime periodically.  Checks whether
 // we've just completed a GPS transfer and need to redraw maps as a
 // result.
 //
@@ -12933,7 +12933,7 @@ void check_for_new_gps_map(void) {
 //
 // We should set some flags here instead of doing the map redraw
 // ourselves, so that multiple map reloads don't occur sometimes in
-// UpdateTime().
+// UpdateTime.
 //
 
                 // Reload maps
@@ -17916,7 +17916,7 @@ void read_file_selection_now(Widget w, XtPointer clientData, XtPointer callData)
     }
     read_file_selection_destroy_shell(w, clientData, callData);
 
-    // Note that we leave the file in the "open" state.  UpdateTime()
+    // Note that we leave the file in the "open" state.  UpdateTime
     // comes along shortly and reads the file.
 }
 
@@ -25479,7 +25479,7 @@ void  Configure_station_toggle( /*@unused@*/ Widget widget, XtPointer clientData
  */
 void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char temp[40];
-    char old_callsign[MAX_CALL+1];
+    char old_callsign[MAX_CALLSIGN+1];
     int ok = 1;
     int temp2;
     int temp3;
@@ -27761,7 +27761,7 @@ int main(int argc, char *argv[]) {
             // to correspond to the selected_maps.sys file.
             map_chooser_init();
 
-            // Start UpdateTime().  It schedules itself to be run
+            // Start UpdateTime.  It schedules itself to be run
             // again each time.  This is also the process that
             // starts up the interfaces.
             UpdateTime( (XtPointer) da , (XtIntervalId) NULL );

@@ -120,7 +120,7 @@ void Track_station_clear(Widget w, XtPointer clientData, XtPointer callData) {
 
 
 void Track_station_now(Widget w, XtPointer clientData, XtPointer callData) {
-    char temp[MAX_CALL+1];
+    char temp[MAX_CALLSIGN+1];
     char temp2[200];
     int found = 0;
     char *temp_ptr;
@@ -391,7 +391,7 @@ end_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_trail_de
 
 
 void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
-    char temp[MAX_CALL+1];
+    char temp[MAX_CALLSIGN+1];
     char fileimg[400];
 #ifdef HAVE_LIBCURL
 #else

@@ -519,15 +519,15 @@ int alert_expire(void) {
     }
 
     // Allocate more space if we're at our maximum already.
-    // Allocate space for 100 more alerts.
+    // Allocate space for 25 more alerts.
     if (alert_list_count == alert_max_count) {
-        ptr = realloc(alert_list, (alert_max_count+100)*sizeof(alert_entry));
+        ptr = realloc(alert_list, (alert_max_count+25)*sizeof(alert_entry));
         if (ptr) {
             int ii;
             alert_list = ptr;
 
             // Zero out the new added entries
-            for (ii = alert_max_count; ii < alert_max_count+100; ii++) {
+            for (ii = alert_max_count; ii < alert_max_count+25; ii++) {
                 alert_list[ii].title[0] = '\0';
                 alert_list[ii].top_boundary = 0.0;
                 alert_list[ii].left_boundary = 0.0;
@@ -549,10 +549,13 @@ int alert_expire(void) {
                 alert_list[ii].desc2[0] = '\0';
                 alert_list[ii].desc3[0] = '\0';
             }
-            alert_max_count += 100;
+            alert_max_count += 25;
+
+//fprintf(stderr, "        Max Alert Array: %d\n", alert_max_count);
+
         }
         if (debug_level & 2) {
-            fprintf(stderr,"Allocated 100 more slots for alerts, Max=%d\n",
+            fprintf(stderr,"Allocated 25 more slots for alerts, Max=%d\n",
                 alert_max_count);
         }
     }

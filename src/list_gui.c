@@ -396,7 +396,7 @@ void Station_List_fill(int type, int new_offset) {
     char stemp[400];
     char stemp1[60];
     char stemp2[60];
-    char temp_call[MAX_CALL+1];
+    char temp_call[MAX_CALLSIGN+1];
     long l_lat, l_lon;
     float value;
     WeatherRow *weather;

@@ -319,7 +319,7 @@ void Clear_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
 
 void Send_message_now( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    char temp1[MAX_CALL+1];
+    char temp1[MAX_CALLSIGN+1];
     char temp2[302];
     char path[200];
     int i;
@@ -393,7 +393,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_now
 
 
 void Clear_message_from( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    char temp1[MAX_CALL+1];
+    char temp1[MAX_CALLSIGN+1];
     int i;
     char *temp_ptr;
 /* int pos;*/
@@ -429,7 +429,7 @@ end_critical_section(&send_message_dialog_lock, "messages_gui.c:Clear_message_fr
 
 
 void Clear_message_to( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    char temp1[MAX_CALL+1];
+    char temp1[MAX_CALLSIGN+1];
     int i;
     char *temp_ptr;
 

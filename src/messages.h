@@ -38,7 +38,6 @@
 #define MAX_MESSAGE_OUTPUT_LENGTH 64
 #define MAX_MESSAGE_ORDER 10
 #define MAX_TRIES 30
-#define MAX_CALLSIGN 20
 
 typedef struct {
     char active;

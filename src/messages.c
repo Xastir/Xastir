@@ -60,8 +60,8 @@
 
 char group_data_file[400];
 char *group_data_list = NULL;   // Need this NULL for Solaris!
-int  group_data_count;
-int  group_data_max;
+int  group_data_count = 0;
+int  group_data_max = 0;
 
 char message_counter[5+1];
 
@@ -122,11 +122,20 @@ void group_build_list(char *filename) {
         if (ptr) {
             group_data_list = ptr;
             group_data_max += 10;
+
+//fprintf(stderr,                "group_data_max: %d\n", group_data_max);
+
         }
     }
+
+
+// What's this, debug code?  Default groups in case the "group" file
+// doesn't exist?
     strcpy(&group_data_list[0], my_callsign);
     strcpy(&group_data_list[10], "XASTIR");
     group_data_count = 2;
+//
+
 
     if (! stat(filename, &group_stat) )
         f = fopen(filename, "r");   // File exists
@@ -144,6 +153,9 @@ void group_build_list(char *filename) {
             if (ptr) {
                 group_data_list = ptr;
                 group_data_max += 10;
+
+//fprintf(stderr,                "group_data_max(2): %d\n", group_data_max);
+
             }
         }
         if (group_data_count < group_data_max) {
@@ -167,11 +179,17 @@ void group_build_list(char *filename) {
 static int group_active(char *from) {
     static struct stat current_group_stat;
     struct stat group_stat;
+
+
     (void)remove_trailing_spaces(from);
-    if (!stat(group_data_file, &group_stat) && (current_group_stat.st_size != group_stat.st_size ||
-    current_group_stat.st_mtime != group_stat.st_mtime || current_group_stat.st_ctime != group_stat.st_ctime)) {
-    group_build_list(group_data_file);
-    current_group_stat = group_stat;
+
+    if (!stat(group_data_file, &group_stat)
+            && (current_group_stat.st_size != group_stat.st_size
+                || current_group_stat.st_mtime != group_stat.st_mtime
+                || current_group_stat.st_ctime != group_stat.st_ctime)) {
+
+        group_build_list(group_data_file);
+        current_group_stat = group_stat;
     }
     if (group_data_list != NULL)        // Causes segfault on Solaris 2.5 without this!
         return (int)(bsearch(from, group_data_list, (size_t)group_data_count, (size_t)10, group_comp) != NULL);

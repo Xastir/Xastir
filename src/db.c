@@ -476,9 +476,18 @@ void msg_input_database(Message *m_fill) {
 
     if (msg_index_end == msg_index_max) {
         for (i = 0; i < msg_index_end; i++) {
+
+            // Check for a record that is marked RECORD_NOTACTIVE.
+            // If found, use that record instead of malloc'ing a new
+            // one.
             if (msg_data[msg_index[i]].active == RECORD_NOTACTIVE) {
+
+                // Found an unused record.  Fill it in.
                 memcpy(&msg_data[msg_index[i]], m_fill, sizeof(Message));
+
+// Sort msg_data
                 qsort(msg_data, (size_t)msg_index_end, sizeof(Message), msg_comp_active);
+
                 for (i = 0; i < msg_index_end; i++) {
                     msg_index[i] = i;
                     if (msg_data[i].active == RECORD_NOTACTIVE) {
@@ -486,17 +495,29 @@ void msg_input_database(Message *m_fill) {
                         break;
                     }
                 }
+
+// Sort msg_index
                 qsort(msg_index, (size_t)msg_index_end, sizeof(long *), msg_comp_data);
+
+                // All done with this message.
                 return;
             }
         }
+
+        // Didn't find free message record.  Fetch some more space.
+        // Get more msg_data space.
         m_ptr = realloc(msg_data, (msg_index_max+MSG_INCREMENT)*sizeof(Message));
         if (m_ptr) {
             msg_data = m_ptr;
+
+            // Get more msg_index space
             m_ptr = realloc(msg_index, (msg_index_max+MSG_INCREMENT)*sizeof(Message *));
             if (m_ptr) {
                 msg_index = m_ptr;
                 msg_index_max += MSG_INCREMENT;
+
+//fprintf(stderr, "Max Message Array: %ld\n", msg_index_max);
+
             } else {
                 XtWarning("Unable to allocate message index.\n");
             }
@@ -506,7 +527,11 @@ void msg_input_database(Message *m_fill) {
     }
     if (msg_index_end < msg_index_max) {
         msg_index[msg_index_end] = msg_index_end;
+
+        // Copy message data into new message record.
         memcpy(&msg_data[msg_index_end++], m_fill, sizeof(Message));
+
+// Sort msg_index
         qsort(msg_index, (size_t)msg_index_end, sizeof(long *), msg_comp_data);
     }
 }
@@ -1265,6 +1290,8 @@ end_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 void mdelete_messages_from(char *from) {
     long i;
 
+    // Mark message records with RECORD_NOTACTIVE.  This will mark
+    // them for re-use.
     for (i = 0; msg_index && i < msg_index_end; i++)
         if (strcmp(msg_data[i].call_sign, my_callsign) == 0 && strcmp(msg_data[i].from_call_sign, from) == 0)
             msg_data[i].active = RECORD_NOTACTIVE;
@@ -1277,6 +1304,8 @@ void mdelete_messages_from(char *from) {
 void mdelete_messages_to(char *to) {
     long i;
 
+    // Mark message records with RECORD_NOTACTIVE.  This will mark
+    // them for re-use.
     for (i = 0; msg_index && i < msg_index_end; i++)
         if (strcmp(msg_data[i].call_sign, to) == 0)
             msg_data[i].active = RECORD_NOTACTIVE;
@@ -1289,6 +1318,8 @@ void mdelete_messages_to(char *to) {
 void mdelete_messages(char *to_from) {
     long i;
 
+    // Mark message records with RECORD_NOTACTIVE.  This will mark
+    // them for re-use.
     for (i = 0; msg_index && i < msg_index_end; i++)
         if (strcmp(msg_data[i].call_sign, to_from) == 0 || strcmp(msg_data[i].from_call_sign, to_from) == 0)
             msg_data[i].active = RECORD_NOTACTIVE;
@@ -1301,6 +1332,8 @@ void mdelete_messages(char *to_from) {
 void mdata_delete_type(const char msg_type, const time_t reference_time) {
     long i;
 
+    // Mark message records with RECORD_NOTACTIVE.  This will mark
+    // them for re-use.
     for (i = 0; msg_index && i < msg_index_end; i++)
         if ((msg_type == '\0' || msg_type == msg_data[i].type) &&
                 msg_data[i].active == RECORD_ACTIVE && msg_data[i].sec_heard < reference_time)
@@ -1313,8 +1346,15 @@ void mdata_delete_type(const char msg_type, const time_t reference_time) {
 
 void check_message_remove(void) {       // called in timing loop
 
-    if (last_message_remove < sec_now() - MESSAGE_REMOVE_CYCLE) {
+    // Time to check for old messages again?  (Currently every ten
+    // minutes)
+    if ( last_message_remove < (sec_now() - MESSAGE_REMOVE_CYCLE) ) {
+
+        // Yes it is.  Mark all messages that are older than
+        // sec_remove with the RECORD_NOTACTIVE flag.  This will
+        // mark them for re-use.
         mdata_delete_type('\0', sec_now()-sec_remove);
+
         last_message_remove = sec_now();
     }
 }
@@ -1829,7 +1869,7 @@ int is_altnet(DataRow *p_station) {
 
     // Snag a possible altnet call out of the record for later use
     if (p_station->node_path_ptr != NULL)
-        substr(temp_altnet_call, p_station->node_path_ptr, MAX_CALL);
+        substr(temp_altnet_call, p_station->node_path_ptr, MAX_CALLSIGN);
     else
         temp_altnet_call[0] = '\0';
 
@@ -1972,7 +2012,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char temp_course[20];
     char temp_speed[20];
     char dr_speed[20];
-    char temp_call[20+1];
+    char temp_call[MAX_TACTICAL_CALL+1];
     char wx_tm[50];
     char temp_wx_temp[30];
     char temp_wx_wind[40];
@@ -3126,7 +3166,7 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
 
     if (tactical_pointer->tactical_call_sign == NULL) {
         // Malloc some memory to hold it.
-        tactical_pointer->tactical_call_sign = (char *)malloc(MAX_CALLSIGN+1);
+        tactical_pointer->tactical_call_sign = (char *)malloc(MAX_TACTICAL_CALL+1);
     }
 
     if (tactical_pointer->tactical_call_sign != NULL) {
@@ -3138,7 +3178,7 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
         }
         else {
             xastir_snprintf(tactical_pointer->tactical_call_sign,
-                MAX_CALLSIGN,
+                MAX_TACTICAL_CALL,
                 "%s",
                 temp);
         }
@@ -3230,9 +3270,9 @@ void Change_tactical(Widget w, XtPointer clientData, XtPointer callData) {
                 XmNcursorPositionVisible, TRUE,
                 XmNsensitive, TRUE,
                 XmNshadowThickness,    1,
-                XmNcolumns, MAX_CALLSIGN-1,
-                XmNwidth, ((MAX_CALLSIGN*7)+2),
-                XmNmaxLength, MAX_CALLSIGN-1,
+                XmNcolumns, MAX_TACTICAL_CALL,
+                XmNwidth, ((MAX_TACTICAL_CALL*7)+2),
+                XmNmaxLength, MAX_TACTICAL_CALL,
                 XmNbackground, colors[0x0f],
                 XmNtopOffset, 5,
                 XmNtopAttachment,XmATTACH_WIDGET,
@@ -8741,7 +8781,7 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
 //  Extract data for $GPRMC, it fails if there is no position!!
 //
 int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
-    char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
+    char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...  ???
     char lat_s[20];
     char long_s[20];
     int ok;
@@ -8901,7 +8941,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 //
 //
 int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
-    char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
+    char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...  ???
     char lat_s[20];
     char long_s[20];
     int  ok;
@@ -9072,7 +9112,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 //   0       1    2      3    4    5   6
 //
 int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
-    char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
+    char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...  ???
     char lat_s[20];
     char long_s[20];
     int ok;
@@ -9208,6 +9248,9 @@ void add_status(DataRow *p_station, char *status_string) {
         }
         else {  // We have status data stored already
                 // Check for an identical string
+            CommentRow *ptr2;
+            int ii = 0;
+ 
             ptr = p_station->status_data;
             while (ptr != NULL) {
                 if (strcmp(ptr->text_ptr, status_string) == 0) {
@@ -9217,11 +9260,36 @@ void add_status(DataRow *p_station, char *status_string) {
                     return; // No need to add the new string
                 }
                 ptr = ptr->next;
+                ii++;
             }
+
+
             // No matching string found, so add it
             add_it++;
             //fprintf(stderr,"No match:
             //%s:%s\n",p_station->call_sign,status_string);
+
+            // We counted the records.  If we have more than
+            // MAX_STATUS_LINES records we'll delete/free the last
+            // one to make room for the next.  This keeps us from
+            // storing unique status records ad infinitum for active
+            // stations, limiting the total space used.
+            //
+            if (ii >= MAX_STATUS_LINES) {
+                // We know we didn't get a match, and that our list
+                // is full (as full as we want it to be).  Traverse
+                // the list again, looking for ptr2->next->next ==
+                // NULL.  If found, free last record and set the
+                // ptr2->next pointer to NULL.
+                ptr2 = p_station->status_data;
+                while (ptr2->next->next != NULL) {
+                    ptr2 = ptr2->next;
+                }
+                // At this point, we have a pointer to the last
+                // record in ptr2->next.  Free it.
+                free(ptr2->next);
+                ptr2->next = NULL;
+            } 
         }
 
         if (add_it) {   // We add to the beginning so we don't have
@@ -9283,6 +9351,9 @@ void add_comment(DataRow *p_station, char *comment_string) {
         }
         else {  // We have comment data stored already
                 // Check for an identical string
+            CommentRow *ptr2;
+            int ii = 0;
+ 
             ptr = p_station->comment_data;
             while (ptr != NULL) {
                 if (strcmp(ptr->text_ptr, comment_string) == 0) {
@@ -9291,10 +9362,33 @@ void add_comment(DataRow *p_station, char *comment_string) {
                     return; // No need to add the new string
                 }
                 ptr = ptr->next;
+                ii++;
             }
             // No matching string found, so add it
             add_it++;
             //fprintf(stderr,"No match: %s:%s\n",p_station->call_sign,comment_string);
+
+            // We counted the records.  If we have more than
+            // MAX_COMMENT_LINES records we'll delete/free the last
+            // one to make room for the next.  This keeps us from
+            // storing unique comment records ad infinitum for
+            // active stations, limiting the total space used.
+            //
+            if (ii >= MAX_COMMENT_LINES) {
+                // We know we didn't get a match, and that our list
+                // is full (as we want it to be).  Traverse the list
+                // again, looking for ptr2->next->next == NULL.  If
+                // found, free that last record and set the
+                // ptr2->next pointer to NULL.
+                ptr2 = p_station->comment_data;
+                while (ptr2->next->next != NULL) {
+                    ptr2 = ptr2->next;
+                }
+                // At this point, we have a pointer to the last
+                // record in ptr2->next.  Free it.
+                free(ptr2->next);
+                ptr2->next = NULL;
+            } 
         }
 
         if (add_it) {   // We add to the beginning so we don't have
@@ -9333,7 +9427,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
     char last_course[MAX_COURSE+1];
     time_t last_stn_sec;
     short last_flag;
-    char temp_data[40];         // short term string storage, MAX_CALL, ...
+    char temp_data[40]; // short term string storage, MAX_CALLSIGN, ...
     long l_lat, l_lon;
     double distance;
     char station_id[600];
@@ -9455,7 +9549,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
  
-                    //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
 
                     p_station->record_type = NORMAL_APRS;
@@ -9486,7 +9579,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
  
-                    //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
 
                     p_station->record_type = DOWN_APRS;
@@ -9513,7 +9605,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
  
-                    //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
 
                     if(type == APRS_MOBILE)
@@ -9534,7 +9625,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
  
-                    //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
 
                 } else {
@@ -9555,7 +9645,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                     extract_multipoints(p_station, data, type, 1);
  
-                //substr(p_station->comments,data,MAX_COMMENTS);          // store status text
                 add_status(p_station,data);
 
                 p_station->flag |= (ST_STATUS);                         // set "Status" flag
@@ -9571,7 +9660,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
  
                 if ((p_station->flag & (~ST_STATUS)) == 0) {            // only store if no status yet
 
-                    //substr(p_station->comments,data,MAX_COMMENTS);
                     add_status(p_station,data);
 
                     p_station->record_type = NORMAL_APRS;               // ???
@@ -9649,7 +9737,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 0);
  
-                    //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
 
                     // the last char always was missing...
@@ -9729,7 +9816,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 0);
  
-                    //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
 
                     // the last char always was missing...
@@ -9760,7 +9846,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     if ( (p_station->coord_lat > 0) && (p_station->coord_lon > 0) )
                         extract_multipoints(p_station, data, type, 1);
  
-                    //substr(p_station->comments,data,MAX_COMMENTS);
                     add_comment(p_station,data);
                 }
                 break;
@@ -9843,7 +9928,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         // store it as status report until we get a real one
         if ((p_station->flag & (~ST_STATUS)) == 0) {         // only store it if no status yet
 
-            //substr(p_station->comments,data-1,MAX_COMMENTS);
             add_status(p_station,data-1);
 
             p_station->record_type = NORMAL_APRS;               // ???
@@ -10859,7 +10943,6 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
 
     substr(p_station->power_gain,my_phg,7);
 
-    //substr(p_station->comments,my_comment,MAX_COMMENTS);
     add_comment(p_station,my_comment);
 
     my_last_course = 0;         // set my last course in deg to zero
@@ -12828,7 +12911,7 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 //
 void relay_digipeat(char *call, char *path, char *info, int port) {
     char new_path[110+1];
-    char new_digi[MAX_CALLSIGN+2];
+    char new_digi[MAX_CALLSIGN+2];  // Need extra for '*' storage
     int  ii;
     int  done;
     char destination[MAX_CALLSIGN+1];
@@ -13082,8 +13165,8 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     char *path0;
     char path[100+1];           // new one, we may add an '*'
     char *info;
-    char call[MAX_CALL+1];
-    char origin[MAX_CALL+1];
+    char call[MAX_CALLSIGN+1];
+    char origin[MAX_CALLSIGN+1];
     int ok;
     int third_party;
     char backup[MAX_LINE_SIZE+1];

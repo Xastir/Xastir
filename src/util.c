@@ -2480,7 +2480,7 @@ void reload_tactical_calls(void) {
 
                         if (p_station->tactical_call_sign == NULL) {
                             // Malloc some memory to hold it.
-                            p_station->tactical_call_sign = (char *)malloc(MAX_CALLSIGN+1);
+                            p_station->tactical_call_sign = (char *)malloc(MAX_TACTICAL_CALL+1);
                         }
 
                         if (p_station->tactical_call_sign != NULL) {
@@ -2492,7 +2492,7 @@ void reload_tactical_calls(void) {
                             }
                             else {
                                 xastir_snprintf(p_station->tactical_call_sign,
-                                    MAX_CALLSIGN,
+                                    MAX_TACTICAL_CALL,
                                     "%s",
                                     ptr);
                             }

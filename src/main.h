@@ -76,11 +76,10 @@ extern int interrupt_drawing_now;
 // NOTE:  This is out of date and not used anymore anyway.
 #define ABOUTGNUL "XASTIR, Copyright (C) 1999, 2000 Frank Giannandrea\nXASTIR comes with ABSOLUTELY NO WARRANTY;\nThis is free software, and you are welcome\nto redistribute it under certain conditions;\nsee the GNU LICENSE for details.\n"
 
-#define MAX_CALL    20
-#define MAX_PHG     8
-#define MAX_COMMENT 80
+#define MAX_PHG      8
+#define MAX_COMMENT  80
 
-#define MAX_UNPROTO 100
+#define MAX_UNPROTO  100
 
 #define MAX_TNC_CHARS 128
 #define MAX_NET_CHARS 128
