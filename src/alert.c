@@ -321,10 +321,6 @@ int alert_max_count = 0;     // Alerts we've allocated space for
 int alert_redraw_on_update = 0;
 
 
-// How many alerts we add storage for each time we're short.
-#define ALERT_COUNT_INCREMENT 25
-
-
 
 
 

@@ -480,7 +480,6 @@ int msg_comp_data(const void *a, const void *b) {
 
 
 void msg_input_database(Message *m_fill) {
-#define MSG_INCREMENT 25
     void *m_ptr;
     long i;
 

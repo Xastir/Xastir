@@ -31,6 +31,7 @@
 #define XASTIR_DB_H
 
 
+#define MSG_INCREMENT 200
 #define MAX_CALLSIGN 9       // Objects are up to 9 chars
 #define MAX_TACTICAL_CALL 20 // Up to 20 chars for tactical calls
 #define MAX_COMMENT_LINES 10  // Save up to 10 unique comment strings per station

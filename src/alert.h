@@ -41,6 +41,11 @@
 #include "db.h"
 #include "maps.h"
 
+
+// How many alerts we add storage for each time we're short.
+#define ALERT_COUNT_INCREMENT 200
+
+
 typedef enum {
     ALERT_TITLE,
     ALERT_TAG,
