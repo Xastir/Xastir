@@ -134,7 +134,7 @@ user environment.  You can name it nearly anything you want as
 long as you don't duplicate any names already used for Cygwin
 programs.
 
-Type "./go.bat".  You should get a large window with a smaller
+Type "./go.bat &".  You should get a large window with a smaller
 shell window displayed on it.  If you right-click on the background
 (outside the smaller window), you should see a menu.  Select "Exit
 FVWM" to make the large window go away, or click on the "X" in the
@@ -219,7 +219,7 @@ Cygwin and/or X11 windows you may have.
 
 Click on the Cygwin icon.
 
-From the resulting Cygwin window, type "./go.bat".
+From the resulting Cygwin window, type "./go.bat &".
 
 Once the large window with the one small window appears, type
 "xastir &" in the small window.  Xastir should start up shortly.
