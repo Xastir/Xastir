@@ -78,6 +78,14 @@ break up maps.c
 Interrupting a sequence of map redraws
 Major CPU Usage improvments
 TRANSPAERENT and CROP tags in .geos
+dbfawk- configurable shapefile metadata
+UTM grid support
+Configurable map label font
+snapshot .geo generation
+map label font, style changes
+various menu reorginization
+cad drawing mode
+cursor changes based on mode
 
 
 HELP-INDEX>What's new in Xastir 1.2
@@ -370,7 +378,7 @@ dialog when bulletins within the configured range are received. "View
 zero-distance bulletins" will cause bulletins with no known location not to
 be displayed or cause pop-ups.
 
-Warn if Modifier keys will cause Xastir to print a warning if you attempt to
+"Warn if Modifier keys" will cause Xastir to print a warning if you attempt to
 use Xastir while num-lock, scroll-lock, or caps-lock is engaged. Some users
 report the screen blanking on them and similar problems when they attempt to
 use Xastir with one of these modifier keys on.
@@ -420,8 +428,9 @@ execute to play the audio file (and any command line options). That of
 course doesn't work if the only sound card in the system is used for a
 soundmodem...
 
-The fields will contain the name of the file to play. Fields under the option
-will set parameters for the option.
+Each type of alert has a checkbox to enable it. The fields will contain the
+name of the file to play. Fields under the option will set parameters for the
+option.
 
 The current choices are:
 Play message on hearing a new station.
@@ -431,6 +440,9 @@ Play message on receiving data from a station within the min/max distance of
 Play message on receiving data from a station (via TNC) within the min/max
      distance of your band opening settings.
 Play message on receiving and displaying a new weather alert.
+
+There is a standard set of sounds available most places where Xastir can be
+obtained, please see the file INSTALL for more information.
 
 HELP-INDEX>Configure Speech
 
@@ -461,14 +473,6 @@ Band Opening      - Announce when receiving data from a station (via TNC)
 New Weather Alert - Not implemented yet.
 
 Info on Festival may be obtained from: http://www.speech.cs.cmu.edu/festival/
-
-HELP-INDEX>Configure Units of Measure
-
-                        Configure Units of Measure
-
-The default selection is for the Metric System: mm, cm, km/h, etc. To select
-English units, inches, feet, MPH, etc. Click on File, then Configure, then
-toggle the "Enable English Units" check-box.
 
 HELP-INDEX>Configure Smart Beaconing
 
@@ -512,6 +516,14 @@ way the original SmartBeaconing(tm) algorithm works.
 Wait Time
 The time in seconds between corner-pegging beacons, prevents multiple
 beacons in short succession.
+
+HELP-INDEX>Configure Units of Measure
+
+                        Configure Units of Measure
+
+The default selection is for the Metric System: mm, cm, km/h, etc. To select
+English units, inches, feet, MPH, etc. Click on File, then Configure, then
+toggle the "Enable English Units" check-box.
 
 HELP-INDEX>Save Config Now!
 
@@ -586,24 +598,25 @@ the size of the square you just described with the mouse drag operation. The
 work. Clicking the middle button zooms out with a factor of 2, centering
 where you clicked as well.
 
-The map can also be zoomed with the keyboard PageUp/PageDown keys.  The
-zooming in this case keeps the same map center (no centering).
-
-Map Display Bookmarks
-See the help topic "Creating and using Map Display Bookmarks"
+The map can also be zoomed with the keyboard PageUp/PageDown keys, or the "In"
+and "Out" buttons in the toolbar. The zooming in this case keeps the same map
+center (no centering).
 
 Panning/Centering:
 The map can be centered at a specific location by choosing center in the
 right-click options menu.
 
 Panning is also accomplished by using the options menu, or by using the arrow
-buttons on the top of the screen. The map position will shift a portion of a
-screen. Enough data from the previous screen should be available to
-re-orient yourself.
+buttons on the toolbar. The map position will shift a portion of a screen.
+Enough data from the previous screen should be available to re-orient yourself.
 
 The map can also be panned with the keyboard arrow keys.
 
 More About Options Menu:
+
+Map Display Bookmarks
+See the help topic "Creating and using Map Display Bookmarks"
+
 The "Station Info" selection on the options menu will look for the station
 closest to where you right-clicked the mouse. If more than one station is
 close to that position a "Station chooser" list will appear, then you can
@@ -620,6 +633,12 @@ With "Last Map View" you can restore the previous map view by restoring the
 previous values of the map zoom and centering values.
 
 For Object and Item information, please see the help topic "Objects and Items"
+
+Draw CAD objects lets you create polygons on screen, for tactial or
+presentation use. This feature is still under construction.
+
+"Move my Station here" Allows you to move your station to a specified map
+location without editing the station configration.
 
 HELP-INDEX>Objects and Items
 
@@ -862,22 +881,17 @@ button will display the selected maps. Cancel will abandon any changes.
 
   Map Chooser Properties
   Clicking the Properties button will bring up a dialog where you can specify
-  the layer in which maps appear. Higher numbers are displayed on top of lower
-  numbers. The range may be specified from -99999 to 99999; it is suggested
-  that you space your layering numbers widely to allow later insertion of
-  additional map layers. From this dialog you may specify whether a vector map
-  is drawn with color fills.  This is a per-map setting; the global disable
-  option on the Maps menu can override this. The Filled setting is ignored for
-  raster maps (images). You can also select whether a map is considered by the
-  "Auto maps" feature here.
-
-Enable/Configure Tigermap
-Turning this option on causes Xastir to download the map from the US census
-bureau's online tiger mapping server. The dialog that comes up allows one to
-select which layers are displayed, as well as the brightness of the resulting
-map. This is only available if you have compiled with ImageMagick support.
-Tigermaps are always loaded as the bottom layer; they do not have layering
-settings in the Map Chooser.
+  the layer in which maps appear, and in which zoom levels they appear. Higher
+  layer numbers are displayed on top of lower numbers. The range may be
+  specified from -99999 to 99999; it is suggested that you space your layering
+  numbers widely to allow later insertion of additional map layers. From this
+  dialog you may specify whether a vector map is drawn with color fills. This
+  is a per-map setting; the global disable option on the Maps menu can override
+  this. The Filled setting is ignored for raster maps (images). You can also
+  select whether a map is considered by the "Auto maps" feature here. Finally,
+  you can specify the minimum and maximul zoom levels at which a map is
+  displayed. This is useful to prevent very detailed local maps from loading at
+  very wide zoom positions, and visa-versa.
 
 Map Display Bookmarks
 See the help topic "Creating and using Map Display Bookmarks"
@@ -895,6 +909,41 @@ systems. This is useful for converting positions to the various formats used
 by different groups of people. This same calculator can be called up by the
 Calc button on some of the other dialogs. It's useful for entering coordinates
 in other formats.
+
+Configure menu:
+  Background color
+  This option controls the color of the background behind the maps you have
+  displayed. The background color is often entirely hidden by filled maps
+  (see below).
+
+  Map Intensity
+  This controls the brightness of any graphics used as maps. This option only
+  appears if you have compiled with GeoTIFF support.
+
+  Adjust Gamma Correction
+  This allows you to apply gamma connection to all loaded map graphics. Maps
+  can be adjusted individually in their .geo files, see the section on .geos in
+  "Map files and WX Counties". This option only appears if you've compiled with
+  ImageMagick support, and does not apply to geoTIFF maps; see the above
+  option.
+
+  Map labels font
+  This allows you to set the font style and size used for map labels.
+
+  Station Text Style
+  Controls which font and style to use for station text and others.
+
+  Icon Outline Style
+  This allows you to specify an outline that surrounds station icons. This
+  helps improve visibility on various backgrounds.
+
+  Configure Tigermap
+  Turning this option on causes Xastir to download the map from the US census
+  bureau's online tiger mapping server. The dialog that comes up allows one to
+  select which layers are displayed, as well as the brightness of the resulting
+  map. This is only available if you have compiled with ImageMagick support.
+  Tigermaps are always loaded as the bottom layer; they do not have layering
+  settings in the Map Chooser.
 
 Disable All Maps
 This option disables the loading of any maps. It is most useful when doing
@@ -962,24 +1011,6 @@ This option starts over from scratch, indexing every map it recognizes in the
 maps directory. This is useful if the Add New Maps function is skipping some
 maps, perhaps because of old timestamps on the map files.  This function may
 take quite a while to complete if you have a lot of maps.
-
-Background color
-This option controls the color of the background behind the maps you have
-displayed. The background color is often entirely hidden by filled maps
-(see above).
-
-Map Intensity
-This controls the brightness of any graphics used as maps. This option only
-appears if you have compiled with GeoTIFF support.
-
-Adjust Gamma Correction
-This allows you to apply gamma connection to all loaded map graphics. Maps can
-be adjusted individually in their .geo files, see the section on .geos in
-"Map files and WX Counties". This option only appears if you've compiled with
-ImageMagick support, and does not apply to geoTIFF maps; see the above option. 
-
-Station Text Style
-Controls which font and style to use for station text and others.
 
 Mouse pointer menu
 This option brings up the options menu normally available by right clicking.
@@ -1686,12 +1717,12 @@ HELP-INDEX>Creating Snapshots
 Xastir has the capability to create automatic snapshots of the map screen
 on a recurring basis.  This time period is currently set at once per five
 minutes.  Assuming that you have "convert" from the ImageMagick tools
-installed, Xastir will create an XPM format file in /var/tmp, then convert
-it to the PNG file /var/tmp/xastir_snap.png.  This file is useful for
+installed, Xastir will create an XPM format file in ~/.xastir/tmp/, then
+convert it to the PNG file ~/.xastir/tmp/snapshot.png. This file is useful for
 embedding in web pages to show a "live" image of what is on your Xastir
-screen.  Enable this feature via the "File->Enable PNG Snapshots"
-togglebutton.  The rate is once every five minutes, or every time the
-button is toggled from off to on.
+screen.  Enable this feature via the "File->PNG Snapshots" togglebutton. 
+The rate is once every five minutes, or every time the button is toggled from
+off to on. A .geo is created to allow you to use the snapshot as a map.
 
 HELP-INDEX>Included Scripts
 
