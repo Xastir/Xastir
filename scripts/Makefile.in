@@ -104,17 +104,12 @@ x_includes = @x_includes@
 x_libraries = @x_libraries@
 xastirpath = @xastirpath@
 
-scriptsdir = ${prefix}/xastir/scripts
-
-EXTRA_DIST =      inf2geo.pl     mapblast2geo.pl     mapfgd.pl     track-get.pl     waypoint-get.pl
-
-
-scripts_DATA =      inf2geo.pl     mapblast2geo.pl     mapfgd.pl     track-get.pl     waypoint-get.pl
+bin_SCRIPTS =      inf2geo.pl     mapblast2geo.pl     mapfgd.pl     track-get.pl     waypoint-get.pl
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
-DATA =  $(scripts_DATA)
+SCRIPTS =  $(bin_SCRIPTS)
 
 DIST_COMMON =  Makefile.am Makefile.in
 
@@ -133,23 +128,23 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
 
-install-scriptsDATA: $(scripts_DATA)
+install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(scriptsdir)
-	@list='$(scripts_DATA)'; for p in $$list; do \
-	  if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(scriptsdir)/$$p"; \
-	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(scriptsdir)/$$p; \
-	  else if test -f $$p; then \
-	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(scriptsdir)/$$p"; \
-	    $(INSTALL_DATA) $$p $(DESTDIR)$(scriptsdir)/$$p; \
-	  fi; fi; \
+	$(mkinstalldirs) $(DESTDIR)$(bindir)
+	@list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; fi; \
 	done
 
-uninstall-scriptsDATA:
+uninstall-binSCRIPTS:
 	@$(NORMAL_UNINSTALL)
-	list='$(scripts_DATA)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(scriptsdir)/$$p; \
+	list='$(bin_SCRIPTS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
 	done
 tags: TAGS
 TAGS:
@@ -183,23 +178,23 @@ check-am: all-am
 check: check-am
 installcheck-am:
 installcheck: installcheck-am
-install-exec-am:
+install-exec-am: install-binSCRIPTS
 install-exec: install-exec-am
 
-install-data-am: install-scriptsDATA
+install-data-am:
 install-data: install-data-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am: uninstall-scriptsDATA
+uninstall-am: uninstall-binSCRIPTS
 uninstall: uninstall-am
-all-am: Makefile $(DATA)
+all-am: Makefile $(SCRIPTS)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(scriptsdir)
+	$(mkinstalldirs)  $(DESTDIR)$(bindir)
 
 
 mostlyclean-generic:
@@ -229,7 +224,7 @@ maintainer-clean-am:  maintainer-clean-generic distclean-am
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: uninstall-scriptsDATA install-scriptsDATA tags distdir info-am \
+.PHONY: uninstall-binSCRIPTS install-binSCRIPTS tags distdir info-am \
 info dvi-am dvi check check-am installcheck-am installcheck \
 install-exec-am install-exec install-data-am install-data install-am \
 install uninstall-am uninstall all-redirect all-am all installdirs \

@@ -39,6 +39,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %attr(4555,root,root) /usr/local/bin/xastir
 /usr/local/bin/callpass
+/usr/local/bin/inf2geo.pl
+/usr/local/bin/mapblast2geo.pl
+/usr/local/bin/mapfgd.pl
+/usr/local/bin/track-get.pl
+/usr/local/bin/waypoint-get.pl
 /usr/local/xastir/config/language-Dutch.sys
 /usr/local/xastir/config/language-English.sys
 /usr/local/xastir/config/language-French.sys
@@ -73,11 +78,6 @@ rm -rf $RPM_BUILD_ROOT
 /usr/local/xastir/maps/transparent/placeholder
 /usr/local/xastir/maps/placeholder
 /usr/local/xastir/maps/z_overlay/placeholder
-/usr/local/xastir/scripts/inf2geo.pl
-/usr/local/xastir/scripts/mapblast2geo.pl
-/usr/local/xastir/scripts/mapfgd.pl
-/usr/local/xastir/scripts/track-get.pl
-/usr/local/xastir/scripts/waypoint-get.pl
 /usr/local/xastir/sounds/placeholder
 /usr/local/xastir/symbols/symbols.dat
 /usr/man/man1/xastir.1.gz
