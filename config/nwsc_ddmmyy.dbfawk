@@ -18,12 +18,8 @@
 # which are named c_ddmmyy.dbf.  These are used for WX alerts but can also
 # be used as a map of all US counties.  For the WX alert feature, the
 # key is set to the concatentation of the STATE and FIPS county code
-# in the same format as the alert message (e.g. NY_C119).
+# in the same format as the alert->title (e.g. WI_C037).
 #
-# <soapbox> This encoding of state and county code is hokey since the 
-# FIPS code includes the state and county codes.  (e.g. 36119 instead of
-# NY_C119).  Furthermore, SAME uses a sub-county code, so the search key
-# should really be SSCCCss. </soapbox>
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {

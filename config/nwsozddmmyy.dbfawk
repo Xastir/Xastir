@@ -16,7 +16,8 @@
 #
 # This file is used to map NWS offshore marine zone area polygon shapefiles
 # which are named ozddmmyy.dbf.  These are used for WX alerts.
-# For the WX alert feature, the key is set to the ID code.
+# For the WX alert feature, the key is set to the ID code reformated
+# to match the alert->title.  For example AN_Z081.
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {
@@ -32,5 +33,5 @@ dbffields="ID:NAME"}
 # Use this rule to re-initialize variables between records.
 BEGIN_RECORD {key=""; lanes=4; color=11; name=""; filled=1; pattern=1; display_level=8192; label_level=512; symbol=""}
 
-/^ID=(.*)$/ {key="$1"; next}
+/^ID=(..)(.*)$/ {key="$1_$2"; next}
 /^NAME=(.*)$/ {name="$1"; next}

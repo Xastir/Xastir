@@ -627,9 +627,11 @@ void draw_shapefile_map (Widget w,
     int             weather_alert_flag = 0;
     char            *filename;  // filename itself w/o directory
     char            search_param1[10];
+#ifndef WITH_DBFAWK
     int             search_field1 = 0;
-    char            search_param2[10];
     int             search_field2 = -1;
+#endif /* !WITH_DBFAWK */
+    char            search_param2[10];
     int             found_shape = -1;
     int             start_record;
     int             end_record;
@@ -755,9 +757,13 @@ void draw_shapefile_map (Widget w,
         }
     }
 #endif /* WITH_DBFAWK */
-#ifdef WITH_DBFAWK
-    /* XXX - need to figure out weather alerts to use dbfawk */
-#endif /* WITH_DBFAWK */
+    /* 
+     * DBFAWK: all this WX junk following to set up the search fields and
+     * parameters is now done by the dbfawk file which sets the "key" 
+     * variable to the appropriate search key for each record which is 
+     * compared to the alert->title[].
+     */
+#ifndef WITH_DBFAWK
     // If we're doing weather alerts and index is not filled in yet
     if (weather_alert_flag && (alert->index == -1) ) {
 
@@ -851,7 +857,6 @@ void draw_shapefile_map (Widget w,
         //fprintf(stderr,"Search_param2: %s\n",search_param2);
     } /* weather_alert */
 
-#ifndef WITH_DBFAWK
     for (i=0; i < fieldcount; i++) {
         char szTitle[12];
 
@@ -1060,17 +1065,37 @@ void draw_shapefile_map (Widget w,
                     break;
             }
         }
-    } /* for (i = 0; i < fieldcount; i++)... */
+    } /* ... end for (i = 0; i < fieldcount; i++) */
 #endif /* !WITH_DBFAWK */
 
     // Search for specific record if we're doing alerts
     if (weather_alert_flag && (alert->index == -1) ) {
         int done = 0;
+#ifndef WITH_DBFAWK
         char *string1;
         char *string2;
+#endif /* !DBFAWK */
 
         // Step through all records
         for( i = 0; i < recordcount && !done; i++ ) {
+#ifdef WITH_DBFAWK
+            int keylen;
+            if (sig_info) {
+                dbfawk_parse_record(sig_info->prog,hDBF,fld_info,i);
+                keylen = strlen(key);
+                if (debug_level & 16) {
+                    fprintf(stderr,"dbfawk alert parse: record %d key=%s\n",
+                            i,key);
+                }
+                if (strncmp(alert->title,key,keylen) == 0) {
+                    found_shape = i;
+                    done++;
+                    if (debug_level & 16) {
+                        fprintf(stderr,"dbfawk alert found it: %d \n",i);
+                    }
+                }
+            }
+#else /* !WITH_DBFAWK */
             char *ptr;
             switch (filenm[0]) {
                 case 'c':   // County File
@@ -1141,6 +1166,7 @@ void draw_shapefile_map (Widget w,
                 default:
                     break;
             }
+#endif /* !WITH_DBFAWK */
         }
         alert->index = found_shape; // Fill it in 'cuz we just found it
     } /* if (weather_alert_flag && alert_index == -1)... */
@@ -1318,11 +1344,11 @@ void draw_shapefile_map (Widget w,
         }
 
         (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
-    }
-#ifndef WITH_DBFAWK
-    else {
+    } /* ...end if (weather_alert_flag) */
+    else { /* !weather_alert_flag */
 // Are these actually used anymore by the code?  Colors get set later
 // when we know more about what we're dealing with.
+#ifndef WITH_DBFAWK
         if (lake_flag || river_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // Steel Blue
         else if (path_flag)
@@ -1333,8 +1359,8 @@ void draw_shapefile_map (Widget w,
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]); // yellow
         else
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
+#endif /* !WITH_DBFAWK */
     }
-#endif /*!WITH_DBFAWK*/
 
     // Now that we have the file open, we can read out the structures.
     // We can handle Point, PolyLine and Polygon shapefiles at the moment.
@@ -1452,7 +1478,6 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
             if (sig_info) {
                 dbfawk_parse_record(sig_info->prog,hDBF,fld_info,structure);
-                /* XXX set draw_filled */
                 if (debug_level & 16) {
                     fprintf(stderr,"dbfawk parse of structure %d: ",structure);
                     fprintf(stderr,"color=%d ",color);
@@ -1465,6 +1490,11 @@ void draw_shapefile_map (Widget w,
                     fprintf(stderr,"display_level=%d ",display_level);
                     fprintf(stderr,"label_level=%d\n",label_level);
                 }
+                /* set attributes */
+                (void)XSetForeground(XtDisplay(w), gc, colors[color]);
+                draw_filled = filled;; /* XXX this overrides map properties! */
+                /* XXX set draw_filled  and all the other XXX's below */
+
             }
 #endif /* WITH_DBFAWK */
 
@@ -1498,7 +1528,7 @@ void draw_shapefile_map (Widget w,
 #ifdef WITH_DBFAWK
                         if (map_labels)
                             temp = name;
-#else
+#else /* !WITH_DBFAWK */
                         // If labels are enabled and we have enough
                         // fields in the .dbf file, read the label.
                         if (map_labels && fieldcount >= 1) {

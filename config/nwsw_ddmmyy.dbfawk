@@ -16,7 +16,8 @@
 #
 # This file is used to map NWS county warning area polygon shapefiles
 # which are named w_ddmmyy.dbf.  These are used for WX alerts.
-# For the WX alert feature, the key is set to the CWA code.
+# For the WX alert feature, the key is set to the CWA code
+# reformated to match alert->title.  For example: CW_ATAE for CWA TAE.
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {
@@ -32,4 +33,4 @@ dbffields="WFO"}
 # Use this rule to re-initialize variables between records.
 BEGIN_RECORD {key=""; lanes=4; color=11; name=""; filled=1; pattern=1; display_level=8192; label_level=512; symbol=""}
 
-/^WFO=(.*)$/ {name="$1"; key="$1"; next}
+/^WFO=(.*)$/ {name="$1"; key="CW_A$1"; next}

@@ -16,7 +16,8 @@
 #
 # This file is used to map NWS state zone area polygon shapefiles
 # which are named z_ddmmyy.dbf.  These are used for WX alerts.
-# For the WX alert feature, the key is set to the STATE_ZONE code.
+# For the WX alert feature, the key is set to the STATE_ZONE code,
+# reformatted to match alert->title (e.g. KS033 is KS_Z033).
 
 # BEGIN is called once per dbf file which contains multiple records.
 BEGIN {
@@ -32,5 +33,5 @@ dbffields="STATE_ZONE:NAME"}
 # Use this rule to re-initialize variables between records.
 BEGIN_RECORD {key=""; lanes=4; color=11; name=""; filled=1; pattern=1; display_level=8192; label_level=512; symbol=""}
 
-/^STATE_ZONE=(.*)$/ {key="$1"; next}
+/^STATE_ZONE=(..)(.*)$/ {key="$1_Z$2"; next}
 /^NAME=(.*)$/ {name="$1"; next}
