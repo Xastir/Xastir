@@ -6247,6 +6247,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     FILE *f;                        // Filehandle of image file
     char line[MAX_FILENAME];        // One line from GEO file
     char fileimg[MAX_FILENAME+1];   // Ascii name of image file, read from GEO file
+    char t_fileimg[MAX_FILENAME+1]; // Temporary Ascii name of image file
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
@@ -6365,9 +6366,14 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     if (f != NULL) {
         while (!feof (f)) {
             (void)get_line (f, line, MAX_FILENAME);
-            if (strncasecmp (line, "FILENAME", 8) == 0)
+            if (strncasecmp (line, "FILENAME", 8) == 0) {
                 (void)sscanf (line + 9, "%s", fileimg);
-
+                if (fileimg[0] != '/' ) { // not absolute path
+                    // make it relative
+                    xastir_snprintf(t_fileimg, sizeof(fileimg), "%s/%s", dir, fileimg );
+                    strcpy(fileimg, t_fileimg );
+                }
+            }
             if (strncasecmp (line, "URL", 3) == 0)
                 (void)sscanf (line + 4, "%s", fileimg);
 
@@ -6596,6 +6602,59 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     // have been initialized to something.
 
     if ( (geo_image_width == 0) || (geo_image_height == 0) ) {
+
+        if ( (strncasecmp ("http", fileimg, 4) == 0)
+             || (strncasecmp ("ftp", fileimg, 3) == 0)) {
+            // what to do for remote files... hmm... -cbell
+        } else {
+
+#ifdef HAVE_IMAGEMAGICK
+            GetExceptionInfo(&exception);
+            image_info=CloneImageInfo((ImageInfo *) NULL);
+            (void) strcpy(image_info->filename, fileimg);
+            if (debug_level & 16) {
+                fprintf(stderr,"Copied %s into image info.\n", file);
+                fprintf(stderr,"image_info got: %s\n", image_info->filename);
+                fprintf(stderr,"Entered ImageMagick code.\n");
+                fprintf(stderr,"Attempting to open: %s\n", image_info->filename);
+            }
+            
+            // We do a test read first to see if the file exists, so we
+            // don't kill Xastir in the ReadImage routine.
+            f = fopen (image_info->filename, "r");
+            if (f == NULL) {
+                fprintf(stderr,"File %s could not be read\n",image_info->filename);
+                return;
+            }
+            (void)fclose (f);
+            
+            image = PingImage(image_info, &exception);
+        
+            if (image == (Image *) NULL) {
+                MagickWarning(exception.severity, exception.reason, exception.description);
+                //fprintf(stderr,"MagickWarning\n");
+                return;
+            }
+            
+            if (debug_level & 16)
+                fprintf(stderr,"Color depth is %i \n", (int)image->depth);
+            
+            geo_image_width = image->magick_columns;
+            geo_image_height = image->magick_rows;
+     
+            // close and clean up imagemagick
+        
+            if (image)
+                DestroyImage(image);
+            if (image_info)
+                DestroyImageInfo(image_info);
+#endif // HAVE_IMAGEMAGICK
+        }
+    }
+
+    //    fprintf(stderr, "Geo: %s: size %ux%u.\n",file, geo_image_width, geo_image_height);
+    // if that did not generate a valid size, bail out... 
+    if ( (geo_image_width == 0) || (geo_image_height == 0) ) {
         fprintf(stderr,"*** Skipping '%s', IMAGESIZE tag missing or incorrect. ***\n",file);
         return;
     }
@@ -6672,7 +6731,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
     atb.valuemask = 0;
 
-    (void)get_map_dir (file);
+    //    (void)get_map_dir (file);
 
 
 // Best here would be to add the process ID or user ID to the filename
@@ -6772,7 +6831,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 
         // We now re-use the "file" variable.  It'll hold the
         //name of the map file now instead of the .geo file.
-        strcat (file, fileimg);
+        strcpy (file, fileimg);
     }
 
     //fprintf(stderr,"File = %s\n",file);
