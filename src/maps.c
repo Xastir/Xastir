@@ -2848,11 +2848,46 @@ void draw_shapefile_map (Widget w,
 
                         ok = 1;
 
-                        // Convert to Xastir coordinates
-                        temp_ok = convert_to_xastir_coordinates(&my_long,
-                            &my_lat,
-                            (float)object->padfX[0],
-                            (float)object->padfY[0]);
+                        // Convert to Xastir coordinates:
+                        // If quad overlay shapefile, need to
+                        // snag the label coordinates from the DBF
+                        // file instead.
+                        if (quad_overlay_flag) {
+                            const char *dbf_temp;
+                            float lat_f;
+                            float lon_f;
+
+                            if (fieldcount >= 4) {
+                                dbf_temp = DBFReadStringAttribute( hDBF, structure, 2 );
+                                sscanf(dbf_temp, "%f", &lat_f);
+                                dbf_temp = DBFReadStringAttribute( hDBF, structure, 3 );
+                                sscanf(dbf_temp, "%f", &lon_f);
+                            }
+                            else {
+                                lat_f = 0.0;
+                                lon_f = 0.0;
+                            }
+
+                            //printf("Lat: %f, Lon: %f\t", lat_f, lon_f);
+
+                            temp_ok = convert_to_xastir_coordinates(&my_long,
+                                &my_lat,
+                                (float)lon_f,
+                                (float)lat_f);
+
+                            // Snag label from DBF file
+                            if (fieldcount >= 1)
+                                temp = DBFReadStringAttribute( hDBF, structure, 0 );    // NAME of quad
+                            else
+                                temp = NULL;
+
+                        }
+                        else {  // Not quad overlay, use vertices
+                            temp_ok = convert_to_xastir_coordinates(&my_long,
+                                &my_lat,
+                                (float)object->padfX[0],
+                                (float)object->padfY[0]);
+                        }
                         //printf("%ld %ld\n", my_long, my_lat);
 
                         if (!temp_ok) {
