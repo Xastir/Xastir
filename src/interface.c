@@ -5334,15 +5334,18 @@ void port_write(int port) {
 // we wake up to check whether the socket has gone down.  Else, we
 // go back into the select to wait for more data or a timeout.
 // FreeBSD has a problem if this is less than 1ms.  Linux works ok
-// down to 100us.  We don't need it anywhere near that short though.
-// We just need to check whether the main thread has requested the
-// interface be closed, and so need to have this short enough to
-// have reasonable response time to the user.
+// down to 100us.  Theoretically we don't need it anywhere near that
+// short, we just need to check whether the main thread has
+// requested the interface be closed, and so need to have this short
+// enough to have reasonable response time to the user.
+// Unfortunately it has been reported that having this at 100ms
+// causes about 9 seconds of delay when transmitting to a KISS TNC,
+// so it's good to keep this short also.
 
             FD_ZERO(&wd);
             FD_SET(port_data[port].channel, &wd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 100000;  // Delay 100ms
+            tmv.tv_usec = 2000;  // Delay 2ms
             (void)select(0,NULL,&wd,NULL,&tmv);
         }
     }
