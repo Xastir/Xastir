@@ -4,6 +4,7 @@
 
 int terminal
 
+ECHO off
 MYAlias RELAY
 B E 0
 DIGI on
