@@ -6533,16 +6533,16 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
         (void)XLookupString( (XKeyEvent *)event, buffer, bufsize, &key, &compose );
         //printf("main.c:da_input():keycode %d\tkeysym %ld\t%s\n", event->xkey.keycode, key, buffer);
 
-        // keycode 99, keysym 65365 is PageUp
-        if (key == 65365) {
+        // keycode 99, keysym 65365 is PageUp (0xffda on sun kbd)
+        if ((key == 65365) || (key == 0xffda)) {
             menu_x=input_x;
             menu_y=input_y;
             Zoom_out_no_pan( w, client_data, call_data );
             TrackMouse(w, (XtPointer)text2, event, NULL);
         }
 
-        // keycode 105, keysym 65366 is PageDown
-        if (key == 65366) {
+        // keycode 105, keysym 65366 is PageDown (0xffe0 on sun kbd)
+        if ((key == 65366) || (key == 0xffe0)) {
             menu_x=input_x;
             menu_y=input_y;
             Zoom_in_no_pan( w, client_data, call_data );
