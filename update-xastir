@@ -4,6 +4,10 @@
 # $Id$
 # Copyright (C) 2004 The Xastir Group
 
+# See README.CVS for instructions on setting up SUDO, specifically
+# the /etc/sudoers file.  Windows/Cygwin users shouldn't need sudo
+# and can just delete the sudo keyword from the lines below.
+
 
 cvs update
 ./bootstrap.sh
