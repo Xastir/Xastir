@@ -128,7 +128,6 @@ int NETWORK_WAITTIME;
 
 
 
-/*
 // Create a packet that can be fed to AGWPE for transmission.
 // Format is as follows:
 //
@@ -218,7 +217,7 @@ unsigned char *create_agwpe_packet(int RadioPort,
 
         // Write the ViaCalls into the Data field
         for (ii = 0; ii < (num_digis * 10); ii++) {
-            strcpy(&output_string[ii + 37], ViaCalls[ii]);
+            strcpy(&output_string[ii + 37], &ViaCalls[ii]);
         }
 
         // Write the Data onto the end
@@ -231,6 +230,28 @@ unsigned char *create_agwpe_packet(int RadioPort,
 
     return(output_string);
 }
+
+
+
+
+
+/*
+// Function which will convert a TAPR2 style packet into an AGWPE
+// packet (suitable for transmitting with AGWPE).  Uses
+// create_agwpe_packet() function above.
+//
+void taprToAGWPE(void) {
+
+unsigned char *create_agwpe_packet(int RadioPort,
+                                   char *FromCall,
+                                   char *ToCall,
+                                   unsigned char *ViaCalls,
+                                   int num_digis,
+                                   char *Data,
+                                   int output_length,
+                                   unsigned char *output_string) {
+}
+*/
 
 
 
@@ -263,7 +284,6 @@ unsigned char *parse_agwpe_header(unsigned char *input_string,
         output_string[ii] = '\0';
     }
 }
-*/
 
 
 
