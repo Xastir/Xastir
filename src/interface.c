@@ -5779,14 +5779,8 @@ void tnc_data_clean(char *buf) {
         fprintf(stderr,"tnc_data_clean: called to clean %s\n", filtered_data);
     }
 
-    while (buf[0]=='c' && buf[1]=='m' && buf[2]=='d' && buf[3]==':') {
-        for(i = 4; i < (int)strlen(buf); i++) {
-            buf[i-4] = buf[i];
-        }
-        buf[i++]=0;     //Null out any remaining old data just in case
-        buf[i++]=0;
-        buf[i++]=0;
-        buf[i++]=0;
+    while (!strncmp(buf,"cmd:",4)) {
+        strcpy(buf,&buf[4]);
     }
 
     if (debug_level & 1) {
