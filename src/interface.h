@@ -61,7 +61,7 @@
 
 
 
-#define MAX_IFACE_DEVICE_TYPES 13
+#define MAX_IFACE_DEVICE_TYPES 14
 
 /* Define Device Types */
 enum Device_Types {
@@ -77,7 +77,8 @@ enum Device_Types {
     DEVICE_SERIAL_TNC_AUX_GPS,  // KB6MER -> KAM XL or other TNC w/GPS on AUX port
     DEVICE_SERIAL_KISS_TNC,     // KISS TNC on serial port (not ax.25 kernel device)
     DEVICE_NET_DATABASE,
-    DEVICE_NET_AGWPE
+    DEVICE_NET_AGWPE,
+    DEVICE_SERIAL_MKISS_TNC     // Multi-port KISS TNC, like the Kantronics KAM
 };
 
 enum Device_Active {

@@ -12246,7 +12246,8 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
     // Check for the only three types of interfaces where we might
     // want to do RELAY digipeating.  If not one of these, go
     // bye-bye.
-    if ( (devices[port].device_type != DEVICE_SERIAL_KISS_TNC)
+    if (       (devices[port].device_type != DEVICE_SERIAL_KISS_TNC)
+            && (devices[port].device_type != DEVICE_SERIAL_MKISS_TNC)
             && (devices[port].device_type != DEVICE_AX25_TNC)
             && (devices[port].device_type != DEVICE_NET_AGWPE) ) {
         return;
@@ -12393,7 +12394,9 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
 //fprintf(stderr,"*** New Path: %s,%s\n", destination, new_path);
 
 
-    if (devices[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+    if (       (devices[port].device_type == DEVICE_SERIAL_KISS_TNC)
+            || (devices[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
+
 
 #ifdef SERIAL_KISS_RELAY_DIGI
 //        fprintf(stderr,"KISS RELAY short_path: %s\n", short_path);

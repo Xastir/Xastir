@@ -439,6 +439,7 @@ WPUPCFT036|Persistance (0 à 255)||
 WPUPCFT037|SlotTime (unités de 10 ms)||
 WPUPCFT038|TxTail (unités de 10 ms)||
 WPUPCFT039|Full Duplex||
+WPUPCFT040|Configurer TNC MKISS||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configurer port météo||
@@ -776,6 +777,7 @@ IFDNL00009|TNC série + GPS sur câble AUX||
 IFDNL00010|TNC KISS série||
 IFDNL00011|Base de données par réseau (pas encore implémenté)||
 IFDNL00012|AGWPE par réseau||
+IFDNL00013|TNC MKISS série||
 #
 # Interface device info
 IFDIN00000|%s %2d %s sur port série %s||

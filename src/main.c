@@ -9707,6 +9707,7 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         /* TNC Devices */
                         case DEVICE_SERIAL_KISS_TNC:
+                        case DEVICE_SERIAL_MKISS_TNC:
 
                             // Try to decode header and checksum.  If
                             // bad, break, else continue through to

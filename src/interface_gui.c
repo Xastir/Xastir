@@ -294,7 +294,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
     if(XmToggleButtonGetState(TNC_transmit_data)) {
         devices[TNC_port].transmit_data=1;
-        if (devices[TNC_port].device_type == DEVICE_SERIAL_KISS_TNC) {
+        if ( (devices[TNC_port].device_type == DEVICE_SERIAL_KISS_TNC)
+                || (devices[TNC_port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
 
 #ifdef SERIAL_KISS_RELAY_DIGI
             XtSetSensitive(TNC_relay_digipeat, TRUE);
@@ -307,11 +308,15 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     }
     else {
         devices[TNC_port].transmit_data=0;
-        if (devices[TNC_port].device_type == DEVICE_SERIAL_KISS_TNC)
+        if ( (devices[TNC_port].device_type == DEVICE_SERIAL_KISS_TNC)
+                || (devices[TNC_port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
             XtSetSensitive(TNC_relay_digipeat, FALSE);
+        }
     }
 
-    if (type == DEVICE_SERIAL_KISS_TNC) {
+    if ( (type == DEVICE_SERIAL_KISS_TNC)
+            || (type == DEVICE_SERIAL_MKISS_TNC) ) {
+
         if (XmToggleButtonGetState(TNC_relay_digipeat))
             devices[TNC_port].relay_digipeat=1;
         else
@@ -330,6 +335,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
         case DEVICE_SERIAL_TNC:
         case DEVICE_SERIAL_KISS_TNC:
+        case DEVICE_SERIAL_MKISS_TNC:
         default:
             break;
     }
@@ -348,7 +354,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     strcpy(devices[TNC_port].unproto_igate,XmTextFieldGetString(TNC_igate_data));
     (void)remove_trailing_spaces(devices[TNC_port].unproto_igate);
 
-    if (type == DEVICE_SERIAL_KISS_TNC) {
+    if ( (type == DEVICE_SERIAL_KISS_TNC)
+            || (type == DEVICE_SERIAL_MKISS_TNC) ) {
+
         // KISS TNC, no up/down files for this one!
         strcpy(devices[TNC_port].tnc_up_file,"");
         strcpy(devices[TNC_port].tnc_down_file,"");
@@ -451,6 +459,10 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 tmp=langcode("WPUPCFT030");
                 break;
 
+            case DEVICE_SERIAL_MKISS_TNC:
+                tmp=langcode("WPUPCFT040");
+                break;
+
             case DEVICE_SERIAL_TNC_HSP_GPS:
                 tmp=langcode("WPUPCFT023");
                 break;
@@ -535,7 +547,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
                 break;
             case DEVICE_SERIAL_KISS_TNC:
-                // Add a "RELAY Digipeat?" button for KISS TNC's
+            case DEVICE_SERIAL_MKISS_TNC:
+                // Add a "RELAY Digipeat?" button for KISS/MKISS TNC's
                 TNC_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
                                       XmNnavigationType, XmTAB_GROUP,
                                       XmNtraversalOn, TRUE,
@@ -683,6 +696,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
         switch(device_type) {
             case DEVICE_SERIAL_KISS_TNC:
+            case DEVICE_SERIAL_MKISS_TNC:
                 break;
             default:
                 frame2 = XtVaCreateManagedWidget("Config_TNC frame2", xmFrameWidgetClass, form,
@@ -729,7 +743,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
         frame4 = XtVaCreateManagedWidget("Config_TNC frame4", xmFrameWidgetClass, form,
                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                     XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC) ? frame : frame2,
+XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SERIAL_MKISS_TNC) ? frame : frame2,
                                      XmNtopOffset, 10,
                                      XmNbottomAttachment, XmATTACH_NONE,
                                      XmNleftAttachment, XmATTACH_FORM,
@@ -922,6 +936,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 // Draw a different frame3 for Serial KISS TNC interfaces
         switch(device_type) {
             case DEVICE_SERIAL_KISS_TNC:
+            case DEVICE_SERIAL_MKISS_TNC:
                 frame3 = XtVaCreateManagedWidget("Config_TNC frame3", xmFrameWidgetClass, form,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopOffset,10,
@@ -1227,6 +1242,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                     XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
                     break;
                 case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_SERIAL_MKISS_TNC:
                     XmToggleButtonSetState(TNC_relay_digipeat, TRUE, FALSE);
                     XmToggleButtonSetState(TNC_fullduplex, FALSE, FALSE);
                     break;
@@ -1238,8 +1254,10 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             XmToggleButtonSetState(speed_4800,TRUE,FALSE);
             device_speed=4;
 
-            if (device_type != DEVICE_SERIAL_KISS_TNC)
+            if ( (device_type != DEVICE_SERIAL_KISS_TNC)
+                    && (device_type != DEVICE_SERIAL_MKISS_TNC) ) {
                 XmToggleButtonSetState(style_8n1,TRUE,FALSE);
+            }
 
             device_style=0;
 
@@ -1251,7 +1269,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             XmTextFieldSetString(TNC_igate_data,"");
 
 //WE7U
-            if (device_type == DEVICE_SERIAL_KISS_TNC) {
+            if ( (device_type == DEVICE_SERIAL_KISS_TNC)
+                    || (device_type == DEVICE_SERIAL_MKISS_TNC) ) {
                 // We don't allow changing the selection for KISS
                 // TNC's, as they require 8N1
                 device_style = 0;
@@ -1285,6 +1304,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                 XmToggleButtonSetState(TNC_transmit_data,FALSE,FALSE);
 
             switch(device_type) {
+
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                     if (devices[TNC_port].set_time)
@@ -1292,7 +1312,9 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     else
                         XmToggleButtonSetState(TNC_GPS_set_time, FALSE, FALSE);
                     break;
+
                 case  DEVICE_SERIAL_KISS_TNC:
+                case  DEVICE_SERIAL_MKISS_TNC:
 
                     if (devices[TNC_port].relay_digipeat)
                         XmToggleButtonSetState(TNC_relay_digipeat, TRUE, FALSE);
@@ -1316,6 +1338,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     else
                         XtSetSensitive(TNC_relay_digipeat, FALSE);
                     break;
+
                 case DEVICE_SERIAL_TNC:
                 default:
                     break;
@@ -1380,7 +1403,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
                     break;
             }
 
-            if (device_type == DEVICE_SERIAL_KISS_TNC) {
+            if ( (device_type == DEVICE_SERIAL_KISS_TNC)
+                    || (device_type == DEVICE_SERIAL_MKISS_TNC) ) {
                 // We don't allow changing the selection for KISS
                 // TNC's, as they require 8N1
                 device_style = 0;
@@ -1435,7 +1459,8 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
             XmTextFieldSetString(TNC_unproto3_data,devices[TNC_port].unproto3);
             XmTextFieldSetString(TNC_igate_data,devices[TNC_port].unproto_igate);
 
-            if (device_type == DEVICE_SERIAL_KISS_TNC) {
+            if ( (device_type == DEVICE_SERIAL_KISS_TNC)
+                    || (device_type == DEVICE_SERIAL_MKISS_TNC) ) {
                 XmTextFieldSetString(TNC_txdelay,devices[TNC_port].txdelay);
                 XmTextFieldSetString(TNC_persistence,devices[TNC_port].persistence);
                 XmTextFieldSetString(TNC_slottime,devices[TNC_port].slottime);
@@ -1456,8 +1481,10 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 
         XtManageChild(speed_box);
 
-        if (device_type != DEVICE_SERIAL_KISS_TNC)
+        if ( (device_type != DEVICE_SERIAL_KISS_TNC)
+                && (device_type != DEVICE_SERIAL_MKISS_TNC) ) {
             XtManageChild(style_box);
+        }
 
         XtManageChild(igate_box);
         XtManageChild(pane);
@@ -5480,6 +5507,7 @@ void modify_device_list(int option, int port) {
                         case DEVICE_SERIAL_TNC_HSP_GPS:
                         case DEVICE_SERIAL_TNC_AUX_GPS:
                         case DEVICE_SERIAL_KISS_TNC:
+                        case DEVICE_SERIAL_MKISS_TNC:
                         case DEVICE_SERIAL_GPS:
                         case DEVICE_SERIAL_WX:
                             xastir_snprintf(temp, sizeof(temp),
@@ -5544,6 +5572,7 @@ void modify_device_list(int option, int port) {
                     switch (devices[i].device_type) {
                         case DEVICE_SERIAL_TNC:
                         case DEVICE_SERIAL_KISS_TNC:
+                        case DEVICE_SERIAL_MKISS_TNC:
                         case DEVICE_SERIAL_TNC_HSP_GPS:
                         case DEVICE_SERIAL_TNC_AUX_GPS:
                         case DEVICE_SERIAL_GPS:
@@ -5651,6 +5680,13 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_setup" );
                         if (debug_level & 1)
                             fprintf(stderr,"ADD SERIAL KISS TNC\n");
                         Config_TNC(w, DEVICE_SERIAL_KISS_TNC, 0, port);
+                        break;
+
+                    case DEVICE_SERIAL_MKISS_TNC:
+                        // configure this port
+                        if (debug_level & 1)
+                            fprintf(stderr,"ADD SERIAL MKISS TNC\n");
+                        Config_TNC(w, DEVICE_SERIAL_MKISS_TNC, 0, port);
                         break;
 
                     case DEVICE_SERIAL_TNC:
@@ -5972,6 +6008,16 @@ end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
                             if (debug_level & 1)
                                 fprintf(stderr,"Modify SERIAL KISS TNC\n");
                             Config_TNC(w, DEVICE_SERIAL_KISS_TNC, 1, port);
+                            break;
+
+                        case DEVICE_SERIAL_MKISS_TNC:
+
+end_critical_section(&devices_lock, "interface_gui.c:interface_option" );
+
+                            /* configure this port */
+                            if (debug_level & 1)
+                                fprintf(stderr,"Modify SERIAL MKISS TNC\n");
+                            Config_TNC(w, DEVICE_SERIAL_MKISS_TNC, 1, port);
                             break;
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
@@ -6572,6 +6618,7 @@ begin_critical_section(&devices_lock, "interface_gui.c:interface_status" );
 
                 case DEVICE_AX25_TNC:
                 case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_SERIAL_MKISS_TNC:
                     s='5';  // Select icon for status bar
                     break;
 

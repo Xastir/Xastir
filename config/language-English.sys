@@ -440,6 +440,7 @@ WPUPCFT036|Persistence (0 to 255)||
 WPUPCFT037|SlotTime (10 ms units)||
 WPUPCFT038|TxTail (10 ms units)||
 WPUPCFT039|Full Duplex||
+WPUPCFT040|Configure MKISS TNC||
 #
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configure WX Port||
@@ -778,6 +779,7 @@ IFDNL00009|Serial TNC w/GPS on AUX port||
 IFDNL00010|Serial KISS TNC||
 IFDNL00011|Networked Database (Not Implemented Yet)||
 IFDNL00012|Networked AGWPE||
+IFDNL00013|Serial MKISS TNC||
 #
 # Interface device info 
 IFDIN00000|%s %2d %s %s||

@@ -328,6 +328,7 @@ int not_a_dupe(int queue_type, int port, char *line, int insert_mode) {
                 case DEVICE_SERIAL_TNC:
                 case DEVICE_AX25_TNC:
                 case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_SERIAL_MKISS_TNC:
                 case DEVICE_NET_AGWPE:
                     fprintf(stderr,"        Found RF dupe: %s\n",match_line);
                     break;
@@ -412,6 +413,7 @@ void insert_into_heard_queue(int port, char *line) {
         case DEVICE_SERIAL_TNC:
         case DEVICE_AX25_TNC:
         case DEVICE_SERIAL_KISS_TNC:
+        case DEVICE_SERIAL_MKISS_TNC:
         case DEVICE_NET_AGWPE:
  
             // We're not using the dupe check function, but merely the
@@ -845,6 +847,7 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
                 case DEVICE_SERIAL_TNC:
                 case DEVICE_AX25_TNC:
                 case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_SERIAL_MKISS_TNC:
                 case DEVICE_NET_AGWPE:
 
 begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
@@ -1181,6 +1184,7 @@ void output_nws_igate_rf(char *from, char *path, char *line, int port, int third
                 case DEVICE_SERIAL_TNC:
                 case DEVICE_AX25_TNC:
                 case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_SERIAL_MKISS_TNC:
                 case DEVICE_NET_AGWPE:
 
 begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );

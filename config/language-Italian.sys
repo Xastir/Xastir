@@ -440,6 +440,7 @@ WPUPCFT036|Persistenza (0 to 255)||
 WPUPCFT037|SlotTime (unità di 10 ms)||
 WPUPCFT038|Coda Tx (unità di 10 ms)||
 WPUPCFT039|Full Duplex||
+WPUPCFT040|Configura TNC MKISS||
 #
 #Configura Porta Meteo
 WPUPCFWX01|Configura Porta Meteo||
@@ -777,6 +778,7 @@ IFDNL00009|TNC Seriale con GPS connesso con cavo AUX||
 IFDNL00010|TNC Seriale in KISS||
 IFDNL00011|Database su Rete (Non ancora Implementato)||
 IFDNL00012|AGWPE Via Rete||
+IFDNL00013|TNC Seriale in MKISS||
 #
 #Interface device info 
 IFDIN00000|%s %2d %s sulla seriale %s|| 

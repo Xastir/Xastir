@@ -4624,7 +4624,9 @@ void port_read(int port) {
                         // as it is otherwise only used for AX.25
                         // ports.
 
-                        if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+                        if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
+                                || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
+
 
                             if (port_data[port].channel2 == KISS_FESC) { // Frame Escape char
                                 if (cin == KISS_TFEND) { // Transposed Frame End char
@@ -4802,7 +4804,8 @@ void port_read(int port) {
                                 && (cin == (unsigned char)'\r'
                                     || cin == (unsigned char)'\n'
                                     || port_data[port].read_in_pos >= (MAX_DEVICE_BUFFER - 1)
-                                    || ( (cin == KISS_FEND) && (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) ) )
+                                    || ( (cin == KISS_FEND) && (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) )
+                                    || ( (cin == KISS_FEND) && (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) )
                                && port_data[port].data_type == 0) {     // If end-of-line
 
 // End serial/net type data send it to the decoder Put a terminating
@@ -4819,7 +4822,9 @@ void port_read(int port) {
                                 //fprintf(stderr,"%d\t%d\n",port_data[port].read_in_pos,port_data[port].read_out_pos);
 
                                 // KISS TNC sends binary data
-                                if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+                                if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
+                                        || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
+ 
                                     length = port_data[port].read_in_pos - port_data[port].read_out_pos;
                                     if (length < 0)
                                         length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
@@ -5193,6 +5198,7 @@ void port_write(int port) {
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                     case DEVICE_SERIAL_KISS_TNC:
+                    case DEVICE_SERIAL_MKISS_TNC:
                     case DEVICE_SERIAL_TNC:
                     case DEVICE_SERIAL_GPS:
                     case DEVICE_SERIAL_WX:
@@ -5533,6 +5539,7 @@ void init_device_names(void) {
     strcpy(dtype[DEVICE_SERIAL_KISS_TNC].device_name,langcode("IFDNL00010"));
     strcpy(dtype[DEVICE_NET_DATABASE].device_name,langcode("IFDNL00011"));
     strcpy(dtype[DEVICE_NET_AGWPE].device_name,langcode("IFDNL00012"));
+    strcpy(dtype[DEVICE_SERIAL_MKISS_TNC].device_name,langcode("IFDNL00013"));
 }
 
 
@@ -5556,6 +5563,7 @@ int del_device(int port) {
 
         case(DEVICE_SERIAL_TNC):
         case(DEVICE_SERIAL_KISS_TNC):
+        case(DEVICE_SERIAL_MKISS_TNC):
         case(DEVICE_SERIAL_GPS):
         case(DEVICE_SERIAL_WX):
         case(DEVICE_SERIAL_TNC_HSP_GPS):
@@ -5582,6 +5590,10 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                         fprintf(stderr,"Close a Serial KISS TNC device\n");
                         break;
 
+                case DEVICE_SERIAL_MKISS_TNC:
+                    if (debug_level & 2)
+                        fprintf(stderr,"Close a Serial MKISS TNC device\n");
+                        break;
 
                 case DEVICE_SERIAL_GPS:
                     if (debug_level & 2)
@@ -5808,6 +5820,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
             case DEVICE_SERIAL_TNC:
             case DEVICE_SERIAL_KISS_TNC:
+            case DEVICE_SERIAL_MKISS_TNC:
             case DEVICE_SERIAL_GPS:
             case DEVICE_SERIAL_WX:
             case DEVICE_SERIAL_TNC_HSP_GPS:
@@ -5824,6 +5837,12 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     case DEVICE_SERIAL_KISS_TNC:
                         if (debug_level & 2)
                             fprintf(stderr,"Opening a Serial KISS TNC device\n");
+
+                        break;
+
+                    case DEVICE_SERIAL_MKISS_TNC:
+                        if (debug_level & 2)
+                            fprintf(stderr,"Opening a Serial MKISS TNC device\n");
 
                         break;
 
@@ -6142,6 +6161,18 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     send_kiss_config(port_avail,0,0x05,devices[port_avail].fullduplex);
                     break;
 
+//WE7U
+               case DEVICE_SERIAL_MKISS_TNC:
+                    // Send the KISS parameters to the TNC.  We'll
+                    // need to send them to the correct port for
+                    // this MKISS device.
+                    send_kiss_config(port_avail,0,0x01,atoi(devices[port_avail].txdelay));
+                    send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
+                    send_kiss_config(port_avail,0,0x03,atoi(devices[port_avail].slottime));
+                    send_kiss_config(port_avail,0,0x04,atoi(devices[port_avail].txtail));
+                    send_kiss_config(port_avail,0,0x05,devices[port_avail].fullduplex);
+                    break;
+
                 case DEVICE_NET_AGWPE:
                     // Query for the AGWPE version
                     //
@@ -6400,6 +6431,7 @@ begin_critical_section(&devices_lock, "interface.c:startup_all_or_defined_port" 
 
                 case DEVICE_SERIAL_TNC:
                 case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_SERIAL_MKISS_TNC:
                 case DEVICE_SERIAL_TNC_HSP_GPS:
                 case DEVICE_SERIAL_TNC_AUX_GPS:
 
@@ -6767,6 +6799,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
             case DEVICE_SERIAL_TNC_AUX_GPS:
             case DEVICE_SERIAL_KISS_TNC:
+            case DEVICE_SERIAL_MKISS_TNC:
             case DEVICE_SERIAL_TNC:
             case DEVICE_AX25_TNC:
 
@@ -6779,6 +6812,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 // Send the callsign out to the TNC only if the interface is up and tx is enabled???
                 // We don't set it this way for KISS TNC interfaces.
                 if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                        && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
                         && (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
@@ -6815,6 +6849,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 // unproto path that'll be used by the next packet.
                 // We don't set it this way for KISS TNC interfaces.
                 if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                        && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
                         && (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
@@ -6827,6 +6862,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 // KISS TNC interfaces.
                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s\r", '\3', "CONV");
                 if ( (port_data[port].device_type != DEVICE_SERIAL_KISS_TNC)
+                        && (port_data[port].device_type != DEVICE_SERIAL_MKISS_TNC)
                         && (port_data[port].status == DEVICE_UP)
                         && (devices[port].transmit_data == 1)
                         && !transmit_disable
@@ -7018,7 +7054,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 // interfaces:  header_txt_save would probably be the one to pass,
 // or create a new string just for KISS TNC's.
 
-                if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+                if ( (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC)
+                        || (port_data[port].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
 
 // Note:  This one has callsign & destination in the string
 
@@ -7177,6 +7214,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
                 case DEVICE_SERIAL_KISS_TNC:
+                case DEVICE_SERIAL_MKISS_TNC:
                 case DEVICE_SERIAL_TNC:
                 case DEVICE_AX25_TNC:
 
@@ -7193,7 +7231,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         my_callsign);
 
                     if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
-                            &&  (port_data[i].status == DEVICE_UP)
+                            && (port_data[i].device_type != DEVICE_SERIAL_MKISS_TNC)
+                            && (port_data[i].status == DEVICE_UP)
                             && (devices[i].transmit_data == 1)
                             && !transmit_disable
                             && !loopback_only) {
@@ -7295,6 +7334,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
 
                     if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
+                            && (port_data[i].device_type != DEVICE_SERIAL_MKISS_TNC)
                             && (port_data[i].status == DEVICE_UP)
                             && (devices[i].transmit_data == 1)
                             && !transmit_disable
@@ -7307,6 +7347,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     xastir_snprintf(data_txt, sizeof(data_txt), "%c%s\r", '\3', "CONV");
 
                     if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
+                            && (port_data[i].device_type != DEVICE_SERIAL_MKISS_TNC)
                             && (port_data[i].status == DEVICE_UP)
                             && (devices[i].transmit_data == 1)
                             && !transmit_disable
@@ -7340,7 +7381,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 // interfaces:  data_txt_save would probably be the one to pass,
 // or create a new string just for KISS TNC's.
 
-                if (port_data[i].device_type == DEVICE_SERIAL_KISS_TNC) {
+                if ( (port_data[i].device_type == DEVICE_SERIAL_KISS_TNC)
+                        || (port_data[i].device_type == DEVICE_SERIAL_MKISS_TNC) ) {
 
                     // Transmit
                     send_ax25_frame(i,
