@@ -28,16 +28,16 @@ PULDNFI002|Open Log File|O|
 PULDNFI003|Test|T|
 PULDNFI004|Exit|x|
 PULDNFI007|Change Debug Level|D|
-PULDNFI010|Enable TNC Logging||
-PULDNFI011|Enable Net Logging||
-PULDNFI012|Enable IGate Logging||
-PULDNFI013|Enable WX Logging||
-PULDNFI014|Enable PNG Snapshots||
-PULDNFI015|Print Map|P|
+PULDNFI010|TNC Logging||
+PULDNFI011|Net Logging||
+PULDNFI012|IGate Logging||
+PULDNFI013|WX Logging||
+PULDNFI014|PNG Snapshots||
+PULDNFI015|Print|P|
 #
 # Menu "View"
 PULDNVI001|Bulletins|B|
-PULDNVI002|Incoming Packet Data|I|
+PULDNVI002|Incoming Data|I|
 PULDNVI003|Mobile Stations|M|
 PULDNVI004|All Stations|A|
 PULDNVI009|Local Stations|S|
@@ -970,7 +970,7 @@ FEATURE005|Type:||
 FEATURE006|GNIS File:||
 #
 # Coordinate Calculator Dialog
-COORD001|Coordinate Calc||
+COORD001|Coordinate Calculator||
 COORD002|Calc||
 COORD003|Calculate||
 COORD004|Clear||
