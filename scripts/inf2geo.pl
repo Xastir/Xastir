@@ -52,7 +52,7 @@ if ( ($tp1_lat =~ /E/) || ($tp1_lat =~ /W/) )   # Reverse them
 }
 
 $filename = $ARGV[0];
-$filename =~ tr/A-Z/a-z/;
+#$filename =~ tr/A-Z/a-z/;
 $filename1 = $filename . '.GIF';
 $filename2 = $filename . '.Gif';
 $filename  = $filename . '.gif';
@@ -62,15 +62,19 @@ $tp0_lon2 = &convert($tp0_lon);
 $tp1_lat2 = &convert($tp1_lat);
 $tp1_lon2 = &convert($tp1_lon);
 
+$final_filename = $filename;
 $string = `identify -ping $filename 2>/dev/null`;
 if ($string eq "")
 {
+    $final_filename = $filename1;
     $string = `identify -ping $filename1 2>/dev/null`;
 }
 if ($string eq "")
 {
+    $final_filename = $filename2;
     $string = `identify -ping $filename2 2>/dev/null`;
 }
+
 if ($string eq "")
 {
     print "\nCouldn't run 'identify -ping' on the file\n";
@@ -95,7 +99,7 @@ $y =~ s/^\d+x(\d+).*/$1/;
 $x1 = $x - 1;    # We start numbering pixels at zero, not 1
 $y1 = $y - 1;    # We start numbering pixels at zero, not 1
 
-printf $geo "FILENAME    $filename\n";
+printf $geo "FILENAME    $final_filename\n";
 printf $geo "TIEPOINT    0\t\t0\t$tp0_lon2\t$tp0_lat2\n";
 printf $geo "TIEPOINT    $x1\t$y1\t$tp1_lon2\t$tp1_lat2\n";
 printf $geo "IMAGESIZE   $x\t$y\n";
