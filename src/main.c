@@ -9825,7 +9825,6 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
 
 
 
-
 void quit(int sig) {
     if(debug_level & 15)
         fprintf(stderr,"Caught %d\n",sig);
@@ -9859,8 +9858,19 @@ void segfault(/*@unused@*/ int sig) {
     quit(-1);
 }
 
+/*  
+   Added by KB4AMA
+   Handle USR1 signal.  This will cause
+   a snapshot to be generated.
+*/
 
+void usr1sig(int sig) {
+	if (debug_level & 512)
+		fprintf(stderr, "Caught Signal USR1, Doing a snapshot! Signal No %d\n", sig);
 
+	last_snapshot = 0;
+	(void)Snapshot();
+}
 
 
 /*********************  dialog position *************************/
@@ -25437,6 +25447,7 @@ int main(int argc, char *argv[]) {
     (void) signal(SIGINT,quit);                         // set signal on stop
     (void) signal(SIGQUIT,quit);
     (void) signal(SIGTERM,quit);
+    (void) signal(SIGUSR1,usr1sig);			// take a snapshot on demand 
     (void) signal(SIGPIPE,SIG_IGN);                     // set sigpipe signal to ignore
     if (!trap_segfault)
         (void) signal(SIGSEGV,segfault);                // set segfault signal to check

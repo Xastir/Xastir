@@ -2925,6 +2925,9 @@ void Snapshot(void) {
 
 #ifndef NO_XPM
 
+    if (debug_level & 512)
+	    fprintf(stderr,"Taking Snapshot\n");
+
     doing_snapshot++;
 
     // Set up the XPM filename that we'll use
@@ -3437,8 +3440,8 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
     DIR *dm;
     char fullpath[MAX_FILENAME];
     struct stat nfile;
-    const time_t *ftime;
-    char this_time[40];
+//    const time_t *ftime;
+//    char this_time[40];
     char *ptr;
     char *map_dir;
     int map_dir_length;
@@ -3625,7 +3628,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                         xastir_snprintf(fullpath, sizeof(fullpath), "%s%s", dir, dl->d_name);
                         /*fprintf(stderr,"FULL PATH %s\n",fullpath); */
                         if (stat (fullpath, &nfile) == 0) {
-                            ftime = (time_t *)&nfile.st_ctime;
+//                            ftime = (time_t *)&nfile.st_ctime;
                             switch (nfile.st_mode & S_IFMT) {
                                 case (S_IFDIR):     // It's a directory, skip it
                                     break;
@@ -3740,7 +3743,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                 xastir_snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, dl->d_name);
                 //fprintf(stderr,"FULL PATH %s\n",fullpath);
                 if (stat (fullpath, &nfile) == 0) {
-                    ftime = (time_t *)&nfile.st_ctime;
+//                    ftime = (time_t *)&nfile.st_ctime;
                     switch (nfile.st_mode & S_IFMT) {
                         case (S_IFDIR):     // It's a directory, recurse
                             //fprintf(stderr,"file %c letter %c\n",dl->d_name[0],letter);
@@ -3770,7 +3773,7 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
                                     index_update_directory(temp_dir);
                                 }
 
-                                strcpy (this_time, ctime (ftime));
+//                                strcpy (this_time, ctime (ftime));
                                 map_search(w, fullpath, alert, alert_count, warn, destination_pixmap);
                             }
                             break;
