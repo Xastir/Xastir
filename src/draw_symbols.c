@@ -1379,22 +1379,43 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
                         if ( (!ghost || show_old_data) && temp_show_last_heard) {
                             char age[20];
                             float minutes;
+                            float hours;
+                            int fgcolor;
+
+                            // Color code the time string based on
+                            // time since last heard:
+                            //  Green:  0-29 minutes
+                            // Yellow: 30-59 minutes
+                            //    Red: 60-infinity minutes
 
                             minutes = (float)( (sec_now() - sec_heard) / 60.0);
-                            // More than an hour old?
-                            if (minutes >= 60.0) {
-                                xastir_snprintf(age,sizeof(age),"%.1fhr",
-                                    (float)(minutes / 60.0) );
+                            hours = minutes / 60.0;
+                            // More than a day old?
+                            if (hours >= 24.0) {
+                                xastir_snprintf(age,sizeof(age),"%.1fday", hours/24.0);
+                                fgcolor = 0x4a; // red
                             }
-                            else {  // Less than an hour old
-                                xastir_snprintf(age,sizeof(age),"%dmin",
-                                    (int)minutes);
+                            // More than an hour old?
+                            else if (minutes >= 60.0) {
+                                xastir_snprintf(age,sizeof(age),"%.1fhr", hours);
+                                fgcolor = 0x4a; // red
+                            }
+                            // Less than an hour old
+                            else {
+                                xastir_snprintf(age,sizeof(age),"%dmin", (int)minutes);
+                                fgcolor = 0x40; // yellow
+                            }
+
+                            // Heard from this station within the
+                            // last 30 minutes?
+                            if (minutes < 30.0) {
+                                fgcolor = 0x52; // green
                             }
 
                             length = strlen(age);
                             x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
                             y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,0x0f,length);
+                            draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,fgcolor,length);
                             posyl += 12;
                         }
                                                                                                                     
