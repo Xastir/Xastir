@@ -629,12 +629,13 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 // character to 1 space character.
 //
 //********************************************************************/
+/*
 char *get_line(FILE *f, char *linedata, int maxline) {
     char temp_line[32768];
     int i;
 
     // Snag one string from the file.  We'll end up with a
-    // terminating zero at temp_line[32767] in an case, because the
+    // terminating zero at temp_line[32767] in any case, because the
     // max quantity we'll get here will be 32767 with a terminating
     // zero added after whatever quantity is read.
     (void)fgets(temp_line, 32768, f);
@@ -662,6 +663,36 @@ char *get_line(FILE *f, char *linedata, int maxline) {
     }
 
     xastir_snprintf(linedata,maxline,"%s",temp_line);
+
+    return(linedata);
+}
+*/
+char *get_line(FILE *f, char *linedata, int maxline) {
+    int length;
+
+    // Write terminating chars throughout variable
+    memset(linedata,0,maxline);
+
+    // Get the data
+    (void)fgets(linedata, maxline, f);
+
+    // Change CR/LF to '\0'
+    length = strlen(linedata);
+
+    // Check the last two characters
+    if (length > 0) {
+        if ( (linedata[length - 1] == '\n')
+                || (linedata[length - 1] == '\r') ) {
+            linedata[length - 1] = '\0';
+        }
+    }
+
+    if (length > 1) {
+        if ( (linedata[length - 2] == '\n')
+                || (linedata[length - 2] == '\r') ) {
+            linedata[length - 2] = '\0';
+        }
+    }
 
     return(linedata);
 }

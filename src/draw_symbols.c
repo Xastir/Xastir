@@ -1361,10 +1361,10 @@ void draw_area(long x_long, long y_lat, char type, char color,
 void read_symbol_from_file(FILE *f, char *pixels) {
     int x,y;                
     int color;
-    char line[21];
+    char line[100];
 
     for (y=0;y<20;y++) {
-        (void)get_line(f,line,21);
+        (void)get_line(f,line,100);
         for (x=0;x<20;x++) {
             switch (line[x]) {
                 case('.'):       // transparent
@@ -1447,7 +1447,7 @@ void read_symbol_from_file(FILE *f, char *pixels) {
 void load_pixmap_symbol_file(char *filename) {
     FILE *f;
     char filen[500];
-    char line[21];
+    char line[100];
     char table_char;
     char symbol_char;
     int done;
@@ -1463,7 +1463,7 @@ void load_pixmap_symbol_file(char *filename) {
     f = fopen(filen,"r");
     if (f!=NULL) {
         while (!feof(f) && !done) {
-            (void)get_line(f,line,21);
+            (void)get_line(f,line,100);
             if (strncasecmp("TABLE ",line,6)==0) {
                 table_char=line[6];
                 /*printf("TABLE %c\n",table_char);*/

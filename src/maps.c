@@ -10700,7 +10700,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                     && (dl->d_name[i] != '\r')
                                     && (dl->d_name[i] < 0x20) ) {
 
-                                printf("\nFound control character 0x%02x in alert file/alert directory name.  Line was:\n",
+                                printf("\nmap_search: Found control char 0x%02x in alert file/alert directory name.  Line was:\n",
                                     dl->d_name[i]);
                                 printf("%s\n",dl->d_name);
                             }
@@ -10801,7 +10801,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                             && (dl->d_name[i] != '\r')
                             && (dl->d_name[i] < 0x20) ) {
 
-                        printf("\nFound control character 0x%02x in map file/map directory name.  Line was:\n",
+                        printf("\nmap_search: Found control char 0x%02x in map file/map directory name.  Line was:\n",
                             dl->d_name[i]);
                         printf("%s\n",dl->d_name);
                     }
@@ -10951,9 +10951,11 @@ void index_update_directory(char *directory) {
         // Change any control characters to '\0' chars
         if (directory[i] < 0x20) {
 
-            directory[i] = '\0';    // Terminate it here
-            printf("index_update_directory: Found control characters in: %s\n",
+            printf("\nindex_update_directory: Found control char 0x%02x in map file/map directory name:\n%s\n",
+                directory[i],
                 directory);
+
+            directory[i] = '\0';    // Terminate it here
         }
     }
     // Check if the string is _now_ bogus
@@ -11094,9 +11096,11 @@ void index_update_xastir(char *filename,
         // Change any control characters to '\0' chars
         if (filename[i] < 0x20) {
 
-            filename[i] = '\0';    // Terminate it here
-            printf("index_update_xastir: Found control characters in: %s\n",
+            printf("\nindex_update_xastir: Found control char 0x%02x in map file/map directory name:\n%s\n",
+                filename[i],
                 filename);
+
+            filename[i] = '\0';    // Terminate it here
         }
     }
     // Check if the string is _now_ bogus
@@ -11255,9 +11259,11 @@ void index_update_ll(char *filename,
         // Change any control characters to '\0' chars
         if (filename[i] < 0x20) {
 
-            filename[i] = '\0';    // Terminate it here
-            printf("index_update_ll: Found control characters in: %s\n",
+            printf("\nindex_update_ll: Found control char 0x%02x in map file/map directory name:\n%s\n",
+                filename[i],
                 filename);
+
+            filename[i] = '\0';    // Terminate it here
         }
     }
     // Check if the string is _now_ bogus
@@ -11502,9 +11508,11 @@ void index_save_to_file() {
             // Change any control characters to '\0' chars
             if (current->filename[i] < 0x20) {
 
-                current->filename[i] = '\0';    // Terminate it here
-                printf("Found control characters while saving map index: %s\n",
+                printf("\nindex_save_to_file: Found control char 0x%02x in map name:\n%s\n",
+                    current->filename[i],
                     current->filename);
+
+                current->filename[i] = '\0';    // Terminate it here
             }
         }
  
@@ -11572,9 +11580,11 @@ void index_insert_sorted(map_index_record *new_record) {
     for ( i = 0; i < strlen(new_record->filename); i++ ) {
         if (new_record->filename[i] < 0x20) {
 
-            new_record->filename[i] = '\0';    // Terminate it here
-            printf("index_insert_sorted: Found control characters in: %s\n",
+            printf("\nindex_insert_sorted: Found control char 0x%02x in map name:\n%s\n",
+                new_record->filename[i],
                 new_record->filename);
+
+            new_record->filename[i] = '\0';    // Terminate it here
         }
     }
     // Check if the string is _now_ bogus
@@ -11767,7 +11777,8 @@ void index_restore_from_file(void) {
                     if (temp_record->filename[i] < 0x20) {
 
                         processed = 0;  // Reject this record
-                        printf("index_restore_from_file: Found control chars in %s\n",
+                        printf("\nindex_restore_from_file: Found control char 0x%02x in map name:\n%s\n",
+                            temp_record->filename[i],
                             temp_record->filename);
                     }
                 }
