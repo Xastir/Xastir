@@ -11,12 +11,17 @@ pkglib_SCRIPTS = \
     inf2geo.pl \
     mapblast2geo.pl \
     mapfgd.pl \
+    ozi2geo.pl \
     permutations.pl \
+    split_gnis.bash \
+    split_gnis.pl \
+    test_coord.pl \
     track-get.pl \
     update_langfile.pl \
     waypoint-get.pl \
-    xastir-migrate.sh \
-    xastir-fixcfg.sh
+    xastir-fixcfg.sh \
+    xastir-migrate.sh
+
 
 EXTRA_DIST = $(pkglib_SCRIPTS)
 
