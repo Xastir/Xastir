@@ -432,14 +432,6 @@ satellite images on the map screen.
 
 
 
-
-
-NOTE:  The below has worked at times with careful selection of the
-various libraries, but appears to have a problem with the latest
-Cygwin releases plus the latest libproj/libgeotiff releases.  We're
-working on the problem, but you may wish to skip these libraries for
-now in order to keep a working Xastir installation.
-
 OPTIONAL:  Install geoTIFF support:
 -----------------------------------
 Allows using USGS DRG topo maps or other types of geoTIFF
