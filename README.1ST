@@ -2,7 +2,7 @@
 $Id$
 
 
-Xastir is an open-source project to create a free X11 graphical APRS
+Xastir is an open-source project to create a free X11 graphical APRS(tm)
 client.  Most sources, documentation, and binaries are available under
 the GPL license, with a few modules available under other open-source or
 public domain licenses.
@@ -43,7 +43,9 @@ contribution!
 
 General steps to configure/compiling/installing Xastir (most systems):
 ----------------------------------------------------------------------
-1a) Get one of the source releases and explode it:
+1a) Get one of the source releases and explode it.  For Windows/Cygwin
+you'll want to use CVS to get the latest, as it's the only version
+that has Cygwin stuff in it (so far).  See step 1b) for CVS info:
 
   mkdir xastir
   cp xastir*.tgz xastir
@@ -65,9 +67,10 @@ password:
   ./bootstrap.sh
   ./configure
   make
-  su (become the root user)
-  make install-strip;chmod 4555 /usr/local/bin/xastir
-  exit (from root)
+  su (become the root user) (not needed on Cygwin)
+  make install-strip
+  chmod 4555 /usr/local/bin/xastir (not needed on Cygwin)
+  exit (from root) (not needed on Cygwin)
 
 3) Xastir should now be installed in /usr/local/bin (the default on
 most systesm).  You can run it by typing this from a shell:
@@ -1269,8 +1272,8 @@ WINDOWS/CYGWIN NOTES:
      get lots of warnings about Xastir not being able to allocate colors
      when it starts up, and the display will be rather stark looking.
 
-     Cygwin Shapelib:
-     ----------------
+     Adding Shapelib to Cygwin:
+     --------------------------
      1) Edit the Makefile for Shapelib to remove the space after the "-h" on
         the line that starts like this:
 
@@ -1306,8 +1309,8 @@ WINDOWS/CYGWIN NOTES:
          make
          make install-strip
 
-     Cygwin ImageMagick:
-     -------------------
+     Adding ImageMagick to Cygwin:
+     -----------------------------
      Download the ImageMagick cygwin binary from www.imagemagick.org or one
      of it's mirrors.  Extract it somewhere, then copy the files/directories
      into the /usr tree (/usr/include and /usr/lib).
@@ -1481,8 +1484,8 @@ Gating NWS Weather Alerts to RF:
 
 
 
- Current List of APRS Internet Servers:
- --------------------------------------
+ Current List of APRS(tm) Internet Servers:
+ ------------------------------------------
  Date: Tue, 12 Mar 2002 19:24:01 EST
  From: WA8LMF2@aol.com
  To: TAPR APRS Special Interest Group <aprssig@lists.tapr.org>
