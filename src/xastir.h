@@ -83,7 +83,6 @@ extern GC gc;
 extern Pixmap  pixmap;
 extern Pixmap  pixmap_final;
 extern Pixmap  pixmap_alerts;
-extern Pixmap  pixmap_snapshot;
 extern Pixmap  pixmap_50pct_stipple;
 extern Pixmap  pixmap_25pct_stipple;
 extern Pixmap  pixmap_13pct_stipple;
