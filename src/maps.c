@@ -1420,7 +1420,7 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
         }
     }
 
-    if (debug_level & 1) {
+    if (debug_level & 16) {
         printf ("(shpgeo:SHPRingDir) highest Rightmost Pt is vtx %d (%f, %f)\n",
             ti,
             a[ti],
@@ -1451,7 +1451,7 @@ int SHPRingDir_2d ( SHPObject *psCShape, int Ring ) {
 
     v3 = ( (dx0 * dy1) - (dx1 * dy0) );
 
-    if (debug_level & 1) {
+    if (debug_level & 16) {
         printf ("(shpgeo:SHPRingDir)  cross product for vtx %d was %f n",
             ti, v3); 
     }
@@ -5576,7 +5576,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
         fprintf(stderr,"Couldn't open file: %s\n", file);
         return;
     }
-    if (debug_level & 1)
+    if (debug_level & 16)
         fprintf(stderr,"Exiting draw_gnis_map\n");
 }
 
@@ -10030,7 +10030,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm,
 
     if ((fn = fopen(filename, "r")) != NULL) {
 
-        if (debug_level & 1)
+        if (debug_level & 16)
             fprintf(stderr,"opened file: %s\n", filename);
 
         fread(&pdb_hdr, sizeof(pdb_hdr), 1, fn);
@@ -10366,7 +10366,7 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm,
 
         fclose(fn);
 
-        if (debug_level & 1)
+        if (debug_level & 16)
             fprintf(stderr,"Closed file\n");
     }
     else {
@@ -10781,7 +10781,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                 statusline(map_it,0);       // Loading/Indexing ...
 
 
-                if (debug_level & 1)
+                if (debug_level & 16)
                     fprintf(stderr,"in Boundary %s\n", map_it);
 
                 (void)XSetLineAttributes (XtDisplay (w), gc, line_width, LineSolid, CapButt,JoinMiter);
@@ -13295,7 +13295,7 @@ void load_maps (Widget w) {
     map_index_record *current;
 
 
-    if (debug_level & 1)
+    if (debug_level & 16)
         fprintf(stderr,"Load maps start\n");
 
     // Skip the sorting of the maps if we don't need to do it
@@ -13314,7 +13314,7 @@ void load_maps (Widget w) {
 
         f = fopen (SELECTED_MAP_DATA, "r");
         if (f != NULL) {
-            if (debug_level & 1)
+            if (debug_level & 16)
                 fprintf(stderr,"Load maps Open map file\n");
 
             while (!feof (f)) {
@@ -13330,7 +13330,7 @@ void load_maps (Widget w) {
                             mapname[i] = '\0'; 
                     }
 
-                    if (debug_level & 1)
+                    if (debug_level & 16)
                         fprintf(stderr,"Found mapname: %s\n", mapname);
 
                     // Test for comment
@@ -13407,7 +13407,7 @@ void load_maps (Widget w) {
 //stop_timer();
 //print_timer_results();
 
-                            if (debug_level & 1)
+                            if (debug_level & 16)
                                 fprintf(stderr,"Load maps -%s\n", mapname);
 
                             XmUpdateDisplay (da);
@@ -13455,6 +13455,6 @@ void load_maps (Widget w) {
         current = current->next;
     }
 
-    if (debug_level & 1)
+    if (debug_level & 16)
         fprintf(stderr,"Load maps stop\n");
 }
