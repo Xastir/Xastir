@@ -1689,7 +1689,7 @@ void Coordinate_calc_clear_data(Widget widget, XtPointer clientData, XtPointer c
 
 
 
-// Computes all four coordinate representations for displaying in
+// Computes all five coordinate representations for displaying in
 // the "result" textField.  Also fills in the global variables for
 // possible later use when passing results back to the calling
 // dialog.  We can't use the util.c:*_l2s routines for the
@@ -1715,7 +1715,9 @@ void Coordinate_calc_output(char *full_zone, long northing,
     long temp;
     long xastir_lat;
     long xastir_lon;
-
+    char MGRS_str[50];
+    double double_easting, double_northing;
+ 
 
     // Latitude:  Switch to integer arithmetic to avoid
     // floating-point rounding errors.
@@ -1756,23 +1758,43 @@ void Coordinate_calc_output(char *full_zone, long northing,
     lon_min_int = (int)(temp / 1000);
     lon_sec = (temp % 1000) * 60.0 / 1000.0;
 
-    // Compute Maidenhead Grid Locator.  Note that the sec_to_loc()
-    // function expects lat/lon in Xastir coordinate system.
-    convert_UTM_to_xastir(easting,
-        northing,
+
+    double_easting = (double)easting;
+    double_northing = (double)northing;
+    convert_UTM_to_xastir(double_easting,
+        double_northing,
         full_zone,
         &xastir_lon,
         &xastir_lat);
+
+//fprintf(stderr,"%s  %f  %f\t\t%lu %lu\n",
+//full_zone,
+//double_easting,
+//double_northing,
+//xastir_lat,
+//xastir_lon);
+
+ 
+    // Compute MGRS coordinates.
+    convert_xastir_to_MGRS_str(MGRS_str,
+        sizeof(MGRS_str),
+        xastir_lon,
+        xastir_lat);
+
+
+    // Compute Maidenhead Grid Locator.  Note that the sec_to_loc()
+    // function expects lat/lon in Xastir coordinate system.
     xastir_snprintf(maidenhead_grid,
         sizeof(maidenhead_grid),
         "%s",
         sec_to_loc( xastir_lon, xastir_lat ) );
 
+
     // Put the four different representations of the coordinate into
     // the "result" textField.
     xastir_snprintf(temp_string,
         sizeof(temp_string),
-        "%s%8.5f%c   %9.5f%c\n%s%02d %06.3f%c  %03d %06.3f%c\n%s%02d %02d %04.1f%c %03d %02d %04.1f%c\n%s%3s  %07lu  %07lu\n%s%s",
+        "%s%8.5f%c   %9.5f%c\n%s%02d %06.3f%c  %03d %06.3f%c\n%s%02d %02d %04.1f%c %03d %02d %04.1f%c\n%s%3s  %07lu  %07lu\n%s%s\n%s%s",
         "               Decimal Degrees:  ",
         lat_deg_int+lat_min/60.0, (south) ? 'S':'N',
         lon_deg_int+lon_min/60.0, (west) ?  'W':'E',
@@ -1784,6 +1806,8 @@ void Coordinate_calc_output(char *full_zone, long northing,
         lon_deg_int, lon_min_int, lon_sec, (west) ?  'W':'E',
         " Universal Transverse Mercator:  ",
         full_zone, easting, northing,
+        "Military Grid Reference System:  ",
+        MGRS_str,
         "       Maidenhead Grid Locator:  ",
         maidenhead_grid);
     XmTextSetString(coordinate_calc_result_text, temp_string);
@@ -2569,7 +2593,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
         coordinate_calc_result_text = XtVaCreateManagedWidget("Coordinate_calc results",
                 xmTextWidgetClass,
                 form,
-                XmNrows, 5,
+                XmNrows, 6,
                 XmNcolumns, 58,
                 XmNeditable, FALSE,
                 XmNtraversalOn, FALSE,
@@ -23948,12 +23972,39 @@ int main(int argc, char *argv[]) {
                 }
             }
 
-            XtRealizeWidget(Global.top);
+//fprintf(stderr,"***XtVaSetValues\n");
+
+    // Set to the proper size before we make the window visible on
+    // the screen
+//    XtVaSetValues(Global.top,
+//                XmNx,           1,
+//                XmNy,           1,
+//                XmNwidth,       screen_width,
+////              XmNheight,      (screen_height+60+2),   // DK7IN:
+////              added 2 because height had been smaller everytime
+//                XmNheight,      (screen_height + 60),   // we7u: Above statement makes mine grow by 2 each time
+//                NULL);
+
+//fprintf(stderr,"***XtRealizeWidget\n");
+
+
+// We get this error on some systems if XtRealizeWidget() is called
+// without setting width/height values first:
+// "Error: Shell widget xastir has zero width and/or height"
+// 
+//            XtRealizeWidget(Global.top);
+
+
+//fprintf(stderr,"***index_restore_from_file\n");
 
             // Read the current map index file into the index linked list
             index_restore_from_file();
 
+//fprintf(stderr,"***create_appshell\n");
+
             create_appshell(display, argv[0], argc, argv);      // does the init
+
+//fprintf(stderr,"***check_fcc_data\n");
 
             /* reset language attribs for numeric, program needs decimal in US for all data! */
 //            (void)setlocale(LC_NUMERIC, "en_US");
