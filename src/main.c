@@ -3944,6 +3944,10 @@ void Map_font_xfontsel(Widget widget, XtPointer clientData, XtPointer callData) 
 // if the temp file was updated, filling in the dialog when it
 // figured it out.
 
+// Check out "gps_operation_pending" and the GPS thread to see how
+// it was done before.  Probably could use the same techniques to
+// make the xfontsel stuff work properly in another thread without
+// stopping the main Xastir thread.
 }
 
 
