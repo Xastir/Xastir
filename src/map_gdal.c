@@ -422,7 +422,8 @@ scr_s_x_min = 0;
 // INDEX_NO_TIMESTAMPS, then we are indexing the file (finding the
 // extents) instead of drawing it.
 //
-// Currently hacked to force index extents to world-size.
+// Indexing currently works properly only if a geographic coordinate
+// system and the correct datum (WGS84 or NAD83) are found.
 //
 void draw_ogr_map(Widget w,
                    char *dir,
@@ -439,11 +440,17 @@ void draw_ogr_map(Widget w,
     const char *ptr;
 
 
+    if (debug_level & 16)
+        fprintf(stderr,"Entered draw_ogr_map function\n");
+
     xastir_snprintf(full_filename,
         sizeof(full_filename),
         "%s/%s",
         dir,
         filenm);
+
+    if (debug_level & 16)
+        fprintf(stderr,"Opening datasource\n");
 
     // Open data source
     datasource = OGROpen(full_filename,
@@ -458,10 +465,15 @@ void draw_ogr_map(Widget w,
         return;
     }
 
+    if (debug_level & 16)
+        fprintf(stderr,"Opened datasource\n");
+
     // Implement the indexing functions, so that we can use these
     // map formats from within Xastir.  Without an index, it'll
     // never appear in the map chooser.  Use the OGR "envelope"
-    // functions to get the extents for the entire file.
+    // functions to get the extents for the each layer in turn.
+    // We'll find the min/max of all and use that for the extents
+    // for the entire dataset.
     //
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -478,6 +490,8 @@ void draw_ogr_map(Widget w,
         int projected = 0;
         int local = 0;
         const char *geogcs = NULL;
+        OGRSpatialReferenceH spatial = NULL;
+
 
 
         xastir_snprintf(status_text,
@@ -485,6 +499,8 @@ void draw_ogr_map(Widget w,
             langcode ("BBARSTA039"),
             filenm);
         statusline(status_text,0);       // Indexing ...
+
+fprintf(stderr,"Indexing %s\n", filenm);
 
         // Use the OGR "envelope" function to get the extents for
         // the entire file or dataset.  Remember that it could be in
@@ -500,7 +516,6 @@ void draw_ogr_map(Widget w,
         for(i=0; i<numLayers; i++) {
             OGRLayerH layer;
             OGREnvelope psExtent;  
-            OGRSpatialReferenceH spatial;
 
 
             layer = OGR_DS_GetLayer( datasource, i );
@@ -545,6 +560,7 @@ void draw_ogr_map(Widget w,
                 geogcs = OSRGetAttrValue(spatial, "GEOGCS", 0);
             }
             else {
+fprintf(stderr,"Couldn't get spatial reference\n");
             }
 
             // Get the extents for this layer.  OGRERR_FAILURE means
@@ -591,11 +607,14 @@ void draw_ogr_map(Widget w,
         if (geographic && !first_extents) {
             // Need to also check datum!  Must be NAD83 or WGS84 for
             // our purposes.
-            if (       strcasecmp(geogcs,"WGS84") == 0
-                    || strcasecmp(geogcs,"NAD83") == 0) {
+//            if (       strcasecmp(geogcs,"WGS84") == 0
+//                    || strcasecmp(geogcs,"NAD83") == 0) {
+            if ( strcasecmp(geogcs,"WGS84") == 0) {
 
 fprintf(stderr, "Geographic coordinate system, %s, adding to index\n", geogcs);
 
+// Debug:  Don't add them to the index so that we can experiment
+// with datum translation and such.
                 index_update_ll(filenm,    // Filename only
                     file_MinY,  // Bottom
                     file_MaxY,  // Top
@@ -605,21 +624,110 @@ fprintf(stderr, "Geographic coordinate system, %s, adding to index\n", geogcs);
             else {
                 // Have geographic coordinates, but in the wrong
                 // datum.  Convert to WGS84.
+                OGRSpatialReferenceH wgs84_spatial = NULL;
+                OGRCoordinateTransformationH transformH = NULL;
 
-fprintf(stderr, "Geographic coordinate system, but wrong datum: %s\n", geogcs);
+//#define WE7U
+#ifdef WE7U
+fprintf(stderr, "Found geographic coordinate system/wrong datum: %s.  Converting to nad27 datum\n", geogcs);
+#else   // WE7U
+fprintf(stderr, "Found geographic coordinate system/wrong datum: %s.  Converting to wgs84 datum\n", geogcs);
+#endif  // WE7U
 
+                wgs84_spatial = OSRNewSpatialReference(NULL);
+                if (wgs84_spatial == NULL) {
+fprintf(stderr,"Couldn't create empty wgs84_spatial object\n");
+                }
+
+#ifdef WE7U
+                if (OSRSetWellKnownGeogCS(wgs84_spatial,"NAD27") == OGRERR_FAILURE) {
+#else   // WE7U
+                if (OSRSetWellKnownGeogCS(wgs84_spatial,"WGS84") == OGRERR_FAILURE) {
+#endif  // WE7U
+ 
+                    // Couldn't fill in WGS84 parameters.
+fprintf(stderr,"Couldn't fill in wgs84 spatial reference parameters\n");
+                    if (wgs84_spatial != NULL)
+                        OSRDestroySpatialReference(wgs84_spatial);
+                }
+
+                if (spatial == NULL || wgs84_spatial == NULL) {
+fprintf(stderr,"Couldn't transform because spatial or wgs84_spatial are NULL\n");
+                    if (wgs84_spatial != NULL)
+                        OSRDestroySpatialReference(wgs84_spatial);
+                }
+                else {
+                    // Set up transformation from original datum to
+                    // wgs84 datum.
+                    transformH = OCTNewCoordinateTransformation(
+                        spatial, wgs84_spatial);
+
+                    if (transformH == NULL) {
+                        // Couldn't create transformation object
+fprintf(stderr,"Couldn't create transformation object\n");
+                    }
+                    else {
+                        // We're good.  Perform the transform to
+                        // WGS84 coordinates.
+                        double x[2];
+                        double y[2];
+
+                        x[0] = file_MinX;
+                        x[1] = file_MaxX;
+                        y[0] = file_MinY;
+                        y[1] = file_MaxY;
+
+fprintf(stderr,"Before: %f,%f\t%f,%f\n",
+x[0],y[0],
+x[1],y[1]);
+
+//                        if (OCTTransform(transformH,
+//                            2,
+//                            x,
+//                            y,
+//                            NULL) == OGRERR_NONE) {
+
+                        {
+                            int result;
+
+                            result = OCTTransform(transformH, 2, x, y, NULL);
+                            
+fprintf(stderr," After: %f,%f\t%f,%f\tresult=%d\n",
+x[0],y[0],
+x[1],y[1],result);
+ 
+// I get a result of '1'.  Should be '0'?.  Not sure why yet.  The
+// simple C example on the OGR pages shows '1' as the proper success
+// value, 0 as an error.
+
+                            if (result) {
+// Debug:  Don't add them to the index so that we can experiment
+// with datum translation and such.
+#ifndef WE7U
+                                index_update_ll(filenm,    // Filename only
+                                    y[0],  // Bottom
+                                    y[1],  // Top
+                                    x[0],  // Left
+                                    x[1]); // Right
+#endif  // WE7U
+                            }
+                        }
+                    }
+                    if (wgs84_spatial != NULL)
+                        OSRDestroySpatialReference(wgs84_spatial);
+                }
             }
         }
         else if (projected && !first_extents) {
             // Convert to geographic/WGS84
 
-fprintf(stderr, "Projected coordinate system.  Skipping indexing\n");
+fprintf(stderr, "Found projected coordinate system.  Skipping indexing\n");
 
         }
         else if (local && !first_extents) {
             // Convert to geographic/WGS84
 
-fprintf(stderr, "Local coordinate system.  Skipping indexing\n");
+fprintf(stderr, "Found local coordinate system.  Skipping indexing\n");
 
         }
         else {
