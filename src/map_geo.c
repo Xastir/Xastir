@@ -422,7 +422,11 @@ void draw_geo_image_map (Widget w,
     // another routine to service this request.
     //
     if (tigerserver_flag) {
+
+#ifdef HAVE_IMAGEMAGICK
         draw_tiger_map(w, filenm, destination_pixmap);
+#endif  // HAVE_IMAGEMAGICK
+
         return;
     }
 
