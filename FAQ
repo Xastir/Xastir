@@ -57,6 +57,8 @@ The Questions
     4.9 Xastir runs slowly/loads maps slowly.
     4.10 I installed a new version of lesstif, but the help menu shows the old
          version.
+    4.11 Why does Xastir segfault sometimes when indexing or loading
+         geoTIFF images?
 
 5.  Features
 
@@ -394,6 +396,26 @@ The Answers
     installed. If you install in /usr/local/LessTif/, the default location,
     be sure you remove any older version from /usr/LessTif/ or
     /usr/X11R6/LessTif/, as some distributions use those locations.
+
+    4.11 Why does Xastir segfault sometimes when indexing or loading
+         geoTIFF images?
+
+    The geoTIFF code must use an API in the TIFF code that is non-public.
+    Unfortunately this means that the geoTIFF code must know more about TIFF
+    than the normal application using the TIFF library.  If the private TIFF
+    include file included with the geoTIFF code doesn't match your installed
+    version of TIFF, you can run into segfault problems.
+
+    Solutions for this include:  1) Installing TIFF from sources, or
+    2) Grabbing the sources for your installed version of TIFF, copying one
+    include file from TIFF into the geoTIFF sources and recompiling/installing
+    geoTIFF.  Either of these solutions will make the geoTIFF code recognize
+    and use the proper structures in TIFF should prevent the segfaulting.
+
+    In the future we hope that either the geoTIFF code will become part of
+    the TIFF code, or that the private TIFF API will become public.  Either
+    of these changes should fix this problem for good.
+
 
 5.  Features
 
