@@ -115,7 +115,8 @@ char packet_data_string[MAX_PACKET_DATA_DISPLAY * (MAX_LINE_SIZE+1)];
 int  packet_data_display;   // Last line filled in array (high water mark)
 int  redraw_on_new_packet_data;
 
-long stations;                  // number of stored stations
+int station_count;              // number of stored stations
+int station_count_save = 0;     // old copy of above
 DataRow *n_first;               // pointer to first element in name sorted station list
 DataRow *n_last;                // pointer to last  element in name sorted station list
 DataRow *t_first;               // pointer to first element in time sorted station list (oldest)
@@ -3195,10 +3196,10 @@ void display_file(Widget w) {
 
 
     // Check whether currently_selected_stations has changed.  If
-    // so, set stations_old to 0 so that main.c will come along and
-    // update the counts on the status line.
+    // so, set station_count_save to 0 so that main.c will come
+    // along and update the counts on the status line.
     if (currently_selected_stations != currently_selected_stations_save) {
-        stations_old = 0;   // Cause and update to occur
+        station_count_save = 0;   // Cause an update to occur
     }
     currently_selected_stations_save = currently_selected_stations;
 
@@ -7392,7 +7393,7 @@ void export_trail(DataRow *p_station) {
  */
 void init_station_data(void) {
 
-    stations = 0;                       // empty station list
+    station_count = 0;                  // empty station list
     n_first = NULL;                     // pointer to next element in name sorted list
     n_last  = NULL;                     // pointer to previous element in name sorted list
     t_first = NULL;                     // pointer to oldest element in time sorted list
@@ -7615,7 +7616,7 @@ void delete_station_memory(DataRow *p_del) {
     remove_name(p_del);
     remove_time(p_del);
     free(p_del);
-    stations--;
+    station_count--;
 }
 
 
@@ -7672,7 +7673,7 @@ void delete_station_memory(DataRow *p_del) {
         sizeof(p_new->call_sign),
         "%s",
         call);
-    stations++;
+    station_count++;
 
     // Do some quick checks to see if we just inserted a new hash
     // key or inserted at the beginning of a hash key (making the
@@ -8297,9 +8298,11 @@ void delete_all_stations(void) {
         //(void)delete_multipoints(p_curr);// Free multipoint memory, if allocated
         //delete_station_memory(p_curr);  // free station memory
     }
-    if (stations != 0) {
-        fprintf(stderr,"ERROR: stations should be 0 after stations delete, is %ld\n",stations);
-        stations = 0;
+    if (station_count != 0) {
+        fprintf(stderr,
+            "ERROR: station_count should be 0 after stations delete, is %d\n",
+            station_count);
+        station_count = 0;
     }    
 }
 
@@ -10922,9 +10925,11 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 // Specifically do NOT set the ST_VIATNC flag if it
                 // was a third-party packet.
             }
-        } else {  // heard other than TNC
+        }
+        else {  // heard other than TNC
             if (new_station) {  // new station
                 p_station->flag &= (~ST_VIATNC);  // clear "via TNC" flag
+//fprintf(stderr,"New_station: Cleared ST_VIATNC flag: %s\n", p_station->call_sign);
                 p_station->heard_via_tnc_last_time = 0l;
             }
         }
@@ -11111,6 +11116,19 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
                 // Clear the ST_VIATNC bit
                 p_station->flag &= ~ST_VIATNC;
+/*
+fprintf(stderr,
+    "\ntype:%d call:%s path:%s data:%s from:%c port:%d origin:%s 3rd:%d\n",
+    type,
+    call_sign,
+    path,
+    data,
+    from,
+    port,
+    origin,
+    third_party);
+fprintf(stderr,"Cleared ST_VIATNC flag (2): %s\n", p_station->call_sign);
+*/
             }
 
             // If direct_heard is over an hour old, clear the
