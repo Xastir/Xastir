@@ -3533,11 +3533,11 @@ struct {
 //  {"rts",tiger,draw_ogr_map},
 //  {"rtt",tiger,draw_ogr_map},
 //  {"rtz",tiger,draw_ogr_map},
-  {"tab",mapinfo,draw_ogr_map},
-  {"mid",mapinfo,draw_ogr_map},
-  {"mif",mapinfo,draw_ogr_map},
-  {"dgn",dgn,draw_ogr_map},
-  {"ddf",sdts,draw_ogr_map},
+  {"tab",mapinfo,draw_ogr_map}, // MapInfo
+  {"mid",mapinfo,draw_ogr_map}, // MapInfo
+  {"mif",mapinfo,draw_ogr_map}, // MapInfo
+  {"dgn",dgn,draw_ogr_map},     // DGN
+  {"ddf",sdts,draw_ogr_map},    // SDTS
 #endif  // HAVE_LIBGDAL
 
   {NULL,none,NULL}
