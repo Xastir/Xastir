@@ -2242,6 +2242,7 @@ void port_write(int port) {
                 switch (port_data[port].device_type) {
                     case DEVICE_SERIAL_TNC_HSP_GPS:
                     case DEVICE_SERIAL_TNC_AUX_GPS:
+                    case DEVICE_SERIAL_KISS_TNC:
                     case DEVICE_SERIAL_TNC:
                         usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
                         break;
@@ -2473,7 +2474,10 @@ int del_device(int port) {
 
     ok = -1;
     switch (port_data[port].device_type) {
+
         case(DEVICE_SERIAL_TNC):
+
+        case(DEVICE_SERIAL_KISS_TNC):
 
         case(DEVICE_SERIAL_GPS):
 
@@ -2481,9 +2485,12 @@ int del_device(int port) {
 
         case(DEVICE_SERIAL_TNC_HSP_GPS):
 
-                case(DEVICE_SERIAL_TNC_AUX_GPS):
+        case(DEVICE_SERIAL_TNC_AUX_GPS):
+
             switch (port_data[port].device_type){
+
                 case DEVICE_SERIAL_TNC:
+
                     if (debug_level & 2)
                         printf("Close a Serial TNC device\n");
 
@@ -2497,6 +2504,12 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                     //(void)sleep(3);
                     usleep(3000000);    // 3secs
                     break;
+
+                case DEVICE_SERIAL_KISS_TNC:
+                    if (debug_level & 2)
+                        printf("Close a Serial KISS TNC device\n");
+                        break;
+
 
                 case DEVICE_SERIAL_GPS:
                     if (debug_level & 2)
@@ -2524,18 +2537,18 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                     usleep(3000000);    // 3secs
                     break;
 
-                                case DEVICE_SERIAL_TNC_AUX_GPS:
-                                        if (debug_level & 2)
-                                                printf("Close a Serial TNC w/AUX GPS\n");
-                                        begin_critical_section(&devices_lock,
-                                                "interface.c:del_device");
-                                        sprintf(temp, "config/%s", devices[port].tnc_down_file);
-                                        end_critical_section(&devices_lock,
-                                                "interface.c:del_device");
-                                        (void)command_file_to_tnc_port(port,
-                                                get_data_base_dir(temp));
-                                        usleep(3000000);
-                                        break;
+                case DEVICE_SERIAL_TNC_AUX_GPS:
+                    if (debug_level & 2)
+                        printf("Close a Serial TNC w/AUX GPS\n");
+                    begin_critical_section(&devices_lock,
+                        "interface.c:del_device");
+                    sprintf(temp, "config/%s", devices[port].tnc_down_file);
+                        end_critical_section(&devices_lock,
+                        "interface.c:del_device");
+                    (void)command_file_to_tnc_port(port,
+                        get_data_base_dir(temp));
+                    usleep(3000000);
+                    break;
 
                 default:
                     break;
@@ -2875,6 +2888,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     }
                     break;
 
+                case DEVICE_SERIAL_KISS_TNC:
                 default:
                     break;
             }
@@ -3218,16 +3232,25 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         // set up TNC's to the proper mode, etc.
         ok = 1;
         switch (port_data[port].device_type) {
+
             case DEVICE_NET_STREAM:
+
                 xastir_snprintf(output_net, sizeof(output_net), "%s>%s,TCPIP*:", my_callsign, VERSIONFRM);
                 break;
 
             case DEVICE_SERIAL_TNC_HSP_GPS:
+
                 /* make dtr normal */
                 port_dtr(port,0);
+
             case DEVICE_SERIAL_TNC_AUX_GPS:
+
+            case DEVICE_SERIAL_KISS_TNC:
+
             case DEVICE_SERIAL_TNC:
+
             case DEVICE_AX25_TNC:
+
                 /* clear this for a TNC */
                 strcpy(output_net,"");
 
@@ -3610,6 +3633,8 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     port_dtr(port,0);           // make DTR normal
 
                 case DEVICE_SERIAL_TNC_AUX_GPS:
+
+                case DEVICE_SERIAL_KISS_TNC:
 
                 case DEVICE_SERIAL_TNC:
 
