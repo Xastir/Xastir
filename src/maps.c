@@ -10500,6 +10500,31 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                 }
                 else {    // We could open the directory just fine
                     while ( (dl = readdir(dm)) && !done ) {
+                        int i;
+
+                        // Check the file/directory name for control
+                        // characters
+                        for (i = 0; i < strlen(dl->d_name); i++) {
+                            // Dump out a warning if control
+                            // characters other than LF or CR are
+                            // found.
+                            if ( (dl->d_name[i] != '\n')
+                                    && (dl->d_name[i] != '\r')
+                                    && (dl->d_name[i] < 0x20) ) {
+                                printf("\nFound control character 0x%02x in alert file/alert directory name.  Line was:\n",
+                                    dl->d_name[i]);
+                                printf("%s\n",dl->d_name);
+                            }
+/*
+// This part might not work 'cuz we'd be changing a memory area that
+// we might have only read access to.  Check this.
+                            if (dl->d_name[i] < 0x20) {
+                                // Terminate string at any control character
+                                dl->d_name[i] = '\0';
+                            }
+*/
+                        }
+
                         xastir_snprintf(fullpath, sizeof(fullpath), "%s%s", dir, dl->d_name);
                         /*printf("FULL PATH %s\n",fullpath); */
                         if (stat (fullpath, &nfile) == 0) {
@@ -10576,6 +10601,30 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
         else {
             int count = 0;
             while ((dl = readdir (dm))) {
+                int i;
+
+                // Check the file/directory name for control
+                // characters
+                for (i = 0; i < strlen(dl->d_name); i++) {
+                    // Dump out a warning if control characters
+                    // other than LF or CR are found.
+                    if ( (dl->d_name[i] != '\n')
+                            && (dl->d_name[i] != '\r')
+                            && (dl->d_name[i] < 0x20) ) {
+                        printf("\nFound control character 0x%02x in map file/map directory name.  Line was:\n",
+                            dl->d_name[i]);
+                        printf("%s\n",dl->d_name);
+                    }
+/*
+// This part might not work 'cuz we'd be changing a memory area that
+// we might have only read access to.  Check this.
+                    if (dl->d_name[i] < 0x20) {
+                        // Terminate string at any control character
+                        dl->d_name[i] = '\0';
+                    }
+*/
+                }
+
                 xastir_snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, dl->d_name);
                 //printf("FULL PATH %s\n",fullpath);
                 if (stat (fullpath, &nfile) == 0) {
@@ -11447,12 +11496,21 @@ void index_restore_from_file(void) {
 
 //printf("%s\n",in_string);
 
+                // Check the file/directory name for control
+                // characters
                 for (i = 0; i < strlen(in_string); i++) {
+                    // Dump out a warning if control characters
+                    // other than LF or CR are found.
                     if ( (in_string[i] != '\n')
+                            && (in_string[i] != '\r')
                             && (in_string[i] < 0x20) ) {
-                        printf("Found control character 0x%2x in map_index.sys\n",
+                        printf("\nFound control character 0x%02x in map_index.sys.  Line was:\n",
                             in_string[i]);
-                        printf("Line was: %s\n",in_string);
+                        printf("%s\n",in_string);
+                    }
+                    if (in_string[i] < 0x20) {
+                        // Terminate string at control character
+                        in_string[i] = '\0';
                     }
                 }
 
