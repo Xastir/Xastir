@@ -1108,6 +1108,15 @@ Getting Data Files for Xastir:
       the symlink so that both mapping and searching of GNIS files will
       function.
 
+      A note from Chris Bell about these files:
+      ---------------------------------------------------------------------
+      The _deci files are huge,
+      with tons of trailing spaces at the end of each line.  I ran them
+      through sed, and cut out about two thirds of the diskspace required!
+
+          sed -e 's/[ ]*$//g' < CA_deci > CA.gnis
+      ---------------------------------------------------------------------
+
      County Warning maps:
       All WX County maps should be stored in the /usr/local/xastir/Counties
 
