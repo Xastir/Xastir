@@ -184,6 +184,7 @@ PULDNDP024|Mostrar Edad de Ultimo Informe||
 PULDNDP015|Anular Todas las Estaciones|A|
 PULDNDP016|Limpiar Rastros|n|
 PULDNDP025|Limpiar Historia de Objetos/Artículos||
+PULDNDP048|Reload Object/Item History||
 #
 # Inglesa/Metrica
 PULDNUT001|Activar Unidades Inglesa||

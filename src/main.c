@@ -3043,6 +3043,19 @@ void Object_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientD
 
 
 /*
+ *  Re-read object/item history log file
+ */
+void Object_History_Refresh( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+
+    // Reload saved objects and items from previous runs.
+    reload_object_item();
+}
+
+
+
+
+
+/*
  *  Display text in the status line, text is removed after timeout
  */
 void statusline(char *status_text,int update) {
@@ -3640,7 +3653,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     Widget trackme_frame, measure_frame, move_frame, display_button,
         track_button, download_trail_button,
-        station_clear_button, tracks_clear_button, object_history_clear_button, uptime_button,
+        station_clear_button, tracks_clear_button,
+        object_history_refresh_button,
+        object_history_clear_button, uptime_button,
         save_button,file_button, open_file_button, exit_button, really_exit_button,
         view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
         localstations_button, laststations_button, objectstations_button, objectmystations_button,
@@ -5391,6 +5406,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
+    object_history_refresh_button = XtVaCreateManagedWidget(langcode("PULDNDP048"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP048"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
     object_history_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP025"),
             xmPushButtonGadgetClass,
             stationspane,
@@ -5616,6 +5639,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(WX_q_button,          XmNactivateCallback,WX_query,NULL);
     XtAddCallback(station_clear_button, XmNactivateCallback,Stations_Clear,NULL);
     XtAddCallback(tracks_clear_button,  XmNactivateCallback,Tracks_All_Clear,NULL);
+    XtAddCallback(object_history_refresh_button, XmNactivateCallback,Object_History_Refresh,NULL);
     XtAddCallback(object_history_clear_button, XmNactivateCallback,Object_History_Clear,NULL);
     XtAddCallback(really_exit_button,   XmNactivateCallback,Menu_Quit,NULL);
 

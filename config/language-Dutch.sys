@@ -188,6 +188,7 @@ PULDNDP024|Geeft Tijd Laatste Rapport||
 PULDNDP015|Wis alle Stations|W|
 PULDNDP016|Wis alle Sporen|S|
 PULDNDP025|Wis Object/Item Geschiedenis||
+PULDNDP048|Reload Object/Item History||
 #
 # Units
 PULDNUT001|Engels||

@@ -183,6 +183,7 @@ PULDNDP024|Display Last Report Age||
 PULDNDP015|Clear All Stations!!!|A|
 PULDNDP016|Clear All Trails!!!|C|
 PULDNDP025|Clear Object/Item History||
+PULDNDP048|Reload Object/Item History||
 #
 # Units
 PULDNUT001|Enable English Units|E|
