@@ -783,6 +783,11 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
             // else continue through to ASCII logging & decode
             // routines.  We skip the first byte as it's not part of
             // the AX.25 packet.
+            //
+            // Note that the packet length often increases here in
+            // decode_ax25_header, as we add '*' characters and such
+            // to the header as it's decoded.
+            //
             if ( !decode_ax25_header( (char *)&input_string[37], data_length ) ) {
 //                int zz;
 
@@ -821,8 +826,8 @@ special_debug++;
             // it (or none of the above).  Best method should be to
             // just search for any 0x0d's or 0x0a's starting at the
             // beginning of the string and overwrite them with
-            // 0x00's.
-
+            // 0x00's.  That's what we do here.
+            //
             for (ii = 0; ii < data_length; ii++) {
                 if (input_string[ii+37] == 0x0d
                         || input_string[ii+37] == 0x0a)
