@@ -80,6 +80,8 @@ The Questions
     4.19 Why do NumLock/ScrollLock/CapsLock interfere with mouse/keyboard operation?
     4.20 How to I redirect serial ports from one computer to another?
     4.21 I have Festival compiled in, but I can't get any speech, why?
+    4.22 ImageMagick gives me: "no decode delegate", why?
+
 
 5.  Features
 
@@ -762,6 +764,22 @@ The Answers
     how to configure /etc/hosts.allow and /etc/hosts.deny.  It's
     part of the tcpwrappers stuff that allows you to configure which
     hosts have access to which services on your system.
+
+    4.22 ImageMagick gives me: "no decode delegate", why?
+
+    README.win32 has a bit of info about this one, as it most often happens
+    on Win32 systems.  It has been seen on other systems as well though.
+    The short answer is that you may have to set the environment variable
+    "MAGICK_HOME" to the location where the ImageMagick modules reside.
+    This is only necessary if ImageMagick doesn't have the location
+    pre-compiled into it.  The example for Win32 systems is:
+
+        export MAGICK_HOME=/usr
+
+    Added to the ~/.profile file, so that the BASH shell gets this defined
+    each time you log in.  The location "/usr" will probably be different
+    on a non-Windows machine, so change the line above as required for your
+    system.
 
 
 5.  Features
