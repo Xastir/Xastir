@@ -5208,8 +5208,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             NULL);
 
 
+//-------------------------------------------------------------------------
+
+
     // Create the mouse menus here
-//WE7U
     ac = 0;
     XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
     XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
@@ -5570,7 +5572,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(pan_down,XmNactivateCallback,Pan_down,NULL);
 
 
-
+//-------------------------------------------------------------------------
 
 
     /* mouse tracking */
@@ -18515,6 +18517,12 @@ int main(int argc, char *argv[], char *envp[]) {
         printf("Making user log dir\n");
         (void)mkdir(get_user_base_dir("logs"),S_IRWXU);
     }
+
+    if (filethere(get_user_base_dir("tracklogs")) != 1) {
+        printf("Making user tracklogs dir\n");
+        (void)mkdir(get_user_base_dir("tracklogs"),S_IRWXU);
+    }
+
 
     /* done checking user dirs */
 
