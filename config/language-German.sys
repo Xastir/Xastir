@@ -7,7 +7,7 @@
 #
 # Creator        : Kai Altenfelder, DL3LBA <ka@suse.de>
 # Maintained by  : The Xastir Group <xastir@xastir.org>
-# Modified by    : 28. Mai 2003, Rolf Bleher, DK7IN <xastir@dk7in.de>
+# Modified by    : 02. Feb 2004, Rolf Bleher, DK7IN <xastir@dk7in.de>
 #
 # comment lines with pound signs in front are ignored
 # File format as follows:
@@ -80,7 +80,7 @@ PULDNMP009|Flächen einfärben||
 PULDNMP007|Wetterwarnung Counties||
 PULDNMP005|Hintergrundfarbe|H|
 PULDNMP006|Textdarstellung|T|
-PULDNMP026|Icon Outline Style|O|
+PULDNMP026|Symbol Umrandung|U|
 PULDNMP011|Mauszeiger-Menu|M|
 PULDNMP008|Intensität|I|
 PULDNMP020|Einstellungen Tigermaps||
@@ -88,20 +88,20 @@ PULDNMP021|Autom. Karten - PixelKarten aus||
 PULDNMP022|Neue Karten beim Start indizieren||
 PULDNMP023|Index: Neue Karten hinzufügen|N|
 PULDNMP024|Index: ALLE Karten reindizieren|r|
-PULDNMP025|Map labels font||
+PULDNMP025|Font Kartenbeschriftung||
 PULDNMP015|Xfontsel||
 #
 #
 # PopUp "Einstellungen Tigermaps"
 MPUPTGR001|Gitter||
 MPUPTGR002|Counties||
-MPUPTGR003|Orts-Beschriftung||
+MPUPTGR003|Orts-Beschr.||
 MPUPTGR004|Urbane Bereiche||
-MPUPTGR005|Übergeordnete Strassen||
+MPUPTGR005|Hauptstrassen||
 MPUPTGR006|Strassen||
 MPUPTGR007|Eisenbahn||
-MPUPTGR008|State Beschriftung||
-MPUPTGR009|Interstate Beschr.||
+MPUPTGR008|State Beschr.||
+MPUPTGR009|Interstate Beschr||
 MPUPTGR010|US Hwy Beschr.||
 MPUPTGR011|State Hwy Beschr.||
 MPUPTGR012|Anzeigen von:||
@@ -120,10 +120,10 @@ PULDNMMC02|Vektor|V|
 PULDNMMC03|250k Topo|2|
 PULDNMMC04|100k Topo|1|
 PULDNMMC05|24k Topo|4|
-PULDNMMC06|Verz. expandieren|||
+PULDNMMC06|Verz. expandieren|e|
 PULDNMMC07|Verz/Karten gewählt:||
-PULDNMMC08|Clear Dirs|C|
-PULDNMMC09|Select All|S|
+PULDNMMC08|Verz. löschen|l|
+PULDNMMC09|Alles wählen|A|
 #
 # Karten - Hintergrundfarbe
 PULDNMBC01|Grau||
@@ -144,11 +144,11 @@ PULDNMSL01|Schwarze Umrandung|U|
 PULDNMSL02|Schatten|S|
 PULDNMSL03|Schwarzer Hintergrund|H|
 #
-# PullDown "Icon Outline Style"
-PULDNMIO01|No Outline|N|
-PULDNMIO02|Black Outline|B|
-PULDNMIO03|Grey Outline|G|
-PULDNMIO04|White Outline|W|
+# PullDown "Symbol Umrandung"
+PULDNMIO01|Keine Umrandung|K|
+PULDNMIO02|Schwarze Umrandung|S|
+PULDNMIO03|Graue  Umrandung|G|
+PULDNMIO04|Weiße Umrandung|W|
 #
 # Schalter
 PULDNOT001|An||
@@ -366,7 +366,7 @@ WPUPCFTM05|Alte Station anzeigen für [Std]||
 WPUPCFTM06|GPS Abfrage alle [Sek]||
 WPUPCFTM07|Station löschen nach [Tage]||
 WPUPCFTM08|Timeout Pos-Voraussage [Min]||
-WPUPCFTM09|Serial Inter-Char Delay (ms)||
+WPUPCFTM09|Abstand zw. seriellen Zeichen (ms)||
 #
 # PopUp "Koordinatensystem"
 WPUPCFC001|Koordinatensystem||
@@ -376,7 +376,7 @@ WPUPCFC004|dd mm.mmm|m|
 WPUPCFC005|dd mm ss.s|s|
 WPUPCFC006|UTM|U|
 WPUPCFC007|MGRS||
-WPUPCFC008|UTM w/special zones||
+WPUPCFC008|UTM mit Spezialzonen||
 #
 # PopUp "GPS Einstellungen"
 WPUPCFG001|GPS Einstellungen||
@@ -546,7 +546,7 @@ WPUPCFI013|Nachrichten aus Internet via TNC aussenden wenn I-Gate?||
 WPUPCFI014|I-Gate Transaktionen protokollieren?|||
 WPUPCFI015|Filter-Parameter||
 #
-# PopUp "Databank Einstellungen"
+# PopUp "Datenbank Einstellungen"
 WPUPCFID01|Datenbank Einstellungen (TBD)||
 WPUPCFID02|Host ||
 WPUPCFID03|Port ||
@@ -597,11 +597,11 @@ WPUPCFA011|Wetter Warnung||
 WPUPCFSP01|Sprachausgabe||
 WPUPCFSP02|Sprachausgabe bei:||
 WPUPCFSP03|Neuer Station||
-WPUPCFSP04|Neue Nachricht||
+WPUPCFSP04|Neuer Nachricht||
 WPUPCFSP05|Neuer Text in Nachricht||
 WPUPCFSP06|Annäherungswarnung||
 WPUPCFSP07|Bandöffnung||
-WPUPCFSP08|Neue Wetterwarnung||
+WPUPCFSP08|Neuer Wetterwarnung||
 WPUPCFSP09|Annäherung verfolgter Station||
 #
 # PopUp "Verfolge Station"
@@ -749,7 +749,7 @@ UNIOP00028|mm Hg||
 UNIOP00029|Systemzeit durch GPS einstellen||
 UNIOP00030|RELAY Digipeater?||
 UNIOP00031|m||
-UNIOP00032|Apply||
+UNIOP00032|Anwenden||
 #
 # popUp "Stationsauswahl"
 STCHO00001|Stationsauswahl||
@@ -869,7 +869,7 @@ LHPUPNI205|Druck||
 LHPUPNI206|Rn-h||
 LHPUPNI207|Rn-0||
 LHPUPNI208|Rn24||
-LHPUPNI209|Lat/Lon oder UTM||
+LHPUPNI209|Breite/Länge oder UTM||
 #
 # Stil der Wetterwarnungskarten
 PULDNMAT01|Zeige Warnungen über anderen Karten||
@@ -910,9 +910,9 @@ POPEM00031|Geändert auf Wettersymbol '/_', auch möglich:  '\_'  '/W'  und  '\W'|
 POPEM00032|Warnung: Symbol des National Weather Service wird benutzt!||
 POPEM00033|Keine GPS Daten!||
 POPEM00034|Position wird nicht gesendet bis gültige GPS-Daten!||
-POPEM00035|Warning||
-POPEM00036|Notice||
-POPEM00037|HSP interface present: GPS timing has been increased||
+POPEM00035|Warnung||
+POPEM00036|Hinweis||
+POPEM00037|HSP Interface vorhanden: GPS-Abfrageintervalle größer||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||
@@ -1015,13 +1015,13 @@ GAMMA002|Gammakorrektur||
 #
 #
 # Map labels font Dialog
-MAPFONT001|Change Map Labels Font||
-MAPFONT002|Map Labels Font||
-MAPFONT003|Tiny||
-MAPFONT004|Small||
-MAPFONT005|Medium||
-MAPFONT006|Large||
-MAPFONT007|Huge||
+MAPFONT001|Font für Kartenbeschriftung ändern||
+MAPFONT002|Font für Kartenbeschriftung||
+MAPFONT003|Winzig||
+MAPFONT004|Klein||
+MAPFONT005|Mittel||
+MAPFONT006|Groß||
+MAPFONT007|Riesig||
 #
 # Entfernung/Richtung auf der Statuszeile
 PULDNDB001|Entf./Richtung in Status||
