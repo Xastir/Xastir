@@ -28,7 +28,11 @@
  * DBFAWK TODO:
  *  - reload .dbfawk's when they've changed (or maps are reindexed)
  *  - scale line widths based on zoom level (see city_flag, for example)
- *  - center area polygon labels
+ *  - allow multiple font sizes (font_size=small|medium|large|huge)
+ *  - allow multiple font faces?
+ *  - allow setting of map layer for individual shapes
+ *  - transparency
+ *  - allow setting fill_style (solid, stippled, etc.)
  *  - do more config/ *.dbfawk files!
  *
  */
