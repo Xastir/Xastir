@@ -13,7 +13,7 @@ AC_INIT(xastir, 1.1.4, xastir@xastir.org)
 AC_PREREQ(2.53)
 
 AC_CONFIG_SRCDIR([src/xastir.h])
-AM_CONFIG_HEADER([config.h])
+AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
 
 echo ""
