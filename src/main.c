@@ -11014,6 +11014,15 @@ if (end_critical_section(&data_lock, "main.c:UpdateTime(2)" ) > 0)
         check_pointer_position();
     }
 
+
+#ifdef __CYGWIN__
+    // These are needed in order to keep Xastir from using too much
+    // CPU on Cygwin.
+    usleep(2);
+    usleep(2);
+#endif  // __CYGWIN__
+
+
     sched_yield();  // Yield the processor to another thread
 
     (void)XtAppAddTimeOut(XtWidgetToApplicationContext(w),
