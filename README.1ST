@@ -1274,7 +1274,7 @@ WINDOWS/CYGWIN NOTES:
      in your home directory.  This is in lieu of the "ldconfig" command
      required for Unix/Linux.  It appears that Cygwin uses the PATH variable
      to look for both binaries and libraries.  Add this line (create the
-     file if the file doesn't exist):
+     "~/.profile" file if the file doesn't exist):
 
         export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib
 
