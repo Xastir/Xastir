@@ -716,7 +716,9 @@ int ax25_init(int port) {
     }
 
     /* COMMENT: tested this AF_INET is CORRECT -FG */
-    if (port_data[port].channel == -1) {
+    // WE7U:  Commented out sections below.  We keep the old socket number
+    // around now, so have to start a new socket in all cases to make it work.
+//    if (port_data[port].channel == -1) {  // WE7U
         if ((port_data[port].channel = socket(AF_INET, SOCK_PACKET, htons(proto))) == -1) {
             perror("socket");
 
@@ -725,10 +727,10 @@ int ax25_init(int port) {
 
             return -1;
         }
-    }
-    else {
-        // Use socket that is already defined
-    }
+//    } // WE7U
+//    else {    // WE7U
+        // Use socket number that is already defined
+//    } // WE7U
 
     /* port active */
     port_data[port].active = DEVICE_IN_USE;
@@ -1400,13 +1402,13 @@ int net_init(int port) {
                     pthread_testcancel();   // Check for thread termination request
                     if (debug_level & 2)
                         printf("net_connect_thread():Net Shutdown 1 Returned %d, port %d\n",stat,port);
-                    usleep(300000);         // 300ms
+                    usleep(100000);         // 100ms
                     pthread_testcancel();   // Check for thread termination request
                     stat = close(port_data[port].channel);
                     pthread_testcancel();   // Check for thread termination request
                     if (debug_level & 2)
                         printf("net_connect_thread():Net Close 1 Returned %d, port %d\n",stat,port);
-                    usleep(300000);         // 300ms
+                    usleep(100000);         // 100ms
                     port_data[port].channel = -1;
                }
 
@@ -1589,7 +1591,7 @@ int net_detach(int port) {
                     printf("net_detach():Waiting to finish writing data to port %d\n",port);
 
                 //(void)sleep(1);
-                usleep(1000000);
+                usleep(100000);    // 100ms
                 max++;
             }
         }
@@ -1610,7 +1612,7 @@ int net_detach(int port) {
                 printf("net_detach():Net Shutdown Returned %d, port %d\n",stat,port);
         }
 
-        usleep(300000); // 300ms
+        usleep(100000); // 100ms
         // We wish to close down the socket (so both ends of the darn thing
         // go away), but we want to keep the number on those systems that
         // re-assign the same file descriptor again.  This is to prevent
@@ -1621,7 +1623,7 @@ int net_detach(int port) {
         if (debug_level & 2)
             printf("net_detach():Net Close Returned %d, port %d\n",stat,port);
 
-        usleep(300000); // 300ms
+        usleep(100000); // 100ms
 
         // Snag a socket again.  We'll use it next time around.
         port_data[port].channel = socket(AF_INET, SOCK_STREAM, 0);
@@ -2172,11 +2174,13 @@ int start_port_threads(int port) {
         /* start the two threads */
         if (pthread_create(&port_data[port].read_thread, NULL, read_access_port_thread, &port_id[port])) {
             /* error starting read thread*/
+            printf("Error starting read thread, port %d\n",port);
             port_data[port].read_thread = 0;
             ok = -1;
         }
         else if (pthread_create(&port_data[port].write_thread, NULL, write_access_port_thread, &port_id[port])) {
                 /* error starting write thread*/
+                printf("Error starting write thread, port %d\n",port);
                 port_data[port].write_thread = 0;
                 ok = -1;
         }
@@ -2319,7 +2323,7 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
 
                     (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
                     //(void)sleep(3);
-                    usleep(3000000);
+                    usleep(3000000);    // 3secs
                     break;
 
                 case DEVICE_SERIAL_GPS:
@@ -2345,7 +2349,7 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
 
                     (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
                     //(void)sleep(3);
-                    usleep(3000000);
+                    usleep(3000000);    // 3secs
                     break;
 
                 default:
@@ -2376,7 +2380,7 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
                         printf("Close a AX25 TNC device\n");
 
                     //(void)sleep(3);
-                    usleep(3000000);
+                    //usleep(3000000);  // 3secs
                     break;
 
                 case DEVICE_NET_GPSD:
@@ -2411,7 +2415,7 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
             printf("port detach OK\n");
 
         //(void)sleep(1);
-        usleep(1000000);
+        usleep(100000);    // 100ms
         if (debug_level & 2)
             printf("Cancel threads\n");
 
@@ -2444,7 +2448,7 @@ end_critical_section(&devices_lock, "interface.c:del_device" );
             printf("port_data_lock, Port = %d\n", port);
 
         //(void)sleep(1);
-        usleep(1000000);
+        usleep(100000); // 100ms
     } else {
         if (debug_level & 2)
             printf("Port %d could not be closed\n",port);
