@@ -11641,6 +11641,12 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
         return;
     }
 
+
+//WE7U
+fprintf(stderr,"\nrelay_digipeat inputs:\n port: %d\n call: %s\n path: %s\n info: %s\n\n",
+    port, call, path, info);
+
+
     // Check to see if this is a packet from me (in some cases, you hear
     // yourself transmit...)
     if (!strcasecmp(call, my_callsign)) {
@@ -11790,6 +11796,13 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
 //        fprintf(stderr,"KISS RELAY short_path: %s\n", short_path);
 //        fprintf(stderr,"KISS RELAY   new_path: %s\n", new_path);
         send_ax25_frame(port, call, destination, new_path, info);
+
+
+//WE7U
+fprintf(stderr,"\nrelay_digipeat output:\n port: %d\n call: %s\n dest: %s\n path: %s\n info: %s\n\n",
+    port, call, destination, new_path, info);
+
+
 #endif
 
     }
@@ -11816,6 +11829,12 @@ void relay_digipeat(char *call, char *path, char *info, int port) {
         if (port_data[port].status == DEVICE_UP)
             port_write_string(port, info);
     }
+
+
+//WE7U
+fprintf(stderr,"\nrelay_digipeat output:\n port: %d\n call: %s\n dest: %s\n path: %s\n info: %s\n\n",
+    port, call, destination, new_path, info);
+
 
 // Example packet:
 //K7FZO>APW251,SEATAC*,WIDE4-1:=4728.00N/12140.83W;PHG3030/Middle Fork Snoqualmie River -251-<630>
