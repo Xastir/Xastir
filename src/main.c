@@ -562,6 +562,9 @@ char object_NRQ[4] = "960\0";
 XtPointer global_parameter1 = (XtPointer)NULL;
 XtPointer global_parameter2 = (XtPointer)NULL;
 
+void Draw_CAD_Objects(Widget w, XtPointer clientData, XtPointer calldata);
+Widget draw_CAD_objects_dialog = (Widget)NULL;
+int draw_CAD_objects_flag = 0;
 
 // ------------------------- audio alarms ----------------------------
 Widget configure_audio_alarm_dialog = (Widget)NULL;
@@ -4244,6 +4247,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         open_messages_group_button, clear_messages_button,
         General_q_button, IGate_q_button, WX_q_button,
         filter_data_button, filter_display_button,
+        draw_CAD_objects_menu,
 
 #ifdef ARROWS
         pan_up_menu, pan_down_menu, pan_left_menu, pan_right_menu,
@@ -7034,6 +7038,22 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             ac);
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
+//WE7U
+    // "Draw CAD Objects Mode"
+    ac = 0;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+    XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
+    XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+//    XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA019")); ac++;
+//    modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),
+    draw_CAD_objects_menu=XtCreateManagedWidget("Draw CAD Objects",
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    XtAddCallback(draw_CAD_objects_menu,XmNactivateCallback,Draw_CAD_Objects,NULL);
+
     XtCreateManagedWidget("create_appshell sep7b",
             xmSeparatorWidgetClass,
             right_menu_popup,
@@ -7452,6 +7472,142 @@ void create_gc(Widget w) {
 
 
 
+void Draw_CAD_Objects_destroy_shell( /*@unused@*/ Widget widget,
+        XtPointer clientData,
+        /*@unused@*/ XtPointer callData) {
+
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    draw_CAD_objects_dialog = (Widget)NULL;
+
+    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
+    draw_CAD_objects_flag = 0;
+}
+
+
+
+
+
+//WE7U
+// This is the callback for the Draw CAD Objects menu option
+//
+void Draw_CAD_Objects( /*@unused@*/ Widget w,
+        /*@unused@*/ XtPointer clientData,
+        /*@unused@*/ XtPointer calldata) {
+
+    static Widget  pane, form, button_ok, button_cancel;
+    Atom delw;
+
+
+    if (!draw_CAD_objects_dialog) {
+
+        fprintf(stderr,"Draw_CAD_Objects function enabled\n");
+        draw_CAD_objects_flag = 1;
+        menu_x = -1;    // Invalid position
+        menu_y = -1;    // Invalid position
+
+//        draw_CAD_objects_dialog = XtVaCreatePopupShell(langcode("SMARTB001"),
+        draw_CAD_objects_dialog = XtVaCreatePopupShell("Draw CAD Objects",
+ 
+                xmDialogShellWidgetClass,Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
+
+        pane = XtVaCreateWidget("Draw_CAD_Objects pane",
+                xmPanedWindowWidgetClass,
+                draw_CAD_objects_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        form =  XtVaCreateWidget("Draw_CAD_Objects form",
+                xmFormWidgetClass,
+                pane,
+                XmNfractionBase, 2,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+//        XtAddCallback(button_ok,
+//            XmNactivateCallback,
+//            Smart_Beacon_change_data,
+//            draw_CAD_objects_dialog);
+
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(button_cancel,
+            XmNactivateCallback,
+            Draw_CAD_Objects_destroy_shell,
+            draw_CAD_objects_dialog);
+
+        pos_dialog(draw_CAD_objects_dialog);
+
+        delw = XmInternAtom(
+            XtDisplay(draw_CAD_objects_dialog),
+            "WM_DELETE_WINDOW",
+            FALSE);
+
+        XmAddWMProtocolCallback(draw_CAD_objects_dialog,
+            delw,
+            Draw_CAD_Objects_destroy_shell,
+            (XtPointer)draw_CAD_objects_dialog);
+
+        XtManageChild(form);
+        XtManageChild(pane);
+        XtPopup(draw_CAD_objects_dialog,XtGrabNone);
+
+//        fix_dialog_size(draw_CAD_objects_dialog);
+
+        // Move focus to the Close button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(draw_CAD_objects_dialog);
+        XmProcessTraversal(button_cancel, XmTRAVERSE_CURRENT);
+
+    }
+    else {  // Raise the dialog if it already exists
+        (void)XRaiseWindow(XtDisplay(draw_CAD_objects_dialog),
+            XtWindow(draw_CAD_objects_dialog));
+    }
+}
+
+
+
+
+ 
 // This routine just copies an area from pixmap_final to the
 // display, so we won't go through all the trouble of making this
 // interruptable.  Just get on with it, perform the operation, and
@@ -7617,6 +7773,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     char str_lat[20];
     char str_long[20];
     long x,y;
+    int done = 0;
 
 
     XtVaGetValues(w,
@@ -7631,7 +7788,79 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     input_x = event->xbutton.x;
     input_y = event->xbutton.y;
 
-    if (event->type == ButtonRelease) {
+
+// Check whether we're in CAD object draw mode first
+    if (draw_CAD_objects_flag) {
+
+// We need to check to see whether we're dragging the pointer, and
+// then need to save the points away (in Xastir lat/long format),
+// drawing lines between the points whenever we do a pixmap_final
+// refresh to the screen.
+
+// Check whether we just did the first mouse button down while in
+// CAD draw mode.  If so, save away the mouse pointer and get out.
+// We'll use that mouse pointer the next time a mouse button gets
+// pressed in order to draw a line.
+
+        // We're going to use gc_tint with an XOR bitblit here to
+        // make sure that any lines we draw will be easily seen, no
+        // matter what colors we're drawing on top of.
+        //
+
+        // If we have a valid saved position already from our first
+        // click, then we must be on the 2nd or later click.  Draw a
+        // line.
+        if (menu_x != -1 && menu_y != -1) {
+ 
+            (void)XSetLineAttributes (XtDisplay (w),
+                gc_tint,
+                4,
+                LineOnOffDash,
+                CapButt,
+                JoinMiter);
+
+            (void)XSetForeground (XtDisplay (w),
+                gc_tint,
+                colors[0x27]);
+
+            (void)XSetFunction (XtDisplay (da),
+                gc_tint,
+                GXxor);
+
+            (void)XDrawLine(XtDisplay(w),
+                pixmap_final,
+                gc_tint,
+                menu_x,
+                menu_y,
+                input_x,
+                input_y);
+
+// Copy the new drawing to the screen.  This is of course a
+// temporary thing to test out the concepts.  Later we'll implement
+// storage for the points and an automatic refresh:  Every time we
+// refresh symbols we'll refresh the overlays.
+//
+            (void)XCopyArea(XtDisplay(w),
+                pixmap_final,
+                XtWindow(w),
+                gc,
+                0,
+                0,
+                screen_width,
+                screen_height,
+                0,
+                0);
+        }
+
+        // Save this point away for the next draw.
+        menu_x = input_x;
+        menu_y = input_y;
+
+        done++;
+    }
+
+
+    if (!done && event->type == ButtonRelease) {
         //fprintf(stderr,"ButtonRelease %d %d\n",event->xbutton.button,Button3);
 
         if (event->xbutton.button == Button1) {
@@ -7896,7 +8125,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     }   // End of ButtonRelease code
 
 
-    else if (event->type == ButtonPress) {
+
+    else if (!done && event->type == ButtonPress) {
         //fprintf(stderr,"ButtonPress %d %d\n",event->xbutton.button,Button3);
 
         if (event->xbutton.button == Button1) {
@@ -7924,7 +8154,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     }   // End of ButtonPress code
 
 
-    else if (event->type == KeyPress) {
+    else if (!done && event->type == KeyPress) {
 
         // We want to branch from the keysym instead of the keycode
         (void)XLookupString( (XKeyEvent *)event, buffer, bufsize, &key, &compose );
@@ -8011,7 +8241,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
     }   // End of KeyPress code
 
 
-    else {  // Something else
+    else if (!done) {  // Something else
         if (event->type == MotionNotify) {
             input_x = event->xmotion.x;
             input_y = event->xmotion.y;
