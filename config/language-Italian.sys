@@ -336,6 +336,11 @@ WPUPCFT029|Configura TNC con INVALID ENUM||
 #Configura Porta Meteo
 WPUPCFWX01|Configura Porta Meteo||
 WPUPCFWX02|Periferica della stazione||
+WPUPCFWX03|Rain Gauge Type (Global Setting)||
+WPUPCFWX04|1/10 inch||
+WPUPCFWX05|2.54 mm||
+WPUPCFWX06|1/100 inch||
+WPUPCFWX07|0.254 mm||
 #
 #Configure Stazione
 WPUPCFS001|Configura Dati Stazione||

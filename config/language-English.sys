@@ -334,6 +334,11 @@ WPUPCFT029|Configure TNC w/INVALID ENUM||
 # PopUp "Configure WX Port"
 WPUPCFWX01|Configure WX Port||
 WPUPCFWX02|Weather Station device||
+WPUPCFWX03|Rain Gauge Type (Global Setting)||
+WPUPCFWX04|1/10 inch||
+WPUPCFWX05|2.54 mm||
+WPUPCFWX06|1/100 inch||
+WPUPCFWX07|0.254 mm||
 #
 # PopUp "Configure - Station"
 WPUPCFS001|Configure Station||

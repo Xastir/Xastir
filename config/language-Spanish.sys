@@ -334,6 +334,11 @@ WPUPCFT029|Configurar el TNC c/MAL ENUM||
 # Configurar el Puerto de la Estación Meteorológica
 WPUPCFWX01|Configurar el Puerto de la Estación Meteorológica||
 WPUPCFWX02|Dispositivo de la Estación Meteorológica||
+WPUPCFWX03|Rain Gauge Type (Global Setting)||
+WPUPCFWX04|1/10 inch||
+WPUPCFWX05|2.54 mm||
+WPUPCFWX06|1/100 inch||
+WPUPCFWX07|0.254 mm||
 #
 # Configurar la Estación
 WPUPCFS001|Configurar la estación||

@@ -338,6 +338,11 @@ WPUPCFT029|TNC Instelling m/AUX GPS||
 # PopUp "Configure WX Port"
 WPUPCFWX01|WX Poort Instelling||
 WPUPCFWX02|Weerstation aparaat||
+WPUPCFWX03|Rain Gauge Type (Global Setting)||
+WPUPCFWX04|1/10 inch||
+WPUPCFWX05|2.54 mm||
+WPUPCFWX06|1/100 inch||
+WPUPCFWX07|0.254 mm||
 #
 # PopUp "Configure - Station"
 WPUPCFS001|Stations Instelling||

@@ -339,6 +339,11 @@ WPUPCFT029|Einstellungen für TNC mit GPS über INVALID ENUM||
 # PopUp "Einstellungen Wetterstation"
 WPUPCFWX01|Einstellungen Wetterstation||
 WPUPCFWX02|Device für Wetterstation||
+WPUPCFWX03|Rain Gauge Type (Global Setting)||
+WPUPCFWX04|1/10 inch||
+WPUPCFWX05|2.54 mm||
+WPUPCFWX06|1/100 inch||
+WPUPCFWX07|0.254 mm||
 #
 # PopUp "Einstellungen - Stationsdaten"
 WPUPCFS001|Stationdaten||
