@@ -147,11 +147,7 @@ required:
 [ ] wget (Optional:  Can use libcurl instead)
 [ ] XFree86-f100:      100 dpi fonts
 [ ] XFree86-prog:      Headers
-[ ] XFree86-xwinclip:  Windows clipboard integration for X11
 [ ] zip
-
-We've had reports that XFree86-xwinclip is not available anymore.
-It's not critical.
 
 Clicking on the small circle with the two arrows will run you
 through the various select/de-select options for each package.
@@ -951,6 +947,27 @@ a temporary folder.
 
 I deleted the "cygwin1.dll" and "README.txt" files that came in the package
 since they aren't needed and the extra cygwin1.dll can cause problems.
+
+
+  Note from James Cour, K1ZC:
+  ---------------------------
+  "The procedure he (Kirk) outlines there works fine EXCEPT that
+  there is a valuable piece of information in that Readme.txt file...
+  The user must have a folder named /DEV under the Cygwin folder in
+  order for NASD to work.  NASD will not create it automatically, and
+  NASD will not run without it.  The default set-up instructions for
+  Xastir and Cygwin do not create this folder, so the user needs to
+  manually create the folder from Windows."
+
+
+  Note from Tim Baggett, AA5DF:
+  -----------------------------
+  "I recommend running the script (create_devices.sh) found attached
+  to the email located at the URL below to create the /dev directory,
+  and all supported devices under Cygwin."
+
+  "http://cygwin.com/ml/cygwin-xfree/2004-01/msg00353.html"
+
 
 Then copy the remaining files from the package into the /bin directory under
 cygwin.
