@@ -3135,6 +3135,7 @@ Widget AX25_unproto3_data;
 Widget AX25_igate_data;
 Widget AX25_active_on_startup;
 Widget AX25_transmit_data;
+Widget AX25_relay_digipeat;
 
 
 
@@ -3182,6 +3183,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25_change_data" 
         devices[AX25_port].transmit_data=1;
     else
         devices[AX25_port].transmit_data=0;
+
+    if(XmToggleButtonGetState(AX25_relay_digipeat))
+        devices[AX25_port].relay_digipeat=1;
+    else
+        devices[AX25_port].relay_digipeat=0;
 
     devices[AX25_port].igate_options=device_igate_options;
 
@@ -3262,13 +3268,24 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
                                       XmNbackground, colors[0xff],
                                       NULL);
 
-        AX25_transmit_data  = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
+        AX25_transmit_data = XtVaCreateManagedWidget(langcode("UNIOP00010"),xmToggleButtonWidgetClass,form,
                                       XmNtopAttachment, XmATTACH_FORM,
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_WIDGET,
                                       XmNleftWidget, AX25_active_on_startup,
-                                      XmNleftOffset ,120,
+                                      XmNleftOffset ,35,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+        AX25_relay_digipeat = XtVaCreateManagedWidget(langcode("UNIOP00030"),xmToggleButtonWidgetClass,form,
+                                      XmNtopAttachment, XmATTACH_FORM,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, AX25_transmit_data,
+                                      XmNleftOffset ,35,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
@@ -3547,6 +3564,7 @@ void Config_AX25( /*@unused@*/ Widget w, int config_type, int port) {
             /* first time port */
             XmToggleButtonSetState(AX25_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(AX25_transmit_data,TRUE,FALSE);
+            XmToggleButtonSetState(AX25_relay_digipeat,TRUE,FALSE);
             XmTextFieldSetString(AX25_device_name_data,"");
             device_igate_options=0;
             XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
@@ -3589,6 +3607,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_AX25" );
                 XmToggleButtonSetState(AX25_transmit_data,TRUE,FALSE);
             else
                 XmToggleButtonSetState(AX25_transmit_data,FALSE,FALSE);
+
+            if (devices[AX25_port].relay_digipeat)
+                XmToggleButtonSetState(AX25_relay_digipeat,TRUE,FALSE);
+            else
+                XmToggleButtonSetState(AX25_relay_digipeat,FALSE,FALSE);
 
             XmTextFieldSetString(AX25_device_name_data,devices[AX25_port].device_name);
             XmTextFieldSetString(AX25_unproto1_data,devices[AX25_port].unproto1);
