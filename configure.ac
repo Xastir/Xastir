@@ -67,10 +67,13 @@ XASTIR_SET_SYSTEM
 # Check for binaries
 use_festival=yes
 use_gpsman=yes
+use_err_popups=yes
 AC_ARG_WITH(festival,[  --without-festival       Disable festival features.],use_festival=$withval)
 
-
 AC_ARG_WITH(gpsman,[  --without-gpsman       Disable gpsman features.],use_gpsman=$withval)
+
+AC_ARG_WITH(errorpopups,[  --without-errorpopups       Send error popups to stderr.],use_err_popups=$withval)
+
 
 # Now that all the various "use_" variables are set, probe for binaries.
 XASTIR_DETECT_BINARIES
@@ -430,6 +433,9 @@ fi
 if test "${use_profiling}" = "yes"; then
   ILIBS="$ILIBS profiling"
 fi
+if test "${use_err_popups}" = "yes"; then
+  ILIBS="$ILIBS error_popups"
+fi
 AC_DEFINE_UNQUOTED(XASTIR_INSTALLED_LIBS, "`echo $ILIBS`", [Defines the installed libs])
 
 
@@ -504,6 +510,7 @@ echo Building with GDAL/OGR ............ : $use_gdal
 echo Building with ShapeLib ............ : $use_shapelib 
 echo Building with pcre ................ : $use_pcre
 echo Building with dbfawk .............. : $use_dbfawk
+echo Building with ErrorPopups ......... : $use_err_popups
 echo "Building with libgc (Debug) ....... : $use_libgc"
 echo "Building with profiling (Debug) ... : $use_profiling"
 #echo Building with Davis/MySQL.......... : $davis

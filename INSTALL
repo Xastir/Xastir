@@ -197,6 +197,7 @@ can add any of the following flags to configure:
     --without-gdal
     --without-pcre
     --without-dbfawk
+    --without-errorpopups
 
 For example, "./configure --without-ax25" will disable the AX.25
 networking code in Xastir.

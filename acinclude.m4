@@ -191,6 +191,10 @@ if test "$use_gpsman" != "no"; then
  fi
 fi
 
+if test "$use_err_popups" != "no"; then
+ AC_DEFINE_UNQUOTED(HAVE_ERROR_POPUPS, 1, [Define if you have error popups enabled])
+fi
+
 ])
 
 # JMT - this is pure evil and will not be edited at the present time
