@@ -503,6 +503,7 @@ void msg_get_data(Message *m_fill, long record_num) {
 void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
     Message m_fill;
     long record;
+    int do_update = 0;
 
     if (debug_level & 1) {
         printf("Recording ack for message to: %s, seq: %s\n",
@@ -534,6 +535,7 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
                 record);
         }
         msg_data[msg_index[record]].acked = 1;
+        do_update++;
         if (debug_level & 1) {
             printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
                 msg_data[msg_index[record]].acked,
@@ -545,7 +547,10 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
         if (debug_level & 1)
             printf("Matching message not found\n");
     }
-    update_messages(1); // Force an update
+
+    if (do_update) {
+        update_messages(1); // Force an update
+    }
 }
 
 
@@ -556,6 +561,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     Message m_fill;
     long record;
     char time_data[MAX_TIME];
+    int do_update = 0;
 
     if (debug_level & 1)
         printf("msg_data_add start\n");
@@ -584,12 +590,21 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     if(record != -1L) { /* fill old data */
         msg_get_data(&m_fill, record);
         //printf("Found a duplicate message.  Updating fields, seq %s\n",seq);
+
+        // If message is different this time, do an update to the
+        // send message window
+        if (strcmp(m_fill.message_line,data) != 0) {
+            do_update++;
+        }
     }
     else {
         // Only do this if it's a new message.  This keeps things
         // more in sequence by not updating the time stamps
         // constantly on old messages that don't get ack'ed.
         m_fill.sec_heard = sec_now();
+
+        do_update++;    // Always do an update to the message window
+                        // for new messages
     }
 
     /* FROM */
@@ -630,7 +645,10 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
     // dialogs
     if (       is_my_call(m_fill.from_call_sign, 1)
             || is_my_call(m_fill.call_sign, 1) ) {
-        update_messages(1); // Force an update
+
+        if (do_update) {
+            update_messages(1); // Force an update
+        }
     }
  
     if (debug_level & 1)
@@ -688,7 +706,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
                     if (new_message_data<0)
                         new_message_data=0;
 
-                    if(strlen(temp1)>0) {   // We got a callsign from the dialogue so
+                    if(strlen(temp1)>0) {   // We got a callsign from the dialog so
                         // create a linked list of the message indexes in time-sorted order
 
                         typedef struct _index_record {
