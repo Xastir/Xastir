@@ -16,6 +16,8 @@ EXTRA_DIST = \
     tgrkgl.dbfawk \
     tgrlk.dbfawk \
     tgrlpt.dbfawk \
+    tgrlpy.dbfawk \
+    tgrplc00.dbfawk \
     tgrwat.dbfawk \
     nwsc_ddmmyy.dbfawk \
     nwsmzddmmyy.dbfawk \
