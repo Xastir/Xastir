@@ -351,7 +351,7 @@ The Answers
 
     4.7 When weather alerts come in, the counties on my map don't highlight.
 
-    First of all, did you download and install the new shaepfile weather maps
+    First of all, did you download and install the new shapefile weather maps
     as described in the README.1ST? Did you compile with shapefile support?
 
     Second, check that Map|Map WX Alert Counties is turned on.

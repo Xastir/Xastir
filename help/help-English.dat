@@ -107,7 +107,10 @@ timestamps
 quad label shapefiles
 Track me
 Map extent/index caching
-
+Dallas One-Wire weather station - see http://melhuish.info/simon/projects/oww/
+storm wind radius decoding
+stations menu cleanup
+grid density adjustment +=-
 
 HELP-INDEX>What's new in Xastir 1.1
 
