@@ -6807,7 +6807,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                             char station_id[50];
                             xastir_snprintf(station_id,
                                 sizeof(station_id), "%s, %d",
-                                langcode("WPUPCFSP08"),
+                                langcode("SPCHSTR009"),
                                 temp_alert_count);
                             SayText(station_id);
                         }

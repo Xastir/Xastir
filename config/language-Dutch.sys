@@ -828,6 +828,9 @@ SPCHSTR005|%s, afstand is %d %s.||
 SPCHSTR006|%s, afstand is %.1f %s.||
 SPCHSTR007|%s, afstand is %d %s %s %s.||
 SPCHSTR008|%s, afstand is %.1f %s %s %s.||
+SPCHSTR009|New Weather Alert||
+SPCHSTR010|New||
+SPCHSTR011|Heard, D X, %s, at distance of %.1f %s||
 #
 SPCHDIRN00|ten noorden van||
 SPCHDIRS00|ten zuiden van||

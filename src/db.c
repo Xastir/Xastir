@@ -8868,7 +8868,11 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 play_sound(sound_command,sound_new_station);
 #ifdef HAVE_FESTIVAL
             if (festival_speak_new_station) {
-                xastir_snprintf(station_id, sizeof(station_id), "%s, %s",langcode("WPUPCFA005"),p_station->call_sign);
+                xastir_snprintf(station_id,
+                    sizeof(station_id),
+                    "%s, %s",
+                    langcode("SPCHSTR010"),
+                    p_station->call_sign);
                 SayText(station_id);
             }
 #endif
@@ -8939,8 +8943,12 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 #ifdef HAVE_FESTIVAL
             if ((distance > atof(bando_min)) && (distance < atof(bando_max)) &&
                    festival_speak_band_opening && from == DATA_VIA_TNC) {
-                xastir_snprintf(station_id, sizeof(station_id), "Heard, D X, %s, %s %.1f %s",p_station->call_sign, langcode("UMBNDO0001"),
-                    distance, units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"));
+                xastir_snprintf(station_id,
+                    sizeof(station_id),
+                    langcode("SPCHSTR011"),
+                    p_station->call_sign,
+                    distance,
+                    units_english_metric?langcode("SPCHSTR003"):langcode("SPCHSTR001"));
                 SayText(station_id);
             }
 #endif
@@ -10410,11 +10418,17 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
 #ifdef HAVE_FESTIVAL
 /* I re-use ipacket_message as my string buffer */
         if (festival_speak_new_message_alert) {
-            xastir_snprintf(ipacket_message, sizeof(ipacket_message), "You have a new message from %s.",call);
+            xastir_snprintf(ipacket_message,
+                sizeof(ipacket_message),
+                "You have a new message from %s.",
+                call);
             SayText(ipacket_message);
         }
         if (festival_speak_new_message_body) {
-            xastir_snprintf(ipacket_message, sizeof(ipacket_message), " %s",message);
+            xastir_snprintf(ipacket_message,
+                sizeof(ipacket_message),
+                " %s",
+                message);
             SayText(ipacket_message);
         }
 
