@@ -108,6 +108,7 @@ quad label shapefiles
 Track me
 Map extent/index caching
 Dallas One-Wire weather station - see http://melhuish.info/simon/projects/oww/
+More weather stations supported via wx200d daemon (WX-200/WM-918/WMR-918/WMR-968)
 storm wind radius decoding
 stations menu cleanup
 grid density adjustment +=-
