@@ -3602,7 +3602,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                                 NULL);
 
 
-
     // Create the mouse menus here
 
     ac = 0;
@@ -3753,6 +3752,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     XtRealizeWidget (appshell);
 
+    create_gc(da);
+
+    // Fill the drawing area with grey.  colors[0xff] was defined
+    // earlier in this function.
+    (void)XSetForeground(XtDisplay(da),gc,colors[0xff]);
+    (void)XSetBackground(XtDisplay(da),gc,colors[0xff]);
+    (void)XFillRectangle(XtDisplay(appshell),XtWindow(da),gc,0,0,screen_width,screen_height);
+
     // Set to the proper size before we make the window visible on the screen
     XtVaSetValues(appshell,
                 XmNx,           1,
@@ -3764,12 +3771,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     // Show the window
     XtPopup(appshell,XtGrabNone);
-
-    create_gc(da);
-    (void)XSetForeground(XtDisplay(da),gc,colors[0xff]);
-    (void)XSetBackground(XtDisplay(da),gc,colors[0xff]);
-
-    (void)XFillRectangle(XtDisplay(appshell),XtWindow(da),gc,0,0,screen_width,screen_height);
 
     XtAddCallback (da, XmNinputCallback,  da_input,NULL);
     XtAddCallback (da, XmNresizeCallback, da_resize,NULL);
@@ -4479,7 +4480,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             load_pixmap_symbol_file("symbols.dat");
             statusline("Initialize my station...",1);
             my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
-            da_resize(w, NULL,NULL);            // make sure the size is right after startup
+            da_resize(w, NULL,NULL);            // make sure the size is right after startup & create image
             set_last_position();                // init last map position
             statusline("Start interfaces...",1);
             startup_all_or_defined_port(-1);    // start interfaces
