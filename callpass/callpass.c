@@ -65,7 +65,11 @@ int main(int argc, char *argv[]) {
     char temp[100];
 
     if (argc>1) {
-        strcpy(temp,argv[1]);
+
+        strncpy(temp,argv[1],100);
+
+        temp[99] = '\0';    // Forced termination
+
         if (strlen(temp)>0)
             printf("Passcode for %s is %d\n",temp,doHash(temp));
 
