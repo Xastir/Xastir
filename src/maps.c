@@ -10455,7 +10455,6 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
                                 //printf("FULL PATH %s\n",fullpath);
 
-//WE7U
                                 // If we're indexing, throw the
                                 // directory into the map index as
                                 // well.
@@ -10543,7 +10542,6 @@ map_index_record *map_index_head = NULL;
 
 
 
-//WE7U
 // Function used to add map directories to the in-memory map index.
 // Causes an update of the index list in memory.  Input Records are
 // inserted in alphanumerical order.  We mark directories in the
@@ -10927,7 +10925,6 @@ void index_update_ll(char *filename,
 // just an initial implementation to see what speedups are possible.
 // Hashing might be next.  --we7u
 //
-//WE7U
 // Note that since we've alphanumerically ordered the list, we can
 // stop when we hit something after this filename in the alphabet.
 // It'll speed things up a bit.  Make this change sometime soon.
@@ -11022,6 +11019,7 @@ void index_save_to_file() {
 
 
 
+//WE7U
 // Snags the file and creates the linked list pointed to by the
 // map_index_head pointer.  The memory linked list keeps the same
 // order as the entries in the file.
@@ -11039,39 +11037,29 @@ void index_restore_from_file(void) {
     current = NULL;
 
     f = fopen(MAP_INDEX_DATA,"r");
-    if (f == NULL)  // No file yet
+    if (f == NULL)  // No map_index file yet
         return;
 
-    while (!feof (f)) { // Loop through entire file
+    while (!feof (f)) { // Loop through entire map_index file
 
-        // Read one object from the file
-        if ( get_line (f, in_string, MAX_FILENAME) ) {   // Snag one line of data
+        // Read one line from the file
+        if ( get_line (f, in_string, MAX_FILENAME) ) {
 
-            if (strlen(in_string) >= 8) {   // We have some data
+            if (strlen(in_string) >= 8) {   // We have some data.
+                                            // Try to process the
+                                            // line.
                 char scanf_format[50];
+                int processed;
 
-                // Malloc space for the data and add it to the head of
-                // the linked list
+                // Malloc an index record.  We'll add it to the list
+                // only if the data looks reasonable.
                 temp_record = (map_index_record *)malloc(sizeof(map_index_record));
                 temp_record->next = NULL;
 
-                if (current == NULL) {  // Empty list
-                    map_index_head = temp_record;
-                    current = temp_record;
-                }
-                else {
-                    current->next = temp_record;
-                    current = temp_record;
-                }
-
-                // Fill in the values
-
-//WE7U
-                // Tweak the string below so that the 1999 will
-                // track along with MAX_FILENAME-1.  We construct
+                // Tweaked the string below so that it will track
+                // along with MAX_FILENAME-1.  We're constructing
                 // the string "%lu,%lu,%lu,%lu,%2000c", where the
                 // 2000 example number is from MAX_FILENAME.
-
                 xastir_snprintf(scanf_format,
                     sizeof(scanf_format),
                     "%s%d%s",
@@ -11081,8 +11069,7 @@ void index_restore_from_file(void) {
 
                 //printf("%s\n",scanf_format);
 
-                sscanf(in_string,
-//                    "%lu,%lu,%lu,%lu,%1999c",
+                processed = sscanf(in_string,
                     scanf_format,
                     &temp_record->bottom,
                     &temp_record->top,
@@ -11090,14 +11077,33 @@ void index_restore_from_file(void) {
                     &temp_record->right,
                     temp_record->filename);
 
-                    // Mark each record as non-accessed at this point
+                    // Mark the record as non-accessed at this
+                    // point.  At the stage where we're writing
+                    // this list off to disk, if the record hasn't
+                    // been accessed by the re-indexing, it doesn't
+                    // get written.  This flushes out deleted files
+                    // after a couple of Xastir reboots.
                     temp_record->accessed = 0;
 
                 temp_record->filename[MAX_FILENAME-1] = '\0';
 
-                // Link the new record to the end of the list
+                if (processed == 5) {
 
-                //printf("Restored: %s\n",temp_record->filename);
+                    // Link the new record to the end of the list
+                    if (current == NULL) {  // Empty list
+                        map_index_head = temp_record;
+                        current = temp_record;
+                    }
+                    else {
+                        current->next = temp_record;
+                        current = temp_record;
+                    }
+                    //printf("Restored: %s\n",temp_record->filename);
+                }
+                else {  // sscanf didn't parse the proper number of
+                        // items.  Delete the record.
+                    free(temp_record);
+                }
             }
         }
     }
@@ -11459,7 +11465,7 @@ void load_maps (Widget w) {
                         // list to find all maps that match the
                         // currently selected directory.  Attempt to
                         // load all of those maps as well.
-//WE7U
+
 //printf("Load all maps under this directory: %s\n",selected_dir);
 
                         // Point to the start of the map_index list
