@@ -1244,8 +1244,6 @@ void alert_build_list(Message *fill) {
         title[3][32]        = '\0';
         title[4][32]        = '\0';
 
-
-
         // Check for "NWS_" in the call_sign field.  Underline
         // signifies compressed alert format.  Dash signifies
         // non-compressed format.
@@ -1298,6 +1296,7 @@ void alert_build_list(Message *fill) {
                 char suffix[4];
                 char temp_suffix[4];
                 char ending[4];
+                int iterations = 0;
 
 
                 // Snag the ALPHA portion
@@ -1310,6 +1309,7 @@ void alert_build_list(Message *fill) {
                 prefix[3] = ptr[0];
                 prefix[4] = '\0';   // Terminate the string
                 ptr += 1;
+
                 // prefix should now contain something like "MN_Z"
 
                 // Snag the NUMERIC portion.  Note that the field
@@ -1319,6 +1319,7 @@ void alert_build_list(Message *fill) {
                     sizeof(temp_suffix),
                     "%s",
                     ptr);
+
                 temp_suffix[3] = '\0';   // Terminate the string
                 if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
                     temp_suffix[1] = '\0';
@@ -1331,6 +1332,7 @@ void alert_build_list(Message *fill) {
                 else {
                     ptr += 3;
                 }
+
                 // temp_suffix should now contain something like
                 // "039" or "45" or "2".  Add leading zeroes to give
                 // "suffix" a length of 3.
@@ -1356,7 +1358,8 @@ void alert_build_list(Message *fill) {
                 suffix[3] = '\0';
 
 // We have our first zone (of this loop) extracted!
-//fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
+if (debug_level & 2)
+    fprintf(stderr,"1Zone:%s%s\n",prefix,suffix);
 
                 // Add it to our zone string.  In this case we know
                 // that the lengths of the strings we're working
@@ -1374,6 +1377,9 @@ void alert_build_list(Message *fill) {
                 // Terminate it every time
                 uncompressed_wx[9999] = '\0';
 
+if (debug_level & 2)
+    fprintf(stderr,"uncompressed_wx:%s\n",uncompressed_wx);
+
                 // Here we keep looping until we hit another alpha
                 // portion.  We need to look at the field separator
                 // to determine whether we have another separate
@@ -1381,53 +1387,67 @@ void alert_build_list(Message *fill) {
                 while ( (ptr < (compressed_wx + strlen(compressed_wx)))
                         && ( is_num_chr(ptr[1]) ) ) {
 
+                    iterations++;
+
+                    // Break out of this loop if we don't find an
+                    // alpha character fairly quickly.  That way the
+                    // Xastir main thread can't hang in this loop
+                    // forever if the input string is malformed.
+                    if (iterations > 30)
+                        break;
+
                     // Look for '>' or '-' character.  If former, we
                     // have a numeric sequence to ennumerate.  If the
                     // latter, we either have another zone number or
                     // another prefix coming up.
-                    if (ptr[0] == '>') { // Numeric zone sequence
+                    if (ptr[0] == '>' || ptr[0] == '<') { // Numeric zone sequence
                         int start_number;
                         int end_number;
                         int kk;
 
-                        ptr++;  // Skip past the '>' character
 
-                        // Snag the NUMERIC portion
+                        ptr++;  // Skip past the '>' or '<' characters
+
+                        // Snag the NUMERIC portion.  May be between
+                        // 1 and three digits long.
                         xastir_snprintf(ending,
                             sizeof(ending),
                             "%s",
                             ptr);
-                        ending[3] = '\0';   // Terminate the string
-                        if (is_num_chr(ending[0])) {
-                            ptr += 1;
-                            if (is_num_chr(ending[1])) {
-                                ptr += 1;
-                                if (is_num_chr(ending[2])) {
-                                    ptr += 1;
-                                }
-                                else {
-                                    ending[2] = '\0';
-                                }
-                            }
-                            else {
-                                ending[1] = '\0';
-                            }
-                        }
-                        else {
+
+                        // Terminate the string and advance the
+                        // pointer past it.
+                        if (!is_num_chr(ending[0])) {
                             // We have a problem, 'cuz we didn't
                             // find at least one number.  Packet is
                             // badly formatted.
                             return;
                         }
+                        else if (!is_num_chr(ending[1])) {
+                            ending[1] = '\0';
+                            ptr++;
+                        }
+                        else if (!is_num_chr(ending[2])) {
+                            ending[2] = '\0';
+                            ptr+=2;
+                        }
+                        else {
+                            ending[3] = '\0';
+                            ptr+=3;
+                        }
                         
                         // ending should now contain something like
-                        // "046" or "35" or "2".
+                        // "046" or "35" or "2"
+if (debug_level & 2)
+    fprintf(stderr,"Ending:%s\n",ending);
+
                         start_number = (int)atoi(suffix);
                         end_number = (int)atoi(ending);
                         for ( kk=start_number+1; kk<=end_number; kk++) {
                             xastir_snprintf(suffix,4,"%03d",kk);
 
-//fprintf(stderr,"2Zone:%s%s\n",prefix,temp);
+if (debug_level & 2)
+    fprintf(stderr,"2Zone:%s%s\n",prefix,suffix);
 
                             // And another zone... Ennumerate
                             // through the sequence, adding each
@@ -1449,10 +1469,13 @@ void alert_build_list(Message *fill) {
                             uncompressed_wx[9999] = '\0';
                         }
                     }
+
+                    // Wasn't a '>' character, so check for a '-'
                     else if (ptr[0] == '-') {
                         // New zone number, not a numeric sequence.
 
                         ptr++;  // Skip past the '-' character
+
                         if ( is_num_chr(ptr[0]) ) {
                             // Found another number.  Use the prefix
                             // stored from last time.
@@ -1464,18 +1487,28 @@ void alert_build_list(Message *fill) {
                                 sizeof(temp_suffix),
                                 "%s",
                                 ptr);
-                            temp_suffix[3] = '\0';   // Terminate the string
-                            if (temp_suffix[1] == '-' || temp_suffix[1] == '>') {
-                                temp_suffix[1] = '\0';
-                                ptr += 1;
+
+                            // Terminate the string and advance the
+                            // pointer past it.
+                            if (!is_num_chr(temp_suffix[0])) {
+                                // We have a problem, 'cuz we didn't
+                                // find at least one number.  Packet is
+                                // badly formatted.
+                                return;
                             }
-                            else if (temp_suffix[2] == '-' || temp_suffix[2] == '>') {
+                            else if (!is_num_chr(temp_suffix[1])) {
+                                temp_suffix[1] = '\0';
+                                ptr++;
+                            }
+                            else if (!is_num_chr(temp_suffix[2])) {
                                 temp_suffix[2] = '\0';
-                                ptr += 2;
+                                ptr+=2;
                             }
                             else {
-                                ptr += 3;
+                                temp_suffix[3] = '\0';
+                                ptr+=3;
                             }
+
                             // temp_suffix should now contain something like
                             // "039" or "45" or "2".  Add leading zeroes to give
                             // "suffix" a length of 3.
@@ -1497,10 +1530,9 @@ void alert_build_list(Message *fill) {
                                         temp_suffix);
                                     break;
                             }
-                            // Make sure that suffix is terminated properly
-                            suffix[3] = '\0';
 
-//fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
+if (debug_level & 2)
+    fprintf(stderr,"3Zone:%s%s\n",prefix,suffix);
 
                             // And another zone...
                             // Add it to our zone string.  In this
@@ -1797,7 +1829,7 @@ void alert_build_list(Message *fill) {
             // Kludge for fire zones
             if (!strncmp(entry.alert_tag,"RED_FLAG",8))
             {
-                // need to replace "Z" in the zone field with "F"
+                // Replace "Z" in the zone field with "F"
                 if (entry.title[3] == 'Z')
                     entry.title[3] = 'F';
             }
