@@ -372,9 +372,9 @@ di chiedere al gruppo di radioamatori locali quale è il miglio percorso per i
 pacchetti in quella data area. 
 
 File di inizializzazione e di spegnimento del TNC. Questi campi specificano i 
-nomi di file presenti nelle cartella /usr/local/xastir/config. Ognuno di questi 
-file di test contiene i comandi che si vogliono mandare al TNC all'avvio del 
-programma e al termine dello stesso.
+nomi di file presenti nelle cartella /usr/local/share/xastir/config. Ognuno
+di questi file di test contiene i comandi che si vogliono mandare al TNC
+all'avvio del programma e al termine dello stesso.
 
 CONFIGURAZIONE DEL TNC AX.25
 
@@ -672,14 +672,14 @@ supporto per gli Allarmi Meteo Statunitensi.
 
 Dove posizionare le mappe
 Qualsiasi mappa Dos, Windows/Mac o Pixmap deve essere messa nella directory 
-/usr/local/xastir/maps.  Si possono creare sottocartelle per oridare il 
+/usr/local/share/xastir/maps.  Si possono creare sottocartelle per oridare il 
 contenuto. Per esempio si può creare una cartella ITALIA per mettere tutte le 
 mappe che comprendono il territorio italiano, oppure si possono dividere le 
 mappe per tipo: Pixmap e Dos.
 
 Esempio
 
-                          /usr/local/xastir/maps/
+                          /usr/local/share/xastir/maps/
                                                 /italia/nord
                                                 /italia/centro
                                                 /italia/sud
@@ -718,12 +718,12 @@ Per usare la mappa Pixmap, selezionare la scelta di mappa e in seguito il file
 
 Mappe di Allerta Meteo USA
 Tutte le mappe di Allerta meteo USA dovrebbero essere posizionate in 
-/usr/local/xastir/Counties.
+/usr/local/share/xastir/Counties.
 Dovranno poi essere create delle sottocartelle per lo stato USA a cui 
 appartiene la mappa chiamate con l'abbreviazione di due lettere dello stato.
 
 
-               /usr/local/xastir/Counties
+               /usr/local/share/xastir/Counties
                                          /CO/
                                          /CO/COPARK.map
                                          /CO/CODOUGLA.map
@@ -759,7 +759,8 @@ Il bottone Spedisci Messaggio aprirà una finestra per spedire un messaggio.
 
 Se si è installato il database FCC o RAC si può fare una ricerca dei dati della 
 stazione.
-I file di databse RAC e FCC devono essere posizionati in /usr/local/xastir/fcc.
+I file di databse RAC e FCC devono essere posizionati in
+/usr/local/share/xastir/fcc.
 
 Questa funzione aggiungerà l'indirizzo della stazione alle informazioni 
 ricevute via radio.

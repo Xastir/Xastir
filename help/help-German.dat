@@ -917,9 +917,9 @@ Hinweis auf die Quellen von verschiedenen Kartenformaten finden Sie in
 der Datei README.1ST.
 
 Karten-Verzeichnisse
-Alle Kartendateien sollten unter /usr/local/xastir/maps auf Ihrm Computer
-gespeichert werden. Zur besseren Organisation und Trennung der Karten
-können sie dort auch beliebige Unterverzeichnisse anlegen. Bei der
+Alle Kartendateien sollten unter /usr/local/share/xastir/maps auf Ihrm
+Computer gespeichert werden. Zur besseren Organisation und Trennung der
+Karten können sie dort auch beliebige Unterverzeichnisse anlegen. Bei der
 Kartenauswahl werden die Karten mit ihrem ralativen Pfad alphabetisch
 sortiert angezeigt. Symbolische Links können helfen, um die Reihenfolge
 gegebenenfalls zu ändern.
@@ -1057,7 +1057,7 @@ eingeschaltet wurden.
 
 
 County Karten für Wetterwarnungen
-Alle County-Karten sollten im Verzeichnis /usr/local/xastir/Counties
+Alle County-Karten sollten im Verzeichnis /usr/local/share/xastir/Counties
 gespeichert werden. Es gibt verschiedene Formate für diese Karten, aber
 dieses Verzeichnis wird immer Unterverzeichnisse für jeden Staat/Marine-
 Bereich haben (Abkürzung aus zwei Buchstaben).
@@ -1344,7 +1344,7 @@ Wenn die FCC (U.S. Federal Communications Commission) oder RAC (Radio
 Amateurs of Canada) Datenbank installiert ist und das Rufzeichen aus
 dem US-amerikanischen bzw. kanadischen Kontingent stammt, so ist das
 "FCC/RAC Suche"-Feld vorhanden, sonst nicht. Die FCC- und RAC-Dateien
-sollten sich im Verzeichnis /usr/local/xastir/fcc befinden, wobei auf
+sollten sich im Verzeichnis /usr/local/share/xastir/fcc befinden, wobei auf
 Groß-/Kleinschreibung zu achten ist. Wenn die Suche erfolgreich ist,
 wird Name und Adresse der Station im Stations-Info Fenster angezeigt.
 Anweisungen zur Installation dieser Datenbanken finden sich in der
@@ -1542,7 +1542,7 @@ weitgehend vermeiden, kann auch z.B. WIDE3-3 oder "RELAY,WIDE3-3"
 verwendet werden.
 
 Die TNC Startup und Shutdown Dateien befinden sich im Verzeichnis
-/usr/local/xastir/config und werden beim Starten bzw. Stoppen der
+/usr/local/share/xastir/config und werden beim Starten bzw. Stoppen der
 TNC-Verbindung zur Initialisierung ausgeführt. Es handelt sich um
 normale Textdateien mit Kommandos, die an den TNC gesendet werden.
 

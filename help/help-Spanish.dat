@@ -716,7 +716,7 @@ USGS DRG topo mapas.
 
 Locaciones de Mapas 
 Cualquier Dos, Windows/Mac o archivo Pixmap y geoTIFF, deben guardarse en el  
-Directorio de /usr/local/xastir/maps en su computadora.
+Directorio de /usr/local/share/xastir/maps en su computadora.
 Usted puedes crear cualquier números de directorios bajo este directorio
 para ayudar a separar sus datos.
 Por ejemplo usted puedes querer crear un directorio de USA.
@@ -724,7 +724,7 @@ y después uno por cada estado bajo el Directorio de USA.
 O tiene un directorio separado para DOS o Pixmaps y geoTIFF.
 
 
-                          /usr/local/xastir/maps/
+                          /usr/local/share/xastir/maps/
                                                 /usa/
                                                 /usa/CO/
                                                 /usa/NJ/
@@ -801,12 +801,12 @@ NAD 1927 a WGS 84 datum, el cual hace el mapa topo USGS mucho más posicionalment
 exacto sobre la pantalla en Xastir.
 
 Mapas Condado WX  
-Todos los mapas Condado WX deben guardarse en el directorio de /usr/local/xastir/Counties.  
-Hay formatos diferentes para los mapas, pero de cualquier modo este  
-directorio tendrá directorios (usted podrías necesitar crearlos) bajo este  
-para cada estado (2 abreviaciones de letras).  
+Todos los mapas Condado WX deben guardarse en el directorio de
+/usr/local/share/xastir/Counties.  Hay formatos diferentes para los mapas,
+pero de cualquier modo este directorio tendrá directorios (usted podrías
+necesitar crearlos) bajo este  para cada estado (2 abreviaciones de letras).
 
-               /usr/local/xastir/Counties
+               /usr/local/share/xastir/Counties
                                          /CO/
                                          /CO/COPARK.map
                                          /CO/CODOUGLA.map
@@ -924,7 +924,7 @@ usan el flujo de protocolos más eficientes, en tales caso usted podría usar
 WIDE3-3 o RELAY,WIDE3-3.
 
 Los archivos de Inicio y Salida del TNC. Estos campos especifican a nombre
-de archivo qie es localizado en el directorio /usr/local/xastir/config.
+de archivo qie es localizado en el directorio /usr/local/share/xastir/config.
 Cada archivo es un archivo de texto estandar conteniendo algunos comandos que
 usted le gustaria enviarle a su TNC a la vez que el dispositivo es activado
 (Archivo de Inicio - Startup file) o de deshabilitar (shut down).
@@ -1290,8 +1290,8 @@ Si el RAC (RadioAficionados de Canadá) banco de datos se instala,
 un botón de búsqueda RAC Banco de datos aparecerá para indicativo 
 que empiezan con una "V".  
 
-El archivo FCC y  RAC deben colocarse en el directorio /usr/local/xastir/fcc,
-y el caso es importante!  
+El archivo FCC y  RAC deben colocarse en el directorio
+/usr/local/share/xastir/fcc, y el caso es importante!  
   
 Usted puedes usar este botón para agregar los nombres de estaciones
 y diríjase al Diálogo de Estación Info. 

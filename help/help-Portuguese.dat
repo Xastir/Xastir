@@ -742,10 +742,10 @@ Details of locations to obtain many of the above types of maps are found in
 the file README.1ST
 
 Map Locations
-Any map file should be stored in the /usr/local/xastir/maps directory on your
-computer. You can create any number of directories under this directory to
-help organize and separate your data. The maps will be listed in
-alphabetical order with their relative path in the Map Choser dialogue.
+Any map file should be stored in the /usr/local/share/xastir/maps directory
+on your computer. You can create any number of directories under this
+directory to help organize and separate your data. The maps will be listed
+in alphabetical order with their relative path in the Map Choser dialogue.
 Symbolic links could help to reorganize the order.
 
 Hints on installing and organizing maps are found in README.1ST.
@@ -852,7 +852,7 @@ Dos/WinAPRS maps.  As you zoom in, more labels will appear, assuming you've
 selected the GNIS file as a map and have enabled Map Labels in the Maps menu.
 
 WX County Maps
-All WX County maps should be stored in the /usr/local/xastir/Counties
+All WX County maps should be stored in the /usr/local/share/xastir/Counties
 directory. There are different formats for the maps, but either way this
 directory will have subdirectories for each state/marine area (2 letter
 abbreviations). The older format uses <ST><COUNTYNAME>.map, while the new
@@ -1119,7 +1119,7 @@ If the FCC (U.S. Federal Communications Commission) or RAC (Radio Amateurs of
 Canada) database is installed and the callsign appears to be a Canadian or
 U.S. callsign, the Search FCC/RAC Database button will become active,
 otherwise this button will be inactive.  The FCC and RAC files should be
-placed in the /usr/local/xastir/fcc directory, and case is important!
+placed in the /usr/local/share/xastir/fcc directory, and case is important!
 Pressing this button adds the station's name and address into the Station
 Info box.  Instructions for installing these databases are in the README.1ST
 file.
@@ -1296,9 +1296,9 @@ use the more efficient flooding protocols, in which case you might use WIDE3-3
 or RELAY,WIDE3-3.
 
 TNC Startup and Shutdown files. These fields specify a filename that is
-located in the /usr/local/xastir/config directory. Each file is a standard
-text file containing any commands you would like to send your TNC at the time
-the device is activated (startup file) or shut down.
+located in the /usr/local/share/xastir/config directory. Each file is a
+standard text file containing any commands you would like to send your TNC at
+the time the device is activated (startup file) or shut down.
 
 HELP-INDEX>Configure Serial TNC w/GPS on HSP cable or AUX port
 
