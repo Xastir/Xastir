@@ -1,4 +1,5 @@
 # $Id$
+
 bin_PROGRAMS = xastir
 
 xastir_SOURCES = \
@@ -18,7 +19,7 @@ xastir_SOURCES = \
     lang.c lang.h \
     list_gui.c list_gui.h \
     locate_gui.c \
-    location.c  \AUTOMAKE_OPTIONS = gnu
+    location.c AUTOMAKE_OPTIONS = gnu \
     location_gui.c \
     main.c main.h \
     maps.c maps.h \
