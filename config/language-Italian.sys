@@ -373,7 +373,7 @@ WPUPCFD030|Disable Posit Dupe-Checks||
 WPUPCFTM01|Configura Temporizzazioni||
 WPUPCFTM02|Intervallo TX posizione (min)||
 WPUPCFTM03|Tempo di Ghosting della stazione (min)||
-WPUPCFTM04|Intervallo TX Oggetto/Entità (min)||
+WPUPCFTM04|Max Intervallo TX Oggetto/Entità (min)||
 WPUPCFTM05|Clear Time della stazione (ore)||
 WPUPCFTM06|Intervallo controllo GPS (sec)||
 WPUPCFTM07|Tempo eliminazione stazione (giorni)||

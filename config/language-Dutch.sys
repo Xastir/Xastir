@@ -384,7 +384,7 @@ WPUPCFD030|Zet Positie Duplicaat Controle Uit||
 WPUPCFTM01|Configureer Tijdsinstelling|||
 WPUPCFTM02|Interval Verzenden Positie (min)||
 WPUPCFTM03|Tijd Tot Vervagen Station (min)||
-WPUPCFTM04|Interval Verzenden Object/Item (min)||
+WPUPCFTM04|Max Interval Verzenden Object/Item (min)||
 WPUPCFTM05|Tijd Tot Verdwijnen Van Kaart (uren)||
 WPUPCFTM06|GPS Status Controle Interval (sec)||
 WPUPCFTM07|Tijd Tot Wissen Station (dagen)||

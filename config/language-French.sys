@@ -372,7 +372,7 @@ WPUPCFD030|Désactiver identif. de duplic. posit.||
 WPUPCFTM01|Configurer temporisation||
 WPUPCFTM02|Intervalle TX position (min)||
 WPUPCFTM03|Délai d'affichage faible d'une station (min)||
-WPUPCFTM04|Intervalle TX d'objets/articles (min)||#'
+WPUPCFTM04|Max Intervalle TX d'objets/articles (min)||#'
 WPUPCFTM05|Délai de suppression d'affichage d'une station (heures)||
 WPUPCFTM06|Intervalle de lecture GPS (sec)||
 WPUPCFTM07|Délai de suppression d'une station (jours)||#'

@@ -376,7 +376,7 @@ WPUPCFD030|Disable Posit Dupe-Checks||
 WPUPCFTM01|Configurar momento certo|||
 WPUPCFTM02|Intervalo Posit TX (min)||
 WPUPCFTM03|Tempo de estacao fantasma (min)||
-WPUPCFTM04|Intervalo TX objecto/item (min)||
+WPUPCFTM04|Max Intervalo TX objecto/item (min)||
 WPUPCFTM05|Tempo para limpar estacao (horas)||
 WPUPCFTM06|Intervalo para verificar GPS (seg)||
 WPUPCFTM07|Tempo para apagar estacao (dias)||

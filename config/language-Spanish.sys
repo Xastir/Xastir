@@ -376,7 +376,7 @@ WPUPCFD030|Disable Posit Dupe-Checks||
 WPUPCFTM01|Configurar Cronómetro||
 WPUPCFTM02|TX Posición Intérvalo (minutos)||
 WPUPCFTM03|Desvanecimiento de la Estación (minutos)||
-WPUPCFTM04|Objeto/Artículo TX Intérvalo (minutos)||
+WPUPCFTM04|Objeto/Artículo TX Max Intérvalo (minutos)||
 WPUPCFTM05|Limpiar Tiempo de la Estación (horas)||
 WPUPCFTM06|Chequeo Intérvalo del GPS (segundos)||
 WPUPCFTM07|Borrar Tiempo de la Estación (días)||

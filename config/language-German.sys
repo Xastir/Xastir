@@ -379,7 +379,7 @@ WPUPCFD030|Position Dubletten-Prüfung aus||
 WPUPCFTM01|Einstellung des Zeitverhaltens|||
 WPUPCFTM02|SendeIntervall Position [Min]||
 WPUPCFTM03|Station schemenhaft nach [Min]||
-WPUPCFTM04|SendeIntervall Objekt [Min]||
+WPUPCFTM04|Max SendeIntervall Objekt [Min]||
 WPUPCFTM05|Alte Station anzeigen für [Std]||
 WPUPCFTM06|GPS Abfrage alle [Sek]||
 WPUPCFTM07|Station löschen nach [Tage]||
