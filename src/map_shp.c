@@ -1669,7 +1669,7 @@ void draw_shapefile_map (Widget w,
                             switch (temp[1]) {
                                 case '0':   // H0? = Water feature/shoreline
                                     // Skip the vector if we're above this zoom level
-                                    if (map_color_levels && scale_y > 16384)
+                                    if (map_color_levels && scale_y > 4096)
                                         skip_it++;
                                     if (map_color_levels && scale_y > 16)
                                         skip_label++;
