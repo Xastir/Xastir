@@ -450,7 +450,7 @@ For geoTIFF support (such as USGS DRG topo maps) you need one each
 of libproj, proj-nad27, and libgeotiff:
 
 
-    libproj (tested with proj-4.4.6):
+    libproj (tested with proj-4.4.7):
     ---------------------------------
         http://www.remotesensing.org/proj/
 or      http://wetnet.net/~we7u/xastir/libproj/
@@ -474,7 +474,7 @@ critical.  Follow the instructions below carefully.
 
 
 
-Adding libproj to Cygwin (tested with proj-4.4.6):
+Adding libproj to Cygwin (tested with proj-4.4.7):
 --------------------------------------------------
 
 NOTE: You must install libproj BEFORE compiling libgeotiff, because
@@ -492,8 +492,8 @@ subdirectory of the proj distribution directory before you run
 configure.
     
     cd ~/src/libproj    
-    tar xzvf proj-4.4.6.tar.gz
-    cd proj-4.4.6/nad
+    tar xzvf proj-4.4.7.tar.gz
+    cd proj-4.4.7/nad
     tar xzvf ../../proj-nad27-1.1.tar.gz
     cd ..
     ./configure
