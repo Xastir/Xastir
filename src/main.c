@@ -8014,12 +8014,12 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
 
 
 
-// Add an ending vertice that is the same as the starting vertice.
-// Best not to use the screen coordinates we captured first, as the
-// user may have zoomed or panned since then.  Better to copy the
-// first vertice that we recorded in our linked list.
+// We add an ending vertice that is the same as the starting
+// vertice.  Best not to use the screen coordinates we captured
+// first, as the user may have zoomed or panned since then.  Better
+// to copy the first vertice that we recorded in our linked list.
 //
-// Also compute the area of the closed polygon.  Write it out to
+// We compute the area of the closed polygon.  Write it out to
 // STDERR and perhaps to a storage area in the Object and to a
 // dialog that pops up on the screen?
 //
@@ -8109,8 +8109,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         // the current measurement units.  We'll use the starting
         // vertice as our fixed point.
         //
-        dx0 = cvt_kn2len
-            * calc_distance_course(
+        dx0 = calc_distance_course(
                 CAD_list_head->start->latitude,
                 CAD_list_head->start->longitude,
                 CAD_list_head->start->latitude,
@@ -8121,8 +8120,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         if (tmp->longitude < CAD_list_head->start->longitude)
             dx0 = -dx0;
 
-        dy0 = cvt_kn2len
-            * calc_distance_course(
+        dy0 = calc_distance_course(
                 CAD_list_head->start->latitude,
                 CAD_list_head->start->longitude,
                 tmp->latitude,
@@ -8133,8 +8131,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         if (tmp->latitude < CAD_list_head->start->latitude)
             dx0 = -dx0;
 
-        dx1 = cvt_kn2len
-            * calc_distance_course(
+        dx1 = calc_distance_course(
                 CAD_list_head->start->latitude,
                 CAD_list_head->start->longitude,
                 CAD_list_head->start->latitude,
@@ -8145,8 +8142,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         if (tmp->next->longitude < CAD_list_head->start->longitude)
             dx0 = -dx0;
 
-        dy1 = cvt_kn2len
-            * calc_distance_course(
+        dy1 = calc_distance_course(
                 CAD_list_head->start->latitude,
                 CAD_list_head->start->longitude,
                 tmp->next->latitude,
@@ -8181,11 +8177,13 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         area = -area;
 
 
-    // Format it for output and dump it out
+    // Format it for output and dump it out.  We're using square
+    // terms, so apply the conversion factor twice to convert from
+    // nautical square miles to the units of interest.
     xastir_snprintf(temp,
         sizeof(temp),
         "Area: %0.2f square %s",
-        area,
+        area * cvt_kn2len * cvt_kn2len,
         un_dst);
     popup_message(langcode("POPUPMA020"),temp);
 
@@ -8193,16 +8191,14 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     fprintf(stderr,"%s\n",temp);
 #endif
 
+    // Save it in the object.  Convert nautical square miles to
+    // square kilometers.
+    CAD_list_head->computed_area = area * 1.852 * 1.852; //km2
 
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
     polygon_last_x = -1;    // Invalid position
     polygon_last_y = -1;    // Invalid position 
-
-
-// Because lat/long units can vary drastically w.r.t. real units, we
-// need to multiply the terms above by the real units in order to
-// get real area.  Take care to do that soon.
 }
 
 
