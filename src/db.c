@@ -2769,21 +2769,33 @@ void display_file(Widget w) {
 
     // Check if we should mark where we found an address
     if (mark_destination && show_destination_mark) {
-        draw_pod_circle(destination_coord_lon,
-                        destination_coord_lat,
-                        0.0020 * scale_y,
-                        colors[0x0e],   // Yellow
-                        pixmap_final);
-        draw_pod_circle(destination_coord_lon,
-                        destination_coord_lat,
-                        0.0023 * scale_y,
-                        colors[0x44],   // Red
-                        pixmap_final);
-        draw_pod_circle(destination_coord_lon,
-                        destination_coord_lat,
-                        0.0026 * scale_y,
-                        colors[0x61],   // Blue
-                        pixmap_final);
+        int offset;
+
+        // Set the line width in the GC.  Make it nice and fat.
+        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 7, LineSolid, CapButt,JoinMiter);
+        (void)XSetForeground (XtDisplay (w), gc_tint, colors[0x27]);
+        (void)(void)XSetFunction (XtDisplay (da), gc_tint, GXxor);
+
+        // Scale it so that the 'X' stays the same size at all zoom
+        // levels.
+        offset = 25 * scale_y;
+
+        // Make a big 'X'
+        draw_vector(w,
+            destination_coord_lon-offset,  // x1
+            destination_coord_lat-offset,  // y1
+            destination_coord_lon+offset,  // x2
+            destination_coord_lat+offset,  // y2
+            gc_tint,
+            pixmap_final);
+
+        draw_vector(w,
+            destination_coord_lon+offset,  // x1
+            destination_coord_lat-offset,  // y1
+            destination_coord_lon-offset,  // x2
+            destination_coord_lat+offset,  // y2
+            gc_tint,
+            pixmap_final);
     }
 
     if (debug_level & 1)
