@@ -198,7 +198,7 @@ int get_int(char *option, int *value, int low, int high, int def) {
         *value = atoi (value_o);
     else {
         printf("Found out-of-range or non-existent value (%d) for %s in config file, changing to %d\n",
-            *value,
+            atoi(value_o),
             option,
             def);
         *value = def;
@@ -221,7 +221,7 @@ int get_long(char *option, long *value, long low, long high, long def) {
         *value = atol (value_o);
     else {
         printf("Found out-of-range or non-existent value (%ld) for %s in config file, changing to %ld\n",
-            *value,
+            atol(value_o),
             option,
             def);
         *value = def;
