@@ -366,6 +366,8 @@ int convert_to_xastir_coordinates ( unsigned long* x,
 
 
 
+
+
 /** MAP DRAWING ROUTINES **/
 
 
@@ -385,8 +387,228 @@ void draw_grid(Widget w) {
     (void)XSetForeground (XtDisplay (w), gc, colors[0x08]);
     (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineOnOffDash, CapButt,JoinMiter);
 
-    if (0 /*coordinate_system == USE_UTM*/) {
-        // Not yet, just teasing... ;-)
+    if (coordinate_system == USE_UTM) {
+
+        // Draw a UTM grid.
+
+        // 84 degrees North to 80 degrees South. 60 zones, each
+        // covering six (6) degrees of longitude. Each zone extends
+        // three degrees eastward and three degrees westward from
+        // its central meridian. Zones are numbered consecutively
+        // west to east from the 180 degree meridian. From 84
+        // degrees North and 80 degrees South to the respective
+        // poles, the Universal Polar Stereographic (UPS) is used.
+
+        // Draw:
+        //   UTM Zones if at zoom level XX or higher
+        //   1km rectangles between zooms XX and YY
+        //   100m rectangles below zoom YY
+        //   Centerlines also???
+
+        // Get the corner points of our current map view in UTM.
+        // Iterate along each line, drawing short line segments to
+        // draw the portion of the UTM that is within the view.
+        // Must be careful and draw each UTM zone separately, as the
+        // numbers start over for each area.  Could also just
+        // iterate along each pixel and draw a point there if the
+        // UTM numbers fit regular patterns (like near every 100m or
+        // 1km, depending on zoom level).
+
+        // Figure out which zone(s) we are viewing by checking the
+        // four corner points of the view.  For each zone, iterate
+        // over the subzone boundaries that are appropriate for the
+        // zoom level, drawing a dot at each interval.  The
+        // iteration intervals should be appropriate for the zoom
+        // level (mathematically related) in order to draw the
+        // curved lines properly.
+
+        // Zone boundaries are curves.  We'll need to start
+        // somewhere outside our view and draw across the view,
+        // checking for zone boundaries as we go.  If a boundary
+        // hit, stop drawing at the boundary and start on the next
+        // line.  Do both vertical and horizontal lines for each
+        // zone before moving on to the next.  Repeat for each zone
+        // in the view.
+
+        unsigned long view_min_x, view_max_x;
+        unsigned long view_min_y, view_max_y;
+        unsigned long temp_x;
+        double easting1, northing1;
+        double easting2, northing2;
+        double easting3, northing3;
+        double easting4, northing4;
+        char zone1[5];
+        char zone2[5];
+        char zone3[5];
+        char zone4[5];
+        int min_zone, max_zone, temp;
+        int done;
+
+
+        // Left edge of view, Xastir coordinate system
+        view_min_x = (unsigned long)x_long_offset;
+        if (view_min_x > 129600000ul)
+            view_min_x = 0;
+
+        // Top edge of view, Xastir coordinate system
+        view_min_y = (unsigned long)y_lat_offset;
+        if (view_min_y > 64800000ul)
+            view_min_y = 0;
+
+        // Right edge of view, Xastir coordinate system
+        view_max_x = (unsigned long)(x_long_offset + (screen_width * scale_x));
+        if (view_max_x > 129600000ul)
+            view_max_x = 129599999ul;
+
+        // Bottom edge of view, Xastir coordinate system
+        view_max_y = (unsigned long)(y_lat_offset + (screen_height * scale_y));
+        if (view_max_y > 64800000ul)
+            view_max_y = 64799999ul;
+
+        // NW corner
+        convert_xastir_to_UTM(&easting1,
+            &northing1,
+            zone1,
+            sizeof(zone1),
+            (long)view_min_x,
+            (long)view_min_y);
+
+        // NE corner
+        convert_xastir_to_UTM(&easting2,
+            &northing2,
+            zone2,
+            sizeof(zone2),
+            (long)view_max_x,
+            (long)view_min_y);
+
+        // SE corner
+        convert_xastir_to_UTM(&easting3,
+            &northing3,
+            zone3,
+            sizeof(zone3),
+            (long)view_max_x,
+            (long)view_max_y);
+
+        // SW corner
+        convert_xastir_to_UTM(&easting4,
+            &northing4,
+            zone4,
+            sizeof(zone4),
+            (long)view_min_x,
+            (long)view_max_y);
+
+
+        // At this stage we have a letter after the zone number,
+        // which we don't need.
+
+//fprintf(stderr,"zones %s, %s, %s, %s\n", zone1, zone2, zone3, zone4);
+
+        // Compute the list of zones we need to iterate across.
+        min_zone = max_zone = atoi(zone1);
+
+        temp = atoi(zone2);
+        if (temp < min_zone)
+            min_zone = temp;
+        if (temp > max_zone)
+            max_zone = temp;
+
+        temp = atoi(zone3);
+        if (temp < min_zone)
+            min_zone = temp;
+        if (temp > max_zone)
+            max_zone = temp;
+        
+          temp = atoi(zone4);
+        if (temp < min_zone)
+            min_zone = temp;
+        if (temp > max_zone)
+            max_zone = temp;
+
+//fprintf(stderr,"min: %d, max: %d\n", min_zone, max_zone);
+
+        // To start with, draw a vertical line for every six degrees
+        // of longitude.  These are the major UTM zones.  On our
+        // map, they are straight lines, aligned with the left/right
+        // edges of our view.
+        // In the Xastir coordinate system, this would mean taking
+        // the left edge of the map, checking whether it was
+        // exactly on a grid line.  If so, draw a vertical line
+        // there, then add 360,000 * 6 (360,000/degree) to it and
+        // draw a vertical line again, repeating until we pass the
+        // right edge of the view.
+
+        // Right edge of screen = view_min_x.  Convert to whole
+        // degrees, then divide into 6 degree zone.
+        temp_x = (view_min_x / 360000) / 6;
+
+        // Now multiply it back up to the Xastir coordinate system.
+        // We now have a zone boundary.
+        temp_x = temp_x * 6 * 360000;
+
+        // Check whether we're off the left edge of the screen.  If
+        // so, add six degrees and try again.
+        if (temp_x < view_min_x)
+            temp_x = temp_x + (360000 * 6);
+
+        XSetLineAttributes(XtDisplay (w), gc, 1, LineSolid, CapButt, JoinMiter);
+
+        (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
+
+        done = 0;
+        while (!done) {
+            // Check whether we're off the right edge of the screen.  If
+            // so, we're done drawing the vertical zone boundaries.
+            if (temp_x > (view_max_x + 1)) {
+                done++;
+            }
+            else {  // Draw a vertical line
+                int x, y1, y2;
+                int ok = 1;
+
+
+                // Convert to screen coordinates.  Careful here!
+                // The format conversions you'll need if you try to
+                // compress this into two lines will get you into
+                // trouble.
+                x = temp_x - x_long_offset;
+                y1 = 0 - y_lat_offset;
+                x = x / scale_x;
+                y1 = y1 / scale_y;
+
+                y2 = 64800000 - y_lat_offset;
+                y2 = y2 / scale_y;
+
+                // XDrawLines uses 16-bit unsigned integers
+                // (shorts).  Make sure we stay within the limits.
+                if (x >  16000) ok = 0;     // Skip this point
+                if (x < -16000) ok = 0;     // Skip this point
+                if (y1 >  16000) y1 = 10000;
+                if (y1 < -16000) y1 = 10000;
+                if (y2 >  16000) y2 = 10000;
+                if (y2 < -16000) y2 = 10000;
+
+                if (ok) {
+                    (void)XDrawLine(XtDisplay(w),
+                        pixmap_final,
+                        gc,
+                        x,
+                        y1,
+                        x,
+                        y2);
+                }
+
+                // Increment to the next zone boundary
+                temp_x = temp_x + (360000 * 6);
+            }
+
+// Draw labels for each UTM zone?
+
+// Need to draw a horizontal line at each pole, if in the view.
+
+        }
+
+        
+
     }
     else { // Not UTM coordinate system, draw some lat/long lines
         unsigned int x,x1,x2;
@@ -394,6 +616,7 @@ void draw_grid(Widget w) {
         unsigned int stepsx[3];
         unsigned int stepsy[3];
         int step;
+
         stepsx[0] = 72000*100;    stepsy[0] = 36000*100;
         stepsx[1] =  7200*100;    stepsy[1] =  3600*100;
         stepsx[2] =   300*100;    stepsy[2] =   150*100;
@@ -413,7 +636,7 @@ void draw_grid(Widget w) {
             step = 2;
         }
 
-        /* draw vertival lines */
+        /* draw vertical lines */
         if (y_lat_offset >= 0)
             y1 = 0;
         else
