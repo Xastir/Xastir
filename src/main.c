@@ -12736,7 +12736,7 @@ void map_properties_max_zoom_change(Widget widget, XtPointer clientData, XtPoint
     new_max_zoom = atoi(temp);
     XtFree(temp);
 
-    fprintf(stderr,"New max_zoom selected is: %d\n", new_max_zoom);
+//    fprintf(stderr,"New max_zoom selected is: %d\n", new_max_zoom);
 
     // Get the list and the count from the dialog
     XtVaGetValues(map_properties_list,
