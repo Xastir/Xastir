@@ -887,6 +887,9 @@ POPEM00031|Changed to WX symbol '/_', other options:  '\_'  '/W'  and  '\W'||
 POPEM00032|Warning: Using National Weather Service Symbol!||
 POPEM00033|No GPS Data!||
 POPEM00034|Disabling My Position TX Until Valid GPS Data!||
+POPEM00035|Warning||
+POPEM00036|Notice||
+POPEM00037|HSP interface present: GPS timing has been increased||
 #
 # Jump Location 
 JMLPO00001|Map Display Bookmarks||

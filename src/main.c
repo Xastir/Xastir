@@ -7888,8 +7888,17 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 port_write_string(i, tmp);
                                 break;
 
-                            case DEVICE_SERIAL_GPS:
                             case DEVICE_SERIAL_TNC_HSP_GPS:
+                                // Check for GPS timing being too
+                                // short for HSP interfaces.  If to
+                                // short, we'll never receive any
+                                // TNC data, just GPS data.
+                                if (gps_time < 3) {
+                                    gps_time = 3;
+                                    popup_message(langcode("POPEM00036"),
+                                        langcode("POPEM00037"));
+                                }
+                            case DEVICE_SERIAL_GPS:
                             case DEVICE_NET_GPSD:
 
 // For each of these we wish to dump their queue to be processed at

@@ -887,6 +887,9 @@ POPEM00031|Cambiato al simbolo Meteo '/_', altre opzioni:  '\_'  '/W'  e  '\W'||
 POPEM00032|Attenzione: Stai usando il simbolo Meteo del Servizio Nazionale!||
 POPEM00033|Nessun dato GPS!||
 POPEM00034|Disabilito TX Mia Posizione fino all'arrivo dei dati GPS!||
+POPEM00035|Warning||
+POPEM00036|Notice||
+POPEM00037|HSP interface present: GPS timing has been increased||
 # 
 # Jump Location 
 JMLPO00001|Posizione Mappa||

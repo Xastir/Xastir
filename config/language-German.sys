@@ -892,6 +892,9 @@ POPEM00031|Geändert auf Wettersymbol '/_', auch möglich:  '\_'  '/W'  und  '\W'|
 POPEM00032|Warnung: Symbol des National Weather Service wird benutzt!||
 POPEM00033|Keine GPS Daten!||
 POPEM00034|Position wird nicht gesendet bis gültige GPS-Daten!||
+POPEM00035|Warning||
+POPEM00036|Notice||
+POPEM00037|HSP interface present: GPS timing has been increased||
 #
 # Karten - Ausschnitt 
 JMLPO00001|Gespeicherte Kartenausschnitte||

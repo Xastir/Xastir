@@ -896,6 +896,9 @@ POPEM00031|Veranderd in WX symbool '/_', andere opties:  '\_'  '/W'  and  '\W'||
 POPEM00032|Waarschuwing: Gebruik Nationaal Weer Service Symbool!||
 POPEM00033|Geen GPS Gegevens!||
 POPEM00034|Zet Mijn Positie TX uit totdat geldige GPS gegevens beschikbaar zijn!||
+POPEM00035|Warning||
+POPEM00036|Notice||
+POPEM00037|HSP interface present: GPS timing has been increased||
 #
 # Jump Location
 JMLPO00001|Kaart Lokatie||

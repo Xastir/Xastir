@@ -885,6 +885,9 @@ POPEM00031|Changé au symbole météo '/_', autres alternatives:  '\_'  '/W'  et  '
 POPEM00032|Attention: utilise symbole du "National Weather Service"!||
 POPEM00033|Pas de données GPS!||
 POPEM00034|TX de ma position désactivé jusqu'a réception de bonnes données GPS!||#'
+POPEM00035|Warning||
+POPEM00036|Notice||
+POPEM00037|HSP interface present: GPS timing has been increased||
 #
 # Jump Location
 JMLPO00001|Lieu de la carte||

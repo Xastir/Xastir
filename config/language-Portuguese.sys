@@ -889,6 +889,9 @@ POPEM00031|Alterado para simbolo de WX '/_', outras opções:  '\_'  '/W'  e  '\W'
 POPEM00032|Atenção: Usando simbolos do serviço nacional meteorológico!||
 POPEM00033|Nao ha dados GPS!||
 POPEM00034|Desactivando a TX da minha posição até ter dados válidos do GPS!||
+POPEM00035|Warning||
+POPEM00036|Notice||
+POPEM00037|HSP interface present: GPS timing has been increased||
 #
 # Salto de localização
 JMLPO00001|Localização de mapa||
