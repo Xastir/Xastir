@@ -1853,7 +1853,7 @@ void draw_shapefile_map (Widget w,
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
                                     break;
                                 case '3':   // A3? = Secondary road & connecting road, state highways
-                                    if (scale_y > 256)
+                                    if (map_color_levels && scale_y > 256)
                                         skip_label++;
                                     lanes = 3;
                                     // Use the default color instead (black)
@@ -1869,21 +1869,21 @@ void draw_shapefile_map (Widget w,
                                         case '7':
                                         case '8':
                                         default:
-                                            if (scale_y > 128)
+                                            if (map_color_levels && scale_y > 128)
                                                 skip_label++;
                                             break;
                                     }
                                     break;
                                 case '4':   // A4? = Local, neighborhood & rural roads, city streets
                                     // Skip the road if we're above zoom 100
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x28]); // darkgray
                                     break;
                                 case '5':   // A5? = Vehicular trail passable only by 4WD vehicle
                                     // Skip the road if we're above zoom 100
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
@@ -1891,7 +1891,7 @@ void draw_shapefile_map (Widget w,
                                 case '6':   // A6? = Cul-de-sac, traffic circles, access ramp,
                                             // service drive, ferry crossing
                                     // Skip the road if we're above zoom 100
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x07]); // darkgray
@@ -1899,7 +1899,7 @@ void draw_shapefile_map (Widget w,
                                 case '7':   // A7? = Walkway or pedestrian trail, stairway,
                                             // alley, driveway or service road
                                     // Skip the road if we're above zoom 100
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_it++;
                                     lanes = 1;
                                     (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
@@ -1932,78 +1932,78 @@ void draw_shapefile_map (Widget w,
                             temp = DBFReadStringAttribute( hDBF, structure, 8 );    // CFCC Field
                             switch (temp[1]) {
                                 case '0':   // H0? = Water feature/shoreline
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 0;
                                     break;
                                 case '1':
-                                    if (scale_y > 128)
+                                    if (map_color_levels && scale_y > 128)
                                         skip_label++;
                                     switch (temp[2]) {
                                         case '0':
-                                            if (scale_y > 16)
+                                            if (map_color_levels && scale_y > 16)
                                                 skip_label++;
                                             lanes = 1;
                                             break;
                                         case '1':
-                                            if (scale_y > 16)
+                                            if (map_color_levels && scale_y > 16)
                                                 skip_label++;
                                             lanes = 1;
                                             break;
                                         case '2':
-                                            if (scale_y > 16)
+                                            if (map_color_levels && scale_y > 16)
                                                 skip_label++;
                                             lanes = 1;
                                             break;
                                         case '3':
-                                            if (scale_y > 16)
+                                            if (map_color_levels && scale_y > 16)
                                                 skip_label++;
                                             lanes = 1;
                                             break;
                                         default:
-                                            if (scale_y > 16)
+                                            if (map_color_levels && scale_y > 16)
                                                 skip_label++;
                                             lanes = 1;
                                             break;
                                     }
                                     break;
                                 case '2':
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                                 case '3':
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                                 case '4':
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                                 case '5':
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                                 case '6':
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                                 case '7':
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                                 case '8':
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
                                 default:
-                                    if (scale_y > 16)
+                                    if (map_color_levels && scale_y > 16)
                                         skip_label++;
                                     lanes = 1;
                                     break;
@@ -2259,7 +2259,7 @@ void draw_shapefile_map (Widget w,
                     temp = "";
 
                     if (lake_flag) {
-                        if (scale_y > 128)
+                        if (map_color_levels && scale_y > 128)
                             skip_label++;
                         if (mapshots_labels_flag && (fieldcount >= 4) )
                             temp = DBFReadStringAttribute( hDBF, structure, 3 );
