@@ -4999,12 +4999,11 @@ void exp_trailstation(FILE *f, DataRow *p_station) {
     newtrk = 1;
 
     if (p_station->track_data != NULL) {
-        // trail should have at least two points
-
-// WE7U:  Not true.  track_data needs to only have one point, and
-// the other point necessary is the current data point.  Fix this.
-// It looks like we'll miss sending the latest position to the file
-// with this code.
+        // trail should have at least two points.  There are two
+        // places to store the most current point, in the struct,
+        // and in the tracklog.  If the station only has one point,
+        // there won't be a tracklog.  If it has moved, then it'll
+        // have both.
 
         if ((p_station->track_data->trail_inp - p_station->track_data->trail_out+MAX_TRACKS)%MAX_TRACKS != 1) {
             for (i = p_station->track_data->trail_out;
@@ -9882,10 +9881,13 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
         if ( (from == DATA_VIA_TNC)             // Came in via a TNC port
                 && (strlen(my_data) > 0) ) {    // Not empty
 
-            // Here's where we inject our own callsign like this: "WE7U-15,I"
-            // in order to provide injection ID for our igate.  Should we also
-            // add a '*' character after our callsign?
-            xastir_snprintf(line, sizeof(line), "%s>%s,%s,I:%s",call,path,my_callsign,my_data);
+            // Here's where we inject our own callsign like this:
+            // "WE7U-15*,I" in order to provide injection ID for our
+            // igate.  We need to add a '*' character after our
+            // callsign as we inject, to show it came through us.
+            // On the way back out of the internet it can get a '*'
+            // added after the 'I' perhaps.
+            xastir_snprintf(line, sizeof(line), "%s>%s,%s*,I:%s",call,path,my_callsign,my_data);
 
             //printf("decode_info_field: IGATE>NET %s\n",line);
             output_igate_net(line, port,third_party);
@@ -10043,7 +10045,7 @@ void extract_TNC_text(char *info) {
 
 
 
-//WE7U
+//WE7U2
 // We feed a raw 7-byte string into this routine.  It decodes the
 // callsign-SSID and tells us whether there are more callsigns after
 // this.  If "asterisk" is nonzero it'll add an asterisk to the
@@ -10063,35 +10065,44 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
     int more = 0;
     int digipeated = 0;
 
+    // Shift each of the six callsign characters right one bit to
+    // convert to ASCII.  We also get rid of the extra spaces here.
     j = 0;
     for (i = 0; i < 6; i++) {
         t = ((unsigned char)string[i] >> 1) & 0x7f;
-        if (t != ' ')
+        if (t != ' ') {
             callsign[j++] = t;
+        }
     }
 
+    // Snag out the SSID byte to play with.  We need more than just
+    // the 4 SSID bits out of it.
     ssid = (unsigned char)string[6];
 
+    // Check the digipeat bit
     if ( (ssid & 0x80) && asterisk)
         digipeated++;   // Has been digipeated
 
+    // Check whether it is the end of the address field
     if ( !(ssid & 0x01) )
         more++; // More callsigns to come after this one
 
-    // Snag just the SSID bits out of the character
+    // Snag the four SSID bits
     ssid = (ssid >> 1) & 0x0f;
 
     // Construct the SSID number and add it to the end of the
-    // callsign if non-zero
+    // callsign if non-zero.  If it's zero we don't add it.
     if (ssid) {
         callsign[j++] = '-';
-        if (ssid > 9)
+        if (ssid > 9) {
             callsign[j++] = '1';
+        }
         ssid = ssid % 10;
         callsign[j++] = '0' + ssid;
     }
 
-    // Add an asterisk if it has been digipeated
+    // Add an asterisk if the packet has been digipeated through
+    // this callsign
     if (digipeated)
         callsign[j++] = '*';
 
@@ -10105,11 +10116,11 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 
 
 
-//WE7U
+// WE7U2
 // Function which receives raw AX.25 packets from a KISS interface and
-// converts them to a printable TAPR-2 style line.  We receive the
-// packet with perhaps more than one flag character at the beginning,
-// and a "\0" character at the end.  We actually end up with
+// converts them to a printable TAPR-2 (more or less) style string.
+// We receive the packet with a KISS Frame End character at the
+// beginning and a "\0" character at the end.  We can end up with
 // multiple asterisks, one for each callsign that the packet was
 // digipeated through.  A few other TNC's put out this same sort of
 // format.
@@ -10130,38 +10141,41 @@ int decode_ax25_header(char *incoming_data) {
     char num_digis = 0;
 
 
+    // Do we have a string at all?
     if (incoming_data == NULL)
         return(0);
 
-    // Drop the packet if it is too long:
+    // Drop the packet if it is too long
     if (strlen(incoming_data) > 1024) {
         incoming_data[0] = '\0';
         return(0);
     }
 
+    // Start with an empty string for the result
     result[0] = '\0';
 
-    // Skip the first character in the string, which will be a Frame End
+    // Skip the first character in the string, which is a Frame End
     // character from the KISS packet
     ptr = 1;
 
-    // Parse the destination address
+    // Process the destination address
     for (i = 0; i < 7; i++)
         temp[i] = incoming_data[ptr++];
     temp[7] = '\0';
     more = decode_ax25_address(temp, callsign, 0); // No asterisk
     xastir_snprintf(dest,sizeof(dest),"%s",callsign);
 
-    // Parse the source address
+    // Process the source address
     for (i = 0; i < 7; i++)
         temp[i] = incoming_data[ptr++];
     temp[7] = '\0';
     more = decode_ax25_address(temp, callsign, 0); // No asterisk
 
-    // Store the two callsigns we have into "result"
+    // Store the two callsigns we have into "result" in the correct
+    // order
     xastir_snprintf(result,sizeof(result),"%s>%s",callsign,dest);
 
-    // Parse the digipeater addresses
+    // Process the digipeater addresses (if any)
     num_digis = 0;
     while (more && num_digis < 8) {
         for (i = 0; i < 7; i++)
@@ -10176,11 +10190,27 @@ int decode_ax25_header(char *incoming_data) {
 
     strcat(result,":");
 
-//WE7U:  We should probably check these bytes and toss packets that
-// are AX.25 connect/disconnect or information packets.  We only
-// want to process UI packets in Xastir.
+// WE7U:  We should probably check the Control and PID bytes and toss
+// packets that are AX.25 connect/disconnect or information packets.
+// We only want to process UI packets in Xastir.
 
     ptr += 2;   // Skip control and PID bytes
+ 
+
+// WE7U:  We get multiple concatenated KISS packets sometimes.  Look
+// for that here and flag when it happens (so we know about it and
+// can fix it someplace earlier in the process).  Correct the
+// current packet so we don't get the extra garbage tacked onto the
+// end.
+    for (i = ptr; i < strlen(incoming_data); i++) {
+        if (incoming_data[i] == KISS_FEND) {
+            printf("***Found concatenated KISS packets:***\n");
+            incoming_data[i] = '\0';    // Truncate the string
+            break;
+        }
+    }
+
+    // Add the Info field to the decoded header info
     strcat(result,&incoming_data[ptr]);
 
     printf("%s\n",result);
