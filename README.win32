@@ -290,17 +290,19 @@ on the line that starts like this:
 
     /usr/bin/ld -G -h libshp.so.1 ...
 
-
-2) Edit the file /usr/include/sys/reent.h to remove the word
-"extern" from this line:
-
-    extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
-
 then type:
 
     cd ~/src/shapelib/shapelib-1.2.9
     make lib
     make lib_install
+
+You may get the "undefined reference impure_ptr" messages.  If so,
+edit the file /usr/include/sys/reent.h to remove the word "extern"
+from this line:
+
+    extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
+
+then try "make lib" and make "lib_install" again.
 
 Edit or create your .profile file in your home directory.  It
 appears that Cygwin uses the PATH variable to look for both binaries
@@ -436,9 +438,9 @@ You may get the "undefined reference impure_ptr" messages (just like
 with Shapelib above).  If so, edit the file /usr/include/sys/reent.h
 to remove the word "extern" from this line:
 
-
     extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
 
+then try "make" and "make install" again.
 
 I've had it compile all the way through, but I've also had it bomb
 out when it gets to the "ld -shared" step.  At that point it writes
