@@ -7696,6 +7696,11 @@ void create_gc(Widget w) {
 // close to the first vertice, ask the operator if they wish to
 // close the polygon.  If closing, ask for a raw probability?
 //
+// As each vertice is allocated, write it out to file?  We'd then
+// need to edit the file and comment vertices out if we're deleting
+// vertices in memory.  We could also write out an entire object
+// when we select "Close Polygon".
+//
 void CAD_vertice_allocate(long latitude, long longitude) {
 
 #ifdef CAD_DEBUG
@@ -7736,6 +7741,10 @@ void CAD_vertice_allocate(long latitude, long longitude) {
 // working on, so that we can modify it easily as we draw.
 // Actually, it'll be pointed to by CAD_list_head, so we already
 // have it!
+//
+// As each object is allocated, write it out to file?
+//
+// Compute a default label of date/time?
 //
 void CAD_object_allocate(long latitude, long longitude) {
     CADRow *p_new;
@@ -7811,6 +7820,8 @@ void CAD_vertice_delete_all(VerticeRow *v) {
 // through the entire list of CAD objects, calling
 // CAD_vertice_delete_all() and then free'ing the CAD object.  When
 // done, set the start pointer to NULL.
+//
+// We also need to wipe the persistent CAD object file.
 //
 void CAD_object_delete_all(void) {
     CADRow *p = CAD_list_head;
@@ -7992,6 +8003,165 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
 
 
 
+// Called when we complete a new CAD object.  Save the object to
+// disk so that we can recover in the case of a crash or power
+// failure.  Save any old file to a backup file.  Perhaps write them
+// to numbered backup files so that we keep several on-hand?
+//
+void Save_CAD_Objects_to_file(void) {
+    FILE *f;
+    char *file;
+    CADRow *object_ptr = CAD_list_head;
+
+
+    fprintf(stderr,"Saving CAD objects to file\n");
+
+    // Save in ~/.xastir/config/CAD_object.log
+    file = get_user_base_dir("config/CAD_object.log");
+    f = fopen(file,"w+");
+
+    if (f == NULL) {
+        fprintf(stderr,
+            "Couldn't open config/CAD_object.log file for writing!\n");
+        return;
+    }
+
+    while (object_ptr != NULL) {
+
+        // Write out the main object info:
+        fprintf(f,"\nCAD_Object\n");
+        fprintf(f,"creation_time:   %lu\n",object_ptr->creation_time);
+        fprintf(f,"line_color:      %d\n",object_ptr->line_color);
+        fprintf(f,"line_type:       %d\n",object_ptr->line_type);
+        fprintf(f,"line_width:      %d\n",object_ptr->line_width);
+        fprintf(f,"computed_area:   %f\n",object_ptr->computed_area);
+        fprintf(f,"raw_probability: %f\n",object_ptr->raw_probability);
+        fprintf(f,"label_latitude:  %lu\n",object_ptr->label_latitude);
+        fprintf(f,"label_longitude: %lu\n",object_ptr->label_longitude);
+        fprintf(f,"label: %s\n",object_ptr->label);
+        fprintf(f,"comment: %s\n",object_ptr->comment);
+
+        // Iterate through the vertices:
+        VerticeRow *vertice = object_ptr->start;
+
+        while (vertice != NULL) {
+
+            fprintf(f,"Vertice: %lu %lu\n",
+                vertice->latitude,
+                vertice->longitude);
+
+            vertice = vertice->next;
+        }
+        object_ptr = object_ptr->next;
+    }
+    (void)fclose(f);
+}
+
+
+
+
+
+// Called by main() when we start Xastir.  Restores CAD objects
+// created in earlier Xastir sessions.
+//
+void Restore_CAD_Objects_from_file(void) {
+    FILE *f;
+    char *file;
+    char line[MAX_FILENAME];
+
+
+    fprintf(stderr,"Restoring CAD objects from file\n");
+
+    // Restore from ~/.xastir/config/CAD_object.log
+    file = get_user_base_dir("config/CAD_object.log");
+    f = fopen(file,"r");
+
+    if (f == NULL) {
+        fprintf(stderr,
+            "Couldn't open config/CAD_object.log file for reading!\n");
+        return;
+    }
+
+    while (!feof (f)) {
+        (void)get_line(f, line, MAX_FILENAME);
+        if (strncasecmp(line,"CAD_Object",10) == 0) {
+            // Found a new CAD Object declaration!
+
+            //fprintf(stderr,"Found CAD_Object\n");
+
+            // Malloc a new object, add it to the linked list, start
+            // filling in the fields.
+            //
+            // This gives us a default object with one vertice.  We
+            // can replace all of the fields in it as we parse them.
+            CAD_object_allocate(0l, 0l);
+
+            // Remove the one vertice from the newly allocated
+            // object so that we don't end up with one too many
+            // vertices when all done.
+            CAD_vertice_delete_all(CAD_list_head->start);
+            CAD_list_head->start = NULL;
+
+        }
+        else if (strncasecmp(line,"creation_time:",14) == 0) {
+            //fprintf(stderr,"Found creation_time:\n");
+            sscanf(line+15, "%lu",&CAD_list_head->creation_time);
+        }
+        else if (strncasecmp(line,"line_color:",11) == 0) {
+            //fprintf(stderr,"Found line_color:\n");
+            sscanf(line+12,"%d",&CAD_list_head->line_color);
+        }
+        else if (strncasecmp(line,"line_type:",10) == 0) {
+            //fprintf(stderr,"Found line_type:\n");
+            sscanf(line+11,"%d",&CAD_list_head->line_type);
+        }
+        else if (strncasecmp(line,"line_width:",11) == 0) {
+            //fprintf(stderr,"Found line_width:\n");
+            sscanf(line+12,"%d",&CAD_list_head->line_width);
+        }
+        else if (strncasecmp(line,"computed_area:",14) == 0) {
+            //fprintf(stderr,"Found computed_area:\n");
+            sscanf(line+15,"%f",&CAD_list_head->computed_area);
+        }
+        else if (strncasecmp(line,"raw_probability:",16) == 0) {
+            //fprintf(stderr,"Found raw_probability:\n");
+            sscanf(line+17,"%f",&CAD_list_head->raw_probability);
+        }
+        else if (strncasecmp(line,"label_latitude:",15) == 0) {
+            //fprintf(stderr,"Found label_latitude:\n");
+            sscanf(line+16,"%lu",&CAD_list_head->label_latitude);
+        }
+        else if (strncasecmp(line,"label_longitude:",16) == 0) {
+            //fprintf(stderr,"Found label_longitude:\n");
+            sscanf(line+17,"%lu",&CAD_list_head->label_longitude);
+        }
+        else if (strncasecmp(line,"label:",6) == 0) {
+            //fprintf(stderr,"Found label:\n");
+            sscanf(line+7,"%s",CAD_list_head->label);
+        }
+        else if (strncasecmp(line,"comment:",8) == 0) {
+            //fprintf(stderr,"Found comment:\n");
+            sscanf(line+9,"%s",CAD_list_head->comment);
+        }
+        else if (strncasecmp(line,"Vertice:",8) == 0) {
+            long latitude, longitude;
+
+            //fprintf(stderr,"Found Vertice:\n");
+            sscanf(line+9,"%lu %lu",&latitude,&longitude);
+            CAD_vertice_allocate(latitude,longitude);
+        }
+        else {
+            // Else not recognized, do nothing with it!
+            //fprintf(stderr,"Found unrecognized line\n");
+        }
+    }
+    (void)fclose(f);
+}
+
+
+
+
+
 // Free the object and vertice lists then do a screen update.
 //
 // It would be good to ask the user whether to delete all CAD
@@ -8006,6 +8176,9 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
     polygon_last_x = -1;    // Invalid position
     polygon_last_y = -1;    // Invalid position
 
+    // Save the empty list out to file
+    Save_CAD_Objects_to_file();
+
     // Reload symbols/tracks/CAD objects
     redraw_symbols(da);
 }
@@ -8014,14 +8187,14 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
 
 
 
-// We add an ending vertice that is the same as the starting
-// vertice.  Best not to use the screen coordinates we captured
-// first, as the user may have zoomed or panned since then.  Better
-// to copy the first vertice that we recorded in our linked list.
+// Add an ending vertice that is the same as the starting vertice.
+// Best not to use the screen coordinates we captured first, as the
+// user may have zoomed or panned since then.  Better to copy the
+// first vertice that we recorded in our linked list.
 //
-// We compute the area of the closed polygon.  Write it out to
-// STDERR and perhaps to a storage area in the Object and to a
-// dialog that pops up on the screen?
+// Compute the area of the closed polygon.  Write it out to STDERR,
+// the computed_area field in the Object, and to a dialog that pops
+// up on the screen.
 //
 void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         XtPointer clientData,
@@ -8187,9 +8360,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         un_dst);
     popup_message(langcode("POPUPMA020"),temp);
 
-#ifdef CAD_DEBUG
     fprintf(stderr,"%s\n",temp);
-#endif
 
     // Save it in the object.  Convert nautical square miles to
     // square kilometers.
@@ -8198,7 +8369,12 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
     polygon_last_x = -1;    // Invalid position
-    polygon_last_y = -1;    // Invalid position 
+    polygon_last_y = -1;    // Invalid position
+
+
+    // Make the objects persistent by saving/restoring them to flat
+    // files.
+    Save_CAD_Objects_to_file();
 }
 
 
@@ -25062,6 +25238,10 @@ int main(int argc, char *argv[]) {
             // Reload saved objects and items from previous runs.
             // This implements persistent objects.
             reload_object_item();
+
+            // Reload any CAD objects from file.  This implements
+            // persistent objects.
+            Restore_CAD_Objects_from_file();
 
             // Update the logging indicator 
             Set_Log_Indicator();
