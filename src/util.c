@@ -1341,6 +1341,12 @@ char *get_time(char *time_here) {
  *  Add missing asterisk for stations that we must have heard via a digi
  *  Extract port for KAM TNCs
  *  Handle igate injection ID formats: "callsign-ssid,I" & "callsign-0ssid"
+ *
+ * TAPR-2 Format:
+ * KC2ELS-1*>SX0PWT,RELAY,WIDE:`2`$l##>/>"4)}
+ *
+ * AEA Format:
+ * KC2ELS-1*>RELAY>WIDE>SX0PWT:`2`$l##>/>"4)}
  */
 
 int valid_path(char *path) {
@@ -1446,7 +1452,7 @@ int valid_path(char *path) {
             if (ch == ',')
                 type |= 0x02;           // set TAPR2 flag
             else
-                type |= 0x01;           // set AEA flag
+                type |= 0x01;           // set AEA flag (found '>')
             hops++;                     // count hops
         } else {                        // digi call character or asterisk
             if (ch == '*') {
@@ -1467,10 +1473,44 @@ int valid_path(char *path) {
         return(0);                      // too much hops, destination + 0-8 digipeater addresses
 
     if (type == 0x01) {
+        int delimiters[20];
+        int k = 0;
+        char dest[15];
+        char rest[100];
+
         for (i=0; i<len; i++) {
-            if (path[i] == '>')
-                path[i] = ',';          // exchange separator character
+            if (path[i] == '>') {
+                path[i] = ',';          // Exchange separator character
+                delimiters[k++] = i;    // Save the delimiter indexes
+            }
         }
+
+        // We also need to move the destination callsign to the end.
+        // AEA has them in a different order than TAPR-2 format.
+        // We'll move the destination address between delimiters[0]
+        // and [1] to the end of the string.
+
+        //printf("Orig. Path:%s\n",path);
+        // Save the destination
+        xastir_snprintf(dest,sizeof(dest),"%s",&path[delimiters[--k]+1]);
+        dest[strlen(path) - delimiters[k] - 1] = '\0'; // Terminate it
+        dest[14] = '\0';    // Just to make sure
+        path[delimiters[k]] = '\0'; // Delete it from the original path
+        //printf("Destination: %s\n",dest);
+
+        // TAPR-2 Format:
+        // KC2ELS-1*>SX0PWT,RELAY,WIDE:`2`$l##>/>"4)}
+        //
+        // AEA Format:
+        // KC2ELS-1*>RELAY>WIDE>SX0PWT:`2`$l##>/>"4)}
+        //          9     15   20
+
+        // We now need to insert the destination into the middle of
+        // the string.  Save part of it in another variable first.
+        strcpy(rest,path);
+        //printf("Rest:%s\n",rest);
+        xastir_snprintf(path,len+1,"%s,%s",dest,rest);
+        //printf("New Path:%s\n",path);
     }
 
     if (allast < 1) {                   // try to insert a missing asterisk

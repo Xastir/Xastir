@@ -7041,12 +7041,13 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     // Note that the first MIC-E character was not passed to us, so we're
     // starting just past it.
     // Check for valid symbol table character.  Should be '/' or '\' only.
-    if (info[7] != '/' && info[7] != '\\') {
-        if (info[6] == '/' || info[6] == '\\') {
-            printf("decode_Mic_E: Symbol table (%c) and symbol (%c) reversed or corrupted packet?  Call=%s\n",
+    if (info[7] != '/' && info[7] != '\\') {        // Symbol table char not in correct spot
+        if (info[6] == '/' || info[6] == '\\') {    // Found it back one char in string
+            printf("decode_Mic_E: Symbol table (%c) and symbol (%c) reversed or corrupted packet?  Call=%s\n, Info=%s",
                 info[7],
                 info[6],
-                call_sign);
+                call_sign,
+                info);
         }
         if (debug_level & 1) {
             printf("Returned from data_add, invalid symbol table character: %c\n",info[7]);
@@ -7073,53 +7074,74 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                     // so that it won't get added to the database at all.
     }
 
+    //printf("Path1:%s\n",path);
+
     msg1 = (int)( ((unsigned char)path[0] & 0x40) >>4 );
     msg2 = (int)( ((unsigned char)path[1] & 0x40) >>5 );
     msg3 = (int)( ((unsigned char)path[2] & 0x40) >>6 );
-    msg = msg1 | msg2 | msg3;        // We now have the complemented message number in one variable
-    msg = msg ^ 0x07;               // And this is now the normal message number
-    msgtyp = 0;                     // DK7IN: Std message, I have to add custom msg decoding
+    msg = msg1 | msg2 | msg3;   // We now have the complemented message number in one variable
+    msg = msg ^ 0x07;           // And this is now the normal message number
+    msgtyp = 0;                 // DK7IN: Std message, I have to add custom msg decoding
 
-    /* Snag the latitude from the destination field, Asume TAPR2 */
+    //printf("Msg: %d\n",msg);
+
+    /* Snag the latitude from the destination field, Assume TAPR-2 */
     /* DK7IN: latitude now works with custom message */
-    s_b1 = (unsigned char)( (path[0] & 0x0f)+ (char)0x2f );
+    s_b1 = (unsigned char)( (path[0] & 0x0f) + (char)0x2f );
+    //printf("path0:%c\ts_b1:%c\n",path[0],s_b1);
     if (path[0] & 0x10)     // A-J
         s_b1 += (unsigned char)1;
 
     if (s_b1 > (unsigned char)0x39)        // K,L,Z
         s_b1 = (unsigned char)0x20;
-
+    //printf("s_b1:%c\n",s_b1);
+ 
     s_b2 = (unsigned char)( (path[1] & 0x0f) + (char)0x2f );
+    //printf("path1:%c\ts_b2:%c\n",path[1],s_b2);
     if (path[1] & 0x10)     // A-J
         s_b2 += (unsigned char)1;
 
     if (s_b2 > (unsigned char)0x39)        // K,L,Z
         s_b2 = (unsigned char)0x20;
-
+    //printf("s_b2:%c\n",s_b2);
+ 
     s_b3 = (unsigned char)( (path[2] & (char)0x0f) + (char)0x2f );
+    //printf("path2:%c\ts_b3:%c\n",path[2],s_b3);
     if (path[2] & 0x10)     // A-J
         s_b3 += (unsigned char)1;
 
     if (s_b3 > (unsigned char)0x39)        // K,L,Z
         s_b3 = (unsigned char)0x20;
-
+    //printf("s_b3:%c\n",s_b3);
+ 
     s_b4 = (unsigned char)( (path[3] & 0x0f) + (char)0x30 );
+    //printf("path3:%c\ts_b4:%c\n",path[3],s_b4);
     if (s_b4 > (unsigned char)0x39)        // L,Z
         s_b4 = (unsigned char)0x20;
-
+    //printf("s_b4:%c\n",s_b4);
+ 
     s_b5 = (unsigned char)( (path[4] & 0x0f) + (char)0x30 );
+    //printf("path4:%c\ts_b5:%c\n",path[4],s_b5);
     if (s_b5 > (unsigned char)0x39)        // L,Z
         s_b5 = (unsigned char)0x20;
-
+    //printf("s_b5:%c\n",s_b5);
+ 
     s_b6 = (unsigned char)( (path[5] & 0x0f) + (char)0x30 );
+    //printf("path5:%c\ts_b6:%c\n",path[5],s_b6);
     if (s_b6 > (unsigned char)0x39)        // L,Z
         s_b6 = (unsigned char)0x20;
-
+    //printf("s_b6:%c\n",s_b6);
+ 
     s_b7 =  (unsigned char)path[6];        // SSID, not used here
+    //printf("path6:%c\ts_b7:%c\n",path[6],s_b7);
+ 
+    //printf("\n");
 
     n = (int)((path[3] & 0x40) == (char)0x40);  // N/S Lat Indicator
     l = (int)((path[4] & 0x40) == (char)0x40);  // Longitude Offset
     w = (int)((path[5] & 0x40) == (char)0x40);  // W/E Long Indicator
+
+    //printf("n:%d\tl:%d\tw:%d\n",n,l,w);
 
     /* Put the latitude string into the temp variable */
     //sprintf(temp,"%c%c%c%c.%c%c%c%c",s_b1,s_b2,s_b3,s_b4,s_b5,s_b6,
