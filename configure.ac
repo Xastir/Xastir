@@ -78,7 +78,7 @@ AC_ARG_WITH(errorpopups,[  --with-errorpopups       Send error popups to stderr.
 
 LIBRTREE=""
 SUBRTREE=""
-AC_ARG_WITH(rtree,[  --with-festival       Enable spatial indexing of shapefiles for faster rendering.],[use_rtree=$withval])
+AC_ARG_WITH(rtree,[  --with-rtree       Enable spatial indexing of shapefiles for faster rendering.],[use_rtree=$withval])
 if test "${use_rtree}" = "yes" ; then
     AC_DEFINE([USE_RTREE],1,[RTree spatial indexing])
     LIBRTREE="-Lrtree -lrtree"
