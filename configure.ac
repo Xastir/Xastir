@@ -241,6 +241,7 @@ AC_CHECK_HEADERS([Xm/Xm.h],MOTIF_INC="yes",)
 if test "$MOTIF_INC" != "yes"; then
   # Check special Mac OSX paths
   AC_CHECK_FILE(/sw/include/Xm/Xm.h,MOTIF_INC="yes") 
+  AC_CHECK_FILE(/usr/dt/share/include/Xm/Xm.h,MOTIF_INC="yes")
   if test "$MOTIF_INC" != "yes"; then
     AC_MSG_ERROR(*** Motif/Lesstif include files not found.  Please install them first. ***)
   fi
