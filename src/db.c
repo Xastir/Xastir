@@ -10491,6 +10491,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 break;
 
+/*
             case (APRS_DOWN):           // '/'
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
@@ -10520,6 +10521,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     p_station->flag &= (~ST_MSGCAP);            // clear "message capable" flag
                 }
                 break;
+*/
 
             case (APRS_DF):             // '@'
             case (APRS_MOBILE):         // '@'
@@ -10774,7 +10776,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 break;
 
-            case (APRS_WX1):    // weather in '@' packet
+            case (APRS_WX1):    // weather in '@' or '/' packet
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
                     if (!extract_position(p_station,&data,type)) {      // uncompressed lat/lon
@@ -14004,6 +14006,10 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             case '=':   // Position without timestamp (with APRS messaging)
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: = (position w/o timestamp)\n");
+
+//WE7U
+// Need to check for weather info in this packet type as well?
+
                 done = data_add(APRS_MSGCAP,call,path,message,from,port,origin,third_party);
                 ok_igate_rf = done;
                 break;
@@ -14021,7 +14027,34 @@ void decode_info_field(char *call, char *path, char *message, char *origin,
             case '/':   // Position with timestamp (no APRS messaging)
                 if (debug_level & 1)
                     fprintf(stderr,"decode_info_field: / (position w/timestamp)\n");
-                done = data_add(APRS_DOWN,call,path,message,from,port,origin,third_party);
+
+//WE7U
+// Need weather decode in this section similar to the '@' section
+// below.
+
+                if ((message[14] == 'N' || message[14] == 'S') &&
+                    (message[24] == 'W' || message[24] == 'E')) {       // uncompressed format
+                    if (debug_level & 1)
+                        fprintf(stderr,"decode_info_field: / (uncompressed position w/timestamp no messaging)\n");
+                    if (message[29] == '/') {
+                        if (message[33] == 'g' && message[37] == 't')
+                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
+                        else
+                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
+                    } else
+                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
+                } else {                                                // compressed format
+                    if (debug_level & 1)
+                        fprintf(stderr,"decode_info_field: / (compressed position w/timestamp no messaging)\n");
+                    if (message[16] >= '!' && message[16] <= 'z') {     // csT is speed/course
+                        if (message[20] == 'g' && message[24] == 't')   // Wx data
+                            done = data_add(APRS_WX1,call,path,message,from,port,origin,third_party);
+                        else
+                            done = data_add(APRS_MOBILE,call,path,message,from,port,origin,third_party);
+                    } else
+                        done = data_add(APRS_DF,call,path,message,from,port,origin,third_party);
+                }
+//                done = data_add(APRS_DOWN,call,path,message,from,port,origin,third_party);
                 ok_igate_rf = done;
                 break;
 

@@ -59,7 +59,7 @@ enum APRS_Types {
     APRS_NULL,
     APRS_MSGCAP,
     APRS_FIXED,
-    APRS_DOWN,
+    APRS_DOWN,      // Not used anymore
     APRS_MOBILE,
     APRS_DF,
     APRS_OBJECT,
