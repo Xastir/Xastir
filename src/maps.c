@@ -976,7 +976,7 @@ void draw_grid(Widget w) {
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 2, LineSolid, CapButt,JoinMiter);
 
         // Draw the prime meridian in the same manner
-        draw_vector_ll(w, 90.0, 0.0, -90.0, 0.0, gc_tint, pixmap_final);
+        draw_vector_ll(w, -80.0, 0.0, 84.0, 0.0, gc_tint, pixmap_final);
 
 
         // Set the line width and style in the GC to 1 pixel wide
