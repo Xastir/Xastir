@@ -4607,9 +4607,9 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         int negate;
         int equalize;
         int normalize;
-        char* level;
-        char* modulate;
-    } imagemagick_options = { 1.0, 1.0, 1.0, 0, 0, -1, 0, 0, NULL, NULL };
+        char level[32];
+        char modulate[32];
+    } imagemagick_options = { 1.0, 1.0, 1.0, 0, 0, -1, 0, 0, "", "" };
     double left, right, top, bottom, map_width, map_height;
     double lat_center  = 0;
     double long_center = 0;
@@ -4699,11 +4699,15 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
             if (strncasecmp(line, "NORMALIZE", 9) == 0)
                 imagemagick_options.normalize = 1;
 #if (MagickLibVersion >= 0x0539)
-            if (strncasecmp(line, "LEVEL", 5) == 0)
-                imagemagick_options.level = line + 6;
+            if (strncasecmp(line, "LEVEL", 5) == 0) {
+                strncpy(imagemagick_options.level, line + 6, 31);
+                imagemagick_options.level[31] = '\0';
+            }
 #endif
-            if (strncasecmp(line, "MODULATE", 8) == 0)
-                imagemagick_options.modulate = line + 9;
+            if (strncasecmp(line, "MODULATE", 8) == 0) {
+                strncpy(imagemagick_options.modulate, line + 9, 31);
+                imagemagick_options.modulate[31] = '\0';
+            }
 #endif
         }
         (void)fclose (f);
@@ -5170,14 +5174,14 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     }
 
 #if (MagickLibVersion >= 0x0539)
-    if (imagemagick_options.level) {
+    if (imagemagick_options.level[0] != '\0') {
         if (debug_level & 16)
             printf("level=%s\n", imagemagick_options.level);
         LevelImage(image, imagemagick_options.level);
     }
 #endif
 
-    if (imagemagick_options.modulate) {
+    if (imagemagick_options.modulate[0] != '\0') {
         if (debug_level & 16)
             printf("modulate=%s\n", imagemagick_options.modulate);
         ModulateImage(image, imagemagick_options.modulate);
@@ -5568,19 +5572,6 @@ void draw_tiger_map (Widget w) {
     int l;
     XColor my_colors[256];
     char tempfile[2000];
-    char gamma[16];
-    struct {
-        float r_gamma;
-        float g_gamma;
-        float b_gamma;
-        int gamma_flag;
-        int contrast;
-        int negate;
-        int equalize;
-        int normalize;
-        char* level;
-        char* modulate;
-    } imagemagick_options = { 1.0, 1.0, 1.0, 0, 0, -1, 0, 0, NULL, NULL };
     double left, right, top, bottom, map_width, map_height;
     double lat_center  = 0;
     double long_center = 0;
@@ -5898,97 +5889,21 @@ void draw_tiger_map (Widget w) {
     atb.height = image->rows;
 
 
-    // gamma setup
-    if (imagemagick_options.gamma_flag == 0 || imagemagick_options.gamma_flag == 1) {
-        if (imagemagick_options.gamma_flag == 0) // if not set in file, set to 1.0
-            imagemagick_options.r_gamma = 1.0;
-
-        imagemagick_options.gamma_flag = 1; // set flag to do gamma
-
-        imagemagick_options.r_gamma += imagemagick_gamma_adjust;
-
-        if (imagemagick_options.r_gamma > 0.95 && imagemagick_options.r_gamma < 1.05)
-            imagemagick_options.gamma_flag = 0; // don't bother if near 1.0
-        else if (imagemagick_options.r_gamma < 0.1)
-            imagemagick_options.r_gamma = 0.1; // 0.0 is black and negative is really wacky
-
-        xastir_snprintf(gamma, sizeof(gamma), "%.1f", imagemagick_options.r_gamma);
-    }
-    else if (imagemagick_options.gamma_flag == 3) {
-        // No checking if you specify 3 channel gamma correction, so you can try negative
-        // numbers, etc. if you wish.
-        imagemagick_options.gamma_flag = 1; // set flag to do gamma
-        imagemagick_options.r_gamma += imagemagick_gamma_adjust;
-        imagemagick_options.g_gamma += imagemagick_gamma_adjust;
-        imagemagick_options.b_gamma += imagemagick_gamma_adjust;
-        xastir_snprintf(gamma, sizeof(gamma), "%.1f,%.1f,%.1f",
-                        imagemagick_options.r_gamma,
-                        imagemagick_options.g_gamma,
-                        imagemagick_options.b_gamma);
-    }
-    else
-        imagemagick_options.gamma_flag = 0;
-
-    if (imagemagick_options.gamma_flag) {
-        if (debug_level & 512)
-            printf("gamma=%s\n", gamma);
-        GammaImage(image, gamma);
-    }
-
-    if (imagemagick_options.contrast != 0) {
-        if (debug_level & 512)
-            printf("contrast=%d\n", imagemagick_options.contrast);
-        ContrastImage(image, imagemagick_options.contrast);
-    }
-
-    if (imagemagick_options.negate != -1) {
-        if (debug_level & 512)
-            printf("negate=%d\n", imagemagick_options.negate);
-        NegateImage(image, imagemagick_options.negate);
-    }
-
-    if (imagemagick_options.equalize) {
-        if (debug_level & 512)
-            puts("equalize");
-        EqualizeImage(image);
-    }
-
-    if (imagemagick_options.normalize) {
-        if (debug_level & 512)
-            puts("normalize");
-        NormalizeImage(image);
-    }
-
 #if (MagickLibVersion >= 0x0539)
-    if (imagemagick_options.level) {
-        if (debug_level & 512)
-            printf("level=%s\n", imagemagick_options.level);
-        LevelImage(image, imagemagick_options.level);
-    }
-#endif // MagickLib > 539
-
-    if (imagemagick_options.modulate) {
-        if (debug_level & 512)
-            printf("modulate=%s\n", imagemagick_options.modulate);
-        ModulateImage(image, imagemagick_options.modulate);
-    }
     //  Code to mute the image so it's not as bright.
     if (tigermap_intensity != 100) {
         char tempstr[30];
-        
+
         if (QuantumDepth == 16)
             xastir_snprintf(tempstr, sizeof(tempstr), "0, 1, %ld", (long)((65535 * 100)/tigermap_intensity));
         else
             xastir_snprintf(tempstr, sizeof(tempstr), "0, 1, %ld", (long)((255 * 100)/tigermap_intensity));
 
-#if (MagickLibVersion >= 0x0539)
-        if (imagemagick_options.level) {
-            if (debug_level & 512)
-                printf("level=%s\n", imagemagick_options.level);
-            LevelImage(image, imagemagick_options.level);
-        }
-#endif // MagickLib > 539
+        if (debug_level & 512)
+            printf("level=%s\n", tempstr);
+        LevelImage(image, tempstr);
     }
+#endif // MagickLib >= 539
 
     // If were are drawing to a low bpp display (typically < 8bpp)
     // try to reduce the number of colors in an image.
