@@ -13551,13 +13551,6 @@ void Test(Widget w, XtPointer clientData, XtPointer callData) {
         view_zero_distance_bulletins);
 
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
-
-
-#ifdef HAVE_LIBSHP
-    test_create_shapefile_map();
-#endif
-
-
 }
 
 

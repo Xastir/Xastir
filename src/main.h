@@ -338,6 +338,11 @@ setegid(egid); \
 if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (int)euid, (int)egid); } \
 } while(0)
 
+#ifdef HAVE_LIBSHP
+extern void create_map_from_trail(char *call_sign);
+#endif  // HAVE_LIBSHP
+
+
 #endif /* XASTIR_MAIN_H */
 
 

@@ -1072,7 +1072,8 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
  * padfx/padfy/padfz are the vertices themselves, in double format.
  *******************************************************************/
 void create_shapefile_map(char *shapefile_name, int type,
-        int quantity, double *padfx, double *padfy, double *padfz) {
+        int quantity, double *padfx, double *padfy, double *padfz,
+        int add_timestamp) {
 
     SHPHandle my_shp_handle;
     SHPObject *my_object;
@@ -1080,21 +1081,59 @@ void create_shapefile_map(char *shapefile_name, int type,
     char timedatestring[101];
     int index;
     int max_objects = 1;
+    char credit_string[] = "Created by Xastir, http://www.xastir.org";
+    char temp_shapefile_name[MAX_FILENAME];
 
+
+    if (quantity == 0) {
+        // No reason to make a map if we don't have any points.
+        return;
+    }
+
+    // Get the time/datestamp
+    get_timestamp(timedatestring);
+
+    if (add_timestamp) {    // Add a timestamp to the filename
+        int ii;
+
+        xastir_snprintf(temp_shapefile_name,
+            sizeof(temp_shapefile_name),
+            "%s_%s",
+            shapefile_name,
+            timedatestring);
+
+        // Change spaces to underlines
+        for (ii = 0; ii < strlen(temp_shapefile_name); ii++) {
+            if (temp_shapefile_name[ii] == ' ') {
+                temp_shapefile_name[ii] = '_';
+            }
+        }
+    }
+    else {  // Use the filename directly, no timestamp
+        xastir_snprintf(temp_shapefile_name,
+            sizeof(temp_shapefile_name),
+            "%s",
+            shapefile_name);
+    }
 
     // Create empty .shp/.shx/.dbf files
     //
-    my_shp_handle = SHPCreate(shapefile_name, type);
-    my_dbf_handle = DBFCreate(shapefile_name);
+    my_shp_handle = SHPCreate(temp_shapefile_name, type);
+    my_dbf_handle = DBFCreate(temp_shapefile_name);
 
     // Create the different fields we'll use to store the
     // attributes:
     //
     // Add a credits field and set the length.  Field 0.
-    DBFAddField(my_dbf_handle, "Credits", FTString, 50, 0);
+    DBFAddField(my_dbf_handle, "Credits", FTString, strlen(credit_string) + 1, 0);
     //
     // Add a date/time field and set the length.  Field 1.
-    DBFAddField(my_dbf_handle, "DateTime", FTString, 101, 0);
+    DBFAddField(my_dbf_handle, "DateTime", FTString, strlen(timedatestring) + 1, 0);
+
+    // Note that if were passed additional parameters that went
+    // along with the lat/long/altitude points, we could write those
+    // into the DBF file in the loop below.  We would have to change
+    // from a polygon to a point filetype though.
 
     // Populate the files with objects and attributes.  Perform this
     // loop once for each object.
@@ -1116,15 +1155,16 @@ void create_shapefile_map(char *shapefile_name, int type,
         // Destroy the temporary object
         SHPDestroyObject(my_object);
 
+// Note that with the current setup the below really only get
+// written into the file once.  Check it with dbfinfo/dbfdump.
+
         // Write the credits attributes
         DBFWriteStringAttribute( my_dbf_handle,
             index,
             0,
-            "Created by Xastir, http://www.xastir.org");
+            credit_string);
 
-        // Write the date/time attributes
-        get_timestamp(timedatestring);
-
+        // Write the time/date string
         DBFWriteStringAttribute( my_dbf_handle,
             index,
             1,
@@ -1140,19 +1180,112 @@ void create_shapefile_map(char *shapefile_name, int type,
 
 
 
-void test_create_shapefile_map(void) {
-    double padfx = 1.0;
-    double padfy = 2.0;
-    double padfz = 3.0;
+// Function which creates a Shapefile map from an APRS trail.
+//
+// Navigate through the linked list of TrackRow structs to pick out
+// the lat/long and write them into arrays of floats.  We then pass
+// those arrays to create_shapefile_map().
+//
+void create_map_from_trail(char *call_sign) {
+    DataRow *p_station;
 
 
-    create_shapefile_map(
-        "/usr/tmp/test_shapefile",
-        SHPT_POLYGON,
-        1,
-        &padfx,
-        &padfy,
-        &padfz);
+    // Find the station in our database.  Count the number of points
+    // for that station first, then allocate some arrays to hold
+    // that quantity of points.  Stuff the lat/long into the arrays
+    // and then call create_shapefile_map().
+    //
+    if (search_station_name(&p_station, call_sign, 1)) {
+        int count;
+        int ii;
+        TrackRow *ptr;
+        char temp[100];
+        double *x;
+        double *y;
+        double *z;
+
+
+        count = 0;
+        ptr = p_station->oldest_trackpoint;
+        while (ptr != NULL) {
+            count++;
+            ptr = ptr->next;
+        }
+
+//fprintf(stderr, "Quantity of points: %d\n", count);
+
+        if (count == 0) {
+            // No reason to make a map if we don't have any points
+            // in the track list.
+            return;
+        }
+
+        // We know how many points are in the linked list.  Allocate
+        // arrays to hold the values.
+        x = (double *) malloc( count * sizeof(double) );
+        y = (double *) malloc( count * sizeof(double) );
+        z = (double *) malloc( count * sizeof(double) );
+        CHECKMALLOC(x);
+        CHECKMALLOC(y);
+        CHECKMALLOC(z);
+
+        // Fill in the values.  We need to convert from Xastir
+        // coordinate system to lat/long doubles as we go.
+        ptr = p_station->oldest_trackpoint;
+        ii = 0;
+        while ((ptr != NULL) && (ii < count) ) {
+
+            // Convert from Xastir coordinates to lat/long
+
+            // Convert to string
+            convert_lon_l2s(ptr->trail_long_pos, temp, sizeof(temp), CONVERT_DEC_DEG);
+            // Convert to double and stuff into array of doubles
+            (void)sscanf(temp, "%lf", &x[ii]);
+            // If longitude string contains "W", make the final
+            // result negative.
+            if (index(temp, 'W'))
+                x[ii] = x[ii] * -1.0;
+           
+            // Convert to string 
+            convert_lat_l2s(ptr->trail_lat_pos, temp, sizeof(temp), CONVERT_DEC_DEG);
+            // Convert to double and stuff into array of doubles
+            (void)sscanf(temp, "%lf", &y[ii]);
+            // If latitude string contains "S", make the final
+            // result negative.
+            if (index(temp, 'S'))
+                y[ii] = y[ii] * -1.0;
+
+            z[ii] = ptr->altitude;  // Altitude (meters), undefined=-99999
+
+            ptr = ptr->next;
+            ii++;
+        }
+
+        // Create a Shapefile from the APRS trail.  Write it into
+        // "/var/tmp" and add a date/timestamp to the end.
+        //
+        xastir_snprintf(temp, sizeof(temp),
+            "%s%s%s",
+            "/var/tmp/",
+            call_sign,
+            "_APRS_Trail");
+
+        create_shapefile_map(
+            temp,
+            SHPT_POLYGON,
+            count,
+            x,
+            y,
+            z,
+            1); // Add a timestamp to the end of the filename
+
+        // Free the storage that we malloc'ed
+        free(x);
+        free(y);
+        free(z);
+    }
+    else {  // Couldn't find the station of interest
+    }
 }
 
 

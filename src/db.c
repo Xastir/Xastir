@@ -2884,6 +2884,11 @@ void Station_data_store_track(Widget w, XtPointer clientData, /*@unused@*/ XtPoi
 
     // Store trail to file
     export_trail(p_station);
+
+#ifdef HAVE_LIBSHP
+    // Save trail as a Shapefile map
+    create_map_from_trail(p_station->call_sign);
+#endif  // HAVE_LIBSHP
 }
 
 
