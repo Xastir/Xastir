@@ -3080,6 +3080,13 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         TrackRow2 *ptr;
 
         ptr = p_station->newest_trackpoint;
+
+        // Skip the first (latest) trackpoint as if it exists, it'll
+        // be the same as the data in the station record, which we
+        // just printed out.
+        if (ptr->prev != NULL)
+           ptr = ptr->prev;
+ 
         while (ptr != NULL) {
             sec  = ptr->sec;
             time = localtime(&sec);
@@ -4363,7 +4370,7 @@ int new_trail_color(char *call) {
 
 
 //
-//  Store one trail point.  Allocate storage for the new data.
+// Store one trail point.  Allocate storage for the new data.
 //
 // We now store track data in a doubly-linked list.  Each record has a
 // pointer to the previous and the next record in the list.  The main
