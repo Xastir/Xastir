@@ -929,8 +929,6 @@ time_t WX_ALERTS_REFRESH_TIME;  /* Minimum WX alert map refresh time in seconds 
 int menu_x;
 int menu_y;
 int mouse_zoom = 0;
-int polygon_start_x = -1;       // Draw CAD Objects functions
-int polygon_start_y = -1;       // Draw CAD Objects functions
 int polygon_last_x = -1;        // Draw CAD Objects functions
 int polygon_last_y = -1;        // Draw CAD Objects functions
 
@@ -7980,7 +7978,10 @@ void Draw_CAD_Objects_end_mode( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer callData) {
 
 //    fprintf(stderr,"Draw_CAD_Objects function disabled\n");
+
     draw_CAD_objects_flag = 0;
+    polygon_last_x = -1;    // Invalid position
+    polygon_last_y = -1;    // Invalid position
 
     // Remove the special "pencil" cursor.
     (void)XUndefineCursor(XtDisplay(da),XtWindow(da));
@@ -8002,6 +8003,8 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
         /*@unused@*/ XtPointer callData) {
 
     CAD_object_delete_all();
+    polygon_last_x = -1;    // Invalid position
+    polygon_last_y = -1;    // Invalid position
 
     // Reload symbols/tracks/CAD objects
     redraw_symbols(da);
@@ -8023,28 +8026,24 @@ void Draw_CAD_Objects_erase( /*@unused@*/ Widget w,
 void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         XtPointer clientData,
         /*@unused@*/ XtPointer callData) {
-
-//    long lat, lon;
     VerticeRow *tmp;
     double area;
 
 
+    // Check whether we're currently working on a polygon.  If not,
+    // get out of here.
+    if (polygon_last_x == -1 || polygon_last_y == -1) {
+        return;
+    }
+
     // Find the last vertice in the linked list.  That will be the
     // first vertice we recorded for the object.
-    if (polygon_last_x != -1
-            && polygon_last_y != -1
-            && CAD_list_head != NULL) {
- 
-/*
-        // Convert from screen coordinates to Xastir coordinate
-        // system and save in the object->vertice list.
-        convert_screen_to_xastir_coordinates(polygon_start_x,
-            polygon_start_y,
-            &lat,
-            &lon);
-        CAD_vertice_allocate(lat, lon);
-*/
 
+// We should check for at least three vertices here, and check that
+// the polygon is closed (first point == last point).
+
+    if (CAD_list_head != NULL) {
+ 
         // Walk the linked list.  Stop at the last record.
         tmp = CAD_list_head->start;
         if (tmp != NULL) {
@@ -8055,21 +8054,16 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         }
     }
  
-    // Tell the code that we're starting a new polygon by wiping out
-    // the first position.
-    polygon_last_x = -1;    // Invalid position
-    polygon_last_y = -1;    // Invalid position 
-
-
     // Walk the linked list again, computing the area of the
-    // polygon.
-/*
-    area = 0.0;
-    for (int i = 0; i < num_vertices; i++) {
-        area += (v2dx[i]-v2dx[i+1]) * (v2dy[i]+v2dy[i+1]);
-    }
-    area *= 0.5;
-*/
+    // polygon.  Code off the web to compute the area of a polygon:
+    //
+    // area = 0.0;
+    // for (int i = 0; i < num_vertices; i++) {
+    //     area += (v2dx[i]-v2dx[i+1]) * (v2dy[i]+v2dy[i+1]);
+    // }
+    // area *= 0.5;
+    //
+    //
     area = 0.0;
     tmp = CAD_list_head->start;
     if (tmp != NULL) {
@@ -8084,6 +8078,13 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     area *= 0.5;
 
 fprintf(stderr,"Area in Xastir units = %f\n", area);
+
+
+    // Tell the code that we're starting a new polygon by wiping out
+    // the first position.
+    polygon_last_x = -1;    // Invalid position
+    polygon_last_y = -1;    // Invalid position 
+
 
 // Because lat/long units can vary drastically w.r.t. real units, we
 // need to multiply the terms above by the real units in order to
@@ -8383,14 +8384,12 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 CAD_vertice_allocate(lat, lon);
             }
             else {  // First point of a polygon.  Save it.
-                polygon_start_x = input_x;
-                polygon_start_y = input_y;
 
                 // Figure out the real lat/long from the screen
                 // coordinates.  Create a new object to hold the
                 // point.
-                convert_screen_to_xastir_coordinates(polygon_start_x,
-                    polygon_start_y,
+                convert_screen_to_xastir_coordinates(input_x,
+                    input_y,
                     &lat,
                     &lon);
                 CAD_object_allocate(lat, lon);
