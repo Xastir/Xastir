@@ -146,6 +146,9 @@ void db_init(void)
     init_critical_section( &db_station_info_lock );
     init_critical_section( &db_station_popup_lock );
     last_emergency_callsign[0] = '\0';
+
+    // Seed the random number generator
+    srand(255);
 }
 
 
@@ -13582,7 +13585,7 @@ void check_and_transmit_objects_items(time_t time) {
     DataRow *p_station;     // pointer to station data
     char line[256];
     int first = 1;  // Used to output debug message only once
-    short increment;
+    int increment;
 
 
     // Time to re-transmit objects/items?
@@ -13643,20 +13646,15 @@ void check_and_transmit_objects_items(time_t time) {
                     // We should transmit this object/item as it has
                     // hit its transmit interval.
 
-                    int randomize;
+                    float randomize;
+                    int fifth_increment;
+                    int new_increment;
 
 
                     if (first) {    // "Transmitting objects/items"
                         statusline(langcode("BBARSTA042"),1);
                         first = 0;
                     }
-
-                    // Set the last transmit time into the object.
-                    // Keep this based off the time the object was
-                    // last created/modified/deleted, so that we
-                    // don't end up with a bunch of them transmitted
-                    // together.
-                    p_station->last_transmit_time = p_station->last_transmit_time + increment;
 
                     // Set up the new doubling increment
                     increment = increment * 2;
@@ -13666,16 +13664,30 @@ void check_and_transmit_objects_items(time_t time) {
 
                     // Randomize the distribution a bit, so that all
                     // objects are not transmitted at the same time.
-                    // Allow the random number to vary over 20% of
-                    // the current increment.
-                    randomize = (int)( random() % (increment/5) );
-//fprintf(stderr,"Randomize = %d\n", randomize);
-                    increment = increment - randomize;
-                    p_station->transmit_time_increment = increment;
+                    // Allow the random number to vary over 20%
+                    // (one-fifth) of the newly computed increment.
+                    fifth_increment = (short)((increment / 5) + 0.5);
+//fprintf(stderr,"fifth_increment: %d\n", fifth_increment);
+ 
+                    randomize = rand() / RAND_MAX;
+//fprintf(stderr,"randomize: %f\n", randomize);
+
+                    randomize = randomize * fifth_increment;
+//fprintf(stderr,"scaled randomize: %f\n", randomize);
+
+                    new_increment = increment - (short)(randomize + 0.5);
+                    p_station->transmit_time_increment = (short)new_increment;
 
 //fprintf(stderr,"check_and_transmit_objects_items():Setting tx_increment to %d:%s\n",
-//    increment,
+//    new_increment,
 //    p_station->call_sign);
+
+                    // Set the last transmit time into the object.
+                    // Keep this based off the time the object was
+                    // last created/modified/deleted, so that we
+                    // don't end up with a bunch of them transmitted
+                    // together.
+                    p_station->last_transmit_time = p_station->last_transmit_time + new_increment;
  
                     // Here we need to re-assemble and re-transmit the object or item
                     // Check whether it is a "live" or "killed" object and vary the
@@ -13717,6 +13729,7 @@ void check_and_transmit_objects_items(time_t time) {
         }
         p_station = p_station->n_next;  // Get next station
     }
+//fprintf(stderr,"Exiting check_and_transmit_objects_items\n");
 }
 
 
