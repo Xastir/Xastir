@@ -141,9 +141,11 @@ typedef struct {
 typedef struct {
     int    device_type;                           /* device type                             */
     char   device_name[MAX_DEVICE_NAME+1];        /* device name                             */
+    char   radio_port[3];                         /* port for multi-port TNC's               */
     char   device_host_name[MAX_DEVICE_HOSTNM+1]; /* device host name for network            */
     char   device_host_pswd[MAX_DEVICE_HOSTPW+1]; /* host password also WX device data type  */
     char   device_host_filter_string[201];        /* host filter string                      */
+    char   comment[50];                           /* Local comment or name for port          */
     char   unproto1[50];                          /* unproto path 1 for this port            */
     char   unproto2[50];                          /* unproto path 2 for this port            */
     char   unproto3[50];                          /* unproto path 3 for this port            */
