@@ -729,10 +729,13 @@ Cell Name
                                     ok = 0;
                                 }
                             }
-                            else if (scale_y > 200) {   // Don't draw cities of less than 1,000
+                            else if (scale_y > 200) {   // Don't draw cities 
+                                                        // of less than 1,000
                                 if (atoi(population) < 1000) {
                                     ok = 0;
-                                    //fprintf(stderr,"Name: %s\tPopulation: %s\n",name,population);
+                                    //fprintf(stderr,
+                                    // "Name: %s\tPopulation: %s\n",name,
+                                    // population);
                                 }
                             }
                         }

@@ -11,18 +11,15 @@
 
 # The filenames used as input should be put on the command line.
 
-require Text::CSV_XS;
-
-my $csv = Text::CSV_XS->new();
 
 while (<>) {
   next unless /[A-Z][a-z]/;
   s/\s+$//;
   my $line = $_;
-  my $status = $csv->parse($line);
-  my @fields = $csv->fields;
+  my @fields = split /\|/, $line;
+#  print "Fields is @fields\n";
   # key is "state county"
-  my $key = $fields[0] . " " . $fields[3];
+  my $key = $fields[1] . " " . $fields[4];
   $key =~ s/ /_/g;
   push @{$county{$key}}, $line;
 }
