@@ -1347,10 +1347,10 @@ void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x,
 
     // Reverse latitude to fit our coordinate system then convert to
     // Xastir units.
-    *y = (long)((180.0 - (lat + 90.0)) * 360000.0);
+    *y = (long)(lat * -360000.0) + 32400000l;
 
-    // Convert longitude to Xastir units.
-    *x = (long)((lon + 180.0) * 360000.0);
+    // Convert longitude to xastir units
+    *x = (long)(lon *  360000.0) + 64800000l;
 }
 
 
