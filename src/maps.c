@@ -1967,7 +1967,7 @@ void draw_shapefile_map (Widget w,
                                             lanes = 1;
                                             break;
                                         case '1':
-                                            lanes = 3;
+                                            lanes = 1;
                                             break;
                                         case '2':
                                             lanes = 1;
