@@ -36,10 +36,10 @@ MENUTB0009|Help|H|
 # Menu "File"
 PULDNFI001|Instelling|I|
 PULDNFI002|Open Log Bestand|O|
-PULDNFI003|Test||
+PULDNFI003|Test|T|
 PULDNFI004|Sluiten|S|
 PULDNFI007|Verander Debug Level|D|
-PULDNFI010|TNC Loggen|T|
+PULDNFI010|TNC Loggen|L|
 PULDNFI011|Net Loggen|N|
 PULDNFI012|IGate Loggen|G|
 PULDNFI013|WX Loggen|W|
@@ -158,14 +158,13 @@ PULDNOT001|Aan||
 PULDNOT002|Uit||
 PULDNOT003|Kort||
 #
-# Menu "Display"
+# Menu "Stations"
 PULDNDP014|Zoek Station|Z|
 PULDNDP001|Volg Station|V|
 PULDNDP022|Spoor Downloaden|p|
-# SubMenu "Filter Data"
 PULDNDP032|Filter Gegevens||
 PULDNDP040|Deselecteer Alles||
-PULDNDP041|Selecteer Mine||
+PULDNDP041|Selecteer Mijn||
 PULDNDP042|Selecteer TNC||
 PULDNDP027|- Selecteer Directe Stations||
 PULDNDP043|- Selecteer Via Digi||
@@ -175,12 +174,11 @@ PULDNDP044|Selecteer Stations||
 PULDNDP028|- Selecteer Vaste Stations||
 PULDNDP029|- Selecteer Bewegende Stations||
 PULDNDP030|- Selecteer Weer Stations||
-PULDNDP053|  - Select CWOP WX Stations||
+PULDNDP053|  - Selecteer CWOP WX Stations||
 PULDNDP045|Selecteer Objecten/Items||
 PULDNDP026|- Selecteer  Weer Objecten/Items||
 PULDNDP039|- Selecteer  Water Hoogte Objecten/Items||
 PULDNDP031|- Selecteer  Andere Objecten/Items||
-# SubMenu "Filter Display"
 PULDNDP033|Filter Weergave||
 PULDNDP010|Roepnaam|R|
 PULDNDP012|Symbolen|y|
@@ -205,19 +203,18 @@ PULDNDP037|- Geef Richting Weer||
 PULDNDP038|- Geef Symbool Weer||
 PULDNDP005|Afst/koers|A|
 PULDNDP024|Geeft Tijd Laatste Rapport||
-#
 PULDNDP015|Wis alle Stations|W|
 PULDNDP016|Wis Alle Sporen|S|
 PULDNDP025|Wis Object/Item Geschiedenis||
 PULDNDP048|Herlaad Object/Item Geschiedenis||
-PULDNDP049|Clear All Tactical Calls||
-PULDNDP050|Clear Tactical Call History||
-PULDNDP051|Select Tactical Calls Only||
-PULDNDP052|- Label Trailpoints||
+PULDNDP049|Wis Alle Taktische Roepnamen||
+PULDNDP050|Wis Taktische Roepnaam Geschiendenis||
+PULDNDP051|Selecteer Alleen Taktische Roepnamen||
+PULDNDP052|- Label Punten Van Sporenopbouw||
 #
 # Units
-PULDNUT001|Engels||
-PULDNUT002|Metrisch||
+PULDNUT001|Engels|E|
+PULDNUT002|Metrisch|M|
 #
 # Menu "Messages"
 PULDNMG001|Zend Bericht Naar|Z|
@@ -236,12 +233,12 @@ PULDNTNT02|Interface Bewerken|B|
 PULDNTNT03|Zet Verzenden Van Alle Data Uit||
 PULDNTNT05|Zet Verzenden Positie Uit||
 PULDNTNT06|Zet Verzenden Van Objecten Uit||
-PULDNTNT11|Enable Server Port||
+PULDNTNT11|Server Port Inschakelen||
 PULDNTNT01|Zend Nu!|Z|
 PULDNTNT07|Volg GPS Spoor|F|
 PULDNTNT08|Volg GPS Routes|R|
 PULDNTNT09|Volg GPS Routepunten|W|
-PULDNTNT10|Fetch Garmin RINO Waypoints|G|
+PULDNTNT10|Laad Garmin RINO Waypoints|G|
 #
 # Menu "Help"
 PULDNHEL01|Informatie|A|
@@ -277,11 +274,11 @@ POPUPMA024|Schakel CapsLock/NumLock/ScrollLock/andere Toetsen UIT||
 POPUPMA026|Centreer & Zoom||
 POPUPMA027|Breedtegraden||
 POPUPMA028| Lengtegraden||
-POPUPMA029|Draw CAD Objects||
-POPUPMA030|Start Draw Mode||
-POPUPMA031|Close Polygon||
-POPUPMA032|Erase All CAD Polygons||
-POPUPMA033|End Draw Mode||
+POPUPMA029|Teken CAD Objecten||
+POPUPMA030|Start Teken Mode||
+POPUPMA031|Sluit Polygon||
+POPUPMA032|Wis Alle CAD Polygonen||
+POPUPMA033|Eindig Teken Mode||
 #
 # Status line labels
 BBARZM0001|Zoom %s||
@@ -347,7 +344,7 @@ WPUPLSP003|Hoofdlettergevoelig||
 WPUPLSP004|Zoek Exact||
 WPUPLSP005|Lokaliseer Nu!||
 WPUPLSP006|Spoed Lokatiseren!||
-WPUPLSP007|FCC/RAC Lookup||
+WPUPLSP007|FCC/RAC Naslaan||
 #
 # PopUp "Configure - Defaults"
 WPUPCFD001|Standaardinstellingen Aanpassen||
@@ -390,9 +387,9 @@ WPUPCFTM06|GPS Status Controle Interval (sec)||
 WPUPCFTM07|Tijd Tot Wissen Station (dagen)||
 WPUPCFTM08|Timeout Berekening Geschatte Waarden (min)||
 WPUPCFTM09|Seriele Inter-Char vertraging (ms)||
-WPUPCFTM10|New Track Time (min)||
-WPUPCFTM11|New Track Interval (degrees)||
-WPUPCFTM12|RINO -> Objects Interval (min), 0 = Disabled||
+WPUPCFTM10|Tijd Voor Nieuw Spoor (min)||
+WPUPCFTM11|Interval Voor Nieuw Spoor (degrees)||
+WPUPCFTM12|RINO -> Interval Voor Objecten (min), 0 = Uitgeschakeld||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer Coordinaten Stelsel||
@@ -556,8 +553,8 @@ POPUPOB040|Straal breedte - Richting||
 POPUPOB041|Rondstraler||
 POPUPOB042|Richtantenne||
 POPUPOB043|Onbruikbaar||
-POPUPOB044|Adopt Object||
-POPUPOB045|Adopt Item||
+POPUPOB044|Adopteer Object||
+POPUPOB045|Adopteer Item||
 #
 # PopUp "Configure Internet"
 WPUPCFI001|Internet Instelling||
@@ -653,11 +650,11 @@ WPUPMSB003|Stations Roepnaam:||
 WPUPMSB004|Groeps Roepnaam:||
 WPUPMSB005|Nieuwe Roepnaam||
 WPUPMSB006|Nieuwe Groep||
-WPUPMSB007|Clear Msg History||
+WPUPMSB007|Wis Berichten Geschiedenis||
 WPUPMSB008|Bericht:||
 WPUPMSB009|Stuur Nu!||
-WPUPMSB010|Path:||
-WPUPMSB011|Cancel Pending Msgs||
+WPUPMSB010|Pad:||
+WPUPMSB011|Anulleer Nog Uitstaande Berichten||
 #
 # PopUp "Auto Reply"
 WPUPARM001|Automatich Antwoord Bericht||
