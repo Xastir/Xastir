@@ -17477,36 +17477,6 @@ int Setup_object_data(char *line, int line_length) {
 
         //fprintf(stderr,"String is: %s\n", line);
 
-    } else if (Probability_circles_enabled) {
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
-        //fprintf(stderr,"Probability min circle entered: %s\n", line);
-        if (strlen(line) != 0) {   // Probability circle data was entered
-            xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
-        } else {  // No data entered, blank it out
-            prob_min[0] = '\0';
-        }
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
-        //fprintf(stderr,"Probability max circle entered: %s\n", line);
-        if (strlen(line) != 0) {   // Probability circle data was entered
-            xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
-        } else {  // No data entered, blank it out
-            prob_max[0] = '\0';
-        }
- 
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s%s%s",
-            last_object,
-            time,
-            lat_str,
-            last_obj_grp,
-            lon_str,
-            last_obj_sym,
-            speed_course,
-            altitude,
-            prob_min,
-            prob_max);
- 
-        //fprintf(stderr,"String is: %s\n", line);
-
     } else if (Signpost_object_enabled) {
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(signpost_data));
         //fprintf(stderr,"Signpost entered: %s\n", line);
@@ -17564,6 +17534,25 @@ int Setup_object_data(char *line, int line_length) {
                 altitude);
         }
     } else {  // Else it's a normal object
+
+        prob_min[0] = '\0';
+        prob_max[0] = '\0';
+
+        if (Probability_circles_enabled) {
+
+            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
+            //fprintf(stderr,"Probability min circle entered: %s\n", line);
+            if (strlen(line) != 0) {   // Probability circle data was entered
+                xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
+            }
+
+            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
+            //fprintf(stderr,"Probability max circle entered: %s\n", line);
+            if (strlen(line) != 0) {   // Probability circle data was entered
+                xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
+            }
+        }
+
         if (transmit_compressed_objects_items) {
             char temp_overlay = last_obj_overlay;
 
@@ -17591,7 +17580,9 @@ int Setup_object_data(char *line, int line_length) {
                 temp_overlay = last_obj_overlay + 'a';
             }
  
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%s",
+            xastir_snprintf(line,
+                line_length,
+                ";%-9s*%s%s%s%s%s",
                 last_object,
                 time,
                 compress_posit(ext_lat_str,
@@ -17601,10 +17592,14 @@ int Setup_object_data(char *line, int line_length) {
                     course,
                     speed,  // In knots
                     ""),    // PHG, must be blank in this case
-                    altitude);
+                    altitude,
+                    prob_min,
+                    prob_max);
         }
         else {
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
+            xastir_snprintf(line,
+                line_length,
+                ";%-9s*%s%s%c%s%c%s%s%s%s",
                 last_object,
                 time,
                 lat_str,
@@ -17612,14 +17607,23 @@ int Setup_object_data(char *line, int line_length) {
                 lon_str,
                 last_obj_sym,
                 speed_course,
-                altitude);
+                altitude,
+                prob_min,
+                prob_max);
         }
     }
+
 
     // We need to tack the comment on the end, but need to make
     // sure we don't go over the maximum length for an object.
     //fprintf(stderr,"Comment: %s\n",comment);
     if (strlen(comment) != 0) {
+
+        // Add a space first.  It's required for multipoint polygons
+        // in the comment field.
+        line[strlen(line) + 1] = '\0';
+        line[strlen(line)] = ' ';
+
         temp = 0;
         while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) ) {
             //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
@@ -17881,35 +17885,6 @@ int Setup_item_data(char *line, int line_length) {
             complete_corridor,
             altitude);
 
-    } else if (Probability_circles_enabled) {
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
-        //fprintf(stderr,"Probability min circle entered: %s\n",
-        //line);
-        if (strlen(line) != 0) {   // Probability circle data was entered
-            xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
-        } else {  // No data entered, blank it out
-            prob_min[0] = '\0';
-        }
-        xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
-        //fprintf(stderr,"Probability max circle entered: %s\n",
-        //line);
-        if (strlen(line) != 0) {   // Probability circle data was entered
-            xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
-        } else {  // No data entered, blank it out
-            prob_max[0] = '\0';
-        }
-
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s%s%s",
-            last_object,
-            lat_str,
-            last_obj_grp,
-            lon_str,
-            last_obj_sym,
-            speed_course,
-            altitude,
-            prob_min,
-            prob_max);
-
     } else if (Signpost_object_enabled) {
         xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(signpost_data));
         //fprintf(stderr,"Signpost entered: %s\n", line);
@@ -17964,6 +17939,28 @@ int Setup_item_data(char *line, int line_length) {
                 altitude);
         }
     } else {  // Else it's a normal item
+
+        prob_min[0] = '\0';
+        prob_max[0] = '\0';
+ 
+        if (Probability_circles_enabled) {
+
+            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_min));
+            //fprintf(stderr,"Probability min circle entered: %s\n",
+            //line);
+            if (strlen(line) != 0) {   // Probability circle data was entered
+                xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
+            }
+
+            xastir_snprintf(line, line_length, "%s", XmTextFieldGetString(probability_data_max));
+            //fprintf(stderr,"Probability max circle entered: %s\n",
+            //line);
+            if (strlen(line) != 0) {   // Probability circle data was entered
+                xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
+            }
+        }
+
+
         if (transmit_compressed_objects_items) {
             char temp_overlay = last_obj_overlay;
 
@@ -17991,7 +17988,9 @@ int Setup_item_data(char *line, int line_length) {
                 temp_overlay = last_obj_overlay + 'a';
             }
  
-            xastir_snprintf(line, line_length, ")%s!%s%s",
+            xastir_snprintf(line,
+                line_length,
+                ")%s!%s%s%s%s",
                 last_object,
                 compress_posit(ext_lat_str,
                     (temp_overlay) ? temp_overlay : last_obj_grp,
@@ -18000,24 +17999,37 @@ int Setup_item_data(char *line, int line_length) {
                     course,
                     speed,  // In knots
                     ""),    // PHG, must be blank in this case
-                    altitude);
+                    altitude,
+                    prob_min,
+                    prob_max);
         }
         else {
-            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
+            xastir_snprintf(line,
+                line_length,
+                ")%s!%s%c%s%c%s%s%s%s",
                 last_object,
                 lat_str,
                 last_obj_overlay ? last_obj_overlay : last_obj_grp,
                 lon_str,
                 last_obj_sym,
                 speed_course,
-                altitude);
+                altitude,
+                prob_min,
+                prob_max);
         }
     }
+
 
     // We need to tack the comment on the end, but need to make
     // sure we don't go over the maximum length for an item.
     //fprintf(stderr,"Comment: %s\n",comment);
     if (strlen(comment) != 0) {
+
+        // Add a space first.  It's required for multipoint polygons
+        // in the comment field.
+        line[strlen(line) + 1] = '\0';
+        line[strlen(line)] = ' ';
+ 
         temp = 0;
         while ( (strlen(line) < (64 + strlen(last_object))) && (temp < (int)strlen(comment)) ) {
             //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
