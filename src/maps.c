@@ -2592,15 +2592,23 @@ void draw_shapefile_map (Widget w,
                                 (void)XDrawLines(XtDisplay(w), pixmap_alerts, gc_tint, points, i, CoordModeOrigin);
                             }
                             else if (map_color_fill) {  // Land masses?
-                                if (city_flag) {
-                                    (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"PaleGoldenrod")); // PaleGoldenrod
-                                }
-                                else {
+                                if (city_flag)
+                                    (void)XSetForeground(XtDisplay(w), gc, GetPixelByName(w,"RosyBrown"));  // RosyBrown, duh
+                                else
                                     (void)XSetForeground(XtDisplay(w), gc, colors[0xff]); // grey
-                                }
 
                                 (void)XFillPolygon(XtDisplay (w), pixmap, gc, points, i, Complex, CoordModeOrigin);
                                 (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
+
+                                // Draw a thicker border for city boundaries
+                                if (city_flag) {
+                                    (void)XSetLineAttributes(XtDisplay(w), gc, 2, LineSolid, CapButt,JoinMiter);
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x14]); // lightgray for border
+                                }
+                                else {
+                                    (void)XSetForeground(XtDisplay(w), gc, colors[0x08]); // black for border
+                                }
+
                                 (void)XDrawLines(XtDisplay(w), pixmap, gc, points, i, CoordModeOrigin);
                             }
                             else {
