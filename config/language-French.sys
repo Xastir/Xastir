@@ -76,8 +76,8 @@ PULDNMP008|Intensité des cartes|I|
 PULDNMP020|Activer/configurer Tigermap||
 PULDNMP021|Cartographie automatique - désactiver cartes tramées||
 PULDNMP022|Indexer nouvelles cartes au démarrage||
-PULDNMP023|Re-indexage des cartes: nouvelles cartes|R|
-PULDNMP024|Re-indexage des cartes: toutes cartes|A|
+PULDNMP023|Index: Ajouter nouvelles cartes|R|
+PULDNMP024|Index: Re-indexer toutes cartes|A|
 #
 #
 # PopUp "Configure Tigermap"
