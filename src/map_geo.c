@@ -633,6 +633,7 @@ void draw_geo_image_map (Widget w,
         return; // Done indexing this file
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return;
 
@@ -668,6 +669,7 @@ void draw_geo_image_map (Widget w,
 
     atb.valuemask = 0;
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return;
 
@@ -781,6 +783,7 @@ void draw_geo_image_map (Widget w,
 
     //fprintf(stderr,"File = %s\n",file);
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return;
 
@@ -808,6 +811,7 @@ void draw_geo_image_map (Widget w,
     }
     (void)fclose (f);
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return;
 
@@ -834,6 +838,7 @@ void draw_geo_image_map (Widget w,
     atb.width = image->columns;
     atb.height = image->rows;
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image)
             DestroyImage(image);
@@ -874,6 +879,7 @@ void draw_geo_image_map (Widget w,
     else
         imagemagick_options.gamma_flag = 0;
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -888,6 +894,7 @@ void draw_geo_image_map (Widget w,
         GammaImage(image, gamma);
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -902,6 +909,7 @@ void draw_geo_image_map (Widget w,
         ContrastImage(image, imagemagick_options.contrast);
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -916,6 +924,7 @@ void draw_geo_image_map (Widget w,
         NegateImage(image, imagemagick_options.negate);
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -930,6 +939,7 @@ void draw_geo_image_map (Widget w,
         EqualizeImage(image);
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -944,6 +954,7 @@ void draw_geo_image_map (Widget w,
         NormalizeImage(image);
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -960,6 +971,7 @@ void draw_geo_image_map (Widget w,
     }
 #endif  // MagickLibVersion >= 0x0539
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -974,6 +986,7 @@ void draw_geo_image_map (Widget w,
         ModulateImage(image, imagemagick_options.modulate);
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -1003,6 +1016,7 @@ void draw_geo_image_map (Widget w,
         // Quantize down to 128 will go here...
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -1021,6 +1035,7 @@ void draw_geo_image_map (Widget w,
         return;
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -1039,6 +1054,7 @@ void draw_geo_image_map (Widget w,
         return;
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -1089,6 +1105,7 @@ void draw_geo_image_map (Widget w,
         }
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image) 
             DestroyImage(image);
@@ -1140,6 +1157,7 @@ void draw_geo_image_map (Widget w,
     // We don't have ImageMagick libs compiled in, so use the
     // XPM library instead.
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
         return;
 
@@ -1159,6 +1177,7 @@ void draw_geo_image_map (Widget w,
         fprintf(stderr,"XX: %ld YY:%ld Sx %f %d Sy %f %d\n", map_c_L, map_c_T, map_c_dx,(int) (map_c_dx / scale_x), map_c_dy, (int) (map_c_dy / scale_y));
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (xi)
             XDestroyImage (xi);
@@ -1245,23 +1264,26 @@ void draw_geo_image_map (Widget w,
     time_mark(0);
 #endif  // TIMING_DEBUG
 
+
+    HandlePendingEvents(app_context);
+    if (interrupt_drawing_now) {
+#ifdef HAVE_IMAGEMAGICK
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+#else   // HAVE_IMAGEMAGICK
+        if (xi)
+            XDestroyImage (xi);
+#endif  // HAVE_IMAGEMAGICK
+        return;
+    }
+
+
     // loop over map pixel rows
     for (map_y_0 = map_y_min, c_y = (double)c_y_min;
                 (map_y_0 <= map_y_max) || (map_proj == 1 && !map_done && scr_y < screen_height);
                 map_y_0++, c_y += map_c_dy) {
-
-        if (interrupt_drawing_now) {
-#ifdef HAVE_IMAGEMAGICK
-            if (image)
-                DestroyImage(image);
-            if (image_info)
-                DestroyImageInfo(image_info);
-#else   // HAVE_IMAGEMAGICK
-            if (xi)
-                XDestroyImage (xi);
-#endif  // HAVE_IMAGEMAGICK
-            return;
-        }
 
         scr_y = (c_y - y_lat_offset) / scale_y;
         if (scr_y != scr_yp) {                  // don't do a row twice

@@ -80,11 +80,11 @@ void map_pos(long mid_y, long mid_x, long sz) {
     scale_y = sz;
     scale_x = get_x_scale(mid_x,mid_y,scale_y);
     setup_in_view();  // flag all stations in screen view
-    create_image(da);
-
-    // We don't care whether or not this succeeds?
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
-
-    display_zoom_status();
+    
+    if (create_image(da)) {
+        // We don't care whether or not this succeeds?
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        display_zoom_status();
+    }
 }
 

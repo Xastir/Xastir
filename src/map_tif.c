@@ -1066,6 +1066,7 @@ void draw_geotiff_image_map (Widget w,
     }
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         GTIFFree (gtif);
         XTIFFClose (tif);
@@ -1199,6 +1200,7 @@ Samples Per Pixel: 1
          * datum-shifted values to plot the points in Xastir.
          */
 
+        HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
             GTIFFree (gtif);
             XTIFFClose (tif);
@@ -1267,6 +1269,7 @@ Samples Per Pixel: 1
             fprintf(stderr,"Problem in translating\n");
         }
 
+        HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
             GTIFFree (gtif);
             XTIFFClose (tif);
@@ -1335,6 +1338,7 @@ Samples Per Pixel: 1
             fprintf(stderr,"Problem in translating\n");
         }
 
+        HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
             GTIFFree (gtif);
             XTIFFClose (tif);
@@ -1403,6 +1407,7 @@ Samples Per Pixel: 1
             fprintf(stderr,"Problem in translating\n");
         }
 
+        HandlePendingEvents(app_context);
         if (interrupt_drawing_now) {
             GTIFFree (gtif);
             XTIFFClose (tif);
@@ -1490,6 +1495,7 @@ Samples Per Pixel: 1
         SE_y = height - 1;
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         GTIFFree (gtif);
         XTIFFClose (tif);
@@ -1639,6 +1645,7 @@ right_crop = width - 1;
         }
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         GTIFFree (gtif);
         XTIFFClose (tif);
@@ -2169,6 +2176,16 @@ right_crop = width - 1;
     view_top_minus_pixel_height = (unsigned long)(view_min_y - steph);
 
 
+    HandlePendingEvents(app_context);
+    if (interrupt_drawing_now) {
+        if (imageMemory)
+            free(imageMemory);
+        GTIFFree (gtif);
+        XTIFFClose (tif);
+        return;
+    }
+
+
     // Iterate over the rows of interest only.  Using the rectangular
     // top/bottom crop values for these is ok at this point.
     //
@@ -2182,15 +2199,6 @@ right_crop = width - 1;
     for ( row = top_crop; (int)row < bottom_crop + 1; row+= SkipRows )
     {
         int skip = 0;
-
-
-        if (interrupt_drawing_now) {
-            if (imageMemory)
-                free(imageMemory);
-            GTIFFree (gtif);
-            XTIFFClose (tif);
-            return;
-        }
 
 
         // Our offset from the top row of the map neatline

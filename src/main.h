@@ -270,6 +270,7 @@ extern int coordinate_system;
 #define USE_DDMMSS      2
 #define USE_UTM         3
 
+extern void HandlePendingEvents(XtAppContext app);
 extern void create_gc(Widget w);
 extern void Station_info(Widget w, XtPointer clientData, XtPointer calldata);
 extern void Station_List(Widget w, XtPointer clientData, XtPointer calldata);
@@ -284,7 +285,7 @@ extern void Bulletins(Widget w, XtPointer clientData, XtPointer callData);
 extern void on_off_switch(int switchpos, Widget first, Widget second);
 extern void busy_cursor(Widget w);
 extern void pos_dialog(Widget w);
-extern void create_image(Widget w);
+extern int create_image(Widget w);
 extern void draw_tiger_map(Widget w);
 
 extern void locate_gui_init(void);

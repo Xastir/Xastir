@@ -12233,8 +12233,10 @@ void set_map_position(Widget w, long lat, long lon) {
     mid_y_lat_offset  = lat;
     mid_x_long_offset = lon;
     setup_in_view();  // flag all stations in new screen view
-    create_image(w);
-    (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+
+    if (create_image(w)) {
+        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
 

@@ -281,13 +281,16 @@ void draw_palm_image_map(Widget w,
             max_x = (long)(screen_width + MAX_OUTBOUND);
             max_y = (long)(screen_height + MAX_OUTBOUND);
 
+
+            HandlePendingEvents(app_context);
+            if (interrupt_drawing_now) {
+                fclose(fn);
+                return;
+            }
+
+
             /* read vectors */
             for (record_count = 2; record_count <= records; record_count++) {
-
-                if (interrupt_drawing_now) {
-                    fclose(fn);
-                    return;
-                }
 
                 // Point to the next record list header & snag it
                 fseek(fn, record_ptr, SEEK_SET);

@@ -340,6 +340,7 @@ void draw_tiger_map (Widget w) {
         "gif");
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         return;
     }
@@ -408,6 +409,7 @@ void draw_tiger_map (Widget w) {
 #endif  // HAVE_LIBCURL
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         return;
     }
@@ -445,6 +447,7 @@ void draw_tiger_map (Widget w) {
     (void)fclose (f);
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image_info)
             DestroyImageInfo(image_info);
@@ -461,6 +464,7 @@ void draw_tiger_map (Widget w) {
     }
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image)
             DestroyImage(image);
@@ -498,6 +502,7 @@ void draw_tiger_map (Widget w) {
     }
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image)
             DestroyImage(image);
@@ -529,6 +534,7 @@ void draw_tiger_map (Widget w) {
     }
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image)
             DestroyImage(image);
@@ -549,6 +555,7 @@ void draw_tiger_map (Widget w) {
     }
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image)
             DestroyImage(image);
@@ -569,6 +576,7 @@ void draw_tiger_map (Widget w) {
     }
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image)
             DestroyImage(image);
@@ -621,6 +629,7 @@ void draw_tiger_map (Widget w) {
     }
 
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now) {
         if (image)
             DestroyImage(image);
@@ -773,18 +782,19 @@ void draw_tiger_map (Widget w) {
     map_seen = 0;
     scr_y = screen_height - 1;
 
+
+    HandlePendingEvents(app_context);
+    if (interrupt_drawing_now) {
+        if (image)
+            DestroyImage(image);
+        if (image_info)
+            DestroyImageInfo(image_info);
+        return;
+    }
+
+
     // loop over map pixel rows
     for (map_y_0 = map_y_min, c_y = (double)c_y_min; (map_y_0 <= map_y_max); map_y_0++, c_y += map_c_dy) {
-
-
-        if (interrupt_drawing_now) {
-            if (image)
-                DestroyImage(image);
-            if (image_info)
-                DestroyImageInfo(image_info);
-            return;
-        }
-
 
         scr_y = (c_y - y_lat_offset) / scale_y;
         if (scr_y != scr_yp) {                  // don't do a row twice

@@ -743,6 +743,7 @@ Pixmap  pixmap_wx_stipple;  // Used for weather alerts
 int interrupt_drawing_now = 0;  // Flag used to interrupt map drawing
 int request_resize = 0;         // Flag used to request a resize operation
 int request_new_image = 0;      // Flag used to request a create_image operation
+//time_t last_input_event = (time_t)0;  // Time of last mouse/keyboard event
 extern void new_image(Widget da);
 
 
@@ -2720,7 +2721,9 @@ void busy_cursor(Widget w) {
 // nicely if so.  That flag means that some other drawing operation
 // needs to happen.
 //
-void create_image(Widget w) {
+// Returns 0 if it gets interrupted, 1 if it completes.
+//
+int create_image(Widget w) {
     Dimension width, height, margin_width, margin_height;
     long lat_offset_temp;
     long long_offset_temp;
@@ -2736,15 +2739,17 @@ void create_image(Widget w) {
     if (debug_level & 4)
         fprintf(stderr,"Create image start\n");
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
 
     // If we're in the middle of ID'ing, wait a bit.
     if (ATV_screen_ID && pending_ID_message)
         usleep(2000000);    // 2 seconds
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     /* First get the various dimensions */
     XtVaGetValues(w,
@@ -2818,16 +2823,18 @@ void create_image(Widget w) {
             break;
     }
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     (void)XSetForeground(XtDisplay(w),gc,colors[0xfd]);
     (void)XSetBackground(XtDisplay(w),gc,colors[0xfd]);
 
     (void)XFillRectangle(XtDisplay(w), pixmap,gc,0,0,screen_width,screen_height);
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     statusline(langcode("BBARSTA003"),1);       // Loading Maps
 
@@ -2839,8 +2846,9 @@ void create_image(Widget w) {
         draw_tiger_map(w);
 #endif // HAVE_IMAGEMAGICK
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     if (display_up_first != 0) {
         if (map_auto_maps && !disable_all_maps)
@@ -2855,14 +2863,16 @@ void create_image(Widget w) {
     // Update to screen
 //    (void)XCopyArea(XtDisplay(da),pixmap,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     /* copy map data to alert pixmap */
     (void)XCopyArea(XtDisplay(w),pixmap,pixmap_alerts,gc,0,0,screen_width,screen_height,0,0);
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     if (!wx_alert_style && !disable_all_maps)
         load_alert_maps(w, ALERT_MAP_DIR);  // These write onto pixmap_alerts
@@ -2870,14 +2880,16 @@ void create_image(Widget w) {
     // Update to screen
 //    (void)XCopyArea(XtDisplay(da),pixmap_alerts,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     /* copy map and alert data to final pixmap */
     (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,screen_width,screen_height,0,0);
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     wx_alert_update_list();
 
@@ -2921,13 +2933,15 @@ void create_image(Widget w) {
         temp_course,
         sizeof(temp_course) );
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     draw_grid(w);                       // Draw grid if enabled
 
+    HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return;
+        return(0);
  
     display_file(w);                    // display stations (symbols, info, trails)
 
@@ -2935,6 +2949,8 @@ void create_image(Widget w) {
 
     if (debug_level & 4)
         fprintf(stderr,"Create image stop\n");
+
+    return(1);
 }
 
 
@@ -3578,8 +3594,9 @@ void Gamma_adjust_change_data(Widget widget, XtPointer clientData, XtPointer cal
     xastir_snprintf(temp_string, sizeof(temp_string), "%+.1f", imagemagick_gamma_adjust);
     XmTextSetString(gamma_adjust_text, temp_string);
 
-    create_image(da);
-    XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    if (create_image(da)) {
+        XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
 
@@ -7133,20 +7150,19 @@ void da_resize_execute(Widget w) {
                 width,height,
                 DefaultDepthOfScreen(XtScreen(w)));
 
+        HandlePendingEvents(app_context);
         if (interrupt_drawing_now)
             return;
 
         setup_in_view();    // flag stations that are in screen view
 
+        HandlePendingEvents(app_context);
         if (interrupt_drawing_now)
             return;
 
-        create_image(w);
-
-        if (interrupt_drawing_now)
-            return;
-
-        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+        if (create_image(w)) {
+            (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+        }
     }
 }
 
@@ -7167,6 +7183,7 @@ void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPoin
 
     // Set the request_resize flag
     request_resize++;
+//    last_input_event = sec_now() + 2;
 }
 
 
@@ -7605,8 +7622,6 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
 
     if (redraw) {
-//        create_image(w);
-//        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
         /*fprintf(stderr,"Current x %ld y %ld\n",mid_x_long_offset,mid_y_lat_offset);*/
 
         // Set the interrupt_drawing_now flag
@@ -7615,6 +7630,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
         // Request that a new image be created.  Calls create_image,
         // XCopyArea, and display_zoom_status.
         request_new_image++;
+//        last_input_event = sec_now() + 2;
     }
 }
 
@@ -7685,11 +7701,15 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             // Check on resize requests
             if (request_resize) {
-                da_resize_execute(w);
+//                if (last_input_event < sec_now()) {
+                    da_resize_execute(w);
+//                }
             }
 
             if (request_new_image) {
-                new_image(w);
+//                if (last_input_event < sec_now()) {
+                    new_image(w);
+//                }
             }
 
             /* check on Redraw requests */
@@ -7989,8 +8009,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             // Is it time to refresh maps? 
             if ( map_refresh_interval && (sec_now() > map_refresh_time) ) {
-                create_image(da);
-                (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+                if (create_image(da)) {
+                    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+                }
+
                 map_refresh_time = sec_now() + map_refresh_interval;
             }
 
@@ -8353,17 +8376,18 @@ void new_image(Widget da) {
     interrupt_drawing_now = 0;
     request_new_image = 0;
 
-    create_image(da);
+    if (create_image(da)) {
+        HandlePendingEvents(app_context);
+        if (interrupt_drawing_now)
+            return;
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
-    if (interrupt_drawing_now)
-        return;
+        HandlePendingEvents(app_context);
+        if (interrupt_drawing_now)
+            return;
 
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
-
-    if (interrupt_drawing_now)
-        return;
-
-    display_zoom_status();
+        display_zoom_status();
+    }
 }
 
 
@@ -8393,20 +8417,16 @@ void display_zoom_image(int recenter) {
         scale_y = new_scale_y;
         setup_in_view();    // update "in view" flag for all stations
 
-//        create_image(da);
-
         // Set the interrupt_drawing_now flag
         interrupt_drawing_now++;
 
         // Request that a new image be created.  Calls create_image,
         // XCopyArea, and display_zoom_status.
         request_new_image++;
+//        last_input_event = sec_now() + 2;
         
     } else {    // No change in zoom or center.  Don't update ANYTHING.
-        //refresh_image(da);    // No reason to do this.
     }
-//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
-//    display_zoom_status();
 }
 
 
@@ -8772,8 +8792,9 @@ void  Map_disable_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPo
     else
         disable_all_maps = 0;
 
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    if (create_image(da)) {
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
 
@@ -8795,8 +8816,10 @@ void  Map_auto_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
 
     re_sort_maps = 1;
 
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    if (create_image(da)) {
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
+
     if (map_auto_maps)
         statusline(langcode("BBARSTA007"),1);   // The use of Auto Maps is now on
     else
@@ -8818,8 +8841,9 @@ void  Map_auto_skip_raster_toggle( /*@unused@*/ Widget widget, XtPointer clientD
 
     re_sort_maps = 1;
 
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    if (create_image(da)) {
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
 
@@ -8840,8 +8864,9 @@ void  Map_levels_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
     else
         statusline(langcode("BBARSTA010"),2);   // The use of Auto Maps is now off
 
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    if (create_image(da)) {
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
 
@@ -8857,8 +8882,9 @@ void  Map_labels_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
     else
         map_labels = 0;
 
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    if (create_image(da)) {
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
 
@@ -8879,8 +8905,9 @@ void  Map_fill_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
     else
         statusline(langcode("BBARSTA010"),1);       // The use of Map Color Fill is now Off
 
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    if (create_image(da)) {
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
 
@@ -8901,8 +8928,10 @@ void Map_background( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
                 XtSetSensitive(map_bgcolor[i],TRUE);
         }
         map_background_color=bgcolor;
-        create_image(da);
-        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+        if (create_image(da)) {
+            (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        }
     }
 }
 
@@ -8926,8 +8955,10 @@ void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
         }
 
         geotiff_map_intensity=my_intensity;
-        create_image(da);
-        XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+        if (create_image(da)) {
+            XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+        }
     }
 }
 #endif  // NO_GRAPHICS && HAVE_LIBGEOTIFF
@@ -9545,8 +9576,9 @@ void check_for_new_gps_map(void) {
 //
 
             // Reload maps
-            create_image(da);
-            (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+            if (create_image(da)) {
+                (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+            }
         }
         else {
             fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
@@ -12504,8 +12536,10 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
         fprintf(stderr,"Couldn't open file: %s\n", SELECTED_MAP_DATA);
 
     map_chooser_destroy_shell(widget,clientData,callData);
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+    if (create_image(da)) {
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
  
@@ -13004,8 +13038,10 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
     XmScaleGetValue(tiger_timeout, &tigermap_timeout);
 
     Configure_tiger_destroy_shell(widget,clientData,callData);
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+
+    if (create_image(da)) {
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
 }
 
 

@@ -166,6 +166,12 @@ void draw_gnis_map (Widget w,
     statusline(status_text,0);       // Loading/Indexing ...
 
 
+    HandlePendingEvents(app_context);
+    if (interrupt_drawing_now) {
+        return;
+    }
+
+
     // Attempt to open the file
     f = fopen (file, "r");
     if (f != NULL) {
@@ -423,11 +429,6 @@ void draw_gnis_map (Widget w,
                     // is, draw a text label at that location.
                     else if (coord_lon >= min_lon && coord_lon <= max_lon
                             && coord_lat <= min_lat && coord_lat >= max_lat) {
-
-                        if (interrupt_drawing_now) {
-                            (void)fclose(f);
-                            return;
-                        }
 
                         if (debug_level & 16) {
                             fprintf(stderr,"%s\t%s\t%s\t%s\t%s\t%s\t\t",
