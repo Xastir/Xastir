@@ -3990,7 +3990,7 @@ void clean_string(char *input) {
             strcpy(input,i+1);
         }
         else {  // We only found one quote character.  What to do?
-            fprintf(stderr,"clean_string: Only one quote found!\n");
+//            fprintf(stderr,"clean_string: Only one quote found!\n");
         }
     }
     //fprintf(stderr,"|%s|\n",input);
