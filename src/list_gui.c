@@ -78,8 +78,7 @@ Widget SL_wx_rain_24[5][20];
 Widget SL_course[5][20];
 Widget SL_speed[5][20];
 Widget SL_alt[5][20];
-Widget SL_lat[5][20];
-Widget SL_long[5][20];
+Widget SL_lat_long[5][20];
 Widget SL_packets[5][20];
 Widget SL_sats[5][20];
 Widget SL_my_course[5][20];
@@ -323,6 +322,7 @@ void Station_List_fill(int type, int new_offset) {
     Dimension new_h;          // overall height in pixel
     char stemp[400];
     char stemp1[60];
+    char stemp2[60];
     char temp_call[MAX_CALL+1];
     long l_lat, l_lon;
     float value;
@@ -561,13 +561,30 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
 
                         XtManageChild(SL_alt[type][row]);
 
-                        convert_lat_l2s(p_station->coord_lat, stemp, sizeof(stemp), CONVERT_HP_NORMAL);
-                        XmTextFieldSetString(SL_lat[type][row],stemp);
-                        XtManageChild(SL_lat[type][row]);
-
-                        convert_lon_l2s(p_station->coord_lon, stemp, sizeof(stemp), CONVERT_HP_NORMAL);
-                        XmTextFieldSetString(SL_long[type][row],stemp);
-                        XtManageChild(SL_long[type][row]);
+                        if (coordinate_system == USE_UTM) {
+                            // Create a UTM string from coordinates
+                            // in Xastir coordinate system.
+                            convert_xastir_to_UTM_str(stemp, sizeof(stemp), p_station->coord_lon, p_station->coord_lat);
+                            XmTextFieldSetString(SL_lat_long[type][row],stemp);
+                            XtManageChild(SL_lat_long[type][row]);
+                        }
+                        else {
+                            // Create lat/lon strings from coordinates
+                            // in Xastir coordinate system.
+                            if (coordinate_system == USE_DDDDDD) {
+                                convert_lat_l2s(p_station->coord_lat, stemp1, sizeof(stemp1), CONVERT_DEC_DEG);
+                                convert_lon_l2s(p_station->coord_lon, stemp2, sizeof(stemp2), CONVERT_DEC_DEG);
+                            } else if (coordinate_system == USE_DDMMSS) {
+                                convert_lat_l2s(p_station->coord_lat, stemp1, sizeof(stemp1), CONVERT_DMS_NORMAL);
+                                convert_lon_l2s(p_station->coord_lon, stemp2, sizeof(stemp2), CONVERT_DMS_NORMAL);
+                            } else {    // Assume coordinate_system == USE_DDMMMM
+                                convert_lat_l2s(p_station->coord_lat, stemp1, sizeof(stemp1), CONVERT_HP_NORMAL);
+                                convert_lon_l2s(p_station->coord_lon, stemp2, sizeof(stemp2), CONVERT_HP_NORMAL);
+                            }
+                            xastir_snprintf(stemp, sizeof(stemp), "%s  %s", stemp1, stemp2);
+                            XmTextFieldSetString(SL_lat_long[type][row],stemp);
+                            XtManageChild(SL_lat_long[type][row]);
+                        }
 
                         xastir_snprintf(stemp, sizeof(stemp), "%d",
                                 (int)p_station->num_packets);
@@ -737,10 +754,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill"
                         XtManageChild(SL_speed[type][row]);
                         XmTextFieldSetString(SL_alt[type][row],"");
                         XtManageChild(SL_alt[type][row]);
-                        XmTextFieldSetString(SL_lat[type][row],"");
-                        XtManageChild(SL_lat[type][row]);
-                        XmTextFieldSetString(SL_long[type][row],"");
-                        XtManageChild(SL_long[type][row]);
+                        XmTextFieldSetString(SL_lat_long[type][row],"");
+                        XtManageChild(SL_lat_long[type][row]);
                         XmTextFieldSetString(SL_packets[type][row],"");
                         XtManageChild(SL_packets[type][row]);
                         XmTextFieldSetString(SL_sats[type][row],"");
@@ -1150,7 +1165,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNtraversalOn,         FALSE,
                                  XmNsensitive, STIPPLE,
                                  XmNshadowThickness, 0,
-                                 XmNcolumns, 10,
+                                 XmNcolumns, 23,
                                  XmNtopAttachment, XmATTACH_FORM,
                                  XmNtopOffset,2,
                                  XmNbottomAttachment, XmATTACH_NONE,
@@ -1161,26 +1176,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNbackground, colors[0xff],
                                  NULL);
 
-                XmTextFieldSetString(it4,langcode("LHPUPNI103"));       // Lat
-
-                it5 = XtVaCreateManagedWidget(langcode("LHPUPNI104"), xmTextFieldWidgetClass, form,
-                                 XmNeditable,   FALSE,
-                                 XmNcursorPositionVisible, FALSE,
-                                 XmNtraversalOn,         FALSE,
-                                 XmNsensitive, STIPPLE,
-                                 XmNshadowThickness, 0,
-                                 XmNcolumns, 11,
-                                 XmNtopAttachment, XmATTACH_FORM,
-                                 XmNtopOffset,2,
-                                 XmNbottomAttachment, XmATTACH_NONE,
-                                 XmNleftAttachment, XmATTACH_WIDGET,
-                                 XmNleftWidget, it4,
-                                 XmNleftOffset, 1,
-                                 XmNrightAttachment, XmATTACH_NONE,
-                                 XmNbackground, colors[0xff],
-                                 NULL);
-
-                XmTextFieldSetString(it5,langcode("LHPUPNI104"));       // Long
+                XmTextFieldSetString(it4,langcode("LHPUPNI209")); // Lat/Lon or UTM
 
                 it6 = XtVaCreateManagedWidget(langcode("LHPUPNI105"), xmTextFieldWidgetClass, form,
                                  XmNeditable,   FALSE,
@@ -1193,7 +1189,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                  XmNtopOffset,2,
                                  XmNbottomAttachment, XmATTACH_NONE,
                                  XmNleftAttachment, XmATTACH_WIDGET,
-                                 XmNleftWidget, it5,
+                                 XmNleftWidget, it4,
                                  XmNleftOffset, 1,
                                  XmNrightAttachment, XmATTACH_NONE,
                                  XmNbackground, colors[0xff],
@@ -1718,35 +1714,17 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNrightAttachment,XmATTACH_NONE,
                                         NULL);
 
-                    SL_lat[type][i] = XtVaCreateManagedWidget("Station_List lat", xmTextFieldWidgetClass, win_list,
+                    SL_lat_long[type][i] = XtVaCreateManagedWidget("Station_List lat/lon", xmTextFieldWidgetClass, win_list,
                                         XmNeditable,   FALSE,
                                         XmNcursorPositionVisible, FALSE,
                                         XmNtraversalOn, FALSE,
                                         XmNsensitive, STIPPLE,
                                         XmNshadowThickness, 0,
-                                        XmNcolumns, 10,
+                                        XmNcolumns, 23,
                                         XmNbackground, colors[0x0f],
                                         XmNalignment, XmALIGNMENT_END,
                                         XmNleftAttachment,XmATTACH_WIDGET,
                                         XmNleftWidget, SL_alt[type][i],
-                                        XmNleftOffset, 1,
-                                        XmNtopAttachment, XmATTACH_OPPOSITE_WIDGET,
-                                        XmNtopWidget, SL_list[type][i],
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNrightAttachment,XmATTACH_NONE,
-                                        NULL);
-
-                    SL_long[type][i] = XtVaCreateManagedWidget("Station_List long", xmTextFieldWidgetClass, win_list,
-                                        XmNeditable,   FALSE,
-                                        XmNcursorPositionVisible, FALSE,
-                                        XmNtraversalOn, FALSE,
-                                        XmNsensitive, STIPPLE,
-                                        XmNshadowThickness, 0,
-                                        XmNcolumns, 11,
-                                        XmNbackground, colors[0x0f],
-                                        XmNalignment, XmALIGNMENT_END,
-                                        XmNleftAttachment,XmATTACH_WIDGET,
-                                        XmNleftWidget, SL_lat[type][i],
                                         XmNleftOffset, 1,
                                         XmNtopAttachment, XmATTACH_OPPOSITE_WIDGET,
                                         XmNtopWidget, SL_list[type][i],
@@ -1764,7 +1742,7 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
                                         XmNbackground, colors[0x0f],
                                         XmNalignment, XmALIGNMENT_END,
                                         XmNleftAttachment,XmATTACH_WIDGET,
-                                        XmNleftWidget, SL_long[type][i],
+                                        XmNleftWidget, SL_lat_long[type][i],
                                         XmNleftOffset, 1,
                                         XmNtopAttachment, XmATTACH_OPPOSITE_WIDGET,
                                         XmNtopWidget, SL_list[type][i],

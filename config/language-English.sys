@@ -696,6 +696,7 @@ LHPUPNI205|Baro||
 LHPUPNI206|RN-H||
 LHPUPNI207|RNSM||
 LHPUPNI208|RN24||
+LHPUPNI209|Lat/Lon or UTM||
 #
 # Maps WX Alert styles
 PULDNMAT01|Show Alert maps above other maps||
