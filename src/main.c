@@ -28743,6 +28743,11 @@ int main(int argc, char *argv[], char *envp[]) {
         (void)mkdir(get_user_base_dir("gps"),S_IRWXU);
     }
 
+    if (filethere(get_user_base_dir("map_cache")) != 1) {
+        fprintf(stderr,"Making map_cache dir\n");
+        (void)mkdir(get_user_base_dir("map_cache"),S_IRWXU);
+    }
+
 
     /* done checking user dirs */
 
@@ -29145,4 +29150,3 @@ int main(int argc, char *argv[], char *envp[]) {
     quit(0);
     return 0;
 }
-
