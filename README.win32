@@ -16,9 +16,10 @@ log in as the same user each time in order for Cygwin to use the
 proper home directory for you.
 
 The following steps direct you through installing Cygwin, Xastir,
-and additional map libraries that Xastir can use.  Note that in most
-of the places below where the directions state to type commands,
-this must be done from within a Cygwin bash shell, not a DOS window.
+and a few optional map libraries that Xastir can use.  Note that in
+most of the places below where the directions state to type
+commands, this must be done from within a Cygwin bash shell, not a
+DOS window.
 
 
 Step 1)  Install Cygwin, a free download.
