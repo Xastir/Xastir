@@ -38,7 +38,7 @@ it up in that manner, so you can have Xastir as just another app on
 your Windows desktop.
 
 
-Step 1)  Install Cygwin, a free download.
+[ ] Step 1)  Install Cygwin, a free download.
 
 
 Step 1a) Go to http://www.cygwin.com with your web browser.  Look
@@ -49,7 +49,7 @@ computer.  Remember where you install this program.  I put mine in
 "c:\hacker\cygwin\setup.exe".
 
 
-Step 1b)  Find the "setup.exe" program and execute it either by:
+[ ] Step 1b)  Find the "setup.exe" program and execute it either by:
 
   a) Clicking on it with File Explorer, or
   b) Start->Run->path to executable, or
@@ -74,43 +74,43 @@ server until you obtain this file and are presented with a list of
 packages to install.
 
 
-Step 1c)  Select Packages:  Leave the packages selected that were
-selected by default, plus select the additional packages listed
+[ ] Step 1c)  Select Packages:  Leave the packages selected that
+were selected by default, plus select the additional packages listed
 below.  Note that enabling some of these packages causes others to
 be selected as well, that's ok and necessary:
 
     Archive
-        unzip
-        zip
+[ ]     unzip
+[ ]     zip
     Devel
-        autoconf
-        automake
-        binutils
-        cvs
-        gcc
-        make
-        rcs
+[ ]     autoconf
+[ ]     automake
+[ ]     binutils
+[ ]     cvs
+[ ]     gcc
+[ ]     make
+[ ]     rcs
     Editors
-        vim
+[ ]     vim
     Graphics
-        tiff (install sources for this one too? TBD)
+[ ]     tiff (install sources for this one too? TBD)
     Interpreters
-        m4
-        perl (install 5.6.1 instead of 5.8.0)
+[ ]     m4
+[ ]     perl (install 5.6.1 instead of 5.8.0)
     Libs
-        curl
-        curl-devel
-        tcltk
+[ ]     curl
+[ ]     curl-devel
+[ ]     tcltk
     Text
-        less
+[ ]     less
     Utils
-        diff
-        patch
+[ ]     diff
+[ ]     patch
     Web
-        wget (or can use libcurl instead)
+[ ]     wget (or can use libcurl instead)
     XFree86
-        XFree86-prog:Headers
-        lesstif
+[ ]     XFree86-prog:Headers
+[ ]     lesstif
  
 In order to see the more detailed list of packages, you'll have to
 click on the '+' symbols to the left of the various categories.
@@ -118,25 +118,25 @@ Clicking on the small circle with the two arrows will run you
 through the various select/de-select options for each package.
 
 
-Step 1d)  Click Next and the packages will get downloaded/installed.
-Repeat the above if you have network difficulties, until the install
-succeeds.
+[ ] Step 1d)  Click Next and the packages will get downloaded and
+installed.  Repeat the above if you have network difficulties, until
+the install succeeds.
 
 Some servers fail to download some files and require the user to
 press enter between downloads when it fails on these files.  If this
 happens, back up and select another server.
 
 
-Step 1e)  At the end of the install it'll ask you if you wish to
+[ ] Step 1e)  At the end of the install it'll ask you if you wish to
 create desktop icons and menu entries.  Definitely select these!
-They will create a Black/Green Cygwin icon on the desktop and a
-menu entry so that you can start Cygwin that way as well.  Click
+They will create a Black/Green Cygwin icon on the desktop and a menu
+entry so that you can start Cygwin that way as well.  Click
 "Finish".  Cygwin is now installed.  The Black/Green Cygwin icon
 will start up a BASH window, without starting up Xwindows.  Think of
 it as being similar to a DOS window, but with a lot more power.
 
 
-Step 2)  Create shortcut for starting X:
+[ ] Step 2)  Create shortcut for starting X:
 
 Create a shortcut to C:\cygwin\usr\X11r6\bin\startxwin.bat from your
 desktop.  This shortcut is the method you'll use to start up
@@ -146,7 +146,7 @@ Change the properties on the shortcut so that it runs it from your
 home directory on Cygwin, something like "c:\cygwin\home\<user>\"
 
 
-Step 3)  Test Cygwin and create startup shortcuts:
+[ ] Step 3)  Test Cygwin and create startup shortcuts:
 
 Double-click on the shortcut you just made.  You should get a shell
 window that looks very much like a DOS window.  It's a BASH shell
@@ -163,22 +163,22 @@ You should still see an 'X' in your system tray.  That's the
 X-server running.  You can right-click on that and make it exit.
 
 
-Step 4)  Create a file at C:\cygwin\home\<user>\ called ".cvsrc",
-where the "<user>" part is your Windows login name.  Don't forget
-the leading period in the filename as it's important.  For instance,
-I created a file:  "C:\cygwin\home\hacker\.cvsrc".  The file should
-contain the following lines:
+[ ] Step 4)  Create a file at C:\cygwin\home\<user>\ called
+".cvsrc", where the "<user>" part is your Windows login name.  Don't
+forget the leading period in the filename as it's important.  For
+instance, I created a file:  "C:\cygwin\home\hacker\.cvsrc".  The
+file should contain the following lines:
 
     cvs -z3
     update -P -d
     status -v
 
-Please note:  this file must be created in Unix format, not DOS format.
-Do not use Notepad or other Windows tools to create the file, as CVS will
-not recognize the contents.  Thanks to Kirk Mefford <kc2elo@softhome.net>
-for noticing this.
+Please note:  this file must be created in Unix format, not DOS
+format.  Do not use Notepad or other Windows tools to create the
+file, as CVS will not recognize the contents.  Thanks to Kirk
+Mefford <kc2elo@softhome.net> for noticing this.
 
-Step 5)  Download Xastir sources.  Start up Xwindows using your
+[ ] Step 5)  Download Xastir sources.  Start up Xwindows using your
 shortcut.  Type the five lines below into the shell exactly as
 shown.  Hit <ENTER> when asked for a password during the last
 command:
@@ -207,9 +207,9 @@ version in just a few minutes!  It's easy to keep up with the
 developers this way.
 
 
-Step 6)  Configure/compile/install Xastir.  Type these commands into
-the BASH shell, waiting until each one completes before typing the
-next command:
+[ ] Step 6)  Configure/compile/install Xastir.  Type these commands
+into the BASH shell, waiting until each one completes before typing
+the next command:
 
     cd ~/src/xastir
     ./bootstrap.sh
@@ -226,8 +226,8 @@ of this document detail adding additional map libraries in order to
 give you access to the full mapping capability of Xastir.
 
 
-Step 7)  Create a link to the Xastir executable.  Type the following
-commands into the BASH shell:
+[ ] Step 7)  Create a link to the Xastir executable.  Type the
+following commands into the BASH shell:
 
     cd ~
     ln -s /usr/local/bin/xastir xastir
@@ -237,7 +237,7 @@ Xastir executable, to make it easier to run Xastir without typing
 the long path each time.
 
 
-Step 8)  Actually run the darn thing:
+[ ] Step 8)  Actually run the darn thing:
 
 Let's start from scratch to make sure it all works.  Close any
 Cygwin/BASH windows you may have.
@@ -322,24 +322,25 @@ Allows using many sources of online polygon, polyline, and point
 maps, including ones from NOAA.  This is the only format used for
 weather alert maps.
 
-From a BASH shell, type:
+[ ] From a BASH shell, type:
 
     cd ~/src
     mkdir shapelib
     
-Fetch "shapelib-1.2.10.tar.gz" from one of these sites:
+[ ] Fetch "shapelib-1.2.10.tar.gz" from one of these sites:
 
     http://gdal.velocet.ca/projects/shapelib/index.html
 or  http://wetnet.net/~we7u/xastir/shapelib/
 
-Put it in the C:\cygwin\home\<user>\src\shapelib directory.  Untar it
-from the BASH shell:
+[ ] Put it in the C:\cygwin\home\<user>\src\shapelib directory.
+
+[ ] Untar it from the BASH shell:
 
     cd ~/src/shapelib
     tar xzvf shapelib-1.2.10.tar.gz
 
-1) Edit Shapelib's Makefile to remove the space after the "-h"
-on the line that looks like this:
+[ ] Edit Shapelib's Makefile to remove the space after the "-h" on
+the line that looks like this:
 
     /usr/bin/ld -G -h libshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lc
 
@@ -348,18 +349,20 @@ Change it to this (one space missing):
     /usr/bin/ld -G -hlibshp.so.1 -o .libs/libshp.so.$(LIBSHP_VERSION) shpopen.lo shptree.lo dbfopen.lo -lc
 
 
-then type:
+[ ] then type:
 
     cd ~/src/shapelib/shapelib-1.2.10
     make lib
 
-You may get the "undefined reference impure_ptr" messages.  If so,
-edit the file /usr/include/sys/reent.h to remove the word "extern"
-from this line:
+[ ] You may get the "undefined reference impure_ptr" messages.  If
+so, edit the file /usr/include/sys/reent.h to remove the word
+"extern" from this line:
 
     extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
 
 then try "make lib" again.
+
+[ ] Type:
 
     make lib_install
 
@@ -376,13 +379,13 @@ pressing <Enter>.  When you see things like "~/.profile" it is
 really referring to the file ".profile" in your home directory (~).
 This is a different file than the ".bash_profile" file.
 
-It appears that Cygwin uses the PATH variable to look for both
+[ ] It appears that Cygwin uses the PATH variable to look for both
 binaries and libraries.  Add this line to the file (create the
 "~/.profile" file if the file doesn't exist):
 
     export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib:.
 
-Now you should be ready to configure and compile Xastir with
+[ ] Now you should be ready to configure and compile Xastir with
 Shapelib support.  Type these commands:
 
     cd ~/src/xastir
@@ -424,30 +427,31 @@ ImageMagick:
     cd ~/src
     mkdir imagemagick
 
-Download the ImageMagick cygwin binary from www.imagemagick.org or
-one of it's mirrors.  If you can't find the version you need, try
+[ ] Download the ImageMagick cygwin binary from www.imagemagick.org
+or one of it's mirrors.  If you can't find the version you need, try
 here:
 
     http://wetnet.net/~we7u/xastir/ImageMagick/cygwin/
 
-Put it in the ~/src/imagemagick directory.
-Extract the files:
+[ ] Put it in the ~/src/imagemagick directory.
+
+[ ] Extract the files:
 
     cd ~/src/imagemagick
     tar xzvf filename
 
-Copy the files/directories into the /usr tree:
+[ ] Copy the files/directories into the /usr tree:
 
     cd ImageMagick-5.5.3
     cp -R * /usr
 
-Reconfigure Xastir to use this library:
+[ ] Reconfigure Xastir to use this library:
 
     cd ~/src/xastir
     ./configure
 
-If "configure" did not find ImageMagick properly, edit the resulting
-config.h file and change this line:
+[ ] If "configure" did not find ImageMagick properly, edit the
+resulting config.h file and change this line:
 
     /* #undef HAVE_IMAGEMAGICK */
 
@@ -456,13 +460,13 @@ to this:
     #define HAVE_IMAGEMAGICK 1
 
 
-Finish the Xastir build and install:
+[ ] Finish the Xastir build and install:
 
     make
     make install
 
-Add this to your ~/.profile file (note this is a different file than
-the .bash_profile file):
+[ ] Add this to your ~/.profile file (note this is a different file
+than the .bash_profile file):
 
     export MAGICK_HOME=/usr
 
@@ -492,7 +496,8 @@ Perhaps name it "aprs".  Start it by typing "./aprs".
 HIGHLY RECOMMENDED:  If you create a file called "terraserver.geo"
 in the /usr/local/xastir/maps directory, containing the single line
 "TERRASERVER", and select it with the Map Chooser, you should see
-satellite images on the map screen.
+satellite images on the map screen.  This is assuming that you have
+an internet connection up and running of course.
 
 
 
@@ -537,15 +542,19 @@ NOTE: You must install libproj BEFORE compiling libgeotiff, because
 libgeotiff uses libproj to do the datum translations. If you install
 libgeotiff first, datum translations won't work.
 
+[ ] Type:
+
     cd ~/src
     mkdir libproj
 
-Download the libproj and proj-nad27 files and place them in the
+[ ] Download the libproj and proj-nad27 files and place them in the
 ~/src/libproj directory.
 
 The proj-nad27-1.1.tar.gz must be decompressed in the nad
 subdirectory of the proj distribution directory before you run
 configure.
+
+[ ] Type:
     
     cd ~/src/libproj    
     tar xzvf proj-4.4.7.tar.gz
@@ -557,9 +566,9 @@ configure.
     make install
 
 
-These next few commands are required for now, but once libgeotiff is
-fixed so that it finds libproj properly on Cygwin, they'll be
-removed from the libproj instructions:
+[ ] These next few commands are required for now, but once
+libgeotiff is fixed so that it finds libproj properly on Cygwin,
+they'll be removed from the libproj instructions:
 
     cd /usr/lib
     ln -s /usr/local/lib/libproj.a
@@ -569,10 +578,12 @@ removed from the libproj instructions:
 Adding libgeotiff (tested with libgeotiff-1.2.0):
 -------------------------------------------------
 
+[ ] Type:
+
     cd ~/src
     mkdir libgeotiff
 
-Download libgeotiff-1.2.0 and place it in the libgeotiff
+[ ] Download libgeotiff-1.2.0 and place it in the libgeotiff
 subdirectory.
 
     cd ~/src/libgeotiff
@@ -585,9 +596,9 @@ subdirectory.
 If you must re-run "configure" for any of these libraries, remember
 to delete "config.status" and "config.cache" files first.
 
-You may get the "undefined reference impure_ptr" messages (just like
-with Shapelib above).  If so, edit the file /usr/include/sys/reent.h
-to remove the word "extern" from this line:
+[ ] You may get the "undefined reference impure_ptr" messages (just
+like with Shapelib above).  If so, edit the file
+/usr/include/sys/reent.h to remove the word "extern" from this line:
 
     extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
 
@@ -609,15 +620,15 @@ To fix this, edit the Makefile to add "-lc" to the end of the LIBS
 line and run "make" again, then "make install".
 
 
-TEMPORARY:  It looks like we need to switch to a newer version of
-the libtiff DLL in order to work with libgeotiff:
+[ ] TEMPORARY:  It looks like we need to switch to a newer version
+of the libtiff DLL in order to work with libgeotiff:
 
     cd /bin
     mv cygtiff3.dll cygtiff3.dll.old
     cp cygtiff3.dll.new cygtiff3.dll
 
 
-Set up Xastir to use the new geotiff libraries:
+[ ] Set up Xastir to use the new geotiff libraries:
 
     cd ~/src/xastir
     ./configure
