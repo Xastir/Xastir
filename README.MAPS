@@ -7,20 +7,20 @@ Recommended Configurations for:
   U.S. Users:
   -----------
 
-    Minimum:  Shapelib, pcre, "--with-dbfawk"
+    Minimum:  Shapelib, pcre
     --------
       Allows use of all built-in map types plus 2003 Tigermap data,
       shapefile weather alerts, and local ESRI Shapefile format
       maps, including U.S. satellite/image/topo maps via internet.
 
     Medium:  Shapelib, pcre, lcms, ImageMagick, libcurl/wget,
-    -------  "--with-dbfawk"
+    -------
 
       Allows use of all the above plus internet maps and local image
       maps.
 
     Maximum:  Shapelib, pcre, lcms, ImageMagick, libcurl/wget,
-    --------  libtif, libproj, libgeotff, "--with-dbfawk"
+    --------  libtif, libproj, libgeotiff
 
       Allows use of all the above plus USGS topo maps.
 
@@ -39,7 +39,7 @@ Recommended Configurations for:
       image maps, including Canadian topo maps via internet.
 
     Medium:  lcms, ImageMagick, libcurl/wget, Shapelib, pcre,
-    -------  "--with-dbfawk"
+    -------
 
       Allows use of all the above plus ESRI Shapefile maps.
 
@@ -62,8 +62,7 @@ USGS GNIS           Built-in.  Can split into county-sized chunks
 Address Lookup      Built-in.
 Weather Alerts      Shapelib
 pre-2003 Tigermaps  Shapelib
-2003 Tigermaps      Shapelib, pcre, plus configure flag:
-                    "--with-dbfawk"
+2003 Tigermaps      Shapelib, pcre
 ESRI Shapefiles     Shapelib
 Image Maps          ImageMagick.  Often need lcms library and others
                     as well (whatever it takes to make ImageMagick

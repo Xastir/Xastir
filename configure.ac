@@ -63,6 +63,7 @@ XASTIR_COMPILER_FLAGS
 # set XASTIR_SYSTEM
 XASTIR_SET_SYSTEM
 
+
 # Check for binaries
 use_festival=no
 use_gpsman=no
@@ -70,11 +71,15 @@ XASTIR_DETECT_BINARIES
 if test "x${festival}" != "xno"; then
   use_festival=yes
 fi
+AC_ARG_WITH(festival,[  --without-festival       Disable festival features.],use_festival=no)
+
 
 #  echo GPSMAN is ${gpsman}
 if test "x${gpsman}" != "xno"; then
   use_gpsman=yes
 fi
+AC_ARG_WITH(gpsman,[  --without-gpsman       Disable gpsman features.],use_gpsman=no)
+
 
 # JMT - XXX - what is this and why is it relevant?
 #AC_DEFINE(_REENTRANT, 1, [Use reentrant code if available.]) 
@@ -162,26 +167,38 @@ AC_CHECK_FUNCS([putenv select setenv setlocale settimeofday signal])
 AC_CHECK_FUNCS([snprintf socket sqrt stpcpy strcasecmp strchr strdup])
 AC_CHECK_FUNCS([strerror strncasecmp strpbrk strptime strrchr strstr])
 AC_CHECK_FUNCS([strtol strtoul tzset vsnprintf])
+
  
 # Check for intl library (Needed for Cygwin) 
 # 
 AC_CHECK_LIB(intl, gettext, LIBS="-lintl ${LIBS}") 
+
  
 # Check for Shapelib
-use_shapelib=no
-AC_CHECK_HEADERS(shapefil.h libshp/shapefil.h, [AC_CHECK_LIB(shp, DBFOpen, use_shapelib=yes
-LIBS="$LIBS -lshp"
-AC_CHECK_LIB(shp,DBFGetFieldIndex,
-  AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
-AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
-break)])
- 
+use_shapelib=yes
+AC_ARG_WITH(shapelib,[  --without-shapelib       Disable shapelib features.],use_shapelib=no)
+if test "${use_shapelib}" = "yes"; then
+  use_shapelib=no
+  AC_CHECK_HEADERS(shapefil.h libshp/shapefil.h, [AC_CHECK_LIB(shp, DBFOpen, use_shapelib=yes
+  LIBS="$LIBS -lshp"
+  AC_CHECK_LIB(shp,DBFGetFieldIndex,
+    AC_DEFINE(HAVE_DBFGETFIELDINDEX, , Define to 1 if your `shp' library has DBFGetFieldIndex. ) )
+  AC_DEFINE(HAVE_LIBSHP, , Define to 1 if you have the `shp' library (-lshp). )
+  break)])
+fi
+
+
 # Check for pcre
-use_pcre=no
-AC_CHECK_HEADERS(pcre.h pcre/pcre.h, [AC_CHECK_LIB(pcre, pcre_compile, use_pcre=yes
-LIBS="$LIBS -lpcre"
-AC_DEFINE(HAVE_LIBPCRE, , Define to 1 if you have the `pcre' library (-lpcre). )
-break)])
+use_pcre=yes
+AC_ARG_WITH(pcre,[  --without-pcre       Disable pcre features.],use_pcre=no)
+if test "${use_pcre}" = "yes"; then
+  use_pcre=no
+  AC_CHECK_HEADERS(pcre.h pcre/pcre.h, [AC_CHECK_LIB(pcre, pcre_compile, use_pcre=yes
+  LIBS="$LIBS -lpcre"
+  AC_DEFINE(HAVE_LIBPCRE, , Define to 1 if you have the `pcre' library (-lpcre). )
+  break)])
+fi
+
  
 # Check for XPM
 AC_CHECK_HEADERS(X11/xpm.h, AC_SEARCH_LIBS(XpmWriteFileFromPixmap, Xpm, AC_DEFINE(HAVE_LIBXPM, , Define to 1 if you have the `Xpm' library (-lXpm). )))
@@ -189,32 +206,50 @@ AC_CHECK_HEADERS(Xm/XpmI.h, AC_SEARCH_LIBS(XmeXpmWriteFileFromPixmap, Xm, AC_DEF
  
  
 # Check for libproj
-use_proj=no
-AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
-AC_DEFINE(HAVE_LIBPROJ, , Define to 1 if you have the `libproj' library (-lproj). )
-)
- 
+use_proj=yes
+AC_ARG_WITH(libproj,[  --without-libproj       Disable libproj features.],use_proj=no)
+if test "${use_proj}" = "yes"; then
+  use_proj=no
+  AC_CHECK_LIB(proj, pj_init, use_proj=yes LIBS="$LIBS -lproj"
+    AC_DEFINE(HAVE_LIBPROJ, , Define to 1 if you have the `libproj' library (-lproj). )
+  )
+fi
+
+
 # Check for libgeotiff and required libraries
 use_geotiff=no
-AC_CHECK_LIB(tiff, TIFFClose, AC_CHECK_LIB(proj, pj_init, AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
-LIBS="$LIBS -ltiff -lgeotiff"
-AC_DEFINE(HAVE_LIBGEOTIFF, , Define to 1 if you have the `geotiff' library (-lgeotiff). )
-)))
- 
+if test "${use_proj}" = "yes"; then
+  use_geotiff=yes
+  AC_ARG_WITH(geotiff,[  --without-geotiff       Disable geotiff features.],use_geotiff=no)
+  if test "${use_geotiff}" = "yes"; then
+    use_geotiff=no
+    AC_CHECK_LIB(tiff, TIFFClose, AC_CHECK_LIB(proj, pj_init, AC_CHECK_LIB(geotiff, GTIFNew, use_geotiff=yes
+    LIBS="$LIBS -ltiff -lgeotiff"
+    AC_DEFINE(HAVE_LIBGEOTIFF, , Define to 1 if you have the `geotiff' library (-lgeotiff). )
+    )))
+  fi
+fi
+
+
 # Check for AX.25 library 
-has_axlib=no
-AC_CHECK_HEADERS(netax25/ax25.h, [AC_CHECK_LIB(ax25, ax25_config_load_ports, has_axlib=yes
-LIBS="$LIBS -lax25"
-AC_DEFINE(HAVE_LIBAX25, , Define to 1 if you have the `ax25' library (-lax25). )
-break)])
+use_ax25=yes
+AC_ARG_WITH(ax25,[  --without-ax25       Disable ax25 features.],use_ax25=no)
+if test "${use_ax25}" = "yes"; then
+  use_ax25=no
+  AC_CHECK_HEADERS(netax25/ax25.h, [AC_CHECK_LIB(ax25, ax25_config_load_ports, use_ax25=yes
+  LIBS="$LIBS -lax25"
+  AC_DEFINE(HAVE_LIBAX25, , Define to 1 if you have the `ax25' library (-lax25). )
+  break)])
+fi
+
 
 # use dbfawk
-use_dbfawk=no
-AC_ARG_WITH(dbfawk,[  --with-dbfawk       Enable experimental dbfawk features.],use_dbfawk=yes)
+use_dbfawk=yes
+AC_ARG_WITH(dbfawk,[  --without-dbfawk       Disable dbfawk features.],use_dbfawk=no)
 # dbfawk requires shapelib and pcre.  Make sure:
 if test "${use_dbfawk}" = "yes"; then
   if test "${use_pcre}" = "yes" -a "${use_shapelib}" = "yes"; then
-    AC_DEFINE(WITH_DBFAWK, , Define to 1 to use experimental dbfawk features. )
+    AC_DEFINE(WITH_DBFAWK, , Define to 1 to use dbfawk features. )
   else
     echo "Warning: dbfawk requires both pcre and shapelib."
     use_dbfawk=no
@@ -224,16 +259,25 @@ fi
 
 # Check for GDAL.  Make sure that the GDAL check is towards the
 # last, as it can mess up shapelib and libgeotiff currently.
-use_gdal=no
-AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister, use_gdal=yes
-LIBS="$LIBS -lgdal"
-AC_DEFINE(HAVE_LIBGDAL, , Define to 1 if you have the `gdal' library (-lgdal). )
-break)])
- 
+use_gdal=yes
+AC_ARG_WITH(gdal,[  --without-gdal       Disable gdal features.],use_gdal=no)
+if test "${use_gdal}" = "yes"; then
+  use_gdal=no
+  AC_CHECK_HEADERS(gdal.h, [AC_CHECK_LIB(gdal, GDALAllRegister, use_gdal=yes
+  LIBS="$LIBS -lgdal"
+  AC_DEFINE(HAVE_LIBGDAL, , Define to 1 if you have the `gdal' library (-lgdal). )
+  break)])
+fi
+
  
 # Check for ImageMagick.  This check is VERY important to have as
 # the last check, as it messes up the previous checks if it fails.
-XASTIR_CHECK_IMAGEMAGICK
+use_imagemagick=yes
+AC_ARG_WITH(imagemagick,[  --without-imagemagick       Disable imagemagick features.],use_imagemagick=no)
+if test "${use_imagemagick}" = "yes"; then
+  XASTIR_CHECK_IMAGEMAGICK
+fi
+
 
  
 # Set XASTIR_DATA_BASE in CPPFLAGS due to Gnu coding standard that requires
@@ -287,7 +331,7 @@ changequote([,])
 
 
 # Create the ILIBS defined variable
-if test "${has_axlib}" = "yes"; then
+if test "${use_ax25}" = "yes"; then
   ILIBS="AX25"
 fi
 if test "${use_festival}" = "yes"; then
@@ -381,14 +425,14 @@ echo AC_PACKAGE_NAME AC_PACKAGE_VERSION has been configured using the
 echo following external libraries.
 echo  
 echo 
-echo Building with AX25.......... : $has_axlib 
+echo Building with AX25.......... : $use_ax25 
 echo Building with Festival...... : $use_festival 
 echo Building with GPSMan........ : $use_gpsman
-echo Building with ShapeLib...... : $use_shapelib 
 echo Building with ImageMagick... : $use_imagemagick 
 echo Building with libproj....... : $use_proj
-echo Building with GeoTiff....... : $use_geotiff 
+echo Building with GeoTiff....... : $use_geotiff
 echo Building with GDAL/OGR...... : $use_gdal
+echo Building with ShapeLib...... : $use_shapelib 
 echo Building with pcre.......... : $use_pcre
 echo Building with dbfawk........ : $use_dbfawk
 echo 
