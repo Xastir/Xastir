@@ -13112,7 +13112,7 @@ void Configure_timing( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     Atom delw;
 
     if (!configure_timing_dialog) {
-        configure_timing_dialog = XtVaCreatePopupShell(langcode("WPUPCFD001"),
+        configure_timing_dialog = XtVaCreatePopupShell(langcode("WPUPCFTM01"),
                 xmDialogShellWidgetClass,
                 Global.top,
                 XmNdeleteResponse,XmDESTROY,

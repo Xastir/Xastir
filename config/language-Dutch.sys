@@ -338,6 +338,9 @@ WPUPCFD027|Nieuwe berichten weergeven||
 WPUPCFD028|Warn if Modifier Keys||
 WPUPCFD029|View zero-distance bulletins||
 #
+# PopUp "Configure - Timing"
+WPUPCFTM01|Configure Timing||
+#
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configureer Coordinaten Stelsel||
 WPUPCFC002|Selecteer Coordinaten Weergave||

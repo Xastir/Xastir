@@ -332,6 +332,9 @@ WPUPCFD027|Pop up de novos boletins||
 WPUPCFD028|Avisar se teclas foram modificadas||
 WPUPCFD029|Ver boletins de distância zero||
 #
+# PopUp "Configure - Timing"
+WPUPCFTM01|Configure Timing||
+#
 # PopUp "Sistema de configuração de coordenadas"
 WPUPCFC001|Sistema de configuração de coordenadas||
 WPUPCFC002|Sistema de seleção de coordenadas||
