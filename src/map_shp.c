@@ -1456,6 +1456,10 @@ void draw_shapefile_map (Widget w,
             sType = "Polyline";
             break;
 
+        case SHPT_ARCZ:
+            sType = "3D Polyline";
+            break;
+
         case SHPT_POLYGON:
             sType = "Polygon";
             break;
@@ -1947,6 +1951,7 @@ void draw_shapefile_map (Widget w,
 
 
                 case SHPT_ARC:
+                case SHPT_ARCZ:
                     // We hit this case once for each polyline shape
                     // in the file, iff at least part of that shape
                     // is within our viewport.
