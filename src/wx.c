@@ -949,7 +949,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
     switch (type) {
 
-        case (APRS_WX4):     // Peet Brothers Ultimeter-II
+
+        ////////////////////////////////
+        // Peet Brothers Ultimeter-II //
+        ////////////////////////////////
+        case (APRS_WX4):
             // This one assume 0.1" rain gauge.  Must correct in software if
             // any other type is used.
 
@@ -1048,7 +1052,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
 
-        case (APRS_WX3):    // Peet Brothers Ultimeter 2000 in data logging mode
+        ///////////////////////////////////////////////////////
+        // Peet Brothers Ultimeter 2000 in data logging mode //
+        ///////////////////////////////////////////////////////
+        case (APRS_WX3):
             if (debug_level & 1)
                 printf("APRS WX3 Peet Bros U-2k (data logging mode) %s:<%s>\n",fill->call_sign,data+2);
 
@@ -1179,7 +1186,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
 
-        case(APRS_WX5):     // Peet Brothers Ultimeter 2000 in packet mode
+        /////////////////////////////////////////////////
+        // Peet Brothers Ultimeter 2000 in packet mode //
+        /////////////////////////////////////////////////
+        case(APRS_WX5):
             if (debug_level & 1)
                 printf("APRS WX5 Peet Bros U-2k Packet (Packet mode) %s:<%s>\n",fill->call_sign,data);
 
@@ -1340,7 +1350,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
 
-        case(PEET_COMPLETE):    // Peet Brothers Ultimeter 2000 in complete record mode
+        //////////////////////////////////////////////////////////
+        // Peet Brothers Ultimeter 2000 in complete record mode //
+        //////////////////////////////////////////////////////////
+        case(PEET_COMPLETE):
             if (debug_level & 1)
                 printf("Peet Bros U-2k Packet (Complete Record Mode) %s:<%s>\n",fill->call_sign,data);
 
@@ -1545,7 +1558,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
 
-        case(QM_WX):    // Qualimetrics Q-Net
+        ////////////////////////
+        // Qualimetrics Q-Net //
+        ////////////////////////
+        case(QM_WX):
             if (debug_level & 1)
                 printf("Qualimetrics Q-Net %s:<%s>\n",fill->call_sign,data);
 
@@ -1584,7 +1600,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
 
 
-        case(RSWX200):  // Radio Shack WX-200 or Huger/Oregon Scientific WM-918
+        ///////////////////////////////////////////////////////////
+        //  Radio Shack WX-200 or Huger/Oregon Scientific WM-918 //
+        ///////////////////////////////////////////////////////////
+        case(RSWX200):
 
             // Notes:  Many people run the wx200d daemon connected to the weather station,
             // with Xastir then connected to wx200d.  Note that wx200d changes the protocol
