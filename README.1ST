@@ -1214,6 +1214,10 @@ WINDOWS/CYGWIN NOTES:
 
      --- End of note from Charles
 
+     Note: The above link line will soon be unnecessary, as a new configure
+     script is being completed that works properly on Cygwin.  It'll be in
+     CVS Real Soon Now!
+
      Install default Cygwin plus these packages via a network install.  Note
      that clicking on some of these causes others to be selected and
      downloaded as well:
@@ -1233,26 +1237,19 @@ WINDOWS/CYGWIN NOTES:
             XFree86/lesstif
             XFree86/XFree86-prog
 
-     CVS has been tested on Cygwin and it appears to work.  It might take
-     some fiddling with adding things to "~/.cvsrc" before it works properly
-     though:  Without those entries, CVS wasn't creating the "CVS/"
-     directories, which it needs in order to maintain bookkeeping
-     information.  Here are my entries in .cvsrc:
-
+     CVS itself has been tested on Cygwin.  Add these entries to your
+     /home/<user>/.cvsrc file:
 
             cvs -z3
             update -P -d
             status -v
 
+     Here are the two commands that should bring down the latest CVS Xastir
+     to your Cygwin/Windows session.  Hit <ENTER> when the first command
+     asks you for a password:
 
-     And here are the two commands that should bring down the latest CVS
-     Xastir to your Cygwin/Windows session.  Hit <ENTER> when the first
-     command asks you for a password:
-
-
-     cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
-     cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
-
+        cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
+        cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
 
      If you keep seeing "EOF" at the end of a short error message, it might
      be that the anonymous CVS server at SourceForge is overloaded.  Keep
@@ -1327,7 +1324,7 @@ WINDOWS/CYGWIN NOTES:
 
      to the file.  Run make, then run the link line listed above but add:
 
-        -L/usr/lib -lmagick
+        -L/usr/lib -lMagick
 
      to the end of it (and add the Shapelib line above if you want Shapelib
      as well).  "make install".
@@ -1351,7 +1348,7 @@ WINDOWS/CYGWIN NOTES:
      -------------------
 
      Another difference with Cygwin:  You can't do the make install portion
-     if Xastir is up and running.  You have to kill it first.
+     if Xastir is up and running.  You have to kill Xastir first.
 
      Note that one user running Cygwin on XP had it crash every time his
      screensaver kicked in.
