@@ -1022,13 +1022,15 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Caractéristiques des cartes||
-MAPP002|Carte  Afficher||
-MAPP003|Couche Remplie AutoCartes  Voie/Fichier||
+MAPP002| Max   Min    Carte  Afficher||
+MAPP003| Zoom  Zoom  Couche Remplie AutoCartes  Voie/Fichier||
 MAPP004|Modifier Couche->||
 MAPP005|Remplie->||
 MAPP006|Oui||
 MAPP007|Non||
 MAPP008|AutoCartes->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
 #
 #
 # Time Strings

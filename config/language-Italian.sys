@@ -1024,13 +1024,15 @@ GPS011|Viola||
 #
 # Map Properties Dialog
 MAPP001|Proprietà Mappa||
-MAPP002|Disegna  Mappa||
-MAPP003|Livello  Riempi  AutoMap   Percorso/Nome File||
+MAPP002| Max   Min    Disegna  Mappa||
+MAPP003| Zoom  Zoom  Livello  Riempi  AutoMap   Percorso/Nome File||
 MAPP004|Cambia Livello->||
 MAPP005|Riempito->||
 MAPP006|Si||
 MAPP007|No||
 MAPP008|Automappe->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
 #
 #
 # Time Strings

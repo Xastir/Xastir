@@ -1020,13 +1020,15 @@ GPS011|Violeta||
 #
 # Diálogo de Propiedades de Mapa
 MAPP001|Propiedades de Mapa||
-MAPP002|Dibuja   Mapa||
-MAPP003|Capa   Llenado  AutoMapa   Sendero/NombreArchivo||
+MAPP002| Max   Min    Dibuja   Mapa||
+MAPP003| Zoom  Zoom  Capa   Llenado  AutoMapa   Sendero/NombreArchivo||
 MAPP004|Cambie Capa->||
 MAPP005|Llenado->||
 MAPP006|Sí||
 MAPP007|No||
 MAPP008|Automapas->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
 #
 # Cadenas del Tiempo
 TIME001|Día||

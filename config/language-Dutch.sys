@@ -1033,13 +1033,15 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Kaart eigenschappen||
-MAPP002|Kaart    Teken||
-MAPP003|Laag    Vulling  AutoKaart Path/Bestandsnaam||
+MAPP002| Max   Min   Kaart    Teken||
+MAPP003| Zoom  Zoom  Laag    Vulling  AutoKaart Path/Bestandsnaam||
 MAPP004|Verander Laag->||
 MAPP005|Vulling->||
 MAPP006|Ja||
 MAPP007|Nee||
 MAPP008|AutoKaart->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
 #
 #
 # Time Strings

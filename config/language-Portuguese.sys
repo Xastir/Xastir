@@ -1026,13 +1026,15 @@ GPS011|Violeta||
 #
 # Dialogo de propriedades dos mapas
 MAPP001|Propriedades dos mapas||
-MAPP002|Desenhar mapas||
-MAPP003|Camada Preenchido AutoMapa Caminho/Ficheiro||
+MAPP002| Max   Min    Desenhar mapas||
+MAPP003| Zoom  Zoom  Camada Preenchido AutoMapa Caminho/Ficheiro||
 MAPP004|Mudar camada->||
 MAPP005|Preenchido->||
 MAPP006|Sim||
 MAPP007|Nao||
 MAPP008|Automapas->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
 #
 #
 # Time Strings
