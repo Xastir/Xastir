@@ -788,14 +788,13 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
             // decode_ax25_header, as we add '*' characters and such
             // to the header as it's decoded.
 
-            // Throw a terminator on the end to start with.  We
-            // probably don't have a string terminator by this
-            // point, as AGWPE raw packets are binary packets.
-            // Adding a string terminator here allows us to process
-            // most of it as a regular string, after we process the
-            // header portion the entire thing is a regular string.
+            // This string already has a terminator on the end,
+            // added by the code in port_read().  If we didn't have
+            // one here, we could end up with portions of strings
+            // concatenated on the end of our string by the time
+            // we're done processing the data here.
             //
-            input_string[data_length+36] = '\0';
+//            input_string[data_length+36] = '\0';
 
             if ( !decode_ax25_header( (char *)&input_string[37], data_length ) ) {
 //                int zz;
@@ -5516,6 +5515,16 @@ void port_read(int port) {
                                         input_string[jj++] = (unsigned char)port_data[port].device_read_buffer[my_pointer];
                                         my_pointer = (my_pointer + 1) % MAX_DEVICE_BUFFER;
                                     }
+
+                                    // Add a terminator.  We need
+                                    // this for the raw packets so
+                                    // that we don't end up getting
+                                    // portions of strings
+                                    // concatenated onto the end of
+                                    // our current packet during
+                                    // later processing.
+                                    input_string[jj] = '\0';
+ 
                                     my_pointer = port_data[port].read_out_pos;
 
                                     if ( parse_agwpe_packet(input_string, frame_length+36, output_string, &new_length) ) {
