@@ -72,6 +72,7 @@ PULDNMP009|Enable Area Color Fills||
 PULDNMP007|Enable Weather Alert Counties||
 PULDNMP005|Background Color|C|
 PULDNMP006|Station Text Style|T|
+PULDNMP026|Icon Outline Style|O|
 PULDNMP011|Mouse Pointer Menu|P|
 PULDNMP008|Map Intensity|I|
 PULDNMP020|Enable/Configure Tigermap||
@@ -131,6 +132,12 @@ PULDNMBC12|Black||
 PULDNMSL01|Black Border|B|
 PULDNMSL02|Black Shadow|S|
 PULDNMSL03|Text on Black|T|
+#
+# PullDown "Icon Outline Style"
+PULDNMIO01|No Outline|N|
+PULDNMIO02|Black Outline|B|
+PULDNMIO03|Grey Outline|G|
+PULDNMIO04|White Outline|W|
 #
 # Switches
 PULDNOT001|On||

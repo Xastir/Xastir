@@ -79,6 +79,7 @@ PULDNMP009|Kleur Gevulde Gebieden|K|
 PULDNMP007|Kaart WX Waarschuwing Counties|W|
 PULDNMP005|Achtergrond Kleur|c|
 PULDNMP006|Station Tekst Stijl|S|
+PULDNMP026|Icon Omranding Stijl|O|
 PULDNMP011|Muis Menu|M|
 PULDNMP008|Kaart Intensiteit|I|
 PULDNMP020|Aanzetten/Configureren Tigermap||
@@ -137,6 +138,12 @@ PULDNMBC12|Zwart||
 PULDNMSL01|Zwarte Rand||
 PULDNMSL02|Zwarte Schaduw en gevulde achtergrond||
 PULDNMSL03|Tekst op Zwarte achtergond|T|
+#
+# PullDown "Icon Outline Style"
+PULDNMIO01|Geen Omranding|G|
+PULDNMIO02|Zwarte Omranding|Z|
+PULDNMIO03|Grijze Omranding|G|
+PULDNMIO04|Witte Omranding|W|
 #
 # Switches
 PULDNOT001|Aan||

@@ -213,6 +213,7 @@ extern char my_comment[];
 extern int map_background_color;
 extern int map_color_fill;
 extern int letter_style;
+extern int icon_outline_style;
 extern int wx_alert_style;
 extern time_t map_refresh_interval;
 extern time_t map_refresh_time;

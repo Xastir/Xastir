@@ -72,6 +72,7 @@ PULDNMP009|Colora le aree chiuse|F|
 PULDNMP007|Mappe Contee Allarme Meteo|W|
 PULDNMP005|Colore dello sfondo della mappa|B|
 PULDNMP006|Etichette Stazione|S|
+PULDNMP026|Icon Outline Style|O|
 PULDNMP011|Menù sul puntatore del mouse|M|
 PULDNMP008|Intensità Mappa|I|
 PULDNMP020|Abilita/Configura Tigermap||
@@ -131,6 +132,12 @@ PULDNMBC12|Nero||
 PULDNMSL01|Bordo nero||
 PULDNMSL02|Ombra nera e sfondo uniforme||
 PULDNMSL03|Testo su sfondo nero|T|
+#
+# PullDown "Icon Outline Style"
+PULDNMIO01|No Outline|N|
+PULDNMIO02|Black Outline|B|
+PULDNMIO03|Grey Outline|G|
+PULDNMIO04|White Outline|W|
 #
 # ATTIVO/DISATTIVO
 PULDNOT001|Attiva||

@@ -1427,10 +1427,13 @@ void draw_area(long x_long, long y_lat, char type, char color,
 
 
 // read pixels from file, speeding it up by smart ordering of switches
-void read_symbol_from_file(FILE *f, char *pixels) {
+void read_symbol_from_file(FILE *f, char *pixels, char table_char) {
     int x,y;                
     int color;
     char line[100];
+    char pixels_copy[400];
+    char *p,*q;
+    char a, b, c;
 
     for (y=0;y<20;y++) {
         (void)get_line(f,line,100);
@@ -1506,6 +1509,101 @@ void read_symbol_from_file(FILE *f, char *pixels) {
             pixels[y*20+x] = (char)(color);
         }
     }
+
+    // Create outline on icons, if needed
+    // Do not change the overlays and "number" tables
+    if((icon_outline_style != 0) && (table_char != '~') && (table_char != '#'))
+    {
+        switch(icon_outline_style) {
+        case 1:  color = 0x51; // Black
+                 break;
+        //case 2:  color = 0x43; // Grey 80%
+        case 2:  color = 0x4e; // Grey 52%
+                 break;
+        case 3:  color = 0x4d; // White
+                 break;
+        default: color = 0xff; // Transparent
+                 break;
+        }
+
+        p = pixels;
+        q = &pixels_copy[0];
+
+        for (y=0;y<20;y++) {
+            for (x=0;x<20;x++) {
+                *q = *p; // copy current color
+
+                // If transparent see if the pixel is on the edge
+                if(*q == (char) 0xff)
+                {
+                    //check if left or right is none transparent
+                    b = c = 0xff;
+
+                    // left (left only possible if x > 0)
+                    if(x > 0)
+                        b = p[-1];
+                    // right (right only possible if x < 19)
+                    if(x < 19)
+                        c = p[+1];
+
+                    // if non-transparent color is found change pixel
+                    // to outline color
+                    if((b != (char) 0xff) || (c != (char) 0xff)) {
+                        // change to icon outline color
+                        *q = color;
+                    }
+
+                    if((y > 0) && (*q == (char) 0xff)) {
+                        //check if left-up, up or right-up is none transparent
+                        //"up" only possible if y > 0
+                        a = b = c = 0xff;
+
+                        // left-up (left only possible if x > 0)
+                        if(x > 0)
+                            a = p[-21];
+                        // up
+                        b = p[-20];
+                        // right-up (right only possible if x < 19)
+                        if(x < 19)
+                            c = p[-19];
+
+                        // if non-transparent color is found change pixel
+                        // to outline color
+                        if((a != (char) 0xff) || (b != (char) 0xff) || (c != (char) 0xff)) {
+                            // change to icon outline color
+                            *q = color;
+                        }
+                    }
+
+                    if((y < 19) && (*q == (char) 0xff)) {
+                        //check if left-down, down or right-down is none transparent
+                        //"down" only possible if y < 19
+                        a = b = c = 0xff;
+
+                        // left-down (left only possible if x > 0)
+                        if(x > 0)
+                            a = p[+19];
+                        // down
+                        b = p[+20];
+                        // right-down (right only possible if x < 19)
+                        if(x < 19)
+                            c = p[+21];
+
+                        // if non-transparent color is found change pixel
+                        // to outline color
+                        if((a != (char) 0xff) || (b != (char) 0xff) || (c != (char) 0xff)) {
+                            // change to icon outline color
+                            *q = color;
+                        }
+                    }
+                }
+
+                p++;
+                q++;
+            }
+        }
+        memcpy(pixels, pixels_copy, 400);
+    }
 }
 
 
@@ -1513,7 +1611,7 @@ void read_symbol_from_file(FILE *f, char *pixels) {
 
 
 /* read in symbol table */
-void load_pixmap_symbol_file(char *filename) {
+void load_pixmap_symbol_file(char *filename, int reloading) {
     FILE *f;
     char filen[500];
     char line[100];
@@ -1547,12 +1645,12 @@ void load_pixmap_symbol_file(char *filename) {
                             orient = 'l';   // should be 'l' for left
                         else
                             orient = ' ';
-                        read_symbol_from_file(f, pixels);                         // read pixels for one symbol
-                        insert_symbol(table_char,symbol_char,pixels,270,orient);  // always have normal orientation
+                        read_symbol_from_file(f, pixels, table_char);                      // read pixels for one symbol
+                        insert_symbol(table_char,symbol_char,pixels,270,orient,reloading); // always have normal orientation
                         if (orient == 'l') {
-                            insert_symbol(table_char,symbol_char,pixels,  0,'u'); // create other orientations
-                            insert_symbol(table_char,symbol_char,pixels, 90,'r');
-                            insert_symbol(table_char,symbol_char,pixels,180,'d');
+                            insert_symbol(table_char,symbol_char,pixels, 0,'u',reloading); // create other orientations
+                            insert_symbol(table_char,symbol_char,pixels, 90,'r',reloading);
+                            insert_symbol(table_char,symbol_char,pixels,180,'d',reloading);
                         }
                     }
                 }
@@ -1577,27 +1675,31 @@ void load_pixmap_symbol_file(char *filename) {
 // which contains separate Pixmap's for the icon, the transparent
 // background, and the ghost image.
 //
-void insert_symbol(char table, char symbol, char *pixel, int deg, char orient) {
+void insert_symbol(char table, char symbol, char *pixel, int deg, char orient, int reloading) {
     int x,y,idx,old_next,color,last_color,last_gc2;
 
     if (symbols_loaded < MAX_SYMBOLS) {
-        symbol_data[symbols_loaded].pix=XCreatePixmap(XtDisplay(appshell),
+        // first time loading, -> create pixmap...        
+        // when reloading -> reuse already created pixmaps...
+        if(reloading == 0) {
+            symbol_data[symbols_loaded].pix=XCreatePixmap(XtDisplay(appshell),
                 RootWindowOfScreen(XtScreen(appshell)),
                 20,
                 20,
                 DefaultDepthOfScreen(XtScreen(appshell)));
 
-        symbol_data[symbols_loaded].pix_mask=XCreatePixmap(XtDisplay(appshell),
+            symbol_data[symbols_loaded].pix_mask=XCreatePixmap(XtDisplay(appshell),
                 RootWindowOfScreen(XtScreen(appshell)),
                 20,
                 20,
                 1);
 
-        symbol_data[symbols_loaded].pix_mask_old=XCreatePixmap(XtDisplay(appshell),
+            symbol_data[symbols_loaded].pix_mask_old=XCreatePixmap(XtDisplay(appshell),
                 RootWindowOfScreen(XtScreen(appshell)),
                 20,
                 20,
                 1);
+        }
 
         old_next=0;
         last_color = -1;    // Something bogus

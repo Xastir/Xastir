@@ -343,6 +343,7 @@ void save_data(void)  {
 #endif  // NO_GRAPHICS
 
         store_int (fout, "MAP_LETTERSTYLE", letter_style);
+        store_int (fout, "MAP_ICONOUTLINESTYLE", icon_outline_style);
         store_int (fout, "MAP_WX_ALERT_STYLE", wx_alert_style);
         store_string(fout, "ALTNET_CALL", altnet_call);
         store_int(fout, "ALTNET", altnet);
@@ -786,6 +787,9 @@ void load_data_or_default(void) {
 
     if (!get_int ("MAP_LETTERSTYLE", &letter_style, 0, 2, 1))
         letter_style = 1;
+
+    if (!get_int ("MAP_ICONOUTLINESTYLE", &icon_outline_style, 0, 3, 0))
+        icon_outline_style = 0;
 
     if (!get_int ("MAP_WX_ALERT_STYLE", &wx_alert_style, 0, 1, 1))
         wx_alert_style = 1;

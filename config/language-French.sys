@@ -71,6 +71,7 @@ PULDNMP009|Activer remplissage de zones|r|
 PULDNMP007|Activer alertes météo|M|
 PULDNMP005|Couleur de fond|f|
 PULDNMP006|Style du texte de station|S|
+PULDNMP026|Icon Outline Style|O|
 PULDNMP011|Menu souris|e|
 PULDNMP008|Intensité des cartes|I|
 PULDNMP020|Activer/configurer Tigermap||
@@ -129,6 +130,12 @@ PULDNMBC12|Noir||
 PULDNMSL01|Bordure noire|n|
 PULDNMSL02|Ombré avec toile de fond|O|
 PULDNMSL03|Blanc sur noir|B|
+#
+# PullDown "Icon Outline Style"
+PULDNMIO01|No Outline|N|
+PULDNMIO02|Black Outline|B|
+PULDNMIO03|Grey Outline|G|
+PULDNMIO04|White Outline|W|
 #
 # Switches
 PULDNOT001|Ouvrir||

@@ -77,6 +77,7 @@ PULDNMP009|Flächen einfärben||
 PULDNMP007|Wetterwarnung Counties||
 PULDNMP005|Hintergrundfarbe|H|
 PULDNMP006|Textdarstellung|T|
+PULDNMP026|Icon Outline Style|O|
 PULDNMP011|Mauszeiger-Menu|M|
 PULDNMP008|Intensität|I|
 PULDNMP020|Einstellungen Tigermaps||
@@ -136,6 +137,12 @@ PULDNMBC12|Schwarz||
 PULDNMSL01|Schwarze Umrandung|U|
 PULDNMSL02|Schatten|S|
 PULDNMSL03|Schwarzer Hintergrund|H|
+#
+# PullDown "Icon Outline Style"
+PULDNMIO01|No Outline|N|
+PULDNMIO02|Black Outline|B|
+PULDNMIO03|Grey Outline|G|
+PULDNMIO04|White Outline|W|
 #
 # Schalter
 PULDNOT001|An||

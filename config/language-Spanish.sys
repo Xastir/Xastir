@@ -71,6 +71,7 @@ PULDNMP009|Activar Areas Coloridas||
 PULDNMP007|Condados Alerta Mapa WX||
 PULDNMP005|Color de fondo|C|
 PULDNMP006|Etiquetas de estiones|E|
+PULDNMP026|Icon Outline Style|O|
 PULDNMP011|Menú Indicador del Ratón|R|
 PULDNMP008|Intensidad del Mapa|I|
 PULDNMP020|Activar/Configurar Tigermapa||
@@ -128,6 +129,12 @@ PULDNMBC12|Negro||
 PULDNMSL01|Fondo Negro||
 PULDNMSL02|Fondo Gris||
 PULDNMSL03|Texto en Negro|T|
+#
+# PullDown "Icon Outline Style"
+PULDNMIO01|No Outline|N|
+PULDNMIO02|Black Outline|B|
+PULDNMIO03|Grey Outline|G|
+PULDNMIO04|White Outline|W|
 #
 # Switches ON/OFF/Corto
 PULDNOT001|On||

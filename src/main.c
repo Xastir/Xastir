@@ -327,6 +327,10 @@ Widget map_station_label0,map_station_label1,map_station_label2;
 static void Map_station_label(Widget w, XtPointer clientData, XtPointer calldata);
 int letter_style;               /* Station Letter style */
 
+Widget map_icon_outline0,map_icon_outline1,map_icon_outline2,map_icon_outline3;
+static void Map_icon_outline(Widget w, XtPointer clientData, XtPointer calldata);
+int icon_outline_style;         /* Icon Outline style */
+
 Widget map_wx_alerts_0,map_wx_alerts_1;
 static void Map_wx_alerts_toggle(Widget w, XtPointer clientData, XtPointer calldata);
 int wx_alert_style;             /* WX alert map style */
@@ -722,6 +726,7 @@ static void WX_Logging_toggle(Widget w, XtPointer clientData, XtPointer calldata
 
 void on_off_switch(int switchpos, Widget first, Widget second);
 void sel3_switch(int switchpos, Widget first, Widget second, Widget third);
+void sel4_switch(int switchpos, Widget first, Widget second, Widget third, Widget fourth);
 
 static void Configure_station(Widget w, XtPointer clientData, XtPointer callData);
 
@@ -4171,6 +4176,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #endif  // NO_GRAPHICS
         map_font_button,
         Map_station_label_Pane, map_station_label_button,
+        Map_icon_outline_Pane, map_icon_outline_button,
         map_wx_alerts_button, index_maps_on_startup_button,
         units_choice_button, dbstatus_choice_button,
         device_config_button, iface_button, iface_connect_button,
@@ -5162,6 +5168,51 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_station_label1,   XmNactivateCallback,Map_station_label,"1");
     XtAddCallback(map_station_label2,   XmNactivateCallback,Map_station_label,"2");
 
+    Map_icon_outline_Pane = XmCreatePulldownMenu(mappane,
+            "create_appshell map_icon_outline",
+            al,
+            ac);
+    map_icon_outline_button = XtVaCreateManagedWidget(langcode("PULDNMP026"),
+            xmCascadeButtonWidgetClass,
+            mappane,
+            XmNsubMenuId, Map_icon_outline_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMP026"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_icon_outline0 = XtVaCreateManagedWidget(langcode("PULDNMIO01"),
+            xmPushButtonGadgetClass,
+            Map_icon_outline_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMIO01"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_icon_outline1 = XtVaCreateManagedWidget(langcode("PULDNMIO02"),
+            xmPushButtonGadgetClass,
+            Map_icon_outline_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMIO02"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_icon_outline2 = XtVaCreateManagedWidget(langcode("PULDNMIO03"),
+            xmPushButtonGadgetClass,
+            Map_icon_outline_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMIO03"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_icon_outline3 = XtVaCreateManagedWidget(langcode("PULDNMIO04"),
+            xmPushButtonGadgetClass,
+            Map_icon_outline_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMIO04"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    sel4_switch(icon_outline_style,map_icon_outline3,map_icon_outline2,map_icon_outline1,map_icon_outline0);
+    XtAddCallback(map_icon_outline0,   XmNactivateCallback,Map_icon_outline,"0");
+    XtAddCallback(map_icon_outline1,   XmNactivateCallback,Map_icon_outline,"1");
+    XtAddCallback(map_icon_outline2,   XmNactivateCallback,Map_icon_outline,"2");
+    XtAddCallback(map_icon_outline3,   XmNactivateCallback,Map_icon_outline,"3");
 
 
     (void)XtVaCreateManagedWidget("create_appshell sep2b",
@@ -7957,7 +8008,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
         if(display_up_first == 0) {             // very first call, do initialization
             display_up_first = 1;
             statusline("Loading symbols...",1);
-            load_pixmap_symbol_file("symbols.dat");
+            load_pixmap_symbol_file("symbols.dat", 0);
             statusline("Initialize my station...",1);
             my_station_add(my_callsign,my_group,my_symbol,my_long,my_lat,my_phg,my_comment,(char)position_amb_chars);
             da_resize(w, NULL,NULL);            // make sure the size is right after startup & create image
@@ -8711,7 +8762,32 @@ void sel3_switch(int switchpos, Widget first, Widget second, Widget third) {
 }
 
 
-
+/*
+ *  Button callback for 1 out of 4 selection
+ */
+void sel4_switch(int switchpos, Widget first, Widget second, Widget third, Widget fourth) {
+    if(switchpos == 3) {
+        XtSetSensitive(first, FALSE);
+        XtSetSensitive(second,TRUE);
+        XtSetSensitive(third, TRUE);
+        XtSetSensitive(fourth, TRUE);
+    } else if(switchpos == 2) {
+        XtSetSensitive(first, TRUE);
+        XtSetSensitive(second,FALSE);
+        XtSetSensitive(third, TRUE);
+        XtSetSensitive(fourth, TRUE);
+    } else if(switchpos == 1) {
+        XtSetSensitive(first, TRUE);
+        XtSetSensitive(second,TRUE);
+        XtSetSensitive(third, FALSE);
+        XtSetSensitive(fourth, TRUE);
+    } else {
+        XtSetSensitive(first, TRUE);
+        XtSetSensitive(second,TRUE);
+        XtSetSensitive(third, TRUE);
+        XtSetSensitive(fourth, FALSE);
+    }
+}
 
 
 /*
@@ -9425,6 +9501,27 @@ void Map_station_label( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*
         redraw_symbols(da);
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     }
+}
+
+
+
+
+
+void Map_icon_outline( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+    int style;
+
+    style=atoi((char *)clientData);
+
+    if(display_up){
+        icon_outline_style = style;
+        sel4_switch(icon_outline_style,map_icon_outline3,map_icon_outline2,map_icon_outline1,map_icon_outline0);
+        redraw_symbols(da);
+        (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+    }
+    statusline("Reloading symbols...",1);
+    load_pixmap_symbol_file("symbols.dat", 1);
+    redraw_symbols(da);
+    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
