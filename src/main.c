@@ -7727,10 +7727,10 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 // packet.
                             }
 
-                        case DEVICE_AX25_TNC:
-
                         case DEVICE_SERIAL_TNC:
+                            tnc_data_clean((char *)incoming_data);
 
+                        case DEVICE_AX25_TNC:
                         case DEVICE_NET_AGWPE:
                             if (log_tnc_data)
                                 log_data(LOGFILE_TNC,(char *)incoming_data);
