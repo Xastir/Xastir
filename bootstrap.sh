@@ -25,3 +25,4 @@ autoconf
 echo "Running automake"
 automake -a -c
 
+echo "Bootstrap complete."

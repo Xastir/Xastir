@@ -291,7 +291,7 @@ fi
 # things grabbed elsewhere
 
 # this is from Squeak-3.2-4's acinclude.m4
-AC_DEFUN(AC_CHECK_GMTOFF,
+AC_DEFUN([AC_CHECK_GMTOFF],
 [AC_CACHE_CHECK([for gmtoff in struct tm], ac_cv_tm_gmtoff,
   AC_TRY_COMPILE([#include <time.h>],[struct tm tm; tm.tm_gmtoff;],
     ac_cv_tm_gmtoff="yes", ac_cv_tm_gmtoff="no"))
