@@ -4627,6 +4627,10 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
     char speed[4];
     char *p, *p2;
 
+
+// Should probably encode the storm type in the weather object and
+// print it out in plain text in the Station Info dialog.
+
     if ((p = strstr(data, "/TS")) != NULL) {
         // We have a Tropical Storm
 //printf("Tropical Storm! %s\n",data);
@@ -4643,6 +4647,8 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
         ok = 0;
         return(ok);
     }
+
+//printf("\n%s\n",data);
 
     // Back up 7 spots to try to extract the next items
     p2 = p - 7;
@@ -4662,6 +4668,8 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
     }
 
 
+//printf("%s\n",data);
+
     if (ok) {
 
         // If we got this far, we have speed/course and know what type
@@ -4673,8 +4681,18 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 
     if (ok) {
         p_station->speed_time[0]     = '\0';
-        strcpy(p_station->speed, speed);;
-        strcpy(p_station->course, course);;
+
+	// Note that speed is in knots.  If we were stuffing it into
+        // "wx_speed" we'd have to convert it to MPH.
+        if (strcmp(speed,"   ") != 0 && strcmp(speed,"...") != 0)
+            strcpy(p_station->speed, speed);
+        else
+            p_station->speed[0] = '\0';
+	
+        if (strcmp(course,"   ") != 0 && strcmp(course,"...") != 0)
+            strcpy(p_station->course, course);
+        else
+            p_station->course[0] = '\0';
  
         weather = p_station->weather_data;
  
@@ -4683,24 +4701,65 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 
         p2++;   // Skip the description text, "/TS", "/HC", or "/TD"
 
-        (void)extract_weather_item(p2,'/',3,weather->wx_sustained); // Sustained wind speed in knots
-// Need to change to MPH?
+	// Extract the sustained wind speed in knots
+        (void)extract_weather_item(p2,'/',3,weather->wx_sustained);
+        if ( (weather->wx_sustained[0] == '.')
+                || (weather->wx_sustained[0] == ' ') )
+            weather->wx_sustained[0] = '\0';
+        else    // Convert from knots to MPH
+            xastir_snprintf(weather->wx_sustained,
+                sizeof(weather->wx_sustained),
+                "%0.1f",
+                (float)(atoi(weather->wx_sustained)) * 1.1508);
 
+//printf("%s\n",data);
+
+        // Extract gust speed in knots
         (void)extract_weather_item(p2,'^',3,weather->wx_gust); // gust (peak wind speed in knots)
-// Need to change to MPH?
+        if ( (weather->wx_gust[0] == '.')
+                || (weather->wx_gust[0] == ' ') )
+            weather->wx_gust[0] = '\0';
+        else    // Convert from knots to MPH
+            xastir_snprintf(weather->wx_gust,
+                sizeof(weather->wx_gust),
+                "%0.1f",
+                (float)(atoi(weather->wx_gust)) * 1.1508);
 
-        if (extract_weather_item(p2,'/',3,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
+//printf("%s\n",data);
+
+	// Pressure is already in millibars/hPa.  No conversion
+        // needed.
+        if (extract_weather_item(p2,'/',4,weather->wx_baro))  // barometric pressure (1/10 mbar / 1/10 hPascal)
             xastir_snprintf(weather->wx_baro,
                 sizeof(weather->wx_baro),
                 "%0.1f",
-                (float)(atoi(weather->wx_baro)/10.0));
-// Need to convert to millibars or hPa?
+                (float)(atoi(weather->wx_baro)));
+        if ( (weather->wx_baro[0] == '.')
+                || (weather->wx_baro[0] == ' ') )
+            weather->wx_baro[0] = '\0';
+
+//printf("%s\n",data);
 
         (void)extract_weather_item(p2,'>',3,weather->wx_hurricane_radius); // Nautical miles
+        if ( (weather->wx_hurricane_radius[0] == '.')
+                || (weather->wx_hurricane_radius[0] == ' ') )
+            weather->wx_hurricane_radius[0] = '\0';
+
+//printf("%s\n",data);
 
         (void)extract_weather_item(p2,'&',3,weather->wx_trop_storm_radius); // Nautical miles
+        if ( (weather->wx_trop_storm_radius[0] == '.')
+                || (weather->wx_trop_storm_radius[0] == ' ') )
+            weather->wx_trop_storm_radius[0] = '\0';
+
+//printf("%s\n",data);
 
         (void)extract_weather_item(p2,'%',3,weather->wx_whole_gale_radius); // Nautical miles
+        if ( (weather->wx_whole_gale_radius[0] == '.')
+                || (weather->wx_whole_gale_radius[0] == ' ') )
+            weather->wx_whole_gale_radius[0] = '\0';
+
+//printf("%s\n",data);
 
         // Create a timestamp from the current time
         strcpy(weather->wx_time,get_time(time_data));
