@@ -19,6 +19,16 @@ Getting Maps and other Data Files for Xastir:
       permissions that are created by downloading/installing new
       maps.
 
+      Currently the maps/GPS directory needs to be writable by normal users
+      in order to support downloading GPS data using GPSMan.  This will be
+      changed at some future date, moving this directory into the user's
+      home directory instead.
+
+      cd /usr/local/xastir/maps
+      chmod 777 GPS
+      find GPS -type d -exec chmod 777 {} \;
+      find GPS -type f -exec chmod 777 {} \;
+
 
     Download some maps:
 
