@@ -302,8 +302,8 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_outgoing_mes
     /* clear message send buttons */
     for (i=0;i<MAX_MESSAGE_WINDOWS;i++) {
         /* find station  */
-        if (mw[i].send_message_dialog!=NULL) /* clear submit */
-            XtSetSensitive(mw[i].button_ok,TRUE);
+//        if (mw[i].send_message_dialog!=NULL) /* clear submit */
+//            XtSetSensitive(mw[i].button_ok,TRUE);
     }
 
 end_critical_section(&send_message_dialog_lock, "messages.c:clear_outgoing_messages" );
@@ -358,11 +358,12 @@ void output_message(char *from, char *to, char *message) {
         /* check for others in the queue */
         wait_on_first_ack=0;
         for (i=0; i<MAX_OUTGOING_MESSAGES; i++) {
-            if (message_pool[i].active == MESSAGE_ACTIVE &&
-        strcmp(to, message_pool[i].to_call_sign) == 0 && strcmp(from, "***") != 0) {
-                    wait_on_first_ack=1;
-                    i=MAX_OUTGOING_MESSAGES+1;
-        }
+            if (message_pool[i].active == MESSAGE_ACTIVE
+                    && strcmp(to, message_pool[i].to_call_sign) == 0
+                    && strcmp(from, "***") != 0) {
+                wait_on_first_ack=1;
+                i=MAX_OUTGOING_MESSAGES+1;  // Done with loop
+            }
         }
         for (i=0; i<MAX_OUTGOING_MESSAGES && !ok ;i++) {
             /* Check for clear position*/
@@ -542,8 +543,8 @@ void check_and_transmit_messages(time_t time) {
                             message_pool[i].from_call_sign,
                             message_pool[i].seq);
 
-                        if (mw[i].send_message_dialog!=NULL) /* clear submit */
-                            XtSetSensitive(mw[i].button_ok,TRUE);
+//                        if (mw[i].send_message_dialog!=NULL) /* clear submit */
+//                            XtSetSensitive(mw[i].button_ok,TRUE);
                     }
                 }
             } else {
@@ -598,8 +599,9 @@ void clear_acked_message(char *from, char *to, char *seq) {
                             }
                         }
                         // Release the next message in the queue for transmission
-                        if (found!=-1)
+                        if (found!=-1) {
                             message_pool[found].wait_on_first_ack=0;
+                        }
                         else {
                             /* if no more clear the send button */
 
@@ -611,10 +613,10 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_acked_messag
                                     strcpy(temp1,XmTextFieldGetString(mw[ii].send_message_call_data));
                                     (void)to_upper(temp1);
                                     //printf("%s\t%s\n",temp1,from);
-                                    if (strcmp(temp1,from)==0) {
+//                                    if (strcmp(temp1,from)==0) {
                                         /*clear submit*/
-                                        XtSetSensitive(mw[ii].button_ok,TRUE);
-                                    }
+//                                        XtSetSensitive(mw[ii].button_ok,TRUE);
+//                                    }
                                 }
                             }
 
