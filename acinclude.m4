@@ -749,10 +749,25 @@ AC_DEFUN([XASTIR_BERKELEY_DB_CHK],
 	dnl Note that FreeBSD puts it in a weird place 
         dnl (/usr/local/include/db42)
         dnl (but they should use with-bdb-incdir)
-        AC_CHECK_HEADER(db.h,
-                        [XASTIR_BERKELEY_DB_CHK_LIB()],
-                        dblib="no")
-
+# Commented out because it doesn't distinguish between versions of db.h
+# that can work with xastir and versions that can't.  It is possible to 
+# have multiple versions of db installed in different places, pick up the 
+# header for one and the library for another.  Bleah.
+#        AC_CHECK_HEADER(db.h,
+#                        [XASTIR_BERKELEY_DB_CHK_LIB()],
+#                        dblib="no")
+#
+# Do this instead --- check to see if the db.h we find first in the search
+# path will actually pass the test we do in map_cache.c.  Don't even bother
+# looking for a library if not.  
+        AC_MSG_CHECKING([if db.h is exists and is usable])
+        AC_TRY_COMPILE([#include <db.h>],
+                       [#if (DB_VERSION_MAJOR < 4 )
+                        #error DB_VERSION_MAJOR < 4
+                        #endif],
+                        [AC_MSG_RESULT([yes])
+                        XASTIR_BERKELEY_DB_CHK_LIB()],
+                        [AC_MSG_RESULT([no]); dblib="no"])
 	CPPFLAGS=$xastir_save_CPPFLAGS
 
     use_map_cache="no"
