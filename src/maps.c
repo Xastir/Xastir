@@ -10757,8 +10757,8 @@ void index_update_directory(char *directory) {
     // that might cause problems later.  Look for CR's and LF's and
     // convert them to string-end characters.
     for ( i = 0; i < strlen(directory); i++ ) {
-        if ( (directory[i] == '\n')
-                || (directory[i] == '\r') ) {
+        // Change any control characters to '\0' chars
+        if (directory[i] < 0x20) {
             directory[i] = '\0';    // Terminate it here
         }
     }
@@ -10896,8 +10896,8 @@ void index_update_xastir(char *filename,
     // that might cause problems later.  Look for CR's and LF's and
     // convert them to string-end characters.
     for ( i = 0; i < strlen(filename); i++ ) {
-        if ( (filename[i] == '\n')
-                || (filename[i] == '\r') ) {
+        // Change any control characters to '\0' chars
+        if (filename[i] < 0x20) {
             filename[i] = '\0';    // Terminate it here
         }
     }
@@ -11053,8 +11053,8 @@ void index_update_ll(char *filename,
     // that might cause problems later.  Look for CR's and LF's and
     // convert them to string-end characters.
     for ( i = 0; i < strlen(filename); i++ ) {
-        if ( (filename[i] == '\n')
-                || (filename[i] == '\r') ) {
+        // Change any control characters to '\0' chars
+        if (filename[i] < 0x20) {
             filename[i] = '\0';    // Terminate it here
         }
     }
@@ -11234,8 +11234,10 @@ int index_retrieve(char *filename,
     int status = 0;
 
     // Search for a matching filename in the linked list
-    while (current != NULL) {
-        if (strncmp(current->filename,filename,strlen(filename)) == 0) {
+    while ( (current != NULL)
+            && (strlen(filename) < MAX_FILENAME) ) {
+
+        if (strcmp(current->filename,filename) == 0) {
             // Found a match!
             status = 1;
             *bottom = current->bottom;
@@ -11485,34 +11487,15 @@ void index_restore_from_file(void) {
     while (!feof (f)) { // Loop through entire map_index file
 
         // Read one line from the file
-        if ( get_line (f, in_string, MAX_FILENAME) ) {
+        if ( get_line (f, in_string, MAX_FILENAME*2) ) {
 
-            if (strlen(in_string) >= 8) {   // We have some data.
+            if (strlen(in_string) >= 15) {   // We have some data.
                                             // Try to process the
                                             // line.
                 char scanf_format[50];
                 int processed;
-                int i;
 
 //printf("%s\n",in_string);
-
-                // Check the file/directory name for control
-                // characters
-                for (i = 0; i < strlen(in_string); i++) {
-                    // Dump out a warning if control characters
-                    // other than LF or CR are found.
-                    if ( (in_string[i] != '\n')
-                            && (in_string[i] != '\r')
-                            && (in_string[i] < 0x20) ) {
-                        printf("\nFound control character 0x%02x in map_index.sys.  Line was:\n",
-                            in_string[i]);
-                        printf("%s\n",in_string);
-                    }
-                    if (in_string[i] < 0x20) {
-                        // Terminate string at control character
-                        in_string[i] = '\0';
-                    }
-                }
 
                 // Malloc an index record.  We'll add it to the list
                 // only if the data looks reasonable.
@@ -11543,17 +11526,7 @@ void index_restore_from_file(void) {
                     &temp_record->auto_maps,
                     temp_record->filename);
 
-                // Make sure there aren't any weird characters in
-                // the filename that might cause problems later.
-                // Look for CR's and LF's and convert them to
-                // string-end characters.
-                for ( i = 0; i < strlen(temp_record->filename); i++ ) {
-                    if ( (temp_record->filename[i] == '\n')
-                            || (temp_record->filename[i] == '\r') ) {
-                        temp_record->filename[i] = '\0';    // Terminate it here
-                    }
-                }
-                // Check if the string is now bogus
+                // Check if the string is bogus
                 if (strlen(temp_record->filename) == 0) {
                     processed = 0;  // Reject this record
                 }

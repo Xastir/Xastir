@@ -620,24 +620,35 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 
 
 
-/*********************************************************************/
-/* get_line - read a line from a file                                */
-/*********************************************************************/
+//********************************************************************/
+// get_line - read a line from a file                                */
+//
+// NOTE: This routine will not work for binary files.  It works only
+// for ASCII-format files, and terminates each line at the first
+// control-character found.
+//
+//********************************************************************/
 char *get_line(FILE *f, char *linedata, int maxline) {
-    int size_line;
     char temp_line[32768];
+    int i;
 
-    strcpy(temp_line, "");
-    (void)fgets(temp_line, 32767, f);
+    // Snag one string from the file.  We'll end up with a
+    // terminating zero at temp_line[32767] in an case, because the
+    // max quantity we'll get here will be 32767 with a terminating
+    // zero added after whatever quantity is read.
+    (void)fgets(temp_line, 32768, f);
 
-    size_line = (int)strlen(temp_line);
-    if (size_line >0) {
-        if (size_line > maxline)
-            temp_line[maxline-1] = '\0';
-        else
-            temp_line[size_line-1] = '\0';
+    // A newline may have been added by the above fgets call.
+    // Change any newlines or other control characters to line-end
+    // characters.
+    for (i = 0; i < strlen(temp_line); i++) {
+        // Change any control characters to '\0';
+        if (temp_line[i] < 0x20) {
+            temp_line[i] = '\0';    // Terminate the string
+        }
     }
-    strcpy(linedata,temp_line);
+
+    xastir_snprintf(linedata,maxline,"%s",temp_line);
 
     return(linedata);
 }
