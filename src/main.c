@@ -41,7 +41,7 @@
 #include <pthread.h>
 #include <locale.h>
 #include <strings.h>
-#include <time.h>
+#include <sys/time.h>
 
 #ifdef HAVE_IMAGEMAGICK
 #include <sys/types.h>
