@@ -556,6 +556,8 @@ POPUPOB040|Straal breedte - Richting||
 POPUPOB041|Rondstraler||
 POPUPOB042|Richtantenne||
 POPUPOB043|Onbruikbaar||
+POPUPOB044|Adopt Object||
+POPUPOB045|Adopt Item||
 #
 # PopUp "Configure Internet"
 WPUPCFI001|Internet Instelling||

@@ -545,6 +545,8 @@ POPUPOB040|Beam Width - Bearing||
 POPUPOB041|Omni Antenna||
 POPUPOB042|Beam Antenna||
 POPUPOB043|Useless||
+POPUPOB044|Adopt Object||
+POPUPOB045|Adopt Item||
 #
 # PopUp "Configure Internet"
 WPUPCFI001|Configure Internet||

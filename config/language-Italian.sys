@@ -545,6 +545,8 @@ POPUPOB040|Larghezza fascio - Puntamento||
 POPUPOB041|Antenna Omni||
 POPUPOB042|Antenna Direzionale||
 POPUPOB043|Sconosciuta||
+POPUPOB044|Adopt Object||
+POPUPOB045|Adopt Item||
 #
 #Configure Internet
 WPUPCFI001|Configura Rete||

@@ -551,6 +551,8 @@ POPUPOB040|Öffnungswinkel - Richtung||
 POPUPOB041|Rundstrahlantenne||
 POPUPOB042|Richtantenne||
 POPUPOB043|unbekannt||
+POPUPOB044|Adopt Object||
+POPUPOB045|Adopt Item||
 #
 # PopUp "Internet Einstellungen"
 WPUPCFI001|Internet Einstellungen||

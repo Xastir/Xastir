@@ -22750,7 +22750,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 width_box,woption0,woption1,woption2,woption3,woption4,woption5,woption6,woption7,woption8,woption9,
                 ob_bearing,
                 ob_lat_offset,ob_lon_offset,
-                ob_sep, ob_button_set, ob_button_del,ob_button_cancel,it_button_set,
+                ob_sep, ob_button_set,ob_button_del,ob_button_cancel,it_button_set,
                 ob_button_symbol,
                 compute_button;
     char temp_data[40];
@@ -24981,8 +24981,14 @@ else if (DF_object_enabled) {
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
                         NULL);
+                XtAddCallback(ob_button_set, XmNactivateCallback, Item_change_data_set, object_dialog);
 
-                ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB033"),
+                // Check whether we own this item
+                if (strcasecmp(p_station->origin,my_callsign)==0) {
+
+                    // We own this item, set up the "Delete"
+                    // button.
+                    ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB033"),
                         xmPushButtonGadgetClass, 
                         ob_form,
                         XmNtopAttachment,           XmATTACH_WIDGET,
@@ -24998,8 +25004,30 @@ else if (DF_object_enabled) {
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
                         NULL);
-                XtAddCallback(ob_button_set, XmNactivateCallback, Item_change_data_set, object_dialog);
-                XtAddCallback(ob_button_del, XmNactivateCallback, Item_change_data_del, object_dialog);
+                    XtAddCallback(ob_button_del, XmNactivateCallback, Item_change_data_del, object_dialog);
+                }
+                else {
+
+                    // Somebody else owns this item, set up the
+                    // "Adopt" button.
+                    ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB045"),
+                        xmPushButtonGadgetClass, 
+                        ob_form,
+                        XmNtopAttachment,           XmATTACH_WIDGET,
+                        XmNtopWidget,               ob_sep,
+                        XmNtopOffset,               5,
+                        XmNbottomAttachment,        XmATTACH_FORM,
+                        XmNbottomOffset,            5,
+                        XmNleftAttachment,          XmATTACH_POSITION,
+                        XmNleftPosition,            1,
+                        XmNrightAttachment,         XmATTACH_POSITION,
+                        XmNrightPosition,           2,
+                        XmNnavigationType,          XmTAB_GROUP,
+                        MY_FOREGROUND_COLOR,
+                        MY_BACKGROUND_COLOR,
+                        NULL);
+                    XtAddCallback(ob_button_del, XmNactivateCallback, Item_change_data_set, object_dialog);
+                }
             }
             else {  // Modifying an Object
                 // Here we need Modify Object/Delete Object/Cancel buttons
@@ -25019,8 +25047,14 @@ else if (DF_object_enabled) {
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
                         NULL);
+                XtAddCallback(ob_button_set, XmNactivateCallback, Object_change_data_set, object_dialog);
+ 
+                // Check whether we own this Object
+                if (strcasecmp(p_station->origin,my_callsign)==0) {
 
-                ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB004"),
+                    // We own this object, set up the "Delete"
+                    // button.
+                    ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB004"),
                         xmPushButtonGadgetClass, 
                         ob_form,
                         XmNtopAttachment,           XmATTACH_WIDGET,
@@ -25036,8 +25070,30 @@ else if (DF_object_enabled) {
                         MY_FOREGROUND_COLOR,
                         MY_BACKGROUND_COLOR,
                         NULL);
-               XtAddCallback(ob_button_set, XmNactivateCallback, Object_change_data_set, object_dialog);
                XtAddCallback(ob_button_del, XmNactivateCallback, Object_change_data_del, object_dialog);
+                }
+                else {
+
+                    // Somebody else owns this object, set up the
+                    // "Adopt" button.
+                    ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB044"),
+                        xmPushButtonGadgetClass, 
+                        ob_form,
+                        XmNtopAttachment,           XmATTACH_WIDGET,
+                        XmNtopWidget,               ob_sep,
+                        XmNtopOffset,               5,
+                        XmNbottomAttachment,        XmATTACH_FORM,
+                        XmNbottomOffset,            5,
+                        XmNleftAttachment,          XmATTACH_POSITION,
+                        XmNleftPosition,            1,
+                        XmNrightAttachment,         XmATTACH_POSITION,
+                        XmNrightPosition,           2,
+                        XmNnavigationType,          XmTAB_GROUP,
+                        MY_FOREGROUND_COLOR,
+                        MY_BACKGROUND_COLOR,
+                        NULL);
+                    XtAddCallback(ob_button_del, XmNactivateCallback, Object_change_data_set, object_dialog);
+                }
             }
         }
         else {  // We were called from Create->Object mouse menu
