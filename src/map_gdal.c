@@ -471,8 +471,14 @@ scr_s_x_min = 0;
 
 
 
-int label_color_guess = 0x08;    // Default black
+int label_color_guess = 0x08;       // Default black
 int sdts_elevation_in_meters = 1;   // Default meters
+int hypsography_layer = 0;          // Topo contours
+int hydrography_layer = 0;          // Underwater contours
+int roads_trails_layer = 0;
+int railroad_layer = 0;
+int misc_transportation_layer = 0;
+
 
 
 // guess_vector_attributes()
@@ -584,12 +590,8 @@ void guess_vector_attributes( Widget w,
         case 0x80000002:    // LineString25D
         case 0x80000005:    // MultiLineString25D
 
-            if (strcasecmp(driver_type,"SDTS") == 0
-                    && (strstr(full_filename,"HY")  // Hydrography
-                        || strstr(full_filename,"HP"))) {   // Hypsography
-// DEBUG:
-// Determine whether it is a hypsography layer we're dealing with.
-//
+            if (hypsography_layer || hydrography_layer) {
+
 // Consider trying GXxor function with gc_tint someday to see what
 // the contour lines look like with that method:  Should make them
 // quite readable no matter what the underlying map colors.
@@ -599,6 +601,18 @@ void guess_vector_attributes( Widget w,
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
 //                label_color_guess = 0x4d;   // white
                 label_color_guess = 0x0e;   // yellow
+            }
+            else if (roads_trails_layer) {
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x08]);  // black
+                label_color_guess = 0x08;
+            }
+            else if (railroad_layer) {
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x44]);  // red
+                label_color_guess = 0x44;
+            }
+            else if (misc_transportation_layer) {
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x0e]);  // yellow
+                label_color_guess = 0x0e;
             }
             else if (strstr(full_filename,"lkH")) {
                 (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
@@ -617,12 +631,8 @@ void guess_vector_attributes( Widget w,
         case 0x80000003:    // Polygon25D
         case 0x80000006:    // MultiPolygon25D
 
-            if (strcasecmp(driver_type,"SDTS") == 0
-                    && (strstr(full_filename,"HY")  // Hydrography
-                        || strstr(full_filename,"HP"))) {   // Hypsography
-// DEBUG:
-// Determine whether it is a hypsography layer we're dealing with.
-//
+            if (hypsography_layer || hydrography_layer) {
+
 // Consider trying GXxor function with gc_tint someday to see what
 // the contour lines look like with that method:  Should make them
 // quite readable no matter what the underlying map colors.
@@ -632,6 +642,18 @@ void guess_vector_attributes( Widget w,
                 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
 //                label_color_guess = 0x4d;   // white
                 label_color_guess = 0x0e;   // yellow
+            }
+            else if (roads_trails_layer) {
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x08]);  // black
+                label_color_guess = 0x08;
+            }
+            else if (railroad_layer) {
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x44]);  // red
+                label_color_guess = 0x44;
+            }
+            else if (misc_transportation_layer) {
+                (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x0e]);  // yellow
+                label_color_guess = 0x0e;
             }
             else if (strstr(full_filename,"wat")) {
                 (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
@@ -2649,7 +2671,7 @@ clear_dangerous();
             short_filenm);
         statusline(status_text,0);       // Indexing ...
 
-//        fprintf(stderr,"Indexing %s\n", filenm);
+//fprintf(stderr,"Indexing %s\n", filenm);
 
         // Use the OGR "envelope" function to get the extents for
         // the entire file or dataset.  Remember that it could be in
@@ -2768,15 +2790,16 @@ clear_dangerous();
         if ( !first_extents && (geographic || projected || no_spatial) ) {
             // Need to also check datum!  Must be NAD83 or WGS84 and
             // geographic for our purposes.
+/*
             if ( no_spatial
                 || (geographic
                     && ( strcasecmp(geogcs,"WGS84") == 0
                         || strcasecmp(geogcs,"NAD83") == 0) ) ) {
 // Also check "datum" here
 
-//                fprintf(stderr,
-//                    "Geographic coordinate system, %s, adding to index\n",
-//                    geogcs);
+                fprintf(stderr,
+                    "Geographic coordinate system, %s, adding to index\n",
+                    geogcs);
 
                 if (   file_MinY >=  -90.0 && file_MinY <=  90.0
                     && file_MaxY >=  -90.0 && file_MaxY <=  90.0
@@ -2788,7 +2811,7 @@ clear_dangerous();
                             && file_MaxY == 0.0
                             && file_MinX == 0.0
                             && file_MaxX == 0.0 ) {
-                        if (debug_level & 16) {
+//                        if (debug_level & 16) {
                             fprintf(stderr,
                                 "Geographic coordinates are all zero, skipping indexing\n");
                             fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
@@ -2796,7 +2819,7 @@ clear_dangerous();
                                 file_MinY,
                                 file_MaxX,
                                 file_MaxY);
-                        }
+//                        }
                     }
                     else {
  
@@ -2813,7 +2836,7 @@ clear_dangerous();
                     }
                 }
                 else {
-                    if (debug_level & 16) {
+//                    if (debug_level & 16) {
                         fprintf(stderr,
                             "Geographic coordinates out of bounds, skipping indexing\n");
                         fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
@@ -2821,12 +2844,13 @@ clear_dangerous();
                             file_MinY,
                             file_MaxX,
                             file_MaxY);
-                    }
+//                    }
                 }
             }
             else {  // We have coordinates but they're in the wrong
                     // datum or in a projected coordinate system.
                     // Convert to WGS84 coordinates.
+*/
                 double x[2];
                 double y[2];
 
@@ -2874,7 +2898,7 @@ clear_dangerous();
                             && file_MaxY == 0.0
                             && file_MinX == 0.0
                             && file_MaxX == 0.0 ) {
-                        if (debug_level & 16) {
+//                        if (debug_level & 16) {
                             fprintf(stderr,
                                 "Coordinates are all zero, skipping indexing\n");
                             fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
@@ -2882,7 +2906,7 @@ clear_dangerous();
                                 file_MinY,
                                 file_MaxX,
                                 file_MaxY);
-                        }
+//                        }
                     }
                     else {
  
@@ -2898,7 +2922,7 @@ clear_dangerous();
                     }
                 }
                 else {
-                    if (debug_level & 16) {
+//                    if (debug_level & 16) {
                         fprintf(stderr,
                             "Coordinates out of bounds, skipping indexing\n");
                         fprintf(stderr,"MinX:%f  MinY:%f  MaxX:%f MaxY:%f\n",
@@ -2906,9 +2930,9 @@ clear_dangerous();
                             file_MinY,
                             file_MaxX,
                             file_MaxY);
-                    }
+//                    }
                 }
-            }
+//            }
         }
 
         // Debug code:
@@ -2952,9 +2976,9 @@ clear_dangerous();
         sizeof(status_text),
         langcode ("BBARSTA028"),
         short_filenm);
-    statusline(status_text,0);       // Indexing ...
+    statusline(status_text,0);       // Loading ...
 
-//    fprintf(stderr,"Loading %s\n", filenm);
+    fprintf(stderr,"Loading %s\n", filenm);
 
 
  
@@ -3061,17 +3085,20 @@ clear_dangerous();
     ViewZ[1] = 0.0;
 
 
+    sdts_elevation_in_meters = 0;
+
     // If it is an SDTS file, determine whether we may have
     // elevation in feet or meters.  AHPT layer present = feet, AHPR
     // layer present = meters.
     if (strcasecmp(driver_type,"SDTS") == 0) {
-        if (OGR_DS_GetLayerByName(datasourceH, "AHPT")) {
-//            fprintf(stderr,"Elevation in feet\n");
-            sdts_elevation_in_meters = 0;
-        }
-        else {
-//            fprintf(stderr,"Elevation in meters\n");
+
+        if (OGR_DS_GetLayerByName(datasourceH, "AHPR")) {
+            fprintf(stderr,"Elevation is in meters\n");
             sdts_elevation_in_meters = 1;
+        }
+
+        if (OGR_DS_GetLayerByName(datasourceH, "AHPT")) {
+            fprintf(stderr,"Elevation is in feet\n");
         }
     }
 
@@ -3082,7 +3109,7 @@ clear_dangerous();
     for ( i=0; i<numLayers; i++ ) {
         OGRLayerH layerH;
         OGRFeatureH featureH;
-        OGRFeatureDefnH layerDefn;
+//        OGRFeatureDefnH layerDefn;
         OGREnvelope psExtent;  
         int extents_found = 0;
         char geometry_type_name[50] = "";
@@ -3144,6 +3171,37 @@ int features_processed = 0;
             }
 
             return; // Exit early
+        }
+
+
+        // Determine what kind of layer we're dealing with and set
+        // some flags.
+        //
+        hypsography_layer = 0;
+        hydrography_layer = 0;
+        roads_trails_layer = 0;
+        railroad_layer = 0;
+        misc_transportation_layer = 0;
+
+        if (layerH == OGR_DS_GetLayerByName(datasourceH, "AHPF")) {
+            hypsography_layer++;    // Topo contours
+            fprintf(stderr,"Hypsography Layer (topo contours)\n");
+        }
+        else if (layerH == OGR_DS_GetLayerByName(datasourceH, "AHYF")) {
+            hydrography_layer++;    // Underwater contours
+            fprintf(stderr,"Hydrography Layer (underwater topo contours)\n");
+        }
+        else if (layerH == OGR_DS_GetLayerByName(datasourceH, "ARDF")) {
+            roads_trails_layer++;
+            fprintf(stderr,"Roads/Trails Layer\n");
+        }
+        else if (layerH == OGR_DS_GetLayerByName(datasourceH, "ARRF")) {
+            railroad_layer++;
+            fprintf(stderr,"Railroad Layer\n");
+        }
+        else if (layerH == OGR_DS_GetLayerByName(datasourceH, "AMTF")) {
+            misc_transportation_layer++;
+            fprintf(stderr,"Misc Transportation Layer\n");
         }
 
 
@@ -3276,6 +3334,7 @@ int features_processed = 0;
         }
 
 
+/*
         if (map_spatialH) {
             const char *temp;
             int geographic = 0;
@@ -3347,6 +3406,7 @@ int features_processed = 0;
                 // exit.
             }
         }
+*/
 
 
 
@@ -3381,6 +3441,7 @@ int features_processed = 0;
 */
 
 
+/*
 // Dump info about this layer
         layerDefn = OGR_L_GetLayerDefn( layerH );
         if (layerDefn != NULL) {
@@ -3401,6 +3462,7 @@ int features_processed = 0;
             }
             fprintf(stderr,"\n");
         }
+*/
 
 
         // Restart reads of this layer at the first feature.
