@@ -172,28 +172,84 @@ void db_init(void)
 
 
 /*
- *  Look if call is mine, exact looks on SSID too
+ *  Check whether callsign is mine.  "exact == 1" checks the SSID
+ *  for a match as well.  "exact == 0" checks only the base
+ *  callsign.
  */
 int is_my_call(char *call, int exact) {
     char *p_del;
     int ok;
 
+
+    // U.S. special-event callsigns can be as short as three
+    // characters, any less and we don't have a valid callsign.
+    // We're only doing a fast check on the first two characters
+    // though before the string compares, so we only need to check
+    // for a terminators in the first position.  If a terminator in
+    // the second position, we'll fail the match properly in the
+    // string compares.
+    // We need this next bit of code so that we don't run off the
+    // end of the string when we compare the 2nd char position.
+    //
+    if (call[0] == '\0' || my_callsign[0] == '\0') {
+        // One or both are empty strings
+        return(0);
+    }
+
+
+    // Check first letter.  If a match, go on to strcmp() functions,
+    // which are more costly time-wise.  If not, we're done.  This
+    // is much faster than the string compares below, so this was
+    // purely added for efficiency improvements.
+    if (call[0] != my_callsign[0]) {
+        return(0);
+    }
+
+
+    // Same for second letter.  This is much faster than the string
+    // compares below, so this was purely added for efficiency
+    // improvements.
+    if (call[1] != my_callsign[1]) {
+        return(0);
+    }
+
+
     if (exact) {
+        // We're looking for an exact match
         ok = (int)( !strcmp(call,my_callsign) );
-    } else {
+        if (ok) {
+            // Ok so far.  Now check that the length of each is the
+            // same.
+            if (strlen(call) != strlen(my_callsign)) {
+                ok = 0; // Not the same!
+            }
+            else {
+//fprintf(stderr,"My exact call found: %s\n",call);
+            }
+        }
+    }
+
+    else {
+        // We're looking for a similar match.  Compare only up to
+        // the '-' in each (if present).
         int len1,len2;
+
         p_del = index(call,'-');
         if (p_del == NULL)
             len1 = (int)strlen(call);
         else
             len1 = p_del - call;
+
         p_del = index(my_callsign,'-');
         if (p_del == NULL)
             len2 = (int)strlen(my_callsign);
         else
             len2 = p_del - my_callsign;
+
         ok = (int)(len1 == len2 && !strncmp(call,my_callsign,(size_t)len1));
+//fprintf(stderr,"My base call found: %s\n",call);
     }
+ 
     return(ok);
 }
 
@@ -15117,8 +15173,10 @@ void check_and_transmit_objects_items(time_t time) {
     // Check every OBJECT_CHECK_RATE seconds - 20%.  No faster else
     // we'll be running through the station list too often and
     // wasting cycles.
-    if (sec_now() < (last_object_check + (int)(4 * OBJECT_CHECK_RATE/5) ) )
+    if (sec_now() < (last_object_check + (int)(4.0 * OBJECT_CHECK_RATE/5.0 + 1.0) ) )
         return;
+
+//fprintf(stderr,"check_and_transmit_objects_items\n");
 
     // Set up timer for next go-around
     last_object_check = sec_now();
@@ -15131,9 +15189,10 @@ void check_and_transmit_objects_items(time_t time) {
 
         //fprintf(stderr,"%s\t%s\n",p_station->call_sign,p_station->origin);
 
-        if (is_my_call(p_station->origin,1)) {   // If station is owned by me
-            if ( ((p_station->flag & ST_OBJECT) != 0)           // And it's an object
-                    || ((p_station->flag & ST_ITEM) != 0) ) {   // or an item
+        // If it is an object or item
+        if ( (p_station->flag & (ST_OBJECT|ST_ITEM)) != 0 ) {
+
+            if (is_my_call(p_station->origin,1)) {   // And is owned by me
 
                 if (debug_level & 1)
                     fprintf(stderr,"Found a locally-owned object or item: %s\n",p_station->call_sign);
