@@ -3681,6 +3681,14 @@ int tnc_get_data_type(char *buf, int port) {
     else {  // Must be APRS data
         type = 0;
     }
+
+    if (debug_level & 1) {
+        if (type == 0)
+            printf("APRS data\n");
+        else
+            printf("NMEA data\n");
+    }
+
     return(type);
 }
 
