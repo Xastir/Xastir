@@ -238,6 +238,7 @@ Widget TNC_down_file_data;
 Widget TNC_txdelay;
 Widget TNC_persistence;
 Widget TNC_slottime;
+Widget TNC_txtail;
 Widget TNC_fullduplex;
 Widget TNC_GPS_set_time;
 Widget TNC_relay_digipeat;
@@ -359,6 +360,9 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
         strcpy(devices[TNC_port].slottime,XmTextFieldGetString(TNC_slottime));
         send_kiss_config(TNC_port,0,0x03,atoi(devices[TNC_port].slottime));
 
+        strcpy(devices[TNC_port].txtail,XmTextFieldGetString(TNC_txtail));
+        send_kiss_config(TNC_port,0,0x04,atoi(devices[TNC_port].txtail));
+ 
         strcpy(devices[TNC_port].fullduplex,XmTextFieldGetString(TNC_fullduplex));
         send_kiss_config(TNC_port,0,0x05,atoi(devices[TNC_port].fullduplex));
     }
@@ -394,7 +398,7 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" );
 void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int port) {
     static Widget  pane, form, form2, button_ok, button_cancel,
                 frame, frame2, frame3, frame4,
-                setup, setup1, setup2, setup3, setup4,
+                setup, setup1, setup2, setup3, setup4, setup5,
                 device, speed, speed_box,
                 speed_300, speed_1200, speed_2400, speed_4800, speed_9600,
                 speed_19200, speed_38400, speed_57600, speed_115200, speed_230400,
@@ -948,8 +952,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup1,
                                     XmNtopOffset, 5,
-                                    XmNbottomAttachment,XmATTACH_FORM,
-                                    XmNbottomOffset, 5,
+                                    XmNbottomAttachment,XmATTACH_NONE,
                                     XmNleftAttachment,XmATTACH_POSITION,
                                     XmNleftPosition, 2,
                                     XmNrightAttachment,XmATTACH_NONE,
@@ -982,9 +985,38 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                                     XmNrightAttachment,XmATTACH_NONE,
                                     NULL);
 
-                setup4 = XtVaCreateManagedWidget("FullDuplex (0=Off, 1=On)", xmLabelWidgetClass, form2,
+                setup4 = XtVaCreateManagedWidget("TxTail (10ms units)", xmLabelWidgetClass, form2,
                                     XmNtopAttachment,XmATTACH_WIDGET,
                                     XmNtopWidget, setup3,
+                                    XmNtopOffset, 10,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment, XmATTACH_POSITION,
+                                    XmNleftPosition, 3,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    XmNbackground, colors[0xff],
+                                    NULL);
+
+                TNC_txtail = XtVaCreateManagedWidget("Config_TNC TxTail", xmTextFieldWidgetClass, form2,
+                                    XmNeditable,   TRUE,
+                                    XmNcursorPositionVisible, TRUE,
+                                    XmNsensitive, TRUE,
+                                    XmNshadowThickness,    1,
+                                    XmNcolumns, 3,
+                                    XmNwidth, ((6*7)+2),
+                                    XmNmaxLength, 3,
+                                    XmNbackground, colors[0x0f],
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup3,
+                                    XmNtopOffset, 5,
+                                    XmNbottomAttachment,XmATTACH_NONE,
+                                    XmNleftAttachment,XmATTACH_POSITION,
+                                    XmNleftPosition, 5,
+                                    XmNrightAttachment,XmATTACH_NONE,
+                                    NULL);
+
+                setup5 = XtVaCreateManagedWidget("FullDuplex (0=Off, 1=On)", xmLabelWidgetClass, form2,
+                                    XmNtopAttachment,XmATTACH_WIDGET,
+                                    XmNtopWidget, setup4,
                                     XmNtopOffset, 10,
                                     XmNbottomAttachment,XmATTACH_NONE,
                                     XmNleftAttachment, XmATTACH_POSITION,
@@ -1003,7 +1035,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                                     XmNmaxLength, 3,
                                     XmNbackground, colors[0x0f],
                                     XmNtopAttachment,XmATTACH_WIDGET,
-                                    XmNtopWidget, setup3,
+                                    XmNtopWidget, setup4,
                                     XmNtopOffset, 5,
                                     XmNbottomAttachment,XmATTACH_FORM,
                                     XmNbottomOffset, 5,
@@ -1177,6 +1209,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                 XmTextFieldSetString(TNC_txdelay,"40");
                 XmTextFieldSetString(TNC_persistence,"63");
                 XmTextFieldSetString(TNC_slottime,"20");
+                XmTextFieldSetString(TNC_txtail,"10");
                 XmTextFieldSetString(TNC_fullduplex,"0");
             }
             else {
@@ -1349,6 +1382,7 @@ XtSetSensitive(TNC_relay_digipeat, FALSE);
                 XmTextFieldSetString(TNC_txdelay,devices[TNC_port].txdelay);
                 XmTextFieldSetString(TNC_persistence,devices[TNC_port].persistence);
                 XmTextFieldSetString(TNC_slottime,devices[TNC_port].slottime);
+                XmTextFieldSetString(TNC_txtail,devices[TNC_port].txtail);
                 XmTextFieldSetString(TNC_fullduplex,devices[TNC_port].fullduplex);
             }
             else {

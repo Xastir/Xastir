@@ -450,6 +450,10 @@ void save_data(void)  {
             store_string (fout, name, devices[i].slottime);
 
             strcpy (name, name_temp);
+            strcat (name, "TNC_TXTAIL");
+            store_string (fout, name, devices[i].txtail);
+
+            strcpy (name, name_temp);
             strcat (name, "TNC_FULLDUPLEX");
             store_string (fout, name, devices[i].fullduplex);
 
@@ -949,6 +953,11 @@ void load_data_or_default(void) {
         strcat (name, "TNC_SLOTTIME");
         if (!get_string (name, devices[i].slottime))
             strcpy (devices[i].slottime, "10");
+
+        strcpy (name, name_temp);
+        strcat (name, "TNC_TXTAIL");
+        if (!get_string (name, devices[i].txtail))
+            strcpy (devices[i].txtail, "10");
 
         strcpy (name, name_temp);
         strcat (name, "TNC_FULLDUPLEX");

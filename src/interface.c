@@ -1974,6 +1974,7 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 // 0x01 TXDELAY
 // 0x02 P-Persistence
 // 0x03 SlotTime
+// 0x04 TxTail
 // 0x05 FullDuplex
 // 0x06 SetHardware
 // 0xff Exit from KISS mode (not implemented yet)
@@ -1990,7 +1991,7 @@ void send_kiss_config(int port, int device, int command, int value) {
         return;
     }
 
-    if (command < 1 || command > 6 || command == 4) {
+    if (command < 1 || command > 6) {
         printf("send_kiss_config: out-of-range value for command\n");
         return;
     }
@@ -3263,6 +3264,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     send_kiss_config(port_avail,0,0x01,atoi(devices[port_avail].txdelay));
                     send_kiss_config(port_avail,0,0x02,atoi(devices[port_avail].persistence));
                     send_kiss_config(port_avail,0,0x03,atoi(devices[port_avail].slottime));
+                    send_kiss_config(port_avail,0,0x04,atoi(devices[port_avail].txtail));
                     send_kiss_config(port_avail,0,0x05,atoi(devices[port_avail].fullduplex));
                     break;
 
