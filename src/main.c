@@ -8115,6 +8115,9 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 temp_course,
                 sizeof(temp_course));
 
+        if (tmp->longitude < CAD_list_head->start->longitude)
+            dx0 = -dx0;
+
         dy0 = cvt_kn2len
             * calc_distance_course(
                 CAD_list_head->start->latitude,
@@ -8123,6 +8126,9 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 CAD_list_head->start->longitude,
                 temp_course,
                 sizeof(temp_course));
+
+        if (tmp->latitude < CAD_list_head->start->latitude)
+            dx0 = -dx0;
 
         dx1 = cvt_kn2len
             * calc_distance_course(
@@ -8133,6 +8139,9 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 temp_course,
                 sizeof(temp_course));
 
+        if (tmp->next->longitude < CAD_list_head->start->longitude)
+            dx0 = -dx0;
+
         dy1 = cvt_kn2len
             * calc_distance_course(
                 CAD_list_head->start->latitude,
@@ -8141,6 +8150,9 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 CAD_list_head->start->longitude,
                 temp_course,
                 sizeof(temp_course));
+
+        if (tmp->next->latitude < CAD_list_head->start->latitude)
+            dx0 = -dx0;
 
         // Greene's Theorem:  Summation of the following, then
         // divide by two:
@@ -8154,6 +8166,9 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
         tmp = tmp->next;
     }
     area = 0.5 * area;
+
+    if (area < 0.0)
+        area = -area;
 
 fprintf(stderr,"Area: %f\n\n", area);
 
