@@ -22,6 +22,8 @@ xastir_SOURCES = \
     geo-find.c geo.h \
     geocoder_gui.c \
     gps.c gps.h \
+    hashtable.c hashtable_private.h hashtable.h \
+    hashtable_itr.c hashtable_itr.h \
     hostname.c hostname.h \
     igate.c igate.h \
     interface.c interface.h \
