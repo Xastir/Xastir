@@ -547,6 +547,14 @@ void save_data(void)  {
             store_string (fout, name, devices[i].device_name);
 
             strcpy (name, name_temp);
+            strcat (name, "RADIO_PORT");
+            store_string (fout, name, devices[i].radio_port);
+
+            strcpy (name, name_temp);
+            strcat (name, "INTERFACE_COMMENT");
+            store_string (fout, name, devices[i].comment);
+
+            strcpy (name, name_temp);
             strcat (name, "HOST");
             store_string (fout, name, devices[i].device_host_name);
 
@@ -1152,6 +1160,16 @@ void load_data_or_default(void) {
         strcat (name, "NAME");
         if (!get_string (name, devices[i].device_name))
             strcpy (devices[i].device_name, "");
+
+        strcpy (name, name_temp);
+        strcat (name, "RADIO_PORT");
+        if (!get_string (name, devices[i].radio_port))
+            strcpy (devices[i].radio_port, "0");
+
+        strcpy (name, name_temp);
+        strcat (name, "INTERFACE_COMMENT");
+        if (!get_string (name, devices[i].comment))
+            strcpy (devices[i].comment, "");
 
         strcpy (name, name_temp);
         strcat (name, "HOST");

@@ -230,6 +230,7 @@ Widget config_TNC_dialog = (Widget)NULL;
 Widget TNC_active_on_startup;
 Widget TNC_transmit_data;
 Widget TNC_device_name_data;
+Widget TNC_radio_port_data; // Used only for Multi-Port TNC's
 Widget TNC_unproto1_data;
 Widget TNC_unproto2_data;
 Widget TNC_unproto3_data;
@@ -286,6 +287,16 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
 
     strcpy(devices[TNC_port].device_name,XmTextFieldGetString(TNC_device_name_data));
     (void)remove_trailing_spaces(devices[TNC_port].device_name);
+
+    if (devices[TNC_port].device_type == DEVICE_SERIAL_MKISS_TNC) {
+        // If MKISS, fetch "radio_port".  If empty, store a zero.
+        strcpy(devices[TNC_port].radio_port,XmTextFieldGetString(TNC_radio_port_data));
+        (void)remove_trailing_spaces(devices[TNC_port].radio_port);
+        if (strcmp(devices[TNC_port].radio_port,"") == 0) {
+            strcpy(devices[TNC_port].radio_port,"0");
+        }
+fprintf(stderr,"Radio Port: %s\n",devices[TNC_port].radio_port);
+    }
 
     if (XmToggleButtonGetState(TNC_active_on_startup))
         devices[TNC_port].connect_on_startup=1;
@@ -383,6 +394,11 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
             devices[TNC_port].fullduplex=0;
         send_kiss_config(TNC_port,0,0x05,devices[TNC_port].fullduplex);
 
+        if (type == DEVICE_SERIAL_MKISS_TNC) {
+//WE7U
+// Get and store the TNC port value (which radio port of the
+// Multi-port TNC we'll be using for this interface).
+        }
 
     }
     else {
@@ -435,7 +451,8 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                 igate, igate_box,
                 igate_o_0, igate_o_1, igate_o_2,
                 igate_label,
-                proto, proto1, proto2, proto3;
+                proto, proto1, proto2, proto3,
+                radio_port_label;
     char temp[50];
     Atom delw;
     Arg al[2];                      /* Arg List */
@@ -581,7 +598,7 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNtopOffset, 5,
                                       XmNbottomAttachment, XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 100,
+                                      XmNleftOffset, 10,
                                       XmNrightAttachment, XmATTACH_NONE,
                                       XmNbackground, colors[0xff],
                                       NULL);
@@ -606,6 +623,47 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                       XmNleftOffset, 12,
                                       XmNrightAttachment,XmATTACH_NONE,
                                       NULL);
+
+
+//WE7U
+        if (device_type ==  DEVICE_SERIAL_MKISS_TNC) {
+            // Add a "Radio Port" field for Multi-Port KISS TNC's.
+
+            radio_port_label = XtVaCreateManagedWidget(langcode("Radio Port"),
+                                      xmLabelWidgetClass, form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, TNC_active_on_startup,
+                                      XmNtopOffset, 5,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, TNC_device_name_data,
+                                      XmNleftOffset, 35,
+                                      XmNrightAttachment, XmATTACH_NONE,
+                                      XmNbackground, colors[0xff],
+                                      NULL);
+
+            TNC_radio_port_data = XtVaCreateManagedWidget("Config_TNC device_data",
+                                      xmTextFieldWidgetClass, form,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+                                      XmNeditable,   TRUE,
+                                      XmNcursorPositionVisible, TRUE,
+                                      XmNsensitive, TRUE,
+                                      XmNshadowThickness,    1,
+                                      XmNcolumns, 5,
+                                      XmNwidth, ((5*7)+2),
+                                      XmNmaxLength, 2,
+                                      XmNbackground, colors[0x0f],
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+                                      XmNtopWidget, TNC_active_on_startup,
+                                      XmNtopOffset, 2,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_WIDGET,
+                                      XmNleftWidget, radio_port_label,
+                                      XmNleftOffset, 12,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      NULL);
+        }
 
         frame = XtVaCreateManagedWidget("Config_TNC frame", xmFrameWidgetClass, form,
                                     XmNtopAttachment,XmATTACH_WIDGET,
@@ -1227,12 +1285,19 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
 
         if (config_type==0) {
             /* first time port */
-                        devices[TNC_port].gps_retrieve=DEFAULT_GPS_RETR;
+            devices[TNC_port].gps_retrieve=DEFAULT_GPS_RETR;
             if (debug_level & 128) {
                 fprintf(stderr,"Storing %d to gps_retrieve for %d\n",
                 DEFAULT_GPS_RETR, port);
             }
+
             XmTextFieldSetString(TNC_device_name_data,TNC_PORT);
+
+            if (device_type == DEVICE_SERIAL_MKISS_TNC) {
+                XmTextFieldSetString(TNC_radio_port_data,"0");
+fprintf(stderr,"Assigning '0' to radio port\n");
+            }
+
             XmToggleButtonSetState(TNC_active_on_startup,TRUE,FALSE);
             XmToggleButtonSetState(TNC_transmit_data,TRUE,FALSE);
 
@@ -1293,6 +1358,12 @@ XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC || device_type == DEVICE_SE
 begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 
             XmTextFieldSetString(TNC_device_name_data,devices[TNC_port].device_name);
+
+            if (device_type == DEVICE_SERIAL_MKISS_TNC) {
+                XmTextFieldSetString(TNC_radio_port_data, devices[TNC_port].radio_port);
+fprintf(stderr,"Reconfig: %s\n", devices[TNC_port].radio_port);
+            }
+
             if (devices[TNC_port].connect_on_startup)
                 XmToggleButtonSetState(TNC_active_on_startup,TRUE,FALSE);
             else
@@ -5507,13 +5578,29 @@ void modify_device_list(int option, int port) {
                         case DEVICE_SERIAL_TNC_HSP_GPS:
                         case DEVICE_SERIAL_TNC_AUX_GPS:
                         case DEVICE_SERIAL_KISS_TNC:
-                        case DEVICE_SERIAL_MKISS_TNC:
                         case DEVICE_SERIAL_GPS:
                         case DEVICE_SERIAL_WX:
-                            xastir_snprintf(temp, sizeof(temp),
-                                langcode("IFDIN00000"), langcode("UNIOP00006"),
-                                i, dtype[devices[i].device_type].device_name,
-                                devices[i].device_name);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                langcode("IFDIN00000"),
+                                langcode("UNIOP00006"),
+                                i,
+                                dtype[devices[i].device_type].device_name,
+                                devices[i].device_name,
+                                devices[i].comment);
+                            strcat(temp,"    ");
+                            break;
+
+                        case DEVICE_SERIAL_MKISS_TNC:
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                langcode("IFDIN00001"),
+                                langcode("UNIOP00006"),
+                                i,
+                                dtype[devices[i].device_type].device_name,
+                                devices[i].device_name,
+                                atoi(devices[i].radio_port),
+                                devices[i].comment);
                             strcat(temp,"    ");
                             break;
 
@@ -5522,18 +5609,27 @@ void modify_device_list(int option, int port) {
                         case DEVICE_NET_GPSD:
                         case DEVICE_NET_WX:
                         case DEVICE_NET_AGWPE:
-                            xastir_snprintf(temp, sizeof(temp),
-                                langcode("IFDIN00001"), langcode("UNIOP00006"),
-                                i, dtype[devices[i].device_type].device_name,
-                                devices[i].device_host_name, devices[i].sp);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                langcode("IFDIN00001"),
+                                langcode("UNIOP00006"),
+                                i,
+                                dtype[devices[i].device_type].device_name,
+                                devices[i].device_host_name,
+                                devices[i].sp,
+                                devices[i].comment);
                             strcat(temp,"    ");
                             break;
 
                         case DEVICE_AX25_TNC:
-                            xastir_snprintf(temp, sizeof(temp),
-                                langcode("IFDIN00002"), langcode("UNIOP00006"),
-                                i, dtype[devices[i].device_type].device_name,
-                                devices[i].device_name);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                langcode("IFDIN00002"),
+                                langcode("UNIOP00006"),
+                                i,
+                                dtype[devices[i].device_type].device_name,
+                                devices[i].device_name,
+                                devices[i].comment);
                             strcat(temp,"    ");
                             break;
 
@@ -5572,15 +5668,33 @@ void modify_device_list(int option, int port) {
                     switch (devices[i].device_type) {
                         case DEVICE_SERIAL_TNC:
                         case DEVICE_SERIAL_KISS_TNC:
-                        case DEVICE_SERIAL_MKISS_TNC:
                         case DEVICE_SERIAL_TNC_HSP_GPS:
                         case DEVICE_SERIAL_TNC_AUX_GPS:
                         case DEVICE_SERIAL_GPS:
                         case DEVICE_SERIAL_WX:
-                            xastir_snprintf(temp, sizeof(temp),
-                                langcode("IFDIN00003"), langcode("UNIOP00006"),
-                                i, temp2, dtype[devices[i].device_type].device_name,
-                                devices[i].device_name);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                langcode("IFDIN00003"),
+                                langcode("UNIOP00006"),
+                                i,
+                                temp2,
+                                dtype[devices[i].device_type].device_name,
+                                devices[i].device_name,
+                                devices[i].comment);
+                            strcat(temp,"    ");
+                            break;
+
+                        case DEVICE_SERIAL_MKISS_TNC:
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                langcode("IFDIN00004"),
+                                langcode("UNIOP00006"),
+                                i,
+                                temp2,
+                                dtype[devices[i].device_type].device_name,
+                                devices[i].device_name,
+                                atoi(devices[i].radio_port),
+                                devices[i].comment);
                             strcat(temp,"    ");
                             break;
 
@@ -5589,18 +5703,29 @@ void modify_device_list(int option, int port) {
                         case DEVICE_NET_GPSD:
                         case DEVICE_NET_WX:
                         case DEVICE_NET_AGWPE:
-                            xastir_snprintf(temp, sizeof(temp),
-                                langcode("IFDIN00004"), langcode("UNIOP00006"),
-                                i, temp2, dtype[devices[i].device_type].device_name,
-                                devices[i].device_host_name, devices[i].sp);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                langcode("IFDIN00004"),
+                                langcode("UNIOP00006"),
+                                i,
+                                temp2,
+                                dtype[devices[i].device_type].device_name,
+                                devices[i].device_host_name,
+                                devices[i].sp,
+                                devices[i].comment);
                             strcat(temp,"    ");
                             break;
 
                         case DEVICE_AX25_TNC:
-                            xastir_snprintf(temp, sizeof(temp),
-                                langcode("IFDIN00005"), langcode("UNIOP00006"),
-                                i, temp2, dtype[devices[i].device_type].device_name,
-                                devices[i].device_name);
+                            xastir_snprintf(temp,
+                                sizeof(temp),
+                                langcode("IFDIN00005"),
+                                langcode("UNIOP00006"),
+                                i,
+                                temp2,
+                                dtype[devices[i].device_type].device_name,
+                                devices[i].device_name,
+                                devices[i].comment);
                             strcat(temp,"    ");
                             break;
 
