@@ -1,4 +1,4 @@
-/*
+/* -*- c-basic-indent: 4; indent-tabs-mode: nil -*-
  * $Id$
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
@@ -411,133 +411,133 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,long y_lat_cor
                         fill_color = (last_behavior & ~0x80) + (unsigned char)0x60;
                         if (fill_color > (unsigned char)0x69)
                             fill_color = (unsigned char)0x60;
-                        } else
-                            fill_color = (unsigned char)object_behavior;
+                    } else
+                        fill_color = (unsigned char)object_behavior;
 
 
-                        // Here's where we draw filled areas using fill_color.
+                    // Here's where we draw filled areas using fill_color.
 
-                        (void)XSetForeground (XtDisplay (w), gc, colors[(int)fill_color]);
-
-                        switch (destination_pixmap) {
-
-                            case DRAW_TO_PIXMAP:
-                                            // We must be drawing maps 'cuz this is the pixmap we use for it.
-                                            if (map_color_fill)
-                                                (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, npoints, Complex,CoordModeOrigin);
-                                            break;
-
-                            case DRAW_TO_PIXMAP_ALERTS:
-                                            // We must be drawing weather alert maps 'cuz this is the pixmap we use for it.
-                                            // This GC is used only for pixmap_alerts
-                                            (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)fill_color]);
-
-                                            // This is how we tint it instead of obscuring the whole map
-                                            (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
-                                            /*
-                                              Options are:
-                                              GXclear         0                       (Don't use)
-                                              GXand           src AND dst             (Darker colors, black can result from overlap)
-                                              GXandReverse    src AND (NOT dst)       (Darker colors)
-                                              GXcopy          src                     (Don't use)
-                                              GXandInverted   (NOT src) AND dst       (Pretty colors)
-                                              GXnoop          dst                     (Don't use)
-                                              GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
-                                              GXor            src OR dst              (More pastel colors, too bright?)
-                                              GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
-                                              GXequiv         (NOT src) XOR dst       (Bright, very readable)
-                                              GXinvert        (NOT dst)               (Don't use)
-                                              GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
-                                              GXcopyInverted  (NOT src)               (Don't use)
-                                              GXorInverted    (NOT src) OR dst        (Bright, not very readable)
-                                              GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
-                                              GXset           1                       (Don't use)
-                                            */
-
-
-                                            // Here we wish to tint the existing map instead of obscuring it.  We'll use
-                                            // gc_tint here instead of gc.
-                                            (void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints, Complex,CoordModeOrigin);
-                                            break;
-
-                            case DRAW_TO_PIXMAP_FINAL:
-                                            // We must be drawing symbols/tracks 'cuz this is the pixmap we use for it.
-                                            (void)XFillPolygon (XtDisplay (w), pixmap_final, gc, points, npoints, Complex,CoordModeOrigin);
-                                            break;
-                                }
-
-                                line_behavior = first_behavior;
-                            }
-                            if (line_behavior & 0x01)
-                                (void)XSetLineAttributes (XtDisplay (w), gc, 2, LineSolid, CapButt,JoinMiter);
-                            else
-                                (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
-
-                            if (color == (unsigned char)0x56)
-                                (void)XSetLineAttributes (XtDisplay (w), gc, 10, LineSolid, CapButt,JoinMiter);
-
-                    // Set the color for drawing lines/borders
-                            (void)XSetForeground (XtDisplay (w), gc, colors[(int)last_color]);
+                    (void)XSetForeground (XtDisplay (w), gc, colors[(int)fill_color]);
 
                     switch (destination_pixmap) {
 
-                        case DRAW_TO_PIXMAP_FINAL:
-                            (void)XDrawLines (XtDisplay (w), pixmap_final, gc, points, npoints,CoordModeOrigin);
-                            break;
+                    case DRAW_TO_PIXMAP:
+                        // We must be drawing maps 'cuz this is the pixmap we use for it.
+                        if (map_color_fill)
+                            (void)XFillPolygon (XtDisplay (w), pixmap, gc, points, npoints, Complex,CoordModeOrigin);
+                        break;
 
-                        case DRAW_TO_PIXMAP:
-                            (void)XDrawLines (XtDisplay (w), pixmap, gc, points, npoints,CoordModeOrigin);
-                            break;
+                    case DRAW_TO_PIXMAP_ALERTS:
+                        // We must be drawing weather alert maps 'cuz this is the pixmap we use for it.
+                        // This GC is used only for pixmap_alerts
+                        (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)fill_color]);
 
-                        case DRAW_TO_PIXMAP_ALERTS:
-                                        // This GC is used only for pixmap_alerts
-                                        (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)last_color]);
+                        // This is how we tint it instead of obscuring the whole map
+                        (void)XSetFunction (XtDisplay (w), gc_tint, GXor);
+                        /*
+                          Options are:
+                          GXclear         0                       (Don't use)
+                          GXand           src AND dst             (Darker colors, black can result from overlap)
+                          GXandReverse    src AND (NOT dst)       (Darker colors)
+                          GXcopy          src                     (Don't use)
+                          GXandInverted   (NOT src) AND dst       (Pretty colors)
+                          GXnoop          dst                     (Don't use)
+                          GXxor           src XOR dst             (Don't use, overlapping areas cancel each other out)
+                          GXor            src OR dst              (More pastel colors, too bright?)
+                          GXnor           (NOT src) AND (NOT dst) (Darker colors, very readable)
+                          GXequiv         (NOT src) XOR dst       (Bright, very readable)
+                          GXinvert        (NOT dst)               (Don't use)
+                          GXorReverse     src OR (NOT dst)        (Bright, not as readable as others)
+                          GXcopyInverted  (NOT src)               (Don't use)
+                          GXorInverted    (NOT src) OR dst        (Bright, not very readable)
+                          GXnand          (NOT src) OR (NOT dst)  (Bright, not very readable)
+                          GXset           1                       (Don't use)
+                        */
 
-                                        // Here we wish to tint the existing map instead of obscuring it.  We'll use
-                            // gc_tint here instead of gc.
-                            (void)XDrawLines (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints,CoordModeOrigin);
-                            break;
+
+                        // Here we wish to tint the existing map instead of obscuring it.  We'll use
+                        // gc_tint here instead of gc.
+                        (void)XFillPolygon (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints, Complex,CoordModeOrigin);
+                        break;
+
+                    case DRAW_TO_PIXMAP_FINAL:
+                        // We must be drawing symbols/tracks 'cuz this is the pixmap we use for it.
+                        (void)XFillPolygon (XtDisplay (w), pixmap_final, gc, points, npoints, Complex,CoordModeOrigin);
+                        break;
                     }
 
-                    npoints = 0;
-
-                    /* check to see if we have been away from the screen too long */
-                    if (redraw_check > 1000) {
-                        redraw_check = 0;
-                        XmUpdateDisplay (XtParent (da));
-                    }
-                    redraw_check++;
+                    line_behavior = first_behavior;
                 }
-                last_color = color;
-                if (color == (unsigned char)0xff) {
-                    npoints = 0;
-                    first_behavior = (unsigned char)object_behavior;
+                if (line_behavior & 0x01)
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 2, LineSolid, CapButt,JoinMiter);
+                else
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
+
+                if (color == (unsigned char)0x56)
+                    (void)XSetLineAttributes (XtDisplay (w), gc, 10, LineSolid, CapButt,JoinMiter);
+
+                // Set the color for drawing lines/borders
+                (void)XSetForeground (XtDisplay (w), gc, colors[(int)last_color]);
+
+                switch (destination_pixmap) {
+
+                case DRAW_TO_PIXMAP_FINAL:
+                    (void)XDrawLines (XtDisplay (w), pixmap_final, gc, points, npoints,CoordModeOrigin);
+                    break;
+
+                case DRAW_TO_PIXMAP:
+                    (void)XDrawLines (XtDisplay (w), pixmap, gc, points, npoints,CoordModeOrigin);
+                    break;
+
+                case DRAW_TO_PIXMAP_ALERTS:
+                    // This GC is used only for pixmap_alerts
+                    (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)last_color]);
+
+                    // Here we wish to tint the existing map instead of obscuring it.  We'll use
+                    // gc_tint here instead of gc.
+                    (void)XDrawLines (XtDisplay (w), pixmap_alerts, gc_tint, points, npoints,CoordModeOrigin);
+                    break;
                 }
-                points[npoints].x = (short)x;
-                points[npoints].y = (short)y;
-                if ( (points[npoints].x > (-MAX_OUTBOUND))
-                        && (points[npoints].x < (short)max_x)
-                        && (points[npoints].y > (-MAX_OUTBOUND))
-                        && (points[npoints].y < (short)max_y)
-                        && (color != (unsigned char)0) )
 
-                    npoints++;
+                npoints = 0;
 
-                last_behavior = (unsigned char)object_behavior;
-                return;
+                /* check to see if we have been away from the screen too long */
+                if (redraw_check > 1000) {
+                    redraw_check = 0;
+                    XmUpdateDisplay (XtParent (da));
+                }
+                redraw_check++;
+            }
+            last_color = color;
+            if (color == (unsigned char)0xff) {
+                npoints = 0;
+                first_behavior = (unsigned char)object_behavior;
             }
             points[npoints].x = (short)x;
             points[npoints].y = (short)y;
-            last_behavior = (unsigned char)object_behavior;
+            if (    (points[npoints].x > (-MAX_OUTBOUND))
+                 && (points[npoints].x < (short)max_x)
+                 && (points[npoints].y > (-MAX_OUTBOUND))
+                 && (points[npoints].y < (short)max_y)
+                 && (color != (unsigned char)0) )
 
-            if (points[npoints].x != points[npoints - 1].x || points[npoints].y != points[npoints - 1].y) {
-                if (last_behavior & 0x80)
-                    npoints++;
+                npoints++;
+
+            last_behavior = (unsigned char)object_behavior;
+            return;
+        }
+        points[npoints].x = (short)x;
+        points[npoints].y = (short)y;
+        last_behavior = (unsigned char)object_behavior;
+
+        if (points[npoints].x != points[npoints - 1].x || points[npoints].y != points[npoints - 1].y) {
+            if (last_behavior & 0x80)
+                npoints++;
 
             else if (points[npoints].x > (-MAX_OUTBOUND)
-                    && points[npoints].x < (short)max_x
-                    && points[npoints].y > (-MAX_OUTBOUND)
-                    && points[npoints].y < (short)max_y)
+                     && points[npoints].x < (short)max_x
+                     && points[npoints].y > (-MAX_OUTBOUND)
+                     && points[npoints].y < (short)max_y)
                 npoints++;
 
         }
