@@ -41,21 +41,24 @@ cd xastir; ./update-xastir
 echo
 echo
 echo
-echo If you have set up the /etc/sudoers file as described in README.CVS, you should
-echo now have Xastir compiled and installed, else go set up the /etc/sudoers file,
-echo then type the update-xastir command as listed below.  Run:
+echo If you have previously set up the /etc/sudoers file as described in README.CVS,
+echo you should have "xastir" and "callpass" binaries installed in /usr/local/bin.
+echo If not, set up the /etc/sudoers file now and run the "update-xastir" command
+echo listed below.  To update Xastir to the latest version at any time in the future,
+echo change to the "xastir" directory and type:
+echo
+echo "    ./update-xastir"
+echo
+echo Running Xastir:  Execute this command to get your passcode.  You will need the
+echo number it computes in order to authenticate with the internet servers.  The
+echo number is entered in the "passcode" box when setting up an internet server
+echo interface:
 echo
 echo "    callpass"
 echo
-echo To get your passcode.  You will need the number it computes in order to
-echo authenticate with the internet servers.  Run Xastir by typing:
+echo Start Xastir itself by typing:
 echo
 echo "    xastir &"
-echo
-echo To update Xastir to the latest CVS version at any time, change
-echo to the "xastir" directory and type:
-echo
-echo "    ./update-xastir"
 echo
 
 
