@@ -1389,7 +1389,7 @@ WINDOWS/CYGWIN NOTES:
      ends up putting you somewhere other than your home directory, and your
      .profile doesn't end up getting sourced.  There must be a better way.
 
-     Adding libproj to Cygwin (proj-4.4.5):
+     Adding libproj to Cygwin (proj-4.4.6):
      --------------------------------------
  
      Should be similar to the previous instructions for installing libproj
