@@ -1469,7 +1469,8 @@ void reload_object_item(void) {
         (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     }
     else {
-        printf("Couldn't open file for reading: %s\n", file);
+        if (debug_level & 1)
+            printf("Couldn't open file for reading: %s\n", file);
     }
 }
 
