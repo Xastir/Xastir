@@ -77,22 +77,17 @@
 // draw_gnis_map()
 //
 // Allows drawing a background map of labels for the viewport.
-// Example format:
+// Example format (old):
 // "WA","Abbey View Memorial Park","cemetery","Snohomish","53","061","474647N","1221650W","47.77972","-122.28056","","","","","420","","Edmonds East"
+//
+// Example format (new):
+// 376016|ID|12th Ave Drain|stream|Canyon|16|027|433107N|1163348W|43.51861|-116.56333||||||||Nampa
 //
 // These types of files are available from http://geonames.usgs.gov/
 // under "Download State Gazetteer Data - Available Via Anonymous FTP".
 // A typical filename would be: "WA.deci.gz".   Do not get the other
 // types of files which are columnar.  The files that we parse are
-// comma-delimited and have quotes around each field.
-
-// Some of the files have quotes around some fields, but not others,
-// and some have an extreme amount of spaces at the end of each
-// line.  Some also have spaces, after a field but before a comma.
-//
-// Another difference just found:  Some files have quotes around all
-// fields, some have quotes around only some.  We need to handle
-// this gracefully.
+// pipe-delimited.
 //
 void draw_gnis_map (Widget w,
 		    char *dir,
@@ -171,6 +166,31 @@ void draw_gnis_map (Widget w,
     }
 
 
+/*
+Latest pipe-delimited format from USGS (as of 08/12/2004):
+----------------------------------------------------------
+Feature ID Number (FID)
+State Alpha Code
+Feature Name
+Feature Type
+County Name
+State Number Code (FIPS Code)
+County Number Code (FIPS Code)
+Primary Latitude (DMS)
+Primary Longitude (DMS)
+Primary Latitude (decimal degrees)
+Primary Longitude (decimal degrees)
+Source Latitude (DMS)
+Source Longitude (DMS)
+Source Latitude (decimal degrees)
+Source Longitude (decimal degrees)
+Elevation
+Estimated Population
+Federal Status
+Cell Name
+*/
+
+
     // Attempt to open the file
     f = fopen (file, "r");
     if (f != NULL) {
@@ -189,33 +209,31 @@ void draw_gnis_map (Widget w,
                     //if we don't find enough parameters while
                     //parsing.
 
-                    // Find State feature resides in
-                    i = index(line,',');    // Find ',' after state field
+                    // Find end of Feature ID Number field
+                    j = index(line,'|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
+                        continue;   // Skip this line
+                    }
+
+                    // Find end of State field
+                    i = index(j+1, '|');
+
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     i[0] = '\0';
-                    strncpy(state,line,49);
+                    strncpy(state,j+1,49);
                     clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
 // of the text someday, i.e. "Cassidy, Lake".
 
-                    // Find Name
-                    j = index(i+1, ',');    // Find ',' after Name.  Note that there may be commas in the name.
+                    // Find end of Name field
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
-                        continue;   // Skip this line
-                    }
-
-                    while ( (j != NULL) && (j[1] != '\"') ) {
-                        k = j;
-                        j = index(k+1, ',');
-                    }
-
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
@@ -224,9 +242,9 @@ void draw_gnis_map (Widget w,
                     clean_string(name);
 
                     // Find Type
-                    i = index(j+1, ',');
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
@@ -235,9 +253,9 @@ void draw_gnis_map (Widget w,
                     clean_string(type);
 
                     // Find County          // Can there be commas in the county name?
-                    j = index(i+1, ',');
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
@@ -245,28 +263,28 @@ void draw_gnis_map (Widget w,
                     strncpy(county,i+1,99);
                     clean_string(county);
 
-                    // Find ?
-                    i = index(j+1, ',');
+                    // Find end of State Number Code field
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     i[0] = '\0';
 
-                    // Find ?
-                    j = index(i+1, ',');
+                    // Find end of County Number Code field
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     j[0] = '\0';
 
-                    // Find latitude (DDMMSSN)
-                    i = index(j+1, ',');
+                    // Find end of Primary Latitude field (DDMMSSN)
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
@@ -274,10 +292,10 @@ void draw_gnis_map (Widget w,
                     strncpy(latitude,j+1,14);
                     clean_string(latitude);
 
-                    // Find longitude (DDDMMSSW)
-                    j = index(i+1, ',');
+                    // Find end of Primary Longitude field (DDDMMSSW)
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
@@ -285,73 +303,77 @@ void draw_gnis_map (Widget w,
                     strncpy(longitude,i+1,14);
                     clean_string(longitude);
 
-                    // Find another latitude
-                    i = index(j+1, ',');
+                    // Find end of Primary Latitude field (decimal
+                    // degrees)
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     i[0] = '\0';
 
-                    // Find another longitude
-                    j = index(i+1, ',');
+                    // Find end of Primary Longitude field (decimal
+                    // degrees)
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     j[0] = '\0';
 
-                    // Find ?
-                    i = index(j+1, ',');
+                    // Find end of Source Latitude field (DMS)
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     i[0] = '\0';
 
-                    // Find ?
-                    j = index(i+1, ',');
+                    // Find end of Source Longitude field (DMS)
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     j[0] = '\0';
 
-                    // Find ?
-                    i = index(j+1, ',');
+                    // Find end of Source Latitude field (decimal
+                    // degrees)
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     i[0] = '\0';
 
-                    // Find ?
-                    j = index(i+1, ',');
+                    // Find end of Source Longitude field (decimal
+                    // degrees)
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     j[0] = '\0';
 
-                    // Find altitude
-                    i = index(j+1, ',');
+                    // Find end of Elevation field
+                    i = index(j+1, '|');
 
-                    if (i == NULL) {    // Comma not found
+                    if (i == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
                     i[0] = '\0';
 
-                    // Find population
-                    j = index(i+1, ',');
+                    // Find end of Estimated Population field
+                    j = index(i+1, '|');
 
-                    if (j == NULL) {    // Comma not found
+                    if (j == NULL) {    // Pipe not found
                         continue;   // Skip this line
                     }
 
@@ -362,6 +384,9 @@ void draw_gnis_map (Widget w,
                         strncpy(population,"0",14);
                     } 
                     clean_string(population);
+
+                    // There are two more field, "Federal Status"
+                    // and "Cell Name".  We ignore those for now.
  
                     lat_dd[0] = latitude[0];
                     lat_dd[1] = latitude[1];
@@ -1212,7 +1237,5 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
     return(0);  // We didn't find a match
 }
-
-
 
 
