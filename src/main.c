@@ -84,7 +84,6 @@
 #include <Xm/XmAll.h>
 #include <X11/cursorfont.h>
 
-
 #define DOS_HDR_LINES 8
 
 #define STATUSLINE_ACTIVE 10    /* status line is cleared after 10 seconds */
@@ -874,8 +873,6 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
         button_ok, button_cancel;
 
     Atom delw;
-    Arg args[2];                    // Arg List
-    register unsigned int n = 0;    // Arg Count
     char temp_string[10];
 
     // Destroy the dialog if it exists.  This is to make sure the
@@ -886,283 +883,329 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
  
     if (!smart_beacon_dialog) {
 
-        smart_beacon_dialog = XtVaCreatePopupShell(langcode("SMARTB001"),xmDialogShellWidgetClass,Global.top,
-                                    XmNdeleteResponse,XmDESTROY,
-                                    XmNdefaultPosition, FALSE,
-                                    NULL);
+        smart_beacon_dialog = XtVaCreatePopupShell(langcode("SMARTB001"),
+                xmDialogShellWidgetClass,Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Smart_Beacon pane",xmPanedWindowWidgetClass, smart_beacon_dialog,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        pane = XtVaCreateWidget("Smart_Beacon pane",
+                xmPanedWindowWidgetClass,
+                smart_beacon_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        form =  XtVaCreateWidget("Smart_Beacon form",xmFormWidgetClass, pane,
-                                XmNfractionBase, 2,
-                                XmNbackground, colors[0xff],
-                                XmNautoUnmanage, FALSE,
-                                XmNshadowThickness, 1,
-                                NULL);
+        form =  XtVaCreateWidget("Smart_Beacon form",
+                xmFormWidgetClass,
+                pane,
+                XmNfractionBase, 2,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        smart_beacon_enable = XtVaCreateManagedWidget(langcode("SMARTB011"),xmToggleButtonWidgetClass,form,
-                                XmNtopAttachment, XmATTACH_FORM,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset,5,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
+        smart_beacon_enable = XtVaCreateManagedWidget(langcode("SMARTB011"),
+                xmToggleButtonWidgetClass,form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset,5,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label1 = XtVaCreateManagedWidget(langcode("SMARTB002"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, smart_beacon_enable,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label1 = XtVaCreateManagedWidget(langcode("SMARTB002"),
+                xmLabelWidgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, smart_beacon_enable,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sb_hi_rate_data = XtVaCreateManagedWidget("Smart_Beacon hi_rate_data", xmTextWidgetClass, form,
-                                XmNeditable,   TRUE,
-                                XmNcursorPositionVisible, TRUE,
-                                XmNsensitive, TRUE,
-                                XmNshadowThickness,    1,
-                                XmNcolumns, 6,
-                                XmNwidth, ((6*7)+2),
-                                XmNmaxLength, 5,
-                                XmNbackground, colors[0x0f],
-                                XmNtopOffset, 5,
-                                XmNtopAttachment,XmATTACH_WIDGET,
-                                XmNtopWidget, smart_beacon_enable,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, label1,
-                                XmNrightAttachment,XmATTACH_FORM,
-                                XmNrightOffset, 10,
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
+        sb_hi_rate_data = XtVaCreateManagedWidget("Smart_Beacon hi_rate_data", 
+                xmTextWidgetClass,
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((6*7)+2),
+                XmNmaxLength, 5,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, smart_beacon_enable,
+                XmNtopOffset, 10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, label1,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        label2 = XtVaCreateManagedWidget(langcode("SMARTB003"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label1,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label2 = XtVaCreateManagedWidget(langcode("SMARTB003"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label1,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sb_hi_mph_data = XtVaCreateManagedWidget("Smart_Beacon hi_mph_data", xmTextWidgetClass, form,
-                                XmNeditable,   TRUE,
-                                XmNcursorPositionVisible, TRUE,
-                                XmNsensitive, TRUE,
-                                XmNshadowThickness,    1,
-                                XmNcolumns, 6,
-                                XmNwidth, ((6*7)+2),
-                                XmNmaxLength, 3,
-                                XmNbackground, colors[0x0f],
-                                XmNtopOffset, 5,
-                                XmNtopAttachment,XmATTACH_WIDGET,
-                                XmNtopWidget, label1,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, label2,
-                                XmNrightAttachment,XmATTACH_FORM,
-                                XmNrightOffset, 10,
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
+        sb_hi_mph_data = XtVaCreateManagedWidget("Smart_Beacon hi_mph_data", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((6*7)+2),
+                XmNmaxLength, 3,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label1,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, label2,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        label3 = XtVaCreateManagedWidget(langcode("SMARTB005"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label2,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label3 = XtVaCreateManagedWidget(langcode("SMARTB005"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label2,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sb_lo_rate_data = XtVaCreateManagedWidget("Smart_Beacon lo_rate_data", xmTextWidgetClass, form,
-                                XmNeditable,   TRUE,
-                                XmNcursorPositionVisible, TRUE,
-                                XmNsensitive, TRUE,
-                                XmNshadowThickness,    1,
-                                XmNcolumns, 6,
-                                XmNwidth, ((6*7)+2),
-                                XmNmaxLength, 3,
-                                XmNbackground, colors[0x0f],
-                                XmNtopOffset, 5,
-                                XmNtopAttachment,XmATTACH_WIDGET,
-                                XmNtopWidget, label2,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, label3,
-                                XmNrightAttachment,XmATTACH_FORM,
-                                XmNrightOffset, 10,
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
+        sb_lo_rate_data = XtVaCreateManagedWidget("Smart_Beacon lo_rate_data", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((6*7)+2),
+                XmNmaxLength, 3,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label2,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, label3,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        label4 = XtVaCreateManagedWidget(langcode("SMARTB006"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label3,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label4 = XtVaCreateManagedWidget(langcode("SMARTB006"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label3,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sb_lo_mph_data = XtVaCreateManagedWidget("Smart_Beacon lo_mph_data", xmTextWidgetClass, form,
-                                XmNeditable,   TRUE,
-                                XmNcursorPositionVisible, TRUE,
-                                XmNsensitive, TRUE,
-                                XmNshadowThickness,    1,
-                                XmNcolumns, 6,
-                                XmNwidth, ((6*7)+2),
-                                XmNmaxLength, 3,
-                                XmNbackground, colors[0x0f],
-                                XmNtopOffset, 5,
-                                XmNtopAttachment,XmATTACH_WIDGET,
-                                XmNtopWidget, label3,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, label4,
-                                XmNrightAttachment,XmATTACH_FORM,
-                                XmNrightOffset, 10,
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
+        sb_lo_mph_data = XtVaCreateManagedWidget("Smart_Beacon lo_mph_data", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((6*7)+2),
+                XmNmaxLength, 3,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label3,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, label4,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        label5 = XtVaCreateManagedWidget(langcode("SMARTB008"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label4,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label5 = XtVaCreateManagedWidget(langcode("SMARTB008"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label4,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sb_min_turn_data = XtVaCreateManagedWidget("Smart_Beacon min_turn_data", xmTextWidgetClass, form,
-                                XmNeditable,   TRUE,
-                                XmNcursorPositionVisible, TRUE,
-                                XmNsensitive, TRUE,
-                                XmNshadowThickness,    1,
-                                XmNcolumns, 6,
-                                XmNwidth, ((6*7)+2),
-                                XmNmaxLength, 3,
-                                XmNbackground, colors[0x0f],
-                                XmNtopOffset, 5,
-                                XmNtopAttachment,XmATTACH_WIDGET,
-                                XmNtopWidget, label4,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, label5,
-                                XmNrightAttachment,XmATTACH_FORM,
-                                XmNrightOffset, 10,
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
+        sb_min_turn_data = XtVaCreateManagedWidget("Smart_Beacon min_turn_data", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((6*7)+2),
+                XmNmaxLength, 3,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label4,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, label5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        label6 = XtVaCreateManagedWidget(langcode("SMARTB009"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label5,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label6 = XtVaCreateManagedWidget(langcode("SMARTB009"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label5,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sb_turn_slope_data = XtVaCreateManagedWidget("Smart_Beacon turn_slope_data", xmTextWidgetClass, form,
-                                XmNeditable,   TRUE,
-                                XmNcursorPositionVisible, TRUE,
-                                XmNsensitive, TRUE,
-                                XmNshadowThickness,    1,
-                                XmNcolumns, 6,
-                                XmNwidth, ((6*7)+2),
-                                XmNmaxLength, 5,
-                                XmNbackground, colors[0x0f],
-                                XmNtopOffset, 5,
-                                XmNtopAttachment,XmATTACH_WIDGET,
-                                XmNtopWidget, label5,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, label6,
-                                XmNrightAttachment,XmATTACH_FORM,
-                                XmNrightOffset, 10,
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
+        sb_turn_slope_data = XtVaCreateManagedWidget("Smart_Beacon turn_slope_data", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((6*7)+2),
+                XmNmaxLength, 5,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, label6,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        label7 = XtVaCreateManagedWidget(langcode("SMARTB010"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label6,
-                                XmNtopOffset, 10,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label7 = XtVaCreateManagedWidget(langcode("SMARTB010"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label6,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sb_wait_time_data = XtVaCreateManagedWidget("Smart_Beacon wait_time_data", xmTextWidgetClass, form,
-                                XmNeditable,   TRUE,
-                                XmNcursorPositionVisible, TRUE,
-                                XmNsensitive, TRUE,
-                                XmNshadowThickness,    1,
-                                XmNcolumns, 6,
-                                XmNwidth, ((6*7)+2),
-                                XmNmaxLength, 3,
-                                XmNbackground, colors[0x0f],
-                                XmNtopOffset, 5,
-                                XmNtopAttachment,XmATTACH_WIDGET,
-                                XmNtopWidget, label6,
-                                XmNbottomAttachment,XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_WIDGET,
-                                XmNleftWidget, label7,
-                                XmNrightAttachment,XmATTACH_FORM,
-                                XmNrightOffset, 10,
-                                XmNnavigationType, XmTAB_GROUP,
-                                NULL);
+        sb_wait_time_data = XtVaCreateManagedWidget("Smart_Beacon wait_time_data", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((6*7)+2),
+                XmNmaxLength, 3,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label6,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, label7,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        /*set args for color */
-        n=0;
-        XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
-
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, sb_wait_time_data,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 0,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 1,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sb_wait_time_data,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(button_ok, XmNactivateCallback, Smart_Beacon_change_data, smart_beacon_dialog);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, sb_wait_time_data,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 1,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 2,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sb_wait_time_data,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Smart_Beacon_destroy_shell, smart_beacon_dialog);
 
         pos_dialog(smart_beacon_dialog);
@@ -1949,231 +1992,281 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
         // clientData supplies the string we use for the label, and
         // is sent to us by the calling dialog.
         xastir_snprintf( temp_string, sizeof(temp_string), "%s %s", (char *)clientData, langcode("COORD001") );
-        coordinate_calc_dialog = XtVaCreatePopupShell(temp_string,xmDialogShellWidgetClass,Global.top,
-                                    XmNdeleteResponse,XmDESTROY,
-                                    XmNdefaultPosition, FALSE,
-                                    NULL);
 
-        pane = XtVaCreateWidget("Coordinate_calc pane",xmPanedWindowWidgetClass, coordinate_calc_dialog,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coordinate_calc_dialog = XtVaCreatePopupShell(temp_string,
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        form =  XtVaCreateWidget("Coordinate_calc form",xmFormWidgetClass, pane,
-                                XmNfractionBase, 4,
-                                XmNbackground, colors[0xff],
-                                XmNautoUnmanage, FALSE,
-                                XmNshadowThickness, 1,
-                                NULL);
+        pane = XtVaCreateWidget("Coordinate_calc pane",
+                xmPanedWindowWidgetClass, 
+                coordinate_calc_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label1 = XtVaCreateManagedWidget(langcode("COORD005"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_FORM,
-                                XmNtopOffset, 5,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        form =  XtVaCreateWidget("Coordinate_calc form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 4,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label2 = XtVaCreateManagedWidget(langcode("COORD006"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_FORM,
-                                XmNtopOffset, 5,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 70,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label1 = XtVaCreateManagedWidget(langcode("COORD005"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label3 = XtVaCreateManagedWidget(langcode("COORD007"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_FORM,
-                                XmNtopOffset, 5,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 200,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label2 = XtVaCreateManagedWidget(langcode("COORD006"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 70,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label4 = XtVaCreateManagedWidget(langcode("COORD008"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label1,
-                                XmNtopOffset, 2,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label3 = XtVaCreateManagedWidget(langcode("COORD007"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 200,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label5 = XtVaCreateManagedWidget(langcode("COORD009"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label1,
-                                XmNtopOffset, 2,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 70,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label4 = XtVaCreateManagedWidget(langcode("COORD008"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label1,
+                XmNtopOffset, 2,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label6 = XtVaCreateManagedWidget(langcode("COORD010"), xmLabelWidgetClass, form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, label1,
-                                XmNtopOffset, 2,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_FORM,
-                                XmNleftOffset, 200,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        label5 = XtVaCreateManagedWidget(langcode("COORD009"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label1,
+                XmNtopOffset, 2,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 70,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        label6 = XtVaCreateManagedWidget(langcode("COORD010"), 
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, label1,
+                XmNtopOffset, 2,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 200,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
         /*set args for color */
         n=0;
-        XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
+        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
 
-        coordinate_calc_zone = XtVaCreateManagedWidget("Coordinate_calc zone", xmTextWidgetClass, form,
-                            XmNeditable,   TRUE,
-                            XmNcursorPositionVisible, TRUE,
-                            XmNsensitive, TRUE,
-                            XmNshadowThickness,    1,
-                            XmNcolumns, 4,
-                            XmNwidth, ((5*7)+2),
-                            XmNmaxLength, 3,
-                            XmNbackground, colors[0x0f],
-                            XmNtopOffset, 5,
-                            XmNtopAttachment,XmATTACH_WIDGET,
-                            XmNtopWidget, label4,
-                            XmNbottomAttachment,XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_FORM,
-                            XmNleftOffset, 5,
-                            XmNrightAttachment,XmATTACH_NONE,
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
 
-       coordinate_calc_latitude_easting = XtVaCreateManagedWidget("Coordinate_calc lat", xmTextWidgetClass, form,
-                            XmNeditable,   TRUE,
-                            XmNcursorPositionVisible, TRUE,
-                            XmNsensitive, TRUE,
-                            XmNshadowThickness,    1,
-                            XmNcolumns, 13,
-                            XmNwidth, ((13*7)+2),
-                            XmNmaxLength, 12,
-                            XmNbackground, colors[0x0f],
-                            XmNtopOffset, 5,
-                            XmNtopAttachment,XmATTACH_WIDGET,
-                            XmNtopWidget, label4,
-                            XmNbottomAttachment,XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_FORM,
-                            XmNleftOffset, 65,
-                            XmNrightAttachment,XmATTACH_NONE,
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
+        coordinate_calc_zone = XtVaCreateManagedWidget("Coordinate_calc zone", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 4,
+                XmNwidth, ((5*7)+2),
+                XmNmaxLength, 3,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label4,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        coordinate_calc_longitude_northing = XtVaCreateManagedWidget("Coordinate_calc lon", xmTextWidgetClass, form,
-                            XmNeditable,   TRUE,
-                            XmNcursorPositionVisible, TRUE,
-                            XmNsensitive, TRUE,
-                            XmNshadowThickness,    1,
-                            XmNcolumns, 13,
-                            XmNwidth, ((14*7)+2),
-                            XmNmaxLength, 13,
-                            XmNbackground, colors[0x0f],
-                            XmNtopOffset, 5,
-                            XmNtopAttachment,XmATTACH_WIDGET,
-                            XmNtopWidget, label4,
-                            XmNbottomAttachment,XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_FORM,
-                            XmNleftOffset, 195,
-                            XmNrightAttachment,XmATTACH_NONE,
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
+       coordinate_calc_latitude_easting = XtVaCreateManagedWidget("Coordinate_calc lat", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 13,
+                XmNwidth, ((13*7)+2),
+                XmNmaxLength, 12,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label4,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 65,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+        coordinate_calc_longitude_northing = XtVaCreateManagedWidget("Coordinate_calc lon", 
+                xmTextWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 13,
+                XmNwidth, ((14*7)+2),
+                XmNmaxLength, 13,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, label4,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 195,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
 //        xastir_snprintf(temp_string, sizeof(temp_string), "%d", temp);
 //        XmTextSetString(coordinate_calc_text, temp_string);
 
         coordinate_calc_result_text = NULL;
-        coordinate_calc_result_text = XtVaCreateManagedWidget("Coordinate_calc results",xmTextWidgetClass,form,
-                            XmNrows, 5,
-                            XmNcolumns, 58,
-                            XmNeditable, FALSE,
-                            XmNtraversalOn, FALSE,
-                            XmNeditMode, XmMULTI_LINE_EDIT,
-                            XmNwordWrap, TRUE,
-                            XmNbackground, colors[0xff],
-//                            XmNscrollHorizontal, FALSE,
-                            XmNcursorPositionVisible, FALSE,
-                            XmNautoShowCursorPosition, True,
-                            XmNtopAttachment, XmATTACH_WIDGET,
-                            XmNtopWidget, coordinate_calc_zone,
-                            XmNtopOffset, 5,
-                            XmNbottomAttachment, XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_FORM,
-                            XmNleftOffset, 5,
-                            XmNrightAttachment, XmATTACH_FORM,
-                            XmNrightOffset, 5,
-                            NULL);
+        coordinate_calc_result_text = XtVaCreateManagedWidget("Coordinate_calc results",
+                xmTextWidgetClass,
+                form,
+                XmNrows, 5,
+                XmNcolumns, 58,
+                XmNeditable, FALSE,
+                XmNtraversalOn, FALSE,
+                XmNeditMode, XmMULTI_LINE_EDIT,
+                XmNwordWrap, TRUE,
+//                XmNscrollHorizontal, FALSE,
+                XmNcursorPositionVisible, FALSE,
+                XmNautoShowCursorPosition, True,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, coordinate_calc_zone,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_clear = XtVaCreateManagedWidget(langcode("COORD004"),xmPushButtonGadgetClass, form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, coordinate_calc_result_text,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 0,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 1,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_clear = XtVaCreateManagedWidget(langcode("COORD004"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, coordinate_calc_result_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(button_clear, XmNactivateCallback, Coordinate_calc_clear_data, coordinate_calc_dialog);
 
-        button_calculate = XtVaCreateManagedWidget(langcode("COORD003"),xmPushButtonGadgetClass, form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, coordinate_calc_result_text,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 1,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 2,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_calculate = XtVaCreateManagedWidget(langcode("COORD003"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, coordinate_calc_result_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(button_calculate, XmNactivateCallback, Coordinate_calc_compute, coordinate_calc_dialog);
 
-        coordinate_calc_button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, coordinate_calc_result_text,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 2,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 3,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        coordinate_calc_button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, coordinate_calc_result_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coordinate_calc_button_ok, XmNactivateCallback, Coordinate_calc_change_data, coordinate_calc_dialog);
         XtSetSensitive(coordinate_calc_button_ok,FALSE);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, coordinate_calc_result_text,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 3,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 4,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, coordinate_calc_result_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(button_cancel, XmNactivateCallback, Coordinate_calc_destroy_shell, coordinate_calc_dialog);
 
         pos_dialog(coordinate_calc_dialog);
@@ -2813,78 +2906,96 @@ void Change_Debug_Level(Widget w, XtPointer clientData, XtPointer callData) {
     char temp_string[10];
 
     if (!change_debug_level_dialog) {
-        change_debug_level_dialog = XtVaCreatePopupShell(langcode("PULDNFI007"),xmDialogShellWidgetClass,Global.top,
-                                    XmNdeleteResponse,XmDESTROY,
-                                    XmNdefaultPosition, FALSE,
-                                    NULL);
+        change_debug_level_dialog = XtVaCreatePopupShell(langcode("PULDNFI007"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Change Debug Level pane",xmPanedWindowWidgetClass, change_debug_level_dialog,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        pane = XtVaCreateWidget("Change Debug Level pane",
+                xmPanedWindowWidgetClass, 
+                change_debug_level_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("Change Debug Level my_form",xmFormWidgetClass, pane,
-                                XmNfractionBase, 5,
-                                XmNbackground, colors[0xff],
-                                XmNautoUnmanage, FALSE,
-                                XmNshadowThickness, 1,
-                                NULL);
+        my_form =  XtVaCreateWidget("Change Debug Level my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        debug_level_text = XtVaCreateManagedWidget("Change_Debug_Level debug text", xmTextWidgetClass, my_form,
-                            XmNeditable,   TRUE,
-                            XmNcursorPositionVisible, TRUE,
-                            XmNsensitive, TRUE,
-                            XmNshadowThickness,    1,
-                            XmNcolumns, 4,
-                            XmNwidth, ((5*7)+2),
-                            XmNmaxLength, 4,
-                            XmNbackground, colors[0x0f],
-                            XmNtopOffset, 5,
-                            XmNtopAttachment,XmATTACH_FORM,
-                            XmNbottomAttachment,XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_POSITION,
-                            XmNleftPosition, 2,
-                            XmNrightAttachment,XmATTACH_POSITION,
-                            XmNrightPosition, 3,
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
+
+        debug_level_text = XtVaCreateManagedWidget("Change_Debug_Level debug text", 
+                xmTextWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 4,
+                XmNwidth, ((5*7)+2),
+                XmNmaxLength, 4,
+                XmNbackground, colors[0x0f],
+                XmNtopOffset, 5,
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment,XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
         // Fill in the current value of debug_level
         xastir_snprintf(temp_string, sizeof(temp_string), "%d", debug_level);
         XmTextSetString(debug_level_text, temp_string);
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, debug_level_text,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 1,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 2,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, debug_level_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
-        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, debug_level_text,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 3,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 4,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, debug_level_text,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Change_debug_level_change_data, change_debug_level_dialog);
         XtAddCallback(button_close, XmNactivateCallback, Change_debug_level_destroy_shell, change_debug_level_dialog);
@@ -2962,79 +3073,85 @@ void Gamma_adjust(Widget w, XtPointer clientData, XtPointer callData) {
     if (!gamma_adjust_dialog) {
         // Gamma Correction
         gamma_adjust_dialog = XtVaCreatePopupShell(langcode("GAMMA002"),
-                                                   xmDialogShellWidgetClass, Global.top,
-                                                   XmNdeleteResponse,        XmDESTROY,
-                                                   XmNdefaultPosition,       FALSE,
-                                                   NULL);
+                xmDialogShellWidgetClass, Global.top,
+                XmNdeleteResponse,        XmDESTROY,
+                XmNdefaultPosition,       FALSE,
+                NULL);
 
         pane = XtVaCreateWidget("Adjust Gamma pane",
-                                xmPanedWindowWidgetClass, gamma_adjust_dialog,
-                                XmNbackground,            colors[0xff],
-                                NULL);
+                xmPanedWindowWidgetClass, gamma_adjust_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         my_form =  XtVaCreateWidget("Adjust Gamma my_form",
-                                    xmFormWidgetClass,  pane,
-                                    XmNfractionBase,    5,
-                                    XmNbackground,      colors[0xff],
-                                    XmNautoUnmanage,    FALSE,
-                                    XmNshadowThickness, 1,
-                                    NULL);
+                xmFormWidgetClass,  pane,
+                XmNfractionBase,    5,
+                XmNautoUnmanage,    FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+
 
         gamma_adjust_text = XtVaCreateManagedWidget("Adjust Gamma text",
-                                                    xmTextWidgetClass,        my_form,
-                                                    XmNeditable,              TRUE,
-                                                    XmNcursorPositionVisible, TRUE,
-                                                    XmNsensitive,             TRUE,
-                                                    XmNshadowThickness,       1,
-                                                    XmNcolumns,               4,
-                                                    XmNwidth,                 4*10,
-                                                    XmNmaxLength,             4,
-                                                    XmNbackground,            colors[0x0f],
-                                                    XmNtopOffset,             5,
-                                                    XmNtopAttachment,         XmATTACH_FORM,
-                                                    XmNbottomAttachment,      XmATTACH_NONE,
-                                                    XmNleftAttachment,        XmATTACH_POSITION,
-                                                    XmNleftPosition,          2,
-                                                    XmNrightAttachment,       XmATTACH_POSITION,
-                                                    XmNrightPosition,         3,
-                                                    XmNnavigationType,        XmTAB_GROUP,
-                                                    NULL);
+                xmTextWidgetClass,        my_form,
+                XmNeditable,              TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive,             TRUE,
+                XmNshadowThickness,       1,
+                XmNcolumns,               4,
+                XmNwidth,                 4*10,
+                XmNmaxLength,             4,
+                XmNbackground,            colors[0x0f],
+                XmNtopOffset,             5,
+                XmNtopAttachment,         XmATTACH_FORM,
+                XmNbottomAttachment,      XmATTACH_NONE,
+                XmNleftAttachment,        XmATTACH_POSITION,
+                XmNleftPosition,          2,
+                XmNrightAttachment,       XmATTACH_POSITION,
+                XmNrightPosition,         3,
+                XmNnavigationType,        XmTAB_GROUP,
+                NULL);
 
         xastir_snprintf(temp_string, sizeof(temp_string), "%+.1f", imagemagick_gamma_adjust);
         XmTextSetString(gamma_adjust_text, temp_string);
 
         button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
-                                            xmPushButtonGadgetClass, my_form,
-                                            XmNtopAttachment,        XmATTACH_WIDGET,
-                                            XmNtopWidget,            gamma_adjust_text,
-                                            XmNtopOffset,            5,
-                                            XmNbottomAttachment,     XmATTACH_FORM,
-                                            XmNbottomOffset,         5,
-                                            XmNleftAttachment,       XmATTACH_POSITION,
-                                            XmNleftPosition,         1,
-                                            XmNrightAttachment,      XmATTACH_POSITION,
-                                            XmNrightPosition,        2,
-                                            XmNbackground,           colors[0xff],
-                                            XmNnavigationType,       XmTAB_GROUP,
-                                            NULL);
+                xmPushButtonGadgetClass, my_form,
+                XmNtopAttachment,        XmATTACH_WIDGET,
+                XmNtopWidget,            gamma_adjust_text,
+                XmNtopOffset,            5,
+                XmNbottomAttachment,     XmATTACH_FORM,
+                XmNbottomOffset,         5,
+                XmNleftAttachment,       XmATTACH_POSITION,
+                XmNleftPosition,         1,
+                XmNrightAttachment,      XmATTACH_POSITION,
+                XmNrightPosition,        2,
+                XmNnavigationType,       XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
-                                               xmPushButtonGadgetClass, my_form,
-                                               XmNtopAttachment,        XmATTACH_WIDGET,
-                                               XmNtopWidget,            gamma_adjust_text,
-                                               XmNtopOffset,            5,
-                                               XmNbottomAttachment,     XmATTACH_FORM,
-                                               XmNbottomOffset,         5,
-                                               XmNleftAttachment,       XmATTACH_POSITION,
-                                               XmNleftPosition,         3,
-                                               XmNrightAttachment,      XmATTACH_POSITION,
-                                               XmNrightPosition,        4,
-                                               XmNbackground,           colors[0xff],
-                                               XmNnavigationType,       XmTAB_GROUP,
-                                               NULL);
+                xmPushButtonGadgetClass, my_form,
+                XmNtopAttachment,        XmATTACH_WIDGET,
+                XmNtopWidget,            gamma_adjust_text,
+                XmNtopOffset,            5,
+                XmNbottomAttachment,     XmATTACH_FORM,
+                XmNbottomOffset,         5,
+                XmNleftAttachment,       XmATTACH_POSITION,
+                XmNleftPosition,         3,
+                XmNrightAttachment,      XmATTACH_POSITION,
+                XmNrightPosition,        4,
+                XmNnavigationType,       XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_ok,
                       XmNactivateCallback, Gamma_adjust_change_data,   gamma_adjust_dialog);
@@ -3192,7 +3309,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Atom WM_DELETE_WINDOW;
     Widget children[8];         /* Children to manage */
     Arg al[64];                 /* Arg List */
-    register unsigned int ac = 0;        /* Arg Count */
+    register unsigned int ac;   /* Arg Count */
     /*popup menu widgets */
     Widget zoom_in, zoom_out, zoom_sub, zoom_level, zl1, zl2, zl3, zl4, zl5, zl6, zl7, zl8, zl9;
     Widget pan_ctr, last_loc, station_info, set_object, modify_object;
@@ -3202,43 +3319,44 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget filepane, configpane, exitpane, mappane, viewpane, stationspane, messagepane, ifacepane, helppane;
 
     Widget measure_frame, move_frame, display_button,
-       track_button, download_trail_button,
-       symbols_button,
-       station_trails_button,
-       station_clear_button, tracks_clear_button, uptime_button,
-       save_button,file_button, open_file_button, exit_button, really_exit_button,
-       view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
-       localstations_button, laststations_button, objectstations_button, objectmystations_button,
-       weather_button, wx_station_button, locate_button, locate_place_button, jump_button, alert_button,
-       config_button, defaults_button, coordinates_button, station_button,
-       map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
-       map_levels_button, map_labels_button, map_fill_button, coordinate_calculator_button,
-       Map_background_color_Pane, map_background_button, map_pointer_menu_button,
+        track_button, download_trail_button,
+        symbols_button,
+        station_trails_button,
+        station_clear_button, tracks_clear_button, uptime_button,
+        save_button,file_button, open_file_button, exit_button, really_exit_button,
+        view_button, view_messages_button, bullet_button, packet_data_button, mobile_button, stations_button,
+        localstations_button, laststations_button, objectstations_button, objectmystations_button,
+        weather_button, wx_station_button, locate_button, locate_place_button, jump_button, alert_button,
+        config_button, defaults_button, coordinates_button, station_button,
+        map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
+        map_levels_button, map_labels_button, map_fill_button, coordinate_calculator_button,
+        Map_background_color_Pane, map_background_button, map_pointer_menu_button,
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_GEOTIFF)
-       Geotiff_intensity_Pane, geotiff_intensity_button,
+        Geotiff_intensity_Pane, geotiff_intensity_button,
 #endif
 #if defined(HAVE_IMAGEMAGICK)
-       gamma_adjust_button, tiger_config_button,
+        gamma_adjust_button, tiger_config_button,
 #endif
 #endif
-       Map_station_label_Pane, map_station_label_button,
-       map_wx_alerts_button,
-       units_choice_button,
-       device_config_button,
-       iface_button, iface_connect_button, tnc_logging,
-       transmit_disable_toggle,
-       net_logging, igate_logging, wx_logging, enable_snapshots, print_button,
-       test_button, debug_level_button, aa_button, speech_button,
-       smart_beacon_button, auto_msg_set_button,
-       message_button, send_message_to_button, open_messages_group_button, clear_messages_button,
-       General_q_button, IGate_q_button, WX_q_button,
+        Map_station_label_Pane, map_station_label_button,
+        map_wx_alerts_button,
+        units_choice_button,
+        device_config_button,
+        iface_button, iface_connect_button, tnc_logging,
+        transmit_disable_toggle,
+        net_logging, igate_logging, wx_logging, enable_snapshots, print_button,
+        test_button, debug_level_button, aa_button, speech_button,
+        smart_beacon_button, auto_msg_set_button,
+        message_button, send_message_to_button, open_messages_group_button,
+        clear_messages_button,
+        General_q_button, IGate_q_button, WX_q_button,
 
 #ifdef ARROWS
-       pan_up_menu, pan_down_menu, pan_left_menu, pan_right_menu,
+        pan_up_menu, pan_down_menu, pan_left_menu, pan_right_menu,
 #endif // ARROWS
 
-       help_button, help_about, help_help;
+        help_button, help_about, help_help;
     char *title, *t;
 
     if(debug_level & 8)
@@ -3252,21 +3370,36 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     strcat(title, t);
     strcat(title, " @ ");
     (void)gethostname(&title[strlen(title)], 28);
-    
+
+    // Allocate a couple of colors that we'll need before we get
+    // around to calling create_gc(), which creates the rest.
+    //
+    //colors[0x08] = (int)GetPixelByName(Global.top,"black");
+    colors[0x0c] = (int)GetPixelByName(Global.top,"red");
     colors[0xff] = (int)GetPixelByName(Global.top,"gray73");
 
-    XtSetArg(al[ac], XmNallowShellResize, TRUE);     ac++;
-    XtSetArg(al[ac], XmNtitle,            title);    ac++;
-    XtSetArg(al[ac], XmNargv,             app_argv); ac++;
-    XtSetArg(al[ac], XmNminWidth,         640);      ac++;
-    XtSetArg(al[ac], XmNminHeight,        380);      ac++;
-    XtSetArg(al[ac], XmNdefaultPosition,  FALSE);    ac++;
+    ac = 0;
+    XtSetArg(al[ac], XmNallowShellResize, TRUE);            ac++;
+    XtSetArg(al[ac], XmNtitle,            title);           ac++;
+    XtSetArg(al[ac], XmNargv,             app_argv);        ac++;
+    XtSetArg(al[ac], XmNminWidth,         640);             ac++;
+    XtSetArg(al[ac], XmNminHeight,        380);             ac++;
+    XtSetArg(al[ac], XmNdefaultPosition,  FALSE);           ac++;
+    XtSetArg(al[ac], XmNforeground,       MY_FG_COLOR);     ac++;
+    XtSetArg(al[ac], XmNbackground,       MY_BG_COLOR);     ac++;
 
-    appshell= XtCreatePopupShell (app_name,topLevelShellWidgetClass,Global.top, al, ac);
+    appshell= XtCreatePopupShell (app_name,
+            topLevelShellWidgetClass,
+            Global.top,
+            al,
+            ac);
 
-    form = XtVaCreateWidget("create_appshell form",xmFormWidgetClass,appshell,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+    form = XtVaCreateWidget("create_appshell form",
+            xmFormWidgetClass,
+            appshell,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     /* Menu Bar */
     ac = 0;
@@ -3276,12 +3409,18 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtSetArg(al[ac],XmNtopAttachment,   XmATTACH_FORM);         ac++;
     XtSetArg(al[ac],XmNrightAttachment, XmATTACH_NONE);         ac++;
     XtSetArg(al[ac],XmNbottomAttachment,XmATTACH_NONE);         ac++;
-    XtSetArg(al[ac],XmNbackground,      colors[0xff]);          ac++;
-    menubar = XmCreateMenuBar(form,"create_appshell menubar",al,ac);
+    XtSetArg(al[ac],XmNforeground,      MY_FG_COLOR);           ac++;
+    XtSetArg(al[ac],XmNbackground,      MY_BG_COLOR);           ac++;
+
+    menubar = XmCreateMenuBar(form,
+            "create_appshell menubar",
+            al,
+            ac);
 
     /*set args for color */
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
 
     /* menu bar */
@@ -3293,362 +3432,677 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     ifacepane   = XmCreatePulldownMenu(menubar,"ifacepane",   al, ac);
     helppane    = XmCreatePulldownMenu(menubar,"helppane",    al, ac);
 
-    file_button = XtVaCreateManagedWidget(langcode("MENUTB0001"),xmCascadeButtonGadgetClass,menubar,
-                    XmNsubMenuId, filepane,
-                    XmNmnemonic,langcode_hotkey("MENUTB0001"),
-                    XmNbackground,colors[0xff],
-                    NULL);
-    view_button = XtVaCreateManagedWidget(langcode("MENUTB0002"),xmCascadeButtonGadgetClass,menubar,
-                    XmNsubMenuId,viewpane,
-                    XmNmnemonic,langcode_hotkey("MENUTB0002"),
-                    XmNbackground,colors[0xff],
-                    NULL);
-    map_button = XtVaCreateManagedWidget(langcode("MENUTB0004"),xmCascadeButtonGadgetClass,menubar,
-                    XmNsubMenuId,mappane,
-                    XmNmnemonic,langcode_hotkey("MENUTB0004"),
-                    XmNbackground,colors[0xff],
-                    NULL);
-    display_button = XtVaCreateManagedWidget(langcode("MENUTB0005"),xmCascadeButtonGadgetClass,menubar,
-                    XmNsubMenuId,stationspane,
-                    XmNmnemonic,langcode_hotkey("MENUTB0005"),
-                    XmNbackground,colors[0xff],
-                    NULL);
-    message_button = XtVaCreateManagedWidget(langcode("MENUTB0006"),xmCascadeButtonGadgetClass,menubar,
-                    XmNsubMenuId,messagepane,
-                    XmNmnemonic,langcode_hotkey("MENUTB0006"),
-                    XmNbackground,colors[0xff],
-                    NULL);
-    iface_button = XtVaCreateManagedWidget(langcode("MENUTB0010"),xmCascadeButtonGadgetClass,menubar,
-                    XmNsubMenuId,ifacepane,
-                    XmNmnemonic,langcode_hotkey("MENUTB0010"),
-                    XmNbackground,colors[0xff],
-                    NULL);
+    file_button = XtVaCreateManagedWidget(langcode("MENUTB0001"),
+            xmCascadeButtonGadgetClass,
+            menubar,
+            XmNsubMenuId, filepane,
+            XmNmnemonic,langcode_hotkey("MENUTB0001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    view_button = XtVaCreateManagedWidget(langcode("MENUTB0002"),
+            xmCascadeButtonGadgetClass,
+            menubar,
+            XmNsubMenuId,viewpane,
+            XmNmnemonic,langcode_hotkey("MENUTB0002"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_button = XtVaCreateManagedWidget(langcode("MENUTB0004"),
+            xmCascadeButtonGadgetClass,
+            menubar,
+            XmNsubMenuId,mappane,
+            XmNmnemonic,langcode_hotkey("MENUTB0004"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    display_button = XtVaCreateManagedWidget(langcode("MENUTB0005"),
+            xmCascadeButtonGadgetClass,
+            menubar,
+            XmNsubMenuId,stationspane,
+            XmNmnemonic,langcode_hotkey("MENUTB0005"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    message_button = XtVaCreateManagedWidget(langcode("MENUTB0006"),
+            xmCascadeButtonGadgetClass,
+            menubar,
+            XmNsubMenuId,messagepane,
+            XmNmnemonic,langcode_hotkey("MENUTB0006"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    iface_button = XtVaCreateManagedWidget(langcode("MENUTB0010"),
+            xmCascadeButtonGadgetClass,
+            menubar,
+            XmNsubMenuId,ifacepane,
+            XmNmnemonic,langcode_hotkey("MENUTB0010"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-
-
-    help_button = XtVaCreateManagedWidget(langcode("MENUTB0009"),xmCascadeButtonGadgetClass,menubar,
-                    XmNsubMenuId,helppane,
-                    XmNmnemonic,langcode_hotkey("MENUTB0009"),
-                    XmNbackground,colors[0xff],
-                    NULL);
+    help_button = XtVaCreateManagedWidget(langcode("MENUTB0009"),
+            xmCascadeButtonGadgetClass,
+            menubar,
+            XmNsubMenuId,helppane,
+            XmNmnemonic,langcode_hotkey("MENUTB0009"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtVaSetValues (menubar,XmNmenuHelpWidget,help_button,NULL);
     /* end bar */
 
     /* File */
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNtearOffModel, XmTEAR_OFF_ENABLED); ac++;
-    configpane  = XmCreatePulldownMenu(filepane, "configpane", al, ac);
 
-    config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),xmCascadeButtonGadgetClass,filepane,
-                    XmNsubMenuId,configpane,
-                    XmNmnemonic,langcode_hotkey("PULDNFI001"),
-                    XmNbackground,colors[0xff],
-                    NULL);
+    configpane  = XmCreatePulldownMenu(filepane,
+            "configpane",
+            al,
+            ac);
+
+    config_button = XtVaCreateManagedWidget(langcode("PULDNFI001"),
+            xmCascadeButtonGadgetClass,
+            filepane,
+            XmNsubMenuId,configpane,
+            XmNmnemonic,langcode_hotkey("PULDNFI001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
  
-   (void)XtVaCreateManagedWidget("create_appshell sep1",xmSeparatorGadgetClass,filepane,
-                    XmNbackground,colors[0xff],NULL);
+   (void)XtVaCreateManagedWidget("create_appshell sep1",
+            xmSeparatorGadgetClass,
+            filepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    open_file_button = XtVaCreateManagedWidget(langcode("PULDNFI002"),xmPushButtonGadgetClass,filepane,
-                    XmNmnemonic,langcode_hotkey("PULDNFI002"),XmNbackground,colors[0xff],NULL);
+    open_file_button = XtVaCreateManagedWidget(langcode("PULDNFI002"),
+            xmPushButtonGadgetClass,
+            filepane,
+            XmNmnemonic,langcode_hotkey("PULDNFI002"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
-    tnc_logging = XtVaCreateManagedWidget(langcode("PULDNFI010"),xmToggleButtonGadgetClass,
-                        filepane,
-                        XmNvisibleWhenOff, TRUE,
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    tnc_logging = XtVaCreateManagedWidget(langcode("PULDNFI010"),
+            xmToggleButtonGadgetClass,
+            filepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(tnc_logging,XmNvalueChangedCallback,TNC_Logging_toggle,"1");
     if (log_tnc_data)
         XmToggleButtonSetState(tnc_logging,TRUE,FALSE);
 
 
 
-    net_logging = XtVaCreateManagedWidget(langcode("PULDNFI011"),xmToggleButtonGadgetClass,
-                        filepane,
-                        XmNvisibleWhenOff, TRUE,
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    net_logging = XtVaCreateManagedWidget(langcode("PULDNFI011"),
+            xmToggleButtonGadgetClass,
+            filepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(net_logging,XmNvalueChangedCallback,Net_Logging_toggle,"1");
     if (log_net_data)
         XmToggleButtonSetState(net_logging,TRUE,FALSE);
 
 
-    igate_logging = XtVaCreateManagedWidget(langcode("PULDNFI012"),xmToggleButtonGadgetClass,
-                        filepane,
-                        XmNvisibleWhenOff, TRUE,
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    igate_logging = XtVaCreateManagedWidget(langcode("PULDNFI012"),
+            xmToggleButtonGadgetClass,
+            filepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(igate_logging,XmNvalueChangedCallback,IGate_Logging_toggle,"1");
     if (log_igate)
         XmToggleButtonSetState(igate_logging,TRUE,FALSE);
 
 
-    wx_logging = XtVaCreateManagedWidget(langcode("PULDNFI013"),xmToggleButtonGadgetClass,
-                        filepane,
-                        XmNvisibleWhenOff, TRUE,
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    wx_logging = XtVaCreateManagedWidget(langcode("PULDNFI013"),
+            xmToggleButtonGadgetClass,
+            filepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(wx_logging,XmNvalueChangedCallback,WX_Logging_toggle,"1");
     if (log_wx)
         XmToggleButtonSetState(wx_logging,TRUE,FALSE);
 
 
-    enable_snapshots = XtVaCreateManagedWidget(langcode("PULDNFI014"),xmToggleButtonGadgetClass,
-                        filepane,
-                        XmNvisibleWhenOff, TRUE,
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    enable_snapshots = XtVaCreateManagedWidget(langcode("PULDNFI014"),
+            xmToggleButtonGadgetClass,
+            filepane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(enable_snapshots,XmNvalueChangedCallback,Snapshots_toggle,"1");
     if (snapshots_enabled)
         XmToggleButtonSetState(enable_snapshots,TRUE,FALSE);
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep1a",xmSeparatorGadgetClass,filepane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep1a",
+            xmSeparatorGadgetClass,
+            filepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
 
     // Print button
-    print_button = XtVaCreateManagedWidget(langcode("PULDNFI015"), xmPushButtonWidgetClass, filepane,
-                        XmNmnemonic, langcode_hotkey("PULDNFI015"), XmNbackground, colors[0xff], NULL);
+    print_button = XtVaCreateManagedWidget(langcode("PULDNFI015"),
+            xmPushButtonWidgetClass,
+            filepane,
+            XmNmnemonic, langcode_hotkey("PULDNFI015"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback( print_button, XmNactivateCallback, Print_properties, NULL );
 
-    (void)XtVaCreateManagedWidget("create_appshell sep1b",xmSeparatorGadgetClass,filepane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep1b",
+            xmSeparatorGadgetClass,
+            filepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
 
-    test_button = XtVaCreateManagedWidget(langcode("PULDNFI003"), xmPushButtonWidgetClass, filepane,
-                        XmNmnemonic, langcode_hotkey("PULDNFI003"), XmNbackground, colors[0xff], NULL);
+    test_button = XtVaCreateManagedWidget(langcode("PULDNFI003"),
+            xmPushButtonWidgetClass,
+            filepane,
+            XmNmnemonic, langcode_hotkey("PULDNFI003"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    debug_level_button = XtVaCreateManagedWidget(langcode("PULDNFI007"), xmPushButtonWidgetClass, filepane,
-                        XmNmnemonic, langcode_hotkey("PULDNFI007"), XmNbackground, colors[0xff], NULL);
+    debug_level_button = XtVaCreateManagedWidget(langcode("PULDNFI007"),
+            xmPushButtonWidgetClass,
+            filepane,
+            XmNmnemonic, langcode_hotkey("PULDNFI007"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep1c",xmSeparatorGadgetClass,filepane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep1c",
+            xmSeparatorGadgetClass,
+            filepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    exitpane  = XmCreatePulldownMenu(filepane, "exitpane", al, ac);
+    exitpane  = XmCreatePulldownMenu(filepane,
+            "exitpane",
+            al,
+            ac);
 
-    exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),xmCascadeButtonGadgetClass,filepane,
-                    XmNsubMenuId,exitpane,
-                    XmNmnemonic,langcode_hotkey("PULDNFI004"),
-                    XmNbackground,colors[0xff],
-                    NULL);
+    exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),
+            xmCascadeButtonGadgetClass,
+            filepane,
+            XmNsubMenuId,exitpane,
+            XmNmnemonic,langcode_hotkey("PULDNFI004"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
  
-//    exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),xmPushButtonWidgetClass,filepane,
-//                        XmNmnemonic,langcode_hotkey("PULDNFI004"),XmNbackground,colors[0xff],NULL);
+/*
+    exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),
+            xmPushButtonWidgetClass,
+            filepane,
+            XmNmnemonic,langcode_hotkey("PULDNFI004"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+*/
 
     /* View */
-    bullet_button = XtVaCreateManagedWidget(langcode("PULDNVI001"),xmPushButtonGadgetClass,viewpane,
-                        XmNmnemonic,langcode_hotkey("PULDNVI001"),XmNbackground,colors[0xff],NULL);
-    packet_data_button = XtVaCreateManagedWidget(langcode("PULDNVI002"),xmPushButtonGadgetClass,viewpane,
-                        XmNmnemonic,langcode_hotkey("PULDNVI002"),XmNbackground,colors[0xff],NULL);
-    mobile_button = XtVaCreateManagedWidget(langcode("PULDNVI003"),xmPushButtonGadgetClass,viewpane,
-                        XmNmnemonic,langcode_hotkey("PULDNVI003"),XmNbackground,colors[0xff],NULL);
-    stations_button = XtVaCreateManagedWidget(langcode("PULDNVI004"),xmPushButtonGadgetClass,viewpane,
-                            XmNmnemonic,langcode_hotkey("PULDNVI004"),XmNbackground,colors[0xff],NULL);
-    localstations_button = XtVaCreateManagedWidget(langcode("PULDNVI009"),xmPushButtonGadgetClass,viewpane,
-                                XmNmnemonic,langcode_hotkey("PULDNVI009"),XmNbackground,colors[0xff],NULL);
-    laststations_button = XtVaCreateManagedWidget(langcode("PULDNVI012"),xmPushButtonGadgetClass,viewpane,
-                                XmNmnemonic,langcode_hotkey("PULDNVI012"),XmNbackground,colors[0xff],NULL);
-    objectstations_button = XtVaCreateManagedWidget(langcode("LHPUPNI005"),xmPushButtonGadgetClass,viewpane,
-                                XmNmnemonic,langcode_hotkey("LHPUPNI005"),XmNbackground,colors[0xff],NULL);
-    objectmystations_button = XtVaCreateManagedWidget(langcode("LHPUPNI006"),xmPushButtonGadgetClass,viewpane,
-                                XmNmnemonic,langcode_hotkey("LHPUPNI006"),XmNbackground,colors[0xff],NULL);
- 
-    weather_button = XtVaCreateManagedWidget(langcode("PULDNVI005"),xmPushButtonGadgetClass,
-                            viewpane,XmNmnemonic,langcode_hotkey("PULDNVI005"),XmNbackground,colors[0xff],NULL);
-    wx_station_button = XtVaCreateManagedWidget(langcode("PULDNVI008"),xmPushButtonGadgetClass,
-                                viewpane,XmNmnemonic,langcode_hotkey("PULDNVI008"),XmNbackground,colors[0xff],NULL);
-    alert_button = XtVaCreateManagedWidget(langcode("PULDNVI007"),xmPushButtonGadgetClass,viewpane,
-                        XmNmnemonic,langcode_hotkey("PULDNVI007"),XmNbackground,colors[0xff],NULL);
-    view_messages_button = XtVaCreateManagedWidget(langcode("PULDNVI011"),xmPushButtonGadgetClass,viewpane,
-                                XmNmnemonic,langcode_hotkey("PULDNVI011"),XmNbackground,colors[0xff],NULL);
-    uptime_button = XtVaCreateManagedWidget(langcode("PULDNVI013"), xmPushButtonWidgetClass, viewpane,
-                        XmNmnemonic, langcode_hotkey("PULDNVI013"), XmNbackground, colors[0xff], NULL);
+    bullet_button = XtVaCreateManagedWidget(langcode("PULDNVI001"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    packet_data_button = XtVaCreateManagedWidget(langcode("PULDNVI002"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI002"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    mobile_button = XtVaCreateManagedWidget(langcode("PULDNVI003"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI003"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    stations_button = XtVaCreateManagedWidget(langcode("PULDNVI004"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI004"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    localstations_button = XtVaCreateManagedWidget(langcode("PULDNVI009"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI009"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    laststations_button = XtVaCreateManagedWidget(langcode("PULDNVI012"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI012"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    objectstations_button = XtVaCreateManagedWidget(langcode("LHPUPNI005"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("LHPUPNI005"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    objectmystations_button = XtVaCreateManagedWidget(langcode("LHPUPNI006"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("LHPUPNI006"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    weather_button = XtVaCreateManagedWidget(langcode("PULDNVI005"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI005"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    wx_station_button = XtVaCreateManagedWidget(langcode("PULDNVI008"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI008"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    alert_button = XtVaCreateManagedWidget(langcode("PULDNVI007"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI007"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    view_messages_button = XtVaCreateManagedWidget(langcode("PULDNVI011"),
+            xmPushButtonGadgetClass,
+            viewpane,
+            XmNmnemonic,langcode_hotkey("PULDNVI011"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    uptime_button = XtVaCreateManagedWidget(langcode("PULDNVI013"),
+            xmPushButtonWidgetClass,
+            viewpane,
+            XmNmnemonic, langcode_hotkey("PULDNVI013"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     /* Configure */
-    station_button = XtVaCreateManagedWidget(langcode("PULDNCF004"),xmPushButtonGadgetClass,configpane,
-                            XmNmnemonic,langcode_hotkey("PULDNCF004"),XmNbackground,colors[0xff],NULL);
+    station_button = XtVaCreateManagedWidget(langcode("PULDNCF004"),
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic,langcode_hotkey("PULDNCF004"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    defaults_button = XtVaCreateManagedWidget(langcode("PULDNCF001"),xmPushButtonGadgetClass,configpane,
-                            XmNmnemonic,langcode_hotkey("PULDNCF001"),XmNbackground,colors[0xff],NULL);
+    defaults_button = XtVaCreateManagedWidget(langcode("PULDNCF001"),
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic,langcode_hotkey("PULDNCF001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    coordinates_button = XtVaCreateManagedWidget(langcode("PULDNCF002"),xmPushButtonGadgetClass,configpane,
-                            XmNmnemonic,langcode_hotkey("PULDNCF002"),XmNbackground,colors[0xff],NULL);
+    coordinates_button = XtVaCreateManagedWidget(langcode("PULDNCF002"),
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic,langcode_hotkey("PULDNCF002"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    aa_button = XtVaCreateManagedWidget(langcode("PULDNCF006"),xmPushButtonGadgetClass,configpane,
-                    XmNmnemonic,langcode_hotkey("PULDNCF006"),XmNbackground,colors[0xff],NULL);
+    aa_button = XtVaCreateManagedWidget(langcode("PULDNCF006"),
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic,langcode_hotkey("PULDNCF006"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    speech_button = XtVaCreateManagedWidget(langcode("PULDNCF007"),xmPushButtonGadgetClass,configpane,
-                    XmNmnemonic,langcode_hotkey("PULDNCF007"),XmNbackground,colors[0xff],NULL);
+    speech_button = XtVaCreateManagedWidget(langcode("PULDNCF007"),
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic,langcode_hotkey("PULDNCF007"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    smart_beacon_button = XtVaCreateManagedWidget("Smart Beaconing",xmPushButtonGadgetClass,configpane,
-                    XmNmnemonic,"Smart Beaconing",XmNbackground,colors[0xff],NULL);
+    smart_beacon_button = XtVaCreateManagedWidget("Smart Beaconing",
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic,"Smart Beaconing",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
-    units_choice_button = XtVaCreateManagedWidget(langcode("PULDNUT001"),xmToggleButtonGadgetClass,
-                        configpane,
-                        XmNvisibleWhenOff, TRUE,
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    units_choice_button = XtVaCreateManagedWidget(langcode("PULDNUT001"),
+            xmToggleButtonGadgetClass,
+            configpane,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(units_choice_button,XmNvalueChangedCallback,Units_choice_toggle,"1");
     if (units_english_metric)
         XmToggleButtonSetState(units_choice_button,TRUE,FALSE);
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep1b",xmSeparatorGadgetClass,configpane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep1b",
+            xmSeparatorGadgetClass,
+            configpane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    save_button = XtVaCreateManagedWidget(langcode("PULDNCF008"),xmPushButtonGadgetClass,configpane,
-                                XmNmnemonic,langcode_hotkey("PULDNCF008"),XmNbackground,colors[0xff],NULL);
+    save_button = XtVaCreateManagedWidget(langcode("PULDNCF008"),
+            xmPushButtonGadgetClass,
+            configpane,
+            XmNmnemonic, langcode_hotkey("PULDNCF008"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
     /* Exit */
-    really_exit_button = XtVaCreateManagedWidget(langcode("PULDNFI005"),xmPushButtonWidgetClass,exitpane,
-                        XmNmnemonic,langcode_hotkey("PULDNFI005"),XmNbackground,colors[0xff],NULL);
+    really_exit_button = XtVaCreateManagedWidget(langcode("PULDNFI005"),
+            xmPushButtonWidgetClass,
+            exitpane,
+            XmNmnemonic,langcode_hotkey("PULDNFI005"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
 //- Maps -------------------------------------------------------------
 
-    map_chooser_button = XtVaCreateManagedWidget(langcode("PULDNMP001"),xmPushButtonGadgetClass,mappane,
-                            XmNmnemonic,langcode_hotkey("PULDNMP001"),XmNbackground,colors[0xff],NULL);
+    map_chooser_button = XtVaCreateManagedWidget(langcode("PULDNMP001"),
+            xmPushButtonGadgetClass,
+            mappane,
+            XmNmnemonic,langcode_hotkey("PULDNMP001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(map_chooser_button,   XmNactivateCallback,Map_chooser,NULL);
 
 #if defined(HAVE_IMAGEMAGICK)
-    tiger_config_button= XtVaCreateManagedWidget(langcode("PULDNMP020"),xmPushButtonGadgetClass,mappane,
-                            XmNmnemonic,langcode_hotkey("PULDNMP020"),XmNbackground,colors[0xff],NULL);
+    tiger_config_button= XtVaCreateManagedWidget(langcode("PULDNMP020"),
+            xmPushButtonGadgetClass,
+            mappane,
+            XmNmnemonic,langcode_hotkey("PULDNMP020"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(tiger_config_button,   XmNactivateCallback,Config_tiger,NULL);
 #endif
 
 
-    jump_button = XtVaCreateManagedWidget(langcode("PULDNMP012"),xmPushButtonGadgetClass,mappane,
-                        XmNmnemonic,langcode_hotkey("PULDNMP012"),XmNbackground,colors[0xff],NULL);
+    jump_button = XtVaCreateManagedWidget(langcode("PULDNMP012"),
+            xmPushButtonGadgetClass,
+            mappane,
+            XmNmnemonic,langcode_hotkey("PULDNMP012"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    locate_place_button = XtVaCreateManagedWidget(langcode("PULDNMP014"),xmPushButtonGadgetClass,mappane,
-                        XmNmnemonic,langcode_hotkey("PULDNMP014"),XmNbackground,colors[0xff],NULL);
+    locate_place_button = XtVaCreateManagedWidget(langcode("PULDNMP014"),
+            xmPushButtonGadgetClass,
+            mappane,
+            XmNmnemonic,langcode_hotkey("PULDNMP014"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     coordinate_calculator_button = XtVaCreateManagedWidget(langcode("COORD001"),
-                        xmPushButtonGadgetClass,mappane,
-                        XmNmnemonic, langcode_hotkey("COORD001"),
-                        XmNbackground,colors[0xff],NULL);
+            xmPushButtonGadgetClass,mappane,
+            XmNmnemonic, langcode_hotkey("COORD001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep2",xmSeparatorGadgetClass,mappane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep2",
+            xmSeparatorGadgetClass,
+            mappane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
-    map_disable_button = XtVaCreateManagedWidget(langcode("PULDNMP013"),xmToggleButtonGadgetClass,
-                        mappane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground,colors[0xff],NULL);
+    map_disable_button = XtVaCreateManagedWidget(langcode("PULDNMP013"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(map_disable_button,XmNvalueChangedCallback,Map_disable_toggle,"1");
     if (disable_all_maps)
         XmToggleButtonSetState(map_disable_button,TRUE,FALSE);
 
 
-    map_auto_button = XtVaCreateManagedWidget(langcode("PULDNMP002"),xmToggleButtonGadgetClass,
-                        mappane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    map_auto_button = XtVaCreateManagedWidget(langcode("PULDNMP002"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(map_auto_button,XmNvalueChangedCallback,Map_auto_toggle,"1");
     if (map_auto_maps)
         XmToggleButtonSetState(map_auto_button,TRUE,FALSE);
 
 
-    map_grid_button = XtVaCreateManagedWidget(langcode("PULDNMP003"),xmToggleButtonGadgetClass,
-                        mappane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    map_grid_button = XtVaCreateManagedWidget(langcode("PULDNMP003"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(map_grid_button,XmNvalueChangedCallback,Grid_toggle,"1");
     if (long_lat_grid)
         XmToggleButtonSetState(map_grid_button,TRUE,FALSE);
 
 
-    map_levels_button = XtVaCreateManagedWidget(langcode("PULDNMP004"),xmToggleButtonGadgetClass,
-                        mappane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    map_levels_button = XtVaCreateManagedWidget(langcode("PULDNMP004"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(map_levels_button,XmNvalueChangedCallback,Map_levels_toggle,"1");
     if (map_color_levels)
         XmToggleButtonSetState(map_levels_button,TRUE,FALSE);
 
 
-    map_labels_button = XtVaCreateManagedWidget(langcode("PULDNMP010"),xmToggleButtonGadgetClass,
-                        mappane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    map_labels_button = XtVaCreateManagedWidget(langcode("PULDNMP010"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(map_labels_button,XmNvalueChangedCallback,Map_labels_toggle,"1");
     if (map_labels)
         XmToggleButtonSetState(map_labels_button,TRUE,FALSE);
 
 
-    map_fill_button = XtVaCreateManagedWidget(langcode("PULDNMP009"),xmToggleButtonGadgetClass,
-                        mappane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    map_fill_button = XtVaCreateManagedWidget(langcode("PULDNMP009"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(map_fill_button,XmNvalueChangedCallback,Map_fill_toggle,"1");
     if (map_color_fill)
         XmToggleButtonSetState(map_fill_button,TRUE,FALSE);
 
 
-    map_wx_alerts_button = XtVaCreateManagedWidget(langcode("PULDNMP007"),xmToggleButtonGadgetClass,
-                        mappane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    map_wx_alerts_button = XtVaCreateManagedWidget(langcode("PULDNMP007"),
+            xmToggleButtonGadgetClass,
+            mappane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(map_wx_alerts_button,XmNvalueChangedCallback,Map_wx_alerts_toggle,"1");
     if (!wx_alert_style)
         XmToggleButtonSetState(map_wx_alerts_button,TRUE,FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep2b",xmSeparatorGadgetClass,mappane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep2b",
+            xmSeparatorGadgetClass,
+            mappane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
-    Map_background_color_Pane = XmCreatePulldownMenu(mappane,"create_appshell map_background_color",al,ac);
+    Map_background_color_Pane = XmCreatePulldownMenu(mappane,
+            "create_appshell map_background_color",
+            al,
+            ac);
  
-    map_background_button = XtVaCreateManagedWidget(langcode("PULDNMP005"),xmCascadeButtonWidgetClass,mappane,
-                                XmNsubMenuId, Map_background_color_Pane,XmNmnemonic,
-                                langcode_hotkey("PULDNMP005"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[10] = XtVaCreateManagedWidget(langcode("PULDNMBC11"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                            XmNmnemonic,langcode_hotkey("PULDNMBC11"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[11] = XtVaCreateManagedWidget(langcode("PULDNMBC12"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                            XmNmnemonic,langcode_hotkey("PULDNMBC12"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[0] = XtVaCreateManagedWidget(langcode("PULDNMBC01"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC01"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[1] = XtVaCreateManagedWidget(langcode("PULDNMBC02"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC02"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[2] = XtVaCreateManagedWidget(langcode("PULDNMBC03"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC03"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[3] = XtVaCreateManagedWidget(langcode("PULDNMBC04"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC04"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[4] = XtVaCreateManagedWidget(langcode("PULDNMBC05"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC05"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[5] = XtVaCreateManagedWidget(langcode("PULDNMBC06"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC06"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[6] = XtVaCreateManagedWidget(langcode("PULDNMBC07"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC07"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[7] = XtVaCreateManagedWidget(langcode("PULDNMBC08"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC08"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[8] = XtVaCreateManagedWidget(langcode("PULDNMBC09"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC09"),XmNbackground,colors[0xff],NULL);
-    map_bgcolor[9] = XtVaCreateManagedWidget(langcode("PULDNMBC10"),xmPushButtonGadgetClass,Map_background_color_Pane,
-                        XmNmnemonic,langcode_hotkey("PULDNMBC10"),XmNbackground,colors[0xff],NULL);
+    map_background_button = XtVaCreateManagedWidget(langcode("PULDNMP005"),
+            xmCascadeButtonWidgetClass,
+            mappane,
+            XmNsubMenuId, Map_background_color_Pane,
+            XmNmnemonic, langcode_hotkey("PULDNMP005"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[10] = XtVaCreateManagedWidget(langcode("PULDNMBC11"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC11"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[11] = XtVaCreateManagedWidget(langcode("PULDNMBC12"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC12"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[0] = XtVaCreateManagedWidget(langcode("PULDNMBC01"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC01"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[1] = XtVaCreateManagedWidget(langcode("PULDNMBC02"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC02"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[2] = XtVaCreateManagedWidget(langcode("PULDNMBC03"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC03"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[3] = XtVaCreateManagedWidget(langcode("PULDNMBC04"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC04"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[4] = XtVaCreateManagedWidget(langcode("PULDNMBC05"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC05"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[5] = XtVaCreateManagedWidget(langcode("PULDNMBC06"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC06"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[6] = XtVaCreateManagedWidget(langcode("PULDNMBC07"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC07"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[7] = XtVaCreateManagedWidget(langcode("PULDNMBC08"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC08"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[8] = XtVaCreateManagedWidget(langcode("PULDNMBC09"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC09"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_bgcolor[9] = XtVaCreateManagedWidget(langcode("PULDNMBC10"),
+            xmPushButtonGadgetClass,
+            Map_background_color_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMBC10"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtSetSensitive(map_bgcolor[map_background_color],FALSE);
     XtAddCallback(map_bgcolor[10], XmNactivateCallback,Map_background,"10");
     XtAddCallback(map_bgcolor[11], XmNactivateCallback,Map_background,"11");
@@ -3665,32 +4119,97 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_GEOTIFF)
-    Geotiff_intensity_Pane = XmCreatePulldownMenu(mappane,"create_appshell geotiff_intensity",al,ac);
-    geotiff_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),xmCascadeButtonWidgetClass,mappane,
-                               XmNsubMenuId, Geotiff_intensity_Pane,XmNmnemonic,
-                               langcode_hotkey("PULDNMP008"),XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[0] = XtVaCreateManagedWidget("0%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"0%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[1] = XtVaCreateManagedWidget("10%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"10%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[2] = XtVaCreateManagedWidget("20%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"20%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[3] = XtVaCreateManagedWidget("30%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"30%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[4] = XtVaCreateManagedWidget("40%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"40%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[5] = XtVaCreateManagedWidget("50%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"50%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[6] = XtVaCreateManagedWidget("60%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"60%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[7] = XtVaCreateManagedWidget("70%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"70%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[8] = XtVaCreateManagedWidget("80%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"80%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[9] = XtVaCreateManagedWidget("90%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                           XmNmnemonic,"90%",XmNbackground,colors[0xff],NULL);
-    geotiff_intensity[10] = XtVaCreateManagedWidget("100%",xmPushButtonGadgetClass,Geotiff_intensity_Pane,
-                            XmNmnemonic,"100%",XmNbackground,colors[0xff],NULL);
+    Geotiff_intensity_Pane = XmCreatePulldownMenu(mappane,
+            "create_appshell geotiff_intensity",
+            al,
+            ac);
+
+    geotiff_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),
+            xmCascadeButtonWidgetClass,
+            mappane,
+            XmNsubMenuId, 
+            Geotiff_intensity_Pane,
+            XmNmnemonic, langcode_hotkey("PULDNMP008"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[0] = XtVaCreateManagedWidget("0%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"0%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[1] = XtVaCreateManagedWidget("10%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"10%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[2] = XtVaCreateManagedWidget("20%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"20%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[3] = XtVaCreateManagedWidget("30%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"30%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[4] = XtVaCreateManagedWidget("40%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"40%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[5] = XtVaCreateManagedWidget("50%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"50%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[6] = XtVaCreateManagedWidget("60%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"60%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[7] = XtVaCreateManagedWidget("70%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"70%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[8] = XtVaCreateManagedWidget("80%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"80%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[9] = XtVaCreateManagedWidget("90%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"90%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    geotiff_intensity[10] = XtVaCreateManagedWidget("100%",
+            xmPushButtonGadgetClass,
+            Geotiff_intensity_Pane,
+            XmNmnemonic,"100%",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtSetSensitive(geotiff_intensity[(int)(geotiff_map_intensity * 10.0)],FALSE);
     XtAddCallback(geotiff_intensity[0],  XmNactivateCallback,Geotiff_intensity,"0.0");
     XtAddCallback(geotiff_intensity[1],  XmNactivateCallback,Geotiff_intensity,"0.1");
@@ -3707,24 +4226,48 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #if defined(HAVE_IMAGEMAGICK)
     // Adjust Gamma Correction
     gamma_adjust_button = XtVaCreateManagedWidget(langcode("GAMMA001"),
-                                                  xmPushButtonWidgetClass, mappane,
-                                                  XmNmnemonic,             "G",
-                                                  XmNbackground,           colors[0xff],
-                                                  NULL);
+            xmPushButtonWidgetClass, mappane,
+            XmNmnemonic,             "G",
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(gamma_adjust_button, XmNactivateCallback, Gamma_adjust, NULL);
 #endif
 #endif
 
-    Map_station_label_Pane = XmCreatePulldownMenu(mappane,"create_appshell map_station_label",al,ac);
-    map_station_label_button = XtVaCreateManagedWidget(langcode("PULDNMP006"),xmCascadeButtonWidgetClass,mappane,
-                                    XmNsubMenuId, Map_station_label_Pane,XmNmnemonic,langcode_hotkey("PULDNMP006"),
-                                    XmNbackground,colors[0xff],NULL);
-    map_station_label0 = XtVaCreateManagedWidget(langcode("PULDNMSL01"),xmPushButtonGadgetClass,Map_station_label_Pane,
-                              XmNmnemonic,langcode_hotkey("PULDNMSL01"),XmNbackground,colors[0xff],NULL);
-    map_station_label1 = XtVaCreateManagedWidget(langcode("PULDNMSL02"),xmPushButtonGadgetClass,Map_station_label_Pane,
-                              XmNmnemonic,langcode_hotkey("PULDNMSL02"),XmNbackground,colors[0xff],NULL);
-    map_station_label2 = XtVaCreateManagedWidget(langcode("PULDNMSL03"),xmPushButtonGadgetClass,Map_station_label_Pane,
-                              XmNmnemonic,langcode_hotkey("PULDNMSL03"),XmNbackground,colors[0xff],NULL);
+    Map_station_label_Pane = XmCreatePulldownMenu(mappane,
+            "create_appshell map_station_label",
+            al,
+            ac);
+    map_station_label_button = XtVaCreateManagedWidget(langcode("PULDNMP006"),
+            xmCascadeButtonWidgetClass,
+            mappane,
+            XmNsubMenuId, Map_station_label_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMP006"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_station_label0 = XtVaCreateManagedWidget(langcode("PULDNMSL01"),
+            xmPushButtonGadgetClass,
+            Map_station_label_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMSL01"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_station_label1 = XtVaCreateManagedWidget(langcode("PULDNMSL02"),
+            xmPushButtonGadgetClass,
+            Map_station_label_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMSL02"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    map_station_label2 = XtVaCreateManagedWidget(langcode("PULDNMSL03"),
+            xmPushButtonGadgetClass,
+            Map_station_label_Pane,
+            XmNmnemonic,langcode_hotkey("PULDNMSL03"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     sel3_switch(letter_style,map_station_label2,map_station_label1,map_station_label0);
     XtAddCallback(map_station_label0,   XmNactivateCallback,Map_station_label,"0");
     XtAddCallback(map_station_label1,   XmNactivateCallback,Map_station_label,"1");
@@ -3732,44 +4275,80 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep_map",xmSeparatorGadgetClass,mappane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep_map",
+            xmSeparatorGadgetClass,
+            mappane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
-    map_pointer_menu_button = XtVaCreateManagedWidget(langcode("PULDNMP011"),xmPushButtonGadgetClass,mappane,
-                                XmNmnemonic,langcode_hotkey("PULDNMP011"),XmNbackground,colors[0xff],NULL);
+    map_pointer_menu_button = XtVaCreateManagedWidget(langcode("PULDNMP011"),
+            xmPushButtonGadgetClass,
+            mappane,
+            XmNmnemonic,langcode_hotkey("PULDNMP011"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
 //- Stations Menu -----------------------------------------------------
-    locate_button = XtVaCreateManagedWidget(langcode("PULDNDP014"),xmPushButtonGadgetClass,stationspane,
-                        XmNmnemonic,langcode_hotkey("PULDNDP014"),XmNbackground,colors[0xff],NULL);
+    locate_button = XtVaCreateManagedWidget(langcode("PULDNDP014"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP014"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    track_button = XtVaCreateManagedWidget(langcode("PULDNDP001"),xmPushButtonGadgetClass,stationspane,
-                        XmNmnemonic,langcode_hotkey("PULDNDP001"),XmNbackground,colors[0xff],NULL);
+    track_button = XtVaCreateManagedWidget(langcode("PULDNDP001"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(track_button, XmNactivateCallback,Track_station,NULL);
 
-    download_trail_button = XtVaCreateManagedWidget(langcode("PULDNDP022"),xmPushButtonGadgetClass,stationspane,
-                        XmNmnemonic,langcode_hotkey("PULDNDP022"),XmNbackground,colors[0xff],NULL);
+    download_trail_button = XtVaCreateManagedWidget(langcode("PULDNDP022"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP022"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(download_trail_button, XmNactivateCallback,Download_findu_trail,NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep3",xmSeparatorGadgetClass,stationspane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep3",
+            xmSeparatorGadgetClass,
+            stationspane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
 
-    symbols_button = XtVaCreateManagedWidget(langcode("PULDNDP012"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    symbols_button = XtVaCreateManagedWidget(langcode("PULDNDP012"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(symbols_button,XmNvalueChangedCallback,Symbols_toggle,"1");
     if (symbol_display_enable)
         XmToggleButtonSetState(symbols_button,TRUE,FALSE);
 
 
-    symbols_rotate_button = XtVaCreateManagedWidget(langcode("PULDNDP011"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    symbols_rotate_button = XtVaCreateManagedWidget(langcode("PULDNDP011"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(symbols_rotate_button,XmNvalueChangedCallback,Symbols_rotate_toggle,"1");
     if (symbol_display_rotate)
         XmToggleButtonSetState(symbols_rotate_button,TRUE,FALSE);
@@ -3777,11 +4356,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(symbols_rotate_button,FALSE);
 
 
-    call_button = XtVaCreateManagedWidget(langcode("PULDNDP010"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    call_button = XtVaCreateManagedWidget(langcode("PULDNDP010"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(call_button,XmNvalueChangedCallback,Call_toggle,"1");
     if (symbol_callsign_display)
         XmToggleButtonSetState(call_button,TRUE,FALSE);
@@ -3789,11 +4371,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(call_button,FALSE);
 
 
-    speed_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP004"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    speed_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP004"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(speed_enable_button,XmNvalueChangedCallback,Speed_enable_toggle,"1");
     if (speed_display_enable)
         XmToggleButtonSetState(speed_enable_button,TRUE,FALSE);
@@ -3801,11 +4386,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(speed_enable_button,FALSE);
 
 
-    speed_short_button = XtVaCreateManagedWidget(langcode("PULDNDP017"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    speed_short_button = XtVaCreateManagedWidget(langcode("PULDNDP017"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(speed_short_button,XmNvalueChangedCallback,Speed_short_toggle,"1");
     if (speed_display_short)
         XmToggleButtonSetState(speed_short_button,TRUE,FALSE);
@@ -3813,11 +4401,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(speed_short_button,FALSE);
 
 
-    alt_button = XtVaCreateManagedWidget(langcode("PULDNDP002"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    alt_button = XtVaCreateManagedWidget(langcode("PULDNDP002"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(alt_button,XmNvalueChangedCallback,Alt_toggle,"1");
     if (symbol_alt_display)
         XmToggleButtonSetState(alt_button,TRUE,FALSE);
@@ -3825,11 +4416,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(alt_button,FALSE);
 
 
-    course_button = XtVaCreateManagedWidget(langcode("PULDNDP003"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    course_button = XtVaCreateManagedWidget(langcode("PULDNDP003"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(course_button,XmNvalueChangedCallback,Course_toggle,"1");
     if (symbol_course_display)
         XmToggleButtonSetState(course_button,TRUE,FALSE);
@@ -3837,11 +4431,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(course_button,FALSE);
 
 
-    dist_course_button = XtVaCreateManagedWidget(langcode("PULDNDP005"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    dist_course_button = XtVaCreateManagedWidget(langcode("PULDNDP005"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(dist_course_button,XmNvalueChangedCallback,Dist_course_toggle,"1");
     if (symbol_dist_course_display)
         XmToggleButtonSetState(dist_course_button,TRUE,FALSE);
@@ -3849,11 +4446,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(dist_course_button,FALSE);
 
 
-    wx_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP009"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    wx_enable_button = XtVaCreateManagedWidget(langcode("PULDNDP009"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(wx_enable_button,XmNvalueChangedCallback,WX_enable_toggle,"1");
     if (wx_display_enable)
         XmToggleButtonSetState(wx_enable_button,TRUE,FALSE);
@@ -3861,11 +4461,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(wx_enable_button,FALSE);
 
 
-    wx_short_button = XtVaCreateManagedWidget(langcode("PULDNDP018"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    wx_short_button = XtVaCreateManagedWidget(langcode("PULDNDP018"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(wx_short_button,XmNvalueChangedCallback,WX_short_toggle,"1");
     if (wx_display_short)
         XmToggleButtonSetState(wx_short_button,TRUE,FALSE);
@@ -3873,11 +4476,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(wx_short_button,FALSE);
 
 
-    station_phg_button = XtVaCreateManagedWidget(langcode("PULDNDP008"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    station_phg_button = XtVaCreateManagedWidget(langcode("PULDNDP008"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(station_phg_button,XmNvalueChangedCallback,Station_phg_toggle,"1");
     if (show_phg)
         XmToggleButtonSetState(station_phg_button,TRUE,FALSE);
@@ -3885,11 +4491,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(station_phg_button,FALSE);
 
 
-    station_phg_default_button = XtVaCreateManagedWidget(langcode("PULDNDP021"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    station_phg_default_button = XtVaCreateManagedWidget(langcode("PULDNDP021"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(station_phg_default_button,XmNvalueChangedCallback,Station_phg_default_toggle,"1");
     if (show_phg_default)
         XmToggleButtonSetState(station_phg_default_button,TRUE,FALSE);
@@ -3897,11 +4506,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(station_phg_default_button,FALSE);
 
 
-    station_phg_mobiles_button = XtVaCreateManagedWidget(langcode("PULDNDP020"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    station_phg_mobiles_button = XtVaCreateManagedWidget(langcode("PULDNDP020"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(station_phg_mobiles_button,XmNvalueChangedCallback,Station_phg_mobiles_toggle,"1");
     if (show_phg_mobiles)
         XmToggleButtonSetState(station_phg_mobiles_button,TRUE,FALSE);
@@ -3909,11 +4521,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(station_phg_mobiles_button,FALSE);
 
 
-    station_amb_button = XtVaCreateManagedWidget(langcode("PULDNDP013"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    station_amb_button = XtVaCreateManagedWidget(langcode("PULDNDP013"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(station_amb_button,XmNvalueChangedCallback,Station_amb_toggle,"1");
     if (show_amb)
         XmToggleButtonSetState(station_amb_button,TRUE,FALSE);
@@ -3921,33 +4536,42 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(station_amb_button,FALSE);
 
 
-    station_old_data_button = XtVaCreateManagedWidget(langcode("PULDNDP019"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    station_old_data_button = XtVaCreateManagedWidget(langcode("PULDNDP019"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(station_old_data_button,XmNvalueChangedCallback,Station_old_data_toggle,"1");
     if (show_old_data)
         XmToggleButtonSetState(station_old_data_button,TRUE,FALSE);
     if (!symbol_display_enable)
         XtSetSensitive(station_old_data_button,FALSE);
 
-    station_DF_button = XtVaCreateManagedWidget(langcode("PULDNDP023"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    station_DF_button = XtVaCreateManagedWidget(langcode("PULDNDP023"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(station_DF_button,XmNvalueChangedCallback,Station_DF_toggle,"1");
     if (show_DF)
         XmToggleButtonSetState(station_DF_button,TRUE,FALSE);
     if (!symbol_display_enable)
         XtSetSensitive(station_DF_button,FALSE);
 
-    station_last_heard_button = XtVaCreateManagedWidget(langcode("PULDNDP024"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    station_last_heard_button = XtVaCreateManagedWidget(langcode("PULDNDP024"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(station_last_heard_button,XmNvalueChangedCallback,Station_Last_Heard_toggle,"1");
     if (show_last_heard)
         XmToggleButtonSetState(station_last_heard_button,TRUE,FALSE);
@@ -3956,100 +4580,198 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep3a",xmSeparatorGadgetClass,stationspane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep3a",
+            xmSeparatorGadgetClass,
+            stationspane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
 
-    station_trails_button = XtVaCreateManagedWidget(langcode("PULDNDP007"),xmToggleButtonGadgetClass,stationspane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    station_trails_button = XtVaCreateManagedWidget(langcode("PULDNDP007"),
+            xmToggleButtonGadgetClass,
+            stationspane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(station_trails_button,XmNvalueChangedCallback,Station_trails_toggle,"1");
     if (station_trails)
         XmToggleButtonSetState(station_trails_button,TRUE,FALSE);
 
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep3b",xmSeparatorGadgetClass,stationspane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep3b",
+            xmSeparatorGadgetClass,
+            stationspane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    station_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP015"),xmPushButtonGadgetClass,stationspane,
-                                XmNmnemonic,langcode_hotkey("PULDNDP015"),XmNbackground,colors[0xff],NULL);
-    tracks_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP016"),xmPushButtonGadgetClass,stationspane,
-                               XmNmnemonic,langcode_hotkey("PULDNDP016"),XmNbackground,colors[0xff],NULL);
+    station_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP015"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP015"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    tracks_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP016"),
+            xmPushButtonGadgetClass,
+            stationspane,
+            XmNmnemonic,langcode_hotkey("PULDNDP016"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
  
 //--------------------------------------------------------------------
 
     /* Messages */
-    send_message_to_button = XtVaCreateManagedWidget(langcode("PULDNMG001"),xmPushButtonGadgetClass,messagepane,
-                                XmNmnemonic,langcode_hotkey("PULDNMG001"),XmNbackground,colors[0xff],NULL);
-    open_messages_group_button = XtVaCreateManagedWidget(langcode("PULDNMG002"),xmPushButtonGadgetClass,messagepane,
-                                    XmNmnemonic,langcode_hotkey("PULDNMG002"),XmNbackground,colors[0xff],NULL);
-    clear_messages_button= XtVaCreateManagedWidget(langcode("PULDNMG003"),xmPushButtonGadgetClass,messagepane,
-                                XmNmnemonic,langcode_hotkey("PULDNMG003"),XmNbackground,colors[0xff],NULL);
+    send_message_to_button = XtVaCreateManagedWidget(langcode("PULDNMG001"),
+            xmPushButtonGadgetClass,
+            messagepane,
+                                
+            XmNmnemonic,langcode_hotkey("PULDNMG001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    open_messages_group_button = XtVaCreateManagedWidget(langcode("PULDNMG002"),
+            xmPushButtonGadgetClass,
+            messagepane,
+            XmNmnemonic,langcode_hotkey("PULDNMG002"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    clear_messages_button= XtVaCreateManagedWidget(langcode("PULDNMG003"),
+            xmPushButtonGadgetClass,
+            messagepane,
+            XmNmnemonic,langcode_hotkey("PULDNMG003"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep4",xmSeparatorGadgetClass,messagepane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep4",
+            xmSeparatorGadgetClass,
+            messagepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    General_q_button = XtVaCreateManagedWidget(langcode("PULDQUS001"),xmPushButtonGadgetClass,messagepane,
-                        XmNmnemonic,langcode_hotkey("PULDQUS001"),XmNbackground,colors[0xff],NULL);
-    IGate_q_button = XtVaCreateManagedWidget(langcode("PULDQUS002"),xmPushButtonGadgetClass,messagepane,
-                        XmNmnemonic,langcode_hotkey("PULDQUS002"),XmNbackground,colors[0xff],NULL);
-    WX_q_button = XtVaCreateManagedWidget(langcode("PULDQUS003"),xmPushButtonGadgetClass,messagepane,
-                        XmNmnemonic,langcode_hotkey("PULDQUS003"),XmNbackground,colors[0xff],NULL);
+    General_q_button = XtVaCreateManagedWidget(langcode("PULDQUS001"),
+            xmPushButtonGadgetClass,
+            messagepane,
+            XmNmnemonic,langcode_hotkey("PULDQUS001"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    IGate_q_button = XtVaCreateManagedWidget(langcode("PULDQUS002"),
+            xmPushButtonGadgetClass,
+            messagepane,
+            XmNmnemonic,langcode_hotkey("PULDQUS002"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    WX_q_button = XtVaCreateManagedWidget(langcode("PULDQUS003"),
+            xmPushButtonGadgetClass,
+            messagepane,
+            XmNmnemonic,langcode_hotkey("PULDQUS003"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-   (void)XtVaCreateManagedWidget("create_appshell sep4a",xmSeparatorGadgetClass,messagepane,XmNbackground,colors[0xff],NULL);
+   (void)XtVaCreateManagedWidget("create_appshell sep4a",
+            xmSeparatorGadgetClass,
+            messagepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    auto_msg_set_button = XtVaCreateManagedWidget(langcode("PULDNMG004"),xmPushButtonGadgetClass,messagepane,
-                                XmNmnemonic,langcode_hotkey("PULDNMG004"),XmNbackground,colors[0xff],NULL);
+    auto_msg_set_button = XtVaCreateManagedWidget(langcode("PULDNMG004"),
+            xmPushButtonGadgetClass,
+            messagepane,
+            XmNmnemonic,langcode_hotkey("PULDNMG004"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
-    auto_msg_toggle = XtVaCreateManagedWidget(langcode("PULDNMG005"),xmToggleButtonGadgetClass,
-                        messagepane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    auto_msg_toggle = XtVaCreateManagedWidget(langcode("PULDNMG005"),
+            xmToggleButtonGadgetClass,
+            messagepane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(auto_msg_toggle,XmNvalueChangedCallback,Auto_msg_toggle,"1");
 
-   (void)XtVaCreateManagedWidget("create_appshell sep5a",xmSeparatorGadgetClass,messagepane,XmNbackground,colors[0xff],NULL);
+   (void)XtVaCreateManagedWidget("create_appshell sep5a",
+            xmSeparatorGadgetClass,
+            messagepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    satellite_msg_ack_toggle = XtVaCreateManagedWidget(langcode("PULDNMG006"),xmToggleButtonGadgetClass,
-                        messagepane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    satellite_msg_ack_toggle = XtVaCreateManagedWidget(langcode("PULDNMG006"),
+            xmToggleButtonGadgetClass,
+            messagepane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(satellite_msg_ack_toggle,XmNvalueChangedCallback,Satellite_msg_ack_toggle,"1");
 
 
 
     /* Interface */
-    iface_connect_button = XtVaCreateManagedWidget(langcode("PULDNTNT04"),xmPushButtonGadgetClass,ifacepane,
-                            XmNmnemonic,langcode_hotkey("PULDNTNT04"),XmNbackground,colors[0xff],NULL);
+    iface_connect_button = XtVaCreateManagedWidget(langcode("PULDNTNT04"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+                            
+            XmNmnemonic,langcode_hotkey("PULDNTNT04"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    device_config_button = XtVaCreateManagedWidget(langcode("PULDNTNT02"),xmPushButtonGadgetClass,ifacepane,
-                                XmNmnemonic,langcode_hotkey("PULDNTNT02"),XmNbackground,colors[0xff],NULL);
+    device_config_button = XtVaCreateManagedWidget(langcode("PULDNTNT02"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("PULDNTNT02"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    (void)XtVaCreateManagedWidget("create_appshell sep5",xmSeparatorGadgetClass,ifacepane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep5",
+            xmSeparatorGadgetClass,
+            ifacepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
-    transmit_disable_toggle =  XtVaCreateManagedWidget(langcode("PULDNTNT03"),xmToggleButtonGadgetClass,
-                        ifacepane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    transmit_disable_toggle =  XtVaCreateManagedWidget(langcode("PULDNTNT03"),
+            xmToggleButtonGadgetClass,
+            ifacepane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(transmit_disable_toggle,XmNvalueChangedCallback,Transmit_disable_toggle,"1");
     if (transmit_disable)
         XmToggleButtonSetState(transmit_disable_toggle,TRUE,FALSE);
  
 
-    posit_tx_disable_toggle = XtVaCreateManagedWidget(langcode("PULDNTNT05"),xmToggleButtonGadgetClass,
-                        ifacepane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    posit_tx_disable_toggle = XtVaCreateManagedWidget(langcode("PULDNTNT05"),
+            xmToggleButtonGadgetClass,
+            ifacepane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(posit_tx_disable_toggle,XmNvalueChangedCallback,Posit_tx_disable_toggle,"1");
     if (posit_tx_disable)
         XmToggleButtonSetState(posit_tx_disable_toggle,TRUE,FALSE);
@@ -4057,12 +4779,14 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(posit_tx_disable_toggle,FALSE);
 
 
-    object_tx_disable_toggle = XtVaCreateManagedWidget(langcode("PULDNTNT06"),xmToggleButtonGadgetClass,
-                        ifacepane,
-                        XmNvisibleWhenOff, TRUE,                        
-                        XmNindicatorSize, 12,
-                        XmNbackground, colors[0xff],
-                        NULL);
+    object_tx_disable_toggle = XtVaCreateManagedWidget(langcode("PULDNTNT06"),
+            xmToggleButtonGadgetClass,
+            ifacepane,
+            XmNvisibleWhenOff, TRUE,                        
+            XmNindicatorSize, 12,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(object_tx_disable_toggle,XmNvalueChangedCallback,Object_tx_disable_toggle,"1");
     if (object_tx_disable)
         XmToggleButtonSetState(object_tx_disable_toggle,TRUE,FALSE);
@@ -4070,20 +4794,40 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         XtSetSensitive(object_tx_disable_toggle,FALSE);
 
 
-    (void)XtVaCreateManagedWidget("create_appshell sep6",xmSeparatorGadgetClass,ifacepane,XmNbackground,colors[0xff],NULL);
+    (void)XtVaCreateManagedWidget("create_appshell sep6",
+            xmSeparatorGadgetClass,
+            ifacepane,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
-    iface_transmit_now = XtVaCreateManagedWidget(langcode("PULDNTNC01"),xmPushButtonGadgetClass,ifacepane,
-                            XmNmnemonic,langcode_hotkey("PULDNTNC01"),XmNbackground,colors[0xff],NULL);
+    iface_transmit_now = XtVaCreateManagedWidget(langcode("PULDNTNC01"),
+            xmPushButtonGadgetClass,
+            ifacepane,
+            XmNmnemonic,langcode_hotkey("PULDNTNC01"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     if (transmit_disable)
         XtSetSensitive(iface_transmit_now,FALSE);
 
 
     /* Help*/
-    help_about = XtVaCreateManagedWidget(langcode("PULDNHEL01"),xmPushButtonGadgetClass,helppane,
-                    XmNmnemonic,langcode_hotkey("PULDNHEL01"),XmNbackground,colors[0xff],NULL);
-    help_help = XtVaCreateManagedWidget(langcode("PULDNHEL02"),xmPushButtonGadgetClass,helppane,
-                    XmNmnemonic,langcode_hotkey("PULDNHEL02"),XmNbackground,colors[0xff],NULL);
+    help_about = XtVaCreateManagedWidget(langcode("PULDNHEL01"),
+            xmPushButtonGadgetClass,
+            helppane,
+            XmNmnemonic,langcode_hotkey("PULDNHEL01"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+    help_help = XtVaCreateManagedWidget(langcode("PULDNHEL02"),
+            xmPushButtonGadgetClass,
+            helppane,
+            XmNmnemonic,langcode_hotkey("PULDNHEL02"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     /* view */
     XtAddCallback(stations_button,      XmNactivateCallback,Station_List,"0");
@@ -4156,124 +4900,142 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 
     // Toolbar
-    toolbar = XtVaCreateWidget("Toolbar form",xmFormWidgetClass, form,
-                     XmNtopAttachment, XmATTACH_FORM,
-                     XmNbottomAttachment, XmATTACH_NONE,
-                     XmNleftAttachment, XmATTACH_WIDGET,
-                     XmNleftWidget, menubar,
-                     XmNleftOffset, 10,
-                     XmNrightAttachment, XmATTACH_NONE,
-                     XmNbackground, colors[0xff],
-                     XmNfractionBase, 3,
-                     XmNbackground, colors[0xff],
-                     XmNautoUnmanage, FALSE,
-                     XmNshadowThickness, 1,
-                     XmNnavigationType, XmTAB_GROUP,
-                     XmNtraversalOn, FALSE,
-                     NULL);
+    toolbar = XtVaCreateWidget("Toolbar form",
+            xmFormWidgetClass, 
+            form,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_NONE,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, menubar,
+            XmNleftOffset, 10,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNfractionBase, 3,
+            XmNautoUnmanage, FALSE,
+            XmNshadowThickness, 1,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    measure_frame = XtVaCreateManagedWidget("Measure frame",xmFrameWidgetClass,
-                     toolbar,
-                     XmNtopAttachment, XmATTACH_FORM,
-                     XmNbottomAttachment, XmATTACH_FORM,
-                     XmNleftAttachment, XmATTACH_FORM,
-                     XmNrightAttachment, XmATTACH_NONE,
-                     XmNnavigationType, XmTAB_GROUP,
-                     XmNtraversalOn, FALSE,
-                     XmNbackground, colors[0xff],
-                     NULL);
+    measure_frame = XtVaCreateManagedWidget("Measure frame",
+            xmFrameWidgetClass,
+            toolbar,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    measure_button=XtVaCreateManagedWidget(langcode("POPUPMA020"),xmToggleButtonGadgetClass,
-                    measure_frame,
-                    XmNtopAttachment, XmATTACH_FORM,
-                    XmNbottomAttachment, XmATTACH_FORM,
-                    XmNleftAttachment, XmATTACH_FORM,
-                    XmNrightAttachment, XmATTACH_FORM,
-                    XmNvisibleWhenOff, TRUE,
-                    XmNindicatorSize, 12,
-                    XmNnavigationType, XmTAB_GROUP,
-                    XmNtraversalOn, FALSE,
-                    XmNbackground, colors[0xff],
-                    NULL);
+    measure_button=XtVaCreateManagedWidget(langcode("POPUPMA020"),
+            xmToggleButtonGadgetClass,
+            measure_frame,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNrightAttachment, XmATTACH_FORM,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(measure_button,XmNvalueChangedCallback,Measure_Distance,"1");
 
-    move_frame = XtVaCreateManagedWidget("Move frame",xmFrameWidgetClass,
-                     toolbar,
-                     XmNtopAttachment, XmATTACH_FORM,
-                     XmNbottomAttachment, XmATTACH_FORM,
-                     XmNleftAttachment, XmATTACH_WIDGET,
-                     XmNleftWidget, measure_frame,
-                     XmNleftOffset, 10,
-                     XmNrightAttachment, XmATTACH_NONE,
-                     XmNnavigationType, XmTAB_GROUP,
-                     XmNtraversalOn, FALSE,
-                     XmNbackground, colors[0xff],
-                     NULL);
+    move_frame = XtVaCreateManagedWidget("Move frame",
+            xmFrameWidgetClass,
+            toolbar,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, measure_frame,
+            XmNleftOffset, 10,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    move_button=XtVaCreateManagedWidget(langcode("POPUPMA021"),xmToggleButtonGadgetClass,
-                    move_frame,
-                    XmNtopAttachment, XmATTACH_FORM,
-                    XmNbottomAttachment, XmATTACH_FORM,
-                    XmNleftAttachment, XmATTACH_FORM,
-                    XmNrightAttachment, XmATTACH_FORM,
-                    XmNvisibleWhenOff, TRUE,
-                    XmNindicatorSize, 12,
-                    XmNnavigationType, XmTAB_GROUP,
-                    XmNtraversalOn, FALSE,
-                    XmNbackground, colors[0xff],
-                    NULL);
+    move_button=XtVaCreateManagedWidget(langcode("POPUPMA021"),
+            xmToggleButtonGadgetClass,
+            move_frame,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_FORM,
+            XmNrightAttachment, XmATTACH_FORM,
+            XmNvisibleWhenOff, TRUE,
+            XmNindicatorSize, 12,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
     XtAddCallback(move_button,XmNvalueChangedCallback,Move_Object,"1");
 
 
 
 #ifdef ARROWS
-    pan_left_menu=XtVaCreateManagedWidget("create_appshell arrow1_menu",xmArrowButtonGadgetClass, toolbar,
-        XmNtopAttachment, XmATTACH_FORM,
-        XmNbottomAttachment, XmATTACH_FORM,
-        XmNleftAttachment, XmATTACH_WIDGET,
-        XmNleftWidget, move_frame,
-        XmNleftOffset, 10,
-        XmNrightAttachment, XmATTACH_NONE,
-        XmNarrowDirection,  XmARROW_LEFT,
-        XmNnavigationType, XmTAB_GROUP,
-        XmNtraversalOn, FALSE,
-        NULL);
+    pan_left_menu=XtVaCreateManagedWidget("create_appshell arrow1_menu",
+            xmArrowButtonGadgetClass,
+            toolbar,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, move_frame,
+            XmNleftOffset, 10,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNarrowDirection,  XmARROW_LEFT,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            NULL);
     XtAddCallback(pan_left_menu,XmNactivateCallback,Pan_left,NULL);
 
-    pan_up_menu=XtVaCreateManagedWidget("create_appshell arrow2_menu",xmArrowButtonGadgetClass, toolbar,
-        XmNtopAttachment, XmATTACH_FORM,
-        XmNbottomAttachment, XmATTACH_FORM,
-        XmNleftAttachment, XmATTACH_WIDGET,
-        XmNleftWidget, pan_left_menu,
-        XmNrightAttachment, XmATTACH_NONE,
-        XmNarrowDirection,  XmARROW_UP,
-        XmNnavigationType, XmTAB_GROUP,
-        XmNtraversalOn, FALSE,
-        NULL);
+    pan_up_menu=XtVaCreateManagedWidget("create_appshell arrow2_menu",
+            xmArrowButtonGadgetClass, 
+            toolbar,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, pan_left_menu,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNarrowDirection,  XmARROW_UP,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            NULL);
     XtAddCallback(pan_up_menu,XmNactivateCallback,Pan_up,NULL);
 
-    pan_down_menu=XtVaCreateManagedWidget("create_appshell arrow3_menu",xmArrowButtonGadgetClass, toolbar,
-        XmNtopAttachment, XmATTACH_FORM,
-        XmNbottomAttachment, XmATTACH_FORM,
-        XmNleftAttachment, XmATTACH_WIDGET,
-        XmNleftWidget, pan_up_menu,
-        XmNrightAttachment, XmATTACH_NONE,
-        XmNarrowDirection,  XmARROW_DOWN,
-        XmNnavigationType, XmTAB_GROUP,
-        XmNtraversalOn, FALSE,
-        NULL);
+    pan_down_menu=XtVaCreateManagedWidget("create_appshell arrow3_menu",
+            xmArrowButtonGadgetClass, 
+            toolbar,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, pan_up_menu,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNarrowDirection,  XmARROW_DOWN,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            NULL);
     XtAddCallback(pan_down_menu,XmNactivateCallback,Pan_down,NULL);
 
-    pan_right_menu=XtVaCreateManagedWidget("create_appshell arrow4_menu",xmArrowButtonGadgetClass, toolbar,
-        XmNtopAttachment, XmATTACH_FORM,
-        XmNbottomAttachment, XmATTACH_FORM,
-        XmNleftAttachment, XmATTACH_WIDGET,
-        XmNleftWidget, pan_down_menu,
-        XmNrightAttachment, XmATTACH_NONE,
-        XmNarrowDirection,  XmARROW_RIGHT,
-        XmNnavigationType, XmTAB_GROUP,
-        XmNtraversalOn, FALSE,
-        NULL);
+    pan_right_menu=XtVaCreateManagedWidget("create_appshell arrow4_menu",
+            xmArrowButtonGadgetClass, 
+            toolbar,
+            XmNtopAttachment, XmATTACH_FORM,
+            XmNbottomAttachment, XmATTACH_FORM,
+            XmNleftAttachment, XmATTACH_WIDGET,
+            XmNleftWidget, pan_down_menu,
+            XmNrightAttachment, XmATTACH_NONE,
+            XmNarrowDirection,  XmARROW_RIGHT,
+            XmNnavigationType, XmTAB_GROUP,
+            XmNtraversalOn, FALSE,
+            NULL);
     XtAddCallback(pan_right_menu,XmNactivateCallback,Pan_right,NULL);
 #endif // ARROWS
 
@@ -4282,337 +5044,492 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 #define FONT_WIDTH 9
 
     /* Create bottom text area */
-    text = XtVaCreateWidget("create_appshell text_output", xmTextFieldWidgetClass, form,
-                                XmNeditable,            FALSE,
-                                XmNcursorPositionVisible, FALSE,
-                                XmNsensitive,           STIPPLE,
-                                XmNshadowThickness,     1,
-                                XmNcolumns,             30,
-                                XmNwidth,               ((30*FONT_WIDTH)+2),
-                                XmNbackground,          colors[0xff],
-                                XmNtopOffset,           4,
-                                XmNtopAttachment,       XmATTACH_NONE,
-                                XmNbottomAttachment,    XmATTACH_FORM,
-                                XmNleftAttachment,      XmATTACH_FORM,
-                                XmNrightAttachment,     XmATTACH_NONE,
-                                XmNnavigationType,      XmTAB_GROUP,
-                                XmNtraversalOn,         FALSE,
-                                XmNbackground,          colors[0xff],
-                                NULL);
+    text = XtVaCreateWidget("create_appshell text_output", 
+            xmTextFieldWidgetClass,
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             30,
+            XmNwidth,               ((30*FONT_WIDTH)+2),
+            XmNtopOffset,           4,
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNleftAttachment,      XmATTACH_FORM,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    text2 = XtVaCreateWidget("create_appshell text_output2", xmTextFieldWidgetClass, form,
-                                XmNeditable,            FALSE,
-                                XmNcursorPositionVisible, FALSE,
-                                XmNsensitive,           STIPPLE,
-                                XmNshadowThickness,     1,
-                                XmNcolumns,             21,
-                                XmNwidth,               ((21*FONT_WIDTH)+2),
-                                XmNbackground,          colors[0xff],
-                                XmNtopAttachment,       XmATTACH_NONE,
-                                XmNbottomAttachment,    XmATTACH_FORM,
-                                XmNleftAttachment,      XmATTACH_WIDGET,
-                                XmNleftWidget,          text,
-                                XmNrightAttachment,     XmATTACH_NONE,
-                                XmNnavigationType,      XmTAB_GROUP,
-                                XmNtraversalOn,         FALSE,
-                                XmNbackground,          colors[0xff],
-                                NULL);
+    text2 = XtVaCreateWidget("create_appshell text_output2",
+            xmTextFieldWidgetClass,
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             21,
+            XmNwidth,               ((21*FONT_WIDTH)+2),
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          text,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    text3 = XtVaCreateWidget("create_appshell text_output3", xmTextFieldWidgetClass, form,
-                                XmNeditable,            FALSE,
-                                XmNcursorPositionVisible, FALSE,
-                                XmNsensitive,           STIPPLE,
-                                XmNshadowThickness,     1,
-                                XmNcolumns,             14,
-                                XmNwidth,               ((14*FONT_WIDTH)+2),
-                                XmNbackground,          colors[0xff],
-                                XmNtopAttachment,       XmATTACH_NONE,
-                                XmNbottomAttachment,    XmATTACH_FORM,
-                                XmNleftAttachment,      XmATTACH_WIDGET,
-                                XmNleftWidget,          text2,
-                                XmNrightAttachment,     XmATTACH_NONE,
-                                XmNnavigationType,      XmTAB_GROUP,
-                                XmNtraversalOn,         FALSE,
-                                XmNbackground,          colors[0xff],
-                                NULL);
+    text3 = XtVaCreateWidget("create_appshell text_output3", 
+            xmTextFieldWidgetClass, 
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             14,
+            XmNwidth,               ((14*FONT_WIDTH)+2),
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          text2,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    text4 = XtVaCreateWidget("create_appshell text_output4", xmTextFieldWidgetClass, form,
-                                XmNeditable,            FALSE,
-                                XmNcursorPositionVisible, FALSE,
-                                XmNsensitive,           STIPPLE,
-                                XmNshadowThickness,     1,
-                                XmNcolumns,             12,
-                                XmNwidth,               ((12*FONT_WIDTH)+2),
-                                XmNbackground,          colors[0xff],
-                                XmNtopAttachment,       XmATTACH_NONE,
-                                XmNbottomAttachment,    XmATTACH_FORM,
-                                XmNleftAttachment,      XmATTACH_WIDGET,
-                                XmNleftWidget,          text3,
-                                XmNrightAttachment,     XmATTACH_NONE,
-                                XmNnavigationType,      XmTAB_GROUP,
-                                XmNtraversalOn,         FALSE,
-                                XmNbackground,          colors[0xff],
-                                NULL);
+    text4 = XtVaCreateWidget("create_appshell text_output4", 
+            xmTextFieldWidgetClass, 
+            form,
+            XmNeditable,            FALSE,
+            XmNcursorPositionVisible, FALSE,
+            XmNsensitive,           STIPPLE,
+            XmNshadowThickness,     1,
+            XmNcolumns,             12,
+            XmNwidth,               ((12*FONT_WIDTH)+2),
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          text3,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    iface_da = XtVaCreateWidget("create_appshell iface", xmDrawingAreaWidgetClass,form,
-                                XmNwidth,               20*(MAX_IFACE_DEVICES/2),
-                                XmNheight,              20,
-                                XmNunitType,            XmPIXELS,
-                                XmNtopAttachment,       XmATTACH_NONE,
-                                XmNbottomAttachment,    XmATTACH_FORM,
-                                XmNbottomOffset,        5,
-                                XmNleftAttachment,      XmATTACH_WIDGET,
-                                XmNleftWidget,          text4,
-                                XmNrightAttachment,     XmATTACH_NONE,
-                                XmNnavigationType,      XmTAB_GROUP,
-                                XmNtraversalOn,         FALSE,
-                                XmNbackground,          colors[0xff],
-                                NULL);
+    iface_da = XtVaCreateWidget("create_appshell iface", 
+            xmDrawingAreaWidgetClass,
+            form,
+            XmNwidth,               20*(MAX_IFACE_DEVICES/2),
+            XmNheight,              20,
+            XmNunitType,            XmPIXELS,
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_FORM,
+            XmNbottomOffset,        5,
+            XmNleftAttachment,      XmATTACH_WIDGET,
+            XmNleftWidget,          text4,
+            XmNrightAttachment,     XmATTACH_NONE,
+            XmNnavigationType,      XmTAB_GROUP,
+            XmNtraversalOn,         FALSE,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
-    sep = XtVaCreateManagedWidget("create_appshell sep", xmSeparatorGadgetClass,form,
-                                XmNorientation,         XmHORIZONTAL,
-                                XmNtopAttachment,       XmATTACH_NONE,
-                                XmNbottomAttachment,    XmATTACH_WIDGET,
-                                XmNbottomWidget,        text,
-                                XmNleftAttachment,      XmATTACH_FORM,
-                                XmNrightAttachment,     XmATTACH_FORM,
-                                XmNbackground,          colors[0xff],
-                                NULL);
+    sep = XtVaCreateManagedWidget("create_appshell sep", 
+            xmSeparatorGadgetClass,
+            form,
+            XmNorientation,         XmHORIZONTAL,
+            XmNtopAttachment,       XmATTACH_NONE,
+            XmNbottomAttachment,    XmATTACH_WIDGET,
+            XmNbottomWidget,        text,
+            XmNleftAttachment,      XmATTACH_FORM,
+            XmNrightAttachment,     XmATTACH_FORM,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     /* Do drawing map area */
-    da = XtVaCreateWidget("create_appshell da", xmDrawingAreaWidgetClass,form,
-                                XmNwidth,               screen_width,
-                                XmNheight,              screen_height,
-                                XmNunitType,            XmPIXELS,
-                                XmNtopAttachment,       XmATTACH_WIDGET,
-                                XmNtopWidget,           menubar,
-                                XmNbottomAttachment,    XmATTACH_WIDGET,
-                                XmNbottomWidget,        sep,
-                                XmNleftAttachment,      XmATTACH_FORM,
-                                XmNrightAttachment,     XmATTACH_FORM,
-                                XmNbackground,          colors[0xff],
-                                NULL);
+    da = XtVaCreateWidget("create_appshell da",
+            xmDrawingAreaWidgetClass,
+            form,
+            XmNwidth,               screen_width,
+            XmNheight,              screen_height,
+            XmNunitType,            XmPIXELS,
+            XmNtopAttachment,       XmATTACH_WIDGET,
+            XmNtopWidget,           menubar,
+            XmNbottomAttachment,    XmATTACH_WIDGET,
+            XmNbottomWidget,        sep,
+            XmNleftAttachment,      XmATTACH_FORM,
+            XmNrightAttachment,     XmATTACH_FORM,
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
 
     // Create the mouse menus here
 //WE7U
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNmenuPost, "<Btn3Down>"); ac++;  // Set for popup menu on button 3
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
     // Right menu popup (right mouse button or button 3)
-    right_menu_popup = XmCreatePopupMenu(da,"create_appshell Menu Popup",al,ac);
+    right_menu_popup = XmCreatePopupMenu(da,
+            "create_appshell Menu Popup",
+            al,
+            ac);
     //XtVaSetValues(right_menu_popup, XmNwhichButton, 3, NULL);
 
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
 
     // "Options"
-    (void)XtCreateManagedWidget(langcode("POPUPMA001"),xmLabelWidgetClass,right_menu_popup,al,ac);
-    (void)XtCreateManagedWidget("create_appshell sep",xmSeparatorWidgetClass,right_menu_popup,al,ac);
+    (void)XtCreateManagedWidget(langcode("POPUPMA001"),
+            xmLabelWidgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    (void)XtCreateManagedWidget("create_appshell sep",
+            xmSeparatorWidgetClass,
+            right_menu_popup,
+            al,
+            ac);
 
     // "Center"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA00c")); ac++;
-    pan_ctr=XtCreateManagedWidget(langcode("POPUPMA00c"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
+    pan_ctr=XtCreateManagedWidget(langcode("POPUPMA00c"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
     XtAddCallback(pan_ctr,XmNactivateCallback,Pan_ctr,NULL);
 
     // "Station info"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA015")); ac++;
-    station_info=XtCreateManagedWidget(langcode("POPUPMA015"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
+    station_info=XtCreateManagedWidget(langcode("POPUPMA015"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
     XtAddCallback(station_info,XmNactivateCallback,Station_info,NULL);
 
     // Zoom in"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA002")); ac++;
-    zoom_in=XtCreateManagedWidget(langcode("POPUPMA002"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
+    zoom_in=XtCreateManagedWidget(langcode("POPUPMA002"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
     XtAddCallback(zoom_in,XmNactivateCallback,Zoom_in,NULL);
 
     // Zoom out" 
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA003")); ac++;
-    zoom_out=XtCreateManagedWidget(langcode("POPUPMA003"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
+    zoom_out=XtCreateManagedWidget(langcode("POPUPMA003"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
     XtAddCallback(zoom_out,XmNactivateCallback,Zoom_out,NULL);
 
-    zoom_sub=XmCreatePulldownMenu(right_menu_popup,"create_appshell zoom sub",al,ac);
+    zoom_sub=XmCreatePulldownMenu(right_menu_popup,
+            "create_appshell zoom sub",
+            al,
+            ac);
  
     // "Zoom level"
-    zoom_level=XtVaCreateManagedWidget(langcode("POPUPMA004"),xmCascadeButtonGadgetClass,right_menu_popup,
-    XmNsubMenuId,zoom_sub,XmNbackground,colors[0xff],XmNmnemonic,langcode_hotkey("POPUPMA004"),NULL);
+    zoom_level=XtVaCreateManagedWidget(langcode("POPUPMA004"),
+            xmCascadeButtonGadgetClass,
+            right_menu_popup,
+            XmNsubMenuId,zoom_sub,
+            XmNmnemonic,langcode_hotkey("POPUPMA004"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
 
     // "1"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA005")); ac++;
-    zl1=XtCreateManagedWidget(langcode("POPUPMA005"),xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl1=XtCreateManagedWidget(langcode("POPUPMA005"),
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl1,XmNactivateCallback,Zoom_level,"1");
 
     // "16"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA006")); ac++;
-    zl2=XtCreateManagedWidget(langcode("POPUPMA006"),xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl2=XtCreateManagedWidget(langcode("POPUPMA006"),
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl2,XmNactivateCallback,Zoom_level,"2");
 
     // "64"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA007")); ac++;
-    zl3=XtCreateManagedWidget(langcode("POPUPMA007"),xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl3=XtCreateManagedWidget(langcode("POPUPMA007"),
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl3,XmNactivateCallback,Zoom_level,"3");
 
     // "256"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA008")); ac++;
-    zl4=XtCreateManagedWidget(langcode("POPUPMA008"),xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl4=XtCreateManagedWidget(langcode("POPUPMA008"),
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl4,XmNactivateCallback,Zoom_level,"4");
 
     // "1024"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA009")); ac++;
-    zl5=XtCreateManagedWidget(langcode("POPUPMA009"),xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl5=XtCreateManagedWidget(langcode("POPUPMA009"),
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl5,XmNactivateCallback,Zoom_level,"5");
 
     // "8192"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA010")); ac++;
-    zl6=XtCreateManagedWidget(langcode("POPUPMA010"),xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl6=XtCreateManagedWidget(langcode("POPUPMA010"),
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl6,XmNactivateCallback,Zoom_level,"6");
 
     // "Entire World"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA017")); ac++;
-    zl7=XtCreateManagedWidget(langcode("POPUPMA017"),xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl7=XtCreateManagedWidget(langcode("POPUPMA017"),
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl7,XmNactivateCallback,Zoom_level,"7");
 
     // "10% out"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'o'); ac++;
-    zl8=XtCreateManagedWidget("10% out" ,xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl8=XtCreateManagedWidget("10% out" ,
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl8,XmNactivateCallback,Zoom_level,"8");
 
     // "10% in"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, 'i'); ac++;
-    zl9=XtCreateManagedWidget("10% in" ,xmPushButtonGadgetClass,zoom_sub,al,ac);
+    zl9=XtCreateManagedWidget("10% in" ,
+            xmPushButtonGadgetClass,
+            zoom_sub,
+            al,
+            ac);
     XtAddCallback(zl9,XmNactivateCallback,Zoom_level,"9");
 
     // "Last map pos/zoom"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA016")); ac++;
-    last_loc=XtCreateManagedWidget(langcode("POPUPMA016"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
+    last_loc=XtCreateManagedWidget(langcode("POPUPMA016"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
     XtAddCallback(last_loc,XmNactivateCallback,Last_location,NULL);
 
-    (void)XtCreateManagedWidget("create_appshell sep",xmSeparatorWidgetClass,right_menu_popup,al,ac);
+    (void)XtCreateManagedWidget("create_appshell sep",
+            xmSeparatorWidgetClass,
+            right_menu_popup,
+            al,
+            ac);
 
     // "Object -> Create"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA018")); ac++;
-    set_object=XtCreateManagedWidget(langcode("POPUPMA018"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
+    set_object=XtCreateManagedWidget(langcode("POPUPMA018"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
     XtAddCallback(set_object,XmNactivateCallback,Set_Del_Object,NULL);
 
     // "Object -> Modify"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA019")); ac++;
-    modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
+    modify_object=XtCreateManagedWidget(langcode("POPUPMA019"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
     XtAddCallback(modify_object,XmNactivateCallback,Station_info,"1");
 
-    XtCreateManagedWidget("create_appshell sep",xmSeparatorWidgetClass,right_menu_popup,al,ac);
+    XtCreateManagedWidget("create_appshell sep",
+            xmSeparatorWidgetClass,
+            right_menu_popup,
+            al,
+            ac);
 
     // "Pan Up"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA011")); ac++;
-    pan_up=XtCreateManagedWidget(langcode("POPUPMA011"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
-    //pan_up=XtVaCreateManagedWidget("create_appshell arrow1",xmArrowButtonGadgetClass, right_menu_popup,
+    pan_up=XtCreateManagedWidget(langcode("POPUPMA011"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    //pan_up=XtVaCreateManagedWidget("create_appshell arrow1",
+    //    xmArrowButtonGadgetClass, 
+    //    right_menu_popup,
     //    XmNarrowDirection,  XmARROW_UP,
     //    NULL);
     XtAddCallback(pan_up,XmNactivateCallback,Pan_up,NULL);
 
     // "Pan Left"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA013")); ac++;
-    pan_left=XtCreateManagedWidget(langcode("POPUPMA013"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
-    //pan_left=XtVaCreateManagedWidget("create_appshell arrow3",xmArrowButtonGadgetClass, right_menu_popup,
+    pan_left=XtCreateManagedWidget(langcode("POPUPMA013"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    //pan_left=XtVaCreateManagedWidget("create_appshell arrow3",
+    //    xmArrowButtonGadgetClass, 
+    //    right_menu_popup,
     //    XmNarrowDirection,  XmARROW_LEFT,
     //    NULL);
     XtAddCallback(pan_left,XmNactivateCallback,Pan_left,NULL);
 
     // "Pan Right"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA014")); ac++;
-    pan_right=XtCreateManagedWidget(langcode("POPUPMA014"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
-    //pan_right=XtVaCreateManagedWidget("create_appshell arrow4",xmArrowButtonGadgetClass, right_menu_popup,
+    pan_right=XtCreateManagedWidget(langcode("POPUPMA014"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    //pan_right=XtVaCreateManagedWidget("create_appshell arrow4",
+    //    xmArrowButtonGadgetClass, 
+    //    right_menu_popup,
     //    XmNarrowDirection,  XmARROW_RIGHT,
     //    NULL);
     XtAddCallback(pan_right,XmNactivateCallback,Pan_right,NULL);
 
     // "Pan Down"
     ac = 0;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
     XtSetArg(al[ac], XmNnavigationType, XmTAB_GROUP); ac++;
     XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
     XtSetArg(al[ac], XmNmnemonic, langcode_hotkey("POPUPMA012")); ac++;
-    pan_down=XtCreateManagedWidget(langcode("POPUPMA012"),xmPushButtonGadgetClass,right_menu_popup,al,ac);
-    //pan_down=XtVaCreateManagedWidget("create_appshell arrow2",xmArrowButtonGadgetClass, right_menu_popup,
+    pan_down=XtCreateManagedWidget(langcode("POPUPMA012"),
+            xmPushButtonGadgetClass,
+            right_menu_popup,
+            al,
+            ac);
+    //pan_down=XtVaCreateManagedWidget("create_appshell arrow2",
+    //    xmArrowButtonGadgetClass, 
+    //    right_menu_popup,
     //    XmNarrowDirection,  XmARROW_DOWN,
     //    NULL);
     XtAddCallback(pan_down,XmNactivateCallback,Pan_down,NULL);
@@ -4657,16 +5574,19 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
     XtManageChild(text);
 
-    (void)XtCreateManagedWidget("MAIN",xmMainWindowWidgetClass,appshell,NULL,0);
+    (void)XtCreateManagedWidget("MAIN",
+            xmMainWindowWidgetClass,
+            appshell,
+            NULL,
+            0);
 
     XtRealizeWidget (appshell);
 
     create_gc(da);
 
-    // Fill the drawing area with grey.  colors[0xff] was defined
-    // earlier in this function.
-    (void)XSetForeground(XtDisplay(da),gc,colors[0xff]);
-    (void)XSetBackground(XtDisplay(da),gc,colors[0xff]);
+    // Fill the drawing area with the background color.
+    (void)XSetForeground(XtDisplay(da),gc,MY_BG_COLOR); // Not a mistake!
+    (void)XSetBackground(XtDisplay(da),gc,MY_BG_COLOR);
     (void)XFillRectangle(XtDisplay(appshell),XtWindow(da),gc,0,0,screen_width,screen_height);
 
     // Set to the proper size before we make the window visible on the screen
@@ -4718,7 +5638,7 @@ void create_gc(Widget w) {
     colors[0x05] = (int)GetPixelByName(w,"plum");       // light magenta
     colors[0x06] = (int)GetPixelByName(w,"orange");
     colors[0x07] = (int)GetPixelByName(w,"darkgray");
-    colors[0x08] = (int)GetPixelByName(w,"black");
+    colors[0x08] = (int)GetPixelByName(w,"black");      // Foreground font color
     colors[0x09] = (int)GetPixelByName(w,"blue");
     colors[0x0a] = (int)GetPixelByName(w,"green");              // PHG (old)
     colors[0x0b] = (int)GetPixelByName(w,"mediumorchid"); // light purple
@@ -4930,19 +5850,19 @@ void da_resize(Widget w, /*@unused@*/ XtPointer client_data, /*@unused@*/ XtPoin
             (void)XFreePixmap(XtDisplay(w),pixmap_alerts);
 
         pixmap=XCreatePixmap(XtDisplay(w),
-                    DefaultRootWindow(XtDisplay(w)),
-                    width,height,
-                    DefaultDepthOfScreen(XtScreen(w)));
+                DefaultRootWindow(XtDisplay(w)),
+                width,height,
+                DefaultDepthOfScreen(XtScreen(w)));
 
         pixmap_final=XCreatePixmap(XtDisplay(w),
-                    DefaultRootWindow(XtDisplay(w)),
-                    width,height,
-                    DefaultDepthOfScreen(XtScreen(w)));
+                DefaultRootWindow(XtDisplay(w)),
+                width,height,
+                DefaultDepthOfScreen(XtScreen(w)));
 
         pixmap_alerts=XCreatePixmap(XtDisplay(w),
-                    DefaultRootWindow(XtDisplay(w)),
-                    width,height,
-                    DefaultDepthOfScreen(XtScreen(w)));
+                DefaultRootWindow(XtDisplay(w)),
+                width,height,
+                DefaultDepthOfScreen(XtScreen(w)));
 
         setup_in_view();    // flag stations that are in screen view
         create_image(w);
@@ -7149,7 +8069,9 @@ void Help_About( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     ac = 0;
     XtSetArg(al[ac], XmNmessageString, xms); ac++;
     XtSetArg(al[ac], XmNtitle, "About Xastir"); ac++;
-    XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+    XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+    XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+ 
     d = XmCreateInformationDialog(Global.top, "About Xastir", al, ac);
     XmStringFree(xms);
     XtDestroyWidget(XmMessageBoxGetChild(d, (unsigned char)XmDIALOG_CANCEL_BUTTON));
@@ -7211,26 +8133,34 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
     Atom delw;
 
     if (!Display_data_dialog) {
-        Display_data_dialog = XtVaCreatePopupShell(langcode("WPUPDPD001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        Display_data_dialog = XtVaCreatePopupShell(langcode("WPUPDPD001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Display_data pane",xmPanedWindowWidgetClass, Display_data_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        pane = XtVaCreateWidget("Display_data pane",
+                xmPanedWindowWidgetClass, 
+                Display_data_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        rowcol =  XtVaCreateWidget("Display_data rowcol",xmRowColumnWidgetClass, pane,
-                            XmNtraversalOn, TRUE,
-                            XmNorientation, XmVERTICAL,
-                            XmNpacking, XmPACK_TIGHT,
-                            XmNisAligned, TRUE,
-                            XmNentryAlignment, XmALIGNMENT_CENTER,
-                            XmNkeyboardFocusPolicy, XmEXPLICIT,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        rowcol =  XtVaCreateWidget("Display_data rowcol",
+                xmRowColumnWidgetClass, 
+                pane,
+                XmNtraversalOn, TRUE,
+                XmNorientation, XmVERTICAL,
+                XmNpacking, XmPACK_TIGHT,
+                XmNisAligned, TRUE,
+                XmNentryAlignment, XmALIGNMENT_CENTER,
+                XmNkeyboardFocusPolicy, XmEXPLICIT,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         n=0;
         XtSetArg(args[n], XmNrows, 15); n++;
@@ -7238,14 +8168,18 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
         XtSetArg(args[n], XmNeditable, FALSE); n++;
         XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
         XtSetArg(args[n], XmNwordWrap, TRUE); n++;
-        XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
+        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
         XtSetArg(args[n], XmNscrollHorizontal, TRUE); n++;
         XtSetArg(args[n], XmNscrollVertical, FALSE); n++;
         XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
         XtSetArg(args[n], XmNtraversalOn, FALSE); n++;
 //        XtSetArg(args[n], XmNnavigationType, XmTAB_GROUP); n++;
         Display_data_text=NULL;
-        Display_data_text = XmCreateScrolledText(rowcol,"Display_data text",args,n);
+        Display_data_text = XmCreateScrolledText(rowcol,
+                "Display_data text",
+                args,
+                n);
    
 // I haven't figured out how to get the scrollbars to allow keyboard traversal.
 // When the ScrolledText widget is in the tab group, once you get there you can't
@@ -7260,47 +8194,60 @@ void Display_data( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
         /* set colors */
         n=0;
-        XtSetArg(args[n],XmNbackground, colors[0xff]); n++;
-        option_box = XmCreateRadioBox(rowcol,"Display_data option box",args,n);
+        XtSetArg(args[n],XmNforeground, MY_FG_COLOR); n++;
+        XtSetArg(args[n],XmNbackground, MY_BG_COLOR); n++;
+        option_box = XmCreateRadioBox(rowcol,
+                "Display_data option box",
+                args,
+                n);
 
         XtVaSetValues(option_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                NULL);
 
-        tnc_data = XtVaCreateManagedWidget(langcode("WPUPDPD002"),xmToggleButtonGadgetClass,
-                        option_box,
-                        XmNbackground, colors[0xff],
-                        NULL);
+        tnc_data = XtVaCreateManagedWidget(langcode("WPUPDPD002"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(tnc_data,XmNvalueChangedCallback,Display_packet_toggle,"1");
 
-        net_data = XtVaCreateManagedWidget(langcode("WPUPDPD003"),xmToggleButtonGadgetClass,
-                        option_box,
-                        XmNbackground, colors[0xff],
-                        NULL);
+        net_data = XtVaCreateManagedWidget(langcode("WPUPDPD003"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(net_data,XmNvalueChangedCallback,Display_packet_toggle,"2");
 
-        tnc_net_data = XtVaCreateManagedWidget(langcode("WPUPDPD004"),xmToggleButtonGadgetClass,
-                            option_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        tnc_net_data = XtVaCreateManagedWidget(langcode("WPUPDPD004"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(tnc_net_data,XmNvalueChangedCallback,Display_packet_toggle,"0");
 
 
-        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, rowcol,
-                            XmNbackground, colors[0xff],
-                            XmNtopAttachment, XmATTACH_FORM,
-                            XmNtopOffset, 5,
-                            XmNbottomAttachment, XmATTACH_FORM,
-                            XmNleftAttachment, XmATTACH_POSITION,
-                            XmNleftPosition, 2,
-                            XmNrightAttachment, XmATTACH_POSITION,
-                            XmNrightPosition, 3,
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
         XtAddCallback(button_close, XmNactivateCallback, Display_data_destroy_shell, Display_data_dialog);
@@ -7428,20 +8375,28 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
         }
         if (!help_view_dialog) {
             xastir_snprintf(title, sizeof(title), "%s - %s", langcode("MENUTB0009"), temp);
-            help_view_dialog = XtVaCreatePopupShell(title,xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
-            pane = XtVaCreateWidget("help_view pane",xmPanedWindowWidgetClass, help_view_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+            help_view_dialog = XtVaCreatePopupShell(title,
+                    xmDialogShellWidgetClass,
+                    Global.top,
+                    XmNdeleteResponse,XmDESTROY,
+                    XmNdefaultPosition, FALSE,
+                    NULL);
+            pane = XtVaCreateWidget("help_view pane",
+                    xmPanedWindowWidgetClass, 
+                    help_view_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                    NULL);
 
-            my_form =  XtVaCreateWidget("help_view my_form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+            my_form =  XtVaCreateWidget("help_view my_form",
+                    xmFormWidgetClass, 
+                    pane,
+                    XmNfractionBase, 5,
+                    XmNautoUnmanage, FALSE,
+                    XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                    NULL);
 
             n=0;
             XtSetArg(args[n], XmNrows, 20); n++;
@@ -7449,7 +8404,6 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
             XtSetArg(args[n], XmNeditable, FALSE); n++;
             XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
             XtSetArg(args[n], XmNwordWrap, TRUE); n++;
-            XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
             XtSetArg(args[n], XmNscrollHorizontal, FALSE); n++;
             XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
             XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
@@ -7459,9 +8413,14 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
             XtSetArg(args[n], XmNleftOffset, 5); n++;
             XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
             XtSetArg(args[n], XmNrightOffset, 5); n++;
+            XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+            XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
 
             help_text=NULL;
-            help_text = XmCreateScrolledText(my_form,"help_view help text",args,n);
+            help_text = XmCreateScrolledText(my_form,
+                    "help_view help text",
+                    args,
+                    n);
 
             f=fopen(HELP_FILE,"r");
             if (f!=NULL) {
@@ -7486,17 +8445,19 @@ void help_view( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unu
             else
                 printf("Couldn't open file: %s\n", HELP_FILE);
 
-            button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, XtParent(help_text),
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 3,
-                                      NULL);
+            button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                    xmPushButtonGadgetClass, 
+                    my_form,
+                    XmNtopAttachment, XmATTACH_WIDGET,
+                    XmNtopWidget, XtParent(help_text),
+                    XmNtopOffset, 5,
+                    XmNbottomAttachment, XmATTACH_FORM,
+                    XmNbottomOffset, 5,
+                    XmNleftAttachment, XmATTACH_POSITION,
+                    XmNleftPosition, 2,
+                    XmNrightAttachment, XmATTACH_POSITION,
+                    XmNrightPosition, 3,
+                    NULL);
 
             XtAddCallback(button_close, XmNactivateCallback, help_view_destroy_shell, help_view_dialog);
 
@@ -7535,26 +8496,33 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
     XmString str_ptr;
 
     if(!help_index_dialog) {
-        help_index_dialog = XtVaCreatePopupShell(langcode("WPUPHPI001"),xmDialogShellWidgetClass,appshell,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  XmNresize, FALSE,
-                                  NULL);
+        help_index_dialog = XtVaCreatePopupShell(langcode("WPUPHPI001"),
+                xmDialogShellWidgetClass,
+                appshell,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                XmNresize, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Help_Index pane",xmPanedWindowWidgetClass, help_index_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        pane = XtVaCreateWidget("Help_Index pane",
+                xmPanedWindowWidgetClass, 
+                help_index_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("Help_Index my_form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        my_form =  XtVaCreateWidget("Help_Index my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNvisibleItemCount, 11); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
@@ -7568,8 +8536,14 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
         XtSetArg(al[ac], XmNrightOffset, 5); ac++;
         XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
         XtSetArg(al[ac], XmNleftOffset, 5); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        help_list = XmCreateScrolledList(my_form,"Help_Index list",al,ac);
+
+        help_list = XmCreateScrolledList(my_form,
+                "Help_Index list",
+                al,
+                ac);
 
         n=1;
         f=fopen(HELP_FILE,"r");
@@ -7586,31 +8560,35 @@ void Help_Index( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@un
         else
             printf("Couldn't open file: %s\n", HELP_FILE);
 
-        button_ok = XtVaCreateManagedWidget(langcode("WPUPHPI002"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, XtParent(help_list),
-                                      XmNtopOffset,5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset,5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 1,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("WPUPHPI002"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, XtParent(help_list),
+                XmNtopOffset,5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, XtParent(help_list),
-                                      XmNtopOffset,5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset,5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 3,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 4,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, XtParent(help_list),
+                XmNtopOffset,5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, help_index_destroy_shell, help_index_dialog);
         XtAddCallback(button_ok, XmNactivateCallback, help_view, NULL);
@@ -8163,315 +9141,389 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
     if (!configure_tiger_dialog) {
 
-        configure_tiger_dialog = XtVaCreatePopupShell(langcode("PULDNMP020"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        configure_tiger_dialog = XtVaCreatePopupShell(langcode("PULDNMP020"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        tiger_pane = XtVaCreateWidget("Configure_tiger pane",xmPanedWindowWidgetClass, configure_tiger_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        tiger_pane = XtVaCreateWidget("Configure_tiger pane",
+                xmPanedWindowWidgetClass, 
+                configure_tiger_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_form =  XtVaCreateWidget("Configure_tiger tiger_form",xmFormWidgetClass, tiger_pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        tiger_form =  XtVaCreateWidget("Configure_tiger tiger_form",
+                xmFormWidgetClass, 
+                tiger_pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_enable_widget = XtVaCreateManagedWidget("Enable Tiger Maps",xmToggleButtonWidgetClass, tiger_form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        tiger_enable_widget = XtVaCreateManagedWidget("Enable Tiger Maps",
+                xmToggleButtonWidgetClass, 
+                tiger_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sep = XtVaCreateManagedWidget("Config Tigermap sep", xmSeparatorGadgetClass,tiger_form,
-                                      XmNorientation, XmHORIZONTAL,
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_enable_widget,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        sep = XtVaCreateManagedWidget("Config Tigermap sep", 
+                xmSeparatorGadgetClass,
+                tiger_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, tiger_enable_widget,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment,XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_label1  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),xmLabelWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_label1  = XtVaCreateManagedWidget(langcode("MPUPTGR012"),
+                xmLabelWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_grid  = XtVaCreateManagedWidget(langcode("MPUPTGR001"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_label1,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_grid  = XtVaCreateManagedWidget(langcode("MPUPTGR001"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_label1,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_counties  = XtVaCreateManagedWidget(langcode("MPUPTGR002"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_label1,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_counties  = XtVaCreateManagedWidget(langcode("MPUPTGR002"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_label1,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_states  = XtVaCreateManagedWidget(langcode("MPUPTGR008"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_label1,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 4,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_states  = XtVaCreateManagedWidget(langcode("MPUPTGR008"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_label1,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 4,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_cities  = XtVaCreateManagedWidget(langcode("MPUPTGR003"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_grid,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_cities  = XtVaCreateManagedWidget(langcode("MPUPTGR003"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_grid,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_places  = XtVaCreateManagedWidget(langcode("MPUPTGR004"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_grid,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_places  = XtVaCreateManagedWidget(langcode("MPUPTGR004"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_grid,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_interstate  = XtVaCreateManagedWidget(langcode("MPUPTGR009"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_grid,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 4,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_interstate  = XtVaCreateManagedWidget(langcode("MPUPTGR009"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_grid,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 4,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_majroads  = XtVaCreateManagedWidget(langcode("MPUPTGR005"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_cities,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_majroads  = XtVaCreateManagedWidget(langcode("MPUPTGR005"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_cities,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_streets  = XtVaCreateManagedWidget(langcode("MPUPTGR006"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_cities,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_streets  = XtVaCreateManagedWidget(langcode("MPUPTGR006"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_cities,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_ushwy  = XtVaCreateManagedWidget(langcode("MPUPTGR010"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_cities,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 4,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_ushwy  = XtVaCreateManagedWidget(langcode("MPUPTGR010"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_cities,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 4,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_railroad  = XtVaCreateManagedWidget(langcode("MPUPTGR007"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_majroads,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_railroad  = XtVaCreateManagedWidget(langcode("MPUPTGR007"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_majroads,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_water  = XtVaCreateManagedWidget(langcode("MPUPTGR013"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_majroads,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_water  = XtVaCreateManagedWidget(langcode("MPUPTGR013"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_majroads,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        tiger_statehwy  = XtVaCreateManagedWidget(langcode("MPUPTGR011"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_majroads,
-                                      XmNtopOffset, 4,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 4,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+        tiger_statehwy  = XtVaCreateManagedWidget(langcode("MPUPTGR011"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_majroads,
+                XmNtopOffset, 4,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 4,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-       tiger_lakes  = XtVaCreateManagedWidget(langcode("MPUPTGR014"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_railroad,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+       tiger_lakes  = XtVaCreateManagedWidget(langcode("MPUPTGR014"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_railroad,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-       tiger_misc  = XtVaCreateManagedWidget(langcode("MPUPTGR015"),xmToggleButtonWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_railroad,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      NULL);
+       tiger_misc  = XtVaCreateManagedWidget(langcode("MPUPTGR015"),
+                xmToggleButtonWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_railroad,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNsensitive, TRUE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-       tiger_intensity  = XtVaCreateManagedWidget("Intensity", xmScaleWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_lakes,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset, 20,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
-                                      XmNrightOffset, 0,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      XmNorientation, XmHORIZONTAL,
-                                      XmNborderWidth, 1,
-                                      XmNminimum, 50,
-                                      XmNmaximum, 100,
-                                      XmNshowValue, TRUE,
-                                      XmNvalue, tigermap_intensity,
-                                      XtVaTypedArg, XmNtitleString, XmRString, "Intensity", 10,
-                                      NULL);
+       tiger_intensity  = XtVaCreateManagedWidget("Intensity", 
+                xmScaleWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_lakes,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 20,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 0,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 50,
+                XmNmaximum, 100,
+                XmNshowValue, TRUE,
+                XmNvalue, tigermap_intensity,
+                XtVaTypedArg, XmNtitleString, XmRString, "Intensity", 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-       tiger_timeout  = XtVaCreateManagedWidget("Timeout", xmScaleWidgetClass,tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_lakes,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 3,
-                                      XmNleftOffset, 0,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 5,
-                                      XmNrightOffset, 20,
-                                      XmNbackground, colors[0xff],
-                                      XmNsensitive, TRUE,
-                                      XmNorientation, XmHORIZONTAL,
-                                      XmNborderWidth, 1,
-                                      XmNminimum, 10,
-                                      XmNmaximum, 120,
-                                      XmNshowValue, TRUE,
-                                      XmNvalue, tigermap_timeout,
-                                      XtVaTypedArg, XmNtitleString, XmRString, "Timeout (sec)", 10,
-                                      NULL);
+       tiger_timeout  = XtVaCreateManagedWidget("Timeout", 
+                xmScaleWidgetClass,
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, tiger_lakes,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNleftOffset, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 5,
+                XmNrightOffset, 20,
+                XmNsensitive, TRUE,
+                XmNorientation, XmHORIZONTAL,
+                XmNborderWidth, 1,
+                XmNminimum, 10,
+                XmNmaximum, 120,
+                XmNshowValue, TRUE,
+                XmNvalue, tigermap_timeout,
+                XtVaTypedArg, XmNtitleString, XmRString, "Timeout (sec)", 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        sep2 = XtVaCreateManagedWidget("Config Tigermap sep2", xmSeparatorGadgetClass,tiger_form,
-                                      XmNorientation, XmHORIZONTAL,
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_timeout,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        sep2 = XtVaCreateManagedWidget("Config Tigermap sep2", 
+                xmSeparatorGadgetClass,
+                tiger_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, tiger_timeout,
+                XmNtopOffset, 10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment,XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep2,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
-                                      XmNrightOffset, 0,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep2,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNrightOffset, 0,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, tiger_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep2,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 3,
-                                      XmNleftOffset, 0,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 5,
-                                      XmNrightOffset, 10,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                tiger_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep2,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNleftOffset, 0,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 5,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_tiger_change_data, configure_tiger_dialog);
 
@@ -8588,125 +9640,164 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
 
     i=0;
     if (!map_chooser_dialog) {
-        map_chooser_dialog = XtVaCreatePopupShell(langcode("WPUPMCP001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        map_chooser_dialog = XtVaCreatePopupShell(langcode("WPUPMCP001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Map_chooser pane",xmPanedWindowWidgetClass, map_chooser_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        pane = XtVaCreateWidget("Map_chooser pane",
+                xmPanedWindowWidgetClass, 
+                map_chooser_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("Map_chooser my_form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 7,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        my_form =  XtVaCreateWidget("Map_chooser my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 7,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNvisibleItemCount, 13); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNselectionPolicy, XmMULTIPLE_SELECT); ac++;
         XtSetArg(al[ac], XmNscrollBarPlacement, XmBOTTOM_RIGHT); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        map_list = XmCreateScrolledList(my_form,"Map_chooser list",al,ac);
+
+        map_list = XmCreateScrolledList(my_form,
+                "Map_chooser list",
+                al,
+                ac);
 
         // Find the names of all the map files on disk and put them into map_list
         map_chooser_fill_in();
 
         // This is the label at the top: "Select Maps"
-        mess = XtVaCreateManagedWidget(langcode("WPUPMCP002"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 5,
-                                      XmNrightAttachment, XmATTACH_FORM,
-                                      XmNrightOffset, 5,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        mess = XtVaCreateManagedWidget(langcode("WPUPMCP002"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtVaSetValues(XtParent(map_list),
-                    XmNtopAttachment, XmATTACH_WIDGET,
-                    XmNtopWidget,mess,
-                    XmNtopOffset, 5,
-                    XmNbottomAttachment, XmATTACH_NONE,
-                    XmNrightAttachment, XmATTACH_FORM,
-                    XmNrightOffset, 5,
-                    XmNleftAttachment, XmATTACH_FORM,
-                    XmNleftOffset, 5,
-                    NULL);
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget,mess,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                NULL);
 
 
         // Attach a rowcolumn manager widget to my_form to handle all of the buttons
-        rowcol = XtVaCreateManagedWidget("Map Chooser rowcol", xmRowColumnWidgetClass, my_form,
-                    XmNorientation, XmHORIZONTAL,
-                    XmNtopAttachment, XmATTACH_WIDGET,
-                    XmNtopWidget, XtParent(map_list),
-                    XmNbottomAttachment, XmATTACH_FORM,
-                    XmNleftAttachment, XmATTACH_FORM,
-                    XmNrightAttachment, XmATTACH_FORM,
-                    XmNbackground, colors[0xff],
-                    XmNkeyboardFocusPolicy, XmEXPLICIT,
-                    NULL);
+        rowcol = XtVaCreateManagedWidget("Map Chooser rowcol", 
+                xmRowColumnWidgetClass, 
+                my_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, XtParent(map_list),
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNkeyboardFocusPolicy, XmEXPLICIT,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
 
 // "None"
-        button_none = XtVaCreateManagedWidget(langcode("PULDNMMC01"),xmPushButtonGadgetClass, rowcol,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_none = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
 // "Vector Maps"
-        button_V = XtVaCreateManagedWidget(langcode("PULDNMMC02"),xmPushButtonGadgetClass, rowcol,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_V = XtVaCreateManagedWidget(langcode("PULDNMMC02"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 // "250k Topos"
-        button_C = XtVaCreateManagedWidget(langcode("PULDNMMC03"),xmPushButtonGadgetClass, rowcol,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
+        button_C = XtVaCreateManagedWidget(langcode("PULDNMMC03"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
 #ifndef HAVE_GEOTIFF
-                                        XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_GEOTIFF */
-                                        NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 // "100k Topos"
-        button_F = XtVaCreateManagedWidget(langcode("PULDNMMC04"),xmPushButtonGadgetClass, rowcol,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
+        button_F = XtVaCreateManagedWidget(langcode("PULDNMMC04"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
 #ifndef HAVE_GEOTIFF
-                                        XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_GEOTIFF */
-                                        NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 // "24k Topos"
-        button_O = XtVaCreateManagedWidget(langcode("PULDNMMC05"),xmPushButtonGadgetClass, rowcol,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
+        button_O = XtVaCreateManagedWidget(langcode("PULDNMMC05"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
 #ifndef HAVE_GEOTIFF
-                                        XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_GEOTIFF */
-                                        NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 // "OK"
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, rowcol,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 // "Cancel"
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, rowcol,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, map_chooser_destroy_shell, map_chooser_dialog);
         XtAddCallback(button_ok, XmNactivateCallback, map_chooser_select_maps, map_chooser_dialog);
@@ -8809,14 +9900,19 @@ void Read_File_Selection( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDa
 
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNtitle, "Open Log File"); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+
         //XtSetArg(al[ac], XmNdirMask, "/home/hacker/.xastir/logs/*"); ac++;
         //XtSetArg(al[ac], XmNdirectory, "/home/hacker/.xastir/logs/"); ac++;
         //XtSetArg(al[ac], XmNpattern, "*"); ac++;
         //XtSetArg(al[ac], XmNdirMask, ".xastir/logs/*"); ac++;
-        read_selection_dialog = XmCreateFileSelectionDialog(Global.top,"filesb",al,ac);
+        read_selection_dialog = XmCreateFileSelectionDialog(Global.top,
+                "filesb",
+                al,
+                ac);
 
         // Change back to the base directory 
         chdir( get_user_base_dir("") );
@@ -9139,521 +10235,677 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
     register unsigned int ac = 0;           /* Arg Count */
 
     if (!configure_defaults_dialog) {
-            configure_defaults_dialog = XtVaCreatePopupShell(langcode("WPUPCFD001"),xmDialogShellWidgetClass,Global.top,
-                                    XmNdeleteResponse,XmDESTROY,
-                                    XmNdefaultPosition, FALSE,
-                                    NULL);
+        configure_defaults_dialog = XtVaCreatePopupShell(langcode("WPUPCFD001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Configure_defaults pane",xmPanedWindowWidgetClass, configure_defaults_dialog,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        pane = XtVaCreateWidget("Configure_defaults pane",
+                xmPanedWindowWidgetClass, 
+                configure_defaults_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("Configure_defaults my_form",xmFormWidgetClass, pane,
-                                XmNfractionBase, 5,
-                                XmNbackground, colors[0xff],
-                                XmNautoUnmanage, FALSE,
-                                XmNshadowThickness, 1,
-                                NULL);
+        my_form =  XtVaCreateWidget("Configure_defaults my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
         // Interval for station being considered old
-        frame = XtVaCreateManagedWidget("Configure_defaults frame", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_FORM,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_FORM,
-                                        XmNrightOffset, 10,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame = XtVaCreateManagedWidget("Configure_defaults frame", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        time = XtVaCreateManagedWidget(langcode("WPUPCFD002"),xmLabelWidgetClass,frame,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        time = XtVaCreateManagedWidget(langcode("WPUPCFD002"),
+                xmLabelWidgetClass,
+                frame,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        time_box = XmCreateRadioBox(frame,"Configure_defaults Time box",al,ac);
+
+        time_box = XmCreateRadioBox(frame,
+                "Configure_defaults Time box",
+                al,
+                ac);
 
         XtVaSetValues(time_box,
-                    XmNpacking, XmPACK_TIGHT,
-                    XmNorientation, XmHORIZONTAL,
-                    XmNnumColumns,5,
-                    NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNnumColumns,5,
+                NULL);
 
 
-        time_15 = XtVaCreateManagedWidget(langcode("WPUPCFD003"),xmToggleButtonGadgetClass,
-                                            time_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_15 = XtVaCreateManagedWidget(langcode("WPUPCFD003"),
+                xmToggleButtonGadgetClass,
+                time_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_15,XmNvalueChangedCallback,defaults_old_toggle,"1");
 
 
-        time_30 = XtVaCreateManagedWidget(langcode("WPUPCFD004"),xmToggleButtonGadgetClass,
-                                            time_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_30 = XtVaCreateManagedWidget(langcode("WPUPCFD004"),
+                xmToggleButtonGadgetClass,
+                time_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_30,XmNvalueChangedCallback,defaults_old_toggle,"2");
 
 
-        time_45 = XtVaCreateManagedWidget(langcode("WPUPCFD005"),xmToggleButtonGadgetClass,
-                                            time_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_45 = XtVaCreateManagedWidget(langcode("WPUPCFD005"),
+                xmToggleButtonGadgetClass,
+                time_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_45,XmNvalueChangedCallback,defaults_old_toggle,"3");
 
 
-        time_60 = XtVaCreateManagedWidget(langcode("WPUPCFD006"),xmToggleButtonGadgetClass,
-                                            time_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_60 = XtVaCreateManagedWidget(langcode("WPUPCFD006"),
+                xmToggleButtonGadgetClass,
+                time_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_60,XmNvalueChangedCallback,defaults_old_toggle,"4");
 
 
-        time_90 = XtVaCreateManagedWidget(langcode("WPUPCFD007"),xmToggleButtonGadgetClass,
-                                            time_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_90 = XtVaCreateManagedWidget(langcode("WPUPCFD007"),
+                xmToggleButtonGadgetClass,
+                time_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_90,XmNvalueChangedCallback,defaults_old_toggle,"5");
 
 
-        time_120 = XtVaCreateManagedWidget(langcode("WPUPCFD008"),xmToggleButtonGadgetClass,
-                                            time_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_120 = XtVaCreateManagedWidget(langcode("WPUPCFD008"),
+                xmToggleButtonGadgetClass,
+                time_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_120,XmNvalueChangedCallback,defaults_old_toggle,"6");
 
 
         // Interval for station not being displayed
-        frame2 = XtVaCreateManagedWidget("Configure_defaults frame2", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_WIDGET,
-                                        XmNtopWidget, frame,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_FORM,
-                                        XmNrightOffset, 10,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame2 = XtVaCreateManagedWidget("Configure_defaults frame2", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, frame,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        time2 = XtVaCreateManagedWidget(langcode("WPUPCFD009"),xmLabelWidgetClass,frame2,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        time2 = XtVaCreateManagedWidget(langcode("WPUPCFD009"),
+                xmLabelWidgetClass,
+                frame2,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        time_box2 = XmCreateRadioBox(frame2,"Configure_defaults Time box2",al,ac);
+        time_box2 = XmCreateRadioBox(frame2,
+                "Configure_defaults Time box2",
+                al,
+                ac);
 
         XtVaSetValues(time_box2,
-                    XmNpacking, XmPACK_TIGHT,
-                    XmNorientation, XmHORIZONTAL,
-                    XmNnumColumns,5,
-                    NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNnumColumns,5,
+                NULL);
 
-        time_6h = XtVaCreateManagedWidget(langcode("WPUPCFD010"),xmToggleButtonGadgetClass,
-                                            time_box2,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_6h = XtVaCreateManagedWidget(langcode("WPUPCFD010"),
+                xmToggleButtonGadgetClass,
+                time_box2,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_6h,XmNvalueChangedCallback,defaults_clear_toggle,"1");
 
 
-        time_12h = XtVaCreateManagedWidget(langcode("WPUPCFD011"),xmToggleButtonGadgetClass,
-                                            time_box2,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_12h = XtVaCreateManagedWidget(langcode("WPUPCFD011"),
+                xmToggleButtonGadgetClass,
+                time_box2,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_12h,XmNvalueChangedCallback,defaults_clear_toggle,"2");
 
 
-        time_24h = XtVaCreateManagedWidget(langcode("WPUPCFD012"),xmToggleButtonGadgetClass,
-                                            time_box2,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_24h = XtVaCreateManagedWidget(langcode("WPUPCFD012"),
+                xmToggleButtonGadgetClass,
+                time_box2,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_24h,XmNvalueChangedCallback,defaults_clear_toggle,"3");
 
 
-        time_48h = XtVaCreateManagedWidget(langcode("WPUPCFD013"),xmToggleButtonGadgetClass,
-                                            time_box2,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_48h = XtVaCreateManagedWidget(langcode("WPUPCFD013"),
+                xmToggleButtonGadgetClass,
+                time_box2,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_48h,XmNvalueChangedCallback,defaults_clear_toggle,"4");
 
 
-        time_168h = XtVaCreateManagedWidget(langcode("WPUPCFD014"),xmToggleButtonGadgetClass,
-                                            time_box2,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        time_168h = XtVaCreateManagedWidget(langcode("WPUPCFD014"),
+                xmToggleButtonGadgetClass,
+                time_box2,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(time_168h,XmNvalueChangedCallback,defaults_clear_toggle,"5");
 
 
         // Posit Time
-        frame6 = XtVaCreateManagedWidget("Configure_defaults frame6", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_WIDGET,
-                                        XmNtopWidget, frame2,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_FORM,
-                                        XmNrightOffset, 10,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame6 = XtVaCreateManagedWidget("Configure_defaults frame6", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, frame2,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        posit_label  = XtVaCreateManagedWidget(langcode("WPUPCFD026"),xmLabelWidgetClass,frame6,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        posit_label  = XtVaCreateManagedWidget(langcode("WPUPCFD026"),
+                xmLabelWidgetClass,
+                frame6,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        posit_box = XmCreateRadioBox(frame6,"Configure_defaults Posit Options box",al,ac);
+        posit_box = XmCreateRadioBox(frame6,
+                "Configure_defaults Posit Options box",
+                al,
+                ac);
 
         XtVaSetValues(posit_box,
-                    XmNpacking, XmPACK_TIGHT,
-                    XmNorientation, XmHORIZONTAL,
-                    XmNnumColumns,7,
-                    NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNnumColumns,7,
+                NULL);
 
         // 30 seconds
-        poption1 = XtVaCreateManagedWidget(langcode("WPUPCFG011"),xmToggleButtonGadgetClass,
-                                            posit_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        poption1 = XtVaCreateManagedWidget(langcode("WPUPCFG011"),
+                xmToggleButtonGadgetClass,
+                posit_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption1,XmNvalueChangedCallback,posit_time_toggle,"30");
 
         // 60 seconds
-        poption2 = XtVaCreateManagedWidget(langcode("WPUPCFG012"),xmToggleButtonGadgetClass,
-                                            posit_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        poption2 = XtVaCreateManagedWidget(langcode("WPUPCFG012"),
+                xmToggleButtonGadgetClass,
+                posit_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption2,XmNvalueChangedCallback,posit_time_toggle,"60");
 
         // 2 minutes
-        poption3 = XtVaCreateManagedWidget(langcode("WPUPCFG013"),xmToggleButtonGadgetClass,
-                                            posit_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        poption3 = XtVaCreateManagedWidget(langcode("WPUPCFG013"),
+                xmToggleButtonGadgetClass,
+                posit_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption3,XmNvalueChangedCallback,posit_time_toggle,"120");
 
         // 5 minutes
-        poption4 = XtVaCreateManagedWidget(langcode("WPUPCFG014"),xmToggleButtonGadgetClass,
-                                            posit_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        poption4 = XtVaCreateManagedWidget(langcode("WPUPCFG014"),
+                xmToggleButtonGadgetClass,
+                posit_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption4,XmNvalueChangedCallback,posit_time_toggle,"300");
 
         // 10 minutes
-        poption5 = XtVaCreateManagedWidget(langcode("WPUPCFG015"),xmToggleButtonGadgetClass,
-                                            posit_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        poption5 = XtVaCreateManagedWidget(langcode("WPUPCFG015"),
+                xmToggleButtonGadgetClass,
+                posit_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption5,XmNvalueChangedCallback,posit_time_toggle,"600");
 
         // 15 minutes
-        poption6 = XtVaCreateManagedWidget(langcode("WPUPCFD003"),xmToggleButtonGadgetClass,
-                                            posit_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        poption6 = XtVaCreateManagedWidget(langcode("WPUPCFD003"),
+                xmToggleButtonGadgetClass,
+                posit_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption6,XmNvalueChangedCallback,posit_time_toggle,"900");
 
         // 30 minutes
-        poption7 = XtVaCreateManagedWidget(langcode("WPUPCFD004"),xmToggleButtonGadgetClass,
-                                            posit_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        poption7 = XtVaCreateManagedWidget(langcode("WPUPCFD004"),
+                xmToggleButtonGadgetClass,
+                posit_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption7,XmNvalueChangedCallback,posit_time_toggle,"1800");
 
         // 45 minutes
-        poption8 = XtVaCreateManagedWidget(langcode("WPUPCFD005"),xmToggleButtonGadgetClass,
-                                            posit_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        poption8 = XtVaCreateManagedWidget(langcode("WPUPCFD005"),
+                xmToggleButtonGadgetClass,
+                posit_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption8,XmNvalueChangedCallback,posit_time_toggle,"2700");
 
 
         // GPS Time
-        frame3 = XtVaCreateManagedWidget("Configure_defaults frame3", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_WIDGET,
-                                        XmNtopWidget, frame6,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_FORM,
-                                        XmNrightOffset, 10,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame3 = XtVaCreateManagedWidget("Configure_defaults frame3", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, frame6,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        time3  = XtVaCreateManagedWidget(langcode("WPUPCFG008"),xmLabelWidgetClass,frame3,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        time3  = XtVaCreateManagedWidget(langcode("WPUPCFG008"),
+                xmLabelWidgetClass,
+                frame3,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        time_box3 = XmCreateRadioBox(frame3,"Configure_defaults Time Options box",al,ac);
+        time_box3 = XmCreateRadioBox(frame3,
+                "Configure_defaults Time Options box",
+                al,
+                ac);
 
         XtVaSetValues(time_box3,
-                    XmNpacking, XmPACK_TIGHT,
-                    XmNorientation, XmHORIZONTAL,
-                    XmNnumColumns,7,
-                    NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNnumColumns,7,
+                NULL);
 
-        toption1 = XtVaCreateManagedWidget(langcode("WPUPCFG009"),xmToggleButtonGadgetClass,
-                                            time_box3,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        toption1 = XtVaCreateManagedWidget(langcode("WPUPCFG009"),
+                xmToggleButtonGadgetClass,
+                time_box3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption1,XmNvalueChangedCallback,gps_time_toggle,"5");
 
 
-        toption2 = XtVaCreateManagedWidget(langcode("WPUPCFG010"),xmToggleButtonGadgetClass,
-                                            time_box3,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        toption2 = XtVaCreateManagedWidget(langcode("WPUPCFG010"),
+                xmToggleButtonGadgetClass,
+                time_box3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption2,XmNvalueChangedCallback,gps_time_toggle,"15");
 
 
-        toption3 = XtVaCreateManagedWidget(langcode("WPUPCFG011"),xmToggleButtonGadgetClass,
-                                            time_box3,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        toption3 = XtVaCreateManagedWidget(langcode("WPUPCFG011"),
+                xmToggleButtonGadgetClass,
+                time_box3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption3,XmNvalueChangedCallback,gps_time_toggle,"30");
 
-        toption4 = XtVaCreateManagedWidget(langcode("WPUPCFG012"),xmToggleButtonGadgetClass,
-                                            time_box3,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        toption4 = XtVaCreateManagedWidget(langcode("WPUPCFG012"),
+                xmToggleButtonGadgetClass,
+                time_box3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption4,XmNvalueChangedCallback,gps_time_toggle,"60");
 
-        toption5 = XtVaCreateManagedWidget(langcode("WPUPCFG013"),xmToggleButtonGadgetClass,
-                                            time_box3,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        toption5 = XtVaCreateManagedWidget(langcode("WPUPCFG013"),
+                xmToggleButtonGadgetClass,
+                time_box3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption5,XmNvalueChangedCallback,gps_time_toggle,"120");
 
-        toption6 = XtVaCreateManagedWidget(langcode("WPUPCFG014"),xmToggleButtonGadgetClass,
-                                            time_box3,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        toption6 = XtVaCreateManagedWidget(langcode("WPUPCFG014"),
+                xmToggleButtonGadgetClass,
+                time_box3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption6,XmNvalueChangedCallback,gps_time_toggle,"300");
 
-        toption7 = XtVaCreateManagedWidget(langcode("WPUPCFG015"),xmToggleButtonGadgetClass,
-                                            time_box3,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        toption7 = XtVaCreateManagedWidget(langcode("WPUPCFG015"),
+                xmToggleButtonGadgetClass,
+                time_box3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption7,XmNvalueChangedCallback,gps_time_toggle,"600");
 
 
         // Transmit Station Options
-        frame4 = XtVaCreateManagedWidget("Configure_defaults frame4", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_WIDGET,
-                                        XmNtopWidget, frame3,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_FORM,
-                                        XmNrightOffset, 10,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame4 = XtVaCreateManagedWidget("Configure_defaults frame4", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, frame3,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        station_type  = XtVaCreateManagedWidget(langcode("WPUPCFD015"),xmLabelWidgetClass,frame4,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        station_type  = XtVaCreateManagedWidget(langcode("WPUPCFD015"),
+                xmLabelWidgetClass,
+                frame4,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        type_box = XmCreateRadioBox(frame4,"Configure_defaults Transmit Options box",al,ac);
+        type_box = XmCreateRadioBox(frame4,
+                "Configure_defaults Transmit Options box",
+                al,
+                ac);
 
         XtVaSetValues(type_box,
-                    XmNnumColumns,2,
-                    NULL);
+                XmNnumColumns,2,
+                NULL);
 
-        styp1 = XtVaCreateManagedWidget(langcode("WPUPCFD016"),xmToggleButtonGadgetClass,
-                                            type_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        styp1 = XtVaCreateManagedWidget(langcode("WPUPCFD016"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(styp1,XmNvalueChangedCallback,station_type_toggle,"0");
 
-        styp2 = XtVaCreateManagedWidget(langcode("WPUPCFD017"),xmToggleButtonGadgetClass,
-                                            type_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        styp2 = XtVaCreateManagedWidget(langcode("WPUPCFD017"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(styp2,XmNvalueChangedCallback,station_type_toggle,"1");
 
-        styp3 = XtVaCreateManagedWidget(langcode("WPUPCFD018"),xmToggleButtonGadgetClass,
-                                            type_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        styp3 = XtVaCreateManagedWidget(langcode("WPUPCFD018"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(styp3,XmNvalueChangedCallback,station_type_toggle,"2");
 
-        styp4 = XtVaCreateManagedWidget(langcode("WPUPCFD019"),xmToggleButtonGadgetClass,
-                                            type_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        styp4 = XtVaCreateManagedWidget(langcode("WPUPCFD019"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(styp4,XmNvalueChangedCallback,station_type_toggle,"3");
 
-        styp5 = XtVaCreateManagedWidget(langcode("WPUPCFD021"),xmToggleButtonGadgetClass,
-                                            type_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        styp5 = XtVaCreateManagedWidget(langcode("WPUPCFD021"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(styp5,XmNvalueChangedCallback,station_type_toggle,"4");
 
-        styp6 = XtVaCreateManagedWidget(langcode("WPUPCFD022"),xmToggleButtonGadgetClass,
-                                            type_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        styp6 = XtVaCreateManagedWidget(langcode("WPUPCFD022"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(styp6,XmNvalueChangedCallback,station_type_toggle,"5");
 
 
         // Igate Options
-        frame5 = XtVaCreateManagedWidget("Configure_defaults frame5", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_WIDGET,
-                                        XmNtopWidget, frame4,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_FORM,
-                                        XmNrightOffset, 10,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame5 = XtVaCreateManagedWidget("Configure_defaults frame5", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, frame4,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        igate_option  = XtVaCreateManagedWidget(langcode("IGPUPCF000"),xmLabelWidgetClass,frame5,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        igate_option  = XtVaCreateManagedWidget(langcode("IGPUPCF000"),
+                xmLabelWidgetClass,
+                frame5,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        igate_box = XmCreateRadioBox(frame5,"Configure_defaults Igate Options box",al,ac);
+        igate_box = XmCreateRadioBox(frame5,
+                "Configure_defaults Igate Options box",
+                al,
+                ac);
 
         XtVaSetValues(igate_box,
-                    XmNnumColumns,2,
-                    NULL);
+                XmNnumColumns,2,
+                NULL);
 
-        igtyp0 = XtVaCreateManagedWidget(langcode("IGPUPCF001"),xmToggleButtonGadgetClass,
-                                            igate_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        igtyp0 = XtVaCreateManagedWidget(langcode("IGPUPCF001"),
+                xmToggleButtonGadgetClass,
+                igate_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(igtyp0,XmNvalueChangedCallback,igate_type_toggle,"0");
 
-        igtyp1 = XtVaCreateManagedWidget(langcode("IGPUPCF002"),xmToggleButtonGadgetClass,
-                                            igate_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        igtyp1 = XtVaCreateManagedWidget(langcode("IGPUPCF002"),
+                xmToggleButtonGadgetClass,
+                igate_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(igtyp1,XmNvalueChangedCallback,igate_type_toggle ,"1");
 
-        igtyp2 = XtVaCreateManagedWidget(langcode("IGPUPCF003"),xmToggleButtonGadgetClass,
-                                            igate_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        igtyp2 = XtVaCreateManagedWidget(langcode("IGPUPCF003"),
+                xmToggleButtonGadgetClass,
+                igate_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(igtyp2,XmNvalueChangedCallback,igate_type_toggle,"2");
 
 
         // Miscellaneous Options
-        compressed_objects_items_tx = XtVaCreateManagedWidget(langcode("WPUPCFD024"),xmToggleButtonWidgetClass,my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, frame5,
-                                        XmNtopOffset, 10,
-                                        XmNbottomAttachment, XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset,10,
-                                        XmNrightAttachment, XmATTACH_NONE,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        compressed_objects_items_tx = XtVaCreateManagedWidget(langcode("WPUPCFD024"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, frame5,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        new_bulletin_popup_enable = XtVaCreateManagedWidget(langcode("WPUPCFD027"),xmToggleButtonWidgetClass,my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, compressed_objects_items_tx,
-                                        XmNbottomAttachment, XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset,10,
-                                        XmNrightAttachment, XmATTACH_NONE,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        new_bulletin_popup_enable = XtVaCreateManagedWidget(langcode("WPUPCFD027"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, compressed_objects_items_tx,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 #ifdef TRANSMIT_RAW_WX
-        raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),xmToggleButtonWidgetClass,my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, new_bulletin_popup_enable,
-                                        XmNbottomAttachment, XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment, XmATTACH_NONE,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, new_bulletin_popup_enable,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 #endif
 
-        altnet_active  = XtVaCreateManagedWidget(langcode("WPUPCFD025"),xmToggleButtonWidgetClass,my_form,
-                            XmNtopAttachment, XmATTACH_WIDGET,
-                            XmNtopWidget, frame5,
-                            XmNtopOffset, 10,
-                            XmNbottomAttachment, XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_NONE,
-                            XmNrightAttachment, XmATTACH_FORM,
-                            XmNrightOffset, 100,
-                            XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                            NULL);
+        altnet_active  = XtVaCreateManagedWidget(langcode("WPUPCFD025"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, frame5,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_NONE,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 100,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-//        altnet_text = XtVaCreateManagedWidget("Configure_defaults Altnet_text", xmTextFieldWidgetClass, my_form,
-        altnet_text = XtVaCreateManagedWidget("Configure_defaults Altnet_text", xmTextWidgetClass, my_form,
-                            XmNeditable,   TRUE,
-                            XmNcursorPositionVisible, TRUE,
-                            XmNsensitive, TRUE,
-                            XmNshadowThickness,    1,
-                            XmNcolumns, 9,
-                            XmNwidth, ((10*7)+2),
-                            XmNmaxLength, 9,
-                            XmNbackground, colors[0x0f],
-                            XmNtopAttachment,XmATTACH_WIDGET,
-                            XmNtopWidget, altnet_active,
-                            XmNbottomAttachment,XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_NONE,
-                            XmNrightAttachment,XmATTACH_FORM,
-                            XmNrightOffset, 160,
-                            XmNnavigationType, XmTAB_GROUP,
-                            NULL);
+//        altnet_text = XtVaCreateManagedWidget("Configure_defaults Altnet_text", 
+//                xmTextFieldWidgetClass, 
+//                my_form,
+        altnet_text = XtVaCreateManagedWidget("Configure_defaults Altnet_text", 
+                xmTextWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 9,
+                XmNwidth, ((10*7)+2),
+                XmNmaxLength, 9,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, altnet_active,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_NONE,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 160,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
 #ifdef TRANSMIT_RAW_WX
-                                        XmNtopWidget, raw_wx_tx,
+                XmNtopWidget, raw_wx_tx,
 #else
-                                        XmNtopWidget, altnet_text,
+                XmNtopWidget, altnet_text,
 #endif
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 1,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 2,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
 #ifdef TRANSMIT_RAW_WX
-                                        XmNtopWidget, raw_wx_tx,
+                XmNtopWidget, raw_wx_tx,
 #else
-                                        XmNtopWidget, altnet_text,
+                XmNtopWidget, altnet_text,
 #endif
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 3,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 4,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_defaults_change_data, configure_defaults_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_defaults_destroy_shell, configure_defaults_dialog);
@@ -9963,108 +11215,140 @@ void Configure_coordinates( /*@unused@*/ Widget w, /*@unused@*/ XtPointer client
     register unsigned int ac = 0;           /* Arg Count */
 
     if (!configure_coordinates_dialog) {
-        configure_coordinates_dialog = XtVaCreatePopupShell(langcode("WPUPCFC001"),xmDialogShellWidgetClass,Global.top,
-                                    XmNdeleteResponse,XmDESTROY,
-                                    XmNdefaultPosition, FALSE,
-                                    NULL);
+        configure_coordinates_dialog = XtVaCreatePopupShell(langcode("WPUPCFC001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Configure_coordinates pane",xmPanedWindowWidgetClass, configure_coordinates_dialog,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        pane = XtVaCreateWidget("Configure_coordinates pane",
+                xmPanedWindowWidgetClass, 
+                configure_coordinates_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("Configure_coordinates my_form",xmFormWidgetClass, pane,
-                                XmNfractionBase, 5,
-                                XmNbackground, colors[0xff],
-                                XmNautoUnmanage, FALSE,
-                                XmNshadowThickness, 1,
-                                NULL);
+        my_form =  XtVaCreateWidget("Configure_coordinates my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
         // Interval for station being considered old
-        frame = XtVaCreateManagedWidget("Configure_coordinates frame", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_FORM,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_FORM,
-                                        XmNrightOffset, 10,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame = XtVaCreateManagedWidget("Configure_coordinates frame", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label = XtVaCreateManagedWidget(langcode("WPUPCFC002"),xmLabelWidgetClass,frame,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        label = XtVaCreateManagedWidget(langcode("WPUPCFC002"),
+                xmLabelWidgetClass,
+                frame,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        coord_box = XmCreateRadioBox(frame,"Configure_coordinates coord_box",al,ac);
+
+        coord_box = XmCreateRadioBox(frame,"Configure_coordinates coord_box",
+                al,
+                ac);
 
         XtVaSetValues(coord_box,
-                    XmNpacking, XmPACK_TIGHT,
-                    XmNorientation, XmHORIZONTAL,
-                    XmNnumColumns,5,
-                    NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNnumColumns,5,
+                NULL);
 
 
-        coord_0 = XtVaCreateManagedWidget(langcode("WPUPCFC003"),xmToggleButtonGadgetClass,
-                                            coord_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        coord_0 = XtVaCreateManagedWidget(langcode("WPUPCFC003"),
+                xmToggleButtonGadgetClass,
+                coord_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coord_0,XmNvalueChangedCallback,coordinates_toggle,"0");
 
 
-        coord_1 = XtVaCreateManagedWidget(langcode("WPUPCFC004"),xmToggleButtonGadgetClass,
-                                            coord_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        coord_1 = XtVaCreateManagedWidget(langcode("WPUPCFC004"),
+                xmToggleButtonGadgetClass,
+                coord_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coord_1,XmNvalueChangedCallback,coordinates_toggle,"1");
 
 
-        coord_2 = XtVaCreateManagedWidget(langcode("WPUPCFC005"),xmToggleButtonGadgetClass,
-                                            coord_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        coord_2 = XtVaCreateManagedWidget(langcode("WPUPCFC005"),
+                xmToggleButtonGadgetClass,
+                coord_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coord_2,XmNvalueChangedCallback,coordinates_toggle,"2");
 
 
-        coord_3 = XtVaCreateManagedWidget(langcode("WPUPCFC006"),xmToggleButtonGadgetClass,
-                                            coord_box,
-                                            XmNbackground, colors[0xff],
-                                            NULL);
+        coord_3 = XtVaCreateManagedWidget(langcode("WPUPCFC006"),
+                xmToggleButtonGadgetClass,
+                coord_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coord_3,XmNvalueChangedCallback,coordinates_toggle,"3");
 
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, frame,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 1,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 2,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, frame,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, frame,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_POSITION,
-                                        XmNleftPosition, 3,
-                                        XmNrightAttachment, XmATTACH_POSITION,
-                                        XmNrightPosition, 4,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, frame,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_coordinates_destroy_shell, configure_coordinates_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_coordinates_destroy_shell, configure_coordinates_dialog);
@@ -10193,433 +11477,518 @@ void Configure_audio_alarms( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clien
     Atom delw;
 
     if (!configure_audio_alarm_dialog) {
-        configure_audio_alarm_dialog = XtVaCreatePopupShell(langcode("WPUPCFA001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        configure_audio_alarm_dialog = XtVaCreatePopupShell(langcode("WPUPCFA001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Configure_audio_alarms pane",xmPanedWindowWidgetClass, configure_audio_alarm_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        pane = XtVaCreateWidget("Configure_audio_alarms pane",
+                xmPanedWindowWidgetClass, 
+                configure_audio_alarm_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("Configure_audio_alarms my_form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        my_form =  XtVaCreateWidget("Configure_audio_alarms my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_play = XtVaCreateManagedWidget(langcode("WPUPCFA002"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        audio_play = XtVaCreateManagedWidget(langcode("WPUPCFA002"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_play_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 80,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_FORM,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, audio_play,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNrightOffset, 10,
-                                      NULL);
+        audio_alarm_config_play_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 25,
+                XmNwidth, ((25*7)+2),
+                XmNmaxLength, 80,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, audio_play,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                NULL);
 
 
-        file1 = XtVaCreateManagedWidget(langcode("WPUPCFA003"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_play,
-                                      XmNtopOffset, 20,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        file1 = XtVaCreateManagedWidget(langcode("WPUPCFA003"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, audio_play,
+                XmNtopOffset, 20,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        file2 = XtVaCreateManagedWidget(langcode("WPUPCFA004"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_play,
-                                      XmNtopOffset, 20,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        file2 = XtVaCreateManagedWidget(langcode("WPUPCFA004"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, audio_play,
+                XmNtopOffset, 20,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_play_on_new_station  = XtVaCreateManagedWidget(langcode("WPUPCFA005"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, file1,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        audio_alarm_config_play_on_new_station = XtVaCreateManagedWidget(langcode("WPUPCFA005"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, file1,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_play_ons_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command NS", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 80,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, file2,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNleftWidget, audio_alarm_config_play_on_new_station,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        audio_alarm_config_play_ons_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command NS", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 25,
+                XmNwidth, ((25*7)+2),
+                XmNmaxLength, 80,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, file2,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNleftWidget, audio_alarm_config_play_on_new_station,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        audio_alarm_config_play_on_new_message  = XtVaCreateManagedWidget(langcode("WPUPCFA006"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_new_station,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        audio_alarm_config_play_on_new_message  = XtVaCreateManagedWidget(langcode("WPUPCFA006"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_new_station,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_play_onm_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command NM", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 80,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_new_station,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        audio_alarm_config_play_onm_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command NM", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 25,
+                XmNwidth, ((25*7)+2),
+                XmNmaxLength, 80,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_new_station,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        audio_alarm_config_play_on_prox  = XtVaCreateManagedWidget(langcode("WPUPCFA007"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_new_message,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        audio_alarm_config_play_on_prox  = XtVaCreateManagedWidget(langcode("WPUPCFA007"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_new_message,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_play_onpx_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command PROX", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 80,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_new_message,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        audio_alarm_config_play_onpx_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command PROX", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 25,
+                XmNwidth, ((25*7)+2),
+                XmNmaxLength, 80,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_new_message,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        min1 = XtVaCreateManagedWidget(langcode("WPUPCFA009"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_prox,
-                                      XmNtopOffset, 8,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset, 30,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        min1 = XtVaCreateManagedWidget(langcode("WPUPCFA009"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_prox,
+                XmNtopOffset, 8,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 30,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        prox_min_data = XtVaCreateManagedWidget("Configure_audio_alarms prox min", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 10,
-                                      XmNwidth, ((10*7)+2),
-                                      XmNmaxLength, 20,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_onpx_data,
-                                      XmNtopOffset, 2,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNleftOffset, 20,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        prox_min_data = XtVaCreateManagedWidget("Configure_audio_alarms prox min", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 10,
+                XmNwidth, ((10*7)+2),
+                XmNmaxLength, 20,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_onpx_data,
+                XmNtopOffset, 2,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNleftOffset, 20,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        min2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_prox,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, prox_min_data,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        min2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_prox,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, prox_min_data,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        max1 = XtVaCreateManagedWidget(langcode("WPUPCFA010"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, min1,
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset, 30,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        max1 = XtVaCreateManagedWidget(langcode("WPUPCFA010"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, min1,
+                XmNtopOffset, 12,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 30,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        prox_max_data = XtVaCreateManagedWidget("Configure_audio_alarms prox max", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 10,
-                                      XmNwidth, ((10*7)+2),
-                                      XmNmaxLength, 20,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, prox_min_data,
-                                      XmNtopOffset, 2,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNleftOffset, 20,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        prox_max_data = XtVaCreateManagedWidget("Configure_audio_alarms prox max", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 10,
+                XmNwidth, ((10*7)+2),
+                XmNmaxLength, 20,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, prox_min_data,
+                XmNtopOffset, 2,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNleftOffset, 20,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        max2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, min1,
-                                      XmNtopOffset, 14,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, prox_max_data,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        max2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, min1,
+                XmNtopOffset, 14,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, prox_max_data,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_play_on_bando  = XtVaCreateManagedWidget(langcode("WPUPCFA008"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, max1,
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        audio_alarm_config_play_on_bando  = XtVaCreateManagedWidget(langcode("WPUPCFA008"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, max1,
+                XmNtopOffset, 12,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_play_onbo_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command BAND", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 25,
-                                      XmNwidth, ((25*7)+2),
-                                      XmNmaxLength, 80,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, prox_max_data,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        audio_alarm_config_play_onbo_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command BAND", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 25,
+                XmNwidth, ((25*7)+2),
+                XmNmaxLength, 80,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, prox_max_data,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        minb1 = XtVaCreateManagedWidget(langcode("WPUPCFA009"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_bando,
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset, 30,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        minb1 = XtVaCreateManagedWidget(langcode("WPUPCFA009"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_bando,
+                XmNtopOffset, 12,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 30,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        bando_min_data = XtVaCreateManagedWidget("Configure_audio_alarms bando min", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 12,
-                                      XmNwidth, ((10*7)+2),
-                                      XmNmaxLength, 20,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_onbo_data,
-                                      XmNtopOffset, 2,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNleftOffset, 20,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        bando_min_data = XtVaCreateManagedWidget("Configure_audio_alarms bando min", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 12,
+                XmNwidth, ((10*7)+2),
+                XmNmaxLength, 20,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_onbo_data,
+                XmNtopOffset, 2,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNleftOffset, 20,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        minb2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_bando,
-                                      XmNtopOffset, 14,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, bando_min_data,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        minb2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_bando,
+                XmNtopOffset, 14,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, bando_min_data,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        maxb1 = XtVaCreateManagedWidget(langcode("WPUPCFA010"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, minb1,
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset, 30,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        maxb1 = XtVaCreateManagedWidget(langcode("WPUPCFA010"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, minb1,
+                XmNtopOffset, 12,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 30,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        bando_max_data = XtVaCreateManagedWidget("Configure_audio_alarms bando max", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 10,
-                                      XmNwidth, ((10*7)+2),
-                                      XmNmaxLength, 20,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, bando_min_data,
-                                      XmNtopOffset, 2,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNleftOffset, 20,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        bando_max_data = XtVaCreateManagedWidget("Configure_audio_alarms bando max", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 10,
+                XmNwidth, ((10*7)+2),
+                XmNmaxLength, 20,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, bando_min_data,
+                XmNtopOffset, 2,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNleftOffset, 20,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        maxb2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, minb1,
-                                      XmNtopOffset, 14,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, bando_max_data,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        maxb2 = XtVaCreateManagedWidget(units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, minb1,
+                XmNtopOffset, 14,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, bando_max_data,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_play_on_wx_alert  = XtVaCreateManagedWidget(langcode("WPUPCFA011"),xmToggleButtonWidgetClass,my_form,
-                                XmNtopAttachment, XmATTACH_WIDGET,
-                                XmNtopWidget, maxb2,
-                                XmNtopOffset, 12,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_POSITION,
-                                XmNleftPosition, 0,
-                                XmNleftOffset, 10,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                XmNbackground, colors[0xff],
-                                NULL);
+        audio_alarm_config_play_on_wx_alert  = XtVaCreateManagedWidget(langcode("WPUPCFA011"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, maxb2,
+                XmNtopOffset, 12,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        audio_alarm_config_wx_alert_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command WxAlert", xmTextFieldWidgetClass, my_form,
-                                XmNeditable, TRUE,
-                                XmNcursorPositionVisible, TRUE,
-                                XmNsensitive, TRUE,
-                                XmNshadowThickness, 1,
-                                XmNcolumns, 25,
-                                XmNwidth, ((25*7)+2),
-                                XmNmaxLength, 80,
-                                XmNbackground, colors[0x0f],
-                                XmNtopAttachment,XmATTACH_WIDGET,
-                                XmNtopWidget, bando_max_data,
-                                XmNtopOffset, 5,
-                                XmNbottomAttachment, XmATTACH_NONE,
-                                XmNleftAttachment, XmATTACH_POSITION,
-                                XmNleftPosition, 2,
-                                XmNrightAttachment, XmATTACH_NONE,
-                                NULL);
+        audio_alarm_config_wx_alert_data = XtVaCreateManagedWidget("Configure_audio_alarms Play Command WxAlert", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable, TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness, 1,
+                XmNcolumns, 25,
+                XmNwidth, ((25*7)+2),
+                XmNmaxLength, 80,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, bando_max_data,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_NONE,
+                NULL);
 
-        sep = XtVaCreateManagedWidget("Configure_audio_alarms sep", xmSeparatorGadgetClass,my_form,
-                                      XmNorientation, XmHORIZONTAL,
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, audio_alarm_config_play_on_wx_alert,
-                                      XmNtopOffset, 20,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        sep = XtVaCreateManagedWidget("Configure_audio_alarms sep", 
+                xmSeparatorGadgetClass,
+                my_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, audio_alarm_config_play_on_wx_alert,
+                XmNtopOffset, 20,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment,XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 1,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 3,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 4,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_audio_alarm_change_data, configure_audio_alarm_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_audio_alarm_destroy_shell, configure_audio_alarm_dialog);
@@ -10750,175 +12119,216 @@ void Configure_speech( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
     Atom delw;
 
     if (!configure_speech_dialog) {
-        configure_speech_dialog = XtVaCreatePopupShell(langcode("WPUPCFSP01"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        configure_speech_dialog = XtVaCreatePopupShell(langcode("WPUPCFSP01"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Configure_speech pane",xmPanedWindowWidgetClass, configure_speech_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        pane = XtVaCreateWidget("Configure_speech pane",
+                xmPanedWindowWidgetClass, 
+                configure_speech_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("Configure_speech my_form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        my_form =  XtVaCreateWidget("Configure_speech my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        file1 = XtVaCreateManagedWidget(langcode("WPUPCFSP02"),xmLabelWidgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 20,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        file1 = XtVaCreateManagedWidget(langcode("WPUPCFSP02"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 20,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        speech_config_play_on_new_station  = XtVaCreateManagedWidget(langcode("WPUPCFSP03"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, file1,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
+        speech_config_play_on_new_station  = XtVaCreateManagedWidget(langcode("WPUPCFSP03"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, file1,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
 #ifndef HAVE_FESTIVAL
-                                      XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_FESTIVAL */
-                                      NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        speech_config_play_on_new_message_alert  = XtVaCreateManagedWidget(langcode("WPUPCFSP04"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, speech_config_play_on_new_station,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
+        speech_config_play_on_new_message_alert  = XtVaCreateManagedWidget(langcode("WPUPCFSP04"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, speech_config_play_on_new_station,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
 #ifndef HAVE_FESTIVAL
-                                      XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_FESTIVAL */
-                                      NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        speech_config_play_on_new_message_body  = XtVaCreateManagedWidget(langcode("WPUPCFSP05"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, speech_config_play_on_new_message_alert,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
+        speech_config_play_on_new_message_body  = XtVaCreateManagedWidget(langcode("WPUPCFSP05"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, speech_config_play_on_new_message_alert,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
 #ifndef HAVE_FESTIVAL
-                                      XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_FESTIVAL */
-                                      NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        speech_config_play_on_prox  = XtVaCreateManagedWidget(langcode("WPUPCFSP06"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, speech_config_play_on_new_message_body,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
+        speech_config_play_on_prox  = XtVaCreateManagedWidget(langcode("WPUPCFSP06"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, speech_config_play_on_new_message_body,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
 #ifndef HAVE_FESTIVAL
-                                      XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_FESTIVAL */
-                                      NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        speech_config_play_on_trak  = XtVaCreateManagedWidget(langcode("WPUPCFSP09"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, speech_config_play_on_prox,
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
+        speech_config_play_on_trak  = XtVaCreateManagedWidget(langcode("WPUPCFSP09"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, speech_config_play_on_prox,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
 #ifndef HAVE_FESTIVAL
-                                      XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_FESTIVAL */
-                                      NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        speech_config_play_on_bando  = XtVaCreateManagedWidget(langcode("WPUPCFSP07"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, speech_config_play_on_trak,
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
+        speech_config_play_on_bando  = XtVaCreateManagedWidget(langcode("WPUPCFSP07"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, speech_config_play_on_trak,
+                XmNtopOffset, 12,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
 #ifndef HAVE_FESTIVAL
-                                      XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_FESTIVAL */
-                                      NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        speech_config_play_on_new_wx_alert  = XtVaCreateManagedWidget(langcode("WPUPCFSP08"),xmToggleButtonWidgetClass,my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, speech_config_play_on_bando,
-                                      XmNtopOffset, 12,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset ,10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
+        speech_config_play_on_new_wx_alert  = XtVaCreateManagedWidget(langcode("WPUPCFSP08"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, speech_config_play_on_bando,
+                XmNtopOffset, 12,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset ,10,
+                XmNrightAttachment, XmATTACH_NONE,
 #ifndef HAVE_FESTIVAL
-                                      XmNsensitive, FALSE,
+                XmNsensitive, FALSE,
 #endif /* HAVE_FESTIVAL */
-                                      NULL);
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
-        sep = XtVaCreateManagedWidget("Configure_speech sep", xmSeparatorGadgetClass,my_form,
-                                      XmNorientation, XmHORIZONTAL,
-                                      XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, speech_config_play_on_new_wx_alert,
-                                      XmNtopOffset, 20,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNrightAttachment,XmATTACH_FORM,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        sep = XtVaCreateManagedWidget("Configure_speech sep", 
+                xmSeparatorGadgetClass,
+                my_form,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, speech_config_play_on_new_wx_alert,
+                XmNtopOffset, 20,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNrightAttachment,XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 1,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, sep,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 3,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 4,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, sep,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_speech_change_data, configure_speech_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_speech_destroy_shell, configure_speech_dialog);
@@ -12362,7 +13772,7 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
     Atom delw;
     DataRow *p_station = (DataRow *)clientData;
     Arg al[2];                    /* Arg List */
-    register unsigned int ac = 0;           /* Arg Count */
+    register unsigned int ac;     /* Arg Count */
     long x,y;
 
 
@@ -12477,387 +13887,479 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
     if(object_dialog)           // it is already open
         (void)XRaiseWindow(XtDisplay(object_dialog), XtWindow(object_dialog));
     else {                      // create new popup window
-        object_dialog = XtVaCreatePopupShell(langcode("POPUPOB001"),xmDialogShellWidgetClass,Global.top,
-                            XmNdeleteResponse,          XmDESTROY,
-                            XmNdefaultPosition,         FALSE,
-                            NULL);
+        object_dialog = XtVaCreatePopupShell(langcode("POPUPOB001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,          XmDESTROY,
+                XmNdefaultPosition,         FALSE,
+                NULL);
 
-        ob_pane = XtVaCreateWidget("Set_Del_Object pane",xmPanedWindowWidgetClass, object_dialog,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_pane = XtVaCreateWidget("Set_Del_Object pane",
+                xmPanedWindowWidgetClass, 
+                object_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_form =  XtVaCreateWidget("Set_Del_Object ob_form",xmFormWidgetClass, ob_pane,
-                            XmNfractionBase,            3,
-                            XmNautoUnmanage,            FALSE,
-                            XmNshadowThickness,         1,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_form =  XtVaCreateWidget("Set_Del_Object ob_form",
+                xmFormWidgetClass, 
+                ob_pane,
+                XmNfractionBase,            3,
+                XmNautoUnmanage,            FALSE,
+                XmNshadowThickness,         1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Name"
-        ob_name = XtVaCreateManagedWidget(langcode("POPUPOB002"),xmLabelWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_name = XtVaCreateManagedWidget(langcode("POPUPOB002"),
+                xmLabelWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // object name
-        object_name_data = XtVaCreateManagedWidget("Set_Del_Object name_data", xmTextFieldWidgetClass, ob_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 9,
-                            XmNmaxLength,               9,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_name,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0x0f],
-                            NULL);
+        object_name_data = XtVaCreateManagedWidget("Set_Del_Object name_data", 
+                xmTextFieldWidgetClass, 
+                ob_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 9,
+                XmNmaxLength,               9,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               5,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_name,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
 
 
 //----- Frame for table / symbol
-        ob_frame = XtVaCreateManagedWidget("Set_Del_Object ob_frame", xmFrameWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               object_name_data,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_frame = XtVaCreateManagedWidget("Set_Del_Object ob_frame", 
+                xmFrameWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               object_name_data,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // "Station Symbol"
-        ob_ts  = XtVaCreateManagedWidget(langcode("WPUPCFS009"),xmLabelWidgetClass,ob_frame,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_ts  = XtVaCreateManagedWidget(langcode("WPUPCFS009"),
+                xmLabelWidgetClass,
+                ob_frame,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_form1 =  XtVaCreateWidget("Set_Del_Object form1",xmFormWidgetClass, ob_frame,
-                            XmNfractionBase,            5,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_form1 =  XtVaCreateWidget("Set_Del_Object form1",
+                xmFormWidgetClass, 
+                ob_frame,
+                XmNfractionBase,            5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Group/overlay"
-        ob_group = XtVaCreateManagedWidget(langcode("WPUPCFS010"),xmLabelWidgetClass, ob_form1,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_group = XtVaCreateManagedWidget(langcode("WPUPCFS010"),
+                xmLabelWidgetClass, 
+                ob_form1,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // table
-        object_group_data = XtVaCreateManagedWidget("Set_Del_Object group", xmTextFieldWidgetClass, ob_form1,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   FALSE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 1,
-                            XmNmaxLength,               1,
-                            XmNtopOffset,               3,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_group,
-                            XmNleftOffset,              5,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        object_group_data = XtVaCreateManagedWidget("Set_Del_Object group", 
+                xmTextFieldWidgetClass, 
+                ob_form1,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   FALSE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 1,
+                XmNmaxLength,               1,
+                XmNtopOffset,               3,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_group,
+                XmNleftOffset,              5,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
         // "Symbol"
-        ob_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS011"),xmLabelWidgetClass, ob_form1,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_group_data,
-                            XmNleftOffset,              20,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS011"),
+                xmLabelWidgetClass, 
+                ob_form1,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_group_data,
+                XmNleftOffset,              20,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // symbol
-        object_symbol_data = XtVaCreateManagedWidget("Set_Del_Object symbol", xmTextFieldWidgetClass, ob_form1,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   FALSE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 1,
-                            XmNmaxLength,               1,
-                            XmNtopOffset,               3,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_symbol,
-                            XmNleftOffset,              5,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        object_symbol_data = XtVaCreateManagedWidget("Set_Del_Object symbol", 
+                xmTextFieldWidgetClass, 
+                ob_form1,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   FALSE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 1,
+                XmNmaxLength,               1,
+                XmNtopOffset,               3,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_symbol,
+                XmNleftOffset,              5,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
         // icon
-        Ob_icon0 = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
-                    DefaultDepthOfScreen(XtScreen(appshell)));
-        Ob_icon  = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
-                    DefaultDepthOfScreen(XtScreen(appshell)));
-        object_icon = XtVaCreateManagedWidget("Set_Del_Object icon", xmLabelWidgetClass, ob_form1,
-                            XmNlabelType,               XmPIXMAP,
-                            XmNlabelPixmap,             Ob_icon,
-                            XmNbackground,              colors[0xff],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_symbol_data,
-                            XmNleftOffset,              15,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        Ob_icon0 = XCreatePixmap(XtDisplay(appshell),
+                RootWindowOfScreen(XtScreen(appshell)),
+                20,
+                20,
+                DefaultDepthOfScreen(XtScreen(appshell)));
+        Ob_icon  = XCreatePixmap(XtDisplay(appshell),
+                RootWindowOfScreen(XtScreen(appshell)),
+                20,
+                20,
+                DefaultDepthOfScreen(XtScreen(appshell)));
+        object_icon = XtVaCreateManagedWidget("Set_Del_Object icon", 
+                xmLabelWidgetClass, 
+                ob_form1,
+                XmNlabelType,               XmPIXMAP,
+                XmNlabelPixmap,             Ob_icon,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_symbol_data,
+                XmNleftOffset,              15,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_button_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS028"),xmPushButtonGadgetClass, ob_form1,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               2,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_icon,
-                            XmNleftOffset,              5,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             5,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+        ob_button_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS028"),
+                xmPushButtonGadgetClass, 
+                ob_form1,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               2,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_icon,
+                XmNleftOffset,              5,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             5,
+                XmNnavigationType,          XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(ob_button_symbol, XmNactivateCallback, Ob_change_symbol, object_dialog);
  
 //----- Frame for Lat/Long
-        ob_latlon_frame = XtVaCreateManagedWidget("Set_Del_Object ob_latlon_frame", xmFrameWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_frame,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_latlon_frame = XtVaCreateManagedWidget("Set_Del_Object ob_latlon_frame", 
+                xmFrameWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_frame,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Location"
-        ob_latlon_ts  = XtVaCreateManagedWidget(langcode("POPUPOB028"),xmLabelWidgetClass,ob_latlon_frame,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_latlon_ts  = XtVaCreateManagedWidget(langcode("POPUPOB028"),
+                xmLabelWidgetClass,
+                ob_latlon_frame,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_latlon_form =  XtVaCreateWidget("Set_Del_Object ob_latlon_form",xmFormWidgetClass, ob_latlon_frame,
-                            XmNfractionBase,            5,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_latlon_form =  XtVaCreateWidget("Set_Del_Object ob_latlon_form",
+                xmFormWidgetClass, 
+                ob_latlon_frame,
+                XmNfractionBase,            5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "LAT"
-        ob_lat = XtVaCreateManagedWidget(langcode("WPUPCFS003"),xmLabelWidgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              15,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lat = XtVaCreateManagedWidget(langcode("WPUPCFS003"),
+                xmLabelWidgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              15,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // lat deg
-        object_lat_data_deg = XtVaCreateManagedWidget("Set_Del_Object lat_deg", xmTextFieldWidgetClass, ob_latlon_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 3,
-                            XmNmaxLength,               2,
-                            XmNtopOffset,               5,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lat,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0x0f],
-                            NULL);
+        object_lat_data_deg = XtVaCreateManagedWidget("Set_Del_Object lat_deg", 
+                xmTextFieldWidgetClass, 
+                ob_latlon_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 3,
+                XmNmaxLength,               2,
+                XmNtopOffset,               5,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lat,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
         // "deg"
-        ob_lat_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),xmLabelWidgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_lat_data_deg,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lat_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),
+                xmLabelWidgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_lat_data_deg,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // lat min
-        object_lat_data_min = XtVaCreateManagedWidget("Set_Del_Object lat_min", xmTextFieldWidgetClass, ob_latlon_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 6,
-                            XmNmaxLength,               6,
-                            XmNtopOffset,               5,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lat_deg,
-                            XmNleftOffset,              10,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0x0f],
-                            NULL);
+        object_lat_data_min = XtVaCreateManagedWidget("Set_Del_Object lat_min", 
+                xmTextFieldWidgetClass, 
+                ob_latlon_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 6,
+                XmNmaxLength,               6,
+                XmNtopOffset,               5,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lat_deg,
+                XmNleftOffset,              10,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
         // "min"
-        ob_lat_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),xmLabelWidgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_lat_data_min,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lat_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),
+                xmLabelWidgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_lat_data_min,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // N/S
-        object_lat_data_ns = XtVaCreateManagedWidget("Set_Del_Object lat_ns", xmTextFieldWidgetClass, ob_latlon_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   FALSE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 1,
-                            XmNmaxLength,               1,
-                            XmNtopOffset,               5,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lat_min,
-                            XmNleftOffset,              10,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0x0f],
-                            NULL);
+        object_lat_data_ns = XtVaCreateManagedWidget("Set_Del_Object lat_ns", 
+                xmTextFieldWidgetClass, 
+                ob_latlon_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   FALSE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 1,
+                XmNmaxLength,               1,
+                XmNtopOffset,               5,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lat_min,
+                XmNleftOffset,              10,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
         // "(N/S)"
-        ob_lat_ns = XtVaCreateManagedWidget(langcode("WPUPCFS006"),xmLabelWidgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_lat_data_ns,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lat_ns = XtVaCreateManagedWidget(langcode("WPUPCFS006"),
+                xmLabelWidgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_lat_data_ns,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "LONG"
-        ob_lon = XtVaCreateManagedWidget(langcode("WPUPCFS007"),xmLabelWidgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_lat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lon = XtVaCreateManagedWidget(langcode("WPUPCFS007"),
+                xmLabelWidgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_lat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // long
-        object_lon_data_deg = XtVaCreateManagedWidget("Set_Del_Object long_deg", xmTextFieldWidgetClass, ob_latlon_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 3,
-                            XmNmaxLength,               3,
-                            XmNtopOffset,               14,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_lat,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lon,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0x0f],
-                            NULL);
+        object_lon_data_deg = XtVaCreateManagedWidget("Set_Del_Object long_deg", 
+                xmTextFieldWidgetClass, 
+                ob_latlon_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 3,
+                XmNmaxLength,               3,
+                XmNtopOffset,               14,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_lat,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lon,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
         // "deg"
-        ob_lon_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),xmLabelWidgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_lat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_lon_data_deg,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lon_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),
+                xmLabelWidgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_lat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_lon_data_deg,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // min
-        object_lon_data_min = XtVaCreateManagedWidget("Set_Del_Object long_min", xmTextFieldWidgetClass, ob_latlon_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 6,
-                            XmNmaxLength,               6,
-                            XmNtopOffset,               14,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lon_deg,
-                            XmNleftOffset,              10,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_lat,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0x0f],
-                            NULL);
+        object_lon_data_min = XtVaCreateManagedWidget("Set_Del_Object long_min", 
+                xmTextFieldWidgetClass, 
+                ob_latlon_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 6,
+                XmNmaxLength,               6,
+                XmNtopOffset,               14,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lon_deg,
+                XmNleftOffset,              10,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_lat,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
         // "min"
-        ob_lon_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),xmLabelWidgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_lat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_lon_data_min,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lon_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),
+                xmLabelWidgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_lat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_lon_data_min,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // E/W
-        object_lon_data_ew = XtVaCreateManagedWidget("Set_Del_Object long_ew", xmTextFieldWidgetClass, ob_latlon_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   FALSE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 1,
-                            XmNmaxLength,               1,
-                            XmNtopOffset,               14,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lon_min,
-                            XmNleftOffset,              10,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_lat,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0x0f],
-                            NULL);
+        object_lon_data_ew = XtVaCreateManagedWidget("Set_Del_Object long_ew", 
+                xmTextFieldWidgetClass, 
+                ob_latlon_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   FALSE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 1,
+                XmNmaxLength,               1,
+                XmNtopOffset,               14,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lon_min,
+                XmNleftOffset,              10,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_lat,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
         // "(E/W)"
-        ob_lon_ew = XtVaCreateManagedWidget(langcode("WPUPCFS008"),xmLabelWidgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_lat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              object_lon_data_ew,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lon_ew = XtVaCreateManagedWidget(langcode("WPUPCFS008"),
+                xmLabelWidgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_lat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              object_lon_data_ew,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        compute_button = XtVaCreateManagedWidget(langcode("COORD002"),xmPushButtonGadgetClass, ob_latlon_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_lat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lon_ew,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+        compute_button = XtVaCreateManagedWidget(langcode("COORD002"),
+                xmPushButtonGadgetClass, 
+                ob_latlon_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_lat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lon_ew,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNnavigationType,          XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // Fill in the pointers to our input textfields so that the coordinate
         // calculator can fiddle with them.
@@ -12873,165 +14375,195 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
         XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, langcode("POPUPOB001"));
 
 //----- Frame for generic options
-        ob_option_frame = XtVaCreateManagedWidget("Set_Del_Object ob_option_frame", xmFrameWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_frame,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_option_frame = XtVaCreateManagedWidget("Set_Del_Object ob_option_frame", 
+                xmFrameWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_frame,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // "Generic Options"
-        ob_option_ts  = XtVaCreateManagedWidget(langcode("POPUPOB027"),xmLabelWidgetClass,ob_option_frame,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_option_ts  = XtVaCreateManagedWidget(langcode("POPUPOB027"),
+                xmLabelWidgetClass,
+                ob_option_frame,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_option_form =  XtVaCreateWidget("Set_Del_Object ob_option_form",xmFormWidgetClass, ob_option_frame,
-                            XmNfractionBase,            5,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_option_form =  XtVaCreateWidget("Set_Del_Object ob_option_form",
+                xmFormWidgetClass, 
+                ob_option_frame,
+                XmNfractionBase,            5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Speed"
-        ob_speed = XtVaCreateManagedWidget(langcode("POPUPOB036"),xmLabelWidgetClass, ob_option_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              5,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_speed = XtVaCreateManagedWidget(langcode("POPUPOB036"),
+                xmLabelWidgetClass, 
+                ob_option_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              5,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_speed_data = XtVaCreateManagedWidget("Set_Del_Object ob_speed_data", xmTextFieldWidgetClass, ob_option_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 3,
-                            XmNmaxLength,               3,
-                            XmNtopOffset,               3,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_speed,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        ob_speed_data = XtVaCreateManagedWidget("Set_Del_Object ob_speed_data", 
+                xmTextFieldWidgetClass, 
+                ob_option_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 3,
+                XmNmaxLength,               3,
+                XmNtopOffset,               3,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_speed,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
         // "Course"
-        ob_course = XtVaCreateManagedWidget(langcode("POPUPOB037"),xmLabelWidgetClass, ob_option_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_speed_data,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_course = XtVaCreateManagedWidget(langcode("POPUPOB037"),
+                xmLabelWidgetClass, 
+                ob_option_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_speed_data,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_course_data = XtVaCreateManagedWidget("Set_Del_Object ob_course_data", xmTextFieldWidgetClass, ob_option_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 3,
-                            XmNmaxLength,               3,
-                            XmNtopOffset,               3,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_course,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        ob_course_data = XtVaCreateManagedWidget("Set_Del_Object ob_course_data", 
+                xmTextFieldWidgetClass, 
+                ob_option_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 3,
+                XmNmaxLength,               3,
+                XmNtopOffset,               3,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_course,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
         // "Altitude"
-        ob_altitude = XtVaCreateManagedWidget(langcode("POPUPOB035"),xmLabelWidgetClass, ob_option_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_course_data,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_altitude = XtVaCreateManagedWidget(langcode("POPUPOB035"),
+                xmLabelWidgetClass, 
+                ob_option_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_course_data,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_altitude_data = XtVaCreateManagedWidget("Set_Del_Object ob_altitude_data", xmTextFieldWidgetClass, ob_option_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 6,
-                            XmNmaxLength,               6,
-                            XmNtopOffset,               3,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_altitude,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        ob_altitude_data = XtVaCreateManagedWidget("Set_Del_Object ob_altitude_data", 
+                xmTextFieldWidgetClass, 
+                ob_option_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 6,
+                XmNmaxLength,               6,
+                XmNtopOffset,               3,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_altitude,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
 
         // "Signpost Enable"
-        signpost_toggle = XtVaCreateManagedWidget(langcode("POPUPOB029"),xmToggleButtonGadgetClass,
-                            ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_latlon_frame,
-                            XmNtopOffset,               2,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNbottomOffset,            0,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_option_frame,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        signpost_toggle = XtVaCreateManagedWidget(langcode("POPUPOB029"),
+                xmToggleButtonGadgetClass,
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_latlon_frame,
+                XmNtopOffset,               2,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNbottomOffset,            0,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_option_frame,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(signpost_toggle,XmNvalueChangedCallback,Signpost_object_toggle,(XtPointer)p_station);
 
 
  
         // "Area Enable"
-        area_toggle = XtVaCreateManagedWidget(langcode("POPUPOB008"),xmToggleButtonGadgetClass,
-                            ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               signpost_toggle,
-                            XmNtopOffset,               0,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNbottomOffset,            0,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_option_frame,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        area_toggle = XtVaCreateManagedWidget(langcode("POPUPOB008"),
+                xmToggleButtonGadgetClass,
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               signpost_toggle,
+                XmNtopOffset,               0,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNbottomOffset,            0,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_option_frame,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(area_toggle,XmNvalueChangedCallback,Area_object_toggle,(XtPointer)p_station);
 
 
 
         // "Area Enable"
-        df_bearing_toggle = XtVaCreateManagedWidget(langcode("POPUPOB038"),xmToggleButtonGadgetClass,
-                            ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               area_toggle,
-                            XmNtopOffset,               0,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNbottomOffset,            0,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_option_frame,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        df_bearing_toggle = XtVaCreateManagedWidget(langcode("POPUPOB038"),
+                xmToggleButtonGadgetClass,
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               area_toggle,
+                XmNtopOffset,               0,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNbottomOffset,            0,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_option_frame,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(df_bearing_toggle,XmNvalueChangedCallback,DF_bearing_object_toggle,(XtPointer)p_station);
 
 
@@ -13041,68 +14573,85 @@ if (Signpost_object_enabled) {
 
         //printf("Drawing signpost data\n");
 
-        signpost_frame = XtVaCreateManagedWidget("Set_Del_Object signpost_frame", xmFrameWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_option_frame,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        signpost_frame = XtVaCreateManagedWidget("Set_Del_Object signpost_frame", 
+                xmFrameWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_option_frame,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Signpost"
-        signpost_ts  = XtVaCreateManagedWidget(langcode("POPUPOB031"),xmLabelWidgetClass,signpost_frame,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        signpost_ts  = XtVaCreateManagedWidget(langcode("POPUPOB031"),
+                xmLabelWidgetClass,
+                signpost_frame,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        signpost_form =  XtVaCreateWidget("Set_Del_Object signpost_form",xmFormWidgetClass, signpost_frame,
-                            XmNfractionBase,            5,
-                            XmNautoUnmanage,            FALSE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        signpost_form =  XtVaCreateWidget("Set_Del_Object signpost_form",
+                xmFormWidgetClass, 
+                signpost_frame,
+                XmNfractionBase,            5,
+                XmNautoUnmanage,            FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Signpost Data"
-        signpost_label = XtVaCreateManagedWidget(langcode("POPUPOB030"),xmLabelWidgetClass, signpost_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        signpost_label = XtVaCreateManagedWidget(langcode("POPUPOB030"),
+                xmLabelWidgetClass, 
+                signpost_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        signpost_data = XtVaCreateManagedWidget("Set_Del_Object signpost_data", xmTextFieldWidgetClass, signpost_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 3,
-                            XmNmaxLength,               3,
-                            XmNtopOffset,               3,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              signpost_label,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        signpost_data = XtVaCreateManagedWidget("Set_Del_Object signpost_data", 
+                xmTextFieldWidgetClass, 
+                signpost_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 3,
+                XmNmaxLength,               3,
+                XmNtopOffset,               3,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              signpost_label,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-        ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", xmSeparatorGadgetClass,ob_form,
-                            XmNorientation,             XmHORIZONTAL,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               signpost_frame,
-                            XmNtopOffset,               14,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", 
+                xmSeparatorGadgetClass,
+                ob_form,
+                XmNorientation,             XmHORIZONTAL,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               signpost_frame,
+                XmNtopOffset,               14,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 }
 
 
@@ -13112,314 +14661,382 @@ else if (Area_object_enabled) {
 
         //printf("Drawing Area data\n");
 
-        area_frame = XtVaCreateManagedWidget("Set_Del_Object area_frame", xmFrameWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_option_frame,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        area_frame = XtVaCreateManagedWidget("Set_Del_Object area_frame", 
+                xmFrameWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_option_frame,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Area Options"
-        area_ts  = XtVaCreateManagedWidget(langcode("POPUPOB007"),xmLabelWidgetClass,area_frame,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        area_ts  = XtVaCreateManagedWidget(langcode("POPUPOB007"),
+                xmLabelWidgetClass,
+                area_frame,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        area_form =  XtVaCreateWidget("Set_Del_Object area_form",xmFormWidgetClass, area_frame,
-                            XmNfractionBase,            5,
-                            XmNautoUnmanage,            FALSE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        area_form =  XtVaCreateWidget("Set_Del_Object area_form",
+                xmFormWidgetClass, 
+                area_frame,
+                XmNfractionBase,            5,
+                XmNautoUnmanage,            FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Bright Color Enable"
-        bright_dim_toggle = XtVaCreateManagedWidget(langcode("POPUPOB009"),xmToggleButtonGadgetClass,
-                            area_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNset,                     FALSE,   // Select default to be OFF
-                           XmNbackground, colors[0xff],
-                            NULL);
+        bright_dim_toggle = XtVaCreateManagedWidget(langcode("POPUPOB009"),
+                xmToggleButtonGadgetClass,
+                area_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNset,                     FALSE,   // Select default to be OFF
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(bright_dim_toggle,XmNvalueChangedCallback,Area_bright_dim_toggle,"1");
         Area_bright = 0;    // Set to default each time dialog is created
 
         // "Color-Fill Enable"
-        open_filled_toggle = XtVaCreateManagedWidget(langcode("POPUPOB010"),xmToggleButtonGadgetClass,
-                            area_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               8,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              bright_dim_toggle,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNset,                     FALSE,   // Select default to be OFF
-                            XmNbackground, colors[0xff],
-                            NULL);
+        open_filled_toggle = XtVaCreateManagedWidget(langcode("POPUPOB010"),
+                xmToggleButtonGadgetClass,
+                area_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               8,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              bright_dim_toggle,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNset,                     FALSE,   // Select default to be OFF
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(open_filled_toggle,XmNvalueChangedCallback,Area_open_filled_toggle,"1");
         Area_filled = 0;    // Set to default each time dialog is created
 
 
 // Shape of object
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        ac = 0;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        shape_box = XmCreateRadioBox(area_form,"Set_Del_Object Shape Options box",al,ac);
+        shape_box = XmCreateRadioBox(area_form,
+                "Set_Del_Object Shape Options box",
+                al,
+                ac);
 
         XtVaSetValues(shape_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_WIDGET,
-                  XmNtopWidget,  bright_dim_toggle,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  XmNnumColumns,1,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget,  bright_dim_toggle,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnumColumns,1,
+                NULL);
 
 
         // "Circle"
-        toption1 = XtVaCreateManagedWidget(langcode("POPUPOB011"),xmToggleButtonGadgetClass,
-                            shape_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        toption1 = XtVaCreateManagedWidget(langcode("POPUPOB011"),
+                xmToggleButtonGadgetClass,
+                shape_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption1,XmNvalueChangedCallback,Area_type_toggle,"0");
 
         // "Line-Right '/'"
-        toption2 = XtVaCreateManagedWidget(langcode("POPUPOB012"),xmToggleButtonGadgetClass,
-                            shape_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        toption2 = XtVaCreateManagedWidget(langcode("POPUPOB012"),
+                xmToggleButtonGadgetClass,
+                shape_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption2,XmNvalueChangedCallback,Area_type_toggle,"1");
 
         // "Line-Left '\'
-        toption3 = XtVaCreateManagedWidget(langcode("POPUPOB013"),xmToggleButtonGadgetClass,
-                            shape_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        toption3 = XtVaCreateManagedWidget(langcode("POPUPOB013"),
+                xmToggleButtonGadgetClass,
+                shape_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption3,XmNvalueChangedCallback,Area_type_toggle,"6");
 
         // "Triangle"
-        toption4 = XtVaCreateManagedWidget(langcode("POPUPOB014"),xmToggleButtonGadgetClass,
-                            shape_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        toption4 = XtVaCreateManagedWidget(langcode("POPUPOB014"),
+                xmToggleButtonGadgetClass,
+                shape_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption4,XmNvalueChangedCallback,Area_type_toggle,"3");
 
         // "Rectangle"
-        toption5 = XtVaCreateManagedWidget(langcode("POPUPOB015"),xmToggleButtonGadgetClass,
-                            shape_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        toption5 = XtVaCreateManagedWidget(langcode("POPUPOB015"),
+                xmToggleButtonGadgetClass,
+                shape_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(toption5,XmNvalueChangedCallback,Area_type_toggle,"4");
 
 
 // Color of object
-        color_box = XmCreateRadioBox(area_form,"Set_Del_Object Color Options box",al,ac);
+        color_box = XmCreateRadioBox(area_form,
+                "Set_Del_Object Color Options box",
+                al,
+                ac);
 
         XtVaSetValues(color_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_WIDGET,
-                  XmNtopWidget, shape_box,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, shape_box,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                NULL);
 
 
         XtVaSetValues(color_box,
-                    XmNnumColumns,4,
-                    NULL);
+                XmNnumColumns,4,
+                NULL);
 
         // "Black"
-        coption1 = XtVaCreateManagedWidget(langcode("POPUPOB016"),xmToggleButtonGadgetClass,
-                            color_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coption1 = XtVaCreateManagedWidget(langcode("POPUPOB016"),
+                xmToggleButtonGadgetClass,
+                color_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coption1,XmNvalueChangedCallback,Area_color_toggle,"/0");
 
         // "Blue"
-        coption2 = XtVaCreateManagedWidget(langcode("POPUPOB017"),xmToggleButtonGadgetClass,
-                            color_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coption2 = XtVaCreateManagedWidget(langcode("POPUPOB017"),
+                xmToggleButtonGadgetClass,
+                color_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coption2,XmNvalueChangedCallback,Area_color_toggle,"/1");
 
         // "Green"
-        coption3 = XtVaCreateManagedWidget(langcode("POPUPOB018"),xmToggleButtonGadgetClass,
-                            color_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coption3 = XtVaCreateManagedWidget(langcode("POPUPOB018"),
+                xmToggleButtonGadgetClass,
+                color_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coption3,XmNvalueChangedCallback,Area_color_toggle,"/2");
 
         // "Cyan"
-        coption4 = XtVaCreateManagedWidget(langcode("POPUPOB019"),xmToggleButtonGadgetClass,
-                            color_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coption4 = XtVaCreateManagedWidget(langcode("POPUPOB019"),
+                xmToggleButtonGadgetClass,
+                color_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coption4,XmNvalueChangedCallback,Area_color_toggle,"/3");
 
         // "Red"
-        coption5 = XtVaCreateManagedWidget(langcode("POPUPOB020"),xmToggleButtonGadgetClass,
-                            color_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coption5 = XtVaCreateManagedWidget(langcode("POPUPOB020"),
+                xmToggleButtonGadgetClass,
+                color_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coption5,XmNvalueChangedCallback,Area_color_toggle,"/4");
 
         // "Violet"
-        coption6 = XtVaCreateManagedWidget(langcode("POPUPOB021"),xmToggleButtonGadgetClass,
-                            color_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coption6 = XtVaCreateManagedWidget(langcode("POPUPOB021"),
+                xmToggleButtonGadgetClass,
+                color_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coption6,XmNvalueChangedCallback,Area_color_toggle,"/5");
 
         // "Yellow"
-        coption7 = XtVaCreateManagedWidget(langcode("POPUPOB022"),xmToggleButtonGadgetClass,
-                            color_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coption7 = XtVaCreateManagedWidget(langcode("POPUPOB022"),
+                xmToggleButtonGadgetClass,
+                color_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coption7,XmNvalueChangedCallback,Area_color_toggle,"/6");
 
         // "Grey"
-        coption8 = XtVaCreateManagedWidget(langcode("POPUPOB023"),xmToggleButtonGadgetClass,
-                            color_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        coption8 = XtVaCreateManagedWidget(langcode("POPUPOB023"),
+                xmToggleButtonGadgetClass,
+                color_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(coption8,XmNvalueChangedCallback,Area_color_toggle,"/7");
 
 // Latitude offset
         // "Offset Up"
-        ob_lat_offset = XtVaCreateManagedWidget(langcode("POPUPOB024"),xmLabelWidgetClass, area_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               color_box,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lat_offset = XtVaCreateManagedWidget(langcode("POPUPOB024"),
+                xmLabelWidgetClass, 
+                area_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               color_box,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_lat_offset_data = XtVaCreateManagedWidget("Set_Del_Object lat offset", xmTextFieldWidgetClass, area_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 4,
-                            XmNmaxLength,               4,
-                            XmNtopOffset,               5,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lat_offset,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               color_box,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        ob_lat_offset_data = XtVaCreateManagedWidget("Set_Del_Object lat offset", 
+                xmTextFieldWidgetClass, 
+                area_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 4,
+                XmNmaxLength,               4,
+                XmNtopOffset,               5,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lat_offset,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               color_box,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
 // Longitude offset
         // "Offset Left (except for '/')"
-        ob_lon_offset = XtVaCreateManagedWidget(langcode("POPUPOB025"),xmLabelWidgetClass, area_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               color_box,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lat_offset_data,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_lon_offset = XtVaCreateManagedWidget(langcode("POPUPOB025"),
+                xmLabelWidgetClass, 
+                area_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               color_box,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lat_offset_data,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_lon_offset_data = XtVaCreateManagedWidget("Set_Del_Object long offset", xmTextFieldWidgetClass, area_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 4,
-                            XmNmaxLength,               4,
-                            XmNtopOffset,               5,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lon_offset,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               color_box,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        ob_lon_offset_data = XtVaCreateManagedWidget("Set_Del_Object long offset", 
+                xmTextFieldWidgetClass, 
+                area_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 4,
+                XmNmaxLength,               4,
+                XmNtopOffset,               5,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lon_offset,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               color_box,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
         // "Corridor (Lines only)"
-        ob_corridor = XtVaCreateManagedWidget(langcode("POPUPOB026"),xmLabelWidgetClass, area_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               color_box,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_lon_offset_data,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_corridor = XtVaCreateManagedWidget(langcode("POPUPOB026"),
+                xmLabelWidgetClass, 
+                area_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               color_box,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_lon_offset_data,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        ob_corridor_data = XtVaCreateManagedWidget("Set_Del_Object lat offset", xmTextFieldWidgetClass, area_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 3,
-                            XmNmaxLength,               3,
-                            XmNtopOffset,               5,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_corridor,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               color_box,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        ob_corridor_data = XtVaCreateManagedWidget("Set_Del_Object lat offset", 
+                xmTextFieldWidgetClass, 
+                area_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 3,
+                XmNmaxLength,               3,
+                XmNtopOffset,               5,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_corridor,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               color_box,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
         // "Miles"
-        ob_corridor_miles = XtVaCreateManagedWidget(langcode("UNIOP00004"),xmLabelWidgetClass, area_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               color_box,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_corridor_data,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_corridor_miles = XtVaCreateManagedWidget(langcode("UNIOP00004"),
+                xmLabelWidgetClass, 
+                area_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               color_box,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_corridor_data,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtSetSensitive(ob_corridor,FALSE);
         XtSetSensitive(ob_corridor_data,FALSE);
         XtSetSensitive(ob_corridor_miles,FALSE);
 
 
-        ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", xmSeparatorGadgetClass,ob_form,
-                            XmNorientation,             XmHORIZONTAL,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               area_frame,
-                            XmNtopOffset,               14,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", 
+                xmSeparatorGadgetClass,
+                ob_form,
+                XmNorientation,             XmHORIZONTAL,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               area_frame,
+                XmNtopOffset,               14,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 }
 
 
@@ -13430,549 +15047,693 @@ else if (DF_object_enabled) {
         //printf("Drawing DF data\n");
 
         // "Omni Antenna"
-        omni_antenna_toggle = XtVaCreateManagedWidget(langcode("POPUPOB041"),xmToggleButtonGadgetClass,
-                            ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               signpost_toggle,
-                            XmNtopOffset,               0,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNbottomOffset,            0,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              area_toggle,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        omni_antenna_toggle = XtVaCreateManagedWidget(langcode("POPUPOB041"),
+                xmToggleButtonGadgetClass,
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               signpost_toggle,
+                XmNtopOffset,               0,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNbottomOffset,            0,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              area_toggle,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(omni_antenna_toggle,XmNvalueChangedCallback,Omni_antenna_toggle,(XtPointer)p_station);
 
 
         // "Beam Antenna"
-        beam_antenna_toggle = XtVaCreateManagedWidget(langcode("POPUPOB042"),xmToggleButtonGadgetClass,
-                            ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               omni_antenna_toggle,
-                            XmNtopOffset,               0,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNbottomOffset,            0,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              area_toggle,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        beam_antenna_toggle = XtVaCreateManagedWidget(langcode("POPUPOB042"),
+                xmToggleButtonGadgetClass,
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               omni_antenna_toggle,
+                XmNtopOffset,               0,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNbottomOffset,            0,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              area_toggle,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(beam_antenna_toggle,XmNvalueChangedCallback,Beam_antenna_toggle,(XtPointer)p_station);
 
 
-        frameomni = XtVaCreateManagedWidget("Set_Del_Object frameomni", xmFrameWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_option_frame,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        frameomni = XtVaCreateManagedWidget("Set_Del_Object frameomni", 
+                xmFrameWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_option_frame,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        omnilabel  = XtVaCreateManagedWidget(langcode("POPUPOB039"),xmLabelWidgetClass,frameomni,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        omnilabel  = XtVaCreateManagedWidget(langcode("POPUPOB039"),
+                xmLabelWidgetClass,
+                frameomni,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        formomni =  XtVaCreateWidget("Set_Del_Object formomni",xmFormWidgetClass,frameomni,
-                            XmNfractionBase,            5,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        formomni =  XtVaCreateWidget("Set_Del_Object formomni",
+                xmFormWidgetClass,
+                frameomni,
+                XmNfractionBase,            5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
         // Power
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        ac = 0;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        signal_box = XmCreateRadioBox(formomni,"Set_Del_Object Power Radio Box",al,ac);
+        signal_box = XmCreateRadioBox(formomni,
+                "Set_Del_Object Power Radio Box",
+                al,
+                ac);
 
         XtVaSetValues(signal_box,
-                  XmNpacking,               XmPACK_TIGHT,
-                  XmNorientation,           XmHORIZONTAL,
-                  XmNtopAttachment,         XmATTACH_FORM,
-                  XmNtopOffset,             5,
-                  XmNbottomAttachment,      XmATTACH_NONE,
-                  XmNleftAttachment,        XmATTACH_FORM,
-                  XmNleftOffset,            5,
-                  XmNrightAttachment,       XmATTACH_FORM,
-                  XmNrightOffset,           5,
-                  XmNnumColumns,            11,
-                  NULL);
+                XmNpacking,               XmPACK_TIGHT,
+                XmNorientation,           XmHORIZONTAL,
+                XmNtopAttachment,         XmATTACH_FORM,
+                XmNtopOffset,             5,
+                XmNbottomAttachment,      XmATTACH_NONE,
+                XmNleftAttachment,        XmATTACH_FORM,
+                XmNleftOffset,            5,
+                XmNrightAttachment,       XmATTACH_FORM,
+                XmNrightOffset,           5,
+                XmNnumColumns,            11,
+                NULL);
 
         // No signal detected what-so-ever
-        soption0 = XtVaCreateManagedWidget("0",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption0 = XtVaCreateManagedWidget("0",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption0,XmNvalueChangedCallback,Ob_signal_toggle,"0");
 
         // Detectible signal (Maybe)
-        soption1 = XtVaCreateManagedWidget("1",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption1 = XtVaCreateManagedWidget("1",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption1,XmNvalueChangedCallback,Ob_signal_toggle,"1");
 
         // Detectible signal (certain but not copyable)
-        soption2 = XtVaCreateManagedWidget("2",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption2 = XtVaCreateManagedWidget("2",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption2,XmNvalueChangedCallback,Ob_signal_toggle,"2");
 
         // Weak signal marginally readable
-        soption3 = XtVaCreateManagedWidget("3",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption3 = XtVaCreateManagedWidget("3",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption3,XmNvalueChangedCallback,Ob_signal_toggle,"3");
 
         // Noisy but copyable
-        soption4 = XtVaCreateManagedWidget("4",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption4 = XtVaCreateManagedWidget("4",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption4,XmNvalueChangedCallback,Ob_signal_toggle,"4");
 
         // Some noise but easy to copy
-        soption5 = XtVaCreateManagedWidget("5",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption5 = XtVaCreateManagedWidget("5",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption5,XmNvalueChangedCallback,Ob_signal_toggle,"5");
 
         // Good signal with detectible noise
-        soption6 = XtVaCreateManagedWidget("6",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption6 = XtVaCreateManagedWidget("6",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption6,XmNvalueChangedCallback,Ob_signal_toggle,"6");
 
         // Near full-quieting signal
-        soption7 = XtVaCreateManagedWidget("7",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption7 = XtVaCreateManagedWidget("7",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption7,XmNvalueChangedCallback,Ob_signal_toggle,"7");
 
         // Dead full-quieting signal, no noise detectible
-        soption8 = XtVaCreateManagedWidget("8",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption8 = XtVaCreateManagedWidget("8",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption8,XmNvalueChangedCallback,Ob_signal_toggle,"8");
 
         // Extremely strong signal "pins the meter"
-        soption9 = XtVaCreateManagedWidget("9",xmToggleButtonGadgetClass,
-                            signal_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        soption9 = XtVaCreateManagedWidget("9",
+                xmToggleButtonGadgetClass,
+                signal_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(soption9,XmNvalueChangedCallback,Ob_signal_toggle,"9");
 
 
         // Height
-        height_box = XmCreateRadioBox(formomni,"Set_Del_Object Height Radio Box",al,ac);
+        height_box = XmCreateRadioBox(formomni,
+                "Set_Del_Object Height Radio Box",
+                al,
+                ac);
 
         XtVaSetValues(height_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_WIDGET,
-                  XmNtopWidget,signal_box,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  XmNnumColumns,10,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget,signal_box,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnumColumns,10,
+                NULL);
 
 
         // 10 Feet
-        hoption0 = XtVaCreateManagedWidget("10ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption0 = XtVaCreateManagedWidget("10ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption0,XmNvalueChangedCallback,Ob_height_toggle,"0");
 
         // 20 Feet
-        hoption1 = XtVaCreateManagedWidget("20ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption1 = XtVaCreateManagedWidget("20ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption1,XmNvalueChangedCallback,Ob_height_toggle,"1");
 
         // 40 Feet
-        hoption2 = XtVaCreateManagedWidget("40ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption2 = XtVaCreateManagedWidget("40ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption2,XmNvalueChangedCallback,Ob_height_toggle,"2");
 
         // 80 Feet
-        hoption3 = XtVaCreateManagedWidget("80ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption3 = XtVaCreateManagedWidget("80ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption3,XmNvalueChangedCallback,Ob_height_toggle,"3");
 
         // 160 Feet
-        hoption4 = XtVaCreateManagedWidget("160ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption4 = XtVaCreateManagedWidget("160ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption4,XmNvalueChangedCallback,Ob_height_toggle,"4");
 
         // 320 Feet
-        hoption5 = XtVaCreateManagedWidget("320ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption5 = XtVaCreateManagedWidget("320ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption5,XmNvalueChangedCallback,Ob_height_toggle,"5");
 
         // 640 Feet
-        hoption6 = XtVaCreateManagedWidget("640ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption6 = XtVaCreateManagedWidget("640ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption6,XmNvalueChangedCallback,Ob_height_toggle,"6");
 
         // 1280 Feet
-        hoption7 = XtVaCreateManagedWidget("1280ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption7 = XtVaCreateManagedWidget("1280ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption7,XmNvalueChangedCallback,Ob_height_toggle,"7");
 
         // 2560 Feet
-        hoption8 = XtVaCreateManagedWidget("2560ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption8 = XtVaCreateManagedWidget("2560ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption8,XmNvalueChangedCallback,Ob_height_toggle,"8");
 
         // 5120 Feet
-        hoption9 = XtVaCreateManagedWidget("5120ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption9 = XtVaCreateManagedWidget("5120ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption9,XmNvalueChangedCallback,Ob_height_toggle,"9");
 
 
         // Gain
-        gain_box = XmCreateRadioBox(formomni,"Set_Del_Object Gain Radio Box",al,ac);
+        gain_box = XmCreateRadioBox(formomni,
+                "Set_Del_Object Gain Radio Box",
+                al,
+                ac);
 
         XtVaSetValues(gain_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_WIDGET,
-                  XmNtopWidget,height_box,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  XmNnumColumns,10,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget,height_box,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnumColumns,10,
+                NULL);
 
 
         // 0 dB
-        goption0 = XtVaCreateManagedWidget("0dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption0 = XtVaCreateManagedWidget("0dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption0,XmNvalueChangedCallback,Ob_gain_toggle,"0");
 
         // 1 dB
-        goption1 = XtVaCreateManagedWidget("1dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption1 = XtVaCreateManagedWidget("1dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption1,XmNvalueChangedCallback,Ob_gain_toggle,"1");
 
         // 2 dB
-        goption2 = XtVaCreateManagedWidget("2dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption2 = XtVaCreateManagedWidget("2dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption2,XmNvalueChangedCallback,Ob_gain_toggle,"2");
 
         // 3 dB
-        goption3 = XtVaCreateManagedWidget("3dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption3 = XtVaCreateManagedWidget("3dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption3,XmNvalueChangedCallback,Ob_gain_toggle,"3");
 
         // 4 dB
-        goption4 = XtVaCreateManagedWidget("4dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption4 = XtVaCreateManagedWidget("4dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption4,XmNvalueChangedCallback,Ob_gain_toggle,"4");
 
         // 5 dB
-        goption5 = XtVaCreateManagedWidget("5dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption5 = XtVaCreateManagedWidget("5dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption5,XmNvalueChangedCallback,Ob_gain_toggle,"5");
 
         // 6 dB
-        goption6 = XtVaCreateManagedWidget("6dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption6 = XtVaCreateManagedWidget("6dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption6,XmNvalueChangedCallback,Ob_gain_toggle,"6");
 
         // 7 dB
-        goption7 = XtVaCreateManagedWidget("7dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption7 = XtVaCreateManagedWidget("7dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption7,XmNvalueChangedCallback,Ob_gain_toggle,"7");
 
         // 8 dB
-        goption8 = XtVaCreateManagedWidget("8dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption8 = XtVaCreateManagedWidget("8dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption8,XmNvalueChangedCallback,Ob_gain_toggle,"8");
 
         // 9 dB
-        goption9 = XtVaCreateManagedWidget("9dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption9 = XtVaCreateManagedWidget("9dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption9,XmNvalueChangedCallback,Ob_gain_toggle,"9");
 
 
         // Gain
-        directivity_box = XmCreateRadioBox(formomni,"Set_Del_Object Directivity Radio Box",al,ac);
+        directivity_box = XmCreateRadioBox(formomni,
+                "Set_Del_Object Directivity Radio Box",
+                al,
+                ac);
 
         XtVaSetValues(directivity_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_WIDGET,
-                  XmNtopWidget,gain_box,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  XmNnumColumns,10,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget,gain_box,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnumColumns,10,
+                NULL);
 
 
         // Omni-directional
-        doption0 = XtVaCreateManagedWidget(langcode("WPUPCFS016"),xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption0 = XtVaCreateManagedWidget(langcode("WPUPCFS016"),
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption0,XmNvalueChangedCallback,Ob_directivity_toggle,"0");
 
         // 45 NE
-        doption1 = XtVaCreateManagedWidget("45°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption1 = XtVaCreateManagedWidget("45°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption1,XmNvalueChangedCallback,Ob_directivity_toggle,"1");
 
         // 90 E
-        doption2 = XtVaCreateManagedWidget("90°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption2 = XtVaCreateManagedWidget("90°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption2,XmNvalueChangedCallback,Ob_directivity_toggle,"2");
 
         // 135 SE
-        doption3 = XtVaCreateManagedWidget("135°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption3 = XtVaCreateManagedWidget("135°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption3,XmNvalueChangedCallback,Ob_directivity_toggle,"3");
 
         // 180 S
-        doption4 = XtVaCreateManagedWidget("180°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption4 = XtVaCreateManagedWidget("180°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption4,XmNvalueChangedCallback,Ob_directivity_toggle,"4");
 
         // 225 SW
-        doption5 = XtVaCreateManagedWidget("225°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption5 = XtVaCreateManagedWidget("225°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption5,XmNvalueChangedCallback,Ob_directivity_toggle,"5");
 
         // 270 W
-        doption6 = XtVaCreateManagedWidget("270°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption6 = XtVaCreateManagedWidget("270°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption6,XmNvalueChangedCallback,Ob_directivity_toggle,"6");
 
         // 315 NW
-        doption7 = XtVaCreateManagedWidget("315°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption7 = XtVaCreateManagedWidget("315°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption7,XmNvalueChangedCallback,Ob_directivity_toggle,"7");
 
         // 360 N
-        doption8 = XtVaCreateManagedWidget("360°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption8 = XtVaCreateManagedWidget("360°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption8,XmNvalueChangedCallback,Ob_directivity_toggle,"8");
 
 
 //----- Frame for DF-beam info
-        framebeam = XtVaCreateManagedWidget("Set_Del_Object framebeam", xmFrameWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               frameomni,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        framebeam = XtVaCreateManagedWidget("Set_Del_Object framebeam", 
+                xmFrameWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               frameomni,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        beamlabel  = XtVaCreateManagedWidget(langcode("POPUPOB040"),xmLabelWidgetClass,framebeam,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        beamlabel  = XtVaCreateManagedWidget(langcode("POPUPOB040"),
+                xmLabelWidgetClass,
+                framebeam,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        formbeam =  XtVaCreateWidget("Set_Del_Object formbeam",xmFormWidgetClass,framebeam,
-                            XmNfractionBase,            5,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        formbeam =  XtVaCreateWidget("Set_Del_Object formbeam",
+                xmFormWidgetClass,
+                framebeam,
+                XmNfractionBase,            5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
         // Beam width
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        ac = 0;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        width_box = XmCreateRadioBox(formbeam,"Set_Del_Object Width Box",al,ac);
+        width_box = XmCreateRadioBox(formbeam,
+                "Set_Del_Object Width Box",
+                al,
+                ac);
 
         XtVaSetValues(width_box,
-                  XmNpacking,               XmPACK_TIGHT,
-                  XmNorientation,           XmHORIZONTAL,
-                  XmNtopAttachment,         XmATTACH_FORM,
-                  XmNtopOffset,             5,
-                  XmNbottomAttachment,      XmATTACH_NONE,
-                  XmNleftAttachment,        XmATTACH_FORM,
-                  XmNleftOffset,            5,
-                  XmNrightAttachment,       XmATTACH_FORM,
-                  XmNrightOffset,           5,
-                  XmNnumColumns,            11,
-                  NULL);
+                XmNpacking,               XmPACK_TIGHT,
+                XmNorientation,           XmHORIZONTAL,
+                XmNtopAttachment,         XmATTACH_FORM,
+                XmNtopOffset,             5,
+                XmNbottomAttachment,      XmATTACH_NONE,
+                XmNleftAttachment,        XmATTACH_FORM,
+                XmNleftOffset,            5,
+                XmNrightAttachment,       XmATTACH_FORM,
+                XmNrightOffset,           5,
+                XmNnumColumns,            11,
+                NULL);
 
         // Useless
-        woption0 = XtVaCreateManagedWidget("Useless",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption0 = XtVaCreateManagedWidget("Useless",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption0,XmNvalueChangedCallback,Ob_width_toggle,"0");
 
         // < 240 Degrees
-        woption1 = XtVaCreateManagedWidget("<240°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption1 = XtVaCreateManagedWidget("<240°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption1,XmNvalueChangedCallback,Ob_width_toggle,"1");
 
         // < 120 Degrees
-        woption2 = XtVaCreateManagedWidget("<120°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption2 = XtVaCreateManagedWidget("<120°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption2,XmNvalueChangedCallback,Ob_width_toggle,"2");
 
         // < 64 Degrees
-        woption3 = XtVaCreateManagedWidget("<64°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption3 = XtVaCreateManagedWidget("<64°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption3,XmNvalueChangedCallback,Ob_width_toggle,"3");
 
         // < 32 Degrees
-        woption4 = XtVaCreateManagedWidget("<32°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption4 = XtVaCreateManagedWidget("<32°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption4,XmNvalueChangedCallback,Ob_width_toggle,"4");
 
         // < 16 Degrees
-        woption5 = XtVaCreateManagedWidget("<16°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption5 = XtVaCreateManagedWidget("<16°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption5,XmNvalueChangedCallback,Ob_width_toggle,"5");
 
         // < 8 Degrees
-        woption6 = XtVaCreateManagedWidget("<8°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption6 = XtVaCreateManagedWidget("<8°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption6,XmNvalueChangedCallback,Ob_width_toggle,"6");
 
         // < 4 Degrees
-        woption7 = XtVaCreateManagedWidget("<4°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption7 = XtVaCreateManagedWidget("<4°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption7,XmNvalueChangedCallback,Ob_width_toggle,"7");
 
         // < 2 Degrees
-        woption8 = XtVaCreateManagedWidget("<2°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption8 = XtVaCreateManagedWidget("<2°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption8,XmNvalueChangedCallback,Ob_width_toggle,"8");
 
         // < 1 Degrees
-        woption9 = XtVaCreateManagedWidget("<1°",xmToggleButtonGadgetClass,
-                            width_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        woption9 = XtVaCreateManagedWidget("<1°",
+                xmToggleButtonGadgetClass,
+                width_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(woption9,XmNvalueChangedCallback,Ob_width_toggle,"9");
 
 
         // "Bearing"
-        ob_bearing = XtVaCreateManagedWidget(langcode("WPUPSTI058"),xmLabelWidgetClass, formbeam,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               width_box,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_bearing = XtVaCreateManagedWidget(langcode("WPUPSTI058"),
+                xmLabelWidgetClass, 
+                formbeam,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               width_box,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // Bearing data
-        ob_bearing_data = XtVaCreateManagedWidget("Set_Del_Object ob_bearing_data", xmTextFieldWidgetClass, formbeam,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 9,
-                            XmNmaxLength,               9,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               width_box,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_bearing,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0x0f],
-                            NULL);
+        ob_bearing_data = XtVaCreateManagedWidget("Set_Del_Object ob_bearing_data", 
+                xmTextFieldWidgetClass, 
+                formbeam,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 9,
+                XmNmaxLength,               9,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               width_box,
+                XmNtopOffset,               5,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_bearing,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNbackground,              colors[0x0f],
+                NULL);
 
 
         XtSetSensitive(frameomni,FALSE);
@@ -13981,16 +15742,19 @@ else if (DF_object_enabled) {
         Beam_antenna_enabled = 0;
 
 
-        ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", xmSeparatorGadgetClass,ob_form,
-                            XmNorientation,             XmHORIZONTAL,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               framebeam,
-                            XmNtopOffset,               14,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", 
+                xmSeparatorGadgetClass,
+                ob_form,
+                XmNorientation,             XmHORIZONTAL,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               framebeam,
+                XmNtopOffset,               14,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 }
 // End of DF-specific widgets
 
@@ -14001,63 +15765,73 @@ else if (DF_object_enabled) {
 
             //printf("No special object types\n");
 
-            ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", xmSeparatorGadgetClass,ob_form,
-                            XmNorientation,             XmHORIZONTAL,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_option_frame,
-                            XmNtopOffset,               14,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+            ob_sep = XtVaCreateManagedWidget("Set_Del_Object ob_sep", 
+                    xmSeparatorGadgetClass,
+                    ob_form,
+                    XmNorientation,             XmHORIZONTAL,
+                    XmNtopAttachment,           XmATTACH_WIDGET,
+                    XmNtopWidget,               ob_option_frame,
+                    XmNtopOffset,               14,
+                    XmNbottomAttachment,        XmATTACH_NONE,
+                    XmNleftAttachment,          XmATTACH_FORM,
+                    XmNrightAttachment,         XmATTACH_FORM,
+                    MY_FOREGROUND_COLOR,
+                    MY_BACKGROUND_COLOR,
+                    NULL);
         }
 
 
 
 //----- Comment Field
         // "Comment:"
-        ob_comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),
+                xmLabelWidgetClass, 
+                ob_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_sep,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        object_comment_data = XtVaCreateManagedWidget("Set_Del_Object comment", xmTextFieldWidgetClass, ob_form,
-                            XmNeditable,                TRUE,
+        object_comment_data = XtVaCreateManagedWidget("Set_Del_Object comment", 
+                xmTextFieldWidgetClass, 
+                ob_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 43,     // max 43 without Data Extension
+                XmNmaxLength,               43,
+                XmNtopOffset,               6,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              ob_comment,
+                XmNleftOffset,              5,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_sep,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 43,     // max 43 without Data Extension
-                            XmNmaxLength,               43,
-                            XmNtopOffset,               6,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              ob_comment,
-                            XmNleftOffset,              5,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
 
-
-        ob_sep2 = XtVaCreateManagedWidget("Set_Del_Object ob_sep2", xmSeparatorGadgetClass,ob_form,
-                            XmNorientation,             XmHORIZONTAL,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_comment,
-                            XmNtopOffset,               14,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        ob_sep2 = XtVaCreateManagedWidget("Set_Del_Object ob_sep2", 
+                xmSeparatorGadgetClass,
+                ob_form,
+                XmNorientation,             XmHORIZONTAL,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_comment,
+                XmNtopOffset,               14,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 //----- Buttons
         if (p_station != NULL) {  // We were called from the Modify_object() or Move function
@@ -14065,115 +15839,130 @@ else if (DF_object_enabled) {
             // Change the buttons/callbacks based on whether we're dealing with an item or an object
             if ((p_station->flag & ST_ITEM) != 0) {     // Modifying an Item
                 // Here we need Modify Item/Delete Item/Cancel buttons
-                ob_button_set = XtVaCreateManagedWidget(langcode("POPUPOB034"),xmPushButtonGadgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep2,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            0,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           1,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+                ob_button_set = XtVaCreateManagedWidget(langcode("POPUPOB034"),
+                        xmPushButtonGadgetClass, 
+                        ob_form,
+                        XmNtopAttachment,           XmATTACH_WIDGET,
+                        XmNtopWidget,               ob_sep2,
+                        XmNtopOffset,               5,
+                        XmNbottomAttachment,        XmATTACH_FORM,
+                        XmNbottomOffset,            5,
+                        XmNleftAttachment,          XmATTACH_POSITION,
+                        XmNleftPosition,            0,
+                        XmNrightAttachment,         XmATTACH_POSITION,
+                        XmNrightPosition,           1,
+                        XmNnavigationType,          XmTAB_GROUP,
+                        MY_FOREGROUND_COLOR,
+                        MY_BACKGROUND_COLOR,
+                        NULL);
 
-                ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB033"),xmPushButtonGadgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep2,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            1,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           2,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+                ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB033"),
+                        xmPushButtonGadgetClass, 
+                        ob_form,
+                        XmNtopAttachment,           XmATTACH_WIDGET,
+                        XmNtopWidget,               ob_sep2,
+                        XmNtopOffset,               5,
+                        XmNbottomAttachment,        XmATTACH_FORM,
+                        XmNbottomOffset,            5,
+                        XmNleftAttachment,          XmATTACH_POSITION,
+                        XmNleftPosition,            1,
+                        XmNrightAttachment,         XmATTACH_POSITION,
+                        XmNrightPosition,           2,
+                        XmNnavigationType,          XmTAB_GROUP,
+                        MY_FOREGROUND_COLOR,
+                        MY_BACKGROUND_COLOR,
+                        NULL);
                 XtAddCallback(ob_button_set, XmNactivateCallback, Item_change_data_set, object_dialog);
                 XtAddCallback(ob_button_del, XmNactivateCallback, Item_change_data_del, object_dialog);
             }
             else {  // Modifying an Object
                 // Here we need Modify Object/Delete Object/Cancel buttons
-                ob_button_set = XtVaCreateManagedWidget(langcode("POPUPOB005"),xmPushButtonGadgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep2,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            0,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           1,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+                ob_button_set = XtVaCreateManagedWidget(langcode("POPUPOB005"),
+                        xmPushButtonGadgetClass, 
+                        ob_form,
+                        XmNtopAttachment,           XmATTACH_WIDGET,
+                        XmNtopWidget,               ob_sep2,
+                        XmNtopOffset,               5,
+                        XmNbottomAttachment,        XmATTACH_FORM,
+                        XmNbottomOffset,            5,
+                        XmNleftAttachment,          XmATTACH_POSITION,
+                        XmNleftPosition,            0,
+                        XmNrightAttachment,         XmATTACH_POSITION,
+                        XmNrightPosition,           1,
+                        XmNnavigationType,          XmTAB_GROUP,
+                        MY_FOREGROUND_COLOR,
+                        MY_BACKGROUND_COLOR,
+                        NULL);
 
-                ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB004"),xmPushButtonGadgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep2,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            1,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           2,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+                ob_button_del = XtVaCreateManagedWidget(langcode("POPUPOB004"),
+                        xmPushButtonGadgetClass, 
+                        ob_form,
+                        XmNtopAttachment,           XmATTACH_WIDGET,
+                        XmNtopWidget,               ob_sep2,
+                        XmNtopOffset,               5,
+                        XmNbottomAttachment,        XmATTACH_FORM,
+                        XmNbottomOffset,            5,
+                        XmNleftAttachment,          XmATTACH_POSITION,
+                        XmNleftPosition,            1,
+                        XmNrightAttachment,         XmATTACH_POSITION,
+                        XmNrightPosition,           2,
+                        XmNnavigationType,          XmTAB_GROUP,
+                        MY_FOREGROUND_COLOR,
+                        MY_BACKGROUND_COLOR,
+                        NULL);
                XtAddCallback(ob_button_set, XmNactivateCallback, Object_change_data_set, object_dialog);
                XtAddCallback(ob_button_del, XmNactivateCallback, Object_change_data_del, object_dialog);
             }
         }
         else {  // We were called from Create->Object mouse menu
             ob_button_set = XtVaCreateManagedWidget(langcode("POPUPOB003"),xmPushButtonGadgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep2,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            0,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           1,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+                    XmNtopAttachment,           XmATTACH_WIDGET,
+                    XmNtopWidget,               ob_sep2,
+                    XmNtopOffset,               5,
+                    XmNbottomAttachment,        XmATTACH_FORM,
+                    XmNbottomOffset,            5,
+                    XmNleftAttachment,          XmATTACH_POSITION,
+                    XmNleftPosition,            0,
+                    XmNrightAttachment,         XmATTACH_POSITION,
+                    XmNrightPosition,           1,
+                    XmNnavigationType,          XmTAB_GROUP,
+                    MY_FOREGROUND_COLOR,
+                    MY_BACKGROUND_COLOR,
+                    NULL);
 
             it_button_set = XtVaCreateManagedWidget(langcode("POPUPOB006"),xmPushButtonGadgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep2,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            1,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           2,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+                    XmNtopAttachment,           XmATTACH_WIDGET,
+                    XmNtopWidget,               ob_sep2,
+                    XmNtopOffset,               5,
+                    XmNbottomAttachment,        XmATTACH_FORM,
+                    XmNbottomOffset,            5,
+                    XmNleftAttachment,          XmATTACH_POSITION,
+                    XmNleftPosition,            1,
+                    XmNrightAttachment,         XmATTACH_POSITION,
+                    XmNrightPosition,           2,
+                    XmNnavigationType,          XmTAB_GROUP,
+                    MY_FOREGROUND_COLOR,
+                    MY_BACKGROUND_COLOR,
+                    NULL);
 
             XtAddCallback(ob_button_set, XmNactivateCallback, Object_change_data_set, object_dialog);
             XtAddCallback(it_button_set, XmNactivateCallback,   Item_change_data_set, object_dialog);
         }
         
         ob_button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, ob_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               ob_sep2,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            2,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           3,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               ob_sep2,
+                XmNtopOffset,               5,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            5,
+                XmNleftAttachment,          XmATTACH_POSITION,
+                XmNleftPosition,            2,
+                XmNrightAttachment,         XmATTACH_POSITION,
+                XmNrightPosition,           3,
+                XmNnavigationType,          XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(ob_button_cancel, XmNactivateCallback, Object_destroy_shell,   object_dialog);
 
 
@@ -15115,268 +16904,323 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
     register unsigned int ac = 0;           /* Arg Count */
 
     if(!configure_station_dialog) {
-        configure_station_dialog = XtVaCreatePopupShell(langcode("WPUPCFS001"),xmDialogShellWidgetClass,Global.top,
-                            XmNdeleteResponse,          XmDESTROY,
-                            XmNdefaultPosition,         FALSE,
-                            NULL);
+        configure_station_dialog = XtVaCreatePopupShell(langcode("WPUPCFS001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,          XmDESTROY,
+                XmNdefaultPosition,         FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Configure_station pane",xmPanedWindowWidgetClass, configure_station_dialog,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        pane = XtVaCreateWidget("Configure_station pane",
+                xmPanedWindowWidgetClass, 
+                configure_station_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        cs_form =  XtVaCreateWidget("Configure_station cs_form",xmFormWidgetClass, pane,
-                            XmNfractionBase,            5,
-                            XmNbackground,              colors[0xff],
-                            XmNautoUnmanage,            FALSE,
-                            XmNshadowThickness,         1,
-                            NULL);
+        cs_form =  XtVaCreateWidget("Configure_station cs_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase,            5,
+                XmNautoUnmanage,            FALSE,
+                XmNshadowThickness,         1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        call = XtVaCreateManagedWidget(langcode("WPUPCFS002"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        call = XtVaCreateManagedWidget(langcode("WPUPCFS002"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        station_config_call_data = XtVaCreateManagedWidget("Configure_station call_data", xmTextFieldWidgetClass, cs_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 9,
-                            XmNwidth,                   ((9*7)+2),
-                            XmNmaxLength,               9,
-                            XmNbackground,              colors[0x0f],
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            1,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_call_data = XtVaCreateManagedWidget("Configure_station call_data", 
+                xmTextFieldWidgetClass, 
+                cs_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 9,
+                XmNwidth,                   ((9*7)+2),
+                XmNmaxLength,               9,
+                XmNbackground,              colors[0x0f],
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               5,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_POSITION,
+                XmNleftPosition,            1,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-        compressed_posit_tx = XtVaCreateManagedWidget(langcode("WPUPCFS029"),xmToggleButtonWidgetClass,cs_form,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            3,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+        compressed_posit_tx = XtVaCreateManagedWidget(langcode("WPUPCFS029"),
+                xmToggleButtonWidgetClass,
+                cs_form,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_POSITION,
+                XmNleftPosition,            3,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNnavigationType,          XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(compressed_posit_tx,XmNvalueChangedCallback,Posit_compressed_toggle,"1");
  
-        slat = XtVaCreateManagedWidget(langcode("WPUPCFS003"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               call,
-                            XmNtopOffset,               25,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        slat = XtVaCreateManagedWidget(langcode("WPUPCFS003"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               call,
+                XmNtopOffset,               25,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        station_config_slat_data_deg = XtVaCreateManagedWidget("Configure_station lat_deg", xmTextFieldWidgetClass, cs_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 3,
-                            XmNmaxLength,               2,
-                            XmNtopOffset,               20,
-                            XmNbackground,              colors[0x0f],
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               call,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            1,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_slat_data_deg = XtVaCreateManagedWidget("Configure_station lat_deg", 
+                xmTextFieldWidgetClass, 
+                cs_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 3,
+                XmNmaxLength,               2,
+                XmNtopOffset,               20,
+                XmNbackground,              colors[0x0f],
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               call,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_POSITION,
+                XmNleftPosition,            1,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-        slat_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               call,
-                            XmNtopOffset,               25,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_slat_data_deg,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        slat_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               call,
+                XmNtopOffset,               25,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_slat_data_deg,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        station_config_slat_data_min = XtVaCreateManagedWidget("Configure_station lat_min", xmTextFieldWidgetClass, cs_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 6,
-                            XmNmaxLength,               6,
-                            XmNtopOffset,               20,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              slat_deg,
-                            XmNleftOffset,              10,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               call,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_slat_data_min = XtVaCreateManagedWidget("Configure_station lat_min", 
+                xmTextFieldWidgetClass, 
+                cs_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 6,
+                XmNmaxLength,               6,
+                XmNtopOffset,               20,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              slat_deg,
+                XmNleftOffset,              10,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               call,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-        slat_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               call,
-                            XmNtopOffset,               25,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_slat_data_min,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        slat_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               call,
+                XmNtopOffset,               25,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_slat_data_min,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        station_config_slat_data_ns = XtVaCreateManagedWidget("Configure_station lat_ns", xmTextFieldWidgetClass, cs_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   FALSE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 1,
-                            XmNmaxLength,               1,
-                            XmNtopOffset,               20,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              slat_min,
-                            XmNleftOffset,              10,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               call,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_slat_data_ns = XtVaCreateManagedWidget("Configure_station lat_ns", 
+                xmTextFieldWidgetClass, 
+                cs_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   FALSE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 1,
+                XmNmaxLength,               1,
+                XmNtopOffset,               20,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              slat_min,
+                XmNleftOffset,              10,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               call,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-        slat_ns = XtVaCreateManagedWidget(langcode("WPUPCFS006"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               call,
-                            XmNtopOffset,               25,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_slat_data_ns,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        slat_ns = XtVaCreateManagedWidget(langcode("WPUPCFS006"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               call,
+                XmNtopOffset,               25,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_slat_data_ns,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        slong = XtVaCreateManagedWidget(langcode("WPUPCFS007"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        slong = XtVaCreateManagedWidget(langcode("WPUPCFS007"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        station_config_slong_data_deg = XtVaCreateManagedWidget("Configure_station long_deg", xmTextFieldWidgetClass, cs_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 3,
-                            XmNmaxLength,               3,
-                            XmNtopOffset,               14,
-                            XmNbackground,              colors[0x0f],
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slat,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            1,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_slong_data_deg = XtVaCreateManagedWidget("Configure_station long_deg", 
+                xmTextFieldWidgetClass, 
+                cs_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 3,
+                XmNmaxLength,               3,
+                XmNtopOffset,               14,
+                XmNbackground,              colors[0x0f],
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slat,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_POSITION,
+                XmNleftPosition,            1,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-        slong_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_slong_data_deg,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        slong_deg = XtVaCreateManagedWidget(langcode("WPUPCFS004"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_slong_data_deg,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        station_config_slong_data_min = XtVaCreateManagedWidget("Configure_station long_min", xmTextFieldWidgetClass, cs_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 6,
-                            XmNmaxLength,               6,
-                            XmNtopOffset,               14,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              slong_deg,
-                            XmNleftOffset,              10,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slat,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_slong_data_min = XtVaCreateManagedWidget("Configure_station long_min", 
+                xmTextFieldWidgetClass, 
+                cs_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 6,
+                XmNmaxLength,               6,
+                XmNtopOffset,               14,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              slong_deg,
+                XmNleftOffset,              10,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slat,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-        slong_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_slong_data_min,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        slong_min = XtVaCreateManagedWidget(langcode("WPUPCFS005"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_slong_data_min,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        station_config_slong_data_ew = XtVaCreateManagedWidget("Configure_station long_ew", xmTextFieldWidgetClass, cs_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   FALSE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 1,
-                            XmNmaxLength,               1,
-                            XmNtopOffset,               14,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              slong_min,
-                            XmNleftOffset,              10,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slat,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_slong_data_ew = XtVaCreateManagedWidget("Configure_station long_ew", 
+                xmTextFieldWidgetClass, 
+                cs_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   FALSE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 1,
+                XmNmaxLength,               1,
+                XmNtopOffset,               14,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              slong_min,
+                XmNleftOffset,              10,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slat,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
-        slong_ew = XtVaCreateManagedWidget(langcode("WPUPCFS008"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_slong_data_ew,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        slong_ew = XtVaCreateManagedWidget(langcode("WPUPCFS008"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_slong_data_ew,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        compute_button = XtVaCreateManagedWidget(langcode("COORD002"),xmPushButtonGadgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slat,
-                            XmNtopOffset,               20,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              slong_ew,
-                            XmNleftOffset,              15,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+        compute_button = XtVaCreateManagedWidget(langcode("COORD002"),
+                xmPushButtonGadgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slat,
+                XmNtopOffset,               20,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              slong_ew,
+                XmNleftOffset,              15,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNnavigationType,          XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // Fill in the pointers to our input textfields so that the
         // coordinate calculator can fiddle with them.
@@ -15395,623 +17239,791 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 
 
 //----- Frame for table / symbol
-        frame = XtVaCreateManagedWidget("Configure_station frame", xmFrameWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               slong_ew,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        frame = XtVaCreateManagedWidget("Configure_station frame", 
+                xmFrameWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               slong_ew,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // "Station Symbol"
-        sts  = XtVaCreateManagedWidget(langcode("WPUPCFS009"),xmLabelWidgetClass,frame,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        sts  = XtVaCreateManagedWidget(langcode("WPUPCFS009"),
+                xmLabelWidgetClass,
+                frame,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        cs_form1 =  XtVaCreateWidget("Configure_station cs_form1",xmFormWidgetClass, frame,
-                            XmNfractionBase,            5,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        cs_form1 =  XtVaCreateWidget("Configure_station cs_form1",
+                xmFormWidgetClass, 
+                frame,
+                XmNfractionBase,            5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // "Group/overlay"
-        group = XtVaCreateManagedWidget(langcode("WPUPCFS010"),xmLabelWidgetClass, cs_form1,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            10,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              100,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        group = XtVaCreateManagedWidget(langcode("WPUPCFS010"),
+                xmLabelWidgetClass, 
+                cs_form1,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            10,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              100,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         // table
-        station_config_group_data = XtVaCreateManagedWidget("Configure_station group", xmTextFieldWidgetClass, cs_form1,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   FALSE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 1,
-                            XmNmaxLength,               1,
-                            XmNtopOffset,               6,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              group,
-                            XmNleftOffset,              5,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_group_data = XtVaCreateManagedWidget("Configure_station group", 
+                xmTextFieldWidgetClass, 
+                cs_form1,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   FALSE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 1,
+                XmNmaxLength,               1,
+                XmNtopOffset,               6,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              group,
+                XmNleftOffset,              5,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
         // "Symbol"
-        st_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS011"),xmLabelWidgetClass, cs_form1,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_group_data,
-                            XmNleftOffset,              20,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        st_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS011"),
+                xmLabelWidgetClass, 
+                cs_form1,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_group_data,
+                XmNleftOffset,              20,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // symbol
-        station_config_symbol_data = XtVaCreateManagedWidget("Configure_station symbol", xmTextFieldWidgetClass, cs_form1,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   FALSE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 1,
-                            XmNmaxLength,               1,
-                            XmNtopOffset,               6,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              st_symbol,
-                            XmNleftOffset,              5,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_symbol_data = XtVaCreateManagedWidget("Configure_station symbol", 
+                xmTextFieldWidgetClass, 
+                cs_form1,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   FALSE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 1,
+                XmNmaxLength,               1,
+                XmNtopOffset,               6,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              st_symbol,
+                XmNleftOffset,              5,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
         // icon
-        CS_icon0 = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
-                    DefaultDepthOfScreen(XtScreen(appshell)));
-        CS_icon  = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
-                    DefaultDepthOfScreen(XtScreen(appshell)));
-        station_config_icon = XtVaCreateManagedWidget("Configure_station icon", xmLabelWidgetClass, cs_form1,
-                            XmNlabelType,               XmPIXMAP,
-                            XmNlabelPixmap,             CS_icon,
-                            XmNbackground,              colors[0xff],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_symbol_data,
-                            XmNleftOffset,              15,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        CS_icon0 = XCreatePixmap(XtDisplay(appshell),
+                RootWindowOfScreen(XtScreen(appshell)),
+                20,
+                20,
+                DefaultDepthOfScreen(XtScreen(appshell)));
+        CS_icon  = XCreatePixmap(XtDisplay(appshell),
+                RootWindowOfScreen(XtScreen(appshell)),
+                20,
+                20,
+                DefaultDepthOfScreen(XtScreen(appshell)));
+        station_config_icon = XtVaCreateManagedWidget("Configure_station icon", 
+                xmLabelWidgetClass, 
+                cs_form1,
+                XmNlabelType,               XmPIXMAP,
+                XmNlabelPixmap,             CS_icon,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_symbol_data,
+                XmNleftOffset,              15,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        configure_button_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS028"),xmPushButtonGadgetClass, cs_form1,
-                            XmNtopAttachment,           XmATTACH_FORM,
-                            XmNtopOffset,               6,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              station_config_icon,
-                            XmNleftOffset,              15,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+        configure_button_symbol = XtVaCreateManagedWidget(langcode("WPUPCFS028"),
+                xmPushButtonGadgetClass, 
+                cs_form1,
+                XmNtopAttachment,           XmATTACH_FORM,
+                XmNtopOffset,               6,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              station_config_icon,
+                XmNleftOffset,              15,
+                XmNrightAttachment,         XmATTACH_NONE,
+                XmNnavigationType,          XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(configure_button_symbol, XmNactivateCallback, Configure_change_symbol, configure_station_dialog);
 
 
 //----- Frame for Power-Gain
-        framephg = XtVaCreateManagedWidget("Configure_station framephg", xmFrameWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               frame,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        framephg = XtVaCreateManagedWidget("Configure_station framephg", 
+                xmFrameWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               frame,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        pg2  = XtVaCreateManagedWidget(langcode("WPUPCFS012"),xmLabelWidgetClass,framephg,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        pg2  = XtVaCreateManagedWidget(langcode("WPUPCFS012"),
+                xmLabelWidgetClass,
+                framephg,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        formphg =  XtVaCreateWidget("Configure_station power_form",xmFormWidgetClass,framephg,
-                            XmNfractionBase,            5,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        formphg =  XtVaCreateWidget("Configure_station power_form",
+                xmFormWidgetClass,
+                framephg,
+                XmNfractionBase,            5,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // Power
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        ac = 0;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        power_box = XmCreateRadioBox(formphg,"Configure_station Power Radio Box",al,ac);
+        power_box = XmCreateRadioBox(formphg,
+                "Configure_station Power Radio Box",
+                al,
+                ac);
 
         XtVaSetValues(power_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_FORM,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  XmNnumColumns,11,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnumColumns,11,
+                NULL);
 
-        poption0 = XtVaCreateManagedWidget(langcode("WPUPCFS013"),xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption0 = XtVaCreateManagedWidget(langcode("WPUPCFS013"),
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption0,XmNvalueChangedCallback,Power_toggle,"x");
 
         // 0 Watts
-        poption1 = XtVaCreateManagedWidget("0W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption1 = XtVaCreateManagedWidget("0W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption1,XmNvalueChangedCallback,Power_toggle,"0");
 
         // 1 Watt
-        poption2 = XtVaCreateManagedWidget("1W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption2 = XtVaCreateManagedWidget("1W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption2,XmNvalueChangedCallback,Power_toggle,"1");
 
         // 4 Watts
-        poption3 = XtVaCreateManagedWidget("4W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption3 = XtVaCreateManagedWidget("4W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption3,XmNvalueChangedCallback,Power_toggle,"2");
 
         // 9 Watts
-        poption4 = XtVaCreateManagedWidget("9W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption4 = XtVaCreateManagedWidget("9W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption4,XmNvalueChangedCallback,Power_toggle,"3");
 
         // 16 Watts
-        poption5 = XtVaCreateManagedWidget("16W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption5 = XtVaCreateManagedWidget("16W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption5,XmNvalueChangedCallback,Power_toggle,"4");
 
         // 25 Watts
-        poption6 = XtVaCreateManagedWidget("25W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption6 = XtVaCreateManagedWidget("25W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption6,XmNvalueChangedCallback,Power_toggle,"5");
 
         // 36 Watts
-        poption7 = XtVaCreateManagedWidget("36W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption7 = XtVaCreateManagedWidget("36W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption7,XmNvalueChangedCallback,Power_toggle,"6");
 
         // 49 Watts
-        poption8 = XtVaCreateManagedWidget("49W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption8 = XtVaCreateManagedWidget("49W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption8,XmNvalueChangedCallback,Power_toggle,"7");
 
         // 64 Watts
-        poption9 = XtVaCreateManagedWidget("64W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption9 = XtVaCreateManagedWidget("64W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption9,XmNvalueChangedCallback,Power_toggle,"8");
 
         // 81 Watts
-        poption10 = XtVaCreateManagedWidget("81W",xmToggleButtonGadgetClass,
-                            power_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        poption10 = XtVaCreateManagedWidget("81W",
+                xmToggleButtonGadgetClass,
+                power_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(poption10,XmNvalueChangedCallback,Power_toggle,"9");
 
 
         // Height
-        height_box = XmCreateRadioBox(formphg,"Configure_station Height Radio Box",al,ac);
+        height_box = XmCreateRadioBox(formphg,
+                "Configure_station Height Radio Box",
+                al,
+                ac);
 
         XtVaSetValues(height_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_WIDGET,
-                  XmNtopWidget,power_box,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  XmNnumColumns,10,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget,power_box,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnumColumns,10,
+                NULL);
 
 
         // 10 Feet
-        hoption1 = XtVaCreateManagedWidget("10ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption1 = XtVaCreateManagedWidget("10ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption1,XmNvalueChangedCallback,Height_toggle,"0");
 
         // 20 Feet
-        hoption2 = XtVaCreateManagedWidget("20ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption2 = XtVaCreateManagedWidget("20ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption2,XmNvalueChangedCallback,Height_toggle,"1");
 
         // 40 Feet
-        hoption3 = XtVaCreateManagedWidget("40ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption3 = XtVaCreateManagedWidget("40ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption3,XmNvalueChangedCallback,Height_toggle,"2");
 
         // 80 Feet
-        hoption4 = XtVaCreateManagedWidget("80ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption4 = XtVaCreateManagedWidget("80ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption4,XmNvalueChangedCallback,Height_toggle,"3");
 
         // 160 Feet
-        hoption5 = XtVaCreateManagedWidget("160ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption5 = XtVaCreateManagedWidget("160ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption5,XmNvalueChangedCallback,Height_toggle,"4");
 
         // 320 Feet
-        hoption6 = XtVaCreateManagedWidget("320ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption6 = XtVaCreateManagedWidget("320ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption6,XmNvalueChangedCallback,Height_toggle,"5");
 
         // 640 Feet
-        hoption7 = XtVaCreateManagedWidget("640ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption7 = XtVaCreateManagedWidget("640ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption7,XmNvalueChangedCallback,Height_toggle,"6");
 
         // 1280 Feet
-        hoption8 = XtVaCreateManagedWidget("1280ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption8 = XtVaCreateManagedWidget("1280ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption8,XmNvalueChangedCallback,Height_toggle,"7");
 
         // 2560 Feet
-        hoption9 = XtVaCreateManagedWidget("2560ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption9 = XtVaCreateManagedWidget("2560ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption9,XmNvalueChangedCallback,Height_toggle,"8");
 
         // 5120 Feet
-        hoption10 = XtVaCreateManagedWidget("5120ft",xmToggleButtonGadgetClass,
-                            height_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        hoption10 = XtVaCreateManagedWidget("5120ft",
+                xmToggleButtonGadgetClass,
+                height_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(hoption10,XmNvalueChangedCallback,Height_toggle,"9");
 
 
         // Gain
-        gain_box = XmCreateRadioBox(formphg,"Configure_station Gain Radio Box",al,ac);
+        gain_box = XmCreateRadioBox(formphg,
+                "Configure_station Gain Radio Box",
+                al,
+                ac);
 
         XtVaSetValues(gain_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_WIDGET,
-                  XmNtopWidget,height_box,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  XmNnumColumns,10,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget,height_box,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnumColumns,10,
+                NULL);
 
 
         // 0 dB
-        goption1 = XtVaCreateManagedWidget("0dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption1 = XtVaCreateManagedWidget("0dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption1,XmNvalueChangedCallback,Gain_toggle,"0");
 
         // 1 dB
-        goption2 = XtVaCreateManagedWidget("1dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption2 = XtVaCreateManagedWidget("1dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption2,XmNvalueChangedCallback,Gain_toggle,"1");
 
         // 2 dB
-        goption3 = XtVaCreateManagedWidget("2dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption3 = XtVaCreateManagedWidget("2dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption3,XmNvalueChangedCallback,Gain_toggle,"2");
 
         // 3 dB
-        goption4 = XtVaCreateManagedWidget("3dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption4 = XtVaCreateManagedWidget("3dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption4,XmNvalueChangedCallback,Gain_toggle,"3");
 
         // 4 dB
-        goption5 = XtVaCreateManagedWidget("4dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption5 = XtVaCreateManagedWidget("4dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption5,XmNvalueChangedCallback,Gain_toggle,"4");
 
         // 5 dB
-        goption6 = XtVaCreateManagedWidget("5dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption6 = XtVaCreateManagedWidget("5dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption6,XmNvalueChangedCallback,Gain_toggle,"5");
 
         // 6 dB
-        goption7 = XtVaCreateManagedWidget("6dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption7 = XtVaCreateManagedWidget("6dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption7,XmNvalueChangedCallback,Gain_toggle,"6");
 
         // 7 dB
-        goption8 = XtVaCreateManagedWidget("7dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption8 = XtVaCreateManagedWidget("7dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption8,XmNvalueChangedCallback,Gain_toggle,"7");
 
         // 8 dB
-        goption9 = XtVaCreateManagedWidget("8dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption9 = XtVaCreateManagedWidget("8dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption9,XmNvalueChangedCallback,Gain_toggle,"8");
 
         // 9 dB
-        goption10 = XtVaCreateManagedWidget("9dB",xmToggleButtonGadgetClass,
-                            gain_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        goption10 = XtVaCreateManagedWidget("9dB",
+                xmToggleButtonGadgetClass,
+                gain_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(goption10,XmNvalueChangedCallback,Gain_toggle,"9");
 
 
         // Gain
-        directivity_box = XmCreateRadioBox(formphg,"Configure_station Directivity Radio Box",al,ac);
+        directivity_box = XmCreateRadioBox(formphg,
+                "Configure_station Directivity Radio Box",
+                al,
+                ac);
 
         XtVaSetValues(directivity_box,
-                  XmNpacking, XmPACK_TIGHT,
-                  XmNorientation, XmHORIZONTAL,
-                  XmNtopAttachment,XmATTACH_WIDGET,
-                  XmNtopWidget,gain_box,
-                  XmNbottomAttachment,XmATTACH_NONE,
-                  XmNleftAttachment, XmATTACH_FORM,
-                  XmNleftOffset, 5,
-                  XmNrightAttachment,XmATTACH_FORM,
-                  XmNrightOffset, 5,
-                  XmNnumColumns,10,
-                  NULL);
+                XmNpacking, XmPACK_TIGHT,
+                XmNorientation, XmHORIZONTAL,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget,gain_box,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnumColumns,10,
+                NULL);
 
 
         // Omni-directional
-        doption1 = XtVaCreateManagedWidget("Omni",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption1 = XtVaCreateManagedWidget("Omni",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption1,XmNvalueChangedCallback,Directivity_toggle,"0");
 
         // 45 NE
-        doption2 = XtVaCreateManagedWidget("45°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption2 = XtVaCreateManagedWidget("45°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption2,XmNvalueChangedCallback,Directivity_toggle,"1");
 
         // 90 E
-        doption3 = XtVaCreateManagedWidget("90°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption3 = XtVaCreateManagedWidget("90°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption3,XmNvalueChangedCallback,Directivity_toggle,"2");
 
         // 135 SE
-        doption4 = XtVaCreateManagedWidget("135°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption4 = XtVaCreateManagedWidget("135°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption4,XmNvalueChangedCallback,Directivity_toggle,"3");
 
         // 180 S
-        doption5 = XtVaCreateManagedWidget("180°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption5 = XtVaCreateManagedWidget("180°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption5,XmNvalueChangedCallback,Directivity_toggle,"4");
 
         // 225 SW
-        doption6 = XtVaCreateManagedWidget("225°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption6 = XtVaCreateManagedWidget("225°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption6,XmNvalueChangedCallback,Directivity_toggle,"5");
 
         // 270 W
-        doption7 = XtVaCreateManagedWidget("270°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption7 = XtVaCreateManagedWidget("270°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption7,XmNvalueChangedCallback,Directivity_toggle,"6");
 
         // 315 NW
-        doption8 = XtVaCreateManagedWidget("315°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption8 = XtVaCreateManagedWidget("315°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption8,XmNvalueChangedCallback,Directivity_toggle,"7");
 
         // 360 N
-        doption9 = XtVaCreateManagedWidget("360°",xmToggleButtonGadgetClass,
-                            directivity_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        doption9 = XtVaCreateManagedWidget("360°",
+                xmToggleButtonGadgetClass,
+                directivity_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(doption9,XmNvalueChangedCallback,Directivity_toggle,"8");
 
 
 //-----------------------
-        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),xmLabelWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               framephg,
-                            XmNtopOffset,               15,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        comment = XtVaCreateManagedWidget(langcode("WPUPCFS017"),
+                xmLabelWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               framephg,
+                XmNtopOffset,               15,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
 
-        station_config_comment_data = XtVaCreateManagedWidget("Configure_station comment", xmTextFieldWidgetClass, cs_form,
-                            XmNeditable,                TRUE,
-                            XmNcursorPositionVisible,   TRUE,
-                            XmNsensitive,               TRUE,
-                            XmNshadowThickness,         1,
-                            XmNcolumns,                 60,
-                            XmNwidth,                   ((60*7)+2),
-                            XmNmaxLength,               MAX_COMMENT,
-                            XmNtopOffset,               11,
-                            XmNbackground,              colors[0x0f],
-                            XmNleftAttachment,          XmATTACH_WIDGET,
-                            XmNleftWidget,              comment,
-                            XmNleftOffset,              5,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               framephg,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNrightAttachment,         XmATTACH_NONE,
-                            NULL);
+        station_config_comment_data = XtVaCreateManagedWidget("Configure_station comment", 
+                xmTextFieldWidgetClass, 
+                cs_form,
+                XmNeditable,                TRUE,
+                XmNcursorPositionVisible,   TRUE,
+                XmNsensitive,               TRUE,
+                XmNshadowThickness,         1,
+                XmNcolumns,                 60,
+                XmNwidth,                   ((60*7)+2),
+                XmNmaxLength,               MAX_COMMENT,
+                XmNtopOffset,               11,
+                XmNbackground,              colors[0x0f],
+                XmNleftAttachment,          XmATTACH_WIDGET,
+                XmNleftWidget,              comment,
+                XmNleftOffset,              5,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               framephg,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNrightAttachment,         XmATTACH_NONE,
+                NULL);
 
 
 //Position Ambiguity Frame
-        frame2 = XtVaCreateManagedWidget("Configure_station frame2", xmFrameWidgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               comment,
-                            XmNtopOffset,               10,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNleftOffset,              10,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNrightOffset,             10,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        frame2 = XtVaCreateManagedWidget("Configure_station frame2", 
+                xmFrameWidgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               comment,
+                XmNtopOffset,               10,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNleftOffset,              10,
+                XmNrightAttachment,         XmATTACH_FORM,
+                XmNrightOffset,             10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        posamb  = XtVaCreateManagedWidget(langcode("WPUPCFS018"),xmLabelWidgetClass,frame2,
-                            XmNchildType,               XmFRAME_TITLE_CHILD,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        posamb  = XtVaCreateManagedWidget(langcode("WPUPCFS018"),
+                xmLabelWidgetClass,
+                frame2,
+                XmNchildType,               XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
 
-        option_box = XmCreateRadioBox(frame2,"Configure_station Option box",al,ac);
+        option_box = XmCreateRadioBox(frame2,
+                "Configure_station Option box",
+                al,
+                ac);
 
         XtVaSetValues(option_box,
-                  XmNnumColumns,5,
-                  NULL);
+                XmNnumColumns,5,
+                NULL);
 
-        posamb0 = XtVaCreateManagedWidget(langcode("WPUPCFS019"),xmToggleButtonGadgetClass,
-                            option_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        posamb0 = XtVaCreateManagedWidget(langcode("WPUPCFS019"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(posamb0,XmNvalueChangedCallback,Configure_station_toggle,"0");
 
-        posamb1 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS020"):langcode("WPUPCFS024"),xmToggleButtonGadgetClass,
-                            option_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        posamb1 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS020"):langcode("WPUPCFS024"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(posamb1,XmNvalueChangedCallback,Configure_station_toggle,"1");
 
 
-        posamb2 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS021"):langcode("WPUPCFS025"),xmToggleButtonGadgetClass,
-                            option_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        posamb2 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS021"):langcode("WPUPCFS025"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(posamb2,XmNvalueChangedCallback,Configure_station_toggle,"2");
 
-        posamb3 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS022"):langcode("WPUPCFS026"),xmToggleButtonGadgetClass,
-                            option_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        posamb3 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS022"):langcode("WPUPCFS026"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(posamb3,XmNvalueChangedCallback,Configure_station_toggle,"3");
 
-        posamb4 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS023"):langcode("WPUPCFS027"),xmToggleButtonGadgetClass,
-                            option_box,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        posamb4 = XtVaCreateManagedWidget(units_english_metric?langcode("WPUPCFS023"):langcode("WPUPCFS027"),
+                xmToggleButtonGadgetClass,
+                option_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
         XtAddCallback(posamb4,XmNvalueChangedCallback,Configure_station_toggle,"4");
 
-        sep = XtVaCreateManagedWidget("Configure_station sep", xmSeparatorGadgetClass,cs_form,
-                            XmNorientation,             XmHORIZONTAL,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               frame2,
-                            XmNtopOffset,               14,
-                            XmNbottomAttachment,        XmATTACH_NONE,
-                            XmNleftAttachment,          XmATTACH_FORM,
-                            XmNrightAttachment,         XmATTACH_FORM,
-                            XmNbackground,              colors[0xff],
-                            NULL);
+        sep = XtVaCreateManagedWidget("Configure_station sep", 
+                xmSeparatorGadgetClass,
+                cs_form,
+                XmNorientation,             XmHORIZONTAL,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               frame2,
+                XmNtopOffset,               14,
+                XmNbottomAttachment,        XmATTACH_NONE,
+                XmNleftAttachment,          XmATTACH_FORM,
+                XmNrightAttachment,         XmATTACH_FORM,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),xmPushButtonGadgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               sep,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            1,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           2,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("UNIOP00001"),
+                xmPushButtonGadgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               sep,
+                XmNtopOffset,               5,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            5,
+                XmNleftAttachment,          XmATTACH_POSITION,
+                XmNleftPosition,            1,
+                XmNrightAttachment,         XmATTACH_POSITION,
+                XmNrightPosition,           2,
+                XmNnavigationType,          XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, cs_form,
-                            XmNtopAttachment,           XmATTACH_WIDGET,
-                            XmNtopWidget,               sep,
-                            XmNtopOffset,               5,
-                            XmNbottomAttachment,        XmATTACH_FORM,
-                            XmNbottomOffset,            5,
-                            XmNleftAttachment,          XmATTACH_POSITION,
-                            XmNleftPosition,            3,
-                            XmNrightAttachment,         XmATTACH_POSITION,
-                            XmNrightPosition,           4,
-                            XmNbackground,              colors[0xff],
-                            XmNnavigationType,          XmTAB_GROUP,
-                            NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                cs_form,
+                XmNtopAttachment,           XmATTACH_WIDGET,
+                XmNtopWidget,               sep,
+                XmNtopOffset,               5,
+                XmNbottomAttachment,        XmATTACH_FORM,
+                XmNbottomOffset,            5,
+                XmNleftAttachment,          XmATTACH_POSITION,
+                XmNleftPosition,            3,
+                XmNrightAttachment,         XmATTACH_POSITION,
+                XmNrightPosition,           4,
+                XmNnavigationType,          XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_ok, XmNactivateCallback, Configure_station_change_data, configure_station_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Configure_station_destroy_shell, configure_station_dialog);
@@ -16613,8 +18625,9 @@ int main(int argc, char *argv[], char *envp[]) {
     if (!trap_segfault)
         (void) signal(SIGSEGV,segfault);                // set segfault signal to check
 
-    load_data_or_default();     // load program parameters or set to default values
-    update_units();                     // setup conversion factors and strings
+    load_data_or_default(); // load program parameters or set to default values
+
+    update_units(); // set up conversion factors and strings
 
     /* do language links */
     if (strlen(lang_to_use_or) > 0)

@@ -97,6 +97,8 @@ void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *t
             break;
         case 1:
             // draw text the old way in a gray box
+            // Leave this next one hard-coded to 0xff.  This keeps
+            // the background as gray.
             (void)XSetForeground(XtDisplay(w),gc,colors[0xff]);
             (void)XFillRectangle(XtDisplay(w),where,gc,x-1,(y-10),(length*6)+2,11);
             (void)XSetForeground(XtDisplay(w),gc,colors[bgcolor]);
@@ -1204,11 +1206,23 @@ void insert_symbol(char table, char symbol, char *pixel, int deg, char orient) {
 
     if (symbols_loaded < MAX_SYMBOLS) {
         symbol_data[symbols_loaded].pix=XCreatePixmap(XtDisplay(appshell),
-                    RootWindowOfScreen(XtScreen(appshell)),20,20,DefaultDepthOfScreen(XtScreen(appshell)));
+                RootWindowOfScreen(XtScreen(appshell)),
+                20,
+                20,
+                DefaultDepthOfScreen(XtScreen(appshell)));
+
         symbol_data[symbols_loaded].pix_mask=XCreatePixmap(XtDisplay(appshell),
-                    RootWindowOfScreen(XtScreen(appshell)),20,20,1);
+                RootWindowOfScreen(XtScreen(appshell)),
+                20,
+                20,
+                1);
+
         symbol_data[symbols_loaded].pix_mask_old=XCreatePixmap(XtDisplay(appshell),
-                    RootWindowOfScreen(XtScreen(appshell)),20,20,1);
+                RootWindowOfScreen(XtScreen(appshell)),
+                20,
+                20,
+                1);
+
         old_next=0;
         for (y=0;y<20;y++) {
             for (x=0;x<20;x++) {
@@ -1623,71 +1637,97 @@ void Select_symbol( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
 begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol" );
 
 
-        select_symbol_dialog = XtVaCreatePopupShell(langcode("SYMSEL0001"),xmDialogShellWidgetClass,Global.top,
-                                    XmNdeleteResponse,XmDESTROY,
-                                    XmNdefaultPosition, FALSE,
-                                    NULL);
+        select_symbol_dialog = XtVaCreatePopupShell(langcode("SYMSEL0001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Select_symbol pane",xmPanedWindowWidgetClass, select_symbol_dialog,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        pane = XtVaCreateWidget("Select_symbol pane",
+                xmPanedWindowWidgetClass, 
+                select_symbol_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("Select_symbol my_form",xmFormWidgetClass, pane,
-                                XmNfractionBase, 5,
-                                XmNbackground, colors[0xff],
-                                XmNautoUnmanage, FALSE,
-                                XmNshadowThickness, 1,
-                                NULL);
+        my_form =  XtVaCreateWidget("Select_symbol my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        frame = XtVaCreateManagedWidget("Select_symbol frame", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_FORM,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_NONE,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame = XtVaCreateManagedWidget("Select_symbol frame", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label1 = XtVaCreateManagedWidget(langcode("SYMSEL0002"),xmLabelWidgetClass,frame,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        label1 = XtVaCreateManagedWidget(langcode("SYMSEL0002"),
+                xmLabelWidgetClass,
+                frame,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        frame2 = XtVaCreateManagedWidget("Select_symbol frame", xmFrameWidgetClass, my_form,
-                                        XmNtopAttachment,XmATTACH_FORM,
-                                        XmNtopOffset,10,
-                                        XmNbottomAttachment,XmATTACH_NONE,
-                                        XmNleftAttachment, XmATTACH_WIDGET,
-                                        XmNleftWidget, frame,
-                                        XmNleftOffset, 10,
-                                        XmNrightAttachment,XmATTACH_FORM,
-                                        XmNrightOffset, 10,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        frame2 = XtVaCreateManagedWidget("Select_symbol frame", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopOffset,10,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, frame,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        label2 = XtVaCreateManagedWidget(langcode("SYMSEL0003"),xmLabelWidgetClass,frame2,
-                                        XmNchildType, XmFRAME_TITLE_CHILD,
-                                        XmNbackground, colors[0xff],
-                                        NULL);
+        label2 = XtVaCreateManagedWidget(langcode("SYMSEL0003"),
+                xmLabelWidgetClass,
+                frame2,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form2 =  XtVaCreateWidget("Select_symbol my_form2",xmRowColumnWidgetClass, frame,
-                                XmNorientation, XmHORIZONTAL,
-                                XmNpacking, XmPACK_COLUMN,
-                                XmNnumColumns, 10,
-                                XmNbackground, colors[0xff],
-                                XmNautoUnmanage, FALSE,
-                                XmNshadowThickness, 1,
-                                NULL);
+        my_form2 =  XtVaCreateWidget("Select_symbol my_form2",
+                xmRowColumnWidgetClass, 
+                frame,
+                XmNorientation, XmHORIZONTAL,
+                XmNpacking, XmPACK_COLUMN,
+                XmNnumColumns, 10,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form3 =  XtVaCreateWidget("Select_symbol my_form3",xmRowColumnWidgetClass, frame2,
-                                XmNorientation, XmHORIZONTAL,
-                                XmNpacking, XmPACK_COLUMN,
-                                XmNnumColumns, 10,
-                                XmNbackground, colors[0xff],
-                                XmNautoUnmanage, FALSE,
-                                XmNshadowThickness, 1,
-                                NULL);
+        my_form3 =  XtVaCreateWidget("Select_symbol my_form3",
+                xmRowColumnWidgetClass, 
+                frame2,
+                XmNorientation, XmHORIZONTAL,
+                XmNpacking, XmPACK_COLUMN,
+                XmNnumColumns, 10,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         // Symbols:  33 to 126, for both '/' and '\' tables (94 * 2)
         // 33 = start of icons in ASCII table, 126 = end
@@ -1695,14 +1735,20 @@ begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol
         // Draw the primary symbol set
         for ( i = 33; i < 127; i++ ) {
 
-            select_icons[i-33] = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
+            select_icons[i-33] = XCreatePixmap(XtDisplay(appshell),
+                    RootWindowOfScreen(XtScreen(appshell)),
+                    20,
+                    20,
                     DefaultDepthOfScreen(XtScreen(appshell)));
  
-            b1 = XtVaCreateManagedWidget("symbol button",xmPushButtonWidgetClass, my_form2,
+            b1 = XtVaCreateManagedWidget("symbol button",
+                    xmPushButtonWidgetClass, 
+                    my_form2,
                     XmNlabelType,               XmPIXMAP,
                     XmNlabelPixmap,             select_icons[i-33],
-                    XmNbackground, colors[0xff],
                     XmNnavigationType, XmTAB_GROUP,
+                    MY_FOREGROUND_COLOR,
+                    MY_BACKGROUND_COLOR,
                     NULL);
 
             symbol(b1,0,'/',(char)i,' ',select_icons[i-33],0,0,0,' ');  // create icon
@@ -1715,14 +1761,20 @@ begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol
         // Draw the alternate symbol set
         for ( i = 33+94; i < 127+94; i++ ) {
 
-            select_icons[i-33] = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
+            select_icons[i-33] = XCreatePixmap(XtDisplay(appshell),
+                    RootWindowOfScreen(XtScreen(appshell)),
+                    20,
+                    20,
                     DefaultDepthOfScreen(XtScreen(appshell)));
  
-            b1 = XtVaCreateManagedWidget("symbol button",xmPushButtonWidgetClass, my_form3,
+            b1 = XtVaCreateManagedWidget("symbol button",
+                    xmPushButtonWidgetClass, 
+                    my_form3,
                     XmNlabelType,               XmPIXMAP,
                     XmNlabelPixmap,             select_icons[i-33],
-                    XmNbackground, colors[0xff],
                     XmNnavigationType, XmTAB_GROUP,
+                    MY_FOREGROUND_COLOR,
+                    MY_BACKGROUND_COLOR,
                     NULL);
 
             symbol(b1,0,'\\',(char)i-94,' ',select_icons[i-33],0,0,0,' ');  // create icon
@@ -1732,19 +1784,22 @@ begin_critical_section(&select_symbol_dialog_lock, "draw_symbols.c:Select_symbol
             XtAddCallback(b1, XmNactivateCallback, Select_symbol_change_data, (XtPointer)(-(i-94)) );
         }
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),xmPushButtonGadgetClass, my_form,
-                                        XmNtopAttachment, XmATTACH_WIDGET,
-                                        XmNtopWidget, frame,
-                                        XmNtopOffset, 5,
-                                        XmNbottomAttachment, XmATTACH_FORM,
-                                        XmNbottomOffset, 5,
-                                        XmNleftAttachment, XmATTACH_FORM,
-                                        XmNleftOffset, 5,
-                                        XmNrightAttachment, XmATTACH_FORM,
-                                        XmNrightOffset, 5,
-                                        XmNbackground, colors[0xff],
-                                        XmNnavigationType, XmTAB_GROUP,
-                                        NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, frame,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_FORM,
+                XmNrightOffset, 5,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, Select_symbol_destroy_shell, select_symbol_dialog);
 

@@ -236,74 +236,93 @@ void view_all_messages( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
 
 begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_messages" );
 
-        All_messages_dialog = XtVaCreatePopupShell(langcode("AMTMW00001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        All_messages_dialog = XtVaCreatePopupShell(langcode("AMTMW00001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("view_all_messages pane",xmPanedWindowWidgetClass, All_messages_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        pane = XtVaCreateWidget("view_all_messages pane",
+                xmPanedWindowWidgetClass, 
+                All_messages_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        my_form =  XtVaCreateWidget("view_all_messages my_form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        my_form =  XtVaCreateWidget("view_all_messages my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        dist = XtVaCreateManagedWidget(langcode("AMTMW00002"),xmLabelWidgetClass, my_form,
-                            XmNtopAttachment, XmATTACH_FORM,
-                            XmNtopOffset, 10,
-                            XmNbottomAttachment, XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_FORM,
-                            XmNleftOffset, 10,
-                            XmNrightAttachment, XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            XmNtraversalOn, FALSE,
-                            NULL);
+        dist = XtVaCreateManagedWidget(langcode("AMTMW00002"),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        vm_dist_data = XtVaCreateManagedWidget("view_all_messages dist_data", xmTextFieldWidgetClass, my_form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 8,
-                                      XmNwidth, ((8*7)+2),
-                                      XmNmaxLength, 8,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, dist,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      NULL);
+        vm_dist_data = XtVaCreateManagedWidget("view_all_messages dist_data", 
+                xmTextFieldWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 8,
+                XmNwidth, ((8*7)+2),
+                XmNmaxLength, 8,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, dist,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_NONE,
+                NULL);
 
-        dist_units = XtVaCreateManagedWidget((units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005")),xmLabelWidgetClass, my_form,
-                            XmNtopAttachment, XmATTACH_FORM,
-                            XmNtopOffset, 10,
-                            XmNbottomAttachment, XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_WIDGET,
-                            XmNleftWidget, vm_dist_data,
-                            XmNleftOffset, 10,
-                            XmNrightAttachment, XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            XmNtraversalOn, FALSE,
-                            NULL);
+        dist_units = XtVaCreateManagedWidget((units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005")),
+                xmLabelWidgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, vm_dist_data,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNtraversalOn, FALSE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_range = XtVaCreateManagedWidget(langcode("BULMW00003"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, dist_units,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_range = XtVaCreateManagedWidget(langcode("BULMW00003"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, dist_units,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         n=0;
         XtSetArg(args[n], XmNrows, 25); n++;
@@ -313,7 +332,6 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtSetArg(args[n], XmNlistSizePolicy, XmVARIABLE); n++;
         XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
         XtSetArg(args[n], XmNwordWrap, TRUE); n++;
-        XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
         XtSetArg(args[n], XmNscrollHorizontal, TRUE); n++;
         XtSetArg(args[n], XmNscrollVertical, TRUE); n++;
 //        XtSetArg(args[n], XmNscrollBarDisplayPolicy, XmSTATIC); n++;
@@ -327,25 +345,33 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNrightOffset, 5); n++;
-
-        view_messages_text = XmCreateScrolledText(my_form,"view_all_messages text",args,n);
+        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
+ 
+        view_messages_text = XmCreateScrolledText(my_form,
+                "view_all_messages text",
+                args,
+                n);
 
 // It's hard to get tab groups working with ScrolledText widgets.  Tab'ing in is
 // fine, but then I'm stuck in insert mode and it absorbs the tabs and beeps.
 
-        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, my_form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, XtParent(view_messages_text),
-                                      XmNtopOffset, 2,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 3,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, XtParent(view_messages_text),
+                XmNtopOffset, 2,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_close, XmNactivateCallback, All_messages_destroy_shell, All_messages_dialog);
         XtAddCallback(button_range, XmNactivateCallback, All_messages_change_range, All_messages_dialog);

@@ -35,6 +35,15 @@
 #include "fcc_data.h"
 #include "rac_data.h"
 
+
+// black
+#define MY_FG_COLOR             colors[0x08]
+#define MY_FOREGROUND_COLOR     XmNforeground,colors[0x08]
+// gray73
+#define MY_BG_COLOR             colors[0xff]
+#define MY_BACKGROUND_COLOR     XmNbackground,colors[0xff]
+
+
 #define CONVERT_HP_NORMAL       0
 #define CONVERT_HP_NOSP         1
 #define CONVERT_LP_NORMAL       2

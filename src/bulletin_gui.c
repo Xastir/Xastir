@@ -232,73 +232,92 @@ void Bulletins(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unus
 begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins" );
 
 
-        Display_bulletins_dialog = XtVaCreatePopupShell(langcode("BULMW00001"),xmDialogShellWidgetClass,Global.top,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  NULL);
+        Display_bulletins_dialog = XtVaCreatePopupShell(langcode("BULMW00001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Bulletins pane",xmPanedWindowWidgetClass, Display_bulletins_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        pane = XtVaCreateWidget("Bulletins pane",
+                xmPanedWindowWidgetClass,
+                Display_bulletins_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        form =  XtVaCreateWidget("Bulletins form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        form =  XtVaCreateWidget("Bulletins form",
+                xmFormWidgetClass,
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        dist = XtVaCreateManagedWidget(langcode("BULMW00002"),xmLabelWidgetClass, form,
-                            XmNtopAttachment, XmATTACH_FORM,
-                            XmNtopOffset, 10,
-                            XmNbottomAttachment, XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_FORM,
-                            XmNleftOffset, 10,
-                            XmNrightAttachment, XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        dist = XtVaCreateManagedWidget(langcode("BULMW00002"),
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        dist_data = XtVaCreateManagedWidget("dist_data", xmTextFieldWidgetClass, form,
-                                      XmNeditable,   TRUE,
-                                      XmNcursorPositionVisible, TRUE,
-                                      XmNsensitive, TRUE,
-                                      XmNshadowThickness,    1,
-                                      XmNcolumns, 8,
-                                      XmNwidth, ((8*7)+2),
-                                      XmNmaxLength, 8,
-                                      XmNbackground, colors[0x0f],
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment,XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, dist,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment,XmATTACH_NONE,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        dist_data = XtVaCreateManagedWidget("dist_data", 
+                xmTextFieldWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 8,
+                XmNwidth, ((8*7)+2),
+                XmNmaxLength, 8,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, dist,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        dist_units = XtVaCreateManagedWidget((units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005")),xmLabelWidgetClass, form,
-                            XmNtopAttachment, XmATTACH_FORM,
-                            XmNtopOffset, 10,
-                            XmNbottomAttachment, XmATTACH_NONE,
-                            XmNleftAttachment, XmATTACH_WIDGET,
-                            XmNleftWidget, dist_data,
-                            XmNleftOffset, 10,
-                            XmNrightAttachment, XmATTACH_NONE,
-                            XmNbackground, colors[0xff],
-                            NULL);
+        dist_units = XtVaCreateManagedWidget((units_english_metric?langcode("UNIOP00004"):langcode("UNIOP00005")),
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, dist_data,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        button_range = XtVaCreateManagedWidget(langcode("BULMW00003"),xmPushButtonGadgetClass, form,
-                                      XmNtopAttachment, XmATTACH_FORM,
-                                      XmNtopOffset, 5,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_WIDGET,
-                                      XmNleftWidget, dist_units,
-                                      XmNleftOffset, 10,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_range = XtVaCreateManagedWidget(langcode("BULMW00003"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, dist_units,
+                XmNleftOffset, 10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         n=0;
         XtSetArg(args[n], XmNrows, 15); n++;
@@ -307,7 +326,6 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
         XtSetArg(args[n], XmNeditable, FALSE); n++;
         XtSetArg(args[n], XmNeditMode, XmMULTI_LINE_EDIT); n++;
         XtSetArg(args[n], XmNwordWrap, TRUE); n++;
-        XtSetArg(args[n], XmNbackground, colors[0xff]); n++;
         XtSetArg(args[n], XmNscrollHorizontal, TRUE); n++;
         XtSetArg(args[n], XmNscrollVertical, TRUE); n++;
         XtSetArg(args[n], XmNcursorPositionVisible, FALSE); n++;
@@ -319,21 +337,30 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
         XtSetArg(args[n], XmNleftOffset, 5); n++;
         XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
         XtSetArg(args[n], XmNrightOffset, 5); n++;
+        XtSetArg(args[n], XmNforeground, MY_FG_COLOR); n++;
+        XtSetArg(args[n], XmNbackground, MY_BG_COLOR); n++;
 
-        Display_bulletins_text = XmCreateScrolledText(form,"Bulletins text",args,n);
 
-        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, XtParent(Display_bulletins_text),
-                                      XmNtopOffset, 2,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset, 5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 3,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        Display_bulletins_text = XmCreateScrolledText(form,
+                "Bulletins text",
+                args,
+                n);
+
+        button_close = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, XtParent(Display_bulletins_text),
+                XmNtopOffset, 2,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         XtAddCallback(button_range, XmNactivateCallback, Display_bulletins_change_range, Display_bulletins_dialog);
         XtAddCallback(button_close, XmNactivateCallback, Display_bulletins_destroy_shell, Display_bulletins_dialog);

@@ -335,26 +335,33 @@ void Jump_location(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
 
 begin_critical_section(&location_dialog_lock, "location_gui.c:Jump_location" );
 
-        location_dialog = XtVaCreatePopupShell(langcode("JMLPO00001"),xmDialogShellWidgetClass,appshell,
-                                  XmNdeleteResponse,XmDESTROY,
-                                  XmNdefaultPosition, FALSE,
-                                  XmNresize, FALSE,
-                                  NULL);
+        location_dialog = XtVaCreatePopupShell(langcode("JMLPO00001"),
+                xmDialogShellWidgetClass,
+                appshell,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                XmNresize, FALSE,
+                NULL);
 
-        pane = XtVaCreateWidget("Jump_location pane",xmPanedWindowWidgetClass, location_dialog,
-                          XmNbackground, colors[0xff],
-                          NULL);
+        pane = XtVaCreateWidget("Jump_location pane",
+                xmPanedWindowWidgetClass,
+                location_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        form =  XtVaCreateWidget("Jump_location form",xmFormWidgetClass, pane,
-                            XmNfractionBase, 5,
-                            XmNbackground, colors[0xff],
-                            XmNautoUnmanage, FALSE,
-                            XmNshadowThickness, 1,
-                            NULL);
+        form =  XtVaCreateWidget("Jump_location form",
+                xmFormWidgetClass,
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
         /*set args for color */
         ac=0;
-        XtSetArg(al[ac], XmNbackground, colors[0xff]); ac++;
         XtSetArg(al[ac], XmNvisibleItemCount, 11); ac++;
         XtSetArg(al[ac], XmNtraversalOn, TRUE); ac++;
         XtSetArg(al[ac], XmNshadowThickness, 3); ac++;
@@ -368,96 +375,114 @@ begin_critical_section(&location_dialog_lock, "location_gui.c:Jump_location" );
         XtSetArg(al[ac], XmNrightOffset, 5); ac++;
         XtSetArg(al[ac], XmNleftAttachment, XmATTACH_FORM); ac++;
         XtSetArg(al[ac], XmNleftOffset, 5); ac++;
-
-        location_list = XmCreateScrolledList(form,"Jump_location list",al,ac);
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+ 
+        location_list = XmCreateScrolledList(form,
+                "Jump_location list",
+                al,
+                ac);
 
         n=1;
         clear_sort_file(get_user_base_dir("data/locations_db.dat"));
         jump_sort();
         sort_list(get_user_base_dir("data/locations_db.dat"),200,location_list,&n);
 
-        locdata = XtVaCreateManagedWidget(langcode("JMLPO00003"),xmLabelWidgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, XtParent(location_list),
-                                      XmNtopOffset, 10,
-                                      XmNbottomAttachment, XmATTACH_NONE,
-                                      XmNleftAttachment, XmATTACH_FORM,
-                                      XmNleftOffset, 5,
-                                      XmNrightAttachment, XmATTACH_NONE,
-                                      XmNbackground, colors[0xff],
-                                      NULL);
+        locdata = XtVaCreateManagedWidget(langcode("JMLPO00003"),
+                xmLabelWidgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, XtParent(location_list),
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 5,
+                XmNrightAttachment, XmATTACH_NONE,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
 
-        location_name = XtVaCreateManagedWidget("Jump_location Location_name", xmTextFieldWidgetClass, form,
-                                       XmNeditable,   TRUE,
-                                       XmNcursorPositionVisible, TRUE,
-                                       XmNsensitive, TRUE,
-                                       XmNshadowThickness,      1,
-                                       XmNcolumns,21,
-                                       XmNwidth,((21*7)+2),
-                                       XmNbackground, colors[0x0f],
-                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                       XmNtopWidget, XtParent(location_list),
-                                       XmNtopOffset, 5,
-                                       XmNbottomAttachment,XmATTACH_NONE,
-                                       XmNleftAttachment, XmATTACH_WIDGET,
-                                       XmNleftWidget,locdata,
-                                       XmNrightAttachment,XmATTACH_FORM,
-                                       XmNrightOffset, 5,
-                                       NULL);
+        location_name = XtVaCreateManagedWidget("Jump_location Location_name", 
+                xmTextFieldWidgetClass, 
+                form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,      1,
+                XmNcolumns,21,
+                XmNwidth,((21*7)+2),
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, XtParent(location_list),
+                XmNtopOffset, 5,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget,locdata,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 5,
+                NULL);
 
-        button_ok = XtVaCreateManagedWidget(langcode("JMLPO00002"),xmPushButtonGadgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, locdata,
-                                      XmNtopOffset,15,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset,5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 0,
-                                      XmNleftOffset, 3,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 1,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_ok = XtVaCreateManagedWidget(langcode("JMLPO00002"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, locdata,
+                XmNtopOffset,15,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 0,
+                XmNleftOffset, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        button_add = XtVaCreateManagedWidget(langcode("UNIOP00007"),xmPushButtonGadgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, locdata,
-                                      XmNtopOffset,15,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset,5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 1,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 2,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_add = XtVaCreateManagedWidget(langcode("UNIOP00007"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, locdata,
+                XmNtopOffset,15,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        button_delete = XtVaCreateManagedWidget(langcode("UNIOP00008"),xmPushButtonGadgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, locdata,
-                                      XmNtopOffset,15,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset,5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 2,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 3,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_delete = XtVaCreateManagedWidget(langcode("UNIOP00008"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, locdata,
+                XmNtopOffset,15,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 2,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
-        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),xmPushButtonGadgetClass, form,
-                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                      XmNtopWidget, locdata,
-                                      XmNtopOffset,15,
-                                      XmNbottomAttachment, XmATTACH_FORM,
-                                      XmNbottomOffset,5,
-                                      XmNleftAttachment, XmATTACH_POSITION,
-                                      XmNleftPosition, 4,
-                                      XmNrightAttachment, XmATTACH_POSITION,
-                                      XmNrightPosition, 5,
-                                      XmNrightOffset, 3,
-                                      XmNnavigationType, XmTAB_GROUP,
-                                      NULL);
+        button_cancel = XtVaCreateManagedWidget(langcode("UNIOP00003"),
+                xmPushButtonGadgetClass, 
+                form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, locdata,
+                XmNtopOffset,15,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset,5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 4,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 5,
+                XmNrightOffset, 3,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
 
         XtAddCallback(button_cancel, XmNactivateCallback, location_destroy_shell, location_dialog);
         XtAddCallback(button_ok, XmNactivateCallback, location_view, NULL);
