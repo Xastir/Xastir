@@ -41,7 +41,7 @@ PULDNFI014|PNG Schnapschüsse||
 PULDNFI015|Karte drucken|d|
 #
 # Menu "Zeige"
-PULDNVI001|Berichte|B|
+PULDNVI001|Bekanntmachungen|B|
 PULDNVI002|Packet Radio|P|
 PULDNVI003|Mobilstationen|M|
 PULDNVI004|Alle Stationen|A|
@@ -338,7 +338,7 @@ WPUPCFD023|Sende Wetter Rohdaten?||
 WPUPCFD024|Komprimierte Daten beim Senden von Objekten?||
 WPUPCFD025|Alternatives Netz?||
 WPUPCFD026|Sende Positionsmeldung in folgenden Intervallen||
-WPUPCFD027|PopUp-Fenster für neue Nachrichten||
+WPUPCFD027|PopUp-Fenster für neue Bekanntmachungen||
 WPUPCFD028|Warnung bei Modifikationstasten||
 WPUPCFD029|Anzeige bei Entfernung Null||
 #
@@ -883,8 +883,8 @@ JMLPO00001|Gespeicherte Kartenausschnitte||
 JMLPO00002|Aktivieren!|A|
 JMLPO00003|Neuer Name:||
 #
-# "Zeige - Berichte"
-BULMW00001|Berichte||
+# "Zeige - Bekanntmachungen"
+BULMW00001|Bekanntmachungen||
 BULMW00002|Bereich einschränken auf (0: unbegrenzt)||
 BULMW00003|neuen Bereich setzen||
 #
