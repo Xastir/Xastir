@@ -121,6 +121,7 @@ PULDNMMC05|24k Topogr.|4|
 PULDNMMC06|Vouw Dirs Uit|||
 PULDNMMC07|Dirs/Kaarten Geselecteerd:||
 PULDNMMC08|Clear Dirs|C|
+PULDNMMC09|Select All|S|
 #
 # PullDown "Map Background Color"
 PULDNMBC01|Grijs||

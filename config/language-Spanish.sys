@@ -112,6 +112,7 @@ PULDNMMC05|24k Topo|4|
 PULDNMMC06|Expandir Dirs|||
 PULDNMMC07|Dirs/Mapas Seleccionado:||
 PULDNMMC08|Clear Dirs|C|
+PULDNMMC09|Select All|S|
 #
 # Colores de fondo del mapa
 PULDNMBC01|Gris||
