@@ -425,8 +425,8 @@ time_t last_bulletin_check = 0;
 void check_for_new_bulletins() {
 
 
-    // Check every two seconds max
-    if ( (last_bulletin_check + 2) > sec_now() ) {
+    // Check every fifteen seconds max
+    if ( (last_bulletin_check + 15) > sec_now() ) {
         return;
     }
 
