@@ -3,7 +3,15 @@
 #ifdef USE_RTREE
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef HAVE_SHAPEFIL_H
 #include <shapefil.h>
+#else
+#ifdef HAVE_LIBSHP_SHAPEFIL_H
+#include <libshp/shapefil.h>
+#else
+#error HAVE_LIBSHP defined but no corresponding include defined
+#endif  // HAVE_LIBSHP_SHAPEFIL_H
+#endif  // HAVE_SHAPEFIL_H
 #include <rtree/index.h>
 
 #include "hashtable.h"
