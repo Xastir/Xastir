@@ -426,6 +426,12 @@ scr_s_x_min = 0;
 // depth so that we can recover if we exceed the maximum.  If we
 // keep finding geometries below us, keep calling the same function.
 // Simple and efficient.
+//
+// Really the important thing here is not to draw a tiny dot on the
+// screen, but to draw a symbol and/or a label at that point on the
+// screen.  We'll need more code to handle that stuff though, to
+// determine which field in the file to use as a label and the
+// font/color/placement/size/etc.
 // 
 void Draw_OGR_Points(OGRGeometryH geometryH,
         int level,
@@ -475,16 +481,16 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
         }
     }
     else {  // Draw
-        int points;
+        int num_points;
         int ii;
 
 
         // Get number of elements (points)
-        points = OGR_G_GetPointCount(geometryH);
-        //fprintf(stderr,"  Number of elements: %d\n",points);
+        num_points = OGR_G_GetPointCount(geometryH);
+        //fprintf(stderr,"  Number of elements: %d\n",num_points);
 
         // Draw the points
-        for ( ii = 0; ii < points; ii++ ) {
+        for ( ii = 0; ii < num_points; ii++ ) {
             double X1, Y1, Z1;
 
 
@@ -505,8 +511,8 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
                 }
             }
 
-            // Skip the map_visible_lat_lon() check.
-            // draw_point_ll() does the check for us anyway.
+            // Skip the map_visible_lat_lon() check:
+            // draw_point_ll() does the check for us.
             //
             draw_point_ll(da,
                 (float)Y1,
@@ -516,8 +522,8 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
         }
     }
 }
- 
 
+ 
 
 
 
@@ -528,11 +534,12 @@ void Draw_OGR_Points(OGRGeometryH geometryH,
 // keep finding geometries below us, keep calling the same function.
 // Simple and efficient.
 //
-// TODO:
-// Implement a function which calls XDrawLines() instead of
-// draw_vector_ll().  This should make things faster as we'll draw
-// the entire line segment instead of one vector at a time.  Pass an
-// array of vertices to it.
+// In the case of !fast_extents, it might be faster to convert the
+// entire object to Xastir coordinates, then check whether it is
+// visible.  That would elimate two conversions in the case that the
+// object gets drawn.  For the fast_extents case, we're just
+// snagging the extents instead of the entire object, so we might
+// just leave it as-is.
 //
 void Draw_OGR_Lines(OGRGeometryH geometryH,
         int level,
@@ -584,11 +591,17 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
             }
         }
     }
-    else {  // Draw
-        int points;
+    else {  // Just draw it.  Standard linestring files return 0 for
+            // object_num.  Multilinestring must return more, so we
+            // recurse?  Yet to be tested!
+        int num_points;
         OGREnvelope envelopeH;
 
 
+        // If we have fast_extents available, take advantage of it
+        // to escape this routine as quickly as possible, should the
+        // object not be within our view.
+        //
         if (fast_extents) {
 
             // Get the extents for this Polyline
@@ -603,44 +616,58 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
                 }
             }
 
+/*
+fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
+    envelopeH.MinY,
+    envelopeH.MaxY,
+    envelopeH.MinX,
+    envelopeH.MaxX);
+*/
+
             if (map_visible_lat_lon( envelopeH.MinY,    // bottom
                     envelopeH.MaxY, // top
                     envelopeH.MinX, // left
                     envelopeH.MaxX, // right
                     NULL)) {
-                //fprintf(stderr, "Line is visible\n");
+                //fprintf(stderr, "Fast Extents: Line is visible\n");
             }
             else {
-                //fprintf(stderr, "Line is NOT visible\n");
+                //fprintf(stderr, "Fast Extents: Line is NOT visible\n");
                 return; // Exit early
             }
 
-            // If we made it this far, the feature is within our
-            // view.
+            // If we made it this far with an object with
+            // fast_extents , the feature is within our view.
         }
-        else {  // Fast extents not available.  Since draw_vector()
-                // checks before drawing, we'll just throw vectors
-                // at it.  It'll draw what it needs to.
+        else {  // Fast extents are not available.  Compute the
+                // extents ourselves once we have all the points,
+                // then check whether this object is within our
+                // view.
         }
 
-        points = OGR_G_GetPointCount(geometryH);
-        //fprintf(stderr,"  Number of elements: %d\n",points);
+        num_points = OGR_G_GetPointCount(geometryH);
+        //fprintf(stderr,"  Number of elements: %d\n",num_points);
 
         // Draw one polyline
-        if (points > 0) {
+        if (num_points > 0) {
             int ii;
             double *vectorX;
             double *vectorY;
             double *vectorZ;
+            unsigned long *XL = NULL;
+            unsigned long *YL = NULL;
+            long *XI = NULL;
+            long *YI = NULL;
+            XPoint *xpoints = NULL;
 
 
             // Get some memory to hold the vectors
-            vectorX = (double *)malloc(sizeof(double) * points);
-            vectorY = (double *)malloc(sizeof(double) * points);
-            vectorZ = (double *)malloc(sizeof(double) * points);
+            vectorX = (double *)malloc(sizeof(double) * num_points);
+            vectorY = (double *)malloc(sizeof(double) * num_points);
+            vectorZ = (double *)malloc(sizeof(double) * num_points);
 
             // Get the points, fill in the vectors
-            for ( ii = 0; ii < points; ii++ ) {
+            for ( ii = 0; ii < num_points; ii++ ) {
 
                 OGR_G_GetPoint(geometryH,
                     ii,
@@ -651,21 +678,70 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
 
             if (transformH) {
                 // Convert all vectors to WGS84 coordinates.
-                if (!OCTTransform(transformH, points, vectorX, vectorY, vectorZ)) {
+                if (!OCTTransform(transformH, num_points, vectorX, vectorY, vectorZ)) {
                     fprintf(stderr,
                         "Couldn't convert vectors to WGS84\n");
                 }
             }
 
-            for ( ii = 1; ii < points; ii++ ) {
+            // For the non-fast_extents case, we need to compute the
+            // extents and check whether this object is within our
+            // view.
+            //
+            if (!fast_extents) {
+                double MinX, MaxX, MinY, MaxY;
 
-                draw_vector_ll(da,
-                    (float)vectorY[ii-1],
-                    (float)vectorX[ii-1],
-                    (float)vectorY[ii],
-                    (float)vectorX[ii],
-                    gc,
-                    pixmap);
+                MinX = vectorX[0];
+                MaxX = vectorX[0];
+                MinY = vectorY[0];
+                MaxY = vectorY[0];
+
+                for ( ii = 1; ii < num_points; ii++ ) {
+                    if (vectorX[ii] < MinX) MinX = vectorX[ii];
+                    if (vectorX[ii] > MaxX) MaxX = vectorX[ii];
+                    if (vectorY[ii] < MinY) MinY = vectorY[ii];
+                    if (vectorY[ii] > MaxY) MaxY = vectorY[ii];
+                }
+
+                // We have the extents now in geographic/WGS84
+                // datum.  Check for visibility.
+                //
+                if (map_visible_lat_lon( MinY,    // bottom
+                        MaxY, // top
+                        MinX, // left
+                        MaxX, // right
+                        NULL)) {
+                    //fprintf(stderr, "Line is visible\n");
+                }
+                else {
+
+                    //fprintf(stderr, "Line is NOT visible\n");
+
+                    // Free the allocated vector memory
+                    if (vectorX)
+                        free(vectorX);
+                    if (vectorY)
+                        free(vectorY);
+                    if (vectorZ)
+                        free(vectorZ);
+
+                    return; // Exit early
+                }
+            }
+
+            // If we've gotten to this point, part or all of the
+            // object is within our view so at least some drawing
+            // should occur.
+
+            XL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
+            YL = (unsigned long *)malloc(sizeof(unsigned long) * num_points);
+
+            // Convert arrays to the Xastir coordinate system
+            for (ii = 0; ii < num_points; ii++) {
+                convert_to_xastir_coordinates(&XL[ii],
+                    &YL[ii],
+                    vectorX[ii],
+                    vectorY[ii]);
             }
 
             // Free the allocated vector memory
@@ -675,6 +751,66 @@ void Draw_OGR_Lines(OGRGeometryH geometryH,
                 free(vectorY);
             if (vectorZ)
                 free(vectorZ);
+
+            XI = (long *)malloc(sizeof(long) * num_points);
+            YI = (long *)malloc(sizeof(long) * num_points);
+
+            // Convert arrays to screen coordinates.  Careful here!
+            // The format conversions you'll need if you try to
+            // compress this into two lines will get you into
+            // trouble.
+            //
+            // We also clip to screen size and compute min/max
+            // values here.
+            for (ii = 0; ii < num_points; ii++) {
+                XI[ii] = XL[ii] - x_long_offset;
+                XI[ii] = XI[ii] / scale_x;
+
+                YI[ii] = YL[ii] - y_lat_offset;
+                YI[ii] = YI[ii] / scale_y;
+
+// Here we truncate:  We should polygon clip instead, so that the
+// slopes of the line segments don't change.  Points beyond +/-
+// 16000 can cause problems in X11 when we draw.
+                if      (XI[ii] > 1700l) XI[ii] = 1700l;
+                else if (XI[ii] <    0l) XI[ii] =    0l;
+                if      (YI[ii] > 1700l) YI[ii] = 1700l;
+                else if (YI[ii] <    0l) YI[ii] =    0l;
+            }
+
+            // We don't need the Xastir coordinate system arrays
+            // anymore.  We've already converted to screen
+            // coordinates.
+            if (XL)
+                free(XL);
+            if (YL)
+                free(YL);
+
+            // Set up the XPoint array.
+            xpoints = (XPoint *)malloc(sizeof(XPoint) * num_points);
+
+            // Load up our xpoints array
+            for (ii = 0; ii < num_points; ii++) {
+                xpoints[ii].x = (short)XI[ii];
+                xpoints[ii].y = (short)YI[ii];
+            }
+
+            // Free the screen coordinate arrays.
+            if (XI)
+                free(XI);
+            if (YI)
+                free(YI);
+
+            // Actually draw the lines
+            (void)XDrawLines(XtDisplay(da),
+                pixmap,
+                gc,
+                xpoints,
+                num_points,
+                CoordModeOrigin);
+
+            if (xpoints)
+                free(xpoints);
         }
     }
 }
@@ -742,14 +878,12 @@ Region create_hole_in_mask(Region mask,
 
     Region region2 = NULL;
     Region region3 = NULL;
-    XPoint *points;
+    XPoint *xpoints = NULL;
     int ii;
 
 
 //    fprintf(stderr,"Hole:");
 
-    points = NULL;
- 
     if (num < 3) {  // Not enough for a polygon
         fprintf(stderr,
             "create_hole_in_mask:XPolygonRegion w/too few vertices: %d\n",
@@ -758,12 +892,12 @@ Region create_hole_in_mask(Region mask,
     }
 
     // Get memory to hold the points
-    points = (XPoint *)malloc(sizeof(XPoint) * num);
+    xpoints = (XPoint *)malloc(sizeof(XPoint) * num);
 
-    // Load up our points array
+    // Load up our xpoints array
     for (ii = 0; ii < num; ii++) {
-        points[ii].x = (short)X[ii];
-        points[ii].y = (short)Y[ii];
+        xpoints[ii].x = (short)X[ii];
+        xpoints[ii].y = (short)Y[ii];
     }
 
     // Create empty regions
@@ -771,13 +905,13 @@ Region create_hole_in_mask(Region mask,
     region3 = XCreateRegion();
 
     // Draw the "hole" polygon
-    region2 = XPolygonRegion(points,
+    region2 = XPolygonRegion(xpoints,
         num,
         WindingRule);
 
     // Free the allocated memory
-    if (points)
-        free(points);
+    if (xpoints)
+        free(xpoints);
 
     // Subtract region2 from mask and put the result into region3.
     XSubtractRegion(mask, region2, region3);
@@ -804,7 +938,7 @@ Region create_hole_in_mask(Region mask,
 // we just draw it to the pixmap using the X11 Region as a mask.
 //
 void draw_polygon_with_mask(Region mask,
-        XPoint *points,
+        XPoint *xpoints,
         int num_points) {
 
     GC gc_temp = NULL;
@@ -839,7 +973,7 @@ void draw_polygon_with_mask(Region mask,
     (void)XFillPolygon(XtDisplay(da),
         pixmap,
         gc_temp,
-        points,
+        xpoints,
         num_points,
         Nonconvex,
         CoordModeOrigin);
@@ -894,7 +1028,14 @@ void draw_polygon_with_mask(Region mask,
 // includes fixes (for shapefiles at least) to fix this up and
 // convert into a multi polygon so you can properly establish what
 // are outer rings, and what are inner rings (holes)."
-
+//
+// In the case of !fast_extents, it might be faster to convert the
+// entire object to Xastir coordinates, then check whether it is
+// visible.  That would elimate two conversions in the case that the
+// object gets drawn.  For the fast_extents case, we're just
+// snagging the extents instead of the entire object, so we might
+// just leave it as-is.
+//
 void Draw_OGR_Polygons(OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
@@ -904,7 +1045,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
     int kk;
     int object_num = 0;
     Region mask = NULL;
-    XPoint *points = NULL;
+    XPoint *xpoints = NULL;
     int num_outer_points = 0;
 
 
@@ -997,20 +1138,19 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                         envelopeH.MinX, // left
                         envelopeH.MaxX, // right
                         NULL)) {
-                    //fprintf(stderr, "Polygon is visible\n");
+                    //fprintf(stderr, "Fast Extents: Polygon is visible\n");
                 }
                 else {
-                    //fprintf(stderr, "Polygon is NOT visible\n");
+                    //fprintf(stderr, "Fast Extents: Polygon is NOT visible\n");
                     return; // Exit early
                 }
 
                 // If we made it this far, the feature is within our
-                // view.
+                // view (if it has fast_extents).
             }
-            else {  // Fast extents not available.  Since
-                    // draw_vector() checks before drawing, we'll
-                    // just throw vectors at it.  It'll draw what it
-                    // needs to.
+            else {
+                // Fast extents not available.  We'll need to
+                // compute our own extents below.
             }
 
             polygon_points = OGR_G_GetPointCount(child_geometryH);
@@ -1044,6 +1184,52 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 //                        fprintf(stderr,
 //                            "Couldn't convert polygon to WGS84\n");
 //return;
+                    }
+                }
+
+                // For the non-fast_extents case, we need to compute
+                // the extents and check whether this object is
+                // within our view.
+                //
+                if (!fast_extents) {
+                    double MinX, MaxX, MinY, MaxY;
+
+                    MinX = vectorX[0];
+                    MaxX = vectorX[0];
+                    MinY = vectorY[0];
+                    MaxY = vectorY[0];
+
+                    for ( mm = 1; mm < polygon_points; mm++ ) {
+                        if (vectorX[mm] < MinX) MinX = vectorX[mm];
+                        if (vectorX[mm] > MaxX) MaxX = vectorX[mm];
+                        if (vectorY[mm] < MinY) MinY = vectorY[mm];
+                        if (vectorY[mm] > MaxY) MaxY = vectorY[mm];
+                    }
+
+                    // We have the extents now in geographic/WGS84
+                    // datum.  Check for visibility.
+                    //
+                    if (map_visible_lat_lon( MinY,    // bottom
+                            MaxY, // top
+                            MinX, // left
+                            MaxX, // right
+                            NULL)) {
+                        //fprintf(stderr, "Polygon is visible\n");
+                    }
+                    else {
+
+                        //fprintf(stderr, "Polygon is NOT visible\n");
+
+                        // Free the allocated vector memory
+                        if (vectorX)
+                            free(vectorX);
+                        if (vectorY)
+                            free(vectorY);
+                        if (vectorZ)
+                            free(vectorZ);
+
+                        //return; // Exit early
+                        continue;   // Next ieration of the loop
                     }
                 }
 
@@ -1131,12 +1317,12 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                         // for our final draw (after the "holey"
                         // region is set up if we have multiple
                         // rings).
-                        points = (XPoint *)malloc(sizeof(XPoint) * polygon_points);
+                        xpoints = (XPoint *)malloc(sizeof(XPoint) * polygon_points);
 
-                        // Load up our points array
+                        // Load up our xpoints array
                         for (pp = 0; pp < polygon_points; pp++) {
-                            points[pp].x = (short)XI[pp];
-                            points[pp].y = (short)YI[pp];
+                            xpoints[pp].x = (short)XI[pp];
+                            xpoints[pp].y = (short)YI[pp];
                         }
                         num_outer_points = polygon_points;
                     }
@@ -1187,10 +1373,10 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                     // with no "hole" polygons.
                     if (kk == (object_num - 1)) {
                         draw_polygon_with_mask(mask,
-                            points,
+                            xpoints,
                             num_outer_points);
 
-                        free(points);
+                        free(xpoints);
                     }
                 }   // end of draw_filled
                 else {  // We're drawing non-filled polygons.
@@ -1263,6 +1449,13 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
 //
 //
 // TODO:
+// *) map_visible_ll() needs to be re-checked.  Lines are not
+//    showing up sometimes when the end points are way outside the
+//    view.  Perhaps need line_visible() and line_visible_ll()
+//    functions?  If I don't want to compute the slope of a line and
+//    such, might just check for line ends being within boundaries
+//    or left/above, and within boundaries or right/below, to catch
+//    those lines that slant across the view.
 // *) Dbfawk support or similar?  Map preferences:  Colors, line
 //    widths, layering, filled, choose label field, label
 //    fonts/placement/color.
