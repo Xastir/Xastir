@@ -724,6 +724,9 @@ time_t max_transmit_time;       /* max time between transmits */
 time_t last_alert_redraw;       /* last time alert caused a redraw */
 time_t sec_next_gps;            /* next gps check */
 time_t gps_time;                /* gps delay time */
+char gprmc_save_string[MAX_LINE_SIZE+1];
+char gpgga_save_string[MAX_LINE_SIZE+1];
+int gps_port_save;
 time_t POSIT_rate;              // Posit TX rate timer
 time_t OBJECT_rate;             // Object/Item TX rate timer
 time_t update_DR_rate;          // How often to call draw_symbols if DR enabled
@@ -7498,7 +7501,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
             /* check gps start up, GPS on GPSPORT */
             if(sec_now() > sec_next_gps) {
-                sec_next_gps = sec_now()+gps_time;
+
                 /*fprintf(stderr,"Check GPS\n");*/
                 /* set dtr lines down */
                                 /* works for SERIAL_GPS and SERIAL_TNC_HSP_GPS */
@@ -7508,28 +7511,51 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 /* Tell TNC to send GPS data for SERIAL_TNC_AUX_GPS */
                 for(i=0; i<MAX_IFACE_DEVICES; i++) {
-                    if (port_data[i].status &&
-                            port_data[i].device_type == DEVICE_SERIAL_TNC_AUX_GPS) {
-                        /* Device is correct type and is UP (or ERROR) */
-
+                    if (port_data[i].status) {
                         char tmp[3];
 
-                        /* Send character to device (prefixed with CTRL-C
-                         * so that we exit CONV if necessary
-                         */
-                        if (debug_level & 128) {
-                            fprintf(stderr,"Retrieving GPS AUX port %d\n", i);
-                        }
-                        sprintf(tmp, "%c%c",
-                            '\3',
-                            devices[i].gps_retrieve);
+                        switch (port_data[i].device_type) {
+                            case DEVICE_SERIAL_TNC_AUX_GPS:
+                                /* Device is correct type and is UP (or ERROR) */
+                                /* Send character to device (prefixed with CTRL-C
+                                 * so that we exit CONV if necessary
+                                 */
+                                if (debug_level & 128) {
+                                    fprintf(stderr,"Retrieving GPS AUX port %d\n", i);
+                                }
+                                sprintf(tmp, "%c%c",
+                                    '\3',
+                                    devices[i].gps_retrieve);
 
-                        if (debug_level & 1) {
-                            fprintf(stderr,"Using %d %d to retrieve GPS\n",
-                                '\3',
-                                devices[i].gps_retrieve);
+                                if (debug_level & 1) {
+                                    fprintf(stderr,"Using %d %d to retrieve GPS\n",
+                                        '\3',
+                                        devices[i].gps_retrieve);
+                                }
+                                port_write_string(i, tmp);
+                                break;
+//WE7UGPS
+                            case DEVICE_SERIAL_GPS:
+                            case DEVICE_SERIAL_TNC_HSP_GPS:
+                            case DEVICE_NET_GPSD:
+
+// For each of these we wish to dump their queue to be processed at
+// the gps_time interval.  At other times they should be overwriting
+// old data with new and not processing the strings.
+
+                                if (gprmc_save_string[0] != '\0')
+                                    gps_data_find(gprmc_save_string, gps_port_save);
+                                if (gpgga_save_string[0] != '\0')
+                                    gps_data_find(gpgga_save_string, gps_port_save);
+
+                                // Blank out the global variables
+                                gprmc_save_string[0] = '\0';
+                                gpgga_save_string[0] = '\0';
+
+                                break;
+                            default:
+                                break;
                         }
-                        port_write_string(i, tmp);
                     }
                 }
                 sec_next_gps = sec_now()+gps_time;
@@ -21878,6 +21904,8 @@ int main(int argc, char *argv[], char *envp[]) {
     display_up_first = 0;
     max_transmit_time = (time_t)900l;
     sec_next_gps = 0l;
+    gprmc_save_string[0] = '\0';
+    gpgga_save_string[0] = '\0';
     sec_next_raw_wx = 0l;
     auto_reply = 0;
     satellite_ack_mode = 0;

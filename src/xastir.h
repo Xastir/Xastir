@@ -193,6 +193,11 @@ extern char locate_gnis_filename[200];
 // for one).
 #define MAX_LINE_SIZE 512
 
+// from main.c
+extern char gprmc_save_string[MAX_LINE_SIZE+1];
+extern char gpgga_save_string[MAX_LINE_SIZE+1];
+extern int gps_port_save;
+
 // from map.c
 extern double calc_dscale_x(long x, long y);
 

@@ -271,11 +271,49 @@ void channel_data(int port, unsigned char *string, int length) {
         if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
             fprintf(stderr,"data_lock, Port = %d\n", port);
 
-        incoming_data = string;
-        incoming_data_length = length;
-        data_port = port;
-        data_avail = 1;
-        //fprintf(stderr,"data_avail\n");
+
+        // If it's any of three types of GPS ports and is a GPRMC or
+        // GPGGA string, just stick it in a one of two global
+        // variables for holding such strings.  UpdateTime() can
+        // come along and process/clear-out those strings at the
+        // gps_time interval.
+        //
+        switch(port_data[port].device_type) {
+
+            case DEVICE_SERIAL_GPS:
+            case DEVICE_SERIAL_TNC_HSP_GPS:
+            case DEVICE_NET_GPSD:
+
+                // One of the three types of interfaces that might
+                // send in a lot of GPS data constantly.  Save only
+                // GPRMC and GPGGA strings into global variables.
+                // Drop other GPS strings on the floor.
+                //
+                if ( (length > 7) && (strncmp(string,"$GPRMC,",7) == 0) ) {
+                    strncpy(gprmc_save_string,string,MAX_LINE_SIZE);
+                    gps_port_save = port;
+                }
+                else if ( (length > 7) && (strncmp(string,"$GPGGA,",7) == 0) ) {
+                    strncpy(gpgga_save_string,string,MAX_LINE_SIZE);
+                    gps_port_save = port;
+                }
+                else {  // Else drop the string on the floor.
+                }
+                break;
+// We need to make sure that the variables stating that a string is
+// available are reset in any case.  Look at how/where data_avail is
+// reset.  We may not care if we just wait for data_avail to be
+// cleared before writing to the string again.
+
+            default:    // Not one of the above three types, decode
+                        // the string normally.
+                incoming_data = string;
+                incoming_data_length = length;
+                data_port = port;
+                data_avail = 1;
+                //fprintf(stderr,"data_avail\n");
+                break;
+        }
 
         if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
             fprintf(stderr,"data_lock, Port = %d\n", port);
@@ -1907,7 +1945,6 @@ void fix_up_callsign(unsigned char *data) {
 
 
 
-// WE7U
 // Create an AX25 frame and then turn it into a KISS packet.  Dump
 // it into the transmit queue.
 //
@@ -2042,7 +2079,6 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
 
 
-// WE7U
 // Send a KISS configuration command to the selected port.
 // The KISS spec allows up to 16 devices to be configured.  We
 // support that here with the "device" input, which should be
@@ -2243,16 +2279,23 @@ void port_read(int port) {
     max = MAX_DEVICE_BUFFER - 1;
     cin = (unsigned char)0;
     last = (unsigned char)0;
+
+    // We stay in this read loop until the port is shut down
     while(port_data[port].active == DEVICE_IN_USE){
+
         if (port_data[port].status == DEVICE_UP){
+
             port_data[port].read_in_pos = 0;
             port_data[port].scan = 1;
+
             while (port_data[port].scan
                     && (port_data[port].read_in_pos < (MAX_DEVICE_BUFFER - 1) )
                     && (port_data[port].status == DEVICE_UP) ) {
+
                 int skip = 0;
 
-                // Handle all except AX25_TNC interfaces here
+
+                // Handle all EXCEPT AX25_TNC interfaces here
                 if (port_data[port].device_type != DEVICE_AX25_TNC) {
                     pthread_testcancel();   // Check for thread termination request
                     // Get one character
@@ -2286,6 +2329,8 @@ void port_read(int port) {
                     pthread_testcancel();   // Check for thread termination request
                 }
 
+
+                // Below is code for ALL types of interfaces
                 if (port_data[port].scan > 0 && port_data[port].status == DEVICE_UP ) {
 
                     if (port_data[port].device_type != DEVICE_AX25_TNC)
@@ -2296,7 +2341,8 @@ void port_read(int port) {
 // if (begin_critical_section(&port_data[port].read_lock, "interface.c:port_read(1)" ) > 0)
 //    fprintf(stderr,"read_lock, Port = %d\n", port);
 
-                    // Handle all except AX25_TNC interfaces here
+
+                    // Handle all EXCEPT AX25_TNC interfaces here
                     if (port_data[port].device_type != DEVICE_AX25_TNC){
 
 
@@ -2363,6 +2409,7 @@ void port_read(int port) {
                         // or \n chars, as the KISS_FEND should
                         // appear immediately afterwards in
                         // properly formed packets.
+
 
                         if ( (!skip)
                                 && (cin == (unsigned char)'\r'
@@ -2505,11 +2552,14 @@ void port_read(int port) {
                             port_data[port].data_type &= 1;
                             port_data[port].read_in_pos = 0;
                         }
-                    } else {    /* process ax25 data and send to the decoder */
+                    }   // End of non-AX.25 interface code block
+
+
+                    else {    // Process ax25 interface data and send to the decoder
                         /*
-                        * Only accept data from our own interface (recvfrom will get
-                        * data from all AX.25 interfaces!) - PE1DNN
-                        */
+                         * Only accept data from our own interface (recvfrom will get
+                         * data from all AX.25 interfaces!) - PE1DNN
+                         */
 #ifdef HAVE_AX25
                         if (port_data[port].device_name != NULL) {
                             if ((dev = ax25_config_get_dev(port_data[port].device_name)) != NULL) {
@@ -2537,7 +2587,8 @@ void port_read(int port) {
                             }
                         }
 #endif /* HAVE_AX25 */
-                    }
+                    }   // End of AX.25 interface code block
+
 
 //if (end_critical_section(&port_data[port].read_lock, "interface.c:port_read(2)" ) > 0)
 //    fprintf(stderr,"read_lock, Port = %d\n", port);
@@ -2617,7 +2668,7 @@ void port_read(int port) {
 // port is port# used
 //
 // This function becomes the long-running thread that sends
-// characters to and interface.  One copy of this is run for
+// characters to an interface.  One copy of this is run for
 // each write thread for each interface.
 //***********************************************************
 void port_write(int port) {
