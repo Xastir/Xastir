@@ -1,0 +1,35 @@
+# $Id$
+# This is the TNC Startup file for a Pac-Comm TNC with v5.x firmware.
+# Adapted from Kantronics startup file by Kurt Freiberger, WB5BBW
+
+# lines that begin with a pound sign are comments.
+
+MON 0
+ECHO off
+#MYCall WB5BBW
+MYAlias RELAY
+MY1Alias WIDE
+MY2Alias REGION
+MY3Alias WORLD
+# B E 0 must be set to 0 or both APRS and your TNC will send BCNS
+# Which will alternate in everyones L and A lists and fill up
+# their logs.  Do NOT set B E to anything other than 0 while APRS
+# is running.
+B E 0
+# This enables DIGI On and DIGI-SWAP,DIGI-NOT-OWN, DIGI-ONCE enabled.
+DIGI 7
+FLow off
+FUll off
+HEA off
+LFadd off
+AUTOLF off
+MCOM off
+MFILT $00
+MRPt on
+MSTamp off
+NEWmode off
+SCR 0
+MON 1
+#
+# End of tnc-startup.pac
+#
