@@ -974,6 +974,7 @@ time_t WX_ALERTS_REFRESH_TIME;  /* Minimum WX alert map refresh time in seconds 
 /* button zoom */
 int menu_x;
 int menu_y;
+int possible_zoom_function = 0;
 int mouse_zoom = 0;
 int polygon_last_x = -1;        // Draw CAD Objects functions
 int polygon_last_y = -1;        // Draw CAD Objects functions
@@ -8865,6 +8866,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     display_zoom_image(1);          // check range and do display, recenter
                 }
             */
+                // Reset the zoom-box variable
+                possible_zoom_function = 0;
             }
             // It's not the center function because the mouse moved more than 15 pixels.
             // It must be either the "Compute new zoom/center" -OR- the "Measure distance"
@@ -8876,6 +8879,8 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                 // and input_x/input_y where the button release occurred.
 
                 if (measuring_distance) {   // Measure distance function
+                    // Reset the zoom-box variable
+                    possible_zoom_function = 0;
                     x_distance = abs(menu_x - input_x);
                     y_distance = abs(menu_y - input_y);
 
@@ -8953,6 +8958,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     //      Compute the lat/lon of the mouse pointer release position.
                     //      Put the new value of lat/lon into the object data.
                     //      Cause symbols to get redrawn.
+
+                    // Reset the zoom-box variable
+                    possible_zoom_function = 0;
 
                     x = (mid_x_long_offset - ((screen_width  * scale_x)/2) + (event->xmotion.x * scale_x));
                     y = (mid_y_lat_offset  - ((screen_height * scale_y)/2) + (event->xmotion.y * scale_y));
@@ -9048,6 +9056,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     menu_x = input_x;
                     menu_y = input_y;
                     //fprintf(stderr,"Drag/zoom/center happened\n");
+
+                    // Reset the zoom-box variable
+                    possible_zoom_function = 0;
                 }
             }
             mouse_zoom = 0;
@@ -9120,6 +9131,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             menu_x=input_x;
             menu_y=input_y;
             mouse_zoom = 1;
+
+            // Allow the zoom-in box to display
+            possible_zoom_function++;
         }   // End of Button1 Press code
 
         else if (event->xbutton.button == Button2) {
@@ -9297,6 +9311,12 @@ void check_pointer_position(void) {
         return;
     }
     last_pointer_check = sec_now();
+
+    // If this variable has not been set, we should not display the
+    // box.
+    if (!possible_zoom_function) {
+        return;
+    }
 
     // Snag the current pointer info
     ret = XQueryPointer(XtDisplay(da),
