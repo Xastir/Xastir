@@ -5571,11 +5571,17 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     // time if it is a static image.
 #if (MagickLibVersion < 0x0540)
     if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128) {
-#else
+#else   // MagickLib >= 540
     if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, &exception) > 128) {
-#endif
-        if (image->storage_class == PseudoClass)
+#endif  // MagickLib Version
+
+        if (image->storage_class == PseudoClass) {
+#if (MagickLibVersion < 0x0549)
             CompressColormap(image); // Remove duplicate colors
+#else // MagickLib >= 0x0549
+            CompressImageColormap(image); // Remove duplicate colors
+#endif
+        }
 
         // Quantize down to 128 will go here...
     }
@@ -6189,11 +6195,17 @@ void draw_tiger_map (Widget w) {
     // time if it is a static image.
 #if (MagickLibVersion < 0x0540)
     if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL) > 128) {
-#else // MagickLib < 540
+#else   // MagickLib >= 540
     if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, &exception) > 128) {
-#endif // MagickLib < 540
-        if (image->storage_class == PseudoClass)
+#endif  // MagickLib Version
+
+        if (image->storage_class == PseudoClass) {
+#if (MagickLibVersion < 0x0549)
             CompressColormap(image); // Remove duplicate colors
+#else // MagickLib >= 0x0549
+            CompressImageColormap(image); // Remove duplicate colors
+#endif
+        }
 
         // Quantize down to 128 will go here...
     }
@@ -9254,6 +9266,8 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 
         // We're indexing maps
         if (i != 2) // We already have an index entry for this map.
+            // This is where we pick up a big speed increase:
+            // Refusing to index a map that's already indexed.
             return; // Skip it.
     }
     else {  // We're drawing maps
@@ -10473,6 +10487,7 @@ void index_update_xastir(char *filename,
     temp_record->top = top;
     temp_record->left = left;
     temp_record->right = right;
+    temp_record->accessed = 1;
 }
 
 
@@ -10605,6 +10620,7 @@ void index_update_ll(char *filename,
     temp_record->top = temp_top;
     temp_record->left = temp_left;
     temp_record->right = temp_right;
+    temp_record->accessed = 1;
 }
 
 
@@ -10649,6 +10665,10 @@ int index_retrieve(char *filename,
             *top = current->top;
             *left = current->left;
             *right = current->right;
+
+            // Mark that we've accessed this record
+            current->accessed = 1;
+
             break;  // Exit the while loop
         }
         else {
@@ -10685,7 +10705,10 @@ void index_save_to_file() {
 
     while (current != NULL) {
 
-        if (current->filename[0] != '\0') {
+        // Save to file if we have something in the filename
+        // and the record has been accessed at least once.
+        if ( (current->filename[0] != '\0')
+                && (current->accessed != 0) ) {
 
             // Write each object out to the file as one
             // comma-delimited line
@@ -10757,12 +10780,15 @@ void index_restore_from_file(void) {
 
                 // Fill in the values
                 sscanf(in_string,
-                    "%lu,%lu,%lu,%lu,%400c",
+                    "%lu,%lu,%lu,%lu,%399c",
                     &temp_record->bottom,
                     &temp_record->top,
                     &temp_record->left,
                     &temp_record->right,
                     temp_record->filename);
+
+                    // Mark each record as non-accessed at this point
+                    temp_record->accessed = 0;
 
                 temp_record->filename[399] = '\0';
 

@@ -70,6 +70,7 @@ typedef struct _map_index_record{
     unsigned long top;
     unsigned long left;
     unsigned long right;
+    int accessed;
     struct _map_index_record *next;
 } map_index_record;
 extern map_index_record *map_index_head;
