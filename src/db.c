@@ -5869,11 +5869,7 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
  
         weather = p_station->weather_data;
  
-//        strcpy(weather->wx_speed, speed);
-//        strcpy(weather->wx_course,course);
-
         p2++;   // Skip the description text, "/TS", "/HC", "/TD", "/TY", "/ST", or "/SC"
-
 
         // Extract the sustained wind speed in knots
         if(extract_weather_item(p2,'/',3,weather->wx_speed))
@@ -5960,7 +5956,8 @@ static void extract_multipoints(DataRow *p_station,
 
     char *p, *p2;
     int found = 0;
-    char* end = data + (strlen(data) - 7);  // 7 == 3 lead-in chars, plus 2 points
+    char *end = data + (strlen(data) - 7);  // 7 == 3 lead-in chars, plus 2 points
+    int data_size = strlen(data);
 
 
 //fprintf(stderr,"Data: %s\t\t", data);
@@ -6142,7 +6139,7 @@ static void extract_multipoints(DataRow *p_station,
 
             // Now we have two strings inside "data".  Copy the 2nd
             // string directly onto the end of the first.
-            strcat(data, p);
+            strncat(data, p, data_size+1);
 
             // The multipoint string and sequence number should be
             // erased now from "data".
@@ -6791,22 +6788,22 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 
 // DK7IN: there should be some library functions for the next two,
 //        but I don't have any documentation while being in holidays...
-void month2str(int month, char *str) {
+void month2str(int month, char *str, int str_size) {
 
     switch (month) {
-        case  0:  strncpy(str,"Jan",4); break;
-        case  1:  strncpy(str,"Feb",4); break;
-        case  2:  strncpy(str,"Mar",4); break;
-        case  3:  strncpy(str,"Apr",4); break;
-        case  4:  strncpy(str,"May",4); break;
-        case  5:  strncpy(str,"Jun",4); break;
-        case  6:  strncpy(str,"Jul",4); break;
-        case  7:  strncpy(str,"Aug",4); break;
-        case  8:  strncpy(str,"Sep",4); break;
-        case  9:  strncpy(str,"Oct",4); break;
-        case 10:  strncpy(str,"Nov",4); break;
-        case 11:  strncpy(str,"Dec",4); break;
-        default:  strncpy(str,"   ",4); break;
+        case  0: xastir_snprintf(str,str_size,"Jan"); break;
+        case  1: xastir_snprintf(str,str_size,"Feb"); break;
+        case  2: xastir_snprintf(str,str_size,"Mar"); break;
+        case  3: xastir_snprintf(str,str_size,"Apr"); break;
+        case  4: xastir_snprintf(str,str_size,"May"); break;
+        case  5: xastir_snprintf(str,str_size,"Jun"); break;
+        case  6: xastir_snprintf(str,str_size,"Jul"); break;
+        case  7: xastir_snprintf(str,str_size,"Aug"); break;
+        case  8: xastir_snprintf(str,str_size,"Sep"); break;
+        case  9: xastir_snprintf(str,str_size,"Oct"); break;
+        case 10: xastir_snprintf(str,str_size,"Nov"); break;
+        case 11: xastir_snprintf(str,str_size,"Dec"); break;
+        default: xastir_snprintf(str,str_size,"   "); break;
     }
 }
 
@@ -6814,17 +6811,17 @@ void month2str(int month, char *str) {
 
 
 
-void wday2str(int wday, char *str) {
+void wday2str(int wday, char *str, int str_size) {
 
     switch (wday) {
-        case 0:   strncpy(str,"Sun",4); break;
-        case 1:   strncpy(str,"Mon",4); break;
-        case 2:   strncpy(str,"Tue",4); break;
-        case 3:   strncpy(str,"Wed",4); break;
-        case 4:   strncpy(str,"Thu",4); break;
-        case 5:   strncpy(str,"Fri",4); break;
-        case 6:   strncpy(str,"Sat",4); break;
-        default:  strncpy(str,"   ",4); break;
+        case  0: xastir_snprintf(str,str_size,"Sun"); break;
+        case  1: xastir_snprintf(str,str_size,"Mon"); break;
+        case  2: xastir_snprintf(str,str_size,"Tue"); break;
+        case  3: xastir_snprintf(str,str_size,"Wed"); break;
+        case  4: xastir_snprintf(str,str_size,"Thu"); break;
+        case  5: xastir_snprintf(str,str_size,"Fri"); break;
+        case  6: xastir_snprintf(str,str_size,"Sat"); break;
+        default: xastir_snprintf(str,str_size,"   "); break;
     }
 }
 
@@ -6855,8 +6852,8 @@ void exp_trailpos(FILE *f,long lat,long lon,time_t sec,long speed,int course,lon
     fprintf(f," %s",temp);
 
     time  = gmtime(&sec);
-    month2str(time->tm_mon,month);
-    wday2str(time->tm_wday,wday);
+    month2str(time->tm_mon, month, sizeof(month));
+    wday2str(time->tm_wday, wday, sizeof(wday));
     fprintf(f," %s %s %02d %02d:%02d:%02d %04d",wday,month,time->tm_mday,time->tm_hour,time->tm_min,time->tm_sec,time->tm_year+1900);
 
     if (alt > -99999l)
@@ -8649,7 +8646,7 @@ int extract_signpost(char *info, char *signpost) {
  *  Extract probability_min data from APRS info field: "Pmin1.23,"
  *  Please note the ending comma.  We use it to delimit the field.
  */
-int extract_probability_min(char *info, char *prob_min) {
+int extract_probability_min(char *info, char *prob_min, int prob_min_size) {
     int len,done;
     char *c;
     char *d;
@@ -8692,7 +8689,10 @@ int extract_probability_min(char *info, char *prob_min) {
     }
 
     // Copy the substring across
-    strncpy(prob_min, c, 10);
+    xastir_snprintf(prob_min,
+        prob_min_size,
+        "%s",
+        c);
     prob_min[d-c] = '\0';
     prob_min[10] = '\0';    // Just to make sure
 
@@ -8718,7 +8718,7 @@ int extract_probability_min(char *info, char *prob_min) {
  *  Extract probability_max data from APRS info field: "Pmax1.23,"
  *  Please note the ending comma.  We use it to delimit the field.
  */
-int extract_probability_max(char *info, char *prob_max) {
+int extract_probability_max(char *info, char *prob_max, int prob_max_size) {
     int len,done;
     char *c;
     char *d;
@@ -8761,7 +8761,10 @@ int extract_probability_max(char *info, char *prob_max) {
     }
 
     // Copy the substring across
-    strncpy(prob_max, c, 10);
+    xastir_snprintf(prob_max,
+        prob_max_size,
+        "%s",
+        c);
     prob_max[d-c] = '\0';
     prob_max[10] = '\0';    // Just to make sure
 
@@ -9089,7 +9092,7 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                 temp2);
         }
 
-        if (extract_probability_min(data, temp3)) {
+        if (extract_probability_min(data, temp3, sizeof(temp3))) {
             //fprintf(stderr,"extracted probability_min data: %s\n",temp3);
             xastir_snprintf(p_station->probability_min,
                 sizeof(p_station->probability_min),
@@ -9097,7 +9100,7 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                 temp3);
         }
  
-        if (extract_probability_max(data, temp3)) {
+        if (extract_probability_max(data, temp3, sizeof(temp3))) {
             //fprintf(stderr,"extracted probability_max data: %s\n",temp3);
             xastir_snprintf(p_station->probability_max,
                 sizeof(p_station->probability_max),
@@ -9118,8 +9121,6 @@ void process_info_field(DataRow *p_station, char *info, /*@unused@*/ int type) {
 
     if (extract_altitude(info,temp_data)) {                         // get altitude
         xastir_snprintf(p_station->altitude, sizeof(p_station->altitude), "%.2f",atof(temp_data)*0.3048);
-        // Create a timestamp from the current time
-//        strcpy(p_station->altitude_time,get_time(time_data));
         //fprintf(stderr,"%.2f\n",atof(temp_data)*0.3048);
     }
     // do other things...
@@ -9343,8 +9344,6 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
         sizeof(p_station->pos_time),
         "%s",
         get_time(temp_data));
-    // Create a timestamp from the current time
-//    strcpy(p_station->altitude_time,get_time(temp_data));   // get_time saves the time in temp_data
     p_station->flag &= (~ST_MSGCAP);    // clear "message capable" flag
 
     /* check aprs type on call sign */
@@ -11354,11 +11353,7 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     p_station->coord_lat = pos_lat_temp;    // DK7IN: we have it already !??
     p_station->coord_lon = pos_long_temp;
 
-    // Create a timestamp from the current time
-//    strcpy(p_station->altitude_time,get_time(temp_data));
     my_last_altitude_time = sec_now();
-    // Create a timestamp from the current time
-//    strcpy(p_station->speed_time,get_time(temp_data));
     xastir_snprintf(p_station->speed,
         sizeof(p_station->speed),
         "%s",
@@ -11611,35 +11606,29 @@ void packet_data_add(char *from, char *line) {
         if (packet_data_display < MAX_PACKET_DATA_DISPLAY) {
             // Array is not filled yet.  Add the new text at the
             // next position in the array.
-            if (strlen(line)<256) {
-                strcpy(packet_data[packet_data_display],from);
-                strcat(packet_data[packet_data_display],"-> ");
-                strcat(packet_data[packet_data_display],line+offset);
-                strcat(packet_data[packet_data_display++],"\n\0");
-            } else {
-                strcpy(packet_data[packet_data_display],from);
-                strcat(packet_data[packet_data_display],"-> ");
-                strncat(packet_data[packet_data_display],line+offset,256);
-                strcat(packet_data[packet_data_display++],"\n\0");
-            }
-        } else {
+            xastir_snprintf(packet_data[packet_data_display],
+                sizeof(packet_data[packet_data_display]),
+                "%s-> %s\n",
+                from,
+                line+offset);
+            packet_data_display++;
+        }
+        else {
             // Move everything up one and add the new text at the
             // last position.
             packet_data_display = MAX_PACKET_DATA_DISPLAY;
-            for ( i = 0; i < (MAX_PACKET_DATA_DISPLAY - 1); i++ )
-                strcpy(packet_data[i],packet_data[i+1]);
-
-            if (strlen(line)<256) {
-                strcpy(packet_data[MAX_PACKET_DATA_DISPLAY-1],from);
-                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],"-> ");
-                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],line+offset);
-                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],"\n\0");
-            } else {
-                strcpy(packet_data[MAX_PACKET_DATA_DISPLAY-1],from);
-                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],"-> ");
-                strncat(packet_data[MAX_PACKET_DATA_DISPLAY-1],line+offset,256);
-                strcat(packet_data[MAX_PACKET_DATA_DISPLAY-1],"\n\0");
+            for ( i = 0; i < (MAX_PACKET_DATA_DISPLAY - 1); i++ ) {
+                xastir_snprintf(packet_data[i],
+                    sizeof(packet_data[i]),
+                    "%s",
+                    packet_data[i+1]);
             }
+
+            xastir_snprintf(packet_data[MAX_PACKET_DATA_DISPLAY-1],
+                sizeof(packet_data[MAX_PACKET_DATA_DISPLAY-1]),
+                "%s-> %s\n",
+                from,
+                line+offset);
         }
 
         // Write the current data in the array out to the
@@ -11647,7 +11636,12 @@ void packet_data_add(char *from, char *line) {
         // display_packet_data() function above.
         packet_data_string[0] = '\0';   // Empty the string
         for ( i = 0; i <= packet_data_display; i++ ) {
-            strcat(packet_data_string, packet_data[i]);
+            int string_end = strlen(packet_data_string);
+
+            xastir_snprintf(&packet_data_string[string_end],
+                sizeof(packet_data_string) - string_end,
+                "%s",
+                packet_data[i]);
         }
     }
 }
@@ -12215,14 +12209,17 @@ int process_status( /*@unused@*/ char *call_sign, /*@unused@*/ char *path, /*@un
  *  used.  If it has counted down to just a TRACE or a WIDE (or TRACE7
  *  or WIDE5), then it should have a '*' after it like normal.
  */
-void shorten_path( char *path, char *short_path ) {
+void shorten_path( char *path, char *short_path, int short_path_size ) {
     int i,j,found_trace_wide,found_asterisk;
     char *ptr;
 
 
     if ( (path != NULL) && (strlen(path) >= 1) ) {
 
-        strcpy(short_path,path);
+        xastir_snprintf(short_path,
+            short_path_size,
+            "%s",
+            path);
 
         // Terminate the path at the end of the last used digipeater
         // This is trickier than it seems due to WIDEn-N and TRACEn-N
@@ -12532,7 +12529,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
                 char short_path[100];
 
                 /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); { */
-                shorten_path(path,short_path);
+                shorten_path(path,short_path,sizeof(short_path));
                 xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
 
 //fprintf(stderr,"Attempting to send ACK to RF\n");
@@ -12663,7 +12660,7 @@ else {
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
             char short_path[100];
 
-            shorten_path(path,short_path);
+            shorten_path(path,short_path,sizeof(short_path));
             xastir_snprintf(ipacket_message,
                 sizeof(ipacket_message),
                 "}%s>%s,TCPIP,%s*::%s:%s",
@@ -12688,7 +12685,7 @@ else {
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
             char short_path[100];
 
-            shorten_path(path,short_path);
+            shorten_path(path,short_path,sizeof(short_path));
             xastir_snprintf(ipacket_message,
                 sizeof(ipacket_message),
                 "}%s>%s,TCPIP,%s*::%s:%s",
@@ -12724,7 +12721,7 @@ else {
 
             /*fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,
                         call,addr);*/     // {
-            shorten_path(path,short_path);
+            shorten_path(path,short_path,sizeof(short_path));
             xastir_snprintf(ipacket_message, sizeof(ipacket_message), "}%s>%s,TCPIP,%s*::%s:%s{%s",call,short_path,my_callsign,addr9,message,msg_id);
 
 //fprintf(stderr,"Attempting to send message to RF\n");
@@ -12890,7 +12887,7 @@ int decode_UI_message(char *call,char *path,char *message,char from,int port,int
 //                char short_path[100];
                 //fprintf(stderr,"Igate check o:%d f:%c myc:%s cf:%s ct:%s\n",operate_as_an_igate,from,my_callsign,call,addr); {
 
-//                shorten_path(path,short_path);
+//                shorten_path(path,short_path,sizeof(short_path));
                 //sprintf(ipacket_message,"}%s>%s:%s:%s",call,path,addr9,message);
 //                sprintf(ipacket_message,"}%s>%s,TCPIP,%s*::%s:%s",call,short_path,my_callsign,addr9,message);
 //                output_igate_rf(call,addr,path,ipacket_message,port,third_party);
@@ -13217,7 +13214,7 @@ int extract_object(char *call, char **info, char *origin) {
 /*
  *  Extract third-party traffic from information field before processing
  */
-int extract_third_party(char *call, char *path, char **info, char *origin) {
+int extract_third_party(char *call, char *path, int path_size, char **info, char *origin) {
     int ok;
     char *p_call;
     char *p_path;
@@ -13245,7 +13242,11 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
         fprintf(stderr,"extract_third_party: invalid format from %s\n",call);
 
     if (ok) {
-        strcpy(path,p_path);
+
+        xastir_snprintf(path,
+            path_size,
+            "%s",
+            p_path);
 
         ok = valid_path(path);                  // check the path and convert it to TAPR format
         // Note that valid_path() also removes igate injection identifiers
@@ -13548,7 +13549,10 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 //    fprintf(stderr,"%s\n",result);
 
     // Copy the result onto the top of the input data
-    strcpy(incoming_data,result);
+    xastir_snprintf(incoming_data,
+        length,
+        "%s",
+        result);
 
     return(1);
 }
@@ -14005,7 +14009,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     }
 
     if (ok && info[0] == '}') {                                 // look for third-party traffic
-        ok = extract_third_party(call,path,&info,origin);       // extract third-party data
+        ok = extract_third_party(call,path,sizeof(path),&info,origin);       // extract third-party data
         third_party = 1;
 
         // Add it to the HEARD queue for this interface.  We use this
@@ -14466,7 +14470,6 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     // exists) for the object/item
     if ( (p_station->comment_data != NULL)
             && (p_station->comment_data->text_ptr != NULL) ){
-        //strcpy(comment,p_station->comments);
         xastir_snprintf(comment,
             sizeof(comment),
             "%s",

@@ -329,18 +329,25 @@ int alert_redraw_on_update = 0;
 // Function to convert "County Warning Area" to "CWA" in a string.
 // Called from alert_match() and alert_update_list() functions.
 //
-void normal_title(char *incoming_title, char *outgoing_title) {
+void normal_title(char *incoming_title, char *outgoing_title, int outgoing_title_size) {
     char *c_ptr;
 
 
 //    if (debug_level & 2)
 //        fprintf(stderr,"normal_title: Incoming: %s\n",incoming_title);
 
-    strncpy(outgoing_title, incoming_title, 32);
+    xastir_snprintf(outgoing_title,
+        outgoing_title_size,
+        "%s",
+        incoming_title);
+
     outgoing_title[32] = '\0';
     if ((c_ptr = strstr(outgoing_title, "County Warning Area ")) && c_ptr == outgoing_title) {
         c_ptr = &outgoing_title[strlen("County Warning Area ")]; // Find end of text
-        strncpy(outgoing_title, "CWA",4);  // Add "CWA" to output string instead
+        // Add "CWA" to output string instead
+        xastir_snprintf(outgoing_title,
+            4,
+            "CWA");
         // Copy remaining portion of input string to the output string
         strncat(outgoing_title, c_ptr, 32-strlen("County Warning Area "));
         outgoing_title[32] = '\0';  // Make sure string is terminated
@@ -623,7 +630,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         fprintf(stderr,"alert_match\n");
  
     // Shorten the title
-    normal_title(alert->title, title_e);
+    normal_title(alert->title, title_e, sizeof(title_e));
 
     xastir_snprintf(filename,
         sizeof(filename),
@@ -653,7 +660,7 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         }
 
         // Shorten the title
-        normal_title(alert_list[i].title, title_m);
+        normal_title(alert_list[i].title, title_m, sizeof(title_m));
 
         xastir_snprintf(alert_f,
             sizeof(alert_f),
@@ -781,7 +788,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
         ptr->flags[on_screen] = alert->flags[on_screen];
 
         // Shorten title
-        normal_title(alert->title, title_e);
+        normal_title(alert->title, title_e, sizeof(title_e));
 
         // Force the string to be terminated
         title_e[sizeof(title_e)-1] = title_m[sizeof(title_m)-1] = '\0';
@@ -794,7 +801,7 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
                 // Shorten the title.  Title_m will be the shortened
                 // title.
-                normal_title(alert_list[i].title, title_m);
+                normal_title(alert_list[i].title, title_m, sizeof(title_m));
 
                 if (strcmp(title_e, title_m) == 0) {
 
@@ -1555,7 +1562,6 @@ void alert_build_list(Message *fill) {
             // that are too long.  Assure that we don't overwrite
             // the strings.
             for (jj = 4; jj > 0; jj--) {
-//                strncpy(&title[jj][0], &title[jj-1][0], 33);
                 xastir_snprintf(&title[jj][0],
                     sizeof(&title[jj][0]),
                     "%s",

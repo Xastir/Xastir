@@ -239,7 +239,8 @@ D(printf("    Buffer is now: '%.*s'\n",s->buffer_end - s->buffer,s->buffer));
 	s->next = last;
 D(printf(">>> '%c' \"%.*s\" found\n",type,len - 1,n + 1));
 	if (NULL != f && f(s)) {
-		char *out = NULL;
+        char *out = NULL;
+
 		switch (type) {
 		case 'E':
 		case 'O':

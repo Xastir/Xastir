@@ -155,9 +155,15 @@ void all_messages(char from, char *call_sign, char *from_call, char *message) {
 
     if ((vm_range == 0) || ((int)distance_from_my_station(call_sign,temp_my_course) <= vm_range)) {
         if (strlen(message)>95) {
-            strncpy(data1, message, 95);
+            xastir_snprintf(data1,
+                sizeof(data1),
+                "%s",
+                message);
             data1[95]='\0';
-            strncpy(data2, message+95, 95);
+            xastir_snprintf(data2,
+                sizeof(data2),
+                "%s",
+                message+95);
         } else {
             xastir_snprintf(data1,
                 sizeof(data1),

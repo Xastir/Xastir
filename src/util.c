@@ -793,39 +793,6 @@ char *get_line(FILE *f, char *linedata, int maxline) {
 
 
 
-/*
-char *new_get_line(FILE *f, char *linedata, int maxline) {
-    char *ptr;
-    int pos;
-    static char Buffer[4097];
-
-    pos=0;
-    *linedata = '\0';
-    while((ptr = strpbrk(Buffer, "\r\n")) == NULL && !feof(f) && strlen(Buffer) <= 4096)
-        (void)fread(&Buffer[strlen(Buffer)], sizeof(char), sizeof(Buffer)-strlen(Buffer)-1, f);
-
-    if (ptr)
-        *ptr = '\0';
-
-    xastir_snprintf(linedata, maxline, "%s", Buffer);
-    if ((pos = (int)strlen(Buffer)) > maxline)
-        fprintf(stderr, "Line length overflow: get_line\n");
-    else if (pos < maxline)
-        linedata[pos] = '\0';
-
-    if (ptr) {
-        for (ptr++; *ptr == '\r' || *ptr == '\n'; ptr++);
-// The below statement makes no sense
-//            strcpy(Buffer, ptr);
-    }
-    return(linedata);
-}
-*/
-
-
-
-
-
 // time_from_aprsstring()
 //
 // Called from alert.c:alert_build_list() only.  Converts to

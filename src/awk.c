@@ -67,6 +67,8 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include "awk.h"
+#include "snprintf.h"
+
 
 #define min(a,b) ((a)<(b)?(a):(b))
 
@@ -192,6 +194,7 @@ awk_symbol *awk_find_sym(awk_symtab *this,
  * awk_set_sym: set a symbol's value (writes into bound storage).
  * Returns -1 if it was unable to (symbol not found).
  */
+/*
 int awk_set_sym(awk_symbol *s,
             const char *val, 
             const int len) {
@@ -221,6 +224,7 @@ int awk_set_sym(awk_symbol *s,
     }
     return 0;
 }
+*/
 
 
 
@@ -246,7 +250,10 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
         if (s->len > 0) {
             minlen = min(s->len,size-1);
             if (minlen > 0) {
-                strncpy(store,s->val,minlen);
+                xastir_snprintf(store,
+                    size,
+                    "%s",
+                    (char *)(s->val));
                 *len = minlen;
             } else 
                 *len = 0;
@@ -259,7 +266,10 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
             cbl = strlen(cbuf);
             minlen = min(cbl,size-1);
             if (minlen > 0) {
-                strncpy(store,cbuf,minlen);
+                xastir_snprintf(store,
+                    size,
+                    "%s",
+                    cbuf);
                 *len = minlen;
             } else
                 *len = 0;
@@ -272,7 +282,10 @@ int awk_get_sym(awk_symbol *s,          /* symbol */
             cbl = strlen(cbuf);
             minlen = min(cbl,size-1);
             if (minlen > 0) {
-                strncpy(store,cbuf,minlen);
+                xastir_snprintf(store,
+                    size,
+                    "%s",
+                    cbuf);
                 *len = minlen;
             } else
                 *len = 0;

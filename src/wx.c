@@ -2002,36 +2002,71 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             memset(weather->wx_station,0,MAX_WXSTATION);
 			
             if ((temp_conv=strchr(data,'c'))) { // Wind Direction in Degrees 
-                strncpy(weather->wx_course,(temp_conv+1),3);
+                xastir_snprintf(weather->wx_course,
+                    sizeof(weather->wx_course),
+                    "%s",
+                    temp_conv+1);
+                weather->wx_course[3] = '\0';
             }
 				
             if ((temp_conv=strchr(data,'s'))) { // Wind Speed in MPH - not snowfall
-                strncpy(weather->wx_speed,(temp_conv+1),3);
+                xastir_snprintf(weather->wx_speed,
+                    sizeof(weather->wx_speed),
+                    "%s",
+                    temp_conv+1);
+                weather->wx_speed[3] = '\0';
             }
 
             if ((temp_conv=strchr(data,'g'))) { // Wind Gust in MPH
-                strncpy(weather->wx_gust,(temp_conv+1),3);
+                xastir_snprintf(weather->wx_gust,
+                    sizeof(weather->wx_gust),
+                    "%s",
+                    temp_conv+1);
+                weather->wx_gust[3] = '\0';
+
             }
 
             if ((temp_conv=strchr(data,'t'))) { // Temperature in Degrees F
-                strncpy(weather->wx_temp,(temp_conv+1),3);	
+                xastir_snprintf(weather->wx_temp,
+                    sizeof(weather->wx_temp),
+                    "%s",
+                    temp_conv+1);
+                weather->wx_temp[3] = '\0';
             }
 
             if ((temp_conv=strchr(data,'r'))) { // Rain per hour
-                strncpy(weather->wx_rain,(temp_conv+1),3);
+                xastir_snprintf(weather->wx_rain,
+                    sizeof(weather->wx_rain),
+                    "%s",
+                    temp_conv+1);
+                weather->wx_rain[3] = '\0';
             }
 
             if ((temp_conv=strchr(data,'p'))) { // Rain per 24 hrs/total
-                strncpy(weather->wx_rain_total,(temp_conv+1),3);
+                xastir_snprintf(weather->wx_rain_total,
+                    sizeof(weather->wx_rain_total),
+                    "%s",
+                    temp_conv+1);
+                    weather->wx_rain_total[3] = '\0';
             }
 
             if ((temp_conv=strchr(data,'h'))) { // Humidity %
-                strncpy(weather->wx_hum,(temp_conv+1),2);
+                xastir_snprintf(weather->wx_hum,
+                    sizeof(weather->wx_hum),
+                    "%s",
+                    temp_conv+1);
+                    weather->wx_hum[2] = '\0';
             }
 
             if ((temp_conv=strchr(data,'b'))) { // Air Pressure in 1/10 hPa
 			    memset(temp_data1,0,sizeof(temp_data1));
-				strncpy(temp_data1,(temp_conv+1),5);
+
+                xastir_snprintf(temp_data1,
+                    sizeof(temp_data1),
+                    "%s",
+                    temp_conv+1);
+                temp_data1[5] = '\0';
+
 			    temp_temp = (float)(atof(temp_data1))/10.0;
                 xastir_snprintf(temp_data1, sizeof(temp_data1), "%0.1f",temp_temp);
                 xastir_snprintf(weather->wx_baro,
@@ -2041,7 +2076,11 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             if ((temp_conv=strchr(data,'x'))) { // WX Station Identifier
-                strncpy(weather->wx_station,(temp_conv+1),MAX_WXSTATION);
+                xastir_snprintf(weather->wx_station,
+                    sizeof(weather->wx_station),
+                    "%s",
+                    temp_conv+1);
+                weather->wx_station[MAX_WXSTATION] = '\0';
             }
 			
 
@@ -2115,7 +2154,11 @@ void wx_decode(unsigned char *wx_line, int port) {
                         "%s",
                         langcode("WXPUPSI011"));
 
-                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                    xastir_snprintf(raw_wx_string,
+                        sizeof(raw_wx_string),
+                        "%s",
+                        wx_line);
+
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0';    // Terminate it
 
                     xastir_snprintf(weather->wx_time,
@@ -2140,7 +2183,11 @@ void wx_decode(unsigned char *wx_line, int port) {
                         langcode("WXPUPSI012"));
                     /*fprintf(stderr,"Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);*/
 
-                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                    xastir_snprintf(raw_wx_string,
+                        sizeof(raw_wx_string),
+                        "%s",
+                        wx_line);
+
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
 
                     xastir_snprintf(weather->wx_time,
@@ -2164,7 +2211,10 @@ void wx_decode(unsigned char *wx_line, int port) {
                         langcode("WXPUPSI013"));
                     /*fprintf(stderr,"Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
 
-                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                    xastir_snprintf(raw_wx_string,
+                        sizeof(raw_wx_string),
+                        "%s",
+                        wx_line);
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
 
                     weather->wx_sec_time=sec_now();
@@ -2227,7 +2277,11 @@ void wx_decode(unsigned char *wx_line, int port) {
                         "%s",
                         langcode("WXPUPSI017"));
 
-                    strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
+                    xastir_snprintf(raw_wx_string,
+                        sizeof(raw_wx_string),
+                        "%s",
+                        wx_line);
+
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
 
                     weather->wx_sec_time=sec_now();

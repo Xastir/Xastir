@@ -132,7 +132,10 @@ void reverse_path(char *input_string) {
                 && (strncasecmp(&input_string[indexes[i]+1],"TCPIP",5) != 0) ) {
 
             // Snag each callsign into temp:
-            strncpy(temp, &input_string[indexes[i]+1], indexes[i+1] - indexes[i]);
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s",
+                &input_string[indexes[i]+1]);
 
             // Massage temp until it resembles something we want to
             // use.

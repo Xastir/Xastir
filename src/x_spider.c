@@ -704,7 +704,10 @@ void init_set_proc_title(int argc, char *argv[], char *envp[]) {
 
     for(i = 0; envp[i] != NULL; i++) {
         if((environ[i] = malloc(strlen(envp[i]) + 1)) != NULL)
-            strcpy(environ[i], envp[i]);
+            xastir_snprintf(environ[i],
+                sizeof(environ[i]),
+                "%s",
+                envp[i]);
         }
     
         environ[i] = NULL;

@@ -213,10 +213,16 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
         output_string[0] = (unsigned char)RadioPort;
 
         if (FromCall)   // Write the FromCall string into the frame
-            strcpy(&output_string[8], FromCall);
+            xastir_snprintf(&output_string[8],
+                sizeof(output_string) - 8,
+                "%s",
+                FromCall);
 
         if (ToCall) // Write the ToCall string into the frame
-            strcpy(&output_string[18], ToCall);
+            xastir_snprintf(&output_string[18],
+                sizeof(output_string) - 18,
+                "%s",
+                ToCall);
     }
 
     if ( (type != '\0') && (type != 'P') ) {
@@ -244,7 +250,10 @@ fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
 
             // Compute the callsign base string
             // (callsign minus SSID)
-            strcpy(callsign_base, my_callsign);
+            xastir_snprintf(callsign_base,
+                sizeof(callsign_base),
+                "%s",
+                my_callsign);
             // Change '-' into end of string
             strtok(callsign_base, "-");
 
@@ -1502,7 +1511,10 @@ static void data_out_ax25(int port, unsigned char *string) {
                 temp = strtok(NULL," \t\r\n");
                 if (temp != NULL) {
                     substr(ui_mycall, temp, 9);
-                    strcpy(port_data[port].ui_call, ui_mycall);
+                    xastir_snprintf(port_data[port].ui_call,
+                        sizeof(port_data[port].ui_call),
+                        "%s",
+                        ui_mycall);
                     if (debug_level & 2)
                         fprintf(stderr,"*** MYCALL %s\n",port_data[port].ui_call);
                 }
@@ -3334,9 +3346,10 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
 //***********************************************************
 // process_ax25_packet()
 //
-// bp       raw packet data
-// len      length of raw packet data
-// buffer   buffer to write readable packet data to
+// bp           raw packet data
+// len          length of raw packet data
+// buffer       buffer to write readable packet data to
+// buffer_size  max length of buffer
 //
 // Note that db.c:decode_ax25_header does much the same thing for
 // Serial KISS interface packets.  Consider combining the two
@@ -3345,7 +3358,7 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
 // as well.
 //***********************************************************
 
-char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
+char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer, int buffer_size) {
     int i,j;
     unsigned int  k,l;
     unsigned int  digis;
@@ -3360,7 +3373,7 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
         return(NULL);
 
     /* clear buffer */
-    strcpy(buffer,"");
+    buffer[0] = '\0';
 
     if (*bp != (unsigned char)0)
         return(NULL); /* not a DATA packet */
@@ -3527,7 +3540,11 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
     /* add terminating '\0' to allow handling as a string */
     message[l] = '\0';
 
-    strcat(buffer,(char *)source);
+    xastir_snprintf(buffer,
+        buffer_size,
+        "%s",
+        source);
+
     /*
      * if there are no digis or the first digi has not handled the
      * packet then this is directly from the source, mark it with
@@ -3538,41 +3555,36 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
     /* I think if we don't have a '*' in the path we can assume direct? -FG */
     /*
     if((digis == 0) || (digi_h[0] != 0x80))
-        strcat(buffer,"*");
+        strncat(buffer, "*", buffer_size - strlen(buffer));
      */
 
-    strcat(buffer,">");
+    strncat(buffer, ">", buffer_size - strlen(buffer));
 
     /* destination is at the begining of the chain, because it is  */
     /* needed so MIC-E packets can be decoded correctly. */
     /* this may be changed in the future but for now leave it here -FG */
-    strcat(buffer,(char *)dest);
+    strncat(buffer, (char *)dest, buffer_size - strlen(buffer));
 
     for(i = 0; i < (int)digis; i++) {
-        strcat(buffer,",");
-        strcat(buffer,(char *)digi[i]);
+        strncat(buffer, ",", buffer_size - strlen(buffer));
+        strncat(buffer, (char *)digi[i], buffer_size - strlen(buffer));
         /* at the last digi always put a '*' when h_bit is set */
         if (i == (int)(digis - 1)) {
             if (digi_h[i] == (unsigned char)0x80) {
                 /* this digi must have transmitted the packet */
-                strcat(buffer,"*");
+                strncat(buffer, "*", buffer_size - strlen(buffer));
             }
         } else {
             if (digi_h[i] == (unsigned char)0x80) {
                 /* only put a '*' when the next digi has no h_bit */
                 if (digi_h[i + 1] != (unsigned char)0x80) {
                     /* this digi must have transmitted the packet */
-                    strcat(buffer,"*");
+                    strncat(buffer, "*", buffer_size - strlen(buffer));
                 }
             }
         }
     }
-    strcat(buffer,":");
-
-    // Have to be careful here:  With all of the text we've already
-    // but into the buffer, we don't want to overflow it with the
-    // message data.
-    //strcat(buffer,(char *)message);   // Old insecure code.
+    strncat(buffer, ":", buffer_size - strlen(buffer));
 
     //Copy into only the free space in buffer.
     strncat( buffer, (char *)message, MAX_DEVICE_BUFFER - strlen(buffer) - 1 );
@@ -4787,7 +4799,7 @@ int net_detach(int port) {
 // byte.  The callsign as processed is ready for inclusion in an
 // AX.25 header.
 //
-void fix_up_callsign(unsigned char *data) {
+void fix_up_callsign(unsigned char *data, int data_size) {
     unsigned char new_call[8] = "       ";  // Start with seven spaces
     int ssid = 0;
     int i;
@@ -4851,7 +4863,10 @@ void fix_up_callsign(unsigned char *data) {
 
     // Write over the top of the input string with the newly
     // formatted callsign
-    strcpy(data,new_call);
+    xastir_snprintf(data,
+        data_size,
+        "%s",
+        new_call);
 }
 
 
@@ -4948,14 +4963,25 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     transmit_txt[0] = '\0';
 
     // Format the destination callsign
-    strcpy(temp_dest,destination);
-    fix_up_callsign(temp_dest);
-    strcat(transmit_txt,temp_dest);
+    xastir_snprintf(temp_dest,
+        sizeof(temp_dest),
+        "%s",
+        destination);
+    fix_up_callsign(temp_dest, sizeof(temp_dest));
+    xastir_snprintf(transmit_txt,
+        sizeof(transmit_txt),
+        "%s",
+        temp_dest);
 
     // Format the source callsign
-    strcpy(temp_source,source);
-    fix_up_callsign(temp_source);
-    strcat(transmit_txt,temp_source);
+    xastir_snprintf(temp_source,
+        sizeof(temp_source),
+        "%s",
+        source);
+    fix_up_callsign(temp_source, sizeof(temp_source));
+    strncat(transmit_txt,
+        temp_source,
+        sizeof(transmit_txt) - strlen(transmit_txt));
 
     // Break up the path into individual callsigns and send them one
     // by one to fix_up_callsign()
@@ -4974,8 +5000,10 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
 
             //fprintf(stderr,"%s\n",temp);
 
-            fix_up_callsign(temp);
-            strcat(transmit_txt,temp);
+            fix_up_callsign(temp, sizeof(temp));
+            strncat(transmit_txt,
+                temp,
+                sizeof(transmit_txt) - strlen(transmit_txt));
         }
     }
 
@@ -4986,15 +5014,21 @@ void send_ax25_frame(int port, char *source, char *destination, char *path, char
     // Add the Control byte
     control[0] = 0x03;
     control[1] = '\0';
-    strcat(transmit_txt,control);
+    strncat(transmit_txt,
+        control,
+        sizeof(transmit_txt) - strlen(transmit_txt));
 
     // Add the PID byte
     pid[0] = 0xf0;
     pid[1] = '\0';
-    strcat(transmit_txt,pid);
+    strncat(transmit_txt,
+        pid,
+        sizeof(transmit_txt) - strlen(transmit_txt));
 
     // Append the information chars
-    strcat(transmit_txt,data);
+    strncat(transmit_txt,
+        data,
+        sizeof(transmit_txt) - strlen(transmit_txt));
 
     //fprintf(stderr,"%s\n",transmit_txt);
 
@@ -5658,7 +5692,10 @@ void port_read(int port) {
                                 /* if the data is not from our interface, ignore it! PE1DNN */
                                 if(strcmp(dev, from.sa_data) == 0) {
                                     /* Received data from our interface! - process data */
-                                    if (process_ax25_packet(buffer, port_data[port].scan, port_data[port].device_read_buffer) != NULL) {
+                                    if (process_ax25_packet(buffer,
+                                            port_data[port].scan,
+                                            port_data[port].device_read_buffer,
+                                            sizeof(port_data[port].device_read_buffer)) != NULL) {
                                         port_data[port].bytes_input += strlen(port_data[port].device_read_buffer);
 
                                         channel_data(port,
@@ -8528,7 +8565,18 @@ void tnc_data_clean(char *buf) {
     }
 
     while (!strncmp(buf,"cmd:",4)) {
-        strcpy(buf,&buf[4]);
+        int ii;
+
+        // We're _shortening_ the string here, so we don't need to
+        // know the length of the buffer unless it has no '\0'
+        // terminator to begin with!  In that one case we could run
+        // off the end of the string and get a segfault or cause
+        // other problems.
+        for (ii = 0; ; ii++) {
+            buf[ii] = buf[ii+4];
+            if (buf[ii] == '\0')
+                break;
+        }
     }
 
     if (debug_level & 1) {
