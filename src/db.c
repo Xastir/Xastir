@@ -8763,16 +8763,20 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         // A station retains the ST_DIRECT setting unless a certain number of 
         // seconds goes by without a direct packet being received.  This value 
         // will eventually make its way to the configuration file, but for now 
-        // it's hardcoded to one minute.
+        // it's hardcoded to one hour.
 
-        if ((p_station->flag & ST_VIATNC) != 0 && 
-                (p_station->flag & ST_3RD_PT) == 0 && 
-                p_station->node_path_ptr != NULL &&
-                strchr(p_station->node_path_ptr,'*') == NULL) {
+        if ((p_station->flag & ST_VIATNC) != 0 &&       // From a TNC interface
+                (p_station->flag & ST_3RD_PT) == 0 &&   // Not a 3RD-Party packet
+                p_station->node_path_ptr != NULL &&     // Path is not NULL
+                strchr(p_station->node_path_ptr,'*') == NULL) { // No asterisk found
+
+            // Look for WIDE or TRACE
             if ((((p = strstr(p_station->node_path_ptr,"WIDE")) != NULL) 
                     && (p+=4)) || 
                     (((p = strstr(p_station->node_path_ptr,"TRACE")) != NULL) 
                     && (p+=5))) {
+
+                // Look for n=N on WIDEn-N/TRACEn-N digi field
                 if ((*p != '\0') && isdigit(*p)) {
                     if ((*(p+1) != '\0') && (*(p+1) == '-')) {
                         if ((*(p+2) != '\0') && isdigit(*(p+2))) {
@@ -8804,6 +8808,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         }
 
         if (direct == 1) {
+            // This packet was heard direct.  Set the ST_DIRECT bit.
             if (debug_level & 1) {
                 printf("Setting ST_DIRECT for station %s\n", 
                     p_station->call_sign);
@@ -8812,8 +8817,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             p_station->flag |= (ST_DIRECT);
         }
         else {
+            // This packet was NOT heard direct.  Check whether we
+            // need to expire the ST_DIRECT bit.  A lot of fixed
+            // stations transmit every 30 minutes.  One hour gives
+            // us time to receive a direct packet from them among
+            // all the digipeated packets.
+            int TIMEOUT = 60 * 60;  // 60 Minutes/1 Hour.
+
             if ((p_station->flag & ST_DIRECT) != 0 &&
-                sec_now() > (p_station->direct_heard + 60)) {
+                    sec_now() > (p_station->direct_heard + TIMEOUT)) {
                 if (debug_level & 1)
                     printf("Clearing ST_DIRECT for station %s\n", 
                         p_station->call_sign);
