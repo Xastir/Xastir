@@ -1206,6 +1206,38 @@ WINDOWS/CYGWIN NOTES:
      get lots of warnings about Xastir not being able to allocate colors
      when it starts up, and the display will be rather stark looking.
 
+     Cygwin Shapelib:
+     ----------------
+     1) Edit the Makefile for Shapelib to remove the space after the "-h" on
+        the line that starts like this:
+
+        /usr/bin/ld -G -h libshp.so.1 ...
+
+
+     2) Edit the file /usr/include/sys/reent.h to remove the word "extern"
+        from this line:
+
+        extern struct _reent *_impure_ptr __ATTRIBUTE_IMPURE_PTR__;
+
+     then perform the "make lib" and "make lib_install" commands for
+     installing Shapelib.
+
+     Before configuring Xastir again, you'll need to edit your .profile file
+     in your home directory.  This is in lieu of the "ldconfig" command
+     required for Unix/Linux.  It appears that Cygwin uses the PATH variable
+     to look for both binaries and libraries.  Add this line (create the
+     file if the file doesn't exist):
+
+        export PATH=$PATH:/usr/local/lib
+
+     I haven't actually managed to get Xastir to find these installed
+     libraries yet, so there may be other fixes required in order to use
+     Shapelib...
+
+     Note that one user running Cygwin on XP had it crash every time his
+     screensaver kicked in.
+
+
 END OF WINDOWS/CYGWIN NOTES.
      -----------------------------------------------------------------------
 
