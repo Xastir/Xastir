@@ -127,8 +127,11 @@ required:
 [ ] diffutils
 [ ] fvwm (used currently?)
 [ ] gcc
+[ ] ImageMagick
 [ ] less
 [ ] lesstif
+[ ] libMagick-devel
+[ ] libMagick6
 [ ] m4
 [ ] make
 [ ] nano (a text editor, optional)
@@ -142,8 +145,8 @@ required:
 [ ] unzip
 [ ] vim (a text editor, optional)
 [ ] wget (Optional:  Can use libcurl instead)
-[ ] XFree86-prog:      Headers
 [ ] XFree86-f100:      100 dpi fonts
+[ ] XFree86-prog:      Headers
 [ ] XFree86-xwinclip:  Windows clipboard integration for X11
 [ ] zip
 
@@ -235,6 +238,33 @@ menu entry to cause it to exit.
 Once you've gotten to this stage, you now have Cygwin and Xwindows
 installed and operational.  Next we go after Xastir itself.
 
+[ ] Edit or create your .profile file in your home directory.
+
+NOTE:  Your "home" directory would be at "C:\cygwin\<user>\" if you
+installed Cygwin in the default location.  From inside a BASH shell
+you can get to your home directory just by typing "cd" and then
+pressing <Enter>.  When you see things like "~/.profile" it is
+really referring to the file ".profile" in your home directory (~).
+This is a different file than the ".bash_profile" file.
+
+It appears that Cygwin uses the PATH variable to look for both
+binaries and libraries.  Add this line to the file (create the
+"~/.profile" file if the file doesn't exist):
+
+ export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib:/usr/local/bin:.
+
+If the line already exists in your .profile, add any missing pieces
+to it from the line above.  Directories should be separated by a ':'
+character.  Edit it with "nano" or "vim" (again, the more
+user-friendly editor is "nano").
+
+Once you have saved the file, execute the following commands to copy
+file to where it will be automatically executed when you open a
+shell and then read it for this session so you don't have to close
+and then reopen the shell.
+
+     cp .profile .bashrc
+     source .bashrc
 
 [ ] Step 4)  Create a file at C:\cygwin\home\<user>\ called
 ".cvsrc", where the "<user>" part is your Windows login name.  Don't
@@ -524,26 +554,6 @@ If you get "cp: cannot stat `.libs/libshp.la': No such file or
 directory", then you forgot to edit the Makefile.  BZZZT!  Please
 start again at step 1) above.  Thank you for playing!
 
-Edit or create your .profile file in your home directory.
-
-NOTE:  Your "home" directory would be at "C:\cygwin\<user>\" if you
-installed Cygwin in the default location.  From inside a BASH shell
-you can get to your home directory just by typing "cd" and then
-pressing <Enter>.  When you see things like "~/.profile" it is
-really referring to the file ".profile" in your home directory (~).
-This is a different file than the ".bash_profile" file.
-
-[ ] It appears that Cygwin uses the PATH variable to look for both
-binaries and libraries.  Add this line to the file (create the
-"~/.profile" file if the file doesn't exist):
-
-    export PATH=$PATH:/lib:/usr/lib:/usr/X11R6/lib:/usr/local/lib:.
-
-If the line already exists in your .profile, add any missing pieces
-to it from the line above.  Directories should be separated by a ':'
-character.  Edit it with "nano" or "vim" (again, the more
-user-friendly editor is "nano").
-
 [ ] Now you should be ready to configure and compile Xastir with
 Shapelib support.  Type these commands:
 
@@ -563,10 +573,14 @@ below that of your choosing).
 See the README.MAPS file for where to get the maps.
 
 
-
 OPTIONAL:  Adding ImageMagick (tested with ImageMagick 5.5.3 &
 ImageMagick 5.5.7):
 --------------------------------------------------------------
+Note: Recent Cygwin installations include ImageMagick 5.5.7-2.
+You only need to manually install ImageMagic if you did not have
+the 3 Magic choices when installing or if Xastir doesn't find
+ImageMagick.
+
 Allows using more than 68 different graphics format files as maps,
 by creating an associated .geo file for each with tiepoints.  This
 support also allows use of online Tiger and Terraserver maps with
