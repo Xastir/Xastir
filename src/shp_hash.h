@@ -1,3 +1,8 @@
+
+// $Id$
+// Copyright (C) 2004-2005  The Xastir Group
+
+
 #ifndef __XASTIR_SHP_HASH_H
 #define __XASTIR_SHP_HASH_H
 

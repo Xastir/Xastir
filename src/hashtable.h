@@ -4,6 +4,9 @@
 
 
 /* Copyright (C) 2002 Christopher Clark <firstname.lastname@cl.cam.ac.uk> */
+// Portions Copyright (C) 2004-2005  The Xastir Project
+
+
 
 #ifndef __HASHTABLE_CWC22_H__
 #define __HASHTABLE_CWC22_H__
