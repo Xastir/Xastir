@@ -1341,6 +1341,7 @@ void Smart_Beacon(Widget w, XtPointer clientData, XtPointer callData) {
 // Find the extents of every map we have
 // 
 void Index_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
+/*
     map_index_record *current;
     map_index_record *temp;
 
@@ -1357,8 +1358,17 @@ void Index_Maps_Now(Widget w, XtPointer clientData, XtPointer callData) {
         current = temp->next;
         free(temp);
     }
+*/
+    // We don't wish to do the above because it throws away the
+    // hand-tweaked map_layer and draw_filled numbers that may be in
+    // the index.
 
-    // Create a new list from scratch
+    // The original reason for throwing away the list and starting
+    // from scratch was to get rid of deleted maps.  They go away
+    // after two restarts of Xastir anyway, so the above code isn't
+    // really needed.
+
+    // Update the list and write it to file.
     map_indexer();
 }
 
