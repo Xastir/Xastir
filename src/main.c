@@ -982,9 +982,6 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
     char str_lat[20];
     char str_long[20];
     long x, y;
-    double utmNorthing;
-    double utmEasting;
-    char utmZone[10];
 
     Widget textarea = (Widget) clientData;
 
@@ -1004,10 +1001,13 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         y = 64800000l;          //  90°S
 
     if (coordinate_system == USE_UTM) {
-        // Create a UTM string from coordinate in Xastir coordinate system
+        // Create a UTM string from coordinate in Xastir coordinate
+        // system.
         convert_xastir_to_UTM_str(my_text, sizeof(my_text), x, y);
     }
     else {
+        // Create a lat/lon string from coordinate in Xastir
+        // coordinate system.
         if (coordinate_system == USE_DDDDDD) {
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
@@ -3104,7 +3104,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     y = 64800000l;          //  90°S
 
                     if (debug_level & 1) {
-                        // This math is only used for the printf below.
+                        // This math is only used for the debug mode printf below.
                         if (coordinate_system == USE_DDDDDD) {
                             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_DEC_DEG);
                             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_DEC_DEG);
