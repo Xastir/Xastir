@@ -169,7 +169,7 @@ For geoTIFF support (such as USGS DRG topo maps) you also need:
     ------------------------------------------------
         http://www.libtiff.org
 
-    libproj (proj-4.4.6):
+    libproj (proj-4.4.7):
     ---------------------
         http://www.remotesensing.org/proj/
         http://wetnet.net/~we7u/xastir/
@@ -333,8 +333,8 @@ First Time Install:
        The proj-nad27-1.1.tar.gz must be decompressed in the nad subdirectory
        of the proj distribution directory before you run configure.
         
-        tar xzvf proj-4.4.5.tar.gz (or newer)
-        cd proj-4.4.5/nad
+        tar xzvf proj-4.4.7.tar.gz (or newer)
+        cd proj-4.4.7/nad
         tar xzvf ../../proj-nad27-1.1.tar.gz (or newer)
         cd ..
         ./configure
