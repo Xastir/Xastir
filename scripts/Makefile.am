@@ -11,6 +11,7 @@ pkglib_SCRIPTS = \
     inf2geo.pl \
     mapblast2geo.pl \
     mapfgd.pl \
+    overlay.pl \
     ozi2geo.pl \
     permutations.pl \
     split_gnis.bash \
