@@ -1364,7 +1364,7 @@ void read_symbol_from_file(FILE *f, char *pixels) {
     char line[21];
 
     for (y=0;y<20;y++) {
-        (void)get_line(f,line,20);
+        (void)get_line(f,line,21);
         for (x=0;x<20;x++) {
             switch (line[x]) {
                 case('.'):       // transparent
@@ -1463,7 +1463,7 @@ void load_pixmap_symbol_file(char *filename) {
     f = fopen(filen,"r");
     if (f!=NULL) {
         while (!feof(f) && !done) {
-            (void)get_line(f,line,20);
+            (void)get_line(f,line,21);
             if (strncasecmp("TABLE ",line,6)==0) {
                 table_char=line[6];
                 /*printf("TABLE %c\n",table_char);*/

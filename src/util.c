@@ -625,16 +625,20 @@ void bearing_decode(const char *langstr, const char *bearing_str,
 /*********************************************************************/
 char *get_line(FILE *f, char *linedata, int maxline) {
     int size_line;
+    char temp_line[32768];
 
-    strcpy(linedata, "");
-    (void)fgets(linedata, 32767, f);
-    size_line = (int)strlen(linedata);
+    strcpy(temp_line, "");
+    (void)fgets(temp_line, 32767, f);
+
+    size_line = (int)strlen(temp_line);
     if (size_line >0) {
         if (size_line > maxline)
-            linedata[maxline] = '\0';
+            temp_line[maxline-1] = '\0';
         else
-            linedata[size_line-1] = '\0';
+            temp_line[size_line-1] = '\0';
     }
+    strcpy(linedata,temp_line);
+
     return(linedata);
 }
 

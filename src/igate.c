@@ -858,7 +858,7 @@ void load_NWS_stations(char *file) {
     f = fopen(file,"r");
     if (f!=NULL) {
         while (!feof(f)) {
-            if (strlen(get_line(f,line,39))>0) {
+            if (strlen(get_line(f,line,40))>0) {
                 // look for comment
                 if (line[0] != '#' ) {
                     NWS_stations++;

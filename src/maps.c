@@ -615,6 +615,7 @@ char *get_map_ext (char *filename) {
  * get_map_dir()
  *
  * Used to snag just the pathname from a complete filename.
+ * Modifies input parameter "fullpath".
  **********************************************************/
 char *get_map_dir (char *fullpath) {
     int len;
@@ -644,7 +645,7 @@ void get_alt_fgd_path(char *fullpath, int fullpath_length) {
     int len;
     int i, j = 0;
     char *dir = fullpath;
-    char fname[128];
+    char fname[MAX_FILENAME];
 
     // Split up into directory and filename
     len = (int)strlen (fullpath);
@@ -697,7 +698,7 @@ void get_alt_fgd_path2(char *fullpath, int fullpath_length) {
     int len;
     int i, j = 0;
     char *dir = fullpath;
-    char fname[128];
+    char fname[MAX_FILENAME];
 
     // Split up into directory and filename
     len = (int)strlen (fullpath);
@@ -1198,8 +1199,8 @@ void draw_shapefile_map (Widget w,
     DBFHandle       hDBF;
     SHPObject       *object;
     static XPoint   points[MAX_MAP_POINTS];
-    char            file[2000];        /* Complete path/name of image file */
-    char            warning_text[2500];
+    char            file[MAX_FILENAME];  /* Complete path/name of image file */
+    char            warning_text[MAX_FILENAME*2];
     int             *panWidth, i, fieldcount, recordcount, structure, ring;
     char            ftype[15];
     int             nWidth, nDecimals;
@@ -1231,7 +1232,7 @@ void draw_shapefile_map (Widget w,
     int             high_water_mark_i = 0;
     int             high_water_mark_index = 0;
     char            quad_label[100];
-    char            status_text[300];
+    char            status_text[MAX_FILENAME];
 
     typedef struct _label_string {
         char   label[50];
@@ -1818,7 +1819,7 @@ void draw_shapefile_map (Widget w,
     //       complex drawing further down like a SteelBlue lake with a black boundary,
     //       or if we have labels turned on which resets our color to black.
     if (weather_alert_flag) {
-        char xbm_path[500];
+        char xbm_path[MAX_FILENAME];
         int _w, _h, _xh, _yh;
         // This GC is used only for pixmap_alerts (LIAR)
         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
@@ -1958,7 +1959,7 @@ void draw_shapefile_map (Widget w,
                                   warning_text) ) { // Error text if failure
 
             const char *temp;
-            char temp2[50];
+            char temp2[100];
             int jj;
             int x0 = 0; // Used for computing label rotation
             int x1 = 0;
@@ -3131,14 +3132,14 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
     printf("XPM or ImageMagick support not compiled into Xastir!\n");
 #else   // NO_GRAPHICS
 
-   char xpm_filename[50];
-    char ps_filename[50];
+   char xpm_filename[MAX_FILENAME];
+    char ps_filename[MAX_FILENAME];
     char mono[50] = "";
     char invert[50] = "";
     char rotate[50] = "";
     char scale[50] = "";
     char density[50] = "";
-    char command[300];
+    char command[MAX_FILENAME*2];
     char temp[100];
     char format[50] = "-portrait ";
     uid_t user_id;
@@ -3888,9 +3889,9 @@ void Snapshot(void) {
     return;
 #else // NO_GRAPHICS
  
-    char xpm_filename[50];
-    char png_filename[50];
-    char command[200];
+    char xpm_filename[MAX_FILENAME];
+    char png_filename[MAX_FILENAME];
+    char command[MAX_FILENAME*2];
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
@@ -4008,9 +4009,9 @@ void clean_string(char *input) {
 //
 void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
 {
-    char file[2000];                // Complete path/name of GNIS file
+    char file[MAX_FILENAME];        // Complete path/name of GNIS file
     FILE *f;                        // Filehandle of GNIS file
-    char line[400];                 // One line of text from file
+    char line[MAX_FILENAME];        // One line of text from file
     char *i, *j, *k;
     char state[50];
     char name[200];
@@ -4039,7 +4040,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
     unsigned long top_extent = 0l;
     unsigned long left_extent = 0l;
     unsigned long right_extent = 0l;
-    char status_text[300];
+    char status_text[MAX_FILENAME];
 
 
     //printf("draw_gnis_map starting: %s/%s\n",dir,filenm);
@@ -4073,7 +4074,7 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
     f = fopen (file, "r");
     if (f != NULL) {
         while (!feof (f)) {     // Loop through entire file
-            if ( get_line (f, line, 399) ) {  // Snag one line of data
+            if ( get_line (f, line, MAX_FILENAME) ) {  // Snag one line of data
                 if (strlen(line) > 0) {
 
 //NOTE:  How do we handle running off the end of "line" while using "index"?
@@ -4622,9 +4623,9 @@ void draw_gnis_map (Widget w, char *dir, char *filenm, int destination_pixmap)
 //
 int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
         char *quad_in, char *type_in, char *filename_in, int follow_case, int get_match ) {
-    char file[2000];                // Complete path/name of GNIS file
+    char file[MAX_FILENAME];        // Complete path/name of GNIS file
     FILE *f;                        // Filehandle of GNIS file
-    char line[400];                 // One line of text from file
+    char line[MAX_FILENAME];        // One line of text from file
     char *i, *j, *k;
     char state[50];
     char state_in2[50];
@@ -4701,7 +4702,7 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
     f = fopen (file, "r");
     if (f != NULL) {
         while (!feof (f)) {     // Loop through entire file
-            if ( get_line (f, line, 399) ) {  // Snag one line of data
+            if ( get_line (f, line, MAX_FILENAME) ) {  // Snag one line of data
                 if (strlen(line) > 0) {
 
 
@@ -4943,12 +4944,12 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
-    char file[2000];                // Complete path/name of image file
+    char file[MAX_FILENAME];        // Complete path/name of image file
     FILE *f;                        // Filehandle of image file
-    char line[400];                 // One line from GEO file
-    char fileimg[400];              // Ascii name of image file, read from GEO file
+    char line[MAX_FILENAME];        // One line from GEO file
+    char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
     //N0VH
-//    char remote_callsign[400];      // Ascii callsign, read from GEO file, used for findu lookups only
+//    char remote_callsign[400];    // Ascii callsign, read from GEO file, used for findu lookups only
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     int n_tp;                       // Temp counter for number of tiepoints read
@@ -4994,7 +4995,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     long scale_x0;                  // at widest map area
 
 #ifdef HAVE_IMAGEMAGICK
-    char local_filename[150];
+    char local_filename[MAX_FILENAME];
     ExceptionInfo exception;
     Image *image;
     ImageInfo *image_info;
@@ -5003,7 +5004,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
-    char tempfile[2000];
+    char tempfile[MAX_FILENAME];
     char gamma[16];
     struct {
         float r_gamma;
@@ -5032,7 +5033,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 //    int findu_flag = 0;
     //    //N0VH
     int terraserver_flag = 0;
-    char map_it[300];
+    char map_it[MAX_FILENAME];
     int geo_image_width = 0;    // Image width  from GEO file
     int geo_image_height = 0;   // Image height from GEO file
     char geo_datum[8+1];        // WGS-84 etc.
@@ -5059,7 +5060,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     f = fopen (file, "r");
     if (f != NULL) {
         while (!feof (f)) {
-            (void)get_line (f, line, 399);
+            (void)get_line (f, line, MAX_FILENAME);
             if (strncasecmp (line, "FILENAME", 8) == 0)
                 (void)sscanf (line + 9, "%s", fileimg);
 
@@ -5990,10 +5991,10 @@ void draw_tiger_map (Widget w) {
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
-    char file[2000];                // Complete path/name of image file
+    char file[MAX_FILENAME];        // Complete path/name of image file
     FILE *f;                        // Filehandle of image file
-    char fileimg[400];              // Ascii name of image file, read from GEO file
-    char tigertmp[400];             // Used for putting together the tigermap query
+    char fileimg[MAX_FILENAME];     // Ascii name of image file, read from GEO file
+    char tigertmp[MAX_FILENAME*2];  // Used for putting together the tigermap query
     XpmAttributes atb;              // Map attributes after map's read into an XImage
     tiepoint tp[2];                 // Calibration points for map, read in from .geo file
     register long map_c_T, map_c_L; // map delta NW edge coordinates, DNN: these should be signed
@@ -6027,7 +6028,7 @@ void draw_tiger_map (Widget w) {
     double scale_x_nm;              // nm per Xastir coordinate unit
     long scale_x0;                  // at widest map area
 
-    char local_filename[150];
+    char local_filename[MAX_FILENAME];
     ExceptionInfo exception;
     Image *image;
     ImageInfo *image_info;
@@ -6036,12 +6037,12 @@ void draw_tiger_map (Widget w) {
     IndexPacket *index_pack;
     int l;
     XColor my_colors[256];
-    char tempfile[2000];
+    char tempfile[MAX_FILENAME];
     double left, right, top, bottom, map_width, map_height;
     double lat_center  = 0;
     double long_center = 0;
 
-    char map_it[300];
+    char map_it[MAX_FILENAME];
     char tmpstr[100];
     int geo_image_width;        // Image width  from GEO file
     int geo_image_height;       // Image height from GEO file
@@ -6162,11 +6163,11 @@ void draw_tiger_map (Widget w) {
     else
         strcat(tigertmp, "&off=miscell");
 
-    xastir_snprintf(tmpstr, sizeof(tigertmp), "&lat=%f\046lon=%f\046", lat_center, long_center);	
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "&lat=%f\046lon=%f\046", lat_center, long_center);	
     strcat (tigertmp, tmpstr);
-    xastir_snprintf(tmpstr, sizeof(tigertmp), "wid=%f\046ht=%f\046", map_width, map_height);
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "wid=%f\046ht=%f\046", map_width, map_height);
     strcat (tigertmp, tmpstr);
-    xastir_snprintf(tmpstr, sizeof(tigertmp), "iwd=%i\046iht=%i\'", tp[1].img_x + 1, tp[1].img_y + 1);
+    xastir_snprintf(tmpstr, sizeof(tmpstr), "iwd=%i\046iht=%i\'", tp[1].img_x + 1, tp[1].img_y + 1);
     strcat (tigertmp, tmpstr);
     xastir_snprintf(fileimg, sizeof(fileimg), tigertmp);
 
@@ -6561,9 +6562,9 @@ int read_fgd_file ( char* tif_filename,
                     float* f_north_bounding,
                     float* f_south_bounding)
 {
-    char fgd_file[2000];        /* Complete path/name of .fgd file */
+    char fgd_file[MAX_FILENAME];/* Complete path/name of .fgd file */
     FILE *fgd;                  /* Filehandle of .fgd file */
-    char line[400];             /* One line from .fgd file */
+    char line[MAX_FILENAME];    /* One line from .fgd file */
     int length;
     char *ptr;                  /* Substring pointer */
     int num_coordinates = 0;
@@ -6602,7 +6603,7 @@ int read_fgd_file ( char* tif_filename,
     {
         while ( ( !feof (fgd) ) && ( num_coordinates < 4 ) )
         {
-            get_line (fgd, line, 399);
+            get_line (fgd, line, MAX_FILENAME);
 
             if (*f_west_bounding == 0.0)
             {
@@ -6728,7 +6729,7 @@ int read_fgd_file ( char* tif_filename,
  * 'o': Good from x064 to x004.  Not very readable at x64.
  ***********************************************************/
 void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_pixmap) {
-    char file[1000];            /* Complete path/name of image file */
+    char file[MAX_FILENAME];    /* Complete path/name of image file */
     TIFF *tif = (TIFF *) 0;     /* Filehandle for tiff image file */
     GTIF *gtif = (GTIF *) 0;    /* GeoKey-level descriptor */
     /* enum { VERSION = 0, MAJOR, MINOR }; */
@@ -6808,7 +6809,7 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
     float steph;
     register float stepw;
     int stepwc, stephc;
-    char map_it[300];           /* Used to hold filename for status line */
+    char map_it[MAX_FILENAME];           /* Used to hold filename for status line */
     int have_fgd;               /* Tells where we have an associated *.fgd file */
     //short datum;
     char *datum_name;           /* Points to text name of datum */
@@ -8846,7 +8847,9 @@ static int map_onscreen_index(char *filename) {
 // unsigned, we may have to explicitly define the long's as well.  -KD6ZWR
 //
 void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixmap) {
- 
+
+// Do NOT change any of these structs.  They have to match the
+// structs  that the palm maps were made with.
 #pragma pack(1)
     struct {
         char name[32];
@@ -8923,14 +8926,14 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
     } label_record;     
 
     FILE *fn;
-    char filename[400];
+    char filename[MAX_FILENAME];
     int records, record_count, count;
     int scale;
     long map_left, map_right, map_top, map_bottom, max_x, max_y;
     long record_ptr;
     long line_x, line_y;
     int vector;
-    char status_text[300];
+    char status_text[MAX_FILENAME];
 
 
     xastir_snprintf(filename, sizeof(filename), "%s/%s", dir, filenm);
@@ -9297,8 +9300,8 @@ void draw_palm_image_map(Widget w, char *dir, char *filenm, int destination_pixm
 void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
                 unsigned char alert_color, int destination_pixmap) {
     FILE *f;
-    char file[2000];
-    char map_it[300];
+    char file[MAX_FILENAME];
+    char map_it[MAX_FILENAME];
 
     /* map header info */
     char map_type[5];
@@ -10206,7 +10209,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int warn, int destination_pixmap) {
     struct dirent *dl = NULL;
     DIR *dm;
-    char fullpath[8000];
+    char fullpath[MAX_FILENAME];
     struct stat nfile;
     const time_t *ftime;
     char this_time[40];
@@ -10528,8 +10531,8 @@ void index_update_xastir(char *filename,
     int done = 0;
 
 
-    //printf( "File Index: %s: (%lu,%lu)\n\t(%lu,%lu)\n",
-    //    filename, bottom, top, left, right );
+    //printf( "index_update_xastir: (%lu,%lu)\t(%lu,%lu)\t%s\n",
+    //    bottom, top, left, right, filename );
 
     //if (map_index_head == NULL)
     //    printf("Empty list\n");
@@ -10609,9 +10612,9 @@ void index_update_xastir(char *filename,
     // Update the values.  By this point we have a struct to fill
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
-    xastir_snprintf(temp_record->filename,400,"%s",filename);
-    //strncpy(temp_record->filename,filename,399);
-    //temp_record->filename[399] = '\0';
+    xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",filename);
+    //strncpy(temp_record->filename,filename,MAX_FILENAME-1);
+    //temp_record->filename[MAX_FILENAME-1] = '\0';
 //    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
 
     temp_record->bottom = bottom;
@@ -10644,8 +10647,8 @@ void index_update_ll(char *filename,
     int ok;
 
 
-    //printf( "File Index: %s: (%15.10g,%15.10g)\n\t(%15.10g,%15.10g)\n",
-    //    filename, bottom, top, left, right );
+    //printf( "index_update_ll: (%15.10g,%15.10g)\t(%15.10g,%15.10g)\t%s\n",
+    //    bottom, top, left, right, filename );
 
     //if (map_index_head == NULL)
     //    printf("Empty list\n");
@@ -10729,9 +10732,13 @@ void index_update_ll(char *filename,
     // Update the values.  By this point we have a struct to fill
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
-    xastir_snprintf(temp_record->filename,400,"%s",filename);
-    //strncpy(temp_record->filename,filename,399);
-    //temp_record->filename[399] = '\0';
+
+    // In this case the struct uses MAX_FILENAME for the length of
+    // the field, so the below statement is ok.
+    xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",filename);
+
+    //strncpy(temp_record->filename,filename,MAX_FILENAME-1);
+    //temp_record->filename[MAX_FILENAME-1] = '\0';
 //    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
 
     ok = convert_to_xastir_coordinates( &temp_left,
@@ -10820,7 +10827,7 @@ int index_retrieve(char *filename,
 void index_save_to_file() {
     FILE *f;
     map_index_record *current;
-    char out_string[500];
+    char out_string[MAX_FILENAME];
 
 
     //printf("Saving map index to file\n");
@@ -10877,7 +10884,7 @@ void index_restore_from_file(void) {
     FILE *f;
     map_index_record *current;
     map_index_record *temp_record;
-    char in_string[500];
+    char in_string[MAX_FILENAME*2];
 
 
     //printf("Restoring map index from file\n");
@@ -10892,9 +10899,10 @@ void index_restore_from_file(void) {
     while (!feof (f)) { // Loop through entire file
 
         // Read one object from the file
-        if ( get_line (f, in_string, 500) ) {   // Snag one line of data
+        if ( get_line (f, in_string, MAX_FILENAME) ) {   // Snag one line of data
 
             if (strlen(in_string) >= 8) {   // We have some data
+                char scanf_format[50];
 
                 // Malloc space for the data and add it to the head of
                 // the linked list
@@ -10911,8 +10919,25 @@ void index_restore_from_file(void) {
                 }
 
                 // Fill in the values
+
+//WE7U
+                // Tweak the string below so that the 1999 will
+                // track along with MAX_FILENAME-1.  We construct
+                // the string "%lu,%lu,%lu,%lu,%2000c", where the
+                // 2000 example number is from MAX_FILENAME.
+
+                xastir_snprintf(scanf_format,
+                    sizeof(scanf_format),
+                    "%s%d%s",
+                    "%lu,%lu,%lu,%lu,%",
+                    MAX_FILENAME,
+                    "c");
+
+                //printf("%s\n",scanf_format);
+
                 sscanf(in_string,
-                    "%lu,%lu,%lu,%lu,%399c",
+//                    "%lu,%lu,%lu,%lu,%1999c",
+                    scanf_format,
                     &temp_record->bottom,
                     &temp_record->top,
                     &temp_record->left,
@@ -10922,7 +10947,7 @@ void index_restore_from_file(void) {
                     // Mark each record as non-accessed at this point
                     temp_record->accessed = 0;
 
-                temp_record->filename[399] = '\0';
+                temp_record->filename[MAX_FILENAME-1] = '\0';
 
                 // Link the new record to the end of the list
 
@@ -11019,7 +11044,7 @@ static int alert_count;
  **********************************************************/
 void load_alert_maps (Widget w, char *dir) {
     int i, level;
-    char alert_scan[400], *dir_ptr;
+    char alert_scan[MAX_FILENAME], *dir_ptr;
 
     /* gray86, red2, yellow2, cyan2, RoyalBlue, ForestGreen, orange3 */
     unsigned char fill_color[] = {  (unsigned char)0x69,
@@ -11036,7 +11061,7 @@ void load_alert_maps (Widget w, char *dir) {
     // and they're in our view.
     if (alert_message_scan ()) {    // Returns number of wx alerts * 3
         memset (alert_scan, 0, sizeof (alert_scan));    // Zero our string
-        strncpy (alert_scan, dir, 390); // Fetch the base directory
+        strncpy (alert_scan, dir, MAX_FILENAME-10); // Fetch the base directory
         strcat (alert_scan, "/");   // Complete alert directory is now set up in the string
         dir_ptr = &alert_scan[strlen (alert_scan)]; // Point to end of path
 
@@ -11229,7 +11254,7 @@ void load_auto_maps (Widget w, char *dir) {
  **********************************************************/
 void load_maps (Widget w) {
     FILE *f;
-    char mapname[300];
+    char mapname[MAX_FILENAME];
     int i;
 
 
@@ -11244,7 +11269,10 @@ void load_maps (Widget w) {
 
         while (!feof (f)) {
             // Grab one line from the file
-            if ( fgets( mapname, 299, f ) != NULL ) {
+            if ( fgets( mapname, MAX_FILENAME-1, f ) != NULL ) {
+
+                // Forced termination (just in case)
+                mapname[MAX_FILENAME-1] = '\0';
 
                 // Get rid of the newline at the end
                 for (i = strlen(mapname); i > 0; i--) {

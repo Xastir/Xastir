@@ -29,6 +29,7 @@
 
 #define MAX_OUTBOUND 900
 #define MAX_MAP_POINTS 100000
+#define MAX_FILENAME 2000
 
 #define DRAW_TO_PIXMAP          0
 #define DRAW_TO_PIXMAP_FINAL    1
@@ -65,7 +66,7 @@ typedef struct {
 } symbol_label;
 
 typedef struct _map_index_record{
-    char filename[400];
+    char filename[MAX_FILENAME];
     unsigned long bottom;
     unsigned long top;
     unsigned long left;
