@@ -7864,8 +7864,6 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
  *
  */
 int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
-    char *temp_ptr;
-    char *temp_ptr2;
     char temp_data[40];         // short term string storage, MAX_CALL, ...  ???
     char lat_s[20];
     char long_s[20];
