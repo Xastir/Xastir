@@ -588,7 +588,6 @@ void save_data(void)  {
 
 #ifdef HAVE_FESTIVAL
             /* Festival speech settings */
-        store_int (fout, "SPEAK_ID",festival_speak_ID);
         store_int (fout, "SPEAK_NEW_STATION",festival_speak_new_station);
         store_int (fout, "SPEAK_PROXIMITY_ALERT",festival_speak_proximity_alert);
         store_int (fout, "SPEAK_TRACKED_ALERT",festival_speak_tracked_proximity_alert);
