@@ -78,6 +78,22 @@ PULDNMP005|Achtergrond Kleur|c|
 PULDNMP006|Station Tekst Stijl|S|
 PULDNMP011|Muis Menu|M|
 PULDNMP008|Kaart Intensiteit|I|
+PULDNMP020|Enable/Configure Tigermap||
+#
+#
+# PopUp "Configure Tigermap"
+MPUPTGR001|Grid||
+MPUPTGR002|Counties||
+MPUPTGR003|City Labels||
+MPUPTGR004|Urban Areas||
+MPUPTGR005|Major Roads||
+MPUPTGR006|Streets||
+MPUPTGR007|Railroads||
+MPUPTGR008|State Labels||
+MPUPTGR009|Interstate Labels||
+MPUPTGR010|US Hwy Labels||
+MPUPTGR011|State Hwy Labels||
+MPUPTGR012|Select items to be displayed:||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Kaart Kiezer||
