@@ -71,6 +71,7 @@ extern Widget select_symbol_dialog;
 extern void Select_symbol_destroy_shell( Widget widget, XtPointer clientData, XtPointer callData);
 extern void draw_symbols_init(void);
 extern void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w);
-#endif
+
+#endif  // __XASTIR_DRAW_SYMBOLS_H
 
 

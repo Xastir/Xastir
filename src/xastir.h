@@ -54,7 +54,7 @@
 
 #ifndef M_PI                      /* if not defined in math.h */
 #define M_PI 3.14159265358979323846
-#endif
+#endif  // M_PI
 
 /* GLOBAL DEFINES */
 extern GC gc;
@@ -138,7 +138,7 @@ extern int tiger_show_lakes;
 extern int tiger_show_misc;
 extern int tigermap_intensity;
 extern int tigermap_timeout;
-#endif
+#endif  // HAVE_IMAGEMAGICK
 
 extern void sort_list(char *filename,int size, Widget list, int *item);
 extern void redraw_symbols(Widget w);
@@ -209,3 +209,5 @@ extern void view_all_messages(Widget w, XtPointer clientData, XtPointer callData
 extern void setup_in_view(void);
 
 #endif /* XASTIR_H */
+
+

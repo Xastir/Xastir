@@ -105,7 +105,7 @@ extern int end_critical_section(xastir_mutex *lock, char *text);
 //#define TIMING_DEBUG
 #ifdef TIMING_DEBUG
 void time_mark(int start);
-#endif
+#endif  // TIMING_DEBUG
 
 // dl9sau
 extern char *sec_to_loc(long longitude, long latitude);
@@ -113,3 +113,5 @@ extern char *sec_to_loc(long longitude, long latitude);
 extern short checkHash(char *theCall, short theHash);
 
 #endif // __XASTIR_UTIL_H
+
+

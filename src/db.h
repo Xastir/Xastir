@@ -160,7 +160,7 @@ typedef struct _ack_record {
 #ifdef MSG_DEBUG
 extern void msg_clear_data(Message *clear);
 extern void msg_copy_data(Message *to, Message *from);
-#else
+#else   // MSG_DEBUG
 #define msg_clear_data(clear) memset((Message *)clear, 0, sizeof(Message))
 #define msg_copy_data(to, from) memmove((Message *)to, (Message *)from, sizeof(Message))
 #endif /* MSG_DEBUG */
@@ -377,7 +377,7 @@ typedef struct _DataRow {
 #ifdef DATA_DEBUG
 extern void clear_data(DataRow *clear);
 extern void copy_data(DataRow *to, DataRow *from);
-#else
+#else   // DATA_DEBUG
 #define clear_data(clear) memset((DataRow *)clear, 0, sizeof(DataRow))
 #define copy_data(to, from) memmove((DataRow *)to, (DataRow *)from, sizeof(DataRow))
 #endif /* DATA_DEBUG */

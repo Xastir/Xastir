@@ -72,4 +72,6 @@ extern void wx_alert_update_list(void);
 
 extern void WX_station(Widget w, XtPointer clientData, XtPointer callData);
 
-#endif
+#endif  // __XASTIR_WX_H
+
+

@@ -37,4 +37,6 @@ extern void check_for_new_bulletins();
 extern void popup_bulletins(void);
 extern void bulletin_gui_init(void);
 
-#endif
+#endif  // __XASTIR_BULLETIN_GUI_H
+
+

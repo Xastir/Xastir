@@ -31,7 +31,7 @@
 // For mutex debugging with Linux threads only
 #ifdef __linux__
   #define MUTEX_DEBUG 1
-#endif
+#endif  // __linux__
 
 
 // To enable the "Transmit Raw WX data" button in
@@ -55,7 +55,7 @@ extern FILE *read_file_ptr;
 #define PACKAGE "xastir"
 #define VERSION "lclint"
 #define VERSIONTXT "xastir lclint debug version"
-#else
+#else   // __LCLINT__
 #define VERSIONTXT PACKAGE " " VERSION
 #endif  // __LCLINT__
 
@@ -192,7 +192,7 @@ extern int operate_as_an_igate;
 
 #ifdef TRANSMIT_RAW_WX
 extern int transmit_raw_wx;
-#endif
+#endif  // TRANSMIT_RAW_WX
 
 extern int transmit_compressed_posit;
 extern int transmit_compressed_objects_items;
@@ -338,4 +338,5 @@ if (debug_level & 4) { fprintf(stderr, "Changing euid to %d and egid to %d\n", (
 } while(0)
 
 #endif /* XASTIR_MAIN_H */
+
 

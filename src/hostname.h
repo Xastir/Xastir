@@ -28,4 +28,6 @@
 
 extern char *host_lookup(char *host, char *ip, int time);
 
-#endif
+#endif  // __XASTIR_HOSTNAME_H
+
+

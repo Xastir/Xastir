@@ -95,4 +95,6 @@ int festivalOpen();
 void festivalStringToWave(char *text);
 int festivalClose();
 
-#endif
+#endif  // _FESTIVAL_CLIENT_H_
+
+

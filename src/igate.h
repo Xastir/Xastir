@@ -36,4 +36,6 @@ extern void output_igate_net(char *line, int port, int third_party);
 extern void output_igate_rf(char *from, char *call, char *path, char *line, int port, int third_party);
 extern void output_nws_igate_rf(char *from, char *path, char *line, int port, int third_party);
 
-#endif
+#endif  // __XASTIR_IGATE_H
+
+

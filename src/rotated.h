@@ -60,7 +60,7 @@ XPoint *XRotTextExtents(Display*, XFontStruct*, float,
                         int, int, char*, int);
 }
 
-#else
+#else   // _cplusplus || c_plusplus
 
 extern float   XRotVersion();
 extern void    XRotSetMagnification();
@@ -77,6 +77,5 @@ extern XPoint *XRotTextExtents();
 
 
 #endif /* _XVERTEXT_INCLUDED_ */
-
 
 

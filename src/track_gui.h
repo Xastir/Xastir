@@ -36,4 +36,7 @@ extern int track_case;
 extern int track_match;
 extern char tracking_station_call[30];
 extern void Download_findu_trail(Widget w, XtPointer clientData, XtPointer callData);
-#endif
+
+#endif  // __TRACK_GUI_H
+
+
