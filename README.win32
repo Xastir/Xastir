@@ -258,6 +258,7 @@ shown.  Hit <ENTER> when asked for a password after typing line
 four (the "login" command):
 
   cd ~
+  touch .cvspass
   mkdir src
   cd src
   cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
