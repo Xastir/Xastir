@@ -21711,6 +21711,7 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
     char *temp_ptr;
     char *temp_ptr2;
     int DR = 0; // Dead-reckoning flag
+    int comment_field_used = 0;   // Amount of comment field used up
 
 
     //fprintf(stderr,"Setup_object_data\n");
@@ -22026,20 +22027,73 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
 
         //fprintf(stderr,"Complete_corridor: %s\n", complete_corridor);
 
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
-            last_object,
-            time,
-            lat_str,
-            last_obj_grp,
-            lon_str,
-            last_obj_sym,
-            complete_area_type,
-            lat_offset,
-            complete_area_color,
-            lon_offset,
-            speed_course,
-            complete_corridor,
-            altitude);
+        if (transmit_compressed_objects_items) {
+            char temp_overlay = last_obj_overlay;
+
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
+
+            // Need to handle the conversion of numeric overlay
+            // chars to "a-j" here.
+            if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                temp_overlay = last_obj_overlay + 'a';
+            }
+ 
+            xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
+                last_object,
+                time,
+                compress_posit(ext_lat_str,
+                    (temp_overlay) ? temp_overlay : last_obj_grp,
+                    ext_lon_str,
+                    last_obj_sym,
+                    course,
+                    speed,  // In knots
+                    ""),    // PHG, must be blank in this case
+                complete_area_type, // In comment field
+                lat_offset,         // In comment field
+                complete_area_color,// In comment field
+                lon_offset,         // In comment field
+                speed_course,       // In comment field
+                complete_corridor,  // In comment field
+                altitude);          // In comment field
+
+            comment_field_used = strlen(line) - 31;
+
+        }
+        else {
+ 
+            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
+                last_object,
+                time,
+                lat_str,
+                last_obj_grp,
+                lon_str,
+                last_obj_sym,
+                complete_area_type, // In comment field
+                lat_offset,         // In comment field
+                complete_area_color,// In comment field
+                lon_offset,         // In comment field
+                speed_course,       // In comment field
+                complete_corridor,  // In comment field
+                altitude);          // In comment field
+
+            comment_field_used = strlen(line) - 37;
+        }
 
         //fprintf(stderr,"String is: %s\n", line);
 
@@ -22060,28 +22114,130 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
         } else {  // No signpost data entered, blank it out
             signpost[0] = '\0';
         }
-        xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s%s",
-            last_object,
-            time,
-            lat_str,
-            last_obj_grp,
-            lon_str,
-            last_obj_sym,
-            speed_course,
-            altitude,
-            signpost);
-    } else if (DF_object_enabled) {   // A DF'ing object of some type
-        if (Omni_antenna_enabled) {
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%cDFS%s/%s%s",
+
+
+        if (transmit_compressed_objects_items) {
+            char temp_overlay = last_obj_overlay;
+
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
+
+            // Need to handle the conversion of numeric overlay
+            // chars to "a-j" here.
+            if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                temp_overlay = last_obj_overlay + 'a';
+            }
+ 
+            xastir_snprintf(line, line_length, ";%-9s*%s%s%s%s",
+                last_object,
+                time,
+                compress_posit(ext_lat_str,
+                    (temp_overlay) ? temp_overlay : last_obj_grp,
+                    ext_lon_str,
+                    last_obj_sym,
+                    course,
+                    speed,  // In knots
+                    ""),    // PHG, must be blank in this case
+                altitude,
+                signpost);
+
+            comment_field_used = strlen(line) - 31;
+
+        }
+        else {
+ 
+            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s%s",
                 last_object,
                 time,
                 lat_str,
                 last_obj_grp,
                 lon_str,
                 last_obj_sym,
-                object_shgd,
                 speed_course,
-                altitude);
+                altitude,
+                signpost);
+
+            comment_field_used = strlen(line) - 37;
+        }
+
+    } else if (DF_object_enabled) {   // A DF'ing object of some type
+        if (Omni_antenna_enabled) {
+
+            if (transmit_compressed_objects_items) {
+                char temp_overlay = last_obj_overlay;
+
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
+
+                // Need to handle the conversion of numeric overlay
+                // chars to "a-j" here.
+                if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                    temp_overlay = last_obj_overlay + 'a';
+                }
+ 
+                xastir_snprintf(line, line_length, ";%-9s*%s%sDFS%s/%s%s",
+                    last_object,
+                    time,
+                    compress_posit(ext_lat_str,
+                        (temp_overlay) ? temp_overlay : last_obj_grp,
+                        ext_lon_str,
+                        last_obj_sym,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank in this case
+                    object_shgd,
+                    speed_course,
+                    altitude);
+
+                comment_field_used = strlen(line) - 31;
+
+            }
+            else {
+ 
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%cDFS%s/%s%s",
+                    last_object,
+                    time,
+                    lat_str,
+                    last_obj_grp,
+                    lon_str,
+                    last_obj_sym,
+                    object_shgd,
+                    speed_course,
+                    altitude);
+
+                comment_field_used = strlen(line) - 37;
+            }
+
         } else {  // Beam Heading DFS object
             if (strlen(speed_course) != 7)
                 xastir_snprintf(speed_course,
@@ -22095,17 +22251,68 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
             if ( (bearing < 1) || (bearing > 360) )
                 bearing = 360;
 
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%03i/%s%s",
-                last_object,
-                time,
-                lat_str,
-                last_obj_grp,
-                lon_str,
-                last_obj_sym,
-                speed_course,
-                bearing,
-                object_NRQ,
-                altitude);
+            if (transmit_compressed_objects_items) {
+                char temp_overlay = last_obj_overlay;
+
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
+
+                // Need to handle the conversion of numeric overlay
+                // chars to "a-j" here.
+                if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                    temp_overlay = last_obj_overlay + 'a';
+                }
+ 
+                xastir_snprintf(line, line_length, ";%-9s*%s%s/%03i/%s%s",
+                    last_object,
+                    time,
+                    compress_posit(ext_lat_str,
+                        (temp_overlay) ? temp_overlay : last_obj_grp,
+                        ext_lon_str,
+                        last_obj_sym,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank in this case
+                    bearing,
+                    object_NRQ,
+                    altitude);
+
+                comment_field_used = strlen(line) - 31;
+
+            }
+            else {
+ 
+ 
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%03i/%s%s",
+                    last_object,
+                    time,
+                    lat_str,
+                    last_obj_grp,
+                    lon_str,
+                    last_obj_sym,
+                    speed_course,
+                    bearing,
+                    object_NRQ,
+                    altitude);
+
+                comment_field_used = strlen(line) - 37;
+            }
+
         }
     } else {  // Else it's a normal object
 
@@ -22120,7 +22327,7 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
 
             //fprintf(stderr,"Probability min circle entered: %s\n", line);
             if (strlen(line) != 0) {   // Probability circle data was entered
-                xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
+                xastir_snprintf(prob_min, sizeof(prob_min), "Pmin%s,", line);
             }
 
             temp_ptr = XmTextFieldGetString(probability_data_max);
@@ -22129,7 +22336,7 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
 
             //fprintf(stderr,"Probability max circle entered: %s\n", line);
             if (strlen(line) != 0) {   // Probability circle data was entered
-                xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
+                xastir_snprintf(prob_max, sizeof(prob_max), "Pmax%s,", line);
             }
         }
 
@@ -22172,9 +22379,12 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
                     course,
                     speed,  // In knots
                     ""),    // PHG, must be blank in this case
-                    altitude,
-                    prob_min,
-                    prob_max);
+                altitude,
+                prob_min,
+                prob_max);
+
+            comment_field_used = strlen(line) - 31;
+
         }
         else {
             xastir_snprintf(line,
@@ -22190,12 +22400,20 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
                 altitude,
                 prob_min,
                 prob_max);
+
+            comment_field_used = strlen(line) - 37;
+
         }
     }
 
 
     // We need to tack the comment on the end, but need to make
-    // sure we don't go over the maximum length for an object.
+    // sure we don't go over the maximum length for an object.  The
+    // maximum comment field is 43 chars.  "comment_field_used"
+    // tells us how many chars of that field we've used up already
+    // with other parameters before adding the comment chars to the
+    // end.
+    //
     //fprintf(stderr,"Comment: %s\n",comment);
     if (strlen(comment) != 0) {
 
@@ -22206,13 +22424,17 @@ int Setup_object_data(char *line, int line_length, DataRow *p_station) {
             // be valid.
             line[strlen(line) + 1] = '\0';
             line[strlen(line)] = ' ';
+
+            comment_field_used++;
         }
 
         temp = 0;
-        while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) ) {
+//        while ( (strlen(line) < 80) && (temp < (int)strlen(comment)) ) {
+        while ((comment_field_used < 43) && (temp < (int)strlen(comment)) ) {
             //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
             line[strlen(line) + 1] = '\0';
             line[strlen(line)] = comment[temp++];
+            comment_field_used++;
         }
     }
     //fprintf(stderr,"line: %s\n",line);
@@ -22262,6 +22484,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
     char *temp_ptr;
     char *temp_ptr2;
     int DR = 0; // Dead-reckoning flag
+    int comment_field_used = 0;   // Amount of comment field used up
 
 
     // If speed for the original object was non-zero, then we need
@@ -22554,19 +22777,72 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
                 }
             }
         }
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%1d%02d%2s%02d%s%s%s",
-            last_object,
-            lat_str,
-            last_obj_grp,
-            lon_str,
-            last_obj_sym,
-            complete_area_type,
-            lat_offset,
-            complete_area_color,
-            lon_offset,
-            speed_course,
-            complete_corridor,
-            altitude);
+
+        if (transmit_compressed_objects_items) {
+            char temp_overlay = last_obj_overlay;
+
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
+
+            // Need to handle the conversion of numeric overlay
+            // chars to "a-j" here.
+            if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                temp_overlay = last_obj_overlay + 'a';
+            }
+ 
+            xastir_snprintf(line, line_length, ")%s!%s%1d%02d%2s%02d%s%s%s",
+                last_object,
+                compress_posit(ext_lat_str,
+                    (temp_overlay) ? temp_overlay : last_obj_grp,
+                    ext_lon_str,
+                    last_obj_sym,
+                    course,
+                    speed,  // In knots
+                    ""),    // PHG, must be blank in this case
+                complete_area_type,
+                lat_offset,
+                complete_area_color,
+                lon_offset,
+                speed_course,
+                complete_corridor,
+                altitude);
+
+            comment_field_used = strlen(line) - 15 - strlen(last_object);
+
+        }
+        else {
+ 
+            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%1d%02d%2s%02d%s%s%s",
+                last_object,
+                lat_str,
+                last_obj_grp,
+                lon_str,
+                last_obj_sym,
+                complete_area_type,
+                lat_offset,
+                complete_area_color,
+                lon_offset,
+                speed_course,
+                complete_corridor,
+                altitude);
+
+            comment_field_used = strlen(line) - 21 - strlen(last_object);
+        }
 
     } else if (Signpost_object_enabled) {
         temp_ptr = XmTextFieldGetString(signpost_data);
@@ -22585,26 +22861,126 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
         } else {  // No signpost data entered, blank it out
             signpost[0] = '\0';
         }
-        xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s%s",
-            last_object,
-            lat_str,
-            last_obj_grp,
-            lon_str,
-            last_obj_sym,
-            speed_course,
-            altitude,
-            signpost);
-    } else if (DF_object_enabled) {   // A DF'ing item of some type
-        if (Omni_antenna_enabled) {
-            xastir_snprintf(line, line_length, ")%s!%s%c%s%cDFS%s/%s%s",
+
+        if (transmit_compressed_objects_items) {
+            char temp_overlay = last_obj_overlay;
+
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
+
+            // Need to handle the conversion of numeric overlay
+            // chars to "a-j" here.
+            if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                temp_overlay = last_obj_overlay + 'a';
+            }
+ 
+            xastir_snprintf(line, line_length, ")%s!%s%s%s",
+                last_object,
+                compress_posit(ext_lat_str,
+                    (temp_overlay) ? temp_overlay : last_obj_grp,
+                    ext_lon_str,
+                    last_obj_sym,
+                    course,
+                    speed,  // In knots
+                    ""),    // PHG, must be blank in this case
+                altitude,
+                signpost);
+
+            comment_field_used = strlen(line) - 15 - strlen(last_object);
+
+        }
+        else {
+ 
+            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s%s",
                 last_object,
                 lat_str,
                 last_obj_grp,
                 lon_str,
                 last_obj_sym,
-                object_shgd,
                 speed_course,
-                altitude);
+                altitude,
+                signpost);
+
+            comment_field_used = strlen(line) - 21 - strlen(last_object);
+        }
+
+    } else if (DF_object_enabled) {   // A DF'ing item of some type
+        if (Omni_antenna_enabled) {
+
+            if (transmit_compressed_objects_items) {
+                char temp_overlay = last_obj_overlay;
+
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
+
+                // Need to handle the conversion of numeric overlay
+                // chars to "a-j" here.
+                if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                    temp_overlay = last_obj_overlay + 'a';
+                }
+ 
+                xastir_snprintf(line, line_length, ")%s!%sDFS%s/%s%s",
+                    last_object,
+                    compress_posit(ext_lat_str,
+                        (temp_overlay) ? temp_overlay : last_obj_grp,
+                        ext_lon_str,
+                        last_obj_sym,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank in this case
+                    object_shgd,
+                    speed_course,
+                    altitude);
+
+                comment_field_used = strlen(line) - 15 - strlen(last_object);
+
+            }
+            else {
+ 
+                xastir_snprintf(line, line_length, ")%s!%s%c%s%cDFS%s/%s%s",
+                    last_object,
+                    lat_str,
+                    last_obj_grp,
+                    lon_str,
+                    last_obj_sym,
+                    object_shgd,
+                    speed_course,
+                    altitude);
+
+                comment_field_used = strlen(line) - 21 - strlen(last_object);
+
+            }
+
         } else {  // Beam Heading DFS item
             if (strlen(speed_course) != 7)
                 xastir_snprintf(speed_course,
@@ -22618,16 +22994,65 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
             if ( (bearing < 1) || (bearing > 360) )
                 bearing = 360;
 
-            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%03i/%s%s",
-                last_object,
-                lat_str,
-                last_obj_grp,
-                lon_str,
-                last_obj_sym,
-                speed_course,
-                bearing,
-                object_NRQ,
-                altitude);
+            if (transmit_compressed_objects_items) {
+                char temp_overlay = last_obj_overlay;
+
+
+// Need to compute "csT" at some point and add it to the object.
+// Until we do that we'll have no course/speed/altitude.  Looks like
+// we can have course/speed or altitude, but not both.  Must have to
+// add the "/A=000123" stuff to the end if we want both.
+//
+// If we have course and/or speed, use course/speed csT bytes.  If
+// no course/speed but we have altitude, use altitude csT bytes.  We
+// can cheat right now and just always use course/speed, adding
+// altitude with the altitude extension.  Not as efficient, but it
+// gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
+
+                // Need to handle the conversion of numeric overlay
+                // chars to "a-j" here.
+                if (last_obj_overlay >= '0' && last_obj_overlay <= '9') {
+                    temp_overlay = last_obj_overlay + 'a';
+                }
+ 
+                xastir_snprintf(line, line_length, ")%s!%s/%03i/%s%s",
+                    last_object,
+                    compress_posit(ext_lat_str,
+                        (temp_overlay) ? temp_overlay : last_obj_grp,
+                        ext_lon_str,
+                        last_obj_sym,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank in this case
+                    bearing,
+                    object_NRQ,
+                    altitude);
+
+                comment_field_used = strlen(line) - 15 - strlen(last_object);
+
+            }
+            else {
+ 
+                xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%03i/%s%s",
+                    last_object,
+                    lat_str,
+                    last_obj_grp,
+                    lon_str,
+                    last_obj_sym,
+                    speed_course,
+                    bearing,
+                    object_NRQ,
+                    altitude);
+
+                comment_field_used = strlen(line) - 21 - strlen(last_object);
+            }
+
         }
     } else {  // Else it's a normal item
 
@@ -22643,7 +23068,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
             //fprintf(stderr,"Probability min circle entered: %s\n",
             //line);
             if (strlen(line) != 0) {   // Probability circle data was entered
-                xastir_snprintf(prob_min, sizeof(prob_min), " Pmin%s,", line);
+                xastir_snprintf(prob_min, sizeof(prob_min), "Pmin%s,", line);
             }
 
             temp_ptr = XmTextFieldGetString(probability_data_max);
@@ -22653,7 +23078,7 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
             //fprintf(stderr,"Probability max circle entered: %s\n",
             //line);
             if (strlen(line) != 0) {   // Probability circle data was entered
-                xastir_snprintf(prob_max, sizeof(prob_max), " Pmax%s,", line);
+                xastir_snprintf(prob_max, sizeof(prob_max), "Pmax%s,", line);
             }
         }
 
@@ -22699,6 +23124,9 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
                     altitude,
                     prob_min,
                     prob_max);
+
+            comment_field_used = strlen(line) - 15 - strlen(last_object);
+
         }
         else {
             xastir_snprintf(line,
@@ -22713,6 +23141,9 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
                 altitude,
                 prob_min,
                 prob_max);
+
+            comment_field_used = strlen(line) - 21 - strlen(last_object);
+
         }
     }
 
@@ -22729,13 +23160,16 @@ int Setup_item_data(char *line, int line_length, DataRow *p_station) {
             // be valid.
             line[strlen(line) + 1] = '\0';
             line[strlen(line)] = ' ';
+            comment_field_used++;
         }
 
         temp = 0;
-        while ( (strlen(line) < (64 + strlen(last_object))) && (temp < (int)strlen(comment)) ) {
+//        while ( (strlen(line) < (64 + strlen(last_object))) && (temp < (int)strlen(comment)) ) {
+        while ( (comment_field_used < 43) && (temp < (int)strlen(comment)) ) {
             //fprintf(stderr,"temp: %d->%d\t%c\n", temp, strlen(line), comment[temp]);
             line[strlen(line) + 1] = '\0';
             line[strlen(line)] = comment[temp++];
+            comment_field_used++;
         }
     }
     //fprintf(stderr,"line: %s\n",line);

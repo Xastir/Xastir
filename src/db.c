@@ -15776,27 +15776,26 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         comment[0] = '\0';  // Empty string
     }
 
-//WE7U
     if ( (p_station->probability_min[0] != '\0')
             || (p_station->probability_max[0] != '\0') ) {
 
         if (p_station->probability_max[0] == '\0') {
             // Only have probability_min
             xastir_snprintf(comment2,
-                sizeof(comment2)," Pmin%s, %s",
+                sizeof(comment2),"Pmin%s,%s",
                 p_station->probability_min,
                 comment);
         }
         else if (p_station->probability_min[0] == '\0') {
             // Only have probability_max
             xastir_snprintf(comment2,
-                sizeof(comment2)," Pmax%s, %s",
+                sizeof(comment2),"Pmax%s,%s",
                 p_station->probability_max,
                 comment);
         }
         else {  // Have both
             xastir_snprintf(comment2,
-                sizeof(comment2)," Pmin%s, Pmax%s, %s",
+                sizeof(comment2),"Pmin%s,Pmax%s,%s",
                 p_station->probability_min,
                 p_station->probability_max,
                 comment);
@@ -15946,35 +15945,133 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         }
 
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
-                p_station->call_sign,
-                time,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                complete_area_type,
-                lat_offset,
-                complete_area_color,
-                lon_offset,
-                speed_course,
-                complete_corridor,
-                altitude);
+
+            if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+                long x_long, y_lat;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
+
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%1d%02d%2s%02d%s%s%s",
+                    p_station->call_sign,
+                    time,
+                    compress_posit(lat_str,
+                        temp_group,
+                        lon_str,
+                        object_symbol,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank
+                    complete_area_type,
+                    lat_offset,
+                    complete_area_color,
+                    lon_offset,
+                    speed_course,
+                    complete_corridor,
+                    altitude);
+ 
+            }
+            else {  // Non-compressed posit object
+ 
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%1d%02d%2s%02d%s%s%s",
+                    p_station->call_sign,
+                    time,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    complete_area_type,
+                    lat_offset,
+                    complete_area_color,
+                    lon_offset,
+                    speed_course,
+                    complete_corridor,
+                    altitude);
+            }
         }
         else  {     // It's an item
-            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%1d%02d%2s%02d%s%s%s",
-                p_station->call_sign,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                complete_area_type,
-                lat_offset,
-                complete_area_color,
-                lon_offset,
-                speed_course,
-                complete_corridor,
-                altitude);
+
+            if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+                long x_long, y_lat;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
+
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
+                xastir_snprintf(line, line_length, ")%s!%s%1d%02d%2s%02d%s%s%s",
+                    p_station->call_sign,
+                    compress_posit(lat_str,
+                        temp_group,
+                        lon_str,
+                        object_symbol,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank
+                    complete_area_type,
+                    lat_offset,
+                    complete_area_color,
+                    lon_offset,
+                    speed_course,
+                    complete_corridor,
+                    altitude);
+            }
+            else {  // Non-compressed item
+ 
+                xastir_snprintf(line, line_length, ")%s!%s%c%s%c%1d%02d%2s%02d%s%s%s",
+                    p_station->call_sign,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    complete_area_type,
+                    lat_offset,
+                    complete_area_color,
+                    lon_offset,
+                    speed_course,
+                    complete_corridor,
+                    altitude);
+            }
         }
     }
 
@@ -15987,53 +16084,230 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
             signpost[0] = '\0';
         }
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s%s",
-                p_station->call_sign,
-                time,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                speed_course,
-                altitude,
-                signpost);
+
+            if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+                long x_long, y_lat;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
+
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%s%s",
+                    p_station->call_sign,
+                    time,
+                    compress_posit(lat_str,
+                        temp_group,
+                        lon_str,
+                        object_symbol,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank
+                    altitude,
+                    signpost);
+            }
+            else {  // Non-compressed posit object
+ 
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s%s",
+                    p_station->call_sign,
+                    time,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    speed_course,
+                    altitude,
+                    signpost);
+            }
         }
         else {  // It's an item
-            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s%s",
-                p_station->call_sign,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                speed_course,
-                altitude,
-                signpost);
+
+            if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+                long x_long, y_lat;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
+
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
+                xastir_snprintf(line, line_length, ")%s!%s%s%s",
+                    p_station->call_sign,
+                    compress_posit(lat_str,
+                        temp_group,
+                        lon_str,
+                        object_symbol,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank
+                    altitude,
+                    signpost);
+            }
+            else {  // Non-compressed item
+ 
+                xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s%s",
+                    p_station->call_sign,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    speed_course,
+                    altitude,
+                    signpost);
+            }
         }
     }
 
     else if (p_station->signal_gain[0] != '\0') { // Must be an Omni-DF object/item
+
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%s%s",
-                p_station->call_sign,
-                time,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                p_station->signal_gain,
-                speed_course,
-                altitude);
+
+            if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+                long x_long, y_lat;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
+
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%s/%s%s",
+                    p_station->call_sign,
+                    time,
+                    compress_posit(lat_str,
+                        temp_group,
+                        lon_str,
+                        object_symbol,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank
+                    p_station->signal_gain,
+                    speed_course,
+                    altitude);
+            }
+            else {  // Non-compressed posit object
+ 
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%s%s",
+                    p_station->call_sign,
+                    time,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    p_station->signal_gain,
+                    speed_course,
+                    altitude);
+            }
         }
         else {  // It's an item
-            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%s%s",
-                p_station->call_sign,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                p_station->signal_gain,
-                speed_course,
-                altitude);
+
+            if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+                long x_long, y_lat;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
+
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
+                xastir_snprintf(line, line_length, ")%s!%s%s/%s%s",
+                    p_station->call_sign,
+                    compress_posit(lat_str,
+                        temp_group,
+                        lon_str,
+                        object_symbol,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank
+                    p_station->signal_gain,
+                    speed_course,
+                    altitude);
+            }
+            else {  // Non-compressed item
+ 
+                xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%s%s",
+                    p_station->call_sign,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    p_station->signal_gain,
+                    speed_course,
+                    altitude);
+            }
         }
     }
     else if (p_station->NRQ[0] != 0) {  // It's a Beam Heading DFS object/item
@@ -16048,34 +16322,125 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                 bearing = 360;
 
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
-            xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%03i/%s%s",
-                p_station->call_sign,
-                time,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                speed_course,
-                bearing,
-                p_station->NRQ,
-                altitude);
+
+            if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+                long x_long, y_lat;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
+
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
+                xastir_snprintf(line, line_length, ";%-9s*%s%s/%03i/%s%s",
+                    p_station->call_sign,
+                    time,
+                    compress_posit(lat_str,
+                        temp_group,
+                        lon_str,
+                        object_symbol,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank
+                    bearing,
+                    p_station->NRQ,
+                    altitude);
+            }
+            else {  // Non-compressed posit object
+ 
+                xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s/%03i/%s%s",
+                    p_station->call_sign,
+                    time,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    speed_course,
+                    bearing,
+                    p_station->NRQ,
+                    altitude);
+            }
         }
         else {  // It's an item
-            xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%03i/%s%s",
-                p_station->call_sign,
-                lat_str,
-                object_group,
-                lon_str,
-                object_symbol,
-                speed_course,
-                bearing,
-                p_station->NRQ,
-                altitude);
+
+            if (transmit_compressed_objects_items) {
+                char temp_group = object_group;
+                long x_long, y_lat;
+
+                // If we have a numeric overlay, we need to convert
+                // it to 'a-j' for compressed objects.
+                if (temp_group >= '0' && temp_group <= '9') {
+                    temp_group = temp_group + 'a';
+                }
+
+                if (speed == 0) {
+                    x_long = p_station->coord_lon;
+                    y_lat  = p_station->coord_lat;
+                }
+                else {
+                    // Speed is non-zero.  Compute the current
+                    // dead-reckoned position and use that instead.
+                    compute_current_DR_position(p_station,
+                        &x_long,
+                        &y_lat);
+                }
+
+                // We need higher precision lat/lon strings than
+                // those created above.
+                convert_lat_l2s(y_lat, lat_str, sizeof(lat_str), CONVERT_HP_NOSP);
+                convert_lon_l2s(x_long, lon_str, sizeof(lon_str), CONVERT_HP_NOSP);
+
+                xastir_snprintf(line, line_length, ")%s!%s/%03i/%s%s",
+                    p_station->call_sign,
+                    compress_posit(lat_str,
+                        temp_group,
+                        lon_str,
+                        object_symbol,
+                        course,
+                        speed,  // In knots
+                        ""),    // PHG, must be blank
+                    bearing,
+                    p_station->NRQ,
+                    altitude);
+            }
+            else {  // Non-compressed item
+ 
+                xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s/%03i/%s%s",
+                    p_station->call_sign,
+                    lat_str,
+                    object_group,
+                    lon_str,
+                    object_symbol,
+                    speed_course,
+                    bearing,
+                    p_station->NRQ,
+                    altitude);
+            }
         }
     }
 
     else {  // Else it's a normal object/item
+
         if ((p_station->flag & ST_OBJECT) != 0) {   // It's an object
+
             if (transmit_compressed_objects_items) {
                 char temp_group = object_group;
                 long x_long, y_lat;
@@ -16113,7 +16478,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                         course,
                         speed,  // In knots
                         ""),    // PHG, must be blank
-                        altitude);
+                    altitude);
             }
             else {  // Non-compressed posit object
                 xastir_snprintf(line, line_length, ";%-9s*%s%s%c%s%c%s%s",
@@ -16128,6 +16493,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
             }
         }
         else {  // It's an item
+
             if (transmit_compressed_objects_items) {
                 char temp_group = object_group;
                 long x_long, y_lat;
@@ -16164,7 +16530,7 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
                         course,
                         speed,  // In knots
                         ""),    // PHG, must be blank
-                        altitude);
+                    altitude);
             }
             else {  // Non-compressed item
                 xastir_snprintf(line, line_length, ")%s!%s%c%s%c%s%s",
