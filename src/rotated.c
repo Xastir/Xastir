@@ -166,7 +166,9 @@ static XImage *XRotMagnifyImage(Display *, XImage *);
 /**************************************************************************/
 /* Routine to mimic `strdup()' (some machines don't have it)              */
 /**************************************************************************/
-
+//
+// This function allocates some memory without freeing it.
+//
 static char *my_strdup(char *str) {
     char *s;
     
@@ -277,7 +279,9 @@ void XRotSetBoundingBoxPad(int p) {
 /**************************************************************************/
 /*  Create an XImage structure and allocate memory for it                 */
 /**************************************************************************/
-
+//
+// Function does not free the memory.
+//
 static XImage *MakeXImage(Display *dpy, int w, int h) {
     XImage *I;
     char *data;
@@ -360,7 +364,10 @@ int XRotDrawAlignedImageString( Display *dpy, XFontStruct *font, float angle, Dr
 /**************************************************************************/
 /*  Aligns and paints a rotated string                                    */
 /**************************************************************************/
-
+//
+// This function allocates some memory but appears to free it
+// properly.
+//
 static int XRotPaintAlignedString( Display *dpy, XFontStruct *font, float angle, Drawable drawable, GC gc, int x, int y, char *text, int align, int bg) {
     int i;
     GC my_gc;
@@ -437,7 +444,7 @@ static int XRotPaintAlignedString( Display *dpy, XFontStruct *font, float angle,
         XPoint *xpoints;
         Pixmap empty_stipple;
         
-        /* reserve space for XPoints */
+        /* reserve space for XPoints, free'd later */
         xpoints=(XPoint *)malloc((unsigned)(4*item->nl*sizeof(XPoint)));
         if(!xpoints)
             return 1;
@@ -598,7 +605,10 @@ static int XRotPaintAlignedString( Display *dpy, XFontStruct *font, float angle,
 /**************************************************************************/
 /*  Draw a horizontal string in a quick fashion                           */
 /**************************************************************************/
-
+//
+// This function allocates some memory but appears to free it
+// properly.
+//
 static int XRotDrawHorizontalString( Display *dpy, XFontStruct *font, Drawable drawable, GC gc, int x, int y, char *text, int align, int bg) {
     GC my_gc;
     int nl=1, i;
@@ -642,7 +652,8 @@ static int XRotDrawHorizontalString( Display *dpy, XFontStruct *font, Drawable d
         yp=y-nl*height+font->ascent;
     else
         yp=y;
-    
+   
+// Allocates some memory 
     str1=my_strdup(text);
     if(str1==NULL)
         return 1;
@@ -776,10 +787,12 @@ static RotatedTextItem *XRotRetrieveFromCache( Display *dpy, XFontStruct *font, 
             return NULL;
 
         /* record what it shows */
+// Allocates some memory
         item->text=my_strdup(text);
 
         /* fontname or ID */
         if(font_name!=NULL) {
+// Allocates some memory
             item->font_name=my_strdup(font_name);
             item->fid=0;
         }
@@ -832,7 +845,10 @@ static RotatedTextItem *XRotRetrieveFromCache( Display *dpy, XFontStruct *font, 
 /**************************************************************************/
 /*  Create a rotated text item                                            */
 /**************************************************************************/
-
+//
+// This function allocates some memory but appears to free it
+// properly.
+//
 static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, float angle, char *text, int align) {
     RotatedTextItem *item=NULL;
     Pixmap canvas;
@@ -873,6 +889,7 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
         str2=str2_b;
     
     /* find width of longest section */
+// Allocates some memory
     str1=my_strdup(text);
     if(str1==NULL)
         return NULL;
@@ -942,6 +959,7 @@ static RotatedTextItem *XRotCreateTextItem( Display *dpy, XFontStruct *font, flo
     /* start at top of bitmap */
     yp=font->ascent;
     
+// Allocates some memory
     str1=my_strdup(text);
     if(str1==NULL)
         return NULL;
@@ -1367,7 +1385,10 @@ static XImage *XRotMagnifyImage( Display *dpy, XImage *ximage) {
 /**************************************************************************/
 /* Calculate the bounding box some text will have when painted            */
 /**************************************************************************/
-
+//
+// This function allocates some memory, frees all but xp_out which
+// is returned.
+//
 XPoint *XRotTextExtents( Display *dpy, XFontStruct *font, float angle, int x, int y, char *text, int align) {
     register int i;
     char *str1, *str2, *str3;
@@ -1407,6 +1428,7 @@ XPoint *XRotTextExtents( Display *dpy, XFontStruct *font, float angle, int x, in
             str2=str2_b;
 
     /* find width of longest section */
+// Allocates some memory, free'd below
     str1=my_strdup(text);
     if(str1==NULL)
             return NULL;
