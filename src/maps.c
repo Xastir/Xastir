@@ -1075,6 +1075,15 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
  DESCRIPT   character   35      Name of road (sparse)
  SPEEDLIM   numeric     16,0
  SECONDS    numeric     16,2
+
+Lakes (lk17de98.shp):
+---------------------
+field name  type     width,dec  description
+NAME        string      (40,0)
+FEATURE     string      (40,0)
+LON         float       (10,5)
+LAT         float       (9,5)
+
  **********************************************************/
 void draw_shapefile_map (Widget w,
                         char *dir,
@@ -1099,10 +1108,18 @@ void draw_shapefile_map (Widget w,
     int             ok, index;
     int             road_flag = 0;
     int             water_flag = 0;
+    int             weather_alert_flag = 0;
     int             lake_flag = 0;
+    char            *filename;  // filename itself w/o directory
 
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
+
+    filename = filenm;
+    i = strlen(filenm);
+    while ( (filenm[i] != '/') && (i >= 0) )
+        filename = &filenm[i--];
+    //printf("filename = %s\n",filename);    
 
     // Open the .dbf file for reading.  This has the textual
     // data (attributes) associated with each shape.
@@ -1124,6 +1141,14 @@ void draw_shapefile_map (Widget w,
 
     panWidth = (int *) malloc( fieldcount * sizeof(int) );
 
+    if (strncasecmp (filename, "lk", 2) == 0) {
+        lake_flag++;
+        water_flag++;
+
+        if (debug_level & 2)
+            printf("*** Found some lakes ***\n");
+    }
+ 
     for( i = 0; i < fieldcount; i++ ) {
         char            szTitle[12];
 
@@ -1159,21 +1184,13 @@ void draw_shapefile_map (Widget w,
             if (debug_level & 2)
                 printf("*** Found some roads ***\n");
         }
-        if ( (strncasecmp (szTitle, "US_RIVS_ID", 10) == 0)
-            || (strncasecmp (szTitle, "FEATURE", 7) == 0) )
+        if (strncasecmp (szTitle, "US_RIVS_ID", 10) == 0)
         {
 
             water_flag++;
 
             if (debug_level & 2)
                 printf("*** Found some water ***\n");
-        }
-
-        if (strncasecmp (szTitle, "FEATURE", 7) == 0) {
-            lake_flag++;
-
-            if (debug_level & 2)
-                printf("*** In a lake ***\n");
         }
     }
 
@@ -1228,7 +1245,7 @@ void draw_shapefile_map (Widget w,
     }
 
 
-    if (!road_flag && !water_flag) {
+    if (weather_alert_flag) {
         // This GC is used only for pixmap_alerts
         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)0x01]);
 
@@ -1259,11 +1276,12 @@ void draw_shapefile_map (Widget w,
 //    else
 //        (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineSolid, CapButt,JoinMiter);
     } else {
-        if (road_flag)
-            (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)0x08]);
-
         if (water_flag)
             (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)0x09]);
+
+//        if (road_flag)
+        else
+            (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)0x08]);
     }
 
 
