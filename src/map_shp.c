@@ -1367,18 +1367,34 @@ void draw_shapefile_map (Widget w,
         return;
     }
 
+
+    // Get the extents of the map file
+    SHPGetInfo( hSHP, &nEntities, &nShapeType, adfBndsMin, adfBndsMax );
+
 #ifdef USE_RTREE
-    // be sure we have this file in the shapefile hash.  
-    si = get_shp_from_hash(file);
-    if (!si) {
-        add_shp_to_hash(file,hSHP); // this will index all the shapes in 
-                                    // an RTree and save the root in a 
-                                    // shpinfo structure
-        si=get_shp_from_hash(file); // now get that structure
+    si=NULL;
+
+    // Don't bother even looking at the hash if this shapefile is completely
+    // contained in the current viewport.  We'll have to read every shape
+    // in it anyway, and all we'd be doing is extra work searching the
+    // RTree
+    if (!map_inside_viewport_lat_lon(adfBndsMin[1],
+                                     adfBndsMax[1],
+                                     adfBndsMin[0],
+                                     adfBndsMax[0])) {
+        si = get_shp_from_hash(file);
         if (!si) {
-            fprintf(stderr,
-                    "Panic!  added %s, lost it already!\n",file);
-            exit(1);
+            // we don't have what we need, so generate the index and make
+            // the hashtable entry
+            add_shp_to_hash(file,hSHP); // this will index all the shapes in 
+                                        // an RTree and save the root in a 
+                                        // shpinfo structure
+            si=get_shp_from_hash(file); // now get that structure
+            if (!si) {
+                fprintf(stderr,
+                        "Panic!  added %s, lost it already!\n",file);
+                exit(1);
+            }
         }
     }
     // we need this for the rtree search
@@ -1388,9 +1404,6 @@ void draw_shapefile_map (Widget w,
     viewportRect.boundary[2] = (RectReal) rXmax;
     viewportRect.boundary[3] = (RectReal) rYmax;
 #endif // USE_RTREE
-
-    // Get the extents of the map file
-    SHPGetInfo( hSHP, &nEntities, &nShapeType, adfBndsMin, adfBndsMax );
 
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
@@ -1657,10 +1670,16 @@ void draw_shapefile_map (Widget w,
         }
     }
     else {  // Draw an entire Shapefile map
-        RTree_hitarray_index=0;
-        // the callback will be executed every time the search finds a 
-        // shape whose bounding box overlaps the viewport.
-        nhits = RTreeSearch(si->root, &viewportRect, RTreeSearchCallback, 0);
+        if (si) {
+            RTree_hitarray_index=0;
+            // the callback will be executed every time the search finds a 
+            // shape whose bounding box overlaps the viewport.
+            nhits = RTreeSearch(si->root, &viewportRect, 
+                                RTreeSearchCallback, 0);
+        } else {
+            // we read the entire shapefile
+            nhits=nEntities;
+        }
     }
 #else
     if (weather_alert_flag) {   // We're drawing _one_ weather alert shape
@@ -1692,7 +1711,11 @@ void draw_shapefile_map (Widget w,
         int skip_label = 0;
 
 #ifdef USE_RTREE
-        structure=RTree_hitarray[RTree_hitarray_index];
+        if (si) {
+            structure=RTree_hitarray[RTree_hitarray_index];
+        } else {
+            structure = RTree_hitarray_index;
+        }
 #endif
 
         // Have had segfaults before at the SHPReadObject() call

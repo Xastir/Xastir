@@ -271,7 +271,7 @@ void RTreeDisconnectBranch(struct Node *n, int i)
 void RTreeDestroyNode (struct Node *n)
 {
     int i;
-    
+    fprintf(stderr,"  Freeing node %lx\n",(unsigned long int) n);
     if (n->level > 0) {  //it is not leaf -> destroy childs 
         for ( i = 0; i < NODECARD; i++) {
             if ( n->branch[i].child ) {

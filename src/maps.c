@@ -1828,6 +1828,7 @@ int map_visible (unsigned long map_max_y,   // bottom_map_boundary
 /////////////////////////////////////////////////////////////////////
 // get_viewport_lat_lon(double *xmin, double *ymin, double* xmax, double *ymax)
 // Simply returns the viewport variables used by map_visible_lat_lon
+/////////////////////////////////////////////////////////////////////
 void get_viewport_lat_lon(double *xmin, 
                           double *ymin, 
                           double* xmax, 
@@ -1838,6 +1839,29 @@ void get_viewport_lat_lon(double *xmin,
     *xmax=view_max_x;
     *ymax=view_max_y;
 }
+
+/////////////////////////////////////////////////////////////////////
+// map_inside_viewport_lat_lon()
+//  Returns 1 if the given set of xmin,xmax, ymin,ymax defines a 
+//  rectangle entirely contained in the current viewport (as opposed to
+//  merely partially overlapping it.  Returns zero otherwise.
+/////////////////////////////////////////////////////////////////////
+int map_inside_viewport_lat_lon(double map_min_y,
+                                double map_max_y,
+                                double map_min_x,
+                                double map_max_x) {
+    int retval=0;
+    if (map_min_x >= view_min_x &&
+        map_min_y >= view_min_y &&
+        map_max_x <= view_max_x &&
+        map_max_y <= view_max_y) {
+        retval=1;
+    }
+
+    return (retval);
+}
+        
+                         
 /////////////////////////////////////////////////////////////////////
 // map_visible_lat_lon()
 //

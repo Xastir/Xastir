@@ -150,6 +150,10 @@ extern int map_visible_lat_lon (double f_bottom_map_boundary,
                                 double f_left_map_boundary,
                                 double f_right_map_boundary,
                                 char *error_message);
+extern int map_inside_viewport_lat_lon(double map_min_y,
+                                       double map_max_y,
+                                       double map_min_x,
+                                       double map_max_x);
 extern void draw_label_text (Widget w, int x, int y, int label_length, int color, char *label_text);
 extern void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize);
 extern void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text, int fontsize);

@@ -151,6 +151,7 @@
 #include "rotated.h"
 #include "datum.h"
 #include "igate.h"
+#include "shp_hash.h"
 #include "x_spider.h"
 
 
@@ -10256,6 +10257,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             check_station_remove();             // remove old stations
             check_message_remove();             // remove old messages
 
+#ifdef USE_RTREE
+            purge_shp_hash();                   // purge stale rtrees
+#endif
 
             //if ( (new_message_data > 0) && ( (delay_time % 2) == 0) )
             //update_messages(0);                 // Check Messages, no forced update
