@@ -2417,30 +2417,6 @@ _do_the_drawing:
                   temp_sec_heard,
                   drawing_target);
 
-    draw_symbol(w,
-                p_station->aprs_symbol.aprs_type,
-                p_station->aprs_symbol.aprs_symbol,
-                p_station->aprs_symbol.special_overlay,
-                p_station->coord_lon,
-                p_station->coord_lat,
-                temp_call,
-                temp_altitude,
-                temp_course,    // ??
-                temp_speed,     // ??
-                temp_my_distance,
-                temp_my_course,
-// Display only if wx temp is current
-                (wx_ghost) ? "" : temp_wx_temp,
-// Display only if if wind speed is current
-                (wx_ghost) ? "" : temp_wx_wind,
-                temp_sec_heard,
-                temp_show_last_heard,
-                drawing_target,
-                orient,
-                p_station->aprs_symbol.area_object.type,
-                p_station->signpost,
-                p_station->probability_min,
-                p_station->probability_max);
 
     // Draw additional stuff if this is the tracked station
     if (is_tracked_station(p_station->call_sign)) {
@@ -2461,6 +2437,7 @@ _do_the_drawing:
                         colors[0x61],   // Blue
                         drawing_target);
     }
+
 
     // Draw additional stuff if this is a storm and the weather data
     // is not too old to display.
@@ -2531,6 +2508,32 @@ _do_the_drawing:
                        temp_sec_heard,
                        drawing_target);
     }
+
+
+    draw_symbol(w,
+                p_station->aprs_symbol.aprs_type,
+                p_station->aprs_symbol.aprs_symbol,
+                p_station->aprs_symbol.special_overlay,
+                p_station->coord_lon,
+                p_station->coord_lat,
+                temp_call,
+                temp_altitude,
+                temp_course,    // ??
+                temp_speed,     // ??
+                temp_my_distance,
+                temp_my_course,
+// Display only if wx temp is current
+                (wx_ghost) ? "" : temp_wx_temp,
+// Display only if if wind speed is current
+                (wx_ghost) ? "" : temp_wx_wind,
+                temp_sec_heard,
+                temp_show_last_heard,
+                drawing_target,
+                orient,
+                p_station->aprs_symbol.area_object.type,
+                p_station->signpost,
+                p_station->probability_min,
+                p_station->probability_max);
 
 
     // Draw other points associated with the station, if any.
