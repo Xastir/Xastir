@@ -3119,6 +3119,8 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
 
     XtFree(temp);
 
+    redraw_on_new_data = 2;  // redraw now
+
     Change_tactical_destroy_shell(widget,clientData,callData);
 }
 
