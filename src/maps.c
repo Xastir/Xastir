@@ -1682,7 +1682,7 @@ void draw_shapefile_map (Widget w,
         if (lake_flag || river_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // SteelBlue
         else if (path_flag)
-            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x04]); // brown
         else if (railroad_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x01]); // purple
         else
