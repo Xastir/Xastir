@@ -3,7 +3,7 @@
  *
  * XASTIR, Amateur Station Tracking and Information Reporting
  * Copyright (C) 1999,2000  Frank Giannandrea
- * Copyright (C) 2000,2002  Xastir Dev Team
+ * Copyright (C) 2000-2003  Xastir Dev Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
