@@ -7736,6 +7736,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     //XtAddEventHandler(da,ButtonReleaseMask,FALSE,(XtEventHandler)Mouse_button_handler,NULL);
 
 
+    // If adding any more widgets here, increase the size of the
+    // children[] array above.
     ac = 0;
     children[ac++] = text;
     children[ac++] = text2;
