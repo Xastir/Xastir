@@ -186,8 +186,8 @@ See below for instructions on installing all of these libraries. Once the
   compiling in support for the new features.
 
 
-If you wish to disable configure's testing of certain features, you
-can add any of the following flags to configure:
+If you wish to enable/disable configure's testing of certain
+features, you can add any of the following flags to configure:
 
     --without-ax25
     --without-festival
@@ -199,7 +199,7 @@ can add any of the following flags to configure:
     --without-gdal
     --without-pcre
     --without-dbfawk
-    --without-errorpopups
+    --with-errorpopups
 
 For example, "./configure --without-ax25" will disable the AX.25
 networking code in Xastir.

@@ -67,12 +67,12 @@ XASTIR_SET_SYSTEM
 # Check for binaries
 use_festival=yes
 use_gpsman=yes
-use_err_popups=yes
+use_err_popups=no
 AC_ARG_WITH(festival,[  --without-festival       Disable festival features.],use_festival=$withval)
 
 AC_ARG_WITH(gpsman,[  --without-gpsman       Disable gpsman features.],use_gpsman=$withval)
 
-AC_ARG_WITH(errorpopups,[  --without-errorpopups       Send error popups to stderr.],use_err_popups=$withval)
+AC_ARG_WITH(errorpopups,[  --with-errorpopups       Send error popups to stderr.],use_err_popups=$withval)
 
 
 # Now that all the various "use_" variables are set, probe for binaries.
@@ -404,6 +404,16 @@ CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = 
 LDFLAGS=`echo "$LDFLAGS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
 #LIBS=`echo "$LIBS" | awk '{for(i=1;i<=NF;++i) {if (arg[$i]++ == 0) s = s " " $i} print s}'`
 changequote([,]) 
+
+
+# 
+# Remove "-g" CFLAGS/CPPFLAGS entries.
+#
+changequote(,) 
+CFLAGS=`echo  "$CFLAGS" | awk '{for(i=1;i<=NF;++i) {if ($i != "-g") s = s " " $i} print s}'`
+CPPFLAGS=`echo  "$CPPFLAGS" | awk '{for(i=1;i<=NF;++i) {if ($i != "-g") s = s " " $i} print s}'`
+changequote([,]) 
+
 
 
 # Create the ILIBS defined variable
