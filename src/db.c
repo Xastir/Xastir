@@ -2611,13 +2611,24 @@ _do_the_drawing:
     if (Display_.phg
         && (!(p_station->flag & ST_MOVING) || Display_.phg_of_moving)) {
 
-        if (strlen(p_station->power_gain) == 7) { // Station has PHG defined
+        // Check for Map View "eyeball" symbol
+        if ( strncmp(p_station->power_gain,"RNG",3) == 0
+                && p_station->aprs_symbol.aprs_type == '/'
+                && p_station->aprs_symbol.aprs_symbol == 'E' ) {
+            // Map View "eyeball" symbol.  Don't draw the RNG ring
+            // for it.
+        }
+        else if (strlen(p_station->power_gain) == 7) {
+            // Station has PHG or RNG defined
+            //
             draw_phg_rng(p_station->coord_lon,p_station->coord_lat,
                          p_station->power_gain,temp_sec_heard,drawing_target);
         }
         else if (Display_.default_phg && !(p_station->flag & (ST_OBJECT|ST_ITEM))) {
-            // No PHG defined and not an object/item.  Display a PHG of 3130 as default
-            // as specified in the spec:  9W, 3dB omni at 20 feet = 6.2 mile PHG radius.
+            // No PHG defined and not an object/item.  Display a PHG
+            // of 3130 as default as specified in the spec:  9W, 3dB
+            // omni at 20 feet = 6.2 mile PHG radius.
+            //
             draw_phg_rng(p_station->coord_lon,p_station->coord_lat,
                          "PHG3130",temp_sec_heard,drawing_target);
         }
@@ -4116,7 +4127,21 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
     // Current Power Gain ...
     if (strlen(p_station->power_gain) == 7) {
-        phg_decode(langcode("WPUPSTI014"), p_station->power_gain, temp, sizeof(temp) );
+        // Check for RNG instead of PHG
+        if (p_station->power_gain[0] == 'R') {
+            // Found a Range
+            xastir_snprintf(temp,
+                sizeof(temp),
+                langcode("WPUPSTI067"),
+                atoi(&p_station->power_gain[3]));
+        }
+        else {
+            // Found PHG
+            phg_decode(langcode("WPUPSTI014"),
+                p_station->power_gain,
+                temp,
+                sizeof(temp) );
+        }
 
         // Check for Map View symbol:  Eyeball symbol with // RNG
         // extension.
@@ -8220,7 +8245,7 @@ int extract_position(DataRow *p_station, char **info, int type) {
     float gridlon;
     my_data = (*info);
 
-    if (type != APRS_GRID){
+    if (type != APRS_GRID){ // Not a grid
         ok = (int)(strlen(my_data) >= 19);
         ok = (int)(ok && my_data[4]=='.' && my_data[14]=='.'
             && (toupper(my_data[7]) =='N' || toupper(my_data[7]) =='S')
@@ -8291,7 +8316,7 @@ int extract_position(DataRow *p_station, char **info, int type) {
 
             (*info) += 19;                  // delete position from comment
         }
-    } else { // is it a grid 
+    } else { // It is a grid 
         // first sanity checks, need more
         ok = (int)(is_num_chr(my_data[2]));
         ok = (int)(ok && is_num_chr(my_data[3]));
@@ -8375,16 +8400,9 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
     //fprintf(stderr,"my_data: %s\n",my_data);
 
     // If c = space, csT bytes are ignored.  Minimum length:  8
-    // bytes for lat/lon, 2 for symbol, "space" for c for a total of
-    // 11.  Maximum length:  8/2/3 for a total of 13.  We'll assume
-    // here that there may be some previously unparsed stuff at the
-    // end and just ignore it, so won't check against a maximum
-    // length.
-    // Should we append a space if it's only 10 characters, so we
-    // can parse out a possible lat/long?  Seems like it'd be a nice
-    // thing to do.
+    // bytes for lat/lon, 2 for symbol, 3 for csT for a total of 13.
     len = strlen(my_data);
-    ok = (int)(len >= 10);
+    ok = (int)(len >= 13);
 
     if (ok) {
         y1 = (int)my_data[1] - '!';
@@ -8396,25 +8414,15 @@ int extract_comp_position(DataRow *p_station, char **info, /*@unused@*/ int type
         x3 = (int)my_data[7] - '!';
         x4 = (int)my_data[8] - '!';
 
-        // Have at least a 'c' byte?
-        if (len > 10) {
+        // csT bytes
+        if (my_data[10] == ' ') // Space
+            c = -1; // This causes us to ignore csT
+        else {
             c = (int)my_data[10] - '!';
-            skip = 11;
-        }
-        else {  // No 'c' byte.  Not per spec, but we decode the packet ok.
-            c = -1; // Causes us to ignore csT
-            skip = 10;
-        }
-      
-        // Have 's' and 'T' bytes?   'c' must not be a space (now -1).
-        if ( (len >= 13) && (c != -1) ) { 
             s = (int)my_data[11] - '!';
             T = (int)my_data[12] - '!';
-            skip = 13;
         }
-        else {  // Not enough chars for csT, so zero them
-            c = -1; // This causes us to ignore csT
-        }
+        skip = 13;
 
         // Convert ' ' to '0'.  Not specified in APRS Reference!  Do
         // we need it?
