@@ -8466,10 +8466,13 @@ void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 }
 
 void Set_Log_Indicator(){
-	if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate))
+	if ((1==log_tnc_data) || (1==log_net_data) || (1==log_wx) || (1==log_igate)) {
 	    XmTextFieldSetString(log_indicator, "Logging");
-	else 
+            XtVaSetValues(log_indicator, XmNbackground, (int)GetPixelByName(Global.top,"RosyBrown"), NULL);
+	} else {
 	    XmTextFieldSetString(log_indicator, NULL);
+            XtVaSetValues(log_indicator, MY_BACKGROUND_COLOR, NULL);
+	}
 }
 
 
