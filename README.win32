@@ -150,6 +150,9 @@ required:
 [ ] XFree86-xwinclip:  Windows clipboard integration for X11
 [ ] zip
 
+We've had reports that XFree86-xwinclip is not available anymore.
+It's not critical.
+
 Clicking on the small circle with the two arrows will run you
 through the various select/de-select options for each package.
 
