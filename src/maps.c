@@ -10519,6 +10519,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                             if ( (dl->d_name[i] != '\n')
                                     && (dl->d_name[i] != '\r')
                                     && (dl->d_name[i] < 0x20) ) {
+
                                 printf("\nFound control character 0x%02x in alert file/alert directory name.  Line was:\n",
                                     dl->d_name[i]);
                                 printf("%s\n",dl->d_name);
@@ -10619,6 +10620,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                     if ( (dl->d_name[i] != '\n')
                             && (dl->d_name[i] != '\r')
                             && (dl->d_name[i] < 0x20) ) {
+
                         printf("\nFound control character 0x%02x in map file/map directory name.  Line was:\n",
                             dl->d_name[i]);
                         printf("%s\n",dl->d_name);
@@ -10755,7 +10757,8 @@ void index_update_directory(char *directory) {
     //printf( "index_update_directory: %s\n", directory );
 
     // Check for initial bad input
-    if ( (directory[0] == '\0')
+    if ( (directory == NULL)
+            || (directory[0] == '\0')
             || (directory[strlen(directory) - 1] != '/')
             || ( (directory[1] == '/') && (strlen(directory) == 1)) ) {
         printf("index_update_directory: Bad input: %s\n",directory);
@@ -10767,7 +10770,10 @@ void index_update_directory(char *directory) {
     for ( i = 0; i < strlen(directory); i++ ) {
         // Change any control characters to '\0' chars
         if (directory[i] < 0x20) {
+
             directory[i] = '\0';    // Terminate it here
+            printf("index_update_directory: Found control characters in: %s\n",
+                directory);
         }
     }
     // Check if the string is _now_ bogus
@@ -10895,7 +10901,8 @@ void index_update_xastir(char *filename,
 
 
     // Check for initial bad input
-    if ( (filename[0] == '\0')
+    if ( (filename == NULL)
+            || (filename[0] == '\0')
             || (filename[strlen(filename) - 1] == '/') ) {
         printf("index_update_xastir: Bad input: %s\n",filename);
         return;
@@ -10906,7 +10913,10 @@ void index_update_xastir(char *filename,
     for ( i = 0; i < strlen(filename); i++ ) {
         // Change any control characters to '\0' chars
         if (filename[i] < 0x20) {
+
             filename[i] = '\0';    // Terminate it here
+            printf("index_update_xastir: Found control characters in: %s\n",
+                filename);
         }
     }
     // Check if the string is _now_ bogus
@@ -11052,7 +11062,8 @@ void index_update_ll(char *filename,
 
 
     // Check for initial bad input
-    if ( (filename[0] == '\0')
+    if ( (filename == NULL)
+            || (filename[0] == '\0')
             || (filename[strlen(filename) - 1] == '/') ) {
         printf("index_update_ll: Bad input: %s\n",filename);
         return;
@@ -11063,7 +11074,10 @@ void index_update_ll(char *filename,
     for ( i = 0; i < strlen(filename); i++ ) {
         // Change any control characters to '\0' chars
         if (filename[i] < 0x20) {
+
             filename[i] = '\0';    // Terminate it here
+            printf("index_update_ll: Found control characters in: %s\n",
+                filename);
         }
     }
     // Check if the string is _now_ bogus
@@ -11241,6 +11255,10 @@ int index_retrieve(char *filename,
     map_index_record *current = map_index_head;
     int status = 0;
 
+    if (filename == NULL) {
+        return(status);
+    }
+
     // Search for a matching filename in the linked list
     while ( (current != NULL)
             && (strlen(filename) < MAX_FILENAME) ) {
@@ -11278,7 +11296,7 @@ int index_retrieve(char *filename,
 void index_save_to_file() {
     FILE *f;
     map_index_record *current;
-    char out_string[MAX_FILENAME];
+    char out_string[MAX_FILENAME*2];
 
 
     //printf("Saving map index to file\n");
@@ -11305,7 +11323,6 @@ void index_save_to_file() {
             if (current->filename[i] < 0x20) {
 
                 current->filename[i] = '\0';    // Terminate it here
-
                 printf("Found control characters while saving map index: %s\n",
                     current->filename);
             }
@@ -11374,7 +11391,10 @@ void index_insert_sorted(map_index_record *new_record) {
     // characters and convert them to string-end characters.
     for ( i = 0; i < strlen(new_record->filename); i++ ) {
         if (new_record->filename[i] < 0x20) {
+
             new_record->filename[i] = '\0';    // Terminate it here
+            printf("index_insert_sorted: Found control characters in: %s\n",
+                new_record->filename);
         }
     }
     // Check if the string is _now_ bogus
