@@ -10581,8 +10581,9 @@ void index_update_xastir(char *filename,
     // Update the values.  By this point we have a struct to fill
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
-    strncpy(temp_record->filename,filename,399);
-    temp_record->filename[399] = '\0';
+    xastir_snprintf(temp_record->filename,400,"%s",filename);
+    //strncpy(temp_record->filename,filename,399);
+    //temp_record->filename[399] = '\0';
 //    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
 
     temp_record->bottom = bottom;
@@ -10700,8 +10701,9 @@ void index_update_ll(char *filename,
     // Update the values.  By this point we have a struct to fill
     // in, whether it's a new or old struct doesn't matter.  Convert
     // the values from lat/long to Xastir coordinate system.
-    strncpy(temp_record->filename,filename,399);
-    temp_record->filename[399] = '\0';
+    xastir_snprintf(temp_record->filename,400,"%s",filename);
+    //strncpy(temp_record->filename,filename,399);
+    //temp_record->filename[399] = '\0';
 //    xastir_snprintf(temp_record->filename,strlen(temp_record->filename),"%s",filename);
 
     ok = convert_to_xastir_coordinates( &temp_left,
