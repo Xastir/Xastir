@@ -388,10 +388,10 @@ README
 
 
 
-     (7) GATING WEATHER ALERTS
+     (7) GATING WEATHER ALERTS, STATIONS, OBJECTS/ITEMS TO RF
 
       Gating NWS Weather Alerts to RF:
-       --------------------------------
+      --------------------------------
       If you wish to gate NWS weather alerts from the Internet onto RF, you'll
       need to create a text file in the users directory as 
       ~/.xastir/data/nws-stations.txt
@@ -429,6 +429,15 @@ README
       logging info. Auto-rollover of log files is typically accomplished via
       CRON.
 
+      Gating Stations, Objects/Items to RF:
+      -------------------------------------
+      The latest code also allows gating packets from specific stations to RF
+      using the above method (except object/item packets).  You can also gate
+      objects/items to RF by name.  The same wildcarding rules apply as listed
+      above.  Callsigns or object/item names listed in this file are
+      case-insensitive, so they'll match any case in received packets.
+
+
      (8) BORING LEGAL STUFF
 
           Xastir is Copyright © by Frank Giannandrea. Xastir is
@@ -449,6 +458,7 @@ README
           it to.
 
           You didn't pay for it, so don't expect magic.
+
 
      (9) MAILING LIST
 
