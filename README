@@ -4,7 +4,7 @@ README
   ------------------------------------------------------------------------
 
      Please at least SKIM this document before asking questions. In fact,
-     READ IT if you've never successfully set up xastir before. PLEASE!
+     READ IT if you've never successfully set up Xastir before. PLEASE!
      READ IT! If you haven't read this file, and ask for help
      expect to be told to READ the README file first! or rtfm :)
 
@@ -13,7 +13,7 @@ README
      0    Important notice
      1    What is Xastir?
      2    How do I get Xastir
-          2a    CVS usage
+     2a   CVS usage
      3    Quick startup
      4    Upgrading
      5    Boring legal stuff
@@ -35,9 +35,9 @@ README
 
      (2) HOW TO GET XASTIR
 
-          Currently, the 1.0.x tree of xastir is developed at
+          Currently, the 1.0.x tree of Xastir is developed at
           <http://sourceforge.net/projects/xastir/>
-          You can get the latest version of xastir from there.
+          You can get the latest version of Xastir from there.
 
           You might try www.xastir.org for help and information.
           The new web site will soon be:
@@ -46,43 +46,34 @@ README
 
      (2a) CVS USAGE
 
-          You might obtain the *very latest* version of xastir that
+          You might obtain the *very latest* version of Xastir that
           is still under development by using CVS. CVS means
           'Concurrent Versions System' and is a tool for developers to
           always keep source code up to date. Try 'man cvs' on your
           shell for more information about CVS ;-)
 
           This intended only for users that know a fair bit about
-          xastir. Be aware that the versions of xastir that you get
+          Xastir. Be aware that the versions of Xastir that you get
           by CVS are still being developed, and may be buggy. The
           Xastir devteam will in *NO WAY* take any responsibility for
           whatever might happen to you or your computer if you use a
-          CVS version of xastir.
+          CVS version of Xastir.
 
-          To obtain xastir over CVS, do as follows:
-
-               (1) log into your shell
-               (2) type 'export
-               CVSROOT=:pserver:anonymous@argon.hscs.virginia.edu:/usr/local/cvs'
-
-               (3) type 'cvs login'
-               (4) type 'xastir' when it asks for a password.
-               (5) in your home dir, type 'cvs checkout xastir'
-               (6) in ~/xastir, you should have a copy of the
-               latest CVS version of xastir.
+          To obtain Xastir over CVS, go to the Xastir project page
+          at SourceForge:  <http://sourceforge.net/projects/xastir/>,
+          Click on CVS, then follow the instructions listed.
 
           Notes:
 
                (1) you can 'cvs logout', but you don't need to.
                (2) you don't need to go through this whole
                process every time; if you want to get a CVS
-               version of xastir at a later time, you can just
+               version of Xastir at a later time, you can just
                'cd ~/xastir' and type 'cvs update -A'.
                (3) if you experience errors when using 'export',
-               you might be using tclsh as a shell. If so, try
-               using the command 'setenv' instead of 'export':
+               you might be using tclsh or csh as a shell. If so,
+               try using the command 'setenv' instead of 'export':
                'setenv CVSROOT
-               :pserver:anonymous@argon.hscs.virginia.edu:/usr/local/cvs'
 
      (3) QUICK STARTUP
 
@@ -100,8 +91,8 @@ README
           Foundation, Inc., 675 Mass Ave, Cambridge, MA
           02139, USA.
 
-          As of xastir 0.4.0 all changes made by the Xastir
-          development team to the xastir source code and any related
+          As of Xastir 0.4.0 all changes made by the Xastir
+          development team to the Xastir source code and any related
           files are Copyright © 2001,2002 by The Xastir Group. The source
           code will still be distributed according to the GNU General
           Public License as Frank Giannandrea did in the past.
@@ -114,21 +105,21 @@ README
 
      (6) MAILING LIST
 
-          There are currently a couple of mailing lists about xastir.
+          There are currently a couple of mailing lists about Xastir.
           xastir@xastir.org is the one relevant for posts about
-          xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
+          Xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
 
-          To subscribe to the xastir mailing list, send email to:
+          To subscribe to the Xastir mailing list, send email to:
           xastir-request@xastir.org In the body of the message,
           put "subscribe xastir"; or go to
           http://www.xastir.org/mailman/listinfo/xastir
 
                ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
 
-          Frank is no longer developing the xastir code (although
+          Frank is no longer developing the Xastir code (although
           he does put a word in every now and then) so don't bother
           emailing him. If you have a serious problem, email the
-          xastir mailing list and it will get to the coders.
+          Xastir mailing list and it will get to the coders.
 
           Please, before posting to this list, see what things are
           like, and when you do post, read over your post for
@@ -159,4 +150,5 @@ README
 
   ------------------------------------------------------------------------
 (c) 1999 Frank Giannandrea
-(c) 2000,2001,2002 The Xastir Group
+(c) 2000-2002 The Xastir Group
+

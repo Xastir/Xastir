@@ -804,26 +804,13 @@ CVS Instructions:
         server to talk to, and which account/encrypted password to use from
         your ~/.cvspass file.
 
-     3) Type this command (you only need to do this the first time through):
-
-         cvs -d:pserver:anonymous@argon.hscs.virginia.edu:/usr/local/cvs login
-         password: xastir
+     3) Follow the instructions listed under "Anonymous CVS Access".  Go to:
+        <http://sourceforge.net/projects/xastir/>, then click on "CVS" to
+        find the instructions.
 
      It creates a .cvspass file in your home directory with the anonymous
-     login information inside it.
-
-     4) Now type (again, only needed the first time through):
-
-         export CVSROOT=:pserver:anonymous@argon.hscs.virginia.edu:/usr/local/cvs
-
-     This tells the CVS commands where to find the repository the first time.
-
-     5) Now type this (again, only needed the first time through):
-
-         cvs checkout xastir
-
-     This will create a subdirectory called "xastir" that has all the
-     latest sources in it.
+     login information inside it, then creates a subdirectory called
+     "xastir" that has all the latest sources in it.
 
      All done!  You know have the latest development sources on your
      computer.  Now you can forget about all of the previous instructions
