@@ -476,10 +476,11 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
     Message m_fill;
     long record;
 
-//    if (debug_level & 1)
+    if (debug_level & 1) {
         printf("Recording ack for message to: %s, seq: %s\n",
             to_call_sign,
             seq);
+    }
 
     // Find the corresponding message in msg_data[i], set the
     // "acked" field to one.
@@ -494,19 +495,23 @@ void msg_record_ack(char *to_call_sign, char *my_call, char *seq) {
     // and seq number
     record = msg_find_data(&m_fill);
     if(record != -1L) {     // Found a match!
-//        if (debug_level & 1)
+        if (debug_level & 1) {
             printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n",
-                msg_data[record].acked,
+                msg_data[msg_index[record]].acked,
                 seq,
                 record);
-        msg_data[record].acked = 1;
-        printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
-            msg_data[record].acked,
-            seq,
-            record);
+        }
+        msg_data[msg_index[record]].acked = 1;
+        if (debug_level & 1) {
+            printf("Found in msg db, updating acked field %d -> 1, seq %s, record %ld\n\n",
+                msg_data[msg_index[record]].acked,
+                seq,
+                record);
+        }
     }
     else {
-        printf("Matching message not found\n");
+        if (debug_level & 1)
+            printf("Matching message not found\n");
     }
     update_messages(1); // Force an update
 }
@@ -577,6 +582,7 @@ void msg_data_add(char *call_sign, char *from_call, char *data, char *seq, char 
         printf("msg_data_add end\n");
 }
  
+
 
 
 
@@ -721,7 +727,7 @@ begin_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
                                 //printf("Looping through, reading messages\n");
  
-printf("acked: %d\n",msg_data[msg_index[j]].acked);
+//printf("acked: %d\n",msg_data[msg_index[j]].acked);
  
                                 // Message matches so snag the important pieces into a string
                                 xastir_snprintf(stemp, sizeof(stemp), "%c%c/%c%c %c%c:%c%c",
@@ -753,25 +759,25 @@ printf("acked: %d\n",msg_data[msg_index[j]].acked);
                                 if (mw[mw_p].send_message_text != NULL) {
 
                                     // Set highlighting based on the "acked" field
-printf("acked: %d\t",msg_data[msg_index[j]].acked);
+//printf("acked: %d\t",msg_data[msg_index[j]].acked);
                                     if ( (msg_data[msg_index[j]].acked == 0)    // Not acked yet
                                             && ( is_my_call(msg_data[msg_index[j]].from_call_sign, 1)) ) {
-printf("Setting underline\t");
+//printf("Setting underline\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
                                             pos,
                                             pos+strlen(temp2),
-                                            XmHIGHLIGHT_SECONDARY_SELECTED); // Underlining
-                                            //XmHIGHLIGHT_SELECTED);         // Reverse Video
+                                            //XmHIGHLIGHT_SECONDARY_SELECTED); // Underlining
+                                            XmHIGHLIGHT_SELECTED);         // Reverse Video
                                     }
                                     else {  // Message was acked, get rid of highlighting
-printf("Setting normal\t");
+//printf("Setting normal\t");
                                         XmTextSetHighlight(mw[mw_p].send_message_text,
                                             pos,
                                             pos+strlen(temp2),
                                             XmHIGHLIGHT_NORMAL);
                                     }
 
-printf("Text: %s\n",temp2); 
+//printf("Text: %s\n",temp2); 
                                     XmTextReplace(mw[mw_p].send_message_text,
                                             pos,
                                             pos+strlen(temp2),
@@ -820,6 +826,9 @@ end_critical_section(&send_message_dialog_lock, "db.c:update_messages" );
 
         }
         last_message_update = sec_now();
+
+//printf("Message index end: %ld\n",msg_index_end);
+ 
     }
 }
 
