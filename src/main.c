@@ -16739,6 +16739,12 @@ int Setup_object_data(char *line, int line_length) {
 // can cheat right now and just always use course/speed, adding
 // altitude with the altitude extension.  Not as efficient, but it
 // gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
+
 
             // Need to handle the conversion of numeric overlay
             // chars to "a-j" here.
@@ -17090,6 +17096,7 @@ int Setup_item_data(char *line, int line_length) {
         if (transmit_compressed_objects_items) {
             char temp_overlay = last_obj_overlay;
 
+
 // Need to compute "csT" at some point and add it to the object.
 // Until we do that we'll have no course/speed/altitude.  Looks like
 // we can have course/speed or altitude, but not both.  Must have to
@@ -17100,6 +17107,11 @@ int Setup_item_data(char *line, int line_length) {
 // can cheat right now and just always use course/speed, adding
 // altitude with the altitude extension.  Not as efficient, but it
 // gets the job done.
+//
+// Later we should change compress_posit() to accept an altitude
+// parameter, and have it decide which csT set of bytes to add, and
+// whether to add altitude as an uncompressed extension if
+// necessary.
 
 
             // Need to handle the conversion of numeric overlay
