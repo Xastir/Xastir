@@ -34,13 +34,23 @@ CVS Instructions:
         <http://sourceforge.net/projects/xastir/>, then click on "CVS" to
         find the instructions.
 
-     It creates a .cvspass file in your home directory with the anonymous
-     login information inside it, then creates a subdirectory called
-     "xastir" that has all the latest sources in it.
+        For those that are internet-challenged, here are the two commands,
+        customized for the Xastir project:
 
-     All done!  You know have the latest development sources on your
-     computer.  Now you can forget about all of the previous instructions
-     unless you delete the entire tree and want to start over from scratch.
+          cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login
+
+        Press the <ENTER> key when it asks you for a password.  That creates
+        a ".cvspass" file in your home directory with the anonymous login
+        information inside it.
+
+          cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir
+
+        That creates a subdirectory called "xastir" that has all the latest
+        sources in it.
+
+     All done!  You now have the latest development sources on your computer.
+     Now you can forget about all of the previous instructions unless you
+     delete the entire tree and want to start over from scratch.
 
 
      CVS Commands for Maintaining the Current Development Sources:
@@ -55,8 +65,7 @@ CVS Instructions:
 
          cd xastir
          cvs update (snag all the latest changes)
-         aclocal;autoconf;autoheader;automake (skip these: for developers only)
-         rm config.cache (causes configure to start from scratch)
+         ./bootstrap.sh
          ./configure
          (make clean;make -j3 2>&1) | tee make.log
          su
