@@ -1,3 +1,6 @@
+
+$Id$
+
 This file has two parts.  The first part describes the debug_level
 definitions that were in the old code and which files they were in.
 The second part describes the new structure for debug levels.

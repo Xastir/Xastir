@@ -1,3 +1,7 @@
+
+$Id$
+
+
 CVS Instructions:
 -----------------
      For those who think CVS might be a bit too complicated to deal with,
@@ -92,3 +96,4 @@ CVS Instructions:
      of use to the developers than the users.  The above should be enough
      for most people to keep their copies in sync with the latest CVS
      development sources.
+
