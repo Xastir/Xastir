@@ -6249,12 +6249,6 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
  **********************************************************/
 
 void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixmap) {
-
-#ifdef NO_GRAPHICS
-    fprintf(stderr,"No XPM or ImageMagick support compiled into Xastir!\n");
-    return;
-#else   // NO_GRAPHICS
-
     uid_t user_id;
     struct passwd *user_info;
     char username[20];
@@ -7305,8 +7299,6 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
 #ifdef TIMING_DEBUG
     time_mark(0);
 #endif  // TIMING_DEBUG
-
-#endif // NO_GRAPHICS
 }
 
 
@@ -10780,6 +10772,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             && (strcasecmp(ext,"tif" ) != 0)
             && (strcasecmp(ext,"geo" ) != 0)
             && (strcasecmp(ext,"gnis") != 0) ) {
+        fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
         return;
     }
 
@@ -10830,16 +10823,22 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
     map_maxed_symbol_labels = 0;
     npoints = 0;
 
+
+// Check file extensions for various supported map types:
+
+
     // If alert is non-NULL, then we have a weather alert and we need
     // to call draw_shapefile_map() to light up that area.  If alert
     // is NULL, then we decide here what method to use to draw the
     // map.
+
 
     // Check for WX alert/ESRI Shapefile maps first
     if ( (alert != NULL)    // We have an alert!
             || ( (ext != NULL) && ( (strcasecmp(ext,"shp") == 0)
                                  || (strcasecmp(ext,"shx") == 0)
                                  || (strcasecmp(ext,"dbf") == 0) ) ) ) { // Or non-alert shapefile map
+
 #ifdef HAVE_LIBSHP
         //fprintf(stderr,"Drawing shapefile map\n");
         if (alert != NULL) {
@@ -10852,16 +10851,40 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             alert_color,
             destination_pixmap,
             draw_filled);
-#endif // HAVE_LIBSHP
+#else   // HAVE_LIBSHP
+        if (!alert) {   // Skip message if alert (too many!)
+            fprintf(stderr,"*** Shapelib support is not compiled in! ***\n");
+        }
+        return;
+#endif  // HAVE_LIBSHP
     }
 
 
     // .geo image map? (can be one of many formats)
     else if (ext != NULL && strcasecmp (ext, "geo") == 0) {
+#ifndef NO_GRAPHICS
         draw_geo_image_map(w,
             dir,
             filenm,
             destination_pixmap);
+#else   // NO_GRAPHICS
+        fprintf(stderr,"*** No XPM or ImageMagick support compiled into Xastir! ***\n");
+        return;
+#endif  // NO_GRAPHICS
+    }
+
+
+    // USGS DRG geoTIFF map?
+    else if (ext != NULL && strcasecmp (ext, "tif") == 0) {
+#ifdef HAVE_LIBGEOTIFF
+        draw_geotiff_image_map(w,
+            dir,
+            filenm,
+            destination_pixmap);
+#else   // HAVE_LIBGEOTIFF
+        fprintf(stderr,"*** Libgeotiff support is not compiled in!  ***\n");
+        return;
+#endif // HAVE_LIBGEOTIFF
     }
 
 
@@ -10883,17 +10906,6 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
             filenm,
             destination_pixmap);
     }
-
-
-#ifdef HAVE_LIBGEOTIFF
-    // USGS DRG geoTIFF map?
-    else if (ext != NULL && strcasecmp (ext, "tif") == 0) {
-        draw_geotiff_image_map(w,
-            dir,
-            filenm,
-            destination_pixmap);
-    }
-#endif // HAVE_LIBGEOTIFF
 
 
     // Else must be APRSdos or WinAPRS map
@@ -11704,7 +11716,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 
     // Couldn't figure out the map type
     else {
-        fprintf(stderr,"draw_map: Unknown map type: %s\n", filenm);
+        fprintf(stderr,"*** draw_map: Unknown map type: %s ***\n", filenm);
     }
 
     XmUpdateDisplay (XtParent (da));
