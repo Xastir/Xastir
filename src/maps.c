@@ -774,6 +774,50 @@ void draw_grid(Widget w) {
 // The major UTM grid lines could be reduced to a bunch of
 // hard-coded vectors.
 
+        // We're done drawing the major UTM zone vertical lines.
+        // Now we need to draw the horizontal lines corresponding to
+        // the lettered NATO UTM subzones.  Zones go from A (south
+        // pole) to Z (north pole).  South of -80 are zones A/B,
+        // north of +84 are zones Y/Z.  "I" and "O" are not used.
+        // Zones from C to W are 8 degrees high.  Zone X is 12
+        // degrees high.  UPS system is used at the poles instead of
+        // UTM.  An arbitrary false northing of 10,000,000 at the
+        // equator is used for southern latitudes only.  Northern
+        // latitudes assume the equator northing is at zero.  An
+        // arbitrary false easting of 500,000 is along the meridian
+        // of each zone (3 degrees from each side).  The lettered
+        // grid lines are necessary due to some coordinates being
+        // valid in both the northern and the southern hemisphere.
+
+        // Y/Z  84N to 90N (UPS System)
+        // X    72N to 84N (12 degrees latitude, equator=0)
+        // W    64N to 72N ( 8 degrees latitude, equator=0)
+        // V    56N to 64N ( 8 degrees latitude, equator=0)
+        // U    48N to 56N ( 8 degrees latitude, equator=0)
+        // T    40N to 48N ( 8 degrees latitude, equator=0)
+        // S    32N to 40N ( 8 degrees latitude, equator=0)
+        // R    24N to 32N ( 8 degrees latitude, equator=0)
+        // Q    16N to 24N ( 8 degrees latitude, equator=0)
+        // P     8N to 16N ( 8 degrees latitude, equator=0)
+        // N     0N to  8N ( 8 degrees latitude, equator=0)
+        // M     0S to  8S ( 8 degrees latitude, equator=10,000,000)
+        // L     8S to 16S ( 8 degrees latitude, equator=10,000,000)
+        // K    16S to 24S ( 8 degrees latitude, equator=10,000,000)
+        // J    24S to 32S ( 8 degrees latitude, equator=10,000,000)
+        // H    32S to 40S ( 8 degrees latitude, equator=10,000,000)
+        // G    40S to 48S ( 8 degrees latitude, equator=10,000,000)
+        // F    48S to 56S ( 8 degrees latitude, equator=10,000,000)
+        // E    56S to 64S ( 8 degrees latitude, equator=10,000,000)
+        // D    64S to 72S ( 8 degrees latitude, equator=10,000,000)
+        // C    72S to 80S ( 8 degrees latitude, equator=10,000,000)
+        // A/B  80S to 90S (UPS System)
+
+        // There are some special zones defined as well:
+        // http://www.colorado.edu/geography/gcraft/notes/coordsys/coordsys_f.html
+        // "There are special UTM zones between 0 degrees and 36
+        // degrees longitude above 72 degrees latitude and a special
+        // zone 32 between 56 degrees and 64 degrees north
+        // latitude."
 
         // Draw a line at 90S and 90N first.  These are the poles.
 
@@ -781,6 +825,17 @@ void draw_grid(Widget w) {
         // (if it fits on the screen), then increment north by 8
         // degrees and try again.  After we draw 72N, increment by
         // 12 degrees and draw a line at 84N.
+
+// Draw labels for each UTM zone?
+
+
+
+
+// Need to draw a horizontal line at each pole, if in the view.
+
+
+// Here we'll draw the subzone (lettered) lines, which are
+// horizontal.
 
     }
     else { // Not UTM coordinate system, draw some lat/long lines
