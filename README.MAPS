@@ -225,9 +225,38 @@ Getting Maps and other Data Files for Xastir:
       the latter file, you'd type "bunzip2 filename" and then
       "tar xvf filename".
 
-      The latest Tiger/Line 2003 data converted to shapefile format is
-      available from http://xastir.tamu.edu/. These maps only work with dbfawk
-      support, and only contain vectors; no filled regions such as water. 
+      Tiger/Line 2003 data converted to shapefile format is available from
+      http://xastir.tamu.edu/. These maps only work with dbfawk support, and
+      only contain vectors; no filled regions such as water.  2004 data is now
+      available and should be available in the form of Shapefiles for Xastir
+      users soon.  We should have Polygons available along with the 2004 data,
+      whereas the 2003 Shapefile maps are missing those (see below).
+
+      Notes from Tom Russo as to the technique used to convert the files:
+
+        "I have been able to download recent (2003) TIGER/Line data from The
+        US Census Bureau's 2003 TIGER web site and convert them to shapefiles.
+        It's a piece of cake. Download the county files you want. Then unzip
+        each one into its own directory (call it "in_directory"). Then cd to
+        in_directory and run the following command:
+
+          ogr2ogr -f "ESRI Shapefile" -t_srs EPSG:4326 foo .
+
+        This will create a subdirectory of in_directory called "foo" which will
+        contain a number of shapefiles and auxiliary data. The files called
+        "CompleteChain.*" are the ones you want; they are the polylines
+        corresponding to roads and other linear features. Copy these to your
+        xastir maps directory and rename them to the name of the county they
+        represent. Then install tgr2shp.dbfawk in your share/xastir/config
+        directory and reindex maps. Ta da. See above: tgr2shp.dbfawk is now
+        part of the xastir distribution..."
+
+      Note that you'll need dbfawk support compiled into Xastir to make these
+      2003 Tiger/Line maps look nice.  Derrick Breshear created scripts to
+      process all of the Tiger/Line raw data into Shapefiles, then they were
+      put on a download site made available by Kevin Glueck,
+      "http://xastir.tamu.edu/".  Thanks go to Tom, Derrick, and Kevin for
+      making these maps so accessible to the rest of us.
 
       While there is not yet a web site from which you can download
       TIGER/Line polygons as shapefiles, you can create your own polygon
