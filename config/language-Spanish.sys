@@ -3,7 +3,7 @@
 #
 # Creador        : por Jose R. Marte A. <hi8gn@amsat.org>
 # Mantenido por  : El Xastir Grupo <xastir@xastir.org>
-# Ult. Revisión  : 04/16/2003, Jose R. Marte A. <hi8gn@amsat.org>
+# Ult. Revisión  : 04/28/2003, Por Jose R. Marte A. <hi8gn@amsat.org>
 #
 # Líneas de comentarios con un signo de libra en frente son ignorado
 # El formato del archivo es como sigue:
@@ -52,7 +52,7 @@ PULDNVI014|Programar el Uptime||
 # Menú de Configuración
 PULDNCF004|Estación|E|
 PULDNCF001|Predefinidos|P|
-PULDNCF003|Cronometrando|t|
+PULDNCF003|Cronómetro|t|
 PULDNCF002|Sistema de Coordenada|C|
 PULDNCF006|Alarmas de Audio|A|
 PULDNCF007|Sintetizador de Voz|S|
@@ -96,7 +96,7 @@ MPUPTGR013|Rios||
 MPUPTGR014|Lagos||
 MPUPTGR015|Aereopuertos, Parqueos, etc||
 MPUPTGR016|Intensidad de Mapa||
-MPUPTGR017|Descanso (sec)||
+MPUPTGR017|Descanso (segundo)||
 MPUPTGR018|Activar Tiger Mapas||
 #
 # Seleccion de Mapas
@@ -311,14 +311,14 @@ WPUPLSP006|Localizar Emergencia!||
 #
 # Configurar predefinidos
 WPUPCFD001|Configurar valores predefinidos||
-WPUPCFD002|desde qué intervalo de tiempo será considerada una estación vieja?||
+WPUPCFD002|desde qué intérvalo de tiempo será considerada una estación vieja?||
 WPUPCFD003|15 minutos|1|
 WPUPCFD004|30 minutos|3|
 WPUPCFD005|45 minutos|4|
 WPUPCFD006|1 hora|H|
 WPUPCFD007|90 minutos|9|
 WPUPCFD008|2 horas|2|
-WPUPCFD009|desde qué intervalo de tiempo la estación no será desplegada?||
+WPUPCFD009|desde qué intérvalo de tiempo la estación no será desplegada?||
 WPUPCFD010|6 horas|6|
 WPUPCFD011|12 horas|o|
 WPUPCFD012|1 Día|D|
@@ -334,13 +334,20 @@ WPUPCFD022|Posición de la estación, fecha-hora Zulu, y Tiempo|f|
 WPUPCFD023|Transmitir datos WX en Raw?||
 WPUPCFD024|Comprimir datos objeto/artículo cuando transmita?||
 WPUPCFD025|Activar Red Alternada?|A|
-WPUPCFD026|Enviar reportes de posición en qué intervalos?||
+WPUPCFD026|Enviar reportes de posición en qué intérvalos?||
 WPUPCFD027|Mostrar bulletines Nuevo||
 WPUPCFD028|Avisar si hay teclas Modificadora||
 WPUPCFD029|Ver boletines de zero-distancia||
 #
 # Menu "Configurar - Cronómetro"
 WPUPCFTM01|Configurar Cronómetro||
+WPUPCFTM02|TX Posición Intérvalo (minutos)||
+WPUPCFTM03|Desvanecimiento de la Estación (minutos)||
+WPUPCFTM04|Objeto/Artículo TX Intérvalo (minutos)||
+WPUPCFTM05|Limpiar Tiempo de la Estación (horas)||
+WPUPCFTM06|Chequeo Intérvalo del GPS (segundos)||
+WPUPCFTM07|Borrar Tiempo de la Estación (días)||
+WPUPCFTM08|Descanso Conteo-Muerto (minutos)||
 #
 # Configurar Sistema de Coordenada"
 WPUPCFC001|Configurar Sistema de Coordenada||
