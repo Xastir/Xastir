@@ -774,18 +774,24 @@ time_t time_from_aprsstring(char *aprs_time) {
 #ifdef HAVE_TM_GMTOFF
     // tm_gmtoff is the GMT offset in seconds.  Some Unix systems
     // have this extra field in the tm struct, some don't.
-    zone = (time_now->tm_gmtoff) - (3600 * (int)(time_now->tm_isdst));
+    // tm_gmtoff is seconds EAST of UTC.
+    zone = time_now->tm_gmtoff;
     //fprintf(stderr,"gmtoff: %ld, tm_isdst: %d\n",
     //    time_now->tm_gmtoff,
     //    time_now->tm_isdst);
 #else   // HAVE_TM_GMTOFF
-    zone = (int)timezone - 3600 * (int)(time_now->tm_isdst > 0);
-    //fprintf(stderr,"timezone: %d\n",timezone);
+    // Note:  timezone is seconds WEST of UTC.  Need to negate
+    // timezone to have the offset occur in the correct direction.
+    zone = -((int)timezone - 3600 * (int)(time_now->tm_isdst > 0));
+    //fprintf(stderr,"timezone: %d, tm_isdst: %d\n",
+    //    timezone,
+    //    time_now->tm_isdst);
 #endif  // HAVE_TM_GMTOFF
-    // zone should now be the number to add to gmtime in order to
-    // get localtime, in seconds.  For PST, I get -28800 which
-    // equals -8 hours.
+    // zone should now be the number to subtract in order to get
+    // localtime, in seconds.  For PST, I get -28800 which equals -8
+    // hours.  Summertime I should get -25200, or -7 hours.
     //fprintf(stderr,"Zone: %ld\n",zone);
+
 
     // Split the input time string into its component parts.
     tz[0] = tz[1] = '\0';
