@@ -729,9 +729,11 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     Message m_fill;
     long record;
     char time_data[MAX_TIME];
-    int do_update = 0;
+    int do_msg_update = 0;
     time_t last_ack_sent;
     int bring_up_bulletins = 0;
+    int distance = -1;
+
 
     if (debug_level & 1)
         printf("msg_data_add start\n");
@@ -772,8 +774,11 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         if (strcmp(m_fill.message_line,data) != 0) {
             m_fill.sec_heard = sec_now();
             last_ack_sent = (time_t)0;
-            do_update++;
             //printf("Message is different this time: Setting last_ack_sent to 0\n");
+ 
+            if (type != MESSAGE_BULLETIN) { // Not a bulletin
+                do_msg_update++;
+            }
         }
 
         // If message is the same, but the sec_heard field is quite
@@ -785,8 +790,11 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         if (m_fill.sec_heard < (sec_now() - (8 * 60 * 60) )) {
             m_fill.sec_heard = sec_now();
             last_ack_sent = (time_t)0;
-            do_update++;
             //printf("Found >8hrs old: Setting last_ack_sent to 0\n");
+
+            if (type != MESSAGE_BULLETIN) { // Not a bulletin
+                do_msg_update++;
+            }
         }
 
         // Check for zero time
@@ -801,23 +809,28 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         // constantly on old messages that don't get ack'ed.
         m_fill.sec_heard = sec_now();
         last_ack_sent = (time_t)0;
-
-        do_update++;    // Always do an update to the message window
-                        // for new messages
         //printf("New msg: Setting last_ack_sent to 0\n");
 
-        if (type == MESSAGE_BULLETIN) {
+        if (type == MESSAGE_BULLETIN) { // Found a bulletin
             char temp[10];
-            int distance;
 
             distance = (int)distance_from_my_station(call_sign,temp);
             if ((distance <= bulletin_range) || (bulletin_range == 0))
             {
                 // We have a _new_ bulletin that's within our
                 // current range setting.  Pop up the Bulletins
-                // dialog.
+                // dialog.  Note that it's also possible to have a
+                // zero distance for the bulletin (we haven't heard
+                // a posit from the sending station yet), then get a
+                // posit from them right after a new bulletin.  In
+                // this case we might get a blank bulletin dialog or
+                // a dialog with no new bulletins showing.
                 bring_up_bulletins++;
             }
+        }
+        else {  // Not a bulletin
+            do_msg_update++;    // Always do an update to the
+                                // message window for new messages
         }
     }
 
@@ -869,7 +882,7 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     if (       is_my_call(m_fill.from_call_sign, 1)
             || is_my_call(m_fill.call_sign, 1) ) {
 
-        if (do_update) {
+        if (do_msg_update) {
             update_messages(1); // Force an update
         }
     }
@@ -879,8 +892,11 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
 
     // Bring up the bulletins dialog if new bulletin and within our
     // range.
-    if (bring_up_bulletins)
+    if (bring_up_bulletins) {
         popup_bulletins();
+        //printf("%05d:%9s:%c:%c:%9s:%s:%s\n",
+        //    distance, call_sign, type, from, from_call, data, seq);
+    }
  
     // Return the important variables we'll need
     *record_out = record;
