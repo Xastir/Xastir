@@ -163,6 +163,10 @@ contain the following lines:
     update -P -d
     status -v
 
+Please note:  this file must be created in Unix format, not DOS format.
+Do not use Notepad or other Windows tools to create the file, as CVS will
+not recognize the contents.  Thanks to Kirk Mefford <kc2elo@softhome.net>
+for noticing this.
 
 Step 5)  Download Xastir sources.  Start up a Cygwin shell (black/
 green icon).  Type the five lines below into the shell exactly as
