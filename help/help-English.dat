@@ -75,50 +75,62 @@ benchmark for APRS programs on any operating system.
 (This section is an informal list of changes that will be formally written
 before a release)
 
-Support for serial TNCs with gps on the AUX port
+...WORK IN PROGRESS...
+*= More Significant
+
 The ability to set the system clock from the GPS.
 Dropping setuid root privs
-Tracked proximity alarms
-Tracking self
-Different Coordinate systems
-Different rain gauge sizes +weather station fixes
-Shapefile weather alerts/pixmaps
-WXserver info via finger
-Major shapefile improvements, point-type shapefiles
 Private colormaps->8bit color usable
-Assorted bug fixes
-Tigermaps menu accessible
-Messaging cleanup, no more timed updates; reply-acks
-ImageMagick speedups and correction features
-Compressed objects/items
-SmartBeaconing(tm)
-Memory usage improvements: multiple comments stored, status, tracklog dynamic
-bulletins bring up dialog
+*SmartBeaconing(tm)
 export waypoints within proximity boundaries
-findu train length contols
-view|objects&items
-bulletin popups
-more parser fixes for overruns
-message reverse path
-igated to RF path
-serial KISS TNC interface
-Grid square in station info/coordinate calc
-Emergency beacons->locate station
-29 sec Anti-dupe queues
-Object persistance
-timestamps 
-quad label shapefiles
-Track me
-Map extent/index caching
+logfile timestamps 
+
+Hardware:
+Support for serial TNCs with gps on the AUX port
 Dallas One-Wire weather station - see http://melhuish.info/simon/projects/oww/
 More weather stations supported via wx200d daemon (WX-200/WM-918/WMR-918/WMR-968)
+serial KISS TNC interface
+Different rain gauge sizes +weather station fixes
+
+UI:
 storm wind radius decoding
 stations menu cleanup
 grid density adjustment +=-
 wind barbs
-dead-reckoning
+view|objects&items
+bulletin popups
+Grid square in station info/coordinate calc
+Track me
+Emergency beacons->locate station
+*dead-reckoning
 voice IDs/Screen IDs-config file only
-Map chooser redone, map layering
+findu trail length controls
+Tracked proximity alarms
+Different Coordinate systems
+Weather alert pixmap stipples
+WXserver info via finger
+Tigermaps menu accessible
+
+Backend:
+*Messaging cleanup, no more timed updates
+message reverse path
+igated to RF path
+*Memory usage improvements: multiple comments stored, status, tracklog dynamic
+Map extent/index caching
+29 sec Anti-dupe queues
+Object persistance
+more parser fixes for overruns
+
+Protocol:
+reply-acks
+Compressed objects/items
+
+Map support:
+*Map chooser redone, map layering
+*Major shapefile improvements, point-type shapefiles
+*ImageMagick speedups and correction features
+quad label shapefiles
+*Shapefile weather alert maps
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -761,12 +773,12 @@ Map Menu:
 
 Map Chooser
 This will present you with a list of map directories and/or files in your map
-directory. Checking the "Expant Dirs" option toggles the expansion of
+directory. Checking the "Expand Dirs" option toggles the expansion of
 directories into individual map files. Clicking the properties button will
 bring up a dialog where you can specify the layer in which maps appear. Higher
-numbers are displayed ontop of lower numbers. You can specify if a map should
+numbers are displayed on top of lower numbers. You can specify if a map should
 be drawn with color fills. You can also disable or enable a map from being
-considered by the "Auto maps" feature in this dialog. In teh main dialog, click
+considered by the "Auto maps" feature in this dialog. In the main dialog, click
 on map names to highlight them, this will cause them to be displayed when you
 click the OK button.  You may select any number of maps. Clicking "Clear" will
 select no maps, clicking "Vector" will select only vector maps. The three
