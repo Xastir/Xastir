@@ -84,6 +84,7 @@ static xastir_mutex db_station_popup_lock;
 
 void redraw_symbols(Widget w);
 int  delete_weather(DataRow *fill);
+int  delete_multipoints(DataRow *fill);
 void Station_data_destroy_track(Widget widget, XtPointer clientData, XtPointer callData);
 void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *speed, char speedu, char *alt, char *sats);
 void station_shortcuts_update_function(int hash_key, DataRow *p_rem);
@@ -2381,12 +2382,14 @@ _do_the_drawing:
 
     // Draw other points associated with the station, if any.
     // KG4NBB
-    draw_multipoints(p_station->coord_lon, p_station->coord_lat,
-                     p_station->num_multipoints,
-                     p_station->multipoints,
-                     p_station->type, p_station->style,
-                     temp_sec_heard,
-                     drawing_target);
+    if (p_station->num_multipoints != 0) {
+        draw_multipoints(p_station->coord_lon, p_station->coord_lat,
+                         p_station->num_multipoints,
+                         p_station->multipoint_data->multipoints,
+                         p_station->type, p_station->style,
+                         temp_sec_heard,
+                         drawing_target);
+    }
 
     temp_sec_heard = p_station->sec_heard;    // DK7IN: ???
 
@@ -5659,7 +5662,7 @@ static void extract_multipoints(DataRow *p_station,
 
 
 //fprintf(stderr,"Data: %s\t\t", data);
- 
+
     p_station->num_multipoints = 0;
 
     /*
@@ -5779,6 +5782,18 @@ static void extract_multipoints(DataRow *p_station,
                     break;
                 }
 
+                // Malloc the storage area for this if we don't have
+                // it yet.
+                if (p_station->multipoint_data == NULL) {
+//fprintf(stderr, "Malloc'ing MultipointRow record, %s\n", p_station->call_sign);
+                    p_station->multipoint_data = malloc(sizeof(MultipointRow));
+                    if (p_station->multipoint_data == NULL) {
+                        p_station->num_multipoints = 0;
+                        fprintf(stderr,"Couldn't malloc MultipointRow'\n");
+                        return;
+                    }
+                }
+ 
                 if (debug_level & MULTI_DEBUG)
                     fprintf(stderr,"computed offset %d,%d\n", lat_val, lon_val);
 
@@ -5792,11 +5807,16 @@ static void extract_multipoints(DataRow *p_station,
                 // check here for the correct sign of the offset? Or should the program that
                 // creates the offsets take that into account?
 
-                p_station->multipoints[p_station->num_multipoints][0] = p_station->coord_lon - (lon_val * multiplier);
-                p_station->multipoints[p_station->num_multipoints][1] = p_station->coord_lat - (lat_val * multiplier);
+                p_station->multipoint_data->multipoints[p_station->num_multipoints][0]
+                    = p_station->coord_lon - (lon_val * multiplier);
+                p_station->multipoint_data->multipoints[p_station->num_multipoints][1]
+                    = p_station->coord_lat - (lat_val * multiplier);
 
                 if (debug_level & MULTI_DEBUG)
-                    fprintf(stderr,"computed point %ld, %ld\n", p_station->multipoints[p_station->num_multipoints][0], p_station->multipoints[p_station->num_multipoints][1]);
+                    fprintf(stderr,
+                        "computed point %ld, %ld\n",
+                        p_station->multipoint_data->multipoints[p_station->num_multipoints][0],
+                        p_station->multipoint_data->multipoints[p_station->num_multipoints][1]);
                 p += 2;
                 ++p_station->num_multipoints;
             }   // End of while loop
@@ -5892,6 +5912,22 @@ int delete_weather(DataRow *fill) {    // delete weather storage, if allocated
     if (fill->weather_data != NULL) {
         free(fill->weather_data);
         fill->weather_data = NULL;
+        return(1);
+    }
+    return(0);
+}
+
+
+
+
+
+int delete_multipoints(DataRow *fill) { // delete multipoint storage, if allocated
+
+    if (fill->multipoint_data != NULL) {
+//fprintf(stderr,"Removing multipoint data, %s\n", fill->call_sign);
+        free(fill->multipoint_data);
+        fill->multipoint_data = NULL;
+        fill->num_multipoints = 0;
         return(1);
     }
     return(0);
@@ -6725,6 +6761,7 @@ void init_station(DataRow *p_station) {
     // KG4NBB
     
     p_station->num_multipoints = 0;
+    p_station->multipoint_data = NULL;
 }
 
 
@@ -7462,17 +7499,18 @@ int position_on_inner_screen(long lat, long lon) {
  *  my callsign, not for any other.
  */
 void station_del(char *call) {
-    DataRow *p_name;                    // DK7IN: do it with move... ?
+    DataRow *p_name;                      // DK7IN: do it with move... ?
 
     if (search_station_name(&p_name, call, 1)) {
-        (void)delete_trail(p_name);     // Free track storage if it exists.
-        (void)delete_weather(p_name);   // free weather memory, if allocated
+        (void)delete_trail(p_name);       // Free track storage if it exists.
+        (void)delete_weather(p_name);     // Free weather memory, if allocated
+        (void)delete_multipoints(p_name); // Free multipoint memory, if allocated
         (void)delete_comments_and_status(p_name);  // Free comment storage if it exists
-        if (p_name->node_path_ptr != NULL)  // Free malloc'ed path
+        if (p_name->node_path_ptr != NULL)// Free malloc'ed path
             free(p_name->node_path_ptr);
         if (p_name->tactical_call_sign != NULL)
             free(p_name->tactical_call_sign);
-        delete_station_memory(p_name);  // free memory
+        delete_station_memory(p_name);    // Free memory
     }
 }
 
@@ -7502,6 +7540,7 @@ void station_del_ptr(DataRow *p_name) {
 
         (void)delete_trail(p_name);     // Free track storage if it exists.
         (void)delete_weather(p_name);   // free weather memory, if allocated
+        (void)delete_multipoints(p_name); // Free multipoint memory, if allocated
         (void)delete_comments_and_status(p_name);  // Free comment storage if it exists
         if (p_name->node_path_ptr != NULL)  // Free malloc'ed path
             free(p_name->node_path_ptr);
@@ -7539,6 +7578,7 @@ void delete_all_stations(void) {
         station_del_ptr(p_curr);
         //(void)delete_trail(p_curr);     // free trail memory, if allocated
         //(void)delete_weather(p_curr);   // free weather memory, if allocated
+        //(void)delete_multipoints(p_curr);// Free multipoint memory, if allocated
         //delete_station_memory(p_curr);  // free station memory
     }
     if (stations != 0) {
@@ -7623,11 +7663,12 @@ void check_station_remove(void) {
                 else {  // Not one of mine, doesn't have a tactical
                         // callsign assigned, so start deleting
  
-                    mdelete_messages(p_station->call_sign);     // delete messages
+                    mdelete_messages(p_station->call_sign); // Delete messages
                     station_del_ptr(p_station);
-                    //(void)delete_trail(p_station);              // Free track storage if it exists.
-                    //(void)delete_weather(p_station);            // free weather memory, if allocated
-                    //delete_station_memory(p_station);           // free memory
+                    //(void)delete_trail(p_station);        // Free track storage if it exists.
+                    //(void)delete_weather(p_station);      // Free weather memory, if allocated
+                    //(void)delete_multipoints(p_station);  // Free multipoint memory, if allocated
+                    //delete_station_memory(p_station);     // Free memory
 
 #ifdef EXPIRE_DEBUG
                     fprintf(stderr,"found old station: %s\t\t",p_station->call_sign);

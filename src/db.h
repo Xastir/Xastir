@@ -140,6 +140,7 @@ extern char my_lat[MAX_LAT];
 extern char my_long[MAX_LONG];
 
 
+
 // Used for messages and bulletins
 typedef struct {
     char active;
@@ -158,12 +159,14 @@ typedef struct {
 } Message;
 
 
+
 // Struct used to create linked list of most recent ack's
 typedef struct _ack_record {
     char callsign[MAX_CALLSIGN+1];
     char ack[5+1];
     struct _ack_record *next;
 } ack_record;
+
 
 
 #ifdef MSG_DEBUG
@@ -175,6 +178,7 @@ extern void msg_copy_data(Message *to, Message *from);
 #endif /* MSG_DEBUG */
 
 extern int message_update_time(void);
+
 
 
 enum AreaObjectTypes {
@@ -191,6 +195,8 @@ enum AreaObjectTypes {
     AREA_MAX             = 0x9,
     AREA_NONE            = 0xF
 };
+
+
 
 enum AreaObjectColors {
     AREA_BLACK_HI  = 0x0,
@@ -211,6 +217,8 @@ enum AreaObjectColors {
     AREA_GRAY_LO   = 0xF
 };
 
+
+
 typedef struct {
     unsigned type : 4;
     unsigned color : 4;
@@ -218,6 +226,8 @@ typedef struct {
     unsigned sqrt_lon_off : 8;
     unsigned corridor_width : 16;
 } AreaObject;
+
+
 
 typedef struct {
     char aprs_type;
@@ -276,9 +286,11 @@ typedef struct _TrackRow{
 } TrackRow;
 
 
+
 // trail flag definitions
 #define TR_LOCAL        0x01    // heard direct (not via digis)
 #define TR_NEWTRK       0x02    // start new track
+
 
 
 // Struct for holding comment/status data.  Will keep a dynamically
@@ -290,6 +302,18 @@ typedef struct _CommentRow{
 } CommentRow;
 
 
+
+#define MAX_MULTIPOINTS 35
+
+
+
+// Struct for holding multipoint data.
+typedef struct _MultipointRow{
+    long multipoints[MAX_MULTIPOINTS][2];
+} MultipointRow;
+
+
+
 // Break DataRow into several structures.  DataRow will contain the parameters
 // that are common across all types of stations.  DataRow will contain a pointer
 // to TrackRow if it is a moving station, and contain a pointer to WeatherRow
@@ -298,14 +322,12 @@ typedef struct _CommentRow{
 // of memory.  If a station suddenly starts moving or spitting out weather data
 // the new structures will be allocated, filled in, and pointers to them
 // installed in DataRow.
-
+//
 // Station storage now is organized as an ordered linked list. We have both
 // sorting by name and by time last heard
-
+//
 // todo: check the string length!
-
-#define MAX_MULTIPOINTS 35
-
+//
 typedef struct _DataRow {
 
     struct _DataRow *n_next;    // pointer to next element in name ordered list
@@ -362,11 +384,26 @@ typedef struct _DataRow {
     TrackRow *oldest_trackpoint; // Pointer to oldest track point in doubly-linked list
     TrackRow *newest_trackpoint; // Pointer to newest track point in doubly-linked list
 
+    // When the station is an object, it can include coordinates
+    // of related points. Currently these are being used to draw
+    // outlines of NWS severe weather watches and warnings, and
+    // storm regions. The coordinates are stored here in Xastir
+    // coordinate form. Element [x][0] is the latitude, and 
+    // element [x][1] is the longitude.  --KG4NBB
+    //
+    // Is there anything preventing a multipoint string from being
+    // in other types of packets, in the comment field?  --WE7U
+    //
+    int num_multipoints;
+    char type;      // from '0' to '9'
+    char style;     // from 'a' to 'z'
+    MultipointRow *multipoint_data;
+
 
 ///////////////////////////////////////////////////////////////////////
-// Optional stuff for Objects/Items only.  These should be moved
-// into an ObjectRow structure, with only a NULL pointer here if not
-// an object/item.
+// Optional stuff for Objects/Items only (I think, needs to be
+// checked).  These could be moved into an ObjectRow structure, with
+// only a NULL pointer here if not an object/item.
 ///////////////////////////////////////////////////////////////////////
  
     char origin[MAX_CALLSIGN+1]; // call sign originating an object
@@ -381,18 +418,6 @@ typedef struct _DataRow {
     char sats_visible[MAX_SAT];
     char probability_min[10+1];  // Holds prob_min (miles)
     char probability_max[10+1];  // Holds prob_max (miles)
-
-    // When the station is an object, it can include coordinates
-    // of related points. Currently these are being used to draw
-    // outlines of NWS severe weather watches and warnings, and
-    // storm regions. The coordinates are stored here in Xastir
-    // coordinate form. Element [x][0] is the latitude, and 
-    // element [x][1] is the longitude.
-    // KG4NBB
-    int num_multipoints;
-    char type;      // from '0' to '9'
-    char style;     // from 'a' to 'z'
-    long multipoints[MAX_MULTIPOINTS][2];
 
 } DataRow;
 
