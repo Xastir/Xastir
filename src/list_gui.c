@@ -50,7 +50,6 @@
 #include "main.h"
 #include "xastir.h"
 #include "messages.h"
-#include "db.h"
 #include "draw_symbols.h"
 #include "list_gui.h"
 

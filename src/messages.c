@@ -53,7 +53,6 @@
 
 #include "xastir.h"
 #include "main.h"
-#include "db.h"
 #include "messages.h"
 #include "util.h"
 #include "interface.h"

@@ -110,7 +110,6 @@
 #include "xa_config.h"
 #include "maps.h"
 #include "alert.h"
-#include "db.h"
 #include "interface.h"
 #include "wx.h"
 #include "popup.h"

@@ -66,7 +66,6 @@
 #include "xastir.h"
 #include "main.h"
 #include "bulletin_gui.h"
-#include "db.h"
 #include "interface.h"
 #include "util.h"
 

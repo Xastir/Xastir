@@ -51,7 +51,6 @@
 #endif  // TIME_WITH_SYS_TIME
 
 #include "xastir.h"
-#include "db.h"
 #include "main.h"
 #include "util.h"
 

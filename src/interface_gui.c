@@ -37,7 +37,6 @@
 #include "main.h"
 #include "xa_config.h"
 #include "interface.h"
-#include "db.h"
 #include "wx.h"
 #include "draw_symbols.h"
 #include "util.h"

@@ -34,7 +34,6 @@
 
 #include "main.h"
 #include "xastir.h"
-#include "db.h"
 #include "lang.h"
 #include "maps.h"
 

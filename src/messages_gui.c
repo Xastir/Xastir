@@ -32,7 +32,6 @@
 
 #include "main.h"
 #include "xastir.h"
-#include "db.h"
 #include "main.h"
 #include "lang.h"
 

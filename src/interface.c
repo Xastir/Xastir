@@ -90,7 +90,6 @@
 #include "main.h"
 #include "xa_config.h"
 #include "maps.h"
-#include "db.h"
 #include "interface.h"
 #include "main.h"
 #include "util.h"

@@ -55,7 +55,6 @@
 #include "xastir.h"
 #include "interface.h"
 #include "lang.h"
-#include "db.h"
 #include "util.h"
 
 
