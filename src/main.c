@@ -743,20 +743,24 @@ void Coordinate_calc_output(char *full_zone, long northing,
         "              Decimal Degrees:  48.00000N   122.00000W",
         "      Degrees/Decimal Minutes:  48 00.000N  122 00.000W",
         "      Degrees/Minutes/Seconds:  48 00 00N   122 00 00W",
-        "Universal Transverse Mercator:  10T  0574598  5316888",
+        "Universal Transverse Mercator:  10T  0574599  5316888",
         "",
         "*** Simulated output ***");
 */
 
     xastir_snprintf(temp_string,
         sizeof(temp_string),
-        "              Decimal Degrees:  %8.5f%c   %9.5f%c\n      Degrees/Decimal Minutes:  %02d %06.3f%c  %03d %06.3f%c\n      Degrees/Minutes/Seconds:  %02d %02d %02d%c   %03d %02d %02d%c\nUniversal Transverse Mercator:  %3s  %07lu  %07lu",
+        "%s%8.5f%c   %9.5f%c\n%s%02d %06.3f%c  %03d %06.3f%c\n%s%02d %02d %02d%c   %03d %02d %02d%c\n%s%3s  %07lu  %07lu",
+        "               Decimal Degrees:  ",
         lat_abs, (south) ? 'S':'N',
         lon_abs, (west) ?  'W':'E',
+        "       Degrees/Decimal Minutes:  ",
         lat_deg_int, lat_min, (south) ? 'S':'N',
         lon_deg_int, lon_min, (west) ?  'W':'E',
+        "       Degrees/Minutes/Seconds:  ",
         lat_deg_int, lat_min_int, lat_sec_int, (south) ? 'S':'N',
         lon_deg_int, lon_min_int, lon_sec_int, (west) ?  'W':'E',
+        " Universal Transverse Mercator:  ",
         full_zone, easting, northing);
     XmTextSetString(coordinate_calc_result_text, temp_string);
 }
@@ -986,10 +990,10 @@ printf("Latitude: %f, Longitude: %f\n",latitude,longitude);
         xastir_snprintf(temp_string,
             sizeof(temp_string),
             "%s\n%s\n%s\n%s",
-            "Use one of these formats:  48.00000N   122.00000W",
-            "                           48 00.000N  122 00.000W",
-            "                           48 00 00N   122 00 00W",
-            "                           10T  0574598  5316888");
+            " **       Sorry, your input was not recognized!       **",
+            " **  Please use one of the following input formats:   **",
+            " ** 48.00000N  122.00000W,    48 00.000N  122 00.000W **",
+            " ** 48 00 00N  122 00 00W,    10T  0574599  5316888   **");
         XmTextSetString(coordinate_calc_result_text, temp_string);
     }
 }
@@ -1238,7 +1242,7 @@ void Coordinate_calc(Widget w, XtPointer clientData, XtPointer callData) {
         coordinate_calc_result_text = NULL;
         coordinate_calc_result_text = XtVaCreateManagedWidget("Coordinate_calc results",xmTextWidgetClass,form,
                             XmNrows, 4,
-                            XmNcolumns, 56,
+                            XmNcolumns, 57,
                             XmNeditable, FALSE,
                             XmNtraversalOn, FALSE,
                             XmNeditMode, XmMULTI_LINE_EDIT,
