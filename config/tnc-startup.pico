@@ -28,13 +28,16 @@ LG3TEXT %
 # Digipeat,callsign substitution,
 # no digi of own packets, and digi-once
 DIGIPEAT 7
+ELOC 0
 FLOW off
 FULLDUP off
 GPS off
 HEADERLI off
 HID off
+INTERVAL 0
 LFADD off
 LGETCHAR $05
+LOC E 0
 #
 MALL ON
 MCOM off
@@ -50,11 +53,17 @@ MYALIAS RELAY
 NEWMODE off
 NOMODE on
 #PACLEN 128
+#
+# Only used in KISS mode?
 PERSIST 128
+#
 #PIDCHECK off
 PMS off
 SCREENLN 0
+#
+# Only used in KISS mode?
 SLOTTIME 15
+#
 TXDELAY 30
 XFLOW off
 #
