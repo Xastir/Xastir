@@ -124,6 +124,7 @@ extern int tiger_show_water;
 extern int tiger_show_lakes;
 extern int tiger_show_misc;
 extern int tigermap_intensity;
+extern int tigermap_timeout;
 #endif
 
 extern void sort_list(char *filename,int size, Widget list, int *item);

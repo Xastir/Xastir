@@ -424,20 +424,21 @@ int festival_speak_new_weather_alert;
 Widget configure_tiger_dialog = (Widget) NULL;
 Widget tiger_enable_widget;
 Widget tiger_cities,
-	tiger_grid,
-	tiger_counties,
-	tiger_majroads,
-	tiger_places,
-	tiger_railroad,
-	tiger_streets,
-	tiger_interstate,
-	tiger_statehwy,
-	tiger_states,
-	tiger_ushwy,
-	tiger_water,
-	tiger_lakes,
-	tiger_misc,
-	tiger_intensity;
+       tiger_grid,
+       tiger_counties,
+       tiger_majroads,
+       tiger_places,
+       tiger_railroad,
+       tiger_streets,
+       tiger_interstate,
+       tiger_statehwy,
+       tiger_states,
+       tiger_ushwy,
+       tiger_water,
+       tiger_lakes,
+       tiger_misc,
+       tiger_intensity,
+       tiger_timeout;
 
 int tiger_show_grid = TRUE;
 int tiger_show_counties = TRUE;
@@ -454,6 +455,7 @@ int tiger_show_water = TRUE;
 int tiger_show_lakes = TRUE;
 int tiger_show_misc = TRUE;
 int tigermap_intensity = 100;
+int tigermap_timeout = 30;
 
 #endif
 
@@ -7996,6 +7998,7 @@ void Configure_tiger_change_data(Widget widget, XtPointer clientData, XtPointer 
 	  	tiger_show_statehwy=FALSE;
 
 	XmScaleGetValue(tiger_intensity, &tigermap_intensity);
+	XmScaleGetValue(tiger_timeout, &tigermap_timeout);
 
 	Configure_tiger_destroy_shell(widget,clientData,callData);
         create_image(da);
@@ -8246,7 +8249,6 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XmNleftAttachment, XmATTACH_POSITION,
                                       XmNleftPosition, 0,
                                       XmNleftOffset, 100,
-                                      //XmNwidth, 100,
                                       XmNrightAttachment, XmATTACH_FORM,
 				      XmNrightOffset, 100,
                                       XmNbackground, colors[0xff],
@@ -8260,10 +8262,31 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                                       XtVaTypedArg, XmNtitleString, XmRString, "Intensity", 10,
                                       NULL);
 
+       tiger_timeout  = XtVaCreateManagedWidget("Timeout", xmScaleWidgetClass,tiger_form,
+                                      XmNtopAttachment, XmATTACH_WIDGET,
+                                      XmNtopWidget, tiger_intensity,
+                                      XmNtopOffset, 16,
+                                      XmNbottomAttachment, XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_POSITION,
+                                      XmNleftPosition, 0,
+                                      XmNleftOffset, 100,
+                                      XmNrightAttachment, XmATTACH_FORM,
+				      XmNrightOffset, 100,
+                                      XmNbackground, colors[0xff],
+                                      XmNsensitive, TRUE,
+                                      XmNorientation, XmHORIZONTAL,
+                                      XmNborderWidth, 1,
+                                      XmNminimum, 10,
+                                      XmNmaximum, 120,
+                                      XmNshowValue, TRUE,
+                                      XmNvalue, tigermap_timeout,
+                                      XtVaTypedArg, XmNtitleString, XmRString, "Timeout (sec)", 10,
+                                      NULL);
+
         sep = XtVaCreateManagedWidget("Configure_speech sep", xmSeparatorGadgetClass,tiger_form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget, tiger_intensity,
+                                      XmNtopWidget, tiger_timeout,
                                       XmNtopOffset, 20,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,

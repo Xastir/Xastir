@@ -5750,7 +5750,7 @@ void draw_tiger_map (Widget w) {
     xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s", username,"gif");
 
     xastir_snprintf(tempfile, sizeof(tempfile),
-        "wget -S -N -t 1 -T 30 -O %s %s 2> /dev/null\n", local_filename, fileimg);
+        "wget -S -N -t 1 -T %d -O %s %s 2> /dev/null\n", tigermap_timeout, local_filename, fileimg);
 
     if (debug_level & 512)
        printf("%s",tempfile);
