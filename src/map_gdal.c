@@ -3125,8 +3125,9 @@ clear_dangerous();
         char geometry_type_name[50] = "";
         int geometry_type = -1;
         int fast_extents = 0;
-int features_processed = 0;
-
+        int features_processed = 0;
+        const char *layer_name;
+        
 
 //fprintf(stderr,"Layer %d:\n", i); 
 
@@ -3187,25 +3188,36 @@ int features_processed = 0;
         // Determine what kind of layer we're dealing with and set
         // some flags.
         //
-        if (layerH == OGR_DS_GetLayerByName(datasourceH, "AHPF")) {
-            hypsography_layer++;    // Topo contours
-            fprintf(stderr,"Hypsography Layer (topo contours)\n");
-        }
-        else if (layerH == OGR_DS_GetLayerByName(datasourceH, "AHYF")) {
-            hydrography_layer++;    // Underwater contours
-            fprintf(stderr,"Hydrography Layer (underwater topo contours)\n");
-        }
-        else if (layerH == OGR_DS_GetLayerByName(datasourceH, "ARDF")) {
-            roads_trails_layer++;
-            fprintf(stderr,"Roads/Trails Layer\n");
-        }
-        else if (layerH == OGR_DS_GetLayerByName(datasourceH, "ARRF")) {
-            railroad_layer++;
-            fprintf(stderr,"Railroad Layer\n");
-        }
-        else if (layerH == OGR_DS_GetLayerByName(datasourceH, "AMTF")) {
-            misc_transportation_layer++;
-            fprintf(stderr,"Misc Transportation Layer\n");
+        layer_name = OGR_FD_GetName( OGR_L_GetLayerDefn( layerH ) );
+
+        if (layer_name != NULL) {
+
+//fprintf(stderr,"Layer Name: %s\n", layer_name);
+
+            if (strncasecmp(layer_name,"AHPF",4) == 0) {
+                hypsography_layer++;    // Topo contours
+                fprintf(stderr,"Hypsography Layer (topo contours)\n");
+            }
+
+            else if (strncasecmp(layer_name,"AHYF",4) == 0) {
+                hydrography_layer++;    // Underwater contours
+                fprintf(stderr,"Hydrography Layer (underwater topo contours)\n");
+            }
+
+            else if (strncasecmp(layer_name,"ARDF",4) == 0) {
+                roads_trails_layer++;
+                fprintf(stderr,"Roads/Trails Layer\n");
+            }
+
+            else if (strncasecmp(layer_name,"ARRF",4) == 0) {
+                railroad_layer++;
+                fprintf(stderr,"Railroad Layer\n");
+            }
+
+            else if (strncasecmp(layer_name,"AMTF",4) == 0) {
+                misc_transportation_layer++;
+                fprintf(stderr,"Misc Transportation Layer\n");
+            }
         }
 
 
