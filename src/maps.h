@@ -118,7 +118,10 @@ extern int grid_size;
 
 extern void Print_properties(Widget widget, XtPointer clientData, XtPointer callData);
 
+#ifdef HAVE_LIBSHP
 extern void test_create_shapefile_map(void);
+#endif // HAVE_LIBSHP
+
 
 #endif /* __XASTIR_MAPS_H */
 
