@@ -2227,7 +2227,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
     ghost = (int)( ( sec_heard + (10 * 60) ) < sec_now() );
 
 
-    // We don't want to draw them if the ghost interval is up, not
+    // We don't want to draw them if the ghost interval is up, no
     // matter whether Include Expired Data is checked.
     //if ( (!ghost || Select_.old_data) && (numpoints > 0) ) {
     if ( !ghost  && (numpoints > 0) ) {
