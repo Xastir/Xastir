@@ -5215,7 +5215,7 @@ void index_restore_from_file(void) {
                     //fprintf(stderr,"Assigning min_zoom of 0\n");
                 }
 
-                if ( (temp_record->map_layer < 0)
+                if ( (temp_record->map_layer < -99999)
                         || (temp_record->map_layer > 99999) ) {
                     processed = 0;  // Reject this record
                     fprintf(stderr,"\nindex_restore_from_file: map_layer field incorrect %d in map name:\n%s\n",

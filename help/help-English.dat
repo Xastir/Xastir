@@ -86,7 +86,7 @@ map label font, style changes
 various menu reorginization
 cad drawing mode
 cursor changes based on mode
-gdal/ogr integration
+gdal/ogr integration, optional gdal shapefile loading
 tiger maps back in the chooser (reverts to pre-1.2 behavior)
 
 
@@ -893,7 +893,10 @@ button will display the selected maps. Cancel will abandon any changes.
   select whether a map is considered by the "Auto maps" feature here. Finally,
   you can specify the minimum and maximul zoom levels at which a map is
   displayed. This is useful to prevent very detailed local maps from loading at
-  very wide zoom positions, and visa-versa.
+  very wide zoom positions, and visa-versa. A minimum zoom of 10 means a map
+  will be displayed at all zooms including and above 10. Likewise, a maximum
+  zoom of 256 means a map will be displayed at all zooms below and including
+  256.
 
 Map Display Bookmarks
 See the help topic "Creating and using Map Display Bookmarks"
