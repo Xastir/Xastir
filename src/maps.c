@@ -3442,6 +3442,8 @@ void index_save_to_file() {
 
 
 //WE7U2
+// This function is currently not used.
+//
 // Function used to add map directories/files to the in-memory map
 // index.  Causes an update of the index list in memory.  Input
 // records are inserted in alphanumerical order.  This function is
@@ -3449,6 +3451,7 @@ void index_save_to_file() {
 // this function is called the new record has all of the needed
 // information in it.
 //
+/*
 static void index_insert_sorted(map_index_record *new_record) {
 
     map_index_record *current = map_index_head;
@@ -3599,6 +3602,7 @@ static void index_insert_sorted(map_index_record *new_record) {
         }
     }
 }
+*/
 
 
 
