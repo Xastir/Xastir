@@ -4201,17 +4201,39 @@ int heard_via_tnc_in_past_hour(char *call) {
 
     in_hour=0;
     if (search_station_name(&p_station,call,1)) {  // find call
-        if((p_station->flag & ST_VIATNC) != 0) {        // test "via TNC" flag
-            /* check to see if the last packet was message capable? */
-            /* ok look to see if it is within the hour */
+
+        // test "via TNC" flag.  This flag is set if a packet is
+        // _ever_ heard on a TNC interface from this station.  It is
+        // reset if the last 20 packets from a station have come
+        // from non-TNC interfaces, so it's _NOT_ a good test to use
+        // to decide whether to igate!
+        //
+        //if((p_station->flag & ST_VIATNC) != 0) {
+
+        // Instead we'll check the heard_via_tnc_last_time
+        // timestamp.  This is a timestamp that is saved each time a
+        // station is heard via RF.  It is initially set to 0.  It
+        // does not get reset when a packet comes in via a non-TNC
+        // interface.
+        if (p_station->heard_via_tnc_last_time) {   // non-zero entry
+
+            // Should we check to see if the last packet was message
+            // capable?
+
+            // Decide whether it was heard on a TNC interface within
+            // the hour
             in_hour = (int)((p_station->heard_via_tnc_last_time+3600l) > sec_now());
+
             if(debug_level & 2)
                 printf("Call %s: %ld %ld ok %d\n",call,(long)(p_station->heard_via_tnc_last_time),(long)sec_now(),in_hour);
-        } else {
+
+        }
+        else {
             if (debug_level & 2)
                 printf("Call %s Not heard via tnc\n",call);
         }
-    } else {
+    }
+    else {
         if (debug_level & 2)
             printf("IG:station not found\n");
     }
@@ -7620,6 +7642,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             last_sec = curr_sec;
             next_time_sn = 0;           // restart time serial number
         }
+
         p_station->time_sn = next_time_sn++;            // todo: warning if serial number too high
         if (from == DATA_VIA_TNC) {                     // heard via TNC
             p_station->flag |= ST_VIATNC;               // set "via TNC" flag
@@ -7633,6 +7656,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 p_station->heard_via_tnc_last_time = 0l;
             } else {                                    // old station
                 p_station->last_heard_via_tnc++;
+
                 // if the last 20 times this station was heard other than tnc clear the heard tnc data
                 if (p_station->last_heard_via_tnc > 20) {
                     p_station->last_heard_via_tnc = 0l;
