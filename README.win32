@@ -340,6 +340,12 @@ Xastir, and NOAA weather radar images.  Other people are working on
 integrating even more online mapping sources.  This will also allow
 you to use any GIF/JPG/XPM/BMP/... image as an Xastir map.
 
+Please note that the released Cygwin binary for ImageMagick-5.5.5
+has a problem in it's Magick-config script which makes it impossible
+to use for our purposes.  Don't try to use that version.  Hopefully
+the new 5.5.6 release will work for us, when a Cygwin binary of it
+is made available on their site.
+
 ImageMagick:
         http://www.imagemagick.org/
 
@@ -353,10 +359,28 @@ Extract the files:
     cd ~/src/imagemagick
     tar xzvf filename
 
-Copy the files/directories into the /usr tree (/usr/include and /usr/lib).
+Copy the files/directories into the /usr/local tree:
+
+    cd ImageMagick-5.5.3
+    cp -R * /usr/local
+
+Reconfigure Xastir to use this library:
 
     cd ~/src/xastir
     ./configure
+
+If "configure" did not find ImageMagick properly, edit the resulting
+config.h file and change this line:
+
+    /* #undef HAVE_IMAGEMAGICK */
+
+to this:
+
+    #define HAVE_IMAGEMAGICK 1
+
+
+Finish the Xastir build and install:
+
     make
     make install
 
@@ -366,8 +390,8 @@ Add this to your ~/.profile file:
 
 Now on-line Tigermaps should work for you.
 
-If you create a file called "terraserver.geo" in the
-/usr/local/xastir/maps directory, containing the single line
+HIGHLY RECOMMENDED:  If you create a file called "terraserver.geo"
+in the /usr/local/xastir/maps directory, containing the single line
 "TERRASERVER", and select it with the Map Chooser, you should see
 satellite images on the map screen.
 
