@@ -4670,6 +4670,11 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
             XmNactivateCallback,
             Assign_Tactical_Call,
             (XtPointer)p_station);
+        if (p_station->flag & (ST_OBJECT|ST_ITEM)) {
+            // We don't allow setting tac-calls for objects/items,
+            // so make the button insensitive.
+            XtSetSensitive(button_tactical,FALSE);
+        }
  
         n=0;
         XtSetArg(args[n], XmNrows, 15); n++;
