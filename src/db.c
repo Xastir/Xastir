@@ -6637,21 +6637,24 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
     compr_pos = 0;
 
     if (search_station_name(&p_station,call,1)) {       // If we found the station in our list
-//WE7U6
+
         // Check whether it's a locally-owned object/item
         if ( (is_my_call(p_station->origin,1))                  // If station is owned by me
                 && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
                   || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
-            // Do nothing.  We don't want to re-order it in the time-ordered
-            // list so that it'll expire from the queue normally.
+            // We don't want to re-order it in the time-ordered list
+            // so that it'll expire from the queue normally.  Don't
+            // call "move_station_time()" here.
 
-// Need an exception here or later in this function for the case
-// where we've moved an object/item (by how much?).  We need to
-// update the time in this case so that it'll expire later (in fact
-// it could already be expired when we move it).  We should be able
-// to move expired objects/items to make them active again.  Perhaps
-// some other method as well?
+            // We need an exception later in this function for the
+            // case where we've moved an object/item (by how much?).
+            // We need to update the time in this case so that it'll
+            // expire later (in fact it could already be expired
+            // when we move it).  We should be able to move expired
+            // objects/items to make them active again.  Perhaps
+            // some other method as well?
 
+            new_station = (char)FALSE;
         }
         else {
             move_station_time(p_station,p_time);        // update time, change position in time sorted list
@@ -6939,7 +6942,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         // we now have valid data to store into database
         // make time index unique by adding a serial number
 
-//WE7U6 
         // Check whether it's a locally-owned object/item
         if ( (is_my_call(p_station->origin,1))                  // If station is owned by me
                 && !new_station                                 // and we've seen this station before
@@ -6948,14 +6950,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             // Do nothing.  We don't want to update the last-heard time
             // so that it'll expire from the queue normally.
 
-// Need an exception here or later in this function for the case
-// where we've moved an object/item (by how much?).  We need to
-// update the time in this case so that it'll expire later (in fact
-// it could already be expired when we move it).  We should be able
-// to move expired objects/items to make them active again.  Perhaps
-// some other method as well?
+            // We need an exception later in this function for the
+            // case where we've moved an object/item (by how much?).
+            // We need to update the time in this case so that it'll
+            // expire later (in fact it could already be expired
+            // when we move it).  We should be able to move expired
+            // objects/items to make them active again.  Perhaps
+            // some other method as well?.
 
-       }
+        }
         else {
             p_station->sec_heard = curr_sec;    // Give it a new timestamp
         }
@@ -7047,7 +7050,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                             p_station->call_sign);
                     }
                     moving = 1;                         // it's moving if it has a trail
-                                }
+                }
                 else {
                     if (strlen(p_station->speed) > 0 && atof(p_station->speed) > 0) {
                         if (debug_level & 256) {
@@ -7055,7 +7058,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                 p_station->call_sign);
                         }
                         moving = 1;                     // declare it moving, if it has a speed
-                                        }
+                    }
                     else {
                         if (debug_level & 256) {
                             printf("Position defined: %d, Changed: %s\n",
@@ -7064,6 +7067,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                 p_station->coord_lon != last_lon) ?
                                 "Yes" : "No");
                         }
+
+                        // Here's where we detect movement
                         if (position_defined(last_lat,last_lon,1)
                                 && (p_station->coord_lat != last_lat || p_station->coord_lon != last_lon)) {
                             if (debug_level & 256) {
@@ -7071,7 +7076,19 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                     p_station->call_sign);
                             }
                             moving = 1;                 // it's moving if it has changed the position
-                                                }
+
+                            // Check whether it's a locally-owned object/item
+                            if ( (is_my_call(p_station->origin,1))  // If station is owned by me
+                                    && (   ((p_station->flag & ST_OBJECT) != 0) // And it's an object
+                                        || ((p_station->flag & ST_ITEM) != 0) ) ) {   // or an item
+
+                                // Update time, change position in time-sorted list
+                                move_station_time(p_station,p_time);
+
+                                // Give it a new timestamp
+                                p_station->sec_heard = curr_sec;
+                            }
+                        }
                         else {
                             if (debug_level & 256) {
                                 printf("Station %s still appears stationary.\n",
@@ -7082,9 +7099,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                     last_lat,             last_lon);
                             }
                             moving = 0;
-                                                }
-                                        }
-                                }
+                        }
+                    }
+                }
                 changed_pos = 0;
                 if (moving == 1) {                      
                     p_station->flag |= (ST_MOVING);
@@ -7106,8 +7123,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                         p_station->call_sign);
                                 }
                                 (void)store_trail_point(p_station,last_lon,last_lat,last_stn_sec,last_alt,last_speed,last_course,last_flag);
-                                                        }
-                                                }
+                            }
+                        }
                         //if (   p_station->coord_lon != last_lon
                         //    || p_station->coord_lat != last_lat ) {
                         // we don't store redundant points (may change this
@@ -7125,7 +7142,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                                 p_station->call_sign);
                         }
                     }
-                                        else {
+                    else {
                         if (debug_level & 256 || debug_level & 1)
                             printf("Speed over %d mph\n",TRAIL_MAX_SPEED);
                     }
@@ -7142,7 +7159,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         if (debug_level & 256) {
                             printf("Adding Solid Trail for %s\n",
                             p_station->call_sign);
-                                                }
+                        }
                         draw_trail(da,p_station,1);         // update trail
                         scrupd = 1;
                     }
