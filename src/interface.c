@@ -5013,7 +5013,7 @@ void port_read(int port) {
             FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 200000;    // 200 ms
+            tmv.tv_usec = 500000;    // 500 ms
             (void)select(0,&rd,NULL,NULL,&tmv);
         }
     }
