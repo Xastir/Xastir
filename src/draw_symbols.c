@@ -671,6 +671,9 @@ void draw_triangle_flags(int *i, int quantity, float bearing_radians, long x, lo
         points[0].x = start_x;           points[0].y = start_y;
         points[1].x = start_x + off_x;   points[1].y = start_y + off_y;
         points[2].x = start_x + off_x2;  points[2].y = start_y + off_y2;
+
+        // Number of points is always 3 here, so we don't need to
+        // check first before calling XFillPolygon().
         (void)XFillPolygon(XtDisplay(da), where, gc, points, 3, Convex, CoordModeOrigin);
     }
 }
@@ -710,6 +713,9 @@ void draw_square_flags(int *i, int quantity, float bearing_radians, long x, long
         points[1].x = start_x + off_x;           points[1].y = start_y + off_y;
         points[2].x = start_x + off_x + off_x2;  points[2].y = start_y + off_y + off_y2;
         points[3].x = start_x + off_x2;          points[3].y = start_y + off_y2;
+
+        // Number of points is always 4 here, so we don't need to
+        // check first before calling XFillPolygon().
         (void)XFillPolygon(XtDisplay(da), where, gc, points, 4, Convex, CoordModeOrigin);
     }
 }
@@ -1323,6 +1329,10 @@ void draw_area(long x_long, long y_lat, char type, char color,
             points[3].y = l16(top +(conv_width * sin(angle)));
             if (onscreen(points[1].x, points[3].x, points[0].y, points[2].y)) {
                 (void)XSetFillStyle(XtDisplay(da), gc, FillStippled);
+
+                // Number of points is always 4 here, so we don't
+                // need to check first before calling
+                // XFillPolygon().
                 (void)XFillPolygon(XtDisplay(da), where, gc, points, 4, Convex, CoordModeOrigin);
             }
         }
@@ -1345,6 +1355,10 @@ void draw_area(long x_long, long y_lat, char type, char color,
             points[3].y = l16(top +(conv_width * sin(angle)));
             if (onscreen(points[3].x, points[1].x, points[0].y, points[2].y)) {
                 (void)XSetFillStyle(XtDisplay(da), gc, FillStippled);
+
+                // Number of points is always 4 here, so we don't
+                // need to check first before calling
+                // XFillPolygon().
                 (void)XFillPolygon(XtDisplay(da), where, gc, points, 4, Convex, CoordModeOrigin);
             }
         }
@@ -1369,6 +1383,9 @@ void draw_area(long x_long, long y_lat, char type, char color,
         points[2].x = l16(left);      points[2].y = l16(bottom);
         if (onscreen(left, right, top, bottom)) {
             (void)XSetFillStyle(XtDisplay(da), gc, FillStippled);
+
+            // Number of points is always 3 here, so we don't need
+            // to check first before calling XFillPolygon().
             (void)XFillPolygon(XtDisplay(da), where, gc, points, 3, Convex, CoordModeOrigin);
         }
         break;
