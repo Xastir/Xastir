@@ -572,21 +572,15 @@ void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y
     long start_x, start_y, off_x, off_y;
 
 
-//    printf("%d half\n",quantity);
-
     for (j = 0; j < quantity; j++) {
         // Starting point for barb is (*i * BARB_SPACING) pixels
         // along bearing_radians vector
         *i = *i + BARB_SPACING;
-//printf("i:%d\n",*i);
         off_x = *i * cos(bearing_radians);
         off_y = *i * sin(bearing_radians);
         start_y = y + off_y;
         start_x = x + off_x;
 
-//(x_long-x_long_offset)/scale_x,
-//(y_lat-y_lat_offset)/scale_y,
- 
         // Set off in the barb direction now
         off_y = (long)( (BARB_LEN / 2) * sin(barb_radians) );
         off_x = (long)( (BARB_LEN / 2) * cos(barb_radians) );
@@ -611,13 +605,10 @@ void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y
     long start_x, start_y, off_x, off_y;
 
 
-//    printf("%d full\n",quantity);
-
     for (j = 0; j < quantity; j++) {
         // Starting point for barb is (*i * BARB_SPACING) pixels
         // along bearing_radians vector
         *i = *i + BARB_SPACING;
-//printf("i:%d\n",*i);
         off_x = *i * cos(bearing_radians);
         off_y = *i * sin(bearing_radians);
         start_y = y + off_y;
@@ -634,7 +625,6 @@ void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y
             start_y,
             start_x + off_x,
             start_y + off_y);
-
     }
 }
 
@@ -649,13 +639,10 @@ void draw_triangle_flags(int *i, int quantity, float bearing_radians, long x, lo
     XPoint points[3];
 
 
-//    printf("%d triangle\n",quantity);
-
     for (j = 0; j < quantity; j++) {
         // Starting point for barb is (*i * BARB_SPACING) pixels
         // along bearing_radians vector
         *i = *i + BARB_SPACING;
-//printf("i:%d\n",*i);
         off_x = *i * cos(bearing_radians);
         off_y = *i * sin(bearing_radians);
         start_y = y + off_y;
@@ -690,13 +677,10 @@ void draw_square_flags(int *i, int quantity, float bearing_radians, long x, long
     XPoint points[4];
 
 
-//    printf("%d square\n",quantity);
-
     for (j = 0; j < quantity; j++) {
         // Starting point for barb is (*i * BARB_SPACING) pixels
         // along bearing_radians vector
         *i = *i + BARB_SPACING;
-//printf("i:%d\n",*i);
         off_x = *i * cos(bearing_radians);
         off_y = *i * sin(bearing_radians);
         start_y = y + off_y;
@@ -712,14 +696,6 @@ void draw_square_flags(int *i, int quantity, float bearing_radians, long x, long
 
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
-
-/*
-        (void)XDrawLine(XtDisplay(da),where,gc,
-            start_x,
-            start_y,
-            start_x + off_x,
-            start_y + off_y);
-*/
 
         points[0].x = start_x;                   points[0].y = start_y;
         points[1].x = start_x + off_x;           points[1].y = start_y + off_y;
@@ -757,19 +733,18 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     int i;
 
 
+// Ghost the wind barb if sec_heard is too long.
+
+// What to do if my_speed is zero?  Blank out any wind barbs
+// that were written before?
+
+
     // Convert from mph to knots for wind speed.
     my_speed = my_speed * cvt_mi2len;
-
-    // What to do if my_speed is zero?  Blank out any wind barbs
-    // that were written before?
 
     // Adjust so that it fits our screen angles.  We're off by
     // 90 degrees.
     my_course = (my_course - 90) % 360;
-
- 
-    // Ghost the wind barb if sec_heard is too long.
-
 
     square_flags = (int)(my_speed / 100);
     my_speed = my_speed % 100;
@@ -815,7 +790,6 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
         y,
         x + off_x,
         y + off_y);
-
 
     // Increment along shaft and draw filled polygons at:
     // "(angle + 45) % 360" degrees to create flags.
