@@ -1241,6 +1241,7 @@ WINDOWS/CYGWIN NOTES:
             devel/make
             devel/rcs
             editors/vim
+            graphics/tiff (install sources for this one)
             interpreters/m4
             interpreters/perl
             text/less
@@ -1369,15 +1370,38 @@ WINDOWS/CYGWIN NOTES:
      ends up putting you somewhere other than your home directory, and your
      .profile doesn't end up getting sourced.  There must be a better way.
 
-     -------------------
+     Adding libproj to Cygwin:
+     -------------------------
+ 
+     Should be similar to the previous instructions for installing libproj
+     all the way through the "make" stage, but then you must type these
+     commands:
 
+     rm /usr/local/bin/invproj (2nd and later installs only)
+     rm /usr/local/bin/invgeod (2nd and later installs only)
+     ln /usr/local/bin/proj.exe /usr/local/bin/invproj
+     ln /usr/local/bin/geod.exe /usr/local/bin/invgeod
+
+     then "make install".
+
+     Adding libgeotiff to Cygwin:
+     ----------------------------
+
+     So far it appears to compile fine until it gets to the "ld -shared"
+     step.  At that point it bombs out with a hundred or so "undefined
+     reference" messages.  Perhaps a new link line would solve that.
+     Investigating that possibility...
+ 
+     -------------------------
+
+ 
      Another difference with Cygwin as opposed to Unix-like operating
      systems:  You can't do the make install portion if Xastir is up and
      running.  You have to kill Xastir first before you do "make install" or
      "make install-strip".
 
      Note that one user running Cygwin on XP had it crash every time his
-     screensaver kicked in.  Disabling the screenserver fixed it.
+     screensaver kicked in.  Disabling the screenserver fixed that problem.
 
 
 END OF WINDOWS/CYGWIN NOTES.
