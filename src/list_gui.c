@@ -110,10 +110,15 @@ int units_last;
                                 /* immediate update, but not in high traffic situations  */
 
 
+
+
+
 void list_gui_init(void)
 {
     init_critical_section( &station_list_dialog_lock );
 }
+
+
 
 
 
@@ -234,6 +239,8 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
 
 
 
+
+
 // initialization of station list at very first Station List call
 void init_station_lists(void) {
     int type,i;
@@ -254,6 +261,8 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:init_station_lists
 end_critical_section(&station_list_dialog_lock, "list_gui.c:init_station_lists" );
 
 }
+
+
 
 
 
@@ -294,6 +303,8 @@ int stations_types(int type) {
 
 
 
+
+
 void station_list_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     int type;
 
@@ -308,6 +319,9 @@ begin_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destr
 end_critical_section(&station_list_dialog_lock, "list_gui.c:station_list_destroy_shell" );
 
 }
+
+
+
 
 
 /*
@@ -803,6 +817,8 @@ end_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill" )
 
 
 
+
+
 /*
  *  Check if we have to update an active list, do it if necessary
  */
@@ -836,6 +852,8 @@ void update_station_scroll_list(void) {         // called from UpdateTime() [mai
 
 
 
+
+
 void dragCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     int i;
 
@@ -848,6 +866,10 @@ void dragCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callDat
     Station_List_fill(i,cbs->value);
 }
 
+
+
+
+
 void decrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     int i;
 
@@ -855,6 +877,10 @@ void decrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
     i = atoi((char *)clientData);
     Station_List_fill(i,cbs->value);
 }
+
+
+
+
 
 void incrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     int i;
@@ -864,6 +890,10 @@ void incrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer ca
     Station_List_fill(i,cbs->value);
 }
 
+
+
+
+
 void pageDecrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     int i;
 
@@ -871,6 +901,10 @@ void pageDecrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointe
     i = atoi((char *)clientData);
     Station_List_fill(i,cbs->value);
 }
+
+
+
+
 
 void pageIncrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     int i;
@@ -880,6 +914,10 @@ void pageIncrementCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointe
     Station_List_fill(i,cbs->value);
 }
 
+
+
+
+
 void valueChangedCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer callData) {
     int i;
 
@@ -887,6 +925,9 @@ void valueChangedCallback(/*@unused@*/ Widget w, XtPointer clientData, XtPointer
     i = atoi((char *)clientData);
     Station_List_fill(i,cbs->value);
 }
+
+
+
 
 
 /*
@@ -2062,4 +2103,5 @@ end_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List" );
         // we already have an initialized widget
         (void)XRaiseWindow(XtDisplay(station_list_dialog[type]), XtWindow(station_list_dialog[type]));
 }
+
 

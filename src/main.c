@@ -7183,6 +7183,8 @@ void coordinates_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoi
     else
         coordinate_system = USE_DDMMMM;
 
+    // Update any active view lists so their coordinates get updated
+    Station_List_fill(1,0);     // Update View->Mobile Station list (has lat/lon or UTM info on it)
 }
 
 
