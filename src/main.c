@@ -9658,6 +9658,163 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
 
 
 
+//WE7U
+// Function written by Chris Bell for a July 2002 version of Xastir.
+// This function allows selecting/deselecting directories of map
+// files at a time.  This needs to be tweaked to fit into the new
+// map_index method of doing things.
+//
+/* map_list callback to select/deselect whole dirs at a time - KD6ZWR */
+/* This only works with real motif... lesstif crashes after the select */
+void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, XtPointer callData) {
+    XmListCallbackStruct *wid_data = (XmListCallbackStruct*) callData;
+    int i, is, it, ipos, selected;
+    char *temp;
+    char clicked_dir[8000];
+    XmString *list;
+
+
+    if ( wid_data->reason == XmCR_MULTIPLE_SELECT ) {
+        XtRemoveCallback(widget, XmNmultipleSelectionCallback, map_list_list_click_motif, NULL); /* kd6zwr - callback test */
+
+        XtVaGetValues(widget,
+                      XmNitemCount,&i,
+                      XmNitems,&list,
+                      NULL);
+        XtVaGetValues(widget,
+                      XmNselectedItemCount,&is,
+                      NULL);
+        
+        printf("%d items, %d selected.\n",i,is);
+        if(XmStringGetLtoR(wid_data->item,XmFONTLIST_DEFAULT_TAG,&temp)) {
+            printf("I got clicked...on %s.\n",temp);
+            if (temp[strlen(temp)-1] == '/' ) {  /* clicked a directory */
+                printf("  and it is a dir.\n");
+                strcpy(clicked_dir, temp);
+                XtFree(temp);
+                
+                selected = (int) XmListPosSelected(widget, wid_data->item_position );
+                
+                for (it=wid_data->item_position+1;it<=i;it++) {
+                    /* we can start from where we are, the list is sorted */
+                    XmStringGetLtoR(list[it-1],XmFONTLIST_DEFAULT_TAG,&temp);
+                    if (temp) {
+                        if (strncmp(temp, clicked_dir, strlen(clicked_dir)) == 0) {
+                            printf("We got a match %s.\n",temp);
+                            ipos = XmListItemPos(widget, list[it-1]);
+                            printf("%sselecting pos %d, was %sselected.\n",
+                                   selected?"":"un-",ipos,
+                                   XmListPosSelected(widget,ipos)?"":"un-");
+                            if (ipos!=0) {
+                                if (selected) { /* add the item to the select list */
+                                    XmListSelectPos(widget,ipos,FALSE);
+                                } else {
+                                    XmListDeselectPos(widget,ipos);
+                                }
+                            }
+                        } else { 
+                            printf("not matched %s.\n",temp);
+                        }
+                        if (temp) XtFree(temp);
+                    }
+                }
+            }
+        }
+        XtAddCallback(widget, XmNmultipleSelectionCallback, map_list_list_click_motif, NULL); /* kd6zwr - callback test */
+    }
+}
+
+
+
+
+
+//WE7U
+// Function written by Chris Bell for a July 2002 version of Xastir.
+// This function allows selecting/deselecting directories of map
+// files at a time.  This needs to be tweaked to fit into the new
+// map_index method of doing things.
+//
+/* map_list callback to select/deselect whole dirs at a time - KD6ZWR */
+void map_list_list_click(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, XtPointer callData) {
+    XmListCallbackStruct *wid_data = (XmListCallbackStruct*) callData;
+    int i, is, it, ipos, selected;
+    char *temp;
+    char clicked_dir[8000];
+    XmString *list, *slist;
+    FILE *f;
+
+
+    if ( wid_data->reason == XmCR_MULTIPLE_SELECT ) {
+        XtRemoveCallback(widget, XmNmultipleSelectionCallback, map_list_list_click, NULL); /* make sure we don't recurse... */
+
+        XtVaGetValues(widget,
+                      XmNitemCount,&i,
+                      XmNitems,&list,
+                      NULL);
+        XtVaGetValues(widget,
+                      XmNselectedItemCount,&is,
+                      XmNselectedItems,&slist,
+                      NULL);
+        
+        printf("%d items, %d selected.\n",i,is);
+        if(XmStringGetLtoR(wid_data->item,XmFONTLIST_DEFAULT_TAG,&temp)) {
+            printf("I got clicked...on %s.\n",temp);
+            if (temp[strlen(temp)-1] == '/' ) {  /* clicked a directory */
+                printf("  and it is a dir.\n");
+                strcpy(clicked_dir, temp);
+                XtFree(temp);
+                
+                selected = (int) XmListPosSelected(widget, wid_data->item_position );
+                
+//                f=fopen(WIN_MAP_DATA,"w+");
+f=NULL;
+                if (f!=NULL) {
+
+                    for (it=1;it<=i;it++) {
+
+                        XmStringGetLtoR(list[it-1],XmFONTLIST_DEFAULT_TAG,&temp);
+                        if (temp) {
+                            if (strncmp(temp, clicked_dir, strlen(clicked_dir)) == 0) {
+                                printf("We got a match %s.\n",temp);
+                                ipos = XmListItemPos(widget, list[it-1]);
+                                printf("%sselecting pos %d, was %sselected.\n",
+                                       selected?"":"un-",ipos, XmListPosSelected(widget,ipos)?"":"un-");
+                                if (ipos!=0) {
+                                    if (selected) { /* add the item to the select list */
+                                        //
+                                        XmListSelectPos(widget,ipos,FALSE);
+                                        fprintf(f,"%s\n",temp);
+                                        //} else {
+                                        //
+                                        XmListDeselectPos(widget,ipos);
+                                    }
+                                }
+                            } else { 
+                                printf("not matched %s.\n",temp);
+                                ipos = XmListItemPos(widget, list[it-1]);
+                                printf("pos %d, was %sselected.\n", ipos, XmListPosSelected(widget,ipos)?"":"un-");
+                                if (XmListPosSelected(widget,ipos))
+                                    fprintf(f,"%s\n",temp);
+                            }
+                            XtFree(temp);
+                        }
+                    }
+                    (void)fclose(f);
+                    map_chooser_fill_in();
+                }
+                else {
+//                    printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+                }
+            }
+        }
+        XtAddCallback(widget, XmNmultipleSelectionCallback, map_list_list_click, NULL); /* kd6zwr - callback test */
+    }
+}
+ 
+ 
+ 
+ 
+
 void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer callData) {
     int i,x;
     XmString *list;
