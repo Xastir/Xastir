@@ -135,41 +135,46 @@ PULDNOT003|Short||
 PULDNDP014|Find Station|F|
 PULDNDP001|Track Station|T|
 PULDNDP022|Fetch Findu Trail|u|
-PULDNDP012|Display Symbols||
-PULDNDP011|Rotate Symbols||
+# SubMenu "Filter Data"
+PULDNDP032|Filter Data||
+PULDNDP040|Select None||
+PULDNDP041|Select TNC||
+PULDNDP027|Select Local||
+PULDNDP034|Select Net||
+PULDNDP019|Include Expired Data||
+PULDNDP028|Select Fixed Stations||
+PULDNDP029|Select Moving Stations||
+PULDNDP030|Select WX Stations||
+PULDNDP026|Select WX Objects/Items||
+PULDNDP039|Select Water Gauge Objects/Items||
+PULDNDP031|Select Other Objects/Items||
+# SubMenu "Filter Display"
+PULDNDP033|Filter Display||
 PULDNDP010|Display Callsign||
-PULDNDP004|Display Speed|S|
-PULDNDP017|Display Short Speed||
-PULDNDP002|Display Altitude||
+PULDNDP012|Display Symbol||
+PULDNDP011|- Rotate Symbol||
+PULDNDP007|Display Trail||
 PULDNDP003|Display Course||
-PULDNDP005|Display Dist/Bearing||
+PULDNDP004|Display Speed|S|
+PULDNDP017|- Display Short Speed||
+PULDNDP002|Display Altitude||
 PULDNDP009|Display Weather Info||
-PULDNDP018|Display Temperature Only||
-PULDNDP008|Display Power/Gain||
-PULDNDP021|Use Default Power/Gain||
-PULDNDP020|Display Mobile Power/Gain||
+PULDNDP018|- Display Temperature Only||
 PULDNDP013|Display Position Ambiguity||
-PULDNDP019|Display Expired Data||
-PULDNDP023|Display DF Circles||
-PULDNDP024|Display Last Report Time||
-PULDNDP007|Display Station Trails||
+PULDNDP008|Display Power/Gain||
+PULDNDP021|- Use Default Power/Gain||
+PULDNDP020|- Display Mobile Power/Gain||
+PULDNDP023|Display DF Attributes||
+PULDNDP035|Enable Dead-Reckoning||
+PULDNDP036|- Display Arc||
+PULDNDP037|- Display Course||
+PULDNDP038|- Display Symbol||
+PULDNDP005|Display Dist/Bearing||
+PULDNDP024|Display Last Report Age||
+#
 PULDNDP015|Clear All Stations!!!|A|
 PULDNDP016|Clear All Trails!!!|C|
 PULDNDP025|Clear Object/Item History||
-PULDNDP026|Display WX Objects/Items||
-PULDNDP027|Display Local Stations||
-PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations||
-PULDNDP030|Display WX Stations||
-PULDNDP031|Display Objects/Items||
-PULDNDP032|Filter Symbols||
-PULDNDP033|Filter Info||
-PULDNDP034|Display Non-Local Stations||
-PULDNDP035|Enable Dead-Reckoning||
-PULDNDP036|Enable Dead-Reckoning Arcs||
-PULDNDP037|Enable Dead-Reckoning Course||
-PULDNDP038|Enable Dead-Reckoning Symbols||
-PULDNDP039|Display Water Gage Objects||
 #
 # Units
 PULDNUT001|Enable English Units|E|

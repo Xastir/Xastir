@@ -135,41 +135,46 @@ PULDNOT003|Court||
 PULDNDP014|Localiser une station|L|
 PULDNDP001|Suivre une station|S|
 PULDNDP022|Télécharger piste Findu||
-PULDNDP012|Activer symboles|c|
-PULDNDP011|Pivoter symboles|o|
-PULDNDP010|Activer indicatif|n|
-PULDNDP004|Activer vitesse|v|
-PULDNDP017|Afficher vitesse abrégée||
-PULDNDP002|Activer altitude|A|
-PULDNDP003|Activer cap|r|
-PULDNDP005|Activer distance/relèvement|d|
-PULDNDP009|Activer info météo|I|
-PULDNDP018|Afficher seulement température||
-PULDNDP008|Activer puissance/gain|g|
-PULDNDP021|Activer puissance/gain défaut||
-PULDNDP020|Activer puissance/gain mobile||
-PULDNDP013|Activer ambiguïté de position|b|
-PULDNDP019|Afficher données périmées||
-PULDNDP023|Afficher cercles DF||
-PULDNDP024|Display Last Report Time||
-PULDNDP007|Activer pistes de station|p|
+# SubMenu "Filter Data"
+PULDNDP032|Filtrer données||
+PULDNDP040|Choisir rien||
+PULDNDP041|Choisir TNC||
+PULDNDP027|Choisir local||
+PULDNDP034|Choisir net||
+PULDNDP019|Inclure données périmées||
+PULDNDP028|Choisir stations fixes||
+PULDNDP029|Choisir stations mobiles||
+PULDNDP030|Choisir stations météo||
+PULDNDP026|Choisir objets/articles météo||
+PULDNDP039|Choisir objets/articles indicateurs d'eau||
+PULDNDP031|Choisir autres objets/articles||
+# SubMenu "Filter Display"
+PULDNDP033|Filtrer affichage||
+PULDNDP010|Afficher indicatif|n|
+PULDNDP012|Afficher symbole|c|
+PULDNDP011|- Pivoter symbole|o|
+PULDNDP007|Afficher piste|p|
+PULDNDP003|Afficher cap|r|
+PULDNDP004|Afficher vitesse|v|
+PULDNDP017|- Afficher vitesse abrégée||
+PULDNDP002|Afficher altitude|A|
+PULDNDP009|Afficher info météo|I|
+PULDNDP018|- Afficher seulement température||
+PULDNDP013|Afficher ambiguïté de position|b|
+PULDNDP008|Afficher puissance/gain|g|
+PULDNDP021|- Activer puissance/gain défaut||
+PULDNDP020|- Activer puissance/gain mobile||
+PULDNDP023|Afficher attributs DF||
+PULDNDP035|Activer point estimé||
+PULDNDP036|- Afficher arc||
+PULDNDP037|- Afficher cap||
+PULDNDP038|- Afficher symbole||
+PULDNDP005|Afficher distance/relèvement|d|
+PULDNDP024|Afficher âge du dernier rapport||
+#
 PULDNDP015|Effacer toutes stations!!!|E|
 PULDNDP016|Effacer toutes pistes!!!|f|
-PULDNDP025|Clear Object/Item History||
-PULDNDP026|Display Weather Objects/Items||
-PULDNDP027|Display Local Stations||
-PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations||
-PULDNDP030|Display WX Stations||
-PULDNDP031|Display Objects/Items||
-PULDNDP032|Filter Symbols||
-PULDNDP033|Filter Info||
-PULDNDP034|Display Non-Local Stations||
-PULDNDP035|Enable Dead-Reckoning||
-PULDNDP036|Enable Dead-Reckoning Arcs||
-PULDNDP037|Enable Dead-Reckoning Course||
-PULDNDP038|Enable Dead-Reckoning Symbols||
-PULDNDP039|Display Water Gage Objects||
+PULDNDP025|Effacer histoire des objets/articles||
 #
 # Units
 PULDNUT001|Activer mesures anglaises||

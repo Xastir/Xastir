@@ -125,33 +125,58 @@ extern int view_zero_distance_bulletins;
 extern int warn_about_mouse_modifiers;
 
 extern int output_station_type;
-extern int symbol_display_enable;
-extern int symbol_display_rotate;
-extern int symbol_display_local_stations;
-extern int symbol_display_nonlocal_stations;
-extern int symbol_display_stationary;
-extern int symbol_display_moving;
-extern int symbol_display_WX;
-extern int symbol_display_objects;
 
-extern int symbol_alt_display;
-extern int symbol_course_display;
-extern int symbol_speed_display;
-extern int speed_display_enable;
-extern int speed_display_short;
-extern int symbol_dist_course_display;
-extern int symbol_weather_display;
-extern int symbol_display;
-extern int symbol_rotate;
-extern int wx_display_enable;
-extern int wx_display_short;
-extern int wx_obj_display_enable;
-extern int gage_obj_display_enable;
+typedef struct _selections {
+    int none;
+    int tnc;
+    int local;
+    int net;
+    int old_data;
+
+    int stationary_stations;
+    int moving_stations;
+    int weather_stations;
+    int weather_objects;
+    int gauge_objects;
+    int other_objects;
+} Selections;
+extern Selections Select_;
+
+typedef struct _what_to_display {
+    int callsign;
+    int symbol;
+    int symbol_rotate;
+    int trail;
+
+    int course;
+    int speed;
+    int speed_short;
+    int altitude;
+
+    int weather;
+    int weather_short;
+
+    int ambiguity;
+    int phg;
+    int default_phg;
+    int phg_of_moving;
+
+    int df_data;
+    int dr_data;
+    int dr_arc;
+    int dr_course;
+    int dr_symbol;
+
+    int dist_bearing;
+    int last_heard;
+} What_to_display;
+extern What_to_display Display_;
+
+
 extern int colors[256];
 extern int max_trail_colors;
 extern int trail_colors[32];
 extern int current_trail_color;
-extern int station_trails;
 extern int units_english_metric;
 extern int do_dbstatus;
 extern int redraw_on_new_data;
@@ -179,17 +204,6 @@ extern int map_background_color;
 extern int map_color_fill;
 extern int letter_style;
 extern int wx_alert_style;
-extern int show_phg;
-extern int show_DF;
-extern int show_last_heard;
-extern int show_phg_mobiles;
-extern int show_phg_default;
-extern int show_amb;
-extern int show_old_data;
-extern int show_DR;
-extern int show_DR_arc;
-extern int show_DR_course;
-extern int show_DR_symbol;
 extern char sound_command[];
 extern pid_t last_sound_pid;
 extern int sound_play_new_station;

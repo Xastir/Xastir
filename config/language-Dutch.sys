@@ -140,41 +140,46 @@ PULDNOT003|Kort||
 PULDNDP014|Zoek Station|Z|
 PULDNDP001|Volg Station|V|
 PULDNDP022|Spoor Downloaden|p|
-PULDNDP012|Symbolen|y|
-PULDNDP011|Draai Symbolen|D|
-PULDNDP010|Roepnaam|R|
-PULDNDP004|Snelheid|S|
-PULDNDP017|Geef snelheid kort traject weer||
-PULDNDP002|Hoogte|H|
-PULDNDP003|Koers|K|
-PULDNDP005|Afst/koers|A|
-PULDNDP009|Weer Informatie|W|
-PULDNDP018|Geef alleen temperatuur weer||
-PULDNDP008|Stations Vermogen/Winst|V|
-PULDNDP021|Activeer standaard Vermogen/Winst||
-PULDNDP020|Activeer mobiel Vermogen/Winst||
-PULDNDP013|Zet stations nadering aan||
+# SubMenu "Filter Data"
+PULDNDP032|Filter Data||
+PULDNDP040|Select None||
+PULDNDP041|Select TNC||
+PULDNDP027|Select Local||
+PULDNDP034|Select Net||
 PULDNDP019|Geef verlopen gegevens weer||
-PULDNDP023|Geef DF cirkels weer||
-PULDNDP024|Geeft Tijd Laatste Rapport||
+PULDNDP028|Select Fixed Stations||
+PULDNDP029|Select Moving Stations||
+PULDNDP030|Select WX Stations||
+PULDNDP026|Select Weather Objects/Items||
+PULDNDP039|Select Water Gauge Objects/Items||
+PULDNDP031|Select Other Objects/Items||
+# SubMenu "Filter Display"
+PULDNDP033|Filter Display||
+PULDNDP010|Roepnaam|R|
+PULDNDP012|Symbolen|y|
+PULDNDP011|- Draai Symbolen|D|
 PULDNDP007|Station Spoor|t|
+PULDNDP003|Koers|K|
+PULDNDP004|Snelheid|S|
+PULDNDP017|- Geef snelheid kort traject weer||
+PULDNDP002|Hoogte|H|
+PULDNDP009|Weer Informatie|W|
+PULDNDP018|- Geef alleen temperatuur weer||
+PULDNDP013|Zet stations nadering aan||
+PULDNDP008|Stations Vermogen/Winst|V|
+PULDNDP021|- Activeer standaard Vermogen/Winst||
+PULDNDP020|- Activeer mobiel Vermogen/Winst||
+PULDNDP023|Geef DF cirkels weer||
+PULDNDP035|Enable Dead-Reckoning||
+PULDNDP036|- Display Arc||
+PULDNDP037|- Display Course||
+PULDNDP038|- Display Symbol||
+PULDNDP005|Afst/koers|A|
+PULDNDP024|Geeft Tijd Laatste Rapport||
+#
 PULDNDP015|Wis alle Stations|W|
 PULDNDP016|Wis alle Sporen|S|
 PULDNDP025|Wis Object/Item Geschiedenis||
-PULDNDP026|Display Weather Objects/Items||
-PULDNDP027|Display Local Stations||
-PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations||
-PULDNDP030|Display WX Stations||
-PULDNDP031|Display Objects/Items||
-PULDNDP032|Filter Symbols||
-PULDNDP033|Filter Info||
-PULDNDP034|Display Non-Local Stations||
-PULDNDP035|Enable Dead-Reckoning||
-PULDNDP036|Enable Dead-Reckoning Arcs||
-PULDNDP037|Enable Dead-Reckoning Course||
-PULDNDP038|Enable Dead-Reckoning Symbols||
-PULDNDP039|Display Water Gage Objects||
 #
 # Units
 PULDNUT001|Engels||

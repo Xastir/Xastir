@@ -134,41 +134,46 @@ PULDNOT003|Curto||
 PULDNDP014|Localizar estação|L|
 PULDNDP001|Rastrear estação|R|
 PULDNDP022|Tirar o rasto de Findu|F|
-PULDNDP012|Mostrar símbolos|D|
-PULDNDP011|Símbolos rodados|S|
-PULDNDP010|Mostrar indicativo|i|
-PULDNDP004|Mostrar velocidade|v|
-PULDNDP017|Mostrar velocidade baixa||
-PULDNDP002|Mostrar altura|a|
-PULDNDP003|Mostrar curso|c|
-PULDNDP005|Mostrar dist/curso|d|
-PULDNDP009|Mostrar info do tempo|t|
-PULDNDP018|Mostrar só a temperatura||
-PULDNDP008|Estação potência/ganho|p|
-PULDNDP021|Activar por defeito pot/ganho||
-PULDNDP020|Activar móvel pot/ganho||
-PULDNDP013|Ambiguidade de posição||
+# SubMenu "Filter Data"
+PULDNDP032|Filtrar datos||
+PULDNDP040|Select None||
+PULDNDP041|Select TNC||
+PULDNDP027|Mostrar estações locais||
+PULDNDP034|Mostrar estações net||
 PULDNDP019|Mostrar infos expiradas||
-PULDNDP023|Mostrar circulos DF||
-PULDNDP024|Mostrar o último reporte horário||
+PULDNDP028|Mostrar estações fixas||
+PULDNDP029|Mostrar estações móveis||
+PULDNDP030|Mostrar estações de tempo||
+PULDNDP026|Mostrar Objects/Items metereológicos||
+PULDNDP039|Display Water Gauge Objects/Items||
+PULDNDP031|Mostrar Objectos/Items||
+# SubMenu "Filter Display"
+PULDNDP033|Filtrar display||
+PULDNDP010|Mostrar indicativo|i|
+PULDNDP012|Mostrar símbolos|D|
+PULDNDP011|- Símbolos rodados|S|
 PULDNDP007|Rastos de estações|R|
+PULDNDP003|Mostrar curso|c|
+PULDNDP004|Mostrar velocidade|v|
+PULDNDP017|- Mostrar velocidade baixa||
+PULDNDP002|Mostrar altura|a|
+PULDNDP009|Mostrar info do tempo|t|
+PULDNDP018|- Mostrar só a temperatura||
+PULDNDP013|Ambiguidade de posição||
+PULDNDP008|Estação potência/ganho|p|
+PULDNDP021|- Activar por defeito pot/ganho||
+PULDNDP020|- Activar móvel pot/ganho||
+PULDNDP023|Mostrar circulos DF||
+PULDNDP035|Activar Dead-Reckoning||
+PULDNDP036|- Activar arco Dead-Reckoning||
+PULDNDP037|- Activar curso Dead-Reckoning||
+PULDNDP038|- Activar símbolo Dead-Reckoning||
+PULDNDP005|Mostrar dist/curso|d|
+PULDNDP024|Mostrar o último reporte horário||
+#
 PULDNDP015|Anular todas as estações|A|
 PULDNDP016|Limpar rastos|L|
 PULDNDP025|Limpar história de Objecto/Item||
-PULDNDP026|Mostrar Objects/Items metereológicos||
-PULDNDP027|Mostrar estações locais||
-PULDNDP028|Mostrar estações fixas||
-PULDNDP029|Mostrar estações móveis|| 
-PULDNDP030|Mostrar estações de tempo||
-PULDNDP031|Mostrar Objectos/Items||
-PULDNDP032|Simbolos filtrados||
-PULDNDP033|Info filtrada||
-PULDNDP034|Mostrar estações não locais||
-PULDNDP035|Activar Dead-Reckoning||
-PULDNDP036|Activar arcos Dead-Reckoning||
-PULDNDP037|Activar curso Dead-Reckoning||
-PULDNDP038|Activar símbolos Dead-Reckoning||
-PULDNDP039|Display Water Gage Objects||
 #
 # Inglesa/métrica
 PULDNUT001|Activar unidades Inglesas||

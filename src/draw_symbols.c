@@ -220,7 +220,7 @@ void draw_phg_rng(long x_long, long y_lat, char *phg, time_t sec_heard, Pixmap w
     /* max off screen values */
     max_x = screen_width+800l;
     max_y = screen_height+800l;
-    if ( ((sec_old+sec_heard)>sec_now()) || show_old_data ) {
+    if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
         if ((x_long>=0) && (x_long<=129600000l)) {
             if ((y_lat>=0) && (y_lat<=64800000l)) {
 
@@ -369,7 +369,7 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
     /* max off screen values */
     max_x = screen_width+800l;
     max_y = screen_height+800l;
-    if ( ((sec_old+sec_heard)>sec_now()) || show_old_data ) {
+    if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
         if ((x_long>=0) && (x_long<=129600000l)) {
             if ((y_lat>=0) && (y_lat<=64800000l)) {
 
@@ -738,113 +738,107 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 // (TBD)
 
 
-    // Refuse to draw the barb at all if we're past the "clear"
-    // interval:
-    if ( ((sec_clear+sec_heard)>sec_now()) || show_old_data ) {
-
- 
 // What to do if my_speed is zero?  Blank out any wind barbs
 // that were written before?
 
 
-        // Convert from mph to knots for wind speed.
-        my_speed = my_speed * 0.8689607;
+    // Convert from mph to knots for wind speed.
+    my_speed = my_speed * 0.8689607;
 
-        //printf("mph:%s, knots:%d\n",speed,my_speed);
+    //printf("mph:%s, knots:%d\n",speed,my_speed);
 
-        // Adjust so that it fits our screen angles.  We're off by
-        // 90 degrees.
-        my_course = (my_course - 90) % 360;
+    // Adjust so that it fits our screen angles.  We're off by
+    // 90 degrees.
+    my_course = (my_course - 90) % 360;
 
-        square_flags = (int)(my_speed / 100);
-        my_speed = my_speed % 100;
+    square_flags = (int)(my_speed / 100);
+    my_speed = my_speed % 100;
 
-        triangle_flags = (int)(my_speed / 50);
-        my_speed = my_speed % 50;
+    triangle_flags = (int)(my_speed / 50);
+    my_speed = my_speed % 50;
 
-        full_barbs = (int)(my_speed / 10);
-        my_speed = my_speed % 10;
+    full_barbs = (int)(my_speed / 10);
+    my_speed = my_speed % 10;
 
-        half_barbs = (int)(my_speed / 5);
+    half_barbs = (int)(my_speed / 5);
 
-        shaft_length = BARB_SPACING * (square_flags + triangle_flags + full_barbs
-            + half_barbs + 1);
+    shaft_length = BARB_SPACING * (square_flags + triangle_flags + full_barbs
+				   + half_barbs + 1);
 
-        // Set a minimum length for the shaft?
-        if (shaft_length < 20)
-            shaft_length = 20;
+    // Set a minimum length for the shaft?
+    if (shaft_length < 20)
+	shaft_length = 20;
 
-        if (debug_level & 128) {
-            printf("Course:%d,\tL:%d,\tsq:%d,\ttr:%d,\tfull:%d,\thalf:%d\n",
-                atoi(course),
-                shaft_length,
-                square_flags,
-                triangle_flags,
-                full_barbs,
-                half_barbs);
-        }
-
-        // Draw shaft at proper angle.
-        bearing_radians = (my_course/360.0) * 2.0 * M_PI;
-
-        off_y = (long)( shaft_length * sin(bearing_radians) );
-        off_x = (long)( shaft_length * cos(bearing_radians) );
-
-        x = (x_long - x_long_offset)/scale_x;
-        y = (y_lat - y_lat_offset)/scale_y;
-
-        (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
-        (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
-        (void)XDrawLine(XtDisplay(da),where,gc,
-            x,
-            y,
-            x + off_x,
-            y + off_y);
-
-        // Increment along shaft and draw filled polygons at:
-        // "(angle + 45) % 360" degrees to create flags.
-
-        i = BARB_SPACING;
-        // Draw half barbs if any
-        if (half_barbs)
-        	draw_half_barbs(&i,
-                half_barbs,
-                bearing_radians,
-                x,
-                y,
-                course,
-                where);
- 
-        // Draw full barbs if any
-        if (full_barbs)
-        	draw_full_barbs(&i,
-                full_barbs,
-                bearing_radians,
-                x,
-                y,
-                course,
-                where);
- 
-        // Draw triangle flags if any
-        if (triangle_flags)
-        	draw_triangle_flags(&i,
-                triangle_flags,
-                bearing_radians,
-                x,
-                y,
-                course,
-                where);
- 
-        // Draw rectangle flags if any
-        if (square_flags)
-        	draw_square_flags(&i,
-                square_flags,
-                bearing_radians,
-                x,
-                y,
-                course,
-                where);
+    if (debug_level & 128) {
+	printf("Course:%d,\tL:%d,\tsq:%d,\ttr:%d,\tfull:%d,\thalf:%d\n",
+	       atoi(course),
+	       shaft_length,
+	       square_flags,
+	       triangle_flags,
+	       full_barbs,
+	       half_barbs);
     }
+
+    // Draw shaft at proper angle.
+    bearing_radians = (my_course/360.0) * 2.0 * M_PI;
+
+    off_y = (long)( shaft_length * sin(bearing_radians) );
+    off_x = (long)( shaft_length * cos(bearing_radians) );
+
+    x = (x_long - x_long_offset)/scale_x;
+    y = (y_lat - y_lat_offset)/scale_y;
+
+    (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
+    (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
+    (void)XDrawLine(XtDisplay(da),where,gc,
+		    x,
+		    y,
+		    x + off_x,
+		    y + off_y);
+
+    // Increment along shaft and draw filled polygons at:
+    // "(angle + 45) % 360" degrees to create flags.
+
+    i = BARB_SPACING;
+    // Draw half barbs if any
+    if (half_barbs)
+	draw_half_barbs(&i,
+			half_barbs,
+			bearing_radians,
+			x,
+			y,
+			course,
+			where);
+
+    // Draw full barbs if any
+    if (full_barbs)
+	draw_full_barbs(&i,
+			full_barbs,
+			bearing_radians,
+			x,
+			y,
+			course,
+			where);
+
+    // Draw triangle flags if any
+    if (triangle_flags)
+	draw_triangle_flags(&i,
+			    triangle_flags,
+			    bearing_radians,
+			    x,
+			    y,
+			    course,
+			    where);
+
+    // Draw rectangle flags if any
+    if (square_flags)
+	draw_square_flags(&i,
+			  square_flags,
+			  bearing_radians,
+			  x,
+			  y,
+			  course,
+			  where);
 }
 
 
@@ -1008,7 +1002,7 @@ void draw_bearing(long x_long, long y_lat, char *course,
     /* max off screen values */
     max_x = screen_width+800l;
     max_y = screen_height+800l;
-    if ( ((sec_old+sec_heard)>sec_now()) || show_old_data ) {
+    if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
         if ((x_long>=0) && (x_long<=129600000l)) {
             if ((y_lat>=0) && (y_lat<=64800000l)) {
 
@@ -1134,7 +1128,7 @@ void draw_ambiguity(long x_long, long y_lat, char amb, time_t sec_heard, Pixmap 
     left = (x_long - x_long_offset - offset_long) / scale_x;
     top  = (y_lat  - y_lat_offset  - offset_lat)  / scale_y;
 
-    if ( ((sec_old+sec_heard)>sec_now()) || show_old_data ) {
+    if ( ((sec_old+sec_heard)>sec_now()) || Select_.old_data ) {
         if ((x_long>=0) && (x_long<=129600000l)) {
             if ((y_lat>=0) && (y_lat<=64800000l)) {
 
@@ -1198,9 +1192,8 @@ void draw_area(long x_long, long y_lat, char type, char color,
     int  c;
     XPoint points[4];
 
-    if ( ( ((sec_clear + sec_heard) <= sec_now()) && !show_old_data ) ||
-        (x_long < 0) || (x_long > 129600000l) ||
-        (y_lat  < 0) || (y_lat  > 64800000l) )
+    if ((x_long < 0) || (x_long > 129600000l) ||
+        (y_lat  < 0) || (y_lat  > 64800000l))
         return;
 
     xoff = 360000.0 / 1500.0 * (sqrt_lon_off * sqrt_lon_off) / scale_x;
@@ -1697,148 +1690,148 @@ void draw_symbol(Widget w, char symbol_table, char symbol_id, char symbol_overla
     int posyl;
     int posyr;
 
-    if ( ((sec_clear+sec_heard)>sec_now()) || show_old_data ) {
-        if((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
-            if((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
-                if((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
-                    if((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
-                        x_offset=((x_long-x_long_offset)/scale_x)-(10);
-                        y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
-                        ghost = (int)(((sec_old+sec_heard)) < sec_now());
-                        symbol(w,ghost,symbol_table,symbol_id,symbol_overlay,where,1,x_offset,y_offset,orient);
+    if ((x_long+10>=0) && (x_long-10<=129600000l)) {      // 360 deg
+	if ((y_lat+10>=0) && (y_lat-10<=64800000l)) {     // 180 deg
+	    if ((x_long>x_long_offset) && (x_long<(x_long_offset+(long)(screen_width *scale_x)))) {
+		if ((y_lat>y_lat_offset) && (y_lat<(y_lat_offset+(long)(screen_height*scale_y)))) {
+		    x_offset=((x_long-x_long_offset)/scale_x)-(10);
+		    y_offset=((y_lat -y_lat_offset) /scale_y)-(10);
+		    ghost = (int)(((sec_old+sec_heard)) < sec_now());
 
-                        posyr = 10;      // align symbols vertically centered to the right
-                        if ( (!ghost || show_old_data) && strlen(alt_text)>0)
-                            posyr -= 6;
-                        if (strlen(callsign_text)>0)
-                            posyr -= 6;
-                        if ( (!ghost || show_old_data) && strlen(speed_text)>0)
-                            posyr -= 6;
-                        if ( (!ghost || show_old_data) && strlen(course_text)>0)
-                            posyr -= 6;
-                        if (area_type == AREA_LINE_RIGHT)
-                            posyr += 8;
-                        // we may eventually have more adjustments for different types of areas
+		    if (Display_.symbol)
+			symbol(w,ghost,symbol_table,symbol_id,symbol_overlay,where,1,x_offset,y_offset,orient);
 
-                        length=(int)strlen(alt_text);
-                        if ( (!ghost || show_old_data) && length>0) {
-                            x_offset=((x_long-x_long_offset)/scale_x)+12;
-                            y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,alt_text,0x08,0x48,length);
-                            posyr += 12;
-                        }
+		    posyr = 10;      // align symbols vertically centered to the right
+		    if ( (!ghost || Select_.old_data) && strlen(alt_text)>0)
+			posyr -= 6;
+		    if (strlen(callsign_text)>0)
+			posyr -= 6;
+		    if ( (!ghost || Select_.old_data) && strlen(speed_text)>0)
+			posyr -= 6;
+		    if ( (!ghost || Select_.old_data) && strlen(course_text)>0)
+			posyr -= 6;
+		    if (area_type == AREA_LINE_RIGHT)
+			posyr += 8;
+		    // we may eventually have more adjustments for different types of areas
 
-                        length=(int)strlen(callsign_text);
-                        if (length>0) {
-                            x_offset=((x_long-x_long_offset)/scale_x)+12;
-                            y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,callsign_text,0x08,0x0f,length);
-                            posyr += 12;
-                        }
+		    length=(int)strlen(alt_text);
+		    if ( (!ghost || Select_.old_data) && length>0) {
+			x_offset=((x_long-x_long_offset)/scale_x)+12;
+			y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,alt_text,0x08,0x48,length);
+			posyr += 12;
+		    }
 
-                        length=(int)strlen(speed_text);
-                        if ( (!ghost || show_old_data) && length>0) {
-                            x_offset=((x_long-x_long_offset)/scale_x)+12;
-                            y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,speed_text,0x08,0x4a,length);
-                            posyr += 12;
-                        }
+		    length=(int)strlen(callsign_text);
+		    if (length>0) {
+			x_offset=((x_long-x_long_offset)/scale_x)+12;
+			y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,callsign_text,0x08,0x0f,length);
+			posyr += 12;
+		    }
 
-                        length=(int)strlen(course_text);
-                        if ( (!ghost || show_old_data) && length>0) {
-                            x_offset=((x_long-x_long_offset)/scale_x)+12;
-                            y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
-                            posyr += 12;
-                        }
+		    length=(int)strlen(speed_text);
+		    if ( (!ghost || Select_.old_data) && length>0) {
+			x_offset=((x_long-x_long_offset)/scale_x)+12;
+			y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,speed_text,0x08,0x4a,length);
+			posyr += 12;
+		    }
 
-                        posyl = 10; // distance and direction goes to the left.
-                                    // Also minutes last heard.
-                        if ( (!ghost || show_old_data) && strlen(my_distance)>0)
-                            posyl -= 6;
-                        if ( (!ghost || show_old_data) && strlen(my_course)>0)
-                            posyl -= 6;
-                        if ( (!ghost || show_old_data) && temp_show_last_heard)
-                            posyl -= 6;
+		    length=(int)strlen(course_text);
+		    if ( (!ghost || Select_.old_data) && length>0) {
+			x_offset=((x_long-x_long_offset)/scale_x)+12;
+			y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,course_text,0x08,0x52,length);
+			posyr += 12;
+		    }
 
-                        length=(int)strlen(my_distance);
-                        if ( (!ghost || show_old_data) && length>0) {
-                            x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                            y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,my_distance,0x08,0x0f,length);
-                            posyl += 12;
-                        }
-                        length=(int)strlen(my_course);
-                        if ( (!ghost || show_old_data) && length>0) {
-                            x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                            y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
-                            posyl += 12;
-                        }
-                        if ( (!ghost || show_old_data) && temp_show_last_heard) {
-                            char age[20];
-                            float minutes;
-                            float hours;
-                            int fgcolor;
+		    posyl = 10; // distance and direction goes to the left.
+		                // Also minutes last heard.
+		    if ( (!ghost || Select_.old_data) && strlen(my_distance)>0)
+			posyl -= 6;
+		    if ( (!ghost || Select_.old_data) && strlen(my_course)>0)
+			posyl -= 6;
+		    if ( (!ghost || Select_.old_data) && temp_show_last_heard)
+			posyl -= 6;
 
-                            // Color code the time string based on
-                            // time since last heard:
-                            //  Green:  0-29 minutes
-                            // Yellow: 30-59 minutes
-                            //    Red: 60 minutes to 1 day
-                            //  White: 1 day or later
+		    length=(int)strlen(my_distance);
+		    if ( (!ghost || Select_.old_data) && length>0) {
+			x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
+			y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,my_distance,0x08,0x0f,length);
+			posyl += 12;
+		    }
+		    length=(int)strlen(my_course);
+		    if ( (!ghost || Select_.old_data) && length>0) {
+			x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
+			y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,my_course,0x08,0x0f,length);
+			posyl += 12;
+		    }
+		    if ( (!ghost || Select_.old_data) && temp_show_last_heard) {
+			char age[20];
+			float minutes;
+			float hours;
+			int fgcolor;
 
-                            minutes = (float)( (sec_now() - sec_heard) / 60.0);
-                            hours = minutes / 60.0;
+			// Color code the time string based on
+			// time since last heard:
+			//  Green:  0-29 minutes
+			// Yellow: 30-59 minutes
+			//    Red: 60 minutes to 1 day
+			//  White: 1 day or later
 
-                            // Heard from this station within the
-                            // last 30 minutes?
-                            if (minutes < 30.0) {
-                                xastir_snprintf(age,sizeof(age),"%dmin", (int)minutes);
-                                fgcolor = 0x52; // green
-                            }
-                            // 30 to 59 minutes?
-                            else if (minutes < 60.0) {
-                                xastir_snprintf(age,sizeof(age),"%dmin", (int)minutes);
-                                fgcolor = 0x40; // yellow
-                            }
-                            // 1 hour to 1 day old?
-                            else if (hours <= 24.0) {
-                                xastir_snprintf(age,sizeof(age),"%.1fhr", hours);
-                                fgcolor = 0x4a; // red
-                            }
-                            // More than a day old
-                            else {
-                                xastir_snprintf(age,sizeof(age),"%.1fday", hours / 24.0);
-                                fgcolor = 0x0f; // white
-                            }
+			minutes = (float)( (sec_now() - sec_heard) / 60.0);
+			hours = minutes / 60.0;
 
-                            length = strlen(age);
-                            x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
-                            y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,fgcolor,length);
-                            posyl += 12;
-                        }
-                                                                                                                    
-                        if (posyr < posyl)  // weather goes to the bottom, centered horizontally
-                            posyr = posyl;
-                        if (posyr < 18)
-                            posyr = 18;
-                                        
-                        length=(int)strlen(wx_temp);
-                        if ( (!ghost || show_old_data) && length>0) {
-                            x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
-                            y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
-                            posyr += 12;
-                        }
+			// Heard from this station within the
+			// last 30 minutes?
+			if (minutes < 30.0) {
+			    xastir_snprintf(age,sizeof(age),"%dmin", (int)minutes);
+			    fgcolor = 0x52; // green
+			}
+			// 30 to 59 minutes?
+			else if (minutes < 60.0) {
+			    xastir_snprintf(age,sizeof(age),"%dmin", (int)minutes);
+			    fgcolor = 0x40; // yellow
+			}
+			// 1 hour to 1 day old?
+			else if (hours <= 24.0) {
+			    xastir_snprintf(age,sizeof(age),"%.1fhr", hours);
+			    fgcolor = 0x4a; // red
+			}
+			// More than a day old
+			else {
+			    xastir_snprintf(age,sizeof(age),"%.1fday", hours / 24.0);
+			    fgcolor = 0x0f; // white
+			}
 
-                        length=(int)strlen(wx_wind);
-                        if ( (!ghost || show_old_data) && length>0) {
-                            x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
-                            y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
-                            draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
-                        }
+			length = strlen(age);
+			x_offset=(((x_long-x_long_offset)/scale_x)-(length*6))-12;
+			y_offset=((y_lat  -y_lat_offset) /scale_y)+posyl;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,age,0x08,fgcolor,length);
+			posyl += 12;
+		    }
+
+		    if (posyr < posyl)  // weather goes to the bottom, centered horizontally
+			posyr = posyl;
+		    if (posyr < 18)
+			posyr = 18;
+
+		    length=(int)strlen(wx_temp);
+		    if ( (!ghost || Select_.old_data) && length>0) {
+			x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
+			y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_temp,0x08,0x40,length);
+			posyr += 12;
+		    }
+
+		    length=(int)strlen(wx_wind);
+		    if ( (!ghost || Select_.old_data) && length>0) {
+			x_offset=((x_long-x_long_offset)/scale_x)-(length*3);
+			y_offset=((y_lat -y_lat_offset) /scale_y)+posyr;
+			draw_nice_string(w,where,letter_style,x_offset,y_offset,wx_wind,0x08,0x40,length);
                     }
                 }
             }
@@ -1944,7 +1937,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
     // if there are points to draw, and the object has not been cleared (or 
     // we're supposed to show old data).
 
-    if (numpoints > 0 && (((sec_clear + sec_heard) > sec_now()) || show_old_data )) {
+    if (numpoints > 0) {
         //long x_offset, y_offset;
         int  i;
         XPoint xpoints[MAX_MULTIPOINTS + 1];
@@ -1971,7 +1964,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
             if (mypoints[i][1] > mostEast)
                 mostEast = mypoints[i][1];
         }
-        
+
         if (onscreen(mostWest, mostEast, mostNorth, mostSouth))
 #else
 
@@ -1981,7 +1974,7 @@ void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2]
         // one or more of them is on the display.
 
         if((x_long > x_long_offset) && (x_long < (x_long_offset + (long)(screen_width * scale_x)))
-            && (y_lat > y_lat_offset) && (y_lat < (y_lat_offset + (long)(screen_height * scale_y)))) 
+            && (y_lat > y_lat_offset) && (y_lat < (y_lat_offset + (long)(screen_height * scale_y))))
 #endif
         {
             //x_offset = (x_long - x_long_offset) / scale_x;
@@ -2373,7 +2366,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
     max_x = screen_width+800l;
     max_y = screen_height+800l;
 
-    if (show_DR_arc &&
+    if (Display_.dr_arc &&
         ((x_long>=0) && (x_long<=129600000l)) &&
 	((y_lat>=0) && (y_lat<=64800000l))) {
 
@@ -2422,7 +2415,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
         }
     }
 
-    if (show_DR_course) {
+    if (Display_.dr_course) {
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineOnOffDash, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,color); // red3
         (void)XDrawLine(XtDisplay(da),where,gc,
@@ -2432,7 +2425,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
             y + off_y);
     }
 
-    if (show_DR_symbol) {
+    if (Display_.dr_symbol) {
         draw_symbol(w,
             p_station->aprs_symbol.aprs_type,
             p_station->aprs_symbol.aprs_symbol,

@@ -141,41 +141,46 @@ PULDNOT003|Kurz||
 PULDNDP014|Station finden|f|
 PULDNDP001|Verfolge Station|V|
 PULDNDP022|Spur von Findu holen|h|
-PULDNDP012|Symbole||
-PULDNDP011|Symbole drehen||
+# SubMenu "Filter Data"
+PULDNDP032|Filter Data||
+PULDNDP040|Select None||
+PULDNDP041|Select TNC||
+PULDNDP027|Select Local||
+PULDNDP034|Select Net||
+PULDNDP019|Alte Daten zeigen||
+PULDNDP028|Select Fixed Stations||
+PULDNDP029|Select Moving Stations||
+PULDNDP030|Select WX Stations||
+PULDNDP026|Select WX Objects/Items||
+PULDNDP039|Select Water Gauge Objects/Items||
+PULDNDP031|Select Other Objects/Items||
+# SubMenu "Filter Display"
+PULDNDP033|Filter Display||
 PULDNDP010|Rufzeichen||
+PULDNDP012|Symbole||
+PULDNDP011|- Symbole drehen||
+PULDNDP007|Spuren||
+PULDNDP003|Kurs||
 PULDNDP004|Geschwindigkeit||
 PULDNDP017|- kurz||
 PULDNDP002|Höhe||
-PULDNDP003|Kurs||
-PULDNDP005|Entfernung/Richtung||
 PULDNDP009|Wetterdaten||
 PULDNDP018|- nur Temperatur||
+PULDNDP013|Positionsverschleierung||
 PULDNDP008|Leistung/Gewinn||
 PULDNDP021|- mit Standardwert||
 PULDNDP020|- bei Mobilstationen||
-PULDNDP013|Positionsverschleierung||
-PULDNDP019|Alte Daten zeigen||
 PULDNDP023|DF Kreise zeigen||
-PULDNDP024|Display Last Report Time||
-PULDNDP007|Spuren||
+PULDNDP035|Enable Dead-Reckoning||
+PULDNDP036|- Display Arc||
+PULDNDP037|- Display Course||
+PULDNDP038|- Display Symbol||
+PULDNDP005|Entfernung/Richtung||
+PULDNDP024|Display Last Report Age||
+#
 PULDNDP015|Stationen löschen|l|
 PULDNDP016|Spuren löschen|S|
 PULDNDP025|Clear Object/Item History||
-PULDNDP026|Display Weather Objects/Items||
-PULDNDP027|Display Local Stations||
-PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations||
-PULDNDP030|Display WX Stations||
-PULDNDP031|Display Objects/Items||
-PULDNDP032|Filter Symbols||
-PULDNDP033|Filter Info||
-PULDNDP034|Display Non-Local Stations||
-PULDNDP035|Enable Dead-Reckoning||
-PULDNDP036|Enable Dead-Reckoning Arcs||
-PULDNDP037|Enable Dead-Reckoning Course||
-PULDNDP038|Enable Dead-Reckoning Symbols||
-PULDNDP039|Display Water Gage Objects||
 #
 # Maßeinheiten
 PULDNUT001|Englische Maße||

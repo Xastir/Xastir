@@ -131,46 +131,51 @@ PULDNMSL03|Testo su sfondo nero|T|
 PULDNOT001|Attiva||
 PULDNOT002|Disattiva||
 PULDNOT003|Short||
-# 
+#
 # Manù Stazioni
 PULDNDP014|Localizza Stazione|L|
 PULDNDP001|Segui Stazione|T|
 PULDNDP022|Scarica il percorso da Findu||
-PULDNDP012|Simboli|Y|
-PULDNDP011|Ruota Simboli|R|
-PULDNDP010|Nominativo|l|
-PULDNDP004|Velocità|S|
-PULDNDP017|Visualizza basse velocità||
-PULDNDP002|Altitudine||A
-PULDNDP003|Direzione|C|
-PULDNDP005|Distanza/Direzione|D|
-PULDNDP009|Informazioni Meteo|W|
-PULDNDP018|Visualizza solo temperatura||
-PULDNDP008|Potenza/Guadagno|P|
-PULDNDP021|Potenza/Guadagno - default||
-PULDNDP020|Potenza/Guadagno - stazioni mobili||
-PULDNDP013|Ambiguità di posizione|
+# SubMenu "Filter Data"
+PULDNDP032|Filter Data||
+PULDNDP040|Select None||
+PULDNDP041|Select TNC||
+PULDNDP027|Select Local||
+PULDNDP034|Select Net||
 PULDNDP019|Visualizza dati scaduti||
-PULDNDP023|Visualizza i cerchi DF||
-PULDNDP024|Display Last Report Time||
+PULDNDP028|Select Fixed Stations||
+PULDNDP029|Select Moving Stations||
+PULDNDP030|Select WX Stations||
+PULDNDP026|Select WX Objects/Items||
+PULDNDP039|Select Water Gauge Objects/Items||
+PULDNDP031|Select Other Objects/Items||
+# SubMenu "Filter Display"
+PULDNDP033|Filter Display||
+PULDNDP010|Nominativo|l|
+PULDNDP012|Simboli|Y|
+PULDNDP011|- Ruota Simboli|R|
 PULDNDP007|Percorsi delle stazioni|i|
+PULDNDP003|Direzione|C|
+PULDNDP004|Velocità|S|
+PULDNDP017|- Visualizza basse velocità||
+PULDNDP002|Altitudine||A
+PULDNDP009|Informazioni Meteo|W|
+PULDNDP018|- Visualizza solo temperatura||
+PULDNDP013|Ambiguità di posizione|
+PULDNDP008|Potenza/Guadagno|P|
+PULDNDP021|- Potenza/Guadagno - default||
+PULDNDP020|- Potenza/Guadagno - stazioni mobili||
+PULDNDP023|Visualizza i cerchi DF||
+PULDNDP035|Enable Dead-Reckoning||
+PULDNDP036|- Display Arc||
+PULDNDP037|- Display Course||
+PULDNDP038|- Display Symbol||
+PULDNDP005|Distanza/Direzione|D|
+PULDNDP024|Display Last Report Age||
+#
 PULDNDP015|Elimina tutte le stazioni|C|
 PULDNDP016|Elimina tutti i percorsi|T|
 PULDNDP025|Clear Object/Item History||
-PULDNDP026|Display Weather Objects/Items||
-PULDNDP027|Display Local Stations||
-PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations||
-PULDNDP030|Display WX Stations||
-PULDNDP031|Display Objects/Items||
-PULDNDP032|Filter Symbols||
-PULDNDP033|Filter Info||
-PULDNDP034|Display Non-Local Stations||
-PULDNDP035|Enable Dead-Reckoning||
-PULDNDP036|Enable Dead-Reckoning Arcs||
-PULDNDP037|Enable Dead-Reckoning Course||
-PULDNDP038|Enable Dead-Reckoning Symbols||
-PULDNDP039|Display Water Gage Objects||
 #
 # Sistema di misura
 PULDNUT001|Sistema inglese||

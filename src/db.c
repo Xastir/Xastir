@@ -1861,31 +1861,49 @@ int is_altnet(DataRow *p_station) {
 
 
 
-// Function which checks various filtering criteria then decides
-// whether to call draw_symbol() for each station.
+// Function which checks various filtering criteria (the Select struct)
+// and decides whether this station/object should be displayed.
 //
-// 0 = don't draw this symbol (based on current filtering criteria)
-// 1 = ok to draw this symbol
+// 0 = don't draw this station/object
+// 1 = ok to draw this station/object
 //
-int ok_to_draw_symbol(DataRow *p_station) {
+int ok_to_draw_station(DataRow *p_station) {
     int ok = 0;
 
+    // Check overall flag
+    if (Select_.none)
+        return 0;
 
-    // Check whether object or item first
+    // Special check for our station that makes it appear all the time
+    // unless none is set.  (TBD: This may not be quite what we want.)
+    if (strcmp(p_station->call_sign, my_callsign) == 0)
+        return 1;
+
+    // Check whether we wish to display TNC heard stations
+    if (p_station->flag & ST_VIATNC    && !Select_.tnc)
+        return 0;
+
+    // Check whether we wish to display stations heard direct
+    if (p_station->flag & ST_LOCAL     && !Select_.local)
+        return 0;
+
+    // Check whether we wish to display net stations
+    if (!(p_station->flag & ST_VIATNC) && !Select_.net)
+        return 0;
+
+    // Check whether object or item
     if (p_station->flag & (ST_OBJECT | ST_ITEM)) {
-        // We're dealing with an an object or an item!
-
 	// Check whether we wish to display objects/items
-        if (symbol_display_objects) {
+        if (Select_.weather_objects || Select_.gauge_objects || Select_.other_objects) {
 
             // Check if WX info and we wish to see it
             if (p_station->weather_data) {
-                ok = wx_obj_display_enable;
+                ok = Select_.weather_objects;
             }
             // Check if water gage and we wish to see it
             else if (p_station->aprs_symbol.aprs_type == '/'
                     && p_station->aprs_symbol.aprs_symbol == 'w') {
-                ok = gage_obj_display_enable;
+                ok = Select_.gauge_objects;
             }
             else {  // Object doesn't contain weather
                 ok = 1;
@@ -1896,35 +1914,33 @@ int ok_to_draw_symbol(DataRow *p_station) {
         }
     }
     else {    // Not an object or item
-
-        // Check whether we wish to display normal local stations
-        if (p_station->flag & ST_VIATNC &&
-            !symbol_display_local_stations)
-            return 0;
-
-        // Check whether we wish to display normal nonlocal stations
-        if (!(p_station->flag & ST_VIATNC) &&
-            !symbol_display_nonlocal_stations)
-            return 0;
-
-        if (symbol_display_local_stations || symbol_display_nonlocal_stations) {
-
-            // Check for weather
-            if (p_station->weather_data) {
-                ok = symbol_display_WX;
+        // Check for weather
+        if (p_station->weather_data) {
+            ok = Select_.weather_stations;
+        }
+        else {    // No weather associated with this symbol
+            if (p_station->flag & ST_MOVING) {
+                ok = Select_.moving_stations;
             }
-            else {    // No weather associated with this symbol
-
-                if (p_station->flag & ST_MOVING) {
-                    ok = symbol_display_moving;
-                }
-                else {
-                    ok = symbol_display_stationary;
-                }
+            else {
+                ok = Select_.stationary_stations;
             }
         }
     }
-    return(ok);
+
+    // If this is me or my object, don't do the old data check
+    if (strcmp(p_station->call_sign, my_callsign) == 0
+        || (is_my_call(p_station->origin, 1)        // If station is owned by me
+            && (   p_station->flag & ST_OBJECT      // And it's an object
+                || p_station->flag & ST_ITEM) ) ) { // or an item
+        return ok;
+    }
+
+    // If this is old data past the clear time, check if we want to display it
+    if (Select_.old_data || (sec_clear + p_station->sec_heard) > sec_now())
+        return ok;
+    else
+        return 0;
 }
 
 
@@ -1961,23 +1977,25 @@ void display_station(Widget w, DataRow *p_station, int single) {
     char tmp[7+1];
     int speed_ok = 0;
     int course_ok = 0;
+    Pixmap drawing_target;
 
 
     if (debug_level & 128)
         printf("Display station called for Single=%d.\n", single);
 
-    if (!symbol_display)
+    if (!ok_to_draw_station(p_station))
         return;
 
     // Set up call string for display
-    if (symbol_callsign_display)
+    if (Display_.callsign)
         strcpy(temp_call,p_station->call_sign);
     else
         strcpy(temp_call,"");
 
     // Set up altitude string for display
     strcpy(temp_altitude,"");
-    if (symbol_alt_display) {
+
+    if (Display_.altitude) {
         // Check whether we have altitude in the current data
         if (strlen(p_station->altitude)>0) {
             // Found it in the current data
@@ -2013,71 +2031,78 @@ void display_station(Widget w, DataRow *p_station, int single) {
     strcpy(dr_speed,"");
     strcpy(temp_course,"");
 
-
-    // don't display 'fixed' stations speed and course.
-    // Check whether we have speed in the current data and it's
-    // >= 0.
-    if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) >= 0) ) {
-        speed_ok++;
-        strncpy(tmp, un_spd, sizeof(tmp));
-        tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
-        if (symbol_speed_display == 1)
-            tmp[0] = '\0';          // without unit
- 
-        xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
-            atof(p_station->speed)*cvt_kn2len,tmp);
-    }
-    // Else check whether the previous position had speed
-    // Note that newest_trackpoint if it exists should be the
-    // same as the current data, so we have to go back one
-    // further trackpoint.
-    else if ( (p_station->newest_trackpoint != NULL)
-            && (p_station->newest_trackpoint->prev != NULL) ) {
-
-        strncpy(tmp, un_spd, sizeof(tmp));
-        tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
-
-        if (symbol_speed_display == 1)
-            tmp[0] = '\0';          // without unit
- 
-        if ( p_station->newest_trackpoint->prev->speed > 0) {
+    if (Display_.speed) {
+        // don't display 'fixed' stations speed and course.
+        // Check whether we have speed in the current data and it's
+        // >= 0.
+        if ( (strlen(p_station->speed)>0) && (atof(p_station->speed) >= 0) ) {
             speed_ok++;
+            strncpy(tmp, un_spd, sizeof(tmp));
+            tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
+            if (Display_.speed_short)
+                tmp[0] = '\0';          // without unit
 
             xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
-                p_station->newest_trackpoint->prev->speed * cvt_hm2len,
-                tmp);
+                            atof(p_station->speed)*cvt_kn2len,tmp);
+        }
+        // Else check whether the previous position had speed
+        // Note that newest_trackpoint if it exists should be the
+        // same as the current data, so we have to go back one
+        // further trackpoint.
+        else if ( (p_station->newest_trackpoint != NULL)
+                  && (p_station->newest_trackpoint->prev != NULL) ) {
+
+            strncpy(tmp, un_spd, sizeof(tmp));
+            tmp[sizeof(tmp)-1] = '\0';     // Terminate the string
+
+            if (Display_.speed_short)
+                tmp[0] = '\0';          // without unit
+
+            if ( p_station->newest_trackpoint->prev->speed > 0) {
+                speed_ok++;
+
+                xastir_snprintf(temp_speed, sizeof(temp_speed), "%.0f%s",
+                                p_station->newest_trackpoint->prev->speed * cvt_hm2len,
+                                tmp);
+            }
         }
     }
 
-    // Check whether we have course in the current data
-    if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
-        course_ok++;
-        xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
-            atof(p_station->course));
-    }
-    // Else check whether the previous position had a course
-    // Note that newest_trackpoint if it exists should be the
-    // same as the current data, so we have to go back one
-    // further trackpoint.
-    else if ( (p_station->newest_trackpoint != NULL)
-            && (p_station->newest_trackpoint->prev != NULL) ) {
-        if( p_station->newest_trackpoint->prev->course > 0 ) {
+    if (Display_.course) {
+        // Check whether we have course in the current data
+        if ( (strlen(p_station->course)>0) && (atof(p_station->course) > 0) ) {
             course_ok++;
             xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
-                (float)p_station->newest_trackpoint->prev->course);
+                            atof(p_station->course));
+        }
+        // Else check whether the previous position had a course
+        // Note that newest_trackpoint if it exists should be the
+        // same as the current data, so we have to go back one
+        // further trackpoint.
+        else if ( (p_station->newest_trackpoint != NULL)
+                  && (p_station->newest_trackpoint->prev != NULL) ) {
+            if( p_station->newest_trackpoint->prev->course > 0 ) {
+                course_ok++;
+                xastir_snprintf(temp_course, sizeof(temp_course), "%.0f°",
+                                (float)p_station->newest_trackpoint->prev->course);
+            }
         }
     }
 
     // Save the speed into the dr string, in case we need it later
     strcpy(dr_speed,temp_speed);
-    if (!speed_ok || !symbol_speed_display)
+
+    if (!speed_ok)
         strcpy(temp_speed,"");
 
-    if (!course_ok || !symbol_course_display)
+    if (!course_ok)
         strcpy(temp_course,"");
 
-    // Set up distance and direction strings for display
-    if (symbol_dist_course_display && strcmp(p_station->call_sign,my_callsign)!=0) {
+    // Set up distance and bearing strings for display
+    strcpy(temp_my_distance,"");
+    strcpy(temp_my_course,"");
+
+    if (Display_.dist_bearing && strcmp(p_station->call_sign,my_callsign) != 0) {
         l_lat = convert_lat_s2l(my_lat);
         l_lon = convert_lon_s2l(my_long);
 
@@ -2092,32 +2117,19 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
         xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%.0f°",
                 atof(temp1_my_course));
-    } else {
-        strcpy(temp_my_distance,"");
-        strcpy(temp_my_course,"");
     }
 
-    // Check whether it's a weather object and whether we wish to
-    // display it
-    if (!wx_obj_display_enable && p_station->weather_data != NULL) {
-        // It contains weather data and we have wx_obj_display
-        // disabled
-        if ( ((p_station->flag & ST_OBJECT) != 0)       // It's an object
-                || ((p_station->flag & ST_ITEM  ) != 0) ) { // or an item
-            return;
-        }
-    }
- 
     // Set up weather strings for display
     strcpy(temp_wx_temp,"");
     strcpy(temp_wx_wind,"");
-    if (symbol_weather_display && p_station->weather_data != NULL) {
+
+    if (Display_.weather && p_station->weather_data != NULL) {
         weather = p_station->weather_data;
         if ( (strlen(weather->wx_temp) > 0)
                 && (weather->wx_temp[0] != ' ')
                 && (weather->wx_temp[0] != '.') ) {
             strcpy(tmp,"T:");
-            if (symbol_weather_display != 2)
+            if (Display_.weather_short)
                 tmp[0] = '\0';
 
             if (units_english_metric)
@@ -2127,8 +2139,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 xastir_snprintf(temp_wx_temp, sizeof(temp_wx_temp), "%s%.0f°C ",
                     tmp,((atof(weather->wx_temp)-32.0)*5.0)/9.0);
         }
-        if (symbol_weather_display == 2) {
 
+        if (!Display_.weather_short) {
             if ( (strlen(weather->wx_hum) > 0)
                     && (weather->wx_hum[0] != ' ')
                     && (weather->wx_hum[0] != '.') ) {
@@ -2168,7 +2180,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     (void)remove_trailing_asterisk(p_station->call_sign);  // DK7IN: is this needed here?
 
-    if (symbol_display == 2)
+    if (Display_.symbol_rotate)
         orient = symbol_orient(p_station->course);   // rotate symbol
     else
         orient = ' ';
@@ -2186,374 +2198,216 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // Show last heard times only for others stations and their
     // objects/items.
-    temp_show_last_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? 0 : show_last_heard;
+    temp_show_last_heard = (strcmp(p_station->call_sign, my_callsign) == 0) ? 0 : Display_.last_heard;
 
 
 //------------------------------------------------------------------------------------------
 
-    // If we're only planning on updating a single station at this time.
-    // The section here draws directly onto the screen instead of a pixmap.
-    if ( !pending_ID_message && single && ok_to_draw_symbol(p_station) ) {
-        if (show_amb && p_station->pos_amb)
-            draw_ambiguity(p_station->coord_lon, p_station->coord_lat,
-                    p_station->pos_amb,temp_sec_heard,XtWindow(da));
+    // If we're only planning on updating a single station at this time, we go
+    // through the drawing calls twice, the first time drawing directly onto
+    // the screen.
+    if (!pending_ID_message && single)
+        drawing_target = XtWindow(da);
+    else
+        drawing_target = pixmap_final;
 
-        // Check for DF'ing data, draw DF circles if present and enabled
-        if (show_DF && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
-            //printf("SHGD:%s\n",p_station->signal_gain);
-            draw_DF_circle(p_station->coord_lon,
-                    p_station->coord_lat,
-                    p_station->signal_gain,
-                    temp_sec_heard,
-                    XtWindow(da));
-        }
-
-        // Check for DF'ing beam heading/NRQ data
-        if (show_DF && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3) ) {
-            //printf("Bearing: %s\n",p_station->signal_gain,NRQ);
-            if (p_station->df_color == -1)
-                p_station->df_color = rand() % 32;
-            draw_bearing(p_station->coord_lon,
-                    p_station->coord_lat,
-                    p_station->course,
-                    p_station->bearing,
-                    p_station->NRQ,
-                    trail_colors[p_station->df_color],
-                    temp_sec_heard,
-                    XtWindow(da));
-        }
-
-        // Check whether to draw dead-reckoning data by KJ5O
-        if (show_DR
-                && ( (p_station->flag & ST_MOVING)
-//                && (p_station->newest_trackpoint!=0
-                && course_ok
-                && atof(dr_speed)>0
-                && speed_ok) ) {
-            if ( (sec_now()-temp_sec_heard) < sec_old ) {
-                draw_deadreckoning_features(p_station,
-                    XtWindow(da),
-                    w);
-            }
-        }
-
-        if (p_station->aprs_symbol.area_object.type != AREA_NONE)
-            draw_area(p_station->coord_lon, p_station->coord_lat,
-                p_station->aprs_symbol.area_object.type,
-                p_station->aprs_symbol.area_object.color,
-                p_station->aprs_symbol.area_object.sqrt_lat_off,
-                p_station->aprs_symbol.area_object.sqrt_lon_off,
-                p_station->aprs_symbol.area_object.corridor_width,
-                temp_sec_heard,
-                XtWindow(da));
-
-        draw_symbol(w,
-            p_station->aprs_symbol.aprs_type,
-            p_station->aprs_symbol.aprs_symbol,
-            p_station->aprs_symbol.special_overlay,
-            p_station->coord_lon,
-            p_station->coord_lat,
-            temp_call,
-            temp_altitude,
-            temp_course,
-            temp_speed,
-            temp_my_distance,
-            temp_my_course,
-            temp_wx_temp,
-            temp_wx_wind,
-            temp_sec_heard,
-            temp_show_last_heard,
-            XtWindow(da),
-            orient,
-            p_station->aprs_symbol.area_object.type);
-
-        // Draw additional stuff if this is the tracked station
-        if (is_tracked_station(p_station->call_sign)) {
-//WE7U
-            draw_pod_circle(p_station->coord_lon,
-                p_station->coord_lat,
-                0.0020 * scale_y,
-                colors[0x0e],   // Yellow
-                pixmap_final);
-            draw_pod_circle(p_station->coord_lon,
-                p_station->coord_lat,
-                0.0023 * scale_y,
-                colors[0x44],   // Red
-                pixmap_final);
-            draw_pod_circle(p_station->coord_lon,
-                p_station->coord_lat,
-                0.0026 * scale_y,
-                colors[0x61],   // Blue
-                pixmap_final);
-        }
-
-
-        // Draw additional stuff if this is a storm
-        weather = p_station->weather_data;
-        if ( (weather != NULL)
-                && (   (weather->wx_hurricane_radius[0]  != '\0')
-                    || (weather->wx_trop_storm_radius[0] != '\0')
-                    || (weather->wx_whole_gale_radius[0] != '\0') ) ) {
-            char temp[4];
-
-
-            //printf("Plotting a storm symbol:%s:%s:%s:\n",
-            //    weather->wx_hurricane_radius,
-            //    weather->wx_trop_storm_radius,
-            //    weather->wx_whole_gale_radius);
-
-// Still need to draw the circles in different colors for the
-// different ranges.  Might be nice to tint it as well.
-
-            strcpy(temp,weather->wx_hurricane_radius);
-            if ( (temp[0] != '\0')
-                    && (strncmp(temp,"000",3) != 0) ) {
-                draw_pod_circle(p_station->coord_lon,
-                    p_station->coord_lat,
-                    atof(temp) * 1.15078, // nautical miles to miles
-                    colors[0x44],   // Red
-                    pixmap_final);
-            }
-
-            strcpy(temp,weather->wx_trop_storm_radius);
-            if ( (temp[0] != '\0')
-                    && (strncmp(temp,"000",3) != 0) ) {
-                draw_pod_circle(p_station->coord_lon,
-                    p_station->coord_lat,
-                    atof(temp) * 1.15078, // nautical miles to miles
-                    colors[0x0e],   // Yellow
-                    pixmap_final);
-            }
-
-            strcpy(temp,weather->wx_whole_gale_radius);
-            if ( (temp[0] != '\0')
-                    && (strncmp(temp,"000",3) != 0) ) {
-                draw_pod_circle(p_station->coord_lon,
-                    p_station->coord_lat,
-                    atof(temp) * 1.15078, // nautical miles to miles
-                    colors[0x0a],   // Green
-                    pixmap_final);
-            }
-        }
-
-
-        // Draw wind barbs if we have wind
-        if (weather != NULL && atoi(weather->wx_speed) >= 5) {
-            draw_wind_barb(p_station->coord_lon,
-                p_station->coord_lat,
-                weather->wx_speed,
-                weather->wx_course,
-                temp_sec_heard,
-                pixmap_final);
-        }
-
-
-        // Draw other points associated with the station, if any.
-        // KG4NBB
-	
-        draw_multipoints(p_station->coord_lon, p_station->coord_lat, 
-            p_station->num_multipoints, 
-            p_station->multipoints,
-            p_station->type, p_station->style,
-            temp_sec_heard,
-            XtWindow(da));
-
-        temp_sec_heard = p_station->sec_heard;    // DK7IN: ???
-    }   // End of "if (single)" portion
-
-//------------------------------------------------------------------------------------------
-
-    // Now we draw the same things into pixmaps instead of the screen.
-    // Then when we update from pixmap_final to the screen all of the items
-    // will still be there.
-
-
+_do_the_drawing:
     // Check whether it's a locally-owned object/item
     if ( (is_my_call(p_station->origin,1))                  // If station is owned by me
             && ( ((p_station->flag & ST_OBJECT) != 0)       // And it's an object
               || ((p_station->flag & ST_ITEM  ) != 0) ) ) { // or an item
         temp_sec_heard = sec_now(); // We don't want our own objects/items to "ghost"
+        // This isn't quite right since if it's a moving object, passing an incorrect
+        // sec_heard should give the wrong results.
+    }
+
+    if (Display_.ambiguity && p_station->pos_amb)
+        draw_ambiguity(p_station->coord_lon, p_station->coord_lat,
+                       p_station->pos_amb,temp_sec_heard,drawing_target);
+
+    // Check for DF'ing data, draw DF circles if present and enabled
+    if (Display_.df_data && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
+        //printf("SHGD:%s\n",p_station->signal_gain);
+        draw_DF_circle(p_station->coord_lon,
+                       p_station->coord_lat,
+                       p_station->signal_gain,
+                       temp_sec_heard,
+                       drawing_target);
+    }
+
+    // Check for DF'ing beam heading/NRQ data
+    if (Display_.df_data && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3)) {
+        //printf("Bearing: %s\n",p_station->signal_gain,NRQ);
+        if (p_station->df_color == -1)
+            p_station->df_color = rand() % 32;
+
+        draw_bearing(p_station->coord_lon,
+                     p_station->coord_lat,
+                     p_station->course,
+                     p_station->bearing,
+                     p_station->NRQ,
+                     trail_colors[p_station->df_color],
+                     temp_sec_heard,
+                     drawing_target);
+    }
+
+    // Check whether to draw dead-reckoning data by KJ5O
+    if (Display_.dr_data
+        && ( (p_station->flag & ST_MOVING)
+//        && (p_station->newest_trackpoint!=0
+             && course_ok
+             && atof(dr_speed)>0
+             && speed_ok) ) {
+        if ( (sec_now()-temp_sec_heard) < sec_old ) {
+            draw_deadreckoning_features(p_station,
+                                        drawing_target,
+                                        w);
+        }
+    }
+
+    if (p_station->aprs_symbol.area_object.type != AREA_NONE)
+        draw_area(p_station->coord_lon, p_station->coord_lat,
+                  p_station->aprs_symbol.area_object.type,
+                  p_station->aprs_symbol.area_object.color,
+                  p_station->aprs_symbol.area_object.sqrt_lat_off,
+                  p_station->aprs_symbol.area_object.sqrt_lon_off,
+                  p_station->aprs_symbol.area_object.corridor_width,
+                  temp_sec_heard,
+                  drawing_target);
+
+    draw_symbol(w,
+                p_station->aprs_symbol.aprs_type,
+                p_station->aprs_symbol.aprs_symbol,
+                p_station->aprs_symbol.special_overlay,
+                p_station->coord_lon,
+                p_station->coord_lat,
+                temp_call,
+                temp_altitude,
+                temp_course,
+                temp_speed,
+                temp_my_distance,
+                temp_my_course,
+                temp_wx_temp,
+                temp_wx_wind,
+                temp_sec_heard,
+                temp_show_last_heard,
+                drawing_target,
+                orient,
+                p_station->aprs_symbol.area_object.type);
+
+    // Draw additional stuff if this is the tracked station
+    if (is_tracked_station(p_station->call_sign)) {
+//WE7U
+        draw_pod_circle(p_station->coord_lon,
+                        p_station->coord_lat,
+                        0.0020 * scale_y,
+                        colors[0x0e],   // Yellow
+                        drawing_target);
+        draw_pod_circle(p_station->coord_lon,
+                        p_station->coord_lat,
+                        0.0023 * scale_y,
+                        colors[0x44],   // Red
+                        drawing_target);
+        draw_pod_circle(p_station->coord_lon,
+                        p_station->coord_lat,
+                        0.0026 * scale_y,
+                        colors[0x61],   // Blue
+                        drawing_target);
+    }
+
+    // Draw additional stuff if this is a storm
+    weather = p_station->weather_data;
+    if ( (weather != NULL)
+         && (   (weather->wx_hurricane_radius[0]  != '\0')
+                || (weather->wx_trop_storm_radius[0] != '\0')
+                || (weather->wx_whole_gale_radius[0] != '\0') ) ) {
+        char temp[4];
+
+
+        //printf("Plotting a storm symbol:%s:%s:%s:\n",
+        //    weather->wx_hurricane_radius,
+        //    weather->wx_trop_storm_radius,
+        //    weather->wx_whole_gale_radius);
+
+// Still need to draw the circles in different colors for the
+// different ranges.  Might be nice to tint it as well.
+
+        strcpy(temp,weather->wx_hurricane_radius);
+        if ( (temp[0] != '\0')
+             && (strncmp(temp,"000",3) != 0) ) {
+            draw_pod_circle(p_station->coord_lon,
+                            p_station->coord_lat,
+                            atof(temp) * 1.15078, // nautical miles to miles
+                            colors[0x44],   // Red
+                            drawing_target);
+        }
+
+        strcpy(temp,weather->wx_trop_storm_radius);
+        if ( (temp[0] != '\0')
+             && (strncmp(temp,"000",3) != 0) ) {
+            draw_pod_circle(p_station->coord_lon,
+                            p_station->coord_lat,
+                            atof(temp) * 1.15078, // nautical miles to miles
+                            colors[0x0e],   // Yellow
+                            drawing_target);
+        }
+
+        strcpy(temp,weather->wx_whole_gale_radius);
+        if ( (temp[0] != '\0')
+             && (strncmp(temp,"000",3) != 0) ) {
+            draw_pod_circle(p_station->coord_lon,
+                            p_station->coord_lat,
+                            atof(temp) * 1.15078, // nautical miles to miles
+                            colors[0x0a],   // Green
+                            drawing_target);
+        }
     }
 
 
-    if ( ok_to_draw_symbol(p_station) ) {
-
-        if (show_amb && p_station->pos_amb)
-            draw_ambiguity(p_station->coord_lon,p_station->coord_lat,p_station->pos_amb,temp_sec_heard,pixmap_final);
-
-        // Check for DF'ing data, draw DF circles if present and enabled
-        if (show_DF && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
-            //printf("SHGD:%s\n",p_station->signal_gain);
-            draw_DF_circle(p_station->coord_lon,p_station->coord_lat,p_station->signal_gain,temp_sec_heard,pixmap_final);
-        }
-
-        // Check for DF'ing beam heading/NRQ data
-        if (show_DF && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3) ) {
-            //printf("Bearing: %s\n",p_station->signal_gain,NRQ);
-            if (p_station->df_color == -1)
-                p_station->df_color = rand() % 32;
-            draw_bearing(p_station->coord_lon,
-                    p_station->coord_lat,
-                    p_station->course,
-                    p_station->bearing,
-                    p_station->NRQ,
-                    trail_colors[p_station->df_color],
-                    temp_sec_heard,
-                    pixmap_final);
-        }
-
-        // Check whether to draw dead-reckoning data by KJ5O
-        if (show_DR
-                && ( (p_station->flag & ST_MOVING)
-//               && (p_station->newest_trackpoint!=0
-                && course_ok
-                && atof(dr_speed)>0
-                && speed_ok) ) {
-            if ( (sec_now()-temp_sec_heard) < sec_old ) {
-                draw_deadreckoning_features(p_station,
-                    pixmap_final,
-                    w);
-            }
-        }
-
-        if (p_station->aprs_symbol.area_object.type != AREA_NONE)
-                draw_area(p_station->coord_lon, p_station->coord_lat,
-                p_station->aprs_symbol.area_object.type,
-                p_station->aprs_symbol.area_object.color,
-                p_station->aprs_symbol.area_object.sqrt_lat_off,
-                p_station->aprs_symbol.area_object.sqrt_lon_off,
-                p_station->aprs_symbol.area_object.corridor_width,
-                temp_sec_heard,
-                pixmap_final);
-
-        draw_symbol(w,
-            p_station->aprs_symbol.aprs_type,
-            p_station->aprs_symbol.aprs_symbol,
-            p_station->aprs_symbol.special_overlay,
-            p_station->coord_lon,
-            p_station->coord_lat,
-            temp_call,
-            temp_altitude,
-            temp_course,
-            temp_speed,
-            temp_my_distance,
-            temp_my_course,
-            temp_wx_temp,
-            temp_wx_wind,
-            temp_sec_heard,
-            temp_show_last_heard,
-            pixmap_final,
-            orient,
-            p_station->aprs_symbol.area_object.type);
-
-        // Draw additional stuff if this is the tracked station
-        if (is_tracked_station(p_station->call_sign)) {
-//WE7U
-            draw_pod_circle(p_station->coord_lon,
-                p_station->coord_lat,
-                0.0020 * scale_y,
-                colors[0x0e],   // Yellow
-                pixmap_final);
-            draw_pod_circle(p_station->coord_lon,
-                p_station->coord_lat,
-                0.0023 * scale_y,
-                colors[0x44],   // Red
-                pixmap_final);
-            draw_pod_circle(p_station->coord_lon,
-                p_station->coord_lat,
-                0.0026 * scale_y,
-                colors[0x61],   // Blue
-                pixmap_final);
+    // Draw wind barbs if we have wind
+    if (weather != NULL && atoi(weather->wx_speed) >= 5) {
+        draw_wind_barb(p_station->coord_lon,
+                       p_station->coord_lat,
+                       weather->wx_speed,
+                       weather->wx_course,
+                       temp_sec_heard,
+                       drawing_target);
         }
 
 
-        // Draw additional stuff if this is a storm
-        weather = p_station->weather_data;
-        if ( (weather != NULL)
-                && (   (weather->wx_hurricane_radius[0]  != '\0')
-                    || (weather->wx_trop_storm_radius[0] != '\0')
-                    || (weather->wx_whole_gale_radius[0] != '\0') ) ) {
-            char temp[4];
+    // Draw other points associated with the station, if any.
+    // KG4NBB
+    draw_multipoints(p_station->coord_lon, p_station->coord_lat,
+                     p_station->num_multipoints,
+                     p_station->multipoints,
+                     p_station->type, p_station->style,
+                     temp_sec_heard,
+                     drawing_target);
 
+    temp_sec_heard = p_station->sec_heard;    // DK7IN: ???
 
-            //printf("Plotting a storm symbol:%s:%s:%s:\n",
-            //    weather->wx_hurricane_radius,
-            //    weather->wx_trop_storm_radius,
-            //    weather->wx_whole_gale_radius);
- 
-// Still need draw the circles in different colors for the different
-// ranges.  Might be nice to tint it as well.
- 
-            strcpy(temp,weather->wx_hurricane_radius);
-            if ( (temp[0] != '\0')
-                    && (strncmp(temp,"000",3) != 0) ) {
-                draw_pod_circle(p_station->coord_lon,
-                    p_station->coord_lat,
-                    atof(temp) * 1.15078, // nautical miles to miles
-                    colors[0x44],   // Red
-                    pixmap_final);
-            }
+    if (Display_.phg
+        && (!(p_station->flag & ST_MOVING) || Display_.phg_of_moving)) {
 
-            strcpy(temp,weather->wx_trop_storm_radius);
-            if ( (temp[0] != '\0')
-                    && (strncmp(temp,"000",3) != 0) ) {
-                draw_pod_circle(p_station->coord_lon,
-                    p_station->coord_lat,
-                    atof(temp) * 1.15078, // nautical miles to miles
-                    colors[0x0e],   // Yellow
-                    pixmap_final);
-            }
-
-            strcpy(temp,weather->wx_whole_gale_radius);
-            if ( (temp[0] != '\0')
-                    && (strncmp(temp,"000",3) != 0) ) {
-                draw_pod_circle(p_station->coord_lon,
-                    p_station->coord_lat,
-                    atof(temp) * 1.15078, // nautical miles to miles
-                    colors[0x0a],   // Green
-                    pixmap_final);
-            }
+        if (strlen(p_station->power_gain) == 7) { // Station has PHG defined
+            draw_phg_rng(p_station->coord_lon,p_station->coord_lat,
+                         p_station->power_gain,temp_sec_heard,drawing_target);
         }
-
-
-        // Draw wind barbs if we have wind
-        if (weather != NULL && atoi(weather->wx_speed) >= 5) {
-            draw_wind_barb(p_station->coord_lon,
-                p_station->coord_lat,
-                weather->wx_speed,
-                weather->wx_course,
-                temp_sec_heard,
-                pixmap_final);
-        }
-
-
-        // Draw other points associated with the station, if any.
-        // KG4NBB
-	
-        draw_multipoints(p_station->coord_lon, p_station->coord_lat, 
-            p_station->num_multipoints, 
-            p_station->multipoints,
-            p_station->type, p_station->style,
-            temp_sec_heard,
-            pixmap_final);  // or pixmap_alerts
-
-        if (show_phg && strlen(p_station->power_gain) == 7) {   // There's a PHG defined
-            /*printf("PHG:%s\n",p_station->power_gain);*/
-
-            if ( !(p_station->flag & ST_MOVING) || show_phg_mobiles ) { // Not-moving, or mobile PHG flag turned on
-                draw_phg_rng(p_station->coord_lon,p_station->coord_lat,p_station->power_gain,temp_sec_heard,pixmap_final);
-                if (single) { // data_add       ????
-                    draw_phg_rng(p_station->coord_lon,p_station->coord_lat,p_station->power_gain,temp_sec_heard,XtWindow(w));
-                }
-            }
-        }
-        else if (show_phg && show_phg_default && !(p_station->flag & (ST_OBJECT|ST_ITEM))) {
+        else if (Display_.default_phg && !(p_station->flag & (ST_OBJECT|ST_ITEM))) {
             // No PHG defined and not an object/item.  Display a PHG of 3130 as default
             // as specified in the spec:  9W, 3dB omni at 20 feet = 6.2 mile PHG radius.
-            if ( !(p_station->flag & ST_MOVING) || show_phg_mobiles ) { // Not-moving, or mobile PHG flag turned on
-                draw_phg_rng(p_station->coord_lon,p_station->coord_lat,"PHG3130",temp_sec_heard,pixmap_final);
-            }
+            draw_phg_rng(p_station->coord_lon,p_station->coord_lat,
+                         "PHG3130",temp_sec_heard,drawing_target);
         }
+    }
+
+
+    // Now if we just did the single drawing, we want to go back and draw
+    // the same things onto pixmap_final so that when we do update from it
+    // to the screen all of the stuff will be there.
+    if (drawing_target == XtWindow(da)) {
+        drawing_target = pixmap_final;
+        goto _do_the_drawing;
     }
 }
 
@@ -2860,7 +2714,7 @@ void display_file(Widget w) {
                     if (debug_level & 256) {
                         printf("display_file:  Inview, check for trail\n");
                     }
-                    if (station_trails && p_station->newest_trackpoint != NULL) {
+                    if (Display_.trail && p_station->newest_trackpoint != NULL) {
                         // ????????????   what is the difference? :
                         if (debug_level & 256) {
                             printf( "%s:    Trails on and have track data\n",
@@ -2892,7 +2746,7 @@ void display_file(Widget w) {
                     }
                     else if (debug_level & 256) {
                         printf("Station trails %d, track data %x\n",
-                            station_trails, (int)p_station->newest_trackpoint);
+                            Display_.trail, (int)p_station->newest_trackpoint);
                     }
                     if (debug_level & 256)
                         printf("calling display_station()\n");
@@ -4557,7 +4411,7 @@ void Station_info(Widget w, /*@unused@*/ XtPointer clientData, XtPointer calldat
     // again later if we find more than one station.
     while (p_station != NULL) {    // search through database for nearby stations
         if ( ( (p_station->flag & ST_INVIEW) != 0)
-                && ok_to_draw_symbol(p_station) ) { // only test stations in view
+                && ok_to_draw_station(p_station) ) { // only test stations in view
             if (!altnet || is_altnet(p_station)) {
                 diff = (unsigned long)( labs((x_long_offset+(menu_x*scale_x)) - p_station->coord_lon)
                     + labs((y_lat_offset+(menu_y*scale_y))  - p_station->coord_lat) );
@@ -4642,7 +4496,7 @@ begin_critical_section(&db_station_popup_lock, "db.c:Station_info" );
                 p_station = n_first;
                 while (p_station != NULL) {    // search through database for nearby stations
                     if ( ( (p_station->flag & ST_INVIEW) != 0)
-                            && ok_to_draw_symbol(p_station) ) { // only test stations in view
+                            && ok_to_draw_station(p_station) ) { // only test stations in view
                         if (!altnet || is_altnet(p_station)) {
                             diff = (unsigned long)( labs((x_long_offset+(menu_x*scale_x)) - p_station->coord_lon)
                                 + labs((y_lat_offset+(menu_y*scale_y))  - p_station->coord_lat) );
@@ -5863,6 +5717,9 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
     long brightness;
     char flag1;
     TrackRow *ptr;
+
+    if (!ok_to_draw_station(fill))
+        return;
 
     // Expire old trackpoints first.  We use the
     // remove-station-from-display time as the expire time for
@@ -8992,7 +8849,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         if (debug_level & 256 || debug_level & 1)
                             printf("Speed over %d mph\n",TRAIL_MAX_SPEED);
                     }
-                            
+
                     if (track_station_on == 1)          // maybe we are tracking a station
                         track_station(da,tracking_station_call,p_station);
                 } // moving...
@@ -9000,7 +8857,7 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 // now do the drawing to the screen
                 ok_to_display = !altnet || is_altnet(p_station); // Optimization step, needed twice below.
                 scrupd = 0;
-                if (changed_pos == 1 && station_trails && ((p_station->flag & ST_INVIEW) != 0)) {
+                if (changed_pos == 1 && Display_.trail && ((p_station->flag & ST_INVIEW) != 0)) {
                     if (ok_to_display) {
                         if (debug_level & 256) {
                             printf("Adding Solid Trail for %s\n",

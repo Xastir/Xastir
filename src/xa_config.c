@@ -374,30 +374,45 @@ void save_data(void)  {
         store_int (fout, "TIGERMAP_TIMEOUT", tigermap_timeout);
 #endif //HAVE_IMAGEMAGICK
 
+        // filter values
+        // NOT SAVED: Select_.none
+        // NOT SAVED: Select_.tnc
+        // NOT SAVED: Select_.local
+        // NOT SAVED: Select_.net
+        store_int (fout, "DISPLAY_OLD_STATION_DATA",      Select_.old_data);
+        // NOT SAVED: Select_.stationary_stations
+        // NOT SAVED: Select_.moving_stations
+        // NOT SAVED: Select_.weather_stations
+        store_int (fout, "DISPLAY_STATION_WX_OBJ",        Select_.weather_objects);
+        store_int (fout, "DISPLAY_WATER_GAGE_OBJ",        Select_.gauge_objects);
+        // NOT SAVED: Select_.other_objects
+
         // display values
-        store_int (fout, "DISPLAY_SYMBOL",        symbol_display);
-        store_int (fout, "DISPLAY_CALLSIGN",      symbol_callsign_display);
-        store_int (fout, "DISPLAY_SPEED",         symbol_speed_display);
-        store_int (fout, "DISPLAY_ALTITUDE",      symbol_alt_display);
-        store_int (fout, "DISPLAY_COURSE",        symbol_course_display);
-        store_int (fout, "DISPLAY_DIST_COURSE",   symbol_dist_course_display);
-        store_int (fout, "DISPLAY_STATION_WX",    symbol_weather_display);
-        store_int (fout, "DISPLAY_STATION_WX_OBJ",wx_obj_display_enable);
-        store_int (fout, "DISPLAY_WATER_GAGE_OBJ",gage_obj_display_enable);
-        store_int (fout, "DISPLAY_STATION_PHG",   show_phg);
-        store_int (fout, "DISPLAY_MOBILES_PHG",   show_phg_mobiles);
-        store_int (fout, "DISPLAY_DEFAULT_PHG",   show_phg_default);
-        store_int (fout, "DISPLAY_POSITION_AMB",  show_amb);
-        store_int (fout, "DISPLAY_OLD_STATION_DATA", show_old_data);
-        store_int (fout, "DISPLAY_DF_INFO",       show_DF);
-        store_int (fout, "DISPLAY_LAST_HEARD",    show_last_heard);
-        store_int (fout, "DISPLAY_STATION_TRAILS",station_trails);
-        store_int (fout, "DISPLAY_UNITS_ENGLISH", units_english_metric);
-        store_int (fout, "DISPLAY_DIST_BEAR_STATUS", do_dbstatus);
-        store_int (fout, "DISPLAY_DEAD_RECKONING_INFO", show_DR);
-        store_int (fout, "DISPLAY_DEAD_RECKONING_ARC", show_DR_arc);
-        store_int (fout, "DISPLAY_DEAD_RECKONING_COURSE", show_DR_course);
-        store_int (fout, "DISPLAY_DEAD_RECKONING_SYMBOL", show_DR_symbol);
+        store_int (fout, "DISPLAY_CALLSIGN",              Display_.callsign);
+        store_int (fout, "DISPLAY_SYMBOL",
+                   Display_.symbol  ? Display_.symbol_rotate + 1 : 0);
+        store_int (fout, "DISPLAY_STATION_PHG",           Display_.phg);
+        store_int (fout, "DISPLAY_DEFAULT_PHG",           Display_.default_phg);
+        store_int (fout, "DISPLAY_MOBILES_PHG",           Display_.phg_of_moving);
+        store_int (fout, "DISPLAY_ALTITUDE",              Display_.altitude);
+        store_int (fout, "DISPLAY_COURSE",                Display_.course);
+        store_int (fout, "DISPLAY_SPEED",
+                   Display_.speed   ? Display_.speed_short   + 1 : 0);
+        store_int (fout, "DISPLAY_DIST_COURSE",           Display_.dist_bearing);
+        store_int (fout, "DISPLAY_STATION_WX",
+                   Display_.weather ? Display_.weather_short + 1 : 0);
+        store_int (fout, "DISPLAY_STATION_TRAILS",        Display_.trail);
+        store_int (fout, "DISPLAY_LAST_HEARD",            Display_.last_heard);
+        store_int (fout, "DISPLAY_POSITION_AMB",          Display_.ambiguity);
+        store_int (fout, "DISPLAY_DF_INFO",               Display_.df_data);
+        store_int (fout, "DISPLAY_DEAD_RECKONING_INFO",   Display_.dr_data);
+        store_int (fout, "DISPLAY_DEAD_RECKONING_ARC",    Display_.dr_arc);
+        store_int (fout, "DISPLAY_DEAD_RECKONING_COURSE", Display_.dr_course);
+        store_int (fout, "DISPLAY_DEAD_RECKONING_SYMBOL", Display_.dr_symbol);
+
+
+        store_int (fout, "DISPLAY_UNITS_ENGLISH",         units_english_metric);
+        store_int (fout, "DISPLAY_DIST_BEAR_STATUS",      do_dbstatus);
 
 
         // Interface values
@@ -440,7 +455,7 @@ void save_data(void)  {
             strcpy (name, name_temp);
             strcat (name, "UNPROTO_IGATE");
             store_string (fout, name, devices[i].unproto_igate);
- 
+
             strcpy (name, name_temp);
             strcat (name, "TNC_UP_FILE");
             store_string (fout, name, devices[i].tnc_up_file);
@@ -569,7 +584,7 @@ void save_data(void)  {
             max_transmit_time = (time_t)120l;       /*  2 min @ mobile */
         else
             max_transmit_time = (time_t)900l;       /* 15 min @ fixed */
-        
+
         /* Audio Alarms */
         store_string (fout, "SOUND_COMMAND", sound_command);
 
@@ -601,7 +616,7 @@ void save_data(void)  {
         store_int (fout, "SPEAK_ID",festival_speak_ID);
 #endif
         store_int (fout, "ATV_SCREEN_ID", ATV_screen_ID);
-       
+
         /* defaults */
         store_long (fout, "DEFAULT_STATION_OLD", (long)sec_old);
 
@@ -823,107 +838,121 @@ void load_data_or_default(void) {
     if (!get_int ("TIGERMAP_TIMEOUT", &tigermap_timeout, 10, 120, 30))
         tigermap_timeout = 30;
 #endif //HAVE_IMAGEMAGICK
+    // filter values
+    // NOT SAVED: Select_.none
+    // NOT SAVED: Select_.tnc
+    // NOT SAVED: Select_.local
+    // NOT SAVED: Select_.net
+    if (!get_int ("DISPLAY_OLD_STATION_DATA", &Select_.old_data, 0, 1, 0))
+        Select_.old_data = 0;
+    // NOT SAVED: Select_.stationary_stations
+    // NOT SAVED: Select_.moving_stations
+    // NOT SAVED: Select_.weather_stations
+    if (!get_int ("DISPLAY_STATION_WX_OBJ", &Select_.weather_objects, 0, 1, 0))
+        Select_.weather_objects = 0;
+    if (!get_int ("DISPLAY_WATER_GAGE_OBJ", &Select_.gauge_objects, 0, 1, 0))
+        Select_.gauge_objects = 0;
+    // NOT SAVED: Select_.other_objects
+
     // display values
-    if (!get_int ("DISPLAY_SYMBOL", &symbol_display, 0, 2, 2))
-        symbol_display = 2;
-
-    switch (symbol_display) {
-        case 0: 
-                symbol_display_enable = 0;
-                symbol_display_rotate = 0;
-                break;
-        case 1:
-                symbol_display_enable = 1;
-                symbol_display_rotate = 0;
-                break;
-        case 2:
-                symbol_display_enable = 1;
-                symbol_display_rotate = 1;
-                break;
+    if (!get_int ("DISPLAY_CALLSIGN", &Display_.callsign, 0, 1, 1))
+        Display_.callsign = 1;
+    if (!get_int ("DISPLAY_SYMBOL", &i, 0, 2, 2)) {
+        Display_.symbol = 1;
+        Display_.symbol_rotate = 1;
     }
-        
-    if (!get_int ("DISPLAY_CALLSIGN", &symbol_callsign_display, 0, 1, 1))
-        symbol_callsign_display = 1;
-    if (!get_int ("DISPLAY_SPEED", &symbol_speed_display, 0, 2, 0))
-        symbol_speed_display = 0;
-
-    switch (symbol_speed_display) {
+    else {
+        switch (i) {
         case 0:
-                speed_display_enable = 0;
-                speed_display_short = 0;
-                break;
+            Display_.symbol        = 0;
+            Display_.symbol_rotate = 0;
+            break;
         case 1:
-                speed_display_enable = 1;
-                speed_display_short = 1;
-                break;
+            Display_.symbol        = 1;
+            Display_.symbol_rotate = 0;
+            break;
         case 2:
-                speed_display_enable = 1;
-                speed_display_short = 0;
-                break;
+            Display_.symbol        = 1;
+            Display_.symbol_rotate = 1;
+            break;
+        }
     }
-
-    if (!get_int ("DISPLAY_ALTITUDE", &symbol_alt_display, 0, 1, 0))
-        symbol_alt_display = 0;
-    if (!get_int ("DISPLAY_COURSE", &symbol_course_display, 0, 1, 0))
-        symbol_course_display = 0;
-    if (!get_int ("DISPLAY_DIST_COURSE", &symbol_dist_course_display, 0, 1, 0))
-        symbol_dist_course_display = 0;
-    if (!get_int ("DISPLAY_STATION_WX", &symbol_weather_display, 0, 2, 0))
-        symbol_weather_display = 0;
-
-    switch (symbol_weather_display) {
+    if (!get_int ("DISPLAY_STATION_PHG", &Display_.phg, 0, 1, 0))
+        Display_.phg = 0;
+    if (!get_int ("DISPLAY_DEFAULT_PHG", &Display_.default_phg, 0, 1, 0))
+        Display_.default_phg = 0;
+    if (!get_int ("DISPLAY_MOBILES_PHG", &Display_.phg_of_moving, 0, 1, 0))
+        Display_.phg_of_moving = 0;
+    if (!get_int ("DISPLAY_ALTITUDE",    &Display_.altitude, 0, 1, 0))
+        Display_.altitude = 0;
+    if (!get_int ("DISPLAY_COURSE",      &Display_.course, 0, 1, 0))
+        Display_.course = 0;
+    if (!get_int ("DISPLAY_SPEED", &i, 0, 2, 0)) {
+        Display_.speed       = 0;
+        Display_.speed_short = 0;
+    }
+    else {
+        switch (i) {
         case 0:
-                wx_display_enable = 0;
-                wx_display_short = 0;
-                break;
-        case 1: // Short
-                wx_display_enable = 1;
-                wx_display_short = 1;
-                break;
-        case 2: // Long
-                wx_display_enable = 1;
-                wx_display_short = 0;
-                break;
+            Display_.speed       = 0;
+            Display_.speed_short = 0;
+            break;
+        case 1:
+            Display_.speed       = 1;
+            Display_.speed_short = 1;
+            break;
+        case 2:
+            Display_.speed       = 1;
+            Display_.speed_short = 0;
+            break;
+        }
     }
-    if (!get_int ("DISPLAY_STATION_WX_OBJ", &wx_obj_display_enable, 0, 1, 0))
-        wx_obj_display_enable = 0;
-    if (!get_int ("DISPLAY_WATER_GAGE_OBJ", &gage_obj_display_enable, 0, 1, 0))
-        gage_obj_display_enable = 0;
-    if (!get_int ("DISPLAY_STATION_PHG", &show_phg, 0, 1, 0))
-        show_phg = 0;
-    if (!get_int ("DISPLAY_MOBILES_PHG", &show_phg_mobiles, 0, 1, 0))
-        show_phg_mobiles = 0;
-    if (!get_int ("DISPLAY_DEFAULT_PHG", &show_phg_default, 0, 1, 0))
-        show_phg_default = 0;
-    if (!get_int ("DISPLAY_POSITION_AMB", &show_amb, 0, 1, 0))
-        show_amb = 0;
-    if (!get_int ("DISPLAY_OLD_STATION_DATA", &show_old_data, 0, 1, 0))
-        show_old_data = 0;
-    if (!get_int ("DISPLAY_DF_INFO", &show_DF, 0, 1, 0))
-        show_DF = 0;
-    if (!get_int ("DISPLAY_LAST_HEARD", &show_last_heard, 0, 1, 0))
-        show_last_heard = 0;
- 
-    if (!get_int ("DISPLAY_STATION_TRAILS", &station_trails, 0, 1, 1))
-        station_trails = 1;
+    if (!get_int ("DISPLAY_DIST_COURSE", &Display_.dist_bearing, 0, 1, 0))
+        Display_.dist_bearing = 0;
+    if (!get_int ("DISPLAY_STATION_WX", &i, 0, 2, 0)) {
+        Display_.weather       = 0;
+        Display_.weather_short = 0;
+    }
+    else {
+        switch (i) {
+        case 0:
+            Display_.weather       = 0;
+            Display_.weather_short = 0;
+            break;
+        case 1:
+            Display_.weather       = 1;
+            Display_.weather_short = 1;
+            break;
+        case 2:
+            Display_.weather       = 1;
+            Display_.weather_short = 0;
+            break;
+        }
+    }
+    if (!get_int ("DISPLAY_STATION_TRAILS", &Display_.trail, 0, 1, 1))
+        Display_.trail = 1;
+    if (!get_int ("DISPLAY_LAST_HEARD", &Display_.last_heard, 0, 1, 0))
+        Display_.last_heard = 0;
+    if (!get_int ("DISPLAY_POSITION_AMB", &Display_.ambiguity, 0, 1, 0))
+        Display_.ambiguity = 0;
+    if (!get_int ("DISPLAY_DF_INFO", &Display_.df_data, 0, 1, 0))
+        Display_.df_data = 0;
+    if (!get_int ("DISPLAY_DEAD_RECKONING_INFO", &Display_.dr_data, 0, 1, 1))
+        Display_.dr_data = 1;
+    if (!get_int ("DISPLAY_DEAD_RECKONING_ARC", &Display_.dr_arc, 0, 1, 1))
+        Display_.dr_arc = 1;
+    if (!get_int ("DISPLAY_DEAD_RECKONING_COURSE", &Display_.dr_course, 0, 1, 1))
+        Display_.dr_course = 1;
+    if (!get_int ("DISPLAY_DEAD_RECKONING_SYMBOL", &Display_.dr_symbol, 0, 1, 1))
+        Display_.dr_symbol = 1;
+
+
 
     if (!get_int ("DISPLAY_UNITS_ENGLISH", &units_english_metric, 0, 1, 0))
         units_english_metric = 0;
 
     if (!get_int ("DISPLAY_DIST_BEAR_STATUS", &do_dbstatus, 0, 1, 0))
         do_dbstatus = 0;
-
-    if (!get_int ("DISPLAY_DEAD_RECKONING_INFO", &show_DR, 0, 1, 1))
-        show_DR = 1;
-
-    if (!get_int ("DISPLAY_DEAD_RECKONING_ARC", &show_DR_arc, 0, 1, 1))
-        show_DR_arc = 1;
-
-    if (!get_int ("DISPLAY_DEAD_RECKONING_COURSE", &show_DR_course, 0, 1, 1))
-        show_DR_course = 1;
-
-    if (!get_int ("DISPLAY_DEAD_RECKONING_SYMBOL", &show_DR_symbol, 0, 1, 1))
-        show_DR_symbol = 1;
 
     if (!get_int ("DISABLE_TRANSMIT", &transmit_disable, 0, 1, 0))
         transmit_disable = 0;

@@ -41,7 +41,6 @@ typedef struct {
     Pixmap pix_mask_old;        // mask for ghost symbols, half transparent icons
 } SymbolData;
 
-extern int symbol_callsign_display;
 extern SymbolData symbol_data[];
 
 extern void draw_nice_string(Widget w, Pixmap where, int style, long x, long y, char *text, int bgcolor, int fgcolor, int length);

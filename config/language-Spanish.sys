@@ -136,41 +136,46 @@ PULDNOT003|Corto||
 PULDNDP014|Localizar Estación|L|
 PULDNDP001|Rastreo de Estación|E|
 PULDNDP022|Sacar Rastro de Findu|F|
-PULDNDP012|Desplegar Símbolos|D|
-PULDNDP011|Símbolos Rotados|S|
-PULDNDP010|Desplegar Indicativo|I|
-PULDNDP004|Desplegar Velocidad|V|
-PULDNDP017|Despliega Corta Velocidad||
-PULDNDP002|Desplagar Altura|A|
-PULDNDP003|Desplegar Curso|C|
-PULDNDP005|Desplegar Dist/curso|D|
-PULDNDP009|Desplagar Informe del Tiempo|T|
-PULDNDP018|Despliega sólo el Tiempo||
-PULDNDP008|Estación Potencia/Ganancia|P|
-PULDNDP021|Activar por Defecto Pot/Ganancia||
-PULDNDP020|Activar Mobile Pot/Ganancia||
-PULDNDP013|Ambigüedad de Posición||
-PULDNDP019|Despliega Datos Expirados||
-PULDNDP023|Despliega DF Círculos||
-PULDNDP024|Display Last Report Time||
-PULDNDP007|Rastros de estaciones|R|
-PULDNDP015|Anular Todas las estns|A|
+# SubMenu "Filter Data"
+PULDNDP032|Filtrar Datos||
+PULDNDP040|Seleccionar Nada||
+PULDNDP041|Seleccionar TNC||
+PULDNDP027|Seleccionar Local||
+PULDNDP034|Seleccionar Net||
+PULDNDP019|Incluir Datos Expirados||
+PULDNDP028|Seleccionar Estaciónes Fijas||
+PULDNDP029|Seleccionar Estaciónes Mobiles||
+PULDNDP030|Seleccionar Estaciónes de Tiempo||
+PULDNDP026|Seleccionar Objetos/Artículos de Tiempo||
+PULDNDP039|Seleccionar Objetos/Artículos Medidores de Agua||
+PULDNDP031|Seleccionar Otros Objetos/Artículos||
+# SubMenu "Filter Display"
+PULDNDP033|Filtrar Visualización||
+PULDNDP010|Mostrar Indicativo|I|
+PULDNDP012|Mostrar Símbolo|D|
+PULDNDP011|- Símbolo Rotado|S|
+PULDNDP007|Mostrar Rastros|R|
+PULDNDP003|Mostrar Curso|C|
+PULDNDP004|Mostrar Velocidad|V|
+PULDNDP017|- Mostrar Velocidad Corta||
+PULDNDP002|Mostrar Altura|A|
+PULDNDP009|Mostrar Informe del Tiempo|T|
+PULDNDP018|- Mostrar sólo la Temperatura||
+PULDNDP013|Mostrar Ambigüedad de Posición||
+PULDNDP008|Mostrar Potencia/Ganancia|P|
+PULDNDP021|- Usar Pot/Ganancia por Defecto||
+PULDNDP020|- Mostrar Pot/Ganancia Mobile||
+PULDNDP023|Mostrar atributos DF||
+PULDNDP035|Activar Dead-Reckoning||
+PULDNDP036|- Mostrar Arco||
+PULDNDP037|- Mostrar Curso||
+PULDNDP038|- Mostrar Símbolo||
+PULDNDP005|Mostrar Dist/Orientación|D|
+PULDNDP024|Mostrar Edad de Ultimo Informe||
+#
+PULDNDP015|Anular Todas las Estaciones|A|
 PULDNDP016|Limpiar Rastros|n|
-PULDNDP025|Clear Object/Item History||
-PULDNDP026|Display Weather Objects/Items||
-PULDNDP027|Display Local Stations||
-PULDNDP028|Display Non-Moving Stations||
-PULDNDP029|Display Moving Stations||
-PULDNDP030|Display WX Stations||
-PULDNDP031|Display Objects/Items||
-PULDNDP032|Filter Symbols||
-PULDNDP033|Filter Info||
-PULDNDP034|Display Non-Local Stations||
-PULDNDP035|Enable Dead-Reckoning||
-PULDNDP036|Enable Dead-Reckoning Arcs||
-PULDNDP037|Enable Dead-Reckoning Course||
-PULDNDP038|Enable Dead-Reckoning Symbols||
-PULDNDP039|Display Water Gage Objects||
+PULDNDP025|Limpiar Historia de Objetos/Artículos||
 #
 # Inglesa/Metrica
 PULDNUT001|Activar Unidades Inglesa||
