@@ -74,6 +74,8 @@ typedef struct _map_index_record{
     unsigned long left;
     unsigned long right;
     int accessed;
+    int max_zoom;       // Specify maximum zoom at which this layer is drawn.
+    int min_zoom;       // Specify minimum zoom at which this layer is drawn.
     int map_layer;      // For future expansion.  Specify which layer to draw the map on.
     int draw_filled;    // For future expansion.  Specify whether to fill polygons when drawing.
     int selected;       // Specifies if map is currently selected
@@ -101,7 +103,8 @@ void draw_grid (Widget w);
 void Snapshot(void);
 extern int index_retrieve(char *filename, unsigned long *bottom,
     unsigned long *top, unsigned long *left, unsigned long *right,
-    int *map_layer, int *draw_filled, int *automaps);
+    int *max_zoom, int *min_zoom, int *map_layer, int *draw_filled, 
+    int *automaps);
 extern void index_restore_from_file(void);
 extern void index_save_to_file(void);
 extern void map_indexer(int parameter);

@@ -3623,11 +3623,14 @@ fprintf(stderr,"map too small for view: %d%%\n",(int)(percentage * 100));
 enum map_onscreen_enum map_onscreen_index(char *filename) {
     unsigned long top, bottom, left, right;
     enum map_onscreen_enum onscreen = MAP_NOT_INDEXED;
+    int max_zoom, min_zoom;
     int map_layer, draw_filled, auto_maps;     // Unused in this function
 
 
     if (index_retrieve(filename, &bottom, &top, &left, &right,
-            &map_layer, &draw_filled, &auto_maps) ) {
+            &max_zoom, &min_zoom, &map_layer, &draw_filled, &auto_maps) ) {
+
+        //fprintf(stderr, "Map found in index: %s\n", filename);
 
         // Map was in the index, check for visibility and scale
         // Check whether the map extents are < XX% of viewscreen
@@ -3636,9 +3639,20 @@ enum map_onscreen_enum map_onscreen_index(char *filename) {
         // that are too large/small to be displayed at this zoom
         // level.
         if (map_onscreen(left, right, top, bottom, 1)) {
-            onscreen = MAP_IS_VIS;
-            //fprintf(stderr,"Map found in index and onscreen! %s\n",filename);
 
+            //fprintf(stderr, "Map found in index and onscreen: %s\n", filename);
+
+            if (((max_zoom == 0) || 
+                 ((max_zoom != 0) && (scale_y <= max_zoom))) && 
+                ((min_zoom == 0) || 
+                 ((min_zoom != 0) && (scale_y >= min_zoom)))) {
+
+                onscreen = MAP_IS_VIS;
+                //fprintf(stderr,"Map in the zoom zone: %s\n",filename);
+            } else {
+                onscreen = MAP_NOT_VIS;
+                //fprintf(stderr,"Map not in the zoom zone: %s\n",filename);
+            }
 
 // Check whether the map extents are < XX% of viewscreen size (both
 // directions), or viewscreen is > XX% of map extents (either
@@ -3795,6 +3809,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
         // See if map is visible.  If not, skip it.
         if (onscreen == MAP_NOT_VIS) // Map is not visible, skip it.
             return;
+        
     }
 
 
@@ -4356,6 +4371,8 @@ static void map_index_copy_properties(map_index_record *primary_index_head,
                 }
 
                 // Copy the Properties across
+                primary->max_zoom    = backup->max_zoom;
+                primary->min_zoom    = backup->min_zoom;
                 primary->map_layer   = backup->map_layer;
                 primary->draw_filled = backup->draw_filled;
                 primary->auto_maps   = backup->auto_maps;
@@ -4525,6 +4542,8 @@ static void index_update_directory(char *directory) {
     temp_record->left = 0;
     temp_record->right = 0;
     temp_record->accessed = 1;
+    temp_record->max_zoom = 0;
+    temp_record->min_zoom = 0;
     temp_record->map_layer = 0;
     temp_record->draw_filled = 0;
 }
@@ -4633,6 +4652,8 @@ void index_update_xastir(char *filename,
 //WE7U
 // Here's where we might look at the file extension and assign
 // default map_layer/draw_filled fields based on that.
+            temp_record->max_zoom = 0;
+            temp_record->min_zoom = 0;
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
@@ -4677,6 +4698,8 @@ void index_update_xastir(char *filename,
 //WE7U
 // Here's where we might look at the file extension and assign
 // default map_layer/draw_filled fields based on that.
+        temp_record->max_zoom = 0;
+        temp_record->min_zoom = 0;
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
@@ -4817,6 +4840,8 @@ void index_update_ll(char *filename,
 //WE7U
 // Here's where we might look at the file extension and assign
 // default map_layer/draw_filled fields based on that.
+            temp_record->max_zoom = 0;
+            temp_record->min_zoom = 0;
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
@@ -4863,6 +4888,8 @@ void index_update_ll(char *filename,
 //WE7U
 // Here's where we might look at the file extension and assign
 // default map_layer/draw_filled fields based on that.
+        temp_record->max_zoom = 0;
+        temp_record->min_zoom = 0;
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
@@ -5017,6 +5044,8 @@ int index_retrieve(char *filename,
                    unsigned long *top,
                    unsigned long *left,
                    unsigned long *right,
+                   int *max_zoom,
+                   int *min_zoom,
                    int *map_layer,
                    int *draw_filled,
                    int *auto_maps) {
@@ -5049,6 +5078,8 @@ int index_retrieve(char *filename,
             *top = current->top;
             *left = current->left;
             *right = current->right;
+            *max_zoom = current->max_zoom;
+            *min_zoom = current->min_zoom;
             *map_layer = current->map_layer;
             *draw_filled = current->draw_filled;
             *auto_maps = current->auto_maps;
@@ -5129,11 +5160,13 @@ void index_save_to_file() {
             // comma-delimited line
             xastir_snprintf(out_string,
                 sizeof(out_string),
-                "%010lu,%010lu,%010lu,%010lu,%05d,%01d,%01d,%s\n",
+                "%010lu,%010lu,%010lu,%010lu,%05d,%05d,%05d,%01d,%01d,%s\n",
                 current->bottom,
                 current->top,
                 current->left,
                 current->right,
+                current->max_zoom,
+                current->min_zoom,
                 current->map_layer,
                 current->draw_filled,
                 current->auto_maps,
@@ -5273,6 +5306,8 @@ static void index_insert_sorted(map_index_record *new_record) {
             current->left = new_record->left;
             current->right = new_record->right;
             current->accessed = 1;
+            current->max_zoom = new_record->max_zoom;
+            current->min_zoom = new_record->min_zoom;
             current->map_layer = new_record->map_layer;
             current->draw_filled = new_record->draw_filled;
             current->selected = selected;   // Restore it
@@ -5469,7 +5504,7 @@ void index_restore_from_file(void) {
                 xastir_snprintf(scanf_format,
                     sizeof(scanf_format),
                     "%s%d%s",
-                    "%lu,%lu,%lu,%lu,%d,%d,%d,%",
+                    "%lu,%lu,%lu,%lu,%d,%d,%d,%d,%d,%",
                     MAX_FILENAME,
                     "c");
                 //fprintf(stderr,"%s\n",scanf_format);
@@ -5486,6 +5521,8 @@ void index_restore_from_file(void) {
                     &temp_record->top,
                     &temp_record->left,
                     &temp_record->right,
+                    &temp_record->max_zoom,
+                    &temp_record->min_zoom,
                     &temp_record->map_layer,
                     &temp_record->draw_filled,
                     &temp_record->auto_maps,
@@ -5529,6 +5566,22 @@ void index_restore_from_file(void) {
                     processed = 0;  // Reject this record
                     fprintf(stderr,"\nindex_restore_from_file: right extent incorrect %lu in map name:\n%s\n",
                             temp_record->right,
+                            temp_record->filename);
+                }
+
+                if ( (temp_record->max_zoom < 0)
+                        || (temp_record->max_zoom > 99999) ) {
+                    processed = 0;  // Reject this record
+                    fprintf(stderr,"\nindex_restore_from_file: max_zoom field incorrect %d in map name:\n%s\n",
+                            temp_record->max_zoom,
+                            temp_record->filename);
+                }
+
+                if ( (temp_record->min_zoom < 0)
+                        || (temp_record->min_zoom > 99999) ) {
+                    processed = 0;  // Reject this record
+                    fprintf(stderr,"\nindex_restore_from_file: min_zoom field incorrect %d in map name:\n%s\n",
+                            temp_record->min_zoom,
                             temp_record->filename);
                 }
 
@@ -5592,7 +5645,7 @@ void index_restore_from_file(void) {
                 temp_record->filename[MAX_FILENAME-1] = '\0';
 
                 // If correct number of parameters
-                if (processed == 8) {
+                if (processed == 10) {
 
                     //fprintf(stderr,"Restored: %s\n",temp_record->filename);
  
@@ -5993,6 +6046,8 @@ static void insert_map_sorted(char *filename){
     unsigned long top;
     unsigned long left;
     unsigned long right;
+    int max_zoom;
+    int min_zoom;
     int map_layer;
     int draw_filled;
     int auto_maps;
@@ -6004,6 +6059,8 @@ static void insert_map_sorted(char *filename){
             &top,
             &left,
             &right,
+            &max_zoom,
+            &min_zoom,
             &map_layer,
             &draw_filled,
             &auto_maps)) {    // Found a match
@@ -6017,6 +6074,8 @@ static void insert_map_sorted(char *filename){
         temp_record->top = top;
         temp_record->left = left;
         temp_record->right = right;
+        temp_record->max_zoom = max_zoom;
+        temp_record->min_zoom = min_zoom;
         temp_record->map_layer = map_layer;
         temp_record->draw_filled = draw_filled;
         temp_record->auto_maps = auto_maps;

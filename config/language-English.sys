@@ -1029,13 +1029,15 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Map Properties||
-MAPP002| Map     Draw||
-MAPP003|Layer   Filled   AutoMap   Path/Filename||
+MAPP002| Max   Min    Map     Draw||
+MAPP003| Zoom  Zoom  Layer   Filled   AutoMap   Path/Filename||
 MAPP004|Change Layer->||
 MAPP005|Filled->||
 MAPP006|Yes||
 MAPP007|No||
 MAPP008|Automaps->||
+MAPP009|Max Zoom->||
+MAPP010|Min Zoom->||
 #
 #
 # Time Strings

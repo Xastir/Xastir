@@ -676,6 +676,8 @@ int warn_about_mouse_modifiers = 1;
 Widget altnet_active;
 Widget altnet_text;
 Widget new_map_layer_text = (Widget)NULL;
+Widget new_max_zoom_text = (Widget)NULL;
+Widget new_min_zoom_text = (Widget)NULL;
 Widget debug_level_text;
 static int sec_last_dr_update = 0;
 
@@ -12228,11 +12230,34 @@ void map_properties_fill_in (void) {
             if (current->filename[strlen(current->filename)-1] != '/') {
                 char temp[MAX_FILENAME];
                 char temp_layer[10];
+                char temp_max_zoom[10];
+                char temp_min_zoom[10];
                 char temp_filled[20];
                 char temp_auto[20];
 
                 // We have a file.  Construct the line that we wish
                 // to place in the list
+
+                // JMT - this is a guess
+                if (current->max_zoom == 0) {
+                    strcpy(temp_max_zoom,"  -  ");
+                }
+                else {
+                    xastir_snprintf(temp_max_zoom,
+                    sizeof(temp_max_zoom),
+                    "%5d",
+                    current->max_zoom);
+                }
+
+                if (current->min_zoom == 0) {
+                    strcpy(temp_min_zoom,"  -  ");
+                }
+                else {
+                    xastir_snprintf(temp_min_zoom,
+                    sizeof(temp_min_zoom),
+                    "%5d",
+                    current->min_zoom);
+                }
 
                 if (current->map_layer == 0) {
                     strcpy(temp_layer,"  -  ");
@@ -12286,7 +12311,9 @@ void map_properties_fill_in (void) {
 
                 xastir_snprintf(temp,
                     sizeof(temp),
-                    "%s   %s   %s   %s",
+                    " %s %s %s   %s   %s   %s",
+                    temp_max_zoom,
+                    temp_min_zoom,
                     temp_layer,
                     temp_filled,
                     temp_auto,
@@ -12398,7 +12425,7 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
-                temp2 = temp + 27;
+                temp2 = temp + 40;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -12447,7 +12474,7 @@ void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer cal
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
-                temp2 = temp + 27;
+                temp2 = temp + 40;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -12534,7 +12561,7 @@ void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
-                temp2 = temp + 27;
+                temp2 = temp + 40;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -12583,7 +12610,7 @@ void map_properties_auto_maps_no(Widget widget, XtPointer clientData, XtPointer 
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
-                temp2 = temp + 27;
+                temp2 = temp + 40;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -12658,7 +12685,7 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
                 // Need to get rid of the first XX characters on the
                 // line in order to come up with just the
                 // path/filename portion.
-                temp2 = temp + 27;
+                temp2 = temp + 40;
 
 //fprintf(stderr,"New string:%s\n",temp2);
 
@@ -12679,8 +12706,154 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
 }
 
 
+// Update the "max_zoom" field in the in-memory map_index based on
+// the "max_zoom" input parameter.
+void map_index_update_max_zoom(char *filename, int max_zoom) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->max_zoom = max_zoom;
+            return;
+        }
+        current = current->next;
+    }
+}
 
 
+
+
+
+void map_properties_max_zoom_change(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x, new_max_zoom;
+    XmString *list;
+    char *temp;
+
+
+    // Get new layer selection in the form of an int
+    temp = XmTextGetString(new_max_zoom_text);
+    new_max_zoom = atoi(temp);
+    XtFree(temp);
+
+    fprintf(stderr,"New max_zoom selected is: %d\n", new_max_zoom);
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the layer on every
+    // one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+                temp2 = temp + 40;
+
+                fprintf(stderr,"New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting/resetting the "selected" field
+                // as appropriate.
+                map_index_update_max_zoom(temp2, new_max_zoom);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
+}
+
+
+// Update the "min_zoom" field in the in-memory map_index based on
+// the "min_zoom" input parameter.
+void map_index_update_min_zoom(char *filename, int min_zoom) {
+    map_index_record *current = map_index_head;
+
+    while (current != NULL) {
+        if (strcmp(current->filename,filename) == 0) {
+            // Found a match.  Update the field and return.
+            current->min_zoom = min_zoom;
+            return;
+        }
+        current = current->next;
+    }
+}
+
+
+
+
+
+void map_properties_min_zoom_change(Widget widget, XtPointer clientData, XtPointer callData) {
+    int i, x, new_min_zoom;
+    XmString *list;
+    char *temp;
+
+
+    // Get new layer selection in the form of an int
+    temp = XmTextGetString(new_min_zoom_text);
+    new_min_zoom = atoi(temp);
+    XtFree(temp);
+
+//fprintf(stderr,"New layer selected is: %d\n", new_layer);
+
+    // Get the list and the count from the dialog
+    XtVaGetValues(map_properties_list,
+               XmNitemCount,&i,
+               XmNitems,&list,
+               NULL);
+
+    // Run through the widget's list, changing the layer on every
+    // one that is selected.
+    for(x=1; x<=i;x++)
+    {
+        // If the line was selected
+        if ( XmListPosSelected(map_properties_list,x) ) {
+ 
+            // Snag the filename portion from the line
+            if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
+                char *temp2;
+
+                // Need to get rid of the first XX characters on the
+                // line in order to come up with just the
+                // path/filename portion.
+                temp2 = temp + 40;
+
+//fprintf(stderr,"New string:%s\n",temp2);
+
+                // Update this file or directory in the in-memory
+                // map index, setting/resetting the "selected" field
+                // as appropriate.
+                map_index_update_min_zoom(temp2, new_min_zoom);
+                XtFree(temp);
+            }
+        }
+    }
+
+    // Delete all entries in the list and re-create anew.
+    map_properties_fill_in();
+
+    // Save the updated index to the file
+    index_save_to_file();
+}
+
+
+
+// JMT -- now supports max and min zoom levels
 
 // Allows setting map layer and filled polygon properties for maps
 // selected in the map chooser.  Show a warning or bring up a
@@ -12711,7 +12884,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
     static Widget pane, my_form, button_clear, button_close, rowcol,
            label1, label2, label3, label4, button_filled_yes,
            button_filled_no, button_layer_change,
-           button_auto_maps_yes, button_auto_maps_no;
+           button_auto_maps_yes, button_auto_maps_no,
+           button_max_zoom_change, button_min_zoom_change;
     Atom delw;
     Arg al[10];                     // Arg List
     register unsigned int ac = 0;   // Arg Count
@@ -12822,6 +12996,56 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                 XmNleftOffset, 5,
                 NULL);
 
+        // JMT -- this is a guess
+// "Max Zoom" stolen from "Change Layer"
+        button_max_zoom_change = XtVaCreateManagedWidget(langcode("MAPP009"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        new_max_zoom_text = XtVaCreateManagedWidget("Map Properties max zoom number",
+                xmTextWidgetClass,
+                rowcol,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((7*7)+2),
+                XmNmaxLength, 5,
+                XmNbackground, colors[0x0f],
+                XmNrightOffset, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+// "Min Zoom" stolen from "Change Layer"
+        button_min_zoom_change = XtVaCreateManagedWidget(langcode("MAPP010"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        new_min_zoom_text = XtVaCreateManagedWidget("Map Properties min zoom number",
+                xmTextWidgetClass,
+                rowcol,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 6,
+                XmNwidth, ((7*7)+2),
+                XmNmaxLength, 5,
+                XmNbackground, colors[0x0f],
+                XmNrightOffset, 1,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+
 // "Change Layer"
         button_layer_change = XtVaCreateManagedWidget(langcode("MAPP004"),
                 xmPushButtonGadgetClass, 
@@ -12919,6 +13143,8 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
         XtAddCallback(button_clear, XmNactivateCallback, map_properties_deselect_maps, map_properties_dialog);
         XtAddCallback(button_filled_yes, XmNactivateCallback, map_properties_filled_yes, map_properties_dialog);
         XtAddCallback(button_filled_no, XmNactivateCallback, map_properties_filled_no, map_properties_dialog);
+        XtAddCallback(button_max_zoom_change, XmNactivateCallback, map_properties_max_zoom_change, map_properties_dialog);
+        XtAddCallback(button_min_zoom_change, XmNactivateCallback, map_properties_min_zoom_change, map_properties_dialog);
         XtAddCallback(button_layer_change, XmNactivateCallback, map_properties_layer_change, map_properties_dialog);
         XtAddCallback(button_auto_maps_yes, XmNactivateCallback,
 map_properties_auto_maps_yes, map_properties_dialog);
