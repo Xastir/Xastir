@@ -767,7 +767,7 @@ void channel_data(int port, unsigned char *string, int length) {
             fprintf(stderr,"data_lock, Port = %d\n", port);
 
 
-        // If it's any of four types of GPS ports and is a GPRMC or
+        // If it's any of three types of GPS ports and is a GPRMC or
         // GPGGA string, just stick it in one of two global
         // variables for holding such strings.  UpdateTime() can
         // come along and process/clear-out those strings at the
@@ -778,9 +778,8 @@ void channel_data(int port, unsigned char *string, int length) {
             case DEVICE_SERIAL_GPS:
             case DEVICE_SERIAL_TNC_HSP_GPS:
             case DEVICE_NET_GPSD:
-            case DEVICE_SERIAL_TNC_AUX_GPS:
 
-                // One of the four types of interfaces that might
+                // One of the three types of interfaces that might
                 // send in a lot of GPS data constantly.  Save only
                 // GPRMC and GPGGA strings into global variables.
                 // Drop other GPS strings on the floor.
@@ -815,7 +814,7 @@ void channel_data(int port, unsigned char *string, int length) {
 // reset.  We may not care if we just wait for data_avail to be
 // cleared before writing to the string again.
 
-            default:    // Not one of the above four types, decode
+            default:    // Not one of the above three types, decode
                         // the string normally.
                 incoming_data = string;
                 incoming_data_length = length;
