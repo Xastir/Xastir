@@ -694,7 +694,8 @@ void channel_data(int port, unsigned char *string, int length) {
     // the last message received.
     xastir_snprintf(incoming_data_copy,
         MAX_LINE_SIZE,
-        "%s",
+        "Port%d:%s",
+        port,
         string);
 
     max = 0;
