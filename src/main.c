@@ -217,10 +217,10 @@ Widget map_bgcolor[12];
 static void Map_background(Widget w, XtPointer clientData, XtPointer calldata);
 int map_background_color;       /* Background color for maps */
 
-#ifdef HAVE_GEOTIFF
+#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
 Widget map_intensity[11];
 static void Map_intensity(Widget w, XtPointer clientData, XtPointer calldata);
-#endif /* HAVE_GEOTIFF */
+#endif
 
 Widget map_station_label0,map_station_label1,map_station_label2;
 static void Map_station_label(Widget w, XtPointer clientData, XtPointer calldata);
@@ -2459,9 +2459,9 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
        map_disable_button, map_button, map_auto_button, map_chooser_button, map_grid_button,
        map_levels_button, map_labels_button, map_fill_button, coordinate_calculator_button,
        Map_background_color_Pane, map_background_button, map_pointer_menu_button,
-#ifdef HAVE_GEOTIFF
+#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
        Map_intensity_Pane, map_intensity_button,
-#endif // HAVE_GEOTIFF
+#endif
        Map_station_label_Pane, map_station_label_button,
        map_wx_alerts_button,
        units_choice_button,
@@ -2892,7 +2892,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_bgcolor[8],  XmNactivateCallback,Map_background,"8");
     XtAddCallback(map_bgcolor[9],  XmNactivateCallback,Map_background,"9");
 
-#ifdef HAVE_GEOTIFF
+#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
     Map_intensity_Pane = XmCreatePulldownMenu(mappane,"create_appshell map_intensity",al,ac);
     map_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),xmCascadeButtonWidgetClass,mappane,
                                 XmNsubMenuId, Map_intensity_Pane,XmNmnemonic,
@@ -2931,7 +2931,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_intensity[8],  XmNactivateCallback,Map_intensity,"0.8");
     XtAddCallback(map_intensity[9],  XmNactivateCallback,Map_intensity,"0.9");
     XtAddCallback(map_intensity[10], XmNactivateCallback,Map_intensity,"1.0");
-#endif  /* HAVE_GEOTIFF */
+#endif
 
     Map_station_label_Pane = XmCreatePulldownMenu(mappane,"create_appshell map_station_label",al,ac);
     map_station_label_button = XtVaCreateManagedWidget(langcode("PULDNMP006"),xmCascadeButtonWidgetClass,mappane,
@@ -5454,7 +5454,7 @@ void Map_background( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
 
 
 
-#ifdef HAVE_GEOTIFF
+#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
 void Map_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
     float my_intensity;
     int i;
@@ -5474,7 +5474,7 @@ void Map_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
         XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     }
 }
-#endif /* HAVE_GEOTIFF */
+#endif
 
 
 

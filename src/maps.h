@@ -77,9 +77,9 @@ extern int  locate_place(Widget w, char *name, char *state, char *county, char *
 extern void maps_init(void);
 
 
-#ifdef HAVE_GEOTIFF
+#if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
 extern float geotiff_map_intensity;
-#endif /* HAVE_GEOTIFF */
+#endif
 
 extern void Print_properties(Widget widget, XtPointer clientData, XtPointer callData);
 
