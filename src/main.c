@@ -9489,11 +9489,13 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
 
                 else if (moving_object) {   // Move function
                     // For this function we need to:
-                    //      Determine which icon is closest to the mouse pointer press position.
-                    //          We'll use Station_info to select the icon for us.
-                    //      Compute the lat/lon of the mouse pointer release position.
-                    //      Put the new value of lat/lon into the object data.
-                    //      Cause symbols to get redrawn.
+                    //   Determine which icon is closest to the mouse pointer press position.
+                    //     We'll use Station_info to select the icon for us.
+                    //   Determine whether it is our object.  If not, force
+                    //     the user to "adopt" the object before moving it.
+                    //   Compute the lat/lon of the mouse pointer release position.
+                    //   Put the new value of lat/lon into the object data.
+                    //   Cause symbols to get redrawn.
 
                     // Reset the zoom-box variables
                     possible_zoom_function = 0;

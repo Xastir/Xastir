@@ -3324,16 +3324,37 @@ void WX_query(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unuse
 
 /*
  *  Change data for current object
- *  If calldata = 3, we're doing a move object operation.  Pass the
+ *  If calldata = 2, we're doing a move object operation.  Pass the
  *  value on through to Set_Del_Object.
  */
 void Modify_object( Widget w, XtPointer clientData, XtPointer calldata) {
     DataRow *p_station = clientData;
 
     //if (calldata != NULL)
-    //    fprintf(stderr,"Modify_object:  calldata:  %s\n", calldata);
+    //    fprintf(stderr,"Modify_object:  calldata:  %s\n", (char *)calldata);
 
     //fprintf(stderr,"Object Name: %s\n", p_station->call_sign);
+
+    // Only move the object if it is our callsign, else force the
+    // user to adopt the object first, then move it.
+    //
+    // Not exact match (this one is useful for testing)
+//    if (!is_my_call(p_station->origin,1)) {
+    //
+    // Exact match (this one is for production code)
+    if (!is_my_call(p_station->origin,0)) {
+
+        // It's not from my callsign
+        if (strncmp(calldata,"2",1) == 0) {
+
+            // We're doing a Move Object operation
+            //fprintf(stderr,"Modify_object:  Object not owned by me!\n");
+            popup_message_always(langcode("POPEM00035"),
+                "Object not owned by me!\nTry adopting the object first.\n");
+            return;
+        }
+    }
+
     Set_Del_Object( w, p_station, calldata );
 }
 
