@@ -237,7 +237,6 @@ X_EXTRA_LIBS=`echo $X_EXTRA_LIBS | sed -e 's/  */ /g'`
  
 CC=`echo $CC | sed -e 's/  */ /g'` 
 CFLAGS=`echo $CFLAGS | sed -e 's/  */ /g'`
-CFLAGS="${CFLAGS} -Wall"
 CPPFLAGS=`echo $CPPFLAGS | sed -e 's/  */ /g'` 
 CXXFLAGS=`echo $CXXFLAGS | sed -e 's/  */ /g'` 
 LDFLAGS=`echo $LDFLAGS | sed -e 's/  */ /g'` 
