@@ -127,7 +127,7 @@ begin_critical_section(&wx_alert_shell_lock, "wx_gui.c:wx_alert_update_list" );
                 xastir_snprintf(status, sizeof(status), "   ");
 
             xastir_snprintf(temp, sizeof(temp),
-                    "%-9s %-9s   %c%c@%c%c%c%cz ==> %c%c@%c%c%c%cz %s %-7s   %-20s %s",
+                    "%-9s %-9s   %c%c @%c%c%c%cz ==> %c%c @%c%c%c%cz %s %-7s   %-20s %s",
                     alert_list[n].from,
                     alert_list[n].to,
                     alert_list[n].issue_date_time[0],
