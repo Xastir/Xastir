@@ -3315,7 +3315,7 @@ void port_read(int port) {
            FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 50000;   // 50 ms
+            tmv.tv_usec = 1000;   // 1 ms
             (void)select(0,&rd,NULL,NULL,&tmv);
         }
     }
@@ -3549,7 +3549,6 @@ void port_write(int port) {
 // we wake up to check whether the socket has gone down.  Else, we
 // go back into the select to wait for more data or a timeout.
 
-            /*usleep(100);*/
             FD_ZERO(&wd);
             FD_SET(port_data[port].channel, &wd);
             tmv.tv_sec = 0;
@@ -3828,7 +3827,6 @@ begin_critical_section(&devices_lock, "interface.c:del_device" );
 end_critical_section(&devices_lock, "interface.c:del_device" );
 
                     (void)command_file_to_tnc_port(port,get_data_base_dir(temp));
-                    //(void)sleep(3);
                     usleep(3000000);    // 3secs
                     break;
 
@@ -3877,7 +3875,6 @@ end_critical_section(&devices_lock, "interface.c:del_device");
                     if (debug_level & 2)
                         fprintf(stderr,"Close a AX25 TNC device\n");
 
-                    //(void)sleep(3);
                     //usleep(3000000);  // 3secs
                     break;
 
@@ -3923,7 +3920,6 @@ end_critical_section(&devices_lock, "interface.c:del_device");
         if (debug_level & 2)
             fprintf(stderr,"port detach OK\n");
 
-        //(void)sleep(1);
         usleep(100000);    // 100ms
         if (debug_level & 2)
             fprintf(stderr,"Cancel threads\n");
@@ -3956,7 +3952,6 @@ end_critical_section(&devices_lock, "interface.c:del_device");
         if (end_critical_section(&port_data_lock, "interface.c:del_device(4)" ) > 0)
             fprintf(stderr,"port_data_lock, Port = %d\n", port);
 
-        //(void)sleep(1);
         usleep(100000); // 100ms
     } else {
         if (debug_level & 2)
