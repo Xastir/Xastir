@@ -92,13 +92,10 @@ packages to install.
 [ ] Step 1c)  Select Packages:  Leave the packages selected that
 were selected by default, plus select the additional packages listed
 below.  Note that enabling some of these packages causes others to
-be selected as well, that's ok and necessary:
+be selected as well, that's ok and necessary.
 
-If you only see "+ALL", then you'll need to click on the "+" symbol
-in order to expand it into more options.  This works very similarly
-to expanding directories in File Explorer.  Continue this expansion
-into the subheadings below so that you can enable/disable individual
-packages.
+[ ] Press the "View" button until it says "Full" next to it.  All
+packages are now in alphanumeric sorted order.
 
 Selecting a package involves clicking on the little circle symbol
 until the option you want is displayed.  You can choose older
@@ -114,42 +111,34 @@ just add the below packages to the selection.  As you select
 packages, other packages may be selected for you that are also
 required:
 
-    Archive
-[ ]     unzip
-[ ]     zip
-    Devel
-[ ]     autoconf
-[ ]     automake
-[ ]     binutils
-[ ]     cvs
-[ ]     gcc
-[ ]     make
-[ ]     rcs
-    Editors
-[ ]     nano
-[ ]     vim
-    Graphics
-[ ]     tiff (install sources for this one too? TBD)
-    Interpreters
-[ ]     m4
-[ ]     perl
-    Libs
-[ ]     curl
-[ ]     curl-devel
-[ ]     tcltk
-    Text
-[ ]     less
-    Utils
-[ ]     bzip2
-[ ]     diffutils
-[ ]     patch
-    Web
-[ ]     wget (or can use libcurl instead)
-    XFree86
-[ ]     XFree86-prog:Headers
-[ ]     fvwm
-[ ]     lesstif
- 
+[ ] autoconf
+[ ] automake
+[ ] binutils
+[ ] bzip2
+[ ] curl
+[ ] curl-devel
+[ ] cvs
+[ ] diffutils
+[ ] fvwm (used currently?)
+[ ] gcc
+[ ] less
+[ ] lesstif
+[ ] m4
+[ ] make
+[ ] nano (a text editor, optional)
+[ ] patch
+[ ] pcre (for future development)
+[ ] pcre-devel (for future development)
+[ ] perl
+[ ] rcs
+[ ] tcltk
+[ ] tiff (install sources for this one too? TBD)
+[ ] unzip
+[ ] vim (a text editor, optional)
+[ ] wget (Optional:  Can use libcurl instead)
+[ ] XFree86-prog:Headers
+[ ] zip
+
 Again, in order to see the more detailed list of packages, you'll
 have to click on the '+' symbols to the left of the various
 categories.  Clicking on the small circle with the two arrows will
