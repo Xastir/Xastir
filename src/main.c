@@ -6589,9 +6589,9 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
     else
         printf("Couldn't open file: %s\n", WIN_MAP_DATA);
 
-    map_chooser_destroy_shell(widget,clientData,callData);
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    map_chooser_destroy_shell(widget,clientData,callData);
+//    create_image(da);
+//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -6629,9 +6629,9 @@ void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer
     else
         printf("Couldn't open file: %s\n", WIN_MAP_DATA);
 
-    map_chooser_destroy_shell(widget,clientData,callData);
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    map_chooser_destroy_shell(widget,clientData,callData);
+//    create_image(da);
+//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -6671,9 +6671,9 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
     else
         printf("Couldn't open file: %s\n", WIN_MAP_DATA);
 
-    map_chooser_destroy_shell(widget,clientData,callData);
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    map_chooser_destroy_shell(widget,clientData,callData);
+//    create_image(da);
+//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -6713,9 +6713,9 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
     else
         printf("Couldn't open file: %s\n", WIN_MAP_DATA);
 
-    map_chooser_destroy_shell(widget,clientData,callData);
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    map_chooser_destroy_shell(widget,clientData,callData);
+//    create_image(da);
+//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
@@ -6732,9 +6732,9 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
     else
         printf("Couldn't zero file: %s\n", WIN_MAP_DATA);
 
-    map_chooser_destroy_shell(widget,clientData,callData);
-    create_image(da);
-    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
+//    map_chooser_destroy_shell(widget,clientData,callData);
+//    create_image(da);
+//    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 }
 
 
