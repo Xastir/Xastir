@@ -3390,6 +3390,8 @@ void draw_shapefile_map (Widget w,
 
 
 
+//if (object->nParts > 1)
+//fprintf(stderr,"Number of parts: %d\n", object->nParts);
 
                     // Read the vertices for each ring
                     for (ring = 0; ring < object->nParts; ring++ ) {
@@ -3427,6 +3429,10 @@ void draw_shapefile_map (Widget w,
                         //fprintf(stderr,"Endpoint %d\n", endpoint);
                         //fprintf(stderr,"Vertices: %d\n", endpoint - object->panPartStart[ring]);
 
+//WE7U
+// Compute whether it's a fill ring or a hole ring.  Fill rings go
+// CW, holes go CCW.
+
                         i = 0;  // i = Number of points to draw for one ring
                         // index = ptr into the shapefile's array of points
                         for (index = object->panPartStart[ring]; index < endpoint; ) {
@@ -3441,6 +3447,19 @@ void draw_shapefile_map (Widget w,
                                 &my_lat,
                                 (float)object->padfX[index],
                                 (float)object->padfY[index]);
+
+//WE7U
+// It looks like I might have to draw each ring into a test area,
+// then figure out whether a pixel to the right of the line between
+// the first and second vertex is filled or not.  Another
+// possibility would be to traverse the ring and compute whether I
+// was turning right or left more by the time I finished.  Keep
+// right/left counters?
+//
+// Use the routine in the contrib directory of Shapelib which can
+// determine whether it's a fill or a hole shape.
+//WE7U
+
 
                             //fprintf(stderr,"%lu %lu\t", my_long, my_lat);
 
