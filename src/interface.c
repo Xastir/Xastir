@@ -207,7 +207,7 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
                        unsigned char *Data,
                        int length) {
     int ii;
-    unsigned char output_string[600];
+    unsigned char output_string[512];
     unsigned char path_string[200];
     int full_length;
     int data_length;
@@ -253,8 +253,56 @@ fprintf(stderr,"%s %s %s\n",
 
         if (type == 'P') {
             // Login/Password frame
+            char callsign_base[15];
+            int jj;
+
+
             // Write the type character into the frame
             output_string[4] = type;
+
+            output_string[28] = (unsigned char)(length % 256);
+            output_string[29] = (unsigned char)((length >> 8) % 256);
+
+//fprintf(stderr,"%02x %02x\n", output_string[28], output_string[29]);
+
+            // Send the header frame to AGWPE
+            port_write_binary(xastir_interface, output_string, 36);
+ 
+            // Clear the output_string (set to binary zeroes)
+            for (ii = 0; ii < 36; ii++) {
+                output_string[ii] = '\0';
+            }
+
+            // Write login/password out as 255-byte strings
+
+            // Compute the callsign base string
+            // (callsign minus SSID)
+            strcpy(callsign_base,my_callsign);
+            for (jj = 0; jj < strlen(my_callsign); jj++) {
+                // Change '-' into end of string
+                if (callsign_base[jj] == '-')
+                    callsign_base[jj] = '\0';
+            }
+
+            // Write the login string               
+            xastir_snprintf(output_string, sizeof(output_string),
+                "%s", callsign_base);
+
+            // Send the packet to AGWPE
+            port_write_binary(xastir_interface, output_string, 255);
+ 
+            // Clear the output_string (set to binary zeroes)
+            for (ii = 0; ii < 10; ii++) {
+                output_string[ii] = '\0';
+            }
+
+            // Write the password string
+            xastir_snprintf(output_string,sizeof(output_string),
+                "%s", Data);
+//fprintf(stderr,"%s %d\n", output_string, strlen(output_string));
+
+            // Send the packet to AGWPE
+            port_write_binary(xastir_interface, output_string, 255);
         }
         else {  // Data frame
             // Write the type character into the frame
@@ -262,20 +310,20 @@ fprintf(stderr,"%s %s %s\n",
 
             // Write the PID type into the frame
             output_string[6] = 0xF0;    // UI Frame
-        }
 
-        output_string[28] = (unsigned char)(length % 256);
-        output_string[29] = (unsigned char)((length >> 8) % 256);
+            output_string[28] = (unsigned char)(length % 256);
+            output_string[29] = (unsigned char)((length >> 8) % 256);
 
 //fprintf(stderr,"%02x %02x\n", output_string[28], output_string[29]);
 
-        // Copy Data onto the end of the string
-        strncpy(&output_string[36], Data, length);
+            // Copy Data onto the end of the string
+            strncpy(&output_string[36], Data, length);
 
-        full_length = length + 36;
+            full_length = length + 36;
 
-        // Send the packet to AGWPE
-        port_write_binary(xastir_interface, output_string, full_length);
+            // Send the packet to AGWPE
+            port_write_binary(xastir_interface, output_string, full_length);
+        }
     }
 
     else {  // We have ViaCalls.  Data packet.
@@ -2409,26 +2457,41 @@ void port_write_binary(int port, unsigned char *data, int length) {
     if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write_binary(1)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
 
+    // Save the current position, just in case we have trouble
     write_in_pos_hold = port_data[port].write_in_pos;
 
     for (ii = 0; ii < length && !erd; ii++) {
 
 //fprintf(stderr,"%02x ",data[ii]);
 
+        // Put character into write buffer and advance pointer
         port_data[port].device_write_buffer[port_data[port].write_in_pos++] = data[ii];
+
+        // Check whether we need to wrap back to the start of the
+        // circular buffer
         if (port_data[port].write_in_pos >= MAX_DEVICE_BUFFER)
             port_data[port].write_in_pos = 0;
 
+        // Check whether we just filled our buffer (read/write
+        // pointers are equal).  If so, exit gracefully, dumping
+        // this string and resetting the write pointer.
         if (port_data[port].write_in_pos == port_data[port].write_out_pos) {
             if (debug_level & 2)
                 fprintf(stderr,"Port %d Buffer overrun\n",port);
 
-            /* clear this restore original write_in pos and dump this string */
+            // Restore original write_in pos and dump this string
             port_data[port].write_in_pos = write_in_pos_hold;
             port_data[port].errors++;
             erd = 1;
         }
     }
+
+// Check that the data got placed in the buffer ok
+//for (ii = write_in_pos_hold;  ii < port_data[port].write_in_pos; ii++) {
+//  fprintf(stderr,"%02x ",port_data[port].device_write_buffer[ii]);
+//}
+//fprintf(stderr,"\n");
+
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write_binary(2)" ) > 0)
         fprintf(stderr,"write_lock, Port = %d\n", port);
@@ -2793,8 +2856,8 @@ void port_read(int port) {
 
                 else {  // Handle AX25_TNC interfaces
                     /*
-                    * Use recvfrom on a network socket to know from which interface
-                    * the packet came - PE1DNN
+                    * Use recvfrom on a network socket to know from
+                    * which interface the packet came - PE1DNN
                     */
 
 #ifdef __solaris__
@@ -2833,9 +2896,12 @@ void port_read(int port) {
                     if (port_data[port].device_type != DEVICE_AX25_TNC){
 
 
-                        // Do special KISS packet processing here.  We save
-                        // the last character in port_data[port].channel2,
-                        // as it is otherwise only used for AX.25 ports.
+                        // Do special KISS packet processing here.
+                        // We save
+                        // the last character in
+                        // port_data[port].channel2,
+                        // as it is otherwise only used for AX.25
+                        // ports.
 
                         if (port_data[port].device_type == DEVICE_SERIAL_KISS_TNC) {
 
@@ -2870,7 +2936,8 @@ void port_read(int port) {
 // the packet came from.  We may want to use this later for
 // multi-drop KISS or other types of KISS protocols.
 
-                                // Save this char for next time around
+                                // Save this char for next time
+                                // around
                                 port_data[port].channel2 = cin;
                                 skip++;
                             }
@@ -2882,6 +2949,8 @@ void port_read(int port) {
                                 port_data[port].channel2 = cin;
                             }
                         }   // End of first special KISS processing
+
+
 
 
 
@@ -3291,19 +3360,24 @@ void port_write(int port) {
     init_critical_section(&port_data[port].write_lock);
 
     while(port_data[port].active == DEVICE_IN_USE) {
+
         if (port_data[port].status == DEVICE_UP) {
 
             if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write(1)" ) > 0)
                 fprintf(stderr,"write_lock, Port = %d\n", port);
 
-            if (port_data[port].write_in_pos != port_data[port].write_out_pos && port_data[port].status == DEVICE_UP) {
+            if ( (port_data[port].write_in_pos != port_data[port].write_out_pos)
+                    && port_data[port].status == DEVICE_UP) {
+
                 if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03) {
+
                     if (debug_level & 128) {
                         fprintf(stderr,"Writing command [%x] on port %d, at pos %d\n",
                             *(port_data[port].device_write_buffer + 
                             port_data[port].write_out_pos),
                             port, port_data[port].write_out_pos);
                     }
+
                     wait_max = 0;
                     bytes_input = port_data[port].bytes_input + 40;
                     while ( (port_data[port].bytes_input != bytes_input)
@@ -3322,17 +3396,24 @@ void port_write(int port) {
                         /*fprintf(stderr,"Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
                     }
                     /*fprintf(stderr,"Wait_max %d\n",wait_max);*/
-                }
+                }   // End of command byte wait
+
                 pthread_testcancel();   // Check for thread termination request
                 retval = (int)write(port_data[port].channel,
-                    port_data[port].device_write_buffer + port_data[port].write_out_pos,
+                    &port_data[port].device_write_buffer[port_data[port].write_out_pos],
                     1);
+
+//fprintf(stderr,"%02x ", (unsigned char)port_data[port].device_write_buffer[port_data[port].write_out_pos]);
+
                 pthread_testcancel();   // Check for thread termination request
-                if (retval == 1) {
+                if (retval == 1) {  // We succeeded in writing one byte
+
                     port_data[port].bytes_output++;
+
                     port_data[port].write_out_pos++;
                     if (port_data[port].write_out_pos >= MAX_DEVICE_BUFFER)
                         port_data[port].write_out_pos = 0;
+
                 }  else {
                     /* error of some kind */
                     port_data[port].errors++;
@@ -3355,7 +3436,7 @@ void port_write(int port) {
                     case DEVICE_SERIAL_TNC_AUX_GPS:
                     case DEVICE_SERIAL_KISS_TNC:
                     case DEVICE_SERIAL_TNC:
-
+//fprintf(stderr,"Char pacing ");
                         usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
                         break;
                     default:
@@ -3374,6 +3455,7 @@ void port_write(int port) {
             FD_SET(port_data[port].channel, &wd);
             tmv.tv_sec = 0;
             tmv.tv_usec = 100000;  // Delay 100ms
+//tmv.tv_usec = 10;
             (void)select(0,NULL,&wd,NULL,&tmv);
         }
     }
@@ -4117,45 +4199,16 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     // information
                     //
                     if (strlen(passwd) != 0) {
-                        char callsign_base[15];
-                        int jj;
 
-                        // Write login/password out as 255-byte strings
-                        //
-                        // Write zeroes into the portions we'll use
-                        for (ii = 0; ii < 512; ii++) {
-                            logon_txt[ii] = '\0';
-                        }
-
-                        // Compute the callsign base string
-                        // (callsign minus SSID)
-                        strcpy(callsign_base,my_callsign);
-                        for (jj = 0; jj < strlen(my_callsign); jj++) {
-                            // Change '-' into end of string
-                            if (callsign_base[jj] == '-')
-                                callsign_base[jj] = '\0';
-                        }
-                        
-                        xastir_snprintf(logon_txt, 255,
-                            "%s",
-                            callsign_base);
-
-                        xastir_snprintf(&logon_txt[255], 255,
-                            "%s",
-                            passwd);
-
-//fprintf(stderr,"Lengths: %d %d\n", strlen(callsign_base), strlen(passwd));
-//fprintf(stderr,"%s  %s\n", callsign_base, passwd);
-
-                        // Send the packet 
+                        // Send the login packet 
                         send_agwpe_packet(port_avail,
-                            0,
-                            'P', // Login/Password Frame
-                            '\0',
-                            '\0',
-                            NULL,
-                            logon_txt,
-                            510);
+                            0,      // AGWPE RadioPort
+                            'P',    // Login/Password Frame
+                            NULL,   // FromCall
+                            NULL,   // ToCall
+                            NULL,   // Path
+                            passwd, // Path (password in this case only)
+                            510);   // Length
                     }
                 }
                 break;
@@ -4205,24 +4258,24 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     // Query for the AGWPE version
                     //
                     send_agwpe_packet(port_avail,
-                        0,
-                        'R', // Request SW Version Frame
-                        '\0',
-                        '\0',
-                        NULL,
-                        NULL,
-                        0);
+                        0,      // AGWPE RadioPort
+                        'R',    // Request SW Version Frame
+                        NULL,   // FromCall
+                        NULL,   // ToCall
+                        NULL,   // Path
+                        NULL,   // Data
+                        0);     // Length
 
                     // Ask to receive "Monitor" frames
                     //
                     send_agwpe_packet(port_avail,
-                        0,
+                        0,      // AGWPE RadioPort
                         'm',    // Monitor Packets Frame
-                        '\0',
-                        '\0',
-                        NULL,
-                        NULL,
-                        0);
+                        NULL,   // FromCall
+                        NULL,   // ToCall
+                        NULL,   // Path
+                        NULL,   // Data
+                        0);     // Length
 
                     // Send a dummy UI frame for testing purposes.
                     //
@@ -4616,6 +4669,117 @@ void check_ports(void) {
 
 
 
+static char unproto_path_txt[MAX_LINE_SIZE+5];
+
+
+
+
+ 
+// Function which selects an unproto path in round-robin fashion.
+// Once we select a path, we save the number selected back to
+// devices[port].unprotonum so that the next time around we select
+// the next in the sequence.  If we don't come up with a valid
+// unproto path, we use the unproto path: "WIDE,WIDE2-2".
+//
+// Input:  Port number
+// Ouput:  String pointer containing unproto path
+//
+// WE7U:  Should we check to make sure that there are printable
+// characters in the path?
+//
+unsigned char *select_unproto_path(int port) {
+    int count;
+    int done;
+    int temp;
+    int bump_up;
+ 
+
+    // Set unproto path:
+    // We look for a non-null path entry starting at the current
+    // value of "unprotonum".  The first non-null path wins.
+    count = 0;
+    done = 0;
+    bump_up = 0;
+
+
+begin_critical_section(&devices_lock, "interface.c:select_unproto_path" );
+
+    while (!done && (count < 3)) {
+        temp = (devices[port].unprotonum + count) % 3;
+        switch (temp) {
+
+            case 0:
+                if (strlen(devices[port].unproto1) > 0) {
+                    xastir_snprintf(unproto_path_txt,
+                        sizeof(unproto_path_txt),
+                        "%s",
+                        devices[port].unproto1);
+                    done++;
+                }
+                else {
+                    // No path entered here.  Skip this path in the
+                    // rotation for next time.
+                    bump_up++;
+                }
+                break;
+
+            case 1:
+                    if (strlen(devices[port].unproto2) > 0) {
+                        xastir_snprintf(unproto_path_txt,
+                            sizeof(unproto_path_txt),
+                            "%s",
+                            devices[port].unproto2);
+                        done++;
+                    }
+                    else {
+                        // No path entered here.  Skip this path in
+                        // the rotation for next time.
+                        bump_up++;
+                    }
+                    break;
+
+            case 2:
+                    if (strlen(devices[port].unproto3) > 0) {
+                        xastir_snprintf(unproto_path_txt,
+                            sizeof(unproto_path_txt),
+                            "%s",
+                            devices[port].unproto3);
+                        done++;
+                    }
+                    else {
+                        // No path entered here.  Skip this path in
+                        // the rotation for next time.
+                        bump_up++;
+                    }
+                    break;
+        }   // End of switch
+        count++;
+    }   // End of while loop
+
+    if (!done) {
+        // We found no entries in the unproto fields for the
+        // interface.
+
+        xastir_snprintf(unproto_path_txt,
+                        sizeof(unproto_path_txt),
+                        "WIDE,WIDE2-2");
+
+    }
+
+    // Increment the path number for the next round of
+    // transmissions.  This will round-robin the paths so that all
+    // entered paths get used.
+    devices[port].unprotonum = (devices[port].unprotonum + 1 + bump_up) % 3;
+
+end_critical_section(&devices_lock, "interface.c:select_unproto_path" );
+
+    return(unproto_path_txt);
+}
+
+
+
+
+
 //***********************************************************
 // output_my_aprs_data
 // This is the function responsible for sending out my own
@@ -4628,6 +4792,7 @@ void output_my_aprs_data(void) {
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
     char path_txt[MAX_LINE_SIZE+5];
+    char *unproto_path;
     char data_txt2[5];
     struct tm *day_time;
     time_t sec;
@@ -4643,7 +4808,6 @@ void output_my_aprs_data(void) {
     int ok;
     int port;
     int count;
-    int done;
     int temp;
     int bump_up;
 
@@ -4713,87 +4877,29 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                     port_write_string(port,header_txt);
                 }
 
-// WE7U:  Should we check here to make sure that there are printable
-// characters in the path?  Also:  Output_aprs_data() has nearly
-// identical path selection code.  Fix it in one place, fix it in
-// the other.
+                // Set unproto path:  Get next unproto path in
+                // sequence.
+                unproto_path = select_unproto_path(port);
 
-                // Set unproto path:
-                // We look for a non-null path entry starting at the current
-                // value of "unprotonum".  The first non-null path wins.
-                count = 0;
-                done = 0;
-                bump_up = 0;
-                while (!done && (count < 3)) {
-                    temp = (devices[port].unprotonum + count) % 3;
-                    switch (temp) {
-
-                        case 0:
-                            if (strlen(devices[port].unproto1) > 0) {
-                                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto1);
-                                xastir_snprintf(header_txt_save, sizeof(header_txt_save), "%s>%s,%s:", my_callsign, VERSIONFRM, devices[port].unproto1);
-                                xastir_snprintf(path_txt,sizeof(path_txt),"%s",devices[port].unproto1);
-                                done++;
-                            }
-                            else {
-                                // No path entered here.  Skip this path in the rotation for next time.
-                                bump_up++;
-                            }
-                            break;
-
-                        case 1:
-                            if (strlen(devices[port].unproto2) > 0) {
-                                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto2);
-                                xastir_snprintf(header_txt_save, sizeof(header_txt_save), "%s>%s,%s:",my_callsign,VERSIONFRM,devices[port].unproto2);
-                                xastir_snprintf(path_txt,sizeof(path_txt),"%s",devices[port].unproto2);
-                                done++;
-                            }
-                            else {
-                                // No path entered here.  Skip this path in the rotation for next time.
-                                bump_up++;
-                            }
-                            break;
-
-                        case 2:
-                            if (strlen(devices[port].unproto3) > 0) {
-                                xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s VIA %s\r", '\3', "UNPROTO", VERSIONFRM, devices[port].unproto3);
-                                xastir_snprintf(header_txt_save, sizeof(header_txt_save), "%s>%s,%s:", my_callsign, VERSIONFRM, devices[port].unproto3);
-                                xastir_snprintf(path_txt,sizeof(path_txt),"%s",devices[port].unproto3);
-                                done++;
-                            }
-                            else {
-                                // No path entered here.  Skip this path in the rotation for next time.
-                                bump_up++;
-                            }
-                            break;
-                    }   // End of switch
-                    count++;
-                }   // End of while loop
-                if (!done) {   // We found no entries in the unproto fields for the interface.
-
-                    xastir_snprintf(header_txt,
+                xastir_snprintf(header_txt,
                         sizeof(header_txt),
                         "%c%s %s VIA %s\r",
                         '\3',
                         "UNPROTO",
                         VERSIONFRM,
-                        "WIDE,WIDE2-2");
+                        unproto_path);
 
-                    xastir_snprintf(header_txt_save,
+                xastir_snprintf(header_txt_save,
                         sizeof(header_txt_save),
                         "%s>%s,%s:",
                         my_callsign,
                         VERSIONFRM,
-                        "WIDE,WIDE2-2");
+                        unproto_path);
 
-                    xastir_snprintf(path_txt,
+                xastir_snprintf(path_txt,
                         sizeof(path_txt),
-                        "WIDE,WIDE2-2");
-
-                }
-                // Increment the path number for the next round of transmissions.
-                // This will round-robin the paths so that all entered paths get used.
-                devices[port].unprotonum = (devices[port].unprotonum + 1 + bump_up) % 3;
+                        "%s",
+                        unproto_path);
 
 
                 // Send the header data to the TNC.  This sets the
@@ -5018,6 +5124,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 //WE7U:AGWPE
                 else if (port_data[port].device_type == DEVICE_NET_AGWPE) {
 
+                    // Set unproto path:  Get next unproto path in
+                    // sequence.
+                    unproto_path = select_unproto_path(port);
+
 // We need to remove the complete AX.25 header from data_txt before
 // we call this routine!  Instead put the digipeaters into the
 // ViaCall fields.
@@ -5026,7 +5136,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                                       '\0',         // Type of frame
                                       my_callsign,  // source
                                       VERSIONFRM,   // destination
-                                      "RELAY,WIDE2-2", // Path,
+                                      unproto_path, // Path,
                                       data_txt,
                                       strlen(data_txt));
                 }
@@ -5102,6 +5212,7 @@ void output_my_data(char *message, int port, int type, int loopback_only, int us
     char data_txt[MAX_LINE_SIZE+5];
     char data_txt_save[MAX_LINE_SIZE+5];
     char path_txt[MAX_LINE_SIZE+5];
+    char *unproto_path;
     char output_net[100];
     int ok, start, finish, i;
     /*char temp[150]; for port message -FG */
@@ -5253,108 +5364,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                         done++;
                     }
 
-                    // We look for a non-null path entry starting at the current
-                    // value of "unprotonum".  The first non-null path wins.
-                    while (!done && (count < 3)) {
-                        temp = (devices[i].unprotonum + count) % 3;
-                        switch (temp) {
-
-                            case 0:
-                                if (strlen(devices[i].unproto1) > 0) {
-
-                                    xastir_snprintf(data_txt,
-                                            sizeof(data_txt),
-                                            "%c%s %s VIA %s\r",
-                                            '\3',
-                                            "UNPROTO",
-                                            VERSIONFRM,
-                                            devices[i].unproto1);
-
-                                    xastir_snprintf(data_txt_save,
-                                            sizeof(data_txt_save),
-                                            "%s>%s,%s:",
-                                            my_callsign,
-                                            VERSIONFRM,
-                                            devices[i].unproto1);
-
-                                    xastir_snprintf(path_txt,
-                                        sizeof(path_txt),
-                                        "%s",
-                                        devices[i].unproto1);
-
-                                    done++;
-                                }
-                                else {
-                                    // No path entered here.  Skip this path in the rotation for next time.
-                                    bump_up++;
-                                }
-                                break;
-
-                            case 1:
-                                if (strlen(devices[i].unproto2) > 0) {
-
-                                    xastir_snprintf(data_txt,
-                                        sizeof(data_txt),
-                                        "%c%s %s VIA %s\r",
-                                        '\3',
-                                        "UNPROTO",
-                                        VERSIONFRM,
-                                        devices[i].unproto2);
-
-                                    xastir_snprintf(data_txt_save,
-                                        sizeof(data_txt_save),
-                                        "%s>%s,%s:",
-                                        my_callsign,
-                                        VERSIONFRM,
-                                        devices[i].unproto2);
-
-                                    xastir_snprintf(path_txt,
-                                        sizeof(path_txt),
-                                        "%s",
-                                        devices[i].unproto2);
-
-                                    done++;
-                                }
-                                else {
-                                    // No path entered here.  Skip this path in the rotation for next time.
-                                    bump_up++;
-                                }
-                                break;
-
-                            case 2:
-                                if (strlen(devices[i].unproto3) > 0) {
-
-                                    xastir_snprintf(data_txt,
-                                        sizeof(data_txt),
-                                        "%c%s %s VIA %s\r",
-                                        '\3',
-                                        "UNPROTO",
-                                        VERSIONFRM,
-                                        devices[i].unproto3);
-
-                                    xastir_snprintf(data_txt_save,
-                                        sizeof(data_txt_save),
-                                        "%s>%s,%s:",
-                                        my_callsign,
-                                        VERSIONFRM,
-                                        devices[i].unproto3);
-
-                                    xastir_snprintf(path_txt,
-                                        sizeof(path_txt),
-                                        "%s",
-                                        devices[i].unproto3);
-
-                                    done++;
-                                }
-                                else {
-                                    // No path entered here.  Skip this path in the rotation for next time.
-                                    bump_up++;
-                                }
-                                break;
-                        }   // End of switch
-                        count++;
-                    }   // End of while loop
-                    if (!done) {    // We found no entries in the unproto fields for the interface
+                    if (!done) {
+                        // Set unproto path:  Get next unproto path
+                        // in sequence.
+                        unproto_path = select_unproto_path(i);
 
                         xastir_snprintf(data_txt,
                             sizeof(data_txt),
@@ -5362,23 +5375,23 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                             '\3',
                             "UNPROTO",
                             VERSIONFRM,
-                            "WIDE,WIDE2-2");
+                            unproto_path);
 
                         xastir_snprintf(data_txt_save,
                             sizeof(data_txt_save),
                             "%s>%s,%s:",
                             my_callsign,
                             VERSIONFRM,
-                            "WIDE,WIDE2-2");
+                            unproto_path);
 
                         xastir_snprintf(path_txt,
                             sizeof(path_txt),
-                            "WIDE,WIDE2-2");
+                            "%s",
+                            unproto_path);
 
+                        done++;
                     }
-                    // Increment the path number for the next round of transmissions.
-                    // This will round-robin the paths so that all entered paths get used.
-                    devices[i].unprotonum = (devices[i].unprotonum + 1 + bump_up) % 3;
+
 
                     if ( (port_data[i].device_type != DEVICE_SERIAL_KISS_TNC)
                             && (port_data[i].status == DEVICE_UP)
@@ -5439,16 +5452,21 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 //WE7U:AGWPE
                 else if (port_data[i].device_type == DEVICE_NET_AGWPE) {
 
+                    // Set unproto path:  Get next unproto path in
+                    // sequence.
+                    unproto_path = select_unproto_path(port);
+
 // We need to remove the complete AX.25 header from data_txt before
 // we call this routine!  Instead put the digipeaters into the
 // ViaCall fields.
 //fprintf(stderr,"send_agwpe_packet\n");
+
                     send_agwpe_packet(i,            // Xastir interface port
                                       0,            // AGWPE RadioPort
                                       '\0',         // Type of frame
                                       my_callsign,  // source
                                       VERSIONFRM,   // destination
-                                      "RELAY,WIDE2-2",// Path,
+                                      unproto_path, // Path,
                                       data_txt,
                                       strlen(data_txt));
                 }
