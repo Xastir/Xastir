@@ -574,8 +574,39 @@ void draw_DF_circle(long x_long, long y_lat, char *shgd, time_t sec_heard, Pixma
 
 
 
-#define BARB_LEN 15
-#define BARB_SPACING 15
+static int barb_len;
+static int barb_spacing;
+
+
+
+// Change barb parameters based on our current zoom level, so the
+// barbs don't get too long as we zoom out.
+void set_barb_parameters(void) {
+    float factor = 1.0;
+
+    // Initial settings
+    barb_len = 16;
+    barb_spacing = 16;
+
+    // Scale factor
+    if      (scale_y > 80000)
+        factor = 3.0;
+    else if (scale_y > 40000)
+        factor = 2.5;
+    else if (scale_y > 20000)
+        factor = 2.0;
+    else if (scale_y > 10000)
+        factor = 1.5;
+
+    // Scale them, plus use poor man's rounding
+    barb_len = (int)((barb_len / factor) + 0.5);
+    barb_spacing = (int)((barb_spacing / factor) + 0.5);;
+}
+
+
+
+
+
 void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y, char *course, Pixmap where) {
     float barb_radians = bearing_radians + ( (45/360.0) * 2.0 * M_PI);
     int j;
@@ -583,17 +614,17 @@ void draw_half_barbs(int *i, int quantity, float bearing_radians, long x, long y
 
 
     for (j = 0; j < quantity; j++) {
-        // Starting point for barb is (*i * BARB_SPACING) pixels
+        // Starting point for barb is (*i * barb_spacing) pixels
         // along bearing_radians vector
-        *i = *i + BARB_SPACING;
+        *i = *i + barb_spacing;
         off_x = *i * cos(bearing_radians);
         off_y = *i * sin(bearing_radians);
         start_y = y + off_y;
         start_x = x + off_x;
 
         // Set off in the barb direction now
-        off_y = (long)( (BARB_LEN / 2) * sin(barb_radians) );
-        off_x = (long)( (BARB_LEN / 2) * cos(barb_radians) );
+        off_y = (long)( (barb_len / 2) * sin(barb_radians) );
+        off_x = (long)( (barb_len / 2) * cos(barb_radians) );
 
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
@@ -616,17 +647,17 @@ void draw_full_barbs(int *i, int quantity, float bearing_radians, long x, long y
 
 
     for (j = 0; j < quantity; j++) {
-        // Starting point for barb is (*i * BARB_SPACING) pixels
+        // Starting point for barb is (*i * barb_spacing) pixels
         // along bearing_radians vector
-        *i = *i + BARB_SPACING;
+        *i = *i + barb_spacing;
         off_x = *i * cos(bearing_radians);
         off_y = *i * sin(bearing_radians);
         start_y = y + off_y;
         start_x = x + off_x;
 
         // Set off in the barb direction now
-        off_y = (long)( BARB_LEN * sin(barb_radians) );
-        off_x = (long)( BARB_LEN * cos(barb_radians) );
+        off_y = (long)( barb_len * sin(barb_radians) );
+        off_x = (long)( barb_len * cos(barb_radians) );
 
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
@@ -650,21 +681,21 @@ void draw_triangle_flags(int *i, int quantity, float bearing_radians, long x, lo
 
 
     for (j = 0; j < quantity; j++) {
-        // Starting point for barb is (*i * BARB_SPACING) pixels
+        // Starting point for barb is (*i * barb_spacing) pixels
         // along bearing_radians vector
-        *i = *i + BARB_SPACING;
+        *i = *i + barb_spacing;
         off_x = *i * cos(bearing_radians);
         off_y = *i * sin(bearing_radians);
         start_y = y + off_y;
         start_x = x + off_x;
 
         // Calculate 2nd point along staff
-        off_x2 = (BARB_SPACING/2) * cos(bearing_radians);
-        off_y2 = (BARB_SPACING/2) * sin(bearing_radians);
+        off_x2 = (barb_spacing/2) * cos(bearing_radians);
+        off_y2 = (barb_spacing/2) * sin(bearing_radians);
 
         // Set off in the barb direction now
-        off_y = (long)( BARB_LEN * sin(barb_radians) );
-        off_x = (long)( BARB_LEN * cos(barb_radians) );
+        off_y = (long)( barb_len * sin(barb_radians) );
+        off_x = (long)( barb_len * cos(barb_radians) );
 
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
@@ -691,21 +722,21 @@ void draw_square_flags(int *i, int quantity, float bearing_radians, long x, long
 
 
     for (j = 0; j < quantity; j++) {
-        // Starting point for barb is (*i * BARB_SPACING) pixels
+        // Starting point for barb is (*i * barb_spacing) pixels
         // along bearing_radians vector
-        *i = *i + BARB_SPACING;
+        *i = *i + barb_spacing;
         off_x = *i * cos(bearing_radians);
         off_y = *i * sin(bearing_radians);
         start_y = y + off_y;
         start_x = x + off_x;
 
         // Calculate 2nd point along staff
-        off_x2 = (BARB_SPACING/2) * cos(bearing_radians);
-        off_y2 = (BARB_SPACING/2) * sin(bearing_radians);
+        off_x2 = (barb_spacing/2) * cos(bearing_radians);
+        off_y2 = (barb_spacing/2) * sin(bearing_radians);
 
         // Set off in the barb direction now
-        off_y = (long)( BARB_LEN * sin(barb_radians) );
-        off_x = (long)( BARB_LEN * cos(barb_radians) );
+        off_y = (long)( barb_len * sin(barb_radians) );
+        off_x = (long)( barb_len * cos(barb_radians) );
 
         (void)XSetLineAttributes(XtDisplay(da), gc, 0, LineSolid, CapButt,JoinMiter);
         (void)XSetForeground(XtDisplay(da),gc,colors[0x44]); // red3
@@ -749,6 +780,10 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     int i;
 
 
+    // Set up the constants for our zoom level
+    set_barb_parameters();
+
+ 
 // Ghost the wind barb if sec_heard is too long.
 // (TBD)
 
@@ -805,12 +840,12 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
 
     half_barbs = (int)(my_speed / 5);
 
-    shaft_length = BARB_SPACING * (square_flags + triangle_flags + full_barbs
+    shaft_length = barb_spacing * (square_flags + triangle_flags + full_barbs
                    + half_barbs + 1);
 
     // Set a minimum length for the shaft?
-    if (shaft_length < 20)
-        shaft_length = 20;
+    if (shaft_length < 2)
+        shaft_length = 2;
 
     if (debug_level & 128) {
         fprintf(stderr,"Course:%d,\tL:%d,\tsq:%d,\ttr:%d,\tfull:%d,\thalf:%d\n",
@@ -842,7 +877,7 @@ void draw_wind_barb(long x_long, long y_lat, char *speed,
     // Increment along shaft and draw filled polygons at:
     // "(angle + 45) % 360" degrees to create flags.
 
-    i = BARB_SPACING;
+    i = barb_spacing;
     // Draw half barbs if any
     if (half_barbs)
         draw_half_barbs(&i,
