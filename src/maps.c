@@ -1138,7 +1138,17 @@ void draw_shapefile_map (Widget w,
     int             weather_alert_flag = 0;
     int             lake_flag = 0;
     char            *filename;  // filename itself w/o directory
+    char            search_param1[10];
+    int             search_field1 = 0;
+    char            search_param2[10];
+    int             search_field2 = -1;
+    int             found_shape = -1;
+    int             start_record;
+    int             end_record;
 
+
+    search_param1[0] = '\0';
+    search_param2[0] = '\0';
 
     xastir_snprintf(file, sizeof(file), "%s/%s", dir, filenm);
 
@@ -1146,7 +1156,10 @@ void draw_shapefile_map (Widget w,
     i = strlen(filenm);
     while ( (filenm[i] != '/') && (i >= 0) )
         filename = &filenm[i--];
-    //printf("filename = %s\n",filename);    
+printf("draw_shapefile_map:filename = %s\n",filename);    
+
+    if (alert)
+        weather_alert_flag++;
 
     // Open the .dbf file for reading.  This has the textual
     // data (attributes) associated with each shape.
@@ -1179,7 +1192,104 @@ void draw_shapefile_map (Widget w,
         if (debug_level & 16)
             printf("*** Found some lakes ***\n");
     }
- 
+
+
+    // For weather alerts:
+    // Need to figure out from the initial characters of the filename which
+    // type of file we're using, then compute the fields we're looking for.
+    // After we know that, need to look in the DBF file for a match.  Once
+    // we find a match, we can open up the SHX/SHP files, go straight to
+    // the shape we want, and draw it.
+    switch (filenm[0]) {
+
+        case 'c':   // County File
+            // County, c_ files:  WI_C037
+            // STATE  CWA  COUNTYNAME
+            // AL     BMX  Morgan
+            // Need fields 0/1:
+            search_field1 = 0;  // STATE
+            search_field2 = 1;  // CWA
+            snprintf(search_param1,sizeof(search_param1),"%c%c",
+                alert->title[0],
+                alert->title[1]);
+// Correct.
+// Here we need wildcards for the first two numbers, or we can perhaps
+// take the number modulus 1000 and then just compare the three digits?
+            snprintf(search_param2,sizeof(search_param2),"??%c%c%c",
+                alert->title[0],
+                alert->title[1],
+                alert->title[2]);
+            break;
+
+        case 'w':   // County Warning Area File
+            // County Warning Area, w_ files:  CW_ATAE
+            // WFO  CWA
+            // TAE  TAE
+            // Need field 0
+            search_field1 = 0;  // WFO
+            search_field2 = -1;
+// Correct
+            snprintf(search_param1,sizeof(search_param1),"%c%c%c",
+                alert->title[4],
+                alert->title[5],
+                alert->title[6]);
+            break;
+
+        case 'o':   // High Seas Marine Area File
+            // High Seas Marine Zones, oz_ files:  AN_Z081
+            // ID      WFO  NAME
+            // ANZ081  MPC  Gulf of Maine
+            // Need field 0
+            search_field1 = 0;  // ID
+            search_field2 = -1;
+// Correct
+            snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
+                alert->title[0],
+                alert->title[1],
+                alert->title[3],
+                alert->title[4],
+                alert->title[5],
+                alert->title[6]);
+            break;
+
+        case 'm':   // Marine Area File
+            // Marine Zones, mz_ files:  PK_Z120
+            // ID      WFO  NAME
+            // PKZ120  AJK  Area 1B. Southeast Alaska,
+            // Need field 0
+            search_field1 = 0;  // ID
+            search_field2 = -1;
+// Correct
+            snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c%c",
+                alert->title[0],
+                alert->title[1],
+                alert->title[3],
+                alert->title[4],
+                alert->title[5],
+                alert->title[6]);
+            break;
+
+        case 'z':   // Zone File
+        default:
+            // Weather alert zones, z_ files:  KS_Z033
+            // STATE_ZONE
+            // AK225
+            // Need field 4
+            search_field1 = 4;  // STATE_ZONE
+            search_field2 = -1;
+// Correct
+            snprintf(search_param1,sizeof(search_param1),"%c%c%c%c%c",
+                alert->title[0],
+                alert->title[1],
+                alert->title[4],
+                alert->title[5],
+                alert->title[6]);
+            break;
+    }
+
+printf("Search_param1: %s,\t",search_param1);
+printf("Search_param2: %s\n",search_param2);
+
     for( i = 0; i < fieldcount; i++ ) {
         char            szTitle[12];
 
@@ -1221,6 +1331,63 @@ void draw_shapefile_map (Widget w,
 
             if (debug_level & 16)
                 printf("*** Found some water ***\n");
+        }
+    }
+
+    // Search for specific record if we're doing alerts
+    if (weather_alert_flag) {
+        int done = 0;
+        int fips;
+        char *string1;
+
+        // Step through all records
+        for( i = 0; i < recordcount && !done; i++ ) {
+            switch (filenm[0]) {
+                case 'c':   // County File
+                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    fips = DBFReadIntegerAttribute(hDBF,i,search_field2);
+                    fips = fips % 1000; // We care about last 3 digits
+                    if ( (!strncasecmp(search_param1,string1,strlen(string1)))
+                        && ( fips = atoi(search_param2) ) ) {
+printf("Found it!  %s\tShape: %d\n",string1,i);
+                        done++;
+                        found_shape = i;
+                    }
+                    break;
+                case 'w':   // County Warning Area File
+                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    if (!strncasecmp(search_param1,string1,strlen(string1))) {
+printf("Found it!  %s\tShape: %d\n",string1,i);
+                        done++;
+                        found_shape = i;
+                    }
+                    break;
+                case 'o':   // High Seas Marine Area File
+                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    if (!strncasecmp(search_param1,string1,strlen(string1))) {
+printf("Found it!  %s\tShape: %d\n",string1,i);
+                        done++;
+                        found_shape = i;
+                    }
+                    break;
+                case 'm':   // Marine Area File
+                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    if (!strncasecmp(search_param1,string1,strlen(string1))) {
+printf("Found it!  %s\tShape: %d\n",string1,i);
+                        done++;
+                        found_shape = i;
+                    }
+                    break;
+                case 'z':   // Zone File
+                    string1 = DBFReadStringAttribute(hDBF,i,search_field1);
+                    if (!strncasecmp(search_param1,string1,strlen(string1))) {
+printf("Found it!  %s\tShape: %d\n",string1,i);
+                        done++;
+                        found_shape = i;
+                    }
+                default:
+                    break;
+            }
         }
     }
 
@@ -1329,7 +1496,16 @@ void draw_shapefile_map (Widget w,
     // polygon shapes found.
 
 
-    for (structure = 0; structure < nEntities; structure++) {
+    if (weather_alert_flag) {
+        start_record = found_shape;
+        end_record = found_shape;
+    }
+    else {
+        start_record = 0;
+        end_record = nEntities;
+    }
+
+    for (structure = start_record; structure < end_record; structure++) {
 
         object = SHPReadObject( hSHP, structure );  // Note that each structure can have multiple rings
 
@@ -6748,8 +6924,13 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 
     // Check for WX alert/ESRI Shapefile maps first
     if ( (alert != NULL)    // We have an alert!
-            || ( (ext != NULL) && strcasecmp(ext,"shp") == 0) ) { // Or non-alert shapefile map
+            || ( (ext != NULL) && ( (strcasecmp(ext,"shp") == 0)
+                                 || (strcasecmp(ext,"shx") == 0)
+                                 || (strcasecmp(ext,"dbf") == 0) ) ) ) { // Or non-alert shapefile map
 #ifdef HAVE_SHAPELIB
+printf("Drawing shapefile map\n");
+if (alert != NULL)
+printf("Alert!\n");
         draw_shapefile_map (w, dir, filenm, alert, alert_color, destination_pixmap);
 #endif // HAVE_SHAPELIB
     }
@@ -7439,7 +7620,7 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 // the alert structure with the filename that alert is found in.
 /////////////////////////////////////////////////////////////////////
 void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int warn, int destination_pixmap) {
-    struct dirent *dl;
+    struct dirent *dl = NULL;
     DIR *dm;
     char fullpath[8000];
     struct stat nfile;
@@ -7464,10 +7645,12 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                 case 'C':   // 'C' in 4th char means county
                     // Use County file c_??????
                     printf("%c:County file\n",alert->title[3]);
+                    strncpy (alert->filename, "c_", sizeof (alert->filename));
                     break;
                 case 'A':   // 'A' in 4th char means county warning area
                     // Use County warning area w_?????
                     printf("%c:County warning area file\n",alert->title[3]);
+                    strncpy (alert->filename, "w_", sizeof (alert->filename));
                     break;
                 case 'Z':
                     // Zone or marine zone file z_????? or mz_????? or oz_?????
@@ -7559,6 +7742,8 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                         strncpy (alert->filename, "mz_", sizeof (alert->filename));
                     }
                     else {
+                        // Must be regular zone file instead of marine
+                        // zone or high seas marine zone.
                         printf("%c:Zone file\n",alert->title[3]);
                         strncpy (alert->filename, "z_", sizeof (alert->filename));
                     }
@@ -7585,7 +7770,8 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                 xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
                 if (warn)
                     perror (fullpath);
-            } else {    // We could open the directory just fine
+            }
+            else {    // We could open the directory just fine
                 while ( (dl = readdir(dm)) && !done ) {
                     xastir_snprintf(fullpath, sizeof(fullpath), "%s%s", dir, dl->d_name);
                     /*printf("FULL PATH %s\n",fullpath); */
@@ -7602,23 +7788,30 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 if (strncasecmp(alert->filename,dl->d_name,2) == 0) {
                                     // We have a match
                                     printf("%s\n",fullpath);
+                                    // Force last three characters to
+                                    // "shp"
+                                    dl->d_name[strlen(dl->d_name)-3] = 's';
+                                    dl->d_name[strlen(dl->d_name)-2] = 'h';
+                                    dl->d_name[strlen(dl->d_name)-1] = 'p';
                                     done++;
+printf("%s\n",dl->d_name);
                                 }
                                 break;
 
-                            default:
+                            default:    // Not dir or file, skip it
                                 break;
                         }
                     }
                 }
             }
-
             if (done) {    // We found a filename match for the alert
-
-                //
-                // Need code here to call draw_map()
-                //
-
+                // Go draw the weather alert
+                draw_map (w,
+                    dir,            // Alert directory
+                    dl->d_name,     // Shapefile filename
+                    alert,
+                    '\0',
+                    destination_pixmap);
             }
             else {      // No filename found that matches the first two
                         // characters that we already computed.
@@ -7637,13 +7830,14 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
         }
     }
-    else {          // We're doing regular maps
+    else {  // We're doing regular maps, not weather alerts
         dm = opendir (dir);
         if (!dm) {  // Couldn't open directory
             xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
             if (warn)
                 perror (fullpath);
-        } else {
+        }
+        else {
             int count = 0;
             while ((dl = readdir (dm))) {
                 xastir_snprintf(fullpath, sizeof(fullpath), "%s/%s", dir, dl->d_name);
@@ -7671,7 +7865,8 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                     destination_pixmap);
                                 if (alert_count && *alert_count)
                                     (*alert_count)--;
-                            } else {
+                            }
+                            else {
                                 // File is in the main map directory
                                 // Find the '/' character
                                 for (ptr = &fullpath[map_dir_length]; *ptr == '/'; ptr++) ;
