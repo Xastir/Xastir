@@ -17,11 +17,7 @@ Linux which makes it the best supported platform at the moment.
 More information on Xastir can be found at:
 
         http://www.xastir.org
-
-or the up and coming new websites:
-
-        http://xastir.sourceforge.net (not up yet)
-and
+        http://xastir.sourceforge.net
         http://sourceforge.net/projects/xastir/
 
 including the latest releases, the anonymous CVS access (lets you
@@ -425,6 +421,11 @@ First Time Install:
      To install, type (as root)
         make install
 
+     If you later install additional libraries and just can't get
+     ./configure to see them, remove the config.cache file via this
+     command:  "rm config.cache", and then re-run configure.  Also
+     see the notes above about ldconfig.
+
 
    8. Kernel AX.25 Interfaces
 
@@ -690,10 +691,10 @@ Getting Data Files for Xastir:
       You can organize the maps however you like. You can also use symbolic
       links to link to files/directories on other disks. Map files are loaded
       in the order that they appear in the chooser, unless you adjust the
-      layering priorities ib the properties dialog.
+      layering priorities in the properties dialog.
 
       There are many methods for organizing many maps; the following have
-      proved successful: 
+      proved successful:
        Create a USA directory and then one for each state under the USA
        directory, or have a separate directory for each type of map. For
        example:
@@ -707,21 +708,28 @@ Getting Data Files for Xastir:
                                                 /pixmaps/CO/
                                                 /pixmaps/NJ/
 
+       The old method of creating transparent/filled or raster/vector
+       directories has been superceded by the new map layering features
+       in the Map Chooser->Properties dialog.  It's now suggested that
+       the map layering be done there, and the directory layout designed
+       to make it easiest for the user to select maps.  Perhaps a
+       good start would be:
 
-       Note that if you structure your top level map directory like this:
+           World/
+           Canada/
+           Canada/Province/
+           USA/
+           USA/State/WA/
+           USA/State/WA/County/
+           ...
+           GNIS/
+           Overlay/
 
-               /usr/local/xastir/maps/
-                                      filled/        (or raster)
-                                      transparent/   (or vector)
-                                      z/
-               /usr/local/xastir/GNIS/ -> /usr/local/xastir/maps/z
-
-       Putting raster maps in the first directory, vector maps in the second,
-       and GNIS files in the third, creating a link from GNIS/ to maps/z, then
-       as you load maps you'll load them in this order: raster, vector, GNIS.
-       This has the advantage that you can layer your maps and still see them
-       all, assuming that you only choose one type of map for the first layer.
-       Some people prefer "raster" and "vector" instead.  This will also work.
+       Please note that the map directories are entirely up to the user
+       now.  Use the map layering facilities to determine the order in
+       which they will be drawn, and to determine which will draw filled
+       areas.  Note that raster maps will always draw filled, not matter
+       what the setting suggests.
 
        Map types available by extension:
 
