@@ -1605,7 +1605,7 @@ right_crop = width - 1;
      * for other applications.
      *
      * Brightness adjust for the colors?  Implemented in the
-     * "geotiff_map_intensity" variable below.
+     * "raster_map_intensity" variable below.
      */
 
     {
@@ -1615,9 +1615,9 @@ right_crop = width - 1;
         case PHOTOMETRIC_PALETTE:
             for (l = 0; l < num_colors; l++)
             {
-                my_colors[l].red   =   (uint16)(red_orig[l] * geotiff_map_intensity);
-                my_colors[l].green = (uint16)(green_orig[l] * geotiff_map_intensity);
-                my_colors[l].blue  =  (uint16)(blue_orig[l] * geotiff_map_intensity);
+                my_colors[l].red   =   (uint16)(red_orig[l] * raster_map_intensity);
+                my_colors[l].green = (uint16)(green_orig[l] * raster_map_intensity);
+                my_colors[l].blue  =  (uint16)(blue_orig[l] * raster_map_intensity);
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT)
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
@@ -1631,7 +1631,7 @@ right_crop = width - 1;
             {
                 int v = (l * 255) / (num_colors-1);
                 my_colors[l].red = my_colors[l].green = my_colors[l].blue =
-                    (uint16)(v * geotiff_map_intensity) << 8;
+                    (uint16)(v * raster_map_intensity) << 8;
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT)
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);
@@ -1645,7 +1645,7 @@ right_crop = width - 1;
             {
                 int v = (((num_colors-1)-l) * 255) / (num_colors-1);
                 my_colors[l].red = my_colors[l].green = my_colors[l].blue =
-                  (uint16)(v * geotiff_map_intensity) << 8;
+                  (uint16)(v * raster_map_intensity) << 8;
 
                 if (visual_type == NOT_TRUE_NOR_DIRECT)
                     XAllocColor(XtDisplay(w), cmap, &my_colors[l]);

@@ -171,7 +171,7 @@ int mag;
 int npoints;    /* number of points in a line */
 
 
-float geotiff_map_intensity = 0.65;    // Geotiff map color intensity, set from Maps->Geotiff Map Intensity
+float raster_map_intensity = 0.65;    // Raster map color intensity, set from Maps->Map Intensity
 float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma correction, set from Maps->Adjust Gamma
 
 

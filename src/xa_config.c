@@ -337,8 +337,8 @@ void save_data(void)  {
         store_string(fout, "IMAGEMAGICK_GAMMA_ADJUST", name);
 #endif  // HAVE_IMAGEMAGICK
 #if defined(HAVE_LIBGEOTIFF)
-        sprintf (name, "%f", geotiff_map_intensity);
-        store_string(fout, "GEOTIFF_MAP_INTENSITY", name);
+        sprintf (name, "%f", raster_map_intensity);
+        store_string(fout, "RASTER_MAP_INTENSITY", name);
 #endif  // HAVE_LIBGEOTIFF
 #endif  // NO_GRAPHICS
 
@@ -777,10 +777,10 @@ void load_data_or_default(void) {
         sscanf(name, "%f", &imagemagick_gamma_adjust);
 #endif  // HAVE_IMAGEMAGICK
 #if defined(HAVE_LIBGEOTIFF)
-    if (!get_string("GEOTIFF_MAP_INTENSITY", name))
-        geotiff_map_intensity = 1.0;
+    if (!get_string("RASTER_MAP_INTENSITY", name))
+        raster_map_intensity = 1.0;
     else
-        sscanf(name, "%f", &geotiff_map_intensity);
+        sscanf(name, "%f", &raster_map_intensity);
 #endif  // HAVE_LIBGEOTIFF
 #endif  // NO_GRAPHICS
 

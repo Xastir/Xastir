@@ -310,8 +310,8 @@ int map_background_color;       /* Background color for maps */
 int tiger_flag;
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_LIBGEOTIFF)
-Widget geotiff_intensity[11];
-static void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata);
+Widget raster_intensity[11];
+static void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata);
 #endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
 Widget gamma_adjust_dialog = (Widget)NULL;
@@ -4163,7 +4163,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         map_pointer_menu_button,
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_LIBGEOTIFF)
-        Geotiff_intensity_Pane, geotiff_intensity_button,
+        Raster_intensity_Pane, raster_intensity_button,
 #endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
         gamma_adjust_button, tiger_config_button,
@@ -4999,109 +4999,109 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
 
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_LIBGEOTIFF)
-    Geotiff_intensity_Pane = XmCreatePulldownMenu(mappane,
-            "create_appshell geotiff_intensity",
+    Raster_intensity_Pane = XmCreatePulldownMenu(mappane,
+            "create_appshell raster_intensity",
             al,
             ac);
 
-    geotiff_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),
+    raster_intensity_button = XtVaCreateManagedWidget(langcode("PULDNMP008"),
             xmCascadeButtonWidgetClass,
             mappane,
             XmNsubMenuId,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic, langcode_hotkey("PULDNMP008"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[0] = XtVaCreateManagedWidget("0%",
+    raster_intensity[0] = XtVaCreateManagedWidget("0%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"0%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[1] = XtVaCreateManagedWidget("10%",
+    raster_intensity[1] = XtVaCreateManagedWidget("10%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"10%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[2] = XtVaCreateManagedWidget("20%",
+    raster_intensity[2] = XtVaCreateManagedWidget("20%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"20%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[3] = XtVaCreateManagedWidget("30%",
+    raster_intensity[3] = XtVaCreateManagedWidget("30%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"30%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[4] = XtVaCreateManagedWidget("40%",
+    raster_intensity[4] = XtVaCreateManagedWidget("40%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"40%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[5] = XtVaCreateManagedWidget("50%",
+    raster_intensity[5] = XtVaCreateManagedWidget("50%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"50%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[6] = XtVaCreateManagedWidget("60%",
+    raster_intensity[6] = XtVaCreateManagedWidget("60%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"60%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[7] = XtVaCreateManagedWidget("70%",
+    raster_intensity[7] = XtVaCreateManagedWidget("70%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"70%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[8] = XtVaCreateManagedWidget("80%",
+    raster_intensity[8] = XtVaCreateManagedWidget("80%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"80%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[9] = XtVaCreateManagedWidget("90%",
+    raster_intensity[9] = XtVaCreateManagedWidget("90%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"90%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    geotiff_intensity[10] = XtVaCreateManagedWidget("100%",
+    raster_intensity[10] = XtVaCreateManagedWidget("100%",
             xmPushButtonGadgetClass,
-            Geotiff_intensity_Pane,
+            Raster_intensity_Pane,
             XmNmnemonic,"100%",
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-    XtSetSensitive(geotiff_intensity[(int)(geotiff_map_intensity * 10.0)],FALSE);
-    XtAddCallback(geotiff_intensity[0],  XmNactivateCallback,Geotiff_intensity,"0.0");
-    XtAddCallback(geotiff_intensity[1],  XmNactivateCallback,Geotiff_intensity,"0.1");
-    XtAddCallback(geotiff_intensity[2],  XmNactivateCallback,Geotiff_intensity,"0.2");
-    XtAddCallback(geotiff_intensity[3],  XmNactivateCallback,Geotiff_intensity,"0.3");
-    XtAddCallback(geotiff_intensity[4],  XmNactivateCallback,Geotiff_intensity,"0.4");
-    XtAddCallback(geotiff_intensity[5],  XmNactivateCallback,Geotiff_intensity,"0.5");
-    XtAddCallback(geotiff_intensity[6],  XmNactivateCallback,Geotiff_intensity,"0.6");
-    XtAddCallback(geotiff_intensity[7],  XmNactivateCallback,Geotiff_intensity,"0.7");
-    XtAddCallback(geotiff_intensity[8],  XmNactivateCallback,Geotiff_intensity,"0.8");
-    XtAddCallback(geotiff_intensity[9],  XmNactivateCallback,Geotiff_intensity,"0.9");
-    XtAddCallback(geotiff_intensity[10], XmNactivateCallback,Geotiff_intensity,"1.0");
+    XtSetSensitive(raster_intensity[(int)(raster_map_intensity * 10.0)],FALSE);
+    XtAddCallback(raster_intensity[0],  XmNactivateCallback,Raster_intensity,"0.0");
+    XtAddCallback(raster_intensity[1],  XmNactivateCallback,Raster_intensity,"0.1");
+    XtAddCallback(raster_intensity[2],  XmNactivateCallback,Raster_intensity,"0.2");
+    XtAddCallback(raster_intensity[3],  XmNactivateCallback,Raster_intensity,"0.3");
+    XtAddCallback(raster_intensity[4],  XmNactivateCallback,Raster_intensity,"0.4");
+    XtAddCallback(raster_intensity[5],  XmNactivateCallback,Raster_intensity,"0.5");
+    XtAddCallback(raster_intensity[6],  XmNactivateCallback,Raster_intensity,"0.6");
+    XtAddCallback(raster_intensity[7],  XmNactivateCallback,Raster_intensity,"0.7");
+    XtAddCallback(raster_intensity[8],  XmNactivateCallback,Raster_intensity,"0.8");
+    XtAddCallback(raster_intensity[9],  XmNactivateCallback,Raster_intensity,"0.9");
+    XtAddCallback(raster_intensity[10], XmNactivateCallback,Raster_intensity,"1.0");
 #endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
     // Adjust Gamma Correction
@@ -9380,7 +9380,7 @@ void Map_background( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
 
 
 #if !defined(NO_GRAPHICS) && defined(HAVE_LIBGEOTIFF)
-void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
+void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
     float my_intensity;
     int i;
 
@@ -9389,12 +9389,12 @@ void Geotiff_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
     if(display_up){
         for (i=0;i<11;i++){
             if (i == (int)((float)(my_intensity * 10.0)) )
-                XtSetSensitive(geotiff_intensity[i],FALSE);
+                XtSetSensitive(raster_intensity[i],FALSE);
             else
-                XtSetSensitive(geotiff_intensity[i],TRUE);
+                XtSetSensitive(raster_intensity[i],TRUE);
         }
 
-        geotiff_map_intensity=my_intensity;
+        raster_map_intensity=my_intensity;
 
         // Set interrupt_drawing_now because conditions have changed.
         interrupt_drawing_now++;

@@ -146,7 +146,7 @@ extern int grid_size;
     extern float imagemagick_gamma_adjust;
   #endif    // HAVE_IMAGEMAGICK
   #if defined(HAVE_LIBGEOTIFF)
-    extern float geotiff_map_intensity;
+    extern float raster_map_intensity;
   #endif    // HAVE_LIBGEOTIFF
 #endif  // NO_GRAPHICS
 

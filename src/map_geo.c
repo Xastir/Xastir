@@ -335,8 +335,12 @@ void draw_geo_image_map (Widget w,
             if (strncasecmp (line, "TERRASERVER", 11) == 0)
                 terraserver_flag = 1;
 
-            if (strncasecmp (line, "TOPOSERVER", 10) == 0)
+            if (strncasecmp (line, "TOPOSERVER", 10) == 0) {
+                // Set to max brightness as it looks weird when the
+                // intensity variable comes into play.
+                xastir_snprintf(imagemagick_options.modulate,32,"100 100 100");
                 toposerver_flag = 1;
+            }
 
             if (strncasecmp (line, "REFRESH", 7) == 0) {
                 (void)sscanf (line + 8, "%d", &map_refresh_interval_temp);
@@ -1057,6 +1061,22 @@ void draw_geo_image_map (Widget w,
         if (debug_level & 16)
             fprintf(stderr,"modulate=%s\n", imagemagick_options.modulate);
         ModulateImage(image, imagemagick_options.modulate);
+    }
+    // Else check the menu option for raster intensity
+    else if (raster_map_intensity < 1.0) {
+        char tempstr[30];
+        int temp_i;
+
+        temp_i = (int)(raster_map_intensity * 100.0);
+
+        xastir_snprintf(tempstr,
+            sizeof(tempstr),
+            "%d, 100, 100",
+            temp_i);
+
+//fprintf(stderr,"Modulate: %s\n", tempstr);
+
+        ModulateImage(image, tempstr);
     }
 
     HandlePendingEvents(app_context);
