@@ -1124,7 +1124,8 @@ void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
 // function switches to the special irregular UTM zones for the
 // areas near Svalbard and SW Norway if the "coordinate_system"
 // variable is set to "USE_MGRS", so we'll be using the correct zone
-// boundaries for MGRS automatically.
+// boundaries for MGRS if that variable is set when we make the
+// call.
 //
 void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
     double utmNorthing;
@@ -1135,7 +1136,11 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
     unsigned int int_utmEasting, int_utmNorthing;
     int UPS = 0;
     int North_UPS = 0;
+    int coordinate_system_save = coordinate_system;
 
+
+    // Set for correct zones
+    coordinate_system = USE_MGRS;
 
     ll_to_utm_ups(E_WGS_84,
         (double)(-((y - 32400000l )/360000.0)),
@@ -1145,6 +1150,10 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
         utmZone,
         sizeof(utmZone) );
     utmZone[9] = '\0';
+
+    // Restore it
+    coordinate_system = coordinate_system_save;
+
 
     //fprintf(stderr,"%s %07.0f %07.0f\n", utmZone, utmEasting,
     //utmNorthing );
@@ -1310,6 +1319,7 @@ void convert_xastir_to_MGRS_str(char *str, int str_len, long x, long y) {
  
 // Convert Xastir lat/lon to UTM
 void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zone_len, long x, long y) {
+
     ll_to_utm_ups(E_WGS_84,
         (double)(-((y - 32400000l )/360000.0)),
         (double)((x - 64800000l )/360000.0),
@@ -1327,6 +1337,7 @@ void convert_xastir_to_UTM(double *easting, double *northing, char *zone, int zo
 // Convert UTM to Xastir lat/lon
 void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x, long *y) {
     double lat, lon;
+
     utm_ups_to_ll(E_WGS_84,
         northing,
         easting,
@@ -1334,8 +1345,12 @@ void convert_UTM_to_xastir(double easting, double northing, char *zone, long *x,
         &lat,
         &lon);
 
-    *y = (long)(lat * -360000.0) + 32400000l;
-    *x = (long)(lon *  360000.0) + 64800000l;
+    // Reverse latitude to fit our coordinate system then convert to
+    // Xastir units.
+    *y = (long)((180.0 - (lat + 90.0)) * 360000.0);
+
+    // Convert longitude to Xastir units.
+    *x = (long)((lon + 180.0) * 360000.0);
 }
 
 
