@@ -266,10 +266,20 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC_change_data" )
     else
         devices[TNC_port].transmit_data=0;
 
-    if (XmToggleButtonGetState(TNC_GPS_set_time))
-        devices[TNC_port].set_time=1;
-    else
-        devices[TNC_port].set_time=0;
+    switch(type) {
+
+        case DEVICE_SERIAL_TNC_HSP_GPS:
+        case DEVICE_SERIAL_TNC_AUX_GPS:
+            if (XmToggleButtonGetState(TNC_GPS_set_time))
+                devices[TNC_port].set_time=1;
+            else
+                devices[TNC_port].set_time=0;
+            break;
+
+        case DEVICE_SERIAL_TNC:
+        default:
+            break;
+    }
 
     set_port_speed(TNC_port);
     devices[TNC_port].style=device_style;
