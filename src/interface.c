@@ -8575,8 +8575,24 @@ end_critical_section(&devices_lock, "interface.c:output_my_data" );
     if (enable_server_port) {
 // Send data to the x_spider server
 
-        xastir_snprintf(data_txt, sizeof(data_txt), "%s>%s,TCPIP*:%s", my_callsign,
-            VERSIONFRM, message);
+        if (type == 0) {    // My data, add a header
+            xastir_snprintf(data_txt,
+                sizeof(data_txt),
+                "%s>%s,TCPIP*:%s",
+                my_callsign,
+                VERSIONFRM,
+                message);
+        }
+        else {  // Not my data, don't add a header
+            xastir_snprintf(data_txt,
+                sizeof(data_txt),
+                "%s",
+                message);
+        }
+
+//fprintf(stderr,"To 2023:%s", data_txt);
+//fprintf(stderr,"\tport:%d  type:%d  loopback_only:%d use_igate_path:%d\n",
+//    incoming_port, type, loopback_only, use_igate_path);
 
         if (writen(pipe_xastir_to_server,
                 data_txt,
