@@ -823,12 +823,23 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
             // distance is known.  The user can either set
             // bulletin_range to zero or leave the View->Bulletins
             // dialog up to see the zero-distance bulletins.
-//            if ((distance <= bulletin_range) || (bulletin_range == 0))
+            if ((distance <= bulletin_range) || (bulletin_range == 0))
 
             // New method:  Pop it up only if distance is non-zero
             // and within range, or range setting set to zero.
-            if ( (bulletin_range == 0)
-                || ( (distance <= bulletin_range) && (distance > 0) ) )
+            //
+            // Problem with this method:  If a bulletin comes w/no
+            // posit, then a posit is received later and it's within
+            // range, the View->Bulletin dialog doesn't pop up.
+            // Distance is not saved with each bulletin, but saved
+            // in the station database.  We'd have to periodically
+            // scan the bulletins and compute distance (not knowing
+            // which bulletins were new and required the dialog to
+            // pop up), or store the distance with the bulletins
+            // themselves and if it changed from zero to a finite
+            // value, check if within range.
+//            if ( (bulletin_range == 0)
+//                || ( (distance <= bulletin_range) && (distance > 0) ) )
             {
                 // We have a _new_ bulletin that's within our
                 // current range setting.  Pop up the Bulletins
