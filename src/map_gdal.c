@@ -466,7 +466,17 @@ void draw_ogr_map(Widget w,
     // Check whether we're indexing or drawing the map
     if ( (destination_pixmap == INDEX_CHECK_TIMESTAMPS)
             || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
+
+        // We're indexing only.  Save the extents in the index.
         char status_text[MAX_FILENAME];
+        double file_MinX = 1000.0;  // Invalid
+        double file_MaxX = 1000.0;  // Invalid
+        double file_MinY = 1000.0;  // Invalid
+        double file_MaxY = 1000.0;  // Invalid
+        int geographic = 0;
+        int projected = 0;
+        int local = 0;
+
 
         xastir_snprintf(status_text,
             sizeof(status_text),
@@ -478,27 +488,124 @@ void draw_ogr_map(Widget w,
         // the entire file or dataset.  Remember that it could be in
         // state-plane coordinate system or something else equally
         // strange.  Make sure we convert it to WGS84 or NAD83
-        // lat/long before saving the index.
+        // geographic coordinates before saving the index.
+
+        // Loop through all layers in the data source.  We can't get
+        // the extents for the entire data source without looping
+        // through the layers.
+        //
+        numLayers = OGR_DS_GetLayerCount(datasource);
+        for(i=0; i<numLayers; i++) {
+            OGRLayerH layer;
+            OGREnvelope psExtent;  
+            OGRSpatialReferenceH spatial;
 
 
-// It looks like we need to run through all of the layers so that we
-// can get a "super-extents" set of numbers that include all layers.
-//        OGRErr OGR_L_GetExtent(OGRLayerH, OGREnvelope *, int);
+            layer = OGR_DS_GetLayer( datasource, i );
+            if (layer == NULL)
+            {
+                fprintf(stderr,
+                    "Unable to open layer %d of %s\n",
+                    i,
+                    full_filename);
 
-        // We're indexing only.  Save the extents in the index.
-//        index_update_ll(filenm,    // Filename only
-//            adfBndsMin[1],  // Bottom
-//            adfBndsMax[1],  // Top
-//            adfBndsMin[0],  // Left
-//            adfBndsMax[0]); // Right
+                // Close data source
+                OGR_DS_Destroy( datasource );
+                return;
+            }
 
-// For now, we'll just set the index to be the entire world to get
-// things up and running.
+            // Query the coordinate system.  Need to have the
+            // extents in WGS84 lat/long coordinate system in order
+            // to compute the extents properly.
+            //
+            spatial = OGR_L_GetSpatialRef(layer);
+            if (spatial) {
+                const char *temp;
+
+                if (OSRIsGeographic(spatial)) {
+                    geographic++;
+                }
+                else if (OSRIsProjected(spatial)) {
+                    projected++;
+                }
+                else {
+                    local++;
+                }
+
+                // PROJCS, GEOGCS, DATUM, SPHEROID, PROJECTION
+                //
+                temp = OSRGetAttrValue(spatial, "DATUM", 0);
+                if (projected) {
+                    temp = OSRGetAttrValue(spatial, "PROJCS", 0);
+                    temp = OSRGetAttrValue(spatial, "PROJECTION", 0);
+                }
+                temp = OSRGetAttrValue(spatial, "GEOGCS", 0);
+                temp = OSRGetAttrValue(spatial, "SPHEROID", 0);
+            }
+            else {
+            }
+
+            // Get the extents for this layer.  OGRERR_FAILURE means
+            // that the layer has no spatial info or that it would be
+            // an expensive operation to establish the extent.
+            if (OGR_L_GetExtent(layer, &psExtent, TRUE) != OGRERR_FAILURE) {
+/*
+                fprintf(stderr,
+                    "  MinX: %f, MaxX: %f, MinY: %f, MaxY: %f\n",
+                    psExtent.MinX,
+                    psExtent.MaxX,
+                    psExtent.MinY,
+                    psExtent.MaxY);
+*/
+
+                    // If first value, store it.
+                    if (file_MinX == 1000.0)
+                        file_MinX = psExtent.MinX;
+                    if (file_MaxX == 1000.0)
+                        file_MaxX = psExtent.MaxX;
+                    if (file_MinY == 1000.0)
+                        file_MinY = psExtent.MinY;
+                    if (file_MaxY == 1000.0)
+                        file_MaxY = psExtent.MaxY;
+
+                    // Store the min/max values
+                    if (psExtent.MinX < file_MinX)
+                        file_MinX = psExtent.MinX;
+                    if (psExtent.MaxX > file_MaxX)
+                        file_MaxX = psExtent.MaxX;
+                    if (psExtent.MinY < file_MinY)
+                        file_MinY = psExtent.MinY;
+                    if (psExtent.MaxY > file_MaxY)
+                        file_MaxY = psExtent.MaxY;
+            }
+            // No need to free layer handle, it belongs to the
+            // datasource.
+        }
+
+        if (geographic
+                && file_MinY != 1000.0
+                && file_MaxY != 1000.0
+                && file_MinX != 1000.0
+                && file_MaxX != 1000.0) {
+
+// Need to also check datum.
+
+            index_update_ll(filenm,    // Filename only
+                file_MinY,  // Bottom
+                file_MaxY,  // Top
+                file_MinX,  // Left
+                file_MaxX); // Right
+        }
+
+/*
+        // For now, set the index to be the entire world to get
+        // things up and running.
         index_update_ll(filenm,    // Filename only
              -90.0,  // Bottom
               90.0,  // Top
             -180.0,  // Left
              180.0); // Right
+*/
 
         // Close data source
         OGR_DS_Destroy( datasource );
@@ -506,6 +613,9 @@ void draw_ogr_map(Widget w,
         return; // Done indexing the file
     }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+ 
     // Find out what type of file we're dealing with:
     // This reports "TIGER" for the tiger driver, "ESRI Shapefile"
     // for Shapefiles.
