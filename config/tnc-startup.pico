@@ -3,23 +3,26 @@
 # lines that begin with a pound sign are comments.
 
 ECHO off
-AUTOLF off
+AUTOLF on
 BEACON EVERY 0
 #
 # Digipeat,callsign substitution,
 # no digi of own packets, and digi-once
 DIGIPEAT 7
 FLOW off
-FULL off
+FULLDUPLEX off
 GPS off
 GPSTEXT $GPRMC
 HEADERLI off
+HID off
 LFADD off
 LGETCHAR $05
 LG1TEXT $GPGGA
 #LG2TEXT $GPVTG
 #LG3TEXT $PGRME
+MALL ON
 MCOM off
+MCON on
 MFILTER 0
 MONITOR 3
 MRPT on
@@ -29,11 +32,15 @@ MYALIAS RELAY
 #MY2ALIAS SAR
 #MY3ALIAS ESAR
 NEWMODE off
+NOMODE on
 #PACLEN 128
 PERSIST 128
 #PIDCHECK off
+PMS off
 SCREENLN 0
 SLOTTIME 15
+TXDELAY 30
+XFLOW off
 #
 #
 # BEACON EVERY 0 must be set to 0 or both Xastir and your TNC will send
