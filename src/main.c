@@ -3318,7 +3318,7 @@ void refresh_image(Widget w) {
 
     HandlePendingEvents(app_context);
     if (interrupt_drawing_now)
-        return(0);
+        return;
  
     /* display icons */
     display_file(w);
