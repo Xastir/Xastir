@@ -92,6 +92,8 @@
 
 #include "gdal.h"
 #include "ogr_api.h"
+#include "ogr_srs_api.h"
+#include "cpl_string.h"
 
 #undef PACKAGE_BUGREPORT
 #define PACKAGE_BUGREPORT XASTIR_PACKAGE_BUGREPORT
@@ -136,7 +138,7 @@ void map_gdal_init() {
     fprintf(stderr,"\nGDAL Registered Drivers: (not implemented yet)\n");
     for (jj = 0; jj < ii; jj++) {
         gDriver = GDALGetDriver(jj);
-        printf("%10s   %s\n",
+        fprintf(stderr,"%10s   %s\n",
             GDALGetDriverShortName(gDriver),
             GDALGetDriverLongName(gDriver) );
     }
@@ -150,7 +152,7 @@ void map_gdal_init() {
     fprintf(stderr,"OGR Registered Drivers: (not implemented yet)\n");
     for  (jj = 0; jj < ii; jj++) {
         oDriver = OGRGetDriver(jj);
-        printf("%10s   %s\n",
+        fprintf(stderr,"%10s   %s\n",
             "",
             OGR_Dr_GetName(oDriver) );
     }
@@ -402,13 +404,19 @@ scr_s_x_min = 0;
 
 
 
+// The GDAL docs say to use these flags to compile:
 // `gdal-config --libs` `gdal-config * --cflags`
+// but so far they return: "-L/usr/local/lib -lgdal" and
+// "-I/usr/local/include", which aren't much.  Leaving it hard-coded
+// in configure.ac for now instead of using "gdal-config".
+//
+// GRASS module that does OGR (for reference):  v.in.ogr
 //
 // This is very nearly verbatim the example C-API code off the OGR
 // web pages.  We are only printing out the attribute field names so
 // far, but at least we are exercising the OGR draw code.  We
 // currently call this function from the draw_shapefile_map()
-// function.
+// function, just so that it gets called and we can play with it.
 //
 void draw_ogr_map(Widget w,
                    char *dir,
@@ -437,7 +445,7 @@ void draw_ogr_map(Widget w,
 
     if (datasource == NULL)
     {
-        printf("Unable to open %s\n", full_filename);
+        fprintf(stderr,"Unable to open %s\n", full_filename);
         return;
     }
 
@@ -448,7 +456,7 @@ void draw_ogr_map(Widget w,
     {
         OGRLayerH layer;
         int j, numFields;
-//        OGRFeatureH feature;
+        OGRFeatureH feature;
         OGRFeatureDefnH layerDefn;
 
         layer = OGR_DS_GetLayer( datasource, i );
@@ -457,26 +465,104 @@ void draw_ogr_map(Widget w,
         layerDefn = OGR_L_GetLayerDefn( layer );
         numFields = OGR_FD_GetFieldCount( layerDefn );
 
-        printf("\n===================\n");
-        printf("Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
+//        fprintf(stderr,"\n===================\n");
+//        fprintf(stderr,"Layer %d: '%s'\n\n", i, OGR_FD_GetName(layerDefn));
 
         for(j=0; j<numFields; j++)
         {
             OGRFieldDefnH fieldDefn;
 
             fieldDefn = OGR_FD_GetFieldDefn( layerDefn, j );
-            printf(" Field %d: %s (%s)\n", 
-                   j, OGR_Fld_GetNameRef(fieldDefn), 
-                   OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
+//            fprintf(stderr," Field %d: %s (%s)\n", 
+//                   j, OGR_Fld_GetNameRef(fieldDefn), 
+//                   OGR_GetFieldTypeName(OGR_Fld_GetType(fieldDefn)));
         }
-        printf("\n");
+//        fprintf(stderr,"\n");
+
+
+
+// Here we need to convert to WGS84 if necessary (using
+// OGRCoordinateTransformation class and PROJ.4), then start
+// plotting the points/lines/whatever.
+// Query the geometry type using OGRFeatureDefn::GetGeomType(),
+// which returns an OGRwkbGeometryType object.
+// OGRLayer::GetNextFeature() will return one feature at a time from
+// a layer.  Can also install a spatial filter first to limit what
+// it returns.  OGRLayer::SetSpatialFilter().
+
+
+/*
+    {
+        // Report the projection
+        OGRSpatialReferenceH hSRS = OGR_L_GetSpatialRef(layer);
+        char *pszProjection;
+        char *pszPrettyWkt = NULL;
+
+
+fprintf(stderr,"1\n");
+        pszProjection = (char *)GDALGetProjectionRef(hDataset);
+        if (OSRImportFromWkt(hSRS, &pszProjection) == CE_None) {
+
+fprintf(stderr,"2\n");
+            OSRExportToPrettyWkt(hSRS, &pszPrettyWkt, FALSE);
+fprintf(stderr,"3\n");
+            fprintf(stderr,"Coordinate System is: %s\n", pszPrettyWkt);
+            CPLFree(pszPrettyWkt);
+fprintf(stderr,"4\n");
+        }
+    }
+*/
+
+
 
 //        /* And dump each feature individually */
 //        while( (feature = OGR_L_GetNextFeature( layer )) != NULL )
 //        {
-//            OGR_F_DumpReadable( feature, stdout );
+//            OGR_F_DumpReadable( feature, stderr );
 //            OGR_F_Destroy( feature );
 //        }
+
+        while ( (feature = OGR_L_GetNextFeature( layer )) != NULL ) {
+            OGRSpatialReferenceH spatial;
+            OGRGeometryH shape;
+            int num, ii;
+            double pdfX, pdfY, pdfZ;
+
+//            OGR_F_DumpReadable( feature, stderr );
+
+            // Get a handle to the shape itself
+            shape = OGR_F_GetGeometryRef(feature);
+//            OGR_G_DumpReadable(shape, stderr, "Shape: ");
+
+// We could either call OGR_G_GetEnvelope() here and calculate for
+// ourselves it if is in our viewport, or we could set a filter and
+// let the library pass us only those that fit.
+
+            spatial = OGR_G_GetSpatialReference(shape);
+
+            // This works for a point or a linestring only.
+            num = OGR_G_GetPointCount(shape);
+            if (num == 0) {
+                // Get number of elements (polygons)
+                num = OGR_G_GetGeometryCount(shape);
+                fprintf(stderr,"Polygon: Number of elements: %d\n",num);
+            }
+            else {
+                fprintf(stderr,"Point/Line: Number of points: %d\n",num);
+            }
+
+
+            // Print out the points
+            for (ii=0; ii < num; ii++) {
+                OGR_G_GetPoint(shape,
+                    ii,
+                    &pdfX,
+                    &pdfY,
+                    &pdfZ);
+//                fprintf(stderr,"%f\t%f\t%f\n",pdfX,pdfY,pdfZ);
+            }
+            OGR_F_Destroy( feature );
+        }
 
         /* No need to free layer handle, it belongs to the datasource */
     }
