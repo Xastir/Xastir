@@ -404,6 +404,10 @@ scr_s_x_min = 0;
 
 
 
+/////////////////////////////////////////////////////////////////////
+// Above this point is GDAL code, below is OGR code.
+/////////////////////////////////////////////////////////////////////
+
 
 
 // Draw_Points().
@@ -491,22 +495,25 @@ void Draw_Points(OGRGeometryH geometryH,
                     if (!OCTTransform(transformH, 1, &X1, &Y1, &Z1)) {
                         fprintf(stderr,
                             "Couldn't convert point to WGS84\n");
-                        ok = 0;
+//                        ok = 0;   // Draw it anyway.  It _might_
+//                        be in WGS84 or NAD83!
                     }
                 }
 
-                // Check whether point is within our view
-                if (ok && map_visible_lat_lon( Y1,  // bottom
-                        Y1, // top
-                        X1, // left
-                        X1, // right
-                        NULL)) {
-//                  fprintf(stderr, "Point is visible\n");
-                }
-                else {
-//                  fprintf(stderr, "Point is NOT visible\n");
-                    ok = 0;
-                }
+// Skip this.  draw_point_ll() does the check for us anyway.
+//
+//                // Check whether point is within our view
+//                if (ok && map_visible_lat_lon( Y1,  // bottom
+//                        Y1, // top
+//                        X1, // left
+//                        X1, // right
+//                        NULL)) {
+////                  fprintf(stderr, "Point is visible\n");
+//                }
+//                else {
+////                  fprintf(stderr, "Point is NOT visible\n");
+//                    ok = 0;
+//                }
 
                 if (ok) {
                     draw_point_ll(da,
@@ -533,12 +540,10 @@ void Draw_Points(OGRGeometryH geometryH,
 // 
 // Optimization:
 // It should be faster to draw the entire Polyline with one X11 call
-// instead of drawing each line segment in turn.  Change to that
-// other method at some point.
-//
-// We should be able to store them in an array, call the Translate()
-// function on all of them at once, and then call an X11 function to
-// draw the entire line at once.
+// instead of drawing each line segment in turn.  Change to the
+// other method sometime.  Store them in an array, call the
+// Translate() function on all of them at once, and then call an X11
+// function to draw the entire line at once.
 //
 void Draw_Lines(OGRGeometryH geometryH,
         int level,
@@ -560,6 +565,7 @@ void Draw_Lines(OGRGeometryH geometryH,
     // rings or they may be other polygons in a collection.
     // 
     object_num = OGR_G_GetGeometryCount(geometryH);
+
     // Iterate through the objects found.  If another geometry is
     // detected, call this function again recursively.  That will
     // cause all of the lower objects to get drawn.
@@ -653,6 +659,8 @@ void Draw_Lines(OGRGeometryH geometryH,
                 }
             }
 
+            // Loop through the rest of the points, drawing vectors
+            // as we go.
             for ( ii = 1; ii < points; ii++ ) {
  
                 X1 = X2;
@@ -712,12 +720,10 @@ void Draw_Lines(OGRGeometryH geometryH,
 //
 // Optimization:
 // It should be faster to draw the entire Polyline with one X11 call
-// instead of drawing each line segment in turn.  Change to that
-// other method at some point.
-//
-// We should be able to store them in an array, call the Translate()
-// function on all of them at once, and then call an X11 function to
-// draw the entire line at once.
+// instead of drawing each line segment in turn.  Change to the
+// other method sometime.  Store them in an array, call the
+// Translate() function on all of them at once, and then call an X11
+// function to draw the entire line at once.
 //
 void Draw_Polygons(OGRGeometryH geometryH,
         int level,
@@ -1753,7 +1759,7 @@ void draw_ogr_map(Widget w,
 // Hard-coded drawing attributes
 (void)XSetLineAttributes (XtDisplay (w), gc, 4, LineSolid, CapButt,JoinMiter);
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
-(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]);  // white
 
                     Draw_Points(geometryH,
                         1,
