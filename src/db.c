@@ -11441,18 +11441,30 @@ int decode_ax25_address(char *string, char *callsign, int asterisk) {
 // running those versions of KISS though?  Here are the KISS
 // variants that I've been able to discover to date:
 //
-// KISS                 No CRC, no flow control
-// SMACK                16-bit CRC
+// KISS               No CRC, one radio port
+//
+// SMACK              16-bit CRC, multiport TNC's
+//
 // KISS-CRC
+//
 // 6-PACK
-// Multi-Drop KISS      8-bit XOR Checksum -,
-// G8BPQ KISS           8-bit XOR Checksum -|-- All the same!
-// XKISS (Kantronics)   8-bit XOR Checksum -'
-// MKISS
-// FlexKISS             -,
-// FlexCRC              -|-- These are all the same!
-// RMNC-KISS            -|
-// CRC-RMNC             -'
+//
+// Multi-Drop KISS    8-bit XOR Checksum, multiport TNC's -,
+// G8BPQ KISS         8-bit XOR Checksum, multiport TNC's -|-- All the same!
+// XKISS (Kantronics) 8-bit XOR Checksum, multiport TNC's -'
+//
+// MKISS              Linux driver which supports KISS/BPQ and
+//                    hardware handshaking?  Also Paccomm command to
+//                    immediately enter KISS mode.
+//
+// FlexKISS           -,
+// FlexCRC            -|-- These are all the same!
+// RMNC-KISS          -|
+// CRC-RMNC           -'
+//
+//
+// It appears that none of the above protocols implement any form of
+// hardware flow control.
 // 
 // 
 // Compare this function with interface.c:process_ax25_packet() to
