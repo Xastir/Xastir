@@ -312,6 +312,7 @@ WPUPCFD025|Activer réseau alterne?|A|
 WPUPCFD026|Transmettre position à quel intervalle?||
 WPUPCFD027|Pop up new bulletins||
 WPUPCFD028|Warn if Modifier Keys||
+WPUPCFD029|View zero-distance bulletins||
 #
 # PopUp "Configure Coordinate System"
 WPUPCFC001|Configure Coordinate System||

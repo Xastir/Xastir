@@ -313,6 +313,7 @@ WPUPCFD025|Activar Red Alternada?|A|
 WPUPCFD026|Enviar reportes de posición en qué intervalos?||
 WPUPCFD027|Pop up new bulletins||
 WPUPCFD028|Warn if Modifier Keys||
+WPUPCFD029|View zero-distance bulletins||
 #
 # Configurar Sistema de Coordenada"
 WPUPCFC001|Configurar Sistema de Coordenada||

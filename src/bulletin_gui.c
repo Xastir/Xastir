@@ -65,6 +65,7 @@
 Widget Display_bulletins_dialog = NULL;
 Widget Display_bulletins_text = NULL;
 Widget dist_data = NULL;
+Widget zero_bulletin_data = NULL;
 
 static xastir_mutex display_bulletins_dialog_lock;
 
@@ -135,7 +136,8 @@ void  bulletin_message(/*@unused@*/ char from, char *call_sign, char *tag, char 
             packet_message);
 
 // Operands of <= have incompatible types (double, int):
-    if (((int)distance <= bulletin_range) || (bulletin_range == 0)) {
+    if ( ( ((int)distance <= bulletin_range) && ((int)distance > 0.0) )
+            || (view_zero_distance_bulletins && (int)distance == 0) ) {
 
 begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:bulletin_message" );
 
@@ -224,7 +226,8 @@ void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag,
             packet_message);
 
 // Operands of <= have incompatible types (double, int):
-    if (((int)distance <= bulletin_range) || (bulletin_range == 0)) {
+    if ( ( ((int)distance <= bulletin_range) && ((int)distance > 0.0) )
+            || (view_zero_distance_bulletins && (int)distance == 0) ) {
 
         // Is it newer than our first new_bulletin timestamp?
         if (sec_heard >= first_new_bulletin_time) {
@@ -370,9 +373,11 @@ void Display_bulletins_change_range(/*@unused@*/ Widget widget, /*@unused@*/ XtP
     // Keep this.  It stores the range in a global variable when we destroy the dialog.
     bulletin_range = atoi(XmTextFieldGetString(dist_data));
 
+    view_zero_distance_bulletins = (int)XmToggleButtonGetState(zero_bulletin_data);
+    //printf("%d\n",view_zero_distance_bulletins);
+
     Display_bulletins_destroy_shell( widget, clientData, callData);
     Bulletins( widget, clientData, callData);
-
 }
 
 
@@ -480,6 +485,21 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        zero_bulletin_data = XtVaCreateManagedWidget(langcode("WPUPCFD029"),
+                xmToggleButtonWidgetClass,
+                form,
+                XmNtopAttachment, XmATTACH_FORM,
+                XmNtopOffset, 5,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, button_range,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
         n=0;
         XtSetArg(args[n], XmNrows, 15); n++;
         XtSetArg(args[n], XmNcolumns, 108); n++;
@@ -534,6 +554,11 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
         xastir_snprintf(temp, sizeof(temp), "%d", bulletin_range);
         XmTextFieldSetString(dist_data, temp);
 
+        if (view_zero_distance_bulletins)
+            XmToggleButtonSetState(zero_bulletin_data,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(zero_bulletin_data,FALSE,FALSE);
+ 
         XtManageChild(form);
         XtManageChild(Display_bulletins_text);
         XtVaSetValues(Display_bulletins_text, XmNbackground, colors[0x0f], NULL);

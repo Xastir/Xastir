@@ -519,8 +519,10 @@ Widget raw_wx_tx;
 Widget compressed_posit_tx;
 Widget compressed_objects_items_tx;
 Widget new_bulletin_popup_enable;
+Widget zero_bulletin_popup_enable;
 Widget warn_about_mouse_modifiers_enable;
 int pop_up_new_bulletins = 0;
+int view_zero_distance_bulletins = 0;
 int warn_about_mouse_modifiers = 1;
 Widget altnet_active;
 Widget altnet_text;
@@ -10909,6 +10911,7 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
     transmit_compressed_objects_items = (int)XmToggleButtonGetState(compressed_objects_items_tx);
 
     pop_up_new_bulletins = (int)XmToggleButtonGetState(new_bulletin_popup_enable);
+    view_zero_distance_bulletins = (int)XmToggleButtonGetState(zero_bulletin_popup_enable);
 
     warn_about_mouse_modifiers = (int)XmToggleButtonGetState(warn_about_mouse_modifiers_enable);
 
@@ -11645,12 +11648,27 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
                 MY_BACKGROUND_COLOR,
                 NULL);
 
+        zero_bulletin_popup_enable = XtVaCreateManagedWidget(langcode("WPUPCFD029"),
+                xmToggleButtonWidgetClass,
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, new_bulletin_popup_enable,
+                XmNbottomAttachment, XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset,10,
+                XmNrightAttachment, XmATTACH_NONE,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+
 #ifdef TRANSMIT_RAW_WX
         raw_wx_tx  = XtVaCreateManagedWidget(langcode("WPUPCFD023"),
                 xmToggleButtonWidgetClass,
                 my_form,
                 XmNtopAttachment, XmATTACH_WIDGET,
-                XmNtopWidget, warn_about_mouse_modifiers_enable,
+                XmNtopWidget, zero_bulletin_popup_enable,
                 XmNbottomAttachment, XmATTACH_NONE,
                 XmNleftAttachment, XmATTACH_FORM,
                 XmNleftOffset, 10,
@@ -11707,7 +11725,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 #ifdef TRANSMIT_RAW_WX
                 XmNtopWidget, raw_wx_tx,
 #else
-                XmNtopWidget, altnet_text,
+                XmNtopWidget, zero_bulletin_popup_enable,
 #endif
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
@@ -11729,7 +11747,7 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
 #ifdef TRANSMIT_RAW_WX
                 XmNtopWidget, raw_wx_tx,
 #else
-                XmNtopWidget, altnet_text,
+                XmNtopWidget, zero_bulletin_popup_enable,
 #endif
                 XmNtopOffset, 5,
                 XmNbottomAttachment, XmATTACH_FORM,
@@ -11950,6 +11968,11 @@ void Configure_defaults( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientDat
             XmToggleButtonSetState(new_bulletin_popup_enable,TRUE,FALSE);
         else
             XmToggleButtonSetState(new_bulletin_popup_enable,FALSE,FALSE);
+
+        if(view_zero_distance_bulletins)
+            XmToggleButtonSetState(zero_bulletin_popup_enable,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(zero_bulletin_popup_enable,FALSE,FALSE);
 
         if(warn_about_mouse_modifiers)
             XmToggleButtonSetState(warn_about_mouse_modifiers_enable,TRUE,FALSE);

@@ -556,6 +556,7 @@ void save_data(void)  {
         store_int (fout, "SB_HIGH_SPEED_LIMIT", sb_high_speed_limit);
 
         store_int (fout, "POP_UP_NEW_BULLETINS", pop_up_new_bulletins);
+        store_int (fout, "VIEW_ZERO_DISTANCE_BULLETINS", view_zero_distance_bulletins);
 
         store_int (fout, "WARN_ABOUT_MOUSE_MODIFIERS", warn_about_mouse_modifiers);
 
@@ -1144,9 +1145,11 @@ void load_data_or_default(void) {
     if (!get_int ("SB_HIGH_SPEED_LIMIT", &sb_high_speed_limit,0,999,60))
         sb_high_speed_limit = 60;
 
-
     if (!get_int ("POP_UP_NEW_BULLETINS", &pop_up_new_bulletins,0,1,1))
         pop_up_new_bulletins = 1;
+
+    if (!get_int ("VIEW_ZERO_DISTANCE_BULLETINS", &view_zero_distance_bulletins,0,1,1))
+        view_zero_distance_bulletins = 1;
 
     if (!get_int ("WARN_ABOUT_MOUSE_MODIFIERS", &warn_about_mouse_modifiers,0,1,1))
         warn_about_mouse_modifiers = 1;
