@@ -3681,7 +3681,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         tracks_clear_button, object_history_refresh_button,
         object_history_clear_button, uptime_button, save_button,
         file_button, open_file_button, exit_button,
-        really_exit_button, view_button, view_messages_button,
+        view_button, view_messages_button,
         bullet_button, packet_data_button, mobile_button,
         stations_button, localstations_button, laststations_button,
         objectstations_button, objectmystations_button,
@@ -4016,23 +4016,12 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             ac);
 
     exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),
-            xmCascadeButtonGadgetClass,
-            filepane,
-            XmNsubMenuId,exitpane,
-            XmNmnemonic,langcode_hotkey("PULDNFI004"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
-
-/*
-    exit_button = XtVaCreateManagedWidget(langcode("PULDNFI004"),
             xmPushButtonWidgetClass,
             filepane,
             XmNmnemonic,langcode_hotkey("PULDNFI004"),
             MY_FOREGROUND_COLOR,
             MY_BACKGROUND_COLOR,
             NULL);
-*/
 
     /* View */
     bullet_button = XtVaCreateManagedWidget(langcode("PULDNVI001"),
@@ -4226,15 +4215,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
-
-    /* Exit */
-    really_exit_button = XtVaCreateManagedWidget(langcode("PULDNFI005"),
-            xmPushButtonWidgetClass,
-            exitpane,
-            XmNmnemonic,langcode_hotkey("PULDNFI005"),
-            MY_FOREGROUND_COLOR,
-            MY_BACKGROUND_COLOR,
-            NULL);
 
 
 //- Maps -------------------------------------------------------------
@@ -5722,7 +5702,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(tracks_clear_button,  XmNactivateCallback,Tracks_All_Clear,NULL);
     XtAddCallback(object_history_refresh_button, XmNactivateCallback,Object_History_Refresh,NULL);
     XtAddCallback(object_history_clear_button, XmNactivateCallback,Object_History_Clear,NULL);
-    XtAddCallback(really_exit_button,   XmNactivateCallback,Menu_Quit,NULL);
+    XtAddCallback(exit_button,   XmNactivateCallback,Menu_Quit,NULL);
 
     XtAddCallback(defaults_button,      XmNactivateCallback,Configure_defaults,NULL);
     XtAddCallback(timing_button,        XmNactivateCallback,Configure_timing,NULL);

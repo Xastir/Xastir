@@ -25,7 +25,6 @@ PULDNFI001|Configurar|C|
 PULDNFI002|Abrir o log|B|
 PULDNFI003|Testar|P|
 PULDNFI004|Sair|S|
-PULDNFI005|Sim, vou sair!|S|
 PULDNFI007|Muda nivel de Debug|D|
 PULDNFI010|Abre o log do TNC|T|
 PULDNFI011|Abre o log da Internet|I|
