@@ -13523,14 +13523,25 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
                 XmNleftOffset, 5,
                 NULL);
 
-// "None"
-        button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
+// "Clear"
+        if(map_chooser_expand_dirs) {   // "Clear"
+            button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC01"),
                 xmPushButtonGadgetClass, 
                 rowcol,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
+        }
+        else {  // "Clear Dirs"
+            button_clear = XtVaCreateManagedWidget(langcode("PULDNMMC08"),
+                xmPushButtonGadgetClass, 
+                rowcol,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        }
 
 
 // "Vector Maps"
@@ -13606,6 +13617,13 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         XtAddCallback(button_O, XmNactivateCallback, map_chooser_select_24k_maps, map_chooser_dialog);
 #endif /* HAVE_LIBGEOTIFF */
 
+        if(!map_chooser_expand_dirs) {
+            XtSetSensitive(button_V, FALSE);
+            XtSetSensitive(button_C, FALSE);
+            XtSetSensitive(button_F, FALSE);
+            XtSetSensitive(button_O, FALSE);
+        }
+ 
         pos_dialog(map_chooser_dialog);
 
         delw = XmInternAtom(XtDisplay(map_chooser_dialog),"WM_DELETE_WINDOW", FALSE);

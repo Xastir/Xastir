@@ -103,13 +103,14 @@ MPUPTGR018|Enable Tiger Maps||
 #
 # PopUp "Map Chooser"
 WPUPMCP001|Map Chooser||
-PULDNMMC01|Clear|N|
+PULDNMMC01|Clear|C|
 PULDNMMC02|Vector|V|
 PULDNMMC03|250k Topo|2|
 PULDNMMC04|100k Topo|1|
 PULDNMMC05|24k Topo|4|
 PULDNMMC06|Expand Dirs||
 PULDNMMC07|Dirs/Maps Selected:||
+PULDNMMC08|Clear Dirs|C
 #
 # PullDown "Map Background Color"
 PULDNMBC01|Gray||
