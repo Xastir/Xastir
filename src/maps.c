@@ -1135,6 +1135,7 @@ void draw_shapefile_map (Widget w,
     int             road_flag = 0;
     int             lake_flag = 0;
     int             river_flag = 0;
+    int             railroad_flag = 0;
     int             path_flag = 0;
     int             mapshots_labels_flag = 0;
     int             weather_alert_flag = 0;
@@ -1323,15 +1324,15 @@ void draw_shapefile_map (Widget w,
         // type of file we may be dealing with.
         if (strncasecmp(filename,"Tgr",3) == 0) {   // Found a Mapshots file
 
-            if (strstr(filename,"ccdcu")) {         // Political Subdivisions
+            if (strstr(filename,"ccdcu")) {         // Cities:  Arlington
                 if (debug_level & 16) {
-                    printf("*** Found (mapshots political subdivisions) ***\n");
+                    printf("*** Found (mapshots political subdivisions: Cities) ***\n");
                     break;
                 }
                 else
                     break;
             }
-            else if (strstr(filename,"ctycu")) {    // County Boundaries
+            else if (strstr(filename,"ctycu")) {    // County Boundaries: WA, Snohomish
                 if (debug_level & 16) {
                     printf("*** Found county (mapshots county) ***\n");
                     break;
@@ -1339,46 +1340,46 @@ void draw_shapefile_map (Widget w,
                 else
                     break;
             }
-            else if (strstr(filename,"lkA")) {      // Minor Roads
+            else if (strstr(filename,"lkA")) {      // Roads
                 road_flag++;
                 mapshots_labels_flag++;
                 if (debug_level & 16) {
-                    printf("*** Found some roads (mapshots minor roads) ***\n");
+                    printf("*** Found some roads (mapshots roads) ***\n");
                     break;
                 }
                 else
                     break;
             }
-            else if (strstr(filename,"lkB")) {      // Major Roads
-                road_flag++;
+            else if (strstr(filename,"lkB")) {      // Railroads
+                railroad_flag++;
                 mapshots_labels_flag++;
                 if (debug_level & 16) {
-                    printf("*** Found some roads (mapshots major roads) ***\n");
+                    printf("*** Found some railroads (mapshots railroads) ***\n");
                     break;
                 }
                 else
                     break;
             }
-            else if (strstr(filename,"lkC")) {      // Rail/Paths/etc
+            else if (strstr(filename,"lkC")) {      // Paths/etc.  Pipelines?  Transmission lines?
                 path_flag++;
                 if (debug_level & 16) {
-                    printf("*** Found some paths (mapshots rail/paths/etc) ***\n");
+                    printf("*** Found some paths (mapshots paths/etc) ***\n");
                     break;
                 }
                 else
                     break;
             }
-            else if (strstr(filename,"lkH")) {      // Rivers/Streams
+            else if (strstr(filename,"lkH")) {      // Rivers/Streams/Lakes/Glaciers
                 river_flag++;
                 mapshots_labels_flag++;
                 if (debug_level & 16) {
-                    printf("*** Found some rivers (mapshots rivers/streams) ***\n");
+                    printf("*** Found water (mapshots rivers/streams/lakes/glaciers) ***\n");
                     break;
                 }
                 else
                     break;
             }
-            else if (strstr(filename,"urb")) {      // Urban areas
+            else if (strstr(filename,"urb")) {      // Urban areas: Seattle, WA
                 if (debug_level & 16) {
                     printf("*** Found (mapshots urban areas) ***\n");
                     break;
@@ -1386,11 +1387,11 @@ void draw_shapefile_map (Widget w,
                 else
                     break;
             }
-            else if (strstr(filename,"wat")) {      // Bodies of water
+            else if (strstr(filename,"wat")) {      // Bodies of water, creeks/lakes/glaciers
                 lake_flag++;
                 mapshots_labels_flag++;
                 if (debug_level & 16) {
-                    printf("*** Found some lakes (mapshots bodies of water) ***\n");
+                    printf("*** Found some water (mapshots bodies of water, creeks/lakes/glaciers) ***\n");
                     break;
                 }
                 else
@@ -1682,6 +1683,8 @@ void draw_shapefile_map (Widget w,
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]); // SteelBlue
         else if (path_flag)
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0c]); // red
+        else if (railroad_flag)
+            (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x01]); // purple
         else
             (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]); // black
     }
