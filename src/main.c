@@ -4569,7 +4569,7 @@ inline int no_data_selected(void)
 
 void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*/ int app_argc, char ** app_argv) {
     Atom WM_DELETE_WINDOW;
-    Widget children[8];         /* Children to manage */
+    Widget children[9];         /* Children to manage */
     Arg al[64];                 /* Arg List */
     register unsigned int ac;   /* Arg Count */
     /*popup menu widgets */
