@@ -63,7 +63,8 @@ int alert_redraw_on_update = 0;
 
 
 //
-// Converts "County Warning Area" text to "CWA"
+// Function to convert "County Warning Area" text to "CWA"
+// Called from alert_match() and alert_update_list() functions.
 //
 void normal_title(char *incoming_title, char *outgoing_title) {
     char *c_ptr;
@@ -95,6 +96,7 @@ void normal_title(char *incoming_title, char *outgoing_title) {
 //
 // Debug routine.  Currently attached to the Test() function in
 // main.c, but the button in the file menu is normally grey'ed out.
+// This function prints the weather alerts to the xterm.
 //
 void alert_print_list(void) {
     int i;
@@ -119,6 +121,7 @@ void alert_print_list(void) {
 
 //
 // Called from alert_build_list()
+// This function add a new alert to the list.
 //
 /*@null@*/ static alert_entry *alert_add_entry(alert_entry *entry) {
     alert_entry *ptr;
@@ -501,8 +504,9 @@ static void alert_build_list(Message *fill) {
 
 
 //
-// Called from db.c:decode_message() function and
-// maps.c:load_alert_maps() functions (both of them).
+// Called from db.c:decode_message() function when a new alert is
+// received, and from maps.c:load_alert_maps() functions (both of
+// them).
 //
 int alert_message_scan(void) {
     char *a_ptr;
