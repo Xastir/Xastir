@@ -928,6 +928,11 @@ fi
 # Check for gpsman/gpsmanshp
 # 
 # Make sure to check /usr/local/lib & /usr/local/include as well 
+#
+# Change to:
+# AC_CHECK_LIB(gpsmanshp.so, GSHPForgetRT,
+#   AC_CHECK_PROG(gpsman, [gpsman.tcl --version], /usr/bin, , /usr/bin)
+#if test "$gpsman" != "/usr/bin"; then
 # 
 use_gpsman=no
 AC_CHECK_FILE(/usr/lib/tcl8.3/gpsmanshp/gpsmanshp.so,

@@ -22,7 +22,6 @@
  * Look at the README for more information on the program.
  */
 
-//#define HAVE_GPSMAN 1
 
 #include "config.h"
 #include "snprintf.h"
