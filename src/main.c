@@ -11949,7 +11949,7 @@ void Config_tiger( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@
                 XmNsensitive, TRUE,
                 XmNorientation, XmHORIZONTAL,
                 XmNborderWidth, 1,
-                XmNminimum, 0,
+                XmNminimum, 30, //Having less than this makes the tigermaps too dark to see (0 will cause a segfault) - N0VH
                 XmNmaximum, 100,
                 XmNshowValue, TRUE,
                 XmNvalue, tigermap_intensity,
