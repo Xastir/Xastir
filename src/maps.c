@@ -165,7 +165,6 @@ int   print_invert = 0;                 // Reverses black/white
 time_t last_snapshot = 0;               // Used to determine when to take next snapshot
 int doing_snapshot = 0;
 
-int position_scale_changed = 0;         // Incremented if position or scale changes
 
 int mag;
 int npoints;    /* number of points in a line */
@@ -384,6 +383,56 @@ long get_x_scale(long x, long y, long ysc) {
 
 
 
+// Here we store cached values that we compute below, so that we
+// don't have to compute them each time.  If longitude/latitude have
+// changed since we last cached, we re-compute our numbers.
+double half_screen_vert = 0.0;
+double half_screen_horiz = 0.0;
+double view_min_x = 0.0;
+double view_max_x = 0.0;
+double view_min_y = 0.0;
+double view_max_y = 0.0;
+
+
+
+void recompute_lat_long(void) {
+
+//    fprintf(stderr,"Updating numbers\n");
+
+    half_screen_vert = screen_height/2.0 * scale_y / 100.0 / 60.0 / 60.0;
+    half_screen_horiz = screen_width/2.0 * scale_x / 100.0 / 60.0 / 60.0;
+
+//fprintf(stderr,"scale_x: %ld\thalf_screen_h: %f\n",scale_x,half_screen_horiz);
+//fprintf(stderr,"scale_y: %ld\thalf_screen_v: %f\n",scale_y,half_screen_vert);
+
+    view_min_x = f_center_longitude - half_screen_horiz; // left edge of view
+    view_max_x = f_center_longitude + half_screen_horiz; // right edge of view
+    view_min_y = f_center_latitude - half_screen_vert; // bottom edge of view
+    view_max_y = f_center_latitude + half_screen_vert; // top edge of view
+
+    //fprintf(stderr,"\tview_min_x:%f\n", view_min_x);
+    //fprintf(stderr,"\tview_max_x:%f\n", view_max_x);
+    //fprintf(stderr,"\tview_min_y:%f\n", view_min_y);
+    //fprintf(stderr,"\tview_max_y:%f\n", view_max_y);
+
+
+    if (view_min_x >  180.0 || view_min_x < -180.0)
+        view_min_x = -180.0;
+
+    if (view_max_x >  180.0 || view_max_x < -180.0)
+        view_max_x =  180.0;
+
+    if (view_min_y >  90.0 || view_min_y < -90.0)
+        view_min_y = -90.0;
+
+    if (view_max_y >  90.0 || view_max_y < -90.0)
+        view_max_y =  90.0;
+}
+
+
+
+
+
 /////////////////////////////////////////////////////////////////////
 // convert_from_xastir_coordinates()
 //
@@ -404,7 +453,7 @@ int convert_from_xastir_coordinates ( float *f_longitude,
                                       long x,
                                       long y ) {
 
-    position_scale_changed++;
+//fprintf(stderr,"convert_from_xastir_coordinates\n");
 
     if (x < 0l ) {
         fprintf(stderr,
@@ -443,6 +492,8 @@ int convert_from_xastir_coordinates ( float *f_longitude,
 //fprintf(stderr,"latitude: %f\tlongitude: %f\n",
 //    *f_latitude,
 //    *f_longitude);
+
+    recompute_lat_long();
 
     return(1);
 }
@@ -537,11 +588,9 @@ void draw_point(Widget w,
     // (width or length of zero)?
     //
     if (!map_visible(y1, y1, x1, x1)) {
-        if (!map_visible(y1, y1, x1, x1)) {
-            // Skip this vector
-            //fprintf(stderr,"Point not visible\n");
-            return;
-        }
+        // Skip this vector
+        //fprintf(stderr,"Point not visible\n");
+        return;
     }
 
     // Convert to screen coordinates.  Careful here!
@@ -603,11 +652,9 @@ void draw_vector(Widget w,
     // (width or length of zero)?
     //
     if (!map_visible(y1, y2, x1, x2)) {
-        if (!map_visible(y2, y1, x2, x1)) {
-            // Skip this vector
+        // Skip this vector
 //fprintf(stderr,"Line not visible\n");
-            return;
-        }
+        return;
     }
 
     // Convert to screen coordinates.  Careful here!
@@ -1632,6 +1679,8 @@ char *get_map_dir (char *fullpath) {
 
 
 
+
+
 /***********************************************************
  * map_visible()
  *
@@ -1668,14 +1717,16 @@ char *get_map_dir (char *fullpath) {
  *          64,800,000 (-90 deg. or 90S)
  *
  ***********************************************************/
-int map_visible (unsigned long bottom_map_boundary,
-                    unsigned long top_map_boundary,
-                    unsigned long left_map_boundary,
-                    unsigned long right_map_boundary) {
+int map_visible (unsigned long map_max_y,   // bottom_map_boundary
+                 unsigned long map_min_y,   // top_map_boundary
+                 unsigned long map_min_x,   // left_map_boundary
+                 unsigned long map_max_x) { // right_map_boundary) {
 
     unsigned long view_min_x, view_max_x;
     unsigned long view_min_y, view_max_y;
 
+
+    //fprintf(stderr,"map_visible\n");
 
     view_min_x = (unsigned long)x_long_offset;                         /*   left edge of view */
     if (view_min_x > 129600000ul)
@@ -1693,150 +1744,27 @@ int map_visible (unsigned long bottom_map_boundary,
     if (view_max_y > 64800000ul)
         view_max_y = 64800000ul;
 
-    if (debug_level & 16) {
-        fprintf(stderr,"              Bottom     Top       Left     Right\n");
 
-        fprintf(stderr,"View Edges:  %lu  %lu  %lu  %lu\n",
-            view_max_y,
-            view_min_y,
-            view_min_x,
-            view_max_x);
+    // From computation geometry equations, intersection of two line
+    // segments, they use the bounding box for two lines.  This is
+    // the same as what we want to do:
+    //
+    // http://www.cs.kent.edu/~dragan/AdvAlg/CompGeom-2x1.pdfa
+    // http://www.gamedev.net/reference/articles/article735.asp
+    //
+    // The quick rejection algorithm:
+    //
+    if (view_min_y > map_max_y) return(0);  // map below view
+    if (map_min_y > view_max_y) return(0);  // view below map
 
-        fprintf(stderr," Map Edges:  %lu  %lu  %lu  %lu\n",
-            bottom_map_boundary,
-            top_map_boundary,
-            left_map_boundary,
-            right_map_boundary);
+    if (view_min_x > map_max_x) return(0);  // map left of view
+    if (map_min_x > view_max_x) return(0);  // view left of  map
 
-        if ((left_map_boundary <= view_max_x) && (left_map_boundary >= view_min_x))
-            fprintf(stderr,"Left map boundary inside view\n");
-
-        if ((right_map_boundary <= view_max_x) && (right_map_boundary >= view_min_x))
-            fprintf(stderr,"Right map boundary inside view\n");
-
-        if ((top_map_boundary <= view_max_y) && (top_map_boundary >= view_min_y))
-            fprintf(stderr,"Top map boundary inside view\n");
-
-        if ((bottom_map_boundary <= view_max_y) && (bottom_map_boundary >= view_min_y))
-            fprintf(stderr,"Bottom map boundary inside view\n");
-
-        if ((view_max_x <= right_map_boundary) && (view_max_x >= left_map_boundary))
-            fprintf(stderr,"Right view boundary inside map\n");
-
-        if ((view_min_x <= right_map_boundary) && (view_min_x >= left_map_boundary))
-            fprintf(stderr,"Left view boundary inside map\n");
-
-        if ((view_max_y <= bottom_map_boundary) && (view_max_y >= top_map_boundary))
-            fprintf(stderr,"Bottom view boundary inside map\n");
-
-        if ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary))
-            fprintf(stderr,"Top view boundary inside map\n");
-    }
-
-
-    if (debug_level & 16)
-        fprintf(stderr,"map_visible(): checking for intersects 1\n");
-    
-
-    /* In order to determine whether the two rectangles intersect,
-    * we need to figure out if any TWO edges of one rectangle are
-    * contained inside the edges of the other.
-    */
-
-    /* Look for left or right map boundaries inside view */
-    if (   (( left_map_boundary <= view_max_x) && ( left_map_boundary >= view_min_x)) ||
-            ((right_map_boundary <= view_max_x) && (right_map_boundary >= view_min_x))) {
-
-        /* Look for top or bottom map boundaries inside view */
-        if (   ((   top_map_boundary <= view_max_y) && (   top_map_boundary >= view_min_y)) ||
-                ((bottom_map_boundary <= view_max_y) && (bottom_map_boundary >= view_min_y))) {
-
-            if (debug_level & 16)
-                fprintf(stderr,"map_visible(): returning 1\n");
- 
-            return (1); /* Draw this pixmap onto the screen */
-        }
-    }
-
-    if (debug_level & 16)
-        fprintf(stderr,"map_visible(): checking for intersects 2\n");
- 
-
-    /* Look for right or left view boundaries inside map */
-    if (   ((view_max_x <= right_map_boundary) && (view_max_x >= left_map_boundary)) ||
-            ((view_min_x <= right_map_boundary) && (view_min_x >= left_map_boundary)))
-    {
-
-        /* Look for top or bottom view boundaries inside map */
-        if (   ((view_max_y <= bottom_map_boundary) && (view_max_y >= top_map_boundary)) ||
-            ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary))) {
-
-            if (debug_level & 16)
-                fprintf(stderr,"map_visible(): returning 1\n");
- 
-            return (1); /* Draw this pixmap onto the screen */
-        }
-    }
-
-    if (debug_level & 16)
-        fprintf(stderr,"map_visible(): checking for intersects 3\n");
- 
-    /*
-    * Look for left/right map boundaries both inside view, but top/bottom
-    * of map surround the viewport.  We have a column of the map going
-    * through from top to bottom.
-    */
-    if (   (( left_map_boundary <= view_max_x) && ( left_map_boundary >= view_min_x)) &&
-            ((right_map_boundary <= view_max_x) && (right_map_boundary >= view_min_x)) &&
-            ((view_max_y <= bottom_map_boundary) && (view_max_y >= top_map_boundary)) &&
-            ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary))) {
-
-        if (debug_level & 16)
-            fprintf(stderr,"map_visible(): returning 1\n");
-
-        return(1);  /* Draw this pixmap onto the screen */
-    }
-
-    if (debug_level & 16)
-        fprintf(stderr,"map_visible(): checking for intersects 4\n");
-
-    /*
-    * Look for top/bottom map boundaries both inside view, but left/right
-    * of map surround the viewport.  We have a row of the map going through
-    * from left to right.
-    */
-    if (   ((   top_map_boundary <= view_max_y) && (   top_map_boundary >= view_min_y)) &&
-        ((bottom_map_boundary <= view_max_y) && (bottom_map_boundary >= view_min_y)) &&
-        ((view_max_x <= right_map_boundary) && (view_max_x >= left_map_boundary)) &&
-        ((view_min_x <= right_map_boundary) && (view_min_x >= left_map_boundary))) {
-
-        if (debug_level & 16)
-            fprintf(stderr,"map_visible(): returning 1\n");
- 
-        return(1);  /* Draw this pixmap onto the screen */
-    }
-
-    if (debug_level & 16)
-        fprintf(stderr,"map_visible(): returning\n");
-
-    return (0); /* Skip this pixmap */
+    return (1); // Draw this map onto the screen
 }
 
 
 
-
-
-// Here we store cached values that we compute below, so that we
-// don't have to compute them each time.  If longitude/latitude have
-// changed since we last cached, we re-compute our numbers.  We
-// check the position_scale_changed variable to determine whether
-// map center or scale have changed.
-double half_screen_vert = 0.0;
-double half_screen_horiz = 0.0;
-double view_min_x = 0.0;
-double view_max_x = 0.0;
-double view_min_y = 0.0;
-double view_max_y = 0.0;
 
 
 /////////////////////////////////////////////////////////////////////
@@ -1861,153 +1789,31 @@ double view_max_y = 0.0;
 //          64,800,000 (-90 deg. or 90S)
 //
 /////////////////////////////////////////////////////////////////////
-int map_visible_lat_lon (double f_bottom_map_boundary,
-                         double f_top_map_boundary,
-                         double f_left_map_boundary,
-                         double f_right_map_boundary,
+int map_visible_lat_lon (double map_min_y,  // f_bottom_map_boundary
+                         double map_max_y,  // f_top_map_boundary
+                         double map_min_x,  // f_left_map_boundary
+                         double map_max_x,  // f_right_map_boundary
                          char *error_message) {
 
 
-    // Check whether map center or zoom have changed.  Re-compute
-    // numbers if so.
+//fprintf(stderr,"map_visible_lat_lon\n");
+
+    // From computation geometry equations, intersection of two line
+    // segments, they use the bounding box for two lines.  This is
+    // the same as what we want to do:
     //
-    if (position_scale_changed) {
+    // http://www.cs.kent.edu/~dragan/AdvAlg/CompGeom-2x1.pdfa
+    // http://www.gamedev.net/reference/articles/article735.asp
+    //
+    // The quick rejection algorithm:
+    //
+    if (view_min_y > map_max_y) return(0);  // map below view
+    if (map_min_y > view_max_y) return(0);  // view below map
 
-//fprintf(stderr,"Updating numbers\n");
+    if (view_min_x > map_max_x) return(0);  // map left of view
+    if (map_min_x > view_max_x) return(0);  // view left of  map
 
-        half_screen_vert = screen_height/2.0 * scale_y / 100.0 / 60.0 / 60.0;
-        half_screen_horiz = screen_width/2.0 * scale_x / 100.0 / 60.0 / 60.0;
-
-        position_scale_changed = 0;
-
-//fprintf(stderr,"scale_x: %ld\thalf_screen_h: %f\n",scale_x,half_screen_horiz);
-//fprintf(stderr,"scale_y: %ld\thalf_screen_v: %f\n",scale_y,half_screen_vert);
-
-        view_min_x = f_center_longitude - half_screen_horiz; // left edge of view
-        view_max_x = f_center_longitude + half_screen_horiz; // right edge of view
-        view_min_y = f_center_latitude - half_screen_vert; // bottom edge of view
-        view_max_y = f_center_latitude + half_screen_vert; // top edge of view
-
-        if (view_min_x >  180.0 || view_min_x < -180.0)
-            view_min_x = -180.0;
-
-        if (view_max_x >  180.0 || view_max_x < -180.0)
-            view_max_x =  180.0;
-
-        if (view_min_y >  90.0 || view_min_y < -90.0)
-            view_min_y = -90.0;
-
-        if (view_max_y >  90.0 || view_max_y < -90.0)
-            view_max_y =  90.0;
-    }
-
-
-    if (debug_level & 16) {
-        fprintf(stderr,"              Bottom     Top       Left     Right\n");
-
-        fprintf(stderr,"View Edges:  %f  %f  %f  %f\n",
-            view_min_y,
-            view_max_y,
-            view_min_x,
-            view_max_x);
-
-        fprintf(stderr," Map Edges:  %f  %f  %f  %f\n",
-            f_bottom_map_boundary,
-            f_top_map_boundary,
-            f_left_map_boundary,
-            f_right_map_boundary);
-
-        if ((f_left_map_boundary <= view_max_x) && (f_left_map_boundary >= view_min_x))
-            fprintf(stderr,"Left map boundary inside view\n");
-
-        if ((f_right_map_boundary <= view_max_x) && (f_right_map_boundary >= view_min_x))
-            fprintf(stderr,"Right map boundary inside view\n");
-
-        if ((f_top_map_boundary <= view_max_y) && (f_top_map_boundary >= view_min_y))
-            fprintf(stderr,"Top map boundary inside view\n");
-
-        if ((f_bottom_map_boundary <= view_max_y) && (f_bottom_map_boundary >= view_min_y))
-            fprintf(stderr,"Bottom map boundary inside view\n");
-
-        if ((view_max_x <= f_right_map_boundary) && (view_max_x >= f_left_map_boundary))
-            fprintf(stderr,"Right view boundary inside map\n");
-
-        if ((view_min_x <= f_right_map_boundary) && (view_min_x >= f_left_map_boundary))
-            fprintf(stderr,"Left view boundary inside map\n");
-
-        if ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary))
-            fprintf(stderr,"Bottom view boundary inside map\n");
-
-        if ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary))
-            fprintf(stderr,"Top view boundary inside map\n");
-    }
-
-    /* In order to determine whether the two rectangles intersect,
-    * we need to figure out if any TWO edges of one rectangle are
-    * contained inside the edges of the other.
-    */
-
-    /* Look for left or right map boundaries inside view */
-    if (   (( f_left_map_boundary <= view_max_x) && ( f_left_map_boundary >= view_min_x)) ||
-            ((f_right_map_boundary <= view_max_x) && (f_right_map_boundary >= view_min_x)))
-    {
-
-        /* Look for top or bottom map boundaries inside view */
-        if (   ((   f_top_map_boundary <= view_max_y) && (   f_top_map_boundary >= view_min_y)) ||
-                ((f_bottom_map_boundary <= view_max_y) && (f_bottom_map_boundary >= view_min_y)))
-        {
-
-//fprintf(stderr,"map_inside_view\n");
-            return (1); /* Draw this pixmap onto the screen */
-        }
-    }
-
-    /* Look for right or left view boundaries inside map */
-    if (   ((view_max_x <= f_right_map_boundary) && (view_max_x >= f_left_map_boundary)) ||
-            ((view_min_x <= f_right_map_boundary) && (view_min_x >= f_left_map_boundary)))
-    {
-
-        /* Look for top or bottom view boundaries inside map */
-        if (   ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary)) ||
-            ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary)))
-        {
-
-//fprintf(stderr,"view_inside_map\n");
-            return (1); /* Draw this pixmap onto the screen */
-        }
-    }
-
-
-    /*
-    * Look for left/right map boundaries both inside view, but top/bottom
-    * of map surround the viewport.  We have a column of the map going
-    * through from top to bottom.
-    */
-    if (   (( f_left_map_boundary <= view_max_x) && ( f_left_map_boundary >= view_min_x)) &&
-            ((f_right_map_boundary <= view_max_x) && (f_right_map_boundary >= view_min_x)) &&
-            ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary)) &&
-            ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary)))
-    {
-//fprintf(stderr,"parallel_edges\n");
-        return (1); /* Draw this pixmap onto the screen */
-    }
-
-
-    /*
-    * Look for top/bottom map boundaries both inside view, but left/right
-    * of map surround the viewport.  We have a row of the map going through
-    * from left to right.
-    */
-    if (   ((   f_top_map_boundary >= view_max_y) && (   f_top_map_boundary <= view_min_y)) &&
-        ((f_bottom_map_boundary >= view_max_y) && (f_bottom_map_boundary <= view_min_y)) &&
-        ((view_max_x <= f_right_map_boundary) && (view_max_x >= f_left_map_boundary)) &&
-        ((view_min_x <= f_right_map_boundary) && (view_min_x >= f_left_map_boundary)))
-    {
-//fprintf(stderr,"parallel_edges\n");
-        return (1); /* Draw this pixmap onto the screen */
-    }
-
-    return (0); /* Skip this pixmap */
+    return (1); // Draw this map onto the screen
 }
 
 
@@ -3211,76 +3017,24 @@ void clean_string(char *input) {
 //
 //          64,800,000 (-90 deg. or 90S)
 //
+// Note that we already have map_visible() and map_visible_lat_lon()
+// routines.
+//
 enum map_onscreen_enum map_onscreen(long left,
                                     long right, 
                                     long top, 
                                     long bottom,
                                     int check_percentage) {
-    unsigned long max_x_long_offset;
-    unsigned long max_y_lat_offset;
-    long map_border_min_x;
-    long map_border_max_x;
-    long map_border_min_y;
-    long map_border_max_y;
-    long x_test, y_test;
+
     enum map_onscreen_enum in_window = MAP_NOT_VIS;
 
-    max_x_long_offset=(unsigned long)(x_long_offset+ (screen_width * scale_x));
-    max_y_lat_offset =(unsigned long)(y_lat_offset + (screen_height* scale_y));
 
-    if (debug_level & 16)
-      fprintf(stderr,"x_long_offset: %ld, y_lat_offset: %ld, max_x_long_offset: %ld, max_y_lat_offset: %ld\n",
-             x_long_offset, y_lat_offset, (long)max_x_long_offset, (long)max_y_lat_offset);
-
-    if (((left <= x_long_offset) && (x_long_offset <= right) &&
-         (top <= y_lat_offset) && (y_lat_offset <= bottom)) ||
-        ((left <= x_long_offset) && (x_long_offset <= right) &&
-         (top <= (long)max_y_lat_offset) && ((long)max_y_lat_offset <= bottom)) ||
-        ((left <= (long)max_x_long_offset) && ((long)max_x_long_offset <= right) &&
-         (top <= y_lat_offset) && (y_lat_offset <= bottom)) ||
-        ((left <= (long)max_x_long_offset) && ((long)max_x_long_offset <= right) &&
-         (top <= (long)max_y_lat_offset) && ((long)max_y_lat_offset <= bottom)) ||
-        ((x_long_offset <= left) && (left <= (long)max_x_long_offset) &&
-         (y_lat_offset <= top) && (top <= (long)max_y_lat_offset)) ||
-        ((x_long_offset <= left) && (left <= (long)max_x_long_offset) &&
-         (y_lat_offset <= bottom) && (bottom <= (long)max_y_lat_offset)) ||
-        ((x_long_offset <= right) && (right <= (long)max_x_long_offset) &&
-         (y_lat_offset <= top) && (top <= (long)max_y_lat_offset)) ||
-        ((x_long_offset <= right) && (right <= (long)max_x_long_offset) &&
-         (y_lat_offset <= bottom) && (bottom <= (long)max_y_lat_offset)))
-      in_window = MAP_IS_VIS;
-    else {
-        // find min and max borders to look at
-        //this routine are for those odd sized maps
-        if ((long)left > x_long_offset)
-          map_border_min_x = (long)left;
-        else
-          map_border_min_x = x_long_offset;
-
-        if (right < (long)max_x_long_offset)
-          map_border_max_x = (long)right;
-        else
-          map_border_max_x = (long)max_x_long_offset;
-
-        if ((long)top > y_lat_offset)
-          map_border_min_y = (long)top;
-        else
-          map_border_min_y = y_lat_offset;
-
-        if (bottom < (long)max_y_lat_offset)
-          map_border_max_y = (long)bottom;
-        else
-          map_border_max_y = (long)max_y_lat_offset;
-
-        // do difficult check inside map
-        for (x_test = map_border_min_x;(x_test <= map_border_max_x && !in_window); x_test += ((scale_x * screen_width) / 10)) {
-            for (y_test = map_border_min_y;(y_test <= map_border_max_y && !in_window);y_test += ((scale_y * screen_height) / 10)) {
-                if ((x_long_offset <= x_test) && (x_test <= (long)max_x_long_offset) && (y_lat_offset <= y_test) &&
-                    (y_test <= (long)max_y_lat_offset))
-
-                  in_window = MAP_IS_VIS;
-            }
-        }
+    if (map_visible((unsigned long)bottom,
+            (unsigned long)top,
+            (unsigned long)left,
+            (unsigned long)right)) {
+        in_window = MAP_IS_VIS;
+        //fprintf(stderr,"map_onscreen:Map is visible\n");
     }
 
 
@@ -3330,7 +3084,7 @@ fprintf(stderr,"map too small for view: %d%%\n",(int)(percentage * 100));
     }
 #endif  // MAP_SCALE_CHECK
  
-
+    //fprintf(stderr,"map_onscreen returning %d\n", in_window);
     return (in_window);
 }
 
@@ -3599,9 +3353,10 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry *alert,
     }
     else {  // We're drawing maps
         // See if map is visible.  If not, skip it.
-        if (onscreen == MAP_NOT_VIS) // Map is not visible, skip it.
+        if (onscreen == MAP_NOT_VIS) {  // Map is not visible, skip it.
+            //fprintf(stderr,"map not visible\n");
             return;
-        
+        }
     }
 
 
