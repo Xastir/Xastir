@@ -657,6 +657,7 @@ char object_shgd[5] = "0000\0";
 char object_NRQ[4] = "960\0";
 XtPointer global_parameter1 = (XtPointer)NULL;
 XtPointer global_parameter2 = (XtPointer)NULL;
+int doing_move_operation = 0;
 
 void Draw_CAD_Objects_start_mode(Widget w, XtPointer clientData, XtPointer calldata);
 void Draw_CAD_Objects_close_polygon(Widget w, XtPointer clientData, XtPointer calldata);
@@ -9579,9 +9580,12 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                         //fprintf(stderr,"%s  %s\n", str_lat, str_long);
                     }
 
-                      // Effect the change in the object/item's
-                      // position.
+                    // Effect the change in the object/item's
+                    // position.
+                    //
+                    doing_move_operation++;
                     Station_info(w, "2", NULL);
+                    doing_move_operation = 0;
                 }
 
 
@@ -21607,6 +21611,47 @@ void Object_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@
 
 
 
+// Snag the latest DR'ed position for an object/item and create the
+// types of strings that we need for Setup_object_data() and
+// Setup_item_data() for APRS and Base-91 compressed formats.
+//
+void fetch_current_DR_strings(DataRow *p_station, char *lat_str,
+        char *lon_str, char *ext_lat_str, char *ext_lon_str) {
+
+    long x_long, y_lat;
+
+
+    // Fetch the latest position for a DR'ed object.  Returns the
+    // values in two longs, x_long and y_lat.
+    compute_current_DR_position(p_station, &x_long, &y_lat);
+
+    // Normal precision for APRS format
+    convert_lat_l2s(y_lat,
+        lat_str,
+        MAX_LAT,
+        CONVERT_LP_NOSP);
+
+    convert_lon_l2s(x_long,
+        lon_str,
+        MAX_LONG,
+        CONVERT_LP_NOSP);
+
+    // Extended precision for Base-91 compressed format
+    convert_lat_l2s(y_lat,
+        ext_lat_str,
+        MAX_LAT,
+        CONVERT_HP_NOSP);
+
+    convert_lon_l2s(x_long,
+        ext_lon_str,
+        MAX_LONG,
+        CONVERT_HP_NOSP);
+}
+
+
+
+
+
 // Convert this eventually to populate a DataRow struct, then call
 // data.c:Create_object_item_tx_string().  Right now we have a lot
 // of code duplication between Setup_object_data, Setup_item_data,
@@ -21617,11 +21662,11 @@ void Object_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@
 /*
  *  Setup APRS Information Field for Objects
  */
-int Setup_object_data(char *line, int line_length) {
+int Setup_object_data(char *line, int line_length, DataRow *p_station) {
     char lat_str[MAX_LAT];
     char lon_str[MAX_LONG];
-    char ext_lat_str[20];
-    char ext_lon_str[20];
+    char ext_lat_str[20];   // Extended precision for base91 compression
+    char ext_lon_str[20];   // Extended precision for base91 compression
     char comment[43+1];                 // max 43 characters of comment
     char time[7+1];
     struct tm *day_time;
@@ -21643,9 +21688,30 @@ int Setup_object_data(char *line, int line_length) {
     int bearing;
     char *temp_ptr;
     char *temp_ptr2;
+    int DR = 0; // Dead-reckoning flag
 
 
     //fprintf(stderr,"Setup_object_data\n");
+
+    // If speed for the original object was non-zero, then we need
+    // to snag the updated DR'ed position for the object.  Snag the
+    // current DR position and build the strings we need // for
+    // position transmit.
+    //
+    if (p_station != NULL) { 
+
+        speed = atoi(p_station->speed);
+
+        if (speed > 0 && !doing_move_operation) {
+
+            fetch_current_DR_strings(p_station,
+                lat_str,
+                lon_str,
+                ext_lat_str,
+                ext_lon_str);
+            DR++;   // Set the dead-reckoning flag
+        }
+    }
 
     temp_ptr = XmTextFieldGetString(object_name_data);
     xastir_snprintf(line,
@@ -21665,91 +21731,96 @@ int Setup_object_data(char *line, int line_length) {
         "%s",
         line);
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_ns);
-    if((char)toupper((int)temp_ptr[0]) == 'S')
-        line[0] = 'S';
-    else
-        line[0] = 'N';
-    XtFree(temp_ptr);
 
-    // Check latitude for out-of-bounds
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp = atoi(temp_ptr);
-    XtFree(temp_ptr);
+    if (!DR) {  // We're not doing dead-reckoning, so proceed
 
-    if ( (temp > 90) || (temp < 0) )
-        return(0);
+        temp_ptr = XmTextFieldGetString(object_lat_data_ns);
+        if((char)toupper((int)temp_ptr[0]) == 'S')
+            line[0] = 'S';
+        else
+            line[0] = 'N';
+        XtFree(temp_ptr);
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_min);
-    temp3 = atof(temp_ptr);
-    XtFree(temp_ptr);
+        // Check latitude for out-of-bounds
+        temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+        temp = atoi(temp_ptr);
+        XtFree(temp_ptr);
 
-    if ( (temp3 >= 60.0) || (temp3 < 0.0) )
-        return(0);
-    if ( (temp == 90) && (temp3 != 0.0) )
-        return(0);
+        if ( (temp > 90) || (temp < 0) )
+            return(0);
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
-    xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
-        atoi(temp_ptr),
-        atof(temp_ptr2), line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
+        temp_ptr = XmTextFieldGetString(object_lat_data_min);
+        temp3 = atof(temp_ptr);
+        XtFree(temp_ptr);
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
-    xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
-        atoi(temp_ptr),
-        atof(temp_ptr2), line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
+        if ( (temp3 >= 60.0) || (temp3 < 0.0) )
+            return(0);
+        if ( (temp == 90) && (temp3 != 0.0) )
+            return(0);
 
-    temp_ptr = XmTextFieldGetString(object_lon_data_ew);
-    xastir_snprintf(line,
-        line_length,
-        "%s",
-        temp_ptr);
-    XtFree(temp_ptr);
+        temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+        temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
+        xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
+            atoi(temp_ptr),
+            atof(temp_ptr2), line[0]);
+        XtFree(temp_ptr);
+        XtFree(temp_ptr2);
 
-    if((char)toupper((int)line[0]) == 'E')
-        line[0] = 'E';
-    else
-        line[0] = 'W';
+        temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+        temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
+        xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
+            atoi(temp_ptr),
+            atof(temp_ptr2), line[0]);
+        XtFree(temp_ptr);
+        XtFree(temp_ptr2);
 
-    // Check longitude for out-of-bounds
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp = atoi(temp_ptr);
-    XtFree(temp_ptr);
+        temp_ptr = XmTextFieldGetString(object_lon_data_ew);
+        xastir_snprintf(line,
+            line_length,
+            "%s",
+            temp_ptr);
+        XtFree(temp_ptr);
 
-    if ( (temp > 180) || (temp < 0) )
-        return(0);
+        if((char)toupper((int)line[0]) == 'E')
+            line[0] = 'E';
+        else
+            line[0] = 'W';
 
-    temp_ptr = XmTextFieldGetString(object_lon_data_min);
-    temp3 = atof(temp_ptr);
-    XtFree(temp_ptr);
+        // Check longitude for out-of-bounds
+        temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+        temp = atoi(temp_ptr);
+        XtFree(temp_ptr);
 
-    if ( (temp3 >= 60.0) || (temp3 < 0.0) )
-        return(0);
+        if ( (temp > 180) || (temp < 0) )
+            return(0);
 
-    if ( (temp == 180) && (temp3 != 0.0) )
-        return(0);
+        temp_ptr = XmTextFieldGetString(object_lon_data_min);
+        temp3 = atof(temp_ptr);
+        XtFree(temp_ptr);
 
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
-    xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
-        atoi(temp_ptr),
-        atof(temp_ptr2), line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
+        if ( (temp3 >= 60.0) || (temp3 < 0.0) )
+            return(0);
 
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
-    xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
-        atoi(temp_ptr),
-        atof(temp_ptr2), line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
+        if ( (temp == 180) && (temp3 != 0.0) )
+            return(0);
+
+        temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+        temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
+        xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
+            atoi(temp_ptr),
+            atof(temp_ptr2), line[0]);
+        XtFree(temp_ptr);
+        XtFree(temp_ptr2);
+
+        temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+        temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
+        xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
+            atoi(temp_ptr),
+            atof(temp_ptr2), line[0]);
+        XtFree(temp_ptr);
+        XtFree(temp_ptr2);
+    }
+
 
     temp_ptr = XmTextFieldGetString(object_group_data);
     xastir_snprintf(line,
@@ -22144,11 +22215,11 @@ int Setup_object_data(char *line, int line_length) {
 /*
  *  Setup APRS Information Field for Items
  */
-int Setup_item_data(char *line, int line_length) {
+int Setup_item_data(char *line, int line_length, DataRow *p_station) {
     char lat_str[MAX_LAT];
     char lon_str[MAX_LONG];
-    char ext_lat_str[20];
-    char ext_lon_str[20];
+    char ext_lat_str[20];   // Extended precision for base91 compression
+    char ext_lon_str[20];   // Extended precision for base91 compression
     char comment[43+1];                 // max 43 characters of comment
     char complete_area_color[3];
     int complete_area_type;
@@ -22168,7 +22239,28 @@ int Setup_item_data(char *line, int line_length) {
     int bearing;
     char *temp_ptr;
     char *temp_ptr2;
+    int DR = 0; // Dead-reckoning flag
 
+
+    // If speed for the original object was non-zero, then we need
+    // to snag the updated DR'ed position for the object.  Snag the
+    // current DR position and build the strings we need // for
+    // position transmit.
+    //
+    if (p_station != NULL) {
+
+        speed = atoi(p_station->speed);
+    
+        if (speed > 0 && !doing_move_operation) {
+
+            fetch_current_DR_strings(p_station,
+                lat_str,
+                lon_str,
+                ext_lat_str,
+                ext_lon_str);
+            DR++;   // Set the dead-reckoning flag
+        }
+    }
 
     temp_ptr = XmTextFieldGetString(object_name_data);
     xastir_snprintf(line, line_length, "%s", temp_ptr);
@@ -22196,87 +22288,92 @@ int Setup_item_data(char *line, int line_length) {
         "%s",
         line);
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_ns);
-    if((char)toupper((int)temp_ptr[0]) == 'S')
-        line[0] = 'S';
-    else
-        line[0] = 'N';
-    XtFree(temp_ptr);
 
-    // Check latitude for out-of-bounds
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp = atoi(temp_ptr);
-    XtFree(temp_ptr);
+    if (!DR) {  // We're not doing dead-reckoning, so proceed
 
-    if ( (temp > 90) || (temp < 0) )
-        return(0);
+        temp_ptr = XmTextFieldGetString(object_lat_data_ns);
+        if((char)toupper((int)temp_ptr[0]) == 'S')
+            line[0] = 'S';
+        else
+            line[0] = 'N';
+        XtFree(temp_ptr);
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_min);
-    temp3 = atof(temp_ptr);
-    XtFree(temp_ptr);
+        // Check latitude for out-of-bounds
+        temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+        temp = atoi(temp_ptr);
+        XtFree(temp_ptr);
 
-    if ( (temp3 >= 60.0) || (temp3 < 0.0) )
-        return(0);
+        if ( (temp > 90) || (temp < 0) )
+            return(0);
 
-    if ( (temp == 90) && (temp3 != 0.0) )
-        return(0);
+        temp_ptr = XmTextFieldGetString(object_lat_data_min);
+        temp3 = atof(temp_ptr);
+        XtFree(temp_ptr);
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
-    xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
-            atoi(temp_ptr),
-            atof(temp_ptr2),line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
+        if ( (temp3 >= 60.0) || (temp3 < 0.0) )
+            return(0);
 
-    temp_ptr = XmTextFieldGetString(object_lat_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
-    xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
-            atoi(temp_ptr),
-            atof(temp_ptr2),line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
+        if ( (temp == 90) && (temp3 != 0.0) )
+            return(0);
 
-    temp_ptr = XmTextFieldGetString(object_lon_data_ew);
-    if((char)toupper((int)temp_ptr[0]) == 'E')
-        line[0] = 'E';
-    else
-        line[0] = 'W';
-    XtFree(temp_ptr);
+        temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+        temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
+        xastir_snprintf(lat_str, sizeof(lat_str), "%02d%05.2f%c",
+                atoi(temp_ptr),
+                atof(temp_ptr2),line[0]);
+        XtFree(temp_ptr);
+        XtFree(temp_ptr2);
 
-    // Check longitude for out-of-bounds
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp = atoi(temp_ptr);
-    XtFree(temp_ptr);
+        temp_ptr = XmTextFieldGetString(object_lat_data_deg);
+        temp_ptr2 = XmTextFieldGetString(object_lat_data_min);
+        xastir_snprintf(ext_lat_str, sizeof(ext_lat_str), "%02d%05.3f%c",
+                atoi(temp_ptr),
+                atof(temp_ptr2),line[0]);
+        XtFree(temp_ptr);
+        XtFree(temp_ptr2);
 
-    if ( (temp > 180) || (temp < 0) )
-        return(0);
+        temp_ptr = XmTextFieldGetString(object_lon_data_ew);
+        if((char)toupper((int)temp_ptr[0]) == 'E')
+            line[0] = 'E';
+        else
+            line[0] = 'W';
+        XtFree(temp_ptr);
 
-    temp_ptr = XmTextFieldGetString(object_lon_data_min);
-    temp3 = atof(temp_ptr);
-    XtFree(temp_ptr);
+        // Check longitude for out-of-bounds
+        temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+        temp = atoi(temp_ptr);
+        XtFree(temp_ptr);
 
-    if ( (temp3 >= 60.0) || (temp3 < 0.0) )
-        return(0);
+        if ( (temp > 180) || (temp < 0) )
+            return(0);
 
-    if ( (temp == 180) && (temp3 != 0.0) )
-        return(0);
+        temp_ptr = XmTextFieldGetString(object_lon_data_min);
+        temp3 = atof(temp_ptr);
+        XtFree(temp_ptr);
 
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
-    xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
-            atoi(temp_ptr),
-            atof(temp_ptr2),line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
+        if ( (temp3 >= 60.0) || (temp3 < 0.0) )
+            return(0);
 
-    temp_ptr = XmTextFieldGetString(object_lon_data_deg);
-    temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
-    xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
-            atoi(temp_ptr),
-            atof(temp_ptr2),line[0]);
-    XtFree(temp_ptr);
-    XtFree(temp_ptr2);
+        if ( (temp == 180) && (temp3 != 0.0) )
+            return(0);
+
+        temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+        temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
+        xastir_snprintf(lon_str, sizeof(lon_str), "%03d%05.2f%c",
+                atoi(temp_ptr),
+                atof(temp_ptr2),line[0]);
+        XtFree(temp_ptr);
+        XtFree(temp_ptr2);
+
+        temp_ptr = XmTextFieldGetString(object_lon_data_deg);
+        temp_ptr2 = XmTextFieldGetString(object_lon_data_min);
+        xastir_snprintf(ext_lon_str, sizeof(ext_lon_str), "%03d%05.3f%c",
+                atoi(temp_ptr),
+                atof(temp_ptr2),line[0]);
+        XtFree(temp_ptr);
+        XtFree(temp_ptr2);
+    }
+
 
     temp_ptr = XmTextFieldGetString(object_group_data);
     last_obj_grp = temp_ptr[0];
@@ -22641,7 +22738,7 @@ void Object_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
 
     //fprintf(stderr,"Object_change_data_set\n");
 
-    if (Setup_object_data(line, sizeof(line))) {
+    if (Setup_object_data(line, sizeof(line), p_station)) {
 
         // Update this object in our save file
         log_object_item(line,0,last_object);
@@ -22683,7 +22780,7 @@ void Item_change_data_set(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
     DataRow *p_station = global_parameter1;
 
    
-    if (Setup_item_data(line,sizeof(line))) {
+    if (Setup_item_data(line,sizeof(line), p_station)) {
 
         // Update this item in our save file
         log_object_item(line,0,last_object);
@@ -22807,7 +22904,7 @@ void Object_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer c
     DataRow *p_station = global_parameter1;
 
     
-    if (Setup_object_data(line, sizeof(line))) {
+    if (Setup_object_data(line, sizeof(line), p_station)) {
 
         line[10] = '_';                         // mark as deleted object
 
@@ -22845,7 +22942,7 @@ void Item_change_data_del(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer cli
     DataRow *p_station = global_parameter1;
 
     
-    if (Setup_item_data(line,sizeof(line))) {
+    if (Setup_item_data(line,sizeof(line), p_station)) {
 
         done = 0;
         i = 0;
@@ -23766,7 +23863,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
     // directly by other routines.  We look at the p_station pointer to decide
     // how we were called.
     //
-    if (p_station != NULL) {  // We were called from the Modify_object() function
+    if (p_station != NULL) {  // We were called from the Modify_object()
+                              // or Move() functions
         //fprintf(stderr,"Got a pointer!\n");
         lon = p_station->coord_lon;     // Fill in values from the original object
         lat = p_station->coord_lat;

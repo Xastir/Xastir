@@ -576,6 +576,7 @@ extern int  locate_station(Widget w, char *call, int follow_case,
 extern void update_station_info(Widget w);
 
 // objects/items
+extern void compute_current_DR_position(DataRow *p_station, long *x_long, long *y_lat);
 extern void check_and_transmit_objects_items(time_t time);
 extern int Create_object_item_tx_string(DataRow *p_station, char *line, 
                                         int line_length);

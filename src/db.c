@@ -15505,6 +15505,7 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
 // Dead-reckoning using distance in nm, course C:
 // Lat_B° = Lat_A° + ( (distance/60) * cos C )
 //
+// Average of two latitudes (required for next two equations)
 // Lat_M° = (Lat_A° + Lat_B°) / 2
 //
 // Dead-reckoning using distance in km, course C:
@@ -15590,32 +15591,48 @@ fprintf(stderr,"Lat:%f,  Lon:%f\n", lat_B, lon_B);
     *y_lat  = (long)y_u_lat;
 
 
-// Possible Problems:
-// *) At 225 degrees, object went at 180 degrees for a bit.  At 315
-//    degrees, object changes direction slightly with each segment.
-//    Need higher accuracy for the angle?
-// *) Compressed objects/items don't go through this code?
+//
+// Possible Problems/Changes:
+//
+// *) Transmit the corner point (the point at which we changed
+//    direction).  That probably comes for free due to the way we
+//    kick up the transmit rate for new/changed objects?  No, we
+//    don't get a new position written to the record until transmit
+//    time.
+//        Modify_object()
+//          Set_Del_Object()
+//
+// *) Change to using last_modified_time for DR.  Also tweak the
+//    code so that we don't do incremental DR and use our own
+//    decoded objects to update everything.  If we keep the
+//    last_modified_time and the last_modified_position separate
+//    DR'ed objects/items, we can always use those instead of the
+//    other variables if we have a non-zero speed.
+//
 // *) Looks like direction is slightly off from dead-reckoning local
 //    display.  Due to screen angle vs. lat/lon angle differences?
-// *) Another Xastir sees empty strings on it's server port when
-//    these objects are transmitted to it.  Investigate.  Sometimes
-//    does it when speed is 0, but not consistent.
+//
+// *) At 225 degrees, object went at 180 degrees for a bit.  At 315
+//    degrees, object changes direction slightly with each segment.
+//    Need higher accuracy for the angle?  Problem caused by APRS
+//    vs. Compressed position accuracy/rounding plus incremental
+//    errors building up?
+//
+// *) A server Xastir sees empty strings on it's server port when
+//    these objects are transmitted to it.  Investigate.  It
+//    sometimes does it when speed is 0, but it's not consistent.
+//
 // *) Make sure not to corrupt our position of the object when we
 //    receive the packet back via loopback/RF/internet.  In
 //    particular the position and the last_modified_time should stay
 //    constant in this case so that dead-reckoning can continue to
 //    move the object consistently, plus we won't compound errors as
 //    we go.
-// *) Change to using last_modified_time for DR.
-// *) Transmit the corner point (the point at which we changed
-//    direction).  That probably comes for free due to the way we
-//    kick up the transmit rate for new/changed objects.
-// *) Make sure not to corrupt object position when we receive the
-//    packet back via loopback/RF/internet.  In particular the
-//    position and last_modified_time should stay constant so that
-//    dead-reckoning can continue to move the object consistently,
-//    plus we won't compound errors as we go.
- 
+//
+// *) Get the last_modified_time embedded into the logfile so that
+//    we don't "lose time" if we shut down for a bit.  DR'ed objects
+//    will be at the proper positions when we start back up.
+// 
 }
 
 
