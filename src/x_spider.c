@@ -785,6 +785,8 @@ void Server(int argc, char *argv[], char *envp[]) {
     struct sockaddr_in cli_addr, serv_addr;
     pipe_object *p;
     int sendbuff;
+    int pipe_to_parent; /* symbolic names to reduce confusion */
+    int pipe_from_parent;
 
     
     // Open a TCP listening socket
@@ -966,8 +968,8 @@ void Server(int argc, char *argv[], char *envp[]) {
             // New naming system so that we don't have to remember
             // the longer name:
             //
-            int pipe_to_parent = p->to_parent[1];
-            int pipe_from_parent = p->to_child[0];
+            pipe_to_parent = p->to_parent[1];
+            pipe_from_parent = p->to_child[0];
 
             close(sockfd);      // Close original socket.  Child
                                 // doesn't need the listening
