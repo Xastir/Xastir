@@ -503,7 +503,7 @@ void output_igate_net(char *line, int port, int third_party) {
 
                 xastir_snprintf(temp,
                     sizeof(temp),
-                    "REJECT: Packet was gated before or shouldn't be gated\n");
+                    "REJECT: Packet was gated before or shouldn't be gated!\n");
                 log_data(LOGFILE_IGATE,temp);
 
                 fprintf(stderr,temp);
@@ -531,7 +531,7 @@ void output_igate_net(char *line, int port, int third_party) {
 
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: Third party traffic\n");
+                "REJECT: Third party traffic!\n");
             log_data(LOGFILE_IGATE,temp);
 
             fprintf(stderr,temp);
@@ -554,7 +554,7 @@ void output_igate_net(char *line, int port, int third_party) {
 
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: Generic Query\n");
+                "REJECT: Generic Query!\n");
             log_data(LOGFILE_IGATE,temp);
 
             fprintf(stderr,temp);
@@ -586,7 +586,7 @@ void output_igate_net(char *line, int port, int third_party) {
 
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: From my call\n");
+                "REJECT: From my call!\n");
             log_data(LOGFILE_IGATE,temp);
 
             fprintf(stderr,temp);
@@ -616,7 +616,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: No RF->NET from input port [%d]\n",
+                "REJECT: No RF->NET from input port [%d]!\n",
                 port);
             log_data(LOGFILE_IGATE,temp);
 
@@ -698,6 +698,8 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
     char temp[MAX_LINE_SIZE+20];
     int x;
     int first = 1;
+    char *ii;
+    char *jj;
 
 
     if ( (from == NULL) || (call == NULL) || (path == NULL) || (line == NULL) )
@@ -752,6 +754,31 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
         }
         return;
     }
+
+    // Don't gate generic queries in any direction.  These packets
+    // have a '?' character after the initial ':' character.
+    //
+    ii = strstr(path,":");  // Find the first ':' character
+    jj = strstr(path,":?"); // Find ":?" combination
+
+    if ( (jj != NULL) && (ii == jj) ) {
+        // We found a generic query.  Don't gate it.
+        if (log_igate && (debug_level & 1024) ) {
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "IGATE NET->RF(%c):%s\n",
+                third_party ? 'T':'N',
+                line);
+            log_data(LOGFILE_IGATE,temp);
+
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "REJECT: Generic query!\n");
+            log_data(LOGFILE_IGATE,temp);
+            fprintf(stderr,temp);
+        }
+        return;
+    }
  
     // Check whether the source and destination calls have been
     // heard on local RF.
@@ -773,12 +800,12 @@ void output_igate_rf(char *from, char *call, char *path, char *line, int port, i
         if (!heard_via_tnc_in_past_hour(call))
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: Destination not heard on TNC within an hour %s\n",
+                "REJECT: Destination not heard on TNC within an hour %s!\n",
                 call );
         else
             xastir_snprintf(temp,
                 sizeof(temp),
-                "REJECT: RF->RF talk\n");
+                "REJECT: RF->RF talk!\n");
             log_data(LOGFILE_IGATE,temp);
             fprintf(stderr,temp);
         }
@@ -870,7 +897,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
 
                             xastir_snprintf(temp,
                                 sizeof(temp),
-                                "REJECT: NET->RF on port [%d]\n",
+                                "REJECT: NET->RF on port [%d]!\n",
                                 x);
                             log_data(LOGFILE_IGATE,temp);
                             fprintf(stderr,temp);
@@ -1207,7 +1234,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
 
                             xastir_snprintf(temp,
                                 sizeof(temp),
-                                "REJECT: NET->RF on port [%d]\n",
+                                "REJECT: NET->RF on port [%d]!\n",
                                 x);
                             log_data(LOGFILE_IGATE,temp);
                             fprintf(stderr,temp);
