@@ -957,6 +957,56 @@ void dtr_all_set(int dtr) {
 
 
 //***********************************************************
+// Serial port close
+// port is port# used
+//***********************************************************
+int serial_detach(int port) {
+    char fn[600];
+    int ok;
+    ok = -1;
+
+    if (begin_critical_section(&port_data_lock, "interface.c:serial_detach(1)" ) > 0)
+        printf("port_data_lock, Port = %d\n", port);
+
+    if (port_data[port].active == DEVICE_IN_USE && port_data[port].status == DEVICE_UP){
+
+        // Close port first
+        (void)tcsetattr(port_data[port].channel, TCSANOW, &port_data[port].t_old);
+        if (close(port_data[port].channel) == 0) {
+            port_data[port].status = DEVICE_DOWN;
+            usleep(200);
+            port_data[port].active = DEVICE_NOT_IN_USE;
+            ok = 1;
+        } else {
+            if (debug_level & 2)
+                printf("Could not close port %s\n",port_data[port].device_name);
+
+            port_data[port].status = DEVICE_DOWN;
+            usleep(200);
+            port_data[port].active = DEVICE_NOT_IN_USE;
+        }
+
+        // Now delete lock
+        xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s", get_device_name_only(port_data[port].device_name));
+        if (debug_level & 2)
+            printf("Delete lock file %s\n",fn);
+
+        ENABLE_SETUID_PRIVILEGE;
+        (void)unlink(fn);
+        DISABLE_SETUID_PRIVILEGE;
+    }
+
+    if (end_critical_section(&port_data_lock, "interface.c:serial_detach(2)" ) > 0)
+        printf("port_data_lock, Port = %d\n", port);
+
+    return(ok);
+}
+
+
+
+
+
+//***********************************************************
 // Serial port INIT
 // port is port# used
 //***********************************************************
@@ -977,25 +1027,26 @@ int serial_init (int port) {
     if (begin_critical_section(&port_data_lock, "interface.c:serial_init(1)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
 
-    /* clear port_channel */
+    // clear port_channel
     port_data[port].channel = -1;
 
-    /* clear port active */
+    // clear port active
     port_data[port].active = DEVICE_NOT_IN_USE;
 
-    /* clear port status */
+    // clear port status
     port_data[port].status = DEVICE_DOWN;
 
-    /* check for lock file */
+    // check for lock file
     xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s",
             get_device_name_only(port_data[port].device_name));
     if (filethere(fn) == 1) {
-        /*Also look for pid of other process and see if it is a valid lock*/
-        printf("Found Lockfile %s for this port\n",fn);
+        // Also look for pid of other process and see if it is a valid lock
+        printf("Found an existing lockfile %s for this port!\n",fn);
         lock = fopen(fn,"r");
-        if (lock != NULL){
+        if (lock != NULL) { // We could open it so it must have
+                            // been created by this userid
             if (fscanf(lock,"%d %s %s",&myintpid,temp,temp1) == 3) {
-                /*printf("Current lock %d %s %s\n",mypid,temp,temp1);*/
+                //printf("Current lock %d %s %s\n",mypid,temp,temp1);
                 mypid = (pid_t)myintpid;
 #ifdef USING_MAC_OS_X
                 status = getpgrp();
@@ -1014,22 +1065,23 @@ int serial_init (int port) {
 
             (void)fclose(lock);
 
-            /* check to see if it is stale*/
+            // check to see if it is stale
             if (status != mypid) {
-                printf("Lock is stale removing\n");
+                printf("Lock is stale!  Removing it.\n");
                 ENABLE_SETUID_PRIVILEGE;
                 (void)unlink(fn);
                 DISABLE_SETUID_PRIVILEGE;
             } else {
-                printf("Can not open port other program has a lock\n");
+                printf("Cannot open port:  Another program has the lock!\n");
 
                 if (end_critical_section(&port_data_lock, "interface.c:serial_init(2)" ) > 0)
                     printf("port_data_lock, Port = %d\n", port);
 
                 return (-1);
             }
-        } else {
-            printf("Can not open port, other program has a lock\n");
+        } else {    // Couldn't open it, so the lock must have been
+                    // created by another userid
+            printf("Cannot open port:  Another program has the lock!\n");
 
             if (end_critical_section(&port_data_lock, "interface.c:serial_init(3)" ) > 0)
                 printf("port_data_lock, Port = %d\n", port);
@@ -1038,14 +1090,14 @@ int serial_init (int port) {
         }
     }
 
-    /* try to open channel */
+    // Try to open the serial port now
     ENABLE_SETUID_PRIVILEGE;
     port_data[port].channel = open(port_data[port].device_name, O_RDWR|O_NOCTTY);
     DISABLE_SETUID_PRIVILEGE;
     if (port_data[port].channel == -1){
 
-    if (end_critical_section(&port_data_lock, "interface.c:serial_init(4)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
+        if (end_critical_section(&port_data_lock, "interface.c:serial_init(4)" ) > 0)
+            printf("port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
             printf("Could not open channel on port %d!\n",port);
@@ -1053,7 +1105,7 @@ int serial_init (int port) {
         return (-1);
     }
 
-    /* try to create lock file */
+    // Attempt to create the lock file
     xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s", get_device_name_only(port_data[port].device_name));
     if (debug_level & 2)
         printf("Create lock file %s\n",fn);
@@ -1062,20 +1114,22 @@ int serial_init (int port) {
     lock = fopen(fn,"w");
     DISABLE_SETUID_PRIVILEGE;
     if (lock != NULL) {
-        /* get my process id for lock file*/
+        // get my process id for lock file
         mypid = getpid();
 
-        /* get user info */
+        // get user info
         user_id = getuid();
         user_info = getpwuid(user_id);
         strcpy(temp,user_info->pw_name);
 
         fprintf(lock,"%9d %s %s",(int)mypid,"xastir",temp);
         (void)fclose(lock);
-    } else {
-        /* lock failed */
+        // We've successfully created our own lock file
+    }
+    else {
+        // lock failed
         if (debug_level & 2)
-            printf("Warning: Failed opening LCK file.\n");
+            printf("Warning:  Failed opening LCK file!  Continuing on...\n");
 
         /* if we can't create lock file don't fail!
 
@@ -1085,14 +1139,17 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
         return (-1);*/
     }
 
-    /* get port attributes for new and old */
+    // get port attributes for new and old
     if (tcgetattr(port_data[port].channel, &port_data[port].t) != 0) {
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(6)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not get port attributes on port %d!\n",port);
+            printf("Could not get t port attributes for port %d!\n",port);
+
+        // Here we should close the port and remove the lock.
+        serial_detach(port);
 
         return (-1);
     }
@@ -1103,16 +1160,19 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not get port attributes on port %d!\n",port);
+            printf("Could not get t_old port attributes for port %d!\n",port);
+
+        // Here we should close the port and remove the lock.
+        serial_detach(port);
 
         return (-1);
     }
 
-    /* set time outs */
+    // set time outs
     port_data[port].t.c_cc[VMIN] = (cc_t)1;
     port_data[port].t.c_cc[VTIME] = (cc_t)2;
 
-    /* set port flags */
+    // set port flags
     port_data[port].t.c_iflag &= ~(BRKINT | IGNPAR | PARMRK | INPCK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
     port_data[port].t.c_iflag = (tcflag_t)(IGNBRK | IGNPAR);
 
@@ -1128,14 +1188,14 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     port_data[port].t.c_cflag &= ~PARENB;
     switch (port_data[port].style){
         case(0):
-            /* No parity (8N1)*/
+            // No parity (8N1)
             port_data[port].t.c_cflag &= ~CSTOPB;
             port_data[port].t.c_cflag &= ~CSIZE;
             port_data[port].t.c_cflag |= CS8;
             break;
 
         case(1):
-            /* Even parity (7E1) */
+            // Even parity (7E1)
             port_data[port].t.c_cflag &= ~PARODD;
             port_data[port].t.c_cflag &= ~CSTOPB;
             port_data[port].t.c_cflag &= ~CSIZE;
@@ -1143,7 +1203,7 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
             break;
 
         case(2):
-            /* Odd parity (7O1): */
+            // Odd parity (7O1):
             port_data[port].t.c_cflag |= PARODD;
             port_data[port].t.c_cflag &= ~CSTOPB;
             port_data[port].t.c_cflag &= ~CSIZE;
@@ -1155,14 +1215,17 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
     }
 
     port_data[port].t.c_cflag |= speed;
-    /* set input and out put speed */
+    // set input and out put speed
     if (cfsetispeed(&port_data[port].t, port_data[port].sp) == -1) {
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(8)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not set port speed on port %d!\n",port);
+            printf("Could not set port input speed for port %d!\n",port);
+
+        // Here we should close the port and remove the lock.
+        serial_detach(port);
 
         return (-1);
     }
@@ -1173,7 +1236,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
             printf("port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not set port speed on port %d!\n",port);
+            printf("Could not set port output speed for port %d!\n",port);
+
+        // Here we should close the port and remove the lock.
+        serial_detach(port);
 
         return (-1);
     }
@@ -1184,7 +1250,10 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
             printf("port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not flush data on port %d!\n",port);
+            printf("Could not flush data for port %d!\n",port);
+
+        // Here we should close the port and remove the lock.
+        serial_detach(port);
 
         return (-1);
     }
@@ -1195,69 +1264,25 @@ if (end_critical_section(&port_data_lock, "interface.c:serial_init(5)" ) > 0)
             printf("port_data_lock, Port = %d\n", port);
 
         if (debug_level & 2)
-            printf("Could not set port attributes on port %d!\n",port);
+            printf("Could not set port attributes for port %d!\n",port);
+
+        // Here we should close the port and remove the lock.
+        serial_detach(port);
 
         return (-1);
     }
 
-    /* clear port active */
+    // clear port active
     port_data[port].active = DEVICE_IN_USE;
 
-    /* clear port status */
+    // clear port status
     port_data[port].status = DEVICE_UP;
 
     if (end_critical_section(&port_data_lock, "interface.c:serial_init(12)" ) > 0)
         printf("port_data_lock, Port = %d\n", port);
 
-    /* return good condition */
+    // return good condition
     return (1);
-}
-
-
-
-
-
-//***********************************************************
-// Serial port close
-// port is port# used
-//***********************************************************
-int serial_detach(int port) {
-    char fn[600];
-    int ok;
-    ok = -1;
-
-    if (begin_critical_section(&port_data_lock, "interface.c:serial_detach(1)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
-
-    if (port_data[port].active == DEVICE_IN_USE && port_data[port].status == DEVICE_UP){
-        /* delete lock */
-        xastir_snprintf(fn, sizeof(fn), "/var/lock/LCK..%s", get_device_name_only(port_data[port].device_name));
-        if (debug_level & 2)
-            printf("Delete lock file %s\n",fn);
-
-        ENABLE_SETUID_PRIVILEGE;
-        (void)unlink(fn);
-        DISABLE_SETUID_PRIVILEGE;
-        (void)tcsetattr(port_data[port].channel, TCSANOW, &port_data[port].t_old);
-        if (close(port_data[port].channel) == 0) {
-            port_data[port].status = DEVICE_DOWN;
-            usleep(200);
-            port_data[port].active = DEVICE_NOT_IN_USE;
-            ok = 1;
-        } else {
-            if (debug_level & 2)
-                printf("Could not close port %s\n",port_data[port].device_name);
-
-            port_data[port].status = DEVICE_DOWN;
-            usleep(200);
-            port_data[port].active = DEVICE_NOT_IN_USE;
-        }
-    }
-
-    if (end_critical_section(&port_data_lock, "interface.c:serial_detach(2)" ) > 0)
-        printf("port_data_lock, Port = %d\n", port);
-
-    return(ok);
 }
 
 //*************************** STOP SERIAL PORT FUNCTIONS ********************************
