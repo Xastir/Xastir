@@ -32,12 +32,15 @@
 #include "util.h"
 #include "hashtable.h"
 #include "hashtable_itr.h"
+/// THIS ONLY FOR DEBUGGING!
+#include "hashtable_private.h"
 #include "shp_hash.h"
 
 #define PURGE_PERIOD 3600     // One hour, hard coded for now.
                               // This should be in a slider in the timing
                               // configuration instead.
 
+//#define PURGE_PERIOD 120  //  debugging
 
 static struct hashtable *shp_hash=NULL;
 static time_t purge_time;
@@ -71,6 +74,7 @@ int shape_keys_equal(void *key1, void *key2) {
 }
 
 void init_shp_hash(int clobber) {
+    //fprintf(stderr," Initializing shape hash \n");
     // make sure we don't leak
     if (shp_hash) {
         if (clobber) {
@@ -125,14 +129,25 @@ void empty_shpinfo(shpinfo *si) {
 void destroy_shp_hash() {
     struct hashtable_itr *iterator=NULL;
     shpinfo *si;
+    int ret;
+
     if (shp_hash) {
         // walk through the hashtable, free any pointers in the values
         // that aren't null, or we'll leak like a sieve.
+
+        // the hashtable functions always attempt to dereference iterator,
+        // and don't check if you give it a null, but will return null if
+        // there's nothing in the table.  Grrrr.
         iterator=hashtable_iterator(shp_hash);
         do {
-            si = hashtable_iterator_value(iterator);
-            empty_shpinfo(si);
-        } while (hashtable_iterator_advance(iterator));
+            ret=0;
+            if (iterator) {
+                si = hashtable_iterator_value(iterator);
+                if (si) 
+                    empty_shpinfo(si);
+                ret=hashtable_iterator_advance(iterator);
+            }
+        } while (ret);
         hashtable_destroy(shp_hash, 1);  // destroy the hashtable, freeing
                                          // what's left of the entries
         shp_hash=NULL;
@@ -147,6 +162,7 @@ void add_shp_to_hash(char *filename, SHPHandle sHP) {
 
     shpinfo *temp;
     int filenm_len;
+
     filenm_len=strlen(filename);
     if (!shp_hash) {  // no table to add to
         init_shp_hash(1); // so create one
@@ -164,7 +180,7 @@ void add_shp_to_hash(char *filename, SHPHandle sHP) {
 
     build_rtree(&(temp->root),sHP);
 
-    //    fprintf(stderr, "  adding %s...",temp->filename);
+    //fprintf(stderr, "  adding %s...",temp->filename);
     if (!hashtable_insert(shp_hash,temp->filename,temp)) {
         fprintf(stderr,"Insert failed on shapefile hash --- fatal\n");
         exit(1);
@@ -177,8 +193,11 @@ shpinfo *get_shp_from_hash(char *filename) {
         init_shp_hash(1); // so create one
         return NULL;
     }
-    //    fprintf(stderr,"   searching for %s...",filename);
+
+    //fprintf(stderr,"   searching for %s...",filename);
+
     result=hashtable_search(shp_hash,filename);
+
     //    if (result) {
     //        fprintf(stderr,"      found it\n");
     //    } else {
@@ -215,38 +234,61 @@ void build_rtree (struct Node **root, SHPHandle sHP) {
 void purge_shp_hash() {
     struct hashtable_itr *iterator=NULL;
     shpinfo *si;
-    time_t time_now;
+    time_t secs_now;
+    //struct tm *time_now;
     int ret;
+    char timestring[256];
 
-    time_now = sec_now();
-    if (time_now > purge_time) {  // Time to purge
-        //   fprintf(stderr,"Purging...\n");
+
+    secs_now = sec_now();
+    if (secs_now > purge_time) {  // Time to purge
+        //time_now = localtime(&secs_now);
+        //(void)strftime(timestring,100,"%a %b %d %H:%M:%S %Z %Y",time_now);
+        //fprintf(stderr,"Purging...%s\n",timestring);
+
         purge_time += PURGE_PERIOD;
 
         if (shp_hash) {
             // walk through the hash table and kill entries that are old
 
             iterator=hashtable_iterator(shp_hash);
-            if (iterator) { // could be null if we've already purged everything
-                do {
+            do {
+                ret=0;
+                if (iterator) {  // must check this, because could be null
+                                 // if the iterator malloc failed
                     si=hashtable_iterator_value(iterator);
-                    if (time_now > si->last_access+PURGE_PERIOD) {
-                        // this is stale, hasn't been accessed in a long time
-                        //                        fprintf(stderr,
-                        // "    found stale entry for %s, deleting it.\n",
-                        //     si->filename);
-                        //fprintf(stderr,"    Destroying si=%lx\n",
-                        //        (unsigned long int) si);
-                        destroy_shpinfo(si);
-                        // fprintf(stderr,"    removing from hashtable\n");
-                        ret=hashtable_iterator_remove(iterator);
-                    } else {
-                        ret=hashtable_iterator_advance(iterator);
+                    
+                    if (si) {
+                        if (secs_now > si->last_access+PURGE_PERIOD) {
+                            // this is stale, hasn't been accessed in a while
+                            //fprintf(stderr,
+                            // "found stale entry for %s, deleting it.\n",
+                            // si->filename);
+                            //fprintf(stderr,"    Destroying si=%lx\n",
+                            //            (unsigned long int) si);
+                            ret=hashtable_iterator_remove(iterator);
+                            
+                            // Important that we NOT do the
+                            // destroy first, because we've used
+                            // the filename pointer field of the
+                            // structure as the key, and the
+                            // remove function will free that.  If
+                            // we clobber the struct first, we
+                            // invite segfaults
+                            destroy_shpinfo(si);
+                            
+                            //fprintf(stderr,"    removing from hashtable\n");
+                        } else {
+                            ret=hashtable_iterator_advance(iterator);
+                        }
                     }
-                } while (ret);
-            }
+                }
+            } while (ret);
+            // we're now done with the iterator.  Free it to stop us from
+            // leaking!
+            if (iterator) free(iterator);
         }
+        //fprintf(stderr,"   done Purging...\n");
     }
-    
 }
 #endif // USE_RTREE

@@ -29,6 +29,15 @@ struct hashtable_itr
 struct hashtable_itr *
 hashtable_iterator(struct hashtable *h);
 
+#if 0
+// BZZZZT!  it is very, very wrong to be inlining this this way.
+// If one calls hashtable_iterator on a hash table from which everything
+// has been deleted, the iterator has a null for i->e.  
+// It is not good to require the caller to check the internals of the iterator
+// structure just to be sure there are no null pointers inside.
+// For whatever reason, these are defined again in the hashtable_iterator.c
+// file, not inlined.  I have modified the ones in hashtable_iterator so they
+// actually check for nulls and don't try to dereference them.
 /*****************************************************************************/
 /* hashtable_iterator_key
  * - return the value of the (key,value) pair at the current position */
@@ -47,6 +56,14 @@ hashtable_iterator_value(struct hashtable_itr *i)
 {
     return i->e->v;
 }
+#else
+// SO instead of inlining, just declare.  No need to be "extern"
+// The ones in the .c file check their arguments and return nulls if they
+// can't comply with the request.  Much nicer for the calling routine to 
+// check a return value than to monkey with the internals of the struct.
+void * hashtable_iterator_key(struct hashtable_itr *i);
+void * hashtable_iterator_value(struct hashtable_itr *i);
+#endif 
 
 /*****************************************************************************/
 /* advance - advance the iterator to the next element

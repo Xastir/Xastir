@@ -53,11 +53,26 @@ hashtable_iterator(struct hashtable *h)
 
 void *
 hashtable_iterator_key(struct hashtable_itr *i)
-{ return i->e->k; }
+{ 
+    if (!i) 
+        return NULL;
+    if (i->e) 
+        return i->e->k;
+    else 
+        return NULL;
+}
 
 void *
 hashtable_iterator_value(struct hashtable_itr *i)
-{ return i->e->v; }
+{ 
+    if (!i) 
+        return NULL;
+    if (i->e) {
+        return i->e->v;
+    } else {
+    }
+
+}
 
 /*****************************************************************************/
 /* advance - advance the iterator to the next element
