@@ -608,7 +608,11 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                         NULL);
         XtAddCallback(speed_230400,XmNvalueChangedCallback,speed_toggle,"10");
 
-        frame2 = XtVaCreateManagedWidget("Config_TNC frame2", xmFrameWidgetClass, form,
+        switch(device_type) {
+            case DEVICE_SERIAL_KISS_TNC:
+                break;
+            default:
+                frame2 = XtVaCreateManagedWidget("Config_TNC frame2", xmFrameWidgetClass, form,
                                      XmNtopAttachment, XmATTACH_WIDGET,
                                      XmNtopWidget, frame,
                                      XmNtopOffset, 10,
@@ -620,37 +624,39 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
                                      XmNbackground, colors[0xff],
                                      NULL);
 
-        style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
+                style = XtVaCreateManagedWidget(langcode("WPUPCFT015"),xmLabelWidgetClass, frame2,
                                     XmNchildType, XmFRAME_TITLE_CHILD,
                                     XmNbackground, colors[0xff],
                                     NULL);
 
 
-        style_box = XmCreateRadioBox(frame2,"Config_TNC Style box",al,ac);
+                style_box = XmCreateRadioBox(frame2,"Config_TNC Style box",al,ac);
 
-        XtVaSetValues(style_box,XmNorientation, XmHORIZONTAL,NULL);
+                XtVaSetValues(style_box,XmNorientation, XmHORIZONTAL,NULL);
 
-        style_8n1 = XtVaCreateManagedWidget(langcode("WPUPCFT016"),xmToggleButtonGadgetClass,
+                style_8n1 = XtVaCreateManagedWidget(langcode("WPUPCFT016"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
                                         NULL);
-        XtAddCallback(style_8n1,XmNvalueChangedCallback,style_toggle,"0");
+                XtAddCallback(style_8n1,XmNvalueChangedCallback,style_toggle,"0");
 
-        style_7e1 = XtVaCreateManagedWidget(langcode("WPUPCFT017"),xmToggleButtonGadgetClass,
+                style_7e1 = XtVaCreateManagedWidget(langcode("WPUPCFT017"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
                                         NULL);
-        XtAddCallback(style_7e1,XmNvalueChangedCallback,style_toggle,"1");
+                XtAddCallback(style_7e1,XmNvalueChangedCallback,style_toggle,"1");
 
-        style_7o1 = XtVaCreateManagedWidget(langcode("WPUPCFT018"),xmToggleButtonGadgetClass,
+                style_7o1 = XtVaCreateManagedWidget(langcode("WPUPCFT018"),xmToggleButtonGadgetClass,
                                         style_box,
                                         XmNbackground, colors[0xff],
                                         NULL);
-        XtAddCallback(style_7o1,XmNvalueChangedCallback,style_toggle,"2");
+                XtAddCallback(style_7o1,XmNvalueChangedCallback,style_toggle,"2");
+            break;
+        }
 
         frame4 = XtVaCreateManagedWidget("Config_TNC frame4", xmFrameWidgetClass, form,
                                      XmNtopAttachment, XmATTACH_WIDGET,
-                                     XmNtopWidget, frame2,
+                                     XmNtopWidget, (device_type == DEVICE_SERIAL_KISS_TNC) ? frame : frame2,
                                      XmNtopOffset, 10,
                                      XmNbottomAttachment, XmATTACH_NONE,
                                      XmNleftAttachment, XmATTACH_FORM,
@@ -1089,10 +1095,6 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
         delw = XmInternAtom(XtDisplay(config_TNC_dialog),"WM_DELETE_WINDOW", FALSE);
         XmAddWMProtocolCallback(config_TNC_dialog, delw, Config_TNC_destroy_shell, (XtPointer)config_TNC_dialog);
 
-//WE7U
-//        if (device_type == DEVICE_SERIAL_KISS_TNC)
-//            XtSetSensitive(frame3,FALSE);
-
         if (config_type==0) {
             /* first time port */
                         devices[TNC_port].gps_retrieve=DEFAULT_GPS_RETR;
@@ -1117,8 +1119,12 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
 
             XmToggleButtonSetState(speed_4800,TRUE,FALSE);
             device_speed=4;
-            XmToggleButtonSetState(style_8n1,TRUE,FALSE);
+
+            if (device_type != DEVICE_SERIAL_KISS_TNC)
+                XmToggleButtonSetState(style_8n1,TRUE,FALSE);
+
             device_style=0;
+
             device_igate_options=0;
             XmToggleButtonSetState(igate_o_0,TRUE,FALSE);
             XmTextFieldSetString(TNC_unproto1_data,"RELAY,WIDE");
@@ -1130,12 +1136,11 @@ void Config_TNC( /*@unused@*/ Widget w, int device_type, int config_type, int po
             if (device_type == DEVICE_SERIAL_KISS_TNC) {
                 // We don't allow changing the selection for KISS
                 // TNC's, as they require 8N1
-                XmToggleButtonSetState(style_8n1,TRUE,FALSE);
-                XtSetSensitive(style,FALSE);
-                XtSetSensitive(style_8n1,FALSE);
-                XtSetSensitive(style_7e1,FALSE);
-                XtSetSensitive(style_7o1,FALSE);
                 device_style = 0;
+                XmTextFieldSetString(TNC_txdelay,"40");
+                XmTextFieldSetString(TNC_persistence,"63");
+                XmTextFieldSetString(TNC_slottime,"20");
+                XmTextFieldSetString(TNC_fullduplex,"0");
             }
             else {
                 XmTextFieldSetString(TNC_up_file_data,"tnc-startup.sys");
@@ -1237,11 +1242,6 @@ begin_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
             if (device_type == DEVICE_SERIAL_KISS_TNC) {
                 // We don't allow changing the selection for KISS
                 // TNC's, as they require 8N1
-                XmToggleButtonSetState(style_8n1,TRUE,FALSE);
-                XtSetSensitive(style,FALSE);
-                XtSetSensitive(style_8n1,FALSE);
-                XtSetSensitive(style_7e1,FALSE);
-                XtSetSensitive(style_7o1,FALSE);
                 device_style = 0;
             }
             else {
@@ -1311,11 +1311,13 @@ end_critical_section(&devices_lock, "interface_gui.c:Config_TNC" );
 
         XtManageChild(form);
 
-//        if (device_type != DEVICE_SERIAL_KISS_TNC)
-            XtManageChild(form2);
+        XtManageChild(form2);
 
         XtManageChild(speed_box);
-        XtManageChild(style_box);
+
+        if (device_type != DEVICE_SERIAL_KISS_TNC)
+            XtManageChild(style_box);
+
         XtManageChild(igate_box);
         XtManageChild(pane);
 
