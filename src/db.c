@@ -2144,7 +2144,8 @@ int ok_to_draw_station(DataRow *p_station) {
                 return 0;
 
             // Check whether we wish to display directly heard stations
-            if (p_station->flag & ST_DIRECT) {
+            if (p_station->flag & ST_DIRECT
+                    && sec_now() < (p_station->direct_heard + st_direct_timeout)) {
                 if (!Select_.direct)
                     return 0;
             }
@@ -5601,19 +5602,11 @@ int heard_via_tnc_in_past_hour(char *call) {
     in_hour=0;
     if (search_station_name(&p_station,call,1)) {  // find call
 
-        // test "via TNC" flag.  This flag is set if a packet is
-        // _ever_ heard on a TNC interface from this station.  It is
-        // reset if the last 20 packets from a station have come
-        // from non-TNC interfaces, so it's _NOT_ a good test to use
-        // to decide whether to igate!
+        // Check the heard_via_tnc_last_time timestamp.  This is a
+        // timestamp that is saved each time a station is heard via
+        // RF.  It is initially set to 0.  It does not get reset
+        // when a packet comes in via a non-TNC interface.
         //
-        //if((p_station->flag & ST_VIATNC) != 0) {
-
-        // Instead we'll check the heard_via_tnc_last_time
-        // timestamp.  This is a timestamp that is saved each time a
-        // station is heard via RF.  It is initially set to 0.  It
-        // does not get reset when a packet comes in via a non-TNC
-        // interface.
         if (p_station->heard_via_tnc_last_time) {   // non-zero entry
 
             // Should we check to see if the last packet was message
@@ -5624,7 +5617,11 @@ int heard_via_tnc_in_past_hour(char *call) {
             in_hour = (int)((p_station->heard_via_tnc_last_time+3600l) > sec_now());
 
             if(debug_level & 2)
-                fprintf(stderr,"Call %s: %ld %ld ok %d\n",call,(long)(p_station->heard_via_tnc_last_time),(long)sec_now(),in_hour);
+                fprintf(stderr, "Call %s: %ld %ld ok %d\n",
+                    call,
+                    (long)(p_station->heard_via_tnc_last_time),
+                    (long)sec_now(),
+                    in_hour);
 
         }
         else {
@@ -7390,7 +7387,6 @@ void init_station(DataRow *p_station) {
     p_station->data_via           = '\0';         // L local, T TNC, I internet, F file
     p_station->heard_via_tnc_port = 0;
     p_station->heard_via_tnc_last_time = 0;
-    p_station->last_heard_via_tnc = 0;
     p_station->last_port_heard    = 0;
     p_station->num_packets        = 0;
     p_station->aprs_symbol.aprs_type = '\0';
@@ -10874,7 +10870,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             if (!third_party) { // Not a third-party packet
                 p_station->flag |= ST_VIATNC;               // set "via TNC" flag
                 p_station->heard_via_tnc_last_time = sec_now();
-                p_station->last_heard_via_tnc = 0l;
                 p_station->heard_via_tnc_port = port;
             }
             else {  // Third-party packet
@@ -10884,17 +10879,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             }
         } else {                                        // heard other than TNC
             if (new_station) {                          // new station
-                p_station->last_heard_via_tnc = 0L;
                 p_station->flag &= (~ST_VIATNC);        // clear "via TNC" flag
                 p_station->heard_via_tnc_last_time = 0l;
-            } else {                                    // old station
-                p_station->last_heard_via_tnc++;
-
-                // if the last 50 times this station was heard other than tnc clear the heard tnc data
-                if (p_station->last_heard_via_tnc > 50) {
-                    p_station->last_heard_via_tnc = 0l;
-                    p_station->flag &= (~ST_VIATNC);        // clear "via TNC" flag
-                }
             }
         }
         p_station->last_port_heard = port;
@@ -10905,15 +10891,6 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             "%s",
             get_time(temp_data)); // get_time returns value in temp_data
 
-        // Free any old path we might have
-        if (p_station->node_path_ptr != NULL)
-            free(p_station->node_path_ptr);
-        // Malloc and store the new path
-        p_station->node_path_ptr = (char *)malloc(strlen(path) + 1);
-        CHECKMALLOC(p_station->node_path_ptr);
-
-        substr(p_station->node_path_ptr,path,strlen(path));
- 
         p_station->flag |= ST_ACTIVE;
         if (third_party)
             p_station->flag |= ST_3RD_PT;               // set "third party" flag
@@ -10940,20 +10917,26 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         // 1.  The packet must have been received via TNC.
         // 2.  The packet must not have any * flags.
         // 3.  If present, the first WIDEn-N (or TRACEn-N) must have n=N.
-        // A station retains the ST_DIRECT setting unless a certain number of 
-        // seconds goes by without a direct packet being received.  This value 
-        // will eventually make its way to the configuration file, but for now 
-        // it's hardcoded to one hour.
+        // A station retains the ST_DIRECT setting.  If
+        // "st_direct_timeout" seconds have passed since we set
+        // that bit then APRSD queries and displays based on the
+        // ST_DIRECT bit will skip that station.
 
-        if ((p_station->flag & ST_VIATNC) != 0 &&       // From a TNC interface
-                (p_station->flag & ST_3RD_PT) == 0 &&   // Not a 3RD-Party packet
-                p_station->node_path_ptr != NULL &&     // Path is not NULL
-                strchr(p_station->node_path_ptr,'*') == NULL) { // No asterisk found
+// In order to make this scheme work for stations that straddle both
+// RF and INET, we need to make sure that node_path_ptr doesn't get
+// overwritten with an INET path if there's an RF path already in
+// there and it has been less than st_direct_timeout seconds since
+// the station was last heard on RF.
+
+        if ((from == DATA_VIA_TNC)             // Heard via TNC
+                && !third_party                // Not a 3RD-Party packet
+                && path != NULL                // Path is not NULL
+                && strchr(path,'*') == NULL) { // No asterisk found
 
             // Look for WIDE or TRACE
-            if ((((p = strstr(p_station->node_path_ptr,"WIDE")) != NULL) 
+            if ((((p = strstr(path,"WIDE")) != NULL) 
                     && (p+=4)) || 
-                    (((p = strstr(p_station->node_path_ptr,"TRACE")) != NULL) 
+                    (((p = strstr(path,"TRACE")) != NULL) 
                     && (p+=5))) {
 
                 // Look for n=N on WIDEn-N/TRACEn-N digi field
@@ -11012,6 +10995,60 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             }
         }
 
+        // If heard on TNC then overwrite node_path_ptr.  If heard
+        // on INET then overwrite node_path_ptr only if direct_heard
+        // is older than one hour (zero counts as well!), plus clear
+        // the ST_DIRECT and ST_VIATNC bits in this case.  This
+        // makes us keep the RF path around for at least one hour
+        // after the station is heard.
+        //
+        if ((from == DATA_VIA_TNC)  // Heard via TNC
+                && !third_party     // Not a 3RD-Party packet
+                && path != NULL) {  // Path is not NULL
+
+            // Heard on TNC interface
+ 
+            // Free any old path we might have
+            if (p_station->node_path_ptr != NULL)
+                free(p_station->node_path_ptr);
+            // Malloc and store the new path
+            p_station->node_path_ptr = (char *)malloc(strlen(path) + 1);
+            CHECKMALLOC(p_station->node_path_ptr);
+
+            substr(p_station->node_path_ptr,path,strlen(path));
+        }
+        else if (from != DATA_VIA_TNC  // From an INET interface
+                && !third_party        // Not a 3RD-Party packet
+                && path != NULL) {     // Path is not NULL
+
+            // Heard on INET interface.  Check if direct_heard is
+            // older than an hour.  If so, overwrite the path and
+            // clear a few bits to show that it has timed out on RF
+            // and we're now receiving that station from the INET
+            // feeds.
+            //
+            if (sec_now() > (p_station->direct_heard + st_direct_timeout)) {
+
+                // Yep, more than one hour old or is a zero,
+                // overwrite the node_path_ptr variable with the new
+                // one.
+
+                // Free any old path we might have
+                if (p_station->node_path_ptr != NULL)
+                    free(p_station->node_path_ptr);
+                // Malloc and store the new path
+                p_station->node_path_ptr = (char *)malloc(strlen(path) + 1);
+                CHECKMALLOC(p_station->node_path_ptr);
+
+                substr(p_station->node_path_ptr,path,strlen(path));
+
+                // Clear the ST_VIATNC and ST_DIRECT bits
+                p_station->flag &= ~ST_VIATNC;
+                p_station->flag &= ~ST_DIRECT;
+            }
+        }
+ 
+ 
         //---------------------------------------------------------------------
 
         p_station->num_packets += 1;
@@ -12465,6 +12502,7 @@ int process_directed_query(char *call,char *path,char *message,char from) {
             if ((p_station->flag & ST_ACTIVE) != 0) {       // ignore deleted objects
                 if ( ((p_station->flag & ST_VIATNC) != 0)   // test "via TNC" flag
                      && ((p_station->flag & ST_DIRECT) != 0) // And "direct" flag
+                     && sec_now() > (p_station->direct_heard + st_direct_timeout) // Within the last hour
                      && !is_my_call(p_station->call_sign,1) ) { // and not me
                     if (strlen(temp)+strlen(p_station->call_sign) < 65) {
                         strncat(temp,

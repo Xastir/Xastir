@@ -378,7 +378,6 @@ typedef struct _DataRow {
 
 // Change to char's to save space?
     int  heard_via_tnc_port;
-    int  last_heard_via_tnc;
     int  last_port_heard;
     unsigned int  num_packets;
     char *node_path_ptr;        // Pointer to path string
