@@ -11924,9 +11924,19 @@ void display_packet_data(void) {
 // Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
 // which is currently set to 4096.
 //
-void packet_data_add(char *from, char *line) {
+// data_port == -1 for x_spider port, normal interface number
+// otherwise.
+//
+void packet_data_add(char *from, char *line, int data_port) {
     int i;
     int offset;
+    char prefix[3] = "";
+
+
+    if (data_port == -1)    // x_spider port (server port)
+        xastir_snprintf(prefix,sizeof(prefix),"sp");
+    else
+        xastir_snprintf(prefix,sizeof(prefix),"%2d",data_port);
 
 
     offset=0;
@@ -11943,7 +11953,8 @@ void packet_data_add(char *from, char *line) {
             // next position in the array.
             xastir_snprintf(packet_data[packet_data_display],
                 sizeof(packet_data[packet_data_display]),
-                "%s-> %s\n",
+                "%s:%s-> %s\n",
+                prefix,
                 from,
                 line+offset);
             packet_data_display++;
@@ -11961,7 +11972,8 @@ void packet_data_add(char *from, char *line) {
 
             xastir_snprintf(packet_data[MAX_PACKET_DATA_DISPLAY-1],
                 sizeof(packet_data[MAX_PACKET_DATA_DISPLAY-1]),
-                "%s-> %s\n",
+                "%s:%s-> %s\n",
+                prefix,
                 from,
                 line+offset);
         }

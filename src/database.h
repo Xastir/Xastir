@@ -523,7 +523,7 @@ extern int decode_ax25_header(unsigned char *incoming_data, int length);
 extern int decode_ax25_line(char *line, char from, int port, int dbadd);
 
 // utilities
-extern void packet_data_add(char *from, char *line);
+extern void packet_data_add(char *from, char *line, int data_port);
 extern void General_query(Widget w, XtPointer clientData, XtPointer calldata);
 extern void IGate_query(Widget w, XtPointer clientData, XtPointer calldata);
 extern void WX_query(Widget w, XtPointer clientData, XtPointer calldata);
