@@ -777,62 +777,95 @@ xpm format, please try to load and save the graphics with Gimp first, to
 convert all unknown colournames into the binary representation.
 
 The geo file is a text data file that will tie the image to a location
-in the world. Here is an example of my world1.geo file:
+in the world. Here is an example of a geo file that will cover the entire
+world with the map world1.xpm:
 
 FILENAME   world1.xpm
 #          x          y        lon         lat
 TIEPOINT   0          0        -180        90
 TIEPOINT   640        320      180         -90
 
-This is a simple file with 4 basic components:
-o The first line specifies the file this .geo data is used with, if using
-  compressed .xpm files the ".gz" extension is optional here. If no path
-  is specified with the graphics file name, Xastir looks for the file in
-  the same directory where the .geo file is. 
-  If you compiled Xastir with ImageMagick support, besides .xpm, the file
-  can be any graphics format that ImageMagick itself supports and for
-  which supporting libraries that ImageMagick requires are also present.
-  The FILENAME portion can also be replaced by a URL statement, and Xastir
-  will download the graphic using wget. This means that nearly any picture
-  available via HTTP or FTP over the internet can be used as a map.
-o The second line shows a comment; any line with the first character as a 
-  '#' will be ignored.
-o The last two lines are for connecting an x,y pixel position in the image
-  to a lat and long position on the earth. Two tie points are needed and
-  should be as close as possible to the upper left corner and the lower
-  right corner of the image (for accuracy). To use pixmap files with
-  Xastir, use the map chooser and select the .geo file to include the
-  image in the current map view.
+.geo files can have many elements:
 
-For speed reasons, another optional line may be included in the .geo file:
+FILENAME <filename>
+This specifies the filename of a map image to be loaded from the local disk.  
 
-FILENAME        Agnes_Mountain.xpm.gz
-#
-#               X       Y       Lon             Lat
-#               ----    ----    -------------   -----------
-TIEPOINT        0       0       -121.00120491   48.37481943
-TIEPOINT        1337    1999    -120.87619806   48.24982052
-#
-IMAGESIZE       1338    2000
+URL <http://website>
+This specifies the URL of a map image to be loaded from a web or ftp site. 
+ImageMagick only.
 
-The IMAGESIZE is the size of the graphic file in pixels. Xastir will use that
-information and the tiepoints to skip the map if it doesn't fit in the current
-view. If this information is omitted, Xastir will always load the graphic.
+TIEPOINT <x-pixel> <y-pixel> <longitude> <latitude>
+Two tiepoints are required, and more than 2 will be ignored.
+these two lines are for connecting an x,y pixel position in the image
+to a lat and long position on the earth. The points should be as close as
+possible to the upper left corner and the lower right corner of the image for
+best accuracy.
 
-There are several "special" .geo files that Xastir can use:
-o A file with just the word "TIGERMAP" will cause Xastir to retrieve an
-  online Tiger map of the area on screen.
-o A file with just the word "TERRASERVER" will cause Xastir to retrieve a
-  Terraserver satellite photo of the area on screen. Those services are not
-  available for every place in the world. Note that using the Terraserver
-  maps at any zoom above 256 will probably take a long time to load, won't
-  show much detail, and probably won't display correctly. This is a limit
-  of the Terraserver, not Xastir.
-o A file with the word "FINDU" and the second line "CALL <callsign>" will
-  retrieve historical data for the specified callsign, although using the
-  Stations menu is easier now. 
+IMAGESIZE <pixels horizontally> <pixels vertically>
+This specifies the size of the image in pixels. If this is not set, the image
+will be loaded each map redraw, regardless if it is on screen or not.
 
-  
+DATUM <datum>
+This feature is not implemented.
+
+PROJECTION <projection>
+This feature is only partially implemented, default is "LatLon", other
+possibility is "TM" to specify that the map is in  Transverse Mercator
+projection.
+
+# <anything>
+Any line with the first character of a '#' will be ignored.
+
+ImageMagick specific image enhancements:
+
+GAMMA
+eg: GAMMA 1.2    or    GAMMA 1.2,2.0,1.2
+The first will change overall gamma for this image, the second will
+lighten green more than red or blue.
+
+CONTRAST
+eg: CONTRAST 0    or    CONTRAST 1
+Doesn't seem to do that much, other values make no difference.
+
+NEGATE
+eg: NEGATE 0    or    NEGATE 1
+0 will negate all colors, 1 just grayscale colors.
+
+EQUALIZE
+No argument.
+
+NORMALIZE
+No argument.
+
+LEVEL <black_point, mid_point, white_point>
+eg: LEVEL 0,1,65535
+These values seem to be the defaults.
+
+MODULATE <brightness, saturation, hue>
+eg: MODULATE 90,150,100
+These are percents, 100,100,100 is the default.
+
+Special/nonstandard .geo files:
+
+TIGERMAP
+A file with just the word "TIGERMAP" will cause Xastir to retrieve an
+online Tiger map of the area on screen.
+
+TERRASERVER
+A file with just the word "TERRASERVER" will cause Xastir to retrieve a
+Terraserver satellite photo of the area on screen. Those services are not
+available for every place in the world. Note that using the Terraserver
+maps at any zoom above 256 will probably take a long time to load, won't
+show much detail, and probably won't display correctly. This is a limit
+of the Terraserver, not Xastir.
+
+FINDU
+CALL <callsign>
+A file with the word "FINDU" and the second line "CALL <callsign>" will
+retrieve historical data for the specified callsign, although using the
+Stations menu is the preferred method.
+
+
 geoTIFF maps are a combination of two files as well: a .tif and a .fgd file.
 The .tif file is the actual map data.  The .fgd file need only contain four
 lines like this (but may contain many other lines):
