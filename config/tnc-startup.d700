@@ -1,0 +1,57 @@
+# $Id$
+#
+# Copyright (C) 2004  The Xastir Group
+#
+# TNC Init file for KENWOOD D700
+#Don't send CONTROL-C before this line
+##META <no-ctrl-c>
+TC 1
+##Pause for one second
+##META <delay>
+##META <delay>
+#Put the TNC in packet mode since this is where we want to end up
+# Change the 1 to 0 to go to normal radio mode
+##META <no-ctrl-c>
+TNC 2
+# Pause for two seconds
+##META <delay>
+##META <delay>
+##META <delay>
+##META <delay>
+# Enable 4800 baud GPS
+# Change to 2 for 9600 baud GPS
+# Disable both the META line and the GU line for no change
+##META <no-ctrl-c>
+GU 1
+# Pause for two seconds
+##META <delay>
+##META <delay>
+##META <delay>
+##META <delay>
+#Turn off Terminal Control
+##META <no-ctrl-c>
+TC 0
+# Pause for two seconds just in case
+##META <delay>
+##META <delay>
+##META <delay>
+##META <delay>
+AWlen 8
+BBSMsgs ON
+B E 0
+LOC E 0
+Echo off
+FLow off
+AUTOLF off
+MCOM off
+MON ON
+MRPt on
+PACLen 128
+PASSALL off
+HBAUD 1200
+# Delete following lines if without GPS
+GBAUD 4800
+GPSTEXT $GPRMC
+LTMH OFF
+LTM 10
+#
