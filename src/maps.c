@@ -1145,6 +1145,8 @@ void draw_shapefile_map (Widget w,
     int             start_record;
     int             end_record;
     int             ok_to_draw = 0;
+    int             high_water_mark_i = 0;
+    int             high_water_mark_index = 0;
 
     //printf("*** Alert color: %d ***\n",alert_color);
 
@@ -1653,7 +1655,6 @@ void draw_shapefile_map (Widget w,
                 }
                 printf("\n");
             }
-
             switch ( nShapeType ) {
                 case SHPT_POINT:
                         // Not implemented.
@@ -1663,15 +1664,19 @@ void draw_shapefile_map (Widget w,
                     temp = "";
 
                     if (road_flag) {
-                        // For roads, we need to use SIGN1 if it exists, else use DESCRIP if it exists.
-                        temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
-
+                        if (fieldcount >=10) {
+                            // For roads, we need to use SIGN1 if it exists, else use DESCRIP if it exists.
+                            temp = DBFReadStringAttribute( hDBF, structure, 9 );    // SIGN1
+                        }
                         if ( (temp == NULL) || (strlen(temp) == 0) ) {
-                            temp = DBFReadStringAttribute( hDBF, structure, 12 );    // DESCRIP
-                            
+                            if (fieldcount >=13) {
+                                temp = DBFReadStringAttribute( hDBF, structure, 12 );    // DESCRIP
+                            }
                         }
                     } else if (lake_flag || river_flag) {
-                        temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
+                        if (fieldcount >=14) {
+                            temp = DBFReadStringAttribute( hDBF, structure, 13 );   // PNAME (rivers)
+                        }
                     }
 
                     if ( (temp != NULL) && (strlen(temp) != 0) && (map_labels) ) {
@@ -1726,18 +1731,26 @@ void draw_shapefile_map (Widget w,
                             index++;
                         }
 
+                        if (index > high_water_mark_index)
+                            high_water_mark_index = index;
+
                         if (index >= MAX_MAP_POINTS) {
                             index = MAX_MAP_POINTS - 1;
-                            printf("Trying to overrun the points array: SHPT_ARC\n");
+                            printf("Trying to overrun the points array: SHPT_ARC, index=%d\n",index);
                         }
                     }
 
                     if (road_flag) {
-                        int lanes;
+                        int lanes = 0;
 
-                        lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
+                        if (fieldcount >= 7) {
+                            lanes = DBFReadIntegerAttribute( hDBF, structure, 6 );
+                        }
                         if (lanes != (int)NULL) {
                             (void)XSetLineAttributes (XtDisplay (w), gc, lanes, LineSolid, CapButt,JoinMiter);
+                        }
+                        else {
+                            (void)XSetLineAttributes (XtDisplay (w), gc, 1, LineSolid, CapButt,JoinMiter);
                         }
                     }
                     else {  // Set default line width
@@ -1803,18 +1816,25 @@ void draw_shapefile_map (Widget w,
                             points[i].y = (short)y;
                             i++;    // Number of points to draw
 
+                            if (i > high_water_mark_i)
+                                high_water_mark_i = i;
+
+
                             if (i >= MAX_MAP_POINTS) {
                                 i = MAX_MAP_POINTS - 1;
-                                printf("Trying to run past the end of our internal points array: i\n");
+                                printf("Trying to run past the end of our internal points array: i=%d\n",i);
                             }
 
                             //printf("%d %d\t", points[i].x, points[i].y);
 
                             index++;
 
+                            if (index > high_water_mark_index)
+                                high_water_mark_index = index;
+
                             if (index > endpoint) {
                                 index = endpoint;
-                                printf("Trying to run past the end of shapefile array: index\n");
+                                printf("Trying to run past the end of shapefile array: index=%d\n",index);
                             }
                         }
 
@@ -1905,6 +1925,12 @@ void draw_shapefile_map (Widget w,
         free(panWidth);
  
 //    XmUpdateDisplay (XtParent (da));
+
+    if (debug_level & 16) {
+        printf("High-Mark Index:%d,\tHigh-Mark i:%d\n",
+            high_water_mark_index,
+            high_water_mark_i);
+    }
 }
 #endif  // HAVE_SHAPELIB
 
