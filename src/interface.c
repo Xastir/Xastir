@@ -805,7 +805,7 @@ void channel_data(int port, unsigned char *string, int length) {
         /* wait until data is processed */
         while (data_avail && max < 5400) {
             tmv.tv_sec = 0;
-            tmv.tv_usec = 100;
+            tmv.tv_usec = 100;  // 100 usec
             (void)select(0,NULL,NULL,NULL,&tmv);
             max++;
         }
@@ -3342,11 +3342,10 @@ void port_read(int port) {
             // We need to delay here so that the thread doesn't use
             // high amounts of CPU doing nothing.
 
-            /*usleep(100);*/
             FD_ZERO(&rd);
             FD_SET(port_data[port].channel, &rd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 100000;
+            tmv.tv_usec = 100000;   // 100 ms
             (void)select(0,&rd,NULL,NULL,&tmv);
         }
     }
@@ -3462,10 +3461,15 @@ void port_write(int port) {
 //fprintf(stderr,"Char pacing ");
                         usleep(25000); // character pacing, 25ms per char.  20ms doesn't work for PicoPacket.
                         break;
+
+                    case DEVICE_NET_AGWPE:
+//fprintf(stderr,"Char pacing ");
+                        usleep(25000);  // character pacing, 25ms per char.
+                        break;
+
                     default:
                         break;
                 }
-
             }
 
             if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write(2)" ) > 0)
