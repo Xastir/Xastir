@@ -186,6 +186,8 @@ static void Help_Index(Widget w, XtPointer clientData, XtPointer callData);
 // ----------------------------- map ---------------------------------
 Widget map_list;
 
+void map_chooser_fill_in (void);
+ 
 Widget map_chooser_dialog = (Widget)NULL;
 static void Map_chooser(Widget w, XtPointer clientData, XtPointer callData);
 
@@ -6598,16 +6600,18 @@ void map_chooser_select_vector_maps(Widget widget, XtPointer clientData, XtPoint
             if(XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp))
             {
                 ext = get_map_ext (temp);
-                if ( (ext != NULL) && (strcasecmp (ext, "map") == 0) )
+                if ( (ext != NULL) && (strcasecmp (ext, "map") == 0)) {
                     fprintf(f,"%s\n",temp);
+                }
                 XtFree(temp);
             }
         }
         (void)fclose(f);
+        map_chooser_fill_in();
     }
     else
         printf("Couldn't open file: %s\n", WIN_MAP_DATA);
-
+ 
 //    map_chooser_destroy_shell(widget,clientData,callData);
 //    create_image(da);
 //    (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
@@ -6637,13 +6641,15 @@ void map_chooser_select_250k_maps(Widget widget, XtPointer clientData, XtPointer
                 ext = get_map_ext (temp);
                 length = (int)strlen(temp);
                 if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
-                    && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
-                    && ( (temp[length - 12] == 'c') || (temp[length - 12] == 'C') ) )
+                        && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
+                        && ( (temp[length - 12] == 'c') || (temp[length - 12] == 'C') ) ) {
                     fprintf(f,"%s\n",temp);
+                }
                 XtFree(temp);
             }
         }
         (void)fclose(f);
+        map_chooser_fill_in();
     }
     else
         printf("Couldn't open file: %s\n", WIN_MAP_DATA);
@@ -6679,13 +6685,15 @@ void map_chooser_select_100k_maps(Widget widget, XtPointer clientData, XtPointer
                 ext = get_map_ext (temp);
                 length = (int)strlen(temp);
                 if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
-                    && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
-                    && ( (temp[length - 12] == 'f') || (temp[length - 12] == 'F') ) )
+                        && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
+                        && ( (temp[length - 12] == 'f') || (temp[length - 12] == 'F') ) ) {
                     fprintf(f,"%s\n",temp);
+                }
                 XtFree(temp);
             }
         }
         (void)fclose(f);
+        map_chooser_fill_in();
     }
     else
         printf("Couldn't open file: %s\n", WIN_MAP_DATA);
@@ -6720,14 +6728,16 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
                 ext = get_map_ext (temp);
                 length = (int)strlen(temp);
                 if ( (ext != NULL) && (strcasecmp (ext, "tif") == 0)
-                    && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
-                    && ( (temp[length - 12] == 'o') || (temp[length - 12] == 'O')
-                            || (temp[length - 12] == 'k') || (temp[length - 12] == 'K') ) )
+                        && (length >= 12)   // "o48122h3.tif", we might have subdirectories also
+                        && ( (temp[length - 12] == 'o') || (temp[length - 12] == 'O')
+                            || (temp[length - 12] == 'k') || (temp[length - 12] == 'K') ) ) {
                     fprintf(f,"%s\n",temp);
+                }
                 XtFree(temp);
             }
         }
         (void)fclose(f);
+        map_chooser_fill_in();
     }
     else
         printf("Couldn't open file: %s\n", WIN_MAP_DATA);
@@ -6750,6 +6760,8 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
         (void)fclose(f);
     else
         printf("Couldn't zero file: %s\n", WIN_MAP_DATA);
+
+    map_chooser_fill_in();
 
 //    map_chooser_destroy_shell(widget,clientData,callData);
 //    create_image(da);
@@ -6828,6 +6840,9 @@ void sort_list(char *filename,int size, Widget list, int *item) {
     char ptr_filename[400];
     XmString str_ptr;
 
+    // Clear the list widget first
+    XmListDeleteAllItems(list);
+
     xastir_snprintf(ptr_filename, sizeof(ptr_filename), "%s-ptr", filename);
     f_pointer=fopen(ptr_filename,"r");
     f_data=fopen(filename,"r");
@@ -6860,20 +6875,62 @@ void sort_list(char *filename,int size, Widget list, int *item) {
 
 
 
+// WE7U
+void map_chooser_fill_in (void) {
+    int n,i;
+    FILE *f;
+    char temp[600];
+    XmString str_ptr;
+
+
+    busy_cursor(appshell);
+
+    i=0;
+    if (map_chooser_dialog) {
+
+        // Find the names of all the map files on disk and put them into map_list
+        n=1;
+        // Clear out the database file
+        clear_sort_file(get_user_base_dir("data/sort_maps_db.dat"));    // defined in db.c
+        // populate the database file with filenames from disk
+        dir_sort(WIN_MAP_DIR);  // defined in main.c
+        sort_list(get_user_base_dir("data/sort_maps_db.dat"),1000,map_list,&n); // defined in main.c
+
+        (void)filecreate(WIN_MAP_DATA);   // Create empty file if it doesn't exist
+
+        // Compare the maps in the list to those we've already selected
+        // and highlight those that match.
+        f=fopen(WIN_MAP_DATA,"r");
+        if (f!=NULL) {
+            while(!feof(f)) {
+                (void)get_line(f,temp,600);
+                i=XmListItemPos(map_list, str_ptr = XmStringCreateLtoR(temp,XmFONTLIST_DEFAULT_TAG));
+                XmStringFree(str_ptr);
+                if (i!=0)
+                    XmListSelectPos(map_list,i,TRUE);
+            }
+            (void)fclose(f);
+        }
+        else {
+            printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+        }
+    }
+}
+
+
+
+
+
 //WE7U
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_none, button_V, button_ok,
             button_cancel, mess, button_C, button_F, button_O, rowcol;
     Atom delw;
-    int n,i;
-    FILE *f;
-    char temp[600];
-    XmString str_ptr;
+    int i;
     Arg al[10];                    /* Arg List */
     register unsigned int ac = 0;           /* Arg Count */
 
 
-//WE7U7
     busy_cursor(appshell);
 
     i=0;
@@ -6906,30 +6963,7 @@ void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@u
         map_list = XmCreateScrolledList(my_form,"Map_chooser list",al,ac);
 
         // Find the names of all the map files on disk and put them into map_list
-        n=1;
-        // Clear out the database file
-        clear_sort_file(get_user_base_dir("data/sort_maps_db.dat"));    // defined in db.c
-        // populate the database file with filenames from disk
-        dir_sort(WIN_MAP_DIR);  // defined in main.c
-        sort_list(get_user_base_dir("data/sort_maps_db.dat"),1000,map_list,&n); // defined in main.c
-
-        (void)filecreate(WIN_MAP_DATA);   // Create empty file if it doesn't exist
-
-        // Compare the maps in the list to those we've already selected
-        // and highlight those that match.
-        f=fopen(WIN_MAP_DATA,"r");
-        if (f!=NULL) {
-            while(!feof(f)) {
-                (void)get_line(f,temp,600);
-                i=XmListItemPos(map_list, str_ptr = XmStringCreateLtoR(temp,XmFONTLIST_DEFAULT_TAG));
-                XmStringFree(str_ptr);
-                if (i!=0)
-                    XmListSelectPos(map_list,i,TRUE);
-            }
-            (void)fclose(f);
-        }
-        else
-            printf("Couldn't open file: %s\n", WIN_MAP_DATA);
+        map_chooser_fill_in();
 
         // This is the label at the top: "Select Maps"
         mess = XtVaCreateManagedWidget(langcode("WPUPMCP002"),xmLabelWidgetClass, my_form,
