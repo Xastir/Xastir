@@ -9077,6 +9077,29 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (APRS_OBJECT):
+                // If old match is a killed Object (owner doesn't
+                // matter), new one is an active Object and owned by
+                // us, remove the old record and create a new one
+                // for storing this Object.  Do the same for Items
+                // in the next section below.
+                //
+                // The easiest implementation might be to remove the
+                // old record and then call this routine again with
+                // the same parameters, which will cause a brand-new
+                // record to be created.
+                //
+                // The new record we're processing is an active
+                // object, as data_add() won't be called on a killed
+                // object.
+                //
+                if ( is_my_call(origin,1)  // If new Object is owned by me
+                        && !(p_station->flag & ST_ACTIVE)
+                        && (p_station->flag & ST_OBJECT) ) {  // Old record was a killed Object
+                    remove_name(p_station);  // Remove old killed Object
+                    redo_list = (int)TRUE;
+                    return( data_add(type, call_sign, path, data, from, port, origin, third_party) );
+                }
+ 
                 ok = extract_time(p_station, data, type);               // we need a time
                 if (ok) {
                     if (!extract_position(p_station,&data,type)) {      // uncompressed lat/lon
@@ -9137,6 +9160,30 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 break;
 
             case (APRS_ITEM):
+                // If old match is a killed Item (owner doesn't
+                // matter), new one is an active Item and owned by
+                // us, remove the old record and create a new one
+                // for storing this Item.  Do the same for Objects
+                // in the previous section above.
+                //
+                // The easiest implementation might be to remove the
+                // old record and then call this routine again with
+                // the same parameters, which will cause a brand-new
+                // record to be created.
+                //
+                // The new record we're processing is an active
+                // Item, as data_add() won't be called on a killed
+                // Item.
+                //
+                if ( is_my_call(origin,1)  // If new Item is owned by me
+                        && !(p_station->flag & ST_ACTIVE)
+                        && (p_station->flag & ST_ITEM) ) {  // Old record was a killed Item
+ 
+                    remove_name(p_station);  // Remove old killed Item
+                    redo_list = (int)TRUE;
+                    return( data_add(type, call_sign, path, data, from, port, origin, third_party) );
+                }
+ 
                 if (!extract_position(p_station,&data,type)) {          // uncompressed lat/lon
                     compr_pos = 1;
                     if (!extract_comp_position(p_station,&data,type))   // compressed lat/lon
