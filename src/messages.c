@@ -427,6 +427,33 @@ void clear_outgoing_messages_to(char *callsign) {
 
 
 
+// Change path on all pending transmit messages that are from us and
+// to the callsign listed.
+//
+void change_path_outgoing_messages_to(char *callsign, char *new_path) {
+    int ii;
+
+
+    fprintf(stderr,"Changing path on msgs to callsign: %s\n", callsign);
+
+    // Run through the entire outgoing message queue
+    for (ii = 0; ii < MAX_OUTGOING_MESSAGES; ii++) {
+
+        // If it matches the callsign we're talking to
+        if (strcasecmp(message_pool[ii].to_call_sign,callsign) == 0) {
+
+            xastir_snprintf(message_pool[ii].path,
+                sizeof(message_pool[ii].path),
+                "%s",
+                new_path);
+        }
+    }
+}
+
+
+
+
+
 time_t last_check_and_transmit = (time_t)0l;
 
 
@@ -895,7 +922,35 @@ void check_delayed_transmit_queue(void) {
     // Run down the linked list checking every record.
     while (ptr != NULL) {
         if (ptr->active_time != 0) {   // Active record
+            char new_path[MAX_LINE_SIZE+1];
+
+
             active_records++;
+
+
+            // Check for a custom path having been set in the Send
+            // Message dialog.  If so, use this for our outgoing
+            // path instead and reset all of the queued message
+            // paths to this station to this new path.
+            //
+            get_send_message_path(ptr->to_call_sign,
+                new_path,
+                sizeof(new_path));
+
+            if (new_path[0] != '\0'
+                    && strcmp(new_path, ptr->path) != 0) {
+
+                // We have a custom path set which is different than
+                // the path saved with the outgoing message.  Change
+                // the path to match the new path.
+                //
+                xastir_snprintf(ptr->path,
+                    sizeof(ptr->path),
+                    "%s",
+                    new_path);
+            }
+
+
             if (ptr->active_time <= sec_now()) {
                 // Transmit it
 //fprintf(stderr,"Found something delayed to transmit!  %ld\n",sec_now());
@@ -957,6 +1012,8 @@ void check_and_transmit_messages(time_t time) {
 
 
                     if (message_pool[i].tries < MAX_TRIES) {
+                        char new_path[MAX_LINE_SIZE+1];
+
  
                         /* sending message let the tnc and net transmits check to see if we should */
                         if (debug_level & 2)
@@ -997,9 +1054,36 @@ void check_and_transmit_messages(time_t time) {
                         if (debug_level & 2)
                             fprintf(stderr,"MESSAGE OUT>%s<\n",temp);
 
+
+                        // Check for a custom path having been set
+                        // in the Send Message dialog.  If so, use
+                        // this for our outgoing path instead and
+                        // reset all of the queued message paths to
+                        // this station to this new path.
+                        //
+                        get_send_message_path(to_call,
+                            new_path,
+                            sizeof(new_path));
+
+                        if (new_path[0] != '\0'
+                                && strcmp(new_path,message_pool[i].path) != 0) {
+
+                            // We have a custom path set which is
+                            // different than the path saved with
+                            // the outgoing message.
+                            //
+                            // Change all messages to that callsign
+                            // to match the new path.
+                            // 
+                            change_path_outgoing_messages_to(to_call,new_path);
+                        }
+
+
+                        // Transmit the message
                         transmit_message_data(message_pool[i].to_call_sign,
                             temp,
                             message_pool[i].path);
+
 
                         message_pool[i].active_time = time + message_pool[i].next_time;
 

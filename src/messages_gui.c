@@ -318,22 +318,47 @@ fprintf(stderr,"Found custom path: %s\n", path);
 
 
 void Send_message_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
-    int i; 
-
-    i=atoi((char *)clientData);
+    int ii;
+//    char *temp_ptr;
+//    char temp1[MAX_LINE_SIZE+1];
+ 
+    ii=atoi((char *)clientData);
 
 begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_destroy_shell" );
 
-    if (mw[i].send_message_dialog) {
-        XtPopdown(mw[i].send_message_dialog);
-        XtDestroyWidget(mw[i].send_message_dialog);
+    if (mw[ii].send_message_dialog) {
+
+/*
+        // Check whether the send_message_call_data field has a
+        // custom path entered.
+        temp_ptr = XmTextFieldGetString(mw[ii].send_message_call_data);
+        xastir_snprintf(temp1,
+                sizeof(temp1),
+                "%s",
+                temp_ptr);
+        XtFree(temp_ptr);
+
+        (void)remove_leading_spaces(temp1);
+        (void)remove_trailing_spaces(temp1);
+
+        if(temp1[0] != '\0') {
+            // Yep, we have a custom path.  Warn the user that
+            // they're going to lose this path by destroying the
+            // dialog.
+            popup_message_always(langcode("POPEM00036"),
+                langcode("POPEM00040"));
+        }
+*/
+ 
+        XtPopdown(mw[ii].send_message_dialog);
+        XtDestroyWidget(mw[ii].send_message_dialog);
     }
 
-    mw[i].send_message_dialog = (Widget)NULL;
-    mw[i].to_call_sign[0] = '\0';
-    mw[i].send_message_call_data = (Widget)NULL;
-    mw[i].send_message_message_data = (Widget)NULL;
-    mw[i].send_message_text = (Widget)NULL;
+    mw[ii].send_message_dialog = (Widget)NULL;
+    mw[ii].to_call_sign[0] = '\0';
+    mw[ii].send_message_call_data = (Widget)NULL;
+    mw[ii].send_message_message_data = (Widget)NULL;
+    mw[ii].send_message_text = (Widget)NULL;
 
 end_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message_destroy_shell" );
 

@@ -949,6 +949,7 @@ POPEM00036|Aviso||
 POPEM00037|Interface HSP presente: tempo de GPS foi aumentado||
 POPEM00038|Name Conflicts With Existing Object/Item/Station||
 POPEM00039|Illegal characters found, substituting periods in their place||
+POPEM00040|Custom outgoing path was lost||
 #
 # Salto de localizacao
 JMLPO00001|Localizacao de mapa||
