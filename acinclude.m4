@@ -4,13 +4,17 @@
 #
 # $Id$
 
-# test for devices
+# test for devices.  Avoid the test for "com1" as it hangs on some
+# WinXP boxes and perhaps on some Win2k boxes as well.  "com1" and
+# "/dev/com1" aren't guaranteed to be present in the Cygwin /dev
+# directory, although Cygwin makes "/dev/com1" available for use.
+#
 AC_DEFUN([XASTIR_DETECT_DEVICES],
 [
 AC_MSG_CHECKING([for devices])
-if test -c com1 ; then
-ac_tnc_port=com1
-ac_gps_port=com2
+if test -d /proc/registry ; then
+ac_tnc_port=/dev/com1
+ac_gps_port=/dev/com2
 elif test -c /dev/cuaa0 ; then
 ac_tnc_port=/dev/cuaa0
 ac_gps_port=/dev/cuaa1
