@@ -370,6 +370,10 @@ void output_message(char *from, char *to, char *message) {
             if (message_pool[i].active==MESSAGE_CLEAR) {
                 /* found a spot */
                 ok=1;
+
+                // Roll over message_counter if we hit the max.  Now
+                // with Reply/Ack protocol the max is only two
+                // characters worth (in Base-91?).
                 message_counter++;
                 if (message_counter > 99999)
                     message_counter=0;
@@ -587,7 +591,8 @@ void clear_acked_message(char *from, char *to, char *seq) {
                             printf("Found and cleared\n");
 
                         clear_outgoing_message(i);
-                        /* now find and release next message, look for the lowest sequence? */
+                        // now find and release next message, look for the lowest sequence?
+// What about when the sequence rolls over?
                         for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
                             if (message_pool[i].active==MESSAGE_ACTIVE) {
                                 if (strcmp(message_pool[i].to_call_sign,from)==0) {

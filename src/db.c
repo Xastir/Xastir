@@ -262,10 +262,10 @@ static int message_update_delay = 300;
 
 
 
-void init_message_data(void) {          // called at start of main
+void init_message_data(void) {  // called at start of main
 
     new_message_data = 0;
-    message_counter = 0;
+//    message_counter = 0;  // Now read in from config file instead
     last_message_remove = sec_now();
 }
 
