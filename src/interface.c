@@ -5742,7 +5742,6 @@ end_critical_section(&devices_lock, "interface.c:output_waypoint_data" );
 // which is currently set to 4096.
 //
 void tnc_data_clean(char *buf) {
-    register int i;
 
     if (debug_level & 1) {
         char filtered_data[MAX_LINE_SIZE+1];
