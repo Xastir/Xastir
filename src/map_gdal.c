@@ -410,14 +410,14 @@ scr_s_x_min = 0;
 
 
 
-// Draw_Points().
+// Draw_OGR_Points().
 //
 // A function which can be recursively called.  Tracks the recursion
 // depth so that we can recover if we exceed the maximum.  If we
 // keep finding geometries below us, keep calling the same function.
 // Simple and efficient.
 // 
-void Draw_Points(OGRGeometryH geometryH,
+void Draw_OGR_Points(OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH) {
  
@@ -425,7 +425,7 @@ void Draw_Points(OGRGeometryH geometryH,
     int object_num = 0;
 
 
-//fprintf(stderr, "Draw_Points\n");
+//fprintf(stderr, "Draw_OGR_Points\n");
 
     if (geometryH == NULL)
         return;
@@ -458,7 +458,7 @@ void Draw_Points(OGRGeometryH geometryH,
                 // We found geometries below this.  Recurse.
                 if (level < 5) {
 //fprintf(stderr, "DrawPoints: Recursing level %d\n", level);
-                    Draw_Points(child_geometryH,
+                    Draw_OGR_Points(child_geometryH,
                         level+1,
                         transformH);
                 }
@@ -531,7 +531,7 @@ void Draw_Points(OGRGeometryH geometryH,
 
 
 
-// Draw_Lines().
+// Draw_OGR_Lines().
 //
 // A function which can be recursively called.  Tracks the recursion
 // depth so that we can recover if we exceed the maximum.  If we
@@ -545,7 +545,7 @@ void Draw_Points(OGRGeometryH geometryH,
 // Translate() function on all of them at once, and then call an X11
 // function to draw the entire line at once.
 //
-void Draw_Lines(OGRGeometryH geometryH,
+void Draw_OGR_Lines(OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
         int fast_extents) {
@@ -554,7 +554,7 @@ void Draw_Lines(OGRGeometryH geometryH,
     int object_num = 0;
 
 
-//fprintf(stderr, "Draw_Lines\n");
+//fprintf(stderr, "Draw_OGR_Lines\n");
 
     if (geometryH == NULL)
         return;
@@ -588,7 +588,7 @@ void Draw_Lines(OGRGeometryH geometryH,
                 // We found geometries below this.  Recurse.
                 if (level < 5) {
 //fprintf(stderr, "DrawLines: Recursing level %d\n", level);
-                    Draw_Lines(child_geometryH,
+                    Draw_OGR_Lines(child_geometryH,
                         level+1,
                         transformH,
                         fast_extents);
@@ -707,7 +707,7 @@ void Draw_Lines(OGRGeometryH geometryH,
 
 
 
-// Draw_Polygons().
+// Draw_OGR_Polygons().
 //
 // A function which can be recursively called.  Tracks the recursion
 // depth so that we can recover if we exceed the maximum.  If we
@@ -725,7 +725,7 @@ void Draw_Lines(OGRGeometryH geometryH,
 // Translate() function on all of them at once, and then call an X11
 // function to draw the entire line at once.
 //
-void Draw_Polygons(OGRGeometryH geometryH,
+void Draw_OGR_Polygons(OGRGeometryH geometryH,
         int level,
         OGRCoordinateTransformationH transformH,
         int draw_filled,
@@ -762,7 +762,7 @@ void Draw_Polygons(OGRGeometryH geometryH,
             // We found geometries below this.  Recurse.
             if (level < 5) {
 //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
-                Draw_Polygons(child_geometryH,
+                Draw_OGR_Polygons(child_geometryH,
                     level+1,
                     transformH,
                     draw_filled,
@@ -1761,7 +1761,7 @@ void draw_ogr_map(Widget w,
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0f]);  // white
 
-                    Draw_Points(geometryH,
+                    Draw_OGR_Points(geometryH,
                         1,
                         transformH);
                     break;
@@ -1776,7 +1776,7 @@ void draw_ogr_map(Widget w,
 (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
 
-                    Draw_Lines(geometryH,
+                    Draw_OGR_Lines(geometryH,
                         1,
                         transformH,
                         fast_extents);
@@ -1793,7 +1793,7 @@ void draw_ogr_map(Widget w,
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x1a]);  // Steel Blue
 //(void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
 
-                    Draw_Polygons(geometryH,
+                    Draw_OGR_Polygons(geometryH,
                         1,
                         transformH,
                         draw_filled,
