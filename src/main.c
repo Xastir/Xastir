@@ -12184,12 +12184,12 @@ void process_RINO_waypoints(void) {
                     lon_dir,    // E/W
                     '[');       // Hiker symbol
 
-                fprintf(stderr,
-                    "%-9s\t%f\t%f\t\t\t\t\t\t",
-                    name,
-                    atof(lat_c),
-                    atof(lon_c));
-                fprintf(stderr,"%s\n",line2);
+//                fprintf(stderr,
+//                    "%-9s\t%f\t%f\t\t\t\t\t\t",
+//                    name,
+//                    atof(lat_c),
+//                    atof(lon_c));
+//                fprintf(stderr,"%s\n",line2);
 
                 // Update this object in our save file
                 log_object_item(line2,0,name);
@@ -12202,7 +12202,7 @@ void process_RINO_waypoints(void) {
         }
     }
 
-fprintf(stderr,"\n");
+//fprintf(stderr,"\n");
 
     (void)fclose(f);
 }
