@@ -112,6 +112,11 @@ extern char *sec_to_loc(long longitude, long latitude);
 
 extern short checkHash(char *theCall, short theHash);
 
+#ifdef HAVE_LIBCURL
+int curl_fwrite(void *buffer, size_t size, size_t nmemb, void *stream);
+void curl_getfile(char *fileimg, char *local_filename);
+#endif
+
 #endif // __XASTIR_UTIL_H
 
 
