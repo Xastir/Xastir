@@ -145,11 +145,10 @@ extern int grid_size;
   #if defined(HAVE_IMAGEMAGICK)
     extern float imagemagick_gamma_adjust;
   #endif    // HAVE_IMAGEMAGICK
-  #if defined(HAVE_LIBGEOTIFF)
-    extern float raster_map_intensity;
-  #endif    // HAVE_LIBGEOTIFF
 #endif  // NO_GRAPHICS
 
+extern float raster_map_intensity;
+ 
 extern void Print_properties(Widget widget, XtPointer clientData, XtPointer callData);
 
 extern void map_plot (Widget w, long max_x, long max_y, long x_long_cord, long y_lat_cord, unsigned char color, long object_behavior, int destination_pixmap, int draw_filled); 

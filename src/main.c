@@ -5004,7 +5004,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(map_bgcolor[9],  XmNactivateCallback,Map_background,"9");
 
 #if !defined(NO_GRAPHICS)
-#if defined(HAVE_LIBGEOTIFF)
     Raster_intensity_Pane = XmCreatePulldownMenu(mappane,
             "create_appshell raster_intensity",
             al,
@@ -5108,7 +5107,6 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(raster_intensity[8],  XmNactivateCallback,Raster_intensity,"0.8");
     XtAddCallback(raster_intensity[9],  XmNactivateCallback,Raster_intensity,"0.9");
     XtAddCallback(raster_intensity[10], XmNactivateCallback,Raster_intensity,"1.0");
-#endif  // HAVE_LIBGEOTIFF
 #if defined(HAVE_IMAGEMAGICK)
     // Adjust Gamma Correction
     gamma_adjust_button = XtVaCreateManagedWidget(langcode("GAMMA001"),
@@ -9455,7 +9453,7 @@ void Map_background( /*@unused@*/ Widget w, XtPointer clientData, /*@unused@*/ X
 
 
 
-#if !defined(NO_GRAPHICS) && defined(HAVE_LIBGEOTIFF)
+#if !defined(NO_GRAPHICS)
 void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
     float my_intensity;
     int i;
@@ -9484,7 +9482,7 @@ void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
 //        }
     }
 }
-#endif  // NO_GRAPHICS && HAVE_LIBGEOTIFF
+#endif  // NO_GRAPHICS
 
 
 
