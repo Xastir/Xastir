@@ -23,5 +23,9 @@ bin_SCRIPTS = \
     permutations.pl \
     track-get.pl \
     update_langfile.pl \
-    waypoint-get.pl
+    waypoint-get.pl \
+    xastir-migrate.sh \
+    xastir-fixcfg.sh
+
+
 
