@@ -1716,17 +1716,6 @@ void port_write_string(int port, char *data) {
 
     if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write_string(2)" ) > 0)
         printf("write_lock, Port = %d\n", port);
-
-    // Delay so that we don't send too fast to serial-port TNC's
-    switch (port_data[port].device_type) {
-        case DEVICE_SERIAL_TNC_HSP_GPS:
-        case DEVICE_SERIAL_TNC_AUX_GPS:
-        case DEVICE_SERIAL_TNC:
-            usleep(500000); // 500ms to let TNC process each line
-            break;
-        default:
-            break;
-    }
 }
  
 
@@ -2057,30 +2046,33 @@ void port_write(int port) {
 
     init_critical_section(&port_data[port].write_lock);
 
-    while(port_data[port].active == DEVICE_IN_USE){
-        if (port_data[port].status == DEVICE_UP){
+    while(port_data[port].active == DEVICE_IN_USE) {
+        if (port_data[port].status == DEVICE_UP) {
 
             if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write(1)" ) > 0)
                 printf("write_lock, Port = %d\n", port);
 
-            if (port_data[port].write_in_pos != port_data[port].write_out_pos && port_data[port].status == DEVICE_UP){
-                if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03){
-                                        if (debug_level & 128) {
-                                                printf("Writing command [%x] on port %d, at pos %d\n",
-                                                        *(port_data[port].device_write_buffer + 
-                                                                port_data[port].write_out_pos),
-                                                        port, port_data[port].write_out_pos);
-                                        }
+            if (port_data[port].write_in_pos != port_data[port].write_out_pos && port_data[port].status == DEVICE_UP) {
+                if (port_data[port].device_write_buffer[port_data[port].write_out_pos] == (char)0x03) {
+                    if (debug_level & 128) {
+                        printf("Writing command [%x] on port %d, at pos %d\n",
+                            *(port_data[port].device_write_buffer + 
+                            port_data[port].write_out_pos),
+                            port, port_data[port].write_out_pos);
+                    }
                     wait_max = 0;
                     bytes_input = port_data[port].bytes_input + 40;
-                    while (port_data[port].bytes_input != bytes_input && port_data[port].status == DEVICE_UP && wait_max < 100){
+                    while ( (port_data[port].bytes_input != bytes_input)
+                            && (port_data[port].status == DEVICE_UP)
+                            && (wait_max < 100) ) {
                         bytes_input = port_data[port].bytes_input;
                         /*sleep(1);*/
+
                         /*wait*/
                         FD_ZERO(&wd);
                         FD_SET(port_data[port].channel, &wd);
                         tmv.tv_sec = 0;
-                        tmv.tv_usec = 80000l;
+                        tmv.tv_usec = 80000l;   // Delay 80ms
                         (void)select(0,NULL,&wd,NULL,&tmv);
                         wait_max++;
                         /*printf("Bytes in %ld %ld\n",bytes_input,port_data[port].bytes_input);*/
@@ -2113,18 +2105,28 @@ void port_write(int port) {
                         }
                     }
                 }
+                switch (port_data[port].device_type) {
+                    case DEVICE_SERIAL_TNC_HSP_GPS:
+                    case DEVICE_SERIAL_TNC_AUX_GPS:
+                    case DEVICE_SERIAL_TNC:
+                        usleep(5000); // character pacing, 5ms per
+                        break;
+                    default:
+                        break;
+                }
+
             }
 
             if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write(2)" ) > 0)
                 printf("write_lock, Port = %d\n", port);
 
         }
-        if (port_data[port].active == DEVICE_IN_USE){
+        if (port_data[port].active == DEVICE_IN_USE) {
             /*usleep(100);*/
             FD_ZERO(&wd);
             FD_SET(port_data[port].channel, &wd);
             tmv.tv_sec = 0;
-            tmv.tv_usec = 100;
+            tmv.tv_usec = 100;  // Delay 100us
             (void)select(0,NULL,&wd,NULL,&tmv);
         }
     }
