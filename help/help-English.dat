@@ -72,7 +72,7 @@ HELP-INDEX>What's new in Xastir BETA
 (This section is an informal list of changes that will be formally written
 before a release)
 
-Serial TNX w/ gps on AUX port
+Serial TNC w/ gps on AUX port
 GPS clock setting
 Dropping setuid root privs
 Tracked proximity alarms
@@ -84,7 +84,7 @@ WXserver info via finger
 Major shapefile improvements, point-type shapefiles
 Private colormaps->8bit color usable
 Assorted bug fixes
-Tigermaps menu accesable
+Tigermaps menu accessible
 Messaging cleanup, no more timed updates; reply-acks
 ImageMagick speedups and correction features
 Compressed objects/items
@@ -859,7 +859,7 @@ Map Locations
 Any map file should be stored in the /usr/local/xastir/maps directory on your
 computer. You can create any number of directories under this directory to
 help organize and separate your data. The maps will be listed in
-alphabetical order with their relative path in the Map Choser dialogue.
+alphabetical order with their relative path in the Map Chooser dialogue.
 Symbolic links could help to reorganize the order.
 
 Hints on installing and organizing maps are found in README.1ST.
