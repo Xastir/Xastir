@@ -139,7 +139,7 @@ PULDNDP022|Fetch Findu Trail|u|
 PULDNDP032|Filter Data||
 PULDNDP040|Select None||
 PULDNDP041|Select TNC||
-PULDNDP027|Select Local||
+PULDNDP027|Select Direct||
 PULDNDP034|Select Net||
 PULDNDP019|Include Expired Data||
 PULDNDP028|Select Fixed Stations||
