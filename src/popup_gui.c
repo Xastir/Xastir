@@ -136,24 +136,7 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_time_out_che
 
 
 
-#ifndef HAVE_ERROR_POPUPS
-//
-// We'll write to STDERR instead since the user doesn't want to see
-// any error popups.  Add a timestamp to the front so we know when
-// the errors happened.
-//
-void popup_message(char *banner, char *message) {
-    char timestring[110];
-
-    get_timestamp(timestring);
-    fprintf(stderr, "%s:\n\t%s  %s\n\n", timestring, banner, message);
-}
-#else   // HAVE_ERROR_POPUPS
-//
-// The user wishes to see popup error messages.  The code to
-// implement that is below.
-//
-void popup_message(char *banner, char *message) {
+void popup_message_always(char *banner, char *message) {
     XmString msg_str;
     int j,i;
     Atom delw;
@@ -237,7 +220,33 @@ end_critical_section(&popup_message_dialog_lock, "popup_gui.c:popup_message" );
         }
     }
 }
+
+
+
+
+
+#ifndef HAVE_ERROR_POPUPS
+//
+// We'll write to STDERR instead since the user doesn't want to see
+// any error popups.  Add a timestamp to the front so we know when
+// the errors happened.
+//
+void popup_message(char *banner, char *message) {
+    char timestring[110];
+
+    get_timestamp(timestring);
+    fprintf(stderr, "%s:\n\t%s  %s\n\n", timestring, banner, message);
+}
+#else   // HAVE_ERROR_POPUPS
+//
+// The user wishes to see popup error messages.  Call the routine
+// above which does so.
+//
+void popup_message(char *banner, char *message) {
+    popup_message_always(banner, message);
+}
 #endif  // HAVE_ERROR_POPUPS
+
 
 
 

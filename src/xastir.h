@@ -272,6 +272,7 @@ extern int gps_port_save;
 extern double calc_dscale_x(long x, long y);
 
 /* from popup_gui.c */
+extern void popup_message_always(char *banner, char *message);
 extern void popup_message(char *banner, char *message);
 extern void popup_ID_message(char *banner, char *message);
 

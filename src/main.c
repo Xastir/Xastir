@@ -4520,12 +4520,12 @@ void view_gps_status(Widget w, XtPointer clientData, XtPointer callData) {
     // GPS status data too old?
     if ((gps_status_save_time + 30) >= sec_now()) {
         // Nope, within 30 seconds
-        popup_message(langcode("PULDNVI015"),
+        popup_message_always(langcode("PULDNVI015"),
             gps_status_save);
     }
     else {
         // Yes, GPS status data is old
-        popup_message(langcode("PULDNVI015"),
+        popup_message_always(langcode("PULDNVI015"),
             "!GPS data is older than 30 seconds!");
     }
 }
@@ -4586,7 +4586,7 @@ void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
     } else {
         xastir_snprintf(temp, sizeof(temp), "%d %s", seconds, Seconds);
     }
-    popup_message(langcode("PULDNVI014"),temp);
+    popup_message_always(langcode("PULDNVI014"),temp);
 }
 
 
@@ -8932,7 +8932,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 sizeof(temp),
                 "Area: %0.2f square feet",
                 area);
-            popup_message(langcode("POPUPMA020"),temp);
+            popup_message_always(langcode("POPUPMA020"),temp);
         }
         else {  // Square meters
             area = area * 1000 * 1000;  // Square meters
@@ -8940,7 +8940,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
                 sizeof(temp),
                 "Area: %0.2f square meters",
                 area);
-            popup_message(langcode("POPUPMA020"),temp);
+            popup_message_always(langcode("POPUPMA020"),temp);
         }
     }
     else {  // Not small
@@ -8949,7 +8949,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
             "Area: %0.2f square %s",
             area,
             un_dst);
-        popup_message(langcode("POPUPMA020"),temp);
+        popup_message_always(langcode("POPUPMA020"),temp);
     }
 
     // Also write the area to stderr
@@ -9395,7 +9395,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     // Here we need to convert to either English or Metric units of distance.
 
                     //(temp,"Distance x:%d pixels,  y:%d pixels\n",x_distance,y_distance);
-                    //popup_message(langcode("POPUPMA020"),temp);
+                    //popup_message_always(langcode("POPUPMA020"),temp);
 
                     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
                     a_x = mid_x_long_offset  - ((width *scale_x)/2) + (menu_x*scale_x);
@@ -9456,7 +9456,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                             area, un_dst,
                             temp_course);
                     }
-                    popup_message(langcode("POPUPMA020"),temp);
+                    popup_message_always(langcode("POPUPMA020"),temp);
                 }
 
 
