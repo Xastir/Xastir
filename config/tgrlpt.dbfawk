@@ -78,12 +78,25 @@ BEGIN_RECORD {key=""; lanes=1; color=11; name=""; filled=0; pattern=1; display_l
 # D91 - post office box-only ZIP Code location
 # D92 - urbanizacion (Puerto Rico)
 
-/^CFCC=D31/ {color=9; next}
+/^CFCC=D28/ {color=10; symbol="/] "; next}
+/^CFCC=D28/ {color=10; symbol="/\; "; next}
+/^CFCC=D31/ {color=9; symbol="/h "; next}
 /^CFCC=D40/ {color=5; next}
 /^CFCC=D41/ {color=2; next}
 /^CFCC=D42/ {color=1; next}
-/^CFCC=D43/ {color=2; next}
+/^CFCC=D43/ {color=2; symbol="/K "; next}
 /^CFCC=D44/ {color=1; next}
-/^CFCC=D51/ {color=14; next}
-/^CFCC=D54/ {color=1; next}
+/^CFCC=D51/ {color=14; symbol="/' "; next}
+/^CFCC=D52/ {color=14; symbol="/= "; next}
+/^CFCC=D53/ {color=14; symbol="/U "; next}
+/^CFCC=D54/ {color=1; symbol="/s "; next}
+/^CFCC=D70/ {color=1; symbol="/r "; next}
 /^CFCC=D8/ {color=2; next}
+
+# X<t><s><o> - APRS extension to get all the various APRS symbols.  
+# Useful for home made maps.  Perhaps I shouldn't overload tiger/line
+# stuff with this and just define a new .dbfawk....
+# <t><s><o> are table, symbol, and overlay,
+
+/^CFCC=X(.*)$/ {symbol="$1"; next}
+
