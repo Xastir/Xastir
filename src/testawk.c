@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "config.h"
 
 #ifdef WITH_DBFAWK
@@ -199,7 +200,7 @@ int main(int argc, char *argv[])
 }
 #else /* !WITH_DBFAWK */
 
-main()
+int main(int argc, char *argv[])
 {
   fprintf(stderr,"DBFAWK support not compiled.\n");
   exit(1);
