@@ -25,7 +25,7 @@ software.
 
 %build
 ./bootstrap.sh
-%configure
+%configure --with-dbfawk
 make
 
 %install
