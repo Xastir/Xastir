@@ -426,7 +426,7 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
                                         XmNeditable,   TRUE,
                                         XmNcursorPositionVisible, TRUE,
                                         XmNsensitive, TRUE,
-                        XmNshadowThickness,    1,
+                                        XmNshadowThickness,    1,
                                         XmNcolumns, 64,
                                         XmNwidth, ((64*7)+2),
                                         XmNmaxLength, 255,
@@ -470,8 +470,9 @@ begin_critical_section(&send_message_dialog_lock, "messages_gui.c:Send_message" 
 
         xastir_snprintf(mw[i].win, sizeof(mw[i].win), "%d", i);
         XtAddCallback(mw[i].button_ok, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
+        XtAddCallback(mw[i].send_message_message_data, XmNactivateCallback, Send_message_now, (XtPointer)mw[i].win);
         XtAddCallback(mw[i].button_cancel, XmNactivateCallback, Send_message_destroy_shell,(XtPointer)mw[i].win);
-
+ 
 // Note group messages isn't implemented fully yet.  When it is, the following might have
 // to change again:
 //        XtAddCallback(mw[i].button_clear_msg, XmNactivateCallback, groupon == 0 ? Clear_message_from: Clear_message_to,

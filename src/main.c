@@ -14821,7 +14821,8 @@ int main(int argc, char *argv[], char *envp[]) {
         <Key>space:     Select(children)\n",
  
         "*XmTextField.translations: #override \
-        <Key>Return:    activate()\n",
+        <Key>Return:    activate()\n\
+        <Key>Enter:     activate()\n",
 
         "*.Text.Translations: #override\n\
         Ctrl<Key>S:     no-op(RingBell)\n\
