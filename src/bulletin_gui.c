@@ -69,6 +69,10 @@ Widget dist_data = NULL;
 static xastir_mutex display_bulletins_dialog_lock;
 
 int bulletin_range;
+int new_bulletin_flag = 0;
+int new_bulletin_count = 0;
+time_t first_new_bulletin_time = 0;
+time_t last_new_bulletin_time = 0;
 
 
 
@@ -83,6 +87,15 @@ void bulletin_gui_init(void)
 
 
 
+// Function called from check_for_new_bulletins() if a new bulletin
+// has come in that's within our range and we have
+// pop_up_new_bulletins enabled.  This causes the Bulletins() dialog
+// to come up and rescan the message database for all bulletins that
+// are within the radius specified.  By the time this gets called
+// we've already waited a few seconds to try to get the posit to
+// come in that matches the bulletin, and have then checked the
+// database to make sure that the new bulletins received are still
+// within our range.
 void popup_bulletins(void) {
     if ((Display_bulletins_dialog == NULL)) {   // Dialog not up
 
@@ -90,7 +103,7 @@ void popup_bulletins(void) {
         Bulletins( (Widget)NULL, (XtPointer)NULL, (XtPointer)NULL );
     }
 }
- 
+
 
 
 
@@ -177,6 +190,151 @@ static void bulletin_line(Message *fill) {
 
 static void scan_bulletin_file(void) {
     mscan_file(MESSAGE_BULLETIN, bulletin_line);
+}
+
+
+
+
+
+// Find each bulletin that is within our range _and_ within our time
+// parameters for new bulletins.  Count them only.  Results returned
+// in the new_bulletin_count variable.
+void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag, char *packet_message, time_t sec_heard) {
+    char temp[200];
+    char temp_my_course[10];
+    double distance;
+    struct tm *tmp;
+    time_t timehd;
+    char time_str[20];
+    timehd=sec_heard;
+    tmp = localtime(&timehd);
+
+    if ( (packet_message != NULL) && (strlen(packet_message) > MAX_MESSAGE_LENGTH) ) {
+        if (debug_level & 1)
+            printf("bulletin_message:  Message length too long\n");
+        return;
+    }
+
+    (void)strftime(time_str,sizeof(time_str),"%b %d %H:%M",tmp);
+
+    distance = distance_from_my_station(call_sign,temp_my_course);
+    xastir_snprintf(temp, sizeof(temp), "%-9s:%-4s (%s %6.1f %s) %s\n",
+            call_sign, &tag[3], time_str, distance,
+            units_english_metric ? langcode("UNIOP00004"): langcode("UNIOP00005"),
+            packet_message);
+
+// Operands of <= have incompatible types (double, int):
+    if (((int)distance <= bulletin_range) || (bulletin_range == 0)) {
+
+        // Is it newer than our first new_bulletin timestamp?
+        if (sec_heard >= first_new_bulletin_time) {
+            new_bulletin_count ++;
+        }
+    }
+}
+
+
+
+
+
+static void count_bulletin_line(Message *fill) {
+    count_bulletin_messages(fill->data_via, fill->from_call_sign, fill->call_sign, fill->message_line, fill->sec_heard);
+}
+
+
+
+
+
+static void count_new_bulletins(void) {
+    mscan_file(MESSAGE_BULLETIN, count_bulletin_line);
+}
+
+
+
+
+// Function called from db.c:msg_data_add() when a new bulletin has
+// come in and we have pop_up_new_bulletins enabled.  We set some
+// variables and then wait for UpdateTime() to check whether any new
+// bulletins are within our range after the timestamp recorded here
+// has aged a bit.  This gives a few seconds for a posit to come in
+// from the callsign as well, which may place the station outside
+// our range.
+void prep_for_popup_bulletins() {
+
+    // Record the time that this most recent bulletin came in
+    last_new_bulletin_time = sec_now();
+
+    // Update the "first" time only if we don't have a timestamp in
+    // it already.  This is the time that we _started_ getting this
+    // string of new bulletins.  We may get several in a row, in
+    // which case "first" and "last" times will differ.
+    if (first_new_bulletin_time == 0)
+        first_new_bulletin_time = last_new_bulletin_time;
+
+    // Set the flag that gets the whole ball rolling
+    new_bulletin_flag = 1;
+
+    //printf("Setting new_bulletin_flag and last_new_bulletin_time\n");
+}
+
+
+
+
+
+// Function called by main.c:UpdateTime().  Checks whether enough
+// time has passed since the last new bulletin came in (so that the
+// posit for it might come in as well).  If so, checks for bulletins
+// that are newer than first_new_bulletin_time and fit within our
+// range.  If any found, it updates the Bulletins dialog.
+time_t last_bulletin_check = 0;
+void check_for_new_bulletins() {
+
+    // Any new bulletins?  If not, return
+    if (!new_bulletin_flag) {
+        return;
+    }
+
+    // Check every two seconds max
+    if ( (last_bulletin_check + 2) > sec_now() ) {
+        return;
+    }
+
+    last_bulletin_check = sec_now();
+
+    // Enough time passed since most recent bulletin?
+    if ( (last_new_bulletin_time + 15) > sec_now() ) {
+
+        //printf("Not enough time has passed\n");
+
+        return;
+    }
+
+    // If we get to here, then we think we may have at least one new
+    // bulletin, and the latest arrived more than XX seconds ago
+    // (currently 15 seconds).  Check for bulletins which have
+    // timestamps equal to or newer than first_new_bulletin_time and
+    // fit within our range.
+
+    new_bulletin_count = 0;
+
+    //printf("Checking for new bulletins\n");
+
+    count_new_bulletins();
+
+    //printf("%d new bulletins found\n",new_bulletin_count);
+
+    if (new_bulletin_count) {
+printf("New bulletins (%d) caused popup!\n",new_bulletin_count);
+        popup_bulletins();
+    }
+    else {
+printf("No bulletin popup generated.\n");
+    }
+
+    // Reset so that we can do it all over again later.  We need
+    // mutex locks protecting these two variables.
+    first_new_bulletin_time = 0;
+    new_bulletin_flag = 0;
 }
 
 

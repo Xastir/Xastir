@@ -6567,6 +6567,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             // Is it time to spit out objects/items?
             check_and_transmit_objects_items(sec_now());
 
+            // Do we have any new bulletins to display?
+            check_for_new_bulletins();
+
             // Is it time to create a JPG snapshot?
             if (snapshots_enabled)
                 (void)Snapshot();

@@ -983,9 +983,16 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     // Bring up the bulletins dialog if it's a new bulletin and
     // within our range.
     if (bring_up_bulletins && pop_up_new_bulletins) {
-        popup_bulletins();
+
+        // Record that we _think_ we have a new bulletin.  We'll
+        // check a bit later to see if it's within range.  This give
+        // a bit of time for the posit to come in that matches the
+        // sender of the bulletin.
+        prep_for_popup_bulletins();
+
 printf("%05d:%9s:%c:%c:%9s:%s:%s\n",
     distance, call_sign, type, from, from_call, data, seq);
+
     }
  
     // Return the important variables we'll need
@@ -4551,7 +4558,23 @@ static void extract_multipoints(DataRow *p_station, char* data, int type) {
                 // Check for correct values.
 
                 if (lon_val < -44 || lon_val > 44 || lat_val < -44 || lat_val > 44) {
-                    printf("extract_multipoints: invalid value in \"%s\": %d,%d\n", data, lat_val, lon_val);
+                    char temp[MAX_LINE_SIZE+1];
+                    int i;
+
+                    // Filter the string so we don't send strange
+                    // chars to the xterm
+                    for (i = 0; i < strlen(data); i++) {
+                        temp[i] = data[i] & 0x7f;
+                        if ( (temp[i] < 0x20) || (temp[i] > 0x7e) )
+                            temp[i] = ' ';
+                    }
+                    temp[strlen(data)] = '\0';
+                    
+                    printf("extract_multipoints: invalid value in (filtered) \"%s\": %d,%d\n",
+                        temp,
+                        lat_val,
+                        lon_val);
+
                     p_station->num_multipoints = 0;     // forget any points we already set
                     break;
                 }
