@@ -990,6 +990,11 @@ SMARTB011|Activar Baliza Inteligente(tm)||
 GAMMA001|Ajuste Corrección de Gamma||
 GAMMA002|Corrección Gamma||
 #
+# Map labels font Dialog
+MAPFONT001|Change Map Labels Font||
+MAPFONT002|Map Labels Font||
+MAPFONT003|Font name:||
+#
 # Distancia/Orientación en línea de estado
 PULDNDB001|Estado de Distancia/Orientación||
 #

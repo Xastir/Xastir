@@ -1001,6 +1001,10 @@ GAMMA001|Stel Gamma Correctie bij||
 GAMMA002|Gamma Correctie||
 #
 #
+# Map labels font Dialog
+MAPFONT001|Change Map Labels Font||
+MAPFONT002|Map Labels Font||
+MAPFONT003|Font name:||
 #
 # Distance/Bearing on status line
 PULDNDB001|Afst/Richting Status||

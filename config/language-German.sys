@@ -997,6 +997,10 @@ GAMMA001|Gammakorrektur einstellen||
 GAMMA002|Gammakorrektur||
 #
 #
+# Map labels font Dialog
+MAPFONT001|Change Map Labels Font||
+MAPFONT002|Map Labels Font||
+MAPFONT003|Font name:||
 #
 # Entfernung/Richtung auf der Statuszeile
 PULDNDB001|Entf./Richtung in Status||
