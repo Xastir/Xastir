@@ -636,6 +636,33 @@ void Draw_OGR_Labels( Widget w,
     const char *pi = NULL;
     const char *pj = NULL;
     char label[200] = "";
+    float angle = 0.0;  // Angle for the beginning of this polyline
+
+
+    if (num_points > 1) {
+        // Compute the label rotation angle
+        float diff_X = (int)xpoints[1].x - xpoints[0].x;
+        float diff_Y = (int)xpoints[1].y - xpoints[0].y;
+        if (diff_X == 0.0) {  // Avoid divide by zero errors
+            diff_X = 0.0000001;
+        }
+        angle = atan( diff_X / diff_Y ); // Compute in radians
+        // Convert to degrees
+        angle = angle / (2.0 * M_PI );
+        angle = angle * 360.0;
+
+        // Change to fit our rotate label function's idea of angle
+        angle = 360.0 - angle;
+    }
+
+    //fprintf(stderr,"Y: %f\tX:
+    //%f\tAngle: %f ==>
+    //",diff_Y,diff_X,angle);
+
+    if ( angle > 90.0 ) {angle += 180.0;}
+    if ( angle >= 360.0 ) {angle -= 360.0;}
+
+    //fprintf(stderr,"%f\t%s\n",angle,temp);
 
 
     // Debug code
@@ -668,15 +695,28 @@ void Draw_OGR_Labels( Widget w,
     // points passed to us, and draw the quantity of labels that are
     // appropriate for the zoom level.
     if (label && map_labels /* && !skip_label */ ) {
-        draw_nice_string(w,
-            pixmap,
-            0,
-            xpoints[0].x+10,
-            xpoints[0].y+5,
-            (char*)label,
-            0xf,
-            0x10,
-            strlen(label));
+
+        if (angle == 0) {   // Non-rotated label
+            draw_rotated_label_text (w,
+                -90.0,
+                xpoints[0].x+10,
+                xpoints[0].y+5,
+                strlen(label),
+                colors[0],
+                label,
+                FONT_DEFAULT);
+        }
+
+        else {  // Rotated label
+            draw_rotated_label_text (w,
+                angle,
+                xpoints[0].x+10,
+                xpoints[0].y+5,
+                strlen(label),
+                colors[0],
+                label,
+                FONT_DEFAULT);
+        }
     }
 }
 
@@ -799,9 +839,14 @@ guess_vector_attributes(w,
                 gc,
                 pixmap);
 
+// We could use a flag back from draw_point_ll() that tells us
+// whether the point was within the view.  That way we know whether
+// or not to draw the label.
+
             xpoint.x = (short)X1;
             xpoint.y = (short)Y1;
 
+/*
             // Draw the corresponding label
             Draw_OGR_Labels(w,
                 pixmap,
@@ -809,6 +854,7 @@ guess_vector_attributes(w,
                 geometryH,
                 &xpoint,
                 1); // Number of points
+*/
         }
     }
 }
