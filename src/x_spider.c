@@ -59,28 +59,31 @@
 // which port is the "master" port (controlling port).
 //
 // Xastir will end up with a togglebutton to enable the server:
-//   Starts up the server.
-//   Connects to it with a socket.
-//   Sends a special string so the server knows which one is the
+//   Starts up x_spider.
+//   Connects to x_spider with a socket.
+//   Sends a special string so x_spider knows which one is the
 //     controlling (master) socket.
-//   All packets received/transmitted by Xastir also get sent to the
-//     server socket if enabled.
+//   All packets received/transmitted by Xastir on any port also get
+//     sent to x_spider.
 //
 // x_spider:
-//   Accept client socket connections.
-//   Spawn a new process for each one.
-//   Each process talks to the listening server using two pipes.
-//   Authenticate each client in the normal manner.
-//   Accept data from any socket, send the data out all ports.
+//   Accepts client socket connections.
+//   Spawns a new process for each one.
+//   Each new process talks to the main x_spider via two pipes.
+//   Authenticate each connecting client in the normal manner.
+//   Accept data from any socket, echo data out _all_ sockets.
 //   If the "master" Xastir sends a shutdown packet, all connections
-//     will be dropped and the server will exit.
-//   x_spider uses select() calls to multiplex multiple pipes,
-//     listening socket, and socket to the "master" Xastir.
+//     are dropped and x_spider and all it's children will exit.
+//   x_spider uses select() calls to multiplex all pipes and the
+//     listening socket.  It shouldn't use up much CPU as it'll be
+//     in the blocking select call until it has data to process.
+//   x_spider's children should also wait in blocking calls until
+//     there is data to process.
 //   
 // This makes the design of the server rather simple:  It needs to
 // authenticate clients and it needs to parse the shutdown message
 // from the "master" socket.  Other than that it just needs to
-// re-transmit anything heard one one socket out to all of the other
+// re-transmit anything heard on one socket to all of the other
 // connected sockets.
 //
 // Xastir itself will have to change a bit in order to add the
@@ -294,40 +297,91 @@ typedef struct _pipe_object {
 } pipe_object;
 
 
+pipe_object *pipe_head = NULL;
+//int master_fd = -1; // Start with an invalid value
+ 
+
+
+
+
+// Function which checks the incoming pipes to see if there's any
+// data.  If there is, checks to see if it is a control packet or a
+// registration packet from the master.  If not, echoes the data out
+// all outgoing pipes.
+// 
+// If we get a shutdown from the verified master, send a "1" as the
+// return value, which will shut down the server.  Otherwise send a
+// "0" return value.
+//
+int pipe_check(void) {
+    return(0);
+}
+
+
 
 
 
 // This TCP server provides a listening socket.  When a client
 // connects, the server forks off a separate process to handle it
-// and goes back to listening for new connects.  The basic concept
-// here is from "Unix Network Programming".
+// and goes back to listening for new connects.  The initial code
+// framework here is from the book:  "Unix Network Programming".
 //
-// We need to create two pipes between this server and all of its
-// forked children.  We also need to identify which one is the
-// master socket connection (back to the Xastir that started up
-// x_spider), keep track of that, and not reset it if another client
-// comes online and claims to be the master.  If we get control
-// commands from the master, service them.
+// Create two pipes between this server and each child process.
+// Identify and record which socket is the master socket connection
+// (back to the Xastir session that started up x_spider).  Set this
+// variable once, don't change it if another client connects and
+// claims to be the master.  If we get control commands from the
+// master, service them.
 //
-// Anything that comes in from a client that's not a registration or
-// a control packet, repeat it to all of the other connected
-// clients, including the control channel.
+// If anything that comes in from a client that's not a registration
+// or a control packet, repeat it to all of the other connected
+// clients, including sending it to the controlling Xastir socket
+// (which is also a data channel).
 //
-
+// We need to make the "accept" call non-blocking so that we can
+// keep servicing all of the pipes from the children.  If any pipe
+// has data, check whether it's a registration from the master or a
+// control packet.  If not, send the data out each client
+// connection.  Each child will take care of normal APRS
+// authentication.  If the client doesn't authenticate, close the
+// socket and exit from the child process.  Notify the main process
+// as well?
+//
 int main(int argc, char *argv[]) {
     int sockfd, newsockfd, clilen, childpid;
     struct sockaddr_in cli_addr, serv_addr;
-//    int masterfd = -1;
-    pipe_object *pipe_head = NULL;
     pipe_object *p;
+    int sendbuff;
 
     
     // Open a TCP listening socket
+    //
     if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         fprintf(stderr,"x_spider: Can't open socket for listening.");
+        exit(1);
+    }
+
+    // Set the new socket to be non-blocking.
+    //
+    sendbuff = 1;
+    if (ioctl(sockfd, FIONBIO, sendbuff) < 0) {
+        fprintf(stderr,"x_spider: Couldn't set socket non-blocking\n");
+    }
+
+    // Set up to reuse the port number (good for debug so we can
+    // restart the server quickly against the same port).
+    //
+    sendbuff = 1;
+    if (setsockopt(sockfd,
+            SOL_SOCKET,
+            SO_REUSEADDR,
+            (char *)&sendbuff,
+            sizeof(sendbuff)) < 0) {
+        fprintf(stderr,"x_spider: Couldn't set socket REUSEADDR\n");
     }
 
     // Bind our local address so that the client can send to us.
+    //
     memset((char *)&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -337,59 +391,101 @@ int main(int argc, char *argv[]) {
             (struct sockaddr *)&serv_addr,
             sizeof(serv_addr)) < 0) {
         fprintf(stderr,"x_spider: Can't bind local address.");
+        exit(1);
     }
 
+    // Set up to listen.  We allow up to five backlog connections
+    // (unserviced connects that get put on a queue until we can
+    // service them).
+    //
     listen(sockfd, 5);
 
     // Infinite loop
+    //
     for ( ; ; ) {
 
-// We need to make the "accept" call non-blocking so that we can
-// keep servicing all of the pipes from the children.  If any pipe
-// has data, check whether it's a registration from the master or a
-// control packet.  If not, send the data out each client
-// connection.  Each child will take care of normal APRS
-// authentication.  If the client doesn't authenticate, close the
-// socket and exit from the child process.  Notify the main process
-// as well?
-
-        // Wait for a connection from a client process.  This is a
+        // Look for a connection from a client process.  This is a
         // concurrent server (allows multiple concurrent
         // connections).
 
         clilen = sizeof(cli_addr);
 
+        // "accept" is the call where we wait for a connection.  We
+        // made the socket non-blocking above so that we pop out of
+        // it with an EAGAIN if we don't have an incoming socket
+        // connection.  This lets us check all of our pipe
+        // connections for incoming data periodically.
+        //
         newsockfd = accept(sockfd,
                         (struct sockaddr *)&cli_addr,
                         &clilen);
 
-        if (newsockfd < 0) {
+        if (newsockfd == EAGAIN) {
+
+            // We returned from the non-blocking accept but with no
+            // incoming socket connection.  Check the pipe queues
+            // for incoming data.
+            //
+            if (pipe_check() == -1) {
+
+                // We received a shutdown command from the master
+                // socket connection.
+                exit(0);
+            }
+            goto finis;
+        }
+        else if (newsockfd < 0) {
+
+            // Some error happened in accept().  Skip the rest of
+            // the loop.
+            //
             fprintf(stderr,"x_spider: Accept error.");
+            goto finis;
         }
 
+        // Else we returned from the accept with an incoming
+        // connection.  Service it.
+        //
         // Allocate a new pipe before we fork.
+        //
         p = (pipe_object *)malloc(sizeof(pipe_object));
         if (p == NULL) {
             fprintf(stderr,"x_spider: Couldn't malloc pipe_object\n");
+            close(newsockfd);
+            goto finis;
         }
 
         // Link it into the head of the chain.
+        //
         p->next = pipe_head;
         pipe_head = p;
 
         if (pipe(p->to_child) < 0 || pipe(p->to_parent) < 0) {
             fprintf(stderr,"x_spider: Can't create pipes\n");
+            free(p);    // Free the malloc'd memory.
+            close(newsockfd);
+            goto finis;
         }
         
         if ( (childpid = fork()) < 0) {
             fprintf(stderr,"x_spider: Fork error.");
+            // Close pipes
+            close(p->to_child[0]);
+            close(p->to_child[1]);
+            close(p->to_parent[0]);
+            close(p->to_parent[1]);
+            free(p);    // Free the malloc'd memory.
+            close(newsockfd);
+            goto finis;
         }
         else if (childpid == 0) {
             //
             // child process
             //
+
             // New naming system so that we don't have to remember
             // the longer name:
+            //
             int pipe_to_parent = p->to_parent[1];
             int pipe_from_parent = p->to_child[0];
 
@@ -402,6 +498,7 @@ int main(int argc, char *argv[]) {
 str_echo(newsockfd);    // Process the request
 
             // Clean up and exit
+            //
             close(pipe_to_parent);
             close(pipe_from_parent);
             exit(0);
@@ -414,6 +511,13 @@ str_echo(newsockfd);    // Process the request
         close(newsockfd);
         close(p->to_parent[1]); // Close write end of pipe
         close(p->to_child[0]);  // Close read end of pipe
+finis:
+        // Need a delay so that we don't use too much CPU, at least
+        // for debug.  Put the delay into the select() call in the
+        // pipe_check() function once we get to that stage of
+        // coding.
+        //
+        usleep(10);
     }
 }
 

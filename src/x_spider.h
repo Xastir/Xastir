@@ -29,9 +29,8 @@
 
 
 #define NET_CONNECT_TIMEOUT 20
-#define SERV_UDP_PORT       2023
 #define SERV_TCP_PORT       2023
-#define SERV_HOST_ADDR      "192.168.1.2"    /* host addr for server */
+
 
 char *pname;
 
