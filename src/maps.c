@@ -8119,7 +8119,9 @@ void load_alert_maps (Widget w, char *dir) {
 
     //printf("Done drawing all active alerts\n");
 
-    (void)alert_display_request ();
+    if (alert_display_request()) {
+        alert_redraw_on_update = redraw_on_new_data = 2;
+    }
 }
 
 

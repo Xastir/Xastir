@@ -820,6 +820,7 @@ static void alert_build_list(Message *fill) {
     int i, j;
     char *ptr;
     DataRow *p_station;
+    int compressed_wx_packet = 0;
 
     //printf("Message_line:%s\n",fill->message_line);
 
@@ -830,9 +831,127 @@ static void alert_build_list(Message *fill) {
         int ignore_title = 0;
 
         memset(entry, 0, sizeof(entry));
-        (void)sscanf(fill->message_line, "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
-           entry[0].activity, entry[0].alert_tag, entry[0].title, entry[1].title,
-           entry[2].title, entry[3].title, entry[4].title, entry[5].title);
+        (void)sscanf(fill->message_line,
+            "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
+            entry[0].activity,
+            entry[0].alert_tag,
+            entry[0].title,
+            entry[1].title,
+            entry[2].title,
+            entry[3].title,
+            entry[4].title,
+            entry[5].title);
+
+        // Check here for the first title being very long.  This
+        // signifies that we may be dealing with the new compressed
+        // format instead.
+        entry[0].title[32] = '\0';  // Terminate it first just in case
+        if ( strlen(entry[0].title) > 7 ) {
+            char compressed_wx[256];
+            char *ptr;
+
+printf("Compressed Weather Alert:%s\n",fill->message_line);
+printf("Compressed alerts are not fully implemented yet.\n");
+
+            // Create a new weather alert for each of these and then
+            // call this function on each one?  Seems like it might
+            // work fine if we watch out for global variables.
+            // Another method would be to create an incoming message
+            // for each one and add it to the message queue, or just
+            // a really long new message and add it to the queue,
+            // in which case we'd exit from this routine as soon as
+            // it was submitted.
+            (void)sscanf(fill->message_line, "%20[^,],%20[^,],%255[^, ]",
+                entry[0].activity,
+                entry[0].alert_tag,
+                compressed_wx);     // Stick the long string in here
+            compressed_wx[255] = '\0';
+            compressed_wx_packet++; // Set the flag
+printf("Line:%s\n",compressed_wx);
+
+            // Snag alpha characters (should be three) at the start
+            // of the string.  Use those until we hit more alpha
+            // characters.
+
+
+// Need to be very careful here to validate the letters/numbers, and
+// to not run off the end of the string.  Need more code here to do
+// this validation.
+
+            // Scan through entire string
+            ptr = compressed_wx;
+            while (ptr < (compressed_wx + strlen(compressed_wx))) {
+                char prefix[5];
+                char suffix[4];
+                char ending[4];
+
+               // Snag the ALPHA portion
+                strncpy(prefix,ptr,2);
+                ptr += 2;
+                prefix[2] = '_';
+                prefix[3] = ptr[0];
+                prefix[4] = '\0';   // Terminate the string
+                ptr += 1;
+                // prefix should now contain something like "MN_Z"
+
+                // Snag the NUMERIC portion
+                strncpy(suffix,ptr,3);
+                suffix[3] = '\0';   // Terminate the string
+                ptr += 3;
+                // suffix should now contain something like "039"
+
+printf("Zone:%s%s\n",prefix,suffix);
+
+                while ( (ptr < (compressed_wx + strlen(compressed_wx)))
+                    && ( is_num_chr(ptr[1]) ) ) {
+
+                    // Look for '>' or '-' character.  If former, we
+                    // have a numeric sequence to ennumerate.  If the
+                    // latter, we either have another zone number or
+                    // another prefix coming up.
+                    if (ptr[0] == '>') { // Numeric sequence
+                        int start_number;
+                        int end_number;
+                        int k;
+                        char temp[4];
+
+                        ptr++;  // Skip past the '>' character
+                        // Snag the NUMERIC portion
+                        strncpy(ending,ptr,3);  
+                        ending[3] = '\0';   // Terminate the string
+                        ptr += 3;
+                        // ending should now contain something like "046"
+                        start_number = (int)atoi(suffix);
+                        end_number = (int)atoi(ending);
+                        for ( k=start_number+1; k<=end_number; k++) {
+                            snprintf(temp,4,"%03d",k);
+printf("Zone:%s%s\n",prefix,temp);
+                        }
+                    }
+                    else if (ptr[0] == '-') {
+                        ptr++;  // Skip past the '-' character
+                        if ( is_num_chr(ptr[0]) ) {
+                            // New zone number
+
+                            // Snag the NUMERIC portion
+                            strncpy(suffix,ptr,3);
+                            suffix[3] = '\0';   // Terminate the string
+                            ptr += 3;
+                            // suffix should now contain something like "046"
+printf("Zone:%s%s\n",prefix,suffix);
+
+                        }
+                        else {  // New prefix
+                            // Start at the top of the outer loop again
+                        }
+                    }
+                }
+                // Skip past '-' character, if any
+                if (ptr[0] == '-') {
+                    ptr++;
+                }
+            }
+        }
 
         entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
 

@@ -4449,28 +4449,39 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
             update_messages(0);                 // Check Messages, no forced update
 
             /* check on Redraw requests */
-            if (((redraw_on_new_data > 1) || (redraw_on_new_data && (sec_now() > last_redraw + REDRAW_WAIT)) ||
-                    (sec_now() > next_redraw)  ) && !wait_to_redraw) {
-                //printf("Redraw on new data \n");
+            if (         ( (redraw_on_new_data > 1)
+                        || (redraw_on_new_data && (sec_now() > last_redraw + REDRAW_WAIT))
+                        || (sec_now() > next_redraw) )
+                    && !wait_to_redraw) {
+
+                int temp_alert_count;
+
+                //printf("Redraw on new data\n");
 
                 // check if alert_redraw_on_update is set and it has been at least xx seconds since
                 // last weather alert redraw.
                 if ( alert_redraw_on_update
                         && ( sec_now() > ( last_alert_redraw + WX_ALERTS_REFRESH_TIME ) ) ) {
+                //if (alert_redraw_on_update) {
+                    //printf("Alert redraw on update: %ld\t%ld\t%ld\n",sec_now(),last_alert_redraw,WX_ALERTS_REFRESH_TIME);
+
 
                     refresh_image(da);  // Much faster than create_image.
 
                     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
 
-                    // Here we use alert_redraw_on_update as a temp holding place for the
+                    // Here we use temp_alert_count as a temp holding place for the
                     // count of active alerts. Sound alarm if new alerts are displayed.
-                    if ((alert_redraw_on_update = alert_on_screen()) > last_alert_on_screen) {
+                    if ((temp_alert_count = alert_on_screen()) > last_alert_on_screen) {
                         if (sound_play_wx_alert_message)
                             play_sound(sound_command, sound_wx_alert_message);
 #ifdef HAVE_FESTIVAL
                         if (festival_speak_new_weather_alert) {
                             char station_id[50];
-                            xastir_snprintf(station_id, sizeof(station_id), "%s, %d", langcode("WPUPCFSP08"), alert_redraw_on_update);
+                            xastir_snprintf(station_id,
+                                sizeof(station_id), "%s, %d",
+                                langcode("WPUPCFSP08"),
+                                temp_alert_count);
                             SayText(station_id);
                         }
 #endif /* HAVE_FESTIVAL */
