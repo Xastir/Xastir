@@ -544,10 +544,10 @@ First Time Install:
       voice to "ked_diphone".
 
    9. OPTIONAL:  Install GDAL/OGR for support of many more map formats.
-      NOTE:  This is not supported in Xastir yet, but the developers
-      are working on it.  Should you wish to see what map formats
-      your system will support once GDAL/OGR are fully integrated
-      into Xastir, proceed with the following:
+      NOTE:  This is currently being added to Xastir:  Some support is there
+      now for the vector formats, but it isn't "pretty" yet.  Should you wish
+      to see what map formats your system will support once GDAL/OGR are fully
+      integrated into Xastir, proceed with the following:
 
         cd src
         export CVSROOT=:pserver:anonymous@cvs.remotesensing.org:/cvsroot
@@ -558,6 +558,11 @@ First Time Install:
         ./configure --without-jasper --without-ld-shared
         make
         su -c 'make install'
+
+      Also note that as of Dec 11, 2003, a major memory leak bug in the OGR
+      code was fixed, having to do with Shapefiles.  Please run a version of
+      GDAL/OGR that is newer than that date (or the CVS version as shown
+      above).
 
    10. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
