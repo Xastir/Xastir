@@ -4155,7 +4155,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     Station_info(w, "2", NULL);
                 }
 
-                else {  // Compute new center/zoom function
+                else {  // Must be "Compute new center/zoom" function
                     // We need to compute a new center and a new scale, then
                     // cause the new image to be created.
                     // Compute new center.  It'll be the average of the two points
@@ -4169,9 +4169,15 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     // Compute the new scale, or as close to it as we can get
                     //new_scale_y = scale_y / 2;    // Zoom in by a factor of 2
                     new_scale_y = (long)( (((float)abs(menu_y - input_y) / (float)height ) * (float)scale_y ) + 0.5);
+                    new_scale_x = (long)( (((float)abs(menu_x - input_x) / (float)width  ) * (float)scale_x ) + 0.5);
+
                     if (new_scale_y < 1)
-                        new_scale_y = 1;            // don't go further in
-                    display_zoom_image(1);          // check range and do display, recenter
+                        new_scale_y = 1;            // Don't go further in than zoom 1
+
+                    if (new_scale_x < 1)
+                        new_scale_x = 1;            // Don't go further in than zoom 1
+
+                    display_zoom_image(1);          // Check range and do display, recenter
 
                     menu_x = input_x;
                     menu_y = input_y;
@@ -4835,7 +4841,13 @@ void check_range(void) {
             if ((new_mid_y + (height*new_scale_y)/2) > 64800000l)
                 new_mid_y = 64800000l-((height*new_scale_y)/2);  // lower border max 90°S
 
-    new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
+    // Adjust scaling of new window based on whether we had more x
+    // or more y mouse movement:
+    if (abs(input_x - menu_x) > abs(input_y - menu_y))
+        new_scale_y = get_y_scale(new_mid_x,new_mid_y,new_scale_x); // recalc y scaling depending on position
+    else
+        new_scale_x = get_x_scale(new_mid_x,new_mid_y,new_scale_y);  // recalc x scaling depending on position
+
     // scale_x will always be bigger than scale_y, so no problem here...
     if ((width*new_scale_x) > 129600000l)
         new_mid_x = 129600000l/2;                                // center between 180°W and 180°E
@@ -4858,7 +4870,9 @@ void display_zoom_image(int recenter) {
     Dimension width, height;
 
     XtVaGetValues(da,XmNwidth, &width,XmNheight, &height,0);
+    //printf("Before,  x: %lu,  y: %lu\n",new_scale_x,new_scale_y);
     check_range();              // keep map inside world and calc x scaling
+    //printf("After,   x: %lu,  y: %lu\n\n",new_scale_x,new_scale_y);
     if (new_mid_x != mid_x_long_offset
             || new_mid_y != mid_y_lat_offset
             || new_scale_x != scale_x
