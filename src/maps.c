@@ -6856,7 +6856,6 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
                               &f_north_bounding,
                               &f_south_bounding );
 
-
     /*
      * If we are able to read the fgd file then we have the lat/lon
      * corner points in floating point variables.  If there isn't
@@ -6882,6 +6881,14 @@ void draw_geotiff_image_map (Widget w, char *dir, char *filenm, int destination_
     if (have_fgd)   /* Must be a USGS file */
     {
         int temp_ok1, temp_ok2;
+
+        if (debug_level & 16) {
+            printf("FGD:  W:%f  E:%f  N:%f  S:%f\n",
+                f_west_bounding,
+                f_east_bounding,
+                f_north_bounding,
+                f_south_bounding);
+        }
 
         crop_it = 1;        /* The map collar needs to be cropped */
 
@@ -7542,10 +7549,42 @@ Samples Per Pixel: 1
 
                 if (debug_level & 16)
                     printf("X/Y Pixels: %d, %d\n", NW_x, NW_y);
+
+                if (NW_x < 0 || NW_y < 0 || NW_x >= width || NW_y >= height) {
+
+                    printf("\nWarning:  NW Neat-line corner calculated at x:%d, y:%d, %s\n",
+                        NW_x, NW_y, filenm);
+                    printf("Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",width,height);
+                    printf("Map may appear in the wrong location or scale incorrectly.\n");
+
+                    if (NW_x < 0)
+                        NW_x = 0;
+
+                    if (NW_x >= width)
+                        NW_x = width - 1;
+
+                    if (NW_y < 0)
+                        NW_y = 0;
+
+                    if (NW_y >= height)
+                        NW_y = height -1;
+
+/*
+                    //Free any memory used and return
+                    // We're finished with the geoTIFF key parser, so get rid of it
+                    GTIFFree (gtif);
+
+                    // Close the TIFF file descriptor
+                    XTIFFClose (tif);
+ 
+                    return;
+*/
+                }
             }
         }
-        else
+        else {
             printf("Problem in translating\n");
+        }
 
 
         if (debug_level & 16)
@@ -7573,10 +7612,42 @@ Samples Per Pixel: 1
 
                 if (debug_level & 16)
                     printf("X/Y Pixels: %d, %d\n", NE_x, NE_y);
+
+                if (NE_x < 0 || NE_y < 0 || NE_x >= width || NE_y >= height) {
+
+                    printf("\nWarning:  NE Neat-line corner calculated at x:%d, y:%d, %s\n",
+                        NE_x, NE_y, filenm);
+                    printf("Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",width,height);
+                    printf("Map may appear in the wrong location or scale incorrectly.\n");
+
+                    if (NE_x < 0)
+                        NE_x = 0;
+
+                    if (NE_x >= width)
+                        NE_x = width - 1;
+
+                    if (NE_y < 0)
+                        NE_y = 0;
+
+                    if (NE_y >= height)
+                        NE_y = height -1;
+
+/*
+                    //Free any memory used and return
+                    // We're finished with the geoTIFF key parser, so get rid of it
+                    GTIFFree (gtif);
+
+                    // Close the TIFF file descriptor
+                    XTIFFClose (tif);
+ 
+                    return;
+*/
+                }
             }
         }
-        else
+        else {
             printf("Problem in translating\n");
+        }
 
 
         if (debug_level & 16)
@@ -7604,10 +7675,42 @@ Samples Per Pixel: 1
 
                 if (debug_level & 16)
                     printf("X/Y Pixels: %d, %d\n", SW_x, SW_y);
+
+                if (SW_x < 0 || SW_y < 0 || SW_x >= width || SW_y >= height) {
+
+                    printf("\nWarning:  SW Neat-line corner calculated at x:%d, y:%d, %s\n",
+                        SW_x, SW_y, filenm);
+                    printf("Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",width,height);
+                    printf("Map may appear in the wrong location or scale incorrectly.\n");
+
+                    if (SW_x < 0)
+                        SW_x = 0;
+
+                    if (SW_x >= width)
+                        SW_x = width - 1;
+
+                    if (SW_y < 0)
+                        SW_y = 0;
+
+                    if (SW_y >= height)
+                        SW_y = height -1;
+
+/*
+                    //Free any memory used and return
+                    // We're finished with the geoTIFF key parser, so get rid of it
+                    GTIFFree (gtif);
+
+                    // Close the TIFF file descriptor
+                    XTIFFClose (tif);
+ 
+                    return;
+*/
+                }
             }
         }
-        else
+        else {
             printf("Problem in translating\n");
+        }
 
 
         if (debug_level & 16)
@@ -7635,10 +7738,42 @@ Samples Per Pixel: 1
 
             if (debug_level & 16)
                 printf("X/Y Pixels: %d, %d\n", SE_x, SE_y);
+
+                if (SE_x < 0 || SE_y < 0 || SE_x >= width || SE_y >= height) {
+
+                    printf("\nWarning:  SE Neat-line corner calculated at x:%d, y:%d, %s\n",
+                        SE_x, SE_y, filenm);
+                    printf("Limits are: 0,0 and %ld,%ld. Resetting corner position.\n",width,height);
+                    printf("Map may appear in the wrong location or scale incorrectly.\n");
+
+                    if (SE_x < 0)
+                        SE_x = 0;
+
+                    if (SE_x >= width)
+                        SE_x = width - 1;
+
+                    if (SE_y < 0)
+                        SE_y = 0;
+
+                    if (SE_y >= height)
+                        SE_y = height -1;
+
+/*
+                    //Free any memory used and return
+                    // We're finished with the geoTIFF key parser, so get rid of it
+                    GTIFFree (gtif);
+
+                    // Close the TIFF file descriptor
+                    XTIFFClose (tif);
+ 
+                    return;
+*/
+                }
             }
         }
-        else
+        else {
             printf("Problem in translating\n");
+        }
     }
     else    /*
              * No map collar to crop off, so we already know
