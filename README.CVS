@@ -5,7 +5,8 @@ $Id$
 CVS Instructions:
 -----------------
      For those who think CVS might be a bit too complicated to deal with,
-     here are (I think) the minimal commands:
+     here are (I think) the minimal commands.  See the "SUDO" section
+     below though for ideas on how to make updating Xastir even simpler.
 
      Initial CVS Checkout:
      ---------------------
@@ -153,6 +154,76 @@ CVS Instructions:
      of use to the developers than the users.  The above should be enough
      for most people to keep their copies in sync with the latest CVS
      development sources.
+
+
+SUDO Instructions:
+------------------
+
+    "sudo" is a command that can make your life much simpler.  After you set
+    it up that is!  By adding a couple of lines to your /etc/sudoers file
+    (using the "visudo" command to edit this file), you'll be able to run a few
+    commands as root without having to type the root password each time.
+    Another thing you can do at that point is automate the entire
+    "cvs update;./configure;su;make install" process via a script.  Here's how
+    to set all of this up:
+
+    Type "su" to become the root user, then type "visudo".  This will bring up
+    the "vi" editor on the /etc/sudoers file.  If you'd like to learn more
+    about what I'm going to describe, type "man sudoers" in another window and
+    read about this file.  Another man-page that is useful here is the "man
+    sudo" page.
+
+    Back to the editing:  There's a section in there for user alias.  Mine is
+    labeled "# User alias specification".  Add a line there that reads like
+    this:
+
+        User_Alias XASTIR = username1, username2, username3
+
+    where username1, etc, are valid usernames that you wish to be able to do
+    Xastir installs.  For instance you might have:
+
+        User_Alias XASTIR = mikey
+
+    Next, add a line near the bottom that reads like this:
+
+        XASTIR ALL = NOPASSWD: /bin/chmod, /usr/bin/make
+
+    Now write out and close the file.  At this point the "mikey" user will have
+    root permissions when he/she runs the commands "/bin/chmod" or
+    "/usr/bin/make".  Make sure the paths to those programs are correct for
+    your system.
+
+    Exit from "su" so that you're a regular (non-root) user again.
+
+    Now, in the "xastir" source directory (mine is in "~/src/xastir"), create a
+    script that reads like this.  I named my script  "update-xastir" but nearly
+    any name for the script will do:
+ 
+    -----------------cut here--------------------
+        #! /bin/sh
+
+        cvs update
+        ./bootstrap.sh
+        ./configure
+        sudo make clean
+        sudo make install-strip
+        sudo chmod 4755 /usr/local/bin/xastir
+    -----------------cut here--------------------
+
+    Now type "chmod u+rwx update-xastir" to make that script executable.
+
+    Try out the script.  Type:
+
+        ./update-xastir
+
+    It should run through the entire update/configure/make/install process for
+    Xastir.  Remember to either change to the proper xastir directory before
+    running it, or add a "cd" command at the beginning of the script so that it
+    will run in the proper directory in all cases.  If you add the proper "cd"
+    command you can copy the script to /usr/local/bin and then run it as
+    "update-xastir" from anywhere.
+
+
 
   ------------------------------------------------------------------------
 Copyright (C) 1999 Frank Giannandrea
