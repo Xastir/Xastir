@@ -3361,9 +3361,9 @@ clear_dangerous();
 //DONE!
     //
     if (strcasecmp(driver_type,"TIGER") == 0) {
-#define POLYID_HASH_SIZE 30000
-#define TLID_HASH_SIZE   30000
-#define LAND_HASH_SIZE   30000
+#define POLYID_HASH_SIZE  64000
+#define TLID_HASH_SIZE   240000
+#define LAND_HASH_SIZE     5000
         struct hashtable *polyid_hash;
         struct hashtable *landmark_hash;
         struct hashtable *tlid_hash;
@@ -3811,7 +3811,6 @@ fprintf(stderr,"PolyChainLink Layer ");
 
                 if (found1 || found2) { // Found at least one match!
                     tlid_struct *tlid_temp;
-                    tlid_struct *p;
 
 //fprintf(stderr,"Found a match for POLYIDL or POLYIDR in PolyChainLink layer!\n");
 
@@ -3830,12 +3829,15 @@ fprintf(stderr,"PolyChainLink Layer ");
                         tlid_temp->TLID = tlid;
                         tlid_temp->next = NULL;
 
+/*
                         if (found1->tlid_list == NULL) {
                             // List is NULL:  Add the new record
                             found1->tlid_list = tlid_temp;
                         }
                         else {  // List has at least one record.
                                 // Traverse to the end of the list.
+                            tlid_struct *p;
+
                             p = found1->tlid_list;  // Head of list
                             while (p->next != NULL) {
                                 p = p->next;
@@ -3844,6 +3846,14 @@ fprintf(stderr,"PolyChainLink Layer ");
                             // Add our new record to the end.
                             p->next = tlid_temp;
                         }
+*/
+
+// Try linking it at the beginning of the list instead, which will
+// change the drawing order of the vertices but should be much
+// faster.
+tlid_temp->next = found1->tlid_list;
+found1->tlid_list = tlid_temp;
+
                     }
                     if (found2) {
                         // Allocate a new record and link it in at the
@@ -3853,12 +3863,15 @@ fprintf(stderr,"PolyChainLink Layer ");
                         tlid_temp->TLID = tlid;
                         tlid_temp->next = NULL;
 
+/*
                         if (found2->tlid_list == NULL) {
                             // List is NULL:  Add the new record
                             found2->tlid_list = tlid_temp;
                         }
                         else {  // List has at least one record.
                                 // Traverse to the end of the list.
+                            tlid_struct *p;
+
                             p = found2->tlid_list;  // Head of list
                             while (p->next != NULL) {
                                 p = p->next;
@@ -3867,6 +3880,14 @@ fprintf(stderr,"PolyChainLink Layer ");
                             // Add our new record to the end.
                             p->next = tlid_temp;
                         }
+*/
+
+// Try linking it at the beginning of the list instead, which will
+// change the drawing order of the vertices but should be much
+// faster.
+tlid_temp->next = found2->tlid_list;
+found2->tlid_list = tlid_temp;
+
                     }
                 }
 
@@ -4124,30 +4145,29 @@ fprintf(stderr,"Combine Hashes, Create/Draw Polygon ");
         free(iterator);
 
 
-stop_timer(); print_timer_results();
+stop_timer(); print_timer_results(); start_timer();
 fprintf(stderr,"Done with Polygon data reassembly/drawing\n");
 
 
-fprintf(stderr,"Free'ing hash memory\n");
+//fprintf(stderr,"Free'ing hash memory\n");
 
         // Free the memory we've allocated for the hashes.
 
+
         // Iterate over the polyid_hash, free'ing the tlid_struct's
-        // that we allocated.  Don't remove the hash entry in this
-        // loop as that will break the iterator.
+        // that we allocated.  Don't remove the hash entry or free
+        // the polyinfo struct inside the loop as that will break
+        // the iterator.
         //
+//fprintf(stderr,"Hash elements: polyid:%6i   ", hashtable_count(polyid_hash));
         if (hashtable_count(polyid_hash) > 0) {
-//fprintf(stderr,"polyid_hash\n");
             iterator = hashtable_iterator(polyid_hash);
-//fprintf(stderr,"got iterator\n");
             do {
                 polyinfo *record;
                 tlid_struct *head;
                 tlid_struct *p;
 
                 record = hashtable_iterator_value(iterator);
-
-//fprintf(stderr,"got record\n");
 
                 // Free the tlid_struct linked list
                 head = record->tlid_list;
@@ -4158,12 +4178,6 @@ fprintf(stderr,"Free'ing hash memory\n");
                     free(p);
                 }
 
-                // Free the polyid_struct itself.
-                // DON'T DO THIS:  It will cause the iterator to get
-                // lost!  Do it with hashtable_destroy() below
-                // instead.
-                //free(record);
-
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_remove(iterator));
         }
@@ -4172,11 +4186,12 @@ fprintf(stderr,"Free'ing hash memory\n");
 
 
         // Iterate over the tlid_hash, free'ing the geometry memory
-        // that we allocated.  Don't remove the hash entry in this
-        // loop as that will break the iterator.
+        // that we allocated.  Don't remove the hash entry or free
+        // the tlidinfo struct inside the loop as that will break
+        // the iterator.
         //
+//fprintf(stderr,"tlid:%6i   ", hashtable_count(tlid_hash));
         if (hashtable_count(tlid_hash) > 0) {
-//fprintf(stderr,"tlid_hash\n");
             iterator = hashtable_iterator(tlid_hash);
             do {
                 tlidinfo *record;
@@ -4186,44 +4201,41 @@ fprintf(stderr,"Free'ing hash memory\n");
                 // Free the geometry structure
                 OGR_G_DestroyGeometry(record->geometryH);
 
-                // Free the tlid_struct itself.
-                // DON'T DO THIS:  It will cause the iterator to get
-                // lost!  Do it with hashtable_destroy() below
-                // instead.
-                //free(record);
-
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_remove(iterator));
         }
         free(iterator);
-//fprintf(stderr,"done iterating through hashes\n");
         // tlid_hash should be empty at this point.
+
+
+        // Iterate over the landmark_hash, free'ing the memory
+        // that we allocated.  Don't remove the hash entry of free
+        // the landmarkinfo struct inside the loop as that will
+        // break the iterator.
+        //
+//fprintf(stderr,"landmark:%6i\n", hashtable_count(landmark_hash));
+        if (hashtable_count(landmark_hash) > 0) {
+            iterator = hashtable_iterator(landmark_hash);
+            do {
+            // Free the current hash element, advance to the next
+            } while (hashtable_iterator_remove(iterator));
+        }
+        free(iterator);
+        // landmark_hash should be empty at this point.
 
 
         // Destroy the hash tables.  If the second argument is a
         // one, it indicates that the values should be free'd as
         // well.
-//fprintf(stderr,"Destroying polyid_hash\n");
+        //
         hashtable_destroy(polyid_hash, 1);
         hashtable_destroy(tlid_hash, 1);
-//        hashtable_destroy(landmark_hash, 1);
-
-
-// For destroying, we'll need to iterate through the polyid_hash and
-// free the linked list of tlid_structs ourselves before we destroy
-// the hash.  Try do do this as we're iterating through the hash
-// drawing polygons.
-
-// Perhaps instead of using the iterator as shown above, we can keep
-// a linked list of the allocated memory and just step through that,
-// free'ing it as we go.  That means we could then call the
-// hashtable_destroy functions with a second parameter of 0 and they
-// would be fast.  Just need to add a pointer inside each struct and
-// have two chains of them for the two types of allocated memory.
+        hashtable_destroy(landmark_hash, 1);
 
     }   // End of special TIGER section
 
-//fprintf(stderr,"Done\n");
+stop_timer(); print_timer_results();
+fprintf(stderr,"Done\n");
 
 #endif  // TIGER_POLYGONS
 
