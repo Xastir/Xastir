@@ -26,6 +26,9 @@ fcc_DATA=placeholder
 mapdir=${prefix}/xastir/maps
 map_DATA=placeholder
 
+gpsdir=${prefix}/xastir/maps/GPS
+gps_DATA=placeholder
+
 sounddir=${prefix}/xastir/sounds
 sound_DATA=placeholder
 
