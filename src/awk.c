@@ -410,7 +410,7 @@ void awk_eval_expr(awk_symtab *this,
                     && dp <= &((char *)src->val)[src->size]) {
                     char *sp;
 
-                    if (sizeof(tbuf) >= src->size) { /* tbuf big enuf */
+                    if ((int)sizeof(tbuf) >= src->size) { /* tbuf big enuf */
                         sp = tbuf;
                     } else {    /* tbuf too small */
                         sp = malloc(src->size);
@@ -451,13 +451,13 @@ void awk_eval_expr(awk_symtab *this,
         *dp = '\0';                     /* null terminate the string */
         switch(dest->type) {
         case INT:
-            if (dest->size >= sizeof(int)) {
+            if (dest->size >= (int)sizeof(int)) {
                 *((int *)dest->val) = atoi(tbuf);
                 dest->len = sizeof(int);
             }
             break;
         case FLOAT:
-            if (dest->size >= sizeof(double)) {
+            if (dest->size >= (int)sizeof(double)) {
                 *((double *)dest->val) = atof(tbuf);
                 dest->len = sizeof(double);
             }
