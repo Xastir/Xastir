@@ -1569,7 +1569,7 @@ void disown_object_item(char *call_sign, char *new_owner) {
     xastir_snprintf(command,
         sizeof(command),
         "%s -f %s %s",
-        CP_PATH,
+        (HAVE_CP) ? CP_PATH : "echo",
         file,
         file_temp);
 
