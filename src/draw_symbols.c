@@ -1961,11 +1961,17 @@ static int getLineStyle(char styleChar) {
  * KG4NBB
  */
 void draw_multipoints(long x_long, long y_lat, int numpoints, long mypoints[][2], char type, char style, time_t sec_heard, Pixmap where) {
+    int ghost;
+
+
     // See if we should draw multipoints for this station. This only happens
     // if there are points to draw, and the object has not been cleared (or 
     // we're supposed to show old data).
 
-    if (numpoints > 0) {
+    ghost = (int)(((sec_old+sec_heard)) < sec_now());
+
+    if ( (!ghost || Select_.old_data) && (numpoints > 0) ) {
+
         //long x_offset, y_offset;
         int  i;
         XPoint xpoints[MAX_MULTIPOINTS + 1];
