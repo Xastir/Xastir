@@ -459,9 +459,16 @@ static int XRotPaintAlignedString( Display *dpy, XFontStruct *font, float angle,
 
         XSetStipple(dpy, my_gc, empty_stipple);
         XSetFillStyle(dpy, my_gc, FillOpaqueStippled);
-        
-        XFillPolygon(dpy, drawable, my_gc, xpoints, 4*item->nl, Nonconvex,
+
+        if (item->nl >= 1) {
+            XFillPolygon(dpy, drawable, my_gc, xpoints, 4*item->nl, Nonconvex,
                      CoordModeOrigin);
+        }
+        else {
+            fprintf(stderr,
+                "XRotPaintAlignedString: Points too few:%d, skipping XFillPolygon",
+                item->nl);
+        }
         
         /* free our resources */
         free((char *)xpoints);
