@@ -10549,7 +10549,6 @@ map_index_record *map_index_head = NULL;
 
 
 
-//WE7U
 // Function used to add map directories to the in-memory map index.
 // Causes an update of the index list in memory.  Input Records are
 // inserted in alphanumerical order.  We mark directories in the
@@ -11143,21 +11142,165 @@ void index_save_to_file() {
 
 
 
+//WE7U2
+// Function used to add map directories/files to the in-memory map
+// index.  Causes an update of the index list in memory.  Input
+// records are inserted in alphanumerical order.  This function is
+// called from the index_restore_from_file() function below.  When
+// this function is called the new record has all of the needed
+// information in it.
+//
+void index_insert_sorted(map_index_record *new_record) {
+
+    map_index_record *current = map_index_head;
+    map_index_record *previous = map_index_head;
+    int done = 0;
+    int i;
+
+
+    //printf( "index_insert_sorted: %s\n", new_record->filename );
+
+    // Check for bad input.
+    if (new_record == NULL) {
+        printf("index_insert_sorted: Bad input.\n");
+        return;
+    }
+    // Make sure there aren't any weird characters in the filename
+    // that might cause problems later.  Look for CR's and LF's and
+    // convert them to string-end characters.
+    for ( i = 0; i < strlen(new_record->filename); i++ ) {
+        if ( (new_record->filename[i] == '\n')
+                || (new_record->filename[i] == '\r') ) {
+            new_record->filename[i] = '\0';    // Terminate it here
+        }
+    }
+    // Check if the string is _now_ bogus
+    if (new_record->filename[0] == '\0') {
+        printf("index_insert_sorted: Bad input.\n");
+        return;
+    }
+
+    //if (map_index_head == NULL)
+    //    printf("Empty list\n");
+
+    // Search for a matching filename in the linked list
+    while ((current != NULL) && !done) {
+        int test;
+
+        //printf("Comparing %s to\n          %s\n",
+        //    current->filename, new_record->filename);
+
+        test = strcmp(current->filename, new_record->filename);
+
+        if (test == 0) {    // Found a match!
+            int selected;
+
+printf("Found a match: Updating entry for %s\n",new_record->filename);
+
+            // Save this away temporarily.
+            selected = current->selected;
+
+            // Copy the fields across and then free new_record.  We
+            // overwrite the contents of the existing record.
+            xastir_snprintf(current->filename,
+                MAX_FILENAME,
+                "%s",
+                new_record->filename);
+            current->bottom = new_record->bottom;
+            current->top = new_record->top;
+            current->left = new_record->left;
+            current->right = new_record->right;
+            current->accessed = 1;
+            current->map_layer = new_record->map_layer;
+            current->draw_filled = new_record->draw_filled;
+            current->selected = selected;   // Restore it
+            current->auto_maps = new_record->auto_maps;
+
+            free(new_record);   // Don't need it anymore
+
+            done++; // Exit loop, "current" points to found record
+        }
+        else if (test > 0) {    // Found a string past us in the
+                                // alphabet.  Insert ahead of this
+                                // last record.
+
+printf("Not Found, inserting: %s\n", new_record->filename);
+printf(  "       Before record: %s\n", current->filename);
+
+            if (current == map_index_head) {  // Start of list!
+                // Insert new record at head of list
+                new_record->next = map_index_head;
+                map_index_head = new_record;
+                //printf("Inserting at head of list\n");
+            }
+            else {  // Insert between "previous" and "current"
+                // Insert new record before "current"
+                previous->next = new_record;
+                new_record->next = current;
+                //printf("Inserting before current\n");
+            }
+
+            //printf("Adding:%d:%s\n",strlen(filename),filename);
+ 
+            // Fill in some default values for the new record that
+            // don't exist in the map_index.sys file.
+            new_record->selected = 0;
+            new_record->auto_maps = 1;
+
+            //current = current->next;
+            done++;
+        }
+        else {  // Haven't gotten to the correct insertion point yet
+            previous = current; // Save ptr to last record
+            current = current->next;
+        }
+    }
+
+    if (!done) {    // Matching record not found, add the record to
+        // the end of the list.  "previous" points to the last
+        // record in the list or NULL (empty list).
+
+printf("Not Found: Adding to end: %s\n",new_record->filename);
+
+        new_record->next = NULL;
+
+        if (previous == NULL) { // Empty list
+            map_index_head = new_record;
+            //printf("First record in new list\n");
+        }
+        else {  // Else at end of list
+            previous->next = new_record;
+            //printf("Adding to end of list: %s\n",new_record->filename);
+        }
+
+        //printf("Adding:%d:%s\n",strlen(new_record->filename),new_record->filename);
+ 
+        // Fill in some default values for the new record.
+        new_record->selected = 0;
+        new_record->auto_maps = 1;
+    }
+}
+
+
+
+
+
+//WE7U2
 // Snags the file and creates the linked list pointed to by the
 // map_index_head pointer.  The memory linked list keeps the same
 // order as the entries in the file.
 //
 void index_restore_from_file(void) {
     FILE *f;
-    map_index_record *current;
+//    map_index_record *current;
     map_index_record *temp_record;
     char in_string[MAX_FILENAME*2];
 
 
-printf("Restoring map index from file\n");
+//printf("\nRestoring map index from file\n");
 
     map_index_head = NULL;  // Starting with empty list
-    current = NULL;
+//    current = NULL;
 
     f = fopen(MAP_INDEX_DATA,"r");
     if (f == NULL)  // No map_index file yet
@@ -11175,7 +11318,7 @@ printf("Restoring map index from file\n");
                 int processed;
                 int i;
 
-printf("%s\n",in_string);
+//printf("%s\n",in_string);
 
                 // Malloc an index record.  We'll add it to the list
                 // only if the data looks reasonable.
@@ -11239,6 +11382,11 @@ printf("%s\n",in_string);
                 // If correct number of parameters
                 if (processed == 8) {
 
+                    // Insert the new record into the in-memory map
+                    // list in sorted order.
+                    index_insert_sorted(temp_record);
+
+/*
                     // Link the new record to the end of the list
                     if (current == NULL) {  // Empty list
                         map_index_head = temp_record;
@@ -11248,6 +11396,7 @@ printf("%s\n",in_string);
                         current->next = temp_record;
                         current = temp_record;
                     }
+*/
                     //printf("Restored: %s\n",temp_record->filename);
                 }
                 else {  // sscanf didn't parse the proper number of
