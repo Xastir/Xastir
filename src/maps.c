@@ -163,6 +163,7 @@ int   print_invert = 0;                 // Reverses black/white
 time_t last_snapshot = 0;               // Used to determine when to take next snapshot
 int doing_snapshot = 0;
 
+int position_scale_changed = 0;         // Incremented if position or scale changes
 
 int mag;
 int npoints;    /* number of points in a line */
@@ -260,6 +261,8 @@ int convert_from_xastir_coordinates ( float *f_longitude,
                                       long x,
                                       long y ) {
 
+    position_scale_changed++;
+
     if (x < 0l ) {
         fprintf(stderr,
             "convert_from_xastir_coordinates:X out-of-range (too low):%lu\n",
@@ -325,6 +328,7 @@ int convert_to_xastir_coordinates ( unsigned long* x,
                                     float f_longitude,
                                     float f_latitude ) {
 
+/*
     if (f_longitude < -180.0) {
         fprintf(stderr,
             "convert_to_xastir_coordinates:Longitude out-of-range (too low):%f\n",
@@ -352,6 +356,7 @@ int convert_to_xastir_coordinates ( unsigned long* x,
             f_latitude);
         return(0);
     }
+*/
 
     *y = (unsigned long)(32400000l + (360000.0 * (-f_latitude)));
     *x = (unsigned long)(64800000l + (360000.0 * f_longitude));
@@ -581,9 +586,7 @@ int map_visible (unsigned long bottom_map_boundary,
 
     unsigned long view_min_x, view_max_x;
     unsigned long view_min_y, view_max_y;
-    int map_inside_view = 0;
-    int view_inside_map = 0;
-    int parallel_edges = 0;
+
 
     view_min_x = (unsigned long)x_long_offset;                         /*   left edge of view */
     if (view_min_x > 129600000ul)
@@ -649,18 +652,14 @@ int map_visible (unsigned long bottom_map_boundary,
 
     /* Look for left or right map boundaries inside view */
     if (   (( left_map_boundary <= view_max_x) && ( left_map_boundary >= view_min_x)) ||
-            ((right_map_boundary <= view_max_x) && (right_map_boundary >= view_min_x)))
-    {
-        map_inside_view++;
-    }
+            ((right_map_boundary <= view_max_x) && (right_map_boundary >= view_min_x))) {
 
+        /* Look for top or bottom map boundaries inside view */
+        if (   ((   top_map_boundary <= view_max_y) && (   top_map_boundary >= view_min_y)) ||
+                ((bottom_map_boundary <= view_max_y) && (bottom_map_boundary >= view_min_y))) {
 
-    /* Look for top or bottom map boundaries inside view */
-    if (   ((   top_map_boundary <= view_max_y) && (   top_map_boundary >= view_min_y)) ||
-            ((bottom_map_boundary <= view_max_y) && (bottom_map_boundary >= view_min_y)))
-    {
-
-        map_inside_view++;
+            return (1); /* Draw this pixmap onto the screen */
+        }
     }
 
 
@@ -668,15 +667,13 @@ int map_visible (unsigned long bottom_map_boundary,
     if (   ((view_max_x <= right_map_boundary) && (view_max_x >= left_map_boundary)) ||
             ((view_min_x <= right_map_boundary) && (view_min_x >= left_map_boundary)))
     {
-        view_inside_map++;
-    }
 
-
-    /* Look for top or bottom view boundaries inside map */
-    if (   ((view_max_y <= bottom_map_boundary) && (view_max_y >= top_map_boundary)) ||
-        ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary)))
-    {
-        view_inside_map++;
+        /* Look for top or bottom view boundaries inside map */
+        if (   ((view_max_y <= bottom_map_boundary) && (view_max_y >= top_map_boundary)) ||
+            ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary)))
+        {
+            return (1); /* Draw this pixmap onto the screen */
+        }
     }
 
 
@@ -690,7 +687,7 @@ int map_visible (unsigned long bottom_map_boundary,
             ((view_max_y <= bottom_map_boundary) && (view_max_y >= top_map_boundary)) &&
             ((view_min_y <= bottom_map_boundary) && (view_min_y >= top_map_boundary)))
     {
-        parallel_edges++;
+        return(1);  /* Draw this pixmap onto the screen */
     }
 
 
@@ -704,27 +701,27 @@ int map_visible (unsigned long bottom_map_boundary,
         ((view_max_x <= right_map_boundary) && (view_max_x >= left_map_boundary)) &&
         ((view_min_x <= right_map_boundary) && (view_min_x >= left_map_boundary)))
     {
-        parallel_edges++;
+        return(1);  /* Draw this pixmap onto the screen */
     }
 
-
-    if (debug_level & 16) {
-        fprintf(stderr,"map_inside_view: %d  view_inside_map: %d  parallel_edges: %d\n",
-                map_inside_view,
-                view_inside_map,
-                parallel_edges);
-    }
-
-    if ((map_inside_view >= 2) || (view_inside_map >= 2) || (parallel_edges) ) {
-        return (1); /* Draw this pixmap onto the screen */
-    }
-    else {
-        return (0); /* Skip this pixmap */
-    }
+    return (0); /* Skip this pixmap */
 }
 
 
 
+
+
+// Here we store cached values that we compute below, so that we
+// don't have to compute them each time.  If longitude/latitude have
+// changed since we last cached, we re-compute our numbers.  We
+// check the position_scale_changed variable to determine whether
+// map center or scale have changed.
+double half_screen_vert = 0.0;
+double half_screen_horiz = 0.0;
+double view_min_x = 0.0;
+double view_max_x = 0.0;
+double view_min_y = 0.0;
+double view_max_y = 0.0;
 
 
 /////////////////////////////////////////////////////////////////////
@@ -754,34 +751,40 @@ int map_visible_lat_lon (double f_bottom_map_boundary,
                          double f_left_map_boundary,
                          double f_right_map_boundary,
                          char *error_message) {
-    double view_min_x, view_max_x;
-    double view_min_y, view_max_y;
-    int map_inside_view = 0;
-    int view_inside_map = 0;
-    int parallel_edges = 0;
-    double half_screen_vert = screen_height/2.0 * scale_y / 100.0 / 60.0 / 60.0;
-    double half_screen_horiz = screen_width/2.0 * scale_x / 100.0 / 60.0 / 60.0;
 
+
+    // Check whether map center or zoom have changed.  Re-compute
+    // numbers if so.
+    //
+    if (position_scale_changed) {
+
+//fprintf(stderr,"Updating numbers\n");
+
+        half_screen_vert = screen_height/2.0 * scale_y / 100.0 / 60.0 / 60.0;
+        half_screen_horiz = screen_width/2.0 * scale_x / 100.0 / 60.0 / 60.0;
+
+        position_scale_changed = 0;
 
 //fprintf(stderr,"scale_x: %ld\thalf_screen_h: %f\n",scale_x,half_screen_horiz);
 //fprintf(stderr,"scale_y: %ld\thalf_screen_v: %f\n",scale_y,half_screen_vert);
 
-    view_min_x = f_center_longitude - half_screen_horiz; // left edge of view
-    view_max_x = f_center_longitude + half_screen_horiz; // right edge of view
-    view_min_y = f_center_latitude - half_screen_vert; // bottom edge of view
-    view_max_y = f_center_latitude + half_screen_vert; // top edge of view
+        view_min_x = f_center_longitude - half_screen_horiz; // left edge of view
+        view_max_x = f_center_longitude + half_screen_horiz; // right edge of view
+        view_min_y = f_center_latitude - half_screen_vert; // bottom edge of view
+        view_max_y = f_center_latitude + half_screen_vert; // top edge of view
 
-    if (view_min_x >  180.0 || view_min_x < -180.0)
-        view_min_x = -180.0;
+        if (view_min_x >  180.0 || view_min_x < -180.0)
+            view_min_x = -180.0;
 
-    if (view_max_x >  180.0 || view_max_x < -180.0)
-        view_max_x =  180.0;
+        if (view_max_x >  180.0 || view_max_x < -180.0)
+            view_max_x =  180.0;
 
-    if (view_min_y >  90.0 || view_min_y < -90.0)
-        view_min_y = -90.0;
+        if (view_min_y >  90.0 || view_min_y < -90.0)
+            view_min_y = -90.0;
 
-    if (view_max_y >  90.0 || view_max_y < -90.0)
-        view_max_y =  90.0;
+        if (view_max_y >  90.0 || view_max_y < -90.0)
+            view_max_y =  90.0;
+    }
 
 
     if (debug_level & 16) {
@@ -833,36 +836,30 @@ int map_visible_lat_lon (double f_bottom_map_boundary,
     if (   (( f_left_map_boundary <= view_max_x) && ( f_left_map_boundary >= view_min_x)) ||
             ((f_right_map_boundary <= view_max_x) && (f_right_map_boundary >= view_min_x)))
     {
-        map_inside_view++;
-//fprintf(stderr,"map inside view\n");
+
+        /* Look for top or bottom map boundaries inside view */
+        if (   ((   f_top_map_boundary <= view_max_y) && (   f_top_map_boundary >= view_min_y)) ||
+                ((f_bottom_map_boundary <= view_max_y) && (f_bottom_map_boundary >= view_min_y)))
+        {
+
+//fprintf(stderr,"map_inside_view\n");
+            return (1); /* Draw this pixmap onto the screen */
+        }
     }
-
-
-    /* Look for top or bottom map boundaries inside view */
-    if (   ((   f_top_map_boundary <= view_max_y) && (   f_top_map_boundary >= view_min_y)) ||
-            ((f_bottom_map_boundary <= view_max_y) && (f_bottom_map_boundary >= view_min_y)))
-    {
-
-        map_inside_view++;
-//fprintf(stderr,"map inside view\n");
-    }
-
 
     /* Look for right or left view boundaries inside map */
     if (   ((view_max_x <= f_right_map_boundary) && (view_max_x >= f_left_map_boundary)) ||
             ((view_min_x <= f_right_map_boundary) && (view_min_x >= f_left_map_boundary)))
     {
-        view_inside_map++;
-//fprintf(stderr,"view inside map\n");
-    }
 
+        /* Look for top or bottom view boundaries inside map */
+        if (   ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary)) ||
+            ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary)))
+        {
 
-    /* Look for top or bottom view boundaries inside map */
-    if (   ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary)) ||
-        ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary)))
-    {
-        view_inside_map++;
-//fprintf(stderr,"view inside map\n");
+//fprintf(stderr,"view_inside_map\n");
+            return (1); /* Draw this pixmap onto the screen */
+        }
     }
 
 
@@ -876,8 +873,8 @@ int map_visible_lat_lon (double f_bottom_map_boundary,
             ((view_max_y >= f_bottom_map_boundary) && (view_max_y <= f_top_map_boundary)) &&
             ((view_min_y >= f_bottom_map_boundary) && (view_min_y <= f_top_map_boundary)))
     {
-        parallel_edges++;
-//fprintf(stderr,"parallel edges\n");
+//fprintf(stderr,"parallel_edges\n");
+        return (1); /* Draw this pixmap onto the screen */
     }
 
 
@@ -891,26 +888,11 @@ int map_visible_lat_lon (double f_bottom_map_boundary,
         ((view_max_x <= f_right_map_boundary) && (view_max_x >= f_left_map_boundary)) &&
         ((view_min_x <= f_right_map_boundary) && (view_min_x >= f_left_map_boundary)))
     {
-        parallel_edges++;
-//fprintf(stderr,"parallel edges\n");
-    }
-
-
-    if (debug_level & 16) {
-        fprintf(stderr,"map_inside_view: %d  view_inside_map: %d  parallel_edges: %d\n",
-                map_inside_view,
-                view_inside_map,
-                parallel_edges);
-    }
-
-    if ((map_inside_view >= 2) || (view_inside_map >= 2) || (parallel_edges) ) {
-//fprintf(stderr,"Success!\n");
+//fprintf(stderr,"parallel_edges\n");
         return (1); /* Draw this pixmap onto the screen */
     }
-    else {
-//fprintf(stderr,"Failure!\n");
-        return (0); /* Skip this pixmap */
-    }
+
+    return (0); /* Skip this pixmap */
 }
 
 
