@@ -409,10 +409,10 @@ void draw_tiger_map (Widget w) {
 #endif  // HAVE_LIBCURL
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        return;
+//    }
 
 
     // For debugging the MagickError/MagickWarning segfaults.
@@ -447,12 +447,12 @@ void draw_tiger_map (Widget w) {
     (void)fclose (f);
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image_info)
-            DestroyImageInfo(image_info);
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        if (image_info)
+//            DestroyImageInfo(image_info);
+//        return;
+//    }
 
 
     image = ReadImage(image_info, &exception);
@@ -464,14 +464,14 @@ void draw_tiger_map (Widget w) {
     }
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        if (image)
+//            DestroyImage(image);
+//        if (image_info)
+//            DestroyImageInfo(image_info);
+//        return;
+//    }
 
 
     if (debug_level & 512)
@@ -502,14 +502,14 @@ void draw_tiger_map (Widget w) {
     }
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        if (image)
+//            DestroyImage(image);
+//        if (image_info)
+//            DestroyImageInfo(image_info);
+//        return;
+//    }
 
 
     // If were are drawing to a low bpp display (typically < 8bpp)
@@ -534,14 +534,14 @@ void draw_tiger_map (Widget w) {
     }
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        if (image)
+//            DestroyImage(image);
+//        if (image_info)
+//            DestroyImageInfo(image_info);
+//        return;
+//    }
 
 
     pixel_pack = GetImagePixels(image, 0, 0, image->columns, image->rows);
@@ -555,14 +555,14 @@ void draw_tiger_map (Widget w) {
     }
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        if (image)
+//            DestroyImage(image);
+//        if (image_info)
+//            DestroyImageInfo(image_info);
+//        return;
+//    }
 
 
     index_pack = GetIndexes(image);
@@ -576,14 +576,14 @@ void draw_tiger_map (Widget w) {
     }
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        if (image)
+//            DestroyImage(image);
+//        if (image_info)
+//            DestroyImageInfo(image_info);
+//        return;
+//    }
 
 
     if (image->storage_class == PseudoClass && image->colors <= 256) {
@@ -629,14 +629,14 @@ void draw_tiger_map (Widget w) {
     }
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        if (image)
+//            DestroyImage(image);
+//        if (image_info)
+//            DestroyImageInfo(image_info);
+//        return;
+//    }
 
 
     /*
@@ -783,14 +783,14 @@ void draw_tiger_map (Widget w) {
     scr_y = screen_height - 1;
 
 
-    HandlePendingEvents(app_context);
-    if (interrupt_drawing_now) {
-        if (image)
-            DestroyImage(image);
-        if (image_info)
-            DestroyImageInfo(image_info);
-        return;
-    }
+//    HandlePendingEvents(app_context);
+//    if (interrupt_drawing_now) {
+//        if (image)
+//            DestroyImage(image);
+//        if (image_info)
+//            DestroyImageInfo(image_info);
+//        return;
+//    }
 
 
     // loop over map pixel rows
