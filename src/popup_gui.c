@@ -237,7 +237,7 @@ void popup_ID_message(char *banner, char *message) {
 
 
 #ifdef HAVE_FESTIVAL
-    if (ATV_speak_ID) {
+    if (festival_speak_ID) {
         SayText(message);
     }
 #endif
