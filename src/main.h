@@ -76,6 +76,7 @@ extern FILE *read_file_ptr;
 #define MAX_GPS_CHARS 128
 #define MAX_WX_CHARS 4
 
+extern int re_sort_maps;
 extern Widget trackme_button;
 extern int debug_level;
 extern int my_position_valid;

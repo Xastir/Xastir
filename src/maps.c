@@ -149,7 +149,7 @@ float imagemagick_gamma_adjust = 0.0;  // Additional imagemagick map gamma corre
 
 // Storage for the index file timestamp
 const time_t *map_index_timestamp;
-extern int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right);
+extern int index_retrieve(char *filename, unsigned long *bottom, unsigned long *top, unsigned long *left, unsigned long *right, int* map_layer, int *draw_filled);
 static int map_onscreen_index(char *filename);
 extern void index_update_directory(char *directory);
 
@@ -8813,9 +8813,10 @@ static int map_onscreen(long left, long right, long top, long bottom) {
 static int map_onscreen_index(char *filename) {
     unsigned long top, bottom, left, right;
     int onscreen = 2;
+    int map_layer, draw_filled;     // Unused in this function
 
 
-    if (index_retrieve(filename, &bottom, &top, &left, &right) ) {
+    if (index_retrieve(filename, &bottom, &top, &left, &right, &map_layer, &draw_filled) ) {
 
         // Map was in the index, check for visibility
         if (map_onscreen(left, right, top, bottom)) {
@@ -10542,6 +10543,7 @@ map_index_record *map_index_head = NULL;
 
 
 
+//WE7U
 // Function used to add map directories to the in-memory map index.
 // Causes an update of the index list in memory.  Input Records are
 // inserted in alphanumerical order.  We mark directories in the
@@ -10643,6 +10645,8 @@ void index_update_directory(char *directory) {
     temp_record->left = 0;
     temp_record->right = 0;
     temp_record->accessed = 1;
+    temp_record->map_layer = 0;     // Default.  Not used for directories though.
+    temp_record->draw_filled = 0;   // Default.  Not used for directories though.
 }
 
 
@@ -10761,6 +10765,8 @@ void index_update_xastir(char *filename,
     temp_record->left = left;
     temp_record->right = right;
     temp_record->accessed = 1;
+    temp_record->map_layer = 0;     // Default
+    temp_record->draw_filled = 0;   // Default
 }
 
 
@@ -10904,6 +10910,8 @@ void index_update_ll(char *filename,
     temp_record->left = temp_left;
     temp_record->right = temp_right;
     temp_record->accessed = 1;
+    temp_record->map_layer = 0;     // Default
+    temp_record->draw_filled = 0;   // Default
 }
 
 
@@ -10933,7 +10941,9 @@ int index_retrieve(char *filename,
                    unsigned long *bottom,
                    unsigned long *top,
                    unsigned long *left,
-                   unsigned long *right) {
+                   unsigned long *right,
+                   int *map_layer,
+                   int *draw_filled) {
 
     map_index_record *current = map_index_head;
     int status = 0;
@@ -10947,6 +10957,8 @@ int index_retrieve(char *filename,
             *top = current->top;
             *left = current->left;
             *right = current->right;
+            *map_layer = current->map_layer;
+            *draw_filled = current->draw_filled;
 
             // Mark that we've accessed this record
             current->accessed = 1;
@@ -10996,11 +11008,13 @@ void index_save_to_file() {
             // comma-delimited line
             xastir_snprintf(out_string,
                 sizeof(out_string),
-                "%010lu,%010lu,%010lu,%010lu,%s\n",
+                "%010lu,%010lu,%010lu,%010lu,%05d,%01d,%s\n",
                 current->bottom,
                 current->top,
                 current->left,
                 current->right,
+                current->map_layer,
+                current->draw_filled,
                 current->filename);
 
             if (fprintf(f,"%s",out_string) < strlen(out_string)) {
@@ -11019,7 +11033,6 @@ void index_save_to_file() {
 
 
 
-//WE7U
 // Snags the file and creates the linked list pointed to by the
 // map_index_head pointer.  The memory linked list keeps the same
 // order as the entries in the file.
@@ -11058,12 +11071,12 @@ void index_restore_from_file(void) {
 
                 // Tweaked the string below so that it will track
                 // along with MAX_FILENAME-1.  We're constructing
-                // the string "%lu,%lu,%lu,%lu,%2000c", where the
-                // 2000 example number is from MAX_FILENAME.
+                // the string "%lu,%lu,%lu,%lu,%d,%d,%2000c", where
+                // the 2000 example number is from MAX_FILENAME.
                 xastir_snprintf(scanf_format,
                     sizeof(scanf_format),
                     "%s%d%s",
-                    "%lu,%lu,%lu,%lu,%",
+                    "%lu,%lu,%lu,%lu,%d,%d,%",
                     MAX_FILENAME,
                     "c");
 
@@ -11075,6 +11088,8 @@ void index_restore_from_file(void) {
                     &temp_record->top,
                     &temp_record->left,
                     &temp_record->right,
+                    &temp_record->map_layer,
+                    &temp_record->draw_filled,
                     temp_record->filename);
 
                     // Mark the record as non-accessed at this
@@ -11087,7 +11102,8 @@ void index_restore_from_file(void) {
 
                 temp_record->filename[MAX_FILENAME-1] = '\0';
 
-                if (processed == 5) {
+                // If correct number of parameters
+                if (processed == 7) {
 
                     // Link the new record to the end of the list
                     if (current == NULL) {  // Empty list
@@ -11351,6 +11367,118 @@ void load_alert_maps (Widget w, char *dir) {
 
 
 
+// Here's the head of our sorted-by-layer maps list
+static map_index_record *map_sorted_list_head = NULL;
+
+
+void empty_map_sorted_list(void) {
+    map_index_record *current = map_sorted_list_head;
+
+    while (map_sorted_list_head != NULL) {
+        current = map_sorted_list_head;
+        map_sorted_list_head = current->next;
+        free(current);
+    }
+}
+
+
+
+
+
+// Insert a map into the list at the end of the maps with the same
+// layer number.  We'll need to look up the parameters for it from
+// the master map_index list and then attach a new record to our new
+// sorted list in the proper place.
+//
+// This function should be called when we're first starting up
+// Xastir and anytime that selected_maps.sys is changed.
+//
+void insert_map_sorted(char *filename){
+    map_index_record *current;
+    map_index_record *last;
+    map_index_record *temp_record;
+    unsigned long bottom;
+    unsigned long top;
+    unsigned long left;
+    unsigned long right;
+    int map_layer;
+    int draw_filled;
+    int done;
+
+
+    if (index_retrieve(filename,
+            &bottom,
+            &top,
+            &left,
+            &right,
+            &map_layer,
+            &draw_filled)) {    // Found a match
+
+        // Allocate a new record
+        temp_record = (map_index_record *)malloc(sizeof(map_index_record));
+
+        // Fill in the values
+        xastir_snprintf(temp_record->filename,MAX_FILENAME,"%s",filename);
+        temp_record->bottom = bottom;
+        temp_record->top = top;
+        temp_record->left = left;
+        temp_record->right = right;
+        temp_record->map_layer = map_layer;
+        temp_record->draw_filled = draw_filled;
+        temp_record->selected = 1;  // Always, we already know this!
+        temp_record->accessed = 1;  // Always, we already know this!
+        temp_record->next = NULL;
+
+        // Now find the proper place for it and insert it in
+        // layer-order into the list.
+        current = map_sorted_list_head;
+        last = map_sorted_list_head;
+        done = 0;
+
+        // Possible cases:
+        // Empty list
+        // insert at beginning of list
+        // insert at end of list
+        // insert between other entries
+
+        if (map_sorted_list_head == NULL) {
+            // Empty list.  Insert record.
+            map_sorted_list_head = temp_record;
+            done++;
+        }
+        else if (map_layer < current->map_layer) {
+            // Insert at beginning of list
+            temp_record->next = current;
+            map_sorted_list_head = temp_record;
+            done++;
+        }
+        else {  // Need to insert between records or at end of list
+            while (!done && (current != NULL) ) {
+                if (map_layer >= current->map_layer) {  // Not to our layer yet
+                    last = current;
+                    current = current->next;    // May point to NULL now
+                }
+                else if (map_layer < current->map_layer) {
+                    temp_record->next = current;
+                    last->next = temp_record;
+                    done++;
+                }
+            }
+        }
+        // Handle running off the end of the list
+        if (!done && (current == NULL) ) {
+            last->next = temp_record;
+        }
+    }
+    else {
+        // We failed to find it in the map index
+    }
+}
+
+
+
+
+
 /**********************************************************
  * load_auto_maps()
  *
@@ -11364,33 +11492,75 @@ void load_auto_maps (Widget w, char *dir) {
     map_index_record *current = map_index_head;
 
 
-    // Run through the entire map_index linked list
-    while (current != NULL) {
+    // Skip the sorting of the maps if we don't need to do it
+    if (re_sort_maps) {
 
-        // I included GNIS here at this time because the files are
-        // very large (at least for a state-wide file), and they
-        // take a long time to load.  They're obviously not a raster
-        // format file.
-        if (auto_maps_skip_raster
-                && (   strstr(current->filename,"geo")
-                    || strstr(current->filename,"GEO")
-                    || strstr(current->filename,"tif")
-                    || strstr(current->filename,"TIF")
-                    || strstr(current->filename,"gnis")
-                    || strstr(current->filename,"GNIS") ) ) {
-            // Skip this map
+printf("*** Sorting the selected maps by layer...\n");
+
+        // Empty the sorted list first.  We'll create a new one.
+        empty_map_sorted_list();
+
+        // Run through the entire map_index linked list
+        while (current != NULL) {
+
+            // I included GNIS here at this time because the files are
+            // very large (at least for a state-wide file), and they
+            // take a long time to load.  They're obviously not a raster
+            // format file.
+            if (auto_maps_skip_raster
+                    && (   strstr(current->filename,"geo")
+                        || strstr(current->filename,"GEO")
+                        || strstr(current->filename,"tif")
+                        || strstr(current->filename,"TIF")
+                        || strstr(current->filename,"gnis")
+                        || strstr(current->filename,"GNIS") ) ) {
+                // Skip this map
+            }
+            else {  // Draw this map
+
+                //printf("Loading: %s/%s\n",SELECTED_MAP_DIR,current->filename);
+
+                //WE7U
+                insert_map_sorted(current->filename);
+ 
+/*
+                draw_map (w,
+                    SELECTED_MAP_DIR,
+                    current->filename,
+                    NULL,
+                    '\0',
+                    DRAW_TO_PIXMAP);
+*/
+            }
+            current = current->next;
         }
-        else {  // Draw this map
 
-            //printf("Loading: %s/%s\n",SELECTED_MAP_DIR,current->filename);
+        // All done sorting until something is changed in the Map
+        // Chooser.
+        re_sort_maps = 0;
 
-            draw_map (w,
-                SELECTED_MAP_DIR,
-                current->filename,
-                NULL,
-                '\0',
-                DRAW_TO_PIXMAP);
-        }
+printf("*** DONE sorting the selected maps.\n");
+
+    }
+
+    // We have the maps in sorted order.  Run through the list and
+    // draw them.
+    current = map_sorted_list_head;
+    while  (current != NULL) {
+
+        // Debug
+//        printf("Drawing level:%05d, file:%s\n",
+//            current->map_layer,
+//            current->filename);
+
+        // Draw the maps in sorted-by-layer order
+        draw_map (w,
+            SELECTED_MAP_DIR,
+            current->filename,
+            NULL,
+            '\0',
+            DRAW_TO_PIXMAP);
+
         current = current->next;
     }
 }
@@ -11399,11 +11569,18 @@ void load_auto_maps (Widget w, char *dir) {
 
 
 
-/**********************************************************
+/*******************************************************************
  * load_maps()
  *
  * Loads maps, draws grid, updates the display.
- **********************************************************/
+ *
+ * We now create a linked list of maps in layer-order and use this
+ * list to draw the maps.  This preserves the correct ordering in
+ * all cases.  The layer to draw each map is specified in the
+ * map_index.sys file (fifth parameter).  Eventually code will be
+ * added to the Map Chooser in order to change the layer each map is
+ * drawn at.
+ *******************************************************************/
 void load_maps (Widget w) {
     FILE *f;
     char mapname[MAX_FILENAME];
@@ -11415,115 +11592,164 @@ void load_maps (Widget w) {
     if (debug_level & 1)
         printf ("Load maps start\n");
 
-    // Make sure the string is empty before we start
-    selected_dir[0] = '\0';
+    // Skip the sorting of the maps if we don't need to do it
+    if (re_sort_maps) {
 
-    // Create empty file if it doesn't exist
-    (void)filecreate(SELECTED_MAP_DATA);
+printf("*** Sorting the selected maps by layer...\n");
 
-    f = fopen (SELECTED_MAP_DATA, "r");
-    if (f != NULL) {
-        if (debug_level & 1)
-            printf ("Load maps Open map file\n");
+        // Empty the sorted list first.  We'll create a new one.
+        empty_map_sorted_list();
+ 
+        // Make sure the string is empty before we start
+        selected_dir[0] = '\0';
 
-        while (!feof (f)) {
-            // Grab one line from the file
-            if ( fgets( mapname, MAX_FILENAME-1, f ) != NULL ) {
+        // Create empty file if it doesn't exist
+        (void)filecreate(SELECTED_MAP_DATA);
 
-                // Forced termination (just in case)
-                mapname[MAX_FILENAME-1] = '\0';
+        f = fopen (SELECTED_MAP_DATA, "r");
+        if (f != NULL) {
+            if (debug_level & 1)
+                printf ("Load maps Open map file\n");
 
-                // Get rid of the newline at the end
-                for (i = strlen(mapname); i > 0; i--) {
-                    if (mapname[i] == '\n')
-                        mapname[i] = '\0'; 
-                }
+            while (!feof (f)) {
+                // Grab one line from the file
+                if ( fgets( mapname, MAX_FILENAME-1, f ) != NULL ) {
 
-                if (debug_level & 1)
-                    printf("Found mapname: %s\n", mapname);
+                    // Forced termination (just in case)
+                    mapname[MAX_FILENAME-1] = '\0';
 
-                // Test for comment
-                if (mapname[0] != '#') {
+                    // Get rid of the newline at the end
+                    for (i = strlen(mapname); i > 0; i--) {
+                        if (mapname[i] == '\n')
+                            mapname[i] = '\0'; 
+                    }
+
+                    if (debug_level & 1)
+                        printf("Found mapname: %s\n", mapname);
+
+                    // Test for comment
+                    if (mapname[0] != '#') {
 
 
-                    // Check whether it's a directory that was
-                    // selected.  If so, save it in a special
-                    // variable and use that to match all the files
-                    // inside the directory.  Note that with the way
-                    // we have things ordered in the list, the
-                    // directories appear before their member files.
-                    if (mapname[strlen(mapname)-1] == '/') {
-                        // Found a directory.  Save the name.
-                        xastir_snprintf(selected_dir,
-                            sizeof(selected_dir),
-                            "%s",
-                            mapname);
+                        // Check whether it's a directory that was
+                        // selected.  If so, save it in a special
+                        // variable and use that to match all the files
+                        // inside the directory.  Note that with the way
+                        // we have things ordered in the list, the
+                        // directories appear before their member files.
+                        if (mapname[strlen(mapname)-1] == '/') {
+                            // Found a directory.  Save the name.
+                            xastir_snprintf(selected_dir,
+                                sizeof(selected_dir),
+                                "%s",
+                                mapname);
 
 //printf("Selected %s directory\n",selected_dir);
 
-                        // Here we need to run through the map_index
-                        // list to find all maps that match the
-                        // currently selected directory.  Attempt to
-                        // load all of those maps as well.
+                            // Here we need to run through the map_index
+                            // list to find all maps that match the
+                            // currently selected directory.  Attempt to
+                            // load all of those maps as well.
 
 //printf("Load all maps under this directory: %s\n",selected_dir);
 
-                        // Point to the start of the map_index list
-                        current = map_index_head;
+                            // Point to the start of the map_index list
+                            current = map_index_head;
 
-                        while (current != NULL) {
+                            while (current != NULL) {
 
-                           if (strstr(current->filename,selected_dir)) {
+                               if (strstr(current->filename,selected_dir)) {
 
-                                if (current->filename[strlen(current->filename)-1] != '/') {
+                                    if (current->filename[strlen(current->filename)-1] != '/') {
 
 //printf("Loading: %s\n",current->filename);
 
-                                    draw_map (w,
-                                        SELECTED_MAP_DIR,
-                                        current->filename,
-                                        NULL,
-                                        '\0',
-                                        DRAW_TO_PIXMAP);
+                                        //WE7U
+                                        insert_map_sorted(current->filename);
+ 
+/*
+                                        draw_map (w,
+                                            SELECTED_MAP_DIR,
+                                            current->filename,
+                                            NULL,
+                                            '\0',
+                                            DRAW_TO_PIXMAP);
+*/
+
+                                    }
                                 }
+                                current = current->next;
                             }
-                            current = current->next;
                         }
-                    }
-                    // Else must be a regular map file
-                    else { 
+                        // Else must be a regular map file
+                        else { 
 //printf("%s\n",mapname);
 //start_timer();
-                        draw_map (w,
-                            SELECTED_MAP_DIR,
-                            mapname,
-                            NULL,
-                            '\0',
-                            DRAW_TO_PIXMAP);
+
+                            //WE7U
+                            insert_map_sorted(mapname);
+
+/*
+                            draw_map (w,
+                                SELECTED_MAP_DIR,
+                                mapname,
+                                NULL,
+                                '\0',
+                                DRAW_TO_PIXMAP);
+*/
+
 //stop_timer();
 //print_timer_results();
 
-                        if (debug_level & 1)
-                            printf ("Load maps -%s\n", mapname);
+                            if (debug_level & 1)
+                                printf ("Load maps -%s\n", mapname);
 
-                        XmUpdateDisplay (da);
+                            XmUpdateDisplay (da);
+                        }
                     }
                 }
-            }
-            else {  // We've hit EOF
-                break;
-            }
+                else {  // We've hit EOF
+                    break;
+                }
 
+            }
+            (void)fclose (f);
+            statusline(" ",1);      // delete status line
         }
-        (void)fclose (f);
-        statusline(" ",1);      // delete status line
+        else
+            printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
+
+        // All done sorting until something is changed in the Map
+        // Chooser.
+        re_sort_maps = 0;
+
+printf("*** DONE sorting the selected maps.\n");
+
     }
-    else
-        printf("Couldn't open file: %s\n", SELECTED_MAP_DATA);
+
+    // We have the maps in sorted order.  Run through the list and
+    // draw them.
+    current = map_sorted_list_head;
+    while  (current != NULL) {
+
+        // Debug
+//        printf("Drawing level:%05d, file:%s\n",
+//            current->map_layer,
+//            current->filename);
+
+        // Draw the maps in sorted-by-layer order
+        draw_map (w,
+            SELECTED_MAP_DIR,
+            current->filename,
+            NULL,
+            '\0',
+            DRAW_TO_PIXMAP);
+
+        current = current->next;
+    }
 
     if (debug_level & 1)
         printf ("Load maps stop\n");
-
 }
 
 

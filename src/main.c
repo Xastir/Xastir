@@ -194,6 +194,7 @@ int map_chooser_expand_dirs = 0;
 Widget map_chooser_dialog = (Widget)NULL;
 static void Map_chooser(Widget w, XtPointer clientData, XtPointer callData);
 Widget map_chooser_maps_selected_data = (Widget)NULL;
+int re_sort_maps = 1;
 
 #ifdef HAVE_IMAGEMAGICK
 static void Config_tiger(Widget w, XtPointer clientData, XtPointer callData);
@@ -7795,6 +7796,8 @@ void  Map_auto_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPoint
         XtSetSensitive(map_auto_skip_raster_button,FALSE);
     }
 
+    re_sort_maps = 1;
+
     create_image(da);
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
     if (map_auto_maps)
@@ -7815,6 +7818,8 @@ void  Map_auto_skip_raster_toggle( /*@unused@*/ Widget widget, XtPointer clientD
         auto_maps_skip_raster = atoi(which);
     else
         auto_maps_skip_raster = 0;
+
+    re_sort_maps = 1;
 
     create_image(da);
     (void)XCopyArea(XtDisplay(da),pixmap_final,XtWindow(da),gc,0,0,screen_width,screen_height,0,0);
@@ -9625,6 +9630,10 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 // It'd be nice to turn off auto-maps here, or better perhaps would
 // be if any button were chosen other than "Cancel".
 
+
+    // Cause load_maps() and load_automaps() to re-sort the selected
+    // maps by layer.
+    re_sort_maps = 1;
 
     // Get the list and the list count from the dialog
     XtVaGetValues(map_list,
