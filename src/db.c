@@ -8073,8 +8073,7 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
         // my station.  I've also seen this from APRS+: "{XX}B", so
         // perhaps this is also possible "{X}B" or "{X}BB}".  We can
         // also get auto-reply responses from APRS+ that just have
-        // "}X" or "}XX" at the end.  We need to decode these as
-        // well.
+        // "}X" or "}XX" at the end.  We decode those as well.
         //
         temp_ptr = strstr(msg_id,"}"); // look for Reply Ack in msg_id
 
@@ -8082,10 +8081,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             int zz = 1;
             int yy = 0;
 
-if (is_my_call(addr,1)) {
-printf("Found Reply/Ack:%s\n",message);
-printf("Orig_msg_id:%s\t",msg_id);
-}
+            if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
+                printf("Found Reply/Ack:%s\n",message);
+                printf("Orig_msg_id:%s\t",msg_id);
+            }
 
 // Put this code into the UI message area as well?
 
@@ -8101,9 +8100,9 @@ printf("Orig_msg_id:%s\t",msg_id);
             // otherwise.
             temp_ptr[0] = '\0'; // adjust msg_id end
 
-if (is_my_call(addr,1)) {
-printf("New_msg_id:%s\tReply_ack:%s\n\n",msg_id,ack_string);
-}
+            if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
+                printf("New_msg_id:%s\tReply_ack:%s\n\n",msg_id,ack_string);
+            }
 
         }
         else {  // Look for Reply Ack in message without sequence
@@ -8114,9 +8113,9 @@ printf("New_msg_id:%s\tReply_ack:%s\n\n",msg_id,ack_string);
                 int zz = 1;
                 int yy = 0;
 
-if (is_my_call(addr,1)) {
-printf("Found Reply/Ack:%s\n",message);
-}
+                if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
+                    printf("Found Reply/Ack:%s\n",message);
+                }
 
 // Put this code into the UI message area as well?
 
@@ -8130,9 +8129,9 @@ printf("Found Reply/Ack:%s\n",message);
                 // otherwise.
                 temp_ptr[0] = '\0'; // adjust message end
 
-if (is_my_call(addr,1)) {
-printf("Reply_ack:%s\n\n",ack_string);
-}
+                if ( (debug_level & 1) && (is_my_call(addr,1)) ) {
+                    printf("Reply_ack:%s\n\n",ack_string);
+                }
             } 
         }
  
@@ -8190,15 +8189,16 @@ printf("Reply_ack:%s\n\n",ack_string);
     }
     if (debug_level & 1)
         printf("4\n");
+
     //--------------------------------------------------------------------------
-    if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) {   // message for me with msg_id
+    if (!done && strlen(msg_id) > 0 && is_my_call(addr,1)) { // Message for me with msg_id (sequence number)
         time_t last_ack_sent;
         long record;
 
 // Remember to put this code into the UI message area as well.
 
         // Check for Reply/Ack
-        if (strlen(ack_string) != 0) {  // Have an extra ack to deal with
+        if (strlen(ack_string) != 0) {  // Have a free-ride ack to deal with
             clear_acked_message(call,addr,ack_string);  // got an ACK for me
             msg_record_ack(call,addr,ack_string);   // Record the ack for this message
         }
@@ -8366,8 +8366,8 @@ else {
         if ( (message[0] != '?') && is_my_call(addr,1) ) {
             popup_message(langcode("POPEM00018"),message);
 
-            // Check for Reply/Ack (APRS+ sends an AA: response back
-            // for auto-reply, with an embedded Reply/Ack.
+            // Check for Reply/Ack.  APRS+ sends an AA: response back
+            // for auto-reply, with an embedded free-ride Ack.
             if (strlen(ack_string) != 0) {  // Have an extra ack to deal with
                 clear_acked_message(call,addr,ack_string);  // got an ACK for me
                 msg_record_ack(call,addr,ack_string);   // Record the ack for this message
