@@ -12892,7 +12892,9 @@ void extract_TNC_text(char *info) {
 //WE7U2
 // We feed a raw 7-byte string into this routine.  It decodes the
 // callsign-SSID and tells us whether there are more callsigns after
-// this.  If the "asterisk" input parameter is nonzero it'll add an asterisk to the callsign if it has been digipeated.  This function is called by the decode_ax25_header() function
+// this.  If the "asterisk" input parameter is nonzero it'll add an
+// asterisk to the callsign if it has been digipeated.  This
+// function is called by the decode_ax25_header() function.
 //
 // Inputs:  string          Raw input string
 //          asterisk        1 = add "digipeated" asterisk
