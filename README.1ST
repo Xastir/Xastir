@@ -1237,7 +1237,26 @@ WINDOWS/CYGWIN NOTES:
      some fiddling with adding things to "~/.cvsrc" before it works properly
      though:  Without those entries, CVS wasn't creating the "CVS/"
      directories, which it needs in order to maintain bookkeeping
-     information.
+     information.  Here are my entries in .cvsrc:
+
+
+            cvs -z3
+            update -P -d
+            status -v
+
+
+     And here are the two commands that should bring down the latest CVS
+     Xastir to your Cygwin/Windows session.  Hit <ENTER> when the first
+     command asks you for a password:
+
+
+     cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir login 
+     cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co xastir 
+
+
+     If you keep seeing "EOF" at the end of a short error message, it might
+     be that the anonymous CVS server at SourceForge is overloaded.  Keep
+     trying!
 
      Some map libraries (ImageMagick, Shapelib) have been tested (see
      below), while libgeotiff, libproj have not.  Anyone doing so is
