@@ -7638,6 +7638,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
             gc_tint,
             4,
             LineOnOffDash,
+//            LineSolid,
             CapButt,
             JoinMiter);
 
@@ -7657,6 +7658,22 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
             polygon_start_x,
             polygon_start_y);
 
+        (void)XDrawLine(XtDisplay(da),
+            pixmap_alerts,
+            gc_tint,
+            polygon_last_x,
+            polygon_last_y,
+            polygon_start_x,
+            polygon_start_y);
+
+       (void)XDrawLine(XtDisplay(da),
+            pixmap,
+            gc_tint,
+            polygon_last_x,
+            polygon_last_y,
+            polygon_start_x,
+            polygon_start_y);
+
 //fprintf(stderr,"drew line\n");
 
 // Copy the new drawing to the screen.  This is of course a
@@ -7665,7 +7682,7 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
 // refresh symbols we'll refresh the overlays.  We'll also need a
 // way to turn on/off the overlay display, probably from the Map
 // menu.
-//
+
         (void)XCopyArea(XtDisplay(da),
             pixmap_final,
             XtWindow(da),
@@ -7678,6 +7695,9 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
             0);
     }
 
+//interrupt_drawing_now++;
+//refresh_image(da);
+ 
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
     polygon_last_x = -1;    // Invalid position
@@ -7906,6 +7926,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     gc_tint,
                     4,
                     LineOnOffDash,
+//                    LineSolid,
                     CapButt,
                     JoinMiter);
 
@@ -7925,11 +7946,27 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     input_x,
                     input_y);
 
+                (void)XDrawLine(XtDisplay(w),
+                    pixmap_alerts,
+                    gc_tint,
+                    polygon_last_x,
+                    polygon_last_y,
+                    input_x,
+                    input_y);
+
+                (void)XDrawLine(XtDisplay(w),
+                    pixmap,
+                    gc_tint,
+                    polygon_last_x,
+                    polygon_last_y,
+                    input_x,
+                    input_y);
+
 // Copy the new drawing to the screen.  This is of course a
 // temporary thing to test out the concepts.  Later we'll implement
 // storage for the points and an automatic refresh:  Every time we
 // refresh symbols we'll refresh the overlays.
-//
+
                 (void)XCopyArea(XtDisplay(w),
                     pixmap_final,
                     XtWindow(w),
@@ -7951,6 +7988,9 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
             polygon_last_y = input_y;
 
             done++;
+
+//interrupt_drawing_now++;
+//refresh_image(da);
         }
     }
 
