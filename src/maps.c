@@ -2395,6 +2395,7 @@ static char current_rotated_label_fontname[sizeof(rotated_label_fontname)] = {'\
 
 /**********************************************************
  * draw_rotated_label_text()
+ * draw_centered_label_text()
  *
  * Does what it says.  Used to draw strings onto the
  * display.
@@ -2402,11 +2403,11 @@ static char current_rotated_label_fontname[sizeof(rotated_label_fontname)] = {'\
  * Use "xfontsel" or other tools to figure out what fonts
  * to use here.
  **********************************************************/
-void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text) {
+/* common code used by the two entries --- a result of retrofitting a new
+   feature (centered) */
+static void draw_rotated_label_text_common (Widget w, float my_rotation, int x, int y, int label_length, int color, char *label_text, int align) {
 //    XPoint *corner;
 //    int i;
-    float my_rotation = (float)((-rotation)-90);
-
 
     /* see if fontname has changed */
     if (rotated_label_font && 
@@ -2438,41 +2439,55 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
 
     //fprintf(stderr,"%0.1f\t%s\n",my_rotation,label_text);
 
-    if (       ( (my_rotation < -90.0) && (my_rotation > -270.0) )
-            || ( (my_rotation >  90.0) && (my_rotation <  270.0) ) ) {
+    (void)XRotDrawAlignedString(XtDisplay (w),
+                                rotated_label_font,
+                                my_rotation,
+                                pixmap,
+                                gc,
+                                x,
+                                y,
+                                label_text,
+                                align);
+}
 
+void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text) {
+    float my_rotation = (float)((-rotation)-90);
+
+    if ( ( (my_rotation < -90.0) && (my_rotation > -270.0) )
+         || ( (my_rotation >  90.0) && (my_rotation <  270.0) ) ) {
         my_rotation = my_rotation + 180.0;
-        (void)XRotDrawAlignedString(XtDisplay (w),
-            rotated_label_font,
+        (void)draw_rotated_label_text_common(w,
             my_rotation,
-            pixmap,
-            gc,
             x,
             y,
+            label_length,                                    
+            color,
             label_text,
             BRIGHT);
-    }
-    else {
-        (void)XRotDrawAlignedString(XtDisplay (w),
-            rotated_label_font,
+    } else {
+        (void)draw_rotated_label_text_common(w,
             my_rotation,
-            pixmap,
-            gc,
             x,
             y,
+            label_length,                                    
+            color,
             label_text,
             BLEFT);
     }
 }
 
+void draw_centered_label_text (Widget w, int rotation, int x, int y, int label_length, int color, char *label_text) {
+    float my_rotation = (float)((-rotation)-90);
 
-
-
-
-
-
-
-
+        (void)draw_rotated_label_text_common(w,
+            my_rotation,
+            x,
+            y,
+            label_length,                                    
+            color,
+            label_text,
+            BCENTRE);
+}
 
 static void Print_properties_destroy_shell(/*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget shell = (Widget) clientData;

@@ -7,6 +7,7 @@
 #   name    - name of the road for labels
 #   filled  - whether a polygon is drawn filled or not
 #   fill_color - color to fill polygon with
+#   label_color - color for label
 #   pattern - line pattern for road, river, etc.
 #   display_level - highest zoom level at which to display the feature
 #   label_level - highest zoom level at which to display the label
@@ -34,7 +35,7 @@ dbffields="COUNTYNAME:STATE:FIPS"}
 
 # BEGIN_RECORD is called once per dbf record which contains multiple fields.
 # Use this rule to re-initialize variables between records.
-BEGIN_RECORD {key=""; lanes=2; fill_color=11; color=8; name=""; filled=1; pattern=0; display_level=8192; label_level=512; symbol=""}
+BEGIN_RECORD {key=""; lanes=2; fill_color=11; color=8; name=""; filled=1; pattern=0; display_level=8192; label_level=512; label_color=20; symbol=""}
 
 # name: name is just the county name.
 /^COUNTYNAME=(.*)$/ {name="$1"; next}
