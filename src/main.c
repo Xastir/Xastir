@@ -8097,9 +8097,9 @@ void SetMyPosition( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*
     long my_new_latl, my_new_lonl;
 
     // check for fixed station
-    if ( (output_station_type == 0) || (output_station_type > 3)) {
-      popup_message( "Modify fixed position", "Are you sure you want to modify your position?");
-    }
+    //if ( (output_station_type == 0) || (output_station_type > 3)) {
+    //  popup_message( "Modify fixed position", "Are you sure you want to modify your position?");
+    //}
     // check for position abiguity
     if ( position_amb_chars > 0 ) { // popup warning that ambiguity is on
       popup_message( "Modify ambiguous position", "Position abiguity is on, your new position may appear to jump.");
