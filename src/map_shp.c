@@ -571,9 +571,15 @@ MRC         string      (8,0)   48122-G7
             switch (zone[4]) {
                 case ('C'): // County File (c_16my01.shp)
                     break;
-                case ('A'): // County Warning File (w_24ja01.shp)
+***             case ('A'): // County Warning File (w_24ja01.shp)
                     break;
                 case ('Z'): // Zone File (z_16mr01.shp, z_16my01.shp, mz24ja01.shp, oz09de99.shp)
+                    break;
+                case ('F'): // Fire weather (fz_ddmmyy.shp)
+                    break;
+***             case ('A'): // Canadian Area (a_mmddyy.shp)
+                    break;
+                case ('R'): // Canadian Region (r_mmddyy.shp)
                     break;
             }
 
@@ -887,6 +893,7 @@ void draw_shapefile_map (Widget w,
                 break;
 
             case 'z':   // Zone File
+            case 'f':   // Fire zone file
             default:
                 // Weather alert zones, z_ files:  KS_Z033
                 // STATE_ZONE
@@ -1204,6 +1211,7 @@ void draw_shapefile_map (Widget w,
                     }
                     break;
                 case 'z':   // Zone File
+                case 'f':   // Fire zone file
                     if (fieldcount >= (search_field1 + 1) ) {
                         string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                         if ( !strncasecmp(search_param1,string1,strlen(string1))

@@ -3454,6 +3454,12 @@ static void map_search (Widget w, char *dir, alert_entry * alert, int *alert_cou
         if (alert->filename[0] == '\0') {   // No filename in struct, so will have
                                             // to search for the shape in the files.
             switch (alert->title[3]) {
+                case 'F':   // 'F' in 4th char means fire alert
+                    // Use fire alert file fz_??????
+                    //fprintf(stderr,"%c:Fire Alert file\n",alert->title[3]);
+                    strncpy (alert->filename, "fz", sizeof (alert->filename));
+                    break;
+ 
                 case 'C':   // 'C' in 4th char means county
                     // Use County file c_??????
                     //fprintf(stderr,"%c:County file\n",alert->title[3]);

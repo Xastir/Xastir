@@ -836,6 +836,7 @@ Getting Maps and other Data Files for Xastir:
         ---------------
         County Warning Areas
         Zone Forecast Areas
+        Fire Weather Zones
         Coastal and Offshore Marine Zones (3 files)
 
         County Libraries:
@@ -847,12 +848,13 @@ Getting Maps and other Data Files for Xastir:
 
       These are what I currently have loaded:
 
-            hz02oc01.shp
-            w_10de02.shp
-            oz11ap03.shp
-            c_12my03.shp
-            z_16ap03.shp
-            mz06my03.shp
+            c_28au03.shp (plus .dbf & .shx)
+            fz04my04.shp (plus .dbf & .shx)
+            hz02oc01.shp (plus .dbf & .shx)
+            mz15jl04.shp (plus .dbf & .shx)
+            oz24mr04.shp (plus .dbf & .shx)
+            w_28au03.shp (plus .dbf & .shx)
+            z_15jl04.shp (plus .dbf & .shx)
            
        Note that you can also use the county file as the background polygon
        filled map for drawing county lands and borders.  Either make a link
