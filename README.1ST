@@ -367,8 +367,8 @@ First Time Install:
 
 
    4. RECOMMENDED:  Install ESRI Shapefile support.  Allows using many sources
-     of online polygon and polyline maps, including ones from NOAA.  This
-     is now the only format for weather alert maps.
+     of online polygon, polyline, and point maps, including ones from NOAA.
+     This is now the only format for weather alert maps.
      The instructions aren't clear in this package, but just installing the
      library is sufficient:
        make lib

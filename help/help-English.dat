@@ -66,6 +66,7 @@ Bob Bruninga. An additional source of information is the APRS(tm)
 specification, available from http://www.tapr.org .
 
 HELP-INDEX>What's new in Xastir BETA
+
                     What's new in Xastir BETA
 
 (This section is an informal list of changes that will be formally written
@@ -78,7 +79,11 @@ Tracked proximity alarms
 Tracking self
 Different Coordinate systems
 Different rain guage sizes
-Shapefile weather alerts
+Shapefile weather alerts/pixmaps
+WXserver info via finger
+Major shapefile improvments, point-type shapefiles
+Private colormaps->8bit color usable
+Assorted bug fixes
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -628,8 +633,10 @@ Xastir to access it.
 Weather Alerts
 Displays weather alerts received, including the alert flags, alert source/type,
 alert destination, expiration, message, and effected location. This data
-is used for the county highlighting, and is not particulary human-readable.
-You can generally figure out the state and county for most of the alerts though.
+is used for the alert highlighting. Double-clicking on an alert will request
+further information about it via finder from the online WXserver. This only
+works if you have internet access; future versions may access this data over
+radio as well.
 
 Message Traffic
 Shows all message traffic while the window is open. It includes the source,
@@ -865,14 +872,17 @@ the README.1ST section on obtaining maps.
 
 As NWS messages are received, different areas will get tinted to designate
 areas of concern.  They are color-coded to specify different types of
-alerts. The original colors were: Cyan for advisory, yellow for watch, red
+alerts. The basic colors are: Cyan for advisory, yellow for watch, red
 for warning, orange for cancelled alert, royal blue for tests, and green
-for undetermined alert levels. With the latest versions of Xastir the
-colors may be different due to a major change:  The areas are tinted now
-instead of color-filled, and the tinting depends on the colors underneath.
-This change was made so that the underlying maps may still be seen
-underneath the weather alert areas. The display of weather alerts may be
-turned on/off via the Map menu as well.
+for undetermined alert levels. With recent versions of Xastir the colors may
+be different because the areas are tinted instead of color-filled, and the
+tinting depends on the colors underneath. The tinting is done with a pixmap
+stipple that displays the type of alert, if it is able to be determined.
+These change was made so that the underlying maps may still be seen
+underneath the weather alert areas, and so the alert type may be more easily
+determined, as sometimes matching the alerts on screen and in the weather
+alerts dialog is difficult. The display of weather alerts may be turned on/off
+via the Map menu.
 
 HELP-INDEX>Stations Menu
 

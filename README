@@ -32,10 +32,19 @@ README
 
      (1) WHAT IS XASTIR?
 
+          Xastir is an APRS client program that uses amateur radio and internet
+          services to convey GPS mapping, weather, and positional data in a
+          graphical application.  It has been developed by and for amateur
+          radio enthusiasts to provide real-time data in an easy to use
+          package.
+
+          Xastir is an open-source project: Most sources, documentation, and
+          binaries are available under the GPL license, with a few modules
+          available under other open-source or public domain licenses.
 
      (2) HOW TO GET XASTIR
 
-          Currently, the 1.0.x tree of Xastir is developed at
+          Currently, the 1.1.x tree of Xastir is developed at
           <http://sourceforge.net/projects/xastir/>
           You can get the latest version of Xastir from there.
 
@@ -77,10 +86,11 @@ README
 
      (3) QUICK STARTUP
 
-         #### NOW INCLUDED IN 'INSTALL' - READ IT *AFTER* FINISHING THIS ####
+           INCLUDED IN 'README.1ST'
 
      (4) UPGRADING
 
+           INCLUDED IN 'README.1ST'
 
      (5) BORING LEGAL STUFF
 
@@ -106,13 +116,13 @@ README
      (6) MAILING LIST
 
           There are currently a couple of mailing lists about Xastir.
-          xastir@xastir.org is the one relevant for posts about
+          xastir@krypton.hscs.virginia.edu is the one relevant for posts about
           Xastir 0.4.0 and up (and bug fixes, and suggestions, etc).
 
           To subscribe to the Xastir mailing list, send email to:
-          xastir-request@xastir.org In the body of the message,
+          xastir-request@krypton.hscs.virginia.edu In the body of the message,
           put "subscribe xastir"; or go to
-          http://www.xastir.org/mailman/listinfo/xastir
+          http://krypton.hscs.virginia.edu/mailman/listinfo/xastir
 
                ### DO NOT SEND FRANK EMAIL ABOUT XASTIR ###
 
@@ -132,7 +142,7 @@ README
           spelling), or even substantive issues either for that
           matter. Please read and follow the mailing list rules.
 
-          The xastir@xastir.org maillist is dedicated to Bug
+          The xastir@krypton.hscs.virginia.edu maillist is dedicated to Bug
           reports, technical questions, your thoughts or
           suggestions on new features being added to Xastir, things
           that should be removed or fixed, amazing problems that even
@@ -142,10 +152,14 @@ README
 
           We're trying to keep the documentation up to date. If you
           feel that anything is missing here, or that anything should
-          be added etc, please email xastir@xastir.org about it,
+          be added etc, please email xastir@krypton.hscs.virginia.edu about it,
           thank you.
 
      (10) OBTAINING HELP
+
+          Please read the file FAQ, and make sure you've followed any relevant
+          instructions in README.1ST. If the problem still exists, feel free to
+          ask on the Xastir mailinglist, as described above.
 
 
   ------------------------------------------------------------------------
