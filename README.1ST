@@ -62,6 +62,7 @@ password:
 2) Go into the xastir directory to build the executable:
 
   cd xastir*
+  ./bootstrap.sh
   ./configure
   make
   su (become the root user)
@@ -426,7 +427,10 @@ First Time Install:
      timeouts/retries in Xastir by specifying new defaults in their ~/.wgetrc
      file.
 
-   7. Building XASTIR
+   7. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
+      automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
+    
+        "./bootstrap.sh"
         "./configure"
         "make" ("gmake" for Solaris or *BSD)
 
@@ -1192,36 +1196,13 @@ WINDOWS/CYGWIN NOTES:
      I do not use maps, gps, or a radio with it.  Mostly because I have not
      had time to get around to it.
 
-     This morning I did a make distclean&& ./configure &&make.  Everything
-     went fine until the linking stage.  I needed to link with the following
-     command.  Under cygwin, the order of the linking matters. and
-     duplicates are not allowed.  (WE7U:  Run this command from the src
-     directory):
-
-
-         gcc -I/usr/X11R6/include -g -O2 -Wall -pipe -o xastir alert.o
-         bulletin_gui.o color.o datum.o db.o draw_symbols.o fcc_data.o
-         festival.o gps.o hostname.o igate.o interface.o interface_gui.o
-         lang.o list_gui.o locate_gui.o location.o location_gui.o main.o
-         maps.o messages.o messages_gui.o popup_gui.o rac_data.o rotated.o
-         sound.o track_gui.o util.o view_message_gui.o wx.o wx_gui.o
-         xa_config.o snprintf.o -L/usr/lib -lXm -L/usr/X11R6/lib -lSM -lICE
-         -lXt -lX11 -lXext -lSM -lICE
-
+     --snip--
 
      It is running right now in X.  It has over 2000 stations reported.
      I am very happy with it.
 
-     --- End of note from Charles
+     --- End of note from Charles ---
 
-
-     Note: The above link line will soon be unnecessary, as a new configure
-     script is being completed that works properly on Cygwin.  It'll be in
-     CVS Real Soon Now!  The new script finds ImageMagick and Shapelib
-     libraries just fine, and will get the link line correct as well,
-     simplifying the install.  Anyone wishing to try the new script before
-     it gets released can contact me.  I'll send it to you with instructions
-     on how to use it:  "archer@eskimo.com"
 
      Install default Cygwin plus these packages via a network install.  Note
      that clicking on some of these causes others to be selected and
@@ -1259,6 +1240,19 @@ WINDOWS/CYGWIN NOTES:
      If you keep seeing "EOF" at the end of a short error message, it might
      be that the anonymous CVS server at SourceForge is overloaded.  Keep
      trying!
+
+        ./bootstrap.sh
+        ./configure
+        make
+        make install-strip
+
+     Ignore the "PACKAGE_* redefined" warnings.  They won't break anything!
+
+     Start up X-Windows by running "/usr/X11R6/bin/startxwin.bat".  You
+     might want to create a shortcut to this on your desktop.
+
+     From the "xterm" window, type "/usr/local/bin/xastir &".  Xastir should
+     start right up.
 
      Some map libraries (ImageMagick, Shapelib) have been tested (see
      below), while libgeotiff, libproj have not.  Anyone doing so is
@@ -1310,29 +1304,17 @@ WINDOWS/CYGWIN NOTES:
 
          ./configure
          make
-
-     After the "make" fails (at the link stage near the end), run the link
-     line listed above (run it while in the src directory), but add:
-
-        -L/usr/local/lib -lshp
-
-     to the end of it.  Once all that is done, run "make install".
+         make install-strip
 
      Cygwin ImageMagick:
      -------------------
      Download the ImageMagick cygwin binary from www.imagemagick.org or one
      of it's mirrors.  Extract it somewhere, then copy the files/directories
-     into the /usr tree (/usr/include and /usr/lib).  Edit the config.h
-     file, adding:
+     into the /usr tree (/usr/include and /usr/lib).
 
-        #define HAVE_IMAGEMAGICK 1
-
-     to the file.  Run make, then run the link line listed above but add:
-
-        -L/usr/lib -lMagick
-
-     to the end of it (and add the Shapelib line above if you want Shapelib
-     as well).  "make install".
+        ./configure
+        make
+        make install-strip
 
      Add this to your .profile:
 
@@ -1346,7 +1328,7 @@ WINDOWS/CYGWIN NOTES:
         cd
         . ./.profile
 
-     So it appears that starting up X-windows using the startx.bat script
+     So it appears that starting up X-windows using the startxwin.bat script
      ends up putting you somewhere other than your home directory, and your
      .profile doesn't end up getting sourced.  There must be a better way.
 
