@@ -374,10 +374,10 @@ void output_message(char *from, char *to, char *message) {
                 // Roll over message_counter if we hit the max.  Now
                 // with Reply/Ack protocol the max is only two
                 // characters worth.  We changed to sending the
-                // sequence number in Base-91 format in order to get
+                // sequence number in Base-89 format in order to get
                 // more range from the 2-character variable.
                 message_counter++;
-                if (message_counter > 8281) // 91*91
+                if (message_counter > 7921) // 89*89
                     message_counter = 0;
 
                 message_pool[i].active = MESSAGE_ACTIVE;
@@ -386,12 +386,14 @@ void output_message(char *from, char *to, char *message) {
                 strcpy(message_pool[i].from_call_sign,from);
                 strcpy(message_pool[i].message_line,message_out);
 
-                // We compute the base-91 sequence number here
+                // We compute the base-89 sequence number here
+                // This allows it to range from "!!" to "yy" (we
+                // can't get to "zz" ?)
                 xastir_snprintf(message_pool[i].seq,
                     sizeof(message_pool[i].seq),
                     "%c%c",
-                    (char)(((message_counter / 91) % 91) + 33),
-                    (char)((message_counter % 91) + 33));
+                    (char)(((message_counter / 89) % 89) + 33),
+                    (char)((message_counter % 89) + 33));
 
                 message_pool[i].active_time=0;
                 message_pool[i].next_time = (time_t)15l;
@@ -583,7 +585,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
     (void)remove_trailing_spaces(seq);  // This is IMPORTANT here!!!
 
     //lowest=100000;
-    strncpy(lowest,"||",2);     // Highest Base-91 2-char string
+    strncpy(lowest,"zz",2);     // Highest Base-89 2-char string
     found=-1;
     for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
@@ -608,7 +610,7 @@ void clear_acked_message(char *from, char *to, char *seq) {
                             if (message_pool[i].active==MESSAGE_ACTIVE) {
                                 if (strcmp(message_pool[i].to_call_sign,from)==0) {
 // Need to change this to a string compare instead of an integer
-// compare.  We are using base-91 encoding now.
+// compare.  We are using base-89 encoding now.
                                     //if (atoi(message_pool[i].seq)<lowest) {
                                     if (strncmp(message_pool[i].seq,lowest,2) < 0) {
                                         //lowest=atoi(message_pool[i].seq);
