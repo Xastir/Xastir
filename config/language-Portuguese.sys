@@ -507,7 +507,7 @@ POPUPOB039|Sinal - Altura(HAAT) - Ganho - Direção||
 POPUPOB040|Dirigindo - Amplitude da direção||
 POPUPOB041|Antena omni-direcional||
 POPUPOB042|Antena direcional||
-POPUPOB043|Useless||
+POPUPOB043|Inutil||
 #
 # Configurar Internet
 WPUPCFI001|Configurar internet||
@@ -1010,8 +1010,8 @@ GPS011|Violeta||
 #
 # Dialogo de propriedades dos mapas
 MAPP001|Propriedades dos mapas||
-MAPP002| Desenhar    mapas||
-MAPP003|Camada   Preenchido   AutoMapa   Caminho/Ficheiro||
+MAPP002|Desenhar mapas||
+MAPP003|Camada Preenchido AutoMapa Caminho/Ficheiro||
 MAPP004|Mudar camada->||
 MAPP005|Preenchido->||
 MAPP006|Sim||
