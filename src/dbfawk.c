@@ -38,12 +38,15 @@
 #include "awk.h"
 #include "dbfawk.h"
 
+
+
+
+
 /*
  * dbfawk_sig:  Generate a signature for a DBF file.
  *  Fills in sig and returns number of fields.
  */
-int dbfawk_sig(DBFHandle dbf, char *sig, int size)
-{
+int dbfawk_sig(DBFHandle dbf, char *sig, int size) {
   int nf = 0;
 
   if (sig && size > 0 && dbf) {
@@ -63,24 +66,31 @@ int dbfawk_sig(DBFHandle dbf, char *sig, int size)
   return nf;
 }
 
+
+
+
+
 /* Free a field list */
-void dbfawk_free_info ( dbfawk_field_info *list)
-{
+void dbfawk_free_info ( dbfawk_field_info *list) {
     dbfawk_field_info *x, *p;
-    for ( p = list; p != NULL; )
-    {
+    for ( p = list; p != NULL; ) {
         x = p;
         p = p->next;
         free(x);
+//WE7U
+//fprintf(stderr,"f1\n");
     }
 }
+
+
+
+
 
 /*
  * dbfawk_field_list: Generate a list of info about fields to read for
  *  a given DBFHandle and colon-separated list of fieldnames.
  */
-dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
-{
+dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields) {
   dbfawk_field_info *fi, *head = NULL, *prev;
   int nf;
   char *sp;
@@ -94,6 +104,10 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
     fi = calloc(1,sizeof(dbfawk_field_info));
     if (!fi)
         return NULL;
+
+//WE7U
+//fprintf(stderr,"a1\n");    
+ 
     if (prev) {
         prev->next = fi;
     } else {                    /* no prev, must be first one */
@@ -111,6 +125,10 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
   return head;
 }
 
+
+
+
+
 /*
  * dbfawk_load_sigs:  Load up dbfawk signature mappings
  *  Reads *.dbfawk and registers dbffields "signature".
@@ -122,8 +140,7 @@ dbfawk_field_info *dbfawk_field_list(DBFHandle dbf, char *dbffields)
  */
 
 dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
-                                  const char *ftype) /* filetype */
-{
+                                  const char *ftype) /* filetype */ {
     DIR *d;
     struct dirent *e;
     int ftlen;
@@ -138,7 +155,11 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
     if (!d)
         return NULL;
 
+//WE7U2
+// Allocates new memory!
     symtbl = awk_new_symtab();
+//WE7U
+// Allocates new memory!
     awk_declare_sym(symtbl,"dbfinfo",STRING,dbfinfo,sizeof(dbfinfo));
 
     while ((e = readdir(d)) != NULL) {
@@ -149,47 +170,75 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
             fprintf(stderr,"failed to malloc in dbfawk.c!\n");
             return NULL;
         }
+//WE7U
+//fprintf(stderr,"a2\n");    
+ 
         *dbfinfo = '\0';
         if (len > ftlen && (strcmp(&e->d_name[len-ftlen],ftype) == 0)) {
             if (!head) {
                 i = head = calloc(1,sizeof(dbfawk_sig_info));
+//WE7U
+//fprintf(stderr,"a3\n");    
             } else {
                 i->next = calloc(1,sizeof(dbfawk_sig_info));
+//WE7U
+//fprintf(stderr,"a4\n");    
                 i = i->next;
             }
             strcpy(path,dir);
             strcat(path,"/");
             strcat(path,e->d_name);
+//WE7U2
+// Calls awk_new_program/awk_new_rule which allocate new memory
             i->prog = awk_load_program_file(path);
             free(path);
+//WE7U
+//fprintf(stderr,"f2\n");
+
+//WE7U2
+// Calls awk_compile_action which allocates new memory
             if (awk_compile_program(symtbl,i->prog) < 0) {
                 fprintf(stderr,"%s: failed to parse\n",e->d_name);
             } else {
                 /* dbfinfo must be defined in BEGIN rule */
+//WE7U2
+// Calls awk_eval_expr (eventually), which can allocate new memory
                 awk_exec_begin(i->prog); 
                 i->sig = strdup(dbfinfo);
+//WE7U2
+// Does some free's
                 awk_uncompile_program(i->prog);
             }
         }
     }
 
+//WE7U2
     awk_free_symtab(symtbl);
     return head;
 }
 
-void dbfawk_free_sig(dbfawk_sig_info *sig) 
-{
+
+
+
+
+void dbfawk_free_sig(dbfawk_sig_info *sig) {
     if (sig) {
         if (sig->prog)
+//WE7U2
             awk_free_program(sig->prog);
         if (sig) {
             free(sig);
+//WE7U
+//fprintf(stderr,"f3\n");
         }
     }
 }
 
-void dbfawk_free_sigs(dbfawk_sig_info *list) 
-{
+
+
+
+
+void dbfawk_free_sigs(dbfawk_sig_info *list) {
     dbfawk_sig_info *x, *p;
 
     for (p = list; p; ) {
@@ -199,6 +248,10 @@ void dbfawk_free_sigs(dbfawk_sig_info *list)
     }
 }
 
+
+
+
+
 /*
  * dbfawk_find_sig:  Given a DBF file's "signature", find the appropriate
  * awk program.  If filename is not null, see if there's a per-file .dbfawk
@@ -207,8 +260,7 @@ void dbfawk_free_sigs(dbfawk_sig_info *list)
 
 dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info, 
                                  const char *sig,
-                                 const char *file)
-{
+                                 const char *file) {
     dbfawk_sig_info *result = NULL;
 
     if (file) {
@@ -219,6 +271,10 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
             fprintf(stderr,"failed to malloc in dbfawk_find_sig!\n");
             return NULL;
         }
+//WE7U
+//fprintf(stderr,"a5\n");
+
+
         strcpy(perfile,file);
         dot = strrchr(perfile,'.');
         if (dot)
@@ -230,17 +286,25 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
             fprintf(stderr,"failed to malloc in dbfawk_find_sig!\n");
             return NULL;
         }
+//WE7U
+//fprintf(stderr,"a6\n");
+ 
+//WE7U2
         info->prog = awk_load_program_file(perfile);
         /* N.B. info->sig is left NULL since it won't be searched, and 
            to flag that it's safe to free this memory when we're done with
            it */
         info->sig = NULL;
         free(perfile);
+//WE7U
+//fprintf(stderr,"f4\n");
         if (info->prog) {
             return info;
         }
         else {
             free(info);
+//WE7U
+//fprintf(stderr,"f5\n");
         }
         /* fall through and do normal signature search */
     }
@@ -252,6 +316,9 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
 }
 
 
+
+
+
 /*
  * dbfawk_parse_record:  Read a dbf record and parse only the fields
  *  listed in 'fi' using the program, 'rs'.
@@ -259,10 +326,11 @@ dbfawk_sig_info *dbfawk_find_sig(dbfawk_sig_info *info,
 void dbfawk_parse_record(awk_program *rs,
                          DBFHandle dbf,
                          dbfawk_field_info *fi,
-                         int i) 
-{
+                         int i) {
     dbfawk_field_info *finfo;
 
+//WE7U2
+// Can allocate new memory via malloc in awk_eval_expr
     awk_exec_begin_record(rs); /* execute a BEGIN_RECORD rule if any */
 
     for (finfo = fi; finfo ; finfo = finfo->next) {
@@ -283,11 +351,17 @@ void dbfawk_parse_record(awk_program *rs,
 	    sprintf(qbuf,"%s=??",finfo->name);
 	    break;
         }
+//WE7U2
         if (awk_exec_program(rs,qbuf,strlen(qbuf)) == 2)
             break;
     }
+//WE7U2
     awk_exec_end_record(rs); /* execute an END_RECORD rule if any */
 }
+
+
+
+
 
 #ifndef HAVE_DBFGETFIELDINDEX
 #include <ctype.h>
@@ -295,8 +369,7 @@ void dbfawk_parse_record(awk_program *rs,
 /*                            str_to_upper()                            */
 /************************************************************************/
 
-static void str_to_upper (char *string)
-{
+static void str_to_upper (char *string) {
   int len;
   short i = -1;
 
@@ -307,6 +380,10 @@ static void str_to_upper (char *string)
       string[i] = toupper ((int)string[i]);
 }
 
+
+
+
+
 /************************************************************************/
 /*                          DBFGetFieldIndex()                          */
 /*                                                                      */
@@ -315,18 +392,14 @@ static void str_to_upper (char *string)
 /*      Contributed by Jim Matthews.                                    */
 /************************************************************************/
 
-int 
-DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName)
-
-{
+int DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName) {
   char          name[12], name1[12], name2[12];
   int           i;
 
   strncpy(name1, pszFieldName,11);
   str_to_upper(name1);
 
-  for( i = 0; i < DBFGetFieldCount(psDBF); i++ )
-    {
+  for( i = 0; i < DBFGetFieldCount(psDBF); i++ ) {
       DBFGetFieldInfo( psDBF, i, name, NULL, NULL );
       strncpy(name2,name,11);
       str_to_upper(name2);
@@ -336,5 +409,10 @@ DBFGetFieldIndex(DBFHandle psDBF, const char *pszFieldName)
     }
   return(-1);
 }
+
+
+
 #endif
 #endif /* HAVE_LIBSHP && HAVE_LIBPCRE */
+
+
