@@ -12213,6 +12213,9 @@ void process_RINO_waypoints(void) {
                 int date;
                 int hour;
                 int minute;
+                char *compressed_string;
+                char lat_s[50];
+                char lon_s[50];
 
 
                 // Strip off the "APRS" at the beginning of the
@@ -12266,9 +12269,6 @@ void process_RINO_waypoints(void) {
 //                hour = (int)(hour - UTC_Offset);
 
 
-                
-
-
                 lat_deg = atoi(lat_c);
                 if (lat_deg < 0)
                     lat_deg = -lat_deg;
@@ -12297,6 +12297,8 @@ void process_RINO_waypoints(void) {
                 else
                     lon_dir = 'E';
 
+/*
+                // Non-Compressed version
                 xastir_snprintf(line2,
                     sizeof(line2),
                     ";%-9s*%02d%02d%02d/%02d%05.2f%c%c%03d%05.2f%c%c",
@@ -12312,6 +12314,51 @@ void process_RINO_waypoints(void) {
                     lon_min,    // Minutes
                     lon_dir,    // E/W
                     '[');       // Hiker symbol
+*/
+
+                // Compressed version.  Gives us more of the
+                // resolution inherent in the RINO waypoints.
+                // Doesn't have an affect on whether we transmit
+                // compressed objects from Xastir over RF.  That is
+                // selected from the File->Configure->Defaults
+                // dialog.
+                //
+                // compress_posit expects its lat/long in //
+                // APRS-like format:
+                // "%2d%lf%c", &deg, &minutes, &ext
+
+                xastir_snprintf(lat_s,
+                    sizeof(lat_s),
+                    "%02d%8.5f%c",
+                    lat_deg,
+                    lat_min,
+                    lat_dir);
+ 
+                xastir_snprintf(lon_s,
+                    sizeof(lon_s),
+                    "%02d%8.5f%c",
+                    lon_deg,
+                    lon_min,
+                    lon_dir);
+                    
+                compressed_string = compress_posit(lat_s,
+                    '/',    // group character
+                    lon_s,
+                    '[',    // symbol,
+                    0,      // course,
+                    0,      // speed,
+                    "");    // phg
+
+//fprintf(stderr, "compressed: %s\n", compressed_string);
+
+                xastir_snprintf(line2,
+                    sizeof(line2),
+                    ";%-9s*%02d%02d%02d/%s",
+                    name,
+                    date,
+                    hour,
+                    minute,
+                    compressed_string);
 
 /*
                 fprintf(stderr,
