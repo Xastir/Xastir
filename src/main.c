@@ -411,10 +411,18 @@ Widget iface_transmit_now, posit_tx_disable_toggle, object_tx_disable_toggle;
 #ifdef HAVE_GPSMAN
 Widget Fetch_gps_track, Fetch_gps_route, Fetch_gps_waypoints;
 Widget Send_gps_track, Send_gps_route, Send_gps_waypoints;
-int gps_got_data_from = 0;
-int gps_operation_pending = 0;
-char gps_map_filename[100];
+int gps_got_data_from = 0;          // We got data from a GPS
+int gps_operation_pending = 0;      // A GPS transfer is happening
+int gps_details_selected = 0;       // Whether name/color have been selected yet
+Widget gpsfilename_text;            // Short name of gps map (no color/type)
+char gps_map_filename[MAX_FILENAME];// Chosen name of gps map (including color)
+char gps_map_filename_base[MAX_FILENAME];   // Same minus ".shp"
+char gps_temp_map_filename[MAX_FILENAME];
+char gps_temp_map_filename_base[MAX_FILENAME];  // Same minus ".shp"
+int gps_map_color = 0;              // Chosen color of gps map
+char gps_map_type[30];              // Type of GPS download
 void check_for_new_gps_map(void);
+Widget GPS_operations_dialog = (Widget)NULL;
 #endif  // HAVE_GPSMAN
 
 // ------------------------ unit conversion --------------------------
@@ -3197,7 +3205,7 @@ void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPoint
     char temp_string[10];
 
     // Small memory leak in below statement:
-    //strcpy(altnet_call, XmTextGetString(debug_level_text));
+    //strcpy(temp, XmTextGetString(debug_level_text));
     // Change to:
     temp = XmTextGetString(debug_level_text);
 
@@ -8599,15 +8607,428 @@ void TNC_Transmit_now( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
 
 
+/////////////////////////////////////////////////////////////////////
+// GPS operations
+/////////////////////////////////////////////////////////////////////
+
+
+
+
+
 #ifdef HAVE_GPSMAN
+void GPS_operations_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    Widget shell = (Widget) clientData;
+    XtPopdown(shell);
+    XtDestroyWidget(shell);
+    GPS_operations_dialog = (Widget)NULL;
+}
+
+
+
+
+
+// Set up gps_map_filename based on user preferences for filename
+// and map color.
+void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
+    char *temp;
+    char short_filename[MAX_FILENAME];
+    char color_text[50];
+
+
+    // Small memory leak in below statement:
+    //strcpy(short_filename, XmTextGetString(gpsfilename_text));
+    // Change to:
+    temp = XmTextGetString(gpsfilename_text);
+    strcpy(short_filename,temp);
+    XtFree(temp);
+    
+    (void)remove_trailing_spaces(short_filename);
+
+    switch (gps_map_color) {
+        case 0:
+            strcpy(color_text,"Red");
+            break;
+        case 1:
+            strcpy(color_text,"Green");
+            break;
+        case 2:
+            strcpy(color_text,"Black");
+            break;
+        case 3:
+            strcpy(color_text,"White");
+            break;
+        case 4:
+            strcpy(color_text,"Orange");
+            break;
+        case 5:
+            strcpy(color_text,"Blue");
+            break;
+        default:
+            strcpy(color_text,"Red");
+            break;
+    }
+
+    // If doing waypoints, don't add the color onto the end
+    if (strcmp("Waypoints",gps_map_type) == 0) {
+        xastir_snprintf(gps_map_filename,
+            sizeof(gps_map_filename),
+            "%s_%s.shp",
+            short_filename,
+            gps_map_type);
+
+        // Same without ".shp"
+        xastir_snprintf(gps_map_filename_base,
+            sizeof(gps_map_filename_base),
+            "%s_%s",
+            short_filename,
+            gps_map_type);
+    }
+    else {  // Doing Tracks/Routes
+        xastir_snprintf(gps_map_filename,
+            sizeof(gps_map_filename),
+            "%s_%s_%s.shp",
+            short_filename,
+            gps_map_type,
+            color_text);
+
+        // Same without ".shp"
+        xastir_snprintf(gps_map_filename_base,
+            sizeof(gps_map_filename_base),
+            "%s_%s_%s",
+            short_filename,
+            gps_map_type,
+            color_text);
+    }
+
+fprintf(stderr,"%s\t%s\n",gps_map_filename,gps_map_filename_base);
+
+    // Signify that the user has selected the filename and color for
+    // the downloaded file.
+    gps_details_selected++;
+
+    GPS_operations_destroy_shell(widget,clientData,callData);
+}
+
+
+
+
+
+void GPS_operations_cancel(Widget widget, XtPointer clientData, XtPointer callData) {
+
+    // Destroy the GPS selection dialog
+    GPS_operations_destroy_shell(widget,clientData,callData);
+
+    // Wait for the GPS operation to be finished, then clear out all
+    // of the variables.
+    while (!gps_got_data_from && gps_operation_pending) {
+        usleep(1000000);    // 1 second
+    }
+
+    gps_details_selected = 0;
+    gps_got_data_from = 0;
+    gps_operation_pending = 0;
+}
+
+
+
+
+
+void  GPS_operations_color_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        gps_map_color = atoi(which);
+    else
+        gps_map_color = 0;
+}
+
+
+
+
+
+// This routine should be called while the transfer is progressing,
+// or perhaps just after it ends.  If we can do it while the
+// transfer is ocurring we can save time overall.  Here we'll select
+// the color and name for the resulting file, then cause it to be
+// selected and displayed on the map screen.
+//
+void GPS_transfer_select( void ) {
+    static Widget pane, my_form, button_select, button_cancel,
+                  frame,  color_type, type_box, ctyp1, ctyp2,
+                  ctyp3, ctyp4, ctyp5, ctyp6,
+                  gpsfilename_label;
+    Atom delw;
+    Arg al[2];                      // Arg List
+    register unsigned int ac = 0;   // Arg Count
+
+
+    if (!GPS_operations_dialog) {
+
+        // Set args for color
+        ac = 0;
+        XtSetArg(al[ac], XmNforeground, MY_FG_COLOR); ac++;
+        XtSetArg(al[ac], XmNbackground, MY_BG_COLOR); ac++;
+
+        GPS_operations_dialog = XtVaCreatePopupShell(
+                langcode("WPUPCFD001"),
+                xmDialogShellWidgetClass,
+                Global.top,
+                XmNdeleteResponse,XmDESTROY,
+                XmNdefaultPosition, FALSE,
+                NULL);
+
+        pane = XtVaCreateWidget(
+                "GPS_transfer_select pane",
+                xmPanedWindowWidgetClass, 
+                GPS_operations_dialog,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        my_form =  XtVaCreateWidget(
+                "GPS_transfer_select my_form",
+                xmFormWidgetClass, 
+                pane,
+                XmNfractionBase, 5,
+                XmNautoUnmanage, FALSE,
+                XmNshadowThickness, 1,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+
+        gpsfilename_label = XtVaCreateManagedWidget(
+                langcode("Filename"),
+                xmLabelWidgetClass,
+                my_form,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        gpsfilename_text = XtVaCreateManagedWidget(
+                "GPS_transfer_select gpsfilename_text", 
+                xmTextWidgetClass, 
+                my_form,
+                XmNeditable,   TRUE,
+                XmNcursorPositionVisible, TRUE,
+                XmNsensitive, TRUE,
+                XmNshadowThickness,    1,
+                XmNcolumns, 20,
+                XmNwidth, ((20*7)+2),
+                XmNmaxLength, 200,
+                XmNbackground, colors[0x0f],
+                XmNtopAttachment,XmATTACH_FORM,
+                XmNtopWidget, altnet_active,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_WIDGET,
+                XmNleftWidget, gpsfilename_label,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_NONE,
+                XmNrightOffset, 10,
+                XmNnavigationType, XmTAB_GROUP,
+                NULL);
+
+        frame = XtVaCreateManagedWidget(
+                "GPS_transfer_select frame", 
+                xmFrameWidgetClass, 
+                my_form,
+                XmNtopAttachment,XmATTACH_WIDGET,
+                XmNtopWidget, gpsfilename_label,
+                XmNtopOffset,15,
+                XmNbottomAttachment,XmATTACH_NONE,
+                XmNleftAttachment, XmATTACH_FORM,
+                XmNleftOffset, 10,
+                XmNrightAttachment,XmATTACH_FORM,
+                XmNrightOffset, 10,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        color_type  = XtVaCreateManagedWidget(
+                langcode("Select Color"),
+                xmLabelWidgetClass,
+                frame,
+                XmNchildType, XmFRAME_TITLE_CHILD,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        type_box = XmCreateRadioBox(
+                frame,
+                "GPS_transfer_select Transmit Options box",
+                al,
+                ac);
+
+        XtVaSetValues(type_box,
+                XmNnumColumns,2,
+                NULL);
+
+        ctyp1 = XtVaCreateManagedWidget(
+                langcode("Red"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(ctyp1,XmNvalueChangedCallback,GPS_operations_color_toggle,"0");
+
+        ctyp2 = XtVaCreateManagedWidget(
+                langcode("Green"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(ctyp2,XmNvalueChangedCallback,GPS_operations_color_toggle,"1");
+
+        ctyp3 = XtVaCreateManagedWidget(
+                langcode("Black"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(ctyp3,XmNvalueChangedCallback,GPS_operations_color_toggle,"2");
+
+        ctyp4 = XtVaCreateManagedWidget(
+                langcode("White"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(ctyp4,XmNvalueChangedCallback,GPS_operations_color_toggle,"3");
+
+        ctyp5 = XtVaCreateManagedWidget(
+                langcode("Orange"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(ctyp5,XmNvalueChangedCallback,GPS_operations_color_toggle,"4");
+
+        ctyp6 = XtVaCreateManagedWidget(
+                langcode("Blue"),
+                xmToggleButtonGadgetClass,
+                type_box,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+        XtAddCallback(ctyp6,XmNvalueChangedCallback,GPS_operations_color_toggle,"5");
+
+
+        button_select = XtVaCreateManagedWidget(
+                langcode("WPUPCFS028"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, frame,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 1,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 2,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+
+        button_cancel = XtVaCreateManagedWidget(
+                langcode("UNIOP00002"),
+                xmPushButtonGadgetClass, 
+                my_form,
+                XmNtopAttachment, XmATTACH_WIDGET,
+                XmNtopWidget, frame,
+                XmNtopOffset, 10,
+                XmNbottomAttachment, XmATTACH_FORM,
+                XmNbottomOffset, 5,
+                XmNleftAttachment, XmATTACH_POSITION,
+                XmNleftPosition, 3,
+                XmNrightAttachment, XmATTACH_POSITION,
+                XmNrightPosition, 4,
+                XmNnavigationType, XmTAB_GROUP,
+                MY_FOREGROUND_COLOR,
+                MY_BACKGROUND_COLOR,
+                NULL);
+
+        XtAddCallback(button_select,
+            XmNactivateCallback,
+            GPS_operations_change_data,
+            GPS_operations_dialog);
+
+        XtAddCallback(button_cancel,
+            XmNactivateCallback,
+            GPS_operations_cancel,
+            GPS_operations_dialog);
+
+        // Set default color to first selection
+        XmToggleButtonSetState(ctyp1,TRUE,FALSE);
+        gps_map_color = 0;
+
+        pos_dialog(GPS_operations_dialog);
+
+        delw = XmInternAtom(
+            XtDisplay(GPS_operations_dialog),
+            "WM_DELETE_WINDOW",
+            FALSE);
+
+        XmAddWMProtocolCallback(
+            GPS_operations_dialog,
+            delw,
+            GPS_operations_destroy_shell,
+            (XtPointer)GPS_operations_dialog);
+
+        XtManageChild(my_form);
+        XtManageChild(type_box);
+        XtManageChild(pane);
+
+        XtPopup(GPS_operations_dialog,XtGrabNone);
+        fix_dialog_size(GPS_operations_dialog);
+
+        // Move focus to the Select button.  This appears to highlight the
+        // button fine, but we're not able to hit the <Enter> key to
+        // have that default function happen.  Note:  We _can_ hit the
+        // <SPACE> key, and that activates the option.
+//        XmUpdateDisplay(GPS_operations_dialog);
+        XmProcessTraversal(button_select, XmTRAVERSE_CURRENT);
+
+    } else {
+        (void)XRaiseWindow(
+            XtDisplay(GPS_operations_dialog),
+            XtWindow(GPS_operations_dialog));
+    }
+}
+
+
+
+
+
 // Function called by UpdateTime() periodically.  Checks whether
 // we've just completed a GPS transfer and need to redraw maps as a
 // result.
 //
 void check_for_new_gps_map(void) {
 
-    if (gps_got_data_from && !gps_operation_pending) {
+    if ( (gps_operation_pending || gps_got_data_from)
+            && !gps_details_selected) {
+
+        // A transfer is underway or has just completed.  The user
+        // hasn't selected the filename/color yet.  Bring up the
+        // selection dialog so that the user can do so.
+        GPS_transfer_select();
+    }
+    else if (gps_details_selected
+            && gps_got_data_from
+            && !gps_operation_pending) {
         FILE *f;
+        char temp[MAX_FILENAME * 2];
+
  
         // We have new data from a GPS!  Add the file to the
         // selected maps file, cause a reload of the maps to occur,
@@ -8620,10 +9041,62 @@ void check_for_new_gps_map(void) {
 // match before attempting to append any new lines.
 //
 
+        // Rename the temporary file to the new filename.  We must
+        // do this three times, once for each piece of the Shapefile
+        // map.
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "mv %s/GPS/%s %s/GPS/%s",
+            get_data_base_dir("maps"),
+            gps_temp_map_filename,
+            get_data_base_dir("maps"),
+            gps_map_filename);
+
+        if ( system(temp) ) {
+            fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
+fprintf(stderr,"%s\n",temp);
+            gps_got_data_from = 0;
+            gps_details_selected = 0;
+            return;
+        }
+        // Done for the ".shp" file.  Now repeat for the ".shx" and
+        // ".dbf" files.
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "mv %s/GPS/%s.shx %s/GPS/%s.shx",
+            get_data_base_dir("maps"),
+            gps_temp_map_filename_base,
+            get_data_base_dir("maps"),
+            gps_map_filename_base);
+
+        if ( system(temp) ) {
+            fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
+fprintf(stderr,"%s\n",temp);
+            gps_got_data_from = 0;
+            gps_details_selected = 0;
+            return;
+        }
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "mv %s/GPS/%s.dbf %s/GPS/%s.dbf",
+            get_data_base_dir("maps"),
+            gps_temp_map_filename_base,
+            get_data_base_dir("maps"),
+            gps_map_filename_base);
+
+        if ( system(temp) ) {
+            fprintf(stderr,"Couldn't rename the downloaded GPS map file\n");
+fprintf(stderr,"%s\n",temp);
+            gps_got_data_from = 0;
+            gps_details_selected = 0;
+            return;
+        }
+ 
+
         // Add the new gps map to the list of selected maps
         f=fopen(SELECTED_MAP_DATA,"a"); // Open for appending
         if (f!=NULL) {
-            fprintf(f,"Gps/%s\n",gps_map_filename);
+            fprintf(f,"GPS/%s\n",gps_map_filename);
             (void)fclose(f);
 
             // Reindex maps
@@ -8647,6 +9120,7 @@ void check_for_new_gps_map(void) {
 
         // Set up for the next GPS run
         gps_got_data_from = 0;
+        gps_details_selected = 0;
     }
 }
 
@@ -8656,12 +9130,7 @@ void check_for_new_gps_map(void) {
 
 // This is the separate execution thread that transfers the data
 // to/from the GPS.  The thread is started up by the
-// GPS_operations() function below.
-//
-// Note that gps_map_filename could be already set up for us in the
-// global variable at this point, so that we wouldn't have to
-// hard-code it here.  Change GPS_operations() to bring up a dialog
-// so that the filename can be entered/chosen.
+// GPS_operations_do_transfer() function below.
 //
 static void* gps_transfer_thread(void *arg) {
     int input_param;
@@ -8671,7 +9140,7 @@ static void* gps_transfer_thread(void *arg) {
     char prefix[100] = "cd /home/src/gpsman/gpsman-pre6.0;./gpsman.tcl -dev /dev/ttyS0";
 
 // Hard-coded map directory path here!  (change)
-    char postfix[100] = "Shapefile_2D /usr/local/xastir/maps/Gps/";
+    char postfix[100] = "Shapefile_2D /usr/local/xastir/maps/GPS/";
 
 
     input_param = *((int *) arg);
@@ -8688,17 +9157,24 @@ static void* gps_transfer_thread(void *arg) {
 
             fprintf(stderr,"Fetch track from GPS\n");
 
-            xastir_snprintf(gps_map_filename,
-                sizeof(gps_map_filename),
-// Hard-coded filename here!  (change)
-                "Team1_Track_Red.shp");
+            xastir_snprintf(gps_temp_map_filename,
+                sizeof(gps_temp_map_filename),
+                "Unnamed_Track_Red.shp");
+            xastir_snprintf(gps_temp_map_filename_base,
+                sizeof(gps_temp_map_filename_base),
+                "Unnamed_Track_Red");
+
+
+            xastir_snprintf(gps_map_type,
+                sizeof(gps_map_type),
+                "Track");
  
             xastir_snprintf(temp,
                 sizeof(temp),
                 "%s getwrite TR %s%s",
                 prefix,
                 postfix,
-                gps_map_filename);
+                gps_temp_map_filename);
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps track\n");
@@ -8714,17 +9190,23 @@ static void* gps_transfer_thread(void *arg) {
 
             fprintf(stderr,"Fetch routes from GPS\n");
 
-            xastir_snprintf(gps_map_filename,
-                sizeof(gps_map_filename),
-// Hard-coded filename here!  (change)
-                "Team2_Routes_Green.shp");
+            xastir_snprintf(gps_temp_map_filename,
+                sizeof(gps_temp_map_filename),
+                "Unnamed_Routes_Green.shp");
+            xastir_snprintf(gps_temp_map_filename_base,
+                sizeof(gps_temp_map_filename_base),
+                "Unnamed_Routes_Green");
+ 
+            xastir_snprintf(gps_map_type,
+                sizeof(gps_map_type),
+                "Routes");
  
             xastir_snprintf(temp,
                 sizeof(temp),
                 "%s getwrite RT %s%s",
                 prefix,
                 postfix,
-                gps_map_filename);
+                gps_temp_map_filename);
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps routes\n");
@@ -8740,17 +9222,23 @@ static void* gps_transfer_thread(void *arg) {
  
             fprintf(stderr,"Fetch waypoints from GPS\n");
 
-            xastir_snprintf(gps_map_filename,
-                sizeof(gps_map_filename),
-// Hard-coded filename here!  (change)
-                "Team3_Waypoints.shp");
+            xastir_snprintf(gps_temp_map_filename,
+                sizeof(gps_temp_map_filename),
+                "Unnamed_Waypoints.shp");
+            xastir_snprintf(gps_temp_map_filename_base,
+                sizeof(gps_temp_map_filename_base),
+                "Unnamed_Waypoints");
+ 
+            xastir_snprintf(gps_map_type,
+                sizeof(gps_map_type),
+                "Waypoints");
  
             xastir_snprintf(temp,
                 sizeof(temp),
                 "%s getwrite WP %s%s",
                 prefix,
                postfix,
-                gps_map_filename);
+                gps_temp_map_filename);
 
             if ( system(temp) ) {
                 fprintf(stderr,"Couldn't download the gps waypoints\n");
@@ -8811,7 +9299,7 @@ static void* gps_transfer_thread(void *arg) {
 // GPSMan can't handle multiple '.'s in the filename.  It chops at
 // the first one.
 //
-// Note that the permissions on the "maps/Gps" directory have to be
+// Note that the permissions on the "maps/GPS" directory have to be
 // set so that this user (or the root user?) can create files in
 // that directory.  The permissions on the resulting files may need
 // to be tweaked.
@@ -8832,7 +9320,11 @@ static void* gps_transfer_thread(void *arg) {
 // Dialog should ask the user to put the unit into Garmin-Garmin
 // mode before proceeding.
 //
-void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer calldata) {
+// We could de-sensitize the GPS transfer menu items during a
+// transfer operation, to make sure we're not called again until the
+// first operation is over.
+//
+void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     pthread_t gps_operations_thread;
     int parameter;
 
@@ -8853,19 +9345,14 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
         if (       (strcmp(clientData,"1") == 0)     // Fetch track from GPS
                 || (strcmp(clientData,"2") == 0)     // Fetch route from GPS
                 || (strcmp(clientData,"3") == 0) ) { // Fetch waypoints from GPS
-// Add code here to ask for a filename and a color (if a
-// track/route).  Perhaps display a list of filenames that are
-// already in existence in a special directory?
         }
         else if (  (strcmp(clientData,"4") == 0)     // Send track to GPS
                 || (strcmp(clientData,"5") == 0)     // Send route to GPS
                 || (strcmp(clientData,"6") == 0) ) { // Send waypoints to GPS
-// Add code here to ask for a filename.  Perhaps display a list of
-// filenames that are already in existence in a special directory?
         }
 
         parameter = atoi(clientData);
- 
+
 
 //----- Start New Thread -----
  
@@ -8885,6 +9372,14 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     }
 }
 #endif  // HAVE_GPSMAN
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////
+// End of GPS operations
+/////////////////////////////////////////////////////////////////////
 
 
 
