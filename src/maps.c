@@ -639,11 +639,15 @@ void draw_vector_ll(Widget w,
 //
 // Draws a lat/lon or UTM/UPS grid on top of the view.
 //
+// Draw labels for each UTM/UPS zone?
+//
 // This routine appears to draw most of the UTM/UPS grid ok, with
 // the exceptions of:
 //
 // 1) Doesn't handle the irregular zones near/above Norway for the
-// smaller grid.
+// smaller grid, the major grid is drawn correctly though.  Need to
+// use the proper meridian values as the base for our smaller grids
+// in these irregular zone areas.
 // 2) Sometimes fails to draw lines near zone boundaries.
 // 3) Lines connect across zone boundaries in an incorrect manner.
 //
@@ -656,8 +660,6 @@ void draw_vector_ll(Widget w,
 // to the respective poles, the Universal Polar Stereographic (UPS)
 // is used.
 //
-// NEED TO ACCOMMODATE THIS:
-// -------------------------
 // UTM Zone 32 has been widened to 9° (at the expense of zone 31)
 // between latitudes 56° and 64° (band V) to accommodate southwest
 // Norway. Thus zone 32 extends westwards to 3°E in the North Sea.
@@ -668,22 +670,33 @@ void draw_vector_ll(Widget w,
 // zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33 -
 // 42 E.
 //
-// Draw labels for each UTM/UPS zone?
+// UTM is depending on the ellipsoid and the datum used.  For our
+// purposes, we're always using WGS84 ellipsoid and datum, so it's a
+// non-issue.
 //
-// Horizontal lines corresponding to the lettered NATO UTM/UPS
-// subzones:
+// Horizontal bands corresponding to the NATO UTM/UPS lettering:
 // Zones go from A (south pole) to Z (north pole).  South of -80 are
 // zones A/B, north of +84 are zones Y/Z.  "I" and "O" are not used.
 // Zones from C to W are 8 degrees high.  Zone X is 12 degrees high.
-// UPS system is used at the poles instead of UTM.  An arbitrary
-// false northing of 10,000,000 at the equator is used for southern
-// latitudes only.  Northern latitudes assume the equator northing
-// is at zero.  An arbitrary false easting of 500,000 is along the
-// meridian of each zone (3 degrees from each side).  The lettered
-// grid lines are necessary due to some coordinates being valid in
-// both the northern and the southern hemisphere.
 //
-// Y/Z  84N to 90N (UPS System)
+// We need these NATO letters or a N/S designator in order to
+// specify which hemisphere the UTM coordinates are in.  Often, the
+// same coordinates can appear in either hemisphere.  Some computer
+// software uses +/- to designate northings instead of N/S or the
+// NATO lettered bands.
+//
+// UPS system is used at the poles instead of UTM.  UPS uses a false
+// northing and easting of 2,000,000 meters.
+//
+// An arbitrary false northing of 10,000,000 at the equator is used
+// for southern latitudes only.  Northern latitudes assume the
+// equator northing is at zero.  An arbitrary false easting of
+// 500,000 is along the meridian of each zone (3 degrees from each
+// side).  The lettered grid lines are necessary due to some
+// coordinates being valid in both the northern and the southern
+// hemisphere.
+//
+// Y/Z  84N to 90N (UPS System) false N/E = 2,000,000
 // X    72N to 84N (12 degrees latitude, equator=0)
 // W    64N to 72N ( 8 degrees latitude, equator=0)
 // V    56N to 64N ( 8 degrees latitude, equator=0)
@@ -704,7 +717,7 @@ void draw_vector_ll(Widget w,
 // E    56S to 64S ( 8 degrees latitude, equator=10,000,000)
 // D    64S to 72S ( 8 degrees latitude, equator=10,000,000)
 // C    72S to 80S ( 8 degrees latitude, equator=10,000,000)
-// A/B  80S to 90S (UPS System)
+// A/B  80S to 90S (UPS System) false N/E = 2,000,000
 // 
 //*****************************************************************
 void draw_grid(Widget w) {
@@ -730,8 +743,9 @@ void draw_grid(Widget w) {
 
     if (coordinate_system == USE_UTM) {
 
-        // This part of the code handles the irregular zones
-        // near/above Norway just fine.
+// This part of the code handles the irregular zones in SW Norway
+// (31V/32V) and the regions near Svalbard (31X/33X/35X/37X) just
+// fine.
 
         // Vertical lines:
 
@@ -812,11 +826,12 @@ void draw_grid(Widget w) {
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
  
 //WE7U
-// The below code does NOT handle the irregular zones properly.  It
-// assumes regular 6 degree zones everywhere.  The irregular zones
-// have sizes of 3/9/12 degrees (width) instead of 6 degrees.  We
-// need to shift the meridian in these zones so that we draw out
-// from the central meridian properly for each subzone.
+// The below code does NOT handle the irregular zones properly
+// (31V/32V/31X/33X/35X/37X). It assumes regular 6 degree zones
+// everywhere.  The irregular zones have sizes of 3/9/12 degrees
+// (width) instead of 6 degrees.  We need to shift the meridian in
+// these zones so that we draw out from the central meridian
+// properly for each subzone.
 
 
         // Now setup for drawing zone grid(s)
