@@ -347,7 +347,7 @@ begin_critical_section(&All_messages_dialog_lock, "view_message_gui.c:view_all_m
                 XmNleftAttachment, XmATTACH_WIDGET,
                 XmNleftWidget, button_range,
                 XmNleftOffset, 10,
-                XmNrightAttachment, XmATTACH_NONE,
+                XmNrightAttachment, XmATTACH_FORM,
                 XmNnavigationType, XmTAB_GROUP,
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
