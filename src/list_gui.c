@@ -52,6 +52,7 @@
 #include "messages.h"
 #include "db.h"
 #include "draw_symbols.h"
+#include "list_gui.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -60,65 +61,57 @@
 
 
 
-// List Numbers:
-// 0: all stations list
-// 1: mobile stations list
-// 2: WX stations list
-// 3: local stations list
-// 4: last stations
-// 5: Objects/Items
-// 6: My Objects/Items
+// List Numbers (defined in list_gui.h)
+// 0: LST_ALL   - all stations list
+// 1: LST_MOB   - mobile stations list
+// 2: LST_WX    - WX stations list
+// 3: LST_TNC   - local stations list
+// 4: LST_TIM   - last stations
+// 5: LST_OBJ   - Objects/Items
+// 6: LST_MYOBJ - My Objects/Items
+// 7: LST_NUM   - Number of lists; for use in array definitions below
 
-Widget station_list_dialog[7];          // store list definitions
+Widget station_list_dialog[LST_NUM];           // store list definitions
 static xastir_mutex station_list_dialog_lock;  // Mutex lock for above
 
-Widget SL_list[7][20];
-Widget SL_da[7][20];
-Widget SL_call[7][20];
-Pixmap SL_icon[7][20];                  // icons for different lists and list rows
+Widget SL_list[LST_NUM][20];
+Widget SL_da[LST_NUM][20];
+Widget SL_call[LST_NUM][20];
+Pixmap SL_icon[LST_NUM][20];            // icons for different lists and list rows
 Pixmap blank_icon;                      // holds an empty icon
-Widget SL_scroll[7];
-Widget SL_wx_wind_course[7][20];
-Widget SL_wx_wind_speed[7][20];
-Widget SL_wx_wind_gust[7][20];
-Widget SL_wx_temp[7][20];
-Widget SL_wx_hum[7][20];
-Widget SL_wx_baro[7][20];
-Widget SL_wx_rain_h[7][20];
-Widget SL_wx_rain_00[7][20];
-Widget SL_wx_rain_24[7][20];
-Widget SL_course[7][20];
-Widget SL_speed[7][20];
-Widget SL_alt[7][20];
-Widget SL_lat_long[7][20];
-Widget SL_packets[7][20];
-Widget SL_sats[7][20];
-Widget SL_my_course[7][20];
-Widget SL_my_distance[7][20];
-Widget SL_pos_time[7][20];
-Widget SL_node_path[7][20];
-Widget SL_power_gain[7][20];
-Widget SL_comments[7][20];
+Widget SL_scroll[LST_NUM];
+Widget SL_wx_wind_course[LST_NUM][20];
+Widget SL_wx_wind_speed[LST_NUM][20];
+Widget SL_wx_wind_gust[LST_NUM][20];
+Widget SL_wx_temp[LST_NUM][20];
+Widget SL_wx_hum[LST_NUM][20];
+Widget SL_wx_baro[LST_NUM][20];
+Widget SL_wx_rain_h[LST_NUM][20];
+Widget SL_wx_rain_00[LST_NUM][20];
+Widget SL_wx_rain_24[LST_NUM][20];
+Widget SL_course[LST_NUM][20];
+Widget SL_speed[LST_NUM][20];
+Widget SL_alt[LST_NUM][20];
+Widget SL_lat_long[LST_NUM][20];
+Widget SL_packets[LST_NUM][20];
+Widget SL_sats[LST_NUM][20];
+Widget SL_my_course[LST_NUM][20];
+Widget SL_my_distance[LST_NUM][20];
+Widget SL_pos_time[LST_NUM][20];
+Widget SL_node_path[LST_NUM][20];
+Widget SL_power_gain[LST_NUM][20];
+Widget SL_comments[LST_NUM][20];
 int station_list_first = 1;
-int list_size_h[7];             // height of entire list widget
-int list_size_w[7];             // width  of entire list widget
-int list_size_i[7];             // size initialized, dirty hack, but works...
+int list_size_h[LST_NUM];       // height of entire list widget
+int list_size_w[LST_NUM];       // width  of entire list widget
+int list_size_i[LST_NUM];       // size initialized, dirty hack, but works...
 
-int last_offset[7];
-char top_call[7][MAX_CALLSIGN+1];  // call of first list entry or empty string for always first call
+int last_offset[LST_NUM];
+char top_call[LST_NUM][MAX_CALLSIGN+1]; // call of first list entry or empty string for always first call
 time_t top_time;                // time of first list entry or 0 for always newest station
 int top_sn;                     // serial number for unique time index
 time_t last_list_upd;           // time of last list update
 int units_last;
-
-// different list types:
-#define LST_ALL 0
-#define LST_MOB 1
-#define LST_WX  2
-#define LST_TNC 3
-#define LST_TIM 4
-#define LST_OBJ 5
-#define LST_MYOBJ 6
 
 #define LIST_UPDATE_CYCLE 2     /* Minimum time between list updates in seconds, we want */
                                 /* immediate update, but not in high traffic situations  */
@@ -311,7 +304,7 @@ void init_station_lists(void) {
 
 begin_critical_section(&station_list_dialog_lock, "list_gui.c:init_station_lists" );
 
-    for (type=0;type<7;type++) {
+    for (type=0;type<LST_NUM;type++) {
         station_list_dialog[type] = NULL;       // set list to undefined
         for (i=0;i<20;i++) {
             SL_icon[type][i] = XCreatePixmap(XtDisplay(appshell),RootWindowOfScreen(XtScreen(appshell)),20,20,
@@ -909,7 +902,7 @@ void update_station_scroll_list(void) {         // called from UpdateTime() [mai
 
     last_h = last_w = 0;
     ok = 0;
-    for (i=0;i<7;i++) {                 // update all active lists
+    for (i=0;i<LST_NUM;i++) {                 // update all active lists
         if (station_list_dialog[i] != NULL) {
             XtVaGetValues(station_list_dialog[i], XmNheight, &last_h, XmNwidth, &last_w, NULL);
             XtVaGetValues(SL_scroll[i], XmNmaximum,&last,XmNvalue, &pos, NULL);
