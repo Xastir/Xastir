@@ -889,7 +889,7 @@ void load_NWS_stations(char *file) {
                     add_NWS_stations();
                     if (NWS_station_data != NULL) {
                         // add data
-                        (void)sscanf(line,"%s",NWS_station_data[NWS_stations-1].call);
+                        (void)sscanf(line,"%11s",NWS_station_data[NWS_stations-1].call);
                         if (debug_level & 1024)
                             fprintf(stderr,"LINE:%s\n",line);
                     }
