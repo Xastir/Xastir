@@ -342,6 +342,16 @@ void normal_title(char *incoming_title, char *outgoing_title, int outgoing_title
         incoming_title);
 
     outgoing_title[32] = '\0';
+
+    // Check whether this string is something we need to convert.
+    // If not, return.  We do two compares here instead of one
+    // strncmp for speed reasons.  This normal_title function gets
+    // called a lot!
+    if (outgoing_title[0] != 'C'
+            || outgoing_title[1] != 'o') {
+        return;
+    }
+
     if ((c_ptr = strstr(outgoing_title, "County Warning Area ")) && c_ptr == outgoing_title) {
         c_ptr = &outgoing_title[strlen("County Warning Area ")]; // Find end of text
         // Add "CWA" to output string instead
@@ -352,6 +362,7 @@ void normal_title(char *incoming_title, char *outgoing_title, int outgoing_title
         strncat(outgoing_title, c_ptr, 32-strlen("County Warning Area "));
         outgoing_title[32] = '\0';  // Make sure string is terminated
     }
+
     // Remove ". " strings ( .<space> )
     while ((c_ptr = strstr(outgoing_title, ". ")))
         memmove(c_ptr, c_ptr+2, strlen(c_ptr)+1);
