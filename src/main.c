@@ -1725,7 +1725,7 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
         }
-        xastir_snprintf(my_text, sizeof(my_text), "%s %s", str_lat, str_long);
+        xastir_snprintf(my_text, sizeof(my_text), "%s  %s", str_lat, str_long);
     }
 
     XmTextFieldSetString(textarea, my_text);
@@ -3826,7 +3826,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                             convert_lat_l2s(y, str_lat, sizeof(str_lat), CONVERT_HP_NORMAL);
                             convert_lon_l2s(x, str_long, sizeof(str_long), CONVERT_HP_NORMAL);
                         }
-                        //printf("%s %s\n", str_lat, str_long);
+                        //printf("%s  %s\n", str_lat, str_long);
                     }
 
                     Station_info(w, "2", NULL);
