@@ -160,6 +160,11 @@ PULDNDP015|Wis alle Stations|W|
 PULDNDP016|Wis alle Sporen|S|
 PULDNDP025|Wis Object/Item Geschiedenis||
 PULDNDP026|Display Weather Objects/Items||
+PULDNDP027|Display Stations||
+PULDNDP028|Display Non-Moving Stations||
+PULDNDP029|Display Moving Stations|| 
+PULDNDP030|Display WX Stations||
+PULDNDP031|Display Objects/Items||
 #
 # Units
 PULDNUT001|Engels||

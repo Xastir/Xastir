@@ -155,6 +155,11 @@ PULDNDP015|Effacer toutes stations!!!|E|
 PULDNDP016|Effacer toutes pistes!!!|f|
 PULDNDP025|Clear Object/Item History||
 PULDNDP026|Display Weather Objects/Items||
+PULDNDP027|Display Stations||
+PULDNDP028|Display Non-Moving Stations||
+PULDNDP029|Display Moving Stations|| 
+PULDNDP030|Display WX Stations||
+PULDNDP031|Display Objects/Items||
 #
 # Units
 PULDNUT001|Activer mesures anglaises||

@@ -1850,55 +1850,57 @@ int is_altnet(DataRow *p_station) {
 
 
 
+//WE7U
 // Function which checks various filtering criteria then decides
 // whether to call draw_symbol() for each station.
 //
-void draw_symbol_filtered(Widget w,
-        char symbol_table,
-        char symbol_id,
-        char symbol_overlay,
-        long x_long,
-        long y_lat,
-        char *callsign_text,
-        char *alt_text,
-        char *course_text,
-        char *speed_text,
-        char *my_distance,
-        char *my_course,
-        char *wx_temp,
-        char* wx_wind,
-        time_t sec_heard,
-        int temp_show_last_heard,
-        Pixmap where,
-        char orient,
-        char area_type) {
+// 0 = don't draw this symbol (based on current filtering criteria)
+// 1 = ok to draw this symbol
+//
+int ok_to_draw_symbol(DataRow *p_station) {
+    int ok = 0;
 
-    // Here we decide whether to/how to draw each symbol based on
-    // user preferences.
 
-//WE7U
-// Right now we just draw everything.  The selection code still
-// needs to be written.
+    // Check whether object or item first
+    if (p_station->flag & (ST_OBJECT | ST_ITEM)) {
+        // We're dealing with an an object or an item!
 
-    draw_symbol(w,
-        symbol_table,
-        symbol_id,
-        symbol_overlay,
-        x_long,
-        y_lat,
-        callsign_text,
-        alt_text,
-        course_text,
-        speed_text,
-        my_distance,
-        my_course,
-        wx_temp,
-        wx_wind,
-        sec_heard,
-        temp_show_last_heard,
-        where,
-        orient,
-        area_type);
+	// Check whether we wish to display objects/items
+        if (symbol_display_objects) {
+
+            // Check if WX info and we wish to see it
+            if (p_station->weather_data) {
+                ok = wx_obj_display_enable;
+            }
+            else {  // Object doesn't contain weather
+                ok = 1;
+            }
+        }
+        else {  // We don't wish to display objects/items
+            ok = 0;
+        }
+    }
+    else {    // Not an object or item
+
+        // Check whether we wish to display normal stations
+        if (symbol_display_stations) {
+
+            // Check for weather
+            if (p_station->weather_data) {
+                ok = symbol_display_WX;
+            }
+            else {    // No weather associated with this symbol
+
+                if (p_station->flag & ST_MOVING) {
+                    ok = symbol_display_moving;
+                }
+                else {
+                    ok = symbol_display_stationary;
+                }
+            }
+        }
+    }
+    return(ok);
 }
 
 
@@ -2148,7 +2150,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
     // If we're only planning on updating a single station at this time.
     // The section here draws directly onto the screen instead of a pixmap.
-    if (single) {
+    if ( single && ok_to_draw_symbol(p_station) ) {
         if (show_amb && p_station->pos_amb)
             draw_ambiguity(p_station->coord_lon, p_station->coord_lat,
                     p_station->pos_amb,temp_sec_heard,XtWindow(da));
@@ -2188,7 +2190,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
                 temp_sec_heard,
                 XtWindow(da));
 
-        draw_symbol_filtered(w,
+        draw_symbol(w,
             p_station->aprs_symbol.aprs_type,
             p_station->aprs_symbol.aprs_symbol,
             p_station->aprs_symbol.special_overlay,
@@ -2297,70 +2299,72 @@ void display_station(Widget w, DataRow *p_station, int single) {
     }
 
 
-    if (show_amb && p_station->pos_amb)
+    if ( ok_to_draw_symbol(p_station) ) {
+
+        if (show_amb && p_station->pos_amb)
             draw_ambiguity(p_station->coord_lon,p_station->coord_lat,p_station->pos_amb,temp_sec_heard,pixmap_final);
 
-    // Check for DF'ing data, draw DF circles if present and enabled
-    if (show_DF && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
-        //printf("SHGD:%s\n",p_station->signal_gain);
-        draw_DF_circle(p_station->coord_lon,p_station->coord_lat,p_station->signal_gain,temp_sec_heard,pixmap_final);
-    }
+        // Check for DF'ing data, draw DF circles if present and enabled
+        if (show_DF && strlen(p_station->signal_gain) == 7) {  // There's an SHGD defined
+            //printf("SHGD:%s\n",p_station->signal_gain);
+            draw_DF_circle(p_station->coord_lon,p_station->coord_lat,p_station->signal_gain,temp_sec_heard,pixmap_final);
+        }
 
-    // Check for DF'ing beam heading/NRQ data
-    if (show_DF && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3) ) {
-        //printf("Bearing: %s\n",p_station->signal_gain,NRQ);
-        if (p_station->df_color == -1)
-            p_station->df_color = rand() % 32;
-        draw_bearing(p_station->coord_lon,
-                p_station->coord_lat,
-                p_station->course,
-                p_station->bearing,
-                p_station->NRQ,
-                trail_colors[p_station->df_color],
+        // Check for DF'ing beam heading/NRQ data
+        if (show_DF && (strlen(p_station->bearing) == 3) && (strlen(p_station->NRQ) == 3) ) {
+            //printf("Bearing: %s\n",p_station->signal_gain,NRQ);
+            if (p_station->df_color == -1)
+                p_station->df_color = rand() % 32;
+            draw_bearing(p_station->coord_lon,
+                    p_station->coord_lat,
+                    p_station->course,
+                    p_station->bearing,
+                    p_station->NRQ,
+                    trail_colors[p_station->df_color],
+                    temp_sec_heard,
+                    pixmap_final);
+        }
+
+
+        if (p_station->aprs_symbol.area_object.type != AREA_NONE)
+                draw_area(p_station->coord_lon, p_station->coord_lat,
+                p_station->aprs_symbol.area_object.type,
+                p_station->aprs_symbol.area_object.color,
+                p_station->aprs_symbol.area_object.sqrt_lat_off,
+                p_station->aprs_symbol.area_object.sqrt_lon_off,
+                p_station->aprs_symbol.area_object.corridor_width,
                 temp_sec_heard,
                 pixmap_final);
-    }
 
-
-    if (p_station->aprs_symbol.area_object.type != AREA_NONE)
-            draw_area(p_station->coord_lon, p_station->coord_lat,
-            p_station->aprs_symbol.area_object.type,
-            p_station->aprs_symbol.area_object.color,
-            p_station->aprs_symbol.area_object.sqrt_lat_off,
-            p_station->aprs_symbol.area_object.sqrt_lon_off,
-            p_station->aprs_symbol.area_object.corridor_width,
-            temp_sec_heard,
-            pixmap_final);
-
-    draw_symbol_filtered(w,
-        p_station->aprs_symbol.aprs_type,
-        p_station->aprs_symbol.aprs_symbol,
-        p_station->aprs_symbol.special_overlay,
-        p_station->coord_lon,
-        p_station->coord_lat,
-        temp_call,
-        temp_altitude,
-        temp_course,
-        temp_speed,
-        temp_my_distance,
-        temp_my_course,
-        temp_wx_temp,
-        temp_wx_wind,
-        temp_sec_heard,
-        temp_show_last_heard,
-        pixmap_final,
-        orient,
-        p_station->aprs_symbol.area_object.type);
-
-    // Draw additional stuff if this is the tracked station
-    if (is_tracked_station(p_station->call_sign)) {
-//WE7U
-        draw_pod_circle(p_station->coord_lon,
+        draw_symbol(w,
+            p_station->aprs_symbol.aprs_type,
+            p_station->aprs_symbol.aprs_symbol,
+            p_station->aprs_symbol.special_overlay,
+            p_station->coord_lon,
             p_station->coord_lat,
-            0.0035 * scale_y,
-            colors[0x44],   // Red
-            pixmap_final);
-    }
+            temp_call,
+            temp_altitude,
+            temp_course,
+            temp_speed,
+            temp_my_distance,
+            temp_my_course,
+            temp_wx_temp,
+            temp_wx_wind,
+            temp_sec_heard,
+            temp_show_last_heard,
+            pixmap_final,
+            orient,
+            p_station->aprs_symbol.area_object.type);
+
+        // Draw additional stuff if this is the tracked station
+        if (is_tracked_station(p_station->call_sign)) {
+//WE7U
+            draw_pod_circle(p_station->coord_lon,
+                p_station->coord_lat,
+                0.0035 * scale_y,
+                colors[0x44],   // Red
+                pixmap_final);
+        }
 
 
 //WE7U
@@ -2413,31 +2417,32 @@ void display_station(Widget w, DataRow *p_station, int single) {
         }
 
 
-    // Draw other points associated with the station, if any.
-    // KG4NBB
+        // Draw other points associated with the station, if any.
+        // KG4NBB
 	
-    draw_multipoints(p_station->coord_lon, p_station->coord_lat, 
-        p_station->num_multipoints, 
-        p_station->multipoints,
-        p_station->type, p_station->style,
-        temp_sec_heard,
-        pixmap_final);  // or pixmap_alerts
+        draw_multipoints(p_station->coord_lon, p_station->coord_lat, 
+            p_station->num_multipoints, 
+            p_station->multipoints,
+            p_station->type, p_station->style,
+            temp_sec_heard,
+            pixmap_final);  // or pixmap_alerts
 
-    if (show_phg && strlen(p_station->power_gain) == 7) {   // There's a PHG defined
-        /*printf("PHG:%s\n",p_station->power_gain);*/
+        if (show_phg && strlen(p_station->power_gain) == 7) {   // There's a PHG defined
+            /*printf("PHG:%s\n",p_station->power_gain);*/
 
-        if ( !(p_station->flag & ST_MOVING) || show_phg_mobiles ) { // Not-moving, or mobile PHG flag turned on
-            draw_phg_rng(p_station->coord_lon,p_station->coord_lat,p_station->power_gain,temp_sec_heard,pixmap_final);
-            if (single) { // data_add       ????
-                draw_phg_rng(p_station->coord_lon,p_station->coord_lat,p_station->power_gain,temp_sec_heard,XtWindow(w));
+            if ( !(p_station->flag & ST_MOVING) || show_phg_mobiles ) { // Not-moving, or mobile PHG flag turned on
+                draw_phg_rng(p_station->coord_lon,p_station->coord_lat,p_station->power_gain,temp_sec_heard,pixmap_final);
+                if (single) { // data_add       ????
+                    draw_phg_rng(p_station->coord_lon,p_station->coord_lat,p_station->power_gain,temp_sec_heard,XtWindow(w));
+                }
             }
         }
-    }
-    else if (show_phg && show_phg_default && !(p_station->flag & (ST_OBJECT|ST_ITEM))) {
-        // No PHG defined and not an object/item.  Display a PHG of 3130 as default
-        // as specified in the spec:  9W, 3dB omni at 20 feet = 6.2 mile PHG radius.
-        if ( !(p_station->flag & ST_MOVING) || show_phg_mobiles ) { // Not-moving, or mobile PHG flag turned on
-            draw_phg_rng(p_station->coord_lon,p_station->coord_lat,"PHG3130",temp_sec_heard,pixmap_final);
+        else if (show_phg && show_phg_default && !(p_station->flag & (ST_OBJECT|ST_ITEM))) {
+            // No PHG defined and not an object/item.  Display a PHG of 3130 as default
+            // as specified in the spec:  9W, 3dB omni at 20 feet = 6.2 mile PHG radius.
+            if ( !(p_station->flag & ST_MOVING) || show_phg_mobiles ) { // Not-moving, or mobile PHG flag turned on
+                draw_phg_rng(p_station->coord_lon,p_station->coord_lat,"PHG3130",temp_sec_heard,pixmap_final);
+            }
         }
     }
 }
