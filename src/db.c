@@ -183,40 +183,8 @@ int is_my_call(char *call, int exact) {
 
 
     // U.S. special-event callsigns can be as short as three
-    // characters, any less and we don't have a valid callsign.
-    // We're only doing a fast check on the first two characters
-    // though before the string compares, so we only need to check
-    // for a terminators in the first position.  If a terminator in
-    // the second position, we'll fail the match properly in the
-    // string compares.
-
-
-    // Check first letter.  If a match, go on to strcmp() functions,
-    // which are more costly time-wise.  If not, we're done.  This
-    // is much faster than the string compares below, so this was
-    // purely added for efficiency improvements.
-    if (call[0] != my_callsign[0]) {
-        return(0);
-    }
-
-
-    // We need this next bit of code so that we don't run off the
-    // end of the string when we compare the 2nd char position.
-    //
-    if (!call[0])   // Empty string
-        return(0);
-
-    if (!my_callsign[0])    // Empty string
-        return(0);
-
-
-    // Same for second letter.  This is much faster than the string
-    // compares below, so this was purely added for efficiency
-    // improvements.
-    if (call[1] != my_callsign[1]) {
-        return(0);
-    }
-
+    // characters, any less and we don't have a valid callsign.  We
+    // don't check for that restriction here though.
 
     if (exact) {
         // We're looking for an exact match
@@ -241,7 +209,7 @@ int is_my_call(char *call, int exact) {
             len2 = p_del - my_callsign;
 
         ok = (int)(len1 == len2 && !strncmp(call,my_callsign,(size_t)len1));
-//fprintf(stderr,"My base call found: %s\n",call);
+        //fprintf(stderr,"My base call found: %s\n",call);
     }
  
     return(ok);
