@@ -8659,123 +8659,117 @@ static void* gps_transfer_thread(void *arg) {
     // return code and won't use pthread_join() later.  Makes
     // threading more efficient.
     (void)pthread_detach(pthread_self());
+
+    switch (input_param) {
+
+        case 1: // Fetch track from GPS
+            // gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile_2D track.date
+
+            fprintf(stderr,"Fetch track from GPS\n");
+
+            xastir_snprintf(gps_filename,
+                sizeof(gps_filename),
+                "Team1_Track_Red.shp");
  
-    if (input_param == 1) { // Fetch track from GPS
-        // gpsman.tcl -dev /dev/ttyS0 getwrite TR Shapefile_2D track.date
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s getwrite TR %s%s",
+                prefix,
+                postfix,
+                gps_filename);
 
-        fprintf(stderr,"Fetch track from GPS\n");
+            if ( system(temp) ) {
+                fprintf(stderr,"Couldn't download the gps track\n");
+                gps_operation_pending = 0;  // We're done
+                return(NULL);
+            }
+            // Set the got_data flag
+            gps_got_data_from++;
+            break;
 
-        xastir_snprintf(gps_filename,
-            sizeof(gps_filename),
-            "Team1_Track_Red.shp");
+        case 2: // Fetch route from GPS
+            // gpsman.tcl -dev /dev/ttyS0 getwrite RT Shapefile_2D routes.date
+
+            fprintf(stderr,"Fetch routes from GPS\n");
+
+            xastir_snprintf(gps_filename,
+                sizeof(gps_filename),
+                "Team2_Routes_Green.shp");
  
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "%s getwrite TR %s%s",
-            prefix,
-            postfix,
-            gps_filename);
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s getwrite RT %s%s",
+                prefix,
+                postfix,
+                gps_filename);
 
-        if ( system(temp) ) {
-            fprintf(stderr,"Couldn't download the gps track\n");
+            if ( system(temp) ) {
+                fprintf(stderr,"Couldn't download the gps routes\n");
+                gps_operation_pending = 0;  // We're done
+                return(NULL);
+            }
+            // Set the got_data flag
+            gps_got_data_from++;
+            break;
+
+        case 3: // Fetch waypoints from GPS
+            // gpsman.tcl -dev /dev/ttyS0 getwrite WP Shapefile_2D waypoints.date
+ 
+            fprintf(stderr,"Fetch waypoints from GPS\n");
+
+            xastir_snprintf(gps_filename,
+                sizeof(gps_filename),
+                "Team3_Waypoints.shp");
+ 
+            xastir_snprintf(temp,
+                sizeof(temp),
+                "%s getwrite WP %s%s",
+                prefix,
+               postfix,
+                gps_filename);
+
+            if ( system(temp) ) {
+                fprintf(stderr,"Couldn't download the gps waypoints\n");
+                gps_operation_pending = 0;  // We're done
+                return(NULL);
+            }
+            // Set the got_data flag
+            gps_got_data_from++;
+            break;
+
+        case 4: // Send track to GPS
+            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D track.date TR 
+
+            fprintf(stderr,"Send track to GPS\n");
+            fprintf(stderr,"Not implemented yet\n");
             gps_operation_pending = 0;  // We're done
             return(NULL);
-        }
+            break;
 
-        // Set the got_data flag
-        gps_got_data_from++;
-    }
+        case 5: // Send route to GPS
+            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D routes.date RT 
 
-
-    else if (input_param == 2) { // Fetch route from GPS
-        // gpsman.tcl -dev /dev/ttyS0 getwrite RT Shapefile_2D routes.date
-
-        fprintf(stderr,"Fetch routes from GPS\n");
-
-        xastir_snprintf(gps_filename,
-            sizeof(gps_filename),
-            "Team2_Routes_Green.shp");
- 
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "%s getwrite RT %s%s",
-            prefix,
-            postfix,
-            gps_filename);
-
-        if ( system(temp) ) {
-            fprintf(stderr,"Couldn't download the gps routes\n");
+            fprintf(stderr,"Send route to GPS\n");
+            fprintf(stderr,"Not implemented yet\n");
             gps_operation_pending = 0;  // We're done
             return(NULL);
-        }
+            break;
 
-        // Set the got_data flag
-        gps_got_data_from++;
-    }
+        case 6: // Send waypoints to GPS
+            // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D waypoints.date WP 
 
-
-    else if (input_param == 3) { // Fetch waypoints from GPS
-        // gpsman.tcl -dev /dev/ttyS0 getwrite WP Shapefile_2D waypoints.date
- 
-        fprintf(stderr,"Fetch waypoints from GPS\n");
-
-        xastir_snprintf(gps_filename,
-            sizeof(gps_filename),
-            "Team3_Waypoints.shp");
- 
-        xastir_snprintf(temp,
-            sizeof(temp),
-            "%s getwrite WP %s%s",
-            prefix,
-            postfix,
-            gps_filename);
-
-        if ( system(temp) ) {
-            fprintf(stderr,"Couldn't download the gps waypoints\n");
+            fprintf(stderr,"Send waypoints to GPS\n");
+            fprintf(stderr,"Not implemented yet\n");
             gps_operation_pending = 0;  // We're done
             return(NULL);
-        }
+            break;
 
-        // Set the got_data flag
-        gps_got_data_from++;
-    }
-
-
-    else if (input_param == 4) { // Send track to GPS
-        // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D track.date TR 
-
-        fprintf(stderr,"Send track to GPS\n");
-        fprintf(stderr,"Not implemented yet\n");
-        gps_operation_pending = 0;  // We're done
-        return(NULL);
-    }
-
-
-    else if (input_param == 5 ) { // Send route to GPS
-        // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D routes.date RT 
-
-        fprintf(stderr,"Send route to GPS\n");
-        fprintf(stderr,"Not implemented yet\n");
-        gps_operation_pending = 0;  // We're done
-        return(NULL);
-    }
-
-
-    else if (input_param == 6) { // Send waypoints to GPS
-        // gpsman.tcl -dev /dev/ttyS0 readput Shapefile_2D waypoints.date WP 
-
-        fprintf(stderr,"Send waypoints to GPS\n");
-        fprintf(stderr,"Not implemented yet\n");
-        gps_operation_pending = 0;  // We're done
-        return(NULL);
-    }
-
-
-    else {
-        fprintf(stderr,"Illegal parameter passed to GPS_operations function!\n");
-        gps_operation_pending = 0;  // We're done
-        return(NULL);
-    }
+        default:
+            fprintf(stderr,"Illegal parameter passed to GPS_operations function!\n");
+            gps_operation_pending = 0;  // We're done
+            return(NULL);
+            break;
+    }   // End of switch
 
 
     // Signal to the main thread that we're all done with the
