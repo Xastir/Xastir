@@ -588,8 +588,10 @@ void guess_vector_attributes( Widget w,
 // DEBUG:
 // Determine whether it is a hypsography layer we're dealing with.
                 // Set color for SDTS hypsography layer (contours)
-                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x43]);  // gray80
-                label_color_guess = 0x4d;   // white
+//                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x43]);  // gray80
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+//                label_color_guess = 0x4d;   // white
+                label_color_guess = 0x0e;   // yellow
             }
             else if (strstr(full_filename,"lkH")) {
                 (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
@@ -612,8 +614,10 @@ void guess_vector_attributes( Widget w,
 // DEBUG:
 // Determine whether it is a hypsography layer we're dealing with.
                 // Set color for SDTS hypsography layer (contours)
-                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x43]);  // gray80
-                label_color_guess = 0x4d;   // white
+//                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x43]);  // gray80
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x0e]);  // yellow
+//                label_color_guess = 0x4d;   // white
+                label_color_guess = 0x0e;   // yellow
             }
             else {
 // DEBUG:
@@ -715,9 +719,15 @@ void Draw_OGR_Labels( Widget w,
         ii = OGR_F_GetFieldIndex(featureH, "FENAME");
     }
     if (ii == -1) {
+
         ii = OGR_F_GetFieldIndex(featureH, "ELEVATION");
 //        my_color = 0x0e;  // yellow
-        xastir_snprintf(extra,sizeof(extra), " ft");
+
+        xastir_snprintf(extra,sizeof(extra), "m");
+
+// We should switch between meters and ft here based on the setting
+// of the "Enable English Units" toggle.
+
     }
     if (ii == -1) {
         ii = OGR_F_GetFieldIndex(featureH, "LANDNAME");
