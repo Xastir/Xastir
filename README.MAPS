@@ -297,6 +297,11 @@ Getting Maps and other Data Files for Xastir:
 
           for a in srb_*; do echo "IMAGESIZE 620 620" >> $a; done
 
+      For .geo files with an ftp or http address for fetching the image,
+      IMAGESIZE is currently a REQUIRED parameter in the .geo file.  For
+      .geo files where the image is resident on your hard drive, the
+      IMAGESIZE tag is optional.
+
       Please also note that the coordinates in the .GEO files are expressed
       in decimal degrees, and are listed with longitude first then latitude
       on the TIEPOINT lines.
