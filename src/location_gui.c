@@ -33,7 +33,6 @@
 #include "main.h"
 #include "xastir.h"
 #include "xa_config.h"
-#include "db.h"
 #include "util.h"
 #include "lang.h"
 
