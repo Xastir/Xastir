@@ -1237,6 +1237,9 @@ WINDOWS/CYGWIN NOTES:
      the src directory, but add "-L/usr/local/lib -lshp" to the end of it.
      Once all that is done, run make install.
 
+     Another difference with Cygwin:  You can't do the make install portion
+     if Xastir is up and running.  You have to kill it first.
+
      Note that one user running Cygwin on XP had it crash every time his
      screensaver kicked in.
 
