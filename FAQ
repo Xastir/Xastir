@@ -356,10 +356,15 @@ The Answers
     levels and your cabling, both between the radio/TNC and between
     the TNC/Computer.
 
-    Check that ALTNET support in File|Configure|Defaults isn't enabled.
+    Check that ALTNET support in File|Configure|Defaults is disabled.
+    If activated, it only shows stations transmitting TO the callsign
+    listed in the box.  I sometimes set it to APX or APX121 in order to
+    see who's running Xastir/who's running the _latest_ Xastir.  Set
+    it to "WEIRD" and you'll only see those transmitting to "WEIRD".
 
     The "Display Symbols" button in the Stations menu must be
-    checked in order to see stations on the map screen.
+    checked in order to see stations on the map screen.  Check all
+    of your Stations|Filter Data and Stations|Filter Display settings.
 
     If you are using an older version of Xastir, Qxx packets are considered
     invalid. This is a newer addition to APRS, and recent Xastir releases
