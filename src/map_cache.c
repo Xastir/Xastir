@@ -79,10 +79,30 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
     "%s/map_cache.db", 
     get_user_base_dir("map_cache"));
 
+    // check for reasonable filename
+    // expects file name like /home/brown/.xastir/map_cache/map_1100052372.gif
+    //                                   1234567890123456789012345678901234567
 
+    mc_ret=strlen(map_cache_file);
+    
+    if ( mc_ret < 37 ) { 
+        if (debug_level & 512 ) {
+            fprintf(stderr,
+            	"map_cache_put: Unusable filename: %s. Skipping encaching\n",
+            	map_cache_file);
+        }
+        return (-1 * mc_ret); 
+    } 
+            
 // stat the file to see if we even need to bother 
 
     if ((mc_file_stat=stat(map_cache_file, &file_status)) !=0) {
+        if (debug_level & 512 ) {
+            fprintf(stderr,
+            	"map_cache_put: File Error: %s. Skipping encaching\n",
+            	map_cache_file);
+        } 
+       
         return (mc_file_stat); 
     }
 
@@ -213,7 +233,7 @@ int map_cache_put( char * map_cache_url, char * map_cache_file ){
 
         if ( debug_level & 512 ) { 
                 fprintf (stderr, "map_cache_put: mc_buf: %s len %d\n",
-                        mc_buf,sizeof(mc_buf));
+                        mc_buf,(int) sizeof(mc_buf));
         }
 
         mc_data.data = mc_buf ; 
@@ -332,6 +352,10 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
     mc_key.size=strlen(map_cache_url); 
 
     statusline("Checking Map Cache",1);
+    if (debug_level & 512 ) {
+        fprintf(stderr, "map_cache_get: Checking Map Cache\n");
+    }
+
 	
     if ((mc_ret = dbp->get(dbp, NULL, &mc_key, &mc_data, 0)) == 0) {
         if ( debug_level & 512 ) {
@@ -340,8 +364,31 @@ int map_cache_get( char * map_cache_url, char * map_cache_file ){
         }
         xastir_snprintf(map_cache_file, MAX_FILENAME, "%s",(char *)mc_data.data);
 
+    // check for reasonable filename
+    // expects file name like /home/brown/.xastir/map_cache/map_1100052372.gif
+    //                                   1234567890123456789012345678901234567
+
+	mc_ret=strlen(map_cache_file);
+	
+        if ( mc_ret < 37 ) { 
+ 
+            if (debug_level & 512 ) {
+                fprintf(stderr,
+                    "map_cache_get: Unusable filename: %s. Deleting key %s from cache\n",
+                    map_cache_file,map_cache_url);
+            }
+            map_cache_del(map_cache_url);
+  
+            return (-1 * mc_ret); 
+        } 
+            
+
     // check age of file - based on name - delete if too old
-        
+     
+        if (debug_level & 512 ) {
+            fprintf(stderr, "map_cache_get: Checking age\n");
+        }
+   
         if ( (mc_ret=map_cache_expired(map_cache_file, (MC_MAX_FILE_AGE)))){
             if ( debug_level & 512 ) {
                 fprintf(stderr, "map_cache_get: deleting expired key: %s.\n",
@@ -581,7 +628,7 @@ int map_cache_del( char * map_cache_url ){
 
                 if ( debug_level & 512 ) {
                     fprintf (stderr, "map_cache_del: mc_buf: %s len %d\n",
-                                mc_buf,sizeof(mc_buf));
+                                mc_buf, (int)sizeof(mc_buf));
                 }
 
                 mc_size_data.data = mc_buf ; 
