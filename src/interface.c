@@ -673,6 +673,11 @@ int get_device_status(int port) {
 void channel_data(int port, unsigned char *string, int length) {
     int max;
     struct timeval tmv;
+    // Some messiness necessary because we're using xastir_mutex's
+    // instead of pthread_mutex_t's.
+    pthread_mutex_t *cleanup_mutex1;
+    pthread_mutex_t *cleanup_mutex2;
+
 
     //fprintf(stderr,"channel_data: %x %d\n",string[0],length);
 
@@ -712,12 +717,36 @@ void channel_data(int port, unsigned char *string, int length) {
         return;
     }
 
-// This protects channel_data from being run by more
-// than one thread at the same time
+
+    // Install the cleanup routine for the case where this thread
+    // gets killed while the mutex is locked.  The cleanup routine
+    // initiates an unlock before the thread dies.  We must be in
+    // deferred cancellation mode for the thread to have this work
+    // properly.  We must first get the pthread_mutex_t address:
+    cleanup_mutex1 = &output_data_lock.lock;
+
+    // Then install the cleanup routine:
+    pthread_cleanup_push(pthread_mutex_unlock, (void *)cleanup_mutex1);
+
+    // This protects channel_data from being run by more than one
+    // thread at the same time.
     if (begin_critical_section(&output_data_lock, "interface.c:channel_data(1)" ) > 0)
         fprintf(stderr,"output_data_lock, Port = %d\n", port);
 
+
     if (length > 0) {
+
+
+        // Install the cleanup routine for the case where this
+        // thread gets killed while the mutex is locked.  The
+        // cleanup routine initiates an unlock before the thread
+        // dies.  We must be in deferred cancellation mode for the
+        // thread to have this work properly.  We must first get the
+        // pthread_mutex_t address.
+        cleanup_mutex2 = &data_lock.lock;
+
+        // Then install the cleanup routine:
+        pthread_cleanup_push(pthread_mutex_unlock, (void *)cleanup_mutex2);
 
         if (begin_critical_section(&data_lock, "interface.c:channel_data(2)" ) > 0)
             fprintf(stderr,"data_lock, Port = %d\n", port);
@@ -780,9 +809,18 @@ void channel_data(int port, unsigned char *string, int length) {
                 break;
         }
 
+
         if (end_critical_section(&data_lock, "interface.c:channel_data(3)" ) > 0)
             fprintf(stderr,"data_lock, Port = %d\n", port);
 
+        // Remove the cleanup routine for the case where this thread
+        // gets killed while the mutex is locked.  The cleanup
+        // routine initiates an unlock before the thread dies.  We
+        // must be in deferred cancellation mode for the thread to
+        // have this work properly.
+        pthread_cleanup_pop(0);
+
+ 
         if (debug_level & 1)
             fprintf(stderr,"Channel data on Port %d [%s]\n",port,(char *)string);
 
@@ -795,8 +833,16 @@ void channel_data(int port, unsigned char *string, int length) {
         }
     }
 
+
     if (end_critical_section(&output_data_lock, "interface.c:channel_data(4)" ) > 0)
         fprintf(stderr,"output_data_lock, Port = %d\n", port);
+
+    // Remove the cleanup routine for the case where this thread
+    // gets killed while the mutex is locked.  The cleanup routine
+    // initiates an unlock before the thread dies.  We must be in
+    // deferred cancellation mode for the thread to have this work
+    // properly.
+    pthread_cleanup_pop(0);
 }
 
 
@@ -3477,11 +3523,13 @@ static void* net_connect_thread(void *arg) {
     int ok;
     int len;
     int result;
-
     int flag;
-
     //int stat;
     struct sockaddr_in address;
+
+    // Some messiness necessary because we're using
+    // xastir_mutex's instead of pthread_mutex_t's.
+    pthread_mutex_t *cleanup_mutex;
 
 
     if (debug_level & 2)
@@ -3596,6 +3644,17 @@ static void* net_connect_thread(void *arg) {
         //    fprintf(stderr,"net_connect_thread():Could not bind socket, port %d\n",port);
     }
 
+
+    // Install the cleanup routine for the case where this thread
+    // gets killed while the mutex is locked.  The cleanup routine
+    // initiates an unlock before the thread dies.  We must be in
+    // deferred cancellation mode for the thread to have this work
+    // properly.  We must first get the pthread_mutex_t address:
+    cleanup_mutex = &connect_lock.lock;
+
+    // Then install the cleanup routine:
+    pthread_cleanup_push(pthread_mutex_unlock, (void *)cleanup_mutex);
+
     if (begin_critical_section(&connect_lock, "interface.c:net_connect_thread(2)" ) > 0)
         fprintf(stderr,"net_connect_thread():connect_lock, Port = %d\n", port);
 
@@ -3604,6 +3663,14 @@ static void* net_connect_thread(void *arg) {
 
     if (end_critical_section(&connect_lock, "interface.c:net_connect_thread(3)" ) > 0)
         fprintf(stderr,"net_connect_thread():connect_lock, Port = %d\n", port);
+
+    // Remove the cleanup routine for the case where this thread
+    // gets killed while the mutex is locked.  The cleanup routine
+    // initiates an unlock before the thread dies.  We must be in
+    // deferred cancellation mode for the thread to have this work
+    // properly.
+    pthread_cleanup_pop(0);
+ 
 
 //if (end_critical_section(&port_data_lock, "interface.c:net_connect_thread(4)" ) > 0)
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port);
@@ -4957,6 +5024,22 @@ void port_write(int port) {
     while(port_data[port].active == DEVICE_IN_USE) {
 
         if (port_data[port].status == DEVICE_UP) {
+            // Some messiness necessary because we're using
+            // xastir_mutex's instead of pthread_mutex_t's.
+            pthread_mutex_t *cleanup_mutex;
+
+
+            // Install the cleanup routine for the case where this
+            // thread gets killed while the mutex is locked.  The
+            // cleanup routine initiates an unlock before the thread
+            // dies.  We must be in deferred cancellation mode for
+            // the thread to have this work properly.  We must first
+            // get the pthread_mutex_t address:
+            cleanup_mutex = &port_data[port].write_lock.lock;
+
+            // Then install the cleanup routine:
+            pthread_cleanup_push(pthread_mutex_unlock, (void *)cleanup_mutex);
+
 
             if (begin_critical_section(&port_data[port].write_lock, "interface.c:port_write(1)" ) > 0)
                 fprintf(stderr,"write_lock, Port = %d\n", port);
@@ -5138,6 +5221,13 @@ void port_write(int port) {
             if (end_critical_section(&port_data[port].write_lock, "interface.c:port_write(2)" ) > 0)
                 fprintf(stderr,"write_lock, Port = %d\n", port);
 
+            // Remove the cleanup routine for the case where this
+            // thread gets killed while the mutex is locked.  The
+            // cleanup routine initiates an unlock before the thread
+            // dies.  We must be in deferred cancellation mode for
+            // the thread to have this work properly.
+            pthread_cleanup_pop(0);
+ 
         }
 
         if (port_data[port].active == DEVICE_IN_USE) {
