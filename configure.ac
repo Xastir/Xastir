@@ -149,7 +149,6 @@ else
         ac_tnc_port='"/dev/ttyS0"' 
         ac_gps_port='"/dev/ttyS1"' 
         CFLAGS="-g -O2 -Wall -pipe -pthread $CFLAGS" 
-        X_CFLAGS="-I/usr/X11R6/include $X_CFLAGS"
 		AC_MSG_RESULT(LINUX - added -g -O2 -Wall -pipe -pthread) 
 		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS) 
 		;; 
