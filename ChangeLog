@@ -1,3 +1,8 @@
+2003-02-01 20:30  jtwilley
+
+	* db.c: added support for direct stations
+	* db.h: added timeout variable for direct stations
+
 2002-01-19 21:12  kg4ijb
 
         * Makefile.in, aclocal.m4, configure, m4/Makefile.in,
