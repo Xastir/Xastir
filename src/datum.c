@@ -470,11 +470,13 @@ void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
 
     ZoneNumber = (int)((LongTemp + 180)/6) + 1;
 
-    // Special zone for southern Norway
+    // Special zone for southern Norway.
+// Used for military version of UTM (MGRS) only?
     if ( lat >= 56.0 && lat < 64.0 && LongTemp >= 3.0 && LongTemp < 12.0 )
         ZoneNumber = 32;
 
-    // Special zones for Svalbard
+    // Special zones for Svalbard.
+// Used for military version of UTM (MGRS) only?
     if (lat >= 72.0 && lat < 84.0) {
         if (LongTemp >= 0.0  && LongTemp <  9.0)
             ZoneNumber = 31;
@@ -488,14 +490,24 @@ void ll_to_utm_ups(short ellipsoidID, const double lat, const double lon,
     LongOrigin = (ZoneNumber - 1)*6 - 180 + 3;  //+3 puts origin in middle of zone
     LongOriginRad = LongOrigin * deg2rad;
 
-    //compute the UTM Zone from the latitude and longitude
-    xastir_snprintf(utmZone,
-        utmZoneLength,
-        "%d%c",
-        ZoneNumber,
-        utm_letter_designator(lat, lon));
-    eccPrimeSquared = (eccSquared)/(1-eccSquared);
+    if (lat > 84.0 || lat < -80.0) {
+        // We're in the UPS areas (near the poles).  ZoneNumber
+        // should be "00" in all cases.
+        xastir_snprintf(utmZone,
+            utmZoneLength,
+            "00%c",
+            utm_letter_designator(lat, lon));
+    }
+    else {  // We're in the UTM areas (not near the poles).
+        //compute the UTM Zone from the latitude and longitude
+        xastir_snprintf(utmZone,
+            utmZoneLength,
+            "%d%c",
+            ZoneNumber,
+            utm_letter_designator(lat, lon));
+    }
 
+    eccPrimeSquared = (eccSquared)/(1-eccSquared);
     
     if (lat > 84.0 || lat < -80.0) {
         //
