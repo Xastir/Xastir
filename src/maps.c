@@ -506,7 +506,7 @@ void draw_grid(Widget w) {
 
         // Draw a UTM grid.
 
-// So far we're just drawing the N/S lines for the 60 major zones.
+// So far we're just drawing the major grids.
 // More to follow.
 
         // 84 degrees North to 80 degrees South. 60 zones, each
@@ -521,7 +521,7 @@ void draw_grid(Widget w) {
         //   UTM Zones if at zoom level XX or higher
         //   1km rectangles between zooms XX and YY
         //   100m rectangles below zoom YY
-        //   Centerlines also???
+        //   Centerlines also???  Probably not.
 
         // Get the corner points of our current map view in UTM.
         // Iterate along each line, drawing short line segments to
@@ -547,19 +547,19 @@ void draw_grid(Widget w) {
         // line.  Do both vertical and horizontal lines for each
         // zone before moving on to the next.  Repeat for each zone
         // in the view.
-
-
-// NEED TO ACCOMMODATE THIS:
-// -------------------------
-// UTM Zone 32 has been widened to 9° (at the expense of zone 31)
-// between latitudes 56° and 64° (band V) to accommodate southwest
-// Norway. Thus zone 32 extends westwards to 3°E in the North
-// Sea.  Similarly, between 72° and 84° (band X), zones 33 and 35
-// have been widened to 12° to accommodate Svalbard. To compensate
-// for these 12° wide zones, zones 31 and 37 are widened to 9° and
-// zones 32, 34, and 36 are eliminated. Thus the W and E boundaries
-// of zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33
-// - 42 E.
+        //
+        // NEED TO ACCOMMODATE THIS:
+        // -------------------------
+        // UTM Zone 32 has been widened to 9° (at the expense of
+        // zone 31) between latitudes 56° and 64° (band V) to
+        // accommodate southwest Norway. Thus zone 32 extends
+        // westwards to 3°E in the North Sea.  Similarly, between
+        // 72° and 84° (band X), zones 33 and 35 have been widened
+        // to 12° to accommodate Svalbard. To compensate for these
+        // 12° wide zones, zones 31 and 37 are widened to 9° and
+        // zones 32, 34, and 36 are eliminated. Thus the W and E
+        // boundaries of zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21
+        // - 33 E and 37: 33 - 42 E.
 
 
         unsigned long view_min_x, view_max_x;
@@ -575,6 +575,7 @@ void draw_grid(Widget w) {
         char zone4[5];
         int min_zone, max_zone, temp;
         int done;
+        int i;
 
 
         // Left edge of view, Xastir coordinate system
@@ -752,13 +753,13 @@ void draw_grid(Widget w) {
                     if (y2 >  16000) y2 =  10000;
                     if (y2 < -16000) y2 = -10000;
 
-                    (void)XDrawLine(XtDisplay(w),
-                        pixmap_final,
-                        gc,
-                        x,
-                        y1,
-                        x,
-                        y2);
+//                    (void)XDrawLine(XtDisplay(w),
+//                        pixmap_final,
+//                        gc,
+//                        x,
+//                        y1,
+//                        x,
+//                        y2);
                 }
 
                 // Increment to the next zone boundary in Xastir
@@ -840,7 +841,16 @@ void draw_grid(Widget w) {
 // of zones are 31: 0 - 9 E, 33: 9 - 21 E, 35: 21 - 33 E and 37: 33
 // - 42 E.
 
+
         // Vertical lines:
+
+        // Draw the vertical lines except for the irregular regions
+        for (i = -180; i <= 0; i += 6) {
+            draw_vector_ll(w, -90.0,  (float)i, 90.0,  (float)i, gc, pixmap_final);
+        }
+        for (i = 42; i <= 180; i += 6) {
+            draw_vector_ll(w, -90.0,  (float)i, 90.0,  (float)i, gc, pixmap_final);
+        }
 
         // Draw the partial lines from 90S to the irregular region
         draw_vector_ll(w, -90.0,  6.0, 56.0,  6.0, gc, pixmap_final);
@@ -872,70 +882,21 @@ void draw_grid(Widget w) {
         // Draw lines at 90S and 90N.  These are the poles.
         draw_vector_ll(w,  90.0, -180.0, 90.0, 180.0, gc, pixmap_final);
         draw_vector_ll(w, -90.0, -180.0, -90.0, 180.0, gc, pixmap_final);
- 
-        // X    72N to 84N (12 degrees latitude, equator=0)
+
+        // Draw the 8 degree-spaced lines 
+        for (i = -80; i <= 72; i += 8) {
+            draw_vector_ll(w, (float)i,  -180.0, (float)i,  180.0, gc, pixmap_final);
+        }
+
+        // Draw the one 12 degree spaced line
         draw_vector_ll(w,  84.0, -180.0, 84.0, 180.0, gc, pixmap_final);
-        draw_vector_ll(w,  72.0, -180.0, 72.0, 180.0, gc, pixmap_final);
-
-        // W    64N to 72N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,  64.0, -180.0, 64.0, 180.0, gc, pixmap_final);
-
-        // V    56N to 64N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,  56.0, -180.0, 56.0, 180.0, gc, pixmap_final);
-
-        // U    48N to 56N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,  48.0, -180.0, 48.0, 180.0, gc, pixmap_final);
-
-        // T    40N to 48N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,  40.0, -180.0, 40.0, 180.0, gc, pixmap_final);
-
-        // S    32N to 40N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,  32.0, -180.0, 32.0, 180.0, gc, pixmap_final);
-
-        // R    24N to 32N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,  24.0, -180.0, 24.0, 180.0, gc, pixmap_final);
-
-        // Q    16N to 24N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,  16.0, -180.0, 16.0, 180.0, gc, pixmap_final);
-
-        // P     8N to 16N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,   8.0, -180.0, 8.0, 180.0, gc, pixmap_final);
-
-        // N     0N to  8N ( 8 degrees latitude, equator=0)
-        draw_vector_ll(w,   0.0, -180.0, 0.0, 180.0, gc, pixmap_final);
-
-        // M     0S to  8S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w,  -8.0, -180.0, -8.0, 180.0, gc, pixmap_final);
-
-        // L     8S to 16S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -16.0, -180.0, -16.0, 180.0, gc, pixmap_final);
-
-        // K    16S to 24S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -24.0, -180.0, -24.0, 180.0, gc, pixmap_final);
-
-        // J    24S to 32S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -32.0, -180.0, -32.0, 180.0, gc, pixmap_final);
-
-        // H    32S to 40S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -40.0, -180.0, -40.0, 180.0, gc, pixmap_final);
-
-        // G    40S to 48S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -48.0, -180.0, -48.0, 180.0, gc, pixmap_final);
-
-        // F    48S to 56S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -56.0, -180.0, -56.0, 180.0, gc, pixmap_final);
-
-        // E    56S to 64S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -64.0, -180.0, -64.0, 180.0, gc, pixmap_final);
-
-        // D    64S to 72S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -72.0, -180.0, -72.0, 180.0, gc, pixmap_final);
-
-        // C    72S to 80S ( 8 degrees latitude, equator=10,000,000)
-        draw_vector_ll(w, -80.0, -180.0, -80.0, 180.0, gc, pixmap_final);
 
 
-    }
+
+
+
+    }   // End of UTM grid section
+
     else { // Not UTM coordinate system, draw some lat/long lines
         unsigned int x,x1,x2;
         unsigned int y,y1,y2;
