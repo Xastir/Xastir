@@ -1452,7 +1452,7 @@ void draw_shapefile_map (Widget w,
             xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "wntr_strm.xbm");
         else if (strncasecmp(alert->alert_tag, "WINTER_WEATHER", 14) == 0)
             xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "winter_wx.xbm");
-        else if (strncasecmp(alert->alert_tag, "RED_FLAG_WARN", 13) == 0)
+        else if (strncasecmp(alert->alert_tag, "RED_FLAG", 8) == 0)
             xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "red_flag.xbm");
         else
             xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "alert.xbm");
