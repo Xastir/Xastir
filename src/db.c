@@ -1025,6 +1025,81 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     *record_out = record;
     return(last_ack_sent);
 }
+
+
+
+
+
+//WE7U
+// alert_data_add:  Function which adds NWS weather alerts to the
+// alert_list.
+//
+// This function adds alerts directly to the alert_list, bypassing
+// the message list and associates message-scan functions.
+//
+void alert_data_add(char *call_sign, char *from_call, char *data,
+        char *seq, char type, char from) {
+    Message m_fill;
+    char time_data[MAX_TIME];
+
+
+    if (debug_level & 1)
+        fprintf(stderr,"alert_data_add start\n");
+
+    if ( (data != NULL) && (strlen(data) > MAX_MESSAGE_LENGTH) ) {
+        if (debug_level & 2)
+            fprintf(stderr,"alert_data_add:  Message length too long\n");
+        return;
+    }
+
+    substr(m_fill.call_sign, call_sign, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.call_sign);
+
+    substr(m_fill.from_call_sign, from_call, MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.call_sign);
+
+    substr(m_fill.seq, seq, MAX_MESSAGE_ORDER);
+    (void)remove_trailing_spaces(m_fill.seq);
+    (void)remove_leading_spaces(m_fill.seq);
+
+    m_fill.sec_heard = sec_now();
+
+    /* FROM */
+    m_fill.data_via=from;
+    m_fill.active=RECORD_ACTIVE;
+    m_fill.type=type;
+    if (m_fill.heard_via_tnc != VIA_TNC)
+        m_fill.heard_via_tnc = (from == 'T') ? VIA_TNC : NOT_VIA_TNC;
+
+    substr(m_fill.call_sign,call_sign,MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.call_sign);
+
+    substr(m_fill.from_call_sign,from_call,MAX_CALLSIGN);
+    (void)remove_trailing_asterisk(m_fill.from_call_sign);
+
+    // Update the message field
+    substr(m_fill.message_line,data,MAX_MESSAGE_LENGTH);
+
+    substr(m_fill.seq,seq,MAX_MESSAGE_ORDER);
+    (void)remove_trailing_spaces(m_fill.seq);
+    (void)remove_leading_spaces(m_fill.seq);
+
+    // Create a timestamp from the current time
+    strcpy(m_fill.packet_time,get_time(time_data));
+
+    // Go try to add it to our alert_list.  alert_build_list() will
+    // check for duplicates before adding it.
+
+    alert_build_list(&m_fill);
+
+    // This function fills in the Shapefile filename and index
+    // so that we can later draw it.
+    fill_in_new_alert_entries(da, ALERT_MAP_DIR);
+
+    if (debug_level & 1)
+        fprintf(stderr,"alert_data_add end\n");
+
+}   // End of alert_data_add()
  
 
 
@@ -10705,27 +10780,10 @@ else {
         fprintf(stderr,"5\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"NWS-",4) == 0) {             // NWS weather alert
-        long dummy;
 
         //fprintf(stderr,"found NWS: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
 
-
-
-//WE7U
-// NOTE:  This sequence is stupid!  We throw the alert into the
-// message database, and then scan the whole message database for
-// alerts so that we can fill in new entries in our alert_list.
-// Instead we need to skip the message database part altogether and
-// just throw the alert onto the alert_list, then set variables so
-// that we'll do a display update soon.
-// Make sure that we don't add duplicate alerts to the list.
-        (void)msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from,&dummy);
-        (void)alert_message_scan();
-        // This function fills in the Shapefile filename and index
-        // so that we can later draw it.
-        fill_in_new_alert_entries(da, ALERT_MAP_DIR);
-
-
+        (void)alert_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
 
         done = 1;
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...
@@ -10747,27 +10805,10 @@ else {
         fprintf(stderr,"6a\n");
     //--------------------------------------------------------------------------
     if (!done && strncmp(addr,"SKY",3) == 0) {  // NWS weather alert additional info
-        long dummy;
 
         //fprintf(stderr,"found SKY: |%s| |%s| |%s|\n",addr,message,msg_id);      // could have sort of line number
 
-
-
-//WE7U
-// NOTE:  This sequence is stupid!  We throw the alert into the
-// message database, and then scan the whole message database for
-// alerts so that we can fill in new entries in our alert_list.
-// Instead we need to skip the message database part altogether and
-// just throw the alert onto the alert_list, then set variables so
-// that we'll do a display update soon.
-// Make sure that we don't add duplicate alerts to the list.
-        (void)msg_data_add(addr,call,message,msg_id,MESSAGE_NWS,from,&dummy);
-        (void)alert_message_scan();
-        // This function fills in the Shapefile filename and index
-        // so that we can later draw it.
-        fill_in_new_alert_entries(da, ALERT_MAP_DIR);
-
-
+        (void)alert_data_add(addr,call,message,msg_id,MESSAGE_NWS,from);
 
         done = 1;
         if (operate_as_an_igate>1 && from==DATA_VIA_NET && !is_my_call(call,1)) { // { for my editor...

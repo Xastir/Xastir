@@ -10499,6 +10499,12 @@ void draw_map (Widget w, char *dir, char *filenm, alert_entry * alert,
 // the alert structure with the filename that alert is found in.
 // For alerts we're not drawing the maps, we're just computing the
 // full filename for the alert and filling that struct field in.
+//
+// The "warn" parameter specifies whether to warn the operator about
+// the alert on the console as well.  If it was received locally or
+// via local RF, then the answer is yes.  The severe weather may be
+// nearby.
+//
 /////////////////////////////////////////////////////////////////////
 void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int warn, int destination_pixmap) {
     struct dirent *dl = NULL;
@@ -10657,6 +10663,8 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                 dm = opendir (dir);
                 if (!dm) {  // Couldn't open directory
                     xastir_snprintf(fullpath, sizeof(fullpath), "aprsmap %s", dir);
+                    // If local alert, warn the operator via the
+                    // console as well.
                     if (warn)
                         perror (fullpath);
                 }
@@ -11988,11 +11996,16 @@ void fill_in_new_alert_entries(Widget w, char *dir) {
             // draw_map() function called by map_search just
             // fills in the filename field in the struct and
             // exits.
+            //
+            // The "warn" parameter (next to last) specifies whether
+            // to dump warnings out to the console as well.  If the
+            // warning was received on local RF or locally, warn the
+            // operator (the weather must be near).
             map_search (w,
                 alert_scan,
                 &alert_list[ii],
                 &alert_count,
-                (int)(alert_status[ii + 2] == DATA_VIA_TNC || alert_status[ii + 2] == DATA_VIA_LOCAL),
+                (int)alert_list[ii].flags[1],
                 DRAW_TO_PIXMAP_ALERTS);
 
             //fprintf(stderr,"Title1:%s\n",alert_list[ii].title);

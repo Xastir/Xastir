@@ -75,23 +75,6 @@
 // is computed from "to" and/or "alert_tag".
 //
 //
-// Global alert_status string contains three characters for each alert.
-// These contain the first two characters of the title, and then 0
-// or 1 for the source of the alert (DATA_VIA_TNC or
-// DATA_VIA_LOCAL).  The first two characters were once used to add
-// on to the end of the path ("/usr/local/xastir/Counties/") to come
-// up with the State subdirectory to search for this map file
-// ("/usr/local/xastir/Counties/MS").  See maps.c:load_alert_maps().
-// These two characters are no longer used since we switched to
-// Shapefile maps for weather alerts.
-//
-// When converting to using Shapefile maps, we could either save the
-// shapefile designator in this same global alert_status string, or we
-// could compute it on the fly from the data.  Perhaps we could
-// compute it on the fly if the variable in the struct was empty,
-// then fill it in after the first search so that we didn't have to
-// look it up again for later display.
-//
 // Stuff from Dale, paraphrased by Curt:
 //
 // WATCH - weather of some type is possible or probable for a geographic 
@@ -315,15 +298,12 @@
 alert_entry *alert_list = NULL;
 static int alert_list_count = 0;           // Count of active alerts
 int alert_max_count = 0;     // Alerts we've allocated space for
-char *alert_status = NULL;
-static int alert_status_size = 0;
 int alert_redraw_on_update = 0;
 
 
 
 
 
-//
 // normal_title()
 //
 // Function to convert "County Warning Area" to "CWA" in a string.
@@ -368,7 +348,6 @@ void normal_title(char *incoming_title, char *outgoing_title) {
 
 
 
-//
 // alert_print_list()
 //
 // Debug routine.  Currently attached to the Test() function in
@@ -416,7 +395,6 @@ void alert_print_list(void) {
 
 
 
-//
 // alert_active_count()
 //
 // Returns the quantity of active alerts
@@ -434,7 +412,6 @@ static time_t last_alert_expire = 0;
 
 
 
-//
 // alert_expire()
 //
 // Delete stored alerts that have expired, by zeroing the title
@@ -488,7 +465,6 @@ int alert_expire(void) {
 
 
 
-//
 // alert_add_entry()
 //
 // This function adds a new alert to our alert list.
@@ -586,7 +562,6 @@ int alert_expire(void) {
 
 
 
-//
 // alert_match()
 //
 // Function used for matching on alerts.
@@ -716,7 +691,6 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
 
 
-//
 // alert_update_list()
 //
 // Updates entry in alert_list from new matching alert.  Checks for
@@ -786,13 +760,14 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 
 
 
-//
 // alert_active()
 //
-// Here's where we get rid of expired alerts in the list.
-// Called from alert_compare(), alert_display_request(),
-// alert_on_screen(), alert_build_list(), and alert_message_scan()
-// functions.  Also called from maps.c:load_alert_maps() function.
+// Here's where we get rid of expired alerts in the list.  Called
+// from alert_compare(), alert_display_request(), alert_on_screen(),
+// and alert_build_list() functions.  Also called from
+// maps.c:load_alert_maps() function.
+//
+// Returns the alert level.
 //
 // Alert Match Levels:
 // 0 = ?
@@ -843,7 +818,6 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 
 
 
-//
 // alert_compare()
 //
 // Used by qsort as the compare function in alert_sort_active()
@@ -892,7 +866,6 @@ static int alert_compare(const void *a, const void *b) {
 
 
 
-//
 // alert_sort_active()
 //
 // This sorts the alert_list so that the active items are at the
@@ -917,7 +890,6 @@ void alert_sort_active(void) {
 
 
 
-//
 // alert_display_request()
 //
 // Function which checks whether an alert should be displayed.
@@ -955,7 +927,6 @@ int alert_display_request(void) {
 
 
 
-//
 // alert_on_screen()
 //
 // Returns a count of active weather alerts in the list which are
@@ -983,13 +954,12 @@ int alert_on_screen(void) {
 
 
 
-//
 // alert_build_list()
 //
 // This function builds alert_entry structs from message entries that
 // contain NWS alert messages.
 //
-// Called from alert_message_scan() function.
+// Called from alert_data_add() function.
 //
 //
 // Here's how Xastir breaks down an alert into an alert struct:
@@ -1048,7 +1018,7 @@ int alert_on_screen(void) {
 //
 //
 //
-static void alert_build_list(Message *fill) {
+void alert_build_list(Message *fill) {
     alert_entry entry[5], *list_ptr;    // We might need up to five structs to split
                                         // up a message into individual map areas.
 
@@ -1494,99 +1464,6 @@ static void alert_build_list(Message *fill) {
         }
         fill->active = RECORD_CLOSED;
     }
-}
-
-
-
-
-
-//
-// alert_message_scan()
-//
-// This function scans the message list to find new alerts.  It adds
-// non-expired alerts to our alert list via the alert_build_list()
-// function.  It also builds the alert_status string which contains
-// three characters per alert, and the on-screen status of each.
-//
-// Called from db.c:decode_message() function when a new alert is
-// received, and from maps.c:load_alert_maps() function.
-//
-// It returns the string length of the global alert_status variable.
-// Divide this by 3 and we know the number of alerts that we have.
-//
-int alert_message_scan(void) {
-    char *a_ptr;
-    int i, j;
-
-
-    if (debug_level & 2)
-        fprintf(stderr,"alert_message_scan\n");
-
-    // This is the shorthand way we keep track of which state's we just got alerts for.
-    // Looks like "CO?MO?ID?". The 3rd position is to indicate if the alert came via local or
-    // from the TNC. If there is an unresolved alert then a message is sent to console.
-    // This is a text string with 3 chars per alert.  We allocate 21
-    // chars here initially, enough for seven alerts.
-    if (!alert_status) {
-        alert_status = malloc(21);
-        alert_status_size = 21;
-    }
-
-    // Mark active/inactive alerts as such
-    for (i = 0; i < alert_max_count; i++)
-        (void)alert_active(&alert_list[i], ALERT_ALL);
-
-    // Scan the message list for alerts, add new ones to our alert list.
-    // This calls alert_build_list() function for each message found.
-    mscan_file(MESSAGE_NWS, alert_build_list);
-
-    // Blank out the alert status
-    *alert_status = '\0';
-
-    // Rebuild the global alert_status string for the current alerts
-    for (j = 0; j < alert_max_count; j++) {
-
-        if (alert_list[j].flags[0] == '?') {    // On-screen status not known yet
-
-            // Look through global alert_status string looking for a
-            // match.
-            for (i = 0; i < (int)strlen(alert_status); i += 3) {
-                // If first 2 chars of title match
-                if (strncmp(&alert_status[i], alert_list[j].title, 2) == 0) {
-                    if (alert_list[j].flags[1]==DATA_VIA_TNC || alert_list[j].flags[1]==DATA_VIA_LOCAL) {
-                        // Set the 3rd char to DATA_VIA_TNC or DATA_VIA_LOCAL
-                        alert_status[i+2] = alert_list[j].flags[1];
-                    }
-                    break;
-                }
-            }
-
-            // If global alert_status string isn't long enough,
-            // allocate some more space.
-            if (i == (int)strlen(alert_status)) {
-                if (i+4 >= alert_status_size) {
-                    a_ptr = realloc(alert_status, (size_t)(alert_status_size+21) );
-                    if (a_ptr) {
-                        alert_status = a_ptr;
-                        alert_status_size += 21;
-                    }
-                }
-                // Add new 3-character string to end of global
-                // alert_status
-                if (i+4 < alert_status_size) {
-                    a_ptr = &alert_status[i];
-                    if (alert_list[j].title[0] && alert_list[j].title[1]) {
-                        *a_ptr++ = alert_list[j].title[0];
-                        *a_ptr++ = alert_list[j].title[1];
-                        *a_ptr++ = alert_list[j].flags[1];
-                    }
-                    // Terminate the alert_status string
-                    *a_ptr = '\0';
-                }
-            }
-        }
-    }
-    return ( (int)strlen(alert_status) );
 }
 
 

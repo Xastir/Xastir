@@ -38,6 +38,7 @@ typedef enum {
 
 #define ALERT_ALL ALERT_FROM
 
+
 typedef struct {
     double top_boundary, left_boundary, bottom_boundary, right_boundary;
     time_t expiration;  // In local time (secs since epoch)
@@ -62,9 +63,9 @@ typedef struct {
     char desc3[68];     //
 } alert_entry;
 
+
 extern alert_entry *alert_list;
 extern int alert_max_count;
-extern char *alert_status;
 
 extern void alert_update_list(alert_entry * alert, alert_match_level match_level);
 extern void alert_print_list(void);
@@ -72,10 +73,10 @@ extern void alert_sort_active(void);
 extern int alert_active(alert_entry *alert, alert_match_level match_level);
 extern int alert_display_request(void);
 extern int alert_on_screen(void);
-extern int alert_message_scan(void);
 extern int alert_redraw_on_update;
 extern int alert_expire(void);
 extern int alert_active_count(void);
+extern void alert_build_list(Message *fill);
 
 #endif /* __XASTIR_ALERT_H */
 
