@@ -28,6 +28,26 @@
  * Alan Crosswell, n2ygk@weca.org
  *
  */
+
+
+//
+// Functions which allocate memory:
+// --------------------------------
+// dbfawk_field_list
+// dbfawk_load_sigs
+// dbfawk_find_sig
+// dbfawk_parse_record (indirectly)
+//
+// Functions which free memory:
+// ----------------------------
+// dbfawk_free_info
+// dbfawk_load_sigs
+// dbfawk_free_sig
+// dbfawk_free_sigs
+// dbfawk_find_sig
+//
+
+
 #include "config.h"
 #if defined(WITH_DBFAWK) && defined(HAVE_LIBSHP) && defined(HAVE_LIBPCRE)
 #include <stdio.h>
@@ -217,7 +237,11 @@ dbfawk_sig_info *dbfawk_load_sigs(const char *dir, /* directory path */
 //WE7U2
 // Calls awk_eval_expr (eventually), which can allocate new memory
                 awk_exec_begin(i->prog); 
+
+//WE7U2
+// strdup allocates memory
                 i->sig = strdup(dbfinfo);
+
 //WE7U2
 // Does some free's
                 awk_uncompile_program(i->prog);
