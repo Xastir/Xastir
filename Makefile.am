@@ -15,12 +15,11 @@ SUBDIRS = src m4 config help scripts symbols callpass
 # DISTCLEANFILES = intl/libintl.h
 
 EXTRA_DIST = xastir.spec.in xastir.spec config.guess config.sub install-sh \
-        missing mkinstalldirs placeholder FAQ LICENSE README \
-        README.CVS README.MAPS README.win32 DEBUG_LEVELS \
+        missing mkinstalldirs placeholder FAQ LICENSE README README.CVS \
+        README.Getting-Started README.MAPS README.win32 DEBUG_LEVELS \
         bootstrap.sh INSTALL UPGRADE xastir.1 terraserver.geo \
-        toposerver.geo tigermap.geo USRadar.geo \
-        CanadaTopo250k.geo CanadaTopo50k.geo \
-        Davis
+        toposerver.geo tigermap.geo USRadar.geo CanadaTopo250k.geo \
+        CanadaTopo50k.geo Davis
 
 MAINTAINERCLEANFILES = configure aclocal.m4 Makefile.in Makefile \
         config.guess config.sub install-sh missing mkinstalldirs \
@@ -49,7 +48,8 @@ sound_DATA=placeholder
 
 docdir=${pkgdatadir}/doc
 doc_DATA=AUTHORS FAQ ChangeLog LICENSE README README.CVS \
-        README.MAPS README.win32 COPYING INSTALL UPGRADE
+        README.MAPS README.win32 COPYING INSTALL UPGRADE \
+        README.Getting-Started
 
 mandir=${prefix}/man
 man_MANS=xastir.1
