@@ -7,9 +7,9 @@ License   : GPL
 Group     : Applications/Networking
 Packager  : cbyam@virginia.edu
 # Icon    : src/@PACKAGE@.xpm
-Source    : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-@VERSION@.tar.gz
+Source    : http://prdownloads.sourceforge.net/@PACKAGE@/@PACKAGE@-@VERSION@.tgz
 URL       : http://www.xastir.org
-BuildRoot : %{_tmppath}/%{name}-root
+BuildRoot : %{_tmppath}/%{name}-buildroot
 Requires  : /usr/X11R6/include/Xm/Xm.h
 
 %description
@@ -28,75 +28,55 @@ software.
 make
 
 %install
-rm -rf %{buildroot}
+rm -rf %{RPM_BUILD_ROOT}
 %makeinstall
-gzip -9nf xastir.1
-cp xastir.1.gz %{buildroot}/usr/man/man1
 
 %clean
-rm -rf %{buildroot}
+rm -rf %{RPM_BUILD_ROOT}
 
 %files
 %defattr(-,root,root)
-%attr(4555,root,root) /usr/local/bin/xastir
-/usr/local/bin/Coordinate.pm
-/usr/local/bin/callpass
-/usr/local/bin/coord-convert.pl
-/usr/local/bin/fcc-get
-/usr/local/bin/icontable.pl
-/usr/local/bin/inf2geo.pl
-/usr/local/bin/mapblast2geo.pl
-/usr/local/bin/mapfgd.pl
-/usr/local/bin/permutations.pl
-/usr/local/bin/track-get.pl
-/usr/local/bin/update_langfile.pl
-/usr/local/bin/waypoint-get.pl
-/usr/local/xastir/config/language-Dutch.sys
-/usr/local/xastir/config/language-English.sys
-/usr/local/xastir/config/language-French.sys
-/usr/local/xastir/config/language-German.sys
-/usr/local/xastir/config/language-Italian.sys
-/usr/local/xastir/config/language-Portuguese.sys
-/usr/local/xastir/config/language-Spanish.sys
-/usr/local/xastir/config/tnc-startup.aea
-/usr/local/xastir/config/tnc-startup.kam
-/usr/local/xastir/config/tnc-startup.kpc3
-/usr/local/xastir/config/tnc-startup.pico
-/usr/local/xastir/config/tnc-startup.sys
-/usr/local/xastir/config/tnc-startup.thd7
-/usr/local/xastir/config/tnc-stop.sys
-/usr/local/xastir/config/xastir.rgb
-/usr/local/xastir/Counties/placeholder
-/usr/local/xastir/GNIS/placeholder
-/usr/local/xastir/doc/AUTHORS
-/usr/local/xastir/doc/ChangeLog
-/usr/local/xastir/doc/COPYING
-/usr/local/xastir/doc/FAQ
-/usr/local/xastir/doc/LICENSE
-/usr/local/xastir/doc/README.1ST
-/usr/local/xastir/fcc/placeholder
-/usr/local/xastir/help/help-Dutch.dat
-/usr/local/xastir/help/help-English.dat
-/usr/local/xastir/help/help-French.dat
-/usr/local/xastir/help/help-German.dat
-/usr/local/xastir/help/help-Italian.dat
-/usr/local/xastir/help/help-Portuguese.sys
-/usr/local/xastir/help/help-Spanish.dat
-/usr/local/xastir/maps/placeholder
-/usr/local/xastir/maps/GPS/placeholder
-/usr/local/xastir/sounds/placeholder
-/usr/local/xastir/symbols/symbols.dat
-/usr/local/xastir/symbols/13pct.xbm
-/usr/local/xastir/symbols/25pct.xbm
-/usr/local/xastir/symbols/2x2.xbm
-/usr/local/xastir/symbols/alert.xbm
-/usr/local/xastir/symbols/flood.xbm
-/usr/local/xastir/symbols/snow.xbm
-/usr/local/xastir/symbols/tornado.xbm
-/usr/local/xastir/symbols/wind.xbm
-/usr/local/xastir/symbols/winter_wx.xbm
-/usr/local/xastir/symbols/wntr_strm.xbm
-/usr/man/man1/xastir.1.gz
+
+# Documents:  Go into special doc area
 %doc AUTHORS ChangeLog COPYING DEBUG_LEVELS FAQ INSTALL
-%doc LICENSE NEWS README README.1ST README.win32 TODO UPDATES
+%doc LICENSE NEWS README README.1ST TODO
+#%doc UPDATES
+
+# One file with special permissions
+%attr(4555,root,root) %{_prefix}/bin/xastir
+
+# Individual files
+%{_prefix}/bin/Coordinate.pm
+%{_prefix}/bin/callpass
+%{_prefix}/bin/coord-convert.pl
+%{_prefix}/bin/fcc-get
+%{_prefix}/bin/icontable.pl
+%{_prefix}/bin/inf2geo.pl
+%{_prefix}/bin/mapblast2geo.pl
+%{_prefix}/bin/mapfgd.pl
+%{_prefix}/bin/permutations.pl
+%{_prefix}/bin/track-get.pl
+%{_prefix}/bin/update_langfile.pl
+%{_prefix}/bin/waypoint-get.pl
+
+# Entire directory
+#%{_prefix}/man/
+
+# Individual files
+%{_prefix}/man/man1/xastir.1.gz
+
+# Entire directories
+%{_prefix}/%{name}/Counties/
+#%{_prefix}/%{name}/GNIS/
+%{_prefix}/%{name}/config/
+%{_prefix}/%{name}/fcc/
+%{_prefix}/%{name}/help/
+
+# One directory w/special permissions
+%attr(666,root,root) %{_prefix}/%{name}/maps/GPS
+
+# Entire directories
+%{_prefix}/%{name}/sounds/
+%{_prefix}/%{name}/symbols/
+
 
