@@ -7098,7 +7098,7 @@ void da_input(Widget w, XtPointer client_data, XtPointer call_data) {
                     // For this function we need to:
                     //      Determine which icon is closest to the mouse pointer press position.
                     //          We'll use Station_info to select the icon for us.
-                    //      Compute the lat/lon of the the mouse pointer release position.
+                    //      Compute the lat/lon of the mouse pointer release position.
                     //      Put the new value of lat/lon into the object data.
                     //      Cause symbols to get redrawn.
 

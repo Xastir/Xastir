@@ -1215,7 +1215,7 @@ char *process_ax25_packet(unsigned char *bp, unsigned int len, char *buffer) {
         return(NULL);
 
     if(*bp != (unsigned char)0xF0)
-        return(NULL); /* check the the PID */
+        return(NULL); /* check the PID */
 
     bp++;
     len--;
