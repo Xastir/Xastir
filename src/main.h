@@ -70,7 +70,6 @@ extern FILE *read_file_ptr;
 #define MAX_COMMENT 80
 
 #define MAX_UNPROTO 100
-#define MAX_LINE_SIZE 300
 
 #define MAX_TNC_CHARS 128
 #define MAX_NET_CHARS 128

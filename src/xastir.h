@@ -184,7 +184,10 @@ extern void Jump_location(Widget w, XtPointer clientData, XtPointer callData);
 extern void map_pos(long mid_y, long mid_x, long sz);
 extern char locate_gnis_filename[200];
 
-#define MAX_LINE_SIZE 300
+// This needs to be quite long for some of the weather station
+// serial data to get through ok (Peet Bros U2k Complete Record Mode
+// for one).
+#define MAX_LINE_SIZE 512
 
 // from map.c
 extern double calc_dscale_x(long x, long y);
