@@ -435,6 +435,7 @@ void wgs84_datum_shift(short fromWGS84, double *latitude, double *longitude, sho
 
 
 
+//WE7U
 // Does not currently handle UPS coordinates (N/S pole regions).
 //
 /*
@@ -496,31 +497,61 @@ void ll_to_utm(short ellipsoidID, const double lat, const double lon,
         utm_letter_designator(lat, lon));
     eccPrimeSquared = (eccSquared)/(1-eccSquared);
 
-    N = a/sqrt(1-eccSquared*sin(LatRad)*sin(LatRad));
-    T = tan(LatRad)*tan(LatRad);
-    C = eccPrimeSquared*cos(LatRad)*cos(LatRad);
-    A = cos(LatRad)*(LongRad-LongOriginRad);
+    
+    if (lat > 84.0 || lat < -80.0) {
+        //
+        // We're dealing with UPS coordinates (near the poles)
+        //
+        double R;   // Radius of the parallel of latitude from the pole
+        double k0pole = 0.994;  // Scale factor at the poles
+        double z;   // Isometric colatitude = 90 minus isometric latitude
 
-    M = a*((1 -
-        eccSquared/4 -
-        3*eccSquared*eccSquared/64 -
-        5*eccSquared*eccSquared*eccSquared/256) * LatRad -
-        (3*eccSquared/8 +
-        3*eccSquared*eccSquared/32 +
-        45*eccSquared*eccSquared*eccSquared/1024) * sin(2*LatRad) +
-        (15*eccSquared*eccSquared/256 + 45*eccSquared*eccSquared*eccSquared/1024) * sin(4*LatRad) -
-        (35*eccSquared*eccSquared*eccSquared/3072) * sin(6*LatRad));
+//WE7U
+//        R = k0pole * Co * tan(z/2);
 
-    *utmEasting = (double)(k0*N*(A+(1-T+C)*A*A*A/6
-                    + (5-18*T+T*T+72*C-58*eccPrimeSquared)*A*A*A*A*A/120)
-                    + 500000.0);
+//fprintf(stderr,"Computing UPS Coordinate\n");
+        if (lat > 84.0) {
+//            *utmNorthing = (double)(2000000 - (R * cos(lon)) );
+        }
+        else {
+//            *utmNorthing = (double)(2000000 + (R * cos(lon)) );
+        }
+//        *utmEasting = (double)(2000000 + (R * sin(lon)) );
 
-    *utmNorthing = (double)(k0*(M+N*tan(LatRad)*
-                    (A*A/2+(5-T+9*C+4*C*C)*A*A*A*A/24
-                    + (61-58*T+T*T+600*C-330*eccPrimeSquared)*A*A*A*A*A*A/720)));
+*utmNorthing = (double)(0);
+*utmEasting = (double)(0);
 
-    if (lat < 0)
-        *utmNorthing += 10000000.0; //10000000 meter offset for southern hemisphere
+    }
+    else {
+        //
+        // We're dealing with UTM coordinates
+        //
+        N = a/sqrt(1-eccSquared*sin(LatRad)*sin(LatRad));
+        T = tan(LatRad)*tan(LatRad);
+        C = eccPrimeSquared*cos(LatRad)*cos(LatRad);
+        A = cos(LatRad)*(LongRad-LongOriginRad);
+
+        M = a*((1 -
+            eccSquared/4 -
+            3*eccSquared*eccSquared/64 -
+            5*eccSquared*eccSquared*eccSquared/256) * LatRad -
+            (3*eccSquared/8 +
+            3*eccSquared*eccSquared/32 +
+            45*eccSquared*eccSquared*eccSquared/1024) * sin(2*LatRad) +
+            (15*eccSquared*eccSquared/256 + 45*eccSquared*eccSquared*eccSquared/1024) * sin(4*LatRad) -
+            (35*eccSquared*eccSquared*eccSquared/3072) * sin(6*LatRad));
+
+        *utmEasting = (double)(k0*N*(A+(1-T+C)*A*A*A/6
+            + (5-18*T+T*T+72*C-58*eccPrimeSquared)*A*A*A*A*A/120)
+            + 500000.0);
+
+        *utmNorthing = (double)(k0*(M+N*tan(LatRad)*
+            (A*A/2+(5-T+9*C+4*C*C)*A*A*A*A/24
+            + (61-58*T+T*T+600*C-330*eccPrimeSquared)*A*A*A*A*A*A/720)));
+
+        if (lat < 0)
+            *utmNorthing += 10000000.0; //10000000 meter offset for southern hemisphere
+    }
 }
 
 
