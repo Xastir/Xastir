@@ -5655,11 +5655,6 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             }
 
                         case DEVICE_AX25_TNC:
-                            // For KISS and AX.25 ports:  See if
-                            // we're supposed to relay digipeat the
-                            // packet
-                            relay_digipeat(incoming_data, data_port);
-
 
                         case DEVICE_SERIAL_TNC:
                             if (log_tnc_data)

@@ -10240,29 +10240,182 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
 // receives the packet.  There we'd have access to every digipeated
 // bit directly instead of parsing asterisks out of a string.
 //
-void relay_digipeat(char *line, int port) {
+// NOTE:  We don't handle the case properly of multiple RELAY's or
+// multiple my_callsign's in the path.
+//
+void relay_digipeat(char *call, char *path, char *info, int port) {
+    char new_path[110+1];
+    char *short_path;
+    char *r_ptr;
+    char *c_ptr;
+    char *a_ptr;
+    char *temp_ptr;
+    int ok;
+    char destination[MAX_CALLSIGN+1];
 
-    if ( (devices[port].device_type != DEVICE_SERIAL_KISS_TNC)
-            && (devices[port].device_type != DEVICE_AX25_TNC)) {
-        return;
-    }
- 
+
+    // Check whether relay_digipeat has been enabled for this interface.
+    // If not, get out while the gettin's good. 
     if (devices[port].relay_digipeat != 1) {
         return;
     }
 
-    printf("Soon we may have code in place to RELAY this packet: %s\n",
-        line);
+    // Check for the only two types of interfaces where we might want to
+    // do RELAY digipeating.  If not one of these, go bye-bye.
+    if ( (devices[port].device_type != DEVICE_SERIAL_KISS_TNC)
+            && (devices[port].device_type != DEVICE_AX25_TNC)) {
+        return;
+    }
 
-    // Scan for "RELAY" and "mycall" in the string.  Make sure it's
-    // not "RELAY*" or "mycall*".  Do we also need to check
+    // Skip the first call in the path.  That's the destination call and
+    // we don't want to look for RELAY or my_callsign there.
+    short_path = strstr(path,",");
+
+    if (short_path != NULL) {   // If comma found
+
+        // Save the destination callsign away for later
+        strncpy(destination,path,short_path - path);
+        destination[short_path - path] = '\0';  // Terminate it
+
+        short_path++;   // Increment past the comma
+    }
+    else {  // No digipeaters listed
+        strcpy(destination,path);
+    }
+
+    //printf("Destination: %s\n",destination);
+
+    // Check to see if we just ran out of path
+    if (short_path == NULL || short_path[0] == '\0') {
+        return;
+    }
+
+    //printf("      Path: %s\n",path);
+    //printf("Short_path: %s\n",short_path);
+
+
+    // Check for RELAY or my_callsign in the string.  If neither one
+    // found then exit this routine, else we have more checking to do to
+    // see where they are and whether the packet has been digipeated
+    // through that callsign (or a later one).
+    if ( (r_ptr = strstr(short_path,"RELAY")) != NULL) {
+//        if ( (r_ptr = strstr(short_path,"SOMTN")) != NULL) {  // DEBUG STATEMENT
+        //printf("*** FOUND RELAY: ", short_path);
+    }
+
+    if ( (c_ptr = strstr(short_path,my_callsign)) != NULL) {
+        // Note that my_callsign is in all caps already
+        //printf("*** FOUND MY CALLSIGN: ", short_path);
+    }
+
+    // Check whether either RELAY or my_callsign were found
+    if (c_ptr == NULL && r_ptr == NULL) {   // Nope, neither one found
+        //printf("Nothing to see here folks, move along: %s\n", short_path);
+        return;
+    }
+
+    // At this point we _might_ have a packet worthy of digipeating.  We
+    // need to check that we don't have an asterisk later in the path.
+
+    // Find the asterisk characters in the path.  We need to find the
+    // last one, then figure out whether c_ptr or r_ptr are after it.
+    temp_ptr = strstr(short_path,"*");
+    a_ptr = temp_ptr;
+    while (temp_ptr != NULL) {
+        a_ptr = temp_ptr;
+        temp_ptr = strstr(a_ptr+1,"*");
+    }
+    // Now a_ptr should be pointing at the very last asterisk or should
+    // be NULL
+
+    ok = 0;
+    if (a_ptr != NULL) {    // We have an asterisk
+        if (r_ptr != NULL && r_ptr > a_ptr) {
+            // RELAY comes after the asterisk
+            ok = 1;
+        }
+        if (c_ptr != NULL && c_ptr > a_ptr) {
+            // my_callsign comes after the asterisk
+            ok = 1;
+        }
+    }
+    else {  // No asterisk found, so we're safe so far
+        ok = 1;
+    }
+
+    if (!ok) {
+        //printf("Used up digi: %s\n", short_path);
+        return;
+    }
+
+
+    // Ok, we made it!  We have either a RELAY or a my_callsign that has
+    // not been digipeated through, and we wish to change that fact.  We
+    // need to do a callsign substitution if it's RELAY.  Add an
+    // asterisk to the end of the call in any case.  Also need to fix up
+    // the transmit routine so that it'll set the digipeated bit for
+    // each callsign that has an asterisk.
+    new_path[0] = '\0';
+
+    // Three cases: RELAY found, my_callsign found, or both found
+    if (r_ptr != NULL && c_ptr != NULL) {   // Both found
+        // Figure out which one comes first
+        if (c_ptr < r_ptr) {    // my_callsign is first
+            strncat(new_path,short_path,c_ptr - short_path);// Prefix
+            strcat(new_path,my_callsign);                   // Callsign substitution
+            strcat(new_path,"*");                           // Has been digipeated
+            strcat(new_path,c_ptr + strlen(my_callsign) );  // Suffix
+        }
+        else {  // RELAY is first
+            strncat(new_path,short_path,r_ptr - short_path);// Prefix
+            strcat(new_path,my_callsign);                   // Callsign substitution
+            strcat(new_path,"*");                           // Has been digipeated
+            strcat(new_path,r_ptr + strlen("RELAY") );      // Suffix
+        }
+    }
+    else if (c_ptr != NULL) {
+        strncat(new_path,short_path,c_ptr - short_path);    // Prefix
+        strcat(new_path,my_callsign);                       // Callsign substitution
+        strcat(new_path,"*");                               // Has been digipeated
+        strcat(new_path,c_ptr + strlen(my_callsign) );      // Suffix
+ 
+    }
+    else if (r_ptr != NULL) {
+        strncat(new_path,short_path,r_ptr - short_path);    // Prefix
+        strcat(new_path,my_callsign);                       // Callsign substitution
+        strcat(new_path,"*");                               // Has been digipeated
+        strcat(new_path,r_ptr + strlen("RELAY") );          // Suffix
+    }
+    else {  // Something's wrong here.  Exit
+        return;
+    }
+
+    if (devices[port].device_type == DEVICE_SERIAL_KISS_TNC) {
+        //printf("KISS RELAY short_path: %s\n", short_path);
+        //printf("KISS RELAY   new_path: %s\n", new_path);
+
+//WE7U
+//        send_ax25_frame(port, call, destination, new_path, info);
+
+    }
+    else if (devices[port].device_type == DEVICE_AX25_TNC) {
+        printf("AX25 RELAY: Coming soon to an Xastir near you: %s\n", short_path);
+    }
+
+
+    // Scan for "RELAY" and "my_callsign" in the string.  Make sure it's
+    // not "RELAY*" or "my_callsign*".  Do we also need to check
     // callsigns after it for '*' characters?  If "RELAY" or
-    // "mycall" is found, substitute "mycall*" in the string and
+    // "my_callsign" is found, substitute "my_callsign*" in the string and
     // retransmit it out the same interface.
     //
     // We could also do premptive digipeating here and skip over
     // callsigns that haven't been digipeated yet.  Should we set
     // the digipeated bits on everything before it?  Probably.
+
+// Example:
+//K7FZO>APW251,SEATAC*,WIDE4-1:=4728.00N/12140.83W;PHG3030/Middle Fork Snoqualmie River -251-<630>
+
 }
  
 
@@ -10360,6 +10513,11 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     }
 
     if (ok) {
+
+//WE7U
+        // Attempt to digipeat this packet if we should
+        relay_digipeat(call_sign, path, info, port);
+ 
         extract_TNC_text(info);                 // extract leading text from TNC X-1J4
         if (strlen(info) > 256)                 // first check if information field conforms to APRS specs
             ok = 0;                             // drop packets too long
