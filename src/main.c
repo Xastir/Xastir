@@ -9518,28 +9518,6 @@ void map_index_update_selected(char *filename, int selected) {
 
 
 
-/*
-//WE7U
-// Get the map_layer and draw_filled parameters from the in-memory
-// map index based.
-void map_index_fetch_parameters(char *filename, int selected) {
-    map_index_record *current = map_index_head;
-
-    while (current != NULL) {
-        if (strcmp(current->filename,filename) == 0) {
-            // Found a match.  Update the field and return.
-            current->selected = selected;
-            return;
-        }
-        current = current->next;
-    }
-}
-*/
-
-
-
-
-
 //WE7U
 // Allows setting map layer and filled polygon properties for maps
 // selected in the map chooser.  Show a warning or bring up a
@@ -9566,28 +9544,46 @@ void map_properties( /*@unused@*/ Widget widget, XtPointer clientData, /*@unused
                XmNitems,&list,
                NULL);
 
-    // Run through the list, updating the equivalent entries in the
-    // in-memory map index.  If we're in "directory" mode we'll only
-    // update the directory entries.  Same for "file" mode, we'll
-    // only tweak the file entries.
-    // The end result is that both directories and files may be
-    // selected, not either/or as the code was written earlier.
+    // Run through the list, snagging the map_layer min/max and
+    // draw_filled min/max for all selected maps.
     for(x=1; x<=i;x++) {
         if (XmListPosSelected(map_list,x)) {
             if (XmStringGetLtoR(list[(x-1)],XmFONTLIST_DEFAULT_TAG,&temp)) {
-                // Update this file or directory in the in-memory map
-                // index, setting/resetting the "selected" field as
-                // appropriate.
+                unsigned long bottom,top,left,right;
+                int map_layer,draw_filled;
+
+                // We now have the filename for a selected map.
+                // Look it up in the map index to get the
+                // parameters for it.
+                index_retrieve(temp,
+                    &bottom,
+                    &top,
+                    &left,
+                    &right,
+                    &map_layer,
+                    &draw_filled);
+
+printf("Layer:%05d, Filled:%01d, %s\n",map_layer,draw_filled,temp);
+
 //                map_index_update_selected(temp,
 //                    XmListPosSelected(map_list,x));
-printf("%s\n",temp);
+//printf("%s\n",temp);
                 XtFree(temp);
             }
         }
     }
 
-//map_layer
-//draw_filled
+    // If the map_layer is a range of values, inform the user here
+    // via a popup, so that they don't make a mistake and change too
+    // many different types of maps to the same map layer.
+
+    // We could either show all maps here and allow changing each
+    // one, or just show min/max map_layer draw_filled properties
+    // for the maps selected in the Map Chooser.
+
+    // Create the properties dialog.  Show the map_layer and
+    // draw_filled properties for the maps.
+
 }
 
 
