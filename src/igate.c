@@ -970,7 +970,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                         // unproto_igate path
                         output_my_data(line,x,0,0,1,NULL);
 
-fprintf(stderr, "Igating->RF: %s\n", line);
+//fprintf(stderr, "Igating->RF: %s\n", line);
 
 begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
 
