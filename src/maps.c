@@ -4414,9 +4414,16 @@ void Print_window( Widget widget, XtPointer clientData, XtPointer callData ) {
     // Get my login name
     strcpy(username,user_info->pw_name);
 
-    xastir_snprintf(xpm_filename, sizeof(xpm_filename), "/var/tmp/xastir_%s_print.xpm",
-            username);
-    xastir_snprintf(ps_filename, sizeof(ps_filename), "/var/tmp/xastir_%s_print.ps",
+    xastir_snprintf(xpm_filename,
+        sizeof(xpm_filename),
+        "%s/xastir_%s_print.xpm",
+        get_user_base_dir("tmp"),
+        username);
+
+    xastir_snprintf(ps_filename,
+        sizeof(ps_filename),
+        "%s/xastir_%s_print.ps",
+        get_user_base_dir("tmp"),
         username);
 
     busy_cursor(appshell);  // Show a busy cursor while we're doing all of this
@@ -5185,10 +5192,17 @@ static void* snapshot_thread(void *arg) {
     // Get my login name
     strcpy(username,user_info->pw_name);
 
-    xastir_snprintf(xpm_filename, sizeof(xpm_filename), "/var/tmp/xastir_%s_snap.xpm",
-            username);
-    xastir_snprintf(png_filename, sizeof(png_filename),"/var/tmp/xastir_%s_snap.png",
-            username);
+    xastir_snprintf(xpm_filename,
+        sizeof(xpm_filename),
+        "%s/xastir_%s_snap.xpm",
+        get_user_base_dir("tmp"),
+        username);
+
+    xastir_snprintf(png_filename,
+        sizeof(png_filename),
+        "%s/xastir_%s_snap.png",
+        get_user_base_dir("tmp"),
+        username);
 
     if ( debug_level & 512 )
         fprintf(stderr,"Creating %s\n", xpm_filename );
@@ -7023,8 +7037,11 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
         else
             ext = get_map_ext(fileimg); // Use extension to determine image type
 
-        xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s",
-                username,ext);
+        xastir_snprintf(local_filename,
+            sizeof(local_filename),
+            "%s/xastir_%s_map.%s",
+            get_user_base_dir("tmp"),
+            username,ext);
 
 #ifdef HAVE_LIBCURL
         curl = curl_easy_init();
@@ -7779,7 +7796,12 @@ void draw_tiger_map (Widget w) {
           fprintf(stderr,"ftp or http file: %s\n", fileimg);
     }
 
-    xastir_snprintf(local_filename, sizeof(local_filename), "/var/tmp/xastir_%s_map.%s", username,"gif");
+    xastir_snprintf(local_filename,
+        sizeof(local_filename),
+        "%s/xastir_%s_map.%s",
+        get_user_base_dir("tmp"),
+        username,
+        "gif");
 
 #ifdef HAVE_LIBCURL
     curl = curl_easy_init();

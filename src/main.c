@@ -22159,6 +22159,12 @@ int main(int argc, char *argv[]) {
         (void)mkdir(get_user_base_dir("tracklogs"),S_IRWXU);
     }
 
+    if (filethere(get_user_base_dir("tmp")) != 1) {
+        fprintf(stderr,"Making user tmp dir\n");
+        (void)mkdir(get_user_base_dir("tmp"),S_IRWXU);
+    }
+
+
 
     /* done checking user dirs */
 

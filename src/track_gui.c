@@ -405,7 +405,11 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     // Fetch the login name
     strcpy(username,user_info->pw_name);
 
-    xastir_snprintf(log_filename, sizeof(log_filename), "/var/tmp/xastir_%s_map.log", username);
+    xastir_snprintf(log_filename,
+        sizeof(log_filename),
+        "%s/xastir_%s_map.log",
+        get_user_base_dir("tmp"),
+        username);
 
     XmScaleGetValue(posit_start_value , &posit_start);
     XmScaleGetValue(posit_length_value , &posit_length);
