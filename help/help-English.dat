@@ -88,6 +88,13 @@ Tigermaps menu accesable
 Messaging cleanup, no more timed updates; reply-acks
 ImageMagick speedups and correction features
 Compressed objects/items
+SmartBeaconing(tm)
+Memory usage improvments, multiple comments stored
+bulletins bring up dialog
+export waypoints within proximity boundries
+findu train length contols
+view|objects&items
+bulletin popups
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -304,10 +311,11 @@ programs do not decode this format yet.  Currently this only compresses
 area, signpost, or DF objects/items, and won't currently represent
 altitude in "standard" objects/items.
 
-"Transmit Raw WX data", if selected, will also send a packet containing raw
-Weather Station Data. This is useful on ASCII types of WX stations, 
-like Peet Bros. WX stations.
-
+"Enable SmartBeaconing(tm)" This will cause Xastir to transmit positions at
+various rates and locations based on the movement of the station. It creates
+more realistic trails and makes dead-reconing much more accurate. This option
+is only useful in a mobile station with a GPS attached.
+  
 You can also select Altnet and choose an altnet call from this dialog. Altnet 
 allows you to have a private APRS(tm) network among the stations that also
 have altnet configured, and have the same altnet call entered.
@@ -606,7 +614,8 @@ If you are connected with the internet interface, it is a good idea to set the
 range field to a few hundred miles, to ignore posts from other portions of the
 world. "0" in the range field means the entire world. Click the "Change range"
 button to make changes to this field effective. Xastir currently does not
-support sending bulletins.
+support sending bulletins. Incoming bulletins will open this dialog
+automatically.
 
 Incoming packet data
 This displays the incoming data on your TNC or internet interface. The radio
@@ -636,11 +645,16 @@ to least recently heard. It includes the number of packets heard, the time
 the station was last heard, the path that the most recent packet took, the PHG,
 and the comment of the station.
 
+Objects & Items
+This option displays only objects and items. It includes the number of packets
+heard, the time the objects/item was last heard, the path that the most recent
+packet took, the PHG, and the comment of the object/item.
+
 WX stations
-This option displays a table of all the APRS(tm) weather stations and their data.
-Data includes wind course, wind speed, wind gust speed, temperature, humidity,
-barometric pressure, rain in the past hour, rain since midnight, and rain in
-the last 24 hours.
+This option displays a table of all the APRS(tm) weather stations and their
+data. Data includes wind course, wind speed, wind gust speed, temperature,
+humidity, barometric pressure, rain in the past hour, rain since midnight,
+and rain in the last 24 hours.
 
 Own weather data
 Displays your weather data if you have a weather station and have configured
@@ -961,8 +975,8 @@ Track Station
 See the help topic "Tracking a Station"
 
 Fetch Findu Trail
-Downloads historic trail data from findu.com.  Currently set to two weeks
-worth of posits.
+Downloads historic trail data from findu.com. Slider bars control the starting
+point and duration of data downloaded.
 
 Enable Symbols
 Determines if symbols should be drawn on the map. Most of the options below
