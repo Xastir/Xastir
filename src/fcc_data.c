@@ -43,10 +43,10 @@
 
 #include <Xm/XmAll.h>
 
+#include "xastir.h"
 #include "fcc_data.h"
 #include "xa_config.h"
 #include "main.h"
-#include "xastir.h"
 
 
 
@@ -128,7 +128,7 @@ int build_fcc_index(int type){
     /*    write out the current callsign and RBA of the db file         */
     /*    skip (index_skip) records and do it again until no more        */
     /*                                    */
-    strncpy (fccdata," ",sizeof(fccdata));
+    xastir_snprintf(fccdata,sizeof(fccdata)," ");
     while(!feof(fdb)) {
         call_offset = (unsigned long)ftell(fdb);
         (void)fgets(fccdata, (int)sizeof(fccdata), fdb);
@@ -278,13 +278,13 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
     fndx=fopen(get_user_base_dir("data/appl.ndx"),"r");
     if (fndx!=NULL){
         (void)fgets(index,(int)sizeof(index),fndx);
-        strncpy(char_offset,&index[6],16);
+        xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
 
         // Search through the indexes looking for a callsign which is
         // close to the callsign of interest.  If callsign is later in
         // the alphabet than the current index, snag the next index.
         while (!feof(fndx) && strncmp(callsign,index,6) > 0) {
-            strncpy(char_offset,&index[6],16);
+            xastir_snprintf(char_offset,sizeof(char_offset),"%s",&index[6]);
             (void)fgets(index,(int)sizeof(index),fndx);
         }
     } else {
@@ -361,11 +361,11 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                                         case(1):
                                             switch(i) {
                                                 case(0):
-                                                    strcpy(data->id_file_num,line+pos_it);
+                                                    xastir_snprintf(data->id_file_num,sizeof(data->id_file_num),"%s",line+pos_it);
                                                     break;
 
                                                 case(1):
-                                                    strcpy(data->type_purpose,line+pos_it);
+                                                    xastir_snprintf(data->type_purpose,sizeof(data->type_purpose),"%s",line+pos_it);
                                                     break;
 
                                                 case(2):
@@ -373,43 +373,43 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                                                     break;
 
                                                 case(3):
-                                                    strcpy(data->name_licensee,line+pos_it);
+                                                    xastir_snprintf(data->name_licensee,sizeof(data->name_licensee),"%s",line+pos_it);
                                                     break;
 
                                                 case(4):
-                                                    strcpy(data->text_street,line+pos_it);
+                                                    xastir_snprintf(data->text_street,sizeof(data->text_street),"%s",line+pos_it);
                                                     break;
 
                                                 case(5):
-                                                    strcpy(data->text_pobox,line+pos_it);
+                                                    xastir_snprintf(data->text_pobox,sizeof(data->text_pobox),"%s",line+pos_it);
                                                     break;
 
                                                 case(6):
-                                                    strcpy(data->city,line+pos_it);
+                                                    xastir_snprintf(data->city,sizeof(data->city),"%s",line+pos_it);
                                                     break;
 
                                                 case(7):
-                                                    strcpy(data->state,line+pos_it);
+                                                    xastir_snprintf(data->state,sizeof(data->state),"%s",line+pos_it);
                                                     break;
 
                                                 case(8):
-                                                    strcpy(data->zipcode,line+pos_it);
+                                                    xastir_snprintf(data->zipcode,sizeof(data->zipcode),"%s",line+pos_it);
                                                     break;
 
                                                 case(9):
-                                                    strcpy(data->date_issue,line+pos_it);
+                                                    xastir_snprintf(data->date_issue,sizeof(data->date_issue),"%s",line+pos_it);
                                                     break;
 
                                                 case(11):
-                                                    strcpy(data->date_expire,line+pos_it);
+                                                    xastir_snprintf(data->date_expire,sizeof(data->date_expire),"%s",line+pos_it);
                                                     break;
 
                                                 case(12):
-                                                    strcpy(data->date_last_change,line+pos_it);
+                                                    xastir_snprintf(data->date_last_change,sizeof(data->date_last_change),"%s",line+pos_it);
                                                     break;
 
                                                 case(13):
-                                                    strcpy(data->id_examiner,line+pos_it);
+                                                    xastir_snprintf(data->id_examiner,sizeof(data->id_examiner),"%s",line+pos_it);
                                                     break;
 
                                                 case(14):
@@ -424,27 +424,27 @@ int search_fcc_data_appl(char *callsign, FccAppl *data) {
                                         case(2):
                                             switch (i) {
                                                 case(0):
-                                                    strcpy(data->id_file_num,line+pos_it);
+                                                    xastir_snprintf(data->id_file_num,sizeof(data->id_file_num),"%s",line+pos_it);
                                                     break;
 
                                                 case(2):
-                                                    strcpy(data->name_licensee,line+pos_it);
+                                                    xastir_snprintf(data->name_licensee,sizeof(data->name_licensee),"%s",line+pos_it);
                                                     break;
 
                                                 case(10):
-                                                    strcpy(data->text_street,line+pos_it);
+                                                    xastir_snprintf(data->text_street,sizeof(data->text_street),"%s",line+pos_it);
                                                     break;
 
                                                 case(11):
-                                                    strcpy(data->city,line+pos_it);
+                                                    xastir_snprintf(data->city,sizeof(data->city),"%s",line+pos_it);
                                                     break;
 
                                                 case(12):
-                                                    strcpy(data->state,line+pos_it);
+                                                    xastir_snprintf(data->state,sizeof(data->state),"%s",line+pos_it);
                                                     break;
 
                                                 case(13):
-                                                    strcpy(data->zipcode,line+pos_it);
+                                                    xastir_snprintf(data->zipcode,sizeof(data->zipcode),"%s",line+pos_it);
                                                     break;
 
                                                 default:

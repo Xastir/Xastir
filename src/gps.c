@@ -52,7 +52,6 @@
 
 #include "gps.h"
 #include "main.h"
-#include "xastir.h"
 #include "interface.h"
 #include "lang.h"
 #include "util.h"

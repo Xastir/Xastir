@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "xastir.h"
 #include "main.h"
 
 

@@ -47,8 +47,8 @@
 #include <Xbae/Matrix.h>
 #endif  // HAVE_XBAE_MATRIX_H
 
-#include "main.h"
 #include "xastir.h"
+#include "main.h"
 #include "messages.h"
 #include "draw_symbols.h"
 #include "list_gui.h"

@@ -1758,7 +1758,10 @@ int OpenTrac_decode_entityid(unsigned char *element,
         *entity_ssid = OpenTrac_extract_ssid(entity_call);
     }
     else {  // Not enough, so use origin_call instead
-        strcpy(entity_call, origin_call);
+        xastir_snprintf(entity_call,
+            sizeof(entity_call),
+            "%s",
+            origin_call);
         *entity_ssid = origin_ssid;
     }
 
@@ -2613,15 +2616,20 @@ int OpenTrac_flag_attention(void) {
 int OpenTrac_decode_hazmat(unsigned char *element,
                            int           element_len,
                            int           *hazmat_id,
-                           char          *comment) {
+                           char          *comment,
+                           int           comment_size) {
 
     if (element_len < 2) {
         fprintf(stderr, "HAZMAT: Unknown Material\n");
-        strcat(comment," HAZMAT: Unknown Material");
+        strncat(comment,
+            " HAZMAT: Unknown Material",
+            comment_size - strlen(comment));
     }
     else if (element_len > 2) {
         fprintf(stderr, "HAZMAT: Unknown Material: ID too Long\n");
-        strcat(comment," HAZMAT: Unknown Material: ID too Long");
+        strncat(comment,
+            " HAZMAT: Unknown Material: ID too Long",
+            comment_size - strlen(comment));
     }
     else {
         char temp[200];
@@ -2632,7 +2640,9 @@ int OpenTrac_decode_hazmat(unsigned char *element,
             sizeof(temp),
             " HAZMAT: UN%04d",
             *hazmat_id);
-        strcat(comment,temp);
+        strncat(comment,
+            temp,
+            comment_size - strlen(comment));
     }
     return 0;
 }
@@ -2650,7 +2660,8 @@ int OpenTrac_decode_hazmat(unsigned char *element,
 int OpenTrac_decode_units(int           unitnum,
                           unsigned char *element,
                           int           element_len,
-                          char          *comment) {
+                          char          *comment,
+                          int           comment_size) {
 
 //WE7U:  Need to pass back and use units.
 
@@ -2680,7 +2691,9 @@ int OpenTrac_decode_units(int           unitnum,
                 " %d %s",
                 mval->c,
                 units[unitnum]);
-            strcat(comment,temp);
+            strncat(comment,
+                temp,
+                comment_size - strlen(comment));
             fprintf(stderr, "%s\n",temp);
             break;
         case 2:
@@ -2690,7 +2703,9 @@ int OpenTrac_decode_units(int           unitnum,
                 " %d %s",
                 ival,
                 units[unitnum]);
-            strcat(comment,temp);
+            strncat(comment,
+                temp,
+                comment_size - strlen(comment));
             fprintf(stderr, "%s\n", temp);
             break;
         case 4:
@@ -2699,7 +2714,9 @@ int OpenTrac_decode_units(int           unitnum,
                 " %f %s",
                 mval->f,
                 units[unitnum]);
-            strcat(comment,temp);
+            strncat(comment,
+                temp,
+                comment_size - strlen(comment));
             fprintf(stderr, "%s\n", temp);
             break;
         case 8:
@@ -2708,7 +2725,9 @@ int OpenTrac_decode_units(int           unitnum,
                 " %f %s",
                 mval->d,
                 units[unitnum]);
-            strcat(comment,temp);
+            strncat(comment,
+                temp,
+                comment_size - strlen(comment));
             fprintf(stderr, "%s\n", temp);
             break;
         default:
@@ -3236,7 +3255,8 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                     data,
                     elen,
                     &hazmat_id,
-                    comment);
+                    comment,
+                    sizeof(comment));
                 break;
             case (0xffff): // Null element
                 fprintf(stderr, "Null element\n");
@@ -3250,7 +3270,8 @@ fprintf(stderr, "\n***** %s\n\n", buffer);
                         etype & 0x00ff,
                         data,
                         elen,
-                        comment);
+                        comment,
+                        sizeof(comment));
                 }
                 else {
 
@@ -4093,7 +4114,10 @@ int serial_init (int port) {
         // get user info
         user_id = getuid();
         user_info = getpwuid(user_id);
-        strcpy(temp,user_info->pw_name);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s",
+            user_info->pw_name);
 
         fprintf(lock,"%9d %s %s",(int)mypid,"xastir",temp);
         (void)fclose(lock);
@@ -6137,8 +6161,8 @@ void clear_port_data(int port, int clear_more) {
     port_data[port].device_type = -1;
     port_data[port].active = DEVICE_NOT_IN_USE;
     port_data[port].status = DEVICE_DOWN;
-    strcpy(port_data[port].device_name,"");
-    strcpy(port_data[port].device_host_name,"");
+    port_data[port].device_name[0] = '\0';
+    port_data[port].device_host_name[0] = '\0';
 
     if (begin_critical_section(&connect_lock, "interface.c:clear_port_data(2)" ) > 0)
         fprintf(stderr,"connect_lock, Port = %d\n", port);
@@ -6154,13 +6178,13 @@ void clear_port_data(int port, int clear_more) {
     port_data[port].decode_errors = 0;
     port_data[port].data_type = 0;
     port_data[port].socket_port = -1;
-    strcpy(port_data[port].device_host_pswd,"");
+    port_data[port].device_host_pswd[0] = '\0';
 
     if (clear_more)
         port_data[port].channel = -1;
 
     port_data[port].channel2 = -1;
-    strcpy(port_data[port].ui_call,"");
+    port_data[port].ui_call[0] = '\0';
     port_data[port].dtr = 0;
     port_data[port].sp = -1;
     port_data[port].style = -1;
@@ -6201,20 +6225,62 @@ void clear_all_port_data(void) {
 // INIT Device names Data
 //***********************************************************
 void init_device_names(void) {
-    strcpy(dtype[DEVICE_NONE].device_name,langcode("IFDNL00000"));
-    strcpy(dtype[DEVICE_SERIAL_TNC].device_name,langcode("IFDNL00001"));
-    strcpy(dtype[DEVICE_SERIAL_TNC_HSP_GPS].device_name,langcode("IFDNL00002"));
-    strcpy(dtype[DEVICE_SERIAL_GPS].device_name,langcode("IFDNL00003"));
-    strcpy(dtype[DEVICE_SERIAL_WX].device_name,langcode("IFDNL00004"));
-    strcpy(dtype[DEVICE_NET_STREAM].device_name,langcode("IFDNL00005"));
-    strcpy(dtype[DEVICE_AX25_TNC].device_name,langcode("IFDNL00006"));
-    strcpy(dtype[DEVICE_NET_GPSD].device_name,langcode("IFDNL00007"));
-    strcpy(dtype[DEVICE_NET_WX].device_name,langcode("IFDNL00008"));
-    strcpy(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name,langcode("IFDNL00009"));
-    strcpy(dtype[DEVICE_SERIAL_KISS_TNC].device_name,langcode("IFDNL00010"));
-    strcpy(dtype[DEVICE_NET_DATABASE].device_name,langcode("IFDNL00011"));
-    strcpy(dtype[DEVICE_NET_AGWPE].device_name,langcode("IFDNL00012"));
-    strcpy(dtype[DEVICE_SERIAL_MKISS_TNC].device_name,langcode("IFDNL00013"));
+    xastir_snprintf(dtype[DEVICE_NONE].device_name,
+        sizeof(dtype[DEVICE_NONE].device_name),
+        "%s",
+        langcode("IFDNL00000"));
+    xastir_snprintf(dtype[DEVICE_SERIAL_TNC].device_name,
+        sizeof(dtype[DEVICE_SERIAL_TNC].device_name),
+        "%s",
+        langcode("IFDNL00001"));
+    xastir_snprintf(dtype[DEVICE_SERIAL_TNC_HSP_GPS].device_name,
+        sizeof(dtype[DEVICE_SERIAL_TNC_HSP_GPS].device_name),
+        "%s",
+        langcode("IFDNL00002"));
+    xastir_snprintf(dtype[DEVICE_SERIAL_GPS].device_name,
+        sizeof(dtype[DEVICE_SERIAL_GPS].device_name),
+        "%s",
+        langcode("IFDNL00003"));
+    xastir_snprintf(dtype[DEVICE_SERIAL_WX].device_name,
+        sizeof(dtype[DEVICE_SERIAL_WX].device_name),
+        "%s",
+        langcode("IFDNL00004"));
+    xastir_snprintf(dtype[DEVICE_NET_STREAM].device_name,
+        sizeof(dtype[DEVICE_NET_STREAM].device_name),
+        "%s",
+        langcode("IFDNL00005"));
+    xastir_snprintf(dtype[DEVICE_AX25_TNC].device_name,
+        sizeof(dtype[DEVICE_AX25_TNC].device_name),
+        "%s",
+        langcode("IFDNL00006"));
+    xastir_snprintf(dtype[DEVICE_NET_GPSD].device_name,
+        sizeof(dtype[DEVICE_NET_GPSD].device_name),
+        "%s",
+        langcode("IFDNL00007"));
+    xastir_snprintf(dtype[DEVICE_NET_WX].device_name,
+        sizeof(dtype[DEVICE_NET_WX].device_name),
+        "%s",
+        langcode("IFDNL00008"));
+    xastir_snprintf(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name,
+        sizeof(dtype[DEVICE_SERIAL_TNC_AUX_GPS].device_name),
+        "%s",
+        langcode("IFDNL00009"));
+    xastir_snprintf(dtype[DEVICE_SERIAL_KISS_TNC].device_name,
+        sizeof(dtype[DEVICE_SERIAL_KISS_TNC].device_name),
+        "%s",
+        langcode("IFDNL00010"));
+    xastir_snprintf(dtype[DEVICE_NET_DATABASE].device_name,
+        sizeof(dtype[DEVICE_NET_DATABASE].device_name),
+        "%s",
+        langcode("IFDNL00011"));
+    xastir_snprintf(dtype[DEVICE_NET_AGWPE].device_name,
+        sizeof(dtype[DEVICE_NET_AGWPE].device_name),
+        "%s",
+        langcode("IFDNL00012"));
+    xastir_snprintf(dtype[DEVICE_SERIAL_MKISS_TNC].device_name,
+        sizeof(dtype[DEVICE_SERIAL_MKISS_TNC].device_name),
+        "%s",
+        langcode("IFDNL00013"));
 }
 
 
@@ -6484,8 +6550,11 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
     if (dev_nm[0] == '\0')
         return(-1);
 
-    strcpy(verstr, "XASTIR ");
-    strcat(verstr, VERSION);
+    xastir_snprintf(verstr,
+        sizeof(verstr),
+        "XASTIR %s",
+        VERSION);
+
     ok = -1;
     if (port_avail >= 0){
         if (debug_level & 2)
@@ -6572,7 +6641,10 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
 
                 port_data[port_avail].device_type = dev_type;
-                strcpy(port_data[port_avail].device_name,dev_nm);
+                xastir_snprintf(port_data[port_avail].device_name,
+                    sizeof(port_data[port_avail].device_name),
+                    "%s",
+                    dev_nm);
                 port_data[port_avail].sp = dev_sp;
                 port_data[port_avail].style = dev_sty;
                 if (dev_type == DEVICE_SERIAL_WX) {
@@ -6596,8 +6668,14 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);    
 
                 port_data[port_avail].device_type = DEVICE_NET_STREAM;
-                strcpy(port_data[port_avail].device_host_name,dev_nm);
-                strcpy(port_data[port_avail].device_host_pswd,passwd);
+                xastir_snprintf(port_data[port_avail].device_host_name,
+                    sizeof(port_data[port_avail].device_host_name),
+                    "%s",
+                    dev_nm);
+                xastir_snprintf(port_data[port_avail].device_host_pswd,
+                    sizeof(port_data[port_avail].device_host_pswd),
+                    "%s",
+                    passwd);
                 port_data[port_avail].socket_port = dev_sck_p;
                 port_data[port_avail].reconnect = reconnect;
 
@@ -6664,7 +6742,10 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 port_data[port_avail].device_type = DEVICE_AX25_TNC;
-                strcpy(port_data[port_avail].device_name,dev_nm);
+                xastir_snprintf(port_data[port_avail].device_name,
+                    sizeof(port_data[port_avail].device_name),
+                    "%s",
+                    dev_nm);
 
 //if (end_critical_section(&port_data_lock, "interface.c:add_device(6)" ) > 0)
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
@@ -6682,7 +6763,10 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 port_data[port_avail].device_type = DEVICE_NET_GPSD;
-                strcpy(port_data[port_avail].device_host_name,dev_nm);
+                xastir_snprintf(port_data[port_avail].device_host_name,
+                    sizeof(port_data[port_avail].device_host_name),
+                    "%s",
+                    dev_nm);
                 port_data[port_avail].socket_port = dev_sck_p;
                 port_data[port_avail].reconnect = reconnect;
 
@@ -6712,7 +6796,10 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 port_data[port_avail].device_type = DEVICE_NET_WX;
-                strcpy(port_data[port_avail].device_host_name,dev_nm);
+                xastir_snprintf(port_data[port_avail].device_host_name,
+                    sizeof(port_data[port_avail].device_host_name),
+                    "%s",
+                    dev_nm);
                 port_data[port_avail].socket_port = dev_sck_p;
                 port_data[port_avail].reconnect = reconnect;
                 if (strcmp("1",passwd) == 0)
@@ -6739,7 +6826,10 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 port_data[port_avail].device_type = DEVICE_NET_DATABASE;
-                strcpy(port_data[port_avail].device_host_name,dev_nm);
+                xastir_snprintf(port_data[port_avail].device_host_name,
+                    sizeof(port_data[port_avail].device_host_name),
+                    "%s",
+                    dev_nm);
                 port_data[port_avail].socket_port = dev_sck_p;
                 port_data[port_avail].reconnect = reconnect;
                 if (strcmp("1",passwd) == 0)
@@ -6766,7 +6856,10 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 port_data[port_avail].device_type = DEVICE_NET_AGWPE;
-                strcpy(port_data[port_avail].device_host_name,dev_nm);
+                xastir_snprintf(port_data[port_avail].device_host_name,
+                    sizeof(port_data[port_avail].device_host_name),
+                    "%s",
+                    dev_nm);
                 port_data[port_avail].socket_port = dev_sck_p;
                 port_data[port_avail].reconnect = reconnect;
                 if (strcmp("1",passwd) == 0)
@@ -7460,13 +7553,19 @@ void output_my_aprs_data(void) {
     sec = sec_now();
 
     // Format latitude string for transmit later
-    strcpy(my_output_lat,my_lat);
+    xastir_snprintf(my_output_lat,
+        sizeof(my_output_lat),
+        "%s",
+        my_lat);
     (void)output_lat(my_output_lat,transmit_compressed_posit);
     if (debug_level & 128)
         fprintf(stderr,"OUT LAT <%s>\n",my_output_lat);
 
     // Format longitude string for transmit later
-    strcpy(my_output_long,my_long);
+    xastir_snprintf(my_output_long,
+        sizeof(my_output_long),
+        "%s",
+        my_long);
     (void)output_long(my_output_long,transmit_compressed_posit);
     if (debug_level & 128)
         fprintf(stderr,"OUT LONG <%s>\n",my_output_long);
@@ -7508,7 +7607,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case DEVICE_AX25_TNC:
 
                 /* clear this for a TNC */
-                strcpy(output_net,"");
+                output_net[0] = '\0';
 
                 /* Set my call sign */
                 xastir_snprintf(header_txt, sizeof(header_txt), "%c%s %s\r", '\3', "MYCALL", my_callsign);
@@ -7597,7 +7696,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
 
         if (transmit_compressed_posit)
-            strcpy(my_pos,
+            xastir_snprintf(my_pos,
+                sizeof(my_pos),
+                "%s",
                 compress_posit(my_output_lat,
                     my_group,
                     my_output_long,
@@ -7609,7 +7710,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             xastir_snprintf(my_pos, sizeof(my_pos), "%s%c%s%c", my_output_lat, my_group, my_output_long, my_symbol);
             /* get PHG, if used for output */
             if (strlen(my_phg) >= 6)
-                strcpy(output_phg,my_phg);
+                xastir_snprintf(output_phg,
+                    sizeof(output_phg),
+                    "%s",
+                    my_phg);
 
             /* get CSE/SPD, Always needed for output even if 0 */
             xastir_snprintf(output_cs,
@@ -7629,7 +7733,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case(1):
                 /* APRS_MOBILE LOCAL TIME */
                 if((strlen(output_cs) < 8) && (my_last_altitude_time > 0))
-                    strcpy(output_brk,"/");
+                    xastir_snprintf(output_brk,
+                        sizeof(output_brk),
+                        "/");
 
                 day_time = localtime(&sec);
 
@@ -7646,7 +7752,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case(2):
                 /* APRS_MOBILE ZULU DATE-TIME */
                 if((strlen(output_cs) < 8) && (my_last_altitude_time > 0))
-                    strcpy(output_brk,"/");
+                    xastir_snprintf(output_brk,
+                        sizeof(output_brk),
+                        "/");
 
                 day_time = gmtime(&sec);
 
@@ -7664,7 +7772,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             case(3):
                 /* APRS_MOBILE ZULU TIME w/SEC */
                 if((strlen(output_cs) < 8) && (my_last_altitude_time > 0))
-                    strcpy(output_brk,"/");
+                    xastir_snprintf(output_brk,
+                        sizeof(output_brk),
+                        "/");
 
                 day_time = gmtime(&sec);
 
@@ -7680,7 +7790,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
             case(4):
                 /* APRS position with WX data*/
-                sec = wx_tx_data1(wx_data);
+                sec = wx_tx_data1(wx_data, sizeof(wx_data));
                 if (sec != 0) {
                     xastir_snprintf(data_txt, sizeof(data_txt), "%s%c%s%s\r",
                             output_net, aprs_station_message_type, my_pos,wx_data);
@@ -7690,7 +7800,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 else {
                     /* default to APRS FIXED if no wx data */
                     if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0))
-                        strcpy(output_brk,"/");
+                        xastir_snprintf(output_brk,
+                            sizeof(output_brk),
+                            "/");
 
                     xastir_snprintf(data_txt, sizeof(data_txt), "%s%c%s%s%s%s%s\r",
                             output_net, aprs_station_message_type,
@@ -7703,7 +7815,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
             case(5):
                 /* APRS position with ZULU DATE-TIME and WX data */
-                sec = wx_tx_data1(wx_data);
+                sec = wx_tx_data1(wx_data,sizeof(wx_data));
                 if (sec != 0) {
                     day_time = gmtime(&sec);
 
@@ -7716,7 +7828,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 } else {
                     /* default to APRS FIXED if no wx data */
                     if((strlen(output_phg) < 6) && (my_last_altitude_time > 0))
-                        strcpy(output_brk,"/");
+                        xastir_snprintf(output_brk,
+                            sizeof(output_brk),
+                            "/");
 
                     xastir_snprintf(data_txt, sizeof(data_txt), "%s%c%s%s%s%s%s\r",
                             output_net, aprs_station_message_type, my_pos,output_phg,
@@ -7733,7 +7847,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
             default:
                 /* APRS_FIXED */
                 if ((strlen(output_phg) < 6) && (my_last_altitude_time > 0))
-                    strcpy(output_brk,"/");
+                    xastir_snprintf(output_brk,
+                        sizeof(output_brk),
+                        "/");
 
                 xastir_snprintf(data_txt,
                         sizeof(data_txt),
@@ -7972,7 +8088,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
                     if (debug_level & 1)
                         fprintf(stderr,"%d AX25 TNC\n",port);
-                    strcpy(output_net,"");      // clear this for a TNC
+                    output_net[0] = '\0';   // clear this for a TNC
 
                     /* Set my call sign */
                     xastir_snprintf(data_txt,
@@ -8119,7 +8235,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                     break;
             } // End of switch
         } else {    // Type == 1, raw data.  Probably igating something...
-            strcpy(output_net,"");
+            output_net[0] = '\0';
         }
 
 

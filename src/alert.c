@@ -308,8 +308,8 @@
 
 #include <Xm/XmAll.h>
 
-#include "alert.h"
 #include "xastir.h"
+#include "alert.h"
 #include "util.h"
 #include "snprintf.h"
 #include "wx.h"

@@ -224,7 +224,7 @@ Cell Name
                     }
 
                     i[0] = '\0';
-                    strncpy(state,j+1,49);
+                    xastir_snprintf(state,sizeof(state),"%s",j+1);
                     clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
@@ -238,7 +238,7 @@ Cell Name
                     }
 
                     j[0] = '\0';
-                    strncpy(name,i+1,199);
+                    xastir_snprintf(name,sizeof(name),"%s",i+1);
                     clean_string(name);
 
                     // Find end of Feature Type field
@@ -249,7 +249,7 @@ Cell Name
                     }
 
                     i[0] = '\0';
-                    strncpy(type,j+1,99);
+                    xastir_snprintf(type,sizeof(type),"%s",j+1);
                     clean_string(type);
 
                     // Find end of County Name field
@@ -260,7 +260,7 @@ Cell Name
                     }
 
                     j[0] = '\0';
-                    strncpy(county,i+1,99);
+                    xastir_snprintf(county,sizeof(county),"%s",i+1);
                     clean_string(county);
 
                     // Find end of State Number Code field
@@ -289,7 +289,7 @@ Cell Name
                     }
 
                     i[0] = '\0';
-                    strncpy(latitude,j+1,14);
+                    xastir_snprintf(latitude,sizeof(latitude),"%s",j+1);
                     clean_string(latitude);
 
                     // Find end of Primary Longitude field (DDDMMSSW)
@@ -300,7 +300,7 @@ Cell Name
                     }
 
                     j[0] = '\0';
-                    strncpy(longitude,i+1,14);
+                    xastir_snprintf(longitude,sizeof(longitude),"%s",i+1);
                     clean_string(longitude);
 
                     // Find end of Primary Latitude field (decimal
@@ -379,9 +379,9 @@ Cell Name
 
                     if ( j != NULL ) {
                         j[0] = '\0';
-                        strncpy(population,i+1,14);
+                        xastir_snprintf(population,sizeof(population),"%s",i+1);
                     } else {
-                        strncpy(population,"0",14);
+                        xastir_snprintf(population,sizeof(population),"0");
                     } 
                     clean_string(population);
 
@@ -877,16 +877,17 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
     struct stat file_status;
  
  
-    strcpy(file,filename_in);
+    xastir_snprintf(file,sizeof(file),"%s",filename_in);
+
     if (debug_level & 16)
         fprintf(stderr,"File: %s\n",file);
 
 
-    strcpy(name_in2,name_in);
-    strcpy(state_in2,state_in);
-    strcpy(county_in2,county_in);
-    strcpy(quad_in2,quad_in);
-    strcpy(type_in2,type_in);
+    xastir_snprintf(name_in2,sizeof(name_in2),"%s",name_in);
+    xastir_snprintf(state_in2,sizeof(state_in2),"%s",state_in);
+    xastir_snprintf(county_in2,sizeof(county_in2),"%s",county_in);
+    xastir_snprintf(quad_in2,sizeof(quad_in2),"%s",quad_in);
+    xastir_snprintf(type_in2,sizeof(type_in2),"%s",type_in);
 
 
     // Convert State/Province to upper-case always (they're
@@ -945,8 +946,7 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                     }
 
                     i[0] = '\0';
-                    strncpy(state,j+1,49);
-//                    state[strlen(state)-1] = '\0';
+                    xastir_snprintf(state,sizeof(state),"%s",j+1);
                     clean_string(state);
 
 //NOTE:  It'd be nice to take the part after the comma and put it before the rest
@@ -960,8 +960,7 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                     }
 
                     j[0] = '\0';
-                    strncpy(name,i+1,199);
-//                    name[strlen(name)-1] = '\0';
+                    xastir_snprintf(name,sizeof(name),"%s",i+1);
                     clean_string(name);
 
                     // Find end of Feature Type field
@@ -972,8 +971,7 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                     }
 
                     i[0] = '\0';
-                    strncpy(type,j+1,99);
-//                    type[strlen(type)-1] = '\0';
+                    xastir_snprintf(type,sizeof(type),"%s",j+1);
                     clean_string(type);
 
                     // Find end of County Name field
@@ -984,8 +982,7 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                     }
 
                     j[0] = '\0';
-                    strncpy(county,i+1,99);
-//                    county[strlen(county)-1] = '\0';
+                    xastir_snprintf(county,sizeof(county),"%s",i+1);
                     clean_string(county);
 
                     // Find end of State Number Code field
@@ -1014,8 +1011,7 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                     }
 
                     i[0] = '\0';
-                    strncpy(latitude,j+1,14);
-//                    latitude[strlen(latitude)-1] = '\0';
+                    xastir_snprintf(latitude,sizeof(latitude),"%s",j+1);
                     clean_string(latitude);
 
                     // Find end of Primary Longitude field (DDDMMSSW)
@@ -1026,8 +1022,7 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                     }
 
                     j[0] = '\0';
-                    strncpy(longitude,i+1,14);
-//                    longitude[strlen(longitude)-1] = '\0';
+                    xastir_snprintf(longitude,sizeof(longitude),"%s",i+1);
                     clean_string(longitude);
 
                     // Find end of Primary Latitude field (decimal
@@ -1105,13 +1100,11 @@ int locate_place( Widget w, char *name_in, char *state_in, char *county_in,
                     }
 
                     j[0] = '\0';
-                    strncpy(population,i+1,14);
-//                    population[strlen(population)-1] = '\0';
+                    xastir_snprintf(population,sizeof(population),"%s",i+1);
                     clean_string(population);
 
                     // Snag Cell Name field (Quad name, last field)
-                    strncpy(quad,j+1,14);
-//                    quad[strlen(quad)] = '\0';
+                    xastir_snprintf(quad,sizeof(quad),"%s",j+1);
                     clean_string(quad);
 
                     // If "Match Case" togglebutton is not set, convert

@@ -33,8 +33,9 @@
 #include <Xbae/Matrix.h>
 #endif  // HAVE_XBAE_MATRIX_H
 
-#include "main.h"
+
 #include "xastir.h"
+#include "main.h"
 #include "lang.h"
 #include "maps.h"
 #include "io.h"
@@ -50,7 +51,7 @@ char geocoder_zip_name[50];
 char geocoder_state_name[50];
 char geocoder_locality_name[255];
 char geocoder_address_name[255];
-char geocoder_map_filename[255];
+char geocoder_map_filename[400];
 static xastir_mutex geocoder_place_dialog_lock;
 
 long destination_coord_lat = 0;

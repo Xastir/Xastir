@@ -807,7 +807,7 @@ char *new_get_line(FILE *f, char *linedata, int maxline) {
     if (ptr)
         *ptr = '\0';
 
-    strncpy(linedata, Buffer, (size_t)maxline);
+    xastir_snprintf(linedata, maxline, "%s", Buffer);
     if ((pos = (int)strlen(Buffer)) > maxline)
         fprintf(stderr, "Line length overflow: get_line\n");
     else if (pos < maxline)
@@ -1654,7 +1654,7 @@ long convert_lat_s2l(char *lat) {      /* N=0°, Ctr=90°, S=180° */
     char copy[11];
     char n[11];
 
-    strncpy(copy,lat,sizeof(copy));
+    xastir_snprintf(copy,sizeof(copy),"%s",lat);
     copy[10] = '\0';
     centi_sec=0l;
     if (copy[4]=='.'
@@ -1716,7 +1716,7 @@ long convert_lon_s2l(char *lon) {     /* W=0°, Ctr=180°, E=360° */
     char copy[12];
     char n[12];
 
-    strncpy(copy,lon,sizeof(copy));
+    xastir_snprintf(copy,sizeof(copy),"%s",lon);
     copy[11] = '\0';
     centi_sec=0l;
     if (copy[5]=='.'
@@ -2990,8 +2990,8 @@ int valid_item(char *name) {
 
 
 /*
- *  Check for a valid internet name
- *  accept only a few well formed names...
+ *  Check for a valid internet name.
+ *  Accept only a few well-formed names...
  */
 int valid_inet_name(char *name, char *info, char *origin) {
     int len, i, ok;
@@ -3007,7 +3007,7 @@ int valid_inet_name(char *name, char *info, char *origin) {
             return(0);                  // not printable
 
     if (len >= 5 && strncmp(name,"aprsd",5) == 0) {
-        strncpy(origin, "INET", 4);
+        xastir_snprintf(origin, 5, "INET");
         origin[4] = '\0';   // Terminate it
         return(1);                      // aprsdXXXX is ok
     }
@@ -3028,7 +3028,7 @@ int valid_inet_name(char *name, char *info, char *origin) {
             }
         }
         if (ok) {
-            strncpy(origin, "INET-NWS", 9);
+            xastir_snprintf(origin, 9, "INET-NWS");
             origin[8] = '\0';
             return(1);                      // weather alerts
         }
@@ -3053,7 +3053,11 @@ void upd_echo(char *path) {
 
     if (echo_digis[5][0] != '\0') {
         for (i=0;i<5;i++) {
-            strncpy(echo_digis[i], echo_digis[i+1], MAX_CALLSIGN+1);
+            xastir_snprintf(echo_digis[i],
+                MAX_CALLSIGN+1,
+                "%s",
+                echo_digis[i+1]);
+
         }
         echo_digis[5][0] = '\0';
     }
@@ -3111,9 +3115,7 @@ char *sec_to_loc(long longitude, long latitude)
  *  Substring function WITH a terminating NULL char, needs a string of at least size+1
  */
 void substr(char *dest, char *src, int size) {
-
-    strncpy(dest,src,(size_t)size);
-    dest[size] = '\0';
+    xastir_snprintf(dest, size+1, "%s", src);
 }
 
 
@@ -3498,7 +3500,7 @@ void spell_it_out(char *text, int max_length) {
 
     // Only use the new string if it kind'a looks like a callsign
     if (number_found_before_dash)
-        strncpy(text, buffer, max_length);
+        xastir_snprintf(text, max_length, "%s", buffer);
 }
 
 

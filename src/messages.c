@@ -87,7 +87,7 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:clear_message_wind
             XtDestroyWidget(mw[i].send_message_dialog);
 
         mw[i].send_message_dialog = (Widget)NULL;
-        strcpy(mw[i].to_call_sign,"");
+        mw[i].to_call_sign[0] = '\0';
         mw[i].send_message_call_data = (Widget)NULL;
         mw[i].send_message_message_data = (Widget)NULL;
         mw[i].send_message_text = (Widget)NULL;
@@ -135,13 +135,13 @@ void group_build_list(char *filename) {
 
 
 // Make sure we always listen for ourself, XASTIR, & our Version groups
-    strcpy(&group_data_list[0], my_callsign);
-    strcpy(&group_data_list[10], "XASTIR");
-    strcpy(&group_data_list[20], XASTIR_TOCALL);
+    xastir_snprintf(&group_data_list[0],10,"%s",my_callsign);
+    xastir_snprintf(&group_data_list[10],10,"XASTIR");
+    xastir_snprintf(&group_data_list[20],10,"%s",XASTIR_TOCALL);
     group_data_count = 3;
 // If we are in special group look for messages.
     if (altnet) {
-        strcpy(&group_data_list[group_data_count*10], altnet_call);
+        xastir_snprintf(&group_data_list[group_data_count*10],10,"%s",altnet_call);
         group_data_count++;
     }
 //
@@ -207,7 +207,7 @@ static int group_active(char *from) {
                 || (altgroup && strcasecmp(altgroup, VERSIONFRM))) {
         group_build_list(group_data_file);
         current_group_stat = group_stat;
-        strcpy(altgroup, VERSIONFRM);
+        xastir_snprintf(altgroup,sizeof(altgroup),"%s",VERSIONFRM);
     }
     if (group_data_list != NULL)    // Causes segfault on Solaris 2.5 without this!
         return (int)(bsearch(from, group_data_list, (size_t)group_data_count, (size_t)10, group_comp) != NULL);
@@ -331,10 +331,10 @@ end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2"
 
 void clear_outgoing_message(int i) {
     message_pool[i].active=MESSAGE_CLEAR;
-    strcpy(message_pool[i].to_call_sign,"");
-    strcpy(message_pool[i].from_call_sign,"");
-    strcpy(message_pool[i].message_line,"");
-    strcpy(message_pool[i].seq,"");
+    message_pool[i].to_call_sign[0] = '\0';
+    message_pool[i].from_call_sign[0] = '\0';
+    message_pool[i].message_line[0] = '\0';
+    message_pool[i].seq[0] = '\0';
     message_pool[i].active_time=0;;
     message_pool[i].next_time=0l;
     message_pool[i].tries=0;
@@ -487,14 +487,26 @@ void output_message(char *from, char *to, char *message, char *path) {
 
                 message_pool[i].active = MESSAGE_ACTIVE;
                 message_pool[i].wait_on_first_ack = wait_on_first_ack;
-                strcpy(message_pool[i].to_call_sign,to);
-                strcpy(message_pool[i].from_call_sign,from);
-                strcpy(message_pool[i].message_line,message_out);
+                xastir_snprintf(message_pool[i].to_call_sign,
+                    sizeof(message_pool[i].to_call_sign),
+                    "%s",
+                    to);
+                xastir_snprintf(message_pool[i].from_call_sign,
+                    sizeof(message_pool[i].from_call_sign),
+                    "%s",
+                    from);
+                xastir_snprintf(message_pool[i].message_line,
+                    sizeof(message_pool[i].message_line),
+                    "%s",
+                    message_out);
 
                 if (path != NULL)
-                    strncpy(message_pool[i].path,path,200);
+                    xastir_snprintf(message_pool[i].path,
+                        sizeof(message_pool[i].path),
+                        "%s",
+                        path);
                 else
-                    strcpy(message_pool[i].path,"");
+                    message_pool[i].path[0] = '\0';
 
 //                // We compute the base-90 sequence number here
 //                // This allows it to range from "!!" to "zz"
@@ -624,7 +636,10 @@ void check_and_transmit_messages(time_t time) {
                     // Reply/Ack protocol capable.
                     last_ack_ptr = get_most_recent_ack(to_call);
                     if (last_ack_ptr != NULL)
-                        strncpy(last_ack,last_ack_ptr,sizeof(last_ack));
+                        xastir_snprintf(last_ack,
+                            sizeof(last_ack),
+                            "%s",
+                            last_ack_ptr);
                     else
                         last_ack[0] = '\0';
                         
@@ -688,7 +703,10 @@ void check_and_transmit_messages(time_t time) {
                         // the message then needs this parameter to
                         // do another compare (to enable the Send Msg
                         // button again).
-                        strcpy(temp_to,message_pool[i].to_call_sign);
+                        xastir_snprintf(temp_to,
+                            sizeof(temp_to),
+                            "%s",
+                            message_pool[i].to_call_sign);
 
                         // Record a fake ack and add "TIMEOUT:" to
                         // the message.  This will be displayed in
@@ -731,7 +749,8 @@ void clear_acked_message(char *from, char *to, char *seq) {
     (void)remove_trailing_spaces(seq);  // This is IMPORTANT here!!!
 
     //lowest=100000;
-    strncpy(lowest,"zz",2);     // Highest Base-90 2-char string
+    // Highest Base-90 2-char string
+    xastir_snprintf(lowest,sizeof(lowest),"zz");
     found=-1;
     for (i=0; i<MAX_OUTGOING_MESSAGES;i++) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
@@ -760,7 +779,10 @@ void clear_acked_message(char *from, char *to, char *seq) {
                                     //if (atoi(message_pool[i].seq)<lowest) {
                                     if (strncmp(message_pool[i].seq,lowest,2) < 0) {
                                         //lowest=atoi(message_pool[i].seq);
-                                        strncpy(lowest,message_pool[i].seq,2);
+                                        xastir_snprintf(lowest,
+                                            sizeof(lowest),
+                                            "%s",
+                                            message_pool[i].seq);
                                         found=i;
                                     }
                                 }

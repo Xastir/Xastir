@@ -31,9 +31,9 @@
 
 #include <Xm/XmAll.h>
 
+#include "xastir.h"
 #include "db.h"
 #include "draw_symbols.h"
-#include "xastir.h"
 #include "main.h"
 #include "util.h"
 #include "color.h"

@@ -32,8 +32,8 @@
 
 #include <Xm/XmAll.h>
 
-#include "main.h"
 #include "xastir.h"
+#include "main.h"
 #include "popup.h"
 #include "main.h"
 #include "lang.h"

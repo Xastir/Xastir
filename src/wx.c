@@ -521,7 +521,9 @@ void decode_U2000_L(int from, unsigned char *data, WeatherRow *weather) {
         fprintf(stderr,"APRS WX3 Peet Bros U-2k (data logging mode): |%s|\n", data);
 
     weather->wx_type = WX_TYPE;
-    strcpy(weather->wx_station,"U2k");
+    xastir_snprintf(weather->wx_station,
+        sizeof(weather->wx_station),
+        "U2k");
 
     /* get last gust speed */
     if (strlen(weather->wx_gust) > 0 && !from) {
@@ -660,7 +662,9 @@ void decode_U2000_P(int from, unsigned char *data, WeatherRow *weather) {
         fprintf(stderr,"APRS WX5 Peet Bros U-2k Packet (Packet mode): |%s|\n",data);
 
     weather->wx_type = WX_TYPE;
-    strcpy(weather->wx_station,"U2k");
+    xastir_snprintf(weather->wx_station,
+        sizeof(weather->wx_station),
+        "U2k");
 
     /* get last gust speed */
     if (strlen(weather->wx_gust) > 0 && !from) {
@@ -818,7 +822,9 @@ void decode_Peet_Bros(int from, unsigned char *data, WeatherRow *weather, int ty
         fprintf(stderr,"APRS WX4 Peet Bros U-II: |%s|\n",data);
 
     weather->wx_type = WX_TYPE;
-    strcpy(weather->wx_station,"UII");
+    xastir_snprintf(weather->wx_station,
+        sizeof(weather->wx_station),
+        "UII");
 
     // #  5 0B 75 0082 0082
     // *  7 00 76 0000 0000
@@ -972,7 +978,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 fprintf(stderr,"APRS WX Dallas One-Wire %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
-            strcpy(weather->wx_station,"OWW");
+            xastir_snprintf(weather->wx_station,
+                sizeof(weather->wx_station),
+                "OWW");
 
             sscanf(data,"%f %f %f %f %f %f %d %d %f %f %f %f",
                 &tmp1,&tmp2,&tmp3,&tmp4,&tmp5,&tmp6,&tmp7,&tmp8,&tmp9,&tmp10,&tmp11,&tmp12);
@@ -1029,7 +1037,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 fprintf(stderr,"APRS WX4 Peet Bros U-II %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
-            strcpy(weather->wx_station,"UII");
+            xastir_snprintf(weather->wx_station,
+                sizeof(weather->wx_station),
+                "UII");
 
             /* wind direction */
             substr(temp_data1,(char *)(data+1),1);
@@ -1126,7 +1136,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 fprintf(stderr,"APRS WX3 Peet Bros U-2k (data logging mode) %s:<%s>\n",fill->call_sign,data+2);
 
             weather->wx_type=WX_TYPE;
-            strcpy(weather->wx_station,"U2k");
+            xastir_snprintf(weather->wx_station,
+                sizeof(weather->wx_station),
+                "U2k");
 
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0 && !from) {    // From local station
@@ -1260,7 +1272,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 fprintf(stderr,"APRS WX5 Peet Bros U-2k Packet (Packet mode) %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
-            strcpy(weather->wx_station,"U2k");
+            xastir_snprintf(weather->wx_station,
+                sizeof(weather->wx_station),
+                "U2k");
 
             /* get last gust speed */
             if (strlen(weather->wx_gust) > 0 && !from) {    // From local station
@@ -1422,7 +1436,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 
                 /* decode only for local station */
                 weather->wx_type=WX_TYPE;
-                strcpy(weather->wx_station,"U2k");
+                xastir_snprintf(weather->wx_station,
+                    sizeof(weather->wx_station),
+                    "U2k");
 
 
                 if (data[12]!='-') {
@@ -1739,7 +1755,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                 fprintf(stderr,"Qualimetrics Q-Net %s:<%s>\n",fill->call_sign,data);
 
             weather->wx_type=WX_TYPE;
-            strcpy(weather->wx_station,"Q-N");
+            xastir_snprintf(weather->wx_station,
+                sizeof(weather->wx_station),
+                "Q-N");
 
             // Can this sscanf overflow the "temp" buffer?  I
             // changed the length of temp to MAX_DEVICE_BUFFER to
@@ -1795,7 +1813,9 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     fprintf(stderr,"RSWX200 WX (binary)\n");
 
                 weather->wx_type=WX_TYPE;
-                strcpy(weather->wx_station,"RSW");
+                xastir_snprintf(weather->wx_station,
+                    sizeof(weather->wx_station),
+                    "RSW");
 
                 switch (data[0]) {
                     case 0x8f: /* humidity */
@@ -2014,7 +2034,10 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
 				strncpy(temp_data1,(temp_conv+1),5);
 			    temp_temp = (float)(atof(temp_data1))/10.0;
                 xastir_snprintf(temp_data1, sizeof(temp_data1), "%0.1f",temp_temp);
-                strcpy(weather->wx_baro,temp_data1); 
+                xastir_snprintf(weather->wx_baro,
+                    sizeof(weather->wx_baro),
+                    "%s",
+                    temp_data1);
             }
 
             if ((temp_conv=strchr(data,'x'))) { // WX Station Identifier
@@ -2087,12 +2110,19 @@ void wx_decode(unsigned char *wx_line, int port) {
                     /* Found Peet Bros U-2k */
 
                     /*fprintf(stderr,"Found Peet Bros U-2k WX:%s\n",wx_line+2);*/
-                    strcpy(wx_station_type,langcode("WXPUPSI011"));
+                    xastir_snprintf(wx_station_type,
+                        sizeof(wx_station_type),
+                        "%s",
+                        langcode("WXPUPSI011"));
 
                     strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0';    // Terminate it
 
-                    strcpy(weather->wx_time,get_time(time_data));
+                    xastir_snprintf(weather->wx_time,
+                        sizeof(weather->wx_time),
+                        "%s",
+                        get_time(time_data));
+
                     weather->wx_sec_time=sec_now();
                     //weather->wx_data=1;
                     wx_fill_data(0,APRS_WX3,wx_line,p_station);
@@ -2104,13 +2134,19 @@ void wx_decode(unsigned char *wx_line, int port) {
 
                     /* Found Peet Bros raw U2 data */
 
-                    strcpy(wx_station_type,langcode("WXPUPSI012"));
+                    xastir_snprintf(wx_station_type,
+                        sizeof(wx_station_type),
+                        "%s",
+                        langcode("WXPUPSI012"));
                     /*fprintf(stderr,"Found Peet Bros raw U2 data WX#:%s\n",wx_line+1);*/
 
                     strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
 
-                    strcpy(weather->wx_time,get_time(time_data));
+                    xastir_snprintf(weather->wx_time,
+                        sizeof(weather->wx_time),
+                        "%s",
+                        get_time(time_data));
                     weather->wx_sec_time=sec_now();
                     //weather->wx_data=1;
                     wx_fill_data(0,APRS_WX4,wx_line,p_station);
@@ -2122,7 +2158,10 @@ void wx_decode(unsigned char *wx_line, int port) {
 
                     /* Found Peet Bros raw U2 data */
 
-                    strcpy(wx_station_type,langcode("WXPUPSI013"));
+                    xastir_snprintf(wx_station_type,
+                        sizeof(wx_station_type),
+                        "%s",
+                        langcode("WXPUPSI013"));
                     /*fprintf(stderr,"Found Peet Bros Ultimeter Packet data WX#:%s\n",wx_line+5);*/
 
                     strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
@@ -2147,9 +2186,15 @@ void wx_decode(unsigned char *wx_line, int port) {
 
                         /* found Qualimetrics Q-Net station */
 
-                        strcpy(wx_station_type,langcode("WXPUPSI016"));
+                        xastir_snprintf(wx_station_type,
+                            sizeof(wx_station_type),
+                            "%s",
+                            langcode("WXPUPSI016"));
                         /*fprintf(stderr,"Found Qualimetrics Q-Net station data WX#:%s\n",wx_line+23);*/
-                        strcpy(weather->wx_time,get_time(time_data));
+                        xastir_snprintf(weather->wx_time,
+                            sizeof(weather->wx_time),
+                            "%s",
+                            get_time(time_data));
                         weather->wx_sec_time=sec_now();
                         //weather->wx_data=1;
                         wx_fill_data(0,QM_WX,wx_line+24,p_station);
@@ -2177,7 +2222,10 @@ void wx_decode(unsigned char *wx_line, int port) {
                         && is_xnum_or_dash((char *)(wx_line+5),44)
                         && port_data[port].data_type==0) {
 
-                    strcpy(wx_station_type,langcode("WXPUPSI017"));
+                    xastir_snprintf(wx_station_type,
+                        sizeof(wx_station_type),
+                        "%s",
+                        langcode("WXPUPSI017"));
 
                     strncpy(raw_wx_string, wx_line, MAX_RAW_WX_STRING);
                     raw_wx_string[MAX_RAW_WX_STRING] = '\0'; // Terminate it
@@ -2228,8 +2276,14 @@ void wx_decode(unsigned char *wx_line, int port) {
                             /* good RS WX-200 data */
                             /*fprintf(stderr,"GOOD %0X data\n",wx_line[0]);*/
                             /* found RS WX-200 */
-                            strcpy(wx_station_type,langcode("WXPUPSI025"));
-                            strcpy(weather->wx_time,get_time(time_data));
+                            xastir_snprintf(wx_station_type,
+                                sizeof(wx_station_type),
+                                "%s",
+                                langcode("WXPUPSI025"));
+                            xastir_snprintf(weather->wx_time,
+                                sizeof(weather->wx_time),
+                                "%s",
+                                get_time(time_data));
                             weather->wx_sec_time=sec_now();
                             //weather->wx_data=1;
                             wx_fill_data(0,RSWX200,wx_line,p_station);
@@ -2247,8 +2301,14 @@ void wx_decode(unsigned char *wx_line, int port) {
                         if (debug_level & 1)
                             fprintf(stdout,"Davis Data found... %s\n",wx_line);
 			    
-                        strcpy(wx_station_type,langcode("WXPUPSI026"));
-                        strcpy(weather->wx_time,get_time(time_data));
+                        xastir_snprintf(wx_station_type,
+                            sizeof(wx_station_type),
+                            "%s",
+                            langcode("WXPUPSI026"));
+                        xastir_snprintf(weather->wx_time,
+                            sizeof(weather->wx_time),
+                            "%s",
+                            get_time(time_data));
                         weather->wx_sec_time=sec_now();
                         wx_fill_data(0,DAVISMETEO,wx_line,p_station);
                         decoded=1;
@@ -2311,13 +2371,13 @@ if (end_critical_section(&port_data_lock, "wx.c:wx_decode(4)" ) > 0)
 /*                            */
 /***********************************************************/
 
-time_t wx_tx_data1(char *st) {
+time_t wx_tx_data1(char *st, int st_size) {
     DataRow *p_station;
     time_t wx_time;
     char temp[100];
     WeatherRow *weather;
 
-    strcpy(st,"");
+    st[0] = '\0';
     wx_time = 0;
     if (search_station_name(&p_station,my_callsign,1)) {
         if (get_weather_record(p_station)) {    // station has wx data
@@ -2352,7 +2412,7 @@ time_t wx_tx_data1(char *st) {
 //sprintf(weather->wx_hum,"92");              // %
 //sprintf(weather->wx_baro,"1013.0");         // hPa
 //weather->wx_type = WX_TYPE;
-//strcpy(weather->wx_station,"RSW");
+//xastir_snprintf(weather->wx_station,sizeof(weather->wx_station),"RSW");
 //  359/000g000t065r010P020p030h92b01000
 
 
@@ -2363,33 +2423,33 @@ time_t wx_tx_data1(char *st) {
                 if (strlen(temp) > 3) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_course too long: %s\n", temp);
-                    strcpy(temp,"...");
+                    xastir_snprintf(temp,sizeof(temp),"...");
                 }
                 if ( (atoi(weather->wx_course) > 359) || (atoi(weather->wx_course) < 0) ) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_course out-of-range: %s\n", weather->wx_course);
-                    strcpy(temp,"...");
+                    xastir_snprintf(temp,sizeof(temp),"...");
                 }
                 //sprintf(st,"%s/%s",weather->wx_course,weather->wx_speed);
-                strcat(st,temp);
-                strcat(st,"/");
+                strncat(st, temp, st_size - strlen(st));
+                strncat(st, "/", st_size - strlen(st));
 
                 xastir_snprintf(temp, sizeof(temp), "%s", weather->wx_speed);
                 if (strlen(temp) > 3) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_speed too long: %s\n", temp);
-                    strcpy(temp,"...");
+                    xastir_snprintf(temp,sizeof(temp),"...");
                 }
                 if ( (atoi(weather->wx_speed) < 0) || (atoi(weather->wx_speed) > 999) ) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_speed out-of-range: %s\n", weather->wx_speed);
-                    strcpy(temp,"...");
+                    xastir_snprintf(temp,sizeof(temp),"...");
                 }
-                strcat(st,temp);
+                strncat(st, temp, st_size - strlen(st));
             } else {
                 // We don't have enough wx_data, may be from a Qualimetrics Q-Net?
                 wx_time=weather->wx_sec_time;
-                xastir_snprintf(st, sizeof(st), ".../...");
+                xastir_snprintf(st, st_size, ".../...");
 
 
             if (debug_level & 1) {
@@ -2405,17 +2465,17 @@ time_t wx_tx_data1(char *st) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_gust too long: %s\n", temp);
 
-                    strcpy(temp,"g...");
+                    xastir_snprintf(temp,sizeof(temp),"g...");
                 }
                 if (atoi(weather->wx_gust) < 0) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_gust out-of-range: %s\n", weather->wx_gust);
 
-                    strcpy(temp,"g...");
+                    xastir_snprintf(temp,sizeof(temp),"g...");
                 }
-                strcat(st,temp);
+                strncat(st, temp, st_size - strlen(st));
             } else
-                strcat(st,"g...");
+                strncat(st, "g...", st_size - strlen(st));
 
             if (strlen(weather->wx_temp) > 0) {
                 xastir_snprintf(temp, sizeof(temp), "t%s", weather->wx_temp);
@@ -2423,17 +2483,17 @@ time_t wx_tx_data1(char *st) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_temp too long: %s\n", temp);
 
-                    strcpy(temp, "t...");
+                    xastir_snprintf(temp,sizeof(temp),"t...");
                 }
                 if ( (atoi(weather->wx_temp) > 999) || (atoi(weather->wx_temp) < -99) ) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_temp out-of-bounds: %s\n", weather->wx_temp);
 
-                    strcpy(temp, "t...");
+                    xastir_snprintf(temp,sizeof(temp),"t...");
                 }
-                strcat(st,temp);
+                strncat(st, temp, st_size - strlen(st));
             } else
-                strcat(st,"t...");
+                strncat(st, "t...", st_size - strlen(st));
 
             if (strlen(weather->wx_rain) > 0) {
                 xastir_snprintf(temp, sizeof(temp), "r%03d",
@@ -2442,17 +2502,20 @@ time_t wx_tx_data1(char *st) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_rain too long: %s\n", temp);
 
-                    strcpy(temp,"r   ");  // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    xastir_snprintf(temp,sizeof(temp),"r   ");
                 }
                 if ((int)(atof(weather->wx_rain)) < 0) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_rain out-of-bounds: %s\n", weather->wx_rain);
 
-                    strcpy(temp, "r..."); // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    xastir_snprintf(temp,sizeof(temp),"r...");
                 }
-                strcat(st,temp);
+                strncat(st, temp, st_size - strlen(st));
             } else {
-                //strcat(st,"r...");  // Don't transmit this field if it's not valid
+                // Don't transmit this field if it's not valid
+                //strncat(st, "r...", st_size - strlen(st));
             }
 
             if (strlen(weather->wx_prec_00) > 0) {
@@ -2462,17 +2525,20 @@ time_t wx_tx_data1(char *st) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_prec_00 too long: %s\n", temp);
 
-                    strcpy(temp,"P   ");    // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    xastir_snprintf(temp,sizeof(temp),"P   ");
                 }
                 if ((int)(atof(weather->wx_prec_00)) < 0) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_prec_00 out-of-bounds: %s\n", weather->wx_prec_00);
 
-                    strcpy(temp, "P...");   // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    xastir_snprintf(temp,sizeof(temp),"P...");
                 }
-                strcat(st,temp);
+                strncat(st, temp, st_size - strlen(st));
             } else {
-                //strcat(st,"P...");  // Don't transmit this field if it's not valid
+                // Don't transmit this field if it's not valid
+                //strncat(st, "P...", st_size - strlen(st));
             }
 
             if (strlen(weather->wx_prec_24) > 0) {
@@ -2482,17 +2548,20 @@ time_t wx_tx_data1(char *st) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_prec_24 too long: %s\n", temp);
 
-                    strcpy(temp,"p   ");    // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    xastir_snprintf(temp,sizeof(temp),"p   ");
                 }
                 if ((int)(atof(weather->wx_prec_24)) < 0) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_prec_24 out-of-bounds: %s\n", weather->wx_prec_24);
 
-                    strcpy(temp, "p...");   // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    xastir_snprintf(temp,sizeof(temp),"p...");
                 }
-                strcat(st,temp);
+                strncat(st, temp, st_size - strlen(st));
             } else {
-                //strcat(st,"p...");  // Don't transmit this field if it's not valid
+                // Don't transmit this field if it's not valid
+                //strncat(st, "p...", st_size - strlen(st));
             }
 
             if (strlen(weather->wx_hum) > 0) {
@@ -2504,16 +2573,20 @@ time_t wx_tx_data1(char *st) {
                 if (strlen(temp) > 4) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_hum too long: %s\n", temp);
-                    //strcpy(temp, "h..");    // Don't transmit this field if it's not valid
+
+                    // Don't transmit this field if it's not valid
+                    //xastir_snprintf(temp,sizeof(temp),"h..");
                 }
                 if (atoi(weather->wx_hum) < 0) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_hum out-of-bounds: %s\n", weather->wx_hum);
-                    //strcpy(temp, "h..");    // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    //xastir_snprintf(temp,sizeof(temp),"h..");
                 }
-                strcat(st,temp);
+                strncat(st, temp, st_size - strlen(st));
             } else {
-                //strcat(st,"h..");   // Don't transmit this field if it's not valid
+                // Don't transmit this field if it's not valid
+                //strncat(st, "h..", st_size - strlen(st));
             }
 
             if (strlen(weather->wx_baro) > 0) {
@@ -2522,20 +2595,23 @@ time_t wx_tx_data1(char *st) {
                 if (strlen(temp)>6) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_baro too long: %s\n", temp);
-                    //strcpy(temp,"b.....");  // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    //xastir_snprintf(temp,sizeof(temp),"b.....");
                 }
                 if ((int)((atof(weather->wx_baro) * 10.0) < 0)) {
                     if (debug_level & 1)
                         fprintf(stderr,"wx_baro out-of-bounds: %s\n", weather->wx_baro);
-                    //strcpy(temp, "b....."); // Don't transmit this field if it's not valid
+                    // Don't transmit this field if it's not valid
+                    //xastir_snprintf(temp,sizeof(temp),"b.....");
                 }
-                strcat(st,temp);
+                strncat(st, temp, st_size - strlen(st));
             } else {
-                //strcat(st,"b.....");    // Don't transmit this field if it's not valid
+                // Don't transmit this field if it's not valid
+                //strncat(st, "b.....", st_size - strlen(st));
             }
 
             xastir_snprintf(temp, sizeof(temp), "%c%s", weather->wx_type, weather->wx_station);
-            strcat(st,temp);
+            strncat(st, temp, st_size - strlen(st));
         }
     }
 

@@ -401,7 +401,9 @@ void draw_toporama_map (Widget w,
 
     // We now re-use the "file" variable.  It'll hold the
     //name of the map file now instead of the .geo file.
-    strcpy(file,local_filename);  // Tell ImageMagick where to find it
+
+    // Tell ImageMagick where to find it
+    xastir_snprintf(file,sizeof(file),"%s",local_filename);
 
 
 
@@ -611,14 +613,15 @@ void draw_geo_image_map (Widget w,
                     // make it relative to the .geo file
                     char temp[MAX_FILENAME];
 
-                    strncpy(temp, file, MAX_FILENAME); // grab .geo file name
-                    temp[MAX_FILENAME-1] = '\0';
+                    // grab .geo file name
+                    xastir_snprintf(temp,sizeof(temp),"%s",file);
+
                     (void)get_map_dir(temp);           // leaves just the path and trailing /
                     if (strlen(temp) < (MAX_FILENAME - 1 - strlen(fileimg)))
                         strncat(temp,
                             fileimg,
                             sizeof(temp) - strlen(temp));
-                    strcpy(fileimg, temp);
+                    xastir_snprintf(fileimg,sizeof(fileimg),"%s",temp);
                 }
             }
             if (strncasecmp (line, "URL", 3) == 0)
@@ -739,13 +742,17 @@ void draw_geo_image_map (Widget w,
                 imagemagick_options.normalize = 1;
 #if (MagickLibVersion >= 0x0539)
             if (strncasecmp(line, "LEVEL", 5) == 0) {
-                strncpy(imagemagick_options.level, line + 6, 31);
-                imagemagick_options.level[31] = '\0';
+                xastir_snprintf(imagemagick_options.level,
+                    sizeof(imagemagick_options.level),
+                    "%s",
+                    line+6);
             }
 #endif  // MagickLibVersion >= 0x0539
             if (strncasecmp(line, "MODULATE", 8) == 0) {
-                strncpy(imagemagick_options.modulate, line + 9, 31);
-                imagemagick_options.modulate[31] = '\0';
+                xastir_snprintf(imagemagick_options.modulate,
+                    sizeof(imagemagick_options.modulate),
+                    "%s",
+                    line+9); 
             }
 #endif  // HAVE_IMAGEMAGICK
         }
@@ -810,7 +817,10 @@ void draw_geo_image_map (Widget w,
 //        fprintf(stderr,"Map Datum: %s\n",geo_datum);   // not used now...
 
     if (geo_projection[0] == '\0')
-        strcpy(geo_projection,"LatLon");        // default
+        // default
+        xastir_snprintf(geo_projection,
+            sizeof(geo_projection),
+            "LatLon");
     //fprintf(stderr,"Map Projection: %s\n",geo_projection);
     //    (void)to_upper(geo_projection);
     if (strcasecmp(geo_projection,"TM") == 0)
@@ -979,7 +989,10 @@ void draw_geo_image_map (Widget w,
 #ifdef HAVE_IMAGEMAGICK
             GetExceptionInfo(&exception);
             image_info=CloneImageInfo((ImageInfo *) NULL);
-            (void) strcpy(image_info->filename, fileimg);
+            xastir_snprintf(image_info->filename,
+                sizeof(image_info->filename),
+                "%s",
+                fileimg);
             if (debug_level & 16) {
                 fprintf(stderr,"Copied %s into image info.\n", file);
                 fprintf(stderr,"image_info got: %s\n", image_info->filename);
@@ -1224,7 +1237,8 @@ fprintf(stderr,"1 ");
 
         // We now re-use the "file" variable.  It'll hold the
         //name of the map file now instead of the .geo file.
-        strcpy(file,local_filename);  // Tell ImageMagick where to find it
+        // Tell ImageMagick where to find it
+        xastir_snprintf(file, sizeof(file), "%s", local_filename);
 #endif  // HAVE_IMAGEMAGICK
 
     } else {
@@ -1232,7 +1246,7 @@ fprintf(stderr,"1 ");
 
         // We now re-use the "file" variable.  It'll hold the
         //name of the map file now instead of the .geo file.
-        strcpy (file, fileimg);
+        xastir_snprintf(file, sizeof(file), "%s", fileimg);
     }
 
     //fprintf(stderr,"File = %s\n",file);
@@ -1250,7 +1264,10 @@ fprintf(stderr,"1 ");
 #ifdef HAVE_IMAGEMAGICK
     GetExceptionInfo(&exception);
     image_info=CloneImageInfo((ImageInfo *) NULL);
-    (void) strcpy(image_info->filename, file);
+    xastir_snprintf(image_info->filename,
+        sizeof(image_info->filename),
+        "%s",
+        file);
     if (debug_level & 16) {
            fprintf(stderr,"Copied %s into image info.\n", file);
            fprintf(stderr,"image_info got: %s\n", image_info->filename);

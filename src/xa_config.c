@@ -47,6 +47,7 @@
 #include "maps.h"
 #include "track_gui.h"
 #include "geo.h"
+#include "snprintf.h"
 
 #define CONFIG_FILE      "config/xastir.cnf"
 #define CONFIG_FILE_BAK1 "config/xastir.cnf.1"
@@ -130,7 +131,7 @@ void input_close(void)
     The return value of the function will be 1 if the option is found and 0
     if the option is not found.
 */
-int get_string(char *option, char *value) {
+int get_string(char *option, char *value, int value_size) {
     char config_file[MAX_VALUE];
     char config_line[256];
     char *option_in;
@@ -140,7 +141,12 @@ int get_string(char *option, char *value) {
     option_found = 0;
 
     if (fin == NULL) {
-        strcpy (config_file, get_user_base_dir (CONFIG_FILE));
+
+        xastir_snprintf(config_file,
+            sizeof(config_file),
+            "%s",
+            get_user_base_dir(CONFIG_FILE));
+
         // filecreate() refuses to create a new file if it already
         // exists.
         (void)filecreate(config_file);
@@ -157,7 +163,10 @@ int get_string(char *option, char *value) {
                 if (value_in == NULL)
                     value = "";
                 else
-                    strcpy (value, value_in);
+                    xastir_snprintf(value,
+                        value_size,
+                        "%s",
+                        value_in);
             }
         }
     }
@@ -175,7 +184,7 @@ int get_char(char *option, char *value) {
     char value_o[MAX_VALUE];
     int ret;
 
-    ret = get_string (option, value_o);
+    ret = get_string (option, value_o, sizeof(value_o));
     if (ret)
         *value = value_o[0];
 
@@ -192,7 +201,7 @@ int get_int(char *option, int *value, int low, int high, int def) {
     char value_o[MAX_VALUE];
     int ret;
 
-    ret = get_string (option, value_o);
+    ret = get_string (option, value_o, sizeof(value_o));
     if (ret && (atoi(value_o) >= low) && (atoi(value_o) <= high) )
         *value = atoi (value_o);
     else {
@@ -215,7 +224,7 @@ int get_long(char *option, long *value, long low, long high, long def) {
     char value_o[MAX_VALUE];
     int ret;
 
-    ret = get_string (option, value_o);
+    ret = get_string (option, value_o, sizeof(value_o));
     if (ret && (atol(value_o) >= low) && (atol(value_o) <= high) )
         *value = atol (value_o);
     else {
@@ -236,13 +245,16 @@ char *get_user_base_dir(char *dir) {
     static char base[MAX_VALUE];
     char *env_ptr;
 
-    strcpy (base, ((env_ptr = getenv ("XASTIR_USER_BASE")) != NULL) ? env_ptr : user_dir);
+    xastir_snprintf(base,
+        sizeof(base),
+        "%s",
+        ((env_ptr = getenv ("XASTIR_USER_BASE")) != NULL) ? env_ptr : user_dir);
 
     if (base[strlen (base) - 1] != '/')
-        strcat (base, "/");
+        strncat (base, "/", sizeof(base) - strlen(base));
 
-    strcat (base, ".xastir/");
-    return strcat (base, dir);
+    strncat (base, ".xastir/", sizeof(base) - strlen(base));
+    return strncat(base, dir, sizeof(base) - strlen(base));
 }
 
 
@@ -255,11 +267,15 @@ char *get_data_base_dir(char *dir) {
 
     // Snag this variable from the environment if it exists there,
     // else grab it from the define in config.h
-    strcpy (base, ((env_ptr = getenv ("XASTIR_DATA_BASE")) != NULL) ? env_ptr : XASTIR_DATA_BASE);
-    if (base[strlen (base) - 1] != '/')
-        strcat (base, "/");
+    xastir_snprintf(base,
+        sizeof(base),
+        "%s",
+        ((env_ptr = getenv ("XASTIR_DATA_BASE")) != NULL) ? env_ptr : XASTIR_DATA_BASE);
 
-    return strcat (base, dir);
+    if (base[strlen (base) - 1] != '/')
+        strncat(base, "/", sizeof(base) - strlen(base));
+
+    return strncat(base, dir, sizeof(base) - strlen(base));
 }
 
 
@@ -297,10 +313,26 @@ void save_data(void)  {
 //    if (debug_level & 1)
 //        fprintf(stderr,"Store String Start\n");
 
-    strcpy (config_file, get_user_base_dir (CONFIG_FILE));
-    strcpy (config_file_bak1, get_user_base_dir (CONFIG_FILE_BAK1));
-    strcpy (config_file_bak2, get_user_base_dir (CONFIG_FILE_BAK2));
-    strcpy (config_file_bak3, get_user_base_dir (CONFIG_FILE_BAK3));
+    xastir_snprintf(config_file,
+        sizeof(config_file),
+        "%s",
+        get_user_base_dir(CONFIG_FILE));
+
+    xastir_snprintf(config_file_bak1,
+        sizeof(config_file_bak1),
+        "%s",
+        get_user_base_dir(CONFIG_FILE_BAK1));
+
+    xastir_snprintf(config_file_bak2,
+        sizeof(config_file_bak2),
+        "%s",
+        get_user_base_dir(CONFIG_FILE_BAK2));
+
+    xastir_snprintf(config_file_bak3,
+        sizeof(config_file_bak3),
+        "%s",
+        get_user_base_dir(CONFIG_FILE_BAK3));
+ 
 
     // Remove the bak3 file
     unlink (config_file_bak3);
@@ -545,112 +577,193 @@ void save_data(void)  {
         for (i = 0; i < MAX_IFACE_DEVICES; i++) {
             sprintf (name_temp, "DEVICE%0d_", i);
 
-            strcpy (name, name_temp);
-            strcat (name, "TYPE");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TYPE", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].device_type);
 
-            strcpy (name, name_temp);
-            strcat (name, "NAME");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "NAME", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].device_name);
 
-            strcpy (name, name_temp);
-            strcat (name, "RADIO_PORT");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "RADIO_PORT", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].radio_port);
 
-            strcpy (name, name_temp);
-            strcat (name, "INTERFACE_COMMENT");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "INTERFACE_COMMENT", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].comment);
 
-            strcpy (name, name_temp);
-            strcat (name, "HOST");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "HOST", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].device_host_name);
 
-            strcpy (name, name_temp);
-            strcat (name, "PASSWD");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "PASSWD", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].device_host_pswd);
 
-            strcpy (name, name_temp);
-            strcat (name, "FILTER_PARAMS");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "FILTER_PARAMS", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].device_host_filter_string);
 
-            strcpy (name, name_temp);
-            strcat (name, "UNPROTO1");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "UNPROTO1", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].unproto1);
 
-            strcpy (name, name_temp);
-            strcat (name, "UNPROTO2");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "UNPROTO2", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].unproto2);
 
-            strcpy (name, name_temp);
-            strcat (name, "UNPROTO3");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "UNPROTO3", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].unproto3);
 
-            strcpy (name, name_temp);
-            strcat (name, "UNPROTO_IGATE");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "UNPROTO_IGATE", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].unproto_igate);
 
-            strcpy (name, name_temp);
-            strcat (name, "TNC_UP_FILE");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TNC_UP_FILE", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].tnc_up_file);
 
-            strcpy (name, name_temp);
-            strcat (name, "TNC_DOWN_FILE");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TNC_DOWN_FILE", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].tnc_down_file);
 
-            strcpy (name, name_temp);
-            strcat (name, "TNC_TXDELAY");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TNC_TXDELAY", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].txdelay);
 
-            strcpy (name, name_temp);
-            strcat (name, "TNC_PERSISTENCE");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TNC_PERSISTENCE", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].persistence);
 
-            strcpy (name, name_temp);
-            strcat (name, "TNC_SLOTTIME");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TNC_SLOTTIME", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].slottime);
 
-            strcpy (name, name_temp);
-            strcat (name, "TNC_TXTAIL");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TNC_TXTAIL", sizeof(name) - strlen(name));
             store_string (fout, name, devices[i].txtail);
 
-            strcpy (name, name_temp);
-            strcat (name, "TNC_FULLDUPLEX");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TNC_FULLDUPLEX", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].fullduplex);
 
-            strcpy (name, name_temp);
-            strcat (name, "SPEED");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "SPEED", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].sp);
 
-            strcpy (name, name_temp);
-            strcat (name, "STYLE");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "STYLE", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].style);
 
-            strcpy (name, name_temp);
-            strcat (name, "IGATE_OPTION");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "IGATE_OPTION", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].igate_options);
 
-            strcpy (name, name_temp);
-            strcat (name, "TXMT");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "TXMT", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].transmit_data);
 
-            strcpy (name, name_temp);
-            strcat (name, "RELAY_DIGIPEAT");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "RELAY_DIGIPEAT", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].relay_digipeat);
 
-            strcpy (name, name_temp);
-            strcat (name, "RECONN");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "RECONN", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].reconnect);
 
-            strcpy (name, name_temp);
-            strcat (name, "ONSTARTUP");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "ONSTARTUP", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].connect_on_startup);
 
-            strcpy (name, name_temp);
-            strcat(name, "GPSRETR");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat(name, "GPSRETR", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].gps_retrieve);
 
-            strcpy (name, name_temp);
-            strcat (name, "SETTIME");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "SETTIME", sizeof(name) - strlen(name));
             store_int (fout, name, devices[i].set_time);
         }
         /* TNC */
@@ -784,11 +897,17 @@ void save_data(void)  {
         /* list attributes */
         for (i = 0; i < LST_NUM; i++) {
             sprintf (name_temp, "LIST%0d_", i);
-            strcpy (name, name_temp);
-            strcat (name, "H");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "H", sizeof(name) - strlen(name));
             store_int (fout, name, list_size_h[i]);
-            strcpy (name, name_temp);
-            strcat (name, "W");
+            xastir_snprintf(name,
+                sizeof(name),
+                "%s",
+                name_temp);
+            strncat (name, "W", sizeof(name) - strlen(name));
             store_int (fout, name, list_size_w[i]);
         }
 
@@ -839,19 +958,26 @@ void load_data_or_default(void) {
     long temp;
 
     /* language */
-    if (!get_string ("LANGUAGE", lang_to_use))
-        strcpy (lang_to_use, "English");
-
+    if (!get_string ("LANGUAGE", lang_to_use, sizeof(lang_to_use)))
+        xastir_snprintf(lang_to_use,
+            sizeof(lang_to_use),
+            "English");
 
     /* my data */
-    if (!get_string ("STATION_CALLSIGN", my_callsign))
-        strcpy (my_callsign, "NOCALL");
+    if (!get_string ("STATION_CALLSIGN", my_callsign, sizeof(my_callsign)))
+        xastir_snprintf(my_callsign,
+            sizeof(my_callsign),
+            "NOCALL");
 
-    if (!get_string ("STATION_LAT", my_lat))
-        strcpy (my_lat, "0000.000N");
+    if (!get_string ("STATION_LAT", my_lat, sizeof(my_lat)))
+        xastir_snprintf(my_lat,
+            sizeof(my_lat),
+            "0000.000N");
     if ( (my_lat[4] != '.')
             || (my_lat[8] != 'N' && my_lat[8] != 'S') ) {
-        strcpy (my_lat, "0000.000N");
+        xastir_snprintf(my_lat,
+            sizeof(my_lat),
+            "0000.000N");
         fprintf(stderr,"Invalid Latitude, changing it to 0000.000N\n");
     }
     // convert old data to high prec
@@ -859,11 +985,15 @@ void load_data_or_default(void) {
     convert_lat_l2s (temp, my_lat, sizeof(my_lat), CONVERT_HP_NOSP);
 
 
-    if (!get_string ("STATION_LONG", my_long))
-        strcpy (my_long, "00000.000W");
+    if (!get_string ("STATION_LONG", my_long, sizeof(my_long)))
+        xastir_snprintf(my_long,
+            sizeof(my_long),
+            "00000.000W");
     if ( (my_long[5] != '.')
             || (my_long[9] != 'W' && my_long[9] != 'E') ) {
-        strcpy (my_long, "00000.000W");
+        xastir_snprintf(my_long,
+            sizeof(my_long),
+            "00000.000W");
         fprintf(stderr,"Invalid Longitude, changing it to 00000.000W\n");
     }
     // convert old data to high prec
@@ -883,10 +1013,10 @@ void load_data_or_default(void) {
     if (!get_char ("STATION_MESSAGE_TYPE", &aprs_station_message_type))
         aprs_station_message_type = '=';
 
-    if (!get_string ("STATION_POWER", my_phg))
-        strcpy (my_phg, "");
+    if (!get_string ("STATION_POWER", my_phg, sizeof(my_phg)))
+        my_phg[0] = '\0';
 
-    if (!get_string ("STATION_COMMENTS", my_comment))
+    if (!get_string ("STATION_COMMENTS", my_comment, sizeof(my_comment)))
         sprintf (my_comment, "XASTIR-%s", XASTIR_SYSTEM);
 
     /* default values */
@@ -923,12 +1053,12 @@ void load_data_or_default(void) {
 
 #if !defined(NO_GRAPHICS)
 #if defined(HAVE_IMAGEMAGICK)
-    if (!get_string("IMAGEMAGICK_GAMMA_ADJUST", name))
+    if (!get_string("IMAGEMAGICK_GAMMA_ADJUST", name, sizeof(name)))
         imagemagick_gamma_adjust = 0.0;
     else
         sscanf(name, "%f", &imagemagick_gamma_adjust);
 #endif  // HAVE_IMAGEMAGICK
-    if (!get_string("RASTER_MAP_INTENSITY", name))
+    if (!get_string("RASTER_MAP_INTENSITY", name, sizeof(name)))
         raster_map_intensity = 1.0;
     else
         sscanf(name, "%f", &raster_map_intensity);
@@ -943,8 +1073,10 @@ void load_data_or_default(void) {
     if (!get_int ("MAP_WX_ALERT_STYLE", &wx_alert_style, 0, 1, 1))
         wx_alert_style = 1;
 
-    if (!get_string("ALTNET_CALL", altnet_call))
-        strcpy(altnet_call, "XASTIR");
+    if (!get_string("ALTNET_CALL", altnet_call, sizeof(altnet_call)))
+        xastir_snprintf(altnet_call,
+            sizeof(altnet_call),
+            "XASTIR");
 
     if (!get_int("ALTNET", &altnet, 0, 1, 0))
         altnet=0;
@@ -952,35 +1084,65 @@ void load_data_or_default(void) {
     if (!get_int("SKIP_DUPE_CHECK", &skip_dupe_checking, 0, 1, 0))
         skip_dupe_checking=0;
 
-    if (!get_string ("AUTO_MAP_DIR", AUTO_MAP_DIR))
-        strcpy (AUTO_MAP_DIR, get_data_base_dir ("maps"));
+    if (!get_string ("AUTO_MAP_DIR", AUTO_MAP_DIR, sizeof(AUTO_MAP_DIR)))
+        xastir_snprintf(AUTO_MAP_DIR,
+            sizeof(AUTO_MAP_DIR),
+            "%s",
+            get_data_base_dir ("maps"));
 
-    if (!get_string ("ALERT_MAP_DIR", ALERT_MAP_DIR))
-        strcpy (ALERT_MAP_DIR, get_data_base_dir ("Counties"));
+    if (!get_string ("ALERT_MAP_DIR", ALERT_MAP_DIR, sizeof(ALERT_MAP_DIR)))
+        xastir_snprintf(ALERT_MAP_DIR,
+            sizeof(ALERT_MAP_DIR),
+            "%s",
+            get_data_base_dir ("Counties"));
 
-    if (!get_string ("SELECTED_MAP_DIR", SELECTED_MAP_DIR))
-        strcpy (SELECTED_MAP_DIR, get_data_base_dir ("maps"));
+    if (!get_string ("SELECTED_MAP_DIR", SELECTED_MAP_DIR, sizeof(SELECTED_MAP_DIR)))
+        xastir_snprintf(SELECTED_MAP_DIR,
+            sizeof(SELECTED_MAP_DIR),
+            "%s",
+            get_data_base_dir ("maps"));
 
-    if (!get_string ("SELECTED_MAP_DATA", SELECTED_MAP_DATA))
-        strcpy (SELECTED_MAP_DATA, get_user_base_dir ("config/selected_maps.sys"));
+    if (!get_string ("SELECTED_MAP_DATA", SELECTED_MAP_DATA, sizeof(SELECTED_MAP_DATA)))
+        xastir_snprintf(SELECTED_MAP_DATA,
+            sizeof(SELECTED_MAP_DATA),
+            "%s",
+            get_user_base_dir ("config/selected_maps.sys"));
 
-    if (!get_string ("MAP_INDEX_DATA", MAP_INDEX_DATA))
-        strcpy (MAP_INDEX_DATA, get_user_base_dir ("config/map_index.sys"));
+    if (!get_string ("MAP_INDEX_DATA", MAP_INDEX_DATA, sizeof(MAP_INDEX_DATA)))
+        xastir_snprintf(MAP_INDEX_DATA,
+            sizeof(MAP_INDEX_DATA),
+            "%s",
+            get_user_base_dir ("config/map_index.sys"));
 
-    if (!get_string ("SYMBOLS_DIR", SYMBOLS_DIR))
-        strcpy (SYMBOLS_DIR, get_data_base_dir ("symbols"));
+    if (!get_string ("SYMBOLS_DIR", SYMBOLS_DIR, sizeof(SYMBOLS_DIR)))
+        xastir_snprintf(SYMBOLS_DIR,
+            sizeof(SYMBOLS_DIR),
+            "%s",
+            get_data_base_dir ("symbols"));
 
-    if (!get_string ("SOUND_DIR", SOUND_DIR))
-        strcpy (SOUND_DIR, get_data_base_dir ("sounds"));
+    if (!get_string ("SOUND_DIR", SOUND_DIR, sizeof(SOUND_DIR)))
+        xastir_snprintf(SOUND_DIR,
+            sizeof(SOUND_DIR),
+            "%s",
+            get_data_base_dir ("sounds"));
 
-    if (!get_string ("GROUP_DATA_FILE", group_data_file))
-        strcpy (group_data_file, get_user_base_dir ("config/groups"));
+    if (!get_string ("GROUP_DATA_FILE", group_data_file, sizeof(group_data_file)))
+        xastir_snprintf(group_data_file,
+            sizeof(group_data_file),
+            "%s",
+            get_user_base_dir ("config/groups"));
 
-    if (!get_string ("GNIS_FILE", locate_gnis_filename))
-        strcpy (locate_gnis_filename, get_data_base_dir ("GNIS/WA.gnis"));
+    if (!get_string ("GNIS_FILE", locate_gnis_filename, sizeof(locate_gnis_filename)))
+        xastir_snprintf(locate_gnis_filename,
+            sizeof(locate_gnis_filename),
+            "%s",
+            get_data_base_dir ("GNIS/WA.gnis"));
 
-    if (!get_string ("GEOCODE_FILE", geocoder_map_filename))
-        strcpy (geocoder_map_filename, get_data_base_dir ("GNIS/geocode"));
+    if (!get_string ("GEOCODE_FILE", geocoder_map_filename, sizeof(geocoder_map_filename)))
+        xastir_snprintf(geocoder_map_filename,
+            sizeof(geocoder_map_filename),
+            "%s",
+            get_data_base_dir ("GNIS/geocode"));
 
     if (!get_int ("SHOW_FIND_TARGET", &show_destination_mark, 0, 1, 1))
         show_destination_mark = 1;
@@ -1004,18 +1166,36 @@ void load_data_or_default(void) {
     if (!get_int ("MAPS_INDEX_ON_STARTUP", &index_maps_on_startup, 0, 1, 1))
       index_maps_on_startup = 1;
 
-    if (!get_string ("MAPS_LABEL_FONT_TINY", rotated_label_fontname[FONT_TINY]))
-        strcpy(rotated_label_fontname[FONT_TINY],"-adobe-helvetica-medium-o-normal--8-*-*-*-*-*-iso8859-1");
-    if (!get_string ("MAPS_LABEL_FONT_SMALL", rotated_label_fontname[FONT_SMALL]))
-        strcpy(rotated_label_fontname[FONT_SMALL],"-adobe-helvetica-medium-o-normal--10-*-*-*-*-*-iso8859-1");
-    if (!get_string ("MAPS_LABEL_FONT_MEDIUM", rotated_label_fontname[FONT_MEDIUM]))
-        strcpy(rotated_label_fontname[FONT_MEDIUM],"-adobe-helvetica-medium-o-normal--12-*-*-*-*-*-iso8859-1");
-    if (!get_string ("MAPS_LABEL_FONT_LARGE", rotated_label_fontname[FONT_LARGE]))
-        strcpy(rotated_label_fontname[FONT_LARGE],"-adobe-helvetica-medium-o-normal--14-*-*-*-*-*-iso8859-1");
-    if (!get_string ("MAPS_LABEL_FONT_HUGE", rotated_label_fontname[FONT_HUGE]))
-        strcpy(rotated_label_fontname[FONT_HUGE],"-adobe-helvetica-medium-o-normal--24-*-*-*-*-*-iso8859-1");
-    if (!get_string ("MAPS_LABEL_FONT", rotated_label_fontname[FONT_DEFAULT]))
-        strcpy(rotated_label_fontname[FONT_DEFAULT],"-adobe-helvetica-medium-o-normal--12-*-*-*-*-*-iso8859-1");
+    if (!get_string ("MAPS_LABEL_FONT_TINY", rotated_label_fontname[FONT_TINY], sizeof(rotated_label_fontname[FONT_TINY])))
+        xastir_snprintf(rotated_label_fontname[FONT_TINY],
+            sizeof(rotated_label_fontname[FONT_TINY]),
+            "-adobe-helvetica-medium-o-normal--8-*-*-*-*-*-iso8859-1");
+
+    if (!get_string ("MAPS_LABEL_FONT_SMALL", rotated_label_fontname[FONT_SMALL], sizeof(rotated_label_fontname[FONT_SMALL])))
+        xastir_snprintf(rotated_label_fontname[FONT_SMALL],
+            sizeof(rotated_label_fontname[FONT_SMALL]),
+            "-adobe-helvetica-medium-o-normal--10-*-*-*-*-*-iso8859-1");
+
+    if (!get_string ("MAPS_LABEL_FONT_MEDIUM", rotated_label_fontname[FONT_MEDIUM], sizeof(rotated_label_fontname[FONT_MEDIUM])))
+        xastir_snprintf(rotated_label_fontname[FONT_MEDIUM],
+            sizeof(rotated_label_fontname[FONT_MEDIUM]),
+            "-adobe-helvetica-medium-o-normal--12-*-*-*-*-*-iso8859-1");
+
+    if (!get_string ("MAPS_LABEL_FONT_LARGE", rotated_label_fontname[FONT_LARGE], sizeof(rotated_label_fontname[FONT_LARGE])))
+        xastir_snprintf(rotated_label_fontname[FONT_LARGE],
+            sizeof(rotated_label_fontname[FONT_LARGE]),
+            "-adobe-helvetica-medium-o-normal--14-*-*-*-*-*-iso8859-1");
+
+    if (!get_string ("MAPS_LABEL_FONT_HUGE", rotated_label_fontname[FONT_HUGE], sizeof(rotated_label_fontname[FONT_HUGE])))
+        xastir_snprintf(rotated_label_fontname[FONT_HUGE],
+            sizeof(rotated_label_fontname[FONT_HUGE]),
+            "-adobe-helvetica-medium-o-normal--24-*-*-*-*-*-iso8859-1");
+
+    if (!get_string ("MAPS_LABEL_FONT", rotated_label_fontname[FONT_DEFAULT], sizeof(rotated_label_fontname[FONT_DEFAULT])))
+        xastir_snprintf(rotated_label_fontname[FONT_DEFAULT],
+            sizeof(rotated_label_fontname[FONT_DEFAULT]),
+            "-adobe-helvetica-medium-o-normal--12-*-*-*-*-*-iso8859-1");
+
 //N0VH
 #if defined(HAVE_IMAGEMAGICK)
     if (!get_int ("TIGERMAP_TIMEOUT", &tigermap_timeout, 10, 120, 30))
@@ -1173,138 +1353,229 @@ void load_data_or_default(void) {
 
     for (i = 0; i < MAX_IFACE_DEVICES; i++) {
         sprintf (name_temp, "DEVICE%0d_", i);
-        strcpy (name, name_temp);
-        strcat (name, "TYPE");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TYPE", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].device_type,0,MAX_IFACE_DEVICE_TYPES,DEVICE_NONE)) {
             devices[i].device_type = DEVICE_NONE;
         }
-        strcpy (name, name_temp);
-        strcat (name, "NAME");
-        if (!get_string (name, devices[i].device_name))
-            strcpy (devices[i].device_name, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "NAME", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].device_name, sizeof(devices[i].device_name)))
+            devices[i].device_name[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "RADIO_PORT");
-        if (!get_string (name, devices[i].radio_port))
-            strcpy (devices[i].radio_port, "0");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "RADIO_PORT", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].radio_port, sizeof(devices[i].radio_port)))
+            xastir_snprintf(devices[i].radio_port,
+                sizeof(devices[i].radio_port),
+                "0");
 
-        strcpy (name, name_temp);
-        strcat (name, "INTERFACE_COMMENT");
-        if (!get_string (name, devices[i].comment))
-            strcpy (devices[i].comment, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "INTERFACE_COMMENT", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].comment, sizeof(devices[i].comment)))
+            devices[i].comment[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "HOST");
-        if (!get_string (name, devices[i].device_host_name))
-            strcpy (devices[i].device_host_name, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "HOST", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].device_host_name, sizeof(devices[i].device_host_name)))
+            devices[i].device_host_name[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "PASSWD");
-        if (!get_string (name, devices[i].device_host_pswd))
-            strcpy (devices[i].device_host_pswd, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "PASSWD", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].device_host_pswd, sizeof(devices[i].device_host_pswd)))
+            devices[i].device_host_pswd[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "FILTER_PARAMS");
-        if (!get_string (name, devices[i].device_host_filter_string))
-            strcpy (devices[i].device_host_filter_string, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "FILTER_PARAMS", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].device_host_filter_string, sizeof(devices[i].device_host_filter_string)))
+            devices[i].device_host_filter_string[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "UNPROTO1");
-        if (!get_string (name, devices[i].unproto1))
-            strcpy (devices[i].unproto1, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "UNPROTO1", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].unproto1, sizeof(devices[i].unproto1)))
+            devices[i].unproto1[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "UNPROTO2");
-        if (!get_string (name, devices[i].unproto2))
-            strcpy (devices[i].unproto2, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "UNPROTO2", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].unproto2, sizeof(devices[i].unproto2)))
+            devices[i].unproto2[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "UNPROTO3");
-        if (!get_string (name, devices[i].unproto3))
-            strcpy (devices[i].unproto3, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "UNPROTO3", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].unproto3, sizeof(devices[i].unproto3)))
+            devices[i].unproto3[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "UNPROTO_IGATE");
-        if (!get_string (name, devices[i].unproto_igate))
-            strcpy (devices[i].unproto_igate, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "UNPROTO_IGATE", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].unproto_igate, sizeof(devices[i].unproto_igate)))
+            devices[i].unproto_igate[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "TNC_UP_FILE");
-        if (!get_string (name, devices[i].tnc_up_file))
-            strcpy (devices[i].tnc_up_file, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TNC_UP_FILE", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].tnc_up_file, sizeof(devices[i].tnc_up_file)))
+            devices[i].tnc_up_file[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "TNC_DOWN_FILE");
-        if (!get_string (name, devices[i].tnc_down_file))
-            strcpy (devices[i].tnc_down_file, "");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TNC_DOWN_FILE", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].tnc_down_file, sizeof(devices[i].tnc_down_file)))
+            devices[i].tnc_down_file[0] = '\0';
 
-        strcpy (name, name_temp);
-        strcat (name, "TNC_TXDELAY");
-        if (!get_string (name, devices[i].txdelay))
-            strcpy (devices[i].txdelay, "40");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TNC_TXDELAY", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].txdelay, sizeof(devices[i].txdelay)))
+            xastir_snprintf(devices[i].txdelay,
+                sizeof(devices[i].txdelay),
+                "40");
 
-        strcpy (name, name_temp);
-        strcat (name, "TNC_PERSISTENCE");
-        if (!get_string (name, devices[i].persistence))
-            strcpy (devices[i].persistence, "63");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TNC_PERSISTENCE", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].persistence, sizeof(devices[i].persistence)))
+            xastir_snprintf(devices[i].persistence,
+                sizeof(devices[i].persistence),
+                "63");
 
-        strcpy (name, name_temp);
-        strcat (name, "TNC_SLOTTIME");
-        if (!get_string (name, devices[i].slottime))
-            strcpy (devices[i].slottime, "10");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TNC_SLOTTIME", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].slottime, sizeof(devices[i].slottime)))
+            xastir_snprintf(devices[i].slottime,
+                sizeof(devices[i].slottime),
+                "10");
 
-        strcpy (name, name_temp);
-        strcat (name, "TNC_TXTAIL");
-        if (!get_string (name, devices[i].txtail))
-            strcpy (devices[i].txtail, "30");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TNC_TXTAIL", sizeof(name) - strlen(name));
+        if (!get_string (name, devices[i].txtail, sizeof(devices[i].txtail)))
+            xastir_snprintf(devices[i].txtail,
+                sizeof(devices[i].txtail),
+                "30");
 
-        strcpy (name, name_temp);
-        strcat (name, "TNC_FULLDUPLEX");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TNC_FULLDUPLEX", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].fullduplex, 0, 1, 0))
             devices[i].fullduplex = 0;
 
-        strcpy (name, name_temp);
-        strcat (name, "SPEED");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "SPEED", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].sp,0,230400,0))
             devices[i].sp = 0;
 
-        strcpy (name, name_temp);
-        strcat (name, "STYLE");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "STYLE", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].style,0,2,0))
             devices[i].style = 0;
 
-        strcpy (name, name_temp);
-        strcat (name, "IGATE_OPTION");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "IGATE_OPTION", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].igate_options,0,2,0))
             devices[i].igate_options = 0;
 
-        strcpy (name, name_temp);
-        strcat (name, "TXMT");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "TXMT", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].transmit_data,0,1,0))
             devices[i].transmit_data = 0;
 
-        strcpy (name, name_temp);
-        strcat (name, "RELAY_DIGIPEAT");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "RELAY_DIGIPEAT", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].relay_digipeat,0,1,1))
             devices[i].relay_digipeat = 1;
 
-        strcpy (name, name_temp);
-        strcat (name, "RECONN");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "RECONN", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].reconnect,0,1,0))
             devices[i].reconnect = 0;
 
-        strcpy (name, name_temp);
-        strcat (name, "ONSTARTUP");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "ONSTARTUP", sizeof(name) - strlen(name));
         if (!get_int (name, &devices[i].connect_on_startup,0,1,0))
             devices[i].connect_on_startup = 0;
 
-                strcpy (name, name_temp);
-                strcat (name, "GPSRETR");
+                xastir_snprintf(name,
+                    sizeof(name),
+                    "%s",
+                    name_temp);
+                strncat (name, "GPSRETR", sizeof(name) - strlen(name));
                 if (!get_int (name, &devices[i].gps_retrieve,0,255,DEFAULT_GPS_RETR))
                         devices[i].gps_retrieve = DEFAULT_GPS_RETR;
 
-                strcpy (name, name_temp);
-                strcat (name, "SETTIME");
+                xastir_snprintf(name,
+                    sizeof(name),
+                    "%s",
+                    name_temp);
+                strncat (name, "SETTIME", sizeof(name) - strlen(name));
                 if (!get_int (name, &devices[i].set_time,0,1,0))
                         devices[i].set_time = 0;
     }
@@ -1313,8 +1584,11 @@ void load_data_or_default(void) {
     if (!get_int ("TNC_LOG_DATA", &log_tnc_data,0,1,0))
         log_tnc_data = 0;
 
-    if (!get_string ("LOGFILE_TNC", LOGFILE_TNC))
-        strcpy (LOGFILE_TNC, get_user_base_dir ("logs/tnc.log"));
+    if (!get_string ("LOGFILE_TNC", LOGFILE_TNC, sizeof(LOGFILE_TNC)))
+        xastir_snprintf(LOGFILE_TNC,
+            sizeof(LOGFILE_TNC),
+            "%s",
+            get_user_base_dir ("logs/tnc.log"));
 
     /* NET */
     if (!get_int ("NET_LOG_DATA", &log_net_data,0,1,0))
@@ -1333,14 +1607,23 @@ void load_data_or_default(void) {
     if (!get_int ("LOG_WX", &log_wx,0,1,0))
         log_wx = 0;
 
-    if (!get_string ("LOGFILE_IGATE", LOGFILE_IGATE))
-        strcpy (LOGFILE_IGATE, get_user_base_dir ("logs/igate.log"));
+    if (!get_string ("LOGFILE_IGATE", LOGFILE_IGATE, sizeof(LOGFILE_IGATE)))
+        xastir_snprintf(LOGFILE_IGATE,
+            sizeof(LOGFILE_IGATE),
+            "%s",
+            get_user_base_dir ("logs/igate.log"));
 
-    if (!get_string ("LOGFILE_NET", LOGFILE_NET))
-        strcpy (LOGFILE_NET, get_user_base_dir ("logs/net.log"));
+    if (!get_string ("LOGFILE_NET", LOGFILE_NET, sizeof(LOGFILE_NET)))
+        xastir_snprintf(LOGFILE_NET,
+            sizeof(LOGFILE_NET),
+            "%s",
+            get_user_base_dir ("logs/net.log"));
 
-    if (!get_string ("LOGFILE_WX", LOGFILE_WX))
-        strcpy (LOGFILE_WX, get_user_base_dir ("logs/wx.log"));
+    if (!get_string ("LOGFILE_WX", LOGFILE_WX, sizeof(LOGFILE_WX)))
+        xastir_snprintf(LOGFILE_WX,
+            sizeof(LOGFILE_WX),
+            "%s",
+            get_user_base_dir ("logs/wx.log"));
 
     // SNAPSHOTS
     if (!get_int ("SNAPSHOTS_ENABLED", &snapshots_enabled,0,1,0))
@@ -1419,50 +1702,70 @@ void load_data_or_default(void) {
 
 
     /* Audio Alarms*/
-    if (!get_string ("SOUND_COMMAND", sound_command))
-        strcpy (sound_command, "vplay -q");
+    if (!get_string ("SOUND_COMMAND", sound_command, sizeof(sound_command)))
+        xastir_snprintf(sound_command,
+            sizeof(sound_command),
+            "vplay -q");
 
     if (!get_int ("SOUND_PLAY_ONS", &sound_play_new_station,0,1,0))
         sound_play_new_station = 0;
 
-    if (!get_string ("SOUND_ONS_FILE", sound_new_station))
-        strcpy (sound_new_station, "newstation.wav");
+    if (!get_string ("SOUND_ONS_FILE", sound_new_station, sizeof(sound_new_station)))
+        xastir_snprintf(sound_new_station,
+            sizeof(sound_new_station),
+            "newstation.wav");
 
     if (!get_int ("SOUND_PLAY_ONM", &sound_play_new_message,0,1,0))
         sound_play_new_message = 0;
 
-    if (!get_string ("SOUND_ONM_FILE", sound_new_message))
-        strcpy (sound_new_message, "newmessage.wav");
+    if (!get_string ("SOUND_ONM_FILE", sound_new_message, sizeof(sound_new_message)))
+        xastir_snprintf(sound_new_message,
+            sizeof(sound_new_message),
+            "newmessage.wav");
 
     if (!get_int ("SOUND_PLAY_PROX", &sound_play_prox_message,0,1,0))
         sound_play_prox_message = 0;
 
-    if (!get_string ("SOUND_PROX_FILE", sound_prox_message))
-        strcpy (sound_prox_message, "proxwarn.wav");
+    if (!get_string ("SOUND_PROX_FILE", sound_prox_message, sizeof(sound_prox_message)))
+        xastir_snprintf(sound_prox_message,
+            sizeof(sound_prox_message),
+            "proxwarn.wav");
 
-    if (!get_string ("PROX_MIN", prox_min))
-        strcpy (prox_min, "0.01");
+    if (!get_string ("PROX_MIN", prox_min, sizeof(prox_min)))
+        xastir_snprintf(prox_min,
+            sizeof(prox_min),
+            "0.01");
 
-    if (!get_string ("PROX_MAX", prox_max))
-        strcpy (prox_max, "10");
+    if (!get_string ("PROX_MAX", prox_max, sizeof(prox_max)))
+        xastir_snprintf(prox_max,
+            sizeof(prox_max),
+            "10");
 
     if (!get_int ("SOUND_PLAY_BAND", &sound_play_band_open_message,0,1,0))
         sound_play_band_open_message = 0;
 
-    if (!get_string ("SOUND_BAND_FILE", sound_band_open_message))
-        strcpy (sound_band_open_message, "bandopen.wav");
+    if (!get_string ("SOUND_BAND_FILE", sound_band_open_message, sizeof(sound_band_open_message)))
+        xastir_snprintf(sound_band_open_message,
+            sizeof(sound_band_open_message),
+            "bandopen.wav");
 
-    if (!get_string ("BANDO_MIN", bando_min))
-        strcpy (bando_min, "200");
+    if (!get_string ("BANDO_MIN", bando_min, sizeof(bando_min)))
+        xastir_snprintf(bando_min,
+            sizeof(bando_min),
+            "200");
 
-    if (!get_string ("BANDO_MAX", bando_max))
-        strcpy (bando_max, "2000");
+    if (!get_string ("BANDO_MAX", bando_max, sizeof(bando_max)))
+        xastir_snprintf(bando_max,
+            sizeof(bando_max),
+            "2000");
 
     if (!get_int ("SOUND_PLAY_WX_ALERT", &sound_play_wx_alert_message,0,1,0))
         sound_play_wx_alert_message = 0;
 
-    if (!get_string ("SOUND_WX_ALERT_FILE", sound_wx_alert_message))
-        strcpy (sound_wx_alert_message, "thunder.wav");
+    if (!get_string ("SOUND_WX_ALERT_FILE", sound_wx_alert_message, sizeof(sound_wx_alert_message)))
+        xastir_snprintf(sound_wx_alert_message,
+            sizeof(sound_wx_alert_message),
+            "thunder.wav");
 
 #ifdef HAVE_FESTIVAL
     /* Festival Speech defaults */
@@ -1510,8 +1813,10 @@ void load_data_or_default(void) {
 //            sec_remove = (time_t)(24*3600); // change to a one-day expire
     }
 
-    if (!get_string ("MESSAGE_COUNTER", message_counter))
-        strcpy (message_counter, "00");
+    if (!get_string ("MESSAGE_COUNTER", message_counter, sizeof(message_counter)))
+        xastir_snprintf(message_counter,
+            sizeof(message_counter),
+            "00");
 
     message_counter[2] = '\0';  // Terminate at 2 chars
     // Check that chars are within the correct ranges
@@ -1527,8 +1832,10 @@ void load_data_or_default(void) {
         message_counter[1] = '0'; 
     }
 
-    if (!get_string ("AUTO_MSG_REPLY", auto_reply_message))
-        strcpy (auto_reply_message, "Autoreply- No one is at the keyboard");
+    if (!get_string ("AUTO_MSG_REPLY", auto_reply_message, sizeof(auto_reply_message)))
+        xastir_snprintf(auto_reply_message,
+            sizeof(auto_reply_message),
+            "Autoreply- No one is at the keyboard");
 
     if (!get_int ("DISPLAY_PACKET_TYPE", &Display_packet_data_type,0,2,0))
         Display_packet_data_type = 0;
@@ -1566,13 +1873,19 @@ void load_data_or_default(void) {
     /* list attributes */
     for (i = 0; i < LST_NUM; i++) {
         sprintf (name_temp, "LIST%0d_", i);
-        strcpy (name, name_temp);
-        strcat (name, "H");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "H", sizeof(name) - strlen(name));
         if (!get_int (name, &list_size_h[i],-1,8192,-1))
             list_size_h[i] = -1;
 
-        strcpy (name, name_temp);
-        strcat (name, "W");
+        xastir_snprintf(name,
+            sizeof(name),
+            "%s",
+            name_temp);
+        strncat (name, "W", sizeof(name) - strlen(name));
         if (!get_int (name, &list_size_w[i],-1,8192,-1))
             list_size_w[i] = -1;
 

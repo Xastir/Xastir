@@ -302,15 +302,15 @@ void map_plot (Widget w, long max_x, long max_y, long x_long_cord,
 
 
 
-void
-draw_dos_map(Widget w,
+
+
+void draw_dos_map(Widget w,
              char *dir,
              char *filenm,
              alert_entry *alert,
              u_char alert_color,
              int destination_pixmap,
-             int draw_filled) 
-{  
+             int draw_filled) {  
   FILE *f;
   char file[MAX_FILENAME];
   char map_it[MAX_FILENAME];
@@ -411,10 +411,10 @@ draw_dos_map(Widget w,
       top_boundary = left_boundary = bottom_boundary = right_boundary = 0;
       rewind (f);
       map_title[0] = map_creator[0] = Buffer[0] = '\0';
-      strncpy (map_type, "DOS ", 4);          // set map_type for DOS ASCII maps
+      // set map_type for DOS ASCII maps
+      xastir_snprintf(map_type,sizeof(map_type),"DOS ");
       map_type[4] = '\0';
-      strncpy (file_name, filenm, 32);
-      file_name[31] = '\0';
+      xastir_snprintf(file_name,sizeof(file_name),"%s",filenm);
       total_vector_points = 200000;
       total_labels = 2000;
 
@@ -463,12 +463,11 @@ draw_dos_map(Widget w,
 	      
 	    case 7:
 //fprintf(stderr,"Map Version: %s\n", Buffer);
-	      strncpy (map_version, Buffer, 4);
-          map_version[4] = '\0';    // Terminate it.
+          xastir_snprintf(map_version,sizeof(map_version),"%s",Buffer);
 //fprintf(stderr,"MAP VERSION: %s\n", map_version);
 	      break;
             }
-	    strcpy (Buffer, ptr);
+        xastir_snprintf(Buffer,sizeof(Buffer),"%s",ptr);
 
 //	    if (strlen (Buffer))
 //	      j++;
@@ -632,7 +631,7 @@ draw_dos_map(Widget w,
                 trailer++;
                 if (color == -1) {
                   dos_labels = (int)TRUE;
-                  strcpy (Buffer, ptr);
+                  xastir_snprintf(Buffer,sizeof(Buffer),"%s",ptr);
                   break;
                 }
                 for (k = strlen (trailer) - 1; k >= 0; k--)
@@ -685,7 +684,7 @@ draw_dos_map(Widget w,
                   for (; *trailer == ',' || *trailer == ' '; trailer++) ;
                   LatHld = strtol (trailer, &trailer, 0);
                 } else if (LongHld == 0 && *trailer != '\0') {
-                  strncpy (map_version, "Comp", 4);
+                  xastir_snprintf(map_version,sizeof(map_version),"Comp");
                   map_version[4] = '\0';
                   goto process;
                 }
@@ -736,7 +735,7 @@ draw_dos_map(Widget w,
                 if (trailer && strpbrk (trailer, ", ")) {
                   for (; *trailer == ',' || *trailer == ' '; trailer++) ;
                   dos_flag = (int)strtol (trailer, &trailer, 0);
-                  strncpy (Tag, trailer, 80);
+                  xastir_snprintf(Tag,sizeof(Tag),"%s",trailer);
                   Tag[79] = '\0';
                   if (dos_flag == -1)
                     dos_labels = (int)TRUE;
@@ -806,7 +805,7 @@ draw_dos_map(Widget w,
               if (trailer) {
                 if (*trailer == ',' || *trailer == ' ') {
                   if (LongHld == 0)
-                    strncpy (map_version, "ASCII", 4);
+                    xastir_snprintf(map_version,sizeof(map_version),"ASCII");
                     map_version[4] = '\0';
                   
                   trailer++;
@@ -815,17 +814,17 @@ draw_dos_map(Widget w,
                     dos_labels = (int)TRUE;
                   
                   if (dos_flag == 0 && *trailer != '\0') {
-                    strncpy (map_version, "Line", 4);
+                    xastir_snprintf(map_version,sizeof(map_version),"Line");
                     map_version[4] = '\0';
                     goto process;
                   }
                   color = (int)LongHld;
                 }
               } else
-                strncpy (map_version, "Comp", 4);
+                xastir_snprintf(map_version,sizeof(map_version),"Comp");
                 map_version[4] = '\0';
             }
-            strcpy (Buffer, ptr);
+            xastir_snprintf(Buffer,sizeof(Buffer),"%s",ptr);
           }
         } else {    // Windows map...
           last_behavior = object_behavior;
@@ -921,7 +920,8 @@ draw_dos_map(Widget w,
           if (strcmp (map_type, "DOS ") == 0) {   // Handle DOS-type map labels/embedded objects
             char *trailer;
             (void)fgets (&Buffer[strlen (Buffer)],(int)sizeof (Buffer) - (strlen (Buffer)), f);
-            for (; (ptr = strpbrk (Buffer, "\r\n")) != NULL;strcpy (Buffer, ptr)) {
+            for (; (ptr = strpbrk (Buffer, "\r\n")) != NULL;xastir_snprintf(Buffer,sizeof(Buffer),"%s",ptr)) {
+
               *ptr = '\0';
               label_type[0] = (char)0x08;
               for (ptr++; *ptr == '\r' || *ptr == '\n'; ptr++) ;
@@ -929,7 +929,7 @@ draw_dos_map(Widget w,
               if (trailer && strncmp (Buffer, "0", 1) != 0) {
                 *trailer = '\0';
                 trailer++;
-                strcpy (label_text, Buffer);
+                xastir_snprintf(label_text,sizeof(label_text),"%s",Buffer);
                 
                 // Check for '#' or '$' as the first character of the label.
                 // If found, we have an embedded symbol and colored text to display.
@@ -943,20 +943,23 @@ draw_dos_map(Widget w,
                     symbol_table = '/';
                     symbol_id = label_text[1];
                     symbol_color = label_text[2];
-                    strcpy( label_text, Buffer+3 );         // Take the object out of the label text
+                    // Take the object out of the label text
+                    xastir_snprintf(label_text,sizeof(label_text),"%s",Buffer+3);
                   }
                   else {  // Could be in new or old format with a leading '#' character
                     symbol_table = label_text[1];
                     if (symbol_table == '/' || symbol_table == '\\') {  // New format: #/xC
                       symbol_id = label_text[2];
                       symbol_color = label_text[3];
-                      strcpy( label_text, Buffer+4 );     // Take the object out of the label text
+                      // Take the object out of the label text
+                      xastir_snprintf(label_text,sizeof(label_text),"%s",Buffer+4);
                     }
                     else {                                  // Old format: #xC
                       symbol_table = '\\';
                       symbol_id = label_text[1];
                       symbol_color = label_text[2];
-                      strcpy( label_text, Buffer+3 );     // Take the object out of the label text
+                      // Take the object out of the label text
+                      xastir_snprintf(label_text,sizeof(label_text),"%s",Buffer+3);
                     }
                   }
                   if (debug_level & 512)

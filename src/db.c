@@ -226,7 +226,10 @@ int is_tracked_station(char *call_sign) {
         }
         call_find[ii] = '\0';
     } else {
-        strcpy(call_find,tracking_station_call);
+        xastir_snprintf(call_find,
+            sizeof(call_find),
+            "%s",
+            tracking_station_call);
     }
 
     if (debug_level & 256) {
@@ -307,7 +310,10 @@ void store_most_recent_ack(char *callsign, char *ack) {
     remove_trailing_spaces(call);
 
     // Get a copy of "ack".  We might need to change it.
-    strcpy(new_ack,ack);
+    xastir_snprintf(new_ack,
+        sizeof(new_ack),
+        "%s",
+        ack);
 
     // If it's more than 2 characters long, we can't use it for
     // Reply/Ack protocol as there's only space enough for two.
@@ -891,7 +897,10 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     (void)remove_leading_spaces(m_fill.seq);
 
     // Create a timestamp from the current time
-    strcpy(m_fill.packet_time,get_time(time_data));
+    xastir_snprintf(m_fill.packet_time,
+        sizeof(m_fill.packet_time),
+        "%s",
+        get_time(time_data));
 
     if(record == -1L) {     // No old record found
         m_fill.acked = 0;   // We can't have been acked yet
@@ -994,7 +1003,10 @@ void alert_data_add(char *call_sign, char *from_call, char *data,
     (void)remove_leading_spaces(m_fill.seq);
 
     // Create a timestamp from the current time
-    strcpy(m_fill.packet_time,get_time(time_data));
+    xastir_snprintf(m_fill.packet_time,
+        sizeof(m_fill.packet_time),
+        "%s",
+        get_time(time_data));
 
     // Go try to add it to our alert_list.  alert_build_list() will
     // check for duplicates before adding it.
@@ -1902,7 +1914,11 @@ int is_altnet(DataRow *p_station) {
     else
         temp_altnet_call[0] = '\0';
 
-    strcpy(temp2,temp_altnet_call); // Save for later
+    // Save for later
+    xastir_snprintf(temp2,
+        sizeof(temp2),
+        "%s",
+        temp_altnet_call);
 
     if ((net_ptr = strchr(temp_altnet_call, ',')))
         *net_ptr = '\0';    // Chop the string at the first ',' character
@@ -2076,21 +2092,29 @@ void display_station(Widget w, DataRow *p_station, int single) {
         return;
 
     // Set up call string for display
-    if (Display_.callsign)
+    if (Display_.callsign) {
         if (p_station->tactical_call_sign) {
             // Display tactical callsign instead if it has one
             // defined.
-            strcpy(temp_call,p_station->tactical_call_sign);
+            xastir_snprintf(temp_call,
+                sizeof(temp_call),
+                "%s",
+                p_station->tactical_call_sign);
         }
         else {
             // Display normal callsign.
-            strcpy(temp_call,p_station->call_sign);
+            xastir_snprintf(temp_call,
+                sizeof(temp_call),
+                "%s",
+                p_station->call_sign);
         }
-    else
-        strcpy(temp_call,"");
+    }
+    else {
+        temp_call[0] = '\0';
+    }
 
     // Set up altitude string for display
-    strcpy(temp_altitude,"");
+    temp_altitude[0] = '\0';
 
     if (Display_.altitude) {
         // Check whether we have altitude in the current data
@@ -2124,9 +2148,9 @@ void display_station(Widget w, DataRow *p_station, int single) {
     }
 
     // Set up speed and course strings for display
-    strcpy(temp_speed,"");
-    strcpy(dr_speed,"");
-    strcpy(temp_course,"");
+    temp_speed[0] = '\0';
+    dr_speed[0] = '\0';
+    temp_course[0] = '\0';
 
     if (Display_.speed || Display_.dr_data) {
         // don't display 'fixed' stations speed and course.
@@ -2187,17 +2211,20 @@ void display_station(Widget w, DataRow *p_station, int single) {
     }
 
     // Save the speed into the dr string for later
-    strcpy(dr_speed,temp_speed);
+    xastir_snprintf(dr_speed,
+        sizeof(dr_speed),
+        "%s",
+        temp_speed);
 
     if (!speed_ok  || !Display_.speed)
-        strcpy(temp_speed,"");
+        temp_speed[0] = '\0';
 
     if (!course_ok || !Display_.course)
-        strcpy(temp_course,"");
+        temp_course[0] = '\0';
 
     // Set up distance and bearing strings for display
-    strcpy(temp_my_distance,"");
-    strcpy(temp_my_course,"");
+    temp_my_distance[0] = '\0';
+    temp_my_course[0] = '\0';
 
     if (Display_.dist_bearing && strcmp(p_station->call_sign,my_callsign) != 0) {
         l_lat = convert_lat_s2l(my_lat);
@@ -2217,8 +2244,8 @@ void display_station(Widget w, DataRow *p_station, int single) {
     }
 
     // Set up weather strings for display
-    strcpy(temp_wx_temp,"");
-    strcpy(temp_wx_wind,"");
+    temp_wx_temp[0] = '\0';
+    temp_wx_wind[0] = '\0';
 
     if (weather != NULL) {
         // wx_ghost = 1 if the weather data is too old to display
@@ -2231,7 +2258,9 @@ void display_station(Widget w, DataRow *p_station, int single) {
             && !wx_ghost) {         // Weather is current, display it
 
         if (strlen(weather->wx_temp) > 0) {
-            strcpy(tmp,"T:");
+            xastir_snprintf(tmp,
+                sizeof(tmp),
+                "T:");
             if (Display_.temperature_only)
                 tmp[0] = '\0';
 
@@ -2246,7 +2275,9 @@ void display_station(Widget w, DataRow *p_station, int single) {
         if (!Display_.temperature_only) {
             if (strlen(weather->wx_hum) > 0) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "H:%.0f%%", atof(weather->wx_hum));
-                strcat(temp_wx_temp,wx_tm);
+                strncat(temp_wx_temp,
+                    wx_tm,
+                    sizeof(temp_wx_temp) - strlen(temp_wx_temp));
             }
 
             if (strlen(weather->wx_speed) > 0) {
@@ -2257,12 +2288,16 @@ void display_station(Widget w, DataRow *p_station, int single) {
             if (strlen(weather->wx_gust) > 0) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "G:%.0f%s ",
                                 atof(weather->wx_gust)*cvt_mi2len,un_spd);
-                strcat(temp_wx_wind,wx_tm);
+                strncat(temp_wx_wind,
+                    wx_tm,
+                    sizeof(temp_wx_wind) - strlen(temp_wx_wind));
             }
 
             if (strlen(weather->wx_course) > 0) {
                 xastir_snprintf(wx_tm, sizeof(wx_tm), "C:%.0f°", atof(weather->wx_course));
-                strcat(temp_wx_wind,wx_tm);
+                strncat(temp_wx_wind,
+                    wx_tm,
+                    sizeof(temp_wx_wind) - strlen(temp_wx_wind));
             }
 
             if (temp_wx_wind[strlen(temp_wx_wind)-1] == ' ') {
@@ -2431,7 +2466,11 @@ _do_the_drawing:
 // Still need to draw the circles in different colors for the
 // different ranges.  Might be nice to tint it as well.
 
-        strcpy(temp,weather->wx_hurricane_radius);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s",
+            weather->wx_hurricane_radius);
+
         if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
 
             draw_pod_circle(p_station->coord_lon,
@@ -2441,7 +2480,11 @@ _do_the_drawing:
                             drawing_target);
         }
 
-        strcpy(temp,weather->wx_trop_storm_radius);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s",
+            weather->wx_trop_storm_radius);
+
         if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
             draw_pod_circle(p_station->coord_lon,
                             p_station->coord_lat,
@@ -2450,7 +2493,11 @@ _do_the_drawing:
                             drawing_target);
         }
 
-        strcpy(temp,weather->wx_whole_gale_radius);
+        xastir_snprintf(temp,
+            sizeof(temp),
+            "%s",
+            weather->wx_whole_gale_radius);
+
         if ( (temp[0] != '\0') && (strncmp(temp,"000",3) != 0) ) {
             draw_pod_circle(p_station->coord_lon,
                             p_station->coord_lat,
@@ -2718,16 +2765,24 @@ void draw_ruler(Widget w) {
 
     if(units_english_metric) {
         if (ruler_siz > 1609.3/2) {
-            strcpy(unit,"mi");
+            xastir_snprintf(unit,
+                sizeof(unit),
+                "mi");
             ruler_siz /= 1609.3;
         } else {
-            strcpy(unit,"ft");
+            xastir_snprintf(unit,
+                sizeof(unit),
+                "ft");
             ruler_siz /= 0.3048;
         }
     } else {
-        strcpy(unit,"m");
+        xastir_snprintf(unit,
+            sizeof(unit),
+            "m");
         if (ruler_siz > 1000/2) {
-            strcpy(unit,"km");
+            xastir_snprintf(unit,
+                sizeof(unit),
+                "km");
             ruler_siz /= 1000.0;
         }
     }
@@ -3045,25 +3100,40 @@ void Station_data_add_rac(Widget w, XtPointer clientData, /*@unused@*/ XtPointer
                 my_data.city,my_data.province,my_data.postal_code);
 
         if (my_data.qual_a[0] == 'A')
-            strcat(temp,langcode("STIFCC0008"));
+            strncat(temp,
+                langcode("STIFCC0008"),
+                sizeof(temp) - strlen(temp));
 
         if (my_data.qual_d[0] == 'D')
-            strcat(temp,langcode("STIFCC0009"));
+            strncat(temp,
+                langcode("STIFCC0009"),
+                sizeof(temp) - strlen(temp));
 
         if (my_data.qual_b[0] == 'B' && my_data.qual_c[0] != 'C')
-            strcat(temp,langcode("STIFCC0010"));
+            strncat(temp,
+                langcode("STIFCC0010"),
+                sizeof(temp) - strlen(temp));
 
         if (my_data.qual_c[0] == 'C')
-            strcat(temp,langcode("STIFCC0011"));
+            strncat(temp,
+                langcode("STIFCC0011"),
+                sizeof(temp) - strlen(temp));
 
-        strcat(temp,"\n");
+        strncat(temp,
+            "\n",
+            sizeof(temp) - strlen(temp));
+
         if (strlen(my_data.club_name) > 1){
             xastir_snprintf(club, sizeof(club), "%s\n%s\n%s, %s\n%s\n",
                     my_data.club_name, my_data.club_address,
                     my_data.club_city, my_data.club_province, my_data.club_postal_code);
-            strcat(temp,club);
+            strncat(temp,
+                club,
+                sizeof(temp) - strlen(temp));
         }
-        strcat(temp,"\n");
+        strncat(temp,
+            "\n",
+            sizeof(temp) - strlen(temp));
         XmTextInsert(si_text,0,temp);
         XmTextShowPosition(si_text,0);
 
@@ -3206,9 +3276,6 @@ void Change_tactical_destroy_shell( /*@unused@*/ Widget widget, XtPointer client
 void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer callData) {
     char *temp;
 
-    // Small memory leak in below statement:
-    //strcpy(temp, XmTextGetString(tactical_text));
-    // Change to:
     temp = XmTextGetString(tactical_text);
 
     if (tactical_pointer->tactical_call_sign == NULL) {
@@ -4164,7 +4231,9 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
             else
                 xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI027"),(int)(atof(weather->wx_gust)*1.6094));
 
-            strcat(temp, "\n");
+            strncat(temp,
+                "\n",
+                sizeof(temp) - strlen(temp));
         } else
             xastir_snprintf(temp, sizeof(temp), "\n");
 
@@ -5425,8 +5494,14 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             // already extracted speed/course from the compressed
             // packet.  extract_comp_position() extracts
             // course/speed as well.
-            strcpy(speed, p_station->speed);
-            strcpy(course,p_station->course);
+            xastir_snprintf(speed,
+                sizeof(speed),
+                "%s",
+                p_station->speed);
+            xastir_snprintf(course,
+                sizeof(course),
+                "%s",
+                p_station->course);
             in_knots = 1;
 
             //fprintf(stderr,"Found compressed wx\n");
@@ -5442,8 +5517,14 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
             // already extracted speed/course from the compressed
             // packet.  extract_comp_position() extracts
             // course/speed as well.
-            strcpy(speed, p_station->speed);
-            strcpy(course,p_station->course);
+            xastir_snprintf(speed,
+                sizeof(speed),
+                "%s",
+                p_station->speed);
+            xastir_snprintf(course,
+                sizeof(course),
+                "%s",
+                p_station->course);
             in_knots = 1;
 
             //fprintf(stderr,"Found compressed WX in non-fixed locations! %s:%s\n",
@@ -5551,10 +5632,17 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
         }
         else {
             // Already in mph.  Copy w/no conversion.
-            strcpy(weather->wx_speed, speed);
+            xastir_snprintf(weather->wx_speed,
+                sizeof(weather->wx_speed),
+                "%s",
+                speed);
         }
 
-        strcpy(weather->wx_course,course);
+        xastir_snprintf(weather->wx_course,
+            sizeof(weather->wx_course),
+            "%s",
+            course);
+
         if (compr) {        // course/speed was taken from normal data, delete that
             // fix me: we delete a potential real speed/course now
             // we should differentiate between normal and weather data in compressed position decoding...
@@ -5602,7 +5690,10 @@ int extract_weather(DataRow *p_station, char *data, int compr) {
     // now there should be the name of the weather station...
 
         // Create a timestamp from the current time
-        strcpy(weather->wx_time,get_time(time_data));
+        xastir_snprintf(weather->wx_time,
+            sizeof(weather->wx_time),
+            "%s",
+            get_time(time_data));
 
         // Set the timestamp in the weather record so that we can
         // decide whether or not to "ghost" the weather data later.
@@ -5722,13 +5813,21 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 
         // Note that speed is in knots.  If we were stuffing it into
         // "wx_speed" we'd have to convert it to MPH.
-        if (strcmp(speed,"   ") != 0 && strcmp(speed,"...") != 0)
-            strcpy(p_station->speed, speed);
-        else
+        if (strcmp(speed,"   ") != 0 && strcmp(speed,"...") != 0) {
+            xastir_snprintf(p_station->speed,
+                sizeof(p_station->speed),
+                "%s",
+                speed);
+        }
+        else {
             p_station->speed[0] = '\0';
+        }
 
         if (strcmp(course,"   ") != 0 && strcmp(course,"...") != 0)
-            strcpy(p_station->course, course);
+            xastir_snprintf(p_station->course,
+                sizeof(p_station->course),
+                "%s",
+                course);
         else
             p_station->course[0] = '\0';
  
@@ -5783,7 +5882,10 @@ int extract_storm(DataRow *p_station, char *data, int compr) {
 //fprintf(stderr,"%s\n",data);
 
         // Create a timestamp from the current time
-        strcpy(weather->wx_time,get_time(time_data));
+        xastir_snprintf(weather->wx_time,
+            sizeof(weather->wx_time),
+            "%s",
+            get_time(time_data));
 
         // Set the timestamp in the weather record so that we can
         // decide whether or not to "ghost" the weather data later.
@@ -6656,19 +6758,19 @@ void draw_trail(Widget w, DataRow *fill, int solid) {
 void month2str(int month, char *str) {
 
     switch (month) {
-        case 0:         strcpy(str,"Jan"); break;
-        case 1:         strcpy(str,"Feb"); break;
-        case 2:         strcpy(str,"Mar"); break;
-        case 3:         strcpy(str,"Apr"); break;
-        case 4:         strcpy(str,"May"); break;
-        case 5:         strcpy(str,"Jun"); break;
-        case 6:         strcpy(str,"Jul"); break;
-        case 7:         strcpy(str,"Aug"); break;
-        case 8:         strcpy(str,"Sep"); break;
-        case 9:         strcpy(str,"Oct"); break;
-        case 10:        strcpy(str,"Nov"); break;
-        case 11:        strcpy(str,"Dec"); break;
-        default:        strcpy(str,"   "); break;
+        case 0:         strncpy(str,"Jan",4); break;
+        case 1:         strncpy(str,"Feb",4); break;
+        case 2:         strncpy(str,"Mar",4); break;
+        case 3:         strncpy(str,"Apr",4); break;
+        case 4:         strncpy(str,"May",4); break;
+        case 5:         strncpy(str,"Jun",4); break;
+        case 6:         strncpy(str,"Jul",4); break;
+        case 7:         strncpy(str,"Aug",4); break;
+        case 8:         strncpy(str,"Sep",4); break;
+        case 9:         strncpy(str,"Oct",4); break;
+        case 10:        strncpy(str,"Nov",4); break;
+        case 11:        strncpy(str,"Dec",4); break;
+        default:        strncpy(str,"   ",4); break;
     }
 }
 
@@ -6679,14 +6781,14 @@ void month2str(int month, char *str) {
 void wday2str(int wday, char *str) {
 
     switch (wday) {
-        case 0:         strcpy(str,"Sun"); break;
-        case 1:         strcpy(str,"Mon"); break;
-        case 2:         strcpy(str,"Tue"); break;
-        case 3:         strcpy(str,"Wed"); break;
-        case 4:         strcpy(str,"Thu"); break;
-        case 5:         strcpy(str,"Fri"); break;
-        case 6:         strcpy(str,"Sat"); break;
-        default:        strcpy(str,"   "); break;
+        case 0:         strncpy(str,"Sun",4); break;
+        case 1:         strncpy(str,"Mon",4); break;
+        case 2:         strncpy(str,"Tue",4); break;
+        case 3:         strncpy(str,"Wed",4); break;
+        case 4:         strncpy(str,"Thu",4); break;
+        case 5:         strncpy(str,"Fri",4); break;
+        case 6:         strncpy(str,"Sat",4); break;
+        default:        strncpy(str,"   ",4); break;
     }
 }
 
@@ -7177,7 +7279,10 @@ void delete_station_memory(DataRow *p_del) {
     }
 
     init_station(p_new);                    // initialize new station record
-    strcpy(p_new->call_sign,call);
+    xastir_snprintf(p_new->call_sign,
+        sizeof(p_new->call_sign),
+        "%s",
+        call);
     stations++;
 
     // Do some quick checks to see if we just inserted a new hash
@@ -8844,30 +8949,54 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
             //fprintf(stderr,"extracted speed/course\n");
                 if (atof(temp2) > 0) {
                 //fprintf(stderr,"course is non-zero\n");
-                xastir_snprintf(p_station->speed, sizeof(p_station->speed), "%06.2f",atof(temp1));
-                        strcpy(p_station->course, temp2);                    // in degrees
+                xastir_snprintf(p_station->speed,
+                    sizeof(p_station->speed),
+                    "%06.2f",
+                    atof(temp1));
+                xastir_snprintf(p_station->course,  // in degrees
+                    sizeof(p_station->course),
+                    "%s",
+                    temp2);
             }
 
             if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
                 //fprintf(stderr,"extracted bearing and NRQ\n");
-                strcpy(p_station->bearing,bearing);
-                strcpy(p_station->NRQ,nrq);
+                xastir_snprintf(p_station->bearing,
+                    sizeof(p_station->bearing),
+                    "%s",
+                    bearing);
+                xastir_snprintf(p_station->NRQ,
+                    sizeof(p_station->NRQ),
+                    "%s",
+                    nrq);
                 p_station->signal_gain[0] = '\0';   // And blank out the shgd values
                 }
             } else {
                 if (extract_powergain(data,temp1)) {
-                        strcpy(p_station->power_gain,temp1);
+                    xastir_snprintf(p_station->power_gain,
+                        sizeof(p_station->power_gain),
+                        "%s",
+                        temp1);
 
                 if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
                     //fprintf(stderr,"extracted bearing and NRQ\n");
-                    strcpy(p_station->bearing,bearing);
-                    strcpy(p_station->NRQ,nrq);
+                    xastir_snprintf(p_station->bearing,
+                        sizeof(p_station->bearing),
+                        "%s",
+                        bearing);
+                    xastir_snprintf(p_station->NRQ,
+                        sizeof(p_station->NRQ),
+                        "%s",
+                        nrq);
                     p_station->signal_gain[0] = '\0';   // And blank out the shgd values
                 }
                 }
             else {
                         if (extract_omnidf(data,temp1)) {
-                    strcpy(p_station->signal_gain,temp1);   // Grab the SHGD values
+                    xastir_snprintf(p_station->signal_gain,
+                        sizeof(p_station->signal_gain),
+                        "%s",
+                        temp1);   // Grab the SHGD values
                     p_station->bearing[0] = '\0';   // And blank out the bearing/NRQ values
                     p_station->NRQ[0] = '\0';
 
@@ -8878,8 +9007,14 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                         //fprintf(stderr,"extracted speed/course\n");
                             if (atof(temp2) > 0) {
                             //fprintf(stderr,"course is non-zero\n");
-                            xastir_snprintf(p_station->speed, sizeof(p_station->speed), "%06.2f",atof(temp1));
-                                    strcpy(p_station->course,temp2);                    // in degrees
+                            xastir_snprintf(p_station->speed,
+                                sizeof(p_station->speed),
+                                "%06.2f",
+                                atof(temp1));
+                            xastir_snprintf(p_station->course,
+                                sizeof(p_station->course),
+                                "%s",
+                                temp2);                    // in degrees
                         }
                     }
 
@@ -8888,8 +9023,14 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
                     // way anyway.
                     if (extract_bearing_NRQ(data, bearing, nrq)) {  // Beam headings from DF'ing
                         //fprintf(stderr,"extracted bearing and NRQ\n");
-                        strcpy(p_station->bearing,bearing);
-                        strcpy(p_station->NRQ,nrq);
+                        xastir_snprintf(p_station->bearing,
+                            sizeof(p_station->bearing),
+                            "%s",
+                            bearing);
+                        xastir_snprintf(p_station->NRQ,
+                            sizeof(p_station->NRQ),
+                            "%s",
+                            nrq);
                         //p_station->signal_gain[0] = '\0';   // And blank out the shgd values
                     }
                 }
@@ -8897,17 +9038,26 @@ void process_data_extension(DataRow *p_station, char *data, /*@unused@*/ int typ
             }
         if (extract_signpost(data, temp2)) {
             //fprintf(stderr,"extracted signpost data\n");
-            strcpy(p_station->signpost,temp2);
+            xastir_snprintf(p_station->signpost,
+                sizeof(p_station->signpost),
+                "%s",
+                temp2);
         }
 
         if (extract_probability_min(data, temp3)) {
             //fprintf(stderr,"extracted probability_min data: %s\n",temp3);
-            strcpy(p_station->probability_min,temp3);
+            xastir_snprintf(p_station->probability_min,
+                sizeof(p_station->probability_min),
+                "%s",
+                temp3);
         }
  
         if (extract_probability_max(data, temp3)) {
             //fprintf(stderr,"extracted probability_max data: %s\n",temp3);
-            strcpy(p_station->probability_max,temp3);
+            xastir_snprintf(p_station->probability_max,
+                sizeof(p_station->probability_max),
+                "%s",
+                temp3);
         }
     }
 }
@@ -8977,7 +9127,11 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 
     p_station->record_type = NORMAL_GPS_RMC;
     // Create a timestamp from the current time
-    strcpy(p_station->pos_time,get_time(temp_data));    // get_time saves the time in temp_data
+    // get_time saves the time in temp_data
+    xastir_snprintf(p_station->pos_time,
+        sizeof(p_station->pos_time),
+        "%s",
+        get_time(temp_data));
     p_station->flag &= (~ST_MSGCAP);    // clear "message capable" flag
 
     /* check aprs type on call sign */
@@ -9063,7 +9217,7 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
 //   0     1    2    3     4    5      6   7    8      9     10    11
 
     if (Substring[7] == NULL) { // No speed string
-        strcpy(p_station->speed,"");    // No speed available
+        p_station->speed[0] = '\0'; // No speed available
         return(ok);
     }
     else {
@@ -9075,7 +9229,9 @@ int extract_RMC(DataRow *p_station, char *data, char *call_sign, char *path) {
     }
 
     if (Substring[8] == NULL) { // No course string
-        strcpy(p_station->course,"000.0");  // No course available
+        xastir_snprintf(p_station->course,
+            sizeof(p_station->course),
+            "000.0");  // No course available
         return(ok);
     }
     else {
@@ -9134,7 +9290,11 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     p_station->record_type = NORMAL_GPS_GGA;
     // Create a timestamp from the current time
-    strcpy(p_station->pos_time,get_time(temp_data));        // get_time saves the time in temp_data
+    // get_time saves the time in temp_data
+    xastir_snprintf(p_station->pos_time,
+        sizeof(p_station->pos_time),
+        "%s",
+        get_time(temp_data));
     // Create a timestamp from the current time
 //    strcpy(p_station->altitude_time,get_time(temp_data));   // get_time saves the time in temp_data
     p_station->flag &= (~ST_MSGCAP);    // clear "message capable" flag
@@ -9217,12 +9377,12 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     // Check for valid fix {
     if (Substring[6] == NULL
-            || Substring[6][0] == '0'   // Fix quality
-            || Substring[7] == NULL     // Sat number
-            || Substring[8] == NULL     // hdop
-            || Substring[9] == NULL) {  // Altitude in meters
-        strcpy(p_station->sats_visible,""); // Store empty sats visible
-        strcpy(p_station->altitude,""); // Store empty altitude
+            || Substring[6][0] == '0'      // Fix quality
+            || Substring[7] == NULL        // Sat number
+            || Substring[8] == NULL        // hdop
+            || Substring[9] == NULL) {     // Altitude in meters
+        p_station->sats_visible[0] = '\0'; // Store empty sats visible
+        p_station->altitude[0] = '\0';;    // Store empty altitude
         return(ok); // A field between fix quality and altitude is missing
     }
 
@@ -9242,7 +9402,10 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
 // Check for valid number for HDOP instead of just throwing it away?
 
     if (strlen(Substring[9]) < MAX_ALTITUDE)    // Not too long
-        strcpy(p_station->altitude,Substring[9]); // Get altitude
+        xastir_snprintf(p_station->altitude,
+            sizeof(p_station->altitude),
+            "%s",
+            Substring[9]); // Get altitude
     else // Too long, truncate it
         strncpy(p_station->altitude,Substring[9],MAX_ALTITUDE);
 
@@ -9258,7 +9421,7 @@ int extract_GGA(DataRow *p_station,char *data,char *call_sign, char *path) {
     if (Substring[10][0] != 'M') {
         //fprintf(stderr,"ERROR: should adjust altitude for meters\n");
         //} else {  // Altitude units wrong.  Assume altitude bad
-        strcpy(p_station->altitude,"");
+        p_station->altitude[0] = '\0';
     }
 
     if (debug_level & 256) {
@@ -9304,7 +9467,11 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
 
     p_station->record_type = NORMAL_GPS_GLL;
     // Create a timestamp from the current time
-    strcpy(p_station->pos_time,get_time(temp_data));    // get_time saves the time in temp_data
+    // get_time saves the time in temp_data
+    xastir_snprintf(p_station->pos_time,
+        sizeof(p_station->pos_time),
+        "%s",
+        get_time(temp_data));
     p_station->flag &= (~ST_MSGCAP);    // clear "message capable" flag
 
     /* check aprs type on call sign */
@@ -9361,8 +9528,10 @@ int extract_GLL(DataRow *p_station,char *data,char *call_sign, char *path) {
     p_station->coord_lon = convert_lon_s2l(long_s);
     ok = 1; // We have enough for a position now
 
-    strcpy(p_station->course,"000.0");  // Fill in with dummy values
-    strcpy(p_station->speed,"");        // Fill in with dummy values
+    xastir_snprintf(p_station->course,
+        sizeof(p_station->course),
+        "000.0");  // Fill in with dummy values
+    p_station->speed[0] = '\0';        // Fill in with dummy values
 
     // A is valid, V is a warning but we can get good data still?
     // We don't currently check the data valid flag.
@@ -9738,7 +9907,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
 
     weather = NULL; // only to make the compiler happy...
     found_pos = 1;
-    strcpy(call,call_sign);
+    xastir_snprintf(call,
+        sizeof(call),
+        "%s",
+        call_sign);
     p_station = NULL;
     new_station = (char)FALSE;                          // to make the compiler happy...
     last_lat = 0L;
@@ -9788,9 +9960,18 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         last_lat = p_station->coord_lat;                // remember last position
         last_lon = p_station->coord_lon;
         last_stn_sec = p_station->sec_heard;
-        strcpy(last_alt,p_station->altitude);
-        strcpy(last_speed,p_station->speed);
-        strcpy(last_course,p_station->course);
+        xastir_snprintf(last_alt,
+            sizeof(last_alt),
+            "%s",
+            p_station->altitude);
+        xastir_snprintf(last_speed,
+            sizeof(last_speed),
+            "%s",
+            p_station->speed);
+        xastir_snprintf(last_course,
+            sizeof(last_course),    
+            "%s",
+            p_station->course);
         last_flag = p_station->flag;
 
         // Wipe out old data so that it doesn't hang around forever
@@ -9813,7 +9994,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 if (ok) {
                     // Create a timestamp from the current time
-                    strcpy(p_station->pos_time,get_time(temp_data));
+                    xastir_snprintf(p_station->pos_time,
+                        sizeof(p_station->pos_time),
+                        "%s",
+                        get_time(temp_data));
                     (void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);    // look for weather data first
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
@@ -9845,7 +10029,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                 }
                 if (ok) {
                     // Create a timestamp from the current time
-                    strcpy(p_station->pos_time,get_time(temp_data));
+                    xastir_snprintf(p_station->pos_time,
+                        sizeof(p_station->pos_time),
+                        "%s",
+                        get_time(temp_data));
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
                     process_info_field(p_station,data,type);
 
@@ -9999,9 +10186,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     }
  
                     // Create a timestamp from the current time
-                    strcpy(p_station->pos_time,get_time(temp_data));
+                    xastir_snprintf(p_station->pos_time,
+                        sizeof(p_station->pos_time),
+                        "%s",
+                        get_time(temp_data));
 
-                    strcpy(p_station->origin,origin);                   // define it as object
+                    xastir_snprintf(p_station->origin,
+                        sizeof(p_station->origin),
+                        "%s",
+                        origin);                   // define it as object
                     (void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
@@ -10079,8 +10272,14 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     }
  
                     // Create a timestamp from the current time
-                    strcpy(p_station->pos_time,get_time(temp_data));
-                    strcpy(p_station->origin,origin);                   // define it as item
+                    xastir_snprintf(p_station->pos_time,
+                        sizeof(p_station->pos_time),
+                        "%s",
+                        get_time(temp_data));
+                    xastir_snprintf(p_station->origin,
+                        sizeof(p_station->origin),
+                        "%s",
+                        origin);                   // define it as item
                     (void)extract_storm(p_station,data,compr_pos);
                     (void)extract_weather(p_station,data,compr_pos);    // look for wx info
                     process_data_extension(p_station,data,type);        // PHG, speed, etc.
@@ -10150,7 +10349,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                         decode_Peet_Bros(1,(unsigned char *)data,weather,type);
                     p_station->record_type = (char)type;
                     // Create a timestamp from the current time
-                    strcpy(weather->wx_time, get_time(temp_data));
+                    xastir_snprintf(weather->wx_time,
+                        sizeof(weather->wx_time),
+                        "%s",
+                        get_time(temp_data));
                     weather->wx_sec_time = sec_now();
                     found_pos = 0;
                 }
@@ -10191,7 +10393,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         if (debug_level & 1) {
             char filtered_data[MAX_LINE_SIZE + 1];
 
-            strcpy(filtered_data,data-1);
+            xastir_snprintf(filtered_data,
+                sizeof(filtered_data),
+                "%s",
+                data-1);
             makePrintable(filtered_data);
             fprintf(stderr,"store non-APRS data as status: %s: |%s|\n",call,filtered_data);
         }
@@ -10286,7 +10491,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         p_station->last_port_heard = port;
         p_station->data_via = from;
         // Create a timestamp from the current time
-        strcpy(p_station->packet_time,get_time(temp_data)); // get_time returns value in temp_data
+        xastir_snprintf(p_station->packet_time,
+            sizeof(p_station->packet_time),
+            "%s",
+            get_time(temp_data)); // get_time returns value in temp_data
 
         // Free any old path we might have
         if (p_station->node_path_ptr != NULL)
@@ -10303,9 +10511,15 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
         else
             p_station->flag &= (~ST_3RD_PT);            // clear "third party" flag
         if (origin != NULL && strcmp(origin,"INET") == 0)  // special treatment for inet names
-            strcpy(p_station->origin,origin);           // to keep them separated from calls
+            xastir_snprintf(p_station->origin,
+                sizeof(p_station->origin),
+                "%s",
+                origin);           // to keep them separated from calls
         if (origin != NULL && strcmp(origin,"INET-NWS") == 0)  // special treatment for NWS
-            strcpy(p_station->origin,origin);           // to keep them separated from calls
+            xastir_snprintf(p_station->origin,
+                sizeof(p_station->origin),
+                "%s",
+                origin);           // to keep them separated from calls
         if (origin == NULL || origin[0] == '\0')        // normal call
             p_station->origin[0] = '\0';                // undefine possible former object with same name
 
@@ -10621,7 +10835,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             if (festival_speak_new_station) {
                 char speech_callsign[50];
 
-                strcpy(speech_callsign,p_station->call_sign);
+                xastir_snprintf(speech_callsign,
+                    sizeof(speech_callsign),
+                    "%s",
+                    p_station->call_sign);
                 spell_it_out(speech_callsign, 50);
 
                 xastir_snprintf(station_id,
@@ -10665,7 +10882,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             if ((distance > atof(prox_min)) && (distance < atof(prox_max)) && festival_speak_proximity_alert) {
                 char speech_callsign[50];
 
-                strcpy(speech_callsign,p_station->call_sign);
+                xastir_snprintf(speech_callsign,
+                    sizeof(speech_callsign),
+                    "%s",
+                    p_station->call_sign);
                 spell_it_out(speech_callsign, 50);
 
                 if (units_english_metric) {
@@ -10706,7 +10926,10 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                    festival_speak_band_opening && from == DATA_VIA_TNC) {
                 char speech_callsign[50];
 
-                strcpy(speech_callsign,p_station->call_sign);
+                xastir_snprintf(speech_callsign,
+                    sizeof(speech_callsign),
+                    "%s",
+                    p_station->call_sign);
                 spell_it_out(speech_callsign, 50);
 
                 xastir_snprintf(station_id,
@@ -11010,9 +11233,15 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     substr(p_station->node_path_ptr,"local",strlen("local"));
  
     // Create a timestamp from the current time
-    strcpy(p_station->packet_time,get_time(temp_data));
+    xastir_snprintf(p_station->packet_time,
+        sizeof(p_station->packet_time),
+        "%s",
+        get_time(temp_data));
     // Create a timestamp from the current time
-    strcpy(p_station->pos_time,get_time(temp_data));
+    xastir_snprintf(p_station->pos_time,
+        sizeof(p_station->pos_time),
+        "%s",
+        get_time(temp_data));
     p_station->flag |= ST_MSGCAP;               // set "message capable" flag
 
     /* convert to long and weed out any odd data */
@@ -11028,8 +11257,14 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
             temp_data[7], temp_data[8],temp_data[9]);
 
     /* fill the data in */    // ???????????????
-    strcpy(my_lat,temp_lat);
-    strcpy(my_long,temp_long);
+    xastir_snprintf(my_lat,
+        sizeof(my_lat),
+        "%s",
+        temp_lat);
+    xastir_snprintf(my_long,
+        sizeof(my_long),
+        "%s",
+        temp_long);
     p_station->coord_lat = convert_lat_s2l(my_lat);
     p_station->coord_lon = convert_lon_s2l(my_long);
 
@@ -11067,10 +11302,19 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
     my_last_altitude_time = sec_now();
     // Create a timestamp from the current time
 //    strcpy(p_station->speed_time,get_time(temp_data));
-    strcpy(p_station->speed,speed);
+    xastir_snprintf(p_station->speed,
+        sizeof(p_station->speed),
+        "%s",
+        speed);
     // is speed always in knots, otherwise we need a conversion!
-    strcpy(p_station->course,course);
-    strcpy(p_station->altitude,alt);
+    xastir_snprintf(p_station->course,
+        sizeof(p_station->course),
+        "%s",
+        course);
+    xastir_snprintf(p_station->altitude,
+        sizeof(p_station->altitude),
+        "%s",
+        alt);
     // altu;    unit should always be meters  ????
 
     if(debug_level & 256)
@@ -11085,7 +11329,10 @@ void my_station_gps_change(char *pos_long, char *pos_lat, char *course, char *sp
 
     /* get my last speed in knots */
     my_last_speed=(int)(atof(speed));
-    strcpy(p_station->sats_visible,sats);
+    xastir_snprintf(p_station->sats_visible,
+        sizeof(p_station->sats_visible),
+        "%s",
+        sats);
 
     // Update "heard" time for our new position
     p_station->sec_heard = sec_now();
@@ -11158,9 +11405,15 @@ void my_station_add(char *my_callsign, char my_group, char my_symbol, char *my_l
     substr(p_station->node_path_ptr,"local",strlen("local"));
 
     // Create a timestamp from the current time
-    strcpy(p_station->packet_time,get_time(temp_data));
+    xastir_snprintf(p_station->packet_time,
+        sizeof(p_station->packet_time),
+        "%s",
+        get_time(temp_data));
     // Create a timestamp from the current time
-    strcpy(p_station->pos_time,get_time(temp_data));
+    xastir_snprintf(p_station->pos_time,
+        sizeof(p_station->pos_time),
+        "%s",
+        get_time(temp_data));
     p_station->flag |= ST_MSGCAP;               // set "message capable" flag
 
     /* Symbol overlay */
@@ -11537,7 +11790,10 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
             (north ? 'N': 'S'), info[7]);   // info[7] = symbol table
 
     /* Compute degrees longitude */
-    strcpy(new_info,temp);
+    xastir_snprintf(new_info,
+        sizeof(new_info),
+        "%s",
+        temp);
     d = (int) info[0]-28;
 
     if (long_offset)
@@ -11558,7 +11814,9 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     h = (int) info[2]-28;
     /* Add the longitude string into the temp variable */
     xastir_snprintf(temp, sizeof(temp), "%03d%02d.%02d%c%c",d,m,h,(west ? 'W': 'E'), info[6]);
-    strcat(new_info,temp);
+    strncat(new_info,
+        temp,
+        sizeof(new_info) - strlen(new_info));
 
     /* Compute speed in knots */
     speed = (int)( ( info[3] - (char)28 ) * (char)10 );
@@ -11576,7 +11834,9 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
         fprintf(stderr,"info[5]-28 = %d\n", ( (int)info[5]) - 28 );
     */
     xastir_snprintf(temp, sizeof(temp), "%03d/%03d",course,speed);
-    strcat(new_info,temp);
+    strncat(new_info,
+        temp,
+        sizeof(new_info) - strlen(new_info));
     offset = 8;   // start of rest of info
 
     /* search for rig type in Mic-E data */
@@ -11584,9 +11844,13 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
     if (info[offset] != '\0' && (info[offset] == '>' || info[offset] == ']')) {
         /* detected type code:     > TH-D7    ] TM-D700 */
         if (info[offset] == '>')
-            strcpy(rig_type," TH-D7");
+            xastir_snprintf(rig_type,
+                sizeof(rig_type),
+                " TH-D7");
         else
-            strcpy(rig_type," TM-D700");
+            xastir_snprintf(rig_type,
+                sizeof(rig_type),
+                " TM-D700");
 
         offset++;
     }
@@ -11609,45 +11873,65 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
         else {  // Altitude is ok
             xastir_snprintf(temp, sizeof(temp), " /A=%06ld",alt);
             offset += 4;
-            strcat(new_info,temp);
+            strncat(new_info,
+                temp,
+                sizeof(new_info) - strlen(new_info));
         }
     }
 
     /* start of comment */
     if (strlen(rig_type) > 0) {
         xastir_snprintf(temp, sizeof(temp), "%s",rig_type);
-        strcat(new_info,temp);
+        strncat(new_info,
+            temp,
+            sizeof(new_info) - strlen(new_info));
     }
 
-    strcat(new_info," Mic-E ");
+    strncat(new_info,
+        " Mic-E ",
+        sizeof(new_info) - strlen(new_info));
     if (msgtyp == 0) {
         switch (msg) {
             case 1:
-                strcat(new_info,"Enroute");
+                strncat(new_info,
+                    "Enroute",
+                    sizeof(new_info) - strlen(new_info));
                 break;
 
             case 2:
-                strcat(new_info,"In Service");
+                strncat(new_info,
+                    "In Service",
+                    sizeof(new_info) - strlen(new_info));
                 break;
 
             case 3:
-                strcat(new_info,"Returning");
+                strncat(new_info,
+                    "Returning",
+                    sizeof(new_info) - strlen(new_info));
                 break;
 
             case 4:
-                strcat(new_info,"Committed");
+                strncat(new_info,
+                    "Committed",
+                    sizeof(new_info) - strlen(new_info));
                 break;
 
             case 5:
-                strcat(new_info,"Special");
+                strncat(new_info,
+                    "Special",
+                    sizeof(new_info) - strlen(new_info));
                 break;
 
             case 6:
-                strcat(new_info,"Priority");
+                strncat(new_info,
+                    "Priority",
+                    sizeof(new_info) - strlen(new_info));
                 break;
 
             case 7:
-                strcat(new_info,"Emergency");
+                strncat(new_info,
+                    "Emergency",
+                    sizeof(new_info) - strlen(new_info));
 
                 // Do a popup to alert the operator to this
                 // condition.  Make sure we haven't popped up an
@@ -11678,11 +11962,15 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
                 break;
 
             default:
-                strcat(new_info,"Off Duty");
+                strncat(new_info,
+                    "Off Duty",
+                    sizeof(new_info) - strlen(new_info));
         }
     } else {
         xastir_snprintf(temp, sizeof(temp), "Custom%d",msg);
-        strcat(new_info,temp);
+        strncat(new_info,
+            temp,
+            sizeof(new_info) - strlen(new_info));
     }
 
     if (info[offset] != '\0') {
@@ -11691,8 +11979,12 @@ int decode_Mic_E(char *call_sign,char *path,char *info,char from,int port,int th
             temp[i-offset] = info[i];
 
         temp[info_size-offset] = '\0';
-        strcat(new_info," ");
-        strcat(new_info,temp);
+        strncat(new_info,
+            " ",
+            sizeof(new_info) - strlen(new_info));
+        strncat(new_info,
+            temp,
+            sizeof(new_info) - strlen(new_info));
     }
 
     if (debug_level & 1) {
@@ -11742,8 +12034,12 @@ int process_directed_query(char *call,char *path,char *message,char from) {
                 if ( ((p_station->flag & ST_VIATNC) != 0)   // test "via TNC" flag
                         && ((p_station->flag & ST_DIRECT) != 0) ) { // And "direct" flag
                     if (strlen(temp)+strlen(p_station->call_sign) < 65) {
-                        strcat(temp," ");
-                        strcat(temp,p_station->call_sign);
+                        strncat(temp,
+                            " ",
+                            sizeof(temp) - strlen(temp));
+                        strncat(temp,
+                            p_station->call_sign,
+                            sizeof(temp) - strlen(temp));
                     } else
                         break;
                 }
@@ -12063,7 +12359,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
     ok = (int)(len > 9 && message[9] == ':');
     if (ok) {
         substr(addr9,message,9);                // extract addressee
-        strcpy(addr,addr9);
+        xastir_snprintf(addr,
+            sizeof(addr),
+            "%s",
+            addr9);
         (void)remove_trailing_spaces(addr);
         message = message + 10;                 // pointer to message text
         temp_ptr = strstr(message,"{");         // look for message ID
@@ -12574,7 +12873,10 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
         (void)data_add(STATION_CALL_DATA,call,path,NULL,from,port,origin,third_party);
         done = 1;                                       // don't report it to internet
     } else
-        strcpy(my_data,message);                        // copy message for later internet transmit
+        xastir_snprintf(my_data,
+            sizeof(my_data),
+            "%s",
+            message);                        // copy message for later internet transmit
 
     // special treatment for objects
     if (!done && strlen(origin) > 0 && strncmp(origin,"INET",4)!=0) { // special treatment for object or item
@@ -12884,7 +13186,11 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
 
         if ((debug_level & 1) && !ok) {
             char filtered_data[MAX_LINE_SIZE + 1];
-            strcpy(filtered_data,path);
+
+            xastir_snprintf(filtered_data,
+                sizeof(filtered_data),
+                "%s",
+                path);
             makePrintable(filtered_data);
             fprintf(stderr,"extract_third_party: invalid path: %s\n",filtered_data);
         }
@@ -12900,7 +13206,11 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
             ok = 0;
             if (debug_level & 1) {
                 char filtered_data[MAX_LINE_SIZE + 1];
-                strcpy(filtered_data,p_call);
+
+                xastir_snprintf(filtered_data,
+                    sizeof(filtered_data),
+                    "%s",
+                    p_call);
                 makePrintable(filtered_data);
                 fprintf(stderr,"extract_third_party: invalid call: %s\n",filtered_data);
             }
@@ -13113,12 +13423,18 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
         temp[7] = '\0';
 
         more = decode_ax25_address(temp, callsign, 1); // Add asterisk
-        strcat(result,",");
-        strcat(result,callsign);
+        strncat(result,
+            ",",
+            sizeof(result) - strlen(result));
+        strncat(result,
+            callsign,
+            sizeof(result) - strlen(result));
         num_digis++;
     }
 
-    strcat(result,":");
+    strncat(result,
+        ":",
+        sizeof(result) - strlen(result));
 
 
     // Check the Control and PID bytes and toss packets that are
@@ -13152,7 +13468,9 @@ int decode_ax25_header(unsigned char *incoming_data, int length) {
     }
 
     // Add the Info field to the decoded header info
-    strcat(result,&incoming_data[ptr]);
+    strncat(result,
+        &incoming_data[ptr],
+        sizeof(result) - strlen(result));
 
 //    fprintf(stderr,"%s\n",result);
 
@@ -13364,10 +13682,14 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
     ii = 2;
     while ( (Substring[ii] != NULL)
             && (ii < MAX_RELAY_SUBSTRINGS) ) {
-        strcat(new_path, Substring[ii]);
+        strncat(new_path,
+            Substring[ii],
+            sizeof(new_path) - strlen(new_path));
         ii++;
         if (Substring[ii] != NULL)  // Add a comma if more to come
-            strcat(new_path, ",");
+            strncat(new_path,
+                ",",
+                sizeof(new_path) - strlen(new_path));
     }
 
 //fprintf(stderr,"*** New Path: %s,%s\n", destination, new_path);
@@ -13421,7 +13743,9 @@ sprintf(big_string,"\nrelay_digipeat: inputs:\n\tport: %d\n\tcall: %s\n\tpath: %
 //WE7U
 sprintf(small_string,"relay_digipeat: outputs:\n\tport: %d\n\tcall: %s\n\tdest: %s\n\tpath: %s\n\tinfo: %s\n",
     port, call, destination, new_path, info);
-strcat(big_string,small_string);
+strncat(big_string,
+    small_string,
+    sizeof(big_string) - strlen(big_string));
 //fprintf(stderr,"%s",big_string);
 
 
@@ -13714,7 +14038,7 @@ void  read_file_line(FILE *f) {
     int pos;
 
     pos = 0;
-    strcpy(line,"");
+    line[0] = '\0';
     while (!feof(f)) {
         if (fread(&cin,1,1,f) == 1) {
             if (cin != (char)10 && cin != (char)13) {   // normal characters
@@ -13808,9 +14132,15 @@ int locate_station(Widget w, char *call, int follow_case, int get_match, int cen
                 call_find[ii] = call[ii];
         }
         call_find[ii] = '\0';
-        strcpy(call_find1,call_find);
+        xastir_snprintf(call_find1,
+            sizeof(call_find1),
+            "%s",
+            call_find);
     } else
-        strcpy(call_find1,call);
+        xastir_snprintf(call_find1,
+            sizeof(call_find1),
+            "%s",
+            call);
 
     if (search_station_name(&p_station,call_find1,get_match)) {
         if (position_defined(p_station->coord_lat,p_station->coord_lon,0)) {
@@ -14012,7 +14342,10 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         }
     }
     else if ((p_station->flag & ST_ITEM) != 0) {    // We have an item
-        strcpy(tempstr,p_station->call_sign);
+        xastir_snprintf(tempstr,
+            sizeof(tempstr),
+            "%s",
+            p_station->call_sign);
         if (strlen(tempstr) == 1)  // Add two spaces (to make 3 minimum chars)
             xastir_snprintf(p_station->call_sign, sizeof(p_station->call_sign), "%s  ",tempstr);
         else if (strlen(tempstr) == 2) // Add one space (to make 3 minimum chars)
@@ -14129,15 +14462,21 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
         temp = atoi(p_station->speed);
         if ( (temp >= 0) && (temp <= 999) ) {
             xastir_snprintf(tempstr, sizeof(tempstr), "%03d",temp);
-            strcat(speed_course, tempstr);
+            strncat(speed_course,
+                tempstr,
+                sizeof(speed_course) - strlen(speed_course));
             speed = temp;
         }
         else {
-            strcat(speed_course, "...");
+            strncat(speed_course,
+                "...",
+                sizeof(speed_course) - strlen(speed_course));
         }
     }
     else {  // No speed entered, blank it out
-        strcat(speed_course, "...");
+        strncat(speed_course,
+            "...",
+            sizeof(speed_course) - strlen(speed_course));
     }
     if ( (speed_course[0] == '.') && (speed_course[4] == '.') ) {
         speed_course[0] = '\0'; // No speed or course entered, so blank it
@@ -14279,7 +14618,9 @@ int Create_object_item_tx_string(DataRow *p_station, char *line, int line_length
     else if (p_station->NRQ[0] != 0) {  // It's a Beam Heading DFS object/item
 
         if (strlen(speed_course) != 7)
-                strcpy(speed_course,"000/000");
+                xastir_snprintf(speed_course,
+                    sizeof(speed_course),
+                    "000/000");
 
         bearing = atoi(p_station->bearing);
         if ( (bearing < 1) || (bearing > 360) )

@@ -3424,8 +3424,14 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         xastir_snprintf(my_text, sizeof(my_text), "%s  %s", str_lat, str_long);
     }
 
-    strcat(my_text,"  ");
-    strcat(my_text,sec_to_loc(x,y));
+    strncat(my_text,
+        "  ",
+        sizeof(my_text) - strlen(my_text));
+
+    strncat(my_text,
+        sec_to_loc(x,y),
+        sizeof(my_text) - strlen(my_text));
+
     // begin dist/bearing
     if ( do_dbstatus ) {
         ml_lat = convert_lat_s2l(my_lat);
@@ -3471,10 +3477,21 @@ static void TrackMouse( /*@unused@*/ Widget w, XtPointer clientData, XEvent *eve
         xastir_snprintf(temp_my_course, sizeof(temp_my_course), "%s°",temp1_my_course);
 
 
-        strcat(my_text," ");
-        strcat(my_text,temp_my_distance);
-        strcat(my_text," ");
-        strcat(my_text,temp_my_course);
+        strncat(my_text,
+            " ",
+            sizeof(my_text) - strlen(my_text));
+
+        strncat(my_text,
+            temp_my_distance,
+            sizeof(my_text) - strlen(my_text));
+
+        strncat(my_text,
+            " ",
+            sizeof(my_text) - strlen(my_text));
+
+        strncat(my_text,
+            temp_my_course,
+            sizeof(my_text) - strlen(my_text));
     }
 
     XmTextFieldSetString(textarea, my_text);
@@ -3560,10 +3577,10 @@ void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clie
 
     // Comment out all active lines in the log file via a '#' mark.
     ptr = get_user_base_dir("config/tactical_calls.log");
-    strcpy(file,ptr);
+    xastir_snprintf(file,sizeof(file),"%s",ptr);
 
     ptr = get_user_base_dir("config/tactical_calls-temp.log");
-    strcpy(file_temp,ptr);
+    xastir_snprintf(file_temp,sizeof(file_temp),"%s",ptr);
 
 #ifdef HAVE_CP
     // Copy to a temp file
@@ -3741,7 +3758,10 @@ void check_statusline_timeout(void) {
             if (festival_speak_ID) {
                 char my_speech_callsign[100];
 
-                strcpy(my_speech_callsign,my_callsign);
+                xastir_snprintf(my_speech_callsign,
+                    sizeof(my_speech_callsign),
+                    "%s",
+                    my_callsign);
                 spell_it_out(my_speech_callsign, 100);
                 xastir_snprintf(status_text,
                     sizeof(status_text),
@@ -3815,9 +3835,6 @@ void Change_debug_level_change_data(Widget widget, XtPointer clientData, XtPoint
     char *temp;
     char temp_string[10];
 
-    // Small memory leak in below statement:
-    //strcpy(temp, XmTextGetString(debug_level_text));
-    // Change to:
     temp = XmTextGetString(debug_level_text);
 
     debug_level = atoi(temp);
@@ -4450,17 +4467,17 @@ char *report_gps_status(void) {
 
     switch (gps_valid) {
         case 3: // 3D Fix
-            strcpy(temp2, "3D");
+            xastir_snprintf(temp2,sizeof(temp2),"3D");
             break;
         case 2: // 2D Fix
-            strcpy(temp2, "2D");
+            xastir_snprintf(temp2,sizeof(temp2),"2D");
             break;
         case 1: // Valid
-            strcpy(temp2, "Valid");
+            xastir_snprintf(temp2,sizeof(temp2),"Valid");
             break;
         case 0: // Invalid
         default:
-            strcpy(temp2, "Invalid");
+            xastir_snprintf(temp2,sizeof(temp2),"Invalid");
             break;
     }
 
@@ -4527,24 +4544,27 @@ void Compute_Uptime(Widget w, XtPointer clientData, XtPointer callData) {
     seconds = runtime - (minutes * 60);
 
     if (days == 1)
-        strcpy(Days,langcode("TIME001")); // Day
+        xastir_snprintf(Days,sizeof(Days),"%s",langcode("TIME001")); // Day
     else
-        strcpy(Days,langcode("TIME002")); // Days
+        xastir_snprintf(Days,sizeof(Days),"%s",langcode("TIME002")); // Days
+
 
     if (hours == 1)
-        strcpy(Hours,langcode("TIME003"));    // Hour
+        xastir_snprintf(Hours,sizeof(Hours),"%s",langcode("TIME003")); // Hour
     else
-        strcpy(Hours,langcode("TIME004"));    // Hours
+        xastir_snprintf(Hours,sizeof(Hours),"%s",langcode("TIME004")); // Hours
 
-   if (minutes == 1)
-        strcpy(Minutes,langcode("TIME005"));  // Minute
-    else
-        strcpy(Minutes,langcode("TIME006"));  // Minutes
 
-   if (seconds == 1)
-        strcpy(Seconds,langcode("TIME007"));  // Seconds
+    if (minutes == 1)
+        xastir_snprintf(Minutes,sizeof(Minutes),"%s",langcode("TIME005")); // Minute
     else
-        strcpy(Seconds,langcode("TIME008"));  // Seconds
+        xastir_snprintf(Minutes,sizeof(Minutes),"%s",langcode("TIME006")); // Minutes
+ 
+
+    if (seconds == 1)
+        xastir_snprintf(Seconds,sizeof(Seconds),"%s",langcode("TIME007")); // Second
+    else
+        xastir_snprintf(Seconds,sizeof(Seconds),"%s",langcode("TIME008")); // Seconds
 
 
     if (days != 0) {
@@ -4748,10 +4768,13 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
         fprintf(stderr,"Couldn't allocate memory for title\n");
     }
     else {
-        strcpy(title, "XASTIR ");
-        strcat(title, " - ");
-        strcat(title, t);
-        strcat(title, " @ ");
+        int t_size;
+
+        t_size = strlen(t) + 42 + strlen(PACKAGE);
+        strncpy(title, "XASTIR ", t_size);
+        strncat(title, " - ", t_size - strlen(title));
+        strncat(title, t, t_size - strlen(title));
+        strncat(title, " @ ", t_size - strlen(title));
         (void)gethostname(&title[strlen(title)], 28);
     }
 
@@ -10395,29 +10418,45 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 if (ret1 && ret2) {
                                     char temp[200];
 
-                                    strcpy(temp, "GPS:GPRMC,GPGGA ");
-                                    strcat(temp, report_gps_status());
+                                    strncpy(temp,
+                                        "GPS:GPRMC,GPGGA ",
+                                        sizeof(temp));
+                                    strncat(temp,
+                                        report_gps_status(),
+                                        sizeof(temp) - strlen(temp));
                                     statusline(temp, 0);
                                 }
                                 else if (ret1) {
                                     char temp[200];
  
-                                    strcpy(temp, "GPS:GPRMC ");
-                                    strcat(temp, report_gps_status());
+                                    strncpy(temp,
+                                        "GPS:GPRMC ",
+                                        sizeof(temp));
+                                    strncat(temp,
+                                        report_gps_status(),
+                                        sizeof(temp) - strlen(temp));
                                     statusline(temp, 0);
                                 }
                                 else if (ret2) {
                                     char temp[200];
  
-                                    strcpy(temp, "GPS:GPGGA ");
-                                    strcat(temp, report_gps_status());
+                                    strncpy(temp,
+                                        "GPS:GPGGA ",
+                                        sizeof(temp));
+                                    strncat(temp,
+                                        report_gps_status(),
+                                        sizeof(temp) - strlen(temp));
                                     statusline(temp, 0);
                                 }
                                 else {
                                     char temp[200];
 
-                                    strcpy(temp, "GPS: ");
-                                    strcat(temp, report_gps_status());
+                                    strncpy(temp,
+                                        "GPS: ",
+                                        sizeof(temp));
+                                    strncat(temp,
+                                        report_gps_status(),
+                                        sizeof(temp) - strlen(temp));
                                     statusline(temp, 0);
                                 }
 
@@ -10750,8 +10789,12 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 (void)gps_data_find((char *)incoming_data,
                                     data_port);
 
-                                strcpy(temp, "GPS: ");
-                                strcat(temp, report_gps_status());
+                                strncpy(temp,
+                                    "GPS: ",
+                                    sizeof(temp));
+                                strncat(temp,
+                                    report_gps_status(),
+                                    sizeof(temp) - strlen(temp));
                                 statusline(temp, 0);
                             }
                             else {
@@ -10798,8 +10841,12 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                                 (void)gps_data_find((char *)incoming_data,
                                     data_port);
 
-                                strcpy(temp, "GPS: ");
-                                strcat(temp, report_gps_status());
+                                strncpy(temp,
+                                    "GPS: ",
+                                    sizeof(temp));
+                                strncat(temp,
+                                    report_gps_status(),
+                                    sizeof(temp) - strlen(temp));
                                 statusline(temp, 0);
                             }
                             else {          // APRS Data
@@ -10845,8 +10892,12 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             {
                                 char temp[200];
 
-                                strcpy(temp, "GPS: ");
-                                strcat(temp, report_gps_status());
+                                strncpy(temp,
+                                    "GPS: ",
+                                    sizeof(temp));
+                                strncat(temp,
+                                    report_gps_status(),
+                                    sizeof(temp) - strlen(temp));
                                 statusline(temp, 0);
                             }
                             break;
@@ -12720,11 +12771,11 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
     char color_text[50];
 
 
-    // Small memory leak in below statement:
-    //strcpy(short_filename, XmTextGetString(gpsfilename_text));
-    // Change to:
     temp = XmTextGetString(gpsfilename_text);
-    strcpy(short_filename,temp);
+    xastir_snprintf(short_filename,
+        sizeof(short_filename),
+        "%s",
+        temp);
     XtFree(temp);
 
     // Add date/time to filename if no filename is given
@@ -12746,31 +12797,31 @@ void GPS_operations_change_data(Widget widget, XtPointer clientData, XtPointer c
 
     switch (gps_map_color) {
         case 0:
-            strcpy(color_text,"Red");
+            xastir_snprintf(color_text,sizeof(color_text),"Red");
             break;
         case 1:
-            strcpy(color_text,"Green");
+            xastir_snprintf(color_text,sizeof(color_text),"Green");
             break;
         case 2:
-            strcpy(color_text,"Black");
+            xastir_snprintf(color_text,sizeof(color_text),"Black");
             break;
         case 3:
-            strcpy(color_text,"White");
+            xastir_snprintf(color_text,sizeof(color_text),"White");
             break;
         case 4:
-            strcpy(color_text,"Orange");
+            xastir_snprintf(color_text,sizeof(color_text),"Orange");
             break;
         case 5:
-            strcpy(color_text,"Blue");
+            xastir_snprintf(color_text,sizeof(color_text),"Blue");
             break;
         case 6:
-            strcpy(color_text,"Yellow");
+            xastir_snprintf(color_text,sizeof(color_text),"Yellow");
             break;
         case 7:
-            strcpy(color_text,"Purple");
+            xastir_snprintf(color_text,sizeof(color_text),"Purple");
             break;
         default:
-            strcpy(color_text,"Red");
+            xastir_snprintf(color_text,sizeof(color_text),"Red");
             break;
     }
 
@@ -14652,9 +14703,9 @@ void update_units(void) {
 
     switch (units_english_metric) {
         case 1:     // English
-            strcpy(un_alt,"ft");
-            strcpy(un_dst,"mi");
-            strcpy(un_spd,"mph");
+            xastir_snprintf(un_alt,sizeof(un_alt),"ft");
+            xastir_snprintf(un_dst,sizeof(un_dst),"mi");
+            xastir_snprintf(un_spd,sizeof(un_spd),"mph");
             cvt_m2len  = 3.28084;   // m to ft
             cvt_dm2len = 0.328084;  // dm to ft
             cvt_hm2len = 0.0621504; // hm to mi
@@ -14663,9 +14714,9 @@ void update_units(void) {
             break;
         case 2:     // Nautical
             // add nautical miles and knots for future use
-            strcpy(un_alt,"ft");
-            strcpy(un_dst,"nm");
-            strcpy(un_spd,"kn");
+            xastir_snprintf(un_alt,sizeof(un_alt),"ft");
+            xastir_snprintf(un_dst,sizeof(un_dst),"nm");
+            xastir_snprintf(un_spd,sizeof(un_spd),"kn");
             cvt_m2len  = 3.28084;   // m to ft
             cvt_dm2len = 0.328084;  // dm to ft
             cvt_hm2len = 0.0539957; // hm to nm
@@ -14673,9 +14724,9 @@ void update_units(void) {
             cvt_mi2len = 0.8689607; // mph to knots / mi to nm
             break;
         default:    // Metric
-            strcpy(un_alt,"m");
-            strcpy(un_dst,"km");
-            strcpy(un_spd,"km/h");
+            xastir_snprintf(un_alt,sizeof(un_alt),"m");
+            xastir_snprintf(un_dst,sizeof(un_dst),"km");
+            xastir_snprintf(un_spd,sizeof(un_spd),"km/h");
             cvt_m2len  = 1.0;       // m to m
             cvt_dm2len = 0.1;       // dm to m
             cvt_hm2len = 0.1;       // hm to km
@@ -15640,7 +15691,9 @@ if (current->temp_select) {
 
                 // JMT - this is a guess
                 if (current->max_zoom == 0) {
-                    strcpy(temp_max_zoom,"  -  ");
+                    xastir_snprintf(temp_max_zoom,
+                        sizeof(temp_max_zoom),
+                        "  -  ");
                 }
                 else {
                     xastir_snprintf(temp_max_zoom,
@@ -15650,7 +15703,9 @@ if (current->temp_select) {
                 }
 
                 if (current->min_zoom == 0) {
-                    strcpy(temp_min_zoom,"  -  ");
+                    xastir_snprintf(temp_min_zoom,
+                        sizeof(temp_min_zoom),
+                        "  -  ");
                 }
                 else {
                     xastir_snprintf(temp_min_zoom,
@@ -15660,7 +15715,9 @@ if (current->temp_select) {
                 }
 
                 if (current->map_layer == 0) {
-                    strcpy(temp_layer,"  -  ");
+                    xastir_snprintf(temp_layer,
+                        sizeof(temp_layer),
+                        "  -  ");
                 }
                 else {
                     xastir_snprintf(temp_layer,
@@ -15670,7 +15727,9 @@ if (current->temp_select) {
                 }
 
                 if (current->draw_filled == 0) {
-                    strcpy(temp_filled,"     ");
+                    xastir_snprintf(temp_filled,
+                        sizeof(temp_filled),
+                        "     ");
                 }
                 else {
                     int len, start;
@@ -15690,7 +15749,9 @@ if (current->temp_select) {
                 }
 
                 if (current->auto_maps == 0) {
-                    strcpy(temp_auto,"     ");
+                    xastir_snprintf(temp_auto,
+                        sizeof(temp_auto),
+                        "     ");
                 }
                 else {
                     int len, start;
@@ -18495,17 +18556,19 @@ void Configure_defaults_change_data(Widget widget, XtPointer clientData, XtPoint
 
     skip_dupe_checking = (int)(XmToggleButtonGetState(disable_dupe_check));
 
-    // Small memory leak in below statement:
-    //strcpy(altnet_call, XmTextGetString(altnet_text));
-    // Change to:
     temp = XmTextGetString(altnet_text);
-    strcpy(altnet_call,temp);
+    xastir_snprintf(altnet_call,
+        sizeof(altnet_call),
+        "%s",
+        temp);
     XtFree(temp);
     
     (void)remove_trailing_spaces(altnet_call);
     if (strlen(altnet_call)==0) {
         altnet = FALSE;
-        strcpy(altnet_call, "XASTIR");
+        xastir_snprintf(altnet_call,
+            sizeof(altnet_call),
+            "XASTIR");
     }
 
     operate_as_an_igate=Igate_type;
@@ -20853,7 +20916,10 @@ void Track_Me( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callD
     XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
 
     if(state->set) {
-        strcpy(tracking_station_call, my_callsign);
+        xastir_snprintf(tracking_station_call,
+            sizeof(tracking_station_call),
+            "%s",
+            my_callsign);
         track_me = atoi(which);
         track_station_on = atoi(which);
         display_zoom_status();
@@ -21024,7 +21090,10 @@ int Setup_object_data(char *line, int line_length) {
         return(0);
 
     // Copy object name into "last_object"
-    strcpy(last_object,line);
+    xastir_snprintf(last_object,
+        sizeof(last_object),
+        "%s",
+        line);
 
     temp_ptr = XmTextFieldGetString(object_lat_data_ns);
     if((char)toupper((int)temp_ptr[0]) == 'S')
@@ -21193,15 +21262,21 @@ int Setup_object_data(char *line, int line_length) {
         temp = atoi(line);
         if ( (temp >= 0) && (temp <= 999) ) {
             xastir_snprintf(line, line_length, "%03d", temp);
-            strcat(speed_course,line);
+            strncat(speed_course,
+                line,
+                sizeof(speed_course) - strlen(speed_course));
             speed = temp;
         }
         else {
-            strcat(speed_course,"...");
+            strncat(speed_course,
+                "...",
+                sizeof(speed_course) - strlen(speed_course));
         }
     }
     else {  // No speed entered, blank it out
-        strcat(speed_course,"...");
+        strncat(speed_course,
+            "...",
+            sizeof(speed_course) - strlen(speed_course));
     }
     if ( (speed_course[0] == '.') && (speed_course[4] == '.') ) {
         speed_course[0] = '\0'; // No speed or course entered, so blank it
@@ -21346,7 +21421,9 @@ int Setup_object_data(char *line, int line_length) {
                 altitude);
         } else {  // Beam Heading DFS object
             if (strlen(speed_course) != 7)
-                strcpy(speed_course,"000/000");
+                xastir_snprintf(speed_course,
+                    sizeof(speed_course),
+                    "000/000");
 
             temp_ptr = XmTextFieldGetString(ob_bearing_data);
             bearing = atoi(temp_ptr);
@@ -21530,7 +21607,10 @@ int Setup_item_data(char *line, int line_length) {
     (void)remove_trailing_spaces(line);
     //(void)to_upper(line);     Not per spec.  Don't use this.
 
-    strcpy(tempstr,line);
+    xastir_snprintf(tempstr,
+        sizeof(tempstr),
+        "%s",
+        line);
 
     if (strlen(line) == 1)  // Add two spaces (to make 3 minimum chars)
         xastir_snprintf(line, line_length, "%s  ", tempstr);
@@ -21541,7 +21621,10 @@ int Setup_item_data(char *line, int line_length) {
     if (!valid_item(line))
         return(0);
 
-    strcpy(last_object,line);
+    xastir_snprintf(last_object,
+        sizeof(last_object),
+        "%s",
+        line);
 
     temp_ptr = XmTextFieldGetString(object_lat_data_ns);
     if((char)toupper((int)temp_ptr[0]) == 'S')
@@ -21690,13 +21773,19 @@ int Setup_item_data(char *line, int line_length) {
         temp = atoi(line);
         if ( (temp >= 0) && (temp <= 999) ) {
             xastir_snprintf(line, line_length, "%03d", temp);
-            strcat(speed_course,line);
+            strncat(speed_course,
+                line,
+                sizeof(speed_course) - strlen(speed_course));
             speed = temp;
         } else {
-            strcat(speed_course,"...");
+            strncat(speed_course,
+                "...",
+                sizeof(speed_course) - strlen(speed_course));
         }
     } else {  // No speed entered, blank it out
-        strcat(speed_course,"...");
+        strncat(speed_course,
+            "...",
+            sizeof(speed_course) - strlen(speed_course));
     }
     if ( (speed_course[0] == '.') && (speed_course[4] == '.') ) {
         speed_course[0] = '\0'; // No speed or course entered, so blank it
@@ -21829,7 +21918,9 @@ int Setup_item_data(char *line, int line_length) {
                 altitude);
         } else {  // Beam Heading DFS item
             if (strlen(speed_course) != 7)
-                strcpy(speed_course,"000/000");
+                xastir_snprintf(speed_course,
+                    sizeof(speed_course),
+                    "000/000");
 
             temp_ptr = XmTextFieldGetString(ob_bearing_data);
             bearing = atoi(temp_ptr);
@@ -25963,7 +26054,11 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
 
     transmit_compressed_posit = (int)XmToggleButtonGetState(compressed_posit_tx);
 
-    strcpy(old_callsign,my_callsign);
+    xastir_snprintf(old_callsign,
+        sizeof(old_callsign),
+        "%s",
+        my_callsign);
+
     /*fprintf(stderr,"Changing Configure station data\n");*/
 
     temp_ptr = XmTextFieldGetString(station_config_call_data);
@@ -26087,7 +26182,10 @@ void Configure_station_change_data(Widget widget, XtPointer clientData, XtPointe
             // track_station_call variable.  If we don't do this, we
             // will still be tracking our old callsign.
             if (track_me) {
-                strcpy(tracking_station_call, my_callsign);
+                xastir_snprintf(tracking_station_call,
+                    sizeof(tracking_station_call),
+                    "%s",
+                    my_callsign);
             }
         }
 
@@ -27852,7 +27950,10 @@ int main(int argc, char *argv[], char *envp[]) {
     /* get User info */
     user_id   = getuid();
     user_info = getpwuid(user_id);
-    strcpy(user_dir,user_info->pw_dir);
+    xastir_snprintf(user_dir,
+        sizeof(user_dir),
+        "%s",
+        user_info->pw_dir);
 
     /*
         fprintf(stderr,"User %s, Dir %s\n",user_info->pw_name,user_dir);
@@ -27940,7 +28041,7 @@ int main(int argc, char *argv[], char *envp[]) {
     my_last_altitude = 0l;
     my_last_altitude_time = 0l;
 
-    strcpy(wx_station_type,"");
+    wx_station_type[0] = '\0';
     last_alert_redraw = 0;
     igate_msgs_tx = 0;
     last_statusline = 0;        // inactive statusline
@@ -27955,7 +28056,7 @@ int main(int argc, char *argv[], char *envp[]) {
     next_redraw = sec_now()+60; // init redraw timing
     last_redraw = sec_now();
 
-    strcpy(lang_to_use_or,"");
+    lang_to_use_or[0] = '\0';
     ag_error=0;
 
     // Reset the gps variables.
@@ -27983,22 +28084,22 @@ int main(int argc, char *argv[], char *envp[]) {
             case 'l':
                 fprintf(stderr,"Language is");
                 if (optarg) {
-                    strcpy(lang_to_use_or,"");
+                    lang_to_use_or[0] = '\0';
                     if (strcasecmp(optarg,"ENGLISH") == 0) {
-                        strcpy(lang_to_use_or,"English");
+                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "English");
                     } else if (strcasecmp(optarg,"DUTCH") == 0) {
-                        strcpy(lang_to_use_or,"Dutch");
+                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "Dutch");
                     } else if (strcasecmp(optarg,"FRENCH") == 0) {
-                        strcpy(lang_to_use_or,"French");
+                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "French");
                     } else if (strcasecmp(optarg,"GERMAN") == 0) {
-                        strcpy(lang_to_use_or,"German");
+                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "German");
                     } else if (strcasecmp(optarg,"SPANISH") == 0) {
-                        strcpy(lang_to_use_or,"Spanish");
+                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "Spanish");
                     } else if (strcasecmp(optarg,"ITALIAN") == 0) {
-                        strcpy(lang_to_use_or,"Italian");
+                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "Italian");
                     } else if (strcasecmp(optarg,"PORTUGUESE") == 0) {
-                        strcpy(lang_to_use_or,"Portuguese");
-                    } else {
+                        xastir_snprintf(lang_to_use, sizeof(lang_to_use), "Portuguese");
+                   } else {
                         ag_error++;
                         fprintf(stderr," INVALID");
                     }
@@ -28104,7 +28205,10 @@ int main(int argc, char *argv[], char *envp[]) {
 
     /* do language links */
     if (strlen(lang_to_use_or) > 0)
-        strcpy(lang_to_use,lang_to_use_or);
+        xastir_snprintf(lang_to_use,
+            sizeof(lang_to_use),
+            "%s",
+            lang_to_use_or);
 
     xastir_snprintf(temp, sizeof(temp), "help/help-%s.dat", lang_to_use);
     (void)unlink(get_user_base_dir("config/help.dat"));
@@ -28135,7 +28239,10 @@ int main(int argc, char *argv[], char *envp[]) {
     }
 
     /* (NEW) set help file area */
-    strcpy(HELP_FILE,get_user_base_dir("config/help.dat"));
+    xastir_snprintf(HELP_FILE,
+        sizeof(HELP_FILE),
+        "%s",
+        get_user_base_dir("config/help.dat"));
 
 #ifdef HAVE_FESTIVAL
     /* Initialize the festival speech synthesis port */

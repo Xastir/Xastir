@@ -32,8 +32,8 @@
 #include <Xbae/Matrix.h>
 #endif  // HAVE_XBAE_MATRIX_H
 
-#include "main.h"
 #include "xastir.h"
+#include "main.h"
 #include "lang.h"
 #include "maps.h"
 

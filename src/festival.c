@@ -78,6 +78,7 @@
 /*                  N7IPB    04/08/2001                                  */
 /*                                                                       */
 /*=======================================================================*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -88,10 +89,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
-#include "festival.h"
 #include <errno.h>
+
+
 #include "xastir.h"
+#include "festival.h"
 #include "snprintf.h"
+
 
 FT_Info *info = NULL;
 

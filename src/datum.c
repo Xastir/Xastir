@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include "xastir.h"
 #include "datum.h"
 #include "main.h"
 #include "util.h"

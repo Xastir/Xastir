@@ -939,23 +939,23 @@ void draw_shapefile_map (Widget w,
 
         switch (DBFGetFieldInfo(hDBF, i, szTitle, &nWidth, &nDecimals)) {
         case FTString:
-            strcpy(ftype, "string");;
+            xastir_snprintf(ftype,sizeof(ftype),"string");
             break;
 
         case FTInteger:
-            strcpy(ftype, "integer");
+            xastir_snprintf(ftype,sizeof(ftype),"integer");
             break;
 
         case FTDouble:
-            strcpy(ftype, "float");
+            xastir_snprintf(ftype,sizeof(ftype),"float");
             break;
 
         case FTInvalid:
-            strcpy(ftype, "invalid/unsupported");
+            xastir_snprintf(ftype,sizeof(ftype),"invalid/unsupported");
             break;
 
         default:
-            strcpy(ftype, "unknown");
+            xastir_snprintf(ftype,sizeof(ftype),"unknown");
             break;
         }
 
@@ -2313,11 +2313,11 @@ void draw_shapefile_map (Widget w,
 
                             // Take care to not insert spaces if
                             // some of the strings are empty.
-                            if (strlen(temp3) != 0) strcpy(a," ");
+                            if (strlen(temp3) != 0) strncpy(a," ",2);
                             else                    a[0] = '\0';
-                            if (strlen(temp4) != 0) strcpy(b," ");
+                            if (strlen(temp4) != 0) strncpy(b," ",2);
                             else                    b[0] = '\0';
-                            if (strlen(temp5) != 0) strcpy(c," ");
+                            if (strlen(temp5) != 0) strncpy(c," ",2);
                             else                    c[0] = '\0';
 
                             xastir_snprintf(temp2,sizeof(temp2),"%s%s%s%s%s%s%s",
@@ -2379,7 +2379,8 @@ void draw_shapefile_map (Widget w,
                         // temp points to an unchangeable string
 
                         if (temp != NULL) { // NOAA interstates file has a NULL at this point
-                            strncpy(temp2,temp,sizeof(temp2));  // Copy the string so we can change it
+                            // Copy the string so we can change it
+                            xastir_snprintf(temp2,sizeof(temp2),"%s",temp);
                             temp = temp2;                       // Point temp to it (for later use)
                         }
                         else {

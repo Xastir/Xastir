@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <Xm/XmAll.h>
 
-#include "main.h"
 #include "xastir.h"
 #include "main.h"
 #include "lang.h"

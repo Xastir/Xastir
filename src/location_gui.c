@@ -30,8 +30,8 @@
 
 #include <Xm/XmAll.h>
 
-#include "main.h"
 #include "xastir.h"
+#include "main.h"
 #include "xa_config.h"
 #include "util.h"
 #include "lang.h"

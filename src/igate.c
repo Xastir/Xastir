@@ -38,9 +38,9 @@
 #include <X11/Xatom.h>
 #include <X11/Shell.h>
 
+#include "xastir.h"
 #include "igate.h"
 #include "main.h"
-#include "xastir.h"
 #include "interface.h"
 #include "xa_config.h"
 #include "util.h"
