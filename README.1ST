@@ -67,7 +67,7 @@ password:
 2) Go into the xastir directory to build the executable:
 
   cd xastir*
-  ./bootstrap.sh
+  ./bootstrap.sh (This step needed only for those using CVS)
   ./configure
   make
   su (become the root user) (not needed on Cygwin)
@@ -436,7 +436,7 @@ First Time Install:
    7. Building XASTIR:  Note that you'll need autoconf 2.53 or newer and
       automake 1.6.3 or newer in order to run the "./bootstrap.sh" script.
     
-        "./bootstrap.sh"
+        "./bootstrap.sh" (This step needed only for those using CVS)
         "./configure"
         "make" ("gmake" for Solaris or *BSD)
 
@@ -1274,7 +1274,7 @@ WINDOWS/CYGWIN NOTES:
      Compile and install and you'll be running the latest developer's
      version!
 
-        ./bootstrap.sh
+        ./bootstrap.sh (This step needed only for those using CVS)
         ./configure
         make
         make install-strip
