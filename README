@@ -121,6 +121,29 @@ README
 
      No changes necessary now for Mac OS X!
 
+     If you intend to run with gdal installed, you may find that geotiff
+     projection doesn't work. To avoid this, install libtiff, libproj,
+     and libgeotiff first, then configure gdal with 
+     --with-libtiff=/path/to/libtiff --with-geotiff=/path/to/geotiff
+     It's important to not choose "yes" or "internal". You may also want
+     --with-libz=yes
+
+     If you have trouble building GDAL you may need this patch:
+     --- GDALmake.opt.in     7 Jan 2004 20:52:29 -0000       1.130
+     +++ GDALmake.opt.in     30 Jan 2004 22:08:58 -0000
+     @@ -78,8 +78,8 @@
+      endif
+ 
+      CPPFLAGS       = @CPPFLAGS@ -I$(GDAL_ROOT)/port
+     -CFLAGS         = @C_WFLAGS@ @C_PIC@ $(C_ODFLAGS) @EXTRA_INCLUDES@ $(USER_DEFS)
+     -CXXFLAGS       = @CXX_WFLAGS@ @CXX_PIC@ $(CXX_ODFLAGS) \
+     +CFLAGS         = @C_WFLAGS@ @C_PIC@ $(GDAL_INCLUDE) $(C_ODFLAGS) @EXTRA_INCLUDES@ $(USER_DEFS)
+     +CXXFLAGS       = @CXX_WFLAGS@ @CXX_PIC@ $(GDAL_INCLUDE) $(CXX_ODFLAGS) \
+                       @EXTRA_INCLUDES@ $(USER_DEFS)
+ 
+      RANLIB         =       @RANLIB@
+
+
      You may want to install everything to /sw though, so that the normal
      user can find it easily and add maps.  To do this, run this instead:
 
@@ -128,6 +151,9 @@ README
 
      That will cause Xastir to be installed in /sw/xastir/* directories, and
      the executable will go into /sw/bin/xastir.
+
+     Ports have been contributed to DarwinPorts. This will be updated with
+     instructions when those are committed.
 
        END OF MAC OS X NOTES.
      -----------------------------------------------------------------------
