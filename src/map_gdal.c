@@ -39,7 +39,7 @@
 #include "snprintf.h"
 
 //#include <stdio.h>
-//#include <stdlib.h>
+#include <stdlib.h>
 //#include <unistd.h>
 //#include <sys/stat.h>
 //#include <ctype.h>
@@ -4137,8 +4137,9 @@ fprintf(stderr,"Combine Hashes, Create/Draw Polygon ");
 
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_advance(iterator));
+
+            free(iterator);
         }
-        free(iterator);
 
 
 stop_timer(); print_timer_results(); start_timer();
@@ -4174,8 +4175,9 @@ fprintf(stderr,"               Free'ing hash memory ");
 
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_remove(iterator));
+
+            free(iterator);
         }
-        free(iterator);
         // polyid_hash should be empty at this point.
 
 
@@ -4197,8 +4199,9 @@ fprintf(stderr,"               Free'ing hash memory ");
 
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_remove(iterator));
+
+            free(iterator);
         }
-        free(iterator);
         // tlid_hash should be empty at this point.
 
 
@@ -4213,8 +4216,9 @@ fprintf(stderr,"               Free'ing hash memory ");
             do {
             // Free the current hash element, advance to the next
             } while (hashtable_iterator_remove(iterator));
+
+            free(iterator);
         }
-        free(iterator);
         // landmark_hash should be empty at this point.
 
 
