@@ -8029,7 +8029,8 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     VerticeRow *tmp;
     double area;
     int n;
-
+    char temp_course[20];
+ 
 
     // Check whether we're currently working on a polygon.  If not,
     // get out of here.
@@ -8086,30 +8087,75 @@ void Draw_CAD_Objects_close_polygon( /*@unused@*/ Widget widget,
     }
  
     // Walk the linked list again, computing the area of the
-    // polygon.  Code off the web to compute the area of a polygon:
+    // polygon.  Greene's Theorem is how we can compute the area of
+    // a polygon using the vertices.
     //
-    // area = 0.0;
-    // for (int i = 0; i < num_vertices; i++) {
-    //     area += (v2dx[i]-v2dx[i+1]) * (v2dy[i]+v2dy[i+1]);
-    // }
-    // area *= 0.5;
-    //
+    // Here we're walking around the vertices backwards due to the
+    // ordering of the list.  This changes some of the signs below.
     //
     area = 0.0;
     tmp = CAD_list_head->start;
-    if (tmp != NULL) {
-        while (tmp->next != NULL) {
-            // Our latitude is inverted so we have to swap the signs
-            // for the second line here:
-            area += (   (double)tmp->longitude - (double)tmp->next->longitude)
-                  * ( (-(double)tmp->latitude) - (double)tmp->next->latitude);
-            tmp = tmp->next;
-        }
+    while (tmp->next != NULL) {
+        double dx0, dy0, dx1, dy1;
+
+        // Because lat/long units can vary drastically w.r.t. real
+        // units, we need to multiply the terms by the real units in
+        // order to get real area.
+
+        // Compute real distances from a fixed point.  Convert to
+        // the current measurement units.  We'll use the starting
+        // vertice as our fixed point.
+        //
+        dx0 = cvt_kn2len
+            * calc_distance_course(
+                CAD_list_head->start->latitude,
+                CAD_list_head->start->longitude,
+                CAD_list_head->start->latitude,
+                tmp->longitude,
+                temp_course,
+                sizeof(temp_course));
+
+        dy0 = cvt_kn2len
+            * calc_distance_course(
+                CAD_list_head->start->latitude,
+                CAD_list_head->start->longitude,
+                tmp->latitude,
+                CAD_list_head->start->longitude,
+                temp_course,
+                sizeof(temp_course));
+
+        dx1 = cvt_kn2len
+            * calc_distance_course(
+                CAD_list_head->start->latitude,
+                CAD_list_head->start->longitude,
+                CAD_list_head->start->latitude,
+                tmp->next->longitude,
+                temp_course,
+                sizeof(temp_course));
+
+        dy1 = cvt_kn2len
+            * calc_distance_course(
+                CAD_list_head->start->latitude,
+                CAD_list_head->start->longitude,
+                tmp->next->latitude,
+                CAD_list_head->start->longitude,
+                temp_course,
+                sizeof(temp_course));
+
+        // Greene's Theorem:  Summation of the following, then
+        // divide by two:
+        //
+        // A = X Y    - X   Y 
+        //  i   i i+1    i+1 i
+        //
+
+        area += (dx0 * dy1) - (dx1 * dy0);
+ 
+        tmp = tmp->next;
     }
-    area *= 0.5;
+    area = 0.5 * area;
 
-fprintf(stderr,"Area in Xastir units = %f\n", area);
-
+fprintf(stderr,"Area: %f\n\n", area);
 
     // Tell the code that we're starting a new polygon by wiping out
     // the first position.
