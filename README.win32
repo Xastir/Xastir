@@ -554,7 +554,10 @@ A very good option is to read the SUDO instructions in the
 README.CVS file, setting up the /etc/sudoers file and creating an
 update-xastir script as shown.  Then you can type "./update-xastir"
 at any time to snag down the latest Xastir changes, compile, and
-install it.
+install it.  We've just included an update-xastir script with
+Xastir, so you don't have to create it anymore.  You may however
+need to remove the "sudo" keyword from each line for it to work
+properly on Cygwin.
 
 
 -----

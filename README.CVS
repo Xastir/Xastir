@@ -212,6 +212,9 @@ SUDO Instructions:
 
     Now type "chmod u+rwx update-xastir" to make that script executable.
 
+    Actually, we've just created a script for Xastir that implements the above
+    and called it "update-xastir".  Do a "cvs update" to get it.
+
     Try out the script.  Type:
 
         ./update-xastir
@@ -222,6 +225,9 @@ SUDO Instructions:
     will run in the proper directory in all cases.  If you add the proper "cd"
     command you can copy the script to /usr/local/bin and then run it as
     "update-xastir" from anywhere.
+
+    Windows users:  You may need to remove the "sudo" keyword on each line to
+    have it work properly for you.
 
     A note from Gerry Creager as to another way to set up the sudoers file:
 
