@@ -575,7 +575,8 @@ you to use any GIF/JPG/XPM/BMP/... image as an Xastir map.
 
 Note:  The Cygwin binary for ImageMagick-5.5.5 has a problem in it's
 Magick-config script which makes it impossible to use for our
-purposes.  Don't try to use that version.
+purposes.  Don't try to use that version.  Some people reported a
+similar problem with 5.5.7.
 
 Later versions of ImageMagick depend on "liblcms", which isn't part
 of Cygwin.  Install liblcms _before_ installing ImageMagick.
@@ -633,7 +634,7 @@ here:
 
 [ ] Copy the files/directories into the /usr tree:
 
-    cd ImageMagick-5.5.7
+    cd ImageMagick-5.5.3
     cp -R * /usr
 
 [ ] Reconfigure Xastir to use this library:
