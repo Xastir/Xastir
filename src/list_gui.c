@@ -242,8 +242,8 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
         case LST_OBJ:
             if (forward == 1)
                 while (!found && (*p_station) != NULL) {
-                    if (((*p_station)->flag & ST_ACTIVE) != 0
-                     && ( (((*p_station)->flag & ST_OBJECT) != 0)
+                    // Show deleted objects/items as well
+                    if ( ( (((*p_station)->flag & ST_OBJECT) != 0)
                             || (((*p_station)->flag & ST_ITEM) != 0) ) )
                         found = (char)TRUE;
                     else
@@ -267,8 +267,8 @@ void get_list_member(int type, DataRow **p_station, int skip, int forward) {
 
             if (forward == 1)
                 while (!found && (*p_station) != NULL) {
-                    if (((*p_station)->flag & ST_ACTIVE) != 0
-                            && ( (((*p_station)->flag & ST_OBJECT) != 0)
+                    // Show deleted objects/items as well
+                    if ( ( (((*p_station)->flag & ST_OBJECT) != 0)
                                 || (((*p_station)->flag & ST_ITEM) != 0) )
                             && ( is_my_call( (*p_station)->origin,1) ) )
                         found = (char)TRUE;
@@ -533,14 +533,39 @@ void Station_List_fill(int type, int new_offset) {
 
 begin_critical_section(&station_list_dialog_lock, "list_gui.c:Station_List_fill" );
 
+        // Start filling in the rows of the widget
         for (i=0;i<rows;i++) {                                  // loop over display lines
             if (p_station != NULL) {                            // we have data...
+                int ghost;
+
                 // icon
                 XtVaSetValues(SL_da[type][row],XmNlabelPixmap, blank_icon,NULL);
                 XtManageChild(SL_da[type][row]);
-                symbol(SL_da[type][row],0,p_station->aprs_symbol.aprs_type,
-                        p_station->aprs_symbol.aprs_symbol,
-                        p_station->aprs_symbol.special_overlay,SL_icon[type][row],0,0,0,' ');
+
+                if ( (type == LST_OBJ || type == LST_MYOBJ)
+                    && (((p_station)->flag & ST_ACTIVE) != 0) ) {
+                    // Active object/item
+                    //printf("Active object\n");
+                    ghost = 0;
+                }
+                else {
+                    // Deleted object/item
+                    //printf("Inactive object\n");
+                    ghost = 1;
+                }
+
+                // Blank out the icon first
+                XtVaSetValues(SL_da[type][row],XmNlabelPixmap, blank_icon,NULL);
+                XtManageChild(SL_da[type][row]);
+                symbol(SL_da[type][row],0,'~','$','\0',SL_icon[type][row],0,0,0,' ');
+                XtVaSetValues(SL_da[type][row],XmNlabelPixmap, SL_icon[type][row],NULL);
+                XtManageChild(SL_da[type][row]);
+
+                // Now redraw it
+                symbol(SL_da[type][row],ghost,p_station->aprs_symbol.aprs_type,
+                    p_station->aprs_symbol.aprs_symbol,
+                    p_station->aprs_symbol.special_overlay,SL_icon[type][row],ghost,0,0,' ');
+ 
                 XtVaSetValues(SL_da[type][row],XmNlabelPixmap, SL_icon[type][row],NULL);
                 XtManageChild(SL_da[type][row]);
 
