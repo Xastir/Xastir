@@ -4773,14 +4773,13 @@ static void index_update_accessed(char *filename) {
 //
 // Note that since we've alphanumerically ordered the list, we can
 // stop when we hit something after this filename in the alphabet.
-// It'll speed things up a bit.  Make this change sometime soon.
+// It speeds things up quite a bit.
 //
 // In order to speed this up slightly for the general case, we'll
 // assume that we'll be fetching indexes in alphabetical order, as
 // that's how we store them everywhere.  We'll save the last map
-// index pointer away and start searching there each time.  If we
-// hit the end and haven't found it, we'll start from the beginning
-// again.  That should make all but the _first_ lookup much faster.
+// index pointer away and start searching there each time.  That
+// should make all but the _first_ lookup much faster.
 //
 map_index_record *last_index_lookup = NULL;
 
@@ -4797,121 +4796,109 @@ int index_retrieve(char *filename,
 
     map_index_record *current;
     int status = 0;
-    int first_iteration = 1;
 
-
-    // Start where we left off last time
-    if (last_index_lookup != NULL) {
-        current = last_index_lookup;
-    }
-    else {
-        first_iteration = 0; // Don't look through the list twice!
-        current = map_index_head;
-    }
 
     if ( (filename == NULL)
             || (strlen(filename) >= MAX_FILENAME) ) {
         return(status);
     }
 
-    // Check the first letter to see if we're already past the
-    // correct area.  If so, start at the beginning of the index.
-    //
-    // if needle > haystack
-    if (filename[0] > current->filename[0]) {
-
-        // Yes, we're past it.  Start at the beginning instead.
-        //
-        first_iteration = 0; // Don't look through the list twice!
+    // Attempt to start where we left off last time
+    if (last_index_lookup != NULL) {
+        current = last_index_lookup;
+    }
+    else {
         current = map_index_head;
+//fprintf(stderr,"Start at beginning:%s\t", filename);
     }
 
-    // Search for a matching filename in the linked list.  We check
-    // the first character of each here in order to speed up the
-    // function, as this function is called rather a lot.
-    while (current != NULL) {
-        char needle = filename[0];
-        char haystack = current->filename[0];
-
-
-        if (needle > haystack) {
-
-            // We're not there yet.  Try the next map in the index.
-            //
-            current = current->next;
-//fprintf(stderr,"next\n");
-        }
-
-        else if (needle < haystack) {
-
-            // We're past it in the index.  Check whether we should
-            // start over at the beginning.
-            //
-            if (first_iteration) {
-                first_iteration = 0; // Don't look through the list again.
-                current = map_index_head;
-//fprintf(stderr,"past it\n");
-            }
-
-            else {
-
-                // We're done.  We didn't find it in the index.
-                // Save the pointer away for next time.
-                last_index_lookup = current;
-//fprintf(stderr,"did not find\n");
-                return(status);
-            }
-        }
-
-        else if (needle == haystack) {
-
-            // We're in the right neighborhood.  The first letter of
-            // each is a match.  Test the entire string now for a
-            // match.
-            //
-//fprintf(stderr,"first char match\n");
-            if (strcmp(current->filename,filename) == 0) {
-                // Found a match!
-                status = 1;
-                *bottom = current->bottom;
-                *top = current->top;
-                *left = current->left;
-                *right = current->right;
-                *max_zoom = current->max_zoom;
-                *min_zoom = current->min_zoom;
-                *map_layer = current->map_layer;
-                *draw_filled = current->draw_filled;
-                *auto_maps = current->auto_maps;
-//fprintf(stderr,"Found it\n");
-                break;  // Exit the while loop
-            }
-            else {
-                // Rest of string didn't match
-                current = current->next;
-            }
-        }
-
-        else {
-            // We should never get here, as we've already hit all
-            // conditions possible.
-            current = current->next;
-//fprintf(stderr,"Got to never-never land\n");
-        }
-
-        // If we hit the end of the list and need to start at the
-        // beginning again...
-        if (current == NULL && first_iteration) {
-            // We hit the end.  Start over at the beginning of the
-            // list.
-            first_iteration = 0; // Don't look through the list again.
+    // Check to see if we're past the correct area.  If so, start at
+    // the beginning of the index instead.
+    //
+    if (current
+            && ((current->filename[0] > filename[0])
+                || (strcmp(current->filename, filename) > 0))) {
+        //
+        // We're past the correct point.  Start at the beginning of
+        // the list unless we're already there.
+        //
+        if (current != map_index_head) {
             current = map_index_head;
-//fprintf(stderr,"Starting over\n");
+        }
+//fprintf(stderr,"Start at beginning:%s\t", filename);
+    }
+
+    //
+    // Search for a matching filename in the linked list.
+    //
+
+    // Check the first char only.  Loop until they match or go past.
+    // This is our high-speed method to get to the correct search
+    // area.
+    //
+    while (current && (current->filename[0] < filename[0])) {
+        // Save the pointer away for next time.  There's a reason we
+        // save it before we increment the counter:  For "z" weather
+        // alerts, it's nice to have it scan just the very last of
+        // the list before it fails, instead of scanning the entire
+        // list each time and then failing.  Need to find out why
+        // weather alerts always fail, and therefore why this
+        // routine gets called every time for them.
+        //
+        last_index_lookup = current;
+        current = current->next;
+//fprintf(stderr,"1");
+    }
+
+    // Stay in this loop while the first char matches.  This is our
+    // active search area.
+    //
+    while (current && (current->filename[0] == filename[0])) {
+        int result;
+
+        // Check the entire string
+        result = strcmp(current->filename, filename);
+
+        if (result == 0) {
+            // Found a match!
+            status = 1;
+            *bottom = current->bottom;
+            *top = current->top;
+            *left = current->left;
+            *right = current->right;
+            *max_zoom = current->max_zoom;
+            *min_zoom = current->min_zoom;
+            *map_layer = current->map_layer;
+            *draw_filled = current->draw_filled;
+            *auto_maps = current->auto_maps;
+//fprintf(stderr," Found it\n");
+            return(status);
+        }
+        else if (result > 0) {
+            // We're past it in the index.  We didn't find it in the
+            // index.
+//fprintf(stderr," Did not find1\n");
+            return(status);
+        }
+        else {  // Not found yet, look at the next
+            // Save the pointer away for next time.  There's a
+            // reason we save it before we increment the counter:
+            // For "z" weather alerts, it's nice to have it scan
+            // just the very last of the list before it fails,
+            // instead of scanning the entire list each time and
+            // then failing.  Need to find out why weather alerts
+            // always fail, and therefore why this routine gets
+            // called every time for them.
+            //
+            last_index_lookup = current;
+            current = current->next;
+//fprintf(stderr,"2");
         }
     }
 
-    // Save the pointer away for next time
-    last_index_lookup = current;
-
+    // We're past the correct search area and didn't find it.
+//fprintf(stderr," Did not find2\n");
+ 
     return(status);
 }
 
