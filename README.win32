@@ -44,11 +44,16 @@ there won't be a good place to put your Xastir startup files.  Of
 course, log in as the same user each time in order for Cygwin to use
 the proper home directory for you.
 
-Cygwin specifically, and Unix boxes in general, don't much like
-spaces in filenames, directories, or login names.  Any of these may
-cause you headaches while playing with Cygwin.  Create a new login
-that doesn't have spaces and log in as that user before installing
-Cygwin, and whenever you intend to run Cygwin/Xastir.
+SPACES IN USERNAMES:  Cygwin specifically, and Unix boxes in
+general, don't much like spaces in filenames, directories, or login
+names.  Any of these may cause you headaches while playing with
+Cygwin.  Create a new login that doesn't have spaces and log in as
+that user before installing Cygwin, and whenever you intend to run
+Cygwin/Xastir.  It's very likely that Xastir won't work for you if
+you use a login that has spaces embedded in it.  For additional
+info, see this link:
+
+    http://cygwin.com/faq/faq_2.html#SEC17
 
 Explanation of this login box for those that don't see it:  If you
 have the option of running networking, you'll have a login box show
