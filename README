@@ -308,6 +308,69 @@ README
       -----------------------------------------------------------------------
 
 
+      -----------------------------------------------------------------------
+        HP/UX NOTES:
+
+      - Installed various needed packages and libraries downloaded from:
+
+      http://hpux.cs.utah.edu/
+
+      I'm not sure all of the following are needed, and, this leaves out a few
+      like ImageMagick, but here's a list of the HPUX depot files I've
+      collected:
+
+        X11R6incs-4.3.0-sd-11.11.depot
+        XR6built-6.11-sd-9.03.tar
+        autoconf-2.59-sd-11.11.depot
+        automake-1.9-sd-11.11.depot
+        bash-3.0-sd-11.00.depot
+        bison-1.875-sd-11.11.depot
+        cvs-1.11.17-sd-11.11.depot
+        db-4.2.52-sd-11.11.depot
+        flex-2.5.4a-sd-11.11.depot
+        gawk-3.1.4-sd-11.11.depot
+        lesstif-0.93.94-sd-11.11.depot
+        libiconv-1.9.2-sd-11.11.depot
+        lsof-4.72-sd-11.11.depot
+        m4-1.4.2-sd-11.11.depot
+        make-3.80-sd-11.11.depot
+        perl-5.8.5-sd-11.11.depot
+        sudo-1.6.7p5-sd-11.00.depot
+        tusc-7.7-sd-11.11.depot
+        wget-1.9.1-sd-11.11.depot
+
+      - Installed HP's version of binutils and gcc off of:
+
+      http://h21007.www2.hp.com/dspp/tech/tech_TechDocumentDetailPage_IDX/1,1701,4682,00.html
+
+        binutils_2.15a_hppa-hp-hpux11.11_depot
+        gcc_3.4.2_hppa-hp-hpux11.11_depot
+
+      HPUX 11.11 doesn't seem to have seteuid and setegid calls so:
+
+      - Intalled and linked against HP's Linux libraries:
+
+      http://devrsrc1.external.hp.com/LPK/
+
+      - Changed a couple #include <strings.h>  to:
+
+        #ifdef HAVE_STRING_H
+        #  include <string.h>
+        #else
+        #  include <strings.h>
+        #endif
+
+      - added  #include <sys/modem.h> to interface.h
+
+
+      Current status:  It runs, but it segfaults when connected to an APRS IS
+      server.
+
+        END OF HP/UX NOTES.
+      -----------------------------------------------------------------------
+
+
+
      (7) GATING WEATHER ALERTS
 
       Gating NWS Weather Alerts to RF:
