@@ -203,14 +203,8 @@ static void scan_bulletin_file(void) {
 // parameters for new bulletins.  Count them only.  Results returned
 // in the new_bulletin_count variable.
 void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag, char *packet_message, time_t sec_heard) {
-    char temp[200];
     char temp_my_course[10];
     double distance;
-    struct tm *tmp;
-    time_t timehd;
-    char time_str[20];
-    timehd=sec_heard;
-    tmp = localtime(&timehd);
 
     if ( (packet_message != NULL) && (strlen(packet_message) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 1)
@@ -218,13 +212,7 @@ void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag,
         return;
     }
 
-    (void)strftime(time_str,sizeof(time_str),"%b %d %H:%M",tmp);
-
     distance = distance_from_my_station(call_sign,temp_my_course);
-    xastir_snprintf(temp, sizeof(temp), "%-9s:%-4s (%s %6.1f %s) %s\n",
-            call_sign, &tag[3], time_str, distance,
-            units_english_metric ? langcode("UNIOP00004"): langcode("UNIOP00005"),
-            packet_message);
 
 // Operands of <= have incompatible types (double, int):
     if ( ( ((int)distance <= bulletin_range) && (distance > 0.0) )
@@ -233,7 +221,7 @@ void count_bulletin_messages(/*@unused@*/ char from, char *call_sign, char *tag,
 
         // Is it newer than our first new_bulletin timestamp?
         if (sec_heard >= first_new_bulletin_time) {
-            new_bulletin_count ++;
+            new_bulletin_count++;
         }
     }
 }
@@ -300,11 +288,12 @@ static void zero_bulletin_processing(Message *fill) {
                 // fact that we might find several older messages, so
                 // we only want to keep taking the timestamp backwards
                 // in time here.
-                if (first_new_bulletin_time > (fill->sec_heard - 1) )
-                    first_new_bulletin_time = fill->sec_heard - 1;
+                if (first_new_bulletin_time > (fill->sec_heard) )
+                    first_new_bulletin_time = fill->sec_heard;
  
                 // Set the flag that gets the whole ball rolling
                 new_bulletin_flag = 1;
+//fprintf(stderr,"Filled in distance, setting new_bulletin_flag\n");
             }
         }
         else {
@@ -346,10 +335,12 @@ void prep_for_popup_bulletins() {
     // string of new bulletins.  We may get several in a row, in
     // which case "first" and "last" times will differ.
     if (first_new_bulletin_time == 0)
-        first_new_bulletin_time = last_new_bulletin_time;
+        first_new_bulletin_time = last_new_bulletin_time + 1;
 
     // Set the flag that gets the whole ball rolling
     new_bulletin_flag = 1;
+
+//fprintf(stderr,"prep_for_popup_bulletins: Setting new_bulletin_flag\n");
 
     //fprintf(stderr,"Setting new_bulletin_flag and last_new_bulletin_time\n");
 }
@@ -374,37 +365,37 @@ void check_for_new_bulletins() {
 
     // Look first to see if we might be able to fill in positions on
     // any older bulletins, then cause a popup for those that fit
-    // our parameters.
+    // our parameters.  The below function sets new_bulletin_flag if
+    // it is able to fill in a distance for an older bulletin.
     find_zero_position_bulletins();
 
-    // Any new bulletins?  If not, return
+    // Any new bulletins to check?  If not, return
     if (!new_bulletin_flag) {
         return;
     }
 
     last_bulletin_check = sec_now();
 
-    // Enough time passed since most recent bulletin?
-    if ( (last_new_bulletin_time + 60) > sec_now() ) {
-
+    // Enough time passed since most recent bulletin?  Need to have
+    // enough time to perhaps fill in a distance for each bulletin.
+    if ( (last_new_bulletin_time + 15) > sec_now() ) {
         //fprintf(stderr,"Not enough time has passed\n");
-
         return;
     }
 
     // If we get to here, then we think we may have at least one new
     // bulletin, and the latest arrived more than XX seconds ago
-    // (currently 60 seconds).  Check for bulletins which have
+    // (currently 15 seconds).  Check for bulletins which have
     // timestamps equal to or newer than first_new_bulletin_time and
     // fit within our range.
 
     new_bulletin_count = 0;
 
-    //fprintf(stderr,"Checking for new bulletins\n");
+//fprintf(stderr,"Checking for new bulletins\n");
 
     count_new_bulletins();
 
-    //fprintf(stderr,"%d new bulletins found\n",new_bulletin_count);
+//fprintf(stderr,"%d new bulletins found\n",new_bulletin_count);
 
     if (new_bulletin_count) {
         popup_bulletins();
@@ -419,7 +410,7 @@ void check_for_new_bulletins() {
 
     // Reset so that we can do it all over again later.  We need
     // mutex locks protecting these two variables.
-    first_new_bulletin_time = 0;
+    first_new_bulletin_time = last_new_bulletin_time + 1;
     new_bulletin_flag = 0;
 }
 
@@ -464,6 +455,23 @@ void Display_bulletins_change_range(/*@unused@*/ Widget widget, /*@unused@*/ XtP
 
 
 
+void  Zero_Bulletin_Data_toggle( /*@unused@*/ Widget widget, XtPointer clientData, XtPointer callData) {
+    char *which = (char *)clientData;
+    XmToggleButtonCallbackStruct *state = (XmToggleButtonCallbackStruct *)callData;
+
+    if(state->set)
+        view_zero_distance_bulletins = atoi(which);
+    else
+        view_zero_distance_bulletins = 0;
+
+    Display_bulletins_destroy_shell( widget, Display_bulletins_dialog, callData);
+    Bulletins( widget, clientData, callData);
+}
+
+
+
+
+ 
 void Bulletins(/*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     Widget pane, form, button_range, button_close, dist, dist_units;
     unsigned int n;
@@ -579,7 +587,12 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
                 MY_FOREGROUND_COLOR,
                 MY_BACKGROUND_COLOR,
                 NULL);
-
+        XtAddCallback(zero_bulletin_data,XmNvalueChangedCallback,Zero_Bulletin_Data_toggle,"1");
+        if (view_zero_distance_bulletins)
+            XmToggleButtonSetState(zero_bulletin_data,TRUE,FALSE);
+        else
+            XmToggleButtonSetState(zero_bulletin_data,FALSE,FALSE);
+ 
         n=0;
         XtSetArg(args[n], XmNrows, 15); n++;
         XtSetArg(args[n], XmNcolumns, 108); n++;
@@ -634,11 +647,6 @@ begin_critical_section(&display_bulletins_dialog_lock, "bulletin_gui.c:Bulletins
         xastir_snprintf(temp, sizeof(temp), "%d", bulletin_range);
         XmTextFieldSetString(dist_data, temp);
 
-        if (view_zero_distance_bulletins)
-            XmToggleButtonSetState(zero_bulletin_data,TRUE,FALSE);
-        else
-            XmToggleButtonSetState(zero_bulletin_data,FALSE,FALSE);
- 
         XtManageChild(form);
         XtManageChild(Display_bulletins_text);
         XtVaSetValues(Display_bulletins_text, XmNbackground, colors[0x0f], NULL);
