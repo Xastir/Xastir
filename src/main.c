@@ -9518,6 +9518,7 @@ void map_properties_destroy_shell( /*@unused@*/ Widget widget, XtPointer clientD
     XtPopdown(shell);
     XtDestroyWidget(shell);
     map_properties_dialog = (Widget)NULL;
+    re_sort_maps = 1;
 }
 
 

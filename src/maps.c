@@ -11604,7 +11604,8 @@ printf("*** DONE sorting the selected maps.\n");
     }
 
     // We have the maps in sorted order.  Run through the list and
-    // draw them.
+    // draw them.  Only include those that have the auto_maps field
+    // set to 1.
     current = map_sorted_list_head;
     while  (current != NULL) {
 
@@ -11614,12 +11615,14 @@ printf("*** DONE sorting the selected maps.\n");
 //            current->filename);
 
         // Draw the maps in sorted-by-layer order
-        draw_map (w,
-            SELECTED_MAP_DIR,
-            current->filename,
-            NULL,
-            '\0',
-            DRAW_TO_PIXMAP);
+        if (current->auto_maps) {
+            draw_map (w,
+                SELECTED_MAP_DIR,
+                current->filename,
+                NULL,
+                '\0',
+                DRAW_TO_PIXMAP);
+        }
 
         current = current->next;
     }
