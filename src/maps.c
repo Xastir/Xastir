@@ -1246,8 +1246,8 @@ void draw_shapefile_map (Widget w,
                     alert->title[6]);
                 break;
 
-            case 'o':   // High Seas Marine Area File
-                // High Seas Marine Zones, oz_ files:  AN_Z081
+            case 'o':   // Offshore Marine Area File
+                // Offshore Marine Zones, oz files:  AN_Z081
                 // ID      WFO  NAME
                 // ANZ081  MPC  Gulf of Maine
                 // Need field 0
@@ -1264,7 +1264,7 @@ void draw_shapefile_map (Widget w,
                 break;
 
             case 'm':   // Marine Area File
-                // Marine Zones, mz_ files:  PK_Z120
+                // Marine Zones, mz?????? files:  PK_Z120
                 // ID      WFO  NAME
                 // PKZ120  AJK  Area 1B. Southeast Alaska,
                 // Need field 0
@@ -1382,7 +1382,7 @@ void draw_shapefile_map (Widget w,
                         found_shape = i;
                     }
                     break;
-                case 'o':   // High Seas Marine Area File
+                case 'o':   // Offshore Marine Area File
                     string1 = (char *)DBFReadStringAttribute(hDBF,i,search_field1);
                     if (!strncasecmp(search_param1,string1,strlen(string1))) {
 //printf("Found it!  %s\tShape: %d\n",string1,i);
@@ -7694,16 +7694,17 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                     strncpy (alert->filename, "w_", sizeof (alert->filename));
                     break;
                 case 'Z':
-                    // Zone or marine zone file z_????? or mz_????? or oz_?????
-                    // oz_: ANZ081-086,088,PZZ081-085
-                    // mz_: AM,AN,GM,LC,LE,LH,LM,LO,LS,PH,PK,PM,PS,PZ,SL
+                    // Zone, coastal or offshore marine zone file z_????? or mz?????? or oz??????
+                    // oz: ANZ081-086,088,PZZ081-085
+                    // mz: AM,AN,GM,LC,LE,LH,LM,LO,LS,PH,PK,PM,PS,PZ,SL
                     // z_: All others
                     if (strncasecmp(alert->title,"AM",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"AN",2) == 0) {
-                        // Need to check for Z081-Z086, Z088, if so use oz_, else use mz_
+                        // Need to check for Z081-Z086, Z088, if so use
+                        // oz??????, else use mz??????
                         if (       (strncasecmp(&alert->title[3],"Z081",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z082",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z083",4) == 0)
@@ -7711,80 +7712,80 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 || (strncasecmp(&alert->title[3],"Z085",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z086",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z088",4) == 0) ) {
-                            //printf("%c:High seas marine zone file\n",alert->title[3]);
-                            strncpy (alert->filename, "oz_", sizeof (alert->filename));
+                            //printf("%c:Offshore marine zone file\n",alert->title[3]);
+                            strncpy (alert->filename, "oz", sizeof (alert->filename));
                         }
                         else {
-                            //printf("%c:Marine zone file\n",alert->title[3]);
-                            strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                            //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                            strncpy (alert->filename, "mz", sizeof (alert->filename));
                         }
                     }
                     else if (strncasecmp(alert->title,"GM",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LC",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LE",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LH",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LM",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LO",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"LS",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PH",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PK",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PM",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PS",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else if (strncasecmp(alert->title,"PZ",2) == 0) {
-// Need to check for PZZ081-085, if so use oz_, else use mz_
+// Need to check for PZZ081-085, if so use oz??????, else use mz??????
                         if (       (strncasecmp(&alert->title[3],"Z081",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z082",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z083",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z084",4) == 0)
                                 || (strncasecmp(&alert->title[3],"Z085",4) == 0) ) {
-                            //printf("%c:High seas marine zone file\n",alert->title[3]);
-                            strncpy (alert->filename, "oz_", sizeof (alert->filename));
+                            //printf("%c:Offshore marine zone file\n",alert->title[3]);
+                            strncpy (alert->filename, "oz", sizeof (alert->filename));
                         }
                         else {
-                            //printf("%c:Marine zone file\n",alert->title[3]);
-                            strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                            //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                            strncpy (alert->filename, "mz", sizeof (alert->filename));
                         }
                     }
                     else if (strncasecmp(alert->title,"SL",2) == 0) {
-                        //printf("%c:Marine zone file\n",alert->title[3]);
-                        strncpy (alert->filename, "mz_", sizeof (alert->filename));
+                        //printf("%c:Coastal marine zone file\n",alert->title[3]);
+                        strncpy (alert->filename, "mz", sizeof (alert->filename));
                     }
                     else {
-                        // Must be regular zone file instead of marine
-                        // zone or high seas marine zone.
+                        // Must be regular zone file instead of coastal
+                        // marine zone or offshore marine zone.
                         //printf("%c:Zone file\n",alert->title[3]);
                         strncpy (alert->filename, "z_", sizeof (alert->filename));
                     }
@@ -7822,6 +7823,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                         switch (nfile.st_mode & S_IFMT) {
                             case (S_IFDIR):     // It's a directory, skip it
                                 break;
+                            case (S_IFLNK):     // It's a symbolic link
                             case (S_IFREG):     // It's a file, check it
                                 /*printf("FILE %s\n",dl->d_name); */
                                 // Here we look for a match for the
@@ -7899,6 +7901,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                 map_search(w, fullpath, alert, alert_count, warn, destination_pixmap);
                             }
                             break;
+                        case (S_IFLNK):     // It's a symbolic link
                         case (S_IFREG):     // It's a file, draw the map
                             /*printf("FILE %s\n",dl->d_name); */
 
