@@ -135,6 +135,7 @@ PULDNOT003|Curto||
 PULDNDP014|Localizar estação|L|
 PULDNDP001|Rastrear estação|R|
 PULDNDP022|Tirar o rasto de Findu|F|
+#
 # SubMenu "Filter Data"
 PULDNDP032|Filtrar datos||
 PULDNDP040|Escolher nada||
@@ -152,6 +153,7 @@ PULDNDP045|Mostrar Objectos/Items||
 PULDNDP026|- Mostrar Objectos/Items metereológicos||
 PULDNDP039|- Mostrar Water Gauge Objectos/Items||
 PULDNDP031|- Mostrar otros Objectos/Items||
+#
 # SubMenu "Filter Display"
 PULDNDP033|Filtrar display||
 PULDNDP010|Mostrar indicativo|i|
@@ -204,7 +206,7 @@ PULDNTNT02|Propriedades|P|
 PULDNTNT03|Desactivar transmitir: TODOS||
 PULDNTNT05|Desactivar transmitir: A minha posição||
 PULDNTNT06|Desactivar transmitir: Objectos/Artigos||
-PULDNTNC01|Transmitir agora..!|T|
+PULDNTNT01|Transmitir agora..!|T|
 PULDNTNT07|Buscar rastro de GPS|F|
 PULDNTNT08|Buscar rotas de GPS|R|
 PULDNTNT09|Buscar waypoints de GPS|W|
@@ -521,6 +523,23 @@ WPUPCFID13|Difundir mensagens via TNC quando houver um I-Gate?||
 WPUPCFID14|Log de transações do I-Gate?|||
 WPUPCFID15|Parametros filtrados||
 #
+# PopUp "Configure AGWPE"
+WPUPCFIA01|Configure AGWPE||
+WPUPCFIA02|Host ||
+WPUPCFIA03|Port ||
+WPUPCFIA04|(Secondary hosts)||
+WPUPCFIA05|Host1||
+WPUPCFIA06|Port1||
+WPUPCFIA07|Host2||
+WPUPCFIA08|Port2||
+WPUPCFIA09|Pass-code||
+WPUPCFIA10|(Leave Blank if None)||
+WPUPCFIA11|Reconnect on NET failure?||
+WPUPCFIA12|Run as an I-Gate?||
+WPUPCFIA13|Broadcast messages via TNC when an I-Gate?||
+WPUPCFIA14|Log I-Gate Transactions?||
+WPUPCFIA15|Transmit RadioPort||
+#
 # Configurar Alarmas de Audio
 WPUPCFA001|Configurar alarme de audio||
 WPUPCFA002|Aplicação audio||
@@ -716,6 +735,7 @@ IFDNL00008|Est. meteorológica ligada a uma REDE||
 IFDNL00009|TNC com GPS na porta AUX||
 IFDNL00010|KISS TNC da porta série||
 IFDNL00011|Base de dados de rede (Não implementada ainda)||
+IFDNL00012|Networked AGWPE||
 #
 # Info dispositivo interface
 IFDIN00000|%s %d %s sobre série %s||
