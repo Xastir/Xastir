@@ -9664,8 +9664,8 @@ void map_chooser_select_24k_maps(Widget widget, XtPointer clientData, XtPointer 
 // files at a time.  This needs to be tweaked to fit into the new
 // map_index method of doing things.
 //
-/* map_list callback to select/deselect whole dirs at a time - KD6ZWR */
-/* This only works with real motif... lesstif crashes after the select */
+// map_list callback to select/deselect whole dirs at a time - KD6ZWR
+// This only works with real motif... lesstif crashes after the select
 void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, XtPointer callData) {
     XmListCallbackStruct *wid_data = (XmListCallbackStruct*) callData;
     int i, is, it, ipos, selected;
@@ -9675,7 +9675,7 @@ void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointe
 
 
     if ( wid_data->reason == XmCR_MULTIPLE_SELECT ) {
-        XtRemoveCallback(widget, XmNmultipleSelectionCallback, map_list_list_click_motif, NULL); /* kd6zwr - callback test */
+        XtRemoveCallback(widget, XmNmultipleSelectionCallback, map_list_list_click_motif, NULL); // kd6zwr - callback test
 
         XtVaGetValues(widget,
                       XmNitemCount,&i,
@@ -9688,7 +9688,7 @@ void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointe
         printf("%d items, %d selected.\n",i,is);
         if(XmStringGetLtoR(wid_data->item,XmFONTLIST_DEFAULT_TAG,&temp)) {
             printf("I got clicked...on %s.\n",temp);
-            if (temp[strlen(temp)-1] == '/' ) {  /* clicked a directory */
+            if (temp[strlen(temp)-1] == '/' ) {  // clicked a directory
                 printf("  and it is a dir.\n");
                 strcpy(clicked_dir, temp);
                 XtFree(temp);
@@ -9696,7 +9696,7 @@ void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointe
                 selected = (int) XmListPosSelected(widget, wid_data->item_position );
                 
                 for (it=wid_data->item_position+1;it<=i;it++) {
-                    /* we can start from where we are, the list is sorted */
+                    // we can start from where we are, the list is sorted
                     XmStringGetLtoR(list[it-1],XmFONTLIST_DEFAULT_TAG,&temp);
                     if (temp) {
                         if (strncmp(temp, clicked_dir, strlen(clicked_dir)) == 0) {
@@ -9706,7 +9706,7 @@ void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointe
                                    selected?"":"un-",ipos,
                                    XmListPosSelected(widget,ipos)?"":"un-");
                             if (ipos!=0) {
-                                if (selected) { /* add the item to the select list */
+                                if (selected) { // add the item to the select list
                                     XmListSelectPos(widget,ipos,FALSE);
                                 } else {
                                     XmListDeselectPos(widget,ipos);
@@ -9720,7 +9720,7 @@ void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointe
                 }
             }
         }
-        XtAddCallback(widget, XmNmultipleSelectionCallback, map_list_list_click_motif, NULL); /* kd6zwr - callback test */
+        XtAddCallback(widget, XmNmultipleSelectionCallback, map_list_list_click_motif, NULL); // kd6zwr - callback test
     }
 }
 
@@ -9734,7 +9734,7 @@ void map_list_list_click_motif(/*@unused@*/ Widget widget, /*@unused@*/ XtPointe
 // files at a time.  This needs to be tweaked to fit into the new
 // map_index method of doing things.
 //
-/* map_list callback to select/deselect whole dirs at a time - KD6ZWR */
+// map_list callback to select/deselect whole dirs at a time - KD6ZWR
 void map_list_list_click(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clientData, XtPointer callData) {
     XmListCallbackStruct *wid_data = (XmListCallbackStruct*) callData;
     int i, is, it, ipos, selected;
@@ -9745,7 +9745,7 @@ void map_list_list_click(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clie
 
 
     if ( wid_data->reason == XmCR_MULTIPLE_SELECT ) {
-        XtRemoveCallback(widget, XmNmultipleSelectionCallback, map_list_list_click, NULL); /* make sure we don't recurse... */
+        XtRemoveCallback(widget, XmNmultipleSelectionCallback, map_list_list_click, NULL); // make sure we don't recurse...
 
         XtVaGetValues(widget,
                       XmNitemCount,&i,
@@ -9759,7 +9759,7 @@ void map_list_list_click(/*@unused@*/ Widget widget, /*@unused@*/ XtPointer clie
         printf("%d items, %d selected.\n",i,is);
         if(XmStringGetLtoR(wid_data->item,XmFONTLIST_DEFAULT_TAG,&temp)) {
             printf("I got clicked...on %s.\n",temp);
-            if (temp[strlen(temp)-1] == '/' ) {  /* clicked a directory */
+            if (temp[strlen(temp)-1] == '/' ) {  // clicked a directory
                 printf("  and it is a dir.\n");
                 strcpy(clicked_dir, temp);
                 XtFree(temp);
@@ -9780,7 +9780,7 @@ f=NULL;
                                 printf("%sselecting pos %d, was %sselected.\n",
                                        selected?"":"un-",ipos, XmListPosSelected(widget,ipos)?"":"un-");
                                 if (ipos!=0) {
-                                    if (selected) { /* add the item to the select list */
+                                    if (selected) { // add the item to the select list
                                         //
                                         XmListSelectPos(widget,ipos,FALSE);
                                         fprintf(f,"%s\n",temp);
@@ -9807,7 +9807,7 @@ f=NULL;
                 }
             }
         }
-        XtAddCallback(widget, XmNmultipleSelectionCallback, map_list_list_click, NULL); /* kd6zwr - callback test */
+        XtAddCallback(widget, XmNmultipleSelectionCallback, map_list_list_click, NULL); // kd6zwr - callback test
     }
 }
  
@@ -9836,6 +9836,9 @@ void map_chooser_deselect_maps(Widget widget, XtPointer clientData, XtPointer ca
 
 
 
+//WE7U
+// This routine isn't used anymore.  We use the map_index stuff now
+// instead.
 void dir_sort(char *dir) {
     struct dirent *dl;
     DIR *dm;
@@ -9858,9 +9861,10 @@ void dir_sort(char *dir) {
                 switch (nfile.st_mode & S_IFMT) {
                     case(S_IFDIR):  // We found a directory
                         /*printf("file %c letter %c\n",dl->d_name[0],letter);*/
-                        if((strcmp(dl->d_name,".") !=0) && (strcmp(dl->d_name,"..") !=0))
-                            dir_sort(fullpath); // Recursively call dir_sort again
 
+                        if ((strcmp(dl->d_name, ".") != 0) && (strcmp(dl->d_name, "..") != 0)) {
+                            dir_sort(fullpath); // Recursively call dir_sort again
+                        }
                         break;
 
                     case(S_IFREG):  // We found a regular file
