@@ -5423,8 +5423,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm, int destination_pixm
     image = ReadImage(image_info, &exception);
 
     if (image == (Image *) NULL) {
-        MagickError(exception.severity, exception.reason, exception.description);
-        //printf ("MagickError\n");
+        MagickWarning(exception.severity, exception.reason, exception.description);
+        //printf ("MagickWarning\n");
         return;
     }
 
@@ -6064,14 +6064,21 @@ void draw_tiger_map (Widget w) {
        return;
     }
 
+
+//WE7U:  For debugging the MagickError/MagickWarning segfaults.
+//    system("cat /dev/null >/var/tmp/xastir_hacker_map.gif");
+
+
     // Set permissions on the file so that any user can overwrite it.
     chmod(local_filename, 0666);
 
     strcpy(file,local_filename);  // Tell ImageMagick where to find it
 
     GetExceptionInfo(&exception);
+
     image_info=CloneImageInfo((ImageInfo *) NULL);
     (void) strcpy(image_info->filename, file);
+
     if (debug_level & 512) {
            printf ("Copied %s into image info.\n", file);
            printf ("image_info got: %s\n", image_info->filename);
@@ -6092,8 +6099,8 @@ void draw_tiger_map (Widget w) {
     image = ReadImage(image_info, &exception);
 
     if (image == (Image *) NULL) {
-        MagickError(exception.severity, exception.reason, exception.description);
-        //printf ("MagickError\n");
+        MagickWarning(exception.severity, exception.reason, exception.description);
+        //printf ("MagickWarning\n");
         return;
     }
 
