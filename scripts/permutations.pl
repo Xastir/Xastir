@@ -29,79 +29,10 @@
 use Coordinate;         # WE7U's Coordinate.pm module
 
 
-# Create new Coordinate object
-my $position = Coordinate->new();
-
-
-$position->datum("WGS 84");    # Datum
-
-
-print "\n";
-print "Examples:  48  07228N   122 07228W\n";
-print "          10U  0565264  5330343\n";
-
-
-print "\nEnter a Lat/Long value or UTM value:\n";
-
-# Snag the input
-$input = <>;
-
-# UTM value?
-if ($input =~ /^\d\d[a-zA-Z]\s+\w+\s+\w+\s*$/) {
-
-    $input2 = $input;
-    &convert($input2);
-
-print "\n";
-
-    # Swap Easting/Northing values and convert again.  Leave the
-    # zone in it's original spot.
-    $input2 = $input;
-    $input2 =~ s/^(\d\d[a-zA-Z])\s+(\w+)\s+(\w+)\s*$/$1 $3 $2\n/;
-
-print $input2;
-    &convert($input2);
-}
-# else must be lat/lon value
-else {
-
-    # Need to break up the input into several possible formats,
-    # possibly including swapping lat/long pieces and plotting N/S
-    # and E/W variants.
-
-    # I'm going to assume that the user knows his/her approximate
-    # lat/lon, so they can input it in roughly the proper format to
-    # begin with.  All that's left then is to determine which of the
-    # three lat/lon formats it's in.
-
-    # 48  07228N   122 07228W
-
-    # DD.DDD
-    $input2 = $input;
-    $input2 =~ s/^(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s*$/$1.$2 $3.$4\n/;
-print $input2;
-    &convert($input2);
-
-print "\n";
-
-    # DD MM.MMM
-    $input2 = $input;
-    $input2 =~ s/^(\w+)\s+(\d\d)(\w+)\s+(\w+)\s+(\d\d)(\w+)\s*$/$1 $2.$3 $4 $5.$6\n/;
-print $input2;
-    &convert($input2);
-
-print "\n";
-
-    # DD MM SS.S
-    $input2 = $input;
-    $input2 =~
-s/^(\w+)\s+(\d\d)(\d\d)(\w+)\s+(\w+)\s+(\d\d)(\d\d)(\w+)\s*$/$1 $2 $3.$4 $5 $6 $7.$8\n/;
-print $input2;
-    &convert($input2);
-}
-
-
-
+# Get the username
+$user = getlogin;
+chomp $user;
+$filename = "/var/tmp/PERMUTATIONS-$user.log";
 
 
 sub convert {
@@ -234,6 +165,16 @@ sub convert {
         $lat_deg, $lat_min, $lat_sec, $lat_dir,
         $long_deg, $long_min, $long_sec, $long_dir);
 
+    # Dump out the coordinate in APRS Item format:
+    printf(FH "TEST>APRS:)%s!%02d%05.2f%s/%03d%05.2f%s/\n",
+        $_[1],
+        $lat_deg,
+        $lat_min + ($lat_sec/60.0),
+        $lat_dir,
+        $long_deg,
+        $long_min + ($long_sec/60.0),
+        $long_dir );
+
     # Fill in the coordinate object with the current lat/lon.
     # Assuming WGS84 datum
     if ($lat_dir =~ /S/) {
@@ -314,20 +255,114 @@ sub convert {
     }
 }
 
+
+
 sub even {
     return (($_[0] & 1) == 0);
 }
+
+
 
 sub odd {
     return (($_[0] & 1) == 1);
 }
 
+
+
 sub s2m_y {
     return (int((0.1917966 * $_[0]) + 0.5));
 }
+
+
 
 sub s2m_x {
     return (int((cos(($lat_deg + ($lat_min / 60.0) + ($lat_sec / 3600.0)) / 57.29578) * (0.1917966 * $_[0])) + 0.5));
 }
 
+
+
+##############
+# Main Program
+##############
+
+open (FH, ">$filename") || die "Couldn't open file for writing:$!\n";
+
+
+# Create new Coordinate object
+$position = Coordinate->new();
+
+
+$position->datum("WGS 84");    # Datum
+
+
+print "\n";
+print "Examples:  48  07228N   122 07228W\n";
+print "          10U  0565264  5330343\n";
+
+print "\nAPRS Items will be written to: $filename\n";
+print "Enter a Lat/Long value or UTM value:\n";
+
+
+# Snag the input
+$input = <>;
+
+# Get rid of whitespace at the beginning
+$input =~ s/\s*//;
+
+# UTM value?
+if ($input =~ /^\d\d[a-zA-Z]\s+\w+\s+\w+\s*$/) {
+
+    $input2 = $input;
+    &convert($input2, "UTM");
+
+print "\n";
+
+    # Swap Easting/Northing values and convert again.  Leave the
+    # zone in it's original spot.
+    $input2 = $input;
+    $input2 =~ s/^(\d\d[a-zA-Z])\s+(\w+)\s+(\w+)\s*$/$1 $3 $2\n/;
+
+print $input2;
+    &convert($input2, "UTM2");
+}
+# else must be lat/lon value
+else {
+
+    # Need to break up the input into several possible formats,
+    # possibly including swapping lat/long pieces and plotting N/S
+    # and E/W variants.
+
+    # I'm going to assume that the user knows his/her approximate
+    # lat/lon, so they can input it in roughly the proper format to
+    # begin with.  All that's left then is to determine which of the
+    # three lat/lon formats it's in.
+
+    # 48  07228N   122 07228W
+
+    # DD.DDD
+    $input2 = $input;
+    $input2 =~ s/^(\w+)\s+(\w+)\s+(\w+)\s+(\w+)\s*$/$1.$2 $3.$4\n/;
+print $input2;
+    &convert($input2, "DD.DDD");
+
+print "\n";
+
+    # DD MM.MMM
+    $input2 = $input;
+    $input2 =~ s/^(\w+)\s+(\d\d)(\w+)\s+(\w+)\s+(\d\d)(\w+)\s*$/$1 $2.$3 $4 $5.$6\n/;
+print $input2;
+    &convert($input2, "DD MM.MM");
+
+print "\n";
+
+    # DD MM SS.S
+    $input2 = $input;
+    $input2 =~
+s/^(\w+)\s+(\d\d)(\d\d)(\w+)\s+(\w+)\s+(\d\d)(\d\d)(\w+)\s*$/$1 $2 $3.$4 $5 $6 $7.$8\n/;
+print $input2;
+    &convert($input2, "DD MM SS");
+
+}
+
+close(FH);
 
