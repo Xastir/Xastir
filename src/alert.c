@@ -76,6 +76,13 @@
 //                           |  alert_tag
 //                        activity
 //
+//
+// The code should also handle the case where the packet looks like
+// this (same except no expiration date):
+//
+// SFONPW>APRS::NWS-ADVIS:WIND,CA_Z007,CA_Z065, ALAMEDA AND CON & NAPA COUNTY {JDIAA
+//
+//
 // Expiration is then computed from the activity field.  Alert_level
 // is computed from "to" and/or "alert_tag".
 //
@@ -522,12 +529,60 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
         while ((ptr = strpbrk(alert_f, "_ -")))
             memmove(ptr, ptr+1, strlen(ptr)+1);
 
+        // Look for non-cancelled alerts that match fairly closely
         if ((match_level < ALERT_FROM || strcmp(alert_list[i].from, alert->from) == 0) &&
                 (match_level < ALERT_TO   || strcasecmp(alert_list[i].to, alert->to) == 0) &&
                 (match_level < ALERT_TAG  || strcmp(alert_list[i].alert_tag, alert->alert_tag) == 0) &&
                 (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0 ||
                 strcasecmp(title_m, filename) == 0 || strcasecmp(alert_f, title_e) == 0 ||
                 (alert_f[0] && filename[0] && strcasecmp(alert_f, filename) == 0)))) {
+            return (&alert_list[i]);
+        }
+
+        // Now check whether a new CANCL alert passed to us might match one
+        // of the existing alerts.  We use a much looser match for this.
+        if (    (alert->alert_level == 'C')         // Cancelled alert
+                && (match_level < ALERT_FROM
+                    || strcmp(alert_list[i].from, alert->from) == 0)
+
+                && (match_level < ALERT_TAG
+                    || strncasecmp(alert_list[i].alert_tag,
+                            alert->alert_tag,
+                            strlen(alert_list[i].alert_tag)) == 0
+                    || strncasecmp(alert_list[i].alert_tag,
+                            alert->alert_tag,
+                            strlen(alert->alert_tag)) == 0)
+
+                && (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0
+                    || strcasecmp(title_m, filename) == 0
+                    || strcasecmp(alert_f, title_e) == 0))) {
+            if (debug_level & 1)
+                printf("Found a cancellation: %s\t%s\n",title_e,title_m);
+
+            return (&alert_list[i]);
+        }
+
+        // Now check whether a new alert passed to us might match a
+        // cancelled existing alert.  We use a much looser match for
+        // this.
+        if (    (alert_list[i].alert_level == 'C')         // Cancelled alert
+                && (match_level < ALERT_FROM
+                    || strcmp(alert_list[i].from, alert->from) == 0)
+
+                && (match_level < ALERT_TAG
+                    || strncasecmp(alert_list[i].alert_tag,
+                            alert->alert_tag,
+                            strlen(alert_list[i].alert_tag)) == 0
+                    || strncasecmp(alert_list[i].alert_tag,
+                            alert->alert_tag,
+                            strlen(alert->alert_tag)) == 0)
+
+                && (title_m[0] && (strncasecmp(title_e, title_m, strlen(title_m)) == 0
+                    || strcasecmp(title_m, filename) == 0
+                    || strcasecmp(alert_f, title_e) == 0))) {
+            if (debug_level & 1)
+                printf("New alert that matches a cancel: %s\t%s\n",title_e,title_m);
+
             return (&alert_list[i]);
         }
     }
@@ -813,6 +868,13 @@ int alert_on_screen(void) {
 //                           |  alert_tag
 //                        activity
 //
+//
+// The code should also handle the case where the packet looks like
+// this (same except no expiration date):
+//
+// SFONPW>APRS::NWS-ADVIS:WIND,CA_Z007,CA_Z065, ALAMEDA AND CON & NAPA COUNTY {JDIAA
+//
+//
 // Expiration is then computed from the activity field.  Alert_level
 // is computed from "to" and/or "alert_tag".  There can be up to
 // five titles in this original format.
@@ -847,8 +909,12 @@ int alert_on_screen(void) {
 // example read ">" as "thru" and "-" as "and".
 //
 static void alert_build_list(Message *fill) {
-    alert_entry entry[6], *list_ptr;    // We might need up to six structs to split
+    alert_entry entry[5], *list_ptr;    // We might need up to five structs to split
                                         // up a message into individual map areas.
+
+// Actually for compressed weather alert packets we might need a
+// _very_ large number of them.
+
     int i, j;
     char *ptr;
     DataRow *p_station;
@@ -864,15 +930,14 @@ static void alert_build_list(Message *fill) {
 
         memset(entry, 0, sizeof(entry));
         (void)sscanf(fill->message_line,
-            "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
+            "%20[^,],%20[^,],%32[^,],%32[^,],%32[^,],%32[^,],%32[^,]",
             entry[0].activity,      // 191700z
             entry[0].alert_tag,     // WIND
             entry[0].title,         // CA_Z007
             entry[1].title,         // ...
             entry[2].title,         // ...
             entry[3].title,         // ...
-            entry[4].title,         // ...
-            entry[5].title);        // ...
+            entry[4].title);        // ...
 
 /////////////////////////////////////////////////////////////////////
 // Compressed weather alert special code
@@ -999,6 +1064,7 @@ printf("Zone:%s%s\n",prefix,suffix);
 /////////////////////////////////////////////////////////////////////
 // End of compressed weather alert special code
 /////////////////////////////////////////////////////////////////////
+//WE7U
 
         // Terminate the strings
         entry[0].activity[20] = entry[0].alert_tag[20] = '\0';
@@ -1006,30 +1072,28 @@ printf("Zone:%s%s\n",prefix,suffix);
         // If the expire time is missing, shift fields to the right
         // by one field.  Evidently we can have an alert come across
         // that doesn't have an expire time.  The code shuffles the
-        // titles to the next record before fixing up the title for
-        // entry[0].
-// One way or another we end up with an extra record that probably
-// is a duplicate and therefore gets dropped at the "add" stage.
-// Inefficient, but it should work ok.
+        // titles to the next record before fixing up the title and
+        // alert_tag for entry[0].
         if (!isdigit((int)entry[0].activity[0]) && entry[0].activity[0] != '-') {
-// Should be "j > 0" ???
-            for (j = 5; j >= 0; j--) {
+            for (j = 4; j > 0; j--) {
                 strcpy(entry[j].title, entry[j-1].title);
             }
             strcpy(entry[0].title, entry[0].alert_tag);
             strcpy(entry[0].alert_tag, entry[0].activity);
-// Shouldn't we clear out entry[0].activity in this case???  It's
-// not a date/time value.
+
+            // Shouldn't we clear out entry[0].activity in this
+            // case???  We've determined it's not a date/time value.
+            xastir_snprintf(entry[0].activity,sizeof(entry[0].activity),"------z");
+            entry[0].expiration = sec_now() + (24 * 60 * 60);   // Add a day
+        }
+        else {
+            // Compute expiration time_t from zulu time
+            entry[0].expiration = time_from_aprsstring(entry[0].activity);
         }
 
         // It looks like we use entry[0] as the master data from
-        // this point on and the extra five entries hold other
-        // possible zones.
-// Why do we need six total instead of five???
- 
-        // Compute expiration time_t from zulu time
-// Need to handle missing "activity" field here?
-        entry[0].expiration = time_from_aprsstring(entry[0].activity);
+        // this point on and the other four entries hold other
+        // zones.
 
         // Copy the sequence (which contains issue_date_time and
         // message sequence) into the record.
@@ -1095,11 +1159,11 @@ printf("Zone:%s%s\n",prefix,suffix);
             entry[0].flags[1] = p_station->data_via;
 
 
-        // Set up each of up to six structs with data and try to
+        // Set up each of up to five structs with data and try to
         // create alerts out of each of them.
-        for (i = 0; i < 6 && entry[i].title[0]; i++) {
+        for (i = 0; i < 5 && entry[i].title[0]; i++) {
 
-            // Terminate title string for each of six structs
+            // Terminate title string for each of five structs
             entry[i].title[32] = '\0';
             //printf("Title: %s\n",entry[i].title);
 
@@ -1188,13 +1252,29 @@ printf("Zone:%s%s\n",prefix,suffix);
 
 // We found a match!  We probably need to copy some more data across
 // between the records:  seq, alert_tag, alert_level, from, to,
-// issue_data_time, expiration?
+// issue_date_time, expiration?
 // If it's a CANCL or CANCEL, we need to make sure the cancel
 // packet's information is kept and the other's info is tossed, so
 // that the alert doesn't get drawn anymore.
 
-                list_ptr->expiration = entry[i].expiration;
-                strcpy(list_ptr->activity, entry[i].activity);
+                // If we're not trying to replace a cancelled alert with
+                // a new non-cancelled alert, go ahead and copy the
+                // fields across.
+                if ( (list_ptr->alert_level != 'C') // Stored alert is _not_ a CANCEL
+                        || (entry[i].alert_level == 'C') ) { // Or new one _is_ a CANCEL
+                    list_ptr->expiration = entry[i].expiration;
+                    strcpy(list_ptr->activity, entry[i].activity);
+                    strcpy(list_ptr->alert_tag, entry[i].alert_tag);
+                    list_ptr->alert_level = entry[i].alert_level;
+                    strcpy(list_ptr->seq, entry[i].seq);
+                    strcpy(list_ptr->from, entry[i].from);
+                    strcpy(list_ptr->to, entry[i].to);
+                    strcpy(list_ptr->issue_date_time, entry[i].issue_date_time);
+                }
+                else {
+                    // Don't copy the info across, as we'd be making a
+                    // cancelled alert active again if we did.
+                }
             } else {    // No similar alert, add a new one to the list
                 (void)alert_add_entry(&entry[i]);
             }
