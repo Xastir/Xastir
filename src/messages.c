@@ -264,20 +264,33 @@ end_critical_section(&send_message_dialog_lock, "messages.c:look_for_open_group_
 
 
 
+// What we wish to do here:  Check for an active Send Message dialog
+// that contains the callsign of interest.  If one doesn't exist,
+// create one and pop it up.  We don't want to do this for duplicate
+// message lines or duplicate acks for any particular QSO.  To do so
+// would cause the Send Message dialog to pop up on every such
+// received message, which is VERY annoying (that was the default in
+// Xastir for years, and nobody liked it!).
+//
 int check_popup_window(char *from_call_sign, int group) {
     int i,found,j,ret;
     char temp1[MAX_CALLSIGN+1];
     char *temp_ptr;
 
 
+//fprintf(stderr,"\tcheck_popup_window()\n");
+
     ret =- 1;
     found =- 1;
 
 begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window" );
 
+    // Check for an already-created dialog for talking to this
+    // particular call_sign.
+    //
     for (i = 0; i < MAX_MESSAGE_WINDOWS; i++) {
-        /* find station  */
-        if (mw[i].send_message_dialog != NULL) {
+
+        if (mw[i].send_message_dialog != NULL) { // If dialog created
 
             temp_ptr = XmTextFieldGetString(mw[i].send_message_call_data);
             xastir_snprintf(temp1,
@@ -288,6 +301,10 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window
 
             /*fprintf(stderr,"Looking at call <%s> for <%s>\n",temp1,from_call_sign);*/
             if (strcasecmp(temp1, from_call_sign) == 0) {
+                // Found a call_sign match in a Send Message dialog!
+
+//fprintf(stderr,"\tFound a Send_message dialog match\n");
+
                 found = i;
                 break;
             }
@@ -296,8 +313,13 @@ begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window
 
 end_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window" );
 
+    // If found == -1 at this point, we haven't found a Send Message
+    // dialog that contains the call_sign of interest.
+    //
     if (found == -1 && (group == 2 || group_active(from_call_sign))) {
         /* no window found Open one! */
+
+//fprintf(stderr,"\tNo Send Message dialog found, creating one\n");
 
 begin_critical_section(&send_message_dialog_lock, "messages.c:check_popup_window2" );
 
@@ -379,8 +401,9 @@ void clear_outgoing_messages_to(char *callsign) {
         // If it matches the callsign we're talking to
         if (strcasecmp(message_pool[ii].to_call_sign,callsign) == 0) {
 
-            // Record a fake ack and add "TIMEOUT:" to the message.
-            // This will be displayed in the Send Message dialog.
+            // Record a fake ack and add "*CANCELLED*" to the
+            // message.  This will be displayed in the Send Message
+            // dialog.
             msg_record_ack(message_pool[ii].to_call_sign,
                 message_pool[ii].from_call_sign,
                 message_pool[ii].seq,
@@ -888,7 +911,7 @@ fprintf(stderr,
                             "%s",
                             message_pool[i].to_call_sign);
 
-                        // Record a fake ack and add "TIMEOUT:" to
+                        // Record a fake ack and add "*TIMEOUT*" to
                         // the message.  This will be displayed in
                         // the Send Message dialog.
                         msg_record_ack(temp_to,
