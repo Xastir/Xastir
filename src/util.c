@@ -2561,19 +2561,28 @@ void time_mark(int start)
 
 // Function which adds commas to callsigns (and other abbreviations)
 // in order to make the text sound better when run through a Text-to-
-// Speech system.
+// Speech system.  We try to change only normal amateur callsigns.
+// If we find a number in the text before a dash is found, we
+// consider it to be a normal callsign.
 void spell_it_out(char *text) {
     char buffer[2000];
-    int i=0;
-    int j=0;
+    int i = 0;
+    int j = 0;
+    int number_found_before_dash = 0;
+    int dash_found = 0;
 
     while (text[i] != '\0') {
+        if (text[i] == '-')
+            dash_found++;
+        if (is_num_chr(text[i]) && !dash_found)
+            number_found_before_dash++;
         buffer[j++] = text[i];
         buffer[j++] = ',';
         i++;
     }
     buffer[j] = '\0';
-    strcpy(text,buffer);
+    if (number_found_before_dash)
+        strcpy(text,buffer);
 }
 
 
