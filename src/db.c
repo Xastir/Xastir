@@ -10348,9 +10348,9 @@ int extract_third_party(char *call, char *path, char **info, char *origin) {
     if (ok) {                                         // check callsign
         (void)remove_trailing_asterisk(p_call);       // is an asterisk valid here ???
         if (valid_inet_name(p_call,(*info),origin)) { // accept some of the names used in internet
-            strcpy(call,p_call);                      // treat is as object with special origin
+            strncpy(call,p_call,MAX_CALLSIGN+1);      // treat is as object with special origin
         } else if (valid_call(p_call)) {              // accept real AX.25 calls
-            strcpy(call,p_call);
+            strncpy(call,p_call,MAX_CALLSIGN+1);
         } else {
             ok = 0;
             if (debug_level & 1) {
