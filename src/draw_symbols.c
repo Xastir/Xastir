@@ -2466,7 +2466,7 @@ void draw_deadreckoning_features(DataRow *p_station, Pixmap where, Widget w) {
             "",
             "",
             "",
-            p_station->sec_heard-sec_old,
+            p_station->sec_heard-sec_old,   // Always draw it ghosted
             0,
             where,
             symbol_orient(p_station->course),

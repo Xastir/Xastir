@@ -123,8 +123,8 @@ time_t last_object_check = 0;   // Used to determine when to re-transmit objects
 
 time_t last_emergency_time = 0;
 char last_emergency_callsign[MAX_CALLSIGN+1];
-int st_direct_timeout = 60 * 60;    // 60 Minutes.
-
+int st_direct_timeout = 60 * 60;        // 60 minutes.
+int dead_reckoning_timeout = 60 * 10;   // 10 minutes;
 
 
 
@@ -2307,7 +2307,7 @@ _do_the_drawing:
              && course_ok
              && speed_ok
              && atof(dr_speed) > 0) ) {
-        if ( (sec_now()-temp_sec_heard) < sec_old ) {
+        if ( (sec_now()-temp_sec_heard) < dead_reckoning_timeout ) {
             draw_deadreckoning_features(p_station,
                                         drawing_target,
                                         w);
