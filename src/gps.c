@@ -31,6 +31,9 @@
 
 /* The following files support setting the system time from the GPS */
 #if TIME_WITH_SYS_TIME
+  // Define needed by some versions of Linux in order to define
+  // strptime()
+# define __USE_XOPEN
 # include <sys/time.h>
 # include <time.h>
 #else   // TIME_WITH_SYS_TIME
