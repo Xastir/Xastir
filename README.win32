@@ -445,7 +445,7 @@ For geoTIFF support (such as USGS DRG topo maps) you need:
         ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
     libgeotiff:
         http://www.remotesensing.org/geotiff/geotiff.html
-        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.1.5.tar.gz
+        ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.2.0.tar.gz
 
     Please note that the order of installation for these libraries is
     critical.  Follow the instructions below carefully.
@@ -458,6 +458,12 @@ Adding libproj to Cygwin (tested with proj-4.4.6):
 NOTE: You must install libproj BEFORE compiling libgeotiff, because
 libgeotiff uses libproj to do the datum translations. If you install
 libgeotiff first, datum translations won't work.
+
+    cd ~/src
+    mkdir libproj
+
+Download the libproj and proj-nad27 files and place them in the
+~/src/libproj directory.
 
 The proj-nad27-1.1.tar.gz must be decompressed in the nad
 subdirectory of the proj distribution directory before you run
@@ -484,6 +490,12 @@ removed from the libproj instructions:
 
 Adding libgeotiff (tested with libgeotiff-1.2.0):
 -------------------------------------------------
+
+    cd ~/src
+    mkdir libgeotiff
+
+Download libgeotiff-1.2.0 and place it in the libgeotiff
+subdirectory.
 
     cd ~/src/libgeotiff
     tar xzvf libgeotiff-1.2.0.tar.gz
