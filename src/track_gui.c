@@ -39,8 +39,6 @@
 #include "lang.h"
 #include "popup.h"
 
-
-
 Widget track_station_dialog = (Widget)NULL;
 Widget track_station_data = (Widget)NULL;
 Widget download_findu_dialog = (Widget)NULL;
@@ -53,6 +51,8 @@ Widget track_case_data, track_match_data;
 
 // Download findu values
 Widget download_trail_station_data;
+Widget posit_start_value;
+Widget posit_length_value;
 
 
 int track_station_on;           /* used for tracking stations */
@@ -60,9 +60,9 @@ int track_case;                 /* used for tracking stations */
 int track_match;                /* used for tracking stations */
 char tracking_station_call[30]; /* Tracking station callsign */
 char download_trail_station_call[30];   /* Trail station callsign */
-
-
-
+//N0VH
+int posit_start = 336;
+int posit_length = 336;
 
 
 void track_gui_init(void)
@@ -71,10 +71,6 @@ void track_gui_init(void)
     init_critical_section( &download_findu_dialog_lock );
     strcpy(tracking_station_call,"");
 }
- 
-
-
-
 
 
 /**** Track STATION ******/
@@ -362,6 +358,8 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 
     xastir_snprintf(log_filename, sizeof(log_filename), "/var/tmp/xastir_%s_map.log", username);
 
+    XmScaleGetValue(posit_start_value , &posit_start);
+    XmScaleGetValue(posit_length_value , &posit_length);
     /* find station and go there */
     strcpy(temp,XmTextFieldGetString(download_trail_station_data));
     (void)remove_trailing_spaces(temp);
@@ -369,8 +367,8 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
     //Download_trail_destroy_shell(w, clientData, callData);
 
     xastir_snprintf(fileimg, sizeof(fileimg),
-        "\'http://64.34.101.121/cgi-bin/rawposit.cgi?call=%s&start=336&length=336\'",
-        download_trail_station_call);
+        "\'http://64.34.101.121/cgi-bin/rawposit.cgi?call=%s&start=%d&length=%d\'",
+        download_trail_station_call,posit_start,posit_length);
 
     xastir_snprintf(tempfile, sizeof(tempfile),
             "wget -S -N -t 1 -T 30 -O %s %s 2> /dev/null\n",
@@ -405,6 +403,21 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
 }
 
 
+void Reset_posit_length_max(Widget w, XtPointer clientData, XtPointer callData) {
+
+    int temp;
+
+    XmScaleGetValue(posit_length_value, &temp);
+    XmScaleGetValue(posit_start_value, &posit_start);
+    if (temp >= posit_start) {
+        XtVaSetValues(posit_length_value,
+		      XmNvalue, posit_start,
+		      NULL);
+    }
+    XtVaSetValues(posit_length_value,
+                  XmNmaximum, posit_start,
+		  NULL);
+}
 
 
 
@@ -463,10 +476,58 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
                                       XmNtraversalOn, TRUE,
                                       NULL);
 
+        posit_start_value = XtVaCreateManagedWidget("Start of Trail (hrs ago)", xmScaleWidgetClass, my_form,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+				      XmNtopWidget, call,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+				      XmNwidth, 190,
+				      XmNrightAttachment, XmATTACH_FORM,
+                                      XmNrightOffset, 10,
+				      XmNbackground, colors[0xff],
+			              XmNsensitive, TRUE,
+				      XmNorientation, XmHORIZONTAL,
+				      XmNborderWidth, 1,
+				      XmNminimum, 1,
+			              XmNmaximum, 336,
+				      XmNshowValue, TRUE,
+				      XmNvalue, posit_start,
+				      XtVaTypedArg, XmNtitleString, XmRString, "Start Trail (hrs ago)", 10,
+				      NULL);
+
+        posit_length_value = XtVaCreateManagedWidget("Length of trail (hrs)", xmScaleWidgetClass, my_form,
+                                      XmNtopAttachment,XmATTACH_WIDGET,
+				      XmNtopWidget, posit_start_value,
+                                      XmNtopOffset, 15,
+                                      XmNbottomAttachment,XmATTACH_NONE,
+                                      XmNleftAttachment, XmATTACH_FORM,
+                                      XmNleftOffset, 10,
+                                      XmNrightAttachment,XmATTACH_NONE,
+                                      XmNnavigationType, XmTAB_GROUP,
+                                      XmNtraversalOn, TRUE,
+				      XmNwidth, 190,
+				      XmNrightAttachment, XmATTACH_FORM,
+                                      XmNrightOffset, 10,
+				      XmNbackground, colors[0xff],
+			              XmNsensitive, TRUE,
+				      XmNorientation, XmHORIZONTAL,
+				      XmNborderWidth, 1,
+				      XmNminimum, 1,
+			              XmNmaximum, 336,
+				      XmNshowValue, TRUE,
+				      XmNvalue, posit_length,
+				      XtVaTypedArg, XmNtitleString, XmRString, "Trail Length (hrs)", 10,
+				      NULL);
+
         sep = XtVaCreateManagedWidget("Download_findu_trail sep", xmSeparatorGadgetClass,my_form,
                                       XmNorientation, XmHORIZONTAL,
                                       XmNtopAttachment,XmATTACH_WIDGET,
-                                      XmNtopWidget,download_trail_station_data,
+                                      XmNtopWidget,posit_length_value,
                                       XmNtopOffset, 10,
                                       XmNbottomAttachment,XmATTACH_NONE,
                                       XmNleftAttachment, XmATTACH_FORM,
@@ -508,6 +569,7 @@ begin_critical_section(&download_findu_dialog_lock, "track_gui.c:Download_findu_
 
         XtAddCallback(button_ok, XmNactivateCallback, Download_trail_now, download_findu_dialog);
         XtAddCallback(button_cancel, XmNactivateCallback, Download_trail_destroy_shell, download_findu_dialog);
+        XtAddCallback(posit_start_value, XmNvalueChangedCallback, Reset_posit_length_max, download_findu_dialog);
 
         pos_dialog(download_findu_dialog);
 
