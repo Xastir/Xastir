@@ -481,7 +481,13 @@ First Time Install:
 
      Download the Imagemagick sources from:
 
-        ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-5.5.7-10.tar.gz
+	ftp://ftp.imagemagick.org/pub/ImageMagick/
+
+     At the time of writing, this was
+
+	ftp://ftp.imagemagick.org/pub/ImageMagick/ImageMagick-5.5.7-34.tar.gz
+
+     But you may need to get a newer version by the time you read this.
 
      Uncompress/un-tar them...
 
