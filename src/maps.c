@@ -743,9 +743,11 @@ void draw_grid(Widget w) {
 
     if (coordinate_system == USE_UTM) {
 
-// This part of the code handles the irregular zones in SW Norway
-// (31V/32V) and the regions near Svalbard (31X/33X/35X/37X) just
-// fine.
+// Draw the major UTM zones first.  These are based off 6-degree
+// lat/long lines, with a few irregular zones that have to be
+// special-cased.  This part of the code handles the irregular zones
+// in SW Norway (31V/32V) and the regions near Svalbard
+// (31X/33X/35X/37X) just fine.
 
         // Vertical lines:
 
@@ -824,14 +826,21 @@ void draw_grid(Widget w) {
         // Set the line width and style in the GC to 1 pixel wide
         // for drawing the smaller grid
         (void)XSetLineAttributes (XtDisplay (w), gc_tint, 1, LineOnOffDash, CapButt,JoinMiter);
- 
+
+// Draw the minor UTM grids.  These are based off the central
+// meridian running up the middle of each zone (typically 3 degrees
+// from either side of the zone, with the exception of the irregular
+// zones).  These grids are defined in terms of meters instead of
+// lat/long, so they don't line up with the left/right edges of the
+// zones or with the longitude lines.
+
 //WE7U
 // The below code does NOT handle the irregular zones properly
 // (31V/32V/31X/33X/35X/37X). It assumes regular 6 degree zones
 // everywhere.  The irregular zones have sizes of 3/9/12 degrees
 // (width) instead of 6 degrees.  We need to shift the meridian in
-// these zones so that we draw out from the central meridian
-// properly for each subzone.
+// these zones so that we draw from the central meridian properly
+// for each subzone.
 
 
         // Now setup for drawing zone grid(s)
@@ -865,22 +874,49 @@ void draw_grid(Widget w) {
         convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
         n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
 
+        // Fix the coordinates to the nearest subgrid intersection,
+        // based on our current grid spacing.  Bump the northing up
+        // by one subgrid.
         e[0] /= utm_grid_spacing_m;
         e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
         n[0] /= utm_grid_spacing_m;
         n[0]  = (double)((int)n[0] * utm_grid_spacing_m);
+
+//WE7U
+// Commenting out the below line makes lines near major zone
+// boundaries worse.  Adding another identical line makes the line
+// drawing problem reverse direction.  It's probably a clue.  The
+// problem appears/disappears at different zoom levels, perhaps
+// having something to do with trying to attach drawing points that
+// are above/below our current view?
+//
+// It appears that the horizontal grid lines get messed up in cases
+// where the top horizontal line doesn't make it all the way across
+// the screen before it goes out of view.  That's a major clue!
+//
         n[0] += utm_grid_spacing_m;
+
+
 
         e[1] = e[0];
         n[1] = n[0];
 
         while (done < 2) { // 1=done with a zone, 2=completely done
             if (done == 1) {
+
+//WE7U
+// Correct here for the irregularly-sized zones?
+                // Initially, boundary_x = 0 (after we call
+                // utm_grid_clear).
                 xx = x_long_offset + ((utm_grid.zone[zone].boundary_x + 1) * scale_x);
+
                 yy = y_lat_offset;
                 convert_xastir_to_UTM(&e[0], &n[0], place_str, sizeof(place_str), xx, yy);
                 n[0] += UTM_GRID_EQUATOR; // To work in southern hemisphere
 
+// Again, fix the coordinates to the nearest subgrid intersection,
+// based on our current grid spacing.  Bump both the easting and
+// northing up by one subgrid.
                 e[0] /= utm_grid_spacing_m;
                 e[0]  = (double)((int)e[0] * utm_grid_spacing_m);
                 e[0] += utm_grid_spacing_m;
@@ -1019,6 +1055,11 @@ void draw_grid(Widget w) {
                 if (xx > screen_width)
                     xx1 = screen_width;
                 else {
+
+//WE7U
+// Adjust for irregular zones here?  360,000 Xastir units equals one
+// degree.  This code appears to be adjusting xx1 to a major zone
+// edge.
                     xx1 = (xx1 / (6 * 360000)) * 6 * 360000;
                     xx1 = (xx1 - x_long_offset) / scale_x;
                 }
