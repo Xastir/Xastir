@@ -173,7 +173,7 @@ PULDNDP002|Höhe||
 PULDNDP009|Wetterdaten||
 PULDNDP046|- Wetter Text||
 PULDNDP018|-- nur Temperatur||
-PULDNDP047|- Wind Barb||
+PULDNDP047|- Windfahne||
 PULDNDP013|Positionsverschleierung||
 PULDNDP008|Leistung/Gewinn||
 PULDNDP021|- mit Standardwert||
@@ -798,7 +798,7 @@ WXPUPSI017|Peet Bros ULTIMETER 2000 Type (Complete Mode)||
 WXPUPSI018|Taupunkt||
 WXPUPSI019|Wind Spitze||
 WXPUPSI020|Wind Chill||
-WXPUPSI021|Heat Index||
+WXPUPSI021|Gefühlte Temp.||
 WXPUPSI022|3 Std. Druck||
 WXPUPSI023|Höchsttemp.||
 WXPUPSI024|Tiefsttemp.||
@@ -968,7 +968,7 @@ SMARTB005|Niedrige Rate [min]            ||
 SMARTB006|Niedrige Geschwindigkeit [mph] ||
 SMARTB007|Niedrige Geschwindigkeit [km/h]||
 SMARTB008|Kurve Schwellwert [deg]        ||
-SMARTB009|Kurve Auslöser für Bake [deg]  ||
+SMARTB009|Kurvenparameter (Turn Slope)   ||
 SMARTB010|Wartezeit [sec]                ||
 SMARTB011|SmartBeaconing(tm) einschalten||
 #
@@ -1004,7 +1004,7 @@ MAPP002|Karten gefüllt  automat.||
 MAPP003|Ebene  zeichnen Karte     Pfad/Dateiname||
 MAPP004|Ebene ändern->||
 MAPP005|gefüllt->||
-MAPP006|Ja  ||
+MAPP006|Ja ||
 MAPP007|Nein||
 MAPP008|aut.Karte->||
 #

@@ -3,7 +3,7 @@ HELP-INDEX>Einführende Worte / Lizenzbestimmungen
                   Einführende Worte / Lizenzbestimmungen
 
 Für die aktuellsten Informationen und genauere Installationshinweise
-lesen sie bitte die README.1ST Datei im Xastir Hauptverzeichnis. Beachten
+lesen sie bitte die README Datei im Xastir Hauptverzeichnis. Beachten
 Sie auch die Dateien LICENCE und COPYING für weitere Informationen.
 
 Bitte denken sie daran, daß dieses Programm für den Einsatz im
@@ -14,8 +14,8 @@ Amateurfunkclub DARC http://www.darc.de. Auch in anderen Ländern
 gelten ähnliche Bestimmungen, die zu beachten sind.
 
 Die Entwicklung der Software und die Dokumentation erfolgte zunächst in
-Englisch, so daß im Zweifelsfall die englische Version meist aktueller
-sein wird. Die vorliegende deutsche Hilfedatei wurde von DK7IN übersetzt.
+Englisch, so daß im Zweifelsfall die englische Version aktueller sein
+könnte. Die vorliegende deutsche Hilfedatei wurde von DK7IN übersetzt.
 Korrekturen und Anregungen bitte an xastir@dk7in.de
 
 
@@ -45,8 +45,7 @@ along with this program; if not, write to the
    Boston, MA  02111-1307, USA
 
 
-Weitere Informationen zum Programm und Schnappschüße der aktuellen
-Programmentwicklung findet man unter:
+Weitere Informationen zum Programm findet man unter:
   http://www.xastir.org
   http://sourceforge.net/projects/xastir/
   http://xastir.sourceforge.net
@@ -86,83 +85,28 @@ der von Bob Bruninga geschriebenen Dokumentationen zu APRSdos
 enthalten ist. Eine weitere Informationsquelle ist die von
 http://www.tapr.org als PDF-Dokument erhältliche APRS Spezifikation.
 
-HELP-INDEX>Neuheiten in Xastir V1.1
+HELP-INDEX>Neuheiten in Xastir BETA
 
-                       Neuheiten in Xastir V1.1
+                       Neuheiten in Xastir BETA
 
-Die vorliegende Version Xastir V1.1 hat einige wichtige Änderungen
-und Erweiterungen in der Benutzerschnittstelle hinzubekommen. Diese
-Änderungen benötigen möglicherweise ein gewisse Eingewöhnungszeit,
-der Gewinn an Flexibilität und Vielseitigkeit wird Sie aber dafür
-mehr als entschädigen.
+Die aktuellste Xastir Version hat wiederum einige neue Fähigkeiten
+hinzubekommen, so daß Xastir ein Benchmark für APRS-Programme auf
+allen Betriebssystemen bleibt.
 
-Einige der Verbessungen der Benutzerschnittstelle:
+Die Hardware-Unterstützung von Xastir wurde erweitert:
+  * Unterstützung für serielle KISS TNCs
+  * Unterstützung für serielle TNCs mit GPS an der AUX-Schnittstelle
+  * Unterstützung für den Einsatz von AGWPE als TNC
+  * Unterstützung für eine Dallas One-Wire Wetterstation
+  ...
+  
+...  
 
-o Tastenkürzel für Menueinträge und Dialoge, eine Reorganisation
-  der Menus und ein geändertes Maus-Verhalten.
-
-o Bei Anklicken der entsprechenden Checkboxen in der Werkzeugleiste
-  können Objekte mit der Maus verschoben oder Entfernungen gemessen
-  werden.
-
-o Eine Skala wurde hinzugefügt, um schnell Entfernungen abschätzen
-  zu können.
-
-o Kartenbeschriftungen in APRS-Karten im Windows-Stil werden nun
-  entsprechend den vorgegebenen Eigenschaften rotiert.
-
-o Die Benutzerschnittstelle für Objekte wurde komplett überarbeitet.
-
-o Fenster mit der Stationsinformation können automatisch aktualisiert
-  werden.
-
-o Separierbare Menus. Dies erlaubt Ihnen ein Menu auf dem Bildschirm
-  zu behalten, um mit verschiedenen Optionen zu spielen. Um ein Menu
-  abzutrennen einfach auf die gestrichelte Linie klicken.
-
-Die Karten-Unterstützung wurde stark erweitert, hierzu gehören nun auch
-PocketAPRS, ESRI Shapefiles, GNIS Bezeichnungen und viele verschiedene
-Grafikformate mittels ImageMagick. Zusätzlich wird das Herunterladen von
-Karten aus dem Internet unterstützt, wodurch Xastir nun auch
-Online-Radar-Karten, Tiger- und Terraserver-Karten verwenden kann.
-
-Xastir V1.1 unterstützt nun deutlich mehr des APRS-Protokolls als sein
-Vorgänger:
-
-o Es kann Objekte, Items und Signpost Objekte hinzufügen, ändern,
-  verschieben und anzeigen. Diese Eigenschaften sind unschätzbar bei
-  der Koordinierung von Ereignissen beim Einsatz im Rettungswesen.
-  Objekte und Items werden auch regelmäßig wiederholt ausgesendet.
-
-o Unterstützung zur Darstellung des Bereichs der Positionsverschleierung,
-  der berechneten Reichweitekreise, Maidenhead Gitterbereiche und
-  von Wetterobjekten. Diese Eigenschaften werden selten gebraucht,
-  kommen aber doch ab und zu mal vor.
-
-o Unterstützung für die APRS-Peilung. Diese Eigenschaft ist brauchbar
-  für alles von der Verfolgung von Störern bis zu verloren gegangenen
-  Wanderern. Xastir unterstützt Berichte von Rundstrahl- und Richt-
-  antennen.
-
-Andere bemerkenswerte Verbesserungen:
-
-o Xastir kann nun durch die Verwendung von GNIS-Daten nach bestimmten 
-  Orten oder Landmarken suchen.
-
-o Tracklogs können nun in eine Datei gespeichert werden.
-
-o Karten können ausgedruckt werden, wenn bestimmte Bibliotheken und
-  Werkzeuge vorhanden sind.
-
-o Unterstützung für das Herunterladeen von historischen Track Daten
-  von findu.com
-
-o Verschiedene kritische Fehler aus der V1.0 wurden behoben, hierunter
-  auch die Probleme beim Laden von DOS-Karten und dem Senden von
-  Wetterdaten. Kleinere Fehler und Memory Leaks wurden ebenfalls
-  beseitigt. Und noch ein paar Fehler beim Zerlegen der Empfangsdaten
-  wurden korrigiert. Xastir sollte nun stabil laufen, egal was man am
-  Eingang an Daten anbietet.
+============
+Hier fehlt die Übersetzung einiger weiteren Neuigkeiten, die vor dem
+Release leider nicht mehr fertig wurde. Falls Sie neugierig sind, schauen
+sie halt mal in die Englische Version hinein.
+============
 
 HELP-INDEX>Der erste Aufruf von Xastir
 
