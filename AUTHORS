@@ -3,9 +3,9 @@ $Revision$
                         Developers and Contributors
      _________________________________________________________________
 
-   This file attempts to list the majority of the Xastir developers and
-   contributors who have devoted a lot of their time into making Xastir
-   one of the best APRS clients ever.
+   Here we attempt to list the majority of the Xastir developers and
+   contributors who have devoted time to making Xastir one of the best
+   APRS clients ever.
 
    Xastir was originally written by Frank Giannandrea, KC2GJS was KC0DGE.
    APRS is trademarked by Bob Bruninga.
@@ -16,12 +16,16 @@ $Revision$
    HI8GN    Jose R Marte A
    IK0YUP   Alessandro Frigeri
    KA9KIM   Mike Sims
+   KB3EHW   Reuven Gevaryahu (our resident docs guy!)
+   KC2ELS   Jack Twilley
    KD5AMB   Mark Grennan
    KD6VPE   Jim Sevilla
+   KD6ZWR   Chris Bell
    KE4NFJ   Gerald Stueve
    KG4IJB   Charles Byam
    N0VH     Jim Chandler
    N3NYN    Michael G Petry
+   N7IPB    Ken Koster
    N7TAP    Olivier Calle
    PE1DNN   Henk de Groot
    VE3UNW   Richard Hagemyer
@@ -32,16 +36,16 @@ $Revision$
    Bragg (KA9MVA) for the HamHUD project.  They offer the algorithm to
    other authors as long as proper credit is given and the term
    SmartBeaconing(tm) is used to describe it.  So be it.  Thanks Tony
-   and Steve!.
+   and Steve!
 
    Thanks go to all the people who have made individual contributions to
-   the Xastir project by sending bug-reports, patches and otherwise have
-   supported the project. Patch contributors are listed in the UPDATES
-   files.
+   the Xastir project by sending bug-reports, patches, or who have
+   otherwise supported the project. Patch contributors are listed in the
+   UPDATES file.
 
    If you think that you are missing from this list contact the Xastir
    Development Team at <http://sourceforge.net/projects/xastir/> or at
-   <http://xastir.sourceforge.net> (soon).
+   <http://xastir.sourceforge.net>.
      _________________________________________________________________
 
    Copyright (C) 2000-2002 The Xastir Group
