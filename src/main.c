@@ -3316,6 +3316,10 @@ void refresh_image(Widget w) {
     // Draw grid if enabled
     draw_grid(w);
 
+    HandlePendingEvents(app_context);
+    if (interrupt_drawing_now)
+        return(0);
+ 
     /* display icons */
     display_file(w);
 
@@ -3355,6 +3359,10 @@ void redraw_symbols(Widget w) {
         (void)XCopyArea(XtDisplay(w),pixmap_alerts,pixmap_final,gc,0,0,screen_width,screen_height,0,0);
 
         draw_grid(w);           // draw grid if enabled
+
+        HandlePendingEvents(app_context);
+        if (interrupt_drawing_now)
+            return;
 
         display_file(w);        // display stations (symbols, info, trails)
 
