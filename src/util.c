@@ -42,6 +42,7 @@
 #include "db.h"
 #include "main.h"
 #include "xa_config.h"
+#include "datum.h"
 
 
 #ifdef HAVE_DMALLOC
@@ -797,6 +798,30 @@ int position_defined(long lat, long lon, int strict) {
         if (lat == 90*60*60*100l && lon == 180*60*60*100l)      // 0N/0E
             return(0);          // undefined location
     return(1);
+}
+
+
+
+
+
+// Convert Xastir lat/lon to UTM printable string
+void convert_xastir_to_UTM_str(char *str, int str_len, long x, long y) {
+    double utmNorthing;
+    double utmEasting;
+    char utmZone[10];
+ 
+    ll_to_utm(gDatum[E_WGS_84].ellipsoid,
+        (double)(-((y - 32400000l )/360000.0)),
+        (double)((x - 64800000l )/360000.0),
+        &utmNorthing,
+        &utmEasting,
+        utmZone,
+        sizeof(utmZone) );
+    utmZone[9] = '\0';
+    //printf( "%s %07.0f %07.0f\n", utmZone, utmEasting,
+    //utmNorthing );
+    xastir_snprintf(str, str_len, "%s %07.0f %07.0f",
+        utmZone, utmEasting, utmNorthing );
 }
 
 
