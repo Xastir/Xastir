@@ -2262,10 +2262,19 @@ void port_read(int port) {
                             // Put a terminating zero at the end of the read-in data
                             port_data[port].device_read_buffer[port_data[port].read_in_pos] = (char)0;
 
-                            if (port_data[port].status == DEVICE_UP && port_data[port].read_in_pos > 0)
+                            if (port_data[port].status == DEVICE_UP && port_data[port].read_in_pos > 0) {
+                                int length;
+
+                                // Compute length of string in
+                                // circular queue
+                                length = port_data[port].read_in_pos - port_data[port].read_out_pos;
+                                if (length < 0)
+                                    length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
+
                                 channel_data(port,
                                     (unsigned char *)port_data[port].device_read_buffer,
-                                    port_data[port].read_in_pos);   // Length of string
+                                    length);   // Length of string
+                            }
 
                             for (i = 0; i <= port_data[port].read_in_pos; i++)
                                 port_data[port].device_read_buffer[i] = (char)0;
@@ -2332,11 +2341,18 @@ void port_read(int port) {
                                     port_data[port].read_in_pos = 0;
                                 }
                                 if (port_data[port].read_in_pos >= max) {
-                                    if (group != 0) {
-                                        /* ok try to decode it */
+                                    if (group != 0) {   /* ok try to decode it */
+                                        int length;
+
+                                        // Compute length of string in
+                                        // circular queue
+                                        length = port_data[port].read_in_pos - port_data[port].read_out_pos;
+                                        if (length < 0)
+                                            length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
+
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
-                                            port_data[port].read_in_pos);   // Length of string
+                                            length);   // Length of string
                                     }
                                     max = MAX_DEVICE_BUFFER - 1;
                                     group = 0;
@@ -2377,10 +2393,19 @@ void port_read(int port) {
                                 if(strcmp(dev, from.sa_data) == 0) {
                                     /* Received data from our interface! - process data */
                                     if (process_ax25_packet(buffer, port_data[port].scan, port_data[port].device_read_buffer) != NULL) {
+                                        int length;
+
+                                        // Compute length of string
+                                        // in circular queue
+                                        length = port_data[port].read_in_pos - port_data[port].read_out_pos;
+                                        if (length < 0)
+                                            length = (length + MAX_DEVICE_BUFFER) % MAX_DEVICE_BUFFER;
+
                                         port_data[port].bytes_input += strlen(port_data[port].device_read_buffer);
+
                                         channel_data(port,
                                             (unsigned char *)port_data[port].device_read_buffer,
-                                             port_data[port].read_in_pos);  // Length of string
+                                             length);  // Length of string
                                     }
                                     /*
                                         do this for interface indicator in this case we only do it for,
