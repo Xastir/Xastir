@@ -153,6 +153,7 @@ For ESRI Shapefile format maps/weather alert maps:
 
 For GDAL/OGR:
     http://remotesensing.org/gdal/
+    http://www.maptools.org
 
 For ImageMagick support for maps in any of 68 major graphics formats,
    including the capability to use online maps and weather radar images:
@@ -587,10 +588,15 @@ First Time Install:
       integrated into Xastir, proceed with the following:
 
         cd ~src (or whereever you keep your sources)
-        export CVSROOT=:pserver:anonymous@cvs.remotesensing.org:/cvsroot
+        export CVSROOT=:pserver:cvsanon@cvs.maptools.org:/cvs/maptools/cvsroot
         cvs login
-        Password: anonymous
+        Password: <ENTER>
         cvs checkout gdal
+
+      Optionally you can also use one of the newer GDAL releases, so in that
+      case just download that instead of the above instructions, then do the
+      following instructions for either:
+
         cd gdal
         ./configure --without-jasper --without-ld-shared
         make
