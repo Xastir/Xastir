@@ -124,6 +124,8 @@ enum APRS_Types {
 #define MAX_MESSAGE_ORDER    10
 
 
+extern char *get_most_recent_ack(char *callsign);
+ 
 extern void Set_Del_Object(Widget w, XtPointer clientData, XtPointer calldata); // From main.c
 
 
@@ -145,6 +147,15 @@ typedef struct {
     char seq[MAX_MESSAGE_ORDER+1];
     char acked;
 } Message;
+
+
+// Struct used to create linked list of most recent ack's
+typedef struct _ack_record {
+    char callsign[MAX_CALLSIGN+1];
+    char ack[5+1];
+    struct _ack_record *next;
+} ack_record;
+
 
 #ifdef MSG_DEBUG
 extern void msg_clear_data(Message *clear);

@@ -492,6 +492,9 @@ void check_and_transmit_messages(time_t time) {
         if (message_pool[i].active==MESSAGE_ACTIVE) {
             if (message_pool[i].wait_on_first_ack!=1) {
                 if (message_pool[i].active_time < time) {
+                    char *last_ack_ptr;
+                    char last_ack[5+1];
+
                     /* sending message let the tnc and net transmits check to see if we should */
                     if (debug_level & 2)
                         printf("Time %ld Active time %ld next time %ld\n",(long)time,(long)message_pool[i].active_time,(long)message_pool[i].next_time);
@@ -505,8 +508,17 @@ void check_and_transmit_messages(time_t time) {
                     // Add Leading ":" as per APRS Spec.
                     // Add trailing '}' to signify that we're
                     // Reply/Ack protocol capable.
-                    xastir_snprintf(temp, sizeof(temp), ":%s:%s{%s}",
-                            to_call, message_pool[i].message_line,message_pool[i].seq);
+                    last_ack_ptr = get_most_recent_ack(to_call);
+                    if (last_ack_ptr != NULL)
+                        strncpy(last_ack,last_ack_ptr,sizeof(last_ack));
+                    else
+                        last_ack[0] = '\0';
+                        
+                    xastir_snprintf(temp, sizeof(temp), ":%s:%s{%s}%s",
+                            to_call,
+                            message_pool[i].message_line,
+                            message_pool[i].seq,
+                            last_ack);
 
                     if (debug_level & 2)
                         printf("MESSAGE OUT>%s<\n",temp);

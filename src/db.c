@@ -124,6 +124,7 @@ time_t last_object_check = 0;   // Used to determine when to re-transmit objects
 
 
 
+
 void db_init(void)
 {
     init_critical_section( &db_station_info_lock );
@@ -247,6 +248,8 @@ static long msg_index_end;
 static long msg_index_max;
 static Message *msg_data;       // All messages, including ones we've transmitted (via loopback in the code)
 time_t last_message_update = 0;
+ack_record *ack_list_head = NULL;  // Head of linked list storing most recent ack's
+
 
 // How often update_messages() will run, in seconds.
 // This is necessary because routines like UpdateTime()
@@ -257,7 +260,98 @@ time_t last_message_update = 0;
 // message.  message_update_delay is no longer used, and we don't call
 // update_messages() from UpdateTime() anymore.
 static int message_update_delay = 300;
-    
+
+
+
+
+
+//WE7U
+// Saves latest ack in a linked list.  We need this value in order
+// to use Reply/Ack protocol when sending out messages.
+void store_most_recent_ack(char *callsign, char *ack) {
+    ack_record *p;
+    int done = 0;
+    char call[MAX_CALLSIGN+1];
+    char new_ack[5+1];
+
+    strncpy(call,callsign,sizeof(call));
+    remove_trailing_spaces(call);
+
+    // Get a copy of "ack".  We might need to change it.
+    strcpy(new_ack,ack);
+
+    // If it's more than 2 characters long, we can't use it for
+    // Reply/Ack protocol as there's only space enough for two.
+    // In this case we need to make sure that we blank out any
+    // former ack that was 1 or 2 characters, so that communications
+    // doesn't stop.
+    if ( strlen(new_ack) > 2 ) {
+        // It's too long, blank it out so that gets saved as "",
+        // which will overwrite any previously saved ack's that were
+        // short enough to use.
+        new_ack[0] = '\0';
+    }
+
+    // Search for matching callsign through linked list
+    p = ack_list_head;
+    while ( !done && (p != NULL) ) {
+        if (strcasecmp(call,p->callsign) == 0) {
+            done++;
+        }
+        else {
+            p = p->next;
+        }
+    }
+
+    if (done) { // Found it.  Update the ack field.
+        //printf("Found callsign %s on recent ack list, Old:%s, New:%s\n",call,p->ack,new_ack);
+        xastir_snprintf(p->ack,sizeof(p->ack),"%s",new_ack);
+    }
+    else {  // Not found.  Add a new record to the beginning of the
+            // list.
+        //printf("New callsign %s, adding to list.  Ack: %s\n",call,new_ack);
+        p = (ack_record *)malloc(sizeof(ack_record));
+        xastir_snprintf(p->callsign,sizeof(p->callsign),"%s",call);
+        xastir_snprintf(p->ack,sizeof(p->ack),"%s",new_ack);
+        p->next = ack_list_head;
+        ack_list_head = p;
+    }
+}
+
+
+
+
+
+// Gets latest ack by callsign
+char *get_most_recent_ack(char *callsign) {
+    ack_record *p;
+    int done = 0;
+    char call[MAX_CALLSIGN+1];
+
+    strncpy(call,callsign,sizeof(call));
+    remove_trailing_spaces(call);
+
+    // Search for matching callsign through linked list
+    p = ack_list_head;
+    while ( !done && (p != NULL) ) {
+        if (strcasecmp(call,p->callsign) == 0) {
+            done++;
+        }
+        else {
+            p = p->next;
+        }
+    }
+
+    if (done) { // Found it.  Return pointer to ack string.
+        //printf("Found callsign %s on linked list, returning ack: %s\n",call,p->ack);
+        return(&p->ack[0]);
+    }
+    else {
+        //printf("Callsign %s not found\n",call);
+        return(NULL);
+    }
+}
+
 
 
 
@@ -8219,6 +8313,10 @@ int decode_message(char *call,char *path,char *message,char from,int port,int th
             msg_record_ack(call,addr,ack_string,0);   // Record the ack for this message
         }
 
+        // Save the ack 'cuz we might need it while talking to this
+        // station.  We need it to implement Reply/Ack protocol.
+        store_most_recent_ack(call,msg_id);
+ 
         // printf("found Msg w line to me: |%s| |%s|\n",message,msg_id);
         last_ack_sent = msg_data_add(addr,call,message,msg_id,MESSAGE_MESSAGE,from,&record); // id_fixed
 
