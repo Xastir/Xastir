@@ -10455,6 +10455,7 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
 
                                 //printf("FULL PATH %s\n",fullpath);
 
+//WE7U
                                 // If we're indexing, throw the
                                 // directory into the map index as
                                 // well.
@@ -10462,21 +10463,15 @@ void map_search (Widget w, char *dir, alert_entry * alert, int *alert_count,int 
                                         || (destination_pixmap == INDEX_NO_TIMESTAMPS) ) {
                                     char temp_dir[8000];
 
-                                    // Zero it first, just in case
-                                    // we mess up and don't have a
-                                    // terminator.
-                                    memset(temp_dir,0x00,8000);
-
-                                    // Figure out the current
-                                    // complete path.  Drop off the
-                                    // base part of the path for the
-                                    // indexing.
-                                    strcpy(temp_dir,&fullpath[map_dir_length+1]);
-
-                                    // Put a '/' on the end so that
-                                    // we can identify it as a
-                                    // directory.
-                                    strcat(temp_dir,"/");
+                                    // Drop off the base part of the
+                                    // path for the indexing,
+                                    // usually
+                                    // "/usr/local/xastir/maps".
+                                    // Add a '/' to the end.
+                                    xastir_snprintf(temp_dir,
+                                        sizeof(temp_dir),
+                                        "%s/",
+                                        &fullpath[map_dir_length+1]);
 
                                     // Add the directory to the
                                     // in-memory map index.
@@ -10549,8 +10544,6 @@ map_index_record *map_index_head = NULL;
 
 
 //WE7U
-// This function not fully implemented yet.  Still in development.
-//
 // Function used to add map directories to the in-memory map index.
 // Causes an update of the index list in memory.  Input Records are
 // inserted in alphanumerical order.  We mark directories in the
@@ -10565,6 +10558,12 @@ void index_update_directory(char *directory) {
 
 
     //printf( "index_update_directory: %s\n", directory );
+
+    // Check for bad input
+    if (directory[0] == '\0'
+            || ( (directory[1] == '/') && (strlen(directory) == 1)) ) {
+        return;
+    }
 
     //if (map_index_head == NULL)
     //    printf("Empty list\n");
@@ -10667,6 +10666,11 @@ void index_update_xastir(char *filename,
     map_index_record *temp_record = map_index_head;
     int done = 0;
 
+
+    // Check for bad input
+    if (filename[0] == '\0') {
+        return;
+    }
 
     //printf( "index_update_xastir: (%lu,%lu)\t(%lu,%lu)\t%s\n",
     //    bottom, top, left, right, filename );
@@ -10783,6 +10787,11 @@ void index_update_ll(char *filename,
     unsigned long temp_left, temp_right, temp_top, temp_bottom;
     int ok;
 
+
+    // Check for bad input
+    if (filename[0] == '\0') {
+        return;
+    }
 
     //printf( "index_update_ll: (%15.10g,%15.10g)\t(%15.10g,%15.10g)\t%s\n",
     //    bottom, top, left, right, filename );
