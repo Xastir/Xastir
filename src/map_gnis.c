@@ -316,8 +316,12 @@ Cell Name
 
                     i[0] = '\0';
                     xastir_snprintf(latitude,sizeof(latitude),"%s",j+1);
-                    clean_string(latitude);
+                    if (!isdigit(latitude[0])) { // skip record if not
+                        continue;                // numeric! (e.g. "UNKNOWN")
+                    }
 
+                    clean_string(latitude);
+                    
                     // Find end of Primary Longitude field (DDDMMSSW)
                     j = index(i+1, '|');
 
@@ -327,6 +331,10 @@ Cell Name
 
                     j[0] = '\0';
                     xastir_snprintf(longitude,sizeof(longitude),"%s",i+1);
+                    if (!isdigit(longitude[0])) { // skip record if not
+                        continue;                 // numeric (e.g. UNKNOWN)
+                    }
+
                     clean_string(longitude);
 
                     // Find end of Primary Latitude field (decimal
