@@ -37,7 +37,7 @@ PID off
 # *TAPR2*
 MNOAX25 off
 # *Paccomm*
-#PIDCHECK
+PIDCHECK on
 # *AEA*
 MPROTO OFF
 # End of monitor only PID 0xf0 packets section

@@ -63,7 +63,7 @@ PERSIST 128
 PASSALL off
 #
 # Important!  Monitor only PID 0xf0 packets:
-#PIDCHECK off
+PIDCHECK on
 #
 PMS off
 SCREENLN 0

@@ -36,7 +36,7 @@ SCR 0
 MON 1
 #
 # Important!  Monitor only PID 0xf0 packets:
-#PIDCHECK off
+PIDCHECK on
 #
 # End of tnc-startup.pac
 #
