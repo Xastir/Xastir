@@ -770,6 +770,14 @@ Allows using USGS DRG topo maps or other types of geoTIFF
 maps/images and has the ability to tile smaller maps into a larger
 contiguous map of an area:
 
+[NOTE: when checked on 30 Oct 2004, it is now possible to install
+libproj and libgeotiff directly from cygwin setup.  Since at least one
+user has had considerable trouble installing xastir with geotiff using
+the instructions below, it is recommended that these libraries be
+installed through cygwin setup instead.  Be sure to install the
+"-devel" versions that will include headers and libraries needed to
+compile xastir.]
+
 For geoTIFF support (such as USGS DRG topo maps) you need one each
 of libproj, proj-nad27, and libgeotiff:
 
@@ -794,8 +802,8 @@ or      http://wetnet.net/~we7u/xastir/libgeotiff/
 
 
 Please note that the order of installation for these libraries is
-critical.  Follow the instructions below carefully.
-
+critical.  If not installing from cygwin setup, please be sure to
+follow the instructions below carefully.
 
 
 Adding libproj to Cygwin (tested with proj-4.4.7):
