@@ -324,11 +324,14 @@ void check_for_new_bulletins() {
     //printf("%d new bulletins found\n",new_bulletin_count);
 
     if (new_bulletin_count) {
-printf("New bulletins (%d) caused popup!\n",new_bulletin_count);
         popup_bulletins();
+
+        if (debug_level & 1)
+            printf("New bulletins (%d) caused popup!\n",new_bulletin_count);
     }
     else {
-printf("No bulletin popup generated.\n");
+        if (debug_level & 1)
+            printf("No bulletin popup generated.\n");
     }
 
     // Reset so that we can do it all over again later.  We need
