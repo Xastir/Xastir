@@ -1000,6 +1000,9 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         // check a bit later to see if it's within range.  This give
         // a bit of time for the posit to come in that matches the
         // sender of the bulletin.
+
+        //fprintf(stderr,"Calling prep_for_popup_bulletins\n");
+
         prep_for_popup_bulletins();
 
         if (debug_level & 1) {
