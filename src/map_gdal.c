@@ -74,9 +74,9 @@
 
 #ifdef HAVE_LIBGDAL
 
-#warning *********************************************************
-#warning GDAL library support not implemented yet.  Coming soon!!!
-#warning *********************************************************
+#warning********************************************************************************
+#warning GDAL library support not implemented yet.  Coming soon to an Xastir near you!!!
+#warning********************************************************************************
 
 // WE7U - Getting rid of stupid compiler warnings in GDAL
 #define XASTIR_PACKAGE_BUGREPORT PACKAGE_BUGREPORT
