@@ -2041,7 +2041,7 @@ void display_station(Widget w, DataRow *p_station, int single) {
 
 
     if (debug_level & 128)
-        fprintf(stderr,"Display station called for Single=%d.\n", single);
+        fprintf(stderr,"Display station (%s) called for Single=%d.\n", p_station->call_sign, single);
 
     if (!ok_to_draw_station(p_station))
         return;
@@ -5264,7 +5264,7 @@ static void extract_multipoints(DataRow *p_station, char *data, int type) {
 
     /*
     for (p = data; !found && p <= end; ++p) {
-        if (*p == ' ' && *(p+1) == RBRACE && islower(*(p+2)) && isdigit(*(p+3)) && 
+        if (*p == ' ' && *(p+1) == RBRACE && islower((int)*(p+2)) && isdigit((int)*(p+3)) && 
                             (p2 = strchr(p+4, LBRACE)) != NULL && ((p2 - p) % 2) == 1) {
             found = 1;
         }
@@ -5280,7 +5280,7 @@ static void extract_multipoints(DataRow *p_station, char *data, int type) {
     while (!found && p < end && (p = strstr(p, START_STR)) != NULL) {
         // The opening string was found. Check the following information.
 
-        if (islower(*(p+2)) && isdigit(*(p+3)) && (p2 = strchr(p+4, LBRACE)) != NULL && ((p2 - p) % 2) == 1) {
+        if (islower((int)*(p+2)) && isdigit((int)*(p+3)) && (p2 = strchr(p+4, LBRACE)) != NULL && ((p2 - p) % 2) == 1) {
             // It all looks good!
 
             found = 1;
@@ -8955,9 +8955,9 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
                     && (p+=5))) {
 
                 // Look for n=N on WIDEn-N/TRACEn-N digi field
-                if ((*p != '\0') && isdigit(*p)) {
+                if ((*p != '\0') && isdigit((int)*p)) {
                     if ((*(p+1) != '\0') && (*(p+1) == '-')) {
-                        if ((*(p+2) != '\0') && isdigit(*(p+2))) {
+                        if ((*(p+2) != '\0') && isdigit((int)*(p+2))) {
                             if (*(p) == *(p+2)) {
                                 direct = 1;
                             }
