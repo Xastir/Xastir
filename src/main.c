@@ -9935,7 +9935,8 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                 ob_bearing,
                 ob_lat_offset,ob_lon_offset,
                 ob_sep, ob_sep2, ob_button_set, ob_button_del,ob_button_cancel,it_button_set,
-                ob_button_symbol;
+                ob_button_symbol,
+                compute_button;
     char temp_data[40];
     Atom delw;
     DataRow *p_station = (DataRow *)clientData;
@@ -10425,7 +10426,21 @@ void Set_Del_Object( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, X
                             XmNbackground,              colors[0xff],
                             NULL);
 
-
+//WE7U
+        //compute_button = XtVaCreateManagedWidget(langcode("More"),xmPushButtonGadgetClass, ob_latlon_form,
+        compute_button = XtVaCreateManagedWidget("More",xmPushButtonGadgetClass, ob_latlon_form,
+                            XmNtopAttachment,           XmATTACH_WIDGET,
+                            XmNtopWidget,               ob_lat,
+                            XmNtopOffset,               20,
+                            XmNbottomAttachment,        XmATTACH_NONE,
+                            XmNleftAttachment,          XmATTACH_WIDGET,
+                            XmNleftWidget,              ob_lon_ew,
+                            XmNleftOffset,              10,
+                            XmNrightAttachment,         XmATTACH_NONE,
+                            XmNbackground,              colors[0xff],
+                            XmNnavigationType,          XmTAB_GROUP,
+                            NULL);
+        XtAddCallback(compute_button, XmNactivateCallback, Coordinate_calc, ob_latlon_form);
 
 //----- Frame for generic options
         ob_option_frame = XtVaCreateManagedWidget("Set_Del_Object ob_option_frame", xmFrameWidgetClass, ob_form,
@@ -12859,8 +12874,8 @@ void Configure_station( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData
                             XmNbackground,              colors[0xff],
                             NULL);
 
-        //compute_button = XtVaCreateManagedWidget(langcode("Other Formats"),xmPushButtonGadgetClass, cs_form,
-        compute_button = XtVaCreateManagedWidget("Other Formats",xmPushButtonGadgetClass, cs_form,
+        //compute_button = XtVaCreateManagedWidget(langcode("More"),xmPushButtonGadgetClass, cs_form,
+        compute_button = XtVaCreateManagedWidget("More",xmPushButtonGadgetClass, cs_form,
                             XmNtopAttachment,           XmATTACH_WIDGET,
                             XmNtopWidget,               slat,
                             XmNtopOffset,               20,
