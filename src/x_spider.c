@@ -943,6 +943,11 @@ void Server(int argc, char *argv[], char *envp[]) {
             //printf("DEBUG: %s\n", Argv[0]);
 #endif  // __linux__
 
+// It'd be very cool here to include the IP address of the remote
+// client on the "ps" line, and include the callsign of the
+// connecting client once the client authenticates.  Both of these
+// are do-able.
+
 
             // New naming system so that we don't have to remember
             // the longer name:
