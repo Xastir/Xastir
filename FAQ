@@ -354,6 +354,8 @@ The Answers
     * First, check that all the libraries are installed. Check the INSTALL
     file for the locations to get these libraries if you've accidently removed
     one of them.
+    * Run "ldd /usr/local/bin/xastir".  This will print out a list of libraries
+    that Xastir is looking for and the locations they are expected to be at.
     * Check that the locations of the libraries are in /etc/ld.so.conf. This
     should probably be set up by your Linux distribution, but if you've
     added new library directories after install, you'll need to add them here.
