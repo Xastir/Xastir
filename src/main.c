@@ -10375,9 +10375,11 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 // Process the GPS strings saved by
                                 // the channel_data() function.
                                 if (gprmc_save_string[0] != '\0')
-                                    ret1 = gps_data_find(gprmc_save_string, gps_port_save);
+                                    ret1 = gps_data_find(gprmc_save_string,
+                                        gps_port_save);
                                 if (gpgga_save_string[0] != '\0')
-                                    ret2 = gps_data_find(gpgga_save_string, gps_port_save);
+                                    ret2 = gps_data_find(gpgga_save_string,
+                                        gps_port_save);
 
                                 // Blank out the global variables
                                 // (we just processed them).
@@ -10614,14 +10616,19 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                         line[n-1] = '\0';
 
                         if (log_net_data)
-                            log_data(LOGFILE_NET,(char *)line);
+                            log_data(LOGFILE_NET,
+                                (char *)line);
 
 //fprintf(stderr,"server data: %s\n", line);
 
-                        packet_data_add(langcode("WPUPDPD006"),(char *)line);
+                        packet_data_add(langcode("WPUPDPD006"),
+                            (char *)line);
 
                         // Set port to -1 here
-                        decode_ax25_line((char *)line,'I',-1, 1);
+                        decode_ax25_line((char *)line,
+                            'I',
+                            -1,
+                            1);
 
                         max++;  // Count the number of packets processed
                     }
@@ -10632,37 +10639,47 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
     fprintf(stderr,"data_lock\n");
 
+
+// Check the rest of the ports for incoming data.
+
                 if (data_avail) {
                     int data_type;              /* 0=AX25, 1=GPS */
 
                     //fprintf(stderr,"device_type: %d\n",port_data[data_port].device_type);
 
-
-                    if (enable_server_port) {
-// Send data to the x_spider server
-                        if (writen(pipe_xastir_to_server, incoming_data, incoming_data_length) != incoming_data_length) {
-                            fprintf(stderr,
-                                "UpdateTime: Writen error: %d\n",
-                                errno);
-                        }
-                        // Terminate it with a linefeed
-                        if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
-                            fprintf(stderr,
-                                "UpdateTime: Writen error: %d\n",
-                                errno);
-                        }
-                    }
-// End of x_spider server send code
-
-
                     switch (port_data[data_port].device_type) {
                         /* NET Data stream */
                         case DEVICE_NET_STREAM:
-                            if (log_net_data)
-                                log_data(LOGFILE_NET,(char *)incoming_data);
 
-                            packet_data_add(langcode("WPUPDPD006"),(char *)incoming_data);
-                            decode_ax25_line((char *)incoming_data,'I',data_port, 1);
+                            if (log_net_data)
+                                log_data(LOGFILE_NET,
+                                    (char *)incoming_data);
+
+                            packet_data_add(langcode("WPUPDPD006"),
+                                (char *)incoming_data);
+
+                            if (enable_server_port) {
+                                // Send data to the x_spider server
+                                if (writen(pipe_xastir_to_server,
+                                        incoming_data,
+                                        incoming_data_length) != incoming_data_length) {
+                                    fprintf(stderr,
+                                        "UpdateTime: Writen error: %d\n",
+                                        errno);
+                                }
+                                // Terminate it with a linefeed
+                                if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                                    fprintf(stderr,
+                                        "UpdateTime: Writen error: %d\n",
+                                        errno);
+                                }
+                            }
+                            // End of x_spider server send code
+
+                            decode_ax25_line((char *)incoming_data,
+                                'I',
+                                data_port,
+                                1);
                             break;
 
                         /* TNC Devices */
@@ -10672,7 +10689,8 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             // Try to decode header and checksum.  If
                             // bad, break, else continue through to
                             // ASCII logging & decode routines.
-                            if ( !decode_ax25_header( (char *)incoming_data, incoming_data_length ) ) {
+                            if ( !decode_ax25_header( (char *)incoming_data,
+                                    incoming_data_length ) ) {
                                 // Had a problem decoding it.  Drop
                                 // it on the floor.
                                 break;
@@ -10689,17 +10707,42 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                         case DEVICE_AX25_TNC:
                         case DEVICE_NET_AGWPE:
                             if (log_tnc_data)
-                                log_data(LOGFILE_TNC,(char *)incoming_data);
+                                log_data(LOGFILE_TNC,
+                                    (char *)incoming_data);
 
-                            packet_data_add(langcode("WPUPDPD005"),(char *)incoming_data);
-                            decode_ax25_line((char *)incoming_data,'T',data_port, 1);
+                            packet_data_add(langcode("WPUPDPD005"),
+                                (char *)incoming_data);
+
+                            if (enable_server_port) {
+                                // Send data to the x_spider server
+                                if (writen(pipe_xastir_to_server,
+                                        incoming_data,
+                                        incoming_data_length) != incoming_data_length) {
+                                    fprintf(stderr,
+                                        "UpdateTime: Writen error: %d\n",
+                                        errno);
+                                }
+                                // Terminate it with a linefeed
+                                if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                                    fprintf(stderr,
+                                        "UpdateTime: Writen error: %d\n",
+                                        errno);
+                                }
+                            }
+                            // End of x_spider server send code
+
+                            decode_ax25_line((char *)incoming_data,
+                                'T',
+                                data_port,
+                                1);
                             break;
 
                         case DEVICE_SERIAL_TNC_HSP_GPS:
                             if (port_data[data_port].dtr==1) { // get GPS data
                                 char temp[200];
 
-                                (void)gps_data_find((char *)incoming_data,data_port);
+                                (void)gps_data_find((char *)incoming_data,
+                                    data_port);
 
                                 strcpy(temp, "GPS: ");
                                 strcat(temp, report_gps_status());
@@ -10708,20 +10751,46 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             else {
                                 /* get TNC data */
                                 if (log_tnc_data)
-                                    log_data(LOGFILE_TNC,(char *)incoming_data);
+                                    log_data(LOGFILE_TNC,
+                                        (char *)incoming_data);
 
-                                packet_data_add(langcode("WPUPDPD005"),(char *)incoming_data);
-                                decode_ax25_line((char *)incoming_data,'T',data_port, 1);
+                                packet_data_add(langcode("WPUPDPD005"),
+                                    (char *)incoming_data);
+
+                                if (enable_server_port) {
+                                    // Send data to the x_spider server
+                                    if (writen(pipe_xastir_to_server,
+                                            incoming_data,
+                                            incoming_data_length) != incoming_data_length) {
+                                        fprintf(stderr,
+                                            "UpdateTime: Writen error: %d\n",
+                                            errno);
+                                    }
+                                    // Terminate it with a linefeed
+                                    if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                                        fprintf(stderr,
+                                            "UpdateTime: Writen error: %d\n",
+                                            errno);
+                                    }
+                                }
+                                // End of x_spider server send code
+
+                                decode_ax25_line((char *)incoming_data,
+                                    'T',
+                                    data_port,
+                                    1);
                             }
                             break;
 
                         case DEVICE_SERIAL_TNC_AUX_GPS:
                             tnc_data_clean((char *)incoming_data);
-                            data_type=tnc_get_data_type((char *)incoming_data, data_port);
+                            data_type=tnc_get_data_type((char *)incoming_data,
+                                data_port);
                             if (data_type) {  // GPS Data
                                 char temp[200];
 
-                                (void)gps_data_find((char *)incoming_data, data_port);
+                                (void)gps_data_find((char *)incoming_data,
+                                    data_port);
 
                                 strcpy(temp, "GPS: ");
                                 strcat(temp, report_gps_status());
@@ -10729,11 +10798,34 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
                             }
                             else {          // APRS Data
                                 if (log_tnc_data)
-                                    log_data(LOGFILE_TNC, (char *)incoming_data);
+                                    log_data(LOGFILE_TNC,
+                                        (char *)incoming_data);
 
                                 packet_data_add(langcode("WPUPDPD005"),
                                     (char *)incoming_data);
-                                decode_ax25_line((char *)incoming_data, 'T', data_port, 1);
+
+                                if (enable_server_port) {
+                                    // Send data to the x_spider server
+                                    if (writen(pipe_xastir_to_server,
+                                            incoming_data,
+                                            incoming_data_length) != incoming_data_length) {
+                                        fprintf(stderr,
+                                            "UpdateTime: Writen error: %d\n",
+                                            errno);
+                                    }
+                                    // Terminate it with a linefeed
+                                    if (writen(pipe_xastir_to_server, "\n", 1) != 1) {
+                                        fprintf(stderr,
+                                            "UpdateTime: Writen error: %d\n",
+                                            errno);
+                                    }
+                                }
+                                // End of x_spider server send code
+
+                                decode_ax25_line((char *)incoming_data,
+                                    'T',
+                                    data_port,
+                                    1);
                             }
                             break;
 
@@ -10742,7 +10834,8 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         case DEVICE_NET_GPSD:
                             /*fprintf(stderr,"GPS Data <%s>\n",incoming_data);*/
-                            (void)gps_data_find((char *)incoming_data,data_port);
+                            (void)gps_data_find((char *)incoming_data,
+                                data_port);
                             {
                                 char temp[200];
 
@@ -10757,9 +10850,11 @@ if (begin_critical_section(&data_lock, "main.c:UpdateTime(1)" ) > 0)
 
                         case DEVICE_NET_WX:
                             if (log_wx)
-                                log_data(LOGFILE_WX,(char *)incoming_data);
+                                log_data(LOGFILE_WX,
+                                    (char *)incoming_data);
 
-                            wx_decode(incoming_data,data_port);
+                            wx_decode(incoming_data,
+                                data_port);
                             break;
 
                         default:
