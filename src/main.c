@@ -6594,7 +6594,7 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
                 XmNy,           1,
                 XmNwidth,       screen_width,
 //              XmNheight,      (screen_height+60+2),   // DK7IN: added 2 because height had been smaller everytime
-                XmNheight,      (screen_height + 60),   // WE7U:  Above statement makes mine grow by 2 each time
+                XmNheight,      (screen_height + 60),   // we7u:  Above statement makes mine grow by 2 each time
                 NULL);
 
     // Show the window
@@ -7516,7 +7516,7 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
                                 }
                                 port_write_string(i, tmp);
                                 break;
-//WE7UGPS
+
                             case DEVICE_SERIAL_GPS:
                             case DEVICE_SERIAL_TNC_HSP_GPS:
                             case DEVICE_NET_GPSD:
@@ -9225,7 +9225,7 @@ static void* gps_transfer_thread(void *arg) {
         "Shapefile_2D %s/GPS/",
         SELECTED_MAP_DIR);
 
-    input_param = *((int *) arg);
+    input_param = atoi((char *)arg);
 
     // The pthread_detach() call means we don't care about the
     // return code and won't use pthread_join() later.  Makes
@@ -9427,9 +9427,9 @@ void GPS_operations( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
 
         parameter = atoi((char *)clientData);
 
-if ( (parameter < 1) || (parameter > 3) ) {
-    fprintf(stderr,"GPS_operations: Parameter out-of-range: %d",parameter);
-}
+        if ( (parameter < 1) || (parameter > 3) ) {
+            fprintf(stderr,"GPS_operations: Parameter out-of-range: %d",parameter);
+        }
 
 //----- Start New Thread -----
  
@@ -9438,7 +9438,7 @@ if ( (parameter < 1) || (parameter > 3) ) {
         // there might be a conflict as to when/how we're updating
         // those variables.
         //
-        if (pthread_create(&gps_operations_thread, NULL, gps_transfer_thread, &parameter)) {
+        if (pthread_create(&gps_operations_thread, NULL, gps_transfer_thread, clientData)) {
             fprintf(stderr,"Error creating gps transfer thread\n");
             gps_got_data_from = 0;      // No data to present
             gps_operation_pending = 0;  // We're done
@@ -11313,7 +11313,6 @@ void map_properties_fill_in (void) {
 
 
 
-//WE7U
 // Removes the highlighting for maps in the current view of the map
 // properties list.
 //
@@ -11376,7 +11375,6 @@ void map_index_update_filled_no(char *filename) {
 
 
 
-//WE7U
 void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer callData) {
     int i, x;
     XmString *list;
@@ -11426,7 +11424,6 @@ void map_properties_filled_yes(Widget widget, XtPointer clientData, XtPointer ca
 
 
 
-//WE7U
 void map_properties_filled_no(Widget widget, XtPointer clientData, XtPointer callData) {
     int i, x;
     XmString *list;
@@ -11514,7 +11511,6 @@ void map_index_update_auto_maps_no(char *filename) {
 
 
 
-//WE7U
 void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer callData) {
     int i, x;
     XmString *list;
@@ -11564,7 +11560,6 @@ void map_properties_auto_maps_yes(Widget widget, XtPointer clientData, XtPointer
 
 
 
-//WE7U
 void map_properties_auto_maps_no(Widget widget, XtPointer clientData, XtPointer callData) {
     int i, x;
     XmString *list;
@@ -11633,7 +11628,6 @@ void map_index_update_layer(char *filename, int map_layer) {
 
 
 
-//WE7U
 void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer callData) {
     int i, x, new_layer;
     XmString *list;
@@ -11691,7 +11685,6 @@ void map_properties_layer_change(Widget widget, XtPointer clientData, XtPointer 
 
 
 
-//WE7U
 // Allows setting map layer and filled polygon properties for maps
 // selected in the map chooser.  Show a warning or bring up a
 // confirmation dialog if more than one map is selected when this
@@ -12143,7 +12136,6 @@ void map_chooser_select_maps(Widget widget, XtPointer clientData, XtPointer call
 
 
 
-//WE7U
 // Counts the number of "selected" fields with a value of 1 in the
 // in-memory map index.  Updates the "Dirs/Maps Selected" count in
 // the map chooser.
@@ -13142,7 +13134,6 @@ void Expand_Dirs_toggle( /*@unused@*/ Widget w, XtPointer clientData, XtPointer 
 
 
 
-//WE7U
 void Map_chooser( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
     static Widget  pane, my_form, button_clear, button_V, button_ok,
             button_cancel, button_C, button_F, button_O,
