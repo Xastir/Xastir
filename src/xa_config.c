@@ -28,9 +28,9 @@
 
 // This define should go away when "configure" is set up properly
 // for CYGWIN
-#ifdef __CYGWIN__
-#define XASTIR_SYSTEM "CYGWIN"
-#endif
+//#ifdef __CYGWIN__
+//#define XASTIR_SYSTEM "CYGWIN"
+//#endif
 
 #include <stdio.h>
 #include <fcntl.h>
