@@ -15184,18 +15184,28 @@ void check_and_transmit_objects_items(time_t time) {
     if (debug_level & 1)
         fprintf(stderr,"Checking whether to retransmit any objects/items\n");
 
+// We could speed things up quite a bit here by either keeping a
+// separate list of our own objects/items, or going through the list
+// of stations by time instead of by name (If by time, only check
+// backwards from the current time by the max transmit interval plus
+// some increment.  Watch out for the user changing the slider).
+
     p_station = n_first;    // Go through received stations alphabetically
     while (p_station != NULL) {
 
         //fprintf(stderr,"%s\t%s\n",p_station->call_sign,p_station->origin);
 
-        // If it is an object or item
-        if ( (p_station->flag & (ST_OBJECT|ST_ITEM)) != 0 ) {
+        // If station is owned by me
+        if (is_my_call(p_station->origin,1)) {
 
-            if (is_my_call(p_station->origin,1)) {   // And is owned by me
+            // and it's an object or item
+            if (p_station->flag & (ST_OBJECT|ST_ITEM)) {
 
-                if (debug_level & 1)
-                    fprintf(stderr,"Found a locally-owned object or item: %s\n",p_station->call_sign);
+                if (debug_level & 1) {
+                    fprintf(stderr,
+                        "Found a locally-owned object or item: %s\n",
+                        p_station->call_sign);
+                }
 
 
 // Implementing sped-up transmission of new objects, regular
