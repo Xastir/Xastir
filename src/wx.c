@@ -98,6 +98,8 @@ float rain_24 = 0.0;                // hundredths of an inch
 float rain_base[24];                // hundredths of an inch
 int rain_check = 0;                 // Flag for re-checking rain_total each hour
 
+float wind_chill = 0;               // holder for wind chill calc
+
 // Gust totals
 float gust[60];                     // High wind gust for each min. of last hour
 int gust_write_ptr = 0;
@@ -2449,6 +2451,16 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp_conv+1);
                 weather->wx_gust[3] = '\0';
 
+                // compute high wind
+                if(wx_high_wind[0] == '\0' ||   // first time
+                        (get_hours() == 0 && get_minutes() == 0) || // midnite
+                        (atol(weather->wx_gust) > atol(wx_high_wind))) { // gust
+                    xastir_snprintf(wx_high_wind,
+                        sizeof(wx_high_wind),
+                        "%s",
+                        weather->wx_gust);
+                }
+                wx_high_wind_on=1;
             }
 
             if ((temp_conv=strchr(data,'t'))) { // Temperature in Degrees F
@@ -2456,7 +2468,29 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     sizeof(weather->wx_temp),
                     "%s",
                     temp_conv+1);
-                weather->wx_temp[3] = '\0';
+                weather->wx_temp[3] = '\0';  	
+
+                // compute hi temp, since APRS doesn't send that
+                if(wx_hi_temp[0] == '\0' || // first time 
+                        (get_hours() == 0 && get_minutes() == 0) || // midnite
+                        (atol(weather->wx_temp) > atol(wx_hi_temp))) {
+                    xastir_snprintf(wx_hi_temp,
+                        sizeof(wx_hi_temp),
+                        "%s",
+                        weather->wx_temp);
+                }
+                wx_hi_temp_on=1;
+
+                // compute low temp, since APRS doesn't send that
+                if(wx_low_temp[0] == '\0' || // first time 
+                        (get_hours() == 0 && get_minutes() == 0) || // midnite
+                        (atol(weather->wx_temp) < atol(wx_low_temp))) {
+                    xastir_snprintf(wx_low_temp,
+                        sizeof(wx_low_temp),
+                        "%s",
+                        weather->wx_temp);
+                }
+                wx_low_temp_on=1;
             }
 
             if ((temp_conv=strchr(data,'r'))) { // Rain per hour
@@ -2476,12 +2510,21 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
             }
 
             if ((temp_conv=strchr(data,'h'))) { // Humidity %
-                xastir_snprintf(weather->wx_hum,
-                    sizeof(weather->wx_hum),
-                    "%s",
-                    temp_conv+1);
-                    weather->wx_hum[2] = '\0';
-            }
+
+                if (!strncmp(temp_conv+1,"00",2)) {  // APRS says 00 is	
+                    xastir_snprintf(weather->wx_hum, // 100% humidity
+                        sizeof(weather->wx_hum),
+                        "%s",
+                        "100");
+                        weather->wx_hum[3] = '\0';
+    		    } else {
+                    xastir_snprintf(weather->wx_hum, // humidity less than
+                        sizeof(weather->wx_hum),     // 100%
+                        "%s",
+                        temp_conv+1);
+                        weather->wx_hum[2] = '\0';
+                }
+            } 	 
 
             if ((temp_conv=strchr(data,'b'))) { // Air Pressure in 1/10 hPa
 			    memset(temp_data1,0,sizeof(temp_data1));
@@ -2510,7 +2553,26 @@ void wx_fill_data(int from, int type, unsigned char *data, DataRow *fill) {
                     temp_conv+1);
                 weather->wx_station[MAX_WXSTATION] = '\0';
             }
-			
+
+            // now compute wind chill
+            wind_chill = 35.74 + .6215 * atof(weather->wx_temp) - 
+                35.75 * pow(atof(weather->wx_gust), .16) + 
+                .4275 * atof(weather->wx_temp) * 
+                pow(atof(weather->wx_gust), .16);
+
+            if((wind_chill < atof(weather->wx_temp)) && 
+                    (atof(weather->wx_temp) < 50)) {
+
+                xastir_snprintf(wx_wind_chill,
+                    sizeof(wx_wind_chill),
+                    "%.0f",
+                    wind_chill);
+                wx_wind_chill_on = 1;	
+            }
+            else {
+                wx_wind_chill_on = 0;
+                wx_wind_chill[0] = '\0';
+            }
 
             // The rest of the optional WX data is not used by
             // xastir (Luminosity, etc), except for snow, which
