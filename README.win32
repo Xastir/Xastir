@@ -310,7 +310,7 @@ From a Cygwin bash shell, type:
 Fetch "shapelib-1.2.9.tar.gz" from one of these sites:
 
     http://gdal.velocet.ca/projects/shapelib/index.html
-or  ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/shapelib-1.2.9.tar.gz
+or  http://wetnet.net/~we7u/xastir/shapelib-1.2.9.tar.gz
 
 Put it in the C:\cygwin\home\<user>\src\shapelib directory.  Untar it
 from the Cygwin shell window:
@@ -394,7 +394,7 @@ Download the ImageMagick cygwin binary from www.imagemagick.org or
 one of it's mirrors.  If you can't find the version you need, try
 here:
 
-    ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/cygwin/
+    http://wetnet.net/~we7u/xastir/cygwin/
 
 Put it in the ~/src/imagemagick directory.
 Extract the files:
@@ -451,16 +451,16 @@ of libproj, proj-nad27, and libgeotiff:
 
     libproj:
         http://www.remotesensing.org/proj/
-or      ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/proj-4.4.6.tar.gz
+or      http://wetnet.net/~we7u/xastir/proj-4.4.6.tar.gz
 
     and for datum translations:
         ftp://ftp.remotesensing.org/pub/proj/proj-nad27-1.1.tar.gz
-or      ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/proj-nad27-1.1.tar.gz
+or      http://wetnet.net/~we7u/xastir/proj-nad27-1.1.tar.gz
 
     libgeotiff:
         http://www.remotesensing.org/geotiff/geotiff.html
 or      ftp://ftp.remotesensing.org/pub/geotiff/libgeotiff/libgeotiff-1.2.0.tar.gz
-or      ftp://ftp.eskimo.com/u/a/archer/aprs/xastir/libgeotiff-1.1.5.tar.gz
+or      http://wetnet.net/~we7u/xastir/libgeotiff-1.1.5.tar.gz
 
 
 Please note that the order of installation for these libraries is
