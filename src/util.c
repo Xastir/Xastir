@@ -803,7 +803,15 @@ int position_defined(long lat, long lon, int strict) {
 
 
 
-/* convert latitude from long to string */
+// convert latitude from long to string 
+//
+// CONVERT_LP_NOSP      = DDMM.MMN
+// CONVERT_LP_NORMAL    = DD MM.MMN
+// CONVERT_HP_NOSP      = DDMMM.MMN
+// CONVERT_UP_TRK       = NDD MMMM.MM
+// CONVERT_DEC_DEG      = DD.DDDDDN
+// CONVERT_HP_NORMAL    = DD MM.MMMN
+//
 void convert_lat_l2s(long lat, char *str, int str_len, int type) {
     char ns;
     float deg;
@@ -849,7 +857,15 @@ void convert_lat_l2s(long lat, char *str, int str_len, int type) {
 
 
 
-/* convert longitude from long to string */
+// convert longitude from long to string
+//
+// CONVERT_LP_NOSP      = DDDMM.MME
+// CONVERT_LP_NORMAL    = DDD MM.MME
+// CONVERT_HP_NOSP      = DDDMMM.MME
+// CONVERT_UP_TRK       = EDDD MMMM.MM
+// CONVERT_DEC_DEG      = DDD.DDDDDE
+// CONVERT_HP_NORMAL    = DDD MM.MMME
+//
 void convert_lon_l2s(long lon, char *str, int str_len, int type) {
     char ew;
     float deg;
