@@ -101,6 +101,8 @@ igated to RF path
 serial KISS TNC interface
 Grid square in station info/coordinate calc
 Emergency beacons->locate station
+29 sec Anti-dupe queues
+
 
 HELP-INDEX>What's new in Xastir 1.1
 
@@ -1715,6 +1717,50 @@ installed, Xastir will create an XPM format file in /var/tmp, then convert
 it to the PNG file /var/tmp/xastir_snap.png.  This file is useful for putting
 on web pages to show a live image of what is on your Xastir screen.  Enable
 this feature via the "File->Enable PNG Snapshots" togglebutton.
+
+HELP-INDEX>Included Scripts
+
+                        Included Scripts
+
+Xastir includes 7 perl scripts that might be useful:
+
+icontable.pl
+This script generates an xpm bitmap of all Xastir's primary and secondary
+symbols from the symbols.dat file. The overlays and specials are ignored.
+Output is to STDOUT, so a typical call would be "icontable.pl > symbols.xpm".
+
+inf2geo.pl
+This script creates .geo files from UI-View .inf files. To create a map.geo
+from a map.inf, typical usage would be "inf2geo map".
+
+mapblast2geo.pl
+This script creates .geo files for Mapblast pixel maps. It includes usage
+information.
+
+mapfgd.pl
+This script creates minimal .fgd files for GeoTIFF images lacking them, based
+on information found in the GeoTIFF file. The created files allow Xastir to
+crop the white boarders. Typical usage would be "mapfgd mapdir" where mapdir
+is the directory containing the GeoTIFF images.
+
+track-get.pl
+This script downloads the tracklog of a specified object from a Garmin GPS.
+It requires the GPS::Garmin module, prompts for an object name, and writes
+the tracklog to the ~/.xastir/logs directory.
+
+waypoint-get.pl
+This similar script downloads the waypoints from a Garmin GPS, and creates a
+log in the ~/.xastir/logs directory containing the waypoints as objects. It
+also requires the GPS::Garmin module.
+
+update_langfile.pl
+This script is targeted toward developers. It rebuilds a specified language
+file to contain all the strings of another. It is usually used to regenerate
+the non-English language files when significant changes have been made to the
+English file. When the second language file lacks a string in the main file,
+the untranslated string is inserted. Typical usage would be 
+"update_langfile language-German.sys" . The main language file is hard-coded
+but easily editable.
 
 HELP-INDEX>Symbol Table
 
