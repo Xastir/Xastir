@@ -142,7 +142,9 @@ required:
 [ ] unzip
 [ ] vim (a text editor, optional)
 [ ] wget (Optional:  Can use libcurl instead)
-[ ] XFree86-prog:Headers
+[ ] XFree86-prog: Headers
+[ ] XFree86-100:  100 dpi fonts
+[ ] Xfree86-clip:  Windows clipboard integration for X11
 [ ] zip
 
 Clicking on the small circle with the two arrows will run you
