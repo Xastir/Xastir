@@ -1004,11 +1004,6 @@ maps at any zoom above 256 will probably take a long time to load, won't
 show much detail, and probably won't display correctly. This is a limit
 of the Terraserver, not Xastir.
 
-FINDU
-CALL <callsign>
-A file with the word "FINDU" and the second line "CALL <callsign>" will
-retrieve historical data for the specified callsign, although using the
-Stations menu is the preferred method.
 
 
 geoTIFF maps are a combination of two files as well: a .tif and a .fgd file.

@@ -175,10 +175,13 @@ First Time Install:
         See the linux-hams mailing list for details.
 
 
-   2. Install LessTif or OpenMotif (for non-RED HAT/non-SuSE)
+   2. Install LessTif or OpenMotif
 
      If you already have Motif or OpenMotif on your system, including
-     the development headers, then you won't need to install LessTif.
+     the development headers, then you won't need to install LessTif. Most
+     distributions include one of these; step 2a describes building from
+     source, while 2b and 2c describe installing from prebuilt packages on
+     RedHat and SuSE. 
 
         2a. Download LessTif version 0.91.1 or higher or download OpenMotif.
         Follow the instructions provided, compile it and install it.
