@@ -1039,6 +1039,86 @@ void draw_rotated_label_text (Widget w, int rotation, int x, int y, int label_le
 
 
 #ifdef HAVE_SHAPELIB
+/*******************************************************************
+ * create_shapefile_map()
+ *
+ * Do we have a need for storing date/ time/ speed/ course/
+ * altitude/ heard-direct for each point?  Altitude could be stored
+ * in the Z space.  If we store a station's trail as an SHPT_POINT
+ * file, then we can associate a bunch of info with each point:
+ * date/time, altitude, course, speed, status/comments, path, port,
+ * heard-direct, weather data, etc.  We could also dynamically
+ * change the number of fields based on what we have a need to
+ * store, using field-names to determine what's stored in each file.
+ *
+ * shapefile_name is the path/name of the map file we wish to create
+ * (without the extension).
+ *
+ * type = SHPT_POINT, SHPT_ARC, SHPT_POLYGON,
+ * SHPT_MULTIPOINT, etc.
+ *
+ * quantity equals the number of vertices.
+ *
+ * padfx/padfy/padfz are the vertices themselves.
+ *******************************************************************/
+void create_shapefile_map(char *shapefile_name, int type,
+        int quantity, double *padfx, double *padfy, double *padfz) {
+
+    SHPHandle my_shp_handle;
+    SHPObject *my_object;
+    DBFHandle my_dbf_handle;
+    char timedatestring[101];
+
+
+    // Create the .SHP/.SHX pair of files
+    //
+    // Create empty files
+    my_shp_handle = SHPCreate(shapefile_name, type);
+
+    // Create the object
+    my_object = SHPCreateSimpleObject( type, quantity, padfx, padfy, padfz);
+
+    // Write the object to the files
+    SHPWriteObject( my_shp_handle, -1, my_object);
+
+    // Destroy the object
+    SHPDestroyObject(my_object);
+
+// We can do the above three steps multiple times for point data.
+
+    // Close the files
+    SHPClose(my_shp_handle);
+
+
+    // Create the corresponding .DBF file
+    //
+    // Create empty file
+    my_dbf_handle = DBFCreate(shapefile_name);
+
+    // Add a credits field
+    DBFAddField(my_dbf_handle, "Credits", FTString, 100, 0);
+
+    // Add a date/time field
+    DBFAddField(my_dbf_handle, "DateTime", FTString, 50, 0);
+
+    // Write out the credits
+    DBFWriteStringAttribute(my_dbf_handle, 0, 0, "Created by Xastir");
+
+    // Write out the date/time
+    get_timestamp(timedatestring);
+    DBFWriteStringAttribute(my_dbf_handle, 0, 1, timedatestring);
+
+// We can do the above two steps multiple times for point data,
+// incrementing the shape index each time.
+
+    // Close the file
+    DBFClose(my_dbf_handle);
+}
+
+
+
+
+ 
 /**********************************************************
  * draw_shapefile_map()
  *
