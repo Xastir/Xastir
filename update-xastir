@@ -20,26 +20,53 @@ case "$uname" in
 esac
 
 
-cvs update -P -d
-./bootstrap.sh
-./configure --without-errorpopups
+(date 2>&1)                               | tee    make.log
+(cvs update -P -d 2>&1)                   | tee -a make.log
+
+echo ""                                   | tee -a make.log
+echo ""                                   | tee -a make.log
+(date 2>&1)                               | tee -a make.log
+(./bootstrap.sh 2>&1)                     | tee -a make.log
+
+echo ""                                   | tee -a make.log
+echo ""                                   | tee -a make.log
+(date 2>&1)                               | tee -a make.log
+(./configure --without-errorpopups 2>&1)  | tee -a make.log
+
+echo ""                                   | tee -a make.log
+echo ""                                   | tee -a make.log
+(date 2>&1)                               | tee -a make.log
 
 
 if $CYGWIN
 then
-    echo "************************************"
-    echo "Building for Cygwin Operating System"
-    echo "************************************"
-    make clean
-    make install
+    (echo "************************************") | tee -a make.log
+    (echo "Building for Cygwin Operating System") | tee -a make.log
+    (echo "************************************") | tee -a make.log
+    (make clean 2>&1)                     | tee -a make.log
+
+    echo ""                               | tee -a make.log
+    echo ""                               | tee -a make.log
+    (date 2>&1)                           | tee -a make.log
+    (make install 2>&1)                   | tee -a make.log
     chmod 4755 /usr/local/bin/xastir
+
+    echo ""                               | tee -a make.log
+    (date 2>&1)                           | tee -a make.log
 else
-    echo "************************************************"
-    echo "Building for Unix/Linux/MacOSX Operating Systems"
-    echo "************************************************"
-    sudo make clean
-    sudo make install
+    (echo "************************************************") | tee -a make.log
+    (echo "Building for Unix/Linux/MacOSX Operating Systems") | tee -a make.log
+    (echo "************************************************") | tee -a make.log
+    (sudo make clean 2>&1)                | tee -a make.log
+
+    echo ""                               | tee -a make.log
+    echo ""                               | tee -a make.log
+    (date 2>&1)                           | tee -a make.log 
+    (sudo make install-strip 2>&1)        | tee -a make.log
     sudo chmod 4755 /usr/local/bin/xastir
+
+    echo ""                               | tee -a make.log
+    (date 2>&1)                           | tee -a make.log
 fi
 
 
