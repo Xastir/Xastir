@@ -39,32 +39,30 @@
 pid_t play_sound(char *sound_cmd, char *soundfile) {
     pid_t sound_pid;
     char command[600];
-    char file[600];
 
     sound_pid=0;
     if (strlen(sound_cmd)>3 && strlen(soundfile)>1) {
         if (last_sound_pid==0) {
-            sound_pid = fork(); // Create a new process to run in
+
+            // Create a new process to run in
+            sound_pid = fork();
             if (sound_pid!=-1) {
                 if(sound_pid==0) {
-
-                    xastir_snprintf(file,
-                        sizeof(file),
-                        "%s/%s",
+// This is the child process
+                    xastir_snprintf(command,
+                        sizeof(command),
+                        "%s %s/%s",
+                        sound_cmd,
                         SOUND_DIR,
                         soundfile);
 
-                    xastir_snprintf(command,
-                        sizeof(command),
-                        "%s %s",
-                        sound_cmd,
-                        file);
-
-                    /*fprintf(stderr,"PS%d:%s\n",sound_pid,file);*/
                     (void)system(command);  // Note we're not caring about whether it succeeded or not
                     exit(0);    // Exits only this process, not Xastir itself
-                } else
+                }
+                else {
+// This is the parent process
                     last_sound_pid=sound_pid;
+                }
             } else
                 fprintf(stderr,"Error! trying to play sound\n");
         } else {

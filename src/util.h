@@ -97,7 +97,7 @@ extern int  is_num_or_sp(char ch);
 extern int  is_xnum_or_dash(char *data, int max);
 extern void removeCtrlCodes(char *cp);
 extern void makePrintable(char *cp);
-extern void spell_it_out(char *text);
+extern void spell_it_out(char *text, int max_length);
 
 typedef struct
 {

@@ -484,6 +484,20 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 
 
 
+/*
+Total Length = 150
+HEX:00 00 00 00 55 00 00 00 4b 4b 31 57 00 ed 12 00 96 ed 41 50 54
+57 30 31 00 00 00 00 72 00 00 00 00 00 00 00 20 31 3a 46 6d 20 4b 4b
+31 57 20 54 6f 20 41 50 54 57 30 31 20 56 69 61 20 57 49 44 45 33 20
+3c 55 49 20 70 69 64 3d 46 30 20 4c 65 6e 3d 35 30 20 3e 5b 31 30 3a
+34 33 3a 34 33 5d 0d 5f 30 38 30 36 31 30 33 39 63 33 35 39 73 30 30
+30 67 30 30 30 74 30 36 32 72 30 30 30 70 30 30 33 50 30 39 36 68 30
+30 62 31 30 30 39 33 74 55 32 6b 0d 0d 00 
+ASC:....U...KK1W......APTW01....r....... 1:Fm KK1W To APTW01 Via WIDE3 <UI pid=F0 Len=50 >[10:43:43]._08061039c359s000g000t062r000p003P096h00b10093tU2k...
+*/
+
+
+
 // Parse an AGWPE header.  Create a TAPR-2 style header out of the
 // data for feeding into the Xastir parsing code.  Input format is
 // as follows:
@@ -499,30 +513,72 @@ fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
 // Callsigns are null-terminated at end of string, but field width
 // is specified to be 10 bytes in all cases.
 //
-// output_string should be quite long, perhaps 1000 characters.
+// output_string variable should be quite long, perhaps 1000
+// characters.
 //
 unsigned char *parse_agwpe_packet(unsigned char *input_string,
                                   int output_string_length,
                                   unsigned char *output_string,
                                   int *new_length) {
     int ii, jj, kk;
-    unsigned char data_length;
+    char *info_ptr;
+    char *via_ptr;
+    char temp_str[512];
+    int special_debug = 0;
 
 
-    // Check that it's a UI packet.  It should have a 'U' in
+    // Implementing some special debugging output for the case of
+    // third-party NWS messages, which so far haven't been parsed
+    // properly by this function.
+    //
+    if (strstr(&input_string[36],"NWS-") || strstr(&input_string[36],"NWS_")) {
+        special_debug = 1;
+        //fprintf(stderr, "AGWPE input: %s\n", &input_string[36]);
+    }
+ 
+    // Check that it's a UI packet.  It should have a 'U' at
     // position input_string[4].
     switch (input_string[4]) {
         case 'U':
-//fprintf(stderr,"AGWPE: Got UI packet\n");
+            if (special_debug)
+              fprintf(stderr,"\nAGWPE: Got UI packet\n");
             break;
         case 'R':
-//fprintf(stderr,"AGWPE: Got software version packet\n");
+            if (special_debug)
+              fprintf(stderr,"\nAGWPE: Got software version packet\n");
             return(NULL);
             break;
         default:
-//fprintf(stderr,"AGWPE: Got '%c' packet\n",input_string[4]);
+            if (special_debug)
+              fprintf(stderr,"\nAGWPE: Got '%c' packet\n",input_string[4]);
             return(NULL);
             break;
+    }
+
+    if (special_debug) {
+        // Dump the hex & ascii representation of the whole packet
+ 
+        // Fetch the length of the data portion of the packet
+        kk = (unsigned char)(input_string[29]) << 8;
+        kk = kk + (unsigned char)(input_string[28]);
+
+        kk = kk + 36; // Add the header length
+        fprintf(stderr, "Total Length = %d\n", kk);
+
+        fprintf(stderr, "HEX:");
+        for (ii = 0; ii < kk; ii++) {
+            fprintf(stderr, "%02x ", input_string[ii]);
+        }
+        fprintf(stderr, "\n");
+
+        fprintf(stderr, "ASC:");
+        for (ii = 0; ii < kk; ii++) {
+            if (input_string[ii] < ' ' || input_string[ii] > '~')
+                fprintf(stderr, ".");
+            else
+                fprintf(stderr, "%c", input_string[ii]);
+        }
+        fprintf(stderr, "\n");
     }
 
     // Clear the output_string (set to binary zeroes)
@@ -532,107 +588,120 @@ unsigned char *parse_agwpe_packet(unsigned char *input_string,
 
     jj = 0;
 
-// The example in the docs shows that the packet starts with a space
-// character.  Watch out for that.  We currently skip over this part
-// of the string entirely:  " 2:Fm " and go straight for the
-// callsign at offset 42.
-
     // Copy the source callsign
-    ii = 42;
-    while (input_string[ii] != ' ') {
+    ii = 8;
+    while (input_string[ii] != '\0') {
         output_string[jj++] = input_string[ii++];
     }
 
     // Add a '>' character
     output_string[jj++] = '>';
 
-    // Skip over the <space>To<space> portion
-    ii += 4;
-
     // Copy the destination callsign
-    while (input_string[ii] != ' ') {
+    ii = 18;
+    while (input_string[ii] != '\0') {
         output_string[jj++] = input_string[ii++];
     }
-    ii++;
 
-    // If next characters are "Via", then we have digipeaters, else
-    // we have the "<Ui pid=" portion.
-    if (input_string[ii] == 'V'
-            && input_string[ii+1] == 'i'
-            && input_string[ii+2] == 'a') {
-        output_string[jj++] = ',';   // Add a comma
-        // Copy the digipeater callsigns
-        // APRS Via RELAY,SAR1-1,SAR2-1,SAR3-1,SAR4-1,SAR5-1,SAR6-1,SAR7-1 <UI pid=F0
-        ii += 4;
-        while (input_string[ii] != ' ') {
-            output_string[jj++] = input_string[ii++];
+    // Search for "]" (0x5d) which is the end of the header string,
+    // beginning of the AX.25 information field.
+    info_ptr = strstr(&input_string[36], "]");
+
+    // If not found, we can't process anymore
+    if (!info_ptr) {
+        output_string[0] = '\0';
+        new_length = 0;
+        return(NULL);
+    }
+
+    // Copy the first part of the string into a variable.  We'll
+    // look for Via calls in this string, if present.
+    ii = 36;
+    temp_str[0] = '\0';
+
+    while (input_string[ii] != ']') {
+      strncat(temp_str, &input_string[ii++], 1);
+    }
+
+    // Make sure that the protocol ID is "F0".  If not, return.
+    if (strstr(temp_str, "pid=F0") == NULL) {
+        char *pid_ptr;
+
+// It'd be great to support OpenTrac protocol with the AGWPE port as
+// well, but we might have to switch to another one of AGWPE's
+// packet formats to do so, probably the raw packet format, which is
+// similar to KISS format.
+
+        pid_ptr = strstr(temp_str, "pid=");
+        if (pid_ptr) {
+            pid_ptr +=4;
+            fprintf(stderr,
+                "Non APRS protocol was seen: PID=%2s\n",
+                pid_ptr);
         }
-        ii++;
+        else {
+            fprintf(stderr,
+                "Non APRS protocol was seen.\n");
+        }
+        output_string[0] = '\0';
+        new_length = 0;
+        return(NULL);
+    }
+
+    // Search for "Via" in temp_str
+    via_ptr = strstr(temp_str, "Via");
+
+    if (via_ptr) {
+        // Found some Via calls.  Copy them into our output string.
+
+        // Add a comma first
+        output_string[jj++] = ',';
+
+        // Skip past "Via " portion of string
+        via_ptr += 4;
+
+        // Copy the string across until we hit a space
+        while (via_ptr[0] != ' ') {
+            output_string[jj++] = via_ptr[0];
+            via_ptr++;
+        }
     }
 
     // Add a ':' character
     output_string[jj++] = ':';
 
-    // Skip over the "<UI pid=" portion
-    ii += 8;
+    // Move the pointer past the "]<CR>" to the real info part of the
+    // packet.
+    info_ptr++;
+    info_ptr++;
 
-    // Make sure that the protocol ID is "F0"
-    if (input_string[ii++] != 'F')
-        return(NULL);
-    if (input_string[ii++] != '0')
-        return(NULL);
-
-    // Skip over the " Len=" portion
-    ii += 5;
-
-    // Figure out how much data is in the payload
-    // "Len=126"
-    data_length = 0;
-    while (input_string[ii] != ' ') {
-        data_length = (data_length * 10) + (input_string[ii++] - 0x30);
-    }
-//fprintf(stderr,"parse_awgpe_packet:Length:%d\n", data_length);
-
-    // Skip over the timestamp
-    ii += 13;
-    
-    // Copy the data across
-    kk = data_length;
-    while (kk > 0) {
-//fprintf(stderr,"%c",input_string[ii]);
-        output_string[jj++] = input_string[ii++];
-        kk--;
-    }
-//fprintf(stderr,"\n");
-
-    // We end up with 0x0d characters on the end.  Make sure we
-    // account for these (and get rid of them):
-    // Terminate it to knock off trailing 0x0d characters
-    output_string[jj] = '\0';
-    if (output_string[jj-1] == 0x0d) {
-        jj--;
-        output_string[jj] = '\0';
-//fprintf(stderr,"Found 0x0d, chopping 1\n");
-    }
-    if (output_string[jj-1] == 0x0d) {
-        jj--;
-        output_string[jj] = '\0';
-//fprintf(stderr,"Found 0x0d, chopping 2\n");
+    // Copy the info field to the output string
+    while (info_ptr[0] != '\0') {
+      strncat(output_string, &info_ptr[0], 1);
+      info_ptr++;
     }
 
+    // We end up with 0x0d characters on the end.  Get rid of them.
+    // The strtok() function will overwrite the first one found with
+    // a '\0' character.
+    (void)strtok(output_string, "\n");
+    (void)strtok(output_string, "\r");
 
-    *new_length = jj;
+    *new_length = strlen(output_string);
 
-    // Print out the intermediate result
-//fprintf(stderr,"AGWPE RX: %s\n", output_string);
-//fprintf(stderr,"new_length: %d\n",*new_length);
-//for (ii = 0; ii < strlen(output_string); ii++) {
-//  fprintf(stderr,"%02x ",output_string[ii]);
-//}
-//fprintf(stderr,"\n");
+    if (special_debug) {
+        // Print out the resulting string
+        fprintf(stderr,"AGWPE RX: %s\n", output_string);
+        fprintf(stderr,"new_length: %d\n",*new_length);
+        for (ii = 0; ii < strlen(output_string); ii++) {
+            fprintf(stderr,"%02x ",output_string[ii]);
+        }
+        fprintf(stderr,"\n");
+    }
 
     return(output_string);
 }
+
 /*
 Found complete AGWPE packet, 93 bytes total in frame:
 00 00 00 00
@@ -5065,16 +5134,16 @@ void port_read(int port) {
                                 // packet format then feed it to our
                                 // decoding routines.
                                 //
-                                if (bytes_available >= (frame_length + 36)) {
+                                if (bytes_available >= (frame_length+36)) {
                                     char input_string[MAX_DEVICE_BUFFER];
                                     char output_string[MAX_DEVICE_BUFFER];
                                     int ii,jj,new_length;
 
-//fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame:\n",frame_length + 36);
+//fprintf(stderr,"Found complete AGWPE packet, %d bytes total in frame:\n",frame_length+36);
 
                                     my_pointer = port_data[port].read_out_pos;
                                     jj = 0;
-                                    for (ii = 0; ii < frame_length + 36; ii++) {
+                                    for (ii = 0; ii < frame_length+36; ii++) {
                                         input_string[jj++] = (unsigned char)port_data[port].device_read_buffer[my_pointer];
                                         my_pointer = (my_pointer + 1) % MAX_DEVICE_BUFFER;
                                     }

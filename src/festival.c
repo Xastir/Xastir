@@ -417,9 +417,12 @@ int SayText(char *text) {
     if ( (strcmp(last_speech_text,text) == 0) // Strings match
             && (last_speech_time + 30 > sec_now()) ) {
 
-    //fprintf(stderr,"Same text, skipping speech: %d seconds, %s\n",
-    //    (int)(sec_now() - last_speech_time),
-    //    text);
+/*
+    fprintf(stderr,
+        "Same text, skipping speech: %d seconds, %s\n",
+        (int)(sec_now() - last_speech_time),
+        text);
+*/
 
         return(1);
     }
@@ -433,6 +436,7 @@ int SayText(char *text) {
     last_speech_time = sec_now();
 
     festivalStringToSpeech(text);
+
     return(0);
 }
 

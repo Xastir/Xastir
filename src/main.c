@@ -3738,7 +3738,7 @@ void check_statusline_timeout(void) {
                 char my_speech_callsign[100];
 
                 strcpy(my_speech_callsign,my_callsign);
-                spell_it_out(my_speech_callsign);
+                spell_it_out(my_speech_callsign, 100);
                 xastir_snprintf(status_text,
                     sizeof(status_text),
                     langcode ("BBARSTA040"),
