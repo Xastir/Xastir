@@ -1017,8 +1017,8 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Kaart eigenschappen||
-MAPP002| Kaart   Teken||
-MAPP003|Laag    Vulling   AutoKaart  Path/Bestandsnaam||
+MAPP002|Kaart    Teken||
+MAPP003|Laag    Vulling  AutoKaart Path/Bestandsnaam||
 MAPP004|Verander Laag->||
 MAPP005|Vulling->||
 MAPP006|Ja||

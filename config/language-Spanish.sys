@@ -1004,7 +1004,7 @@ GPS011|Violeta||
 # Diálogo de Propiedades de Mapa
 MAPP001|Propiedades de Mapa||
 MAPP002|Dibuja   Mapa||
-MAPP003|Capa   Llenado   AutoMapa   Sendero/NombreArchivo||
+MAPP003|Capa   Llenado  AutoMapa   Sendero/NombreArchivo||
 MAPP004|Cambie Capa->||
 MAPP005|Llenado->||
 MAPP006|Sí||

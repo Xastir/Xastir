@@ -1006,8 +1006,8 @@ GPS011|Violet||
 #
 # Map Properties Dialog
 MAPP001|Caractéristiques des cartes||
-MAPP002|Carte Afficher||
-MAPP003|Couche  Remplie AutoCartes Voie/Fichier||
+MAPP002|Carte  Afficher||
+MAPP003|Couche Remplie AutoCartes  Voie/Fichier||
 MAPP004|Modifier Couche->||
 MAPP005|Remplie->||
 MAPP006|Oui||
