@@ -12750,7 +12750,7 @@ void index_update_directory(char *directory) {
  
             // Fill in some default values for the new record.
             temp_record->selected = 0;
-            temp_record->auto_maps = 1;
+            temp_record->auto_maps = 0;
 
             //current = current->next;
             done++;
@@ -12782,7 +12782,7 @@ void index_update_directory(char *directory) {
  
         // Fill in some default values for the new record.
         temp_record->selected = 0;
-        temp_record->auto_maps = 1;
+        temp_record->auto_maps = 0;
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -12909,7 +12909,15 @@ void index_update_xastir(char *filename,
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
-            temp_record->auto_maps = 1;
+ 
+            if (       strstr(filename,".geo")
+                    || strstr(filename,".GEO")
+                    || strstr(filename,".Geo") ) {
+                temp_record->auto_maps = 0;
+            }
+            else {
+                temp_record->auto_maps = 1;
+            }
         
             //current = current->next;
             done++;
@@ -12944,7 +12952,16 @@ void index_update_xastir(char *filename,
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
-        temp_record->auto_maps= 1;
+
+        if (       strstr(filename,".geo")
+                || strstr(filename,".GEO")
+                || strstr(filename,".Geo") ) {
+            temp_record->auto_maps = 0;
+        }
+        else {
+            temp_record->auto_maps = 1;
+        }
+ 
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -13074,7 +13091,15 @@ void index_update_ll(char *filename,
             temp_record->map_layer = 0;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
-            temp_record->auto_maps = 1;
+
+            if (       strstr(filename,".geo")
+                    || strstr(filename,".GEO")
+                    || strstr(filename,".Geo") ) {
+                temp_record->auto_maps = 0;
+            }
+            else {
+                temp_record->auto_maps = 1;
+            }
  
             //current = current->next;
             done++;
@@ -13111,7 +13136,16 @@ void index_update_ll(char *filename,
         temp_record->map_layer = 0;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
-        temp_record->auto_maps = 1;
+
+        if (       strstr(filename,".geo")
+                || strstr(filename,".GEO")
+                || strstr(filename,".Geo") ) {
+            temp_record->auto_maps = 0;
+        }
+        else {
+            temp_record->auto_maps = 1;
+        }
+
     }
 
     // Update the values.  By this point we have a struct to fill
@@ -13501,7 +13535,15 @@ void index_insert_sorted(map_index_record *new_record) {
             // Fill in some default values for the new record that
             // don't exist in the map_index.sys file.
             new_record->selected = 0;
-            new_record->auto_maps = 1;
+
+            if (       strstr(new_record->filename,".geo")
+                    || strstr(new_record->filename,".GEO")
+                    || strstr(new_record->filename,".Geo") ) {
+                new_record->auto_maps = 0;
+            }
+            else {
+                new_record->auto_maps = 1;
+            }
 
             //current = current->next;
             done++;
@@ -13533,7 +13575,15 @@ void index_insert_sorted(map_index_record *new_record) {
  
         // Fill in some default values for the new record.
         new_record->selected = 0;
-        new_record->auto_maps = 1;
+
+        if (       strstr(new_record->filename,".geo")
+                || strstr(new_record->filename,".GEO")
+                || strstr(new_record->filename,".Geo") ) {
+            new_record->auto_maps = 0;
+        }
+        else {
+            new_record->auto_maps = 1;
+        }
     }
 }
 
