@@ -224,7 +224,25 @@ Getting Maps and other Data Files for Xastir:
       The latest Tiger/Line 2003 data converted to shapefile format is
       available from http://xastir.tamu.edu/. These maps only work with dbfawk
       support, and only contain vectors; no filled regions such as water. 
-      FIXME
+
+      While there is not yet a web site from which you can download
+      TIGER/Line polygons as shapefiles, you can create your own polygon
+      shapefiles from raw TIGER/line data (see below).  This requires
+      GDAL/OGR configured with python support, and requires that you have
+      the Python language installed.  Use the script Xastir_tigerpoly.py
+      included in the "scripts" directory of xastir's source tree.  As an
+      example, if you have unzipped the file TGR35001.zip (the TIGER/Line
+      file for Bernalillo County, NM) into a directory called TGR35001, then
+
+        Xastir_tigerpoly.py TGR35001 Bernalillo_County_NM_Polys.shp
+
+      would create a shapefile of TIGER polygons (water bodies,
+      political boundaries, parks, wilderness areas) that you can install 
+      in your maps directory and read directly using normal shapefile support.
+      Viewing these shapefiles as filled polygons requires dbfawk support,
+      and the rules for displaying them are contained in the file 
+      tgr2shppoly.dbfawk.
+
 
       Tiger/Line 2000 map data is available from:
       http://www.esri.com/data/download/census2000_tigerline/index.html
@@ -833,7 +851,7 @@ Getting Maps and other Data Files for Xastir:
        to these files from your maps directory, or copy the files there so
        that they show up in the Map Chooser.
 
-     Raw Tiger/Line format maps (requires GDAL/ORG):
+     Raw Tiger/Line format maps (requires GDAL/OGR):
 
       If you have GDAL/OGR library added to Xastir, you should (very soon)
       be able to use Tiger/Line maps.  The developers are working to add
