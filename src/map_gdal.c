@@ -584,7 +584,9 @@ void guess_vector_attributes( Widget w,
         case 0x80000002:    // LineString25D
         case 0x80000005:    // MultiLineString25D
 
-            if (strcasecmp(driver_type,"SDTS") == 0) {
+            if (strcasecmp(driver_type,"SDTS") == 0
+                    && (strstr(full_filename,"HY")  // Hydrography
+                        || strstr(full_filename,"HP"))) {   // Hypsography
 // DEBUG:
 // Determine whether it is a hypsography layer we're dealing with.
 //
@@ -615,7 +617,9 @@ void guess_vector_attributes( Widget w,
         case 0x80000003:    // Polygon25D
         case 0x80000006:    // MultiPolygon25D
 
-            if (strcasecmp(driver_type,"SDTS") == 0) {
+            if (strcasecmp(driver_type,"SDTS") == 0
+                    && (strstr(full_filename,"HY")  // Hydrography
+                        || strstr(full_filename,"HP"))) {   // Hypsography
 // DEBUG:
 // Determine whether it is a hypsography layer we're dealing with.
 //
@@ -629,10 +633,13 @@ void guess_vector_attributes( Widget w,
 //                label_color_guess = 0x4d;   // white
                 label_color_guess = 0x0e;   // yellow
             }
-            else {
-// DEBUG:
+            else if (strstr(full_filename,"wat")) {
                 (void)XSetForeground(XtDisplay(da), gc, colors[(int)0x1a]);  // Steel Blue
                 label_color_guess = 0x1a;
+            }
+            else {
+// DEBUG:
+                (void)XSetForeground(XtDisplay(w), gc, colors[(int)0x08]);  // black
             }
             (void)XSetLineAttributes (XtDisplay (w), gc, 0, LineSolid, CapButt,JoinMiter);
             break;
