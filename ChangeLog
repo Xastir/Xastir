@@ -1,5 +1,9 @@
 2003-02-13  kg4ijb@sourceforge.net
 
+	* bootstrap.sh - routine to rebuild autostuff environment
+
+2003-02-13  kg4ijb@sourceforge.net
+
 	* Removed old configure files and added new ac
     * Removed files that are generated locally
 
