@@ -1346,7 +1346,8 @@ void draw_shapefile_map (Widget w,
             adfBndsMin[1],  // Bottom
             adfBndsMax[1],  // Top
             adfBndsMin[0],  // Left
-            adfBndsMax[0]); // Right
+            adfBndsMax[0],  // Right
+            1000);          // Default Map Level
 
         DBFClose( hDBF );   // Clean up open file descriptors
         SHPClose( hSHP );

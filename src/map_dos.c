@@ -574,10 +574,11 @@ void draw_dos_map(Widget w,
       
       // We're indexing only.  Save the extents in the index.
       index_update_xastir(filenm, // Filename only
-                          bottom_boundary,        // Bottom
-                          top_boundary,           // Top
-                          left_boundary,          // Left
-                          right_boundary);        // Right
+                          bottom_boundary,  // Bottom
+                          top_boundary,     // Top
+                          left_boundary,    // Left
+                          right_boundary,   // Right
+                          1000);            // Default Map Level
       
       (void)fclose (f);
 

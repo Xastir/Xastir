@@ -253,7 +253,8 @@ void draw_tiger_map (Widget w,
             64800000l,      // Bottom
             0l,             // Top
             0l,             // Left
-            129600000l);    // Right
+            129600000l,     // Right
+            0);             // Default Map Level
 
         // Update statusline
         xastir_snprintf(map_it,

@@ -1064,7 +1064,8 @@ void draw_geotiff_image_map (Widget w,
             south_bounding_wgs84,   // Bottom
             north_bounding_wgs84,   // Top
             west_bounding_wgs84,    // Left
-            east_bounding_wgs84);   // Right
+            east_bounding_wgs84,    // Right
+            0);                     // Default Map Level
 
         //Free any memory used and return
         /* We're finished with the geoTIFF key parser, so get rid of it */

@@ -252,7 +252,8 @@ void draw_toporama_map (Widget w,
             64800000l,      // Bottom
             0l,             // Top
             0l,             // Left
-            129600000l);    // Right
+            129600000l,     // Right
+            0);             // Default Map Level
 
         // Update statusline
         xastir_snprintf(map_it,
@@ -1114,14 +1115,16 @@ fprintf(stderr,"1 ");
                 64800000l,      // Bottom
                 0l,             // Top
                 0l,             // Left
-                129600000l);    // Right
+                129600000l,     // Right
+                0);             // Default Map Level
         }
         else {
             index_update_xastir(filenm, // Filename only
                 tp[1].y_lat,    // Bottom
                 tp[0].y_lat,    // Top
                 tp[0].x_long,   // Left
-                tp[1].x_long);  // Right
+                tp[1].x_long,   // Right
+                0);             // Default Map Level
         }
 
         // Update statusline

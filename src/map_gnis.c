@@ -842,10 +842,11 @@ Cell Name
 
             // We're indexing only.  Save the extents in the index.
             index_update_xastir(filenm, // Filename only
-                bottom_extent, // Bottom
-                top_extent,    // Top
-                left_extent,   // Left
-                right_extent); // Right
+                bottom_extent,  // Bottom
+                top_extent,     // Top
+                left_extent,    // Left
+                right_extent,   // Right
+                99999);         // Default Map Level
         }
     }
     else {

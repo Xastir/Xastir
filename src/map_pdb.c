@@ -275,7 +275,8 @@ void draw_palm_image_map(Widget w,
                 map_bottom, // Bottom
                 map_top,    // Top
                 map_left,   // Left
-                map_right); // Right
+                map_right,  // Right
+                1000);      // Default Map Level
 
             fclose(fn);
 

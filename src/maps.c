@@ -4257,7 +4257,8 @@ void index_update_xastir(char *filename,
                   unsigned long bottom,
                   unsigned long top,
                   unsigned long left,
-                  unsigned long right) {
+                  unsigned long right,
+                  int default_map_layer) {
 
     map_index_record *current = map_index_head;
     map_index_record *previous = map_index_head;
@@ -4352,7 +4353,7 @@ void index_update_xastir(char *filename,
 // default map_layer/draw_filled fields based on that.
             temp_record->max_zoom = 0;
             temp_record->min_zoom = 0;
-            temp_record->map_layer = 0;
+            temp_record->map_layer = default_map_layer;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
             temp_record->XmStringPtr = NULL;
@@ -4400,7 +4401,7 @@ void index_update_xastir(char *filename,
 // default map_layer/draw_filled fields based on that.
         temp_record->max_zoom = 0;
         temp_record->min_zoom = 0;
-        temp_record->map_layer = 0;
+        temp_record->map_layer = default_map_layer;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
         temp_record->XmStringPtr = NULL;
@@ -4441,7 +4442,8 @@ void index_update_ll(char *filename,
                   double bottom,
                   double top,
                   double left,
-                  double right) {
+                  double right,
+                  int default_map_layer) {
 
     map_index_record *current = map_index_head;
     map_index_record *previous = map_index_head;
@@ -4540,7 +4542,7 @@ void index_update_ll(char *filename,
 // default map_layer/draw_filled fields based on that.
             temp_record->max_zoom = 0;
             temp_record->min_zoom = 0;
-            temp_record->map_layer = 0;
+            temp_record->map_layer = default_map_layer;
             temp_record->draw_filled = 0;
             temp_record->selected = 0;
             temp_record->XmStringPtr = NULL;
@@ -4590,7 +4592,7 @@ void index_update_ll(char *filename,
 // default map_layer/draw_filled fields based on that.
         temp_record->max_zoom = 0;
         temp_record->min_zoom = 0;
-        temp_record->map_layer = 0;
+        temp_record->map_layer = default_map_layer;
         temp_record->draw_filled = 0;
         temp_record->selected = 0;
         temp_record->XmStringPtr = NULL;
