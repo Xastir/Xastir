@@ -226,8 +226,8 @@ int main(int argc, char *argv[]) {
 	fprintf(stderr,"filled=%d, ",filled);
 	fprintf(stderr,"pattern=%d, ",pattern);
 	fprintf(stderr,"display_level=%d, ",display_level);
-	fprintf(stderr,"label_level=%d\n",label_level);
 	fprintf(stderr,"font_size=%d, ", font_size);
+	fprintf(stderr,"label_level=%d\n",label_level);
 	//	print_symtbl(symtbl);
       }
       DBFClose(dbf);
