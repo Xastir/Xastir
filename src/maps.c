@@ -4608,14 +4608,6 @@ int  locate_place( Widget w, char *name_in, char *state_in, char *county_in,
 
 
 
-#if !defined(NO_GRAPHICS) && defined(HAVE_IMAGEMAGICK) && (MagickLibVersion >= 0x0539)
-// Note that some versions of ImageMagick 5.4 mis-report the
-// version as 5.3.9.  Also note that the API changed in some
-// of the 5.4 versions, and IsPseudoClass() isn't supported
-// in newer versions of the library.
-inline int IsPseudoClass(Image* image) { return (image->storage_class == PseudoClass); }
-#endif
-
 /**********************************************************
  * draw_geo_image_map()
  *
@@ -5312,7 +5304,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
 #else
     if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, &exception) > 128) {
 #endif
-        if (IsPseudoClass(image))
+        if (image->storage_class == PseudoClass)
             CompressColormap(image); // Remove duplicate colors
 
         // Quantize down to 128 will go here...
@@ -5329,8 +5321,8 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
     }
 
     index_pack = GetIndexes(image);
-    if (IsPseudoClass(image) && !index_pack) {
-        puts("IsPseudoClass && index_pack == NULL!!!");
+    if (image->storage_class == PseudoClass && !index_pack) {
+        puts("PseudoClass && index_pack == NULL!!!");
         if (image)
             DestroyImage(image);
         if (image_info)
@@ -5338,7 +5330,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
         return;
     }
 
-    if (IsPseudoClass(image) && image->colors <= 256) {
+    if (image->storage_class == PseudoClass && image->colors <= 256) {
         for (l = 0; l < image->colors; l++) {
             // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
             // of image files
@@ -5398,12 +5390,12 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
            printf ("is Gray Image = %i\n", IsGrayImage(image));
            printf ("is Monochrome Image = %i\n", IsMonochromeImage(image));
            //printf ("is Opaque Image = %i\n", IsOpaqueImage(image));
-           //printf ("is PseudoClass = %i\n", IsPseudoClass(image));
+           //printf ("is PseudoClass = %i\n", image->storage_class == PseudoClass);
        #else
            printf ("is Gray Image = %i\n", IsGrayImage( image, &exception ));
            printf ("is Monochrome Image = %i\n", IsMonochromeImage( image, &exception ));
            //printf ("is Opaque Image = %i\n", IsOpaqueImage( image, &exception ));
-           //printf ("is PseudoClass = %i\n", IsPseudoClass( image, &exception ));
+           //printf ("is PseudoClass = %i\n", image->storage_class == PseudoClass);
        #endif
 
        printf ("image matte is %i\n", image->matte);
@@ -5589,7 +5581,7 @@ void draw_geo_image_map (Widget w, char *dir, char *filenm) {
                         // now copy a pixel from the map image to the screen
 #ifdef HAVE_IMAGEMAGICK
                         l = map_x + map_y * image->columns;
-                        if (IsPseudoClass(image)) {
+                        if (image->storage_class == PseudoClass) {
                             XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
                         }
                         else {
@@ -5918,7 +5910,7 @@ void draw_tiger_map (Widget w) {
 #else // MagickLib < 540
     if (visual_type == NOT_TRUE_NOR_DIRECT && GetNumberColors(image, NULL, &exception) > 128) {
 #endif // MagickLib < 540
-        if (IsPseudoClass(image))
+        if (image->storage_class == PseudoClass)
             CompressColormap(image); // Remove duplicate colors
 
         // Quantize down to 128 will go here...
@@ -5935,8 +5927,8 @@ void draw_tiger_map (Widget w) {
     }
 
     index_pack = GetIndexes(image);
-    if (IsPseudoClass(image) && !index_pack) {
-        puts("IsPseudoClass && index_pack == NULL!!!");
+    if (image->storage_class == PseudoClass && !index_pack) {
+        puts("PseudoClass && index_pack == NULL!!!");
         if (image)
             DestroyImage(image);
         if (image_info)
@@ -5944,7 +5936,7 @@ void draw_tiger_map (Widget w) {
         return;
     }
 
-    if (IsPseudoClass(image) && image->colors <= 256) {
+    if (image->storage_class == PseudoClass && image->colors <= 256) {
         for (l = 0; l < image->colors; l++) {
             // Need to check how to do this for ANY image, as ImageMagick can read in all sorts
             // of image files
@@ -6149,7 +6141,7 @@ void draw_tiger_map (Widget w) {
 
                         // now copy a pixel from the map image to the screen
                         l = map_x + map_y * image->columns;
-                        if (IsPseudoClass(image)) {
+                        if (image->storage_class == PseudoClass) {
                             XSetForeground(XtDisplay(w), gc, my_colors[index_pack[l]].pixel);
                         }
                         else {
