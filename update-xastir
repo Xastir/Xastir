@@ -34,9 +34,9 @@ then
     make install
     chmod 4755 /usr/local/bin/xastir
 else
-    echo "***********************************************"
-    echo "Building for Unix/Linux/MacOSX Operating System"
-    echo "***********************************************"
+    echo "************************************************"
+    echo "Building for Unix/Linux/MacOSX Operating Systems"
+    echo "************************************************"
     sudo make clean
     sudo make install
     sudo chmod 4755 /usr/local/bin/xastir
