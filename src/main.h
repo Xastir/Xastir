@@ -264,6 +264,7 @@ extern int transmit_disable;
 extern int posit_tx_disable;
 extern int object_tx_disable;
 extern int map_chooser_expand_dirs;
+extern int request_new_image;
 
 extern int coordinate_system;
 #define USE_DDDDDD      0

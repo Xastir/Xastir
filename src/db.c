@@ -12239,14 +12239,23 @@ void  read_file_line(FILE *f) {
  */
 void set_map_position(Widget w, long lat, long lon) {
     // see also map_pos() in location.c
+
+    // Set interrupt_drawing_now because conditions have changed
+    // (new map center).
+    interrupt_drawing_now++;
+
     set_last_position();
     mid_y_lat_offset  = lat;
     mid_x_long_offset = lon;
     setup_in_view();  // flag all stations in new screen view
 
-    if (create_image(w)) {
-        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
-    }
+    // Request that a new image be created.  Calls create_image,
+    // XCopyArea, and display_zoom_status.
+    request_new_image++;
+
+//    if (create_image(w)) {
+//        (void)XCopyArea(XtDisplay(w),pixmap_final,XtWindow(w),gc,0,0,screen_width,screen_height,0,0);
+//    }
 }
 
 
@@ -12414,7 +12423,9 @@ void track_station(Widget w, char *call_tracked, DataRow *p_station) {
                 new_lat  += y_ofs/2;                    // give more space in driving direction
             if (labs(x_ofs) < (screen_width*scale_x/2))
                 new_lon += x_ofs/2;
+
             set_map_position(w, new_lat, new_lon);      // center map to new position
+
         }
         search_tracked_station(&p_station);
     }
