@@ -53,6 +53,9 @@
 #define MAX_VALUE 300
 
 
+
+
+
 void store_string(FILE * fout, char *option, char *value) {
 
 //    if (debug_level & 1)
@@ -66,6 +69,9 @@ void store_string(FILE * fout, char *option, char *value) {
 }
 
 
+
+
+
 void store_char(FILE * fout, char *option, char value) {
     char value_o[2];
 
@@ -74,6 +80,10 @@ void store_char(FILE * fout, char *option, char value) {
     store_string (fout, option, value_o);
 }
 
+
+
+
+
 void store_int(FILE * fout, char *option, int value) {
     char value_o[MAX_VALUE];
 
@@ -81,12 +91,19 @@ void store_int(FILE * fout, char *option, int value) {
     store_string (fout, option, value_o);
 }
 
+
+
+
+
 void store_long (FILE * fout, char *option, long value) {
     char value_o[MAX_VALUE];
 
     sprintf (value_o, "%ld", value);
     store_string (fout, option, value_o);
 }
+
+
+
 
 
 FILE * fin;
@@ -97,6 +114,10 @@ void input_close(void)
         (void)fclose(fin);
     fin = NULL;
 }
+
+
+
+
 
 /*
     This function will read the configuration file (xastir.cnf) until it finds
@@ -141,6 +162,9 @@ int get_string(char *option, char *value) {
 }
 
 
+
+
+
 int get_char(char *option, char *value) {
     char value_o[MAX_VALUE];
     int ret;
@@ -152,26 +176,55 @@ int get_char(char *option, char *value) {
     return (ret);
 }
 
-int get_int(char *option, int *value) {
+
+
+
+
+// Snags an int and checks whether it is within the correct range.
+// If not, it assigns a default value.
+int get_int(char *option, int *value, int low, int high, int def) {
     char value_o[MAX_VALUE];
     int ret;
 
     ret = get_string (option, value_o);
-    if (ret)
+    if (ret && (atoi(value_o) >= low) && (atoi(value_o) <= high) )
         *value = atoi (value_o);
+    else {
+        printf("Found out-of-range value (%d) for %s in config file, changing to %d\n",
+            *value,
+            option,
+            def);
+        *value = def;
+    }
     return (ret);
 }
 
-int get_long(char *option, long *value) {
+
+
+
+
+// Snags a long and checks whether it is within the correct range.
+// If not, it assigns a default value.
+int get_long(char *option, long *value, long low, long high, long def) {
     char value_o[MAX_VALUE];
     int ret;
 
     ret = get_string (option, value_o);
-    if (ret)
+    if (ret && (atol(value_o) >= low) && (atol(value_o) <= high) )
         *value = atol (value_o);
-
+    else {
+        printf("Found out-of-range value (%ld) for %s in config file, changing to %ld\n",
+            *value,
+            option,
+            def);
+        *value = def;
+    }
     return (ret);
 }
+
+
+
+
 
 char *get_user_base_dir(char *dir) {
     static char base[MAX_VALUE];
@@ -186,6 +239,10 @@ char *get_user_base_dir(char *dir) {
     return strcat (base, dir);
 }
 
+
+
+
+
 char *get_data_base_dir(char *dir) {
     static char base[MAX_VALUE];
     char *env_ptr;
@@ -196,6 +253,8 @@ char *get_data_base_dir(char *dir) {
 
     return strcat (base, dir);
 }
+
+
 
 
 
@@ -502,6 +561,8 @@ void save_data(void)  {
 
 
 
+
+
 void load_data_or_default(void) {
     int i;
     char name_temp[20];
@@ -529,7 +590,7 @@ void load_data_or_default(void) {
     temp = convert_lon_s2l (my_long);
     convert_lon_l2s (temp, my_long, sizeof(my_long), CONVERT_HP_NOSP);
 
-    if (!get_int ("STATION_TRANSMIT_AMB", &position_amb_chars))
+    if (!get_int ("STATION_TRANSMIT_AMB", &position_amb_chars, 0, 4, 0))
         position_amb_chars = 0;
 
     if (!get_char ("STATION_GROUP", &my_group))
@@ -548,35 +609,35 @@ void load_data_or_default(void) {
         sprintf (my_comment, "XASTIR-%s", XASTIR_SYSTEM);
 
     /* default values */
-    if (!get_long ("SCREEN_WIDTH", &screen_width))
+    if (!get_long ("SCREEN_WIDTH", &screen_width, 0l, 10000l, 640l))
         screen_width = 640;
 
     if (screen_width < 640)
         screen_width = 640;
 
-    if (!get_long ("SCREEN_HEIGHT", &screen_height))
+    if (!get_long ("SCREEN_HEIGHT", &screen_height, 0l, 10000l, 480l))
         screen_height = 320;
 
     if (screen_height < 320)
         screen_height = 320;
 
-    if (!get_long ("SCREEN_LAT", &mid_y_lat_offset))
+    if (!get_long ("SCREEN_LAT", &mid_y_lat_offset, 0l, 32400000l, 32400000l))
         mid_y_lat_offset = 32400000l;
 
-    if (!get_long ("SCREEN_LONG", &mid_x_long_offset))
+    if (!get_long ("SCREEN_LONG", &mid_x_long_offset, 0l, 64800000l, 64800000l))
         mid_x_long_offset = 64800000l;
 
-    if (!get_int ("COORDINATE_SYSTEM", &coordinate_system))
+    if (!get_int ("COORDINATE_SYSTEM", &coordinate_system, 0, 3, USE_DDMMMM))
         coordinate_system = USE_DDMMMM;
 
-    if (!get_long ("SCREEN_ZOOM", &scale_y))
+    if (!get_long ("SCREEN_ZOOM", &scale_y, 1l, 300000l, 327680l))
         scale_y = 327680;
     scale_x = get_x_scale(mid_x_long_offset,mid_y_lat_offset,scale_y);
 
-    if (!get_int ("MAP_BGCOLOR", &map_background_color))
+    if (!get_int ("MAP_BGCOLOR", &map_background_color, 0, 11, 0))
         map_background_color = 0;
 
-    if (!get_int ( "MAP_DRAW_FILLED_COLORS", &map_color_fill) )
+    if (!get_int ( "MAP_DRAW_FILLED_COLORS", &map_color_fill, 0, 1, 1) )
         map_color_fill = 1;
 
 #if !defined(NO_GRAPHICS) && (defined(HAVE_IMAGEMAGICK) || defined(HAVE_GEOTIFF))
@@ -586,16 +647,16 @@ void load_data_or_default(void) {
         sscanf( name, "%f", &geotiff_map_intensity);
 #endif
 
-    if (!get_int ("MAP_LETTERSTYLE", &letter_style))
+    if (!get_int ("MAP_LETTERSTYLE", &letter_style, 0, 2, 1))
         letter_style = 1;
 
-    if (!get_int ("MAP_WX_ALERT_STYLE", &wx_alert_style))
+    if (!get_int ("MAP_WX_ALERT_STYLE", &wx_alert_style, 0, 1, 1))
         wx_alert_style = 1;
 
     if (!get_string("ALTNET_CALL", altnet_call))
         strcpy(altnet_call, "XASTIR");
 
-    if (!get_int("ALTNET", &altnet))
+    if (!get_int("ALTNET", &altnet, 0, 1, 0))
         altnet=0;
 
     if (!get_string ("AUTO_MAP_DIR", AUTO_MAP_DIR))
@@ -623,20 +684,20 @@ void load_data_or_default(void) {
         strcpy (locate_gnis_filename, get_data_base_dir ("GNIS/WA.gnis"));
 
     /* maps */
-    if (!get_int ("MAPS_LONG_LAT_GRID", &long_lat_grid))
+    if (!get_int ("MAPS_LONG_LAT_GRID", &long_lat_grid, 0, 1, 1))
         long_lat_grid = 1;
 
-    if (!get_int ("MAPS_LEVELS", &map_color_levels))
+    if (!get_int ("MAPS_LEVELS", &map_color_levels, 0, 1, 0))
         map_color_levels = 0;
 
-    if (!get_int ("MAPS_LABELS", &map_labels))
+    if (!get_int ("MAPS_LABELS", &map_labels, 0, 1, 1))
         map_labels = 1;
 
-    if (!get_int ("MAPS_AUTO_MAPS", &map_auto_maps))
+    if (!get_int ("MAPS_AUTO_MAPS", &map_auto_maps, 0, 1, 0))
         map_auto_maps = 0;
 
     // display values
-    if (!get_int ("DISPLAY_SYMBOL",        &symbol_display))
+    if (!get_int ("DISPLAY_SYMBOL", &symbol_display, 0, 2, 2))
         symbol_display = 2;
 
     switch (symbol_display) {
@@ -654,9 +715,9 @@ void load_data_or_default(void) {
                 break;
     }
         
-    if (!get_int ("DISPLAY_CALLSIGN",      &symbol_callsign_display))
+    if (!get_int ("DISPLAY_CALLSIGN", &symbol_callsign_display, 0, 1, 1))
         symbol_callsign_display = 1;
-    if (!get_int ("DISPLAY_SPEED",         &symbol_speed_display))
+    if (!get_int ("DISPLAY_SPEED", &symbol_speed_display, 0, 2, 0))
         symbol_speed_display = 0;
 
     switch (symbol_speed_display) {
@@ -674,13 +735,13 @@ void load_data_or_default(void) {
                 break;
     }
 
-    if (!get_int ("DISPLAY_ALTITUDE",      &symbol_alt_display))
+    if (!get_int ("DISPLAY_ALTITUDE", &symbol_alt_display, 0, 1, 0))
         symbol_alt_display = 0;
-    if (!get_int ("DISPLAY_COURSE",        &symbol_course_display))
+    if (!get_int ("DISPLAY_COURSE", &symbol_course_display, 0, 1, 0))
         symbol_course_display = 0;
-    if (!get_int ("DISPLAY_DIST_COURSE",   &symbol_dist_course_display))
+    if (!get_int ("DISPLAY_DIST_COURSE", &symbol_dist_course_display, 0, 1, 0))
         symbol_dist_course_display = 0;
-    if (!get_int ("DISPLAY_STATION_WX",    &symbol_weather_display))
+    if (!get_int ("DISPLAY_STATION_WX", &symbol_weather_display, 0, 2, 0))
         symbol_weather_display = 0;
 
     switch (symbol_weather_display) {
@@ -698,31 +759,31 @@ void load_data_or_default(void) {
                 break;
     }
 
-    if (!get_int ("DISPLAY_STATION_PHG",   &show_phg))
+    if (!get_int ("DISPLAY_STATION_PHG", &show_phg, 0, 1, 0))
         show_phg = 0;
-    if (!get_int ("DISPLAY_MOBILES_PHG",   &show_phg_mobiles))
+    if (!get_int ("DISPLAY_MOBILES_PHG", &show_phg_mobiles, 0, 1, 0))
         show_phg_mobiles = 0;
-    if (!get_int ("DISPLAY_DEFAULT_PHG",   &show_phg_default))
+    if (!get_int ("DISPLAY_DEFAULT_PHG", &show_phg_default, 0, 1, 0))
         show_phg_default = 0;
-    if (!get_int ("DISPLAY_POSITION_AMB",  &show_amb))
+    if (!get_int ("DISPLAY_POSITION_AMB", &show_amb, 0, 1, 0))
         show_amb = 0;
-    if (!get_int ("DISPLAY_OLD_STATION_DATA", &show_old_data))
+    if (!get_int ("DISPLAY_OLD_STATION_DATA", &show_old_data, 0, 1, 0))
         show_old_data = 0;
-    if (!get_int ("DISPLAY_DF_INFO",       &show_DF))
+    if (!get_int ("DISPLAY_DF_INFO", &show_DF, 0, 1, 0))
         show_DF = 0;
-    if (!get_int ("DISPLAY_STATION_TRAILS",&station_trails))
+    if (!get_int ("DISPLAY_STATION_TRAILS", &station_trails, 0, 1, 1))
         station_trails = 1;
 
-    if (!get_int ("DISPLAY_UNITS_ENGLISH", &units_english_metric))
+    if (!get_int ("DISPLAY_UNITS_ENGLISH", &units_english_metric, 0, 1, 0))
         units_english_metric = 0;
 
-    if (!get_int ("DISABLE_TRANSMIT", &transmit_disable))
+    if (!get_int ("DISABLE_TRANSMIT", &transmit_disable, 0, 1, 0))
         transmit_disable = 0;
 
-    if (!get_int ("DISABLE_POSIT_TX", &posit_tx_disable))
+    if (!get_int ("DISABLE_POSIT_TX", &posit_tx_disable, 0, 1, 0))
         posit_tx_disable = 0;
 
-    if (!get_int ("DISABLE_OBJECT_TX", &object_tx_disable))
+    if (!get_int ("DISABLE_OBJECT_TX", &object_tx_disable, 0, 1, 0))
         object_tx_disable = 0;
 
 
@@ -730,7 +791,7 @@ void load_data_or_default(void) {
         sprintf (name_temp, "DEVICE%0d_", i);
         strcpy (name, name_temp);
         strcat (name, "TYPE");
-        if (!get_int (name, &devices[i].device_type)) {
+        if (!get_int (name, &devices[i].device_type,0,9,DEVICE_NONE)) {
             devices[i].device_type = DEVICE_NONE;
         }
         strcpy (name, name_temp);
@@ -775,67 +836,67 @@ void load_data_or_default(void) {
 
         strcpy (name, name_temp);
         strcat (name, "SPEED");
-        if (!get_int (name, &devices[i].sp))
+        if (!get_int (name, &devices[i].sp,0,230400,0))
             devices[i].sp = 0;
 
         strcpy (name, name_temp);
         strcat (name, "STYLE");
-        if (!get_int (name, &devices[i].style))
+        if (!get_int (name, &devices[i].style,0,2,0))
             devices[i].style = 0;
 
         strcpy (name, name_temp);
         strcat (name, "IGATE_OPTION");
-        if (!get_int (name, &devices[i].igate_options))
+        if (!get_int (name, &devices[i].igate_options,0,2,0))
             devices[i].igate_options = 0;
 
         strcpy (name, name_temp);
         strcat (name, "TXMT");
-        if (!get_int (name, &devices[i].transmit_data))
+        if (!get_int (name, &devices[i].transmit_data,0,1,0))
             devices[i].transmit_data = 0;
 
         strcpy (name, name_temp);
         strcat (name, "RECONN");
-        if (!get_int (name, &devices[i].reconnect))
+        if (!get_int (name, &devices[i].reconnect,0,1,0))
             devices[i].reconnect = 0;
 
         strcpy (name, name_temp);
         strcat (name, "ONSTARTUP");
-        if (!get_int (name, &devices[i].connect_on_startup))
+        if (!get_int (name, &devices[i].connect_on_startup,0,1,0))
             devices[i].connect_on_startup = 0;
 
                 strcpy (name, name_temp);
                 strcat (name, "GPSRETR");
-                if (!get_int (name, &devices[i].gps_retrieve))
-                        devices[i].gps_retrieve = 0;
+                if (!get_int (name, &devices[i].gps_retrieve,0,255,DEFAULT_GPS_RETR))
+                        devices[i].gps_retrieve = DEFAULT_GPS_RETR;
 
                 strcpy (name, name_temp);
                 strcat (name, "SETTIME");
-                if (!get_int (name, &devices[i].set_time))
+                if (!get_int (name, &devices[i].set_time,0,1,0))
                         devices[i].set_time = 0;
     }
 
     /* TNC */
-    if (!get_int ("TNC_LOG_DATA", &log_tnc_data))
+    if (!get_int ("TNC_LOG_DATA", &log_tnc_data,0,1,0))
         log_tnc_data = 0;
 
     if (!get_string ("LOGFILE_TNC", LOGFILE_TNC))
         strcpy (LOGFILE_TNC, get_user_base_dir ("logs/tnc.log"));
 
     /* NET */
-    if (!get_int ("NET_LOG_DATA", &log_net_data))
+    if (!get_int ("NET_LOG_DATA", &log_net_data,0,1,0))
         log_net_data = 0;
 
-    if (!get_int ("NET_RUN_AS_IGATE", &operate_as_an_igate))
+    if (!get_int ("NET_RUN_AS_IGATE", &operate_as_an_igate,0,2,0))
         operate_as_an_igate = 0;
 
-    if (!get_int ("LOG_IGATE", &log_igate))
+    if (!get_int ("LOG_IGATE", &log_igate,0,1,0))
         log_igate = 0;
 
-    if (!get_int ("NETWORK_WAITTIME", &NETWORK_WAITTIME))
+    if (!get_int ("NETWORK_WAITTIME", &NETWORK_WAITTIME,0,120,10))
         NETWORK_WAITTIME = 10;
 
     // LOGGING
-    if (!get_int ("LOG_WX", &log_wx))
+    if (!get_int ("LOG_WX", &log_wx,0,1,0))
         log_wx = 0;
 
     if (!get_string ("LOGFILE_IGATE", LOGFILE_IGATE))
@@ -848,52 +909,52 @@ void load_data_or_default(void) {
         strcpy (LOGFILE_WX, get_user_base_dir ("logs/wx.log"));
 
     // SNAPSHOTS
-    if (!get_int ("SNAPSHOTS_ENABLED", &snapshots_enabled))
+    if (!get_int ("SNAPSHOTS_ENABLED", &snapshots_enabled,0,1,0))
         snapshots_enabled = 0;
 
     /* WX ALERTS */
-    if (!get_long ("WX_ALERTS_REFRESH_TIME", (long *)&WX_ALERTS_REFRESH_TIME))
+    if (!get_long ("WX_ALERTS_REFRESH_TIME", (long *)&WX_ALERTS_REFRESH_TIME, 1l, 86400l, 30l))
         WX_ALERTS_REFRESH_TIME = (time_t)30l;
 
     /* gps */
-    if (!get_long ("GPS_TIME", (long *)&gps_time))
+    if (!get_long ("GPS_TIME", (long *)&gps_time, 1l, 86400l, 60l))
         gps_time = (time_t)60l;
 
     /* POSIT RATE */
-    if (!get_long ("POSIT_RATE", (long *)&POSIT_rate))
+    if (!get_long ("POSIT_RATE", (long *)&POSIT_rate, 1l, 86400l, 1800l))
         POSIT_rate = (time_t)30*60l;
 
     /* station broadcast type */
-    if (!get_int ("BST_TYPE", &output_station_type))
+    if (!get_int ("BST_TYPE", &output_station_type,0,5,0))
         output_station_type = 0;
 
 #ifdef TRANSMIT_RAW_WX
     /* raw wx transmit */
-    if (!get_int ("BST_WX_RAW", &transmit_raw_wx))
+    if (!get_int ("BST_WX_RAW", &transmit_raw_wx,0,1,0))
         transmit_raw_wx = 0;
 #endif
 
     /* compressed posit transmit */
-    if (!get_int ("BST_COMPRESSED_POSIT", &transmit_compressed_posit))
+    if (!get_int ("BST_COMPRESSED_POSIT", &transmit_compressed_posit,0,1,0))
         transmit_compressed_posit = 0;
 
     /* Audio Alarms*/
     if (!get_string ("SOUND_COMMAND", sound_command))
         strcpy (sound_command, "vplay -q");
 
-    if (!get_int ("SOUND_PLAY_ONS", &sound_play_new_station))
+    if (!get_int ("SOUND_PLAY_ONS", &sound_play_new_station,0,1,0))
         sound_play_new_station = 0;
 
     if (!get_string ("SOUND_ONS_FILE", sound_new_station))
         strcpy (sound_new_station, "newstation.wav");
 
-    if (!get_int ("SOUND_PLAY_ONM", &sound_play_new_message))
+    if (!get_int ("SOUND_PLAY_ONM", &sound_play_new_message,0,1,0))
         sound_play_new_message = 0;
 
     if (!get_string ("SOUND_ONM_FILE", sound_new_message))
         strcpy (sound_new_message, "newmessage.wav");
 
-    if (!get_int ("SOUND_PLAY_PROX", &sound_play_prox_message))
+    if (!get_int ("SOUND_PLAY_PROX", &sound_play_prox_message,0,1,0))
         sound_play_prox_message = 0;
 
     if (!get_string ("SOUND_PROX_FILE", sound_prox_message))
@@ -905,7 +966,7 @@ void load_data_or_default(void) {
     if (!get_string ("PROX_MAX", prox_max))
         strcpy (prox_max, "10");
 
-    if (!get_int ("SOUND_PLAY_BAND", &sound_play_band_open_message))
+    if (!get_int ("SOUND_PLAY_BAND", &sound_play_band_open_message,0,1,0))
         sound_play_band_open_message = 0;
 
     if (!get_string ("SOUND_BAND_FILE", sound_band_open_message))
@@ -917,7 +978,7 @@ void load_data_or_default(void) {
     if (!get_string ("BANDO_MAX", bando_max))
         strcpy (bando_max, "2000");
 
-    if (!get_int ("SOUND_PLAY_WX_ALERT", &sound_play_wx_alert_message))
+    if (!get_int ("SOUND_PLAY_WX_ALERT", &sound_play_wx_alert_message,0,1,0))
         sound_play_wx_alert_message = 0;
 
     if (!get_string ("SOUND_WX_ALERT_FILE", sound_wx_alert_message))
@@ -926,37 +987,37 @@ void load_data_or_default(void) {
 #ifdef HAVE_FESTIVAL
     /* Festival Speech defaults */
 
-    if (!get_int ("SPEAK_NEW_STATION",&festival_speak_new_station))
+    if (!get_int ("SPEAK_NEW_STATION",&festival_speak_new_station,0,1,0))
         festival_speak_new_station = 0;
 
-    if (!get_int ("SPEAK_PROXIMITY_ALERT",&festival_speak_proximity_alert))
+    if (!get_int ("SPEAK_PROXIMITY_ALERT",&festival_speak_proximity_alert,0,1,0))
         festival_speak_proximity_alert = 0;
 
-    if (!get_int ("SPEAK_TRACKED_ALERT",&festival_speak_tracked_proximity_alert))
+    if (!get_int ("SPEAK_TRACKED_ALERT",&festival_speak_tracked_proximity_alert,0,1,0))
         festival_speak_tracked_proximity_alert = 0;
 
-    if (!get_int ("SPEAK_BAND_OPENING",&festival_speak_band_opening))
+    if (!get_int ("SPEAK_BAND_OPENING",&festival_speak_band_opening,0,1,0))
         festival_speak_band_opening = 0;
                                   
-    if (!get_int ("SPEAK_MESSAGE_ALERT",&festival_speak_new_message_alert))
+    if (!get_int ("SPEAK_MESSAGE_ALERT",&festival_speak_new_message_alert,0,1,0))
         festival_speak_new_message_alert = 0; 
 
-    if (!get_int ("SPEAK_MESSAGE_BODY",&festival_speak_new_message_body))
+    if (!get_int ("SPEAK_MESSAGE_BODY",&festival_speak_new_message_body,0,1,0))
         festival_speak_new_message_body = 0;
 
-    if (!get_int ("SPEAK_WEATHER_ALERT",&festival_speak_new_weather_alert))
+    if (!get_int ("SPEAK_WEATHER_ALERT",&festival_speak_new_weather_alert,0,1,0))
         festival_speak_new_weather_alert = 0; 
 
 #endif
 
     /* defaults */
-    if (!get_long ("DEFAULT_STATION_OLD", (long *)&sec_old))
+    if (!get_long ("DEFAULT_STATION_OLD", (long *)&sec_old, 1l, 604800l, 4800l))
         sec_old = (time_t)4800l;
 
-    if (!get_long ("DEFAULT_STATION_CLEAR", (long *)&sec_clear))
+    if (!get_long ("DEFAULT_STATION_CLEAR", (long *)&sec_clear, 1l, 604800l, 43200l))
         sec_clear = (time_t)43200l;
 
-    if (!get_long("DEFAULT_STATION_REMOVE", (long *)&sec_remove)) {
+    if (!get_long("DEFAULT_STATION_REMOVE", (long *)&sec_remove, 1l, 604800l, sec_clear*2)) {
         sec_remove = sec_clear*2;
     // In the interests of keeping the memory used by Xastir down, I'm
     // commenting out the below lines.  When hooked to one or more internet
@@ -965,42 +1026,42 @@ void load_data_or_default(void) {
 //            sec_remove = (time_t)(24*3600); // change to a one-day expire
     }
 
-    if (!get_int ("MESSAGE_COUNTER", &message_counter))
+    if (!get_int ("MESSAGE_COUNTER", &message_counter,0,99999,0))
         message_counter = 0;
 
     if (!get_string ("AUTO_MSG_REPLY", auto_reply_message))
         strcpy (auto_reply_message, "Autoreply- No one is at the keyboard");
 
-    if (!get_int ("DISPLAY_PACKET_TYPE", &Display_packet_data_type))
+    if (!get_int ("DISPLAY_PACKET_TYPE", &Display_packet_data_type,0,2,0))
         Display_packet_data_type = 0;
 
-    if (!get_int ("BULLETIN_RANGE", &bulletin_range))
+    if (!get_int ("BULLETIN_RANGE", &bulletin_range,0,99999,0))
         bulletin_range = 0;
 
-    if(!get_int("VIEW_MESSAGE_RANGE", &vm_range))
+    if(!get_int("VIEW_MESSAGE_RANGE", &vm_range,0,99999,0))
         vm_range=0;
 
-    if(!get_int("VIEW_MESSAGE_LIMIT", &view_message_limit))
+    if(!get_int("VIEW_MESSAGE_LIMIT", &view_message_limit,0,10000,0))
         view_message_limit = 3000;
 
 
     /* printer variables */
-    if (!get_int ("PRINT_ROTATED", &print_rotated))
+    if (!get_int ("PRINT_ROTATED", &print_rotated,0,1,0))
         print_rotated = 0;
 
-    if (!get_int ("PRINT_AUTO_ROTATION", &print_auto_rotation))
+    if (!get_int ("PRINT_AUTO_ROTATION", &print_auto_rotation,0,1,1))
         print_auto_rotation = 1;
 
-    if (!get_int ("PRINT_AUTO_SCALE", &print_auto_scale))
+    if (!get_int ("PRINT_AUTO_SCALE", &print_auto_scale,0,1,1))
         print_auto_scale = 1;
 
-    if (!get_int ("PRINT_IN_MONOCHROME", &print_in_monochrome))
+    if (!get_int ("PRINT_IN_MONOCHROME", &print_in_monochrome,0,1,0))
         print_in_monochrome = 0;
 
-    if (!get_int ("PRINT_INVERT_COLORS", &print_invert))
+    if (!get_int ("PRINT_INVERT_COLORS", &print_invert,0,1,0))
         print_invert = 0;
 
-    if (!get_int ("RAIN_GAUGE_TYPE", &WX_rain_gauge_type))
+    if (!get_int ("RAIN_GAUGE_TYPE", &WX_rain_gauge_type,0,3,0))
         WX_rain_gauge_type = 0;     // No Correction
 
 
@@ -1009,12 +1070,12 @@ void load_data_or_default(void) {
         sprintf (name_temp, "LIST%0d_", i);
         strcpy (name, name_temp);
         strcat (name, "H");
-        if (!get_int (name, &list_size_h[i]))
+        if (!get_int (name, &list_size_h[i],10,8192,-1))
             list_size_h[i] = -1;
 
         strcpy (name, name_temp);
         strcat (name, "W");
-        if (!get_int (name, &list_size_w[i]))
+        if (!get_int (name, &list_size_w[i],10,8192,-1))
             list_size_w[i] = -1;
 
     }

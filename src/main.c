@@ -1811,9 +1811,9 @@ void create_image(Widget w) {
             colors[0xfd] = (int)GetPixelByName(w,"white");
             break;
 
-                case 11 :
-                        colors[0xfd] = (int)GetPixelByName(w, "black");
-                        break;
+        case 11 :
+            colors[0xfd] = (int)GetPixelByName(w, "black");
+            break;
 
         default:
             colors[0xfd] = (int)GetPixelByName(appshell,"gray73");
