@@ -1277,10 +1277,10 @@ fprintf(stderr,"MinY:%f, MaxY:%f, MinX:%f, MaxX:%f\n",
 // Here we truncate:  We should polygon clip instead, so that the
 // slopes of the line segments don't change.  Points beyond +/-
 // 16000 can cause problems in X11 when we draw.
-            if      (XI[ii] > 1700l) XI[ii] = 1700l;
-            else if (XI[ii] <    0l) XI[ii] =    0l;
-            if      (YI[ii] > 1700l) YI[ii] = 1700l;
-            else if (YI[ii] <    0l) YI[ii] =    0l;
+            if      (XI[ii] >  15000l) XI[ii] =  15000l;
+            else if (XI[ii] < -15000l) XI[ii] = -15000l;
+            if      (YI[ii] >  15000l) YI[ii] =  15000l;
+            else if (YI[ii] < -15000l) YI[ii] = -15000l;
         }
 
         // We don't need the Xastir coordinate system arrays
@@ -1864,11 +1864,11 @@ void Draw_OGR_Polygons( Widget w,
                     CHECKMALLOC(XI);
                     CHECKMALLOC(YI);
  
-// Note:  We're limiting screen size to 1700 in this routine.
-                    minX = 1700;
-                    maxX = 0;
-                    minY = 1700;
-                    maxY = 0;
+// Note:  We're limiting screen size to 15000 in this routine.
+                    minX = -15000;
+                    maxX =  15000;
+                    minY = -15000;
+                    maxY =  15000;
  
                     // Convert arrays to screen coordinates.
                     // Careful here!  The format conversions you'll
@@ -1889,10 +1889,10 @@ void Draw_OGR_Polygons( Widget w,
 // 16000 can cause problems in X11 when we draw.  Here we are more
 // interested in keeping the rectangles small and fast.  Screen-size
 // or smaller basically.
-                        if      (XI[nn] > 1700l) XI[nn] = 1700l;
-                        else if (XI[nn] <    0l) XI[nn] =    0l;
-                        if      (YI[nn] > 1700l) YI[nn] = 1700l;
-                        else if (YI[nn] <    0l) YI[nn] =    0l;
+                        if      (XI[nn] >  15000l) XI[nn] =  15000l;
+                        else if (XI[nn] < -15000l) XI[nn] = -15000l;
+                        if      (YI[nn] >  15000l) YI[nn] =  15000l;
+                        else if (YI[nn] < -15000l) YI[nn] = -15000l;
 
                         if (!polygon_hole) {
 
