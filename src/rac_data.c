@@ -55,11 +55,13 @@
 
 
 
+
+
 /* ====================================================================    */
 /*    my version of chomp from perl, removes spaces and dashes    */
 /*                                    */
 /* ******************************************************************** */
-int chomp(char *input,unsigned int i){
+int chomp(char *input,unsigned int i) {
     unsigned int    x;
 
     for (x=i;input[x] == ' ' || input[x] == '-';x--)
@@ -67,6 +69,10 @@ int chomp(char *input,unsigned int i){
 
     return ( (int)(i-x) );
 }
+
+
+
+
 
 /* ====================================================================    */
 /*    build a new (or newer if I check the file date) index file    */
@@ -76,8 +82,7 @@ int chomp(char *input,unsigned int i){
 /*      time stamp. Use the touch command on the AMACALL.LST file to    */
 /*      make the time current if necessary.                             */
 /* ******************************************************************** */
-
-int build_rac_index(void){
+int build_rac_index(void) {
     FILE *fdb;
     FILE *fndx;
     unsigned long call_offset = 0;
@@ -87,11 +92,11 @@ int build_rac_index(void){
     /* ====================================================================    */
     /*    If the index file is there, exit                */
     /*                                    */
-    if (filethere(get_user_base_dir("data/AMACALL.ndx"))){
+    if (filethere(get_user_base_dir("data/AMACALL.ndx"))) {
         /* if file is there make sure the index date is newer */
-        if(file_time(get_data_base_dir("fcc/AMACALL.LST"))<=file_time(get_user_base_dir("data/AMACALL.ndx"))){
+        if(file_time(get_data_base_dir("fcc/AMACALL.LST"))<=file_time(get_user_base_dir("data/AMACALL.ndx"))) {
             return(1);
-        }else{
+        } else {
             statusline("RAC Index old rebuilding",1);
 //            XmTextFieldSetString(text,"RAC Index old rebuilding");
 //            XtManageChild(text);
@@ -102,13 +107,13 @@ int build_rac_index(void){
     /*    Open the database and index file                */
     /*                                    */
     fdb=fopen(get_data_base_dir("fcc/AMACALL.LST"),"rb");
-    if (fdb==NULL){
+    if (fdb==NULL) {
         printf("Build:Could not open RAC data base: %s\n", get_data_base_dir("fcc/AMACALL.LST") );
         return(0);
     }
 
     fndx=fopen(get_user_base_dir("data/AMACALL.ndx"),"w");
-    if (fndx==NULL){
+    if (fndx==NULL) {
         printf("Build:Could not open/create RAC data base index: %s\n", get_user_base_dir("data/AMACALL.ndx") );
         (void)fclose(fdb);
         return(0);
@@ -116,9 +121,9 @@ int build_rac_index(void){
     /* ====================================================================    */
     /*    Skip past the header to the first callsign (VA2AA)        */
     /*                                    */
-    while (!feof(fdb) && strncmp(racdata,"VA",2)){
+    while (!feof(fdb) && strncmp(racdata,"VA",2)) {
         call_offset = (unsigned long)ftell(fdb);
-        if (fgets(racdata, (int)sizeof(racdata), fdb)==NULL){
+        if (fgets(racdata, (int)sizeof(racdata), fdb)==NULL) {
             printf("Build:header:Unable to read data base\n");
             (void)fclose(fdb);
             (void)fclose(fndx);
@@ -131,7 +136,7 @@ int build_rac_index(void){
     /*    write out the current callsign and RBA of the db file         */
     /*    skip 100 records and do it again until no more            */
     /*                                    */
-    while (!feof(fdb)){
+    while (!feof(fdb)) {
         fprintf(fndx,"%6.6s%li\n",racdata,(long)call_offset);
         call_offset = (unsigned long)ftell(fdb);
         for (x=0;x<=100 && !feof(fdb);x++)
@@ -146,12 +151,16 @@ int build_rac_index(void){
     return(1);
 }
 
+
+
+
+
 /* ====================================================================    */
 /*    Check for ic data base file                    */
 /*    Check/build the index                        */
 /*                                    */
 /* ******************************************************************** */
-int check_rac_data(void){
+int check_rac_data(void) {
     int rac_data_available = 0;
     if( filethere( get_data_base_dir("fcc/AMACALL.LST") ) ) {
         if (build_rac_index())
@@ -164,11 +173,15 @@ int check_rac_data(void){
     return(rac_data_available);
 }
 
+
+
+
+
 /* ====================================================================    */
 /*    The real work.  Pass the callsign, get the info            */
 /*                                    */
 /* ******************************************************************** */
-int search_rac_data(char *callsign, rac_record *data){
+int search_rac_data(char *callsign, rac_record *data) {
     FILE *fdb;
     FILE *fndx;
     char *rc;
@@ -186,10 +199,10 @@ int search_rac_data(char *callsign, rac_record *data){
     /*    Search thru the index, get the RBA                */
     /*                                    */
     fndx=fopen(get_user_base_dir("data/AMACALL.ndx"),"r");
-    if(fndx!=NULL){
+    if(fndx!=NULL) {
         rc = fgets(index,(int)sizeof(index),fndx);
         strncpy(char_offset,&index[6],16);
-        while (!feof(fndx) && strncmp(callsign,index,6) > 0){
+        while (!feof(fndx) && strncmp(callsign,index,6) > 0) {
             strncpy(char_offset,&index[6],16);
             rc = fgets(index,(int)sizeof(index),fndx);
         }
@@ -207,7 +220,7 @@ int search_rac_data(char *callsign, rac_record *data){
     /*                                    */
 
     fdb=fopen(get_data_base_dir("fcc/AMACALL.LST"),"r");
-    if (fdb!=NULL){
+    if (fdb!=NULL) {
         (void)fseek(fdb, call_offset,SEEK_SET);
         if (callsign[5] == '-')
             (void)chomp(callsign,5);
@@ -220,7 +233,7 @@ int search_rac_data(char *callsign, rac_record *data){
 
     /*  || (callsign[5] == '-' && strncmp((char *)&racdata,callsign,5) < 0)) */
     (void)chomp(racdata.callsign,6);
-    if (!strncmp((char *)racdata.callsign,callsign,6)){
+    if (!strncmp((char *)racdata.callsign,callsign,6)) {
         found = 1;
         (void)chomp(racdata.first_name,35);
         (void)chomp(racdata.last_name,35);
@@ -255,5 +268,12 @@ int search_rac_data(char *callsign, rac_record *data){
         strcpy(data->club_postal_code,racdata.club_postal_code);
     }
     (void)fclose(fdb);
+
+    if (!found) {
+        popup_message("Callsign Search", "Callsign Not Found!");
+    }
+
     return(found);
 }
+
+
