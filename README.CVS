@@ -16,9 +16,13 @@ CVS Instructions:
          cvs -z3
          update -P -d
          status -v
+         diff -u
 
         These are just some of the CVS options that I prefer, and make some
         things easier.  They are not required.
+
+        The "cvs -z3" option isn't accepted by SourceForge currently.  Comment
+        it out by adding a couple of '#' marks in front of the line.
 
      2) Start up a shell window of some type, perhaps an xterm or an rxvt.
         Type the following commands into this one shell.  You'll be setting
@@ -48,6 +52,16 @@ CVS Instructions:
         That creates a subdirectory called "xastir" that has all the latest
         sources in it.
 
+     You may want to use this instead, to get the sources corresponding to the
+     latest release:
+
+       cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co -r RELEASE xastir
+
+     or use this line to get the latest version deemed "stable" by the developers
+     (generally newer than the RELEASE version):
+
+       cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/xastir co -r STABLE xastir
+
      All done!  You now have the latest development sources on your computer.
      Now you can forget about all of the previous instructions unless you
      delete the entire tree and want to start over from scratch.
@@ -74,6 +88,20 @@ CVS Instructions:
          chmod 4555 /usr/local/bin/xastir (only needed if using kernel AX.25)
          exit (from root)
          xastir
+
+     For the "cvs update" line, you can also choose which version to update to,
+     just like the "cvs co" lines shown above:
+
+       cvs update -r RELEASE
+     or
+       cvs update -r STABLE
+
+     Once you specify a revision tag (RELEASE or STABLE), that option becomes
+     "sticky" for future checkouts and updates.  That means you only need to
+     type "cvs update" in order to update your code to the latest sources
+     containing that tag.  I believe that "-r HEAD" will make the cvs update
+     command track to the most recently submitted versions again (will make the
+     RELEASE or STABLE options unsticky).
 
      Even more CVS commands (most people won't need these):
      ------------------------------------------------------
