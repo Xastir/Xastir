@@ -1024,18 +1024,18 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     // Return the important variables we'll need
     *record_out = record;
     return(last_ack_sent);
-}
+
+}   // End of msg_data_add()
 
 
 
 
 
-//WE7U
 // alert_data_add:  Function which adds NWS weather alerts to the
 // alert_list.
 //
 // This function adds alerts directly to the alert_list, bypassing
-// the message list and associates message-scan functions.
+// the message list and associated message-scan functions.
 //
 void alert_data_add(char *call_sign, char *from_call, char *data,
         char *seq, char type, char from) {
