@@ -765,6 +765,29 @@ First Time Install:
    This will change the default voice to "ked_diphone".
 
 
+   FESTIVAL NOTE:  From: J. Lance Cotton:
+   One thing that I found that I had to do to finally get festival to work was
+   to get rid of the 'only localhost can connect to the server' pref in the
+   festival configuration. I don't know if that's the default on a source
+   install (I installed festival from RPMs), but it might be.
+   
+   I don't know why it doesn't let localhost connect, even though it's the
+   only one specifically allowed.
+   
+   Here's what to do:  Open the 'festival.scm' file (I found mine in
+   /usr/share/festival/' and look for the line that starts like:
+   
+       (defvar server_access_list ...
+   
+   Make it look like:
+   
+       (defvar server_access_list nil
+   
+   Then restart the festival server.
+   -Lance KJ5O
+
+
+
 You probably want to download some maps and additional data files. The
 instructions for this are below in the "Getting data files for Xastir" section.
 
