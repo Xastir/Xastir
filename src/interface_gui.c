@@ -6029,7 +6029,7 @@ void Config_AGWPE( /*@unused@*/ Widget w, int config_type, int port) {
             XmTextFieldSetString(AGWPE_unproto2_data,"");
             XmTextFieldSetString(AGWPE_unproto3_data,"");
             XmTextFieldSetString(AGWPE_igate_data,"");
-            XmTextFieldSetString(AGWPE_radioport_data,"0");
+            XmTextFieldSetString(AGWPE_radioport_data,"1");
 
 //WE7U
 // Keep this statement until we get relay digipeating functional for

@@ -169,6 +169,11 @@ int NETWORK_WAITTIME;
 // Else if no Path, then put the Data directly into the Data
 // field and use "M" format packets.
 //
+// We currently use the base portion of my_callsign as the username
+// portion of the AGWPE login.  This must be upper-case when you're
+// setting up the account in AGWPE, as that's what we send to
+// authenticate.
+//
 void send_agwpe_packet(int xastir_interface,// Xastir interface port
                        int RadioPort,       // AGWPE RadioPort
                        unsigned char type,
@@ -178,42 +183,41 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
                        unsigned char *Data,
                        int length) {
     int ii;
-    unsigned char output_string[512];
+    const int header_size = 36;
+    unsigned char output_string[512+header_size];
     unsigned char path_string[200];
     int full_length;
     int data_length;
 
 
-//fprintf(stderr,"Sending to RadioPort %d\n", RadioPort);
-//fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
-//    type, FromCall, ToCall, Path, Data);
+/*
+fprintf(stderr,"Sending to AGWPE RadioPort %d, ", RadioPort);
+fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
+    type, FromCall, ToCall, Path, Data);
+*/
 
 
     // Check size of data
     if (length > 512)
         return;
 
-/*
-fprintf(stderr,"%s %s %s\n",
-    FromCall,
-    ToCall,
-    Path);
-*/
-
     // Clear the output_string (set to binary zeroes)
     for (ii = 0; ii < (int)sizeof(output_string); ii++) {
         output_string[ii] = '\0';
     }
 
-    // Write the port number into the frame
-    output_string[0] = (unsigned char)RadioPort;
+    if (type != 'P') {
+        // Write the port number into the frame.  Note that AGWPE
+        // uses 1 for the first port in its GUI, but the programming
+        // interface starts at 0.
+        output_string[0] = (unsigned char)RadioPort;
 
-    if (FromCall)   // Write the FromCall string into the frame
-        strcpy(&output_string[8], FromCall);
+        if (FromCall)   // Write the FromCall string into the frame
+            strcpy(&output_string[8], FromCall);
 
-    if (ToCall) // Write the ToCall string into the frame
-        strcpy(&output_string[18], ToCall);
-
+        if (ToCall) // Write the ToCall string into the frame
+            strcpy(&output_string[18], ToCall);
+    }
 
     if ( (type != '\0') && (type != 'P') ) {
         // Type was specified, not a data frame or login frame
@@ -222,7 +226,9 @@ fprintf(stderr,"%s %s %s\n",
         output_string[4] = type;
 
         // Send the packet to AGWPE
-        port_write_binary(xastir_interface, output_string, 36);
+        port_write_binary(xastir_interface,
+            output_string,
+            header_size);
     }
  
     else if (Path == NULL) { // No ViaCalls, Data or login packet
@@ -230,55 +236,54 @@ fprintf(stderr,"%s %s %s\n",
         if (type == 'P') {
             // Login/Password frame
             char callsign_base[15];
-            int jj;
+            int new_length;
 
 
             // Write the type character into the frame
             output_string[4] = type;
 
-            output_string[28] = (unsigned char)(length % 256);
-            output_string[29] = (unsigned char)((length >> 8) % 256);
-
-//fprintf(stderr,"%02x %02x\n", output_string[28], output_string[29]);
-
-            // Send the header frame to AGWPE
-            port_write_binary(xastir_interface, output_string, 36);
- 
-            // Clear the output_string (set to binary zeroes)
-            for (ii = 0; ii < 36; ii++) {
-                output_string[ii] = '\0';
-            }
-
-            // Write login/password out as 255-byte strings
-
             // Compute the callsign base string
             // (callsign minus SSID)
-            strcpy(callsign_base,my_callsign);
-            for (jj = 0; jj < (int)strlen(my_callsign); jj++) {
-                // Change '-' into end of string
-                if (callsign_base[jj] == '-')
-                    callsign_base[jj] = '\0';
-            }
+            strcpy(callsign_base, my_callsign);
+            // Change '-' into end of string
+            strtok(callsign_base, "-");
 
-            // Write the login string               
-            xastir_snprintf(output_string, sizeof(output_string),
-                "%s", callsign_base);
+            // Length = length of each string plus the two
+            // terminating zeroes.
+            //new_length = strlen(callsign_base) + length + 2;
+            new_length = 255+255;
+
+            output_string[28] = (unsigned char)(new_length % 256);
+            output_string[29] = (unsigned char)((new_length >> 8) % 256);
+
+/*
+fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
+    output_string[28],
+    output_string[29],
+    output_string[30],
+    output_string[31]);
+*/
+
+// Write login/password out as 255-byte strings each
+
+            // Put the login string into the buffer
+            xastir_snprintf(&output_string[header_size],
+                sizeof(output_string) - header_size,
+                "%s",
+                callsign_base);
+
+            // Put the password string into the buffer
+            xastir_snprintf(&output_string[header_size+255],
+                sizeof(output_string) - header_size - 255,
+                "%s",
+                Data);
+
+//fprintf(stderr,"AGWPE User:%s,  Pass:%s\n",callsign_base, Data);
 
             // Send the packet to AGWPE
-            port_write_binary(xastir_interface, output_string, 255);
- 
-            // Clear the output_string (set to binary zeroes)
-            for (ii = 0; ii < 10; ii++) {
-                output_string[ii] = '\0';
-            }
-
-            // Write the password string
-            xastir_snprintf(output_string,sizeof(output_string),
-                "%s", Data);
-//fprintf(stderr,"%s %d\n", output_string, strlen(output_string));
-
-            // Send the packet to AGWPE
-            port_write_binary(xastir_interface, output_string, 255);
+            port_write_binary(xastir_interface,
+                output_string,
+                255+255+header_size);
         }
         else {  // Data frame
             // Write the type character into the frame
@@ -290,18 +295,29 @@ fprintf(stderr,"%s %s %s\n",
             output_string[28] = (unsigned char)(length % 256);
             output_string[29] = (unsigned char)((length >> 8) % 256);
 
-//fprintf(stderr,"%02x %02x\n", output_string[28], output_string[29]);
+/*
+fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
+    output_string[28],
+    output_string[29],
+    output_string[30],
+    output_string[31]);
+*/
 
             // Copy Data onto the end of the string.  This one
             // doesn't have to be null-terminated, so strncpy() is
             // ok to use here.  strncpy stops at the first null byte
             // though.  Proper for a binary output routine?
-            strncpy(&output_string[36], Data, length);
+            strncpy(&output_string[header_size], Data, length);
 
-            full_length = length + 36;
+            full_length = length + header_size;
 
             // Send the packet to AGWPE
-            port_write_binary(xastir_interface, output_string, full_length);
+            port_write_binary(xastir_interface,
+                output_string,
+                full_length);
+
+//fprintf(stderr, "Sent: %s\n", Data);
+
         }
     }
 
@@ -327,64 +343,96 @@ fprintf(stderr,"%s %s %s\n",
         output_string[6] = 0xF0;    // UI Frame
 
         // Write the number of ViaCalls into the first byte
-        if (ViaCall[7])
-            output_string[36] = 0x08;
-        else if (ViaCall[6])
-            output_string[36] = 0x07;
-        else if (ViaCall[5])
-            output_string[36] = 0x06;
-        else if (ViaCall[4])
-            output_string[36] = 0x05;
-        else if (ViaCall[3])
-            output_string[36] = 0x04;
-        else if (ViaCall[2])
-            output_string[36] = 0x03;
-        else if (ViaCall[1])
-            output_string[36] = 0x02;
-        else
-            output_string[36] = 0x01;
+        if (ViaCall[7]) {
+//fprintf(stderr, "Eight viacalls\n");
+            output_string[header_size] = 0x08;
+        }
+        else if (ViaCall[6]) {
+//fprintf(stderr, "Seven viacalls\n");
+            output_string[header_size] = 0x07;
+        }
+        else if (ViaCall[5]) {
+//fprintf(stderr, "Six viacalls\n");
+            output_string[header_size] = 0x06;
+        }
+        else if (ViaCall[4]) {
+//fprintf(stderr, "Five viacalls\n");
+            output_string[header_size] = 0x05;
+        }
+        else if (ViaCall[3]) {
+//fprintf(stderr, "Four viacalls\n");
+            output_string[header_size] = 0x04;
+        }
+        else if (ViaCall[2]) {
+//fprintf(stderr, "Three viacalls\n");
+            output_string[header_size] = 0x03;
+        }
+        else if (ViaCall[1]) {
+//fprintf(stderr, "Two viacalls\n");
+            output_string[header_size] = 0x02;
+        }
+        else {
+//fprintf(stderr, "One viacall\n");
+            output_string[header_size] = 0x01;
+        }
  
         // Write the ViaCalls into the Data field
-        switch (output_string[36]) {
+        switch (output_string[header_size]) {
             case 8:
-                if (ViaCall[7])
-                    strcpy(&output_string[37+70], ViaCall[7]);
+                if (ViaCall[7]) {
+                    strncpy(&output_string[header_size+1+70], ViaCall[7], 10);
+//fprintf(stderr, "%s\n", ViaCall[7]);
+                }
                 else
                     return;
             case 7:
-                if (ViaCall[6])
-                    strcpy(&output_string[37+60], ViaCall[6]);
+                if (ViaCall[6]) {
+                    strncpy(&output_string[header_size+1+60], ViaCall[6], 10);
+//fprintf(stderr, "%s\n", ViaCall[6]);
+                }
                 else
                     return;
             case 6:
-                if (ViaCall[5])
-                    strcpy(&output_string[37+50], ViaCall[5]);
+                if (ViaCall[5]) {
+                    strncpy(&output_string[header_size+1+50], ViaCall[5], 10);
+//fprintf(stderr, "%s\n", ViaCall[5]);
+                }
                 else
                     return;
             case 5:
-                if (ViaCall[4])
-                    strcpy(&output_string[37+40], ViaCall[4]);
+                if (ViaCall[4]) {
+                    strncpy(&output_string[header_size+1+40], ViaCall[4], 10);
+//fprintf(stderr, "%s\n", ViaCall[4]);
+                }
                 else
                     return;
             case 4:
-                if (ViaCall[3])
-                    strcpy(&output_string[37+30], ViaCall[3]);
+                if (ViaCall[3]) {
+                    strncpy(&output_string[header_size+1+30], ViaCall[3], 10);
+//fprintf(stderr, "%s\n", ViaCall[3]);
+                }
                 else
                     return;
             case 3:
-                if (ViaCall[2])
-                    strcpy(&output_string[37+20], ViaCall[2]);
+                if (ViaCall[2]) {
+                    strncpy(&output_string[header_size+1+20], ViaCall[2], 10);
+//fprintf(stderr, "%s\n", ViaCall[2]);
+                }
                 else
                     return;
             case 2:
-                if (ViaCall[1])
-                    strcpy(&output_string[37+10], ViaCall[1]);
+                if (ViaCall[1]) {
+                    strncpy(&output_string[header_size+1+10], ViaCall[1], 10);
+//fprintf(stderr, "%s\n", ViaCall[1]);
+                }
                 else
                     return;
             case 1:
             default:
-                if (ViaCall[0])
-                    strcpy(&output_string[37],    ViaCall[0]);
+                if (ViaCall[0]) {
+                    strncpy(&output_string[header_size+1+0],  ViaCall[0], 10);
+//fprintf(stderr, "%s\n", ViaCall[0]);
+                }
                 else
                     return;
                 break;
@@ -394,21 +442,41 @@ fprintf(stderr,"%s %s %s\n",
         // Doesn't need to be null-terminated, so strncpy is ok to
         // use here.  strncpy stops at the first null byte though.
         // Proper for a binary output routine?
-        strncpy(&output_string[(output_string[36] * 10) + 37], Data, length);
+        strncpy(&output_string[((int)(output_string[header_size]) * 10) + header_size + 1],
+            Data,
+            length);
 
         //Fill in the data length field.  We're assuming the total
         //is less than 512 + 37.
-        data_length = length + (output_string[36] * 10) + 1;
-        if ( data_length > (512 + 37) )
+        data_length = length + ((int)(output_string[header_size]) * 10) + 1;
+
+//fprintf(stderr, "Via calls: %d\n", (int)(output_string[header_size]));
+//fprintf(stderr, "Length: %d\n", length);
+//fprintf(stderr, "Data Length: %d\n", data_length);
+
+        if ( data_length > 512 )
             return;
 
         output_string[28] = (unsigned char)(data_length % 256);
         output_string[29] = (unsigned char)((data_length >> 8) % 256);
 
-        full_length = data_length + 36;
+/*
+fprintf(stderr,"Length bytes:  %02x %02x %02x %02x\n",
+    output_string[28],
+    output_string[29],
+    output_string[30],
+    output_string[31]);
+*/
+
+        full_length = data_length + header_size;
 
         // Send the packet to AGWPE
-        port_write_binary(xastir_interface, output_string, full_length);
+        port_write_binary(xastir_interface,
+            output_string,
+            full_length);
+
+//fprintf(stderr, "Data: %s\n", Data);
+
     }
 }
 
@@ -6351,7 +6419,9 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 //    fprintf(stderr,"port_data_lock, Port = %d\n", port_avail);
 
                 ok = net_init(port_avail);
+
                 if (ok == 1) {
+
                     // If password isn't empty, send login
                     // information
                     //
@@ -6359,13 +6429,13 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
 
                         // Send the login packet 
                         send_agwpe_packet(port_avail,
-                            0,      // AGWPE RadioPort
-                            'P',    // Login/Password Frame
-                            NULL,   // FromCall
-                            NULL,   // ToCall
-                            NULL,   // Path
-                            passwd, // Path (password in this case only)
-                            510);   // Length
+                            0,              // AGWPE RadioPort
+                            'P',            // Login/Password Frame
+                            NULL,           // FromCall
+                            NULL,           // ToCall
+                            NULL,           // Path
+                            passwd,         // Data
+                            strlen(passwd));// Length
                     }
                 }
                 break;
@@ -6450,7 +6520,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     // Send a dummy UI frame for testing purposes.
                     //
                     send_agwpe_packet(port_avail,
-                        atoi(devices[port_avail].device_host_filter_string), // AGWPE radio port
+                        atoi(devices[port_avail].device_host_filter_string) - 1, // AGWPE radio port
                         '\0',       // type
                         "TEST-3",   // FromCall
                         "APRS",     // ToCall
@@ -6461,7 +6531,7 @@ int add_device(int port_avail,int dev_type,char *dev_nm,char *passwd,int dev_sck
                     // Send another dummy UI frame.
                     //
                     send_agwpe_packet(port_avail,
-                        atoi(devices[port_avail].device_host_filter_string), // AGWPE radio port
+                        atoi(devices[port_avail].device_host_filter_string) - 1, // AGWPE radio port
                         '\0',       // type
                         "TEST-3",   // FromCall
                         "APRS",     // ToCall
@@ -7131,10 +7201,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         // Set up some more strings for later transmission
 
         /* send station info */
-        strcpy(output_cs, "");
-        strcpy(output_phg,"");
-        strcpy(output_alt,"");
-        strcpy(output_brk,"");
+        output_cs[0] = '\0';
+        output_phg[0] = '\0';
+        output_alt[0] = '\0';
+        output_brk[0] = '\0';
 
 
         if (transmit_compressed_posit)
@@ -7299,7 +7369,7 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
         }
 
 
-        //fprintf(stderr,"data_txt_save: %s\n",data_txt_save);
+//fprintf(stderr,"data_txt_save: %s\n",data_txt_save);
 
 
         if (ok) {
@@ -7338,20 +7408,25 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
 
 // We need to remove the complete AX.25 header from data_txt before
 // we call this routine!  Instead put the digipeaters into the
-// ViaCall fields.
+// ViaCall fields.  We do this above by setting output_net to '\0'
+// before creating the data_txt string.
                     send_agwpe_packet(port,         // Xastir interface port
-                        atoi(devices[port].device_host_filter_string), // AGWPE RadioPort
+                        atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
                         '\0',         // Type of frame
                         my_callsign,  // source
                         VERSIONFRM,   // destination
                         unproto_path, // Path,
-                        data_txt,
-                        strlen(data_txt));
+                        data_txt,     // Data
+                        strlen(data_txt) - 1); // Skip \r
+
+//fprintf(stderr,"Sending this string: \n%s\n", data_txt);
+//fprintf(stderr,"Length was %d\n", strlen(data_txt) - 1);
+
                 }
 
                 else {  // Not a Serial KISS TNC interface
 
-//fprintf(stderr,"Sending this string: %s\n", data_txt);
+//fprintf(stderr,"Sending this string: \n%s\n\n", data_txt);
 
                     port_write_string(port, data_txt);  // Transmit the posit
                 }
@@ -7725,17 +7800,19 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
 
 // We need to remove the complete AX.25 header from data_txt before
 // we call this routine!  Instead put the digipeaters into the
-// ViaCall fields.
+// ViaCall fields.  We do this above by setting output_net to '\0'
+// before creating the data_txt string.
+
 //fprintf(stderr,"send_agwpe_packet\n");
 
                     send_agwpe_packet(port,            // Xastir interface port
-                        atoi(devices[port].device_host_filter_string), // AGWPE RadioPort
+                        atoi(devices[port].device_host_filter_string) - 1, // AGWPE RadioPort
                         '\0',         // Type of frame
                         my_callsign,  // source
                         VERSIONFRM,   // destination
-                        path_txt, // Path,
-                        data_txt,
-                        strlen(data_txt));
+                        path_txt,     // Path,
+                        data_txt,     // Data
+                        strlen(data_txt) - 1);  // Skip \r
                 }
 
                 else {  // Not a Serial KISS TNC interface
