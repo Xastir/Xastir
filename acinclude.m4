@@ -37,7 +37,9 @@ dnl    if you want the them to remain permanent.
 dnl
 
 
-dnl ----------------------------------------------------------------------
+
+dnl ======================================================================
+dnl
 dnl XASTIR_MSG_CONFIGURE_START()
 dnl
 AC_DEFUN(XASTIR_MSG_CONFIGURE_START, [dnl
@@ -50,7 +52,9 @@ AC_MSG_RESULT(=======================================================)
 AC_MSG_RESULT()
 ])dnl
 
-dnl ----------------------------------------------------------------------
+
+
+dnl ======================================================================
 dnl
 dnl XASTIR_MSG_CONFIGURE_END()
 dnl
@@ -71,7 +75,9 @@ AC_MSG_RESULT()
 ])dnl
 
 
-dnl ------------------------------------------------------------------------
+
+dnl ======================================================================
+dnl
 dnl Find a file (or one of more files in a list of dirs)
 dnl ------------------------------------------------------------------------
 dnl
@@ -91,7 +97,8 @@ done
 ])
 
 
-dnl ----------------------------------------------------------------------
+
+dnl ======================================================================
 dnl
 dnl XASTIR_FIND_PATH(program-name, variable-name, list of directories,
 dnl       if-not-found, test-parameter)
@@ -150,9 +157,7 @@ fi
 
 
 
-
-
-dnl ----------------------------------------------------------------------
+dnl ======================================================================
 #
 # Check to make sure that the build environment is sane.
 #
@@ -196,6 +201,9 @@ rm -f conftest*
 AC_MSG_RESULT(yes)])
 
 
+
+dnl ======================================================================
+dnl
 dnl AC_VALIDIFY_CXXFLAGS checks for forbidden flags the user may have given
 AC_DEFUN(AC_VALIDIFY_CXXFLAGS,
 [dnl
@@ -203,6 +211,10 @@ AC_DEFUN(AC_VALIDIFY_CXXFLAGS,
  AC_REMOVE_FORBIDDEN(CXXFLAGS, [-fno-rtti])
 ])
 
+
+
+dnl ======================================================================
+dnl
 dnl use: AC_REMOVE_FORBIDDEN(CC, [-forbid -bad-option whatever])
 dnl it's all white-space separated
 AC_DEFUN(AC_REMOVE_FORBIDDEN,
@@ -226,6 +238,9 @@ AC_DEFUN(AC_REMOVE_FORBIDDEN,
 ])
 
 
+
+dnl ======================================================================
+dnl
 AC_DEFUN(XASTIR_PRUNE_DUPLICATES,
 [
   changequote(,)dnl
@@ -235,6 +250,9 @@ AC_DEFUN(XASTIR_PRUNE_DUPLICATES,
 ])
 
 
+
+dnl ======================================================================
+dnl
 AC_DEFUN(XASTIR_CHECK_COMPILER_FLAG,
 [
 AC_REQUIRE([AC_CHECK_COMPILERS])
@@ -263,6 +281,9 @@ fi
 ])
 
 
+
+dnl ======================================================================
+dnl
 AC_DEFUN(AC_CHECK_COMPILERS,
 [
   dnl this is somehow a fat lie, but prevents other macros from double checking
@@ -562,8 +583,8 @@ dnl     ])
 
 
 
-
-dnl ----------------------------------------------------------------------
+dnl ======================================================================
+dnl
 # Like AC_CONFIG_HEADER, but automatically create stamp file.
 AC_DEFUN(AM_CONFIG_HEADER,
 [AC_PREREQ([2.12])
@@ -586,7 +607,10 @@ for am_file in <<$1>>; do
 done<<>>dnl>>)
 changequote([,]))])
 
-dnl ----------------------------------------------------------------------
+
+
+dnl ======================================================================
+dnl
 dnl  XASTIR_CHECK_CCPIPE()
 dnl
 dnl  Checks whether the compiler supports the `-pipe' flag, which
@@ -612,6 +636,9 @@ fi
 ])dnl
 
 
+
+dnl ======================================================================
+dnl
 AC_DEFUN([AM_WITH_DMALLOC],
 [AC_MSG_CHECKING(whether to dmalloc library)
 AC_ARG_WITH(dmalloc,
@@ -629,7 +656,12 @@ LDFLAGS="$LDFLAGS -L$ac_cv_dmalloc/lib"
 LIBS="$LIBS -ldmalloc"
 ,AC_MSG_RESULT(no))
 ])
+dnl ----------------------------------------------------------------------
 
+
+
+dnl ======================================================================
+dnl
 AC_DEFUN(XASTIR_CHECK_AX25, [
 has_axlib="no"
 xastir_has_axlib_inc="no"
@@ -652,7 +684,8 @@ fi
 
 
 
-dnl ----------------------------------------------------------------------
+dnl ======================================================================
+dnl
 dnl  XASTIR_CHECK_GEOTIFF_LIBS()
 dnl
 AC_DEFUN(XASTIR_CHECK_GEOTIFF_LIBS, [dnl
@@ -684,7 +717,8 @@ fi
 
 
 
-dnl ----------------------------------------------------------------------
+dnl ======================================================================
+dnl
 dnl  XASTIR_CHECK_SHAPELIB_LIBS()
 dnl
 AC_DEFUN(XASTIR_CHECK_SHAPELIB_LIBS, [dnl
@@ -716,7 +750,8 @@ fi
 
 
 
-dnl ----------------------------------------------------------------------
+dnl ======================================================================
+dnl
 dnl  XASTIR_CHECK_IMAGEMAGICK_LIBS()
 dnl
 AC_DEFUN(XASTIR_CHECK_IMAGEMAGICK_LIBS, [dnl
@@ -772,7 +807,8 @@ fi
 
 
 
-dnl ----------------------------------------------------------------------
+dnl ======================================================================
+dnl
 dnl  XASTIR_CHECK_FESTIVAL()
 dnl
 AC_DEFUN(XASTIR_CHECK_FESTIVAL, [dnl
@@ -791,7 +827,7 @@ fi
 
 
 
-dnl ------------------------------------------------------------------------
+dnl ======================================================================
 dnl Find the header files and libraries for X-Windows. Extended the
 dnl macro AC_PATH_X
 dnl ------------------------------------------------------------------------
@@ -951,8 +987,8 @@ fi
 ])
 
 
-dnl ----------------------------------------------------------------------
-dnl
+
+dnl ======================================================================
 dnl AC_FIND_MOTIF : find OSF/Motif or LessTif, and provide variables
 dnl     to easily use them in a Makefile.
 dnl
@@ -1150,8 +1186,7 @@ AC_MSG_RESULT(
 
 
 
-dnl ----------------------------------------------------------------------
-dnl
+dnl ======================================================================
 dnl AC_FIND_XPM : find libXpm, and provide variables
 dnl     to easily use them in a Makefile.
 dnl
@@ -1415,7 +1450,9 @@ AC_SUBST(LIBS)
 AC_SUBST(CFLAGS)
 ])dnl AC_DEFN
 
-dnl ----------------------------------------------------------------------
+
+
+dnl ======================================================================
 dnl
 AC_DEFUN(XASTIR_CHECK_MOTIF,
 [
@@ -1468,6 +1505,8 @@ if test "$no_x" = ""; then
 fi dnl "$no_x" = "yes"
 
 ])dnl
+
+
 
 dnl ======================================================================
 dnl
@@ -1543,6 +1582,7 @@ support])
 ])
 
 
+
 dnl ======================================================================
 dnl
 AC_DEFUN(XASTIR_CHECK_LIBDL,
@@ -1561,7 +1601,9 @@ AC_SUBST(LIBDL)
 ])
 
 
+
 dnl ======================================================================
+dnl
 dnl Check for the type of the third argument of getsockname
 AC_DEFUN(AC_CHECK_KSIZE_T,
 [AC_MSG_CHECKING(for the third argument of getsockname)
@@ -1608,6 +1650,7 @@ AC_DEFINE_UNQUOTED(ksize_t, $ac_cv_ksize_t,
 ])
 
 
+
 dnl ======================================================================
 dnl
 AC_DEFUN(XASTIR_CHECK_TYPES,
@@ -1615,6 +1658,8 @@ AC_DEFUN(XASTIR_CHECK_TYPES,
   AC_CHECK_SIZEOF(long, 4)dnl
   AC_CHECK_SIZEOF(char *, 4)dnl
 ])dnl
+
+
 
 dnl ======================================================================
 dnl
@@ -1655,7 +1700,9 @@ fi
 ])
 
 
+
 dnl ======================================================================
+dnl
 # AC_CHECK_LIBM - check for math library
 AC_DEFUN(AC_CHECK_LIBM,
 [AC_REQUIRE([AC_CANONICAL_HOST])dnl
@@ -1675,7 +1722,10 @@ esac
   LIBS=$LIBM
 ])
 
+
+
 dnl =======================================================================
+dnl
 AC_DEFUN(XASTIR_TYPE_SOCKLEN_T,
 [AC_CACHE_CHECK([for socklen_t], ac_cv_type_socklen_t,
 [
@@ -1690,7 +1740,10 @@ AC_DEFUN(XASTIR_TYPE_SOCKLEN_T,
   fi
 ])
 
+
+
 dnl ======================================================================
+dnl
 AC_DEFUN(XASTIR_STRUCT_TM_GMTOFF,
 [AC_CACHE_CHECK([for tm_gmtoff in struct tm], ac_cv_struct_tm_gmtoff,
 [
