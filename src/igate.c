@@ -141,7 +141,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
                                     xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
                                     log_data(LOGFILE_IGATE,temp);
 
-                                    xastir_snprintf(temp, sizeof(temp), "REJECT: No RF->NET from input port [%d]", port);
+                                    xastir_snprintf(temp, sizeof(temp), "REJECT: No RF->NET from input port [%d]\n", port);
                                     log_data(LOGFILE_IGATE,temp);
                                     printf(temp);
                                 }
@@ -155,7 +155,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                                 xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
                                 log_data(LOGFILE_IGATE,temp);
 
-                                xastir_snprintf(temp, sizeof(temp), "REJECT: From my call");
+                                xastir_snprintf(temp, sizeof(temp), "REJECT: From my call\n");
                                 log_data(LOGFILE_IGATE,temp);
                                 printf(temp);
                             }
@@ -166,7 +166,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                             xastir_snprintf(temp, sizeof(temp), "\nIGATE RF->NET(%c):%s", third_party ? 'T':'N', line);
                             log_data(LOGFILE_IGATE,temp);
 
-                            xastir_snprintf(temp, sizeof(temp), "REJECT: Third party traffic");
+                            xastir_snprintf(temp, sizeof(temp), "REJECT: Third party traffic\n");
                             log_data(LOGFILE_IGATE,temp);
                             printf(temp);
                         }
@@ -251,7 +251,7 @@ begin_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                                         xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                                         log_data(LOGFILE_IGATE,temp);
 
-                                        xastir_snprintf(temp, sizeof(temp), "REJECT: NET->RF on port [%d]", x);
+                                        xastir_snprintf(temp, sizeof(temp), "REJECT: NET->RF on port [%d]\n", x);
                                         log_data(LOGFILE_IGATE,temp);
                                         printf(temp);
                                     }
@@ -277,9 +277,9 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                 // !heard(call), !heard(from) : Destination/source not heard on TNC
 
                 if (!heard_via_tnc_in_past_hour(call))
-                    xastir_snprintf(temp, sizeof(temp), "REJECT: Destination not heard on TNC within an hour");
+                    xastir_snprintf(temp, sizeof(temp), "REJECT: Destination not heard on TNC within an hour %s\n", call );
                 else
-                    xastir_snprintf(temp, sizeof(temp), "REJECT: RF->RF talk");
+                    xastir_snprintf(temp, sizeof(temp), "REJECT: RF->RF talk\n");
                     log_data(LOGFILE_IGATE,temp);
                     printf(temp);
                 }
@@ -290,7 +290,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_rf" );
                 xastir_snprintf(temp, sizeof(temp), "\nIGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                 log_data(LOGFILE_IGATE,temp);
 
-                xastir_snprintf(temp, sizeof(temp), "REJECT: Unregistered net user!");
+                xastir_snprintf(temp, sizeof(temp), "REJECT: Unregistered net user!\n");
                 log_data(LOGFILE_IGATE,temp);
                 printf(temp);
             }
@@ -369,6 +369,9 @@ void load_NWS_stations(char *file) {
 int check_NWS_stations(char *call) {
     int ok,i;
 
+    if (debug_level & 1024)
+	    printf("igate.c::check_NWS_stations %s\n", call);
+
     if (call == NULL)
         return(0);
 
@@ -378,15 +381,14 @@ int check_NWS_stations(char *call) {
     ok=0;
     for (i=0; i<NWS_stations && !ok; i++) {
         if (strcasecmp(call,NWS_station_data[i].call)==0) {
-            ok=1; /* match found */
-            //printf("NWS-MATCH:(%s) (%s)\n",NWS_station_data[i].call,call);
+            ok=1; // match found 
+	    if (debug_level && 1024) {
+               printf("NWS-MATCH:(%s) (%s)\n",NWS_station_data[i].call,call);
+	    }
         }
     }
     return(ok);
 }
-
-
-
 
 
 /****************************************************************/
@@ -467,7 +469,7 @@ begin_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                                             xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                                             log_data(LOGFILE_IGATE,temp);
 
-                                            xastir_snprintf(temp, sizeof(temp), "REJECT: NET->RF on port [%d]", x);
+                                            xastir_snprintf(temp, sizeof(temp), "REJECT: NET->RF on port [%d]\n", x);
                                             log_data(LOGFILE_IGATE,temp);
                                             printf(temp);
                                         }
@@ -488,7 +490,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                         xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                         log_data(LOGFILE_IGATE,temp);
 
-                        xastir_snprintf(temp, sizeof(temp), "REJECT: No matching station in nws-stations.txt file!");
+                        xastir_snprintf(temp, sizeof(temp), "REJECT: No matching station in nws-stations.txt file!\n");
                         log_data(LOGFILE_IGATE,temp);
                         printf(temp);
                     }
@@ -499,7 +501,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                     xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                     log_data(LOGFILE_IGATE,temp);
 
-                    xastir_snprintf(temp, sizeof(temp), "REJECT: No nws-stations.txt file!");
+                    xastir_snprintf(temp, sizeof(temp), "REJECT: No nws-stations.txt file!\n");
                     log_data(LOGFILE_IGATE,temp);
                     printf(temp);
                 }
@@ -510,7 +512,7 @@ end_critical_section(&devices_lock, "igate.c:output_nws_igate_rf" );
                 xastir_snprintf(temp, sizeof(temp), "\nNWS IGATE NET->RF(%c):%s", third_party ? 'T':'N', line);
                 log_data(LOGFILE_IGATE,temp);
 
-                xastir_snprintf(temp, sizeof(temp), "REJECT: Unregistered net user!");
+                xastir_snprintf(temp, sizeof(temp), "REJECT: Unregistered net user!\n");
                 log_data(LOGFILE_IGATE,temp);
                 printf(temp);
             }
