@@ -5350,6 +5350,10 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
     XtSetSensitive(raster_intensity[(int)(raster_map_intensity * 10.0)],FALSE);
+
+    //fprintf(stderr,"raster index = %d\n",
+    //    (int)(raster_map_intensity * 10.01) );
+
     XtAddCallback(raster_intensity[0],  XmNactivateCallback,Raster_intensity,"0.0");
     XtAddCallback(raster_intensity[1],  XmNactivateCallback,Raster_intensity,"0.1");
     XtAddCallback(raster_intensity[2],  XmNactivateCallback,Raster_intensity,"0.2");
@@ -10734,13 +10738,16 @@ void Raster_intensity(Widget w, XtPointer clientData, XtPointer calldata) {
 
     if(display_up){
         for (i=0;i<11;i++){
-            if (i == (int)((float)(my_intensity * 10.0)) )
+            if (i == (int)((float)(my_intensity * 10.01)) )
                 XtSetSensitive(raster_intensity[i],FALSE);
             else
                 XtSetSensitive(raster_intensity[i],TRUE);
+
+            //fprintf(stderr,"Change to index: %d\n", (int)((float)(my_intensity * 10.01)));
         }
 
         raster_map_intensity=my_intensity;
+        //fprintf(stderr,"raster_map_intensity = %f\n", raster_map_intensity);
 
         // Set interrupt_drawing_now because conditions have changed.
         interrupt_drawing_now++;
