@@ -408,7 +408,7 @@ void Download_trail_now(Widget w, XtPointer clientData, XtPointer callData) {
         download_trail_station_call,posit_start,posit_length);
 
     xastir_snprintf(tempfile, sizeof(tempfile),
-            "wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
+            "/usr/bin/wget --server-response --timestamping --tries=1 --timeout=30 --output-document=%s %s 2> /dev/null\n",
             log_filename,
             fileimg);
 
