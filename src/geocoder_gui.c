@@ -394,7 +394,6 @@ begin_critical_section(&geocoder_place_dialog_lock, "geocoder_gui.c:Geocoder_pla
 
 //        zip = XtVaCreateManagedWidget(langcode("FEATURE001"),xmLabelWidgetClass, form,
         zip = XtVaCreateManagedWidget("Zip Code:",xmLabelWidgetClass, form,
- 
                 XmNtopAttachment, XmATTACH_WIDGET,
                 XmNtopWidget, state,
                 XmNtopOffset, 10,

@@ -4837,7 +4837,6 @@ begin_critical_section(&db_station_info_lock, "db.c:Station_data" );
 
 
             button_nws = XtVaCreateManagedWidget(langcode("WPUPSTI064"),xmPushButtonGadgetClass, form,
- 
                             XmNtopAttachment, XmATTACH_NONE,
                             XmNbottomAttachment, XmATTACH_WIDGET,
                             XmNbottomWidget, button_messages,
