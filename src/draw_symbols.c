@@ -1489,8 +1489,11 @@ void load_pixmap_symbol_file(char *filename) {
                 }
             }
         }
-    } else
+    } else {
         printf("Error opening symbol file %s\n",filen);
+        popup_message("Error opening symbol file","Error opening symbol file");
+    }
+
     if (f != NULL)
         (void)fclose(f);
 }

@@ -6114,6 +6114,7 @@ void create_gc(Widget w) {
     Pixmap pix;
     int _w, _h, _xh, _yh;
     char xbm_path[500];
+    int ret_val;
 
     if (debug_level & 8)
         printf("Create gc start\n");
@@ -6272,20 +6273,40 @@ void create_gc(Widget w) {
                         DefaultDepthOfScreen(XtScreen(w)));
 
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "2x2.xbm");
-    XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
+    ret_val = XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
                     xbm_path, &_w, &_h, &pixmap_50pct_stipple, &_xh, &_yh);
 
+    if (ret_val != 0) {
+        printf("Bitmap not found: %s\n",xbm_path);
+        exit(1);
+    }
+
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "25pct.xbm");
-    XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
+    ret_val = XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
                     xbm_path, &_w, &_h, &pixmap_25pct_stipple, &_xh, &_yh);
 
+    if (ret_val != 0) {
+        printf("Bitmap not found: %s\n",xbm_path);
+        exit(1);
+    }
+
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "13pct.xbm");
-    XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
+    ret_val = XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
                     xbm_path, &_w, &_h, &pixmap_13pct_stipple, &_xh, &_yh);
 
+    if (ret_val != 0) {
+        printf("Bitmap not found: %s\n",xbm_path);
+        exit(1);
+    }
+
     xastir_snprintf(xbm_path, sizeof(xbm_path), "%s/%s", SYMBOLS_DIR, "alert.xbm");
-    XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
+    ret_val = XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
                     xbm_path, &_w, &_h, &pixmap_wx_stipple, &_xh, &_yh);
+
+    if (ret_val != 0) {
+        printf("Bitmap not found: %s\n",xbm_path);
+        exit(1);
+    }
 
     display_up=1;
 

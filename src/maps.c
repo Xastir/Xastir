@@ -1828,6 +1828,8 @@ void draw_shapefile_map (Widget w,
     if (weather_alert_flag) {
         char xbm_path[MAX_FILENAME];
         int _w, _h, _xh, _yh;
+        int ret_val;
+
         // This GC is used only for pixmap_alerts (LIAR)
         (void)XSetForeground (XtDisplay (w), gc_tint, colors[(int)alert_color]);
 
@@ -1870,8 +1872,14 @@ void draw_shapefile_map (Widget w,
 
         (void)XSetLineAttributes(XtDisplay(w), gc_tint, 0, LineSolid, CapButt,JoinMiter);
         XFreePixmap(XtDisplay(w), pixmap_wx_stipple);
-        XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
+        ret_val = XReadBitmapFile(XtDisplay(w), DefaultRootWindow(XtDisplay(w)),
                         xbm_path, &_w, &_h, &pixmap_wx_stipple, &_xh, &_yh);
+
+        if (ret_val != 0) {
+            printf("Bitmap not found: %s\n",xbm_path);
+            exit(1);
+        }
+
         (void)XSetStipple(XtDisplay(w), gc_tint, pixmap_wx_stipple);
     } else {
 // Are these actually used anymore by the code?  Colors get set later
