@@ -8270,6 +8270,8 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
     int ok_to_display;
     int compr_pos;
     int my_object = 0;
+    char *p = NULL; // KC2ELS - used for WIDEn-N
+    int direct = 0;
 
     // call and path had been validated before
     // Check "data" against the max APRS length, and dump the packet if too long.
@@ -8751,23 +8753,59 @@ int data_add(int type ,char *call_sign, char *path, char *data, char from, int p
             p_station->origin[0] = '\0';                // undefine possible former object with same name
 
 
-//-----------------------------------------------------------------------------
-//WE7U
-// We need some work here to properly set the ST_DIRECT bit for
-// various types of paths.  We need to account for WIDEn-N and
-// TRACEn-N digi's:  They won't have an asterisk until they count
-// down to 1.  Also, setting ST_DIRECT should be a one-way trip.  We
-// shouldn't be clearing that bit except for new records and if a
-// timer expires (haven't heard it direct for a very long time).
+        //--------------------------------------------------------------------
 
-        if (!third_party
-                && ((p_station->flag & ST_VIATNC) != 0)
-                && (p_station->node_path_ptr != NULL)
-                && strchr(p_station->node_path_ptr,'*') == NULL)
-            p_station->flag |= (ST_DIRECT);              // set "direct" flag
+        // KC2ELS
+        // Okay, here are the standards for ST_DIRECT:
+        // 1.  The packet must have been received via TNC.
+        // 2.  The packet must not have any * flags.
+        // 3.  If present, the first WIDEn-N (or TRACEn-N) must have n=N.
+        // A station retains the ST_DIRECT setting unless a certain number of 
+        // seconds goes by without a direct packet being received.  This value 
+        // will eventually make its way to the configuration file, but for now 
+        // it's hardcoded to one minute.
+
+        if ((p_station->flag & ST_VIATNC) != 0 && 
+            (p_station->flag & ST_3RD_PT) == 0 && 
+            p_station->node_path_ptr != NULL &&
+            strchr(p_station->node_path_ptr,'*') == NULL)
+          if ((((p = strstr(p_station->node_path_ptr,"WIDE")) != NULL) 
+               && (p+=4)) || 
+              (((p = strstr(p_station->node_path_ptr,"TRACE")) != NULL) 
+               && (p+=5)))
+            if ((*p != NULL) && isdigit(*p))
+              if ((*(p+1) != NULL) && (*(p+1) == '-'))
+                if ((*(p+2) != NULL) && isdigit(*(p+2)))
+                  if (*(p) == *(p+2))
+                    direct = 1;
+                  else
+                    direct = 0;
+                else
+                  direct = 0;
+              else
+                direct = 0;
+            else
+              direct = 1;
+          else
+            direct = 1;
         else
-            p_station->flag &= (~ST_DIRECT);             // clear "direct" flag
-//-----------------------------------------------------------------------------
+          direct = 0;
+
+        if (direct == 1) {
+          if (debug_level & 1)
+            printf("Setting ST_DIRECT for station %s\n", 
+                   p_station->call_sign);
+          p_station->direct_heard = sec_now();
+          p_station->flag |= (ST_DIRECT);
+        } else if ((p_station->flag & ST_DIRECT) != 0 &&
+                   sec_now() > (p_station->direct_heard + 60)) {
+          if (debug_level & 1)
+            printf("Clearing ST_DIRECT for station %s\n", 
+                   p_station->call_sign);
+          p_station->flag &= (~ST_DIRECT);
+        }
+
+        //---------------------------------------------------------------------
 
         p_station->num_packets += 1;
         redo_list = (int)TRUE;          // we may need to update the lists
