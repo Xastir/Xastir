@@ -128,8 +128,8 @@ void alert_print_list(void) {
 
 
 //
-// Called from alert_build_list()
 // This function add a new alert to our alert list.
+// Called from alert_build_list() function.
 //
 /*@null@*/ static alert_entry *alert_add_entry(alert_entry *entry) {
     alert_entry *ptr;
@@ -183,7 +183,7 @@ void alert_print_list(void) {
 
 //
 // Called from alert_build_list(), alert_update_list(), and
-// alert_active().
+// alert_active() functions.
 //
 static alert_entry *alert_match(alert_entry *alert, alert_match_level match_level) {
     int i;
@@ -239,8 +239,8 @@ static alert_entry *alert_match(alert_entry *alert, alert_match_level match_leve
 
 
 //
-// Called from maps.c:load_alert_maps() (both copies of it, compiled
-// in with different map support).
+// Called from maps.c:load_alert_maps() functions (both copies of it,
+// compiled in with different map support).
 //
 void alert_update_list(alert_entry *alert, alert_match_level match_level) {
     alert_entry *ptr;
@@ -288,9 +288,9 @@ void alert_update_list(alert_entry *alert, alert_match_level match_level) {
 //
 // Here's where we mark the expired alerts in the list.
 // Called from alert_compare(), alert_display_request(),
-// alert_on_screen(), alert_build_list(), alert_message_scan().
-// Also called from maps.c:load_alert_maps() functions (both of
-// them).
+// alert_on_screen(), alert_build_list(), and alert_message_scan()
+// functions.  Also called from maps.c:load_alert_maps() functions
+// (both of them).
 //
 int alert_active(alert_entry *alert, alert_match_level match_level) {
     alert_entry *a_ptr;
@@ -319,7 +319,7 @@ int alert_active(alert_entry *alert, alert_match_level match_level) {
 
 
 //
-// Used in qsort as the compare function in alert_sort_active()
+// Used via qsort as the compare function in alert_sort_active()
 // function below.
 //
 static int alert_compare(const void *a, const void *b) {
@@ -404,8 +404,8 @@ int alert_display_request(void) {
 
 
 //
-// Called from main.c:UpdateTime() function.
 // Returns a count of active weather alerts in the list
+// Called from main.c:UpdateTime() function.
 //
 int alert_on_screen(void) {
     int i, alert_count;
@@ -425,10 +425,12 @@ int alert_on_screen(void) {
 
 
 //
-// Called from alert_message_scan().
-//
 // This function builds alert_entry structs from message entries that
-// contain NWS alert messages.  The original form is this:
+// contain NWS alert messages.
+//
+// Called from alert_message_scan() function.
+//
+// The original form is this:
 //
 //     :NWS-WARN :092010z,THUNDER_STORM,AR_ASHLEY,{S9JbA
 //      activity            alert_tag   title (may be up to 5 more)
@@ -550,6 +552,10 @@ static void alert_build_list(Message *fill) {
 
 
 //
+// This function scans the message list to find new alerts.  It adds
+// current alerts to our alert list via the alert_build_list()
+// function.
+//
 // Called from db.c:decode_message() function when a new alert is
 // received, and from maps.c:load_alert_maps() functions (both of
 // them).
@@ -561,17 +567,24 @@ int alert_message_scan(void) {
     // This is the shorthand way we keep track of which state's we just got alerts for.
     // Looks like "CO?MO?ID?". The 3rd position is to indicate if the alert came via local or
     // from the TNC. If there is an unresolved alert then a message is sent to console.
+    // This is a text string with 3 chars per alert.  We allocate 21
+    // chars here initially, enough for seven alerts.
     if (!alert_tag) {
         alert_tag = malloc(21);
         alert_tag_size = 21;
     }
 
+    // Mark active/inactive alerts as such
     for (i = 0; i < alert_list_count; i++)
         (void)alert_active(&alert_list[i], ALERT_ALL);
 
+    // Scan the message list for alerts, add new ones to our alert list.
     mscan_file(MESSAGE_NWS, alert_build_list);
+
+    // Blank out the alert tag
     *alert_tag = '\0';
 
+    // Rebuild the alert tag string for the current alerts
     for (j = 0; j < alert_list_count; j++) {
         if (alert_list[j].flags[0] == '?') {
             for (i = 0; i < (int)strlen(alert_tag); i += 3) {
