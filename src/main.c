@@ -7725,7 +7725,14 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 
                 int temp_alert_count;
 
+
                 //fprintf(stderr,"Redraw on new data\n");
+
+                // Cause refresh_image() to happen if no other
+                // triggers occurred, but enough time has passed.
+                if (sec_now() > next_redraw) {
+                    alert_redraw_on_update++;
+                }
 
                 // check if alert_redraw_on_update is set and it has been at least xx seconds since
                 // last weather alert redraw.
