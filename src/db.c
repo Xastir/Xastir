@@ -12705,11 +12705,12 @@ void decode_info_field(char *call, char *path, char *message, char *origin, char
         ok_igate_net = 0;   // don't put my data on internet     ???
 
     if (ok_igate_net) {
+
         if (debug_level & 1)
             fprintf(stderr,"decode_info_field: ok_igate_net start\n");
 
-        if ( (from == DATA_VIA_TNC)             // Came in via a TNC port
-                && (strlen(my_data) > 0) ) {    // Not empty
+        if ( (from == DATA_VIA_TNC) // Came in via a TNC
+                && (strlen(my_data) > 0) ) { // Not empty
 
             // Here's where we inject our own callsign like this:
             // "WE7U-15*,I" in order to provide injection ID for our
@@ -13390,6 +13391,7 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
     int ok;
     int third_party;
     char backup[MAX_LINE_SIZE+1];
+    char tmp_line[MAX_LINE_SIZE+1];
 
     strcpy(backup, line);
 
@@ -13460,9 +13462,10 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
 
     if (ok) {
 
-//WE7U
-        // Attempt to digipeat this packet if we should
-        if (port)
+        // Attempt to digipeat this packet if we should.  If port=-1,
+        // we received this packet from the x_spider server and we
+        // should not attempt to digipeat it.
+        if (port >= 0)
             relay_digipeat(call_sign, path, info, port);
  
         extract_TNC_text(info);                 // extract leading text from TNC X-1J4
@@ -13502,11 +13505,12 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         ok = extract_third_party(call,path,&info,origin);       // extract third-party data
         third_party = 1;
 
-//WE7U
         // Add it to the HEARD queue for this interface.  We use this
         // for igating purposes.  If some other igate beat us to this
-        // packet, we don't want to duplicate it over the air.
-        if (port)
+        // packet, we don't want to duplicate it over the air.  If
+        // port=-1, we received it from the x_spider server and we
+        // should not save it in the queue.
+        if (port >= 0)
             insert_into_heard_queue(port, backup);
     }
 
@@ -13529,6 +13533,58 @@ int decode_ax25_line(char *line, char from, int port, int dbadd) {
         }
         decode_info_field(call,path,info,origin,from,port,third_party);
     }
+
+
+    if (port == -1) {    // We received this packet from an x_spider
+        // server.  We need to dump it out all of our
+        // transmit-enabled ports.
+
+        // If the string starts with "user" or "pass", it's an
+        // authentication string.  We need to send those through as
+        // well so that the user gets logged into the internet
+        // server and can send/receive packets/messages.  We also
+        // dump it to our console so that we can see who logged in
+        // to us.
+        if (strncasecmp(line,"user",4) == 0
+                || strncasecmp(line,"pass",4 == 0)
+                || strncasecmp(line,"filter",6 == 0)) {
+            fprintf(stderr,"Logged on via x_spider: %s\n", line);
+
+// If the line has a "filter" parameter in it, we need to remove it,
+// else a client may change our filtering parameters.  Perhaps we
+// should skip the authentication stuff as well, as the servers
+// might get confused if we pass two different authentications on
+// the same socket?
+
+        }
+        else if (strlen(line) > 0) {    // Not empty
+            // Send the packet unchanged out all of our
+            // transmit-enabled ports.  We should send it as
+            // third-party igated packets if we're sending to
+            // servers, send it unchanged if sending through TNC?
+
+//fprintf(stderr,"Retransmitting x_spider packet: %s\n", line);
+
+            // Here's where we inject our own callsign like this:
+            // "WE7U-15*,I" in order to provide injection ID for our
+            // igate.  We need to add a '*' character after our
+            // callsign as we inject, to show it came through us.
+            // On the way back out of the internet it can get a '*'
+            // added after the 'I' perhaps.
+            xastir_snprintf(tmp_line,
+                sizeof(tmp_line),
+                "%s>%s,%s*,I:%s",
+                call,
+                path,
+                my_callsign,
+                info);
+
+            //fprintf(stderr,"decode_info_field: IGATE>NET %s\n",line);
+            output_igate_net(tmp_line, port,0); // 0="not third-party"
+//fprintf(stderr,"%s\n",tmp_line);
+        }
+    }
+
 
     if (debug_level & 1)
         fprintf(stderr,"decode_ax25_line: exiting\n");

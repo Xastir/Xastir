@@ -7350,6 +7350,9 @@ begin_critical_section(&devices_lock, "interface.c:output_my_aprs_data" );
                 }
 
                 else {  // Not a Serial KISS TNC interface
+
+//fprintf(stderr,"Sending this string: %s\n", data_txt);
+
                     port_write_string(port, data_txt);  // Transmit the posit
                 }
 
@@ -7736,7 +7739,10 @@ begin_critical_section(&devices_lock, "interface.c:output_my_data" );
                 }
 
                 else {  // Not a Serial KISS TNC interface
-                    port_write_string(port, data_txt);  // Transmit
+
+//fprintf(stderr,"Sending this string: %s\n", data_txt);
+
+                   port_write_string(port, data_txt);  // Transmit
                 }
 
                 if (debug_level & 1)

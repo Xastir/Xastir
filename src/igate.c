@@ -498,7 +498,7 @@ void output_igate_net(char *line, int port, int third_party) {
     // Don't gate OpenTrac expanded packets to the 'net.
     //
     if ( (strstr(path,"TCPXX") != NULL)
-            || (strstr(path,"TCPIP") != NULL)
+            || (strstr(path,"TCPIP") != NULL && port >= 0) // x_spider ok
             || (strstr(path,"NOGATE") != NULL)
             || (strstr(path,"RFONLY") != NULL)
             || (strstr(path,"OPNTRK") != NULL)      // OpenTrac Packet
@@ -611,10 +611,13 @@ void output_igate_net(char *line, int port, int third_party) {
 
 begin_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
-    if (port)
-        igate_options = devices[port].igate_options;
-    else
+    // If received from x_spider port or it's our own tactical call
+    if (port < -1)
+        igate_options = 0;
+    else if (port == -1)    // From x_spider server port
         igate_options = 1;
+    else
+        igate_options = devices[port].igate_options;
 
 end_critical_section(&devices_lock, "igate.c:output_igate_net" );
 
@@ -693,6 +696,7 @@ end_critical_section(&devices_lock, "igate.c:output_igate_net" );
                 // means raw format, the last digit says to _not_
                 // use the unproto_igate path
                 output_my_data(data_txt,x,1,0,0,NULL);
+//fprintf(stderr,"Sending: %s\n", data_txt);
             }
         }
     }

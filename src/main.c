@@ -10594,7 +10594,9 @@ void UpdateTime( XtPointer clientData, /*@unused@*/ XtIntervalId id ) {
 //fprintf(stderr,"server data: %s\n", line);
 
                         packet_data_add(langcode("WPUPDPD006"),(char *)line);
-                        decode_ax25_line((char *)line,'I',0, 1);
+
+                        // Set port to -1 here
+                        decode_ax25_line((char *)line,'I',-1, 1);
 
                         max++;  // Count the number of packets processed
                     }

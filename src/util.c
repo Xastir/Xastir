@@ -2467,9 +2467,9 @@ void reload_tactical_calls(void) {
                     xastir_snprintf(line2,sizeof(line2),"%s>APRS:ID",line);
 
                     // Decode this packet.  This will put it into
-                    // our station database.  Port is set to -1
+                    // our station database.  Port is set to -2
                     // here.
-                    decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
+                    decode_ax25_line( line2, DATA_VIA_LOCAL, -2, 1);
 
                     // Add the tactical callsign to the recently
                     // added station.  We must search for it first.
