@@ -214,6 +214,11 @@ void send_agwpe_packet(int xastir_interface,// Xastir interface port
     int data_length;
 
 
+//fprintf(stderr,"Sending to RadioPort %d\n", RadioPort);
+//fprintf(stderr,"Type:%c, From:%s, To:%s, Path:%s, Data:%s\n",
+//    type, FromCall, ToCall, Path, Data);
+
+
     // Check size of data
     if (length > 512)
         return;
