@@ -970,6 +970,14 @@ First Time Install:
         http://members.aol.com/wa8lmf3/miscinfo/APRServe.txt
         http://www.wa6oft.com/APRServe.txt
         http://www.aprs-is.net/aprsservers.htm
+        http://www.aprs-is.net/APRSServers.htm
+
+
+   Filter port syntax (for those ports that allow user-selectable
+   filtering):
+
+        http://www.aprs-is.net/javaprssrvr/javaprsfilter.htm
+
 
    The procedure to connect to one of them is this:
 
