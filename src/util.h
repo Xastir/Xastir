@@ -76,6 +76,8 @@ extern void log_data(char *file, char *line);
 extern void disown_object_item(char *call_sign,char *new_owner);
 extern void log_object_item(char *line, int disable_object, char *object_name);
 extern void reload_object_item(void);
+extern void log_tactical_call(char *call_sign, char *tactical_call_sign);
+extern void reload_tactical_calls(void);
 extern time_t sec_now(void);
 extern char *get_time(char *time_here);
 

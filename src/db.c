@@ -3117,6 +3117,10 @@ void Change_tactical_change_data(Widget widget, XtPointer clientData, XtPointer 
         temp,
         tactical_pointer->call_sign);
 
+    // Log the change in the tactical_calls.log file
+    log_tactical_call(tactical_pointer->call_sign,
+        tactical_pointer->tactical_call_sign);
+
     XtFree(temp);
 
     redraw_on_new_data = 2;  // redraw now

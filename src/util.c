@@ -2339,6 +2339,115 @@ void reload_object_item(void) {
 
 
 
+// Tactical callsign logging
+//
+// Logging function called from the Assign Tactical Call right-click
+// menu option.  Each tactical assignment is logged as one line.
+//
+// We need to check for identical callsigns in the file, deleting
+// lines that have the same name and adding new records to the end.
+// Actually  BAD IDEA!  We want to keep the history of the tactical
+// calls so that we can trace the changes later.
+//
+// Best method:  Look for lines containing matching callsigns and
+// comment them out, adding the new tactical callsign at the end of
+// the file.
+//
+// Do we need to use a special marker to mean NO tactical callsign
+// is assigned?  This is for when we had a tactical call but now
+// we're removing it.  The reload_tactical_calls() routine below
+// would need to match.  Since we're using comma-delimited files, we
+// can just check for an empty string instead.
+//
+void log_tactical_call(char *call_sign, char *tactical_call_sign) {
+    char *file;
+    FILE *f;
+
+    file = get_user_base_dir("config/tactical_calls.log");
+
+    f=fopen(file,"a");
+    if (f!=NULL) {
+        fprintf(f,"%s,%s\n",call_sign,tactical_call_sign);
+        (void)fclose(f);
+
+        if (debug_level & 1) {
+            fprintf(stderr,
+                "Saving tactical call to file: %s:%s",
+                call_sign,
+                tactical_call_sign);
+        }
+    }
+    else {
+        fprintf(stderr,"Couldn't open file for appending: %s\n", file);
+    }
+}
+
+
+
+
+
+//
+// Function to load saved tactical calls back into Xastir.  This
+// is called on startup.  This implements persistent tactical calls
+// across Xastir restarts.
+//
+// Actually, to fully implement persistent tactical calls, we'd need
+// to create dummy station records for each of these which get
+// filled in when the station is actually heard.  We'd also need to
+// assure the records don't get deleted if the station isn't heard
+// for a while.
+//
+// We can cheat a little:  Throw a simulated packet for that
+// callsign into the decoding (maybe a status packet?), then assign
+// a tactical callsign to it.  Change the expire code later to skip
+// records that have a tactical callsign.
+//
+// Note that the length of "line" can be up to MAX_DEVICE_BUFFER,
+// which is currently set to 4096.
+//
+void reload_tactical_calls(void) {
+/*
+    char *file;
+    FILE *f;
+    char line[300+1];
+    char line2[300+1];
+
+
+    file = get_user_base_dir("config/tactical_calls.log");
+
+    f=fopen(file,"r");
+    if (f!=NULL) {
+
+        while (fgets(line, 300, f) != NULL) {
+
+            if (debug_level & 1)
+                fprintf(stderr,"Loading tactical calls from file: %s",line);
+   
+            if (line[0] != '#') {   // Skip comment lines
+
+// Create a dummy packet here.  Something without a position,
+// perhaps a status packet.
+
+                xastir_snprintf(line2,sizeof(line2),"%s>%s:%s",my_callsign,VERSIONFRM,line);
+
+                // Decode this packet.  This will put it into our
+                // station database.  Port is set to -1 here.
+                decode_ax25_line( line2, DATA_VIA_LOCAL, -1, 1);
+            }
+        }
+        (void)fclose(f);
+    }
+    else {
+        if (debug_level & 1)
+            fprintf(stderr,"Couldn't open file for reading: %s\n", file);
+    }
+*/
+}
+
+
+
+
+
 // Returns time in seconds since the Unix epoc.
 //
 time_t sec_now(void) {

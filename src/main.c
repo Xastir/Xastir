@@ -3466,6 +3466,138 @@ void Tracks_All_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData,
 
 
 
+// Get a pointer to the first station record.  Loop through all
+// station records and clear out the tactical_call_sign fields in
+// each.
+// 
+void clear_all_tactical(void) {
+    DataRow *p_station = n_first;
+
+    // Run through the name-ordered list of records
+    while (p_station != 0) {
+        p_station->tactical_call_sign[0] = '\0';
+        p_station = p_station->n_next;
+    }
+    fprintf(stderr,"Cleared all tactical calls\n");
+}
+
+
+
+
+
+/*
+ *  Clear all tactical callsigns from the station records.  Comment
+ *  out the active records in the log file.
+ */
+void Tactical_Callsign_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    char *ptr;
+    char file[200];
+    char file_temp[200];
+    FILE *f;
+    FILE *f_temp;
+    char line[300];
+#ifdef HAVE_CP
+    char command[300];
+#endif  // HAVE_CP
+
+
+    // Loop through all station records and clear out the
+    // tactical_call_sign fields in each.
+    clear_all_tactical();
+
+    // Comment out all active lines in the log file via a '#' mark.
+    ptr = get_user_base_dir("config/tactical_calls.log");
+    strcpy(file,ptr);
+
+    ptr = get_user_base_dir("config/tactical_calls-temp.log");
+    strcpy(file_temp,ptr);
+
+#ifdef HAVE_CP
+    // Copy to a temp file
+    xastir_snprintf(command,
+        sizeof(command),
+        "%s -f %s %s",
+        CP_PATH,
+        file,
+        file_temp);
+
+    if ( debug_level & 512 )
+        fprintf(stderr,"%s\n", command );
+
+    if ( system( command ) != 0 ) {
+        fprintf(stderr,"\n\nCouldn't create temp file %s!\n\n\n",
+            file_temp);
+        return;
+    }
+#endif  // HAVE_CP
+
+    // Read one line at a time from the temp file.  Add a '#'
+    // mark to the line if it doesn't already have it, then write
+    // that line to the original file.
+    f_temp=fopen(file_temp,"r");
+    f=fopen(file,"w");
+
+    if (f == NULL) {
+        fprintf(stderr,"Couldn't open %s\n",file);
+        return;
+    }
+    if (f_temp == NULL) {
+        fprintf(stderr,"Couldn't open %s\n",file_temp);
+        return;
+    }
+
+    // Read lines from the temp file and write them to the standard
+    // file, modifying them as necessary.
+    while (fgets(line, 300, f_temp) != NULL) {
+
+        if (line[0] != '#') {
+            fprintf(f,"#%s",line);
+        }
+        else {
+            fprintf(f,"%s",line);
+        }
+    }
+    fclose(f);
+    fclose(f_temp);
+}
+
+
+
+
+
+/*
+ *  Clear out tactical callsign log file
+ */
+void Tactical_Callsign_History_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /*@unused@*/ XtPointer callData) {
+    char *file;
+    FILE *f;
+
+
+    // Loop through all station records and clear out the
+    // tactical_call_sign fields in each.
+    clear_all_tactical();
+
+    // Wipe out the log file.
+    file = get_user_base_dir("config/tactical_calls.log");
+
+    f=fopen(file,"w");
+    if (f!=NULL) {
+        (void)fclose(f);
+
+        if (debug_level & 1)
+            fprintf(stderr,"Clearing tactical callsign file...\n");
+    }
+    else {
+        fprintf(stderr,"Couldn't open file for writing: %s\n", file);
+    }
+
+    fprintf(stderr,"Cleared tactical call history file\n");
+}
+
+
+
+
+
 /*
  *  Clear out object/item history log file
  */
@@ -4435,7 +4567,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     Widget trackme_frame, measure_frame, move_frame, display_button,
         track_button, download_trail_button, station_clear_button,
         tracks_clear_button, object_history_refresh_button,
-        object_history_clear_button, uptime_button, save_button,
+        object_history_clear_button, tactical_clear_button,
+        tactical_history_clear_button, uptime_button, save_button,
         file_button, open_file_button, exit_button,
         view_button, view_messages_button,
         bullet_button, packet_data_button, mobile_button,
@@ -6272,6 +6405,27 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
             MY_BACKGROUND_COLOR,
             NULL);
 
+//    tactical_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP025"),
+    tactical_clear_button = XtVaCreateManagedWidget("Clear All Tactical Calls",
+            xmPushButtonGadgetClass,
+            stationspane,
+//            XmNmnemonic,langcode_hotkey("PULDNDP025"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+
+//    tactical_history_clear_button = XtVaCreateManagedWidget(langcode("PULDNDP025"),
+    tactical_history_clear_button = XtVaCreateManagedWidget("Clear Tactical Call History",
+            xmPushButtonGadgetClass,
+            stationspane,
+//            XmNmnemonic,langcode_hotkey("PULDNDP025"),
+            MY_FOREGROUND_COLOR,
+            MY_BACKGROUND_COLOR,
+            NULL);
+
+
+
 //--------------------------------------------------------------------
 
     /* Messages */
@@ -6542,6 +6696,8 @@ void create_appshell( /*@unused@*/ Display *display, char *app_name, /*@unused@*
     XtAddCallback(tracks_clear_button,  XmNactivateCallback,Tracks_All_Clear,NULL);
     XtAddCallback(object_history_refresh_button, XmNactivateCallback,Object_History_Refresh,NULL);
     XtAddCallback(object_history_clear_button, XmNactivateCallback,Object_History_Clear,NULL);
+    XtAddCallback(tactical_clear_button, XmNactivateCallback,Tactical_Callsign_Clear,NULL);
+    XtAddCallback(tactical_history_clear_button, XmNactivateCallback,Tactical_Callsign_History_Clear,NULL);
     XtAddCallback(exit_button,   XmNactivateCallback,Menu_Quit,NULL);
 
     XtAddCallback(defaults_button,      XmNactivateCallback,Configure_defaults,NULL);
@@ -14104,6 +14260,10 @@ void Stations_Clear( /*@unused@*/ Widget w, /*@unused@*/ XtPointer clientData, /
     // Reload saved objects and items from previous runs.
     // This implements persistent objects.
     reload_object_item();
+
+    // Reload tactical calls from file.  This implements persistence
+    // for this feature as well.
+    reload_tactical_calls();
 
     redraw_on_new_data=2;
 }
@@ -26436,6 +26596,10 @@ int main(int argc, char *argv[]) {
             // Reload saved objects and items from previous runs.
             // This implements persistent objects.
             reload_object_item();
+
+            // Reload tactical calls.  This implements persistence
+            // for this type.
+            reload_tactical_calls();
 
             // Reload any CAD objects from file.  This implements
             // persistent objects.
