@@ -740,6 +740,7 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
         OGRGeometryH child_geometryH;
         int sub_object_num;
 
+
         // This may be a ring, or another object with rings.
         child_geometryH = OGR_G_GetGeometryRef(geometryH, kk);
 
@@ -748,7 +749,15 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
         if (sub_object_num) {
             // We found geometries below this.  Recurse.
             if (level < 5) {
-                //fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
+
+                // If we got here, we're dealing with a multipolygon
+                // file.  There are multiple sets of polygon
+                // objects, each may have inner (hole) and outer
+                // (fill) rings.  If (level > 0), it's a
+                // multipolygon layer.
+
+                fprintf(stderr, "DrawPolygons: Recursing level %d\n", level);
+
                 Draw_OGR_Polygons(child_geometryH,
                     level+1,
                     transformH,
@@ -761,6 +770,13 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
             int polygon_points;
             OGREnvelope envelopeH;
 
+// if (kk==0) we're dealing with an outer (fill) ring.  If (kk>0)
+// we're dealing with an inner (hole) ring.
+
+if (kk == 0)
+    fprintf(stderr,"Polygon->Fill\n");
+else
+    fprintf(stderr,"Polygon->Hole\n");
 
             if (fast_extents) {
 
@@ -831,16 +847,51 @@ void Draw_OGR_Polygons(OGRGeometryH geometryH,
                     }
                 }
 
-                for ( mm = 1; mm < polygon_points; mm++ ) {
+// If draw_filled != 0, draw the polygon using X11 polygon calls
+// instead of just drawing the border.
 
-                    draw_vector_ll(da,
-                        (float)vectorY[mm-1],
-                        (float)vectorX[mm-1],
-                        (float)vectorY[mm],
-                        (float)vectorX[mm],
-                        gc,
-                        pixmap);
+                if (draw_filled) { // Draw a filled polygon
+
+// Note that this is problematic, as we have to worry about fill and
+// hole polygons, so we really need to define X11 regions, work them
+// against each other, then apply the final result to the drawing
+// area.  We can't do this polygon by polygon:  We have to do the
+// region thing for each set and then apply the region when we're
+// all done.
+//
+// Also note that we might have a multipolygon file, in which case
+// we'll be doing a set of regions (and applying each set) for each
+// set of polygons.
+
+                    // Temporary code (drawing only a border)
+                    for ( mm = 1; mm < polygon_points; mm++ ) {
+
+                        draw_vector_ll(da,
+                            (float)vectorY[mm-1],
+                            (float)vectorX[mm-1],
+                            (float)vectorY[mm],
+                            (float)vectorX[mm],
+                            gc,
+                            pixmap);
+                    }
                 }
+                else {  // Draw just the border
+
+                    for ( mm = 1; mm < polygon_points; mm++ ) {
+
+                        draw_vector_ll(da,
+                            (float)vectorY[mm-1],
+                            (float)vectorX[mm-1],
+                            (float)vectorY[mm],
+                            (float)vectorX[mm],
+                            gc,
+                            pixmap);
+                    }
+                }
+
+// For weather polygons, we might want to draw the border color in a
+// different color so that we can see these borders easily, or skip
+// drawing the border itself for a few pixels, like UI-View does.
 
                 // Free the allocated vector memory
                 free(vectorX);
