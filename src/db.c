@@ -3630,6 +3630,192 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
     // Clear the text
     XmTextSetString(si_text,NULL);
 
+
+    // Weather Data ...
+    if (p_station->weather_data != NULL
+            // Make sure the timestamp on the weather is current
+            && (int)(((sec_old + p_station->weather_data->wx_sec_time)) >= sec_now()) ) {
+
+        last_pos = pos;
+
+        weather = p_station->weather_data;
+
+        pos += strlen(temp);
+        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI024"),weather->wx_type,weather->wx_station);
+        XmTextInsert(si_text,pos,temp);
+        pos += strlen(temp);
+        sprintf(temp, "\n");
+        xastir_snprintf(temp, sizeof(temp), "\n");
+        XmTextInsert(si_text,pos,temp);
+        pos += strlen(temp);
+        if (units_english_metric)
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI026"),weather->wx_course,weather->wx_speed);
+        else
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI025"),weather->wx_course,(int)(atof(weather->wx_speed)*1.6094));
+
+        XmTextInsert(si_text,pos,temp);
+        pos += strlen(temp);
+
+        if (strlen(weather->wx_gust) > 0) {
+            if (units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI028"),weather->wx_gust);
+            else
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI027"),(int)(atof(weather->wx_gust)*1.6094));
+
+            strncat(temp,
+                "\n",
+                sizeof(temp) - strlen(temp));
+        } else
+            xastir_snprintf(temp, sizeof(temp), "\n");
+
+        XmTextInsert(si_text, pos, temp);
+        pos += strlen(temp);
+
+        if (strlen(weather->wx_temp) > 0) {
+            if (units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI030"),weather->wx_temp);
+            else {
+                temp_out_C =(((atof(weather->wx_temp)-32)*5.0)/9.0);
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI029"),temp_out_C);
+            }
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_hum) > 0) {
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI031"),weather->wx_hum);
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+// NOTE:  The below (Humidex) is not coded for english units, only for metric.
+// What is Humidex anyway?  Heat Index?  Wind Chill? --we7u
+
+        // DK7IN: ??? units_english ???
+        if (strlen(weather->wx_hum) > 0
+                && strlen(weather->wx_temp) > 0
+                && (!units_english_metric) &&
+                (atof(weather->wx_hum) > 0.0) ) {
+
+            e = (float)(6.112 * pow(10,(7.5 * temp_out_C)/(237.7 + temp_out_C)) * atof(weather->wx_hum) / 100.0);
+            humidex = (temp_out_C + ((5.0/9.0) * (e-10.0)));
+
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI032"),humidex);
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_baro) > 0) {
+            if (!units_english_metric) {  // hPa
+                xastir_snprintf(temp, sizeof(temp),
+                    langcode("WPUPSTI033"),
+                    weather->wx_baro);
+            }
+            else {  // Inches Mercury
+                xastir_snprintf(temp, sizeof(temp),
+                    langcode("WPUPSTI063"),
+                    atof(weather->wx_baro)*0.02953);
+            }
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+            xastir_snprintf(temp, sizeof(temp), "\n");
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        } else {
+            if(last_pos!=pos) {
+                xastir_snprintf(temp, sizeof(temp), "\n");
+                XmTextInsert(si_text,pos,temp);
+                pos += strlen(temp);
+            }
+        }
+
+        if (strlen(weather->wx_snow) > 0) {
+            if(units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI035"),atof(weather->wx_snow));
+            else
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI034"),atof(weather->wx_snow)*2.54);
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+            xastir_snprintf(temp, sizeof(temp), "\n");
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_rain) > 0 || strlen(weather->wx_prec_00) > 0
+                || strlen(weather->wx_prec_24) > 0) {
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI036"));
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_rain) > 0) {
+            if (units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI038"),atof(weather->wx_rain)/100.0);
+            else
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI037"),atof(weather->wx_rain)*.254);
+
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_prec_24) > 0) {
+            if(units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI040"),atof(weather->wx_prec_24)/100.0);
+            else
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI039"),atof(weather->wx_prec_24)*.254);
+
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_prec_00) > 0) {
+            if (units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI042"),atof(weather->wx_prec_00)/100.0);
+            else
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI041"),atof(weather->wx_prec_00)*.254);
+
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_rain_total) > 0) {
+            xastir_snprintf(temp, sizeof(temp), "\n%s",langcode("WPUPSTI046"));
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+            if (units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI048"),atof(weather->wx_rain_total)/100.0);
+            else
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI047"),atof(weather->wx_rain_total)*.254);
+
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        // Fuel temp/moisture for RAWS weather stations
+        if (strlen(weather->wx_fuel_temp) > 0) {
+            if (units_english_metric)
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI061"),weather->wx_fuel_temp);
+            else {
+                temp_out_C =(((atof(weather->wx_fuel_temp)-32)*5.0)/9.0);
+                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI060"),temp_out_C);
+            }
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        if (strlen(weather->wx_fuel_moisture) > 0) {
+            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI062"),weather->wx_fuel_moisture);
+            XmTextInsert(si_text,pos,temp);
+            pos += strlen(temp);
+        }
+
+        xastir_snprintf(temp, sizeof(temp), "\n\n");
+ 
+        XmTextInsert(si_text,pos,temp);
+        pos += strlen(temp);
+    }
+
+
     // Packets received ... 
     xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI005"),p_station->num_packets);
     XmTextInsert(si_text,pos,temp);
@@ -4235,189 +4421,6 @@ end_critical_section(&db_station_info_lock, "db.c:Station_data" );
         }
     }
 
-
-    // Weather Data ...
-    if (p_station->weather_data != NULL
-            // Make sure the timestamp on the weather is current
-            && (int)(((sec_old + p_station->weather_data->wx_sec_time)) >= sec_now()) ) {
-
-        weather = p_station->weather_data;
-
-        xastir_snprintf(temp, sizeof(temp), "\n");
-        XmTextInsert(si_text,pos,temp);
-        pos += strlen(temp);
-        xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI024"),weather->wx_type,weather->wx_station);
-        XmTextInsert(si_text,pos,temp);
-        pos += strlen(temp);
-        sprintf(temp, "\n");
-        xastir_snprintf(temp, sizeof(temp), "\n");
-        XmTextInsert(si_text,pos,temp);
-        pos += strlen(temp);
-        if (units_english_metric)
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI026"),weather->wx_course,weather->wx_speed);
-        else
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI025"),weather->wx_course,(int)(atof(weather->wx_speed)*1.6094));
-
-        XmTextInsert(si_text,pos,temp);
-        pos += strlen(temp);
-
-        if (strlen(weather->wx_gust) > 0) {
-            if (units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI028"),weather->wx_gust);
-            else
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI027"),(int)(atof(weather->wx_gust)*1.6094));
-
-            strncat(temp,
-                "\n",
-                sizeof(temp) - strlen(temp));
-        } else
-            xastir_snprintf(temp, sizeof(temp), "\n");
-
-        XmTextInsert(si_text, pos, temp);
-        pos += strlen(temp);
-
-        if (strlen(weather->wx_temp) > 0) {
-            if (units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI030"),weather->wx_temp);
-            else {
-                temp_out_C =(((atof(weather->wx_temp)-32)*5.0)/9.0);
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI029"),temp_out_C);
-            }
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        if (strlen(weather->wx_hum) > 0) {
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI031"),weather->wx_hum);
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-// NOTE:  The below (Humidex) is not coded for english units, only for metric.
-// What is Humidex anyway?  Heat Index?  Wind Chill? --we7u
-
-        // DK7IN: ??? units_english ???
-        if (strlen(weather->wx_hum) > 0
-                && strlen(weather->wx_temp) > 0
-                && (!units_english_metric) &&
-                (atof(weather->wx_hum) > 0.0) ) {
-
-            e = (float)(6.112 * pow(10,(7.5 * temp_out_C)/(237.7 + temp_out_C)) * atof(weather->wx_hum) / 100.0);
-            humidex = (temp_out_C + ((5.0/9.0) * (e-10.0)));
-
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI032"),humidex);
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        if (strlen(weather->wx_baro) > 0) {
-            if (!units_english_metric) {  // hPa
-                xastir_snprintf(temp, sizeof(temp),
-                    langcode("WPUPSTI033"),
-                    weather->wx_baro);
-            }
-            else {  // Inches Mercury
-                xastir_snprintf(temp, sizeof(temp),
-                    langcode("WPUPSTI063"),
-                    atof(weather->wx_baro)*0.02953);
-            }
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-            xastir_snprintf(temp, sizeof(temp), "\n");
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        } else {
-            if(last_pos!=pos) {
-                xastir_snprintf(temp, sizeof(temp), "\n");
-                XmTextInsert(si_text,pos,temp);
-                pos += strlen(temp);
-            }
-        }
-
-        if (strlen(weather->wx_snow) > 0) {
-            if(units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI035"),atof(weather->wx_snow));
-            else
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI034"),atof(weather->wx_snow)*2.54);
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-            xastir_snprintf(temp, sizeof(temp), "\n");
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        if (strlen(weather->wx_rain) > 0 || strlen(weather->wx_prec_00) > 0
-                || strlen(weather->wx_prec_24) > 0) {
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI036"));
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        if (strlen(weather->wx_rain) > 0) {
-            if (units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI038"),atof(weather->wx_rain)/100.0);
-            else
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI037"),atof(weather->wx_rain)*.254);
-
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        if (strlen(weather->wx_prec_24) > 0) {
-            if(units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI040"),atof(weather->wx_prec_24)/100.0);
-            else
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI039"),atof(weather->wx_prec_24)*.254);
-
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        if (strlen(weather->wx_prec_00) > 0) {
-            if (units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI042"),atof(weather->wx_prec_00)/100.0);
-            else
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI041"),atof(weather->wx_prec_00)*.254);
-
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        if (strlen(weather->wx_rain_total) > 0) {
-            xastir_snprintf(temp, sizeof(temp), "\n%s",langcode("WPUPSTI046"));
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-            if (units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI048"),atof(weather->wx_rain_total)/100.0);
-            else
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI047"),atof(weather->wx_rain_total)*.254);
-
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        // Fuel temp/moisture for RAWS weather stations
-        if (strlen(weather->wx_fuel_temp) > 0) {
-            if (units_english_metric)
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI061"),weather->wx_fuel_temp);
-            else {
-                temp_out_C =(((atof(weather->wx_fuel_temp)-32)*5.0)/9.0);
-                xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI060"),temp_out_C);
-            }
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        if (strlen(weather->wx_fuel_moisture) > 0) {
-            xastir_snprintf(temp, sizeof(temp), langcode("WPUPSTI062"),weather->wx_fuel_moisture);
-            XmTextInsert(si_text,pos,temp);
-            pos += strlen(temp);
-        }
-
-        xastir_snprintf(temp, sizeof(temp), "\n\n");
-        XmTextInsert(si_text,pos,temp);
-        pos += strlen(temp);
-    }
 
     if (fcc_lookup_pushed) {
         Station_data_add_fcc(w, clientData, calldata);
