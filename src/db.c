@@ -917,10 +917,12 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     time_t last_ack_sent;
     int distance = -1;
     char temp[10];
+    int group_message = 0;
 
 
     if (debug_level & 1)
         fprintf(stderr,"msg_data_add start\n");
+//fprintf(stderr,"from:%s, to:%s, seq:%s\n", from_call, call_sign, seq);
 
     if ( (data != NULL) && (strlen(data) > MAX_MESSAGE_LENGTH) ) {
         if (debug_level & 2)
@@ -940,10 +942,22 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
     (void)remove_trailing_spaces(m_fill.seq);
     (void)remove_leading_spaces(m_fill.seq);
 
-    // Look for a message with the same call_sign, from_call_sign,
-    // and seq number
-    record = msg_find_data(&m_fill);
+// If the sequence number is blank, then it may have been a query,
+// directed query, or group message.  Assume it is a new message in
+// each case and add it.
+
+    if (seq[0] != '\0') {   // Normal station->station messaging
+        // Look for a message with the same call_sign,
+        // from_call_sign, and seq number
+        record = msg_find_data(&m_fill);
 //fprintf(stderr,"RECORD %ld  \n",record);
+//fprintf(stderr,"Normal station->station message\n");
+    }
+    else {  // Group message/query/etc.
+        record = -1L;
+        group_message++;    // Flag it as a group message
+//fprintf(stderr,"Group message/query/etc\n");
+    }
     msg_clear_data(&m_fill);
     if(record != -1L) { /* fill old data */
         msg_get_data(&m_fill, record);
@@ -1039,7 +1053,11 @@ time_t msg_data_add(char *call_sign, char *from_call, char *data,
         get_time(time_data));
 
     if(record == -1L) {     // No old record found
-        m_fill.acked = 0;   // We can't have been acked yet
+        if (group_message)
+            m_fill.acked = 1;   // Group msgs/queries need no ack
+        else
+            m_fill.acked = 0;   // We can't have been acked yet
+
         m_fill.interval = 0;
         m_fill.tries = 0;
 
